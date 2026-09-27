@@ -4,7 +4,10 @@ import { C } from '../../lib/palette.mjs';
 import { text, markR } from '../../lib/text.mjs';
 import { squircle } from '../../lib/brand.mjs';
 import { channelAvatar } from '../../lib/channels.mjs';
-import { COPY, bg, lines, rise, g, enter, pop, span, CX } from '../kit.mjs';
+import { COPY, rise, g, enter, pop, span, CX } from '../kit.mjs';
+import { words } from '../type.mjs';
+import { sky, bokeh, SKY } from '../world.mjs';
+import { prog, outCubic } from '../../lib/ease.mjs';
 import { icon } from '../icons.mjs';
 
 const read = (path) => JSON.parse(fs.readFileSync(new URL(path, import.meta.url), 'utf8'));
@@ -27,9 +30,13 @@ function map(t, { dim = 1, highlight } = {}) {
     MAP.regions.map((r) => `<path d="${r.d}" fill="${C.mint}" stroke="${C.white}" stroke-width="3" stroke-linejoin="round"/>`).join('') + '</g>';
   const routes = DEST.map((c, i) => {
     const r = route(c), p = enter(t, 0.8 + i * 0.12, 0.7), hot = highlight === c.id;
-    const moving = p >= 1 ? r.point((t * 0.35 + i * 0.17) % 1) : null;
-    return `<path d="${r.d}" fill="none" stroke="${hot ? C.amber : C.teal}" stroke-width="${hot ? 9 : 4}" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${(1 - p).toFixed(3)}" opacity="${hot || !highlight ? 1 : 0.35}"/>` +
-      (moving && !highlight ? `<circle cx="${moving[0].toFixed(1)}" cy="${moving[1].toFixed(1)}" r="6" fill="${C.amber}"/>` : '') +
+    const comet = p >= 1 && !highlight ? [0, 1, 2, 3, 4].map((k) => {
+      const [x, y] = r.point((((t * 0.35 + i * 0.17 - k * 0.018) % 1) + 1) % 1);
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${7 - k}" fill="${C.amber}" opacity="${(1 - k * 0.2).toFixed(2)}"/>`;
+    }).join('') : '';
+    return `<path d="${r.d}" fill="none" stroke="${hot ? C.amber : C.teal}" stroke-width="16" opacity="${(0.12 * p).toFixed(3)}" stroke-linecap="round"/>` +
+      `<path d="${r.d}" fill="none" stroke="${hot ? C.amber : C.teal}" stroke-width="${hot ? 9 : 4}" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="${(1 - p).toFixed(3)}" opacity="${hot || !highlight ? 1 : 0.35}"/>` +
+      comet +
       g(`<circle cx="${at(c)[0]}" cy="${at(c)[1]}" r="10" fill="${hot ? C.amber : C.teal}"/>`, { s: pop(t, 1.4 + i * 0.12, 0.4), cx: at(c)[0], cy: at(c)[1] });
   }).join('');
   const labels = Object.entries(LABELS).map(([id, [dx, dy]]) => {
@@ -48,7 +55,9 @@ function channels(t) {
   return rows.map((row, ri) => row.map((r, j) => {
     const cx = CX + (j - (row.length - 1) / 2) * 200, cy = 720 + ri * 210, id = `ch${ri}${j}`, k = ri * 5 + j;
     const svg = channelAvatar(r).replace('<svg ', `<svg x="${cx - 90}" y="${cy - 90}" `).replace('width="640" height="640"', 'width="180" height="180"');
-    return g(`<clipPath id="${id}"><circle cx="${cx}" cy="${cy}" r="90"/></clipPath><g clip-path="url(#${id})">${svg}</g>`, { s: pop(t, 0.15 + k * 0.1, 0.45), cx, cy });
+    const p = outCubic(prog(t, 0.1 + k * 0.08, 0.7 + k * 0.08)), a = k * 2.4, fx = cx + Math.cos(a) * 1000 * (1 - p), fy = cy + Math.sin(a) * 1000 * (1 - p);
+    const av = `<clipPath id="${id}"><circle cx="${cx}" cy="${cy}" r="90"/></clipPath><g clip-path="url(#${id})">${svg}</g>`;
+    return p > 0 ? `<g transform="translate(${(fx - cx).toFixed(1)} ${(fy - cy).toFixed(1)}) rotate(${(-60 * (1 - p)).toFixed(1)} ${cx} ${cy})">${av}</g>` : '';
   }).join('')).join('');
 }
 
@@ -65,8 +74,10 @@ function notice(t) {
 export function uzMap(t) {
   const part = Math.min(2, Math.floor(t / 4)), local = t - part * 4;
   const head = [K.all, K.channels, K.subscribe][part];
-  let body = bg(C.white) + map(t, { dim: part === 1 ? 0.2 : 1, highlight: part === 2 ? 'buxoro' : undefined });
+  const zoom = 1 + 1.6 * (1 - outCubic(prog(t, 0, 1.8)));
+  let body = sky(SKY.day) + bokeh(t, { opacity: 0.06, seed: 8 }) +
+    g(map(t, { dim: part === 1 ? 0.2 : 1, highlight: part === 2 ? 'buxoro' : undefined }), { s: zoom, cx: HUB[0], cy: HUB[1] });
   if (part === 1) body += channels(local);
   if (part === 2) body += notice(local) + rise(text(K.subscribeSub, { x: CX, y: 530, anchor: 'middle', fill: C.muted, weight: 600, size: 44 }), enter(local, 0.3, 0.4), 20);
-  return body + rise(lines(head, { cy: 360, size: 84 }), span(local, 0.05, 4.05, 0.25), 25);
+  return body + g(words(head, local, 0.05, { cy: 360, size: 88 }), { o: span(local, -1, 4.05, 0.25) });
 }

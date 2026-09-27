@@ -21,11 +21,12 @@ function chrome(title = 'Rida') {
     `<rect y="85" width="${PT_W}" height="1" fill="${UI.line}"/>`;
 }
 
-// Screen content (points) inside the phone; `cam` moves the phone up to show its lower part.
-// `withChrome` false for Telegram's own screens.
-export function phone(content, { withChrome = true, title, cam = 0 } = {}) {
+// Screen content (points) inside the phone. `cam` moves the phone up, `zoom` scales around frame
+// height `fy` (camera push-in), `tilt` rotates in degrees. `withChrome` false for Telegram's own screens.
+export function phone(content, { withChrome = true, title, cam = 0, zoom = 1, fy = 960, tilt = 0 } = {}) {
   const sx = F.x + F.bezel, sy = F.y + F.bezel, sw = F.w - 2 * F.bezel, sh = F.h - 2 * F.bezel, sr = F.r - F.bezel;
-  return `<g transform="translate(0 ${cam.toFixed(1)})"><defs><clipPath id="screen"><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" rx="${sr}"/></clipPath>` +
+  const move = `translate(540 ${fy}) scale(${zoom.toFixed(4)}) rotate(${tilt.toFixed(2)}) translate(-540 ${-fy}) translate(0 ${cam.toFixed(1)})`;
+  return `<g transform="${move}"><defs><clipPath id="screen"><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" rx="${sr}"/></clipPath>` +
     `<filter id="phoneShadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="#0F172A" flood-opacity="0.22"/></filter></defs>` +
     `<rect x="${F.x}" y="${F.y}" width="${F.w}" height="${F.h}" rx="${F.r}" fill="#111827" filter="url(#phoneShadow)"/>` +
     `<g clip-path="url(#screen)"><g transform="translate(${sx} ${sy}) scale(${K.toFixed(5)})">` +

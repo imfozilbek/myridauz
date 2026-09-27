@@ -4,9 +4,9 @@
     "pains": [["Mashina toʻlguncha", "kutish"], ["Bayramda", "narx oshadi"], ["Notanish", "haydovchi"], ["Mashinada", "ayol bormi?"]],
     "turn": ["Endi", "boshqacha"]
   },
-  "reveal": { "tagline": ["Viloyatlararo", "birga safarlar"], "telegram": "Telegramda" },
+  "reveal": { "tagline": ["Viloyatlararo", "*birga* safarlar"], "telegram": "Telegramda" },
   "concept": {
-    "lines": [["Yoʻli bir odamlar", "bir mashinada boradi"], ["Yoʻl xarajati", "hammaga boʻlinadi"], ["Hamma uchun", "qulay"]],
+    "lines": [["Yoʻli bir *odamlar*", "bir mashinada boradi"], ["Yoʻl xarajati", "*hammaga* boʻlinadi"], ["Hamma uchun", "*qulay*"]],
     "from": "Toshkent",
     "to": "Samarqand"
   },
@@ -93,7 +93,7 @@
     "reviews": ["Oʻz vaqtida keldi", "Xavfsiz haydaydi"],
     "woman": "Mashinada ayol bor",
     "womanLine": ["Ayollar uchun", "xotirjam safar"],
-    "share": ["Yaqinlaringiz", "doim xabardor"],
+    "share": ["Yaqinlaringiz", "doim *xabardor*"],
     "shareButton": "Yaqinlarimga yuborish",
     "shareTitle": "Safar holati",
     "shareCar": "Oq Cobalt · 01 A 123 BC",
@@ -122,7 +122,7 @@
   },
   "finale": {
     "pause": ["Yaqinlaringiz", "kutyapti"],
-    "people": ["Odamlar uchun", "yaratildi"],
+    "people": ["*Odamlar* uchun", "yaratildi"],
     "slogan": "Manzil sari",
     "tagline": "Viloyatlararo birga safarlar",
     "soon": "Tez orada Telegramda",

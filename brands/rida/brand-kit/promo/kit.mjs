@@ -42,14 +42,6 @@ export function pill(label, { cx = CX, cy, size = 44, bg: fill = C.white, fg = C
     text(label, { x: x + size * pad + iw, y: cy + size * 0.35, fill: fg, weight, size });
 }
 
-// Numbered step caption above the phone.
-export function step(num, label, { cy = 290, size = 58 } = {}) {
-  const w = layout(label, { size }).width, r = size * 0.62, total = r * 2 + 24 + w, x = CX - total / 2;
-  return `<circle cx="${n(x + r)}" cy="${cy}" r="${n(r)}" fill="${C.teal}"/>` +
-    text(String(num), { x: x + r, y: cy + size * 0.28, anchor: 'middle', fill: C.white, size: size * 0.8 }) +
-    text(label, { x: x + r * 2 + 24, y: cy + size * 0.35, fill: C.ink, size });
-}
-
 // Circle wipe that covers the frame by time `at` (the next scene starts in `fill`).
 export function wipe(t, at, fill, { dur = 0.45, cx = CX, cy = H / 2 } = {}) {
   if (t < at - dur || t >= at) return '';

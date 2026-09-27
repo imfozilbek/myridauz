@@ -2,14 +2,27 @@
 import { C } from '../../lib/palette.mjs';
 import { text, markR } from '../../lib/text.mjs';
 import { squircle } from '../../lib/brand.mjs';
-import { COPY, bg, lines, pill, rise, g, enter, pop, span, SOFT, CX } from '../kit.mjs';
+import { COPY, pill, rise, g, enter, pop, span, CX } from '../kit.mjs';
+import { words } from '../type.mjs';
+import { stage } from '../world.mjs';
+import { rings } from '../fx.mjs';
+import { prog, outCubic } from '../../lib/ease.mjs';
 import { icon, iconOf } from '../icons.mjs';
 import { star } from '../ui.mjs';
 
 const K = COPY.trust;
 const card = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="44" fill="${C.white}" filter="url(#soft)"/>`;
 const SHADOW = '<defs><filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.12"/></filter></defs>';
-const head = (list, t, cy = 400) => rise(lines(list, { cy, size: 84 }), enter(t, 0.1, 0.4), 30);
+const head = (list, t, cy = 400) => words(list, t, 0.1, { cy, size: 88, stagger: 0.07 });
+// Small sparks flying out of (cx, cy) right after `at`.
+function sparks(t, at, cx, cy, color = C.amber) {
+  const p = prog(t, at, at + 0.6);
+  if (p <= 0 || p >= 1) return '';
+  return Array.from({ length: 8 }, (_, i) => {
+    const a = (i / 8) * 2 * Math.PI, r = 20 + 90 * outCubic(p);
+    return `<circle cx="${(cx + r * Math.cos(a)).toFixed(1)}" cy="${(cy + r * Math.sin(a)).toFixed(1)}" r="${(7 * (1 - p)).toFixed(2)}" fill="${color}"/>`;
+  }).join('');
+}
 
 function checked(t) {
   const rows = K.items.map((label, i) => {
@@ -21,13 +34,13 @@ function checked(t) {
   return head(K.check, t) + card(190, 580, 700, 700) +
     `<circle cx="370" cy="760" r="110" fill="${face > 0.5 ? C.teal : '#E5E7EB'}"/>` + icon('User', 370, 760, 130, face > 0.5 ? C.white : C.muted, 1.8) +
     `<rect x="530" y="660" width="300" height="200" rx="32" fill="${car > 0.5 ? C.teal : '#E5E7EB'}"/>` + icon('CarFront', 680, 760, 130, car > 0.5 ? C.white : C.muted, 1.8) +
-    rows + g(pill(K.stamp, { cy: 1370, size: 52, bg: C.teal, fg: C.white, iconSvg: iconOf('BadgeCheck', 2.4) }), { s: pop(t, 3.3, 0.5), cx: CX, cy: 1370 });
+    rows + g(pill(K.stamp, { cy: 1370, size: 52, bg: C.teal, fg: C.white, iconSvg: iconOf('BadgeCheck', 2.4) }), { s: pop(t, 3.3, 0.5), cx: CX, cy: 1370 }) + rings(t, 3.3, CX, 1370, { color: C.teal, max: 360 });
 }
 
 function rating(t) {
   const stars = [0, 1, 2, 3, 4].map((i) => {
     const x = CX + (i - 2) * 150;
-    return star(x, 720, 64, '#E5E7EB') + g(star(x, 720, 64, C.amber), { s: pop(t, 0.5 + i * 0.25, 0.4), cx: x, cy: 720 });
+    return star(x, 720, 64, '#E5E7EB') + g(star(x, 720, 64, C.amber), { s: pop(t, 0.5 + i * 0.25, 0.4), cx: x, cy: 720 }) + sparks(t, 0.55 + i * 0.25, x, 720);
   }).join('');
   const review = (label, y, t0) => g(card(170, y, 740, 130) + [0, 1, 2, 3, 4].map((i) => star(240 + i * 40, y + 45, 16)).join('') +
     text(label, { x: 220, y: y + 104, fill: C.ink, weight: 600, size: 44 }), { o: enter(t, t0, 0.35), y: 30 * (1 - enter(t, t0, 0.35)) });
@@ -58,11 +71,11 @@ function woman(t) {
   const on = enter(t, 1.0, 0.35), knob = 440 + 200 * on;
   return g(pill(K.woman, { cy: 620, size: 64, bg: C.amber, fg: C.deep }), { s: pop(t, 0.2, 0.5), cx: CX, cy: 620 }) +
     `<rect x="340" y="770" width="400" height="200" rx="100" fill="${on > 0.5 ? C.teal : '#D1D5DB'}"/><circle cx="${knob}" cy="870" r="80" fill="${C.white}"/>` +
-    rise(lines(K.womanLine, { cy: 1150, size: 88 }), enter(t, 1.6, 0.45), 30);
+    rings(t, 1.0, 640, 870, { color: C.teal, max: 260 }) + words(K.womanLine, t, 1.6, { cy: 1150, size: 92 });
 }
 
 const PARTS = [checked, rating, share, woman];
 export function trust(t) {
-  const i = Math.min(3, Math.floor(t / 4)), local = t - i * 4;
-  return SHADOW + bg(i % 2 ? SOFT : C.white) + g(PARTS[i](local), { o: span(local, -1, 4.05, 0.2) });
+  const i = Math.min(3, Math.floor(t / 4)), local = t - i * 4, p = enter(local, 0, 0.5);
+  return SHADOW + stage(t) + g(PARTS[i](local), { o: span(local, -1, 4.05, 0.2), y: 60 * (1 - p) });
 }

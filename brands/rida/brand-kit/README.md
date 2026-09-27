@@ -52,6 +52,9 @@ FFMPEG=… CHROMIUM=… npm run promo -- --preview 1.5,30,100
 | `promo/copy.json` | Все узбекские тексты ролика (проверяет носитель) |
 | `promo/kit.mjs`, `promo/icons.mjs` | Общие части ролика: время, заголовки, иконки Lucide |
 | `promo/phone.mjs`, `promo/ui.mjs` | Телефон с Telegram и элементы экранов |
+| `promo/world.mjs`, `promo/car.mjs` | Небо, горы, дороги, свет; машина с людьми |
+| `promo/type.mjs`, `promo/fx.mjs` | Слова по одному; вспышки, кольца, блики, лучи |
+| `promo/people.mjs` | Толпа людей, которая складывается в букву R |
 | `promo/screens/` | Экраны: поиск, поездки, бронь, чат, публикация, заявки, список чатов |
 | `promo/scenes/` | Сцены ролика по порядку музыки |
 

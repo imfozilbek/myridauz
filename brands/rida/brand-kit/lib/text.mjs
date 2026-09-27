@@ -69,6 +69,9 @@ export function markR({ cx, cy, h, fill = '#fff', id, decimals = 1 }) {
   return fill === null ? `<path d="${d}"/>` : `<path${id ? ` id="${id}"` : ''} d="${d}" fill="${fill}"/>`;
 }
 
+// Outline of one Rubik ExtraBold glyph at a font size, baseline at y = 0 (opentype.js Path).
+export const glyphPath = (char, size) => FONTS['rubik-800'].charToGlyph(char).getPath(0, 0, size);
+
 // Text centered on (cx, cy) by cap height (for digits and caps).
 export function textCentered(str, { cx, cy, h, fill, weight = 800, maxWidth, id, spacing = 0 }) {
   return text(str, { x: cx, y: cy + h / 2, anchor: 'middle', fill, weight, size: h / CAP, maxWidth, id, spacing });
