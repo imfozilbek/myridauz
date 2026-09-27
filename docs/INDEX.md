@@ -27,3 +27,4 @@
 | 23 | [23-pricing-engine.md](23-pricing-engine.md) | Движок цен: одно место для формулы и переменных |
 | 24 | [24-ratings-reviews-subscriptions.md](24-ratings-reviews-subscriptions.md) | Рейтинг, отзывы, подписка на маршрут |
 | 25 | [25-uzbek-language-guide.md](25-uzbek-language-guide.md) | Узбекский язык продукта: правила и источники |
+| 26 | [26-lessons-learned.md](26-lessons-learned.md) | Уроки: причины и следствия ошибок |
