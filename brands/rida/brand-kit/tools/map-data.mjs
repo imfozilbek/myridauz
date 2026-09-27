@@ -54,5 +54,9 @@ const out = {
     return { id, name, code, x: +x.toFixed(1), y: +y.toFixed(1) };
   })
 };
-fs.writeFileSync(new URL('../data/uzbekistan.json', import.meta.url), JSON.stringify(out, null, 1) + '\n');
+// One region or city per line keeps diffs readable.
+const list = (items) => `[\n${items.map((i) => `  ${JSON.stringify(i)}`).join(',\n')}\n]`;
+const json = `{"source": ${JSON.stringify(out.source)}, "width": ${out.width}, "height": ${out.height},\n` +
+  `"regions": ${list(out.regions)},\n"cities": ${list(out.cities)}}\n`;
+fs.writeFileSync(new URL('../data/uzbekistan.json', import.meta.url), json);
 console.log(`regions ${out.regions.length}, ${out.width} x ${out.height}`);
