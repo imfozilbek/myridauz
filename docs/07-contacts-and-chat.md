@@ -35,7 +35,7 @@
 - Cloudflare Durable Objects (SQLite) + WebSocket Hibernation API.
 - Один Durable Object = один чат (одна бронь).
 - Во время «сна» (hibernation) Duration не тарифицируется.
-- Поддержка: текст; голосовые сообщения: желательно.
+- Поддержка: текст. Голосовые сообщения: вопрос №24 (риск по закону, `30-legal.md`).
 
 ## Уведомления
 
