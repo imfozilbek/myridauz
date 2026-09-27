@@ -14,3 +14,4 @@
 | 10 | [10-open-questions.md](10-open-questions.md) | Открытые вопросы и решения по умолчанию |
 | 11 | [11-code-architecture.md](11-code-architecture.md) | Архитектура кода: монорепо, backend, frontend, лимит 150 строк |
 | 12 | [12-monetization.md](12-monetization.md) | Монетизация: кошелёк, комиссия 10%, акция, подписка |
+| 13 | [13-i18n.md](13-i18n.md) | Мультиязычность: готовность к новым языкам |
