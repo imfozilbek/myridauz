@@ -26,7 +26,7 @@
 |---|---|---|
 | oʻ, gʻ: символ `ʻ` (U+02BB) | oʻ, gʻ, Oʻzbekiston | o', g', o`, oʼ |
 | Тутук белгиси (ъ): символ `ʼ` (U+02BC) | maʼlumot, taʼlim | ma'lumot, ma`lumot |
-| Сочетания sh, ch, ng: две буквы | shahar, choy, keling |: |
+| Сочетания sh, ch, ng: две буквы | shahar, choy, keling | |
 | Латинская `c`: только в `ch` | chiqish | cikish |
 | ВСЕ ЗАГЛАВНЫЕ: все буквы | CHIQISH | ChIQISH |
 
@@ -51,7 +51,7 @@
 | Деньги | пробел между тысячами + «soʻm» | 150 000 soʻm |
 | Дата | число-месяц (месяц строчными) | 27-sentabr |
 | Время | 24 часа | 14:30 |
-| Дни | bugun, ertaga, dushanba … yakshanba |: |
+| Дни | bugun, ertaga, dushanba … yakshanba | |
 
 Месяцы: yanvar, fevral, mart, aprel, may, iyun, iyul, avgust,
 sentabr, oktabr, noyabr, dekabr.
