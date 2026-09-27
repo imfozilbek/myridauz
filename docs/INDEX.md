@@ -21,3 +21,4 @@
 | 17 | [17-complaints-and-blocking.md](17-complaints-and-blocking.md) | Жалобы, причины, решения модератора, блокировки |
 | 18 | [18-retention.md](18-retention.md) | Удержание людей на платформе |
 | 19 | [19-design-system-and-ux.md](19-design-system-and-ux.md) | Дизайн-система, иконки, простота интерфейса |
+| 20 | [20-brand.md](20-brand.md) | Бренд: цвета, светлая тема, продуктовый язык |

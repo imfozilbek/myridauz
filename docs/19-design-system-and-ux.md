@@ -13,7 +13,7 @@
 |---|---|---|
 | UI-компоненты | `@telegram-apps/telegram-ui` (TelegramUI) | Выглядит как сам Telegram — людям привычно; iOS и Android стили |
 | Иконки | `lucide-react` (Lucide) | Большой единый набор, простые понятные иконки, MIT |
-| Тема (цвета) | Тема Telegram (`themeParams`) | Светлая/тёмная тема как у пользователя |
+| Тема (цвета) | Свои токены бренда (`20-brand.md`) | Только светлая тема, тема Telegram игнорируется |
 | SDK Mini App | `@telegram-apps/sdk-react` | Кнопки Telegram (MainButton, BackButton), тема, haptic |
 
 - Перед стартом проверить, что библиотеки поддерживаются (последние релизы).
