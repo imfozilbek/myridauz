@@ -54,5 +54,6 @@ export function end(t) {
     logo(99, { cy: LOGO_Y }) + sweep(t, 1.2, CX - 150, LOGO_Y - 150, 300, 'endSweep') +
     text(K.tagline, { x: CX, y: 1250, anchor: 'middle', fill: C.white, weight: 800, size: 60 }) +
     g(pill(K.soon, { cy: 1400, size: 50, iconSvg: iconOf('Send', 2.4) }), { s: pop(t, 0.3, 0.5), cx: CX, cy: 1400 }) +
-    rise(text(K.site, { x: CX, y: 1545, anchor: 'middle', fill: C.mint, weight: 600, size: 56 }), enter(t, 0.8, 0.5), 20);
+    rise(text(K.site, { x: CX, y: 1545, anchor: 'middle', fill: C.mint, weight: 600, size: 56 }), enter(t, 0.8, 0.5), 20) +
+    text(K.credit, { x: CX, y: 1760, anchor: 'middle', fill: C.mint, weight: 500, size: 26, maxWidth: 900 });
 }

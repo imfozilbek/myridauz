@@ -25,7 +25,7 @@ function intro(t) {
 }
 
 // Phone part: t from 0 (44.47 s) to 12. Publish 0…4, requests 4…12 (arrivals, then confirmations).
-const FOCUS = [[1.6, 2.4, 1.2, 1319], [0, 3.6, 1.04, 960], [2.7, 3.6, 1.35, 816]];
+const FOCUS = [[1.6, 2.4, 1.2, 1319], [0, 3.6, 1, 960], [2.7, 3.6, 1.35, 816]];
 function app(t) {
   const onPublish = t < 4, p = (t - 3.65) / 0.35;
   const screen = onPublish && p > 0 ? slide(publish(t), requests(t - 4), p) : onPublish ? publish(t) : requests(t - 4);
@@ -35,7 +35,7 @@ function app(t) {
   const cam = 420 * (1 - enter(t, 0, 0.6)) - 360 * lift + Math.sin(t * 1.4) * 8;
   const tilt = 6 * (1 - enter(t, 0, 0.9)) + Math.sin(t * 0.9) * 0.6;
   return stage(t, C.amberStrong) + flash(t, 0, { max: 0.5 }) + phone(screen, { cam, zoom, fy, tilt }) +
-    g(stepCaption(i + 1, K.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 8) });
+    g(stepCaption(i + 1, K.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) });
 }
 
 // Solutions on the road: the full car leaves without waiting, then turns back with people too.

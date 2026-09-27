@@ -12,7 +12,7 @@ import { chat } from '../screens/chat.mjs';
 const SCREENS = [search, results, trip, chat];
 const STEP = 4, SLIDE = 0.35;
 // Push-in per step: [start, end, zoom, frame y of the focus].
-const FOCUS = [[0, 3.6, 1.05, 960], [1.4, 3.2, 1.32, 875], [2.0, 3.1, 1.18, 951], [2.9, 3.8, 1.25, 1035]];
+const FOCUS = [[0, 3.6, 1, 960], [1.4, 3.2, 1.32, 875], [2.0, 3.1, 1.18, 951], [2.9, 3.8, 1.25, 1035]];
 
 export function passenger(t) {
   const i = Math.min(SCREENS.length - 1, Math.floor(t / STEP)), local = t - i * STEP;
@@ -24,5 +24,5 @@ export function passenger(t) {
   const tilt = -6 * (1 - enter(t, 0, 0.9)) + Math.sin(t * 0.9) * 0.6;
   const zoom = 1 + (z - 1) * push;
   return stage(t) + phone(content, { cam, zoom, fy, tilt }) +
-    g(stepCaption(i + 1, COPY.passenger.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 8) });
+    g(stepCaption(i + 1, COPY.passenger.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) });
 }
