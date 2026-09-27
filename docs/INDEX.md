@@ -30,3 +30,4 @@
 | 26 | [26-lessons-learned.md](26-lessons-learned.md) | Уроки: причины и следствия ошибок |
 | 27 | [27-launch-roadmap.md](27-launch-roadmap.md) | Запуск 31 декабря 2026: план и объём |
 | 28 | [28-documentation-rules.md](28-documentation-rules.md) | Правила документации |
+| 29 | [29-product-analytics.md](29-product-analytics.md) | Продуктовая аналитика: где люди застревают |
