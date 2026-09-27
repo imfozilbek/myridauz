@@ -1,5 +1,5 @@
 // Channel assets (docs/37): avatar "code | R" with region name, post image 1280 x 720.
-import { text, markR, textCentered, layout, CAP } from './text.mjs';
+import { text, markR, textCentered, layout } from './text.mjs';
 import { C, svg } from './palette.mjs';
 import { squircle, plate } from './brand.mjs';
 

@@ -93,6 +93,6 @@ await browser.close();
 // Tokens, fonts and README: copied or generated without rendering.
 put(`${OUT}/tokens/rida-colors.json`, fs.readFileSync('data/tokens.json'));
 put(`${OUT}/tokens/rida-tokens.css`, extras.tokensCss(TOKENS));
-for (const f of fs.readdirSync('fonts')) put(`${OUT}/fonts/${f}`, fs.readFileSync(`fonts/${f}`));
+for (const f of fs.readdirSync('fonts/rubik')) put(`${OUT}/fonts/${f}`, fs.readFileSync(`fonts/rubik/${f}`));
 put(`${OUT}/README.txt`, fs.readFileSync('data/kit-readme.txt'));
 console.log('built');

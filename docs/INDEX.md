@@ -41,4 +41,7 @@
 | 37 | [37-channels-pack.md](37-channels-pack.md) | Пакет для 13 каналов: тексты, картинки, настройки |
 | 38 | [38-brand-kit.md](38-brand-kit.md) | Бренд-пакет и моушн |
 | 39 | [39-saved-links.md](39-saved-links.md) | Сохранённые ссылки владельца |
+| 40 | [40-product-deep-dive.md](40-product-deep-dive.md) | Продукт глубоко: для кого, боли, прорыв, рынок, риски |
+| 41 | [41-promo-video.md](41-promo-video.md) | Рекламное видео: музыка, логика, сценарий, нарезки |
+| 42 | [42-promo-prompts.md](42-promo-prompts.md) | Промпты для рекламных видео |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |

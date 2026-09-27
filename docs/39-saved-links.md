@@ -4,7 +4,7 @@
 
 | # | Дата | Ссылка | Что это | Зачем |
 |---|---|---|---|---|
-| 1 | 27.09.2026 | https://youtu.be/_AOHZKg4AmE | YouTube: «No Copyright Epic Cinematic Teaser Background Music / Breakthrough», автор ArcticFoxMusic | Владелец скажет позже |
+| 1 | 27.09.2026 | https://youtu.be/_AOHZKg4AmE | YouTube: «No Copyright Epic Cinematic Teaser Background Music / Breakthrough», автор ArcticFoxMusic | Музыка рекламного видео, подробно `41` |
 
 ## Правила
 

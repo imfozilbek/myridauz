@@ -2,11 +2,13 @@
   "name": "@platform/brand-kit-rida",
   "private": true,
   "type": "module",
-  "description": "Rida brand kit generator: SVG masters, PNG renders, motion videos (docs/38-brand-kit.md)",
+  "description": "Rida brand kit generator: SVG masters, PNG renders, motion videos, promo film (docs/38, docs/41)",
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "promo": "node promo/build.mjs"
   },
   "dependencies": {
+    "lucide-static": "1.48.0",
     "opentype.js": "1.3.4",
     "playwright": "1.56.1"
   }

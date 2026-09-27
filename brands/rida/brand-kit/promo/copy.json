@@ -1,0 +1,289 @@
+{
+  "hook": {
+    "question": [
+      "Boshqa viloyatga",
+      "borasizmi?"
+    ],
+    "pains": [
+      [
+        "Soatlab",
+        "kutish"
+      ],
+      [
+        "Nomaʼlum",
+        "narx"
+      ],
+      [
+        "Notanish",
+        "haydovchi"
+      ],
+      [
+        "Raqamingiz",
+        "hammaga ochiq"
+      ]
+    ],
+    "turn": [
+      "Endi",
+      "boshqacha"
+    ]
+  },
+  "reveal": {
+    "tagline": [
+      "Viloyatlararo",
+      "birga safarlar"
+    ],
+    "telegram": "Telegramda"
+  },
+  "concept": {
+    "lines": [
+      [
+        "Haydovchi baribir",
+        "yoʻlga chiqadi"
+      ],
+      [
+        "Mashinasida",
+        "boʻsh joylar bor"
+      ],
+      [
+        "Siz shu joyni",
+        "band qilasiz"
+      ],
+      [
+        "Yoʻl xarajatini",
+        "birga koʻtarasiz"
+      ]
+    ],
+    "from": "Toshkent",
+    "to": "Samarqand",
+    "driver": "Haydovchi",
+    "you": "Siz"
+  },
+  "passenger": {
+    "steps": [
+      "Yoʻnalishni tanlang",
+      "Safarni tanlang",
+      "Joy band qiling",
+      "Rida chatida yozishing"
+    ]
+  },
+  "search": {
+    "title": "Safar toping",
+    "from": "Qayerdan",
+    "to": "Qayerga",
+    "when": "Qachon",
+    "date": "Ertaga, 28-sentabr",
+    "seats": "Joylar soni",
+    "oneSeat": "1 joy",
+    "woman": "Mashinada ayol bor",
+    "button": "Qidirish",
+    "choose": "Tanlang"
+  },
+  "results": {
+    "route": "Toshkent → Samarqand",
+    "sub": "Ertaga, 28-sentabr · 1 joy",
+    "all": "Hammasi",
+    "verified": "Tasdiqlangan",
+    "trips": [
+      {
+        "time": "07:00",
+        "arrive": "11:30",
+        "name": "Jasur",
+        "rating": "4,9",
+        "car": "Oq Cobalt",
+        "seats": "2 joy",
+        "price": "105 000 soʻm"
+      },
+      {
+        "time": "08:30",
+        "arrive": "13:00",
+        "name": "Dilshod",
+        "rating": "4,8",
+        "car": "Kulrang Gentra",
+        "seats": "1 joy",
+        "price": "105 000 soʻm",
+        "woman": true
+      },
+      {
+        "time": "10:00",
+        "arrive": "14:30",
+        "name": "Sardor",
+        "rating": "5,0",
+        "car": "Oq Nexia",
+        "seats": "3 joy",
+        "price": "100 000 soʻm"
+      }
+    ]
+  },
+  "trip": {
+    "trips": "38 ta safar",
+    "verifiedDriver": "Tasdiqlangan haydovchi",
+    "car": "Chevrolet Cobalt, oq",
+    "price": "Bir joy narxi",
+    "button": "Band qilish",
+    "sent": "Soʻrov yuborildi",
+    "confirmed": "Haydovchi tasdiqladi",
+    "carLabel": "Mashina"
+  },
+  "chat": {
+    "subtitle": "Rida chati",
+    "hidden": "Raqamingiz yashirin",
+    "input": "Xabar",
+    "incoming": [
+      "Assalomu alaykum.",
+      "Ertaga 07:00 da kutaman."
+    ],
+    "outgoing": [
+      "Rahmat, oʻz vaqtida",
+      "boraman."
+    ]
+  },
+  "driver": {
+    "intro": [
+      "Haydovchimisiz?"
+    ],
+    "introSub": [
+      "Boʻsh joylaringiz",
+      "bekor ketmasin"
+    ],
+    "steps": [
+      "Safaringizni eʼlon qiling",
+      "Yoʻlovchilar sizni topadi",
+      "Tasdiqlang, joylar toʻladi"
+    ],
+    "outro": [
+      [
+        "Benzin puli",
+        "boʻlinadi"
+      ],
+      [
+        "Bekatda kutish",
+        "shart emas"
+      ]
+    ]
+  },
+  "publish": {
+    "title": "Safar eʼlon qilish",
+    "time": "Ertaga, 07:00",
+    "seats": "Boʻsh joylar",
+    "price": "Bir joy narxi",
+    "hint": "Tavsiya: 105 000 soʻm",
+    "button": "Eʼlon qilish",
+    "done": "Safar eʼlon qilindi"
+  },
+  "requests": {
+    "title": "Mening safarlarim",
+    "time": "Ertaga, 07:00",
+    "new": "Yangi soʻrovlar",
+    "confirm": "Tasdiqlash",
+    "full": "Mashina toʻldi",
+    "people": [
+      {
+        "name": "Dilnoza",
+        "rating": "5,0"
+      },
+      {
+        "name": "Aziz",
+        "rating": "4,9"
+      },
+      {
+        "name": "Madina",
+        "rating": "4,8"
+      }
+    ]
+  },
+  "trust": {
+    "check": [
+      "Har bir haydovchi",
+      "tekshiriladi"
+    ],
+    "items": [
+      "Yuz surati",
+      "Mashina surati",
+      "Moderator tasdiqladi"
+    ],
+    "stamp": "Tasdiqlangan",
+    "rating": [
+      "Reyting va fikrlar"
+    ],
+    "ratingSub": "Har safardan keyin",
+    "reviews": [
+      "Oʻz vaqtida keldi",
+      "Xavfsiz haydaydi"
+    ],
+    "hidden": [
+      "Raqamingiz",
+      "hech kimga koʻrinmaydi"
+    ],
+    "hiddenSub": "Faqat Rida chatida yozishasiz",
+    "woman": "Mashinada ayol bor",
+    "womanLine": [
+      "Ayollar uchun",
+      "xotirjam safar"
+    ]
+  },
+  "map": {
+    "all": [
+      "Butun Oʻzbekiston",
+      "boʻylab"
+    ],
+    "channels": [
+      "Har bir viloyatning",
+      "oʻz kanali"
+    ],
+    "subscribe": [
+      "Yoʻnalishga",
+      "obuna boʻling"
+    ],
+    "subscribeSub": "Yangi safar chiqsa, xabar beramiz",
+    "notice": [
+      "Yangi safar: Toshkent → Buxoro",
+      "Ertaga, 06:00 · 2 joy"
+    ],
+    "telegram": [
+      "Hammasi Telegramda"
+    ],
+    "telegramSub": "Ilova yuklab olish shart emas"
+  },
+  "chats": {
+    "title": "Telegram",
+    "bot": "Rida",
+    "botLast": "Safaringiz tasdiqlandi",
+    "channels": [
+      {
+        "code": "30",
+        "last": "Toshkent → Samarqand · ertaga 07:00"
+      },
+      {
+        "code": "80",
+        "last": "Buxoro → Toshkent · bugun 19:00"
+      },
+      {
+        "code": "60",
+        "last": "Andijon → Toshkent · ertaga 05:30"
+      },
+      {
+        "code": "95",
+        "last": "Nukus → Toshkent · juma 07:00"
+      }
+    ],
+    "times": [
+      "21:05",
+      "20:48",
+      "19:30",
+      "18:12",
+      "17:40"
+    ]
+  },
+  "finale": {
+    "pause": [
+      "Yaqinlaringiz",
+      "kutyapti"
+    ],
+    "find": "Safar toping",
+    "findDriver": "Yoʻlovchi toping",
+    "slogan": "Manzil sari",
+    "tagline": "Viloyatlararo birga safarlar",
+    "soon": "Tez orada Telegramda",
+    "site": "myrida.uz"
+  }
+}
