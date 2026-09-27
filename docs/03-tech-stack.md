@@ -14,7 +14,7 @@
 |---|---|
 | Вход, номер телефона | Telegram (initData, `requestContact`) |
 | Уведомления | Telegram Bot API |
-| Оплата (позже) | Telegram Stars |
+| Живые платежи (до конца марта 2027) | Решаем: Click, Payme или Telegram Stars (`10`, вопрос 29) |
 | Mini App и лендинг | Cloudflare Pages |
 | API и боты | Cloudflare Workers |
 | База данных | Cloudflare D1 (SQLite) |
@@ -27,7 +27,6 @@
 | Продуктовая аналитика и ошибки (`29`) | Workers Analytics Engine |
 | Логи backend | Workers Logs (observability) |
 | Аналитика лендинга | Cloudflare Web Analytics |
-| Почта поддержки `@myrida.uz` | Cloudflare Email Routing |
 
 ## Стек кода
 
@@ -53,6 +52,9 @@
 - Статика: только через Pages.
 - Кэш, без лишнего polling.
 - Фото сжимать на клиенте (~200 КБ).
+- Ресурс Cloudflare создаётся в той цели, где он впервые нужен (без «про запас»).
+- Резервные копии базы: D1 Time Travel (восстановление на момент времени;
+  срок хранения на бесплатном тарифе проверить в G03).
 - Проверять подпись initData на backend для каждого из трёх ботов.
 
 ## Резерв при росте

@@ -17,7 +17,7 @@
 | 13 | [13-i18n.md](13-i18n.md) | Мультиязычность: готовность к новым языкам |
 | 14 | [14-locations-and-routes.md](14-locations-and-routes.md) | Регионы, районы, точки посадки и высадки |
 | 15 | [15-channels.md](15-channels.md) | Telegram-каналы: логика и формат постов |
-| 16 | [16-start-prices.md](16-start-prices.md) | Стартовые цены: формула и таблица маршрутов (черновик) |
+| 16 | [16-start-prices.md](16-start-prices.md) | Стартовые цены: формула и таблица маршрутов (принята) |
 | 17 | [17-complaints-and-blocking.md](17-complaints-and-blocking.md) | Жалобы, причины, решения модератора, блокировки |
 | 18 | [18-retention.md](18-retention.md) | Удержание людей на платформе |
 | 19 | [19-design-system-and-ux.md](19-design-system-and-ux.md) | Дизайн-система, иконки, простота интерфейса |
@@ -34,5 +34,7 @@
 | 30 | [30-legal.md](30-legal.md) | Правовая часть: оферта, конфиденциальность, законы |
 | 31 | [31-testing-and-quality-gates.md](31-testing-and-quality-gates.md) | Тесты и барьеры качества |
 | 32 | [32-ci-security.md](32-ci-security.md) | Безопасный CI в публичном репозитории |
-| goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |
 | 33 | [33-owner-approvals.md](33-owner-approvals.md) | Согласие и проверка владельцем |
+| 34 | [34-git-workflow.md](34-git-workflow.md) | Git: ветка на каждую цель, слияние в main |
+| 35 | [35-trip-booking-lifecycle.md](35-trip-booking-lifecycle.md) | Жизненный цикл поездки, заявки и брони |
+| goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |

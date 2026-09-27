@@ -45,8 +45,10 @@ brands/
 ```
 apps/backend/src/
   modules/
-    users/  drivers/  moderation/  trips/  ride-requests/
-    bookings/  chat/  calls/  pricing/  locations/  media/  notifications/
+    users/  drivers/  moderation/  trips/  ride-requests/  bookings/
+    wallet/  billing/  pricing/  locations/  media/  chat/  calls/
+    notifications/  channels/  route-subscriptions/  ratings/
+    complaints/  analytics/    (каждый появляется в своей цели)
   bots/
     passenger/  driver/  admin/    тонкий слой: команды → use cases
   shared/
@@ -122,7 +124,8 @@ src/
 ### Автоматическая проверка (CI)
 
 - ESLint: `max-lines: 150`, границы модулей и слоёв FSD, запрет `any`,
-  запрет прямого импорта UI-библиотек и HEX-цветов вне `packages/ui`.
+  запрет прямого импорта UI-библиотек вне `packages/ui`, HEX-цвета
+  только в `brands/<brand>/theme.ts` (`22`).
 - TypeScript: `noUnusedLocals`, `noUnusedParameters`.
 - `knip`: ищет неиспользуемые файлы, экспорты и зависимости. Нашёл: CI падает.
 - Prettier: единое форматирование.

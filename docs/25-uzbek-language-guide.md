@@ -75,6 +75,11 @@ sentabr, oktabr, noyabr, dekabr.
 | В машине есть женщина | Mashinada ayol bor |
 | Отмена / Подтвердить / Назад | Bekor qilish / Tasdiqlash / Orqaga |
 | Поиск / Сохранить / Далее | Qidirish / Saqlash / Davom etish |
+| Заявка попутчика | soʻrov |
+| Бронь | band qilingan joy |
+| Подписка на маршрут | obuna |
+| Рейтинг | reyting |
+| Мои поездки | Mening safarlarim |
 
 - Глоссарий: единый для всех ботов и Mini App (`packages/i18n`).
   Одно понятие = одно слово везде.

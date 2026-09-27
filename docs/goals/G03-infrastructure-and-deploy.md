@@ -4,15 +4,16 @@
 
 ```text
 ЦЕЛЬ G03: Инфраструктура Cloudflare и деплой
+Ветка: goal/g03-infra-deploy от свежего main (docs/34).
 
 Зависит от: G01, G02, OPS-01.
 Контекст: docs/03-tech-stack.md, docs/22-multi-brand.md, docs/32-ci-security.md.
 
 Сделать:
 1. brands/rida/wrangler.toml: Worker backend, D1, R2 (приватный),
-   Queues (уведомления, посты в каналы), Durable Objects (заготовка
-   класса чата не создаётся, пока нет G09: без неиспользуемого кода),
-   Analytics Engine, Cron Triggers (пока только нужные).
+   Analytics Engine. Queues, Durable Objects, Cron создаются в целях,
+   где они впервые нужны (без ресурсов «про запас», docs/03).
+   Проверить срок D1 Time Travel на бесплатном тарифе, записать в docs/03.
 2. Создать ресурсы через API/wrangler в аккаунте Cloudflare.
 3. Миграции D1 (инструмент миграций, первая пустая миграция схемы).
 4. Секреты в Cloudflare (wrangler secret): токены 3 ботов,
@@ -43,6 +44,7 @@ Definition of Done:
 [ ] PR из форка не получает секретов (проверено настройками workflow).
 [ ] docs обновлены (домены, ресурсы), docs/goals/INDEX.md: G03 выполнена.
 [ ] Скриншоты результата показаны владельцу (docs/33).
+[ ] Ветка слита в main без конфликтов (squash), CI на main зелёный, деплой из main прошёл.
 [ ] Владелец подтвердил все пункты «Проверка владельцем».
 
 Не останавливаться, пока все пункты DoD не выполнены.
