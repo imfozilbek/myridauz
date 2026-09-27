@@ -10,31 +10,35 @@
 | Что | Сколько |
 |---|---|
 | Название и ссылка канала | 14 |
-| Аватар (логотип, сочетание 1) | 1 файл на все каналы |
+| Аватар: «R» и код региона (`36`) | 14, у каждого канала свой |
 | Описание канала (до 255 знаков) | 14 |
 | Пост «Tez orada» (до запуска, по желанию) | 14 |
 | Закреплённый пост «Tanishuv» (в день запуска) | 14 |
-| Картинка к посту 1280 × 720 | 14 (отправлены владельцу архивом `rida-kanallar.zip`) |
+| Картинка к посту 1280 × 720 | 14 |
+
+Все 28 файлов (14 аватаров и 14 картинок) отправлены владельцу архивом `rida-kanallar.zip`.
 | Настройки канала | 1 чек-лист |
 
 ## Названия и ссылки
 
-| # | Регион | Название | Ссылка |
-|---|---|---|---|
-| 1 | Toshkent shahri | Rida \| Toshkent | t.me/rida_toshkent |
-| 2 | Toshkent viloyati | Rida \| Toshkent viloyati | t.me/rida_toshkentvil |
-| 3 | Andijon viloyati | Rida \| Andijon | t.me/rida_andijon |
-| 4 | Buxoro viloyati | Rida \| Buxoro | t.me/rida_buxoro |
-| 5 | Fargʻona viloyati | Rida \| Fargʻona | t.me/rida_fargona |
-| 6 | Jizzax viloyati | Rida \| Jizzax | t.me/rida_jizzax |
-| 7 | Xorazm viloyati | Rida \| Xorazm | t.me/rida_xorazm |
-| 8 | Namangan viloyati | Rida \| Namangan | t.me/rida_namangan |
-| 9 | Navoiy viloyati | Rida \| Navoiy | t.me/rida_navoiy |
-| 10 | Qashqadaryo viloyati | Rida \| Qashqadaryo | t.me/rida_qashqadaryo |
-| 11 | Samarqand viloyati | Rida \| Samarqand | t.me/rida_samarqand |
-| 12 | Sirdaryo viloyati | Rida \| Sirdaryo | t.me/rida_sirdaryo |
-| 13 | Surxondaryo viloyati | Rida \| Surxondaryo | t.me/rida_surxondaryo |
-| 14 | Qoraqalpogʻiston Respublikasi | Rida \| Qoraqalpogʻiston | t.me/rida_qoraqalpogiston |
+| # | Регион | Название | Ссылка | Код на аватаре |
+|---|---|---|---|---|
+| 1 | Toshkent shahri | Rida \| Toshkent | t.me/rida_toshkent | 01 |
+| 2 | Toshkent viloyati | Rida \| Toshkent viloyati | t.me/rida_toshkentvil | 10 |
+| 3 | Andijon viloyati | Rida \| Andijon | t.me/rida_andijon | 60 |
+| 4 | Buxoro viloyati | Rida \| Buxoro | t.me/rida_buxoro | 80 |
+| 5 | Fargʻona viloyati | Rida \| Fargʻona | t.me/rida_fargona | 40 |
+| 6 | Jizzax viloyati | Rida \| Jizzax | t.me/rida_jizzax | 25 |
+| 7 | Xorazm viloyati | Rida \| Xorazm | t.me/rida_xorazm | 90 |
+| 8 | Namangan viloyati | Rida \| Namangan | t.me/rida_namangan | 50 |
+| 9 | Navoiy viloyati | Rida \| Navoiy | t.me/rida_navoiy | 85 |
+| 10 | Qashqadaryo viloyati | Rida \| Qashqadaryo | t.me/rida_qashqadaryo | 70 |
+| 11 | Samarqand viloyati | Rida \| Samarqand | t.me/rida_samarqand | 30 |
+| 12 | Sirdaryo viloyati | Rida \| Sirdaryo | t.me/rida_sirdaryo | 20 |
+| 13 | Surxondaryo viloyati | Rida \| Surxondaryo | t.me/rida_surxondaryo | 75 |
+| 14 | Qoraqalpogʻiston Respublikasi | Rida \| Qoraqalpogʻiston | t.me/rida_qoraqalpogiston | 95 |
+
+- Код на аватаре: первый код региона на автомобильных номерах (`36`).
 
 - Ссылка занята: добавить `_uz` в конце (например, `rida_buxoro_uz`).
 - Ссылки только латиницей без апострофов: так их проще найти в поиске.
@@ -93,7 +97,7 @@ Manzil sari.
 ## Настройки канала (чек-лист)
 
 1. Тип: публичный, ссылка из таблицы.
-2. Аватар: общий файл логотипа (сочетание 1, `36`).
+2. Аватар: свой файл для каждого канала (код региона, `36`).
 3. Описание: из шаблона.
 4. **Комментарии выключены** (без группы обсуждения): иначе люди
    обменяются номерами в обход Rida (`18`).
