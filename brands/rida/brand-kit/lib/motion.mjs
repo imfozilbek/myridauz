@@ -2,15 +2,7 @@
 import { text, markR, textCentered, layout } from './text.mjs';
 import { C, svg } from './palette.mjs';
 import { squircle, plate, plateGeom } from './brand.mjs';
-
-const clamp = (v) => Math.max(0, Math.min(1, v));
-const prog = (t, a, b) => clamp((t - a) / (b - a));
-const outCubic = (p) => 1 - Math.pow(1 - p, 3);
-const outBack = (p) => (p <= 0 ? 0 : 1 + 2.7 * Math.pow(p - 1, 3) + 1.7 * Math.pow(p - 1, 2));
-const scaleAt = (cx, cy, s) => `translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`;
-
-// Motion tokens (docs/38): durations in seconds and easing names.
-export const MOTION = { micro: 0.15, ui: 0.25, brand: 0.6, hold: 0.45, easeOut: 'cubic-bezier(0.22, 1, 0.36, 1)', pop: 'back-out 1.7' };
+import { clamp, prog, outCubic, outBack, scaleAt } from './ease.mjs';
 
 export function logoReveal(t, { wide = true } = {}) {
   const W = wide ? 1920 : 1080, H = 1080;
@@ -32,7 +24,7 @@ export function logoReveal(t, { wide = true } = {}) {
     `<g id="r" opacity="${rP}" transform="translate(0 ${S * 0.12 * (1 - rP)})">${markR({ cx, cy, h: S * 0.62, fill: C.white })}</g></g>` +
     `<g id="wordmark" opacity="${wP}" transform="translate(${wide ? -50 * (1 - wP) : 0} ${wide ? 0 : 40 * (1 - wP)})">${text('Rida', { x: wordX, y: wordY, anchor, fill: C.teal, size: wordSize })}</g>` +
     `<rect id="bar" x="${barX}" y="${barY}" width="${130 * barP}" height="12" rx="6" fill="${C.amber}"/>` +
-    `<g id="slogan" opacity="${sP}" transform="translate(0 ${20 * (1 - sP)})">${text('Manzil sari', { x: slX, y: slY + (wide ? 0 : 0), anchor: wide ? 'start' : 'middle', fill: C.ink, weight: 600, size: wide ? 58 : 60 })}</g>`;
+    `<g id="slogan" opacity="${sP}" transform="translate(0 ${20 * (1 - sP)})">${text('Manzil sari', { x: slX, y: slY, anchor: wide ? 'start' : 'middle', fill: C.ink, weight: 600, size: wide ? 58 : 60 })}</g>`;
   return svg(W, H, body);
 }
 

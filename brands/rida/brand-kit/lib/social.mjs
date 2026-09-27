@@ -2,6 +2,7 @@
 import { text, markR, textCentered, layout } from './text.mjs';
 import { C, svg } from './palette.mjs';
 import { squircle, plate } from './brand.mjs';
+import { prog, outCubic, outBack, scaleAt } from './ease.mjs';
 
 const tile = (x, y, s, bg = C.teal, fg = C.white) => squircle(x, y, s, bg) + markR({ cx: x + s / 2, cy: y + s / 2, h: s * 0.62, fill: fg });
 const bar = (cx, y, w = 150, h = 14) => `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${C.amber}"/>`;
@@ -51,15 +52,9 @@ export function storyDriver() {
 }
 
 // Route story. t = animation time in seconds; default shows the final state.
-const clamp = (v) => Math.max(0, Math.min(1, v));
-const prog = (t, a, b) => clamp((t - a) / (b - a));
-const outCubic = (p) => 1 - Math.pow(1 - p, 3);
-const pop = (p) => (p <= 0 ? 0 : 1 + 2.7 * Math.pow(p - 1, 3) + 1.7 * Math.pow(p - 1, 2));
-const scaleAt = (cx, cy, s) => `translate(${cx} ${cy}) scale(${s}) translate(${-cx} ${-cy})`;
-
 export function storyRoute(t = 99) {
-  const card = outCubic(prog(t, 0, 0.45)), a = pop(prog(t, 0.35, 0.7)), line = outCubic(prog(t, 0.7, 1.8));
-  const b = pop(prog(t, 1.8, 2.15)), det = (k) => outCubic(prog(t, 2.2 + k * 0.15, 2.6 + k * 0.15)), btn = pop(prog(t, 2.8, 3.2));
+  const card = outCubic(prog(t, 0, 0.45)), a = outBack(prog(t, 0.35, 0.7)), line = outCubic(prog(t, 0.7, 1.8));
+  const b = outBack(prog(t, 1.8, 2.15)), det = (k) => outCubic(prog(t, 2.2 + k * 0.15, 2.6 + k * 0.15)), btn = outBack(prog(t, 2.8, 3.2));
   const dash = Array.from({ length: 7 }, (_, i) => `<rect x="194" y="${580 + i * 38}" width="12" height="22" rx="6" fill="${C.teal}"/>`).join('');
   const markerY = 560 + 300 * line;
   return svg(1080, 1920, `<defs><clipPath id="reveal"><rect x="150" y="560" width="100" height="${300 * line}"/></clipPath></defs>` +
@@ -75,7 +70,7 @@ export function storyRoute(t = 99) {
     `<g id="details"><rect x="150" y="990" width="780" height="3" fill="#E5EEEC" opacity="${det(0)}"/>` +
     `<g opacity="${det(0)}">${text('Ertaga · 08:00', { x: 150, y: 1095, fill: C.muted, weight: 600, size: 58 })}</g>` +
     `<g opacity="${det(1)}">${text('3 ta joy', { x: 150, y: 1185, fill: C.muted, weight: 600, size: 58 })}</g>` +
-    `<g opacity="${det(2)}">${text('115 000 soʻm', { x: 930, y: 1185, anchor: 'end', fill: C.teal, size: 76 })}</g></g>` +
+    `<g opacity="${det(2)}">${text('105 000 soʻm', { x: 930, y: 1185, anchor: 'end', fill: C.teal, size: 76 })}</g></g>` +
     `<g id="button" transform="${scaleAt(540, 1355, btn)}"><rect x="150" y="1290" width="780" height="130" rx="30" fill="${C.teal}"/>` +
     textCentered('Band qilish', { cx: 540, cy: 1355, h: 46, fill: C.white }) + `</g></g>` +
     tile(480, 1600, 120, C.white, C.teal) + textCentered('Manzil sari', { cx: 540, cy: 1810, h: 40, fill: C.white, weight: 600 }));

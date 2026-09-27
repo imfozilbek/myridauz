@@ -1,4 +1,4 @@
-// Builds the Rida brand kit into ./kit: SVG masters, PNG renders, motion videos.
+// Builds the Rida brand kit into ./kit: SVG masters, PNG renders, motion videos, tokens, fonts.
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { chromium } from 'playwright';
@@ -6,6 +6,8 @@ import * as brand from './lib/brand.mjs';
 import * as social from './lib/social.mjs';
 import * as motion from './lib/motion.mjs';
 import * as channels from './lib/channels.mjs';
+import * as extras from './lib/extras.mjs';
+import { C, TOKENS } from './lib/palette.mjs';
 
 const OUT = 'kit';
 const FFMPEG = process.env.FFMPEG;
@@ -33,9 +35,9 @@ async function asset(name, svgStr, sizes) {
 // Logo
 for (const c of [1, 2, 3, 4, 5, 6]) await asset(`logo/rida-icon-${c}`, brand.icon(c, 'squircle'), [1024]);
 await asset('logo/rida-icon-1-circle', brand.icon(1, 'circle'), [1024]);
-await asset('logo/rida-mark-teal', brand.mark('#0D9488'), [620]);
-await asset('logo/rida-mark-white', brand.mark('#FFFFFF'), [620]);
-await asset('logo/rida-wordmark-teal', brand.wordmark('#0D9488'), [1480]);
+await asset('logo/rida-mark-teal', brand.mark(C.teal), [620]);
+await asset('logo/rida-mark-white', brand.mark(C.white), [620]);
+await asset('logo/rida-wordmark-teal', brand.wordmark(C.teal), [1480]);
 await asset('logo/rida-lockup-horizontal', brand.lockupH(), [1640]);
 await asset('logo/rida-lockup-vertical', brand.lockupV(), [1000]);
 // Telegram
@@ -52,6 +54,7 @@ for (const r of regions) {
 // Web
 put(`${OUT}/web/favicon.svg`, brand.icon(1, 'squircle', 64));
 for (const s of [16, 32, 48]) await png(brand.icon(1, 'squircle', 64), s, s, `${OUT}/web/favicon-${s}.png`);
+put(`${OUT}/web/favicon.ico`, extras.ico([16, 32, 48].map((size) => ({ size, png: fs.readFileSync(`${OUT}/web/favicon-${size}.png`) }))));
 await png(brand.icon(1, 'square', 1024), 180, 180, `${OUT}/web/apple-touch-icon.png`);
 for (const s of [192, 512]) await png(brand.icon(1, 'square', 1024), s, s, `${OUT}/web/icon-${s}.png`);
 await asset('web/og-image', brand.ogImage(), [1200]);
@@ -87,4 +90,9 @@ put(`${OUT}/motion/layers/logo-layers.svg`, motion.logoReveal(99));
 put(`${OUT}/motion/layers/plate-layers.svg`, motion.plateFlip(0.5, regions));
 put(`${OUT}/motion/layers/route-layers.svg`, social.storyRoute());
 await browser.close();
+// Tokens, fonts and README: copied or generated without rendering.
+put(`${OUT}/tokens/rida-colors.json`, fs.readFileSync('data/tokens.json'));
+put(`${OUT}/tokens/rida-tokens.css`, extras.tokensCss(TOKENS));
+for (const f of fs.readdirSync('fonts')) put(`${OUT}/fonts/${f}`, fs.readFileSync(`fonts/${f}`));
+put(`${OUT}/README.txt`, fs.readFileSync('data/kit-readme.txt'));
 console.log('built');

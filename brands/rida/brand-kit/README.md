@@ -14,7 +14,7 @@
 FFMPEG=/путь/к/ffmpeg CHROMIUM=/путь/к/chromium npm run build
 ```
 
-Результат: папка `kit/` (в `.gitignore`). Архив: `cd kit && zip -r ../rida-brand-kit.zip .`
+Результат: папка `kit/` (131 файл, в `.gitignore`), без ручных шагов. Архив: `cd kit && zip -r ../rida-brand-kit.zip .`
 
 ## Что где
 
@@ -26,13 +26,18 @@ FFMPEG=/путь/к/ffmpeg CHROMIUM=/путь/к/chromium npm run build
 | `lib/channels.mjs` | Аватары и картинки 13 каналов |
 | `lib/social.mjs` | Посты, сторис, наклейка, QR-плакат, анимация «Yangi safar» |
 | `lib/motion.mjs` | Появление логотипа, смена кодов регионов, моушн-токены |
+| `lib/ease.mjs` | Плавность анимации: общие функции для видео и сторис |
+| `lib/extras.mjs` | CSS токенов и favicon.ico (без рендера) |
 | `build.mjs` | Собирает всё в `kit/` |
 | `data/regions.json` | 13 каналов: код региона, названия, ссылки |
 | `data/qr.json` | Матрица QR для https://myrida.uz (python qrcode, уровень H) |
+| `data/tokens.json` | Цвета и моушн-токены: копия таблицы из `docs/20` |
+| `data/kit-readme.txt` | README.txt внутри архива |
 | `fonts/` | Rubik 500, 600, 800 и лицензия OFL |
 
 ## Важно
 
 - В Rubik нет знака ʻ (U+02BB). `lib/text.mjs` рисует его знаком ‘ из Rubik.
-- Цвета пока в `lib/palette.mjs`. В цели G02 они переедут в
-  `brands/rida/theme.ts` (правило: HEX только там).
+- Цвета берутся из `data/tokens.json` (копия таблицы `docs/20`, меняем вместе).
+  В цели G02 они переедут в `brands/rida/theme.ts` (правило: HEX только там).
+- Цифры в картинках берём из документов: цены `docs/16`, бонус `docs/12`.
