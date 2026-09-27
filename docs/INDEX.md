@@ -12,3 +12,4 @@
 | 08 | [08-voice-calls.md](08-voice-calls.md) | Голосовые звонки на Cloudflare Realtime |
 | 09 | [09-marketplace-and-pricing.md](09-marketplace-and-pricing.md) | Двусторонний рынок, рекомендованная цена |
 | 10 | [10-open-questions.md](10-open-questions.md) | Открытые вопросы и решения по умолчанию |
+| 11 | [11-code-architecture.md](11-code-architecture.md) | Архитектура кода: монорепо, backend, frontend, лимит 150 строк |
