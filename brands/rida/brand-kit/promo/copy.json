@@ -29,7 +29,7 @@
     "all": "Hammasi",
     "verified": "Tasdiqlangan",
     "trips": [
-      { "time": "07:00", "arrive": "11:30", "name": "Jasur", "rating": "4,9", "car": "Oq Cobalt", "seats": "2 joy", "price": "105 000 soʻm" },
+      { "time": "07:00", "arrive": "11:30", "name": "Jasur", "rating": "4,9", "car": "Oq Cobalt", "seats": "2 joy", "price": "90 000 soʻm" },
       {
         "time": "08:30",
         "arrive": "13:00",
@@ -37,10 +37,10 @@
         "rating": "4,8",
         "car": "Kulrang Gentra",
         "seats": "1 joy",
-        "price": "105 000 soʻm",
+        "price": "90 000 soʻm",
         "woman": true
       },
-      { "time": "10:00", "arrive": "14:30", "name": "Sardor", "rating": "5,0", "car": "Oq Nexia", "seats": "3 joy", "price": "100 000 soʻm" }
+      { "time": "10:00", "arrive": "14:30", "name": "Sardor", "rating": "5,0", "car": "Oq Nexia", "seats": "3 joy", "price": "85 000 soʻm" }
     ]
   },
   "trip": {
@@ -72,7 +72,7 @@
     "time": "Ertaga, 07:00",
     "seats": "Boʻsh joylar",
     "price": "Bir joy narxi",
-    "hint": "Tavsiya: 105 000 soʻm",
+    "hint": "Tavsiya: 90 000 soʻm",
     "button": "Eʼlon qilish",
     "done": "Safar eʼlon qilindi"
   },

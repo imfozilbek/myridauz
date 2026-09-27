@@ -70,7 +70,7 @@ export function storyRoute(t = 99) {
     `<g id="details"><rect x="150" y="990" width="780" height="3" fill="#E5EEEC" opacity="${det(0)}"/>` +
     `<g opacity="${det(0)}">${text('Ertaga · 08:00', { x: 150, y: 1095, fill: C.muted, weight: 600, size: 58 })}</g>` +
     `<g opacity="${det(1)}">${text('3 ta joy', { x: 150, y: 1185, fill: C.muted, weight: 600, size: 58 })}</g>` +
-    `<g opacity="${det(2)}">${text('105 000 soʻm', { x: 930, y: 1185, anchor: 'end', fill: C.teal, size: 76 })}</g></g>` +
+    `<g opacity="${det(2)}">${text('90 000 soʻm', { x: 930, y: 1185, anchor: 'end', fill: C.teal, size: 76 })}</g></g>` +
     `<g id="button" transform="${scaleAt(540, 1355, btn)}"><rect x="150" y="1290" width="780" height="130" rx="30" fill="${C.teal}"/>` +
     textCentered('Band qilish', { cx: 540, cy: 1355, h: 46, fill: C.white }) + `</g></g>` +
     tile(480, 1600, 120, C.white, C.teal) + textCentered('Manzil sari', { cx: 540, cy: 1810, h: 40, fill: C.white, weight: 600 }));
