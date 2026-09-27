@@ -39,3 +39,4 @@
 | 35 | [35-trip-booking-lifecycle.md](35-trip-booking-lifecycle.md) | Жизненный цикл поездки, заявки и брони |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |
 | 36 | [36-logo.md](36-logo.md) | Логотип: монограмма R, формы, цвета, все места использования |
+| 37 | [37-channels-pack.md](37-channels-pack.md) | Пакет для 14 каналов: тексты, картинки, настройки |
