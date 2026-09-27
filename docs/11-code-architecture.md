@@ -17,6 +17,8 @@
 
 ## Монорепозиторий (pnpm workspaces)
 
+Пакеты называются нейтрально: `@platform/*` (`22-multi-brand.md`).
+
 ```
 apps/
   backend/            Cloudflare Worker: API, вебхуки 3 ботов, Durable Objects
@@ -30,6 +32,8 @@ packages/
   api-client/         типизированный клиент API для Mini App
   i18n/               тексты на узбекском
   config/             общие tsconfig, eslint, prettier
+brands/
+  rida/               конфиг бренда (`22-multi-brand.md`)
 ```
 
 ## Backend: модульный монолит

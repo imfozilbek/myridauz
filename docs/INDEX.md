@@ -23,3 +23,4 @@
 | 19 | [19-design-system-and-ux.md](19-design-system-and-ux.md) | Дизайн-система, иконки, простота интерфейса |
 | 20 | [20-brand.md](20-brand.md) | Бренд: цвета, светлая тема, продуктовый язык |
 | 21 | [21-native-feel.md](21-native-feel.md) | Ощущение «родного» Telegram |
+| 22 | [22-multi-brand.md](22-multi-brand.md) | Несколько брендов на одном коде (white-label) |
