@@ -38,6 +38,12 @@
 Статусы брони: `requested` → `confirmed` → `completed`, или
 `declined`, `expired`, `cancelled_by_passenger`, `cancelled_by_driver`.
 
+## Посадка и прибытие (`43`)
+
+- В брони две отметки времени: `boarded_at` (попутчик нажал «Mashinaga chiqdim»)
+  и `arrived_at` («Yetib keldim»). Это не новые статусы брони.
+- По ним близкие попутчика видят, где он (`43`).
+
 ## Когда списывается комиссия (`12`)
 
 - В момент, когда бронь становится `confirmed`, в обоих путях.

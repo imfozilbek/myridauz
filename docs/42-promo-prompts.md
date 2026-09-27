@@ -10,6 +10,10 @@
 Цель: одно рекламное видео. Человек смотрит и сразу понимает, что делает Rida,
 чем помогает, почему это удобно. После просмотра он хочет попробовать.
 
+Главная мысль: Rida сделан для людей. Он решает их проблемы в поездках
+между регионами. Строим вокруг людей и общества, а не вокруг машины,
+водителя или попутчика. Слоган «Manzil sari» не меняется.
+
 Зрители: попутчик без машины; водитель, который часто ездит между регионами;
 любой, кто едет в другой регион.
 
@@ -23,8 +27,11 @@
 2. Изучи, как устроена реклама совместных поездок (docs/41).
 3. Возьми материалы бренда (docs/38) и открытые источники с понятной лицензией.
 4. Музыка: трек владельца. Длина видео равна длине трека. Монтаж по фразам трека.
-5. Сделай сценарий: боль, решение, путь попутчика, путь водителя, доверие,
-   вся страна, Telegram, логотип и призыв.
+5. Сделай сценарий: боли людей (ждать, пока машина заполнится; скачки цены;
+   незнакомый водитель; есть ли в машине женщина; питак и хаос чатов;
+   пустой обратный путь; тревога близких), решение, путь попутчика и
+   водителя, чат и звонок, доверие, «Поделиться поездкой», вся страна,
+   Telegram, «для людей», логотип и призыв.
 6. Собери видео генератором в репозитории. Покажи кадры владельцу.
 
 Правила:
@@ -49,7 +56,9 @@
 ```text
 Brand film for "Rida", a carpooling service for trips between regions of
 Uzbekistan that works inside Telegram. Not a taxi: drivers already travel
-and share fuel costs with passengers. Vertical 9:16, 30 fps.
+and share fuel costs with passengers. The core idea: Rida is made for people
+and built around people and community, not around cars or roles.
+Vertical 9:16, 30 fps.
 
 Style: clean, bright, optimistic. Light backgrounds only. Brand colors:
 white #FFFFFF, turquoise #0D9488, deep turquoise #115E59, mint #CCFBF1,
@@ -61,20 +70,24 @@ middle of the frame. No text inside the generated video.
 Shots (one clip each, cut on the beat):
 1. Early morning at an intercity car stand in Tashkent. People wait with bags,
    looking at their watches. Muted colors. (pain: waiting)
-2. Close-up of a phone with a chaotic group chat full of phone numbers. (pain)
+2. Close-up of a phone with a chaotic group chat, messages blurred. (pain)
 3. A clean white screen; a turquoise rounded square tile with a white letter R
    pops in the center. (brand)
 4. A friendly driver in his own white sedan on a sunny highway between
    Tashkent and Samarkand, three empty seats next to him. (driver goes anyway)
 5. Hands holding a phone with a light Telegram-style app: a list of trips
    with times, prices and star ratings. A thumb taps the first trip. (booking)
-6. Two women passengers sit together in the back seat, relaxed and smiling;
+6. A mother at home looks at her phone: a trip card shows the car, the driver
+   and a check mark "arrived"; she smiles with relief. (loved ones informed)
+7. Two women passengers sit together in the back seat, relaxed and smiling;
    warm daylight. (safety, "Mashinada ayol bor")
-7. A stylized map of Uzbekistan in mint; turquoise route lines draw from
+8. A stylized map of Uzbekistan in mint; turquoise route lines draw from
    Tashkent to all regions. (the whole country)
-8. The car arrives at a family house in a regional town; relatives meet the
+9. The car arrives at a family house in a regional town; relatives meet the
    passenger at the gate. (emotion: loved ones waiting)
-9. Turquoise background; the R tile, the word "Rida" and an amber line below. (end)
+10. Many different people of Uzbekistan (students, elders, women, families)
+   greet each other at a roadside; warm and human. (made for people)
+11. Turquoise background; the R tile, the word "Rida" and an amber line below. (end)
 
 Avoid: taxi signs, checkered patterns, meters, dark theme, competitor logos,
 real license plates, readable phone numbers, money or earnings imagery.

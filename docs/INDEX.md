@@ -44,4 +44,6 @@
 | 40 | [40-product-deep-dive.md](40-product-deep-dive.md) | Продукт глубоко: для кого, боли, прорыв, рынок, риски |
 | 41 | [41-promo-video.md](41-promo-video.md) | Рекламное видео: музыка, логика, сценарий, нарезки |
 | 42 | [42-promo-prompts.md](42-promo-prompts.md) | Промпты для рекламных видео |
+| 43 | [43-share-trip.md](43-share-trip.md) | Поделиться поездкой с близкими |
+| 44 | [44-lessons-learned-2.md](44-lessons-learned-2.md) | Уроки: продолжение журнала |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |

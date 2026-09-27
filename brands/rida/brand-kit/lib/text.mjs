@@ -7,7 +7,7 @@ const FONTS = {};
 for (const [key, [name, weights]] of Object.entries(FAMILIES)) {
   for (const w of weights) FONTS[`${key}-${w}`] = opentype.loadSync(new URL(`../fonts/${key}/${name}-${w}.ttf`, import.meta.url).pathname);
 }
-export const CAP = 0.7; // cap height / em for Rubik
+const CAP = 0.7; // cap height / em for Rubik
 
 // No U+02BB in either font (Rubik also lacks U+02BC): draw look-alike quote glyphs.
 const SUBST = { 'ʻ': '‘', 'ʼ': '’' };

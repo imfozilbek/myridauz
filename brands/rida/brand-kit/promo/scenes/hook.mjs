@@ -7,7 +7,7 @@ import { icon } from '../icons.mjs';
 const { question, pains, turn } = COPY.hook;
 const GREY = '#F3F4F6';
 const HITS = [2.44, 3.46, 4.46, 5.48, 7.0]; // pain cards start on these music hits
-const ICONS = ['Hourglass', 'Banknote', 'UserRound', 'PhoneCall'];
+const ICONS = ['Hourglass', 'TrendingUp', 'UserRound', 'UsersRound'];
 
 function route(t) {
   const p = enter(t, 0.5, 0.9), a = pop(t, 0, 0.4), b = pop(t, 1.2, 0.4);
@@ -19,10 +19,9 @@ function route(t) {
 
 function pain(t, i) {
   const t0 = HITS[i], p = pop(t, t0, 0.3), o = Math.min(enter(t, t0, 0.15), leave(t, HITS[i + 1], 0.08));
-  const shake = i === 3 ? Math.sin(t * 60) * 4 * leave(t, t0 + 0.6, 0.3) : 0;
-  const mark = i === 1 || i === 2 ? `<circle cx="650" cy="650" r="46" fill="${C.amber}"/>` +
+  const mark = i >= 2 ? `<circle cx="650" cy="650" r="46" fill="${C.amber}"/>` +
     text('?', { x: 650, y: 672, anchor: 'middle', fill: C.deep, size: 64 }) : '';
-  const art = `<circle cx="${CX}" cy="760" r="170" fill="${GREY}"/>` + g(icon(ICONS[i], CX, 760, 170, C.muted, 1.6), { x: shake }) + mark;
+  const art = `<circle cx="${CX}" cy="760" r="170" fill="${GREY}"/>` + icon(ICONS[i], CX, 760, 170, C.muted, 1.6) + mark;
   return g(g(art, { s: 0.85 + 0.15 * p, cx: CX, cy: 760 }) + lines(pains[i], { cy: 1110, size: 112 }), { o });
 }
 

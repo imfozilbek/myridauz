@@ -54,7 +54,7 @@
 | Отклик на нажатие | `HapticFeedback` (лёгкая вибрация) |
 | Не потерять данные формы | `enableClosingConfirmation` + отключать свайп закрытия |
 | Черновики | `CloudStorage` Telegram |
-| Поделиться поездкой (после запуска) | `shareMessage` / выбор чата Telegram |
+| Поделиться поездкой (`43`) | `shareMessage`: родное окно выбора чата |
 | Точка встречи | Локация Telegram (`14-locations-and-routes.md`) |
 | Телефон | `requestContact` (без ввода руками) |
 

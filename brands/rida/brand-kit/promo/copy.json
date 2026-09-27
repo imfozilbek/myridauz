@@ -1,23 +1,16 @@
 {
   "hook": {
     "question": ["Boshqa viloyatga", "borasizmi?"],
-    "pains": [["Soatlab", "kutish"], ["Nomaʼlum", "narx"], ["Notanish", "haydovchi"], ["Raqamingiz", "hammaga ochiq"]],
+    "pains": [["Mashina toʻlguncha", "kutish"], ["Bayramda", "narx oshadi"], ["Notanish", "haydovchi"], ["Mashinada", "ayol bormi?"]],
     "turn": ["Endi", "boshqacha"]
   },
   "reveal": { "tagline": ["Viloyatlararo", "birga safarlar"], "telegram": "Telegramda" },
   "concept": {
-    "lines": [
-      ["Haydovchi baribir", "yoʻlga chiqadi"],
-      ["Mashinasida", "boʻsh joylar bor"],
-      ["Siz shu joyni", "band qilasiz"],
-      ["Yoʻl xarajatini", "birga koʻtarasiz"]
-    ],
+    "lines": [["Yoʻli bir odamlar", "bir mashinada boradi"], ["Yoʻl xarajati", "hammaga boʻlinadi"], ["Hamma uchun", "qulay"]],
     "from": "Toshkent",
-    "to": "Samarqand",
-    "driver": "Haydovchi",
-    "you": "Siz"
+    "to": "Samarqand"
   },
-  "passenger": { "steps": ["Yoʻnalishni tanlang", "Safarni tanlang", "Joy band qiling", "Rida chatida yozishing"] },
+  "passenger": { "steps": ["Yoʻnalishni tanlang", "Safarni tanlang", "Joy band qiling", "Yozing yoki qoʻngʻiroq qiling"] },
   "search": {
     "title": "Safar toping",
     "from": "Qayerdan",
@@ -65,13 +58,14 @@
     "hidden": "Raqamingiz yashirin",
     "input": "Xabar",
     "incoming": ["Assalomu alaykum.", "Ertaga 07:00 da kutaman."],
-    "outgoing": ["Rahmat, oʻz vaqtida", "boraman."]
+    "outgoing": ["Rahmat, oʻz vaqtida", "boraman."],
+    "call": "Qoʻngʻiroq · 0:45"
   },
   "driver": {
     "intro": ["Haydovchimisiz?"],
-    "introSub": ["Boʻsh joylaringiz", "bekor ketmasin"],
+    "pains": ["Pitakda kutish", "Chatlarda qidirish", "Qaytishda boʻsh mashina"],
     "steps": ["Safaringizni eʼlon qiling", "Yoʻlovchilar sizni topadi", "Tasdiqlang, joylar toʻladi"],
-    "outro": [["Benzin puli", "boʻlinadi"], ["Bekatda kutish", "shart emas"]]
+    "outro": [["Pitakda kutish", "shart emas"], ["Qaytishda ham", "yoʻlovchi topasiz"]]
   },
   "publish": {
     "title": "Safar eʼlon qilish",
@@ -97,10 +91,13 @@
     "rating": ["Reyting va fikrlar"],
     "ratingSub": "Har safardan keyin",
     "reviews": ["Oʻz vaqtida keldi", "Xavfsiz haydaydi"],
-    "hidden": ["Raqamingiz", "hech kimga koʻrinmaydi"],
-    "hiddenSub": "Faqat Rida chatida yozishasiz",
     "woman": "Mashinada ayol bor",
-    "womanLine": ["Ayollar uchun", "xotirjam safar"]
+    "womanLine": ["Ayollar uchun", "xotirjam safar"],
+    "share": ["Yaqinlaringiz", "doim xabardor"],
+    "shareButton": "Yaqinlarimga yuborish",
+    "shareTitle": "Safar holati",
+    "shareCar": "Oq Cobalt · 01 A 123 BC",
+    "shareSteps": ["Mashinaga chiqdi", "Yoʻlda", "Yetib keldi"]
   },
   "map": {
     "all": ["Butun Oʻzbekiston", "boʻylab"],
@@ -125,8 +122,7 @@
   },
   "finale": {
     "pause": ["Yaqinlaringiz", "kutyapti"],
-    "find": "Safar toping",
-    "findDriver": "Yoʻlovchi toping",
+    "people": ["Odamlar uchun", "yaratildi"],
     "slogan": "Manzil sari",
     "tagline": "Viloyatlararo birga safarlar",
     "soon": "Tez orada Telegramda",

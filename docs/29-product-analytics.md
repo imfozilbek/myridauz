@@ -23,6 +23,7 @@
 | Уход | `flow_abandoned` (закрыл Mini App посреди шагов) |
 | Ошибки | `client_error`, `api_error` (код ошибки, экран) |
 | Бот | `bot_command`, `bot_button` |
+| Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `boarded`, `arrived` |
 
 - Каждое событие: время, Mini App, экран, версия, анонимный ID пользователя.
 - **Без личных данных:** без имени, телефона, текста чата, точных координат.
