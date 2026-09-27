@@ -14,7 +14,7 @@
 |---|---|
 | Вход, номер телефона | Telegram (initData, `requestContact`) |
 | Уведомления | Telegram Bot API |
-| Живые платежи (до конца марта 2027) | Решаем: Click, Payme или Telegram Stars (`10`, вопрос 29) |
+| Живые платежи (после запуска, до 01.05.2027) | Решаем: Click или Payme (`10`, вопрос 29) |
 | Mini App и лендинг | Cloudflare Pages |
 | API и боты | Cloudflare Workers |
 | База данных | Cloudflare D1 (SQLite) |
