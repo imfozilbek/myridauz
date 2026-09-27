@@ -11,6 +11,7 @@ OPS-01 (владелец): Cloudflare, домен, боты
 3. В панели Eskiz у домена myrida.uz заменить NS на серверы Cloudflare.
    Домен остаётся зарегистрирован в Eskiz.
 4. В BotFather создать 3 бота: пассажиров, водителей, админ.
+   И ещё 3 тестовых бота для staging (к неделе 2).
 5. Создать токен API Cloudflare (My Profile → API Tokens → Custom):
    на аккаунт: Workers Scripts, Workers KV, Workers R2, D1, Pages,
    Queues, Realtime, чтение аналитики и настроек;
