@@ -26,7 +26,7 @@ apps/
   landing/            лендинг (в конце)
 packages/
   contracts/          общие типы и zod-схемы API (backend ⇄ frontend)
-  ui/                 общие React-компоненты, тема Telegram
+  ui/                 обёртка над TelegramUI + Lucide (`19-design-system-and-ux.md`)
   api-client/         типизированный клиент API для Mini App
   i18n/               тексты на узбекском
   config/             общие tsconfig, eslint, prettier
@@ -81,6 +81,7 @@ src/
 
 - Импорт только сверху вниз: `pages` → `widgets` → `features` → `entities` → `shared`.
 - Общее для 2+ Mini App — в `packages/ui`, `packages/api-client`, `packages/i18n`.
+- UI-библиотеки и иконки — только через `packages/ui`, прямой импорт запрещён.
 - Компонент > 150 строк — делить на подкомпоненты и хуки.
 
 ## Тесты
