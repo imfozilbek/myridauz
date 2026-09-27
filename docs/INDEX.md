@@ -18,3 +18,4 @@
 | 14 | [14-locations-and-routes.md](14-locations-and-routes.md) | Регионы, районы, точки посадки и высадки |
 | 15 | [15-channels.md](15-channels.md) | Telegram-каналы: логика и формат постов |
 | 16 | [16-start-prices.md](16-start-prices.md) | Стартовые цены: формула и таблица маршрутов (черновик) |
+| 17 | [17-complaints-and-blocking.md](17-complaints-and-blocking.md) | Жалобы, причины, решения модератора, блокировки |
