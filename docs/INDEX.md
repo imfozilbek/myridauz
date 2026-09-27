@@ -24,3 +24,4 @@
 | 20 | [20-brand.md](20-brand.md) | Бренд: цвета, светлая тема, продуктовый язык |
 | 21 | [21-native-feel.md](21-native-feel.md) | Ощущение «родного» Telegram |
 | 22 | [22-multi-brand.md](22-multi-brand.md) | Несколько брендов на одном коде (white-label) |
+| 23 | [23-pricing-engine.md](23-pricing-engine.md) | Движок цен: одно место для формулы и переменных |
