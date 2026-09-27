@@ -11,3 +11,7 @@ node_modules/
 dist/
 .wrangler/
 coverage/
+
+# Brand kit build output
+brands/rida/brand-kit/kit/
+brands/rida/brand-kit/node_modules/

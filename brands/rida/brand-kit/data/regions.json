@@ -1,0 +1,119 @@
+[
+ {
+  "n": 1,
+  "region": "Toshkent viloyati",
+  "big": "Toshkent",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Toshkent viloyati",
+  "user": "rida_toshkentvil",
+  "code": "10"
+ },
+ {
+  "n": 2,
+  "region": "Andijon viloyati",
+  "big": "Andijon",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Andijon",
+  "user": "rida_andijon",
+  "code": "60"
+ },
+ {
+  "n": 3,
+  "region": "Buxoro viloyati",
+  "big": "Buxoro",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Buxoro",
+  "user": "rida_buxoro",
+  "code": "80"
+ },
+ {
+  "n": 4,
+  "region": "Fargʻona viloyati",
+  "big": "Fargʻona",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Fargʻona",
+  "user": "rida_fargona",
+  "code": "40"
+ },
+ {
+  "n": 5,
+  "region": "Jizzax viloyati",
+  "big": "Jizzax",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Jizzax",
+  "user": "rida_jizzax",
+  "code": "25"
+ },
+ {
+  "n": 6,
+  "region": "Xorazm viloyati",
+  "big": "Xorazm",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Xorazm",
+  "user": "rida_xorazm",
+  "code": "90"
+ },
+ {
+  "n": 7,
+  "region": "Namangan viloyati",
+  "big": "Namangan",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Namangan",
+  "user": "rida_namangan",
+  "code": "50"
+ },
+ {
+  "n": 8,
+  "region": "Navoiy viloyati",
+  "big": "Navoiy",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Navoiy",
+  "user": "rida_navoiy",
+  "code": "85"
+ },
+ {
+  "n": 9,
+  "region": "Qashqadaryo viloyati",
+  "big": "Qashqadaryo",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Qashqadaryo",
+  "user": "rida_qashqadaryo",
+  "code": "70"
+ },
+ {
+  "n": 10,
+  "region": "Samarqand viloyati",
+  "big": "Samarqand",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Samarqand",
+  "user": "rida_samarqand",
+  "code": "30"
+ },
+ {
+  "n": 11,
+  "region": "Sirdaryo viloyati",
+  "big": "Sirdaryo",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Sirdaryo",
+  "user": "rida_sirdaryo",
+  "code": "20"
+ },
+ {
+  "n": 12,
+  "region": "Surxondaryo viloyati",
+  "big": "Surxondaryo",
+  "suffix": "viloyatidan va viloyatiga",
+  "title": "Surxondaryo",
+  "user": "rida_surxondaryo",
+  "code": "75"
+ },
+ {
+  "n": 13,
+  "region": "Qoraqalpogʻiston Respublikasi",
+  "big": "Qoraqalpogʻiston",
+  "suffix": "Respublikasidan va Respublikasiga",
+  "title": "Qoraqalpogʻiston",
+  "user": "rida_qoraqalpogiston",
+  "code": "95"
+ }
+]
