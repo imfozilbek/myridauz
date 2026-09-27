@@ -32,3 +32,5 @@
 | 28 | [28-documentation-rules.md](28-documentation-rules.md) | Правила документации |
 | 29 | [29-product-analytics.md](29-product-analytics.md) | Продуктовая аналитика: где люди застревают |
 | 30 | [30-legal.md](30-legal.md) | Правовая часть: оферта, конфиденциальность, законы |
+| 31 | [31-testing-and-quality-gates.md](31-testing-and-quality-gates.md) | Тесты и барьеры качества |
+| 32 | [32-ci-security.md](32-ci-security.md) | Безопасный CI в публичном репозитории |
