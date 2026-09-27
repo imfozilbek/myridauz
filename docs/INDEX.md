@@ -8,7 +8,7 @@
 | 04 | [04-driver-moderation.md](04-driver-moderation.md) | Заявка водителя, статусы, модерация |
 | 05 | [05-avatars.md](05-avatars.md) | Аватары водителей и пассажиров |
 | 06 | [06-woman-in-car.md](06-woman-in-car.md) | Фича «В машине есть женщина» |
-| 07 | [07-contacts-and-chat.md](07-contacts-and-chat.md) | Скрытые контакты, анонимный чат |
+| 07 | [07-contacts-and-chat.md](07-contacts-and-chat.md) | Контакты не раскрываются никогда, маскировка, чат |
 | 08 | [08-voice-calls.md](08-voice-calls.md) | Голосовые звонки на Cloudflare Realtime |
 | 09 | [09-marketplace-and-pricing.md](09-marketplace-and-pricing.md) | Двусторонний рынок, рекомендованная цена |
 | 10 | [10-open-questions.md](10-open-questions.md) | Открытые вопросы и решения по умолчанию |

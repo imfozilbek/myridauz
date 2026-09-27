@@ -59,7 +59,7 @@ Mini App, каналах, уведомлениях и лендинге. Код �
 | `docs/04-driver-moderation.md` | Заявка водителя, статусы, модерация |
 | `docs/05-avatars.md` | Аватары: обязательны для водителя, позже для пассажира |
 | `docs/06-woman-in-car.md` | Фича «В машине есть женщина» |
-| `docs/07-contacts-and-chat.md` | Скрытые контакты, анонимный чат на Durable Objects |
+| `docs/07-contacts-and-chat.md` | Прямые контакты не раскрываются никогда; маскировка; чат на Durable Objects |
 | `docs/08-voice-calls.md` | Голосовые звонки на Cloudflare Realtime |
 | `docs/09-marketplace-and-pricing.md` | Двусторонний рынок, рекомендованная цена |
 | `docs/10-open-questions.md` | Открытые вопросы и советы по умолчанию |
