@@ -1,6 +1,6 @@
-# 37. Пакет для 14 каналов
+# 37. Пакет для 13 каналов
 
-> **Кратко:** Всё, чтобы создать 14 каналов и представить их людям: название, ссылка, аватар, описание, закреплённый пост, пост «скоро», картинки и настройки. Тексты на узбекском, владелец вычитывает.
+> **Кратко:** Всё, чтобы создать 13 каналов (у города Ташкента канала нет, `15`) и представить их людям: название, ссылка, аватар, описание, закреплённый пост, пост «скоро», картинки и настройки. Тексты на узбекском, владелец вычитывает.
 
 Логика каналов: `15-channels.md`. Логотип: `36-logo.md`.
 Страница с готовыми текстами и кнопками «Копировать»: https://claude.ai/artifact/B5UrJkyqPbJzQghfPsWEaT
@@ -9,34 +9,33 @@
 
 | Что | Сколько |
 |---|---|
-| Название и ссылка канала | 14 |
-| Аватар: «R» и код региона (`36`) | 14, у каждого канала свой |
-| Описание канала (до 255 знаков) | 14 |
-| Пост «Tez orada» (до запуска, по желанию) | 14 |
-| Закреплённый пост «Tanishuv» (в день запуска) | 14 |
-| Картинка к посту 1280 × 720 | 14 |
+| Название и ссылка канала | 13 |
+| Аватар: «R» и код региона (`36`) | 13, у каждого канала свой |
+| Описание канала (до 255 знаков) | 13 |
+| Пост «Tez orada» (до запуска, по желанию) | 13 |
+| Закреплённый пост «Tanishuv» (в день запуска) | 13 |
+| Картинка к посту 1280 × 720 | 13 |
 
-Все 28 файлов (14 аватаров и 14 картинок) отправлены владельцу архивом `rida-kanallar.zip`.
+Все 26 файлов (13 аватаров и 13 картинок) отправлены владельцу архивом `rida-kanallar.zip`.
 | Настройки канала | 1 чек-лист |
 
 ## Названия и ссылки
 
 | # | Регион | Название | Ссылка | Код на аватаре |
 |---|---|---|---|---|
-| 1 | Toshkent shahri | Rida \| Toshkent | t.me/rida_toshkent | 01 |
-| 2 | Toshkent viloyati | Rida \| Toshkent viloyati | t.me/rida_toshkentvil | 10 |
-| 3 | Andijon viloyati | Rida \| Andijon | t.me/rida_andijon | 60 |
-| 4 | Buxoro viloyati | Rida \| Buxoro | t.me/rida_buxoro | 80 |
-| 5 | Fargʻona viloyati | Rida \| Fargʻona | t.me/rida_fargona | 40 |
-| 6 | Jizzax viloyati | Rida \| Jizzax | t.me/rida_jizzax | 25 |
-| 7 | Xorazm viloyati | Rida \| Xorazm | t.me/rida_xorazm | 90 |
-| 8 | Namangan viloyati | Rida \| Namangan | t.me/rida_namangan | 50 |
-| 9 | Navoiy viloyati | Rida \| Navoiy | t.me/rida_navoiy | 85 |
-| 10 | Qashqadaryo viloyati | Rida \| Qashqadaryo | t.me/rida_qashqadaryo | 70 |
-| 11 | Samarqand viloyati | Rida \| Samarqand | t.me/rida_samarqand | 30 |
-| 12 | Sirdaryo viloyati | Rida \| Sirdaryo | t.me/rida_sirdaryo | 20 |
-| 13 | Surxondaryo viloyati | Rida \| Surxondaryo | t.me/rida_surxondaryo | 75 |
-| 14 | Qoraqalpogʻiston Respublikasi | Rida \| Qoraqalpogʻiston | t.me/rida_qoraqalpogiston | 95 |
+| 1 | Toshkent viloyati | Rida \| Toshkent viloyati | t.me/rida_toshkentvil | 10 |
+| 2 | Andijon viloyati | Rida \| Andijon | t.me/rida_andijon | 60 |
+| 3 | Buxoro viloyati | Rida \| Buxoro | t.me/rida_buxoro | 80 |
+| 4 | Fargʻona viloyati | Rida \| Fargʻona | t.me/rida_fargona | 40 |
+| 5 | Jizzax viloyati | Rida \| Jizzax | t.me/rida_jizzax | 25 |
+| 6 | Xorazm viloyati | Rida \| Xorazm | t.me/rida_xorazm | 90 |
+| 7 | Namangan viloyati | Rida \| Namangan | t.me/rida_namangan | 50 |
+| 8 | Navoiy viloyati | Rida \| Navoiy | t.me/rida_navoiy | 85 |
+| 9 | Qashqadaryo viloyati | Rida \| Qashqadaryo | t.me/rida_qashqadaryo | 70 |
+| 10 | Samarqand viloyati | Rida \| Samarqand | t.me/rida_samarqand | 30 |
+| 11 | Sirdaryo viloyati | Rida \| Sirdaryo | t.me/rida_sirdaryo | 20 |
+| 12 | Surxondaryo viloyati | Rida \| Surxondaryo | t.me/rida_surxondaryo | 75 |
+| 13 | Qoraqalpogʻiston Respublikasi | Rida \| Qoraqalpogʻiston | t.me/rida_qoraqalpogiston | 95 |
 
 - Код на аватаре: первый код региона на автомобильных номерах (`36`).
 
@@ -45,9 +44,8 @@
 
 ## Шаблоны текстов (узбекский, черновик)
 
-`{from}`: «Samarqand viloyatidan va viloyatiga» (у Ташкента: «Toshkent
-shahridan va shahriga», у Каракалпакстана: «Qoraqalpogʻiston
-Respublikasidan va Respublikasiga»). `{passenger_bot}`, `{driver_bot}`: имена ботов (OPS-01).
+`{from}`: «Samarqand viloyatidan va viloyatiga» (у Каракалпакстана:
+«Qoraqalpogʻiston Respublikasidan va Respublikasiga»). `{passenger_bot}`, `{driver_bot}`: имена ботов (OPS-01).
 
 **Описание канала:**
 
@@ -110,7 +108,7 @@ Manzil sari.
 
 | Когда | Что |
 |---|---|
-| Сейчас | Создать 14 каналов, аватар, описание. Пост «Tez orada». Копить подписчиков |
+| Сейчас | Создать 13 каналов, аватар, описание. Пост «Tez orada». Копить подписчиков |
 | После OPS-01 | Подставить имена ботов в описание |
 | День запуска | Пост «Tanishuv» с картинкой, закрепить. Бот начинает публиковать поездки (G10) |
 
