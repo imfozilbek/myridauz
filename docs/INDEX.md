@@ -15,3 +15,5 @@
 | 11 | [11-code-architecture.md](11-code-architecture.md) | Архитектура кода: монорепо, backend, frontend, лимит 150 строк |
 | 12 | [12-monetization.md](12-monetization.md) | Монетизация: кошелёк, комиссия 10%, акция, подписка |
 | 13 | [13-i18n.md](13-i18n.md) | Мультиязычность: готовность к новым языкам |
+| 14 | [14-locations-and-routes.md](14-locations-and-routes.md) | Регионы, районы, точки посадки и высадки |
+| 15 | [15-channels.md](15-channels.md) | Telegram-каналы: логика и формат постов |
