@@ -34,3 +34,4 @@
 | 30 | [30-legal.md](30-legal.md) | Правовая часть: оферта, конфиденциальность, законы |
 | 31 | [31-testing-and-quality-gates.md](31-testing-and-quality-gates.md) | Тесты и барьеры качества |
 | 32 | [32-ci-security.md](32-ci-security.md) | Безопасный CI в публичном репозитории |
+| goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G16, OPS) |

@@ -1,0 +1,45 @@
+# G01. Монорепозиторий и барьеры качества
+
+> **Кратко:** Каркас проекта, все барьеры качества и безопасный CI для PR. Без деплоя.
+
+```text
+ЦЕЛЬ G01: Монорепозиторий и барьеры качества
+
+Контекст: CLAUDE.md, docs/11-code-architecture.md, docs/22-multi-brand.md,
+docs/31-testing-and-quality-gates.md, docs/32-ci-security.md.
+
+Сделать:
+1. pnpm workspaces. Пакеты @platform/*: contracts, ui, api-client, i18n,
+   config (общие tsconfig strict, eslint, prettier).
+2. apps/backend: Cloudflare Worker на Hono, слои modules/<m>/{domain,
+   application,infrastructure,http}, пример модуля health с тестами.
+3. apps/miniapp-passenger, miniapp-driver, miniapp-admin: React + Vite,
+   структура FSD (app, pages, widgets, features, entities, shared),
+   один стартовый экран в каждом.
+4. brands/rida/brand.config.ts (имя, домен, слоган «Manzil sari»,
+   модель commission) и загрузчик конфига бренда.
+5. ESLint: max-lines 150 (error), границы модулей и слоёв FSD,
+   запрет any, запрет HEX вне packages/ui, запрет слова «Rida» вне brands/,
+   запрет прямого импорта UI-библиотек вне packages/ui.
+6. tsc strict + noUnusedLocals + noUnusedParameters. knip. Prettier.
+7. Vitest во всех пакетах, покрытие с порогами (domain/application 90%).
+8. GitHub Actions: workflow для pull_request и push без секретов,
+   permissions: contents: read, actions закреплены по SHA.
+   Шаги: format, lint, typecheck, knip, test, coverage, gitleaks.
+9. CodeQL, Dependabot. .gitignore и .env.example уже есть.
+10. Проверка отсутствия длинных тире «—», «–» в коде и docs (скрипт в CI).
+
+Не делать: деплой, Cloudflare ресурсы, реальные фичи, лендинг.
+
+Definition of Done:
+[ ] pnpm install и pnpm check (все барьеры) проходят локально.
+[ ] CI зелёный на ветке.
+[ ] Каждый барьер проверен: намеренное нарушение (файл 151 строка,
+    any, HEX, «Rida» в коде, неиспользуемый экспорт, тире) роняет CI;
+    после проверки нарушение удалено.
+[ ] Ни одного файла больше 150 строк, ни одной неиспользуемой строки.
+[ ] docs обновлены (что изменилось), docs/goals/INDEX.md: G01 выполнена.
+[ ] Коммиты запушены.
+
+Не останавливаться, пока все пункты DoD не выполнены.
+```
