@@ -1,6 +1,6 @@
 # 16. Стартовые цены (v3)
 
-> **Кратко:** Формула: км × 357 сум, калибровка по рынку (Ташкент → Яккабаг = 150 000). Таблица по 14 регионам ждёт проверки владельца.
+> **Кратко:** Формула: км × 357 сум, калибровка по рынку (Ташкент → Яккабаг = 150 000). Таблица по 13 регионам (из Ташкента) ждёт проверки владельца.
 
 **Статус: предложение Claude на основе рыночной цены владельца. Владелец проверяет.**
 
@@ -28,27 +28,28 @@
 
 **Ставка = 150 000 / 420 ≈ 357 сум/км.** Ставка: настройка в админке.
 
-## Предложение по 14 регионам: из города Ташкента в центр региона
+## Предложение по 13 регионам: из города Ташкента в центр региона
+
+Поездок внутри города нет (`14-locations-and-routes.md`).
 
 Расстояния: примерные, по дороге. Цена: за 1 место, сум.
 
 | # | Регион | Центр | км | Рекомендация |
 |---|---|---|---|---|
-| 1 | Toshkent shahri | ichida (внутри города) |: | 30 000 (минимум) |
-| 2 | Toshkent viloyati | Nurafshon | 35 | 30 000 (минимум) |
-| 3 | Sirdaryo viloyati | Guliston | 120 | 45 000 |
-| 4 | Jizzax viloyati | Jizzax | 200 | 70 000 |
-| 5 | Namangan viloyati | Namangan | 290 | 105 000 |
-| 6 | Samarqand viloyati | Samarqand | 300 | 105 000 |
-| 7 | Farg'ona viloyati | Farg'ona | 320 | 115 000 |
-| 8 | Andijon viloyati | Andijon | 350 | 125 000 |
-| 9 | Navoiy viloyati | Navoiy | 465 | 165 000 |
-| 10 | Qashqadaryo viloyati | Qarshi | 490 | 175 000 |
-| 11 | Buxoro viloyati | Buxoro | 570 | 205 000 |
-| 12 | Surxondaryo viloyati | Termiz | 700 | 250 000 |
-| 13 | Xorazm viloyati | Urganch | 1000 | 355 000 |
-| 14 | Qoraqalpog'iston Respublikasi | Nukus | 1150 | 410 000 |
-|: | Qashqadaryo, Yakkabog' (проверка) | Yakkabog' | 420 | 150 000 ✓ |
+| 1 | Toshkent viloyati | Nurafshon | 35 | 30 000 (минимум) |
+| 2 | Sirdaryo viloyati | Guliston | 120 | 45 000 |
+| 3 | Jizzax viloyati | Jizzax | 200 | 70 000 |
+| 4 | Namangan viloyati | Namangan | 290 | 105 000 |
+| 5 | Samarqand viloyati | Samarqand | 300 | 105 000 |
+| 6 | Farg'ona viloyati | Farg'ona | 320 | 115 000 |
+| 7 | Andijon viloyati | Andijon | 350 | 125 000 |
+| 8 | Navoiy viloyati | Navoiy | 465 | 165 000 |
+| 9 | Qashqadaryo viloyati | Qarshi | 490 | 175 000 |
+| 10 | Buxoro viloyati | Buxoro | 570 | 205 000 |
+| 11 | Surxondaryo viloyati | Termiz | 700 | 250 000 |
+| 12 | Xorazm viloyati | Urganch | 1000 | 355 000 |
+| 13 | Qoraqalpog'iston Respublikasi | Nukus | 1150 | 410 000 |
+| ✓ | Qashqadaryo, Yakkabog' (проверка) | Yakkabog' | 420 | 150 000 ✓ |
 
 - Районы внутри региона: та же формула по расстоянию до района.
 - Поездки между регионами (не через Ташкент): та же формула.
