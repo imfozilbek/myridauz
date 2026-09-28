@@ -3,5 +3,6 @@
   "passenger.start": "Assalomu alaykum. {brand} bilan yoʻli bir odamlar birga safar qiladi. Safar topish uchun tugmani bosing.",
   "driver.start": "Assalomu alaykum. Safaringizga yoʻlovchi toping, yoʻl xarajatini birga koʻtaring. Boshlash uchun tugmani bosing.",
   "admin.start": "{brand} jamoasi uchun boshqaruv paneli.",
-  "admin.denied": "Bu bot faqat {brand} jamoasi uchun."
+  "admin.denied": "Bu bot faqat {brand} jamoasi uchun.",
+  "blocked": "Hisobingiz bloklangan."
 }

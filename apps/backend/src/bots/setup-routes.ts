@@ -3,7 +3,8 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { safeEqual } from '../shared/http/safe-equal';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
-import { BOT_ROLES, botToken } from './bot-roles';
+import { botToken } from '../shared/telegram/bot-config';
+import { BOT_ROLES } from './bot-roles';
 import { openButton } from './start-reply';
 
 const SETUP_HEADER = 'x-setup-secret';

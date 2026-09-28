@@ -19,12 +19,14 @@ type StartContext = {
   readonly brand: BrandConfig;
   readonly role: BotRole;
   readonly chatId: number;
-  readonly allowed: boolean;
+  // not_admin: the admin bot answers only the team (docs/02); blocked: docs/17.
+  readonly access: 'allowed' | 'not_admin' | 'blocked';
 };
 
 // The answer to /start goes back in the webhook response: no extra request to Telegram (docs/03).
-export function startReply({ brand, role, chatId, allowed }: StartContext) {
-  if (!allowed)
+export function startReply({ brand, role, chatId, access }: StartContext) {
+  if (access === 'blocked') return { method: 'sendMessage', chat_id: chatId, text: t('bot.blocked') };
+  if (access === 'not_admin')
     return { method: 'sendMessage', chat_id: chatId, text: t('bot.admin.denied', { brand: brand.name }) };
   return {
     method: 'sendMessage',
