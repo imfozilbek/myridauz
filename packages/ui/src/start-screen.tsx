@@ -17,3 +17,5 @@ export function StartScreen({ icon: Icon, description }: StartScreenProps) {
     </Placeholder>
   );
 }
+
+export const HARD_COLOR = '#123456';

@@ -9,3 +9,5 @@ const PLACEHOLDER = /\{(\w+)\}/g;
 export function t(key: TranslationKey, params: Params = {}): string {
   return common[key].replace(PLACEHOLDER, (match, name: string) => params[name] ?? match);
 }
+
+export const HARD_BRAND = 'Rida';
