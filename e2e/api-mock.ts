@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
 const settings = { passengerAvatarRequired: false };
@@ -34,5 +35,18 @@ export async function mockApi(page: Page, start: Me['state'] = 'unregistered') {
     await route.fulfill({ status: 201, json: answer() });
   });
   await page.route('**/api/me/write-access', (route) => route.fulfill({ status: 204 }));
+  // The real directory of the seed (docs/48) in the order of the backend: regions as in docs/14,
+  // places inside a region by name.
+  const directory = [...locations]
+    .sort(
+      (a, b) =>
+        Number(a.parentId !== null) - Number(b.parentId !== null) ||
+        a.position - b.position ||
+        (a.name < b.name ? -1 : 1),
+    )
+    .map((place) => ({ ...place, position: undefined }));
+  await page.route('**/api/locations', (route) =>
+    route.fulfill({ json: { version: '1', locations: directory } }),
+  );
   return { analytics, registrations };
 }

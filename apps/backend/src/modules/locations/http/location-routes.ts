@@ -1,5 +1,6 @@
 import {
   distanceQuerySchema,
+  distanceSchema,
   LOCATION_DISTANCE_PATH,
   LOCATIONS_PATH,
   type ApiErrorCode,

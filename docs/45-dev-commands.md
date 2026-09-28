@@ -10,6 +10,7 @@
 | `pnpm check` | Все барьеры подряд: формат, линтер, типы, knip, тесты с покрытием, тире, секреты |
 | `pnpm format` | Исправляет формат (Prettier) |
 | `pnpm test` | Тесты Vitest без покрытия |
+| `pnpm vitest run -u apps/backend/src/modules/locations/seed.test.ts` | Пересобрать SQL справочника мест из seed (`48`) |
 | `pnpm e2e` | Smoke тест трёх Mini App в Chromium с подменой Telegram |
 | `pnpm screenshots` | Скриншоты экранов в `screenshots/` (для владельца, `33`) |
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |

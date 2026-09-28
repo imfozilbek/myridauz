@@ -49,4 +49,6 @@
 | 45 | [45-dev-commands.md](45-dev-commands.md) | Команды разработки, барьеры, как устроен CI |
 | 46 | [46-infrastructure.md](46-infrastructure.md) | Инфраструктура: адреса, ресурсы Cloudflare, боты, секреты, деплой |
 | 47 | [47-users-and-registration.md](47-users-and-registration.md) | Пользователи: вход по подписи Telegram, регистрация, блокировка, фото |
+| 48 | [48-locations-directory.md](48-locations-directory.md) | Справочник мест: регионы, районы, расстояния, выбор места |
+| 49 | [49-lessons-learned-3.md](49-lessons-learned-3.md) | Уроки: продолжение журнала (№21 и дальше) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

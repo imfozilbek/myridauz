@@ -10,8 +10,8 @@ const seed = places as readonly SeedPlace[];
 const byId = new Map(seed.map((place) => [place.id, place]));
 const REGION_COUNT = 14;
 const TASHKENT_CITY = '1726';
-// The Tashkent point of docs/16: the city center, in Shayxontohur district.
-const TASHKENT_CENTER = '1726294';
+// The Tashkent point of docs/16: the city center, in Mirobod district.
+const TASHKENT_CENTER = '1726273';
 const TOLERANCE = 0.1;
 
 // docs/16: from the city of Tashkent to the center of each region, km by road.
@@ -65,7 +65,8 @@ describe('locations seed (docs/14)', () => {
   it('has no distance for a trip inside Toshkent shahri', () => {
     const pairs = seedDistances(seed, factors);
     const inside = pairs.filter(
-      (pair) => byId.get(pair.from)?.parentId === TASHKENT_CITY && byId.get(pair.to)?.parentId === TASHKENT_CITY,
+      (pair) =>
+        byId.get(pair.from)?.parentId === TASHKENT_CITY && byId.get(pair.to)?.parentId === TASHKENT_CITY,
     );
     expect(inside).toHaveLength(0);
     expect(pairs.every((pair) => pair.from < pair.to && pair.km > 0)).toBe(true);

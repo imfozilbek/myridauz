@@ -3,7 +3,6 @@ import type { Location } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
-import { LocationsClientContext } from './directory';
 import { RouteScreen, type Route } from './route-screen';
 
 afterEach(cleanup);
@@ -28,9 +27,10 @@ const LOCATIONS = [
 function renderRoute(getLocations: LocationsClient['getLocations'], wholeRegion = false) {
   const onDone = vi.fn<(route: Route) => void>();
   const result = renderInShell(
-    <LocationsClientContext.Provider value={{ getLocations }}>
-      <RouteScreen allowWholeRegion={wholeRegion} onBack={() => undefined} onDone={onDone} />
-    </LocationsClientContext.Provider>,
+    <RouteScreen allowWholeRegion={wholeRegion} onBack={() => undefined} onDone={onDone} />,
+    false,
+    true,
+    { getLocations },
   );
   return { ...result, onDone };
 }

@@ -13,11 +13,12 @@ describe('StartPage', () => {
     expect(tracked.map((event) => event.screen)).toEqual(['home']);
   });
 
-  it('opens a section and comes back', () => {
+  it('opens a section and comes back', async () => {
     renderInShell(<StartPage />);
-    fireEvent.click(screen.getByText('Safar topish'));
+    fireEvent.click(screen.getByText('Mening safarlarim'));
     expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
-    expect(screen.getByText('Soʻrov qoldirish')).toBeTruthy();
+    fireEvent.click(screen.getByText('Safar topish'));
+    expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 });

@@ -7,7 +7,6 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
-import { LocationsClientContext } from './places/directory';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -43,18 +42,16 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   });
   createRoot(container).render(
     <StrictMode>
-      <AppShell brand={brand} analytics={analytics} session={session}>
-        <LocationsClientContext.Provider value={locations}>
-          {welcome ? (
-            <AccountGate app={app} client={users} welcome={welcome}>
-              <Page />
-            </AccountGate>
-          ) : (
-            <TeamGate client={users}>
-              <Page />
-            </TeamGate>
-          )}
-        </LocationsClientContext.Provider>
+      <AppShell brand={brand} analytics={analytics} locations={locations} session={session}>
+        {welcome ? (
+          <AccountGate app={app} client={users} welcome={welcome}>
+            <Page />
+          </AccountGate>
+        ) : (
+          <TeamGate client={users}>
+            <Page />
+          </TeamGate>
+        )}
       </AppShell>
     </StrictMode>,
   );

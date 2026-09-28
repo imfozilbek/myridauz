@@ -28,3 +28,36 @@ test('blocked: screenshot', async ({ page }) => {
   await expect(page.getByText(TEXT.blocked)).toBeVisible();
   await page.screenshot({ path: 'screenshots/miniapp-blocked.png' });
 });
+
+test('places: screenshots', async ({ page }) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
+  // The mouse leaves the screen first: a phone has no hover state.
+  const shot = async (name: string) => {
+    await page.mouse.move(0, 0);
+    await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
+  };
+  await page.getByText(MINI_APPS[0].action).click();
+  await expect(page.getByText(TEXT.from)).toBeVisible();
+  await shot('1-route');
+  await page.getByText(TEXT.from).click();
+  await expect(page.getByAltText('Xorazm viloyati')).toBeVisible();
+  await page.waitForLoadState('networkidle');
+  await shot('2-regions');
+  await page.getByAltText('Samarqand viloyati').click();
+  await shot('3-districts');
+  await page.getByText('Samarqand shahri').click();
+  await page.getByText(TEXT.to).click();
+  await page.getByPlaceholder(TEXT.search).fill("g'ijduvon");
+  await shot('4-search');
+  await page.getByText('Gʻijduvon').click();
+  await shot('5-chosen');
+  await page.getByText(TEXT.from).click();
+  await page.getByAltText('Toshkent shahri').click();
+  await page.getByText(TEXT.wholeCity).click();
+  await page.getByText(TEXT.to).click();
+  await page.getByAltText('Toshkent shahri').click();
+  await page.getByText('Chilonzor').click();
+  await shot('6-inside-city');
+});

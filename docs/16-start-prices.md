@@ -50,15 +50,15 @@ Rida не такси: мы предлагаем цену, которая дел�
 | 3 | Jizzax viloyati | Jizzax | 200 | 60 000 |
 | 4 | Namangan viloyati | Namangan | 290 | 85 000 |
 | 5 | Samarqand viloyati | Samarqand | 300 | 90 000 |
-| 6 | Farg'ona viloyati | Farg'ona | 320 | 95 000 |
+| 6 | Fargʻona viloyati | Fargʻona | 320 | 95 000 |
 | 7 | Andijon viloyati | Andijon | 350 | 105 000 |
 | 8 | Navoiy viloyati | Navoiy | 465 | 140 000 |
 | 9 | Qashqadaryo viloyati | Qarshi | 490 | 145 000 |
 | 10 | Buxoro viloyati | Buxoro | 570 | 170 000 |
 | 11 | Surxondaryo viloyati | Termiz | 700 | 210 000 |
 | 12 | Xorazm viloyati | Urganch | 1000 | 300 000 |
-| 13 | Qoraqalpog'iston Respublikasi | Nukus | 1150 | 345 000 |
-| ✓ | Qashqadaryo, Yakkabog' (для сравнения: на рынке 150 000) | Yakkabog' | 420 | 125 000 |
+| 13 | Qoraqalpogʻiston Respublikasi | Nukus | 1150 | 345 000 |
+| ✓ | Qashqadaryo, Yakkabogʻ (для сравнения: на рынке 150 000) | Yakkabogʻ | 420 | 125 000 |
 
 - Районы внутри региона: та же формула по расстоянию до района.
 - Поездки между регионами (не через Ташкент): та же формула.
@@ -67,5 +67,5 @@ Rida не такси: мы предлагаем цену, которая дел�
 ## Как это станет данными
 
 - Ставка, пределы и множители: переменные движка цен (`23-pricing-engine.md`).
-- Расстояния между районами: таблица в базе (seed), правится админом.
+- Расстояния между районами: таблица в базе (seed), правится админом. Как считаются: `48`.
 - Дальше цены правятся в таблице направлений в админке (`23`).
