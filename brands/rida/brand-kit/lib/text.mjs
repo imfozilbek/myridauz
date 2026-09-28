@@ -66,8 +66,24 @@ export function markR({ cx, cy, h, fill = C.white, id, decimals = 1 }) {
   const bb = g.getPath(0, 0, size).getBoundingBox();
   const x = cx - (bb.x1 + bb.x2) / 2;
   const y = cy + h / 2;
-  const d = g.getPath(x, y, size).toPathData(decimals);
+  const path = g.getPath(x, y, size);
+  const d = fill === null ? cubicPathData(path) : path.toPathData(decimals);
   return fill === null ? `<path d="${d}"/>` : `<path${id ? ` id="${id}"` : ''} d="${d}" fill="${fill}"/>`;
+}
+
+// BotFather reads only M, L, C, Z with integers: quadratic curves become cubic, zero-length lines are dropped.
+function cubicPathData(path) {
+  const r = Math.round, out = [];
+  let px = 0, py = 0;
+  for (const c of path.commands) {
+    if (c.type === 'M') out.push(`M${r(c.x)} ${r(c.y)}`);
+    else if (c.type === 'L' && (r(c.x) !== r(px) || r(c.y) !== r(py))) out.push(`L${r(c.x)} ${r(c.y)}`);
+    else if (c.type === 'Q') out.push(`C${r(px + (2 / 3) * (c.x1 - px))} ${r(py + (2 / 3) * (c.y1 - py))} ${r(c.x + (2 / 3) * (c.x1 - c.x))} ${r(c.y + (2 / 3) * (c.y1 - c.y))} ${r(c.x)} ${r(c.y)}`);
+    else if (c.type === 'C') out.push(`C${r(c.x1)} ${r(c.y1)} ${r(c.x2)} ${r(c.y2)} ${r(c.x)} ${r(c.y)}`);
+    else if (c.type === 'Z') out.push('Z');
+    if (c.type !== 'Z') [px, py] = [c.x, c.y];
+  }
+  return out.join('');
 }
 
 // Outline of one Rubik ExtraBold glyph at a font size, baseline at y = 0 (opentype.js Path).
