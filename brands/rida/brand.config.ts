@@ -1,5 +1,5 @@
 import type { BrandConfig } from '../brand-config';
-import { theme } from './theme';
+import { theme } from './theme.ts';
 
 export const brandConfig: BrandConfig = {
   id: 'rida',
