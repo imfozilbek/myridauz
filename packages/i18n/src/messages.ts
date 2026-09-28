@@ -1,12 +1,14 @@
 import account from '../locales/uz-Latn/account.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import common from '../locales/uz-Latn/common.json' with { type: 'json' };
+import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
+import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
-const REFERENCE = { account, bot, common, errors, places };
+const REFERENCE = { account, bot, common, drivers, errors, moderation, places };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {
   [N in keyof Namespaces]: `${N & string}.${keyof Namespaces[N] & string}`;

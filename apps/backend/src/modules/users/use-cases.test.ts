@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { createMemoryAvatars, createMemoryUsers } from './infrastructure/memory-stores';
+import { createMemoryImages } from '../../shared/storage/memory-images';
+import { createMemoryUsers } from './infrastructure/memory-stores';
 import { readAvatar, setAvatar } from './application/avatar';
 import { checkAccess } from './application/check-access';
 import { getMe } from './application/get-me';
@@ -15,7 +16,7 @@ const jpeg = (size: number) => ({ body: new ArrayBuffer(size), type: 'image/jpeg
 
 function setup(relation: Awaited<ReturnType<TripRelations['relation']>> = 'none') {
   const users = createMemoryUsers();
-  const avatars = createMemoryAvatars();
+  const avatars = createMemoryImages();
   let id = 0;
   const deps: UsersDeps = {
     users,

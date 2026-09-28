@@ -5,6 +5,7 @@ import type { BrandConfig } from '@platform/brands';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 import { Suspense, type ReactNode } from 'react';
 import { AnalyticsContext } from './context/analytics-context';
+import { ApiClientsContext, type ApiClients } from './context/api-clients';
 import { BrandContext } from './context/brand-context';
 import { I18nProvider } from './context/i18n-context';
 import { LocationsClientContext } from './places/directory';
@@ -17,6 +18,7 @@ type AppShellProps = {
   readonly brand: BrandConfig;
   readonly analytics: AnalyticsClient;
   readonly locations: LocationsClient;
+  readonly clients: ApiClients;
   readonly session?: TelegramSession;
   readonly children: ReactNode;
 };
@@ -26,6 +28,7 @@ export function AppShell({
   brand,
   analytics,
   locations,
+  clients,
   session = OUTSIDE_TELEGRAM,
   children,
 }: AppShellProps) {
@@ -41,9 +44,11 @@ export function AppShell({
               style={themeVars(brand.theme.colors)}
             >
               <LocationsClientContext.Provider value={locations}>
-                <ErrorBoundary>
-                  <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
-                </ErrorBoundary>
+                <ApiClientsContext.Provider value={clients}>
+                  <ErrorBoundary>
+                    <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                  </ErrorBoundary>
+                </ApiClientsContext.Provider>
               </LocationsClientContext.Provider>
             </AppRoot>
           </I18nProvider>

@@ -1,6 +1,7 @@
 import {
   Ban,
   Camera,
+  CarFront,
   ChartColumn,
   Check,
   ChevronRight,
@@ -48,6 +49,7 @@ const ICONS = {
   blocked: Ban,
   origin: CircleDot,
   destination: MapPin,
+  car: CarFront,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

@@ -1,4 +1,4 @@
-import { StartFlow, type StartAction } from '@platform/ui';
+import { ApplicationsScreen, StartFlow, type StartAction } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -8,6 +8,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.admin.applications',
     hintKey: 'common.admin.applicationsHint',
+    Screen: ApplicationsScreen,
   },
   {
     id: 'complaints',

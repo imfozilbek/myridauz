@@ -27,5 +27,15 @@ export const TEXT = {
   search: t('places.search'),
   wholeCity: t('places.wholeCity'),
   insideCity: t('errors.locations.inside_city'),
+  becomeDriver: t('drivers.intro.title'),
+  start: t('drivers.intro.start'),
+  plateHint: t('drivers.plate.hint'),
+  send: t('drivers.review.send'),
+  pending: t('drivers.status.pending.title'),
+  photoFront: t('drivers.photo.front'),
+  photoSide: t('drivers.photo.side'),
+  photoInterior: t('drivers.photo.interior'),
+  approve: t('moderation.approve'),
+  decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;

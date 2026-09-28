@@ -1,7 +1,7 @@
-import type { AvatarStore } from '../application/ports';
+import type { ImageStore } from './image-store';
 
-// Avatars in the private R2 bucket (docs/05). The bucket has no public access.
-export const r2Avatars = (bucket: R2Bucket): AvatarStore => ({
+// Photos in the private R2 bucket. The bucket has no public access: the API checks who may see a photo.
+export const r2Images = (bucket: R2Bucket): ImageStore => ({
   put: async (key, body, type) => {
     await bucket.put(key, body, { httpMetadata: { contentType: type } });
   },

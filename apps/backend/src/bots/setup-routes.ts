@@ -25,7 +25,8 @@ export function setupRoutes(fetch: Fetch) {
       await callTelegram(fetch, token, 'setWebhook', {
         url: `https://${apiHost(brand)}/telegram/${role}`,
         secret_token: secret,
-        allowed_updates: ['message'],
+        // Buttons of the moderation card come as callback queries (docs/04).
+        allowed_updates: ['message', 'callback_query'],
         drop_pending_updates: true,
       });
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.

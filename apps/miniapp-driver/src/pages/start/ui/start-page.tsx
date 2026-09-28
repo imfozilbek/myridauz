@@ -1,4 +1,4 @@
-import { StartFlow, type StartAction } from '@platform/ui';
+import { DriverGate, StartFlow, type StartAction } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -27,6 +27,11 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
+// Only an approved driver sees the main screen; before that the application (docs/04, G06).
 export function StartPage() {
-  return <StartFlow actions={ACTIONS} />;
+  return (
+    <DriverGate>
+      <StartFlow actions={ACTIONS} />
+    </DriverGate>
+  );
 }

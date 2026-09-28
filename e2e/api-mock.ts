@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
+import { mockDrivers, type DriverStart } from './drivers-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
 const settings = { passengerAvatarRequired: false };
@@ -15,14 +16,19 @@ const profile = {
 };
 
 // The backend as the Mini App sees it: registration makes the person active.
-export async function mockApi(page: Page, start: Me['state'] = 'unregistered') {
+export async function mockApi(
+  page: Page,
+  start: Me['state'] = 'unregistered',
+  driver: DriverStart = 'approved',
+) {
   let state = start;
+  let hasAvatar = false;
   const analytics: unknown[] = [];
   const registrations: unknown[] = [];
   const answer = () => {
     if (state === 'blocked') return { state, until: null };
     if (state === 'unregistered') return { state, suggestedName: 'Dilnoza', settings };
-    return { state, profile, settings };
+    return { state, profile: { ...profile, hasAvatar }, settings };
   };
   await page.route('**/api/analytics', async (route) => {
     analytics.push(route.request().postDataJSON());
@@ -35,6 +41,12 @@ export async function mockApi(page: Page, start: Me['state'] = 'unregistered') {
     await route.fulfill({ status: 201, json: answer() });
   });
   await page.route('**/api/me/write-access', (route) => route.fulfill({ status: 204 }));
+  await page.route('**/api/me/avatar', async (route) => {
+    hasAvatar = true;
+    await route.fulfill({ status: 204 });
+  });
+  // A test person has no real photo: the profile shows the empty circle.
+  await page.route('**/api/users/*/avatar', (route) => route.fulfill({ status: 404, json: {} }));
   // The real directory of the seed (docs/48) in the order of the backend: regions as in docs/14,
   // places inside a region by name.
   const directory = [...locations]
@@ -48,5 +60,6 @@ export async function mockApi(page: Page, start: Me['state'] = 'unregistered') {
   await page.route('**/api/locations', (route) =>
     route.fulfill({ json: { version: '1', locations: directory } }),
   );
-  return { analytics, registrations };
+  const drivers = await mockDrivers(page, driver);
+  return { analytics, registrations, ...drivers };
 }

@@ -1,4 +1,4 @@
-import type { MiniApp } from '@platform/contracts';
+import type { MiniApp, TeamRole } from '@platform/contracts';
 import type { TelegramUser } from './shared/auth/telegram-fields';
 
 // Cloudflare bindings, vars and secrets of the Worker (brands/<brand>/wrangler.toml).
@@ -24,6 +24,8 @@ type Session = {
   readonly user: TelegramUser;
   readonly botToken: string;
   readonly isAdmin: boolean;
+  // owner or moderator (docs/02); null for everyone else.
+  readonly teamRole: TeamRole | null;
 };
 
 export type AppEnv = { Bindings: Bindings; Variables: { session: Session } };

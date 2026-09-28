@@ -1,0 +1,15 @@
+{
+  "queue.empty": "Yangi ariza yoʻq",
+  "queue.emptyHint": "Yangi ariza kelganda bot sizga xabar beradi.",
+  "photo.avatar": "Yuz rasmi",
+  "approve": "Tasdiqlash",
+  "reject": "Rad etish",
+  "requestChanges": "Tuzatishni soʻrash",
+  "reason.title": "Sababni tanlang",
+  "block": "Bloklash",
+  "block.title": "Qancha muddatga bloklaymiz?",
+  "block.days": "{days} kun",
+  "block.forever": "Butunlay",
+  "decided": "Javob yuborildi",
+  "blocked": "Bloklandi"
+}

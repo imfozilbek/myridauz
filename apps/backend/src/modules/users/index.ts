@@ -2,21 +2,23 @@ import { ME_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { checkAccess } from './application/check-access';
+import { people } from './application/people';
 import type { UsersDeps } from './application/ports';
 import { accessGuard } from './http/access-guard';
 import { meRoutes } from './http/me-routes';
 import { userRoutes } from './http/user-routes';
 import { d1Users } from './infrastructure/d1-users';
-import { createMemoryAvatars, createMemoryUsers, noTripRelations } from './infrastructure/memory-stores';
-import { r2Avatars } from './infrastructure/r2-avatars';
+import { createMemoryImages } from '../../shared/storage/memory-images';
+import { r2Images } from '../../shared/storage/r2-images';
+import { createMemoryUsers, noTripRelations } from './infrastructure/memory-stores';
 
 // Without D1 and R2 (local runs, tests) the module keeps its data in memory.
 export const localUsers = createMemoryUsers();
-const localAvatars = createMemoryAvatars();
+const localAvatars = createMemoryImages();
 
 const usersDeps = (env: Bindings): UsersDeps => ({
   users: env.DB ? d1Users(env.DB) : localUsers,
-  avatars: env.MEDIA ? r2Avatars(env.MEDIA) : localAvatars,
+  avatars: env.MEDIA ? r2Images(env.MEDIA) : localAvatars,
   trips: noTripRelations,
   now: Date.now,
   newId: () => crypto.randomUUID(),
@@ -37,3 +39,7 @@ export const usersModule = new Hono<AppEnv>()
 // For the bots: a blocked person gets "account blocked" in every bot too (docs/17).
 export const isBlocked = async (env: Bindings, telegramId: number) =>
   (await checkAccess(usersDeps(env), telegramId)) !== null;
+
+// Other modules reach people only through this (drivers, moderation).
+export const peopleOf = (env: Bindings) => people(usersDeps(env));
+export const blockedGuard = guard;

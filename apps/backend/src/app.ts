@@ -6,9 +6,11 @@ import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
 import { analyticsModule } from './modules/analytics';
+import { avatarWatch, driversModule } from './modules/drivers';
 import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
-import { usersModule } from './modules/users';
+import { teamRole } from './modules/team';
+import { blockedGuard, usersModule } from './modules/users';
 import { telegramAuth } from './shared/auth/telegram-auth';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
@@ -18,7 +20,7 @@ const allowMiniApps = cors({
     return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
   },
 });
-const auth = telegramAuth(Date.now);
+const auth = telegramAuth(Date.now, teamRole);
 
 export const app = new Hono<AppEnv>()
   .use('/analytics', allowMiniApps)
@@ -26,16 +28,24 @@ export const app = new Hono<AppEnv>()
   // "/me/*" also matches "/me".
   .use('/me/*', allowMiniApps, auth)
   .use('/users/*', allowMiniApps, auth)
+  .use('/driver/*', allowMiniApps, auth, blockedGuard)
+  .use('/admin/*', allowMiniApps, auth, blockedGuard)
   // The directory is public: no personal data. Only a change of a distance checks the signature.
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
   .route('/', healthModule)
   .route('/', analyticsModule)
+  // The avatar watch goes before users: it wraps the avatar route of the users module.
+  .route('/', avatarWatch)
   .route('/', usersModule)
+  .route('/', driversModule)
   .route('/', locationsModule(auth))
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',
     setupRoutes((input, init) => fetch(input, init)),
   )
-  .route('/', webhookRoutes);
+  .route(
+    '/',
+    webhookRoutes((input, init) => fetch(input, init)),
+  );

@@ -2,6 +2,8 @@ export { AppShell } from './app-shell';
 export { Button, Cell, Input, List, Modal, Section } from './components';
 export { useAnalytics, useScreenView } from './context/analytics-context';
 export { useBrand } from './context/brand-context';
+export { DriverGate } from './driver/driver-gate';
+export { ApplicationsScreen } from './moderation/applications-screen';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';
 export { StartFlow } from './flow/start-flow';

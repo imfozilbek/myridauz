@@ -1,0 +1,37 @@
+/* The team screens: grouped Telegram lists, photos of an application in two columns (docs/21). */
+.moderation {
+  min-height: 100vh;
+  padding-bottom: 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.moderation-title {
+  padding: 16px 20px 4px;
+}
+
+.moderation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px 16px;
+}
+
+.moderation-photo {
+  margin: 0;
+}
+
+.moderation-photo img,
+.moderation-photo-empty {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--tgui--section_bg_color);
+}
+
+.moderation-caption {
+  display: block;
+  padding-top: 4px;
+  color: var(--tgui--hint_color);
+}

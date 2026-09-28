@@ -1,4 +1,5 @@
 import type { TranslationKey } from '@platform/i18n';
+import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
 import type { Tone } from '../icon-tile';
 
@@ -11,4 +12,6 @@ export type StartAction = {
   readonly hintKey: TranslationKey;
   // The section starts with "from" and "to" (G05); wholeRegion: a search may cover a whole region.
   readonly route?: { readonly wholeRegion: boolean };
+  // A ready section of its own (G06: applications in the admin Mini App).
+  readonly Screen?: ComponentType<{ readonly onBack: () => void }>;
 };
