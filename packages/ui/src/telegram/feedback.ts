@@ -6,6 +6,7 @@ const CONFIRM_ID = 'confirm';
 export const haptic = {
   tap: () => void hapticFeedback.impactOccurred.ifAvailable('light'),
   success: () => void hapticFeedback.notificationOccurred.ifAvailable('success'),
+  error: () => void hapticFeedback.notificationOccurred.ifAvailable('error'),
 };
 
 // "Are you sure?" in the native Telegram window (docs/19, principle 9).

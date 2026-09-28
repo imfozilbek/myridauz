@@ -26,5 +26,5 @@ const ACTIONS: readonly StartAction[] = [
 ];
 
 export function StartPage() {
-  return <StartFlow welcomeIcon="team" welcome="common.admin.welcome" actions={ACTIONS} />;
+  return <StartFlow actions={ACTIONS} />;
 }

@@ -6,6 +6,7 @@ import { BackButton } from './back-button';
 import { MainButton, SecondaryButton } from './bottom-button';
 import { confirm, haptic, protectFromClosing } from './feedback';
 import { initTelegram } from './init-telegram';
+import { requestBotMessages, requestSignedContact } from './permissions';
 import { useScreenBackground } from './screen-background';
 
 const sdk = vi.hoisted(() => {
@@ -20,6 +21,9 @@ const sdk = vi.hoisted(() => {
   return {
     isTMA: vi.fn(() => true),
     retrieveLaunchParams: vi.fn(() => ({ tgWebAppPlatform: 'ios' })),
+    retrieveRawInitData: vi.fn(() => 'user=1&hash=x'),
+    requestContactComplete: available(Promise.resolve({ raw: 'contact=1&hash=y' })),
+    requestWriteAccess: available(Promise.resolve('allowed')),
     init: vi.fn(),
     miniApp: {
       mount: available(Promise.resolve()),
@@ -50,7 +54,7 @@ beforeEach(() => vi.clearAllMocks());
 
 describe('Telegram wrappers', () => {
   it('sets white Telegram colors and native behaviour', async () => {
-    expect(initTelegram(colors)).toEqual({ inTelegram: true, platform: 'ios' });
+    expect(initTelegram(colors)).toEqual({ inTelegram: true, platform: 'ios', initData: 'user=1&hash=x' });
     await Promise.resolve();
     await Promise.resolve();
     expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenCalledWith(colors.bg);
@@ -77,7 +81,7 @@ describe('Telegram wrappers', () => {
 
   it('does nothing outside Telegram', () => {
     sdk.isTMA.mockReturnValueOnce(false);
-    expect(initTelegram(colors)).toEqual({ inTelegram: false, platform: 'base' });
+    expect(initTelegram(colors)).toEqual({ inTelegram: false, platform: 'base', initData: '' });
     expect(sdk.init).not.toHaveBeenCalled();
   });
 
@@ -128,5 +132,17 @@ describe('Telegram wrappers', () => {
     expect(sdk.hapticFeedback.impactOccurred.ifAvailable).toHaveBeenCalledWith('light');
     expect(sdk.closingBehavior.enableConfirmation.ifAvailable).toHaveBeenCalled();
     expect(sdk.closingBehavior.disableConfirmation.ifAvailable).toHaveBeenCalled();
+  });
+
+  it('asks Telegram for the signed phone and for bot messages', async () => {
+    expect(await requestSignedContact()).toBe('contact=1&hash=y');
+    expect(await requestBotMessages()).toBe(true);
+    sdk.requestContactComplete.ifAvailable.mockReturnValueOnce([
+      true,
+      Promise.reject(new Error('no')),
+    ] as never);
+    expect(await requestSignedContact()).toBeNull();
+    sdk.requestWriteAccess.ifAvailable.mockReturnValueOnce([false] as never);
+    expect(await requestBotMessages()).toBe(false);
   });
 });

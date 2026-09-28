@@ -1,6 +1,11 @@
+import type { ApiErrorCode } from '@platform/contracts';
+
 // Errors carry a code, never a text for people (docs/13).
 export class ApiError extends Error {
-  constructor(readonly status: number) {
-    super(`api.http_${status}`);
+  constructor(
+    readonly status: number,
+    readonly code?: ApiErrorCode,
+  ) {
+    super(code ?? `api.http_${status}`);
   }
 }

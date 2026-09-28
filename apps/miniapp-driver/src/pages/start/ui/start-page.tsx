@@ -26,5 +26,5 @@ const ACTIONS: readonly StartAction[] = [
 ];
 
 export function StartPage() {
-  return <StartFlow welcomeIcon="newTrip" welcome="common.driver.welcome" actions={ACTIONS} />;
+  return <StartFlow actions={ACTIONS} />;
 }
