@@ -51,3 +51,23 @@ function hexToRgb(hex: string): string {
   const [r, g, b] = [1, 3, 5].map((start) => parseInt(hex.slice(start, start + 2), 16));
   return `rgb(${r}, ${g}, ${b})`;
 }
+
+test('route: a place is chosen by region photo, search, and a trip inside the city is refused', async ({
+  page,
+}) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
+  await page.getByText(MINI_APPS[0].action).click();
+  await page.getByText(TEXT.from).click();
+  await page.getByAltText('Toshkent shahri').click();
+  await page.getByText('Chilonzor').click();
+  await page.getByText(TEXT.to).click();
+  await page.getByPlaceholder(TEXT.search).fill('yunus');
+  await page.getByText('Yunusobod').click();
+  await expect(page.getByText(TEXT.insideCity)).toBeVisible();
+  await page.getByText(TEXT.to).click();
+  await page.getByPlaceholder(TEXT.search).fill("farg'ona sh");
+  await page.getByText('Fargʻona shahri').click();
+  await expect(page.getByText(TEXT.insideCity)).toBeHidden();
+});

@@ -1,6 +1,6 @@
 # 14. Локации и маршруты
 
-> **Кратко:** Маршрут: регион и район → регион и район. Точная точка через локацию Telegram, видна только после брони.
+> **Кратко:** Маршрут: регион и район → регион и район. Точная точка через локацию Telegram, видна только после брони. Справочник, источники, расстояния и экран выбора: `48`.
 
 ## Как устроен рынок
 
@@ -16,7 +16,7 @@
 | 2 | Toshkent viloyati |
 | 3 | Andijon viloyati |
 | 4 | Buxoro viloyati |
-| 5 | Farg'ona viloyati |
+| 5 | Fargʻona viloyati |
 | 6 | Jizzax viloyati |
 | 7 | Xorazm viloyati |
 | 8 | Namangan viloyati |
@@ -25,7 +25,7 @@
 | 11 | Samarqand viloyati |
 | 12 | Sirdaryo viloyati |
 | 13 | Surxondaryo viloyati |
-| 14 | Qoraqalpog'iston Respublikasi |
+| 14 | Qoraqalpogʻiston Respublikasi |
 
 ## Уровень 2: районы
 

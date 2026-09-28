@@ -1,11 +1,19 @@
-import { createAnalyticsClient, type AnalyticsInput } from '@platform/api-client';
+import { createAnalyticsClient, type AnalyticsInput, type LocationsClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { AppShell } from './app-shell';
 
 // Test helper: renders UI inside the real shell and collects tracked analytics events.
-export function renderInShell(children: ReactNode, inTelegram = false, hasCamera = true) {
+// Without a directory the place picker shows no regions; tests of places pass their own.
+const NO_LOCATIONS: LocationsClient = { getLocations: async () => ({ version: '0', locations: [] }) };
+
+export function renderInShell(
+  children: ReactNode,
+  inTelegram = false,
+  hasCamera = true,
+  locations = NO_LOCATIONS,
+) {
   const tracked: AnalyticsInput[] = [];
   const client = createAnalyticsClient({
     baseUrl: 'https://api.test',
@@ -18,6 +26,7 @@ export function renderInShell(children: ReactNode, inTelegram = false, hasCamera
     <AppShell
       brand={loadBrand()}
       analytics={analytics}
+      locations={locations}
       session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '', hasCamera }}
     >
       {children}

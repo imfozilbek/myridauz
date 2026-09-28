@@ -22,5 +22,10 @@ export const TEXT = {
   sendPhone: t('account.phone.send'),
   profile: t('account.profile.open'),
   blocked: t('account.blocked.title'),
+  from: t('places.from'),
+  to: t('places.to'),
+  search: t('places.search'),
+  wholeCity: t('places.wholeCity'),
+  insideCity: t('errors.locations.inside_city'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;

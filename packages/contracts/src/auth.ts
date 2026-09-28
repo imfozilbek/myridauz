@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { MINI_APPS } from './analytics';
+import { ROUTE_ERRORS } from './route-rule';
 
 // Every API call of a Mini App carries the signed Telegram launch data of its bot (docs/32).
 // The server checks the signature with the token of that bot: no separate login, no cookies.
@@ -26,6 +27,9 @@ export const API_ERRORS = [
   'users.not_found',
   'users.avatar_hidden',
   'users.avatar_too_large',
+  'locations.not_found',
+  'locations.invalid_input',
+  ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];
 

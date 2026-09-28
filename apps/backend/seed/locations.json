@@ -1,0 +1,2202 @@
+[
+  {
+    "id": "1703",
+    "parentId": null,
+    "type": "region",
+    "name": "Andijon viloyati",
+    "lat": 40.7833,
+    "lng": 72.3507,
+    "oneCity": false,
+    "position": 3
+  },
+  {
+    "id": "1706",
+    "parentId": null,
+    "type": "region",
+    "name": "Buxoro viloyati",
+    "lat": 39.776,
+    "lng": 64.4152,
+    "oneCity": false,
+    "position": 4
+  },
+  {
+    "id": "1708",
+    "parentId": null,
+    "type": "region",
+    "name": "Jizzax viloyati",
+    "lat": 40.1332,
+    "lng": 67.8234,
+    "oneCity": false,
+    "position": 6
+  },
+  {
+    "id": "1710",
+    "parentId": null,
+    "type": "region",
+    "name": "Qashqadaryo viloyati",
+    "lat": 38.8406,
+    "lng": 65.8005,
+    "oneCity": false,
+    "position": 10
+  },
+  {
+    "id": "1712",
+    "parentId": null,
+    "type": "region",
+    "name": "Navoiy viloyati",
+    "lat": 40.1035,
+    "lng": 65.3734,
+    "oneCity": false,
+    "position": 9
+  },
+  {
+    "id": "1714",
+    "parentId": null,
+    "type": "region",
+    "name": "Namangan viloyati",
+    "lat": 40.9996,
+    "lng": 71.6726,
+    "oneCity": false,
+    "position": 8
+  },
+  {
+    "id": "1718",
+    "parentId": null,
+    "type": "region",
+    "name": "Samarqand viloyati",
+    "lat": 39.655,
+    "lng": 66.9757,
+    "oneCity": false,
+    "position": 11
+  },
+  {
+    "id": "1722",
+    "parentId": null,
+    "type": "region",
+    "name": "Surxondaryo viloyati",
+    "lat": 37.2442,
+    "lng": 67.2832,
+    "oneCity": false,
+    "position": 13
+  },
+  {
+    "id": "1724",
+    "parentId": null,
+    "type": "region",
+    "name": "Sirdaryo viloyati",
+    "lat": 40.496,
+    "lng": 68.7759,
+    "oneCity": false,
+    "position": 12
+  },
+  {
+    "id": "1726",
+    "parentId": null,
+    "type": "region",
+    "name": "Toshkent shahri",
+    "lat": 41.3123,
+    "lng": 69.2787,
+    "oneCity": true,
+    "position": 1
+  },
+  {
+    "id": "1727",
+    "parentId": null,
+    "type": "region",
+    "name": "Toshkent viloyati",
+    "lat": 41.0429,
+    "lng": 69.3578,
+    "oneCity": false,
+    "position": 2
+  },
+  {
+    "id": "1730",
+    "parentId": null,
+    "type": "region",
+    "name": "Fargʻona viloyati",
+    "lat": 40.3765,
+    "lng": 71.7913,
+    "oneCity": false,
+    "position": 5
+  },
+  {
+    "id": "1733",
+    "parentId": null,
+    "type": "region",
+    "name": "Xorazm viloyati",
+    "lat": 41.5518,
+    "lng": 60.6313,
+    "oneCity": false,
+    "position": 7
+  },
+  {
+    "id": "1735",
+    "parentId": null,
+    "type": "region",
+    "name": "Qoraqalpogʻiston Respublikasi",
+    "lat": 42.46,
+    "lng": 59.6177,
+    "oneCity": false,
+    "position": 14
+  },
+  {
+    "id": "1703202",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Oltinkoʻl",
+    "lat": 40.8011,
+    "lng": 72.1634,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703203",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Andijon",
+    "lat": 40.8568,
+    "lng": 72.3135,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703206",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Baliqchi",
+    "lat": 40.9002,
+    "lng": 71.8414,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703209",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Boʻston",
+    "lat": 40.689,
+    "lng": 71.9254,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703210",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Buloqboshi",
+    "lat": 40.6291,
+    "lng": 72.5015,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703211",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Jalaquduq",
+    "lat": 40.7186,
+    "lng": 72.6423,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703214",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Izboskan",
+    "lat": 40.8986,
+    "lng": 72.2475,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703217",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Ulugʻnor",
+    "lat": 40.7459,
+    "lng": 71.703,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703220",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Qoʻrgʻontepa",
+    "lat": 40.734,
+    "lng": 72.7629,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703224",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Asaka",
+    "lat": 40.6462,
+    "lng": 72.2489,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703227",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Marhamat",
+    "lat": 40.5039,
+    "lng": 72.3326,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703230",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Shahrixon",
+    "lat": 40.709,
+    "lng": 72.0578,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703232",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Paxtaobod",
+    "lat": 40.9275,
+    "lng": 72.4981,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703236",
+    "parentId": "1703",
+    "type": "district",
+    "name": "Xoʻjaobod",
+    "lat": 40.666,
+    "lng": 72.5682,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703401",
+    "parentId": "1703",
+    "type": "city",
+    "name": "Andijon shahri",
+    "lat": 40.7833,
+    "lng": 72.3507,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1703408",
+    "parentId": "1703",
+    "type": "city",
+    "name": "Xonobod",
+    "lat": 40.801,
+    "lng": 72.9866,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706204",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Olot",
+    "lat": 39.4181,
+    "lng": 63.8071,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706207",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Buxoro",
+    "lat": 39.8575,
+    "lng": 64.4475,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706212",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Vobkent",
+    "lat": 40.0212,
+    "lng": 64.5181,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706215",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Gʻijduvon",
+    "lat": 40.103,
+    "lng": 64.6829,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706219",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Kogon",
+    "lat": 39.7245,
+    "lng": 64.5452,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706230",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Qorakoʻl",
+    "lat": 39.5187,
+    "lng": 63.8425,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706232",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Qorovulbozor",
+    "lat": 39.4973,
+    "lng": 64.7833,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706240",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Peshku",
+    "lat": 40.0347,
+    "lng": 64.3901,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706242",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Romitan",
+    "lat": 39.9332,
+    "lng": 64.3827,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706246",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Jondor",
+    "lat": 39.7408,
+    "lng": 64.1818,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706258",
+    "parentId": "1706",
+    "type": "district",
+    "name": "Shofirkon",
+    "lat": 40.1186,
+    "lng": 64.5022,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706401",
+    "parentId": "1706",
+    "type": "city",
+    "name": "Buxoro shahri",
+    "lat": 39.776,
+    "lng": 64.4152,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1706403",
+    "parentId": "1706",
+    "type": "city",
+    "name": "Kogon shahri",
+    "lat": 39.7245,
+    "lng": 64.5452,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708201",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Arnasoy",
+    "lat": 40.4943,
+    "lng": 67.8792,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708204",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Baxmal",
+    "lat": 39.7456,
+    "lng": 67.6484,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708209",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Gʻallaorol",
+    "lat": 40.028,
+    "lng": 67.5893,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708212",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Sharof Rashidov",
+    "lat": 40.2129,
+    "lng": 67.9122,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708215",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Doʻstlik",
+    "lat": 40.5288,
+    "lng": 68.0329,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708218",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Zomin",
+    "lat": 39.962,
+    "lng": 68.397,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708220",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Zarbdor",
+    "lat": 40.0897,
+    "lng": 68.1687,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708223",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Mirzachoʻl",
+    "lat": 40.6631,
+    "lng": 68.1706,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708225",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Zafarobod",
+    "lat": 40.3919,
+    "lng": 67.8233,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708228",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Paxtakor",
+    "lat": 40.3115,
+    "lng": 67.9613,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708235",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Forish",
+    "lat": 40.4184,
+    "lng": 67.1813,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708237",
+    "parentId": "1708",
+    "type": "district",
+    "name": "Yangiobod",
+    "lat": 39.8764,
+    "lng": 68.7917,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1708401",
+    "parentId": "1708",
+    "type": "city",
+    "name": "Jizzax",
+    "lat": 40.1332,
+    "lng": 67.8234,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710207",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Gʻuzor",
+    "lat": 38.6215,
+    "lng": 66.2525,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710212",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Dehqonobod",
+    "lat": 38.3395,
+    "lng": 66.5733,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710220",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Qamashi",
+    "lat": 38.8156,
+    "lng": 66.4666,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710224",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Qarshi",
+    "lat": 38.8209,
+    "lng": 65.6567,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710229",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Koson",
+    "lat": 39.0407,
+    "lng": 65.5859,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710232",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Kitob",
+    "lat": 39.118,
+    "lng": 66.8736,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710233",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Mirishkor",
+    "lat": 38.8502,
+    "lng": 65.2711,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710234",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Muborak",
+    "lat": 39.2615,
+    "lng": 65.158,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710235",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Nishon",
+    "lat": 38.6477,
+    "lng": 65.6915,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710237",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Kasbi",
+    "lat": 38.9236,
+    "lng": 65.4026,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710240",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Koʻkdala",
+    "lat": 39.2168,
+    "lng": 66.2462,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710242",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Chiroqchi",
+    "lat": 39.0334,
+    "lng": 66.5758,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710245",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Shahrisabz",
+    "lat": 39.0526,
+    "lng": 66.8279,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710250",
+    "parentId": "1710",
+    "type": "district",
+    "name": "Yakkabogʻ",
+    "lat": 38.9785,
+    "lng": 66.6831,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710401",
+    "parentId": "1710",
+    "type": "city",
+    "name": "Qarshi shahri",
+    "lat": 38.8406,
+    "lng": 65.8005,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1710405",
+    "parentId": "1710",
+    "type": "city",
+    "name": "Shahrisabz shahri",
+    "lat": 39.0526,
+    "lng": 66.8279,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712211",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Konimex",
+    "lat": 40.2779,
+    "lng": 65.1427,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712216",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Qiziltepa",
+    "lat": 40.0361,
+    "lng": 64.8448,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712230",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Navbahor",
+    "lat": 40.2433,
+    "lng": 65.2971,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712234",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Karmana",
+    "lat": 40.1411,
+    "lng": 65.3608,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712238",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Nurota",
+    "lat": 40.5628,
+    "lng": 65.6904,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712244",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Tomdi",
+    "lat": 41.7537,
+    "lng": 64.6235,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712248",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Uchquduq",
+    "lat": 42.1533,
+    "lng": 63.5622,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712251",
+    "parentId": "1712",
+    "type": "district",
+    "name": "Xatirchi",
+    "lat": 40.031,
+    "lng": 65.9695,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712401",
+    "parentId": "1712",
+    "type": "city",
+    "name": "Navoiy",
+    "lat": 40.1035,
+    "lng": 65.3734,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712408",
+    "parentId": "1712",
+    "type": "city",
+    "name": "Zarafshon",
+    "lat": 41.5716,
+    "lng": 64.2053,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1712412",
+    "parentId": "1712",
+    "type": "city",
+    "name": "Gʻozgʻon",
+    "lat": 40.5894,
+    "lng": 65.494,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714204",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Mingbuloq",
+    "lat": 40.8609,
+    "lng": 71.4598,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714207",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Kosonsoy",
+    "lat": 41.2529,
+    "lng": 71.5446,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714212",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Namangan",
+    "lat": 40.9251,
+    "lng": 71.5891,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714216",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Norin",
+    "lat": 40.9165,
+    "lng": 72.1186,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714219",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Pop",
+    "lat": 40.8744,
+    "lng": 71.097,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714224",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Toʻraqoʻrgʻon",
+    "lat": 40.9991,
+    "lng": 71.5089,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714229",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Uychi",
+    "lat": 41.0304,
+    "lng": 71.8514,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714234",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Uchqoʻrgʻon",
+    "lat": 41.1146,
+    "lng": 72.0776,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714236",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Chortoq",
+    "lat": 41.0714,
+    "lng": 71.819,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714237",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Chust",
+    "lat": 40.9966,
+    "lng": 71.2273,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714242",
+    "parentId": "1714",
+    "type": "district",
+    "name": "Yangiqoʻrgʻon",
+    "lat": 41.1889,
+    "lng": 71.7257,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1714401",
+    "parentId": "1714",
+    "type": "city",
+    "name": "Namangan shahri",
+    "lat": 40.9996,
+    "lng": 71.6726,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718203",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Oqdaryo",
+    "lat": 39.8797,
+    "lng": 66.7535,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718206",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Bulungʻur",
+    "lat": 39.76,
+    "lng": 67.2761,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718209",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Jomboy",
+    "lat": 39.6946,
+    "lng": 67.1012,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718212",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Ishtixon",
+    "lat": 39.9652,
+    "lng": 66.484,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718215",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Kattaqoʻrgʻon",
+    "lat": 40.0101,
+    "lng": 66.2315,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718216",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Qoʻshrabot",
+    "lat": 40.2476,
+    "lng": 66.6456,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718218",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Narpay",
+    "lat": 39.9242,
+    "lng": 65.9302,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718224",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Payariq",
+    "lat": 39.9909,
+    "lng": 66.85,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718227",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Pastdargʻom",
+    "lat": 39.7108,
+    "lng": 66.6613,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718230",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Paxtachi",
+    "lat": 40.0304,
+    "lng": 65.6672,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718233",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Samarqand",
+    "lat": 39.5829,
+    "lng": 66.9661,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718235",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Nurobod",
+    "lat": 39.6093,
+    "lng": 66.2912,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718236",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Urgut",
+    "lat": 39.4092,
+    "lng": 67.2494,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718238",
+    "parentId": "1718",
+    "type": "district",
+    "name": "Toyloq",
+    "lat": 39.6024,
+    "lng": 67.0917,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718401",
+    "parentId": "1718",
+    "type": "city",
+    "name": "Samarqand shahri",
+    "lat": 39.655,
+    "lng": 66.9757,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1718406",
+    "parentId": "1718",
+    "type": "city",
+    "name": "Kattaqoʻrgʻon shahri",
+    "lat": 39.9018,
+    "lng": 66.2685,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722201",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Oltinsoy",
+    "lat": 38.1934,
+    "lng": 67.6838,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722202",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Angor",
+    "lat": 37.4624,
+    "lng": 67.1518,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722203",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Bandixon",
+    "lat": 37.8608,
+    "lng": 67.3883,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722204",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Boysun",
+    "lat": 38.2041,
+    "lng": 67.2034,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722207",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Muzrabot",
+    "lat": 37.4607,
+    "lng": 66.9261,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722210",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Denov",
+    "lat": 38.2754,
+    "lng": 67.8951,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722212",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Jarqoʻrgʻon",
+    "lat": 37.5092,
+    "lng": 67.4206,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722214",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Qumqoʻrgʻon",
+    "lat": 37.8293,
+    "lng": 67.595,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722215",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Qiziriq",
+    "lat": 37.6722,
+    "lng": 67.2375,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722217",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Sariosiyo",
+    "lat": 38.4131,
+    "lng": 67.9569,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722220",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Termiz",
+    "lat": 37.3421,
+    "lng": 67.2318,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722221",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Uzun",
+    "lat": 38.3654,
+    "lng": 68.0067,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722223",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Sherobod",
+    "lat": 37.6711,
+    "lng": 67.0166,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722226",
+    "parentId": "1722",
+    "type": "district",
+    "name": "Shoʻrchi",
+    "lat": 37.9982,
+    "lng": 67.7908,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1722401",
+    "parentId": "1722",
+    "type": "city",
+    "name": "Termiz shahri",
+    "lat": 37.2442,
+    "lng": 67.2832,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724206",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Oqoltin",
+    "lat": 40.5434,
+    "lng": 68.4111,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724212",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Boyovut",
+    "lat": 40.2803,
+    "lng": 69.0261,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724216",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Sayxunobod",
+    "lat": 40.7103,
+    "lng": 68.8464,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724220",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Guliston",
+    "lat": 40.5325,
+    "lng": 69.0304,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724226",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Sardoba",
+    "lat": 40.3388,
+    "lng": 68.1832,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724228",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Mirzaobod",
+    "lat": 40.4963,
+    "lng": 68.701,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724231",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Sirdaryo",
+    "lat": 40.8309,
+    "lng": 68.6662,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724235",
+    "parentId": "1724",
+    "type": "district",
+    "name": "Xovos",
+    "lat": 40.2144,
+    "lng": 68.8387,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724401",
+    "parentId": "1724",
+    "type": "city",
+    "name": "Guliston shahri",
+    "lat": 40.496,
+    "lng": 68.7759,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724410",
+    "parentId": "1724",
+    "type": "city",
+    "name": "Shirin",
+    "lat": 40.2303,
+    "lng": 69.1263,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1724413",
+    "parentId": "1724",
+    "type": "city",
+    "name": "Yangiyer",
+    "lat": 40.2701,
+    "lng": 68.8166,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726262",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Uchtepa",
+    "lat": 41.3044,
+    "lng": 69.1603,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726264",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Bektemir",
+    "lat": 41.2281,
+    "lng": 69.3206,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726266",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Yunusobod",
+    "lat": 41.3515,
+    "lng": 69.299,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726269",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Mirzo Ulugʻbek",
+    "lat": 41.3331,
+    "lng": 69.3499,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726273",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Mirobod",
+    "lat": 41.2827,
+    "lng": 69.2933,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726277",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Shayxontohur",
+    "lat": 41.3238,
+    "lng": 69.2034,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726280",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Olmazor",
+    "lat": 41.3621,
+    "lng": 69.2266,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726283",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Sergeli",
+    "lat": 41.2465,
+    "lng": 69.2369,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726287",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Yakkasaroy",
+    "lat": 41.2846,
+    "lng": 69.253,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726290",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Yashnobod",
+    "lat": 41.2882,
+    "lng": 69.3309,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726292",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Yangihayot",
+    "lat": 41.2135,
+    "lng": 69.214,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1726294",
+    "parentId": "1726",
+    "type": "district",
+    "name": "Chilonzor",
+    "lat": 41.2847,
+    "lng": 69.2152,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727206",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Oqqoʻrgʻon",
+    "lat": 40.8785,
+    "lng": 69.0444,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727212",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Ohangaron",
+    "lat": 40.9054,
+    "lng": 69.6401,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727220",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Bekobod",
+    "lat": 40.3783,
+    "lng": 69.252,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727224",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Boʻstonliq",
+    "lat": 41.5617,
+    "lng": 69.7705,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727228",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Boʻka",
+    "lat": 40.8169,
+    "lng": 69.1998,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727233",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Quyi Chirchiq",
+    "lat": 40.8509,
+    "lng": 68.9213,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727237",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Zangiota",
+    "lat": 41.2508,
+    "lng": 69.1517,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727239",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Yuqori Chirchiq",
+    "lat": 41.315,
+    "lng": 69.523,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727248",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Qibray",
+    "lat": 41.3873,
+    "lng": 69.4645,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727249",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Parkent",
+    "lat": 41.2923,
+    "lng": 69.669,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727250",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Piskent",
+    "lat": 40.8951,
+    "lng": 69.3417,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727253",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Oʻrta Chirchiq",
+    "lat": 41.0429,
+    "lng": 69.3578,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727256",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Chinoz",
+    "lat": 40.94,
+    "lng": 68.763,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727259",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Yangiyoʻl",
+    "lat": 41.1196,
+    "lng": 69.0568,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727265",
+    "parentId": "1727",
+    "type": "district",
+    "name": "Toshkent",
+    "lat": 41.4034,
+    "lng": 69.207,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727401",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Nurafshon",
+    "lat": 41.0429,
+    "lng": 69.3578,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727404",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Olmaliq",
+    "lat": 40.8457,
+    "lng": 69.6072,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727407",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Angren",
+    "lat": 41.0212,
+    "lng": 70.0795,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727413",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Bekobod shahri",
+    "lat": 40.232,
+    "lng": 69.2531,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727415",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Ohangaron shahri",
+    "lat": 40.9054,
+    "lng": 69.6401,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727419",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Chirchiq",
+    "lat": 41.4726,
+    "lng": 69.5812,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1727424",
+    "parentId": "1727",
+    "type": "city",
+    "name": "Yangiyoʻl shahri",
+    "lat": 41.1196,
+    "lng": 69.0568,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730203",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Oltiariq",
+    "lat": 40.3916,
+    "lng": 71.4754,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730206",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Qoʻshtepa",
+    "lat": 40.5234,
+    "lng": 71.6548,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730209",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Bagʻdod",
+    "lat": 40.461,
+    "lng": 71.2122,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730212",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Buvayda",
+    "lat": 40.5566,
+    "lng": 71.1431,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730215",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Beshariq",
+    "lat": 40.438,
+    "lng": 70.604,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730218",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Quva",
+    "lat": 40.5251,
+    "lng": 72.0713,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730221",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Uchkoʻprik",
+    "lat": 40.5456,
+    "lng": 71.0559,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730224",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Rishton",
+    "lat": 40.3618,
+    "lng": 71.2789,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730226",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Soʻx",
+    "lat": 40.0307,
+    "lng": 71.1053,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730227",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Toshloq",
+    "lat": 40.4857,
+    "lng": 71.759,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730230",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Oʻzbekiston",
+    "lat": 40.3764,
+    "lng": 70.8145,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730233",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Fargʻona",
+    "lat": 40.2522,
+    "lng": 71.5764,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730236",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Dangʻara",
+    "lat": 40.5781,
+    "lng": 70.9212,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730238",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Furqat",
+    "lat": 40.4833,
+    "lng": 70.7776,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730242",
+    "parentId": "1730",
+    "type": "district",
+    "name": "Yozyovon",
+    "lat": 40.6622,
+    "lng": 71.7306,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730401",
+    "parentId": "1730",
+    "type": "city",
+    "name": "Fargʻona shahri",
+    "lat": 40.3765,
+    "lng": 71.7913,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730405",
+    "parentId": "1730",
+    "type": "city",
+    "name": "Qoʻqon",
+    "lat": 40.5408,
+    "lng": 70.9474,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730408",
+    "parentId": "1730",
+    "type": "city",
+    "name": "Quvasoy",
+    "lat": 40.2939,
+    "lng": 71.9851,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1730412",
+    "parentId": "1730",
+    "type": "city",
+    "name": "Margʻilon",
+    "lat": 40.4695,
+    "lng": 71.7195,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733204",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Bogʻot",
+    "lat": 41.3572,
+    "lng": 60.8185,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733208",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Gurlan",
+    "lat": 41.8447,
+    "lng": 60.3899,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733212",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Qoʻshkoʻpir",
+    "lat": 41.5337,
+    "lng": 60.3519,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733217",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Urganch",
+    "lat": 41.5601,
+    "lng": 60.5844,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733220",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Hazorasp",
+    "lat": 41.3112,
+    "lng": 61.0892,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733221",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Tuproqqalʼa",
+    "lat": 41.216,
+    "lng": 61.3139,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733223",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Xonqa",
+    "lat": 41.4746,
+    "lng": 60.7768,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733226",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Xiva",
+    "lat": 41.3775,
+    "lng": 60.3635,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733230",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Shovot",
+    "lat": 41.6607,
+    "lng": 60.2924,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733233",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Yangiariq",
+    "lat": 41.3668,
+    "lng": 60.606,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733236",
+    "parentId": "1733",
+    "type": "district",
+    "name": "Yangibozor",
+    "lat": 41.711,
+    "lng": 60.5311,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733401",
+    "parentId": "1733",
+    "type": "city",
+    "name": "Urganch shahri",
+    "lat": 41.5518,
+    "lng": 60.6313,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1733406",
+    "parentId": "1733",
+    "type": "city",
+    "name": "Xiva shahri",
+    "lat": 41.3775,
+    "lng": 60.3635,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735204",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Amudaryo",
+    "lat": 42.1162,
+    "lng": 60.0625,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735207",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Beruniy",
+    "lat": 41.6945,
+    "lng": 60.7497,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735209",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Boʻzatov",
+    "lat": 43.0167,
+    "lng": 59.3589,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735211",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Qoraoʻzak",
+    "lat": 43.0287,
+    "lng": 60.016,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735212",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Kegeyli",
+    "lat": 42.7747,
+    "lng": 59.6116,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735215",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Qoʻngʻirot",
+    "lat": 43.0457,
+    "lng": 58.8475,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735218",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Qanlikoʻl",
+    "lat": 42.8361,
+    "lng": 59.0065,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735222",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Moʻynoq",
+    "lat": 43.7643,
+    "lng": 59.0297,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735225",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Nukus",
+    "lat": 42.5979,
+    "lng": 59.5381,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735228",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Taxiatosh",
+    "lat": 42.3347,
+    "lng": 59.5792,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735230",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Taxtakoʻpir",
+    "lat": 43.0207,
+    "lng": 60.2893,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735233",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Toʻrtkoʻl",
+    "lat": 41.562,
+    "lng": 60.9924,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735236",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Xoʻjayli",
+    "lat": 42.4133,
+    "lng": 59.4525,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735240",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Chimboy",
+    "lat": 42.9337,
+    "lng": 59.7785,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735243",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Shumanay",
+    "lat": 42.6372,
+    "lng": 58.9298,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735250",
+    "parentId": "1735",
+    "type": "district",
+    "name": "Ellikqalʼa",
+    "lat": 41.8394,
+    "lng": 60.9125,
+    "oneCity": false,
+    "position": 0
+  },
+  {
+    "id": "1735401",
+    "parentId": "1735",
+    "type": "city",
+    "name": "Nukus shahri",
+    "lat": 42.46,
+    "lng": 59.6177,
+    "oneCity": false,
+    "position": 0
+  }
+]

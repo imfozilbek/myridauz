@@ -18,6 +18,23 @@ export {
   MINI_APP_HEADER,
   type ApiErrorCode,
 } from './auth';
+export {
+  distanceQuerySchema,
+  distanceSchema,
+  LOCATION_DISTANCE_PATH,
+  LOCATION_TYPES,
+  locationIdSchema,
+  LOCATIONS_PATH,
+  locationSchema,
+  locationsResponseSchema,
+  MAX_DISTANCE_KM,
+  type Distance,
+  type Location,
+  type LocationsResponse,
+  type LocationType,
+} from './locations';
+export { matchesPlace, normalizeSearch } from './place-search';
+export { checkRoute, ROUTE_ERRORS, type RouteError } from './route-rule';
 export { HEALTH_PATH, healthResponseSchema, type HealthResponse } from './health';
 export {
   AVATAR_TARGET_BYTES,

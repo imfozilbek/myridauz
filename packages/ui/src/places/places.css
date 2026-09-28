@@ -1,0 +1,55 @@
+/* Place picker: grouped Telegram lists, region photos in two columns (docs/21, docs/48). */
+.places {
+  min-height: 100vh;
+  padding-bottom: 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.places-title {
+  padding: 16px 20px 4px;
+}
+
+.places-error {
+  display: block;
+  padding: 0 20px;
+  color: var(--tgui--destructive_text_color);
+}
+
+.region-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 4px 16px 16px;
+}
+
+.region-card {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 72px;
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: 14px;
+  background: var(--tgui--section_bg_color);
+  cursor: pointer;
+  text-align: left;
+}
+
+.region-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The name stays readable on any photo: a soft dark fade at the bottom. */
+.region-name {
+  position: relative;
+  width: 100%;
+  padding: 24px 10px 8px;
+  color: var(--tgui--button_text_color);
+  background: linear-gradient(transparent, color-mix(in srgb, var(--tgui--text_color) 65%, transparent));
+}

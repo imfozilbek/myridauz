@@ -8,4 +8,5 @@ export const brandConfig: BrandConfig = {
   slogan: 'Manzil sari',
   monetization: 'commission',
   theme,
+  regionPhotos: true,
 };

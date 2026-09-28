@@ -8,6 +8,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.passenger.findTrip',
     hintKey: 'common.passenger.findTripHint',
+    route: { wholeRegion: true },
   },
   {
     id: 'leave_request',
@@ -15,6 +16,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.passenger.leaveRequest',
     hintKey: 'common.passenger.leaveRequestHint',
+    route: { wholeRegion: false },
   },
   {
     id: 'my_trips',

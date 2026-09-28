@@ -31,4 +31,6 @@ export type BrandConfig = {
   readonly slogan: string;
   readonly monetization: 'commission';
   readonly theme: BrandTheme;
+  // Photos of the 14 regions in brands/<brand>/public/regions/<SOATO code>.webp (docs/48).
+  readonly regionPhotos: boolean;
 };

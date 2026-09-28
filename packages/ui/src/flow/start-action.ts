@@ -9,4 +9,6 @@ export type StartAction = {
   readonly tone: Tone;
   readonly labelKey: TranslationKey;
   readonly hintKey: TranslationKey;
+  // The section starts with "from" and "to" (G05); wholeRegion: a search may cover a whole region.
+  readonly route?: { readonly wholeRegion: boolean };
 };

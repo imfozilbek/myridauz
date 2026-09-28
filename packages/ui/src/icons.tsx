@@ -5,11 +5,13 @@ import {
   Check,
   ChevronRight,
   CircleAlert,
+  CircleDot,
   ClipboardCheck,
   FileText,
   Flag,
   Inbox,
   Languages,
+  MapPin,
   Phone,
   MessageSquarePlus,
   Route,
@@ -44,6 +46,8 @@ const ICONS = {
   phone: Phone,
   document: FileText,
   blocked: Ban,
+  origin: CircleDot,
+  destination: MapPin,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

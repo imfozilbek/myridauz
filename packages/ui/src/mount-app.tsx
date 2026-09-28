@@ -1,4 +1,4 @@
-import { createAnalyticsClient, createUsersClient } from '@platform/api-client';
+import { createAnalyticsClient, createLocationsClient, createUsersClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
 import { StrictMode, type ComponentType } from 'react';
@@ -26,6 +26,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
   const users = createUsersClient({ baseUrl, fetch, app, initData: session.initData });
+  const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
     baseUrl,
     fetch,
@@ -41,7 +42,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   });
   createRoot(container).render(
     <StrictMode>
-      <AppShell brand={brand} analytics={analytics} session={session}>
+      <AppShell brand={brand} analytics={analytics} locations={locations} session={session}>
         {welcome ? (
           <AccountGate app={app} client={users} welcome={welcome}>
             <Page />
