@@ -44,4 +44,13 @@ describe('backend contract', () => {
     const other = await preflight('https://evil.example');
     expect(other.headers.get('access-control-allow-origin')).toBeNull();
   });
+
+  it('reaches the bot setup, not a bot named "setup"', async () => {
+    const response = await app.request(
+      '/telegram/setup',
+      { method: 'POST' },
+      { TELEGRAM_WEBHOOK_SECRET: 'hook' },
+    );
+    expect(response.status).toBe(401);
+  });
 });

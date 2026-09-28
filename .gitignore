@@ -19,3 +19,4 @@ brands/rida/brand-kit/kit/
 playwright-report/
 test-results/
 screenshots/
+brands/*/wrangler.tmp.toml

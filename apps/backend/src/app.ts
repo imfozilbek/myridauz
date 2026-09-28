@@ -20,8 +20,9 @@ export const app = new Hono<AppEnv>()
   .use('/analytics', allowMiniApps)
   .route('/', healthModule)
   .route('/', analyticsModule)
-  .route('/', webhookRoutes)
+  // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',
     setupRoutes((input, init) => fetch(input, init)),
-  );
+  )
+  .route('/', webhookRoutes);
