@@ -6,6 +6,7 @@ import { BackButton } from '../../telegram/back-button';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useAccount } from '../account-context';
 import { CellValue, formatPhone } from '../cell-value';
+import { CarCell } from '../../driver/car-cell';
 import { AvatarPicker } from './avatar-picker';
 import { ProfilePhoto } from './profile-photo';
 
@@ -34,6 +35,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
             {t('account.profile.phone')}
           </Cell>
         </Section>
+        <CarCell />
       </List>
     </div>
   );

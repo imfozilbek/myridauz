@@ -28,15 +28,22 @@ afterEach(() => {
 describe('compressImage', () => {
   it('cuts the middle square, scales it down and lowers quality until it is small', async () => {
     const { image, qualities } = stubCanvas([900, 500, 90]);
-    const result = await compressImage(new Blob(['raw']), 100);
+    const result = await compressImage(new Blob(['raw']), 'square', 100);
     expect(result.size).toBe(90);
     expect(qualities).toEqual([0.85, 0.75, 0.65]);
     expect(drawImage).toHaveBeenCalledWith(image, 150, 0, 900, 900, 0, 0, 800, 800);
     expect(image.close).toHaveBeenCalled();
   });
 
+  it('keeps the whole car photo, the long side up to 1280 px', async () => {
+    const { image } = stubCanvas([50]);
+    vi.mocked(createImageBitmap).mockResolvedValueOnce({ ...image, width: 4000, height: 3000 } as never);
+    await compressImage(new Blob(['raw']), 'whole', 100);
+    expect(drawImage).toHaveBeenLastCalledWith(expect.anything(), 0, 0, 4000, 3000, 0, 0, 1280, 960);
+  });
+
   it('returns the smallest try when no quality reaches the target', async () => {
     stubCanvas([900, 800, 700, 600, 500]);
-    expect((await compressImage(new Blob(['raw']), 100)).size).toBe(500);
+    expect((await compressImage(new Blob(['raw']), 'square', 100)).size).toBe(500);
   });
 });

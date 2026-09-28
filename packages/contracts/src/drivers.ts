@@ -87,3 +87,11 @@ export type DriverApplication = z.infer<typeof driverApplicationSchema>;
 
 export const driverApplicationResponseSchema = z.object({ application: driverApplicationSchema.nullable() });
 export type DriverApplicationResponse = z.infer<typeof driverApplicationResponseSchema>;
+
+// A plate is stored without spaces and shown in groups, as on the car: "01 A 123 BC", "10 123 ABC".
+export function formatPlate(plate: string): string {
+  const person = /^(\d{2})([A-Z])(\d{3})([A-Z]{2})$/.exec(plate);
+  if (person) return person.slice(1).join(' ');
+  const company = /^(\d{2})(\d{3})([A-Z]{3})$/.exec(plate);
+  return company ? company.slice(1).join(' ') : plate;
+}

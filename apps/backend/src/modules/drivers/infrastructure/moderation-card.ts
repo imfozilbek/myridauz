@@ -1,4 +1,5 @@
 import {
+  formatPlate,
   MODERATION_REASONS,
   type Decision,
   type DecisionInput,
@@ -29,6 +30,7 @@ export function cardText(application: { readonly car: Car | null }, firstName: s
   return t('bot.moderation.card', {
     name: firstName,
     ...car,
+    plate: formatPlate(car.plate),
     color,
     year: String(car.year),
     seats: String(car.seats),

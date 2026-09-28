@@ -51,4 +51,5 @@
 | 47 | [47-users-and-registration.md](47-users-and-registration.md) | Пользователи: вход по подписи Telegram, регистрация, блокировка, фото |
 | 48 | [48-locations-directory.md](48-locations-directory.md) | Справочник мест: регионы, районы, расстояния, выбор места |
 | 49 | [49-lessons-learned-3.md](49-lessons-learned-3.md) | Уроки: продолжение журнала (№21 и дальше) |
+| 50 | [50-drivers-and-moderation.md](50-drivers-and-moderation.md) | Заявка водителя, модерация, поддержка, команда |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

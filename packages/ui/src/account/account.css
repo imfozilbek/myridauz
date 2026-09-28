@@ -67,3 +67,9 @@
   min-height: 80vh;
   place-items: center;
 }
+
+.step-note {
+  display: block;
+  padding: 0 32px 8px;
+  text-align: center;
+}

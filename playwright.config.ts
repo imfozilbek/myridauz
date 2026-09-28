@@ -9,8 +9,8 @@ export default defineConfig({
   reporter: process.env['CI'] ? 'github' : 'list',
   use: { ...PHONE, locale: 'uz-UZ' },
   projects: [
-    { name: 'smoke', testMatch: 'smoke.spec.ts' },
-    { name: 'screenshots', testMatch: 'screenshots.spec.ts' },
+    { name: 'smoke', testMatch: ['smoke.spec.ts', 'drivers.spec.ts'] },
+    { name: 'screenshots', testMatch: ['screenshots.spec.ts', 'drivers-screenshots.spec.ts'] },
   ],
   webServer: MINI_APPS.map(({ name, port }) => {
     const app = `pnpm --filter @platform/miniapp-${name}`;

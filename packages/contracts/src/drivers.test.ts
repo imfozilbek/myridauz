@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { carSchema } from './drivers';
+import { carSchema, formatPlate } from './drivers';
 import { blockSchema, decisionSchema } from './moderation';
 
 const car = {
@@ -15,6 +15,9 @@ describe('car of a driver (docs/04, docs/35)', () => {
   it('accepts Uzbek plates of a person and of a company, kept without spaces', () => {
     expect(carSchema.parse(car).plate).toBe('01A123BC');
     expect(carSchema.parse({ ...car, plate: '10 123 abc' }).plate).toBe('10123ABC');
+    expect(formatPlate('01A123BC')).toBe('01 A 123 BC');
+    expect(formatPlate('10123ABC')).toBe('10 123 ABC');
+    expect(formatPlate('X')).toBe('X');
     for (const plate of ['A 123 BC', '01 A 12 BC', '01A123B', 'ABC']) {
       expect(carSchema.safeParse({ ...car, plate }).success).toBe(false);
     }

@@ -23,6 +23,7 @@ export function StartFlow({ actions }: StartFlowProps) {
   if (screen === 'home') return <HomeScreen actions={actions} onOpen={openAction} onProfile={openProfile} />;
   if (screen === 'profile') return <ProfileScreen onBack={openHome} />;
   const { action } = screen;
+  if (action.Screen) return <action.Screen onBack={openHome} />;
   if (screen.step === 'route' && action.route) {
     // Trips and requests arrive in G07: after the route the section says it is coming soon.
     return (
