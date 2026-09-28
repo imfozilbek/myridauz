@@ -48,4 +48,5 @@
 | 44 | [44-lessons-learned-2.md](44-lessons-learned-2.md) | Уроки: продолжение журнала |
 | 45 | [45-dev-commands.md](45-dev-commands.md) | Команды разработки, барьеры, как устроен CI |
 | 46 | [46-infrastructure.md](46-infrastructure.md) | Инфраструктура: адреса, ресурсы Cloudflare, боты, секреты, деплой |
+| 47 | [47-users-and-registration.md](47-users-and-registration.md) | Пользователи: вход по подписи Telegram, регистрация, блокировка, фото |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

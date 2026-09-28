@@ -12,5 +12,9 @@ export function BlockedScreen({ until }: { readonly until: number | null }) {
     until === null
       ? t('account.blocked.forever')
       : t('account.blocked.until', { date: formatDate(new Date(until)) });
-  return <EmptyState icon="blocked" title={t('account.blocked.title')} description={description} />;
+  return (
+    <div className="center-screen">
+      <EmptyState icon="blocked" title={t('account.blocked.title')} description={description} />
+    </div>
+  );
 }

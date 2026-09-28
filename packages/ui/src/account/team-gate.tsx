@@ -1,3 +1,4 @@
+import './account.css';
 import type { UsersClient } from '@platform/api-client';
 import { ApiError } from '@platform/api-client';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
@@ -25,6 +26,10 @@ export function TeamGate({ client, children }: TeamGateProps) {
   if (state === 'loading') return <ScreenSkeleton />;
   if (state === 'failed') return <ErrorScreen onRetry={load} />;
   if (state === 'denied')
-    return <EmptyState icon="team" title={t('account.team.denied', { brand: brand.name })} />;
+    return (
+      <div className="center-screen">
+        <EmptyState icon="team" title={t('account.team.denied', { brand: brand.name })} />
+      </div>
+    );
   return <>{children}</>;
 }

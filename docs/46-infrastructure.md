@@ -23,7 +23,9 @@
 | Analytics Engine | `rida_analytics` | `ANALYTICS` |
 | Workers Logs | включены | `observability` |
 
-- Настройки: `brands/rida/wrangler.toml`. Миграции: `apps/backend/migrations`.
+- Настройки: `brands/rida/wrangler.toml`. Миграции: `apps/backend/migrations`
+  (таблицы `users`, `blocked_phones` с G04, `47`).
+- Фото людей в R2: `avatars/<id>/<uuid>`, отдаёт только API (`47`).
 - Queues, Durable Objects, Cron появятся в целях, где они нужны (`03`).
 - Резервные копии D1: Time Travel 7 дней на бесплатном тарифе (`03`).
 

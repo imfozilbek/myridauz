@@ -5,6 +5,7 @@ import { useI18n } from '../../context/i18n-context';
 import { BackButton } from '../../telegram/back-button';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useAccount } from '../account-context';
+import { CellValue, formatPhone } from '../cell-value';
 import { AvatarPicker } from './avatar-picker';
 import { ProfilePhoto } from './profile-photo';
 
@@ -18,7 +19,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   const { profile } = account;
   const rating = profile.rating === null ? t('account.profile.newRating') : String(profile.rating);
   return (
-    <div className="step">
+    <div className="profile">
       <BackButton onClick={onBack} />
       <div className="profile-photo">
         <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} />
@@ -28,8 +29,10 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
       </div>
       <List>
         <Section footer={t('account.profile.phoneHint')}>
-          <Cell after={rating}>{t('account.profile.rating')}</Cell>
-          <Cell after={profile.phone}>{t('account.profile.phone')}</Cell>
+          <Cell after={<CellValue>{rating}</CellValue>}>{t('account.profile.rating')}</Cell>
+          <Cell after={<CellValue>{formatPhone(profile.phone)}</CellValue>}>
+            {t('account.profile.phone')}
+          </Cell>
         </Section>
       </List>
     </div>

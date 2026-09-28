@@ -5,6 +5,7 @@ import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Icon } from '../../icons';
 import { MainButton } from '../../telegram/bottom-button';
+import { CellValue } from '../cell-value';
 import { StepLayout } from '../step-layout';
 
 // The documents are written in G14 (docs/30): until then the links say "soon".
@@ -31,7 +32,7 @@ export function ConsentStep({ onAccept }: { readonly onAccept: () => void }) {
             <Cell
               key={key}
               before={<Icon name="document" color={brand.theme.colors.brand} />}
-              after={t('account.consent.soon')}
+              after={<CellValue>{t('account.consent.soon')}</CellValue>}
               multiline
             >
               {t(key)}

@@ -59,7 +59,7 @@ describe('profile', () => {
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Yangi')).toBeTruthy();
-    expect(screen.getByText('+998901234567')).toBeTruthy();
+    expect(screen.getByText('+998 90 123 45 67')).toBeTruthy();
     expect(screen.getByText('Raqamingizni faqat siz koʻrasiz.')).toBeTruthy();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
     expect(client.getAvatar).toHaveBeenCalledWith(7);

@@ -26,12 +26,23 @@
   color: var(--tgui--destructive_text_color);
 }
 
+.profile {
+  min-height: 100vh;
+  padding-bottom: 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
 .profile-photo {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 24px 16px 12px;
+  gap: 10px;
+  padding: 24px 32px 12px;
+  text-align: center;
+}
+
+.cell-value {
+  color: var(--tgui--hint_color);
 }
 
 .profile-round {
@@ -48,4 +59,11 @@
 
 .file-input {
   display: none;
+}
+
+/* A lone message stands in the optical center of the screen. */
+.center-screen {
+  display: grid;
+  min-height: 80vh;
+  place-items: center;
 }
