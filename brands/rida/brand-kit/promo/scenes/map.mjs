@@ -63,7 +63,7 @@ function channels(t) {
 
 function notice(t) {
   const p = enter(t, 0.5, 0.45), y = 1300;
-  const body = `<rect x="110" y="${y}" width="860" height="180" rx="40" fill="${C.white}" stroke="#E5E7EB" stroke-width="2"/>` +
+  const body = `<rect x="110" y="${y}" width="860" height="180" rx="40" fill="${C.white}" stroke="${C.line}" stroke-width="2"/>` +
     squircle(150, y + 40, 100, C.teal) + markR({ cx: 200, cy: y + 90, h: 62, fill: C.white }) +
     text(K.notice[0], { x: 280, y: y + 82, fill: C.ink, weight: 600, size: 38, maxWidth: 560 }) +
     text(K.notice[1], { x: 280, y: y + 132, fill: C.muted, weight: 600, size: 34 }) +

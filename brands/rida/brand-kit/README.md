@@ -7,12 +7,12 @@
 
 ## Как собрать
 
-1. `npm install` в этой папке (opentype.js, playwright, lucide-static).
+1. `pnpm install` в корне репозитория (пакет входит в монорепо).
 2. Нужны Chromium и ffmpeg с libx264.
 3. Запуск:
 
 ```text
-FFMPEG=/путь/к/ffmpeg CHROMIUM=/путь/к/chromium npm run build
+FFMPEG=/путь/к/ffmpeg CHROMIUM=/путь/к/chromium pnpm build
 ```
 
 Результат: папка `kit/` (131 файл, в `.gitignore`), без ручных шагов. Архив: `cd kit && zip -r ../rida-brand-kit.zip .`
@@ -20,8 +20,8 @@ FFMPEG=/путь/к/ffmpeg CHROMIUM=/путь/к/chromium npm run build
 Рекламный ролик (музыка по лицензии, в репозиторий не кладём):
 
 ```text
-FFMPEG=… CHROMIUM=… MUSIC=/путь/к/треку.mp3 npm run promo
-FFMPEG=… CHROMIUM=… npm run promo -- --preview 1.5,30,100
+FFMPEG=… CHROMIUM=… MUSIC=/путь/к/треку.mp3 pnpm promo
+FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 ```
 
 Результат: `kit/promo/rida-promo-1080x1920.mp4`. Режим `--preview` сохраняет кадры PNG.
@@ -31,7 +31,7 @@ FFMPEG=… CHROMIUM=… npm run promo -- --preview 1.5,30,100
 | Файл | Что делает |
 |---|---|
 | `lib/text.mjs` | Текст в контуры (Rubik, Roboto), буква «R» по центру |
-| `lib/palette.mjs` | Цвета бренда и 6 сочетаний логотипа |
+| `lib/palette.mjs` | Цвета из `brands/rida/theme.ts` и 6 сочетаний логотипа |
 | `lib/brand.mjs` | Логотип, номер «код \| R», боты, экран загрузки, превью ссылки |
 | `lib/channels.mjs` | Аватары и картинки 13 каналов |
 | `lib/social.mjs` | Посты, сторис, наклейка, QR-плакат, анимация «Yangi safar» |
@@ -41,7 +41,7 @@ FFMPEG=… CHROMIUM=… npm run promo -- --preview 1.5,30,100
 | `build.mjs` | Собирает всё в `kit/` |
 | `data/regions.json` | 13 каналов: код региона, названия, ссылки |
 | `data/qr.json` | Матрица QR для https://myrida.uz (python qrcode, уровень H) |
-| `data/tokens.json` | Цвета и моушн-токены: копия таблицы из `docs/20` |
+| `data/tokens.json` | Для чего каждый цвет и моушн-токены. Значения цветов: только `brands/rida/theme.ts` |
 | `data/kit-readme.txt` | README.txt внутри архива |
 | `fonts/rubik/` | Rubik 500, 600, 800 и лицензия OFL (идёт в архив) |
 | `fonts/roboto/` | Roboto 400, 500, 700 и лицензия OFL (экраны Telegram в ролике) |
@@ -62,6 +62,7 @@ FFMPEG=… CHROMIUM=… npm run promo -- --preview 1.5,30,100
 
 - В Rubik и Roboto нет знака ʻ (U+02BB) и стрелки «→». `lib/text.mjs` рисует ʻ знаком ‘,
   а стрелку своим контуром.
-- Цвета берутся из `data/tokens.json` (копия таблицы `docs/20`, меняем вместе).
-  В цели G02 они переедут в `brands/rida/theme.ts` (правило: HEX только там).
+- Все цвета, и бренда, и вспомогательные для иллюстраций, берутся из `brands/rida/theme.ts`.
+  HEX живут только там (ESLint проверяет и этот пакет).
+- CI собирает пакет на каждый PR и в `main`: архив лежит в артефакте `brand-kit` (`docs/45`).
 - Цифры в картинках берём из документов: цены `docs/16`, бонус `docs/12`.

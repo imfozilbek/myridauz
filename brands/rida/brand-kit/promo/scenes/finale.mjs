@@ -18,7 +18,7 @@ function house(t, lit) {
   const x = CX, y = HORIZON, glow = enter(t, lit, 0.4);
   return `<path d="M${x - 90} ${y - 70}L${x} ${y - 140}L${x + 90} ${y - 70}Z" fill="${C.amberStrong}"/>` +
     `<rect x="${x - 70}" y="${y - 72}" width="140" height="72" fill="${C.white}"/><rect x="${x - 12}" y="${y - 44}" width="24" height="44" fill="${C.deep}"/>` +
-    [x - 48, x + 26].map((wx) => `<rect x="${wx}" y="${y - 58}" width="22" height="20" fill="${glow > 0 ? C.amber : '#CBD5E1'}"/>` +
+    [x - 48, x + 26].map((wx) => `<rect x="${wx}" y="${y - 58}" width="22" height="20" fill="${glow > 0 ? C.amber : C.slateLight}"/>` +
       `<circle cx="${wx + 11}" cy="${y - 48}" r="${(40 * glow).toFixed(1)}" fill="${C.amber}" opacity="${(0.25 * glow).toFixed(3)}"/>`).join('');
 }
 
@@ -27,7 +27,7 @@ export function pause(t) {
   const sunY = HORIZON - 90 + 70 * enter(t, 0, 2.6);
   return sky(SKY.sunset) + `<circle cx="${CX + 230}" cy="${sunY.toFixed(1)}" r="110" fill="${C.amber}" opacity="0.85"/>` +
     mountains(t, { y: HORIZON - 40, speed: 4, amp: 90, seed: 11, color: C.amberStrong, opacity: 0.18 }) +
-    `<rect y="${HORIZON}" width="1080" height="1020" fill="#FFF7EC"/>` + perspectiveRoad(t, { horizon: HORIZON, color: '#F3E3C8', speed: 0.3 }) +
+    `<rect y="${HORIZON}" width="1080" height="1020" fill="${C.sunsetLight}"/>` + perspectiveRoad(t, { horizon: HORIZON, color: C.sand, speed: 0.3 }) +
     house(t, 1.7) + words(K.pause, t, 0.3, { cy: 360, size: 104, stagger: 0.2, dur: 0.8 }) +
     g(pill(COPY.trust.shareSteps[2], { cy: 700, size: 44, bg: SOFT, fg: C.teal, iconSvg: iconOf('CircleCheckBig', 2.4) }), { s: pop(t, 1.7, 0.45), cx: CX, cy: 700 }) +
     rings(t, 1.7, CX, 700, { color: C.teal, max: 220 });

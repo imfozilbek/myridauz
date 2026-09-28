@@ -91,7 +91,7 @@ put(`${OUT}/motion/layers/plate-layers.svg`, motion.plateFlip(0.5, regions));
 put(`${OUT}/motion/layers/route-layers.svg`, social.storyRoute());
 await browser.close();
 // Tokens, fonts and README: copied or generated without rendering.
-put(`${OUT}/tokens/rida-colors.json`, fs.readFileSync('data/tokens.json'));
+put(`${OUT}/tokens/rida-colors.json`, `${JSON.stringify({ name: TOKENS.name, theme: TOKENS.theme, colors: TOKENS.colors, motion: TOKENS.motion }, null, 2)}\n`);
 put(`${OUT}/tokens/rida-tokens.css`, extras.tokensCss(TOKENS));
 for (const f of fs.readdirSync('fonts/rubik')) put(`${OUT}/fonts/${f}`, fs.readFileSync(`fonts/rubik/${f}`));
 put(`${OUT}/README.txt`, fs.readFileSync('data/kit-readme.txt'));

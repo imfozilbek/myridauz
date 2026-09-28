@@ -5,7 +5,7 @@ import { prog, outCubic } from '../lib/ease.mjs';
 import { icon } from './icons.mjs';
 
 const PT_W = 390, PT_H = 825;
-export const UI = { bg2: '#F2F3F5', line: '#E5E7EB', accentText: '#0F766E' };
+export const UI = { bg2: C.telegramBg, line: C.line, accentText: C.tealText };
 const F = { x: 190, y: 380, w: 700, h: 1450, r: 90, bezel: 14 };
 const K = (F.w - 2 * F.bezel) / PT_W;
 
@@ -27,8 +27,8 @@ export function phone(content, { withChrome = true, title, cam = 0, zoom = 1, fy
   const sx = F.x + F.bezel, sy = F.y + F.bezel, sw = F.w - 2 * F.bezel, sh = F.h - 2 * F.bezel, sr = F.r - F.bezel;
   const move = `translate(540 ${fy}) scale(${zoom.toFixed(4)}) rotate(${tilt.toFixed(2)}) translate(-540 ${-fy}) translate(0 ${cam.toFixed(1)})`;
   return `<g transform="${move}"><defs><clipPath id="screen"><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" rx="${sr}"/></clipPath>` +
-    `<filter id="phoneShadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="#0F172A" flood-opacity="0.22"/></filter></defs>` +
-    `<rect x="${F.x}" y="${F.y}" width="${F.w}" height="${F.h}" rx="${F.r}" fill="#111827" filter="url(#phoneShadow)"/>` +
+    `<filter id="phoneShadow" x="-20%" y="-10%" width="140%" height="130%"><feDropShadow dx="0" dy="30" stdDeviation="34" flood-color="${C.shadow}" flood-opacity="0.22"/></filter></defs>` +
+    `<rect x="${F.x}" y="${F.y}" width="${F.w}" height="${F.h}" rx="${F.r}" fill="${C.phone}" filter="url(#phoneShadow)"/>` +
     `<g clip-path="url(#screen)"><g transform="translate(${sx} ${sy}) scale(${K.toFixed(5)})">` +
     `<rect width="${PT_W}" height="${PT_H}" fill="${UI.bg2}"/>${content}${withChrome ? chrome(title) : ''}` +
     `<rect x="${PT_W / 2 - 60}" y="${PT_H - 10}" width="120" height="4" rx="2" fill="${C.ink}" opacity="0.35"/></g></g></g>`;
@@ -39,7 +39,7 @@ export function slide(a, b, p) {
   if (p <= 0) return a;
   if (p >= 1) return b;
   const e = outCubic(p);
-  return `<g transform="translate(${(-0.3 * PT_W * e).toFixed(1)} 0)">${a}<rect width="${PT_W}" height="${PT_H}" fill="#000" opacity="${(0.15 * e).toFixed(3)}"/></g>` +
+  return `<g transform="translate(${(-0.3 * PT_W * e).toFixed(1)} 0)">${a}<rect width="${PT_W}" height="${PT_H}" fill="${C.black}" opacity="${(0.15 * e).toFixed(3)}"/></g>` +
     `<g transform="translate(${(PT_W * (1 - e)).toFixed(1)} 0)"><rect width="${PT_W}" height="${PT_H}" fill="${UI.bg2}"/>${b}</g>`;
 }
 

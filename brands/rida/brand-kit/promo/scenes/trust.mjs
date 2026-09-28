@@ -12,7 +12,7 @@ import { star } from '../ui.mjs';
 
 const K = COPY.trust;
 const card = (x, y, w, h) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="44" fill="${C.white}" filter="url(#soft)"/>`;
-const SHADOW = '<defs><filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#0F172A" flood-opacity="0.12"/></filter></defs>';
+const SHADOW = `<defs><filter id="soft" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="${C.shadow}" flood-opacity="0.12"/></filter></defs>`;
 const head = (list, t, cy = 400) => words(list, t, 0.1, { cy, size: 88, stagger: 0.07 });
 // Small sparks flying out of (cx, cy) right after `at`.
 function sparks(t, at, cx, cy, color = C.amber) {
@@ -32,15 +32,15 @@ function checked(t) {
   }).join('');
   const face = enter(t, 0.7, 0.4), car = enter(t, 1.25, 0.4);
   return head(K.check, t) + card(190, 580, 700, 700) +
-    `<circle cx="370" cy="760" r="110" fill="${face > 0.5 ? C.teal : '#E5E7EB'}"/>` + icon('User', 370, 760, 130, face > 0.5 ? C.white : C.muted, 1.8) +
-    `<rect x="530" y="660" width="300" height="200" rx="32" fill="${car > 0.5 ? C.teal : '#E5E7EB'}"/>` + icon('CarFront', 680, 760, 130, car > 0.5 ? C.white : C.muted, 1.8) +
+    `<circle cx="370" cy="760" r="110" fill="${face > 0.5 ? C.teal : C.line}"/>` + icon('User', 370, 760, 130, face > 0.5 ? C.white : C.muted, 1.8) +
+    `<rect x="530" y="660" width="300" height="200" rx="32" fill="${car > 0.5 ? C.teal : C.line}"/>` + icon('CarFront', 680, 760, 130, car > 0.5 ? C.white : C.muted, 1.8) +
     rows + g(pill(K.stamp, { cy: 1370, size: 52, bg: C.teal, fg: C.white, iconSvg: iconOf('BadgeCheck', 2.4) }), { s: pop(t, 3.3, 0.5), cx: CX, cy: 1370 }) + rings(t, 3.3, CX, 1370, { color: C.teal, max: 360 });
 }
 
 function rating(t) {
   const stars = [0, 1, 2, 3, 4].map((i) => {
     const x = CX + (i - 2) * 150;
-    return star(x, 720, 64, '#E5E7EB') + g(star(x, 720, 64, C.amber), { s: pop(t, 0.5 + i * 0.25, 0.4), cx: x, cy: 720 }) + sparks(t, 0.55 + i * 0.25, x, 720);
+    return star(x, 720, 64, C.line) + g(star(x, 720, 64, C.amber), { s: pop(t, 0.5 + i * 0.25, 0.4), cx: x, cy: 720 }) + sparks(t, 0.55 + i * 0.25, x, 720);
   }).join('');
   const review = (label, y, t0) => g(card(170, y, 740, 130) + [0, 1, 2, 3, 4].map((i) => star(240 + i * 40, y + 45, 16)).join('') +
     text(label, { x: 220, y: y + 104, fill: C.ink, weight: 600, size: 44 }), { o: enter(t, t0, 0.35), y: 30 * (1 - enter(t, t0, 0.35)) });
@@ -54,8 +54,8 @@ function share(t) {
   const R = COPY.results.trips[0];
   const steps = K.shareSteps.map((label, i) => {
     const y = 1000 + i * 100, done = t >= 1 + i;
-    return (i ? `<line x1="250" y1="${y - 72}" x2="250" y2="${y - 28}" stroke="${done ? C.teal : '#E5E7EB'}" stroke-width="6"/>` : '') +
-      g(`<circle cx="250" cy="${y}" r="26" fill="${done ? C.teal : '#E5E7EB'}"/>` + (done ? icon('Check', 250, y, 32, C.white, 3) : ''), { s: done ? pop(t, 1 + i, 0.4) : 1, cx: 250, cy: y }) +
+    return (i ? `<line x1="250" y1="${y - 72}" x2="250" y2="${y - 28}" stroke="${done ? C.teal : C.line}" stroke-width="6"/>` : '') +
+      g(`<circle cx="250" cy="${y}" r="26" fill="${done ? C.teal : C.line}"/>` + (done ? icon('Check', 250, y, 32, C.white, 3) : ''), { s: done ? pop(t, 1 + i, 0.4) : 1, cx: 250, cy: y }) +
       text(label, { x: 300, y: y + 16, fill: done ? C.ink : C.muted, weight: 600, size: 46 });
   }).join('');
   const body = card(150, 600, 780, 700) + squircle(200, 640, 96, C.teal) + markR({ cx: 248, cy: 688, h: 60, fill: C.white }) +
@@ -70,7 +70,7 @@ function share(t) {
 function woman(t) {
   const on = enter(t, 1.0, 0.35), knob = 440 + 200 * on;
   return g(pill(K.woman, { cy: 620, size: 64, bg: C.amber, fg: C.deep }), { s: pop(t, 0.2, 0.5), cx: CX, cy: 620 }) +
-    `<rect x="340" y="770" width="400" height="200" rx="100" fill="${on > 0.5 ? C.teal : '#D1D5DB'}"/><circle cx="${knob}" cy="870" r="80" fill="${C.white}"/>` +
+    `<rect x="340" y="770" width="400" height="200" rx="100" fill="${on > 0.5 ? C.teal : C.greyLight}"/><circle cx="${knob}" cy="870" r="80" fill="${C.white}"/>` +
     rings(t, 1.0, 640, 870, { color: C.teal, max: 260 }) + words(K.womanLine, t, 1.6, { cy: 1150, size: 92 });
 }
 

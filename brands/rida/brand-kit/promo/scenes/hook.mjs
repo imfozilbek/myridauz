@@ -12,11 +12,11 @@ const ICONS = ['Hourglass', 'TrendingUp', 'UserRound', 'UsersRound'];
 
 // Grey world that fills with brand color as p goes 0 → 1.
 function world(t, p) {
-  const col = mix('#94A3B8', C.teal, p);
+  const col = mix(C.slate, C.teal, p);
   return sky([mix(SKY.grey[0], SKY.day[0], p), mix(SKY.grey[1], SKY.day[1], p)]) +
     mountains(t, { y: 1180, speed: 6, amp: 120, seed: 2, color: col, opacity: 0.18 }) +
     mountains(t, { y: 1260, speed: 14, amp: 80, seed: 5, color: col, opacity: 0.28 }) +
-    perspectiveRoad(t, { horizon: 1300, color: mix('#CBD5E1', '#99E6DA', p), speed: 0.15 + 1.2 * p });
+    perspectiveRoad(t, { horizon: 1300, color: mix(C.slateLight, C.tealLight, p), speed: 0.15 + 1.2 * p });
 }
 
 // Each icon acts out its pain: the hourglass turns, the price climbs, question marks bounce.

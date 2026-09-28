@@ -3,8 +3,8 @@ import { C } from '../lib/palette.mjs';
 import { W, H } from './kit.mjs';
 
 export const SKY = {
-  grey: ['#E6EAEE', '#F8FAFC'], day: ['#CCFBF1', '#FFFFFF'], soft: ['#DDF7F1', '#F0FDFA'],
-  sunset: ['#FCD9A0', '#FFF7EC'], teal: [C.teal, C.deep], amber: [C.amber, '#FBBF24']
+  grey: [C.skyGrey, C.skyGreyLight], day: [C.mint, C.white], soft: [C.mintSoft, C.soft],
+  sunset: [C.sunset, C.sunsetLight], teal: [C.teal, C.deep], amber: [C.amber, C.amberLight]
 };
 const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
 // Blend two hex colors, p from 0 (a) to 1 (b).
@@ -38,14 +38,14 @@ export function mountains(t, { y, speed = 20, amp = 90, seed = 1, period = 900, 
 }
 
 // Straight road across the frame with dashes moving left.
-export function road(t, { y, speed = 260, color = '#94A3B8', dash = C.white, opacity = 1 }) {
+export function road(t, { y, speed = 260, color = C.slate, dash = C.white, opacity = 1 }) {
   const off = (t * speed) % 120;
   const dashes = Array.from({ length: 11 }, (_, i) => `<rect x="${(i * 120 - off).toFixed(1)}" y="${y + 36}" width="60" height="8" rx="4" fill="${dash}"/>`).join('');
   return `<g opacity="${opacity}"><rect y="${y}" width="${W}" height="80" fill="${color}"/>${dashes}</g>`;
 }
 
 // Road going to the horizon; dashes come toward the viewer.
-export function perspectiveRoad(t, { horizon = 900, color = '#CBD5E1', dash = C.white, speed = 0.6 }) {
+export function perspectiveRoad(t, { horizon = 900, color = C.slateLight, dash = C.white, speed = 0.6 }) {
   const quad = (z0, z1, w) => {
     const y0 = horizon + (H - horizon) * z0 * z0, y1 = horizon + (H - horizon) * z1 * z1;
     const w0 = 8 + w * z0 * z0, w1 = 8 + w * z1 * z1;
@@ -70,8 +70,8 @@ export function bokeh(t, { count = 14, colors = [C.teal, C.amber], opacity = 0.1
   return out;
 }
 
-export const VIGNETTE = `<defs><radialGradient id="vig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.6" stop-color="#0F172A" stop-opacity="0"/>` +
-  `<stop offset="1" stop-color="#0F172A" stop-opacity="0.16"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#vig)"/>`;
+export const VIGNETTE = `<defs><radialGradient id="vig" cx="0.5" cy="0.45" r="0.75"><stop offset="0.6" stop-color="${C.shadow}" stop-opacity="0"/>` +
+  `<stop offset="1" stop-color="${C.shadow}" stop-opacity="0.16"/></radialGradient></defs><rect width="${W}" height="${H}" fill="url(#vig)"/>`;
 
 // Calm stage behind the phone scenes: soft sky, far mountains, drifting light.
 export const stage = (t, tint = C.teal) => sky(SKY.soft, 'stage') + mountains(t, { y: 1500, speed: 8, amp: 140, seed: 9, color: tint, opacity: 0.08 }) +

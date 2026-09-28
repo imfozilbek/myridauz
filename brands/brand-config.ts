@@ -19,6 +19,8 @@ export type BrandColors = {
 
 export type BrandTheme = {
   readonly colors: BrandColors;
+  // Helper colors of illustrations and videos in the brand kit (docs/38): never in the product UI.
+  readonly art: Readonly<Record<string, HexColor>>;
 };
 
 export type BrandConfig = {

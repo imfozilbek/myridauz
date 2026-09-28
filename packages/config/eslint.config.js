@@ -72,7 +72,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/coverage/**',
-      'brands/*/brand-kit/**',
+      'brands/*/brand-kit/kit/**',
       'playwright-report/**',
       'test-results/**',
     ],

@@ -67,7 +67,7 @@ export function storyRoute(t = 99) {
     (line > 0 && line < 1 ? `<circle cx="200" cy="${markerY}" r="18" fill="${C.amber}" stroke="${C.white}" stroke-width="6"/>` : '') +
     `<g id="to" transform="${scaleAt(200, 880, b)}"><circle cx="200" cy="880" r="26" fill="${C.amber}"/></g>` +
     `<g opacity="${b > 0 ? 1 : 0}">${text('Samarqand', { x: 262, y: 905, fill: C.ink, size: 72 })}</g>` +
-    `<g id="details"><rect x="150" y="990" width="780" height="3" fill="#E5EEEC" opacity="${det(0)}"/>` +
+    `<g id="details"><rect x="150" y="990" width="780" height="3" fill="${C.divider}" opacity="${det(0)}"/>` +
     `<g opacity="${det(0)}">${text('Ertaga · 08:00', { x: 150, y: 1095, fill: C.muted, weight: 600, size: 58 })}</g>` +
     `<g opacity="${det(1)}">${text('3 ta joy', { x: 150, y: 1185, fill: C.muted, weight: 600, size: 58 })}</g>` +
     `<g opacity="${det(2)}">${text('90 000 soʻm', { x: 930, y: 1185, anchor: 'end', fill: C.teal, size: 76 })}</g></g>` +

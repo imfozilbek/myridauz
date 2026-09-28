@@ -5,7 +5,7 @@ import { prog, outCubic } from '../lib/ease.mjs';
 import { W, CX } from './kit.mjs';
 
 const STEP = 46, SIZE = 30;
-const COLORS = [C.white, C.mint, C.amber, C.white, '#FBBF24'];
+const COLORS = [C.white, C.mint, C.amber, C.white, C.amberLight];
 
 // Grid points inside the glyph "R" (even-odd fill), centered on (cx, cy), cap height about h.
 function targets(cx, cy, h) {

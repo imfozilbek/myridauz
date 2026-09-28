@@ -44,7 +44,7 @@ function outro(t) {
   const art = (name) => `<circle cx="${CX}" cy="470" r="130" fill="${C.amber}" opacity="0.2"/>` + icon(name, CX, 470, 150, C.amberStrong, 1.8);
   const strike = `<line x1="440" y1="570" x2="640" y2="370" stroke="${C.teal}" stroke-width="16" stroke-linecap="round" stroke-dasharray="290" stroke-dashoffset="${(290 * (1 - enter(t, 0.4, 0.4))).toFixed(1)}"/>`;
   return sky(SKY.day) + mountains(t, { y: 700, speed: 20, amp: 120, seed: 6, opacity: 0.12 }) + mountains(t, { y: 800, speed: 50, amp: 70, seed: 8, opacity: 0.22 }) +
-    `<rect y="940" width="1080" height="980" fill="${C.white}"/>` + road(t, { y: 860, speed: back ? -380 : 380, color: '#64748B' }) +
+    `<rect y="940" width="1080" height="980" fill="${C.white}"/>` + road(t, { y: 860, speed: back ? -380 : 380, color: C.road }) +
     g(art('Hourglass') + strike, { o: span(t, -1, 2, 0.25) }) + g(art('Repeat'), { o: span(t, 2, 99, 0.25) }) +
     car(x, 900, t, { flip: back, scale: 1.1 }) +
     K.outro.map((l, i) => g(words(l, t, i * 2 + 0.1, { cy: 1260, size: 88 }), { o: span(t, i * 2, i ? 99 : 2, 0.2) })).join('');

@@ -1,13 +1,13 @@
 // Side view of a car with people in the windows; wheels turn with time. y is the road line.
 import { C } from '../lib/palette.mjs';
 
-const HEADS = [C.amber, C.white, C.mint, '#FBBF24'];
+const HEADS = [C.amber, C.white, C.mint, C.amberLight];
 
 function wheel(cx, cy, t, spin) {
   const a = (t * spin) % 360;
-  return `<circle cx="${cx}" cy="${cy}" r="34" fill="${C.ink}"/><circle cx="${cx}" cy="${cy}" r="14" fill="#E5E7EB"/>` +
-    `<g transform="rotate(${a.toFixed(1)} ${cx} ${cy})"><rect x="${cx - 2}" y="${cy - 26}" width="4" height="52" fill="#9CA3AF"/>` +
-    `<rect x="${cx - 26}" y="${cy - 2}" width="52" height="4" fill="#9CA3AF"/></g>`;
+  return `<circle cx="${cx}" cy="${cy}" r="34" fill="${C.ink}"/><circle cx="${cx}" cy="${cy}" r="14" fill="${C.line}"/>` +
+    `<g transform="rotate(${a.toFixed(1)} ${cx} ${cy})"><rect x="${cx - 2}" y="${cy - 26}" width="4" height="52" fill="${C.grey}"/>` +
+    `<rect x="${cx - 26}" y="${cy - 2}" width="52" height="4" fill="${C.grey}"/></g>`;
 }
 
 // people: how many heads show in the windows (0 … 4). bob: small bounce while driving.
