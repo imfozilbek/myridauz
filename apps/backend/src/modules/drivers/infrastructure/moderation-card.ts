@@ -1,5 +1,11 @@
-import { MODERATION_REASONS, type Decision, type ModerationReason } from '@platform/contracts';
+import {
+  MODERATION_REASONS,
+  type Decision,
+  type DecisionInput,
+  type ModerationReason,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import type { Car } from '@platform/contracts';
 import type { Application } from '../domain/application';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -7,12 +13,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 // Buttons of the card carry "mod:<user id>:<action>[:<reason>]", well under the 64 bytes of Telegram.
 const PREFIX = 'mod';
 export type CardAction =
-  | {
-      readonly userId: number;
-      readonly kind: 'decide';
-      readonly action: Decision;
-      readonly reason: ModerationReason | null;
-    }
+  | { readonly userId: number; readonly kind: 'decide'; readonly decision: DecisionInput }
   | { readonly userId: number; readonly kind: 'reasons'; readonly action: Exclude<Decision, 'approve'> }
   | { readonly userId: number; readonly kind: 'menu' };
 
@@ -21,7 +22,7 @@ const button = (text: string, ...parts: (string | number)[]) => ({
   callback_data: [PREFIX, ...parts].join(':'),
 });
 
-export function cardText(application: Application, firstName: string): string {
+export function cardText(application: { readonly car: Car | null }, firstName: string): string {
   const car = application.car;
   if (!car) return firstName;
   const color = t(`drivers.color.${car.color}`);
@@ -52,7 +53,7 @@ export const reasonMenu = (userId: number, action: Exclude<Decision, 'approve'>)
   ],
 });
 
-export function decisionLine(application: Application): string {
+export function decisionLine(application: Pick<Application, 'status' | 'reason'>): string {
   const reason = application.reason ? t(`drivers.reason.${application.reason}`) : '';
   if (application.status === 'approved') return t('bot.moderation.approved');
   if (application.status === 'rejected') return t('bot.moderation.rejected', { reason });
@@ -67,8 +68,8 @@ export function parseCardAction(data: string): CardAction | null {
   const userId = Number(id);
   if (prefix !== PREFIX || !Number.isInteger(userId) || userId <= 0) return null;
   if (action === 'menu') return { userId, kind: 'menu' };
-  if (action === 'approve') return { userId, kind: 'decide', action, reason: null };
+  if (action === 'approve') return { userId, kind: 'decide', decision: { action } };
   if (action !== 'reject' && action !== 'request_changes') return null;
   if (reason === undefined) return { userId, kind: 'reasons', action };
-  return isReason(reason) ? { userId, kind: 'decide', action, reason } : null;
+  return isReason(reason) ? { userId, kind: 'decide', decision: { action, reason } } : null;
 }

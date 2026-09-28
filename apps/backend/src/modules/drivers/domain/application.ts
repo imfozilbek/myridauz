@@ -7,7 +7,7 @@ import type {
 } from '@platform/contracts';
 
 // A driver application (docs/04): one per person, edited in place.
-export type CarPhotos = Readonly<Record<CarPhotoKind, string | null>>;
+type CarPhotos = Readonly<Record<CarPhotoKind, string | null>>;
 
 export type Application = {
   readonly userId: number;

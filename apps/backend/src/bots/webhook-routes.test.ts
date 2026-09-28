@@ -1,28 +1,16 @@
 import { loadBrand } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
 import { localUsers } from '../modules/users';
-import { webhookRoutes } from './webhook-routes';
+import { botEnv, botSender, fakeTelegram } from './test-bot';
 
 const brand = loadBrand();
-const env = {
-  PASSENGER_BOT_TOKEN: 'p',
-  ADMIN_BOT_TOKEN: 'a',
-  TELEGRAM_WEBHOOK_SECRET: 'hook',
-  ADMIN_TELEGRAM_IDS: '7,8',
-};
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
 const start = (fromId = 1, text = '/start') => ({
-  message: { text, chat: { id: 42 }, from: { id: fromId } },
+  message: { message_id: 1, text, chat: { id: 42 }, from: { id: fromId } },
 });
 
-function send(role: string, body: unknown, secret = 'hook', bindings: object = env) {
-  const headers = { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': secret };
-  return webhookRoutes.request(
-    `/telegram/${role}`,
-    { method: 'POST', headers, body: JSON.stringify(body) },
-    bindings,
-  );
-}
+const send = botSender(fakeTelegram().fetch);
+const env = botEnv;
 
 describe('POST /telegram/:role', () => {
   it('answers /start with a text and a button that opens the Mini App of the role', async () => {
@@ -40,19 +28,26 @@ describe('POST /telegram/:role', () => {
   });
 
   it('knows only configured bots', async () => {
-    expect((await send('driver', start())).status).toBe(404);
+    expect((await send('driver', start(), 'hook', { ...env, DRIVER_BOT_TOKEN: undefined })).status).toBe(404);
     expect((await send('taxi', start())).status).toBe(404);
     expect((await send('passenger', start(), 'hook', {})).status).toBe(404);
   });
 
-  it('opens the admin Mini App only for the team', async () => {
+  it('opens the admin Mini App only for the team; for others the admin bot is support (docs/02)', async () => {
     const team = (await (await send('admin', start(7))).json()) as Reply;
     expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(`https://admin.${brand.domain}`);
-    const stranger = await (await send('admin', start(9))).json();
-    expect(stranger).toEqual({
-      method: 'sendMessage',
-      chat_id: 42,
-      text: `Bu bot faqat ${brand.name} jamoasi uchun.`,
+    const stranger = (await (await send('admin', start(9))).json()) as Reply;
+    expect(stranger.text).toContain('yordam xizmati');
+    expect(stranger.reply_markup).toBeUndefined();
+  });
+
+  it('offers "Haydovchi boʻlish" in the passenger bot: a link to the driver bot', async () => {
+    const reply = (await (await send('passenger', start())).json()) as {
+      reply_markup: { inline_keyboard: { text: string; url?: string }[][] };
+    };
+    expect(reply.reply_markup.inline_keyboard[1]?.[0]).toEqual({
+      text: 'Haydovchi boʻlish',
+      url: `https://t.me/${brand.bots.driver}?start=from_passenger`,
     });
   });
 

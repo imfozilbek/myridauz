@@ -25,5 +25,3 @@ export function people(deps: UsersDeps) {
     avatar: (key: string) => deps.avatars.get(key),
   };
 }
-
-export type People = ReturnType<typeof people>;

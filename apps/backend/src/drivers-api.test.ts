@@ -1,6 +1,11 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
+import { fakeTelegram } from './bots/test-bot';
 import { changeModerator } from './modules/team';
 import { call, registerUser, testEnv } from './test-api';
+
+// The bots are called for real in production: here a fake Telegram answers.
+vi.stubGlobal('fetch', fakeTelegram().fetch);
+afterAll(() => vi.unstubAllGlobals());
 
 const APPLICANT = 5;
 const STRANGER = 7;

@@ -45,4 +45,7 @@ export const app = new Hono<AppEnv>()
     '/',
     setupRoutes((input, init) => fetch(input, init)),
   )
-  .route('/', webhookRoutes);
+  .route(
+    '/',
+    webhookRoutes((input, init) => fetch(input, init)),
+  );

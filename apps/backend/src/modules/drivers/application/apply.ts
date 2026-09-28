@@ -12,7 +12,7 @@ import type { DriversDeps, Result } from './ports';
 type ApplyError =
   'drivers.not_found' | 'drivers.invalid_input' | 'drivers.photo_too_large' | 'drivers.wrong_status';
 
-export const toView = (application: Application): DriverApplication => ({
+const toView = (application: Application): DriverApplication => ({
   status: application.status,
   car: application.car,
   photos: {

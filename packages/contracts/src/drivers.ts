@@ -47,7 +47,7 @@ const NAME_MAX = 32;
 
 // Uzbek plates: "01 A 123 BC" (a person) or "01 123 ABC" (a company). Kept without spaces.
 const PLATE_PATTERN = /^\d{2}(?:[A-Z]\d{3}[A-Z]{2}|\d{3}[A-Z]{3})$/;
-export const plateSchema = z
+const plateSchema = z
   .string()
   .transform((value) => value.toUpperCase().replace(/[\s-]/g, ''))
   .pipe(z.string().regex(PLATE_PATTERN));
@@ -77,7 +77,7 @@ export type CarInput = z.input<typeof carSchema>;
 const photosSchema = z.object({ front: z.boolean(), side: z.boolean(), interior: z.boolean() });
 
 // What the applicant sees: their own application, never another one.
-export const driverApplicationSchema = z.object({
+const driverApplicationSchema = z.object({
   status: z.enum(APPLICATION_STATUSES),
   car: carSchema.nullable(),
   photos: photosSchema,

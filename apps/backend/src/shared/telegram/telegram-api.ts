@@ -40,3 +40,21 @@ export async function sendAlbum(
   });
   if (!response.ok) throw new Error(`telegram.sendMediaGroup_${response.status}`);
 }
+
+// sendMessage that returns the id of the message: support links a copy to the person (docs/02).
+export async function sendText(
+  fetch: Fetch,
+  token: string,
+  chatId: number,
+  text: string,
+  markup?: object,
+): Promise<number | undefined> {
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, ...(markup ? { reply_markup: markup } : {}) }),
+  });
+  if (!response.ok) throw new Error(`telegram.sendMessage_${response.status}`);
+  const body = (await response.json()) as { result?: { message_id?: number } };
+  return body.result?.message_id;
+}
