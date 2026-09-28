@@ -10,7 +10,7 @@ describe('createI18n', () => {
   it('translates keys from namespaces', () => {
     expect(i18n.t('common.continue')).toBe('Davom etish');
     expect(i18n.t('errors.generic.title')).toBe('Xatolik yuz berdi');
-    expect(i18n.t('common.admin.welcome', { brand: 'Brend' })).toBe('Brend jamoasi uchun');
+    expect(i18n.t('account.team.denied', { brand: 'Brend' })).toBe('Bu boʻlim faqat Brend jamoasi uchun.');
   });
 
   it('formats money with a space between thousands', () => {

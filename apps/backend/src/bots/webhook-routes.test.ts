@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
+import { localUsers } from '../modules/users';
 import { webhookRoutes } from './webhook-routes';
 
 const brand = loadBrand();
@@ -53,6 +54,30 @@ describe('POST /telegram/:role', () => {
       chat_id: 42,
       text: `Bu bot faqat ${brand.name} jamoasi uchun.`,
     });
+  });
+
+  it('tells a blocked person that the account is blocked, in every bot (docs/17)', async () => {
+    await localUsers.save({
+      id: 66,
+      firstName: 'Ali',
+      gender: 'male',
+      phone: '+998900000066',
+      locale: 'uz-Latn',
+      isDriver: false,
+      consentAt: 1,
+      block: { until: null },
+      avatarKey: null,
+      writeAccess: false,
+      createdAt: 1,
+      updatedAt: 1,
+    });
+    for (const role of ['passenger', 'admin']) {
+      expect(await (await send(role, start(66))).json()).toEqual({
+        method: 'sendMessage',
+        chat_id: 42,
+        text: 'Hisobingiz bloklangan.',
+      });
+    }
   });
 
   it('answers other updates with an empty 200, so Telegram does not retry', async () => {

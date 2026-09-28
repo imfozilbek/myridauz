@@ -1,0 +1,69 @@
+/* Registration and profile: one question per screen, a lot of air (docs/19, docs/21). */
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100vh;
+  padding: 12vh 0 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.step-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0 32px 12px;
+  text-align: center;
+}
+
+.step-hint {
+  color: var(--tgui--hint_color);
+}
+
+.step-error {
+  padding: 0 20px;
+  color: var(--tgui--destructive_text_color);
+}
+
+.profile {
+  min-height: 100vh;
+  padding-bottom: 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.profile-photo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 32px 12px;
+  text-align: center;
+}
+
+.cell-value {
+  color: var(--tgui--hint_color);
+}
+
+.profile-round {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-empty {
+  display: grid;
+  place-items: center;
+  background: var(--tgui--secondary_fill);
+}
+
+.file-input {
+  display: none;
+}
+
+/* A lone message stands in the optical center of the screen. */
+.center-screen {
+  display: grid;
+  min-height: 80vh;
+  place-items: center;
+}

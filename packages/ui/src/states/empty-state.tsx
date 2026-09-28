@@ -8,7 +8,7 @@ const ICON_SIZE = 56;
 type EmptyStateProps = {
   readonly icon?: IconName;
   readonly title: string;
-  readonly description: string;
+  readonly description?: string;
   readonly action?: ReactNode;
 };
 

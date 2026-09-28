@@ -1,4 +1,5 @@
 import { LargeTitle } from '@telegram-apps/telegram-ui';
+import { ProfileCell } from '../account/profile/profile-cell';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
@@ -12,10 +13,11 @@ import type { StartAction } from './start-action';
 type HomeScreenProps = {
   readonly actions: readonly StartAction[];
   readonly onOpen: (action: StartAction) => void;
+  readonly onProfile: () => void;
 };
 
 // At most 3 actions (docs/19). A chevron only on iOS, like Telegram itself.
-export function HomeScreen({ actions, onOpen }: HomeScreenProps) {
+export function HomeScreen({ actions, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -28,6 +30,7 @@ export function HomeScreen({ actions, onOpen }: HomeScreenProps) {
         {brand.name}
       </LargeTitle>
       <List>
+        <ProfileCell onOpen={onProfile} />
         <Section>
           {actions.map((action) => (
             <Cell

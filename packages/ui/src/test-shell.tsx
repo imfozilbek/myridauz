@@ -18,7 +18,7 @@ export function renderInShell(children: ReactNode, inTelegram = false) {
     <AppShell
       brand={loadBrand()}
       analytics={analytics}
-      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base' }}
+      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '' }}
     >
       {children}
     </AppShell>,

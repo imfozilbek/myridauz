@@ -8,6 +8,7 @@ import {
   mainButton,
   miniApp,
   retrieveLaunchParams,
+  retrieveRawInitData,
   secondaryButton,
   swipeBehavior,
   viewport,
@@ -36,5 +37,5 @@ export function initTelegram(colors: BrandColors): TelegramSession {
   swipeBehavior.disableVertical.ifAvailable();
   miniApp.ready.ifAvailable();
   const platform = APPLE_PLATFORMS.has(retrieveLaunchParams().tgWebAppPlatform) ? 'ios' : 'base';
-  return { inTelegram: true, platform };
+  return { inTelegram: true, platform, initData: retrieveRawInitData() ?? '' };
 }

@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -22,16 +21,8 @@ const ACTIONS = [
 ] as const;
 
 describe('StartFlow', () => {
-  it('goes from welcome to the main screen, a section and back', () => {
-    const brand = loadBrand();
-    const { tracked } = renderInShell(
-      <StartFlow welcomeIcon="search" welcome="common.passenger.welcome" actions={ACTIONS} />,
-    );
-    expect(screen.getByText(brand.name)).toBeTruthy();
-    expect(screen.getByText(brand.slogan)).toBeTruthy();
-    expect(screen.getByText('Safar toping')).toBeTruthy();
-
-    fireEvent.click(screen.getByText('Davom etish'));
+  it('goes from the main screen to a section and back', () => {
+    const { tracked } = renderInShell(<StartFlow actions={ACTIONS} />);
     expect(screen.getByText('Safar topish')).toBeTruthy();
     expect(screen.getByText('Band qilingan joylar va suhbatlar')).toBeTruthy();
 
@@ -40,6 +31,6 @@ describe('StartFlow', () => {
 
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Safar topish')).toBeTruthy();
-    expect(tracked.map((event) => event.screen)).toEqual(['welcome', 'home', 'my_trips', 'home']);
+    expect(tracked.map((event) => event.screen)).toEqual(['home', 'my_trips', 'home']);
   });
 });

@@ -1,18 +1,23 @@
 import {
+  Ban,
+  Camera,
   ChartColumn,
   Check,
   ChevronRight,
   CircleAlert,
   ClipboardCheck,
+  FileText,
   Flag,
   Inbox,
   Languages,
+  Phone,
   MessageSquarePlus,
   Route,
   Search,
   ShieldCheck,
   SquarePlus,
   Ticket,
+  UserRound,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -34,6 +39,11 @@ const ICONS = {
   language: Languages,
   selected: Check,
   next: ChevronRight,
+  profile: UserRound,
+  camera: Camera,
+  phone: Phone,
+  document: FileText,
+  blocked: Ban,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

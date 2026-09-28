@@ -50,8 +50,8 @@
 
 ## Как устроено (G02)
 
-- Схема: `packages/contracts/src/analytics.ts`. Сейчас события `screen_open`
-  и `client_error`, новые добавляет цель, которой они нужны.
+- Схема: `packages/contracts/src/analytics.ts`. Сейчас события `screen_open`,
+  `client_error` и `registration_step` (G04, `47`); новые добавляет цель.
 - Экраны и коды: только id вида `home`, `my_trips`. Свободный текст схема не пропускает.
 - Клиент: `createAnalyticsClient` (`packages/api-client`): пакет до 50 событий,
   отправка через 5 секунд или когда Mini App скрыт. Ошибка сети не ломает приложение.

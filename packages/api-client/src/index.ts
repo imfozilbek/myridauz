@@ -2,3 +2,4 @@ export { createAnalyticsClient, type AnalyticsClient, type AnalyticsInput } from
 export { ApiError } from './api-error';
 export { createApiClient } from './create-api-client';
 export type { Fetch } from './fetch';
+export { createUsersClient, type UsersClient } from './users-client';
