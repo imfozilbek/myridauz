@@ -29,6 +29,7 @@
 | Тесты | Vitest | Логика; покрытие: `domain` и `application` 90%, остальное 70% | `vitest.config.ts` |
 | Текст | `scripts/check-text.mjs` | Длинные тире везде; имя бренда в html, json и css внутри `apps/` и `packages/` | `scripts/text-rules.mjs` |
 | Секреты | gitleaks | Ключи во всей истории git | `.github/workflows/ci.yml` |
+| Уязвимости | `pnpm audit` | Зависимость с известной уязвимостью (уровень moderate и выше) | `package.json` |
 | E2E | Playwright | Mini App в Telegram не открылся, главная кнопка не бирюзовая, шапка и нижняя панель не белые, аналитика не дошла | `playwright.config.ts`, `e2e/` |
 | Бренд-пакет | CI | Генератор `brands/rida/brand-kit` не собирается | `.github/workflows/ci.yml` |
 | Безопасность | CodeQL | Уязвимости в коде и в workflow | `.github/workflows/codeql.yml` |
@@ -45,7 +46,7 @@
 - gitleaks скачивается файлом и проверяется по SHA-256, чужой код не запускается.
 - Общая подготовка (Node 22, pnpm, `install --frozen-lockfile`):
   `.github/actions/setup`.
-- Задачи CI: 6 барьеров параллельно, `e2e` (со скриншотами как артефакт),
+- Задачи CI: 7 барьеров параллельно (с `audit`), `e2e` (со скриншотами как артефакт),
   `brand-kit` (архив как артефакт), `secrets`. CodeQL: отдельный workflow и раз в неделю.
 
 ## Каркас (что создано в G01)

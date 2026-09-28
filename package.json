@@ -16,9 +16,10 @@
     "test:coverage": "vitest run --coverage",
     "check:text": "node scripts/check-text.mjs",
     "check:secrets": "gitleaks git --no-banner --redact",
+    "audit": "pnpm audit --audit-level moderate",
     "e2e": "playwright test --project=smoke",
     "screenshots": "playwright test --project=screenshots",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets"
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },
   "devDependencies": {
     "@platform/brands": "workspace:*",
@@ -33,5 +34,10 @@
     "prettier": "3.9.9",
     "typescript": "6.0.3",
     "vitest": "5.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "valibot": "1.4.2"
+    }
   }
 }
