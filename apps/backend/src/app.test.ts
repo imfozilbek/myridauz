@@ -1,3 +1,4 @@
+import { appHost, loadBrand } from '@platform/brands';
 import { createAnalyticsClient, createApiClient } from '@platform/api-client';
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
@@ -29,5 +30,27 @@ describe('backend contract', () => {
     analytics.track({ name: 'screen_open', screen: 'welcome' });
     await analytics.flush();
     expect(localAnalyticsRows.at(-1)?.blobs.slice(0, 3)).toEqual(['screen_open', 'passenger', 'welcome']);
+  });
+
+  it('lets only the brand Mini Apps call the API from a browser', async () => {
+    const preflight = (origin: string) =>
+      app.request('/analytics', {
+        method: 'OPTIONS',
+        headers: { origin, 'access-control-request-method': 'POST' },
+      });
+    const passenger = `https://${appHost(loadBrand(), 'passenger')}`;
+    const allowed = await preflight(passenger);
+    expect(allowed.headers.get('access-control-allow-origin')).toBe(passenger);
+    const other = await preflight('https://evil.example');
+    expect(other.headers.get('access-control-allow-origin')).toBeNull();
+  });
+
+  it('reaches the bot setup, not a bot named "setup"', async () => {
+    const response = await app.request(
+      '/telegram/setup',
+      { method: 'POST' },
+      { TELEGRAM_WEBHOOK_SECRET: 'hook' },
+    );
+    expect(response.status).toBe(401);
   });
 });

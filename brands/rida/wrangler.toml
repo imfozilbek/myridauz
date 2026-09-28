@@ -1,0 +1,29 @@
+# Cloudflare settings of the brand (docs/22). Secrets are set with `wrangler secret`, never here (docs/32).
+# Queues, Durable Objects and Cron come in the goals that first need them (docs/03).
+name = "rida-backend"
+main = "../../apps/backend/src/index.ts"
+compatibility_date = "2026-09-01"
+workers_dev = false
+
+routes = [{ pattern = "api.myrida.uz", custom_domain = true }]
+
+[vars]
+BRAND = "rida"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "rida-db"
+database_id = "e8f94542-f5f1-450c-96a7-73682555c8ba"
+migrations_dir = "../../apps/backend/migrations"
+
+# Private bucket: photos are served only through the API (docs/05).
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "rida-media"
+
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+dataset = "rida_analytics"
+
+[observability]
+enabled = true

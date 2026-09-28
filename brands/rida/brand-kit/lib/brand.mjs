@@ -67,7 +67,7 @@ export function botDescription(role) {
 }
 
 // BotFather splash: 512 viewBox, one <path>, no fill (Telegram fills it).
-export const splash = () => `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${markR({ cx: 256, cy: 256, h: 300, fill: null, decimals: 0 })}</svg>`;
+export const splash = () => `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">${markR({ cx: 256, cy: 256, h: 300, fill: null })}</svg>`;
 
 export function ogImage() {
   const body = `<rect width="1200" height="630" fill="${C.teal}"/>` + squircle(96, 135, 360, C.white) +

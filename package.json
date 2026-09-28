@@ -19,6 +19,8 @@
     "audit": "pnpm audit --audit-level moderate",
     "e2e": "playwright test --project=smoke",
     "screenshots": "playwright test --project=screenshots",
+    "deploy": "node scripts/deploy.mjs",
+    "setup-bots": "node scripts/setup-bots.mjs",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },
   "devDependencies": {
@@ -33,7 +35,8 @@
     "knip": "6.38.0",
     "prettier": "3.9.9",
     "typescript": "6.0.3",
-    "vitest": "5.0.2"
+    "vitest": "5.0.2",
+    "wrangler": "4.142.0"
   },
   "pnpm": {
     "overrides": {
