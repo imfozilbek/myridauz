@@ -1,3 +1,4 @@
+import type { ImageStore } from '../../../shared/storage/image-store';
 import type { TripRelation } from '../domain/avatar-visibility';
 import type { Block, User } from '../domain/user';
 
@@ -9,20 +10,12 @@ export type UserRepository = {
   phoneBlock(phone: string): Promise<Block | null>;
 };
 
-export type StoredImage = { readonly body: ReadableStream | ArrayBuffer; readonly type: string };
-
-export type AvatarStore = {
-  put(key: string, body: ArrayBuffer, type: string): Promise<void>;
-  get(key: string): Promise<StoredImage | undefined>;
-  delete(key: string): Promise<void>;
-};
-
 // How two people are linked by trips (G07). Used only for photo visibility (docs/05).
 export type TripRelations = { relation(viewerId: number, ownerId: number): Promise<TripRelation> };
 
 export type UsersDeps = {
   readonly users: UserRepository;
-  readonly avatars: AvatarStore;
+  readonly avatars: ImageStore;
   readonly trips: TripRelations;
   readonly now: () => number;
   readonly newId: () => string;

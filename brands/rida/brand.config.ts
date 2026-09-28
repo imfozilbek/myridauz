@@ -9,4 +9,5 @@ export const brandConfig: BrandConfig = {
   monetization: 'commission',
   theme,
   regionPhotos: true,
+  bots: { passenger: 'myrida_bot', driver: 'myrida_haydovchi_bot', admin: 'myrida_admin_bot' },
 };

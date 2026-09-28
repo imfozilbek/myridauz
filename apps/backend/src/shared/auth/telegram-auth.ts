@@ -1,7 +1,14 @@
-import { AUTH_HEADER, AUTH_SCHEME, MINI_APP_HEADER, MINI_APPS, type MiniApp } from '@platform/contracts';
+import {
+  AUTH_HEADER,
+  AUTH_SCHEME,
+  MINI_APP_HEADER,
+  MINI_APPS,
+  type MiniApp,
+  type TeamRole,
+} from '@platform/contracts';
 import type { MiddlewareHandler } from 'hono';
-import type { AppEnv } from '../../env';
-import { adminIds, botToken } from '../telegram/bot-config';
+import type { AppEnv, Bindings } from '../../env';
+import { botToken } from '../telegram/bot-config';
 import { readTelegramUser } from './telegram-fields';
 import { verifySignedParams } from './verify-signed-params';
 
@@ -15,7 +22,9 @@ const isMiniApp = (value: string | undefined): value is MiniApp =>
 
 // Every API route behind it knows who calls: the signature of the bot of that Mini App is checked
 // on each request (docs/32). initData of another bot, an old one or a forged one is rejected.
-export function telegramAuth(now: () => number): MiddlewareHandler<AppEnv> {
+type TeamLookup = (env: Bindings, userId: number) => Promise<TeamRole | null>;
+
+export function telegramAuth(now: () => number, teamRole: TeamLookup): MiddlewareHandler<AppEnv> {
   return async (context, next) => {
     const app = context.req.header(MINI_APP_HEADER);
     const [scheme, raw] = (context.req.header(AUTH_HEADER) ?? '').split(' ', 2);
@@ -31,10 +40,11 @@ export function telegramAuth(now: () => number): MiddlewareHandler<AppEnv> {
     if (!signed.ok) return context.json({ error: signed.error }, UNAUTHORIZED);
     const user = readTelegramUser(signed.fields);
     if (!user) return context.json({ error: 'auth.invalid' }, UNAUTHORIZED);
-    const isAdmin = adminIds(context.env).has(user.id);
+    const role = await teamRole(context.env, user.id);
+    const isAdmin = role !== null;
     // The admin Mini App is only for the team (docs/02).
     if (app === 'admin' && !isAdmin) return context.json({ error: 'auth.not_admin' }, FORBIDDEN);
-    context.set('session', { app, user, botToken: token, isAdmin });
+    context.set('session', { app, user, botToken: token, isAdmin, teamRole: role });
     await next();
   };
 }

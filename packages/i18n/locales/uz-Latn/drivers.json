@@ -1,0 +1,17 @@
+{
+  "color.white": "Oq",
+  "color.black": "Qora",
+  "color.silver": "Kumush",
+  "color.gray": "Kulrang",
+  "color.blue": "Koʻk",
+  "color.red": "Qizil",
+  "color.green": "Yashil",
+  "color.yellow": "Sariq",
+  "color.brown": "Jigarrang",
+  "color.beige": "Bej",
+  "reason.face_not_visible": "Yuzingiz aniq koʻrinmaydi",
+  "reason.plate_not_readable": "Davlat raqami oʻqilmaydi",
+  "reason.photos_unclear": "Mashina rasmlari tiniq emas",
+  "reason.car_mismatch": "Mashina maʼlumotlari rasmga mos emas",
+  "reason.fake_profile": "Maʼlumotlar haqiqiy emas"
+}

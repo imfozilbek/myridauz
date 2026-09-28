@@ -14,3 +14,29 @@ export async function callTelegram(
   });
   if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);
 }
+
+type Photo = { readonly body: ReadableStream | ArrayBuffer; readonly type: string };
+
+// Private photos go to Telegram as uploaded files: there is no public link to give (docs/05).
+export async function sendAlbum(
+  fetch: Fetch,
+  token: string,
+  chatId: number,
+  photos: readonly Photo[],
+): Promise<void> {
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  const media = await Promise.all(
+    photos.map(async (photo, index) => {
+      const name = `photo${index}`;
+      form.append(name, new Blob([await new Response(photo.body).arrayBuffer()], { type: photo.type }), name);
+      return { type: 'photo', media: `attach://${name}` };
+    }),
+  );
+  form.append('media', JSON.stringify(media));
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, {
+    method: 'POST',
+    body: form,
+  });
+  if (!response.ok) throw new Error(`telegram.sendMediaGroup_${response.status}`);
+}

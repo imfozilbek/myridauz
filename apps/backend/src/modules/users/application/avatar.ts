@@ -1,6 +1,7 @@
 import { AVATAR_TYPES, MAX_AVATAR_BYTES } from '@platform/contracts';
 import { canSeeAvatar } from '../domain/avatar-visibility';
-import type { Caller, Failure, StoredImage, UsersDeps } from './ports';
+import type { StoredImage } from '../../../shared/storage/image-store';
+import type { Caller, Failure, UsersDeps } from './ports';
 
 type AvatarError = 'users.not_registered' | 'users.avatar_too_large' | 'users.invalid_input';
 

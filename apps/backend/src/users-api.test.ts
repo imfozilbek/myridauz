@@ -1,40 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
+import { call, initData, nowSeconds as now, registerUser, testEnv as env } from './test-api';
 import { localUsers } from './modules/users';
-import { initDataFor, signTelegramData } from './shared/auth/test-signing';
-
-const env = {
-  PASSENGER_BOT_TOKEN: '1:passenger',
-  DRIVER_BOT_TOKEN: '2:driver',
-  ADMIN_BOT_TOKEN: '3:admin',
-  ADMIN_TELEGRAM_IDS: '900',
-};
-const now = () => Math.floor(Date.now() / 1000);
-const initData = (id: number, token = env.PASSENGER_BOT_TOKEN, authDate = now()) =>
-  initDataFor(token, id, authDate);
-
-async function call(path: string, id: number, init: RequestInit & { app?: string; data?: string } = {}) {
-  const headers = new Headers(init.headers);
-  headers.set('authorization', `tma ${init.data ?? (await initData(id))}`);
-  headers.set('x-mini-app', init.app ?? 'passenger');
-  return app.request(path, { ...init, headers }, env);
-}
-
-async function registerUser(id: number) {
-  const contact = await signTelegramData(
-    env.PASSENGER_BOT_TOKEN,
-    {
-      contact: { user_id: id, phone_number: `99890${id}` },
-    },
-    now(),
-  );
-  const body = JSON.stringify({ consent: true, firstName: 'Ali', gender: 'male', contact });
-  return call('/me/registration', id, {
-    method: 'POST',
-    body,
-    headers: { 'content-type': 'application/json' },
-  });
-}
+import { signTelegramData } from './shared/auth/test-signing';
 
 describe('Telegram auth on API routes', () => {
   it('accepts initData of the bot of the Mini App', async () => {
