@@ -4,6 +4,7 @@ import type { BrandTheme } from '../brand-config';
 export const theme: BrandTheme = {
   colors: {
     bg: '#FFFFFF',
+    bgGrouped: '#F2F3F5',
     brand: '#14B8A6',
     brandStrong: '#0D9488',
     brandText: '#0F766E',
@@ -29,7 +30,6 @@ export const theme: BrandTheme = {
     line: '#E5E7EB',
     edge: '#DCE7E5',
     divider: '#E5EEEC',
-    telegramBg: '#F2F3F5',
     skyGrey: '#E6EAEE',
     skyGreyLight: '#F8FAFC',
     mintSoft: '#DDF7F1',

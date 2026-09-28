@@ -1,6 +1,7 @@
 import {
   ChartColumn,
   Check,
+  ChevronRight,
   CircleAlert,
   ClipboardCheck,
   Flag,
@@ -32,6 +33,7 @@ const ICONS = {
   error: CircleAlert,
   language: Languages,
   selected: Check,
+  next: ChevronRight,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

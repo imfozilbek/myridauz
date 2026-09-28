@@ -13,7 +13,7 @@ export const TOKENS = {
 export const C = {
   teal: colors.brandStrong, deep: colors.brandDeep, mint: colors.brandMint, amber: colors.accent,
   amberStrong: colors.accentStrong, white: colors.bg, ink: colors.text, muted: colors.textMuted,
-  soft: colors.brandSoft, tealText: colors.brandText, ...art
+  soft: colors.brandSoft, tealText: colors.brandText, telegramBg: colors.bgGrouped, ...art
 };
 // Six logo combos (docs/36): background and R color.
 export const COMBOS = {

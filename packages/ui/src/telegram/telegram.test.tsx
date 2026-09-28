@@ -6,6 +6,7 @@ import { BackButton } from './back-button';
 import { MainButton, SecondaryButton } from './bottom-button';
 import { confirm, haptic, protectFromClosing } from './feedback';
 import { initTelegram } from './init-telegram';
+import { useScreenBackground } from './screen-background';
 
 const sdk = vi.hoisted(() => {
   const available = <T,>(result?: T) => ({ ifAvailable: vi.fn(() => [true, result] as const) });
@@ -18,6 +19,7 @@ const sdk = vi.hoisted(() => {
   });
   return {
     isTMA: vi.fn(() => true),
+    retrieveLaunchParams: vi.fn(() => ({ tgWebAppPlatform: 'ios' })),
     init: vi.fn(),
     miniApp: {
       mount: available(Promise.resolve()),
@@ -48,7 +50,7 @@ beforeEach(() => vi.clearAllMocks());
 
 describe('Telegram wrappers', () => {
   it('sets white Telegram colors and native behaviour', async () => {
-    expect(initTelegram(colors)).toBe(true);
+    expect(initTelegram(colors)).toEqual({ inTelegram: true, platform: 'ios' });
     await Promise.resolve();
     await Promise.resolve();
     expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenCalledWith(colors.bg);
@@ -58,9 +60,24 @@ describe('Telegram wrappers', () => {
     expect(sdk.miniApp.ready.ifAvailable).toHaveBeenCalled();
   });
 
+  it('uses the Android look on other platforms', () => {
+    sdk.retrieveLaunchParams.mockReturnValueOnce({ tgWebAppPlatform: 'android' });
+    expect(initTelegram(colors).platform).toBe('base');
+  });
+
+  it('paints the Telegram header in the color of the screen', () => {
+    const Grouped = () => {
+      useScreenBackground('grouped');
+      return null;
+    };
+    renderInShell(<Grouped />, true);
+    expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenCalledWith(colors.bgGrouped);
+    expect(document.body.style.background).not.toBe('');
+  });
+
   it('does nothing outside Telegram', () => {
     sdk.isTMA.mockReturnValueOnce(false);
-    expect(initTelegram(colors)).toBe(false);
+    expect(initTelegram(colors)).toEqual({ inTelegram: false, platform: 'base' });
     expect(sdk.init).not.toHaveBeenCalled();
   });
 

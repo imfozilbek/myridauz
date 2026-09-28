@@ -2,9 +2,27 @@ import { StartFlow, type StartAction } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
-  { id: 'applications', icon: 'applications', labelKey: 'common.admin.applications' },
-  { id: 'complaints', icon: 'complaints', labelKey: 'common.admin.complaints' },
-  { id: 'statistics', icon: 'statistics', labelKey: 'common.admin.statistics' },
+  {
+    id: 'applications',
+    icon: 'applications',
+    tone: 'brand',
+    labelKey: 'common.admin.applications',
+    hintKey: 'common.admin.applicationsHint',
+  },
+  {
+    id: 'complaints',
+    icon: 'complaints',
+    tone: 'accent',
+    labelKey: 'common.admin.complaints',
+    hintKey: 'common.admin.complaintsHint',
+  },
+  {
+    id: 'statistics',
+    icon: 'statistics',
+    tone: 'deep',
+    labelKey: 'common.admin.statistics',
+    hintKey: 'common.admin.statisticsHint',
+  },
 ];
 
 export function StartPage() {

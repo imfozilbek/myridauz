@@ -3,6 +3,7 @@ export type HexColor = `#${string}`;
 
 export type BrandColors = {
   readonly bg: HexColor;
+  readonly bgGrouped: HexColor;
   readonly brand: HexColor;
   readonly brandStrong: HexColor;
   readonly brandText: HexColor;

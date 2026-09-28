@@ -1,4 +1,5 @@
 import type { BrandColors } from '@platform/brands';
+import { OUTSIDE_TELEGRAM, type TelegramSession } from './in-telegram-context';
 import {
   backButton,
   closingBehavior,
@@ -6,14 +7,17 @@ import {
   isTMA,
   mainButton,
   miniApp,
+  retrieveLaunchParams,
   secondaryButton,
   swipeBehavior,
   viewport,
 } from '@telegram-apps/sdk-react';
 
 // Native Telegram behaviour (docs/21). Outside Telegram (browser, tests) the app works without it.
-export function initTelegram(colors: BrandColors): boolean {
-  if (!isTMA()) return false;
+const APPLE_PLATFORMS = new Set(['ios', 'macos']);
+
+export function initTelegram(colors: BrandColors): TelegramSession {
+  if (!isTMA()) return OUTSIDE_TELEGRAM;
   init();
   void miniApp.mount.ifAvailable()?.[1]?.then(() => {
     // White header, background and bottom bar: light theme only (docs/20).
@@ -31,5 +35,6 @@ export function initTelegram(colors: BrandColors): boolean {
   // A swipe must not close the app by accident (docs/21).
   swipeBehavior.disableVertical.ifAvailable();
   miniApp.ready.ifAvailable();
-  return true;
+  const platform = APPLE_PLATFORMS.has(retrieveLaunchParams().tgWebAppPlatform) ? 'ios' : 'base';
+  return { inTelegram: true, platform };
 }

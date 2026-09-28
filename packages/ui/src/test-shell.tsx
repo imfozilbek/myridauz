@@ -15,7 +15,11 @@ export function renderInShell(children: ReactNode, inTelegram = false) {
   });
   const analytics = { ...client, track: (event: AnalyticsInput) => void tracked.push(event) };
   const result = render(
-    <AppShell brand={loadBrand()} analytics={analytics} inTelegram={inTelegram}>
+    <AppShell
+      brand={loadBrand()}
+      analytics={analytics}
+      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base' }}
+    >
       {children}
     </AppShell>,
   );

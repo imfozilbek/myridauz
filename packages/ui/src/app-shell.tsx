@@ -9,31 +9,36 @@ import { BrandContext } from './context/brand-context';
 import { I18nProvider } from './context/i18n-context';
 import { ErrorBoundary } from './states/error-boundary';
 import { ScreenSkeleton } from './states/screen-skeleton';
-import { InTelegramContext } from './telegram/in-telegram-context';
+import { OUTSIDE_TELEGRAM, TelegramContext, type TelegramSession } from './telegram/in-telegram-context';
 import { themeVars } from './theme/theme-vars';
 
 type AppShellProps = {
   readonly brand: BrandConfig;
   readonly analytics: AnalyticsClient;
-  readonly inTelegram?: boolean;
+  readonly session?: TelegramSession;
   readonly children: ReactNode;
 };
 
 // Light theme only, never dark (docs/20): the Telegram theme of the user is ignored.
-export function AppShell({ brand, analytics, inTelegram = false, children }: AppShellProps) {
+export function AppShell({ brand, analytics, session = OUTSIDE_TELEGRAM, children }: AppShellProps) {
   return (
     <BrandContext.Provider value={brand}>
-      <InTelegramContext.Provider value={inTelegram}>
+      <TelegramContext.Provider value={session}>
         <AnalyticsContext.Provider value={analytics}>
           <I18nProvider>
-            <AppRoot appearance="light" className="app-shell" style={themeVars(brand.theme.colors)}>
+            <AppRoot
+              appearance="light"
+              platform={session.platform}
+              className="app-shell"
+              style={themeVars(brand.theme.colors)}
+            >
               <ErrorBoundary>
                 <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
               </ErrorBoundary>
             </AppRoot>
           </I18nProvider>
         </AnalyticsContext.Provider>
-      </InTelegramContext.Provider>
+      </TelegramContext.Provider>
     </BrandContext.Provider>
   );
 }

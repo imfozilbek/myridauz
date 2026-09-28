@@ -4,6 +4,7 @@ import type { BrandColors } from '@platform/brands';
 export function themeVars(colors: BrandColors): Record<string, string> {
   return {
     '--tgui--bg_color': colors.bg,
+    '--tgui--secondary_bg_color': colors.bgGrouped,
     '--tgui--header_bg_color': colors.bg,
     '--tgui--section_bg_color': colors.bg,
     '--tgui--text_color': colors.text,

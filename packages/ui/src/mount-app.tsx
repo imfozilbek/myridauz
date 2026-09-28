@@ -16,7 +16,7 @@ export function mountApp(app: MiniApp, Page: ComponentType): void {
   if (!container) throw new Error('ui.root_missing');
   const brand = loadBrand(import.meta.env.VITE_BRAND);
   document.title = brand.name;
-  const inTelegram = initTelegram(brand.theme.colors);
+  const session = initTelegram(brand.theme.colors);
   const analytics = createAnalyticsClient({
     baseUrl: new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString(),
     fetch: (input, init) => window.fetch(input, init),
@@ -32,7 +32,7 @@ export function mountApp(app: MiniApp, Page: ComponentType): void {
   });
   createRoot(container).render(
     <StrictMode>
-      <AppShell brand={brand} analytics={analytics} inTelegram={inTelegram}>
+      <AppShell brand={brand} analytics={analytics} session={session}>
         <Page />
       </AppShell>
     </StrictMode>,
