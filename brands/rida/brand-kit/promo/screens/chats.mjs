@@ -21,7 +21,7 @@ function row(t, i, avatar, name, last) {
   return `<g opacity="${p.toFixed(3)}"><rect y="${y}" width="390" height="78" fill="${C.white}"/>` + avatar(44, y + 39, 29) +
     ui(name, 86, y + 32, { size: 16, weight: 500, maxWidth: 220 }) + ui(last, 86, y + 57, { size: 14, fill: C.muted, maxWidth: 240 }) +
     ui(K.times[i], 366, y + 32, { size: 13, fill: C.muted, anchor: 'end' }) +
-    `<circle cx="354" cy="${y + 52}" r="11" fill="#9CA3AF"/>` + ui(UNREAD[i], 354, y + 57, { size: 12, weight: 500, fill: C.white, anchor: 'middle' }) +
+    `<circle cx="354" cy="${y + 52}" r="11" fill="${C.grey}"/>` + ui(UNREAD[i], 354, y + 57, { size: 12, weight: 500, fill: C.white, anchor: 'middle' }) +
     sep(y + 78, 86) + '</g>';
 }
 

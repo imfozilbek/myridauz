@@ -1,12 +1,19 @@
-// Brand colors from data/tokens.json (the color table of docs/20).
+// Brand colors come only from brands/rida/theme.ts (docs/20, docs/22).
+// data/tokens.json keeps what each color is for, and the motion tokens.
 import fs from 'node:fs';
+import { theme } from '../../theme.ts';
 
-export const TOKENS = JSON.parse(fs.readFileSync(new URL('../data/tokens.json', import.meta.url), 'utf8'));
-const color = (name) => TOKENS.colors.find((c) => c.name === name).value;
+const { colors, art } = theme;
+const notes = JSON.parse(fs.readFileSync(new URL('../data/tokens.json', import.meta.url), 'utf8'));
+const tokenName = (key) => `color.${key.replace(/[A-Z]/g, (letter) => `.${letter.toLowerCase()}`)}`;
+export const TOKENS = {
+  name: notes.name, theme: notes.theme, motion: notes.motion,
+  colors: Object.entries(notes.colorUsage).map(([key, usage]) => ({ name: tokenName(key), value: colors[key], usage }))
+};
 export const C = {
-  teal: color('color.brand.strong'), deep: color('color.brand.deep'), mint: color('color.brand.mint'),
-  amber: color('color.accent'), amberStrong: color('color.accent.strong'),
-  white: '#FFFFFF', ink: color('color.text'), muted: color('color.text.muted')
+  teal: colors.brandStrong, deep: colors.brandDeep, mint: colors.brandMint, amber: colors.accent,
+  amberStrong: colors.accentStrong, white: colors.bg, ink: colors.text, muted: colors.textMuted,
+  soft: colors.brandSoft, tealText: colors.brandText, telegramBg: colors.bgGrouped, ...art
 };
 // Six logo combos (docs/36): background and R color.
 export const COMBOS = {

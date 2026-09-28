@@ -37,7 +37,7 @@ export function star(cx, cy, r, fill = C.amber) {
 // Telegram switch; p is how far it is turned on (0 → 1).
 export function toggle(x, y, p) {
   const knob = x + 10 + 18 * p;
-  return `<rect x="${x}" y="${y - 11}" width="46" height="22" rx="11" fill="${p > 0.5 ? C.teal : '#D1D5DB'}"/>` +
+  return `<rect x="${x}" y="${y - 11}" width="46" height="22" rx="11" fill="${p > 0.5 ? C.teal : C.greyLight}"/>` +
     `<circle cx="${knob.toFixed(1)}" cy="${y}" r="8" fill="${C.white}"/>`;
 }
 

@@ -12,7 +12,7 @@ const COLORS = [C.amberStrong, C.teal, C.deep];
 function seats(t) {
   return [0, 1, 2].map((i) => {
     const p = pop(t, CONFIRM[i] + 0.15, 0.4), x = 28 + i * 38;
-    return `<rect x="${x}" y="230" width="30" height="30" rx="8" fill="none" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="4 3"/>` +
+    return `<rect x="${x}" y="230" width="30" height="30" rx="8" fill="none" stroke="${C.slateLight}" stroke-width="2" stroke-dasharray="4 3"/>` +
       (p > 0 ? `<g transform="translate(${x + 15} 245) scale(${p.toFixed(3)}) translate(${-x - 15} -245)"><rect x="${x}" y="230" width="30" height="30" rx="8" fill="${C.teal}"/>` +
         icon('User', x + 15, 245, 18, C.white, 2.4) + '</g>' : '');
   }).join('');

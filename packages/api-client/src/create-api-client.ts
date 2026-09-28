@@ -1,7 +1,6 @@
 import { HEALTH_PATH, healthResponseSchema, type HealthResponse } from '@platform/contracts';
 import { ApiError } from './api-error';
-
-type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
+import type { Fetch } from './fetch';
 
 type ApiClientOptions = {
   readonly baseUrl: string;

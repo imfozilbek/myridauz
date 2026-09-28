@@ -6,7 +6,7 @@ export const squircle = (x, y, s, fill, extra = '') => `<rect x="${x}" y="${y}" 
 
 export function icon(combo = 1, shape = 'squircle', S = 1024) {
   const { bg, fg } = COMBOS[combo];
-  const edge = bg === C.white ? ` stroke="#DCE7E5" stroke-width="${S * 0.004}"` : '';
+  const edge = bg === C.white ? ` stroke="${C.edge}" stroke-width="${S * 0.004}"` : '';
   const shapes = {
     square: `<rect width="${S}" height="${S}" fill="${bg}"/>`,
     squircle: squircle(0, 0, S, bg, edge),

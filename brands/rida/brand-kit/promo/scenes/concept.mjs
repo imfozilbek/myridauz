@@ -14,7 +14,7 @@ const LINE_AT = [0, 4, 6]; // start of each line (local seconds)
 
 // Road sign on a post; x moves with the road.
 function sign(label, x, color) {
-  return `<rect x="${x - 6}" y="${ROAD - 170}" width="12" height="170" fill="#94A3B8"/>` +
+  return `<rect x="${x - 6}" y="${ROAD - 170}" width="12" height="170" fill="${C.slate}"/>` +
     `<rect x="${x - 150}" y="${ROAD - 260}" width="300" height="96" rx="18" fill="${color}"/>` +
     text(label, { x, y: ROAD - 196, anchor: 'middle', fill: C.white, size: 46, maxWidth: 260 });
 }
@@ -28,7 +28,7 @@ export function concept(t, d) {
     mountains(t, { y: 620, speed: 12, amp: 150, seed: 1, opacity: 0.1 }) +
     mountains(t, { y: 720, speed: 35, amp: 110, seed: 4, opacity: 0.16 }) +
     mountains(t, { y: 820, speed: 80, amp: 70, seed: 7, opacity: 0.26 }) +
-    `<rect y="${ROAD + 80}" width="1080" height="1100" fill="${C.white}"/>` + road(t, { y: ROAD, speed: SPEED, color: '#64748B' }) +
+    `<rect y="${ROAD + 80}" width="1080" height="1100" fill="${C.white}"/>` + road(t, { y: ROAD, speed: SPEED, color: C.road }) +
     (from > -200 ? sign(K.from, from, C.teal) : '') + sign(K.to, to, C.amberStrong) +
     car(400, ROAD + 40, t, { people, scale: 1.45 }) + g(coins, { o: enter(t, 4.0, 0.2) }) + copy;
 }

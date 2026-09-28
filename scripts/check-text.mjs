@@ -1,12 +1,12 @@
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { findViolations, isTextFile } from './text-rules.mjs';
 
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], {
   encoding: 'utf8',
 })
   .split('\0')
-  .filter((path) => path && isTextFile(path));
+  .filter((path) => path && isTextFile(path) && existsSync(path));
 
 const brandIds = readdirSync('brands', { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')

@@ -1,7 +1,7 @@
 import type { BrandConfig } from './brand-config';
 import { brandConfig as rida } from './rida/brand.config';
 
-export type { BrandConfig } from './brand-config';
+export type { BrandColors, BrandConfig, HexColor } from './brand-config';
 
 const BRANDS: Readonly<Record<string, BrandConfig>> = { [rida.id]: rida };
 const DEFAULT_BRAND_ID = rida.id;

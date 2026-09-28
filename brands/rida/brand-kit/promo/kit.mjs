@@ -6,7 +6,7 @@ import { prog, outCubic, outBack } from '../lib/ease.mjs';
 
 export const COPY = JSON.parse(fs.readFileSync(new URL('./copy.json', import.meta.url), 'utf8'));
 export const W = 1080, H = 1920, CX = W / 2;
-export const SOFT = '#F0FDFA'; // color.brand.soft (docs/20)
+export const SOFT = C.soft; // color.brand.soft (docs/20)
 
 // Eased progress: entrance from t0, pop with overshoot, exit before `end`.
 export const enter = (t, t0, dur = 0.4) => outCubic(prog(t, t0, t0 + dur));
@@ -24,14 +24,6 @@ export function g(body, { o = 1, x = 0, y = 0, s = 1, cx = CX, cy = H / 2 } = {}
 }
 // Rises into place as p goes 0 → 1.
 export const rise = (body, p, dy = 50) => g(body, { o: p, y: dy * (1 - p) });
-
-export const bg = (fill) => `<rect width="${W}" height="${H}" fill="${fill}"/>`;
-
-// Centered lines of text; cy is the middle of the block.
-export function lines(list, { cy, size = 96, fill = C.ink, weight = 800, lh = 1.18, maxWidth = 960, x = CX }) {
-  const step = size * lh, top = cy - ((list.length - 1) * step) / 2;
-  return list.map((l, i) => text(l, { x, y: top + i * step + size * 0.35, anchor: 'middle', fill, weight, size, maxWidth })).join('');
-}
 
 // Rounded label: text with optional leading icon markup, centered at (cx, cy).
 export function pill(label, { cx = CX, cy, size = 44, bg: fill = C.white, fg = C.teal, iconSvg, pad = 0.8, weight = 800 }) {

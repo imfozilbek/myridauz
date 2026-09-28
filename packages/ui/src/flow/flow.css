@@ -1,0 +1,31 @@
+/* Welcome: one idea in the optical center, a lot of air (docs/21, quality bar). */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 18vh 32px 120px;
+  text-align: center;
+}
+
+.welcome-title {
+  margin-top: 12px;
+}
+
+.welcome-slogan {
+  color: var(--tgui--link_color);
+}
+
+.welcome-text {
+  color: var(--tgui--hint_color);
+}
+
+/* Main screen: grouped lists on the gray Telegram background. */
+.home {
+  min-height: 100vh;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.home-title {
+  padding: 16px 20px 4px;
+}

@@ -20,6 +20,8 @@
 
 - Перед стартом проверить, что библиотеки поддерживаются (последние релизы).
   Запасной вариант: shadcn/ui + Tailwind + Lucide.
+- Проверено 28.09.2026 (G02): TelegramUI 2.1.13 и SDK 3.x (релизы 12.2025),
+  Lucide 1.48 (09.2026). Живые, запасной вариант не нужен.
 
 ## Визуальный язык: Telegram + цвета Rida (решение владельца)
 
@@ -39,8 +41,12 @@
 - `packages/ui` оборачивает библиотеки: `Button`, `Icon`, `ListItem` и т.д.
 - Прямой импорт библиотеки в приложениях запрещён (правило ESLint).
 - Зачем: заменить библиотеку = поменять только `packages/ui`.
-- Иконки: через единый словарь по смыслу: `icon('trip')`, `icon('chat')`.
+- Иконки: через единый словарь по смыслу: `<Icon name="trip" />` (`packages/ui/src/icons.tsx`).
   Один смысл = одна иконка во всех трёх Mini App.
+- Что есть в `packages/ui` (G02): `AppShell` (тема, светлый `AppRoot`, ошибки, скелетон),
+  обёртки TelegramUI, `MainButton`, `SecondaryButton`, `BackButton`, `confirm`, `haptic`,
+  `protectFromClosing`, `EmptyState`, `ErrorScreen`, `ScreenSkeleton`, `StartFlow`
+  (приветствие, главный экран из 3 действий, раздел), `useI18n`, `useScreenView`.
 
 ## Принципы простоты (для людей без опыта в IT)
 

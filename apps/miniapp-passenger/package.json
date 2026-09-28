@@ -9,12 +9,10 @@
     "typecheck": "tsc -p ."
   },
   "dependencies": {
-    "@platform/i18n": "workspace:*",
     "@platform/ui": "workspace:*",
     "react": "18.3.1"
   },
   "devDependencies": {
-    "@platform/brands": "workspace:*",
     "@platform/config": "workspace:*",
     "@testing-library/react": "16.3.3",
     "@types/react": "18.3.31",

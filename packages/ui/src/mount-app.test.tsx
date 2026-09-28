@@ -6,27 +6,21 @@ const Page = () => <p>sahifa</p>;
 
 afterEach(() => {
   document.body.innerHTML = '';
-  delete window.Telegram;
 });
 
 describe('mountApp', () => {
-  it('renders the page and tells Telegram it is ready', async () => {
+  it('renders the page with the brand title and sends analytics when hidden', async () => {
     document.body.innerHTML = '<div id="root"></div>';
-    const webApp = { ready: vi.fn(), expand: vi.fn() };
-    window.Telegram = { WebApp: webApp };
-    await act(async () => mountApp(Page));
+    const fetch = vi.spyOn(window, 'fetch').mockResolvedValue(new Response(null, { status: 204 }));
+    await act(async () => mountApp('driver', Page));
     expect(document.body.textContent).toContain('sahifa');
-    expect(webApp.ready).toHaveBeenCalledOnce();
-    expect(webApp.expand).toHaveBeenCalledOnce();
-  });
-
-  it('works outside Telegram', async () => {
-    document.body.innerHTML = '<div id="root"></div>';
-    await act(async () => mountApp(Page));
-    expect(document.body.textContent).toContain('sahifa');
+    expect(document.title).toBeTruthy();
+    Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(fetch).toHaveBeenCalledTimes(0);
   });
 
   it('fails without a root element', () => {
-    expect(() => mountApp(Page)).toThrow('ui.root_missing');
+    expect(() => mountApp('driver', Page)).toThrow('ui.root_missing');
   });
 });

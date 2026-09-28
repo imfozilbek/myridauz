@@ -1,4 +1,5 @@
 // Text to outlined SVG paths (no font needed where the SVG is shown).
+import { C } from './palette.mjs';
 // Families: rubik (brand) and roboto (Telegram on Android, for app screens).
 import opentype from 'opentype.js';
 
@@ -49,7 +50,7 @@ export function text(str, opts = {}) {
   if (!cache.has(key)) cache.set(key, draw(str, opts));
   return cache.get(key);
 }
-function draw(str, { x = 0, y = 0, anchor = 'start', fill = '#000', family, weight = 800, size = 100, spacing = 0, maxWidth, id }) {
+function draw(str, { x = 0, y = 0, anchor = 'start', fill = C.black, family, weight = 800, size = 100, spacing = 0, maxWidth, id }) {
   let L = layout(str, { family, weight, size, spacing });
   if (maxWidth && L.width > maxWidth) L = layout(str, { family, weight, size: size * maxWidth / L.width, spacing });
   const x0 = anchor === 'middle' ? x - L.width / 2 : anchor === 'end' ? x - L.width : x;
@@ -58,7 +59,7 @@ function draw(str, { x = 0, y = 0, anchor = 'start', fill = '#000', family, weig
 }
 
 // Glyph "R" centered on (cx, cy) with the given cap height, as an SVG path.
-export function markR({ cx, cy, h, fill = '#fff', id, decimals = 1 }) {
+export function markR({ cx, cy, h, fill = C.white, id, decimals = 1 }) {
   const font = FONTS['rubik-800'];
   const size = h / CAP;
   const g = font.charToGlyph('R');
