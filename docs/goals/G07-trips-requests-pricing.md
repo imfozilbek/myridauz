@@ -9,7 +9,8 @@
 Зависит от: G05, G06.
 Контекст: docs/09-marketplace-and-pricing.md, docs/16-start-prices.md,
 docs/23-pricing-engine.md, docs/06-woman-in-car.md, docs/14-locations-and-routes.md,
-docs/19-design-system-and-ux.md, docs/01-project-overview.md (терминология).
+docs/19-design-system-and-ux.md, docs/01-project-overview.md (терминология),
+docs/48-locations-directory.md (расстояния: показывать только со знаком ≈).
 
 Сделать:
 1. Модуль pricing по docs/23: ручная цена направления, иначе
