@@ -1,4 +1,6 @@
 {
   "generic.title": "Xatolik yuz berdi",
-  "generic.description": "Birozdan keyin qayta urinib koʻring."
+  "generic.description": "Birozdan keyin qayta urinib koʻring.",
+  "locations.same_place": "Qayerdan va qayerga bir xil boʻlmasin. Boshqa manzilni tanlang.",
+  "locations.inside_city": "Shahar ichida safar yoʻq. Boshqa shahar yoki tumanni tanlang."
 }

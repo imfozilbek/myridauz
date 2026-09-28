@@ -7,6 +7,7 @@ import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
 import { analyticsModule } from './modules/analytics';
 import { healthModule } from './modules/health';
+import { locationsModule } from './modules/locations';
 import { usersModule } from './modules/users';
 import { telegramAuth } from './shared/auth/telegram-auth';
 
@@ -25,9 +26,13 @@ export const app = new Hono<AppEnv>()
   // "/me/*" also matches "/me".
   .use('/me/*', allowMiniApps, auth)
   .use('/users/*', allowMiniApps, auth)
+  // The directory is public: no personal data. Only a change of a distance checks the signature.
+  .use('/locations', allowMiniApps)
+  .use('/locations/*', allowMiniApps)
   .route('/', healthModule)
   .route('/', analyticsModule)
   .route('/', usersModule)
+  .route('/', locationsModule(auth))
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',

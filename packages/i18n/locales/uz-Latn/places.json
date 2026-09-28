@@ -1,0 +1,13 @@
+{
+  "route": "Yoʻnalish",
+  "from": "Qayerdan",
+  "to": "Qayerga",
+  "choose": "Tanlang",
+  "fromTitle": "Qayerdan yoʻlga chiqasiz?",
+  "toTitle": "Qayerga borasiz?",
+  "search": "Viloyat, tuman yoki shahar",
+  "wholeRegion": "Butun viloyat",
+  "wholeCity": "Butun shahar",
+  "nothingFound": "Hech narsa topilmadi",
+  "nothingFoundHint": "Nomini boshqacha yozib koʻring"
+}

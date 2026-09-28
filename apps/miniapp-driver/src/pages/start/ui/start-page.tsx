@@ -8,6 +8,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.driver.newTrip',
     hintKey: 'common.driver.newTripHint',
+    route: { wholeRegion: false },
   },
   {
     id: 'passenger_requests',
@@ -15,6 +16,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
+    route: { wholeRegion: true },
   },
   {
     id: 'my_trips',

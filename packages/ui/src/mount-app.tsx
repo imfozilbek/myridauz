@@ -1,4 +1,4 @@
-import { createAnalyticsClient, createUsersClient } from '@platform/api-client';
+import { createAnalyticsClient, createLocationsClient, createUsersClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
 import { StrictMode, type ComponentType } from 'react';
@@ -7,6 +7,7 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
+import { LocationsClientContext } from './places/directory';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -26,6 +27,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
   const users = createUsersClient({ baseUrl, fetch, app, initData: session.initData });
+  const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
     baseUrl,
     fetch,
@@ -42,15 +44,17 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   createRoot(container).render(
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} session={session}>
-        {welcome ? (
-          <AccountGate app={app} client={users} welcome={welcome}>
-            <Page />
-          </AccountGate>
-        ) : (
-          <TeamGate client={users}>
-            <Page />
-          </TeamGate>
-        )}
+        <LocationsClientContext.Provider value={locations}>
+          {welcome ? (
+            <AccountGate app={app} client={users} welcome={welcome}>
+              <Page />
+            </AccountGate>
+          ) : (
+            <TeamGate client={users}>
+              <Page />
+            </TeamGate>
+          )}
+        </LocationsClientContext.Provider>
       </AppShell>
     </StrictMode>,
   );
