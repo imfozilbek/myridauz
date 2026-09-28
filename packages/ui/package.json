@@ -3,13 +3,18 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./testing": "./src/test-shell.tsx"
   },
   "scripts": {
     "typecheck": "tsc -p ."
   },
   "dependencies": {
+    "@platform/api-client": "workspace:*",
     "@platform/brands": "workspace:*",
+    "@platform/contracts": "workspace:*",
+    "@platform/i18n": "workspace:*",
+    "@telegram-apps/sdk-react": "3.3.9",
     "@telegram-apps/telegram-ui": "2.1.13",
     "lucide-react": "1.48.0",
     "react": "18.3.1",

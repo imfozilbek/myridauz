@@ -1,7 +1,12 @@
-import { t } from '@platform/i18n';
-import { ShieldCheck, StartScreen, useBrand } from '@platform/ui';
+import { StartFlow, type StartAction } from '@platform/ui';
+
+// The main screen has at most 3 actions (docs/19).
+const ACTIONS: readonly StartAction[] = [
+  { id: 'applications', icon: 'applications', labelKey: 'common.admin.applications' },
+  { id: 'complaints', icon: 'complaints', labelKey: 'common.admin.complaints' },
+  { id: 'statistics', icon: 'statistics', labelKey: 'common.admin.statistics' },
+];
 
 export function StartPage() {
-  const brand = useBrand();
-  return <StartScreen icon={ShieldCheck} description={t('start.admin', { brand: brand.name })} />;
+  return <StartFlow welcomeIcon="team" welcome="common.admin.welcome" actions={ACTIONS} />;
 }

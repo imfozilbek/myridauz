@@ -34,6 +34,20 @@ const fsdBlocks = FSD.slice(1).map((layer, i) => ({
   },
 }));
 
+// Text for people only through translation keys (docs/13): no words in JSX or in text props.
+const TEXT = 'Text for people only through translation keys: t(key) (docs/13).';
+const TEXT_PROPS = '^(title|header|subtitle|description|text|label|placeholder|message|alt|aria-label)$';
+const TEXT_RULES = [
+  { selector: 'JSXText[value=/[A-Za-z\\u0400-\\u04FF]/]', message: TEXT },
+  { selector: `JSXAttribute[name.name=/${TEXT_PROPS}/] > Literal`, message: TEXT },
+  { selector: `Property[key.name=/${TEXT_PROPS}/] > Literal[value=/[A-Za-z]/]`, message: TEXT },
+];
+const textBlock = {
+  files: ['apps/miniapp-*/src/**/*.tsx', 'packages/ui/src/**/*.tsx'],
+  ignores: ['**/*.test.tsx', 'packages/ui/src/test-shell.tsx'],
+  rules: { 'no-restricted-syntax': ['error', ...HEX_RULES, ...BRAND_RULES, ...TEXT_RULES] },
+};
+
 // Backend module layers: dependencies point inward; no deep imports into another module.
 const DEEP = layerRule(
   '^(\\.\\./){2,}[^./][^/]*/(domain|application|infrastructure|http)(/|$)',
@@ -78,6 +92,7 @@ export default tseslint.config(
   { files: ['brands/*/theme.ts'], rules: { 'no-restricted-syntax': 'off' } },
   { files: ['packages/ui/**'], rules: { 'no-restricted-imports': 'off' } },
   { files: ['apps/backend/src/modules/*/*/**/*.ts'], rules: { 'no-restricted-imports': imports([DEEP]) } },
+  textBlock,
   ...fsdBlocks,
   ...backendBlocks,
 );

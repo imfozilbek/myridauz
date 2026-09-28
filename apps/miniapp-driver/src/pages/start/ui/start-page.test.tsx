@@ -1,18 +1,15 @@
-import { loadBrand } from '@platform/brands';
-import { AppShell } from '@platform/ui';
-import { render, screen } from '@testing-library/react';
+import { renderInShell } from '@platform/ui/testing';
+import { fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { StartPage } from './start-page';
 
 describe('StartPage', () => {
-  it('shows the brand and the start text', () => {
-    const brand = loadBrand();
-    render(
-      <AppShell brand={brand}>
-        <StartPage />
-      </AppShell>,
-    );
-    expect(screen.getByText(brand.name)).toBeTruthy();
-    expect(screen.getByText('Safaringizga yoʻlovchi toping')).toBeTruthy();
+  it('welcomes and opens the main screen with 3 actions', () => {
+    const { tracked } = renderInShell(<StartPage />);
+    expect(screen.getByText(/Safaringizga yoʻlovchi toping/)).toBeTruthy();
+    fireEvent.click(screen.getByText('Davom etish'));
+    for (const action of ['Yangi safar', 'Yoʻlovchilar soʻrovlari', 'Mening safarlarim'])
+      expect(screen.getByText(action)).toBeTruthy();
+    expect(tracked.map((event) => event.screen)).toEqual(['welcome', 'home']);
   });
 });

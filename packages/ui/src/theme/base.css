@@ -1,0 +1,28 @@
+/* A Mini App must not feel like a website (docs/21): no zoom, no text selection, no bounce. */
+html,
+body {
+  margin: 0;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+input,
+textarea {
+  user-select: text;
+}
+
+/* Keep content out of system areas (docs/21): Telegram SDK binds these variables. */
+.app-shell {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-top: calc(
+    var(--tg-viewport-safe-area-inset-top, 0px) + var(--tg-viewport-content-safe-area-inset-top, 0px)
+  );
+  padding-bottom: calc(
+    var(--tg-viewport-safe-area-inset-bottom, 0px) + var(--tg-viewport-content-safe-area-inset-bottom, 0px)
+  );
+}

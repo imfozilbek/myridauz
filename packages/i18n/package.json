@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "@platform/config": "workspace:*"
+  },
+  "dependencies": {
+    "intl-messageformat": "12.1.2"
   }
 }

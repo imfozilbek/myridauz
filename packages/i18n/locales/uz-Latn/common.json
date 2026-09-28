@@ -1,5 +1,19 @@
 {
-  "start.passenger": "Safar toping",
-  "start.driver": "Safaringizga yoʻlovchi toping",
-  "start.admin": "{brand} jamoasi uchun"
+  "continue": "Davom etish",
+  "back": "Orqaga",
+  "retry": "Qayta urinish",
+  "money": "{amount} soʻm",
+  "language": "Til",
+  "soon": "Bu boʻlim tez orada ishga tushadi.",
+  "passenger.welcome": "Safar toping",
+  "passenger.findTrip": "Safar topish",
+  "passenger.leaveRequest": "Soʻrov qoldirish",
+  "driver.welcome": "Safaringizga yoʻlovchi toping",
+  "driver.newTrip": "Yangi safar",
+  "driver.passengerRequests": "Yoʻlovchilar soʻrovlari",
+  "admin.welcome": "{brand} jamoasi uchun",
+  "admin.applications": "Arizalar",
+  "admin.complaints": "Shikoyatlar",
+  "admin.statistics": "Statistika",
+  "myTrips": "Mening safarlarim"
 }
