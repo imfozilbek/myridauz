@@ -9,6 +9,7 @@ const env = {
   TELEGRAM_WEBHOOK_SECRET: 'hook',
   ADMIN_TELEGRAM_IDS: '7,8',
 };
+type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
 const start = (fromId = 1, text = '/start') => ({
   message: { text, chat: { id: 42 }, from: { id: fromId } },
 });
@@ -24,10 +25,10 @@ function send(role: string, body: unknown, secret = 'hook', bindings: object = e
 
 describe('POST /telegram/:role', () => {
   it('answers /start with a text and a button that opens the Mini App of the role', async () => {
-    const reply = await (await send('passenger', start())).json();
+    const reply = (await (await send('passenger', start())).json()) as Reply;
     expect(reply).toMatchObject({ method: 'sendMessage', chat_id: 42 });
     expect(reply.text).toContain(brand.name);
-    expect(reply.reply_markup.inline_keyboard[0][0]).toEqual({
+    expect(reply.reply_markup.inline_keyboard[0]?.[0]).toEqual({
       text: 'Ochish',
       web_app: { url: `https://passenger.${brand.domain}` },
     });
@@ -44,8 +45,8 @@ describe('POST /telegram/:role', () => {
   });
 
   it('opens the admin Mini App only for the team', async () => {
-    const team = await (await send('admin', start(7))).json();
-    expect(team.reply_markup.inline_keyboard[0][0].web_app.url).toBe(`https://admin.${brand.domain}`);
+    const team = (await (await send('admin', start(7))).json()) as Reply;
+    expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(`https://admin.${brand.domain}`);
     const stranger = await (await send('admin', start(9))).json();
     expect(stranger).toEqual({
       method: 'sendMessage',
