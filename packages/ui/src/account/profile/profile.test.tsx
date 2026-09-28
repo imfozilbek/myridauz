@@ -19,7 +19,7 @@ const profile = {
   rating: null,
 };
 
-function renderProfile(overrides: Partial<Account> = {}) {
+function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
   const client = {
     getMe: vi.fn(),
     register: vi.fn(),
@@ -43,6 +43,8 @@ function renderProfile(overrides: Partial<Account> = {}) {
     <AccountContext.Provider value={account}>
       <StartFlow actions={actions} />
     </AccountContext.Provider>,
+    false,
+    hasCamera,
   );
   return { client, account };
 }
@@ -72,7 +74,7 @@ describe('profile', () => {
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasmni almashtirish')).toBeTruthy();
     const input = document.querySelector('input[type=file]') as HTMLInputElement;
-    expect(input.getAttribute('capture')).toBeNull();
+    expect(input.getAttribute('capture')).toBe('user');
     const photo = new File(['x'], 'me.jpg', { type: 'image/jpeg' });
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
     expect(client.uploadAvatar).toHaveBeenCalledWith(photo);
@@ -80,6 +82,13 @@ describe('profile', () => {
     client.uploadAvatar.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
     expect(screen.getByText('Rasmni yuklab boʻlmadi. Qayta urinib koʻring.')).toBeTruthy();
+  });
+
+  it('sends people on Telegram Desktop to the phone: no camera there', () => {
+    renderProfile({}, false);
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(screen.getByText(/old kamerasida olinadi/)).toBeTruthy();
+    expect(document.querySelector('input[type=file]')).toBeNull();
   });
 
   it('opens the front camera for a driver photo (docs/05)', () => {

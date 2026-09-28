@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 import { AppShell } from './app-shell';
 
 // Test helper: renders UI inside the real shell and collects tracked analytics events.
-export function renderInShell(children: ReactNode, inTelegram = false) {
+export function renderInShell(children: ReactNode, inTelegram = false, hasCamera = true) {
   const tracked: AnalyticsInput[] = [];
   const client = createAnalyticsClient({
     baseUrl: 'https://api.test',
@@ -18,7 +18,7 @@ export function renderInShell(children: ReactNode, inTelegram = false) {
     <AppShell
       brand={loadBrand()}
       analytics={analytics}
-      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '' }}
+      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '', hasCamera }}
     >
       {children}
     </AppShell>,

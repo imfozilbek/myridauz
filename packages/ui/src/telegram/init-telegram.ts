@@ -16,6 +16,7 @@ import {
 
 // Native Telegram behaviour (docs/21). Outside Telegram (browser, tests) the app works without it.
 const APPLE_PLATFORMS = new Set(['ios', 'macos']);
+const PHONE_PLATFORMS = new Set(['ios', 'android', 'android_x']);
 
 export function initTelegram(colors: BrandColors): TelegramSession {
   if (!isTMA()) return OUTSIDE_TELEGRAM;
@@ -36,6 +37,8 @@ export function initTelegram(colors: BrandColors): TelegramSession {
   // A swipe must not close the app by accident (docs/21).
   swipeBehavior.disableVertical.ifAvailable();
   miniApp.ready.ifAvailable();
-  const platform = APPLE_PLATFORMS.has(retrieveLaunchParams().tgWebAppPlatform) ? 'ios' : 'base';
-  return { inTelegram: true, platform, initData: retrieveRawInitData() ?? '' };
+  const telegramPlatform = retrieveLaunchParams().tgWebAppPlatform;
+  const platform = APPLE_PLATFORMS.has(telegramPlatform) ? 'ios' : 'base';
+  const hasCamera = PHONE_PLATFORMS.has(telegramPlatform);
+  return { inTelegram: true, platform, initData: retrieveRawInitData() ?? '', hasCamera };
 }
