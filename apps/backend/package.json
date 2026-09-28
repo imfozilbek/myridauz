@@ -1,0 +1,17 @@
+{
+  "name": "@platform/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@platform/contracts": "workspace:*",
+    "hono": "4.13.9"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260928.1",
+    "@platform/api-client": "workspace:*",
+    "@platform/config": "workspace:*"
+  }
+}
