@@ -1,0 +1,9 @@
+docs/
+brands/rida/brand-kit/
+pnpm-lock.yaml
+coverage/
+dist/
+playwright-report/
+test-results/
+screenshots/
+*.md

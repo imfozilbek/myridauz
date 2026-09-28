@@ -46,7 +46,8 @@
 ## Защита в репозитории (бесплатно для public)
 
 - Secret scanning и **push protection**: GitHub блокирует push с ключом.
-- `gitleaks` в CI: второй барьер от утечки ключей.
+- `gitleaks` в CI: второй барьер от утечки ключей. Файл gitleaks
+  проверяется по SHA-256, checkout без сохранения токена (`45`).
 - Dependabot: обновления и уязвимости зависимостей.
 - CodeQL: анализ безопасности кода.
 - Branch protection на `main`: только через PR, CI зелёный,

@@ -22,7 +22,7 @@
 
 | # | Цель | Неделя | Статус |
 |---|---|---|---|
-| 1 | [G01. Монорепозиторий и барьеры качества](G01-monorepo-and-quality-gates.md) | 1 | Не начата |
+| 1 | [G01. Монорепозиторий и барьеры качества](G01-monorepo-and-quality-gates.md) | 1 | В работе: ждём настройки GitHub от владельца |
 | 2 | [G02. Дизайн-система, i18n, аналитика](G02-design-system-i18n-analytics.md) | 1 | Не начата |
 | 3 | [OPS-01. Cloudflare, домен, боты](OPS-01-cloudflare-domain-bots.md) | 1 | Владелец |
 | 4 | [G03. Инфраструктура и деплой](G03-infrastructure-and-deploy.md) | 1 … 2 | Не начата |

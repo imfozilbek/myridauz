@@ -1,0 +1,18 @@
+{
+  "name": "@platform/config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint": "./eslint.config.js",
+    "./prettier": "./prettier.config.js",
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./vite": "./vite.config.js"
+  },
+  "dependencies": {
+    "@eslint/js": "10.0.1",
+    "globals": "17.12.0",
+    "typescript-eslint": "8.70.1",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.3.1"
+  }
+}

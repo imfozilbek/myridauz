@@ -14,3 +14,8 @@ coverage/
 
 # Brand kit build output
 brands/rida/brand-kit/kit/
+
+# Test output
+playwright-report/
+test-results/
+screenshots/

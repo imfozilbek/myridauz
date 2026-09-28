@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": ["brands/*/brand-kit/**"],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.mjs"]
+    },
+    "apps/backend": {
+      "entry": ["src/index.ts"]
+    }
+  },
+  "ignoreBinaries": ["gitleaks"]
+}

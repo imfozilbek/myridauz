@@ -35,7 +35,7 @@ packages/
   i18n/               тексты на узбекском
   config/             общие tsconfig, eslint, prettier
 brands/
-  rida/               конфиг бренда (`22-multi-brand.md`)
+  rida/               конфиг бренда, пакет @platform/brands (`22`)
 ```
 
 ## Backend: модульный монолит

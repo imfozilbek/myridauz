@@ -46,4 +46,5 @@
 | 42 | [42-promo-prompts.md](42-promo-prompts.md) | Промпты для рекламных видео |
 | 43 | [43-share-trip.md](43-share-trip.md) | Поделиться поездкой с близкими |
 | 44 | [44-lessons-learned-2.md](44-lessons-learned-2.md) | Уроки: продолжение журнала |
+| 45 | [45-dev-commands.md](45-dev-commands.md) | Команды разработки, барьеры, как устроен CI |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

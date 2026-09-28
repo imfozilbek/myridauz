@@ -1,0 +1,17 @@
+{
+  "name": "@platform/api-client",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  },
+  "dependencies": {
+    "@platform/contracts": "workspace:*"
+  },
+  "devDependencies": {
+    "@platform/config": "workspace:*"
+  }
+}
