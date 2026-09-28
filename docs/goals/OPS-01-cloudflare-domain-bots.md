@@ -26,3 +26,19 @@ Definition of Done:
 [ ] Claude подтвердил, что токен работает (запрос к API успешен).
 [ ] Все 3 бота отвечают на запрос getMe от Claude.
 ```
+
+## Результат (28.09.2026)
+
+| Что | Итог |
+|---|---|
+| Зона `myrida.uz` | Active в Cloudflare, NS `jill` и `razvan.ns.cloudflare.com`, DNSSEC выключен |
+| Токен API | `rida-claude`, действует до 31.01.2027, права по списку выше |
+| Бот попутчиков | `@myrida_bot` (Rida) |
+| Бот водителей | `@myrida_haydovchi_bot` (Rida Haydovchi) |
+| Админ-бот | `@myrida_admin_bot` (Rida Admin) |
+| Первый админ | Telegram ID владельца |
+
+- Все 3 бота ответили на `getMe`, токен прошёл проверку API.
+- Ключи только в `.env` сессии Claude и в секретах Cloudflare (G03), не в репозитории (`32`).
+- В аккаунте есть чужой для Rida Worker `ilkish`: его не трогаем.
+
