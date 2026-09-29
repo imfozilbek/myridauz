@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
+import { recordServerEvent } from '../modules/analytics';
 import { teamRole } from '../modules/team';
 import { isBlocked } from '../modules/users';
 import { safeEqual } from '../shared/http/safe-equal';
@@ -12,6 +13,7 @@ import { onDriverMessage } from './driver-messages';
 import { onPassengerMessage } from './passenger-messages';
 import { onRatingCallback } from './rating-callbacks';
 import type { BotContext } from './bot-context';
+import { botEventOf } from './bot-events';
 import { isBotRole } from './bot-roles';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema } from './telegram-update';
@@ -30,6 +32,8 @@ export function webhookRoutes(fetch: Fetch) {
     if (!safeEqual(context.req.header(SECRET_HEADER) ?? '', secret)) return context.body(null, UNAUTHORIZED);
     const update = telegramUpdateSchema.safeParse(await context.req.json().catch(() => null));
     if (!update.success) return context.json({});
+    const event = botEventOf(role, update.data);
+    if (event) recordServerEvent(context.env, event);
     const bot: BotContext = { env: context.env, brand: loadBrand(context.env.BRAND), fetch };
     const query = update.data.callback_query;
     if (query)

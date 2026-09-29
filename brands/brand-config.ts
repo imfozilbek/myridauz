@@ -50,6 +50,16 @@ export type PromoRule = {
   readonly windowDays: number;
 };
 
+// Signals to the admin bot (docs/29): errors of the last hour against the usual hour, the drop
+// of a funnel step today against the week. The same signal again only after repeatHours.
+export type AlertRules = {
+  readonly errorGrowth: number;
+  readonly minErrors: number;
+  readonly dropGrowth: number;
+  readonly minPeople: number;
+  readonly repeatHours: number;
+};
+
 export type BrandConfig = {
   readonly id: string;
   readonly name: string;
@@ -68,4 +78,5 @@ export type BrandConfig = {
   // username without "@". A region without a channel (Toshkent shahri) is not listed.
   readonly channels: Readonly<Record<string, string>>;
   readonly pricing: PricingStrategy;
+  readonly alerts: AlertRules;
 };

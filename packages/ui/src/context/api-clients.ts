@@ -6,6 +6,7 @@ import type {
   MarketClient,
   ModerationClient,
   PricingClient,
+  StatsClient,
   SubscriptionsClient,
   WalletClient,
 } from '@platform/api-client';
@@ -22,6 +23,7 @@ export type ApiClients = {
   readonly chat: ChatClient;
   readonly subscriptions: SubscriptionsClient;
   readonly feedback: FeedbackClient;
+  readonly stats: StatsClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

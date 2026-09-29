@@ -30,4 +30,7 @@ export const brandConfig: BrandConfig = {
     '1735': 'rida_qoraqalpogiston',
   },
   pricing: 'per-km',
+  // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
+  // from at least 20 people; the same signal once in 6 hours.
+  alerts: { errorGrowth: 3, minErrors: 10, dropGrowth: 20, minPeople: 20, repeatHours: 6 },
 };

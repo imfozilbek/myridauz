@@ -7,5 +7,6 @@ export {
   Modal,
   Multiselectable,
   Section,
+  SegmentedControl,
   Switch,
 } from '@telegram-apps/telegram-ui';

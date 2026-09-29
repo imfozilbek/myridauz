@@ -64,4 +64,17 @@ describe('createAnalyticsClient', () => {
     client.track({ name: 'client_error', screen: 'home', code: 'render' });
     await expect(client.flush()).resolves.toBeUndefined();
   });
+
+  it('sends an API error with the screen opened last (G12)', async () => {
+    const { client, sent } = setup();
+    client.apiError('trips.not_found');
+    client.track({ name: 'screen_open', screen: 'my_trips' });
+    client.apiError('api.http_500');
+    await client.flush();
+    const errors = sent[0]?.batch.events.filter((event) => event.name === 'api_error');
+    expect(errors?.map((event) => [event.screen, 'code' in event ? event.code : ''])).toEqual([
+      ['app', 'trips.not_found'],
+      ['my_trips', 'api.http_500'],
+    ]);
+  });
 });

@@ -22,6 +22,11 @@ export type Bindings = {
   readonly PASSENGER_AVATAR_REQUIRED?: string;
   // "on" posts new trips to the channels (docs/15). Off until the owner approves the post (docs/33).
   readonly CHANNEL_POSTS?: string;
+  // The dashboard reads Analytics Engine through its SQL API (docs/29): a read-only key and the
+  // account are secrets, the dataset is a brand setting in wrangler.toml (docs/46).
+  readonly ANALYTICS_API_TOKEN?: string;
+  readonly CF_ACCOUNT_ID?: string;
+  readonly ANALYTICS_DATASET?: string;
 };
 
 // Set by the Telegram auth middleware for API routes (shared/auth).

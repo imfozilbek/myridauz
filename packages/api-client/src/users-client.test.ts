@@ -60,4 +60,18 @@ describe('createUsersClient', () => {
     const broken = setup(new Response('oops', { status: 500 }));
     await expect(broken.client.getMe()).rejects.toMatchObject({ status: 500, code: undefined });
   });
+
+  it('reports every error answer with its code (G12)', async () => {
+    const errors: string[] = [];
+    const fetch = vi.fn<Fetch>(async () => Response.json({ error: 'users.blocked' }, { status: 403 }));
+    const client = createUsersClient({
+      baseUrl: 'https://api.test',
+      fetch,
+      app: 'driver',
+      initData: 'a=1',
+      onError: (code) => errors.push(code),
+    });
+    await expect(client.getMe()).rejects.toEqual(new ApiError(403, 'users.blocked'));
+    expect(errors).toEqual(['users.blocked']);
+  });
 });

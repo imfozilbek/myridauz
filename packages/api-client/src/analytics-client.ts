@@ -12,6 +12,7 @@ type Schedule = (task: () => void, delayMs: number) => () => void;
 
 // Events go in batches to save requests and the daily limit (docs/29).
 const FLUSH_DELAY_MS = 5000;
+const FIRST_SCREEN = 'app';
 const scheduleWithTimer: Schedule = (task, delayMs) => {
   const timer = setTimeout(task, delayMs);
   return () => clearTimeout(timer);
@@ -30,6 +31,8 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
   const url = new URL(ANALYTICS_PATH.slice(1), `${baseUrl.replace(/\/$/, '')}/`).toString();
   const queue: AnalyticsEvent[] = [];
   let cancelScheduled: (() => void) | undefined;
+  // An API error is shown on the screen that was opened last (G12, docs/29).
+  let lastScreen = FIRST_SCREEN;
 
   async function send(events: AnalyticsEvent[]): Promise<void> {
     const init = { method: 'POST', body: JSON.stringify({ events }), keepalive: true };
@@ -44,12 +47,15 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
   }
 
   function track(input: AnalyticsInput): void {
+    lastScreen = input.screen;
     queue.push({ ...input, ...context, at: now() } as AnalyticsEvent);
     if (queue.length >= MAX_ANALYTICS_BATCH) void flush();
     else cancelScheduled ??= schedule(() => void flush(), FLUSH_DELAY_MS);
   }
 
-  return { track, flush };
+  const apiError = (code: string) => track({ name: 'api_error', screen: lastScreen, code });
+
+  return { track, flush, apiError };
 }
 
 export type AnalyticsClient = ReturnType<typeof createAnalyticsClient>;

@@ -13,6 +13,7 @@ export { MyTripsScreen } from './market/my-trips-screen';
 export { NewRequestFlow } from './market/new-request-flow';
 export { NewTripFlow } from './market/new-trip-flow';
 export { ManagementScreen } from './pricing/management-screen';
+export { linkedStats } from './stats/stats-screen';
 export { RequestsSearchFlow } from './market/requests-search-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';

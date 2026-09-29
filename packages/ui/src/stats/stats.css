@@ -1,0 +1,14 @@
+.stats-period {
+  padding: 0 16px 8px;
+}
+
+.stats-note {
+  display: block;
+  padding: 8px 16px;
+  color: var(--tgui--hint_color);
+}
+
+/* A step where many people left: the warning color of Telegram. */
+.stats-high {
+  color: var(--tgui--destructive_text_color);
+}

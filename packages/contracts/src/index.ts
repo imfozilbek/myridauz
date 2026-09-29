@@ -3,6 +3,7 @@ export {
   analyticsBatchSchema,
   MAX_ANALYTICS_BATCH,
   MINI_APPS,
+  QUIET_API_ERRORS,
   DRIVER_STEPS,
   TRIP_STEPS,
   REGISTRATION_STEPS,
@@ -122,3 +123,4 @@ export * from './shares';
 export * from './subscriptions';
 export * from './ratings';
 export * from './complaints';
+export * from './stats';

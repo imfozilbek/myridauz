@@ -12,6 +12,7 @@ import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
+import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
 import type { Locale } from './config';
@@ -32,6 +33,7 @@ const REFERENCE = {
   pricing,
   reviews,
   share,
+  stats,
   subscriptions,
   wallet,
 };

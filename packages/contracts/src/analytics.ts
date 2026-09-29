@@ -32,6 +32,9 @@ const BOOKING_STEPS = [
   'offer_declined',
 ] as const;
 
+// Answers that are a normal state, not an error: they are not sent as api_error (G12).
+export const QUIET_API_ERRORS: readonly string[] = ['users.not_registered', 'drivers.not_found'];
+
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
 const context = {
@@ -45,6 +48,8 @@ const context = {
 const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('screen_open'), ...context }),
   z.object({ name: z.literal('client_error'), code: id, ...context }),
+  // An answer of the API with an error (G12): its code and the last opened screen.
+  z.object({ name: z.literal('api_error'), code: id, ...context }),
   // Registration funnel (G04): one event per finished step, to see where people stop.
   z.object({ name: z.literal('registration_step'), step: z.enum(REGISTRATION_STEPS), ...context }),
   // Driver funnel (G06): one event per finished step of the application, up to "submitted".

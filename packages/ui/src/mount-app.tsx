@@ -11,9 +11,10 @@ import {
   createChatClient,
   createSubscriptionsClient,
   createFeedbackClient,
+  createStatsClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
-import type { MiniApp } from '@platform/contracts';
+import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
 import { StrictMode, type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AccountGate } from './account/account-gate';
@@ -40,7 +41,19 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const session = initTelegram(brand.theme.colors);
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
-  const signed = { baseUrl, fetch, app, initData: session.initData };
+  const analytics = createAnalyticsClient({
+    baseUrl,
+    fetch,
+    context: {
+      app,
+      sessionId: crypto.randomUUID(),
+      version: import.meta.env.VITE_APP_VERSION ?? DEV_VERSION,
+    },
+  });
+  const onError = (code: string) => {
+    if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code);
+  };
+  const signed = { baseUrl, fetch, app, initData: session.initData, onError };
   const users = createUsersClient(signed);
   const clients = {
     drivers: createDriversClient(signed),
@@ -52,17 +65,9 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     chat: createChatClient(signed),
     subscriptions: createSubscriptionsClient(signed),
     feedback: createFeedbackClient(signed),
+    stats: createStatsClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
-  const analytics = createAnalyticsClient({
-    baseUrl,
-    fetch,
-    context: {
-      app,
-      sessionId: crypto.randomUUID(),
-      version: import.meta.env.VITE_APP_VERSION ?? DEV_VERSION,
-    },
-  });
   // Send what is left when Telegram hides or closes the app.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') void analytics.flush();

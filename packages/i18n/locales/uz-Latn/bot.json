@@ -117,5 +117,7 @@
   "complaint.warning": "Sizga shikoyat tushdi. Iltimos, qoidalarga amal qiling: takrorlansa, akkaunt bloklanadi.",
   "complaint.blocked": "Akkauntingiz {date} gacha bloklandi. Faol safarlar va bronlar bekor qilindi.",
   "complaint.blockedForever": "Akkauntingiz butunlay bloklandi. Faol safarlar va bronlar bekor qilindi.",
-  "complaint.resolved": "Shikoyatingiz koʻrib chiqildi. Rahmat!"
+  "complaint.resolved": "Shikoyatingiz koʻrib chiqildi. Rahmat!",
+  "stats.errors": "⚠️ Xatolar koʻpaydi: soʻnggi soatda {hour} ta, odatda {usual} ta.",
+  "stats.drop": "⚠️ {funnel}: «{step}» qadamida {drop}% odam ketdi, odatda {usual}%."
 }

@@ -3,6 +3,7 @@ import {
   ComplaintsScreen,
   linkedApplication,
   linkedComplaint,
+  linkedStats,
   ManagementScreen,
   StartFlow,
   type StartAction,
@@ -37,9 +38,13 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
-// A link from the admin bot opens the applications or a complaint at once (docs/17, docs/50).
-const opened = () =>
-  linkedComplaint() ? 'complaints' : linkedApplication() === null ? null : 'applications';
+// A link from the admin bot opens the applications, a complaint or the dashboard at once
+// (docs/17, docs/29, docs/50).
+const opened = () => {
+  if (linkedComplaint()) return 'complaints';
+  if (linkedStats()) return 'management';
+  return linkedApplication() === null ? null : 'applications';
+};
 
 export function StartPage() {
   const open = opened();
