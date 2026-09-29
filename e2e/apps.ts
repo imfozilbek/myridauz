@@ -29,7 +29,7 @@ export const TEXT = {
   insideCity: t('errors.locations.inside_city'),
   becomeDriver: t('drivers.intro.title'),
   start: t('drivers.intro.start'),
-  platePlaceholder: t('drivers.plate.placeholder'),
+  plateField: t('drivers.plate.title'),
   take: t('drivers.photo.take'),
   shutter: t('common.camera.shoot'),
   addPhoto: t('account.avatar.add'),

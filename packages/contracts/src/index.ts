@@ -38,6 +38,7 @@ export {
 export { matchesPlace, normalizeSearch } from './place-search';
 export { checkRoute, ROUTE_ERRORS, type RouteError } from './route-rule';
 export { CAR_CATALOG } from './car-catalog';
+export { formatPlate, maskPlate } from './plate';
 export {
   APPLICATION_STATUSES,
   CAR_COLORS,
@@ -46,7 +47,6 @@ export {
   DRIVER_APPLICATION_PATH,
   driverApplicationResponseSchema,
   driverPhotoPath,
-  formatPlate,
   MAX_SEATS,
   MODERATION_REASONS,
   REASON_PLACE,

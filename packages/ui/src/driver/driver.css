@@ -124,25 +124,43 @@
   border-color: var(--tgui--destructive_text_color);
 }
 
-.plate-input {
+.plate-field {
+  position: relative;
   flex: 1;
   min-width: 0;
+}
+
+/* The input and the grey example under it share one font and padding, so they line up. */
+.plate-input,
+.plate-ghost {
+  width: 100%;
   padding: 14px 16px;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--tgui--text_color);
   font-family: inherit;
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 2px;
-  text-align: center;
-  text-transform: uppercase;
+  white-space: pre;
 }
 
-.plate-input::placeholder {
+.plate-input {
+  position: relative;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--tgui--text_color);
+}
+
+.plate-ghost {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
   color: var(--tgui--hint_color);
   opacity: 0.6;
+  pointer-events: none;
+}
+
+.plate-typed {
+  visibility: hidden;
 }
 
 .plate-country {

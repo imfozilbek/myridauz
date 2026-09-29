@@ -12,7 +12,7 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
     const { submit, tracked, container } = renderGate(null);
     for (const step of ['Boshlash', 'Chevrolet', 'Cobalt', 'Oq']) await tap(step);
     // Only Latin capitals and digits stay in the plate, whatever the keyboard gives.
-    const plate = screen.getByPlaceholderText('01 A 123 BC');
+    const plate = screen.getByLabelText('Davlat raqami');
     fireEvent.change(plate, { target: { value: '01 a 123 bcЖ!' } });
     expect(screen.getByDisplayValue('01 A 123 BC')).toBeTruthy();
     await tap('Davom etish');

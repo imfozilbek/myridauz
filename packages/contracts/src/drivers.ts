@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { plateSchema } from './plate';
 
 // A driver application (docs/04). G06.
 export const DRIVER_APPLICATION_PATH = '/driver/application';
@@ -58,13 +59,6 @@ export type CarColor = (typeof CAR_COLORS)[number];
 const NAME_MIN = 2;
 const NAME_MAX = 32;
 
-// Uzbek plates: "01 A 123 BC" (a person) or "01 123 ABC" (a company). Kept without spaces.
-const PLATE_PATTERN = /^\d{2}(?:[A-Z]\d{3}[A-Z]{2}|\d{3}[A-Z]{3})$/;
-const plateSchema = z
-  .string()
-  .transform((value) => value.toUpperCase().replace(/[\s-]/g, ''))
-  .pipe(z.string().regex(PLATE_PATTERN));
-
 const carNameSchema = z
   .string()
   .transform((value) => value.trim().replace(/\s+/g, ' '))
@@ -99,11 +93,3 @@ export type DriverApplication = z.infer<typeof driverApplicationSchema>;
 
 export const driverApplicationResponseSchema = z.object({ application: driverApplicationSchema.nullable() });
 export type DriverApplicationResponse = z.infer<typeof driverApplicationResponseSchema>;
-
-// A plate is stored without spaces and shown in groups, as on the car: "01 A 123 BC", "10 123 ABC".
-export function formatPlate(plate: string): string {
-  const person = /^(\d{2})([A-Z])(\d{3})([A-Z]{2})$/.exec(plate);
-  if (person) return person.slice(1).join(' ');
-  const company = /^(\d{2})(\d{3})([A-Z]{3})$/.exec(plate);
-  return company ? company.slice(1).join(' ') : plate;
-}

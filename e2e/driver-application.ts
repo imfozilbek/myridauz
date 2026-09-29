@@ -23,7 +23,11 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('2-color');
   await page.getByText('Oq', { exact: true }).click();
   await shot('3-plate-empty');
-  await page.getByPlaceholder(TEXT.platePlaceholder).fill('01 a 123 bc');
+  await page.getByLabel(TEXT.plateField).fill('01a1');
+  await shot('3-plate-typing');
+  await page.getByLabel(TEXT.plateField).fill('011');
+  await shot('3-plate-company');
+  await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await shot('3-plate');
   await mainButton.click();
   // 4 seats are chosen in advance.

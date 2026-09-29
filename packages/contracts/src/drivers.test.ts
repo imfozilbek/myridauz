@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { carSchema, formatPlate, reasonsAt } from './drivers';
+import { carSchema, reasonsAt } from './drivers';
+import { formatPlate } from './plate';
 import { blockSchema, decisionSchema } from './moderation';
 
 const car = {
