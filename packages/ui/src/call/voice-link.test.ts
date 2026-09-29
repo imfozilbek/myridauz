@@ -37,16 +37,32 @@ describe('voiceLink (docs/08)', () => {
     expect(FakePeer.last?.config.iceServers).toHaveLength(1);
   });
 
-  it('tells when the voice connected or failed, and closes everything at the end', async () => {
+  it('starts the talk when the other voice arrives, tells a failure, and closes everything', async () => {
     const heard = events();
     const link = voiceLink(api(), heard, devices());
     await link.start();
-    FakePeer.last?.becomes('connected');
+    expect(heard.onConnected).not.toHaveBeenCalled();
+    FakePeer.last?.hears();
     FakePeer.last?.becomes('failed');
     expect(heard.onConnected).toHaveBeenCalledTimes(1);
     expect(heard.onFailed).toHaveBeenCalledTimes(1);
     const peer = FakePeer.last;
     link.stop();
     expect(peer?.closed).toBe(true);
+  });
+
+  it('tries again while the other voice is not in Realtime yet', async () => {
+    const calls = api();
+    let tries = 0;
+    calls.pull = vi.fn(async () => {
+      tries += 1;
+      if (tries < 3) throw new Error('calls.track_not_ready');
+      return 'sfu-offer';
+    });
+    const link = voiceLink(calls, events(), devices(), 1);
+    await link.start();
+    await link.pull({ sessionId: 's2', trackName: 'voice-b' });
+    expect(calls.pull).toHaveBeenCalledTimes(3);
+    expect(calls.renegotiate).toHaveBeenCalledWith('s1', 'local-answer');
   });
 });

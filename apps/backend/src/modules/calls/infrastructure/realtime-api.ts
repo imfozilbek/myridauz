@@ -13,15 +13,25 @@ type Options = {
   readonly fetch: Fetch;
 };
 type Description = { readonly type: string; readonly sdp: string };
-type TracksAnswer = { sessionDescription?: Description; requiresImmediateRenegotiation?: boolean };
+type TracksAnswer = {
+  sessionDescription?: Description;
+  requiresImmediateRenegotiation?: boolean;
+  tracks?: { errorCode?: string }[];
+};
 
 export function realtimeApi({ appId, appSecret, turnKeyId, turnKeyToken, fetch }: Options): Realtime {
+  // A new session takes no body at all: Realtime refuses even an empty object.
   async function call<T>(path: string, method: string, body: unknown, token = appSecret): Promise<T> {
-    const response = await fetch(`${BASE}${path}`, {
-      method,
-      headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    const authorization = `Bearer ${token}`;
+    const init: RequestInit =
+      body === undefined
+        ? { method, headers: { authorization } }
+        : {
+            method,
+            headers: { authorization, 'content-type': 'application/json' },
+            body: JSON.stringify(body),
+          };
+    const response = await fetch(`${BASE}${path}`, init);
     if (!response.ok) throw new Error(`calls.realtime_${response.status}`);
     return (await response.json()) as T;
   }
@@ -35,7 +45,11 @@ export function realtimeApi({ appId, appSecret, turnKeyId, turnKeyToken, fetch }
         turnKeyToken,
       ),
     connect: async (offer, mid, trackName) => {
-      const { sessionId } = await call<{ sessionId: string }>(`/apps/${appId}/sessions/new`, 'POST', {});
+      const { sessionId } = await call<{ sessionId: string }>(
+        `/apps/${appId}/sessions/new`,
+        'POST',
+        undefined,
+      );
       const answer = await call<TracksAnswer>(`${session(sessionId)}/tracks/new`, 'POST', {
         sessionDescription: { type: 'offer', sdp: offer },
         tracks: [{ location: 'local', mid, trackName }],
@@ -46,6 +60,8 @@ export function realtimeApi({ appId, appSecret, turnKeyId, turnKeyToken, fetch }
       const answer = await call<TracksAnswer>(`${session(sessionId)}/tracks/new`, 'POST', {
         tracks: [{ location: 'remote', sessionId: remote.sessionId, trackName: remote.trackName }],
       });
+      // The other voice is not there yet (its side still connects): the Mini App tries again.
+      if (answer.tracks?.some((track) => track.errorCode)) throw new Error('calls.track_not_ready');
       return answer.requiresImmediateRenegotiation ? (answer.sessionDescription?.sdp ?? null) : null;
     },
     renegotiate: async (sessionId, answer) =>

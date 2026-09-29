@@ -37,7 +37,7 @@ export function useCall(key: string, chat: ChatCalling) {
         onRemote: (stream) => {
           if (!audio.current) return;
           audio.current.srcObject = stream;
-          void audio.current.play().catch(() => undefined);
+          void Promise.resolve(audio.current.play()).catch(() => undefined);
         },
       },
     ));
