@@ -5,7 +5,7 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
-import type { TripsDeps } from './application/ports';
+import type { TripEvent, TripsDeps } from './application/ports';
 import { publishTrip } from './application/publish';
 import { cancelTrip, views } from './application/read';
 import { setMeetingPoint } from './application/meeting-point';
@@ -17,6 +17,14 @@ import { telegramAnnouncer } from './infrastructure/telegram-announcer';
 
 // Without D1 (tests) trips live in memory.
 const localTrips = createMemoryTrips();
+
+// What follows a published or changed trip (channel posts, route subscriptions): set by the app,
+// which knows every module (app.ts), so trips does not depend on them.
+type ChangeHandler = (env: Bindings, tripId: string, event: TripEvent) => Promise<void>;
+let onChange: ChangeHandler = async () => undefined;
+export const handleTripChange = (handler: ChangeHandler) => void (onChange = handler);
+// A booking was confirmed or cancelled: the seats left changed (G08).
+export const tripChanged = (env: Bindings, tripId: string) => onChange(env, tripId, 'updated');
 
 const tripsDeps = (env: Bindings): TripsDeps => ({
   trips: env.DB ? d1Trips(env.DB) : localTrips,
@@ -31,6 +39,7 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
     driverToken: env.DRIVER_BOT_TOKEN,
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
   }),
+  changed: (tripId, event) => onChange(env, tripId, event),
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });

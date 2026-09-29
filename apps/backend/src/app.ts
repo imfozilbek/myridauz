@@ -5,19 +5,13 @@ import { cors } from 'hono/cors';
 import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
+import './module-events';
 import { analyticsModule } from './modules/analytics';
-import {
-  bookingForShare,
-  bookingsModule,
-  chatMemberOf,
-  pickupMessageSent,
-  tripCancelWatch,
-} from './modules/bookings';
+import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from './modules/bookings';
 import { chatRoutes } from './modules/chat';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
-import { handleAfterSent } from './modules/notifications';
 import { pricingModule } from './modules/pricing';
 import { requestsModule } from './modules/ride-requests';
 import { sharesModule } from './modules/shares';
@@ -35,10 +29,6 @@ const allowMiniApps = cors({
   },
 });
 const auth = telegramAuth(Date.now, teamRole);
-
-// Once the bot sent the confirmation, the booking remembers the message: the passenger answers
-// it with the pickup point (docs/14). Set here: the app is the one place that knows every module.
-handleAfterSent((env, after, messageId) => pickupMessageSent(env, after.bookingId, messageId));
 
 export const app = new Hono<AppEnv>()
   .use('/analytics', allowMiniApps)

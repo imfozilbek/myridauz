@@ -51,5 +51,6 @@ export async function publishTrip(
   await deps.trips.save(trip);
   const meetingMessageId = await deps.announce(trip);
   if (meetingMessageId !== null) await deps.trips.save({ ...trip, meetingMessageId });
+  await deps.changed(trip.id, 'published');
   return { ok: true, value: tripView(trip, driver, car, now, NO_RIDERS) };
 }

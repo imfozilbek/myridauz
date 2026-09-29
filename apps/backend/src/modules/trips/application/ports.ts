@@ -16,6 +16,8 @@ export type TripRepository = {
   completeOver(now: number): Promise<void>;
 };
 
+export type TripEvent = 'published' | 'updated';
+
 // A confirmed booking holds seats and gives "ayol bor" when a woman rides (docs/06). G08.
 export type Rider = { readonly tripId: string; readonly passengerId: number; readonly seats: number };
 
@@ -33,6 +35,8 @@ export type TripsDeps = {
   >;
   // The driver bot tells about the new trip; the id of that message, or null if it was not sent.
   readonly announce: (trip: TripRecord) => Promise<number | null>;
+  // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
+  readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
   readonly newId: () => string;
   readonly now: () => number;
 };

@@ -2,13 +2,24 @@
 type BotName = 'passenger' | 'driver' | 'admin';
 
 // Something to remember once Telegram gave the message its id: the passenger answers the
-// confirmation with the pickup point (docs/14).
-type AfterSent = { readonly type: 'pickup'; readonly bookingId: string };
+// confirmation with the pickup point (docs/14); a channel post is edited later (docs/15).
+type AfterSent =
+  | { readonly type: 'pickup'; readonly bookingId: string }
+  | {
+      readonly type: 'channelPost';
+      readonly tripId: string;
+      readonly channel: string;
+      // What the post showed when it was queued: a trip changed since then is edited at once.
+      readonly shown: string;
+    };
 
 export type NotificationJob = {
   readonly bot: BotName;
-  readonly chatId: number;
+  // A person, or a channel as "@username" (docs/15).
+  readonly chatId: number | string;
   readonly text: string;
+  // Set: the message with this id is edited instead of a new one sent (a channel post, docs/15).
+  readonly edit?: number;
   readonly markup?: object;
   readonly after?: AfterSent;
 };

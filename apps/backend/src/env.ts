@@ -20,6 +20,8 @@ export type Bindings = {
   readonly ADMIN_TELEGRAM_IDS?: string;
   // "true" makes an avatar required for passengers too (docs/05). Brand setting in wrangler.toml.
   readonly PASSENGER_AVATAR_REQUIRED?: string;
+  // "on" posts new trips to the channels (docs/15). Off until the owner approves the post (docs/33).
+  readonly CHANNEL_POSTS?: string;
 };
 
 // Set by the Telegram auth middleware for API routes (shared/auth).

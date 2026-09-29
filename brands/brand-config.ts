@@ -64,5 +64,8 @@ export type BrandConfig = {
   readonly regionPhotos: boolean;
   // Telegram usernames of the three bots (docs/02, docs/46): deep links between them.
   readonly bots: { readonly passenger: string; readonly driver: string; readonly admin: string };
+  // Telegram channels by region (docs/15, docs/37): the SOATO code of the region → the channel
+  // username without "@". A region without a channel (Toshkent shahri) is not listed.
+  readonly channels: Readonly<Record<string, string>>;
   readonly pricing: PricingStrategy;
 };

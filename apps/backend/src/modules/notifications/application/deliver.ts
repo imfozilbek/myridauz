@@ -19,12 +19,15 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   if (!token) return { outcome: 'drop' };
   let response: Response;
   try {
-    response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const method = job.edit === undefined ? 'sendMessage' : 'editMessageText';
+    response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         chat_id: job.chatId,
         text: job.text,
+        ...(job.edit === undefined ? {} : { message_id: job.edit }),
+        // An edit without a keyboard takes the button away (a full or cancelled trip, docs/15).
         ...(job.markup ? { reply_markup: job.markup } : {}),
       }),
     });
