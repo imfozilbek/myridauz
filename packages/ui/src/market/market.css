@@ -53,3 +53,73 @@
 .market .cell-value {
   white-space: nowrap;
 }
+
+/* Point A and point B: the place, its region and the time (owner decision 29.09.2026). */
+.route {
+  padding: 4px 0;
+}
+
+/* The text of a stop takes the whole row, so the time stands at the right edge. */
+.route > li {
+  gap: 16px;
+}
+
+.route > li > :last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.route-stop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.route-time {
+  flex: none;
+  font-weight: 600;
+  color: var(--tgui--text_color);
+}
+
+/* A trip in a list is a card of its own: tap anywhere to open it. */
+.trip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.trip-card-head,
+.trip-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.trip-card-foot {
+  padding-top: 10px;
+  border-top: 1px solid var(--tgui--divider);
+}
+
+.trip-card-driver {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trip-card-hint {
+  color: var(--tgui--hint_color);
+}
+
+.trip-card-facts {
+  flex: none;
+  max-width: 45%;
+  text-align: right;
+}
+
+.route-summary {
+  padding: 12px 16px 4px;
+}

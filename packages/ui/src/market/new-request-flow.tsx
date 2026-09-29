@@ -14,7 +14,9 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DateStep } from './date-step';
 import { errorKey } from './error-text';
+import { PlacesGate } from './places-gate';
 import { PriceStep } from './price-step';
+import { RouteView } from './route-view';
 import { noonOf } from './when';
 
 type Step = 'route' | 'date' | 'seats' | 'price' | 'review' | 'done';
@@ -108,20 +110,24 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
   }
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
-    <StepLayout icon="request" title={t('market.request.review.title')}>
-      <BackButton onClick={() => setStep('price')} />
-      <List>
-        <Section>
-          <Cell multiline description={route ? `${route.from.name} → ${route.to.name}` : ''}>
-            {t('market.review.route')}
-          </Cell>
-          {line(t('market.review.when'), date ? formatDate(noonOf(date)) : '')}
-          {line(t('market.requestSeats.title'), String(seats ?? 1))}
-          {line(t('market.review.price'), formatMoney(price ?? 0))}
-        </Section>
-      </List>
-      {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('market.request.publish')} onClick={() => void publish()} />
-    </StepLayout>
+    <PlacesGate>
+      <StepLayout icon="request" title={t('market.request.review.title')}>
+        <BackButton onClick={() => setStep('price')} />
+        <List>
+          <Section>
+            {route ? (
+              <div className="route-summary">
+                <RouteView from={route.from.id} to={route.to.id} />
+              </div>
+            ) : null}
+            {line(t('market.review.when'), date ? formatDate(noonOf(date)) : '')}
+            {line(t('market.requestSeats.title'), String(seats ?? 1))}
+            {line(t('market.review.price'), formatMoney(price ?? 0))}
+          </Section>
+        </List>
+        {error ? <Text className="step-error">{t(error)}</Text> : null}
+        <MainButton text={t('market.request.publish')} onClick={() => void publish()} />
+      </StepLayout>
+    </PlacesGate>
   );
 }

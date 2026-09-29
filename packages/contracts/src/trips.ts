@@ -11,6 +11,10 @@ export const tripPath = (id: string) => `${TRIPS_PATH}/${id}`;
 
 export const TRIP_STATUSES = ['active', 'full', 'completed', 'cancelled'] as const;
 export const MAX_ACTIVE_TRIPS = 5;
+// An average speed on Uzbek roads: the arrival shown to people is approximate ("≈ 17:30").
+const ROAD_KMH = 60;
+const HOUR_MS = 60 * 60 * 1000;
+export const arrivalAt = (departAt: number, km: number) => departAt + Math.ceil((km / ROAD_KMH) * HOUR_MS);
 // A trip is published at most this far ahead.
 export const TRIP_DAYS_AHEAD = 30;
 export const COMMENT_MAX = 200;

@@ -5,7 +5,7 @@ import { StepLayout } from '../account/step-layout';
 import { Input, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { usePlaceName } from '../market/places-gate';
+import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 
@@ -21,19 +21,19 @@ type DirectionEditProps = {
 export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEditProps) {
   useScreenView('pricing.direction');
   const { t, formatMoney } = useI18n();
-  const place = usePlaceName();
   const [value, setValue] = useState(String(direction.manual ?? direction.formula ?? ''));
   const price = Number(value);
   const hint =
     direction.formula === null ? undefined : t('pricing.formula', { price: formatMoney(direction.formula) });
   return (
-    <StepLayout
-      icon="trip"
-      title={`${place(direction.from, false)} → ${place(direction.to, false)}`}
-      {...(hint ? { hint } : {})}
-    >
+    <StepLayout icon="trip" title={t('pricing.directionTitle')} {...(hint ? { hint } : {})}>
       <BackButton onClick={onBack} />
       <List>
+        <Section>
+          <div className="route-summary">
+            <RouteView from={direction.from} to={direction.to} />
+          </div>
+        </Section>
         <Section>
           <Input
             header={t('pricing.directionPrice')}

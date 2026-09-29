@@ -1,7 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { List, Section } from '../components';
+import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -61,11 +61,9 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
         {t('common.myTrips')}
       </Title>
       <List>
-        <Section>
-          {items.map((trip) => (
-            <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpen(trip)} />
-          ))}
-        </Section>
+        {items.map((trip) => (
+          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpen(trip)} />
+        ))}
       </List>
     </div>
   );

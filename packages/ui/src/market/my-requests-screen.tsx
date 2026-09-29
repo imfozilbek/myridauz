@@ -1,7 +1,7 @@
 import type { RideRequest } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { List, Section } from '../components';
+import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -65,11 +65,9 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
         {t('common.myTrips')}
       </Title>
       <List>
-        <Section>
-          {items.map((request) => (
-            <RequestCard key={request.id} request={request} showStatus onOpen={() => setOpen(request)} />
-          ))}
-        </Section>
+        {items.map((request) => (
+          <RequestCard key={request.id} request={request} showStatus onOpen={() => setOpen(request)} />
+        ))}
       </List>
     </div>
   );

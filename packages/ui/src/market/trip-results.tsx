@@ -1,5 +1,5 @@
 import type { Trip } from '@platform/contracts';
-import { Text, Title } from '@telegram-apps/telegram-ui';
+import { Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { Cell, List, Section, Switch } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -11,6 +11,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { RouteView } from './route-view';
 import { TripCard } from './trip-card';
 import { useDayLabel } from './when';
 import './market.css';
@@ -55,10 +56,14 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   return (
     <div className="market">
       <BackButton onClick={onBack} />
-      <Title weight="1" className="market-title">{`${route.from.name} → ${route.to.name}`}</Title>
-      <Text className="market-subtitle">{dayLabel(date, now)}</Text>
+      <Title weight="1" className="market-title">
+        {dayLabel(date, now)}
+      </Title>
       <List>
         <Section>
+          <div className="route-summary">
+            <RouteView from={route.from.id} to={route.to.id} />
+          </div>
           <Cell
             Component="label"
             after={<Switch checked={woman} onChange={(event) => setWoman(event.target.checked)} />}
@@ -66,13 +71,9 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
             {t('market.search.woman')}
           </Cell>
         </Section>
-        {trips && trips.length > 0 ? (
-          <Section>
-            {trips.map((trip) => (
-              <TripCard key={trip.id} trip={trip} onOpen={() => onOpen(trip)} />
-            ))}
-          </Section>
-        ) : null}
+        {trips?.map((trip) => (
+          <TripCard key={trip.id} trip={trip} onOpen={() => onOpen(trip)} />
+        ))}
       </List>
       {trips === null ? <ScreenSkeleton /> : null}
       {trips?.length === 0 ? (

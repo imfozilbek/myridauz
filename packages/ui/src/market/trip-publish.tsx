@@ -11,16 +11,18 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
 import type { TripDraft } from './new-trip-flow';
+import { RouteView } from './route-view';
 import { useWhenLabel } from './when';
 
 type TripPublishProps = {
   readonly draft: TripDraft;
+  readonly km: number;
   readonly onBack: () => void;
   readonly onClose: () => void;
 };
 
 // Everything on one screen before publishing; then a short "done" with the meeting point hint.
-export function TripPublish({ draft, onBack, onClose }: TripPublishProps) {
+export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
   useScreenView('market.review');
   const { track } = useAnalytics();
   const { market } = useApiClients();
@@ -62,9 +64,9 @@ export function TripPublish({ draft, onBack, onClose }: TripPublishProps) {
       <BackButton onClick={onBack} />
       <List>
         <Section>
-          <Cell multiline description={`${draft.route.from.name} → ${draft.route.to.name}`}>
-            {t('market.review.route')}
-          </Cell>
+          <div className="route-summary">
+            <RouteView from={draft.route.from.id} to={draft.route.to.id} departAt={draft.departAt} km={km} />
+          </div>
           {line(t('market.review.when'), when(draft.departAt))}
           {line(t('market.review.seats'), String(draft.seats))}
           {line(t('market.review.price'), formatMoney(draft.price))}

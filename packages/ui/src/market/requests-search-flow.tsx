@@ -1,5 +1,5 @@
 import type { RideRequest } from '@platform/contracts';
-import { Text, Title } from '@telegram-apps/telegram-ui';
+import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -14,6 +14,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { DateStep } from './date-step';
 import { PlacesGate } from './places-gate';
 import { RequestCard, RequestScreen } from './request-card';
+import { RouteView } from './route-view';
 import { useList } from './use-list';
 import { useDayLabel } from './when';
 
@@ -54,23 +55,26 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
   return (
     <div className="market">
       <BackButton onClick={onBack} />
-      <Title weight="1" className="market-title">{`${route.from.name} → ${route.to.name}`}</Title>
-      <Text className="market-subtitle">{dayLabel(date, now)}</Text>
+      <Title weight="1" className="market-title">
+        {dayLabel(date, now)}
+      </Title>
+      <List>
+        <Section>
+          <div className="route-summary">
+            <RouteView from={route.from.id} to={route.to.id} />
+          </div>
+        </Section>
+        {items.map((request) => (
+          <RequestCard key={request.id} request={request} onOpen={() => setOpen(request)} />
+        ))}
+      </List>
       {items.length === 0 ? (
         <EmptyState
           icon="passengers"
           title={t('market.requests.empty')}
           description={t('market.requests.emptyHint')}
         />
-      ) : (
-        <List>
-          <Section>
-            {items.map((request) => (
-              <RequestCard key={request.id} request={request} onOpen={() => setOpen(request)} />
-            ))}
-          </Section>
-        </List>
-      )}
+      ) : null}
     </div>
   );
 }

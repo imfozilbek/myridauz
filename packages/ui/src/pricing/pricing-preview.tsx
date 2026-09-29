@@ -3,7 +3,7 @@ import { Title, Text } from '@telegram-apps/telegram-ui';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { usePlaceName } from '../market/places-gate';
+import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import '../market/market.css';
@@ -18,7 +18,6 @@ type PricingPreviewProps = {
 export function PricingPreviewScreen({ preview, onBack, onSave }: PricingPreviewProps) {
   useScreenView('pricing.preview');
   const { t, formatMoney } = useI18n();
-  const place = usePlaceName();
   return (
     <div className="market">
       <BackButton onClick={onBack} />
@@ -35,7 +34,7 @@ export function PricingPreviewScreen({ preview, onBack, onSave }: PricingPreview
               subtitle={`${formatMoney(row.before)} → ${formatMoney(row.after)}`}
               description={t('pricing.km', { km: String(row.km) })}
             >
-              {place(row.to, false)}
+              <RouteView from={row.from} to={row.to} />
             </Cell>
           ))}
         </Section>
