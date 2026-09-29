@@ -15,7 +15,8 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
       bot: 'passenger' as const,
       chatId: `@${channel}`,
       text,
-      ...(markup ? { markup } : {}),
+      html: true,
+      markup,
       after: { type: 'channelPost' as const, tripId, channel, shown },
     })),
   );
@@ -31,8 +32,9 @@ async function edit(deps: ChannelsDeps, tripId: string, posts: readonly ChannelP
       bot: 'passenger' as const,
       chatId: `@${post.channel}`,
       text,
+      html: true,
       edit: post.messageId,
-      ...(markup ? { markup } : {}),
+      markup,
     })),
   );
 }
