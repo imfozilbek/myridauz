@@ -1,6 +1,7 @@
 import account from '../locales/uz-Latn/account.json' with { type: 'json' };
 import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
+import chat from '../locales/uz-Latn/chat.json' with { type: 'json' };
 import common from '../locales/uz-Latn/common.json' with { type: 'json' };
 import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
@@ -8,6 +9,7 @@ import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
+import share from '../locales/uz-Latn/share.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
 import type { Locale } from './config';
 
@@ -16,6 +18,7 @@ const REFERENCE = {
   account,
   bookings,
   bot,
+  chat,
   common,
   drivers,
   errors,
@@ -23,6 +26,7 @@ const REFERENCE = {
   moderation,
   places,
   pricing,
+  share,
   wallet,
 };
 type Namespaces = typeof REFERENCE;

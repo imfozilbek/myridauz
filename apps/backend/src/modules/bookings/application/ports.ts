@@ -88,12 +88,14 @@ export type BookingsDeps = {
 // Bot messages to the other side (docs/07): a new request, an answer, a cancel, an offer.
 export type BookingNotifier = {
   requested(booking: Booking): Promise<void>;
-  // Returns the id of the message the passenger answers with the pickup point (docs/14).
-  confirmed(booking: Booking): Promise<number | null>;
+  // The passenger answers this message with the pickup point (docs/14).
+  confirmed(booking: Booking): Promise<void>;
   declined(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
-  offered(passengerId: number): Promise<void>;
-  offerAnswered(driverId: number, accepted: boolean): Promise<void>;
+  offered(passengerId: number, offerId: string): Promise<void>;
+  offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
+  // "Mashinaga chiqdi" and "Yetib keldi" for the passenger's close people (docs/43).
+  progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
 };
 
 export type Result<T, E extends string> =

@@ -13,6 +13,11 @@ export type BookingRecord = {
   // The passenger's own pickup point, sent to the passenger bot after the confirmation (docs/14).
   readonly pickup: Point | null;
   readonly pickupMessageId: number | null;
+  // The offer this booking came from: its chat is the offer's chat (docs/07).
+  readonly offerId: string | null;
+  // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
+  readonly boardedAt: number | null;
+  readonly arrivedAt: number | null;
   readonly createdAt: number;
   readonly updatedAt: number;
 };

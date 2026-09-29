@@ -62,6 +62,9 @@ export async function acceptOffer(
     expiresAt: offer.departAt,
     pickup: null,
     pickupMessageId: null,
+    offerId: offer.id,
+    boardedAt: null,
+    arrivedAt: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -73,10 +76,9 @@ export async function acceptOffer(
   const accepted: OfferRecord = { ...offer, status: 'accepted', bookingId: booking.id };
   await deps.offers.save(accepted);
   await deps.requests.matched(request.id);
-  await deps.notify.offerAnswered(offer.driverId, true);
+  await deps.notify.offerAnswered(offer.driverId, true, offer.id);
   const [forPassenger] = await bookingViews(deps, [booking], 'passenger');
-  const messageId = forPassenger ? await deps.notify.confirmed(forPassenger) : null;
-  if (messageId !== null) await deps.bookings.save({ ...booking, pickupMessageId: messageId });
+  if (forPassenger) await deps.notify.confirmed(forPassenger);
   return view(deps, accepted, { ...request, open: false });
 }
 
@@ -89,8 +91,14 @@ export async function declineOffer(
   if (typeof found === 'string') return { ok: false, error: found };
   const declined: OfferRecord = { ...found.offer, status: 'declined' };
   await deps.offers.save(declined);
-  await deps.notify.offerAnswered(found.offer.driverId, false);
+  await deps.notify.offerAnswered(found.offer.driverId, false, found.offer.id);
   return view(deps, declined, found.request);
+}
+
+// The bot sent the confirmation: the passenger answers that very message with the pickup point.
+export async function rememberPickupMessage(deps: BookingsDeps, bookingId: string, messageId: number) {
+  const booking = await deps.bookings.find(bookingId);
+  if (booking) await deps.bookings.save({ ...booking, pickupMessageId: messageId });
 }
 
 // A location the passenger sent to the passenger bot as an answer to the confirmation (docs/14).

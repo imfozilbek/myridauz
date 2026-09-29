@@ -1,40 +1,25 @@
 import { appHost, type BrandConfig } from '@platform/brands';
-import { formatPlate, type Booking } from '@platform/contracts';
+import { chatKeyOfOffer, formatPlate, type Booking, type ChatSystemEvent } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { sendText, type Fetch } from '../../../shared/telegram/telegram-api';
+import type { NotificationJob } from '../../notifications';
 import type { BookingNotifier } from '../application/ports';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 
 type Wiring = {
-  readonly fetch: Fetch;
   readonly brand: BrandConfig;
-  readonly passengerToken: string | undefined;
-  readonly driverToken: string | undefined;
+  readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
+  readonly system: (key: string, event: ChatSystemEvent) => Promise<void>;
   readonly placeName: (id: string) => Promise<string>;
+  readonly closeOnes: (booking: Booking, update: 'boarded' | 'arrived' | 'cancelled') => Promise<void>;
 };
 
-// The bots tell the other side (docs/07): names only, never a phone or a username.
-// A person who never opened the bot gets nothing; the booking works anyway.
-export function telegramNotifier({
-  fetch,
-  brand,
-  passengerToken,
-  driverToken,
-  placeName,
-}: Wiring): BookingNotifier {
+// The bots tell the other side through the queue (docs/07, docs/03): names only, never a phone
+// or a username. The chat of the booking gets a line about it too.
+export function telegramNotifier({ brand, notify, system, placeName, closeOnes }: Wiring): BookingNotifier {
   const open = (app: 'passenger' | 'driver') => ({
     inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
   });
-  const send = async (token: string | undefined, chatId: number, text: string, markup?: object) => {
-    if (!token) return null;
-    try {
-      return (await sendText(fetch, token, chatId, text, markup)) ?? null;
-    } catch (error) {
-      console.warn(String(error));
-      return null;
-    }
-  };
   const about = async (booking: Booking) => ({
     from: await placeName(booking.trip.from),
     to: await placeName(booking.trip.to),
@@ -44,13 +29,16 @@ export function telegramNotifier({
     seats: String(booking.seats),
   });
   const toDriver = (booking: Booking, text: string) =>
-    send(driverToken, booking.trip.driver.id, text, open('driver'));
+    notify([{ bot: 'driver', chatId: booking.trip.driver.id, text, markup: open('driver') }]);
   const toPassenger = (booking: Booking, text: string) =>
-    send(passengerToken, booking.passenger.id, text, open('passenger'));
+    notify([{ bot: 'passenger', chatId: booking.passenger.id, text, markup: open('passenger') }]);
   return {
-    requested: async (booking) =>
-      void (await toDriver(booking, t('bot.booking.requested', await about(booking)))),
+    requested: async (booking) => {
+      await system(booking.chatKey, 'requested');
+      await toDriver(booking, t('bot.booking.requested', await about(booking)));
+    },
     confirmed: async (booking) => {
+      await system(booking.chatKey, 'confirmed');
       const { car } = booking.trip.driver;
       const text = t('bot.booking.confirmed', {
         ...(await about(booking)),
@@ -58,23 +46,37 @@ export function telegramNotifier({
         plate: booking.plate ? formatPlate(booking.plate) : '',
       });
       // No button: the passenger answers this very message with the pickup point (docs/14).
-      return send(passengerToken, booking.passenger.id, text);
+      await notify([
+        {
+          bot: 'passenger',
+          chatId: booking.passenger.id,
+          text,
+          after: { type: 'pickup', bookingId: booking.id },
+        },
+      ]);
     },
-    declined: async (booking) =>
-      void (await toPassenger(booking, t('bot.booking.declined', await about(booking)))),
+    declined: async (booking) => {
+      await system(booking.chatKey, 'declined');
+      await toPassenger(booking, t('bot.booking.declined', await about(booking)));
+    },
     cancelled: async (booking, by) => {
+      await system(booking.chatKey, 'cancelled');
+      await closeOnes(booking, 'cancelled');
       if (by === 'passenger')
         await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
       else await toPassenger(booking, t('bot.booking.cancelledByDriver', await about(booking)));
     },
-    offered: async (passengerId) =>
-      void (await send(passengerToken, passengerId, t('bot.offer.new'), open('passenger'))),
-    offerAnswered: async (driverId, accepted) =>
-      void (await send(
-        driverToken,
-        driverId,
-        t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined'),
-        open('driver'),
-      )),
+    offered: async (passengerId, offerId) => {
+      await system(chatKeyOfOffer(offerId), 'offered');
+      await notify([
+        { bot: 'passenger', chatId: passengerId, text: t('bot.offer.new'), markup: open('passenger') },
+      ]);
+    },
+    offerAnswered: async (driverId, accepted, offerId) => {
+      if (!accepted) await system(chatKeyOfOffer(offerId), 'declined');
+      const text = t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined');
+      await notify([{ bot: 'driver', chatId: driverId, text, markup: open('driver') }]);
+    },
+    progress: (booking, step) => closeOnes(booking, step),
   };
 }

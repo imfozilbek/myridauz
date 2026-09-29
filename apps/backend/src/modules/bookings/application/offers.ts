@@ -49,7 +49,7 @@ export async function sendOffer(
     createdAt: now,
   };
   await deps.offers.save(offer);
-  await deps.notify.offered(request.passengerId);
+  await deps.notify.offered(request.passengerId, offer.id);
   const [view] = await offerViews(deps, [offer], [request]);
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
 }

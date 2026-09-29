@@ -17,10 +17,11 @@ export const fakeRecommend: BookingsDeps['recommend'] = async (from, to) => ({
 
 export const fakeNotifier = (notes: string[]): BookingsDeps['notify'] => ({
   requested: async (booking) => void notes.push(`driver: request ${booking.passenger.firstName}`),
-  confirmed: async (booking) => (notes.push(`passenger: confirmed ${booking.plate}`), 555),
+  confirmed: async (booking) => void notes.push(`passenger: confirmed ${booking.plate}`),
   declined: async () => void notes.push('passenger: declined'),
   cancelled: async (_booking, by) => void notes.push(`cancelled by ${by}`),
   offered: async (passengerId) => void notes.push(`offer to ${passengerId}`),
+  progress: async (booking, step) => void notes.push(`close ones: ${booking.passenger.firstName} ${step}`),
   offerAnswered: async (_driverId, accepted) =>
     void notes.push(`offer ${accepted ? 'accepted' : 'declined'}`),
 });

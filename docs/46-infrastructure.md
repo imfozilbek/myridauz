@@ -22,11 +22,13 @@
 | R2 | `rida-media`, приватный | `MEDIA` |
 | Analytics Engine | `rida_analytics` | `ANALYTICS` |
 | Workers Logs | включены | `observability` |
+| Durable Objects | `ChatRoom` (SQLite), один на чат брони (G09) | `CHATS` |
+| Queues | `rida-notifications`, сообщения ботов (G09) | `NOTIFICATIONS` |
 
 - Настройки: `brands/rida/wrangler.toml`. Миграции: `apps/backend/migrations`
   (таблицы `users`, `blocked_phones` с G04, `47`).
 - Фото людей в R2: `avatars/<id>/<uuid>`, отдаёт только API (`47`).
-- Queues, Durable Objects, Cron появятся в целях, где они нужны (`03`).
+- Очередь создана один раз: `wrangler queues create rida-notifications` (G09). Cron каждые 15 минут (G07).
 - Резервные копии D1: Time Travel 7 дней на бесплатном тарифе (`03`).
 
 ## Боты

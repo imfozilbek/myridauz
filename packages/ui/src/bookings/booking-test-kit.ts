@@ -14,6 +14,9 @@ export const booking: Booking = {
   meetingPoint: null,
   pickup: null,
   plate: null,
+  chatKey: 'b00000000-0000-4000-8000-0000000000b1',
+  boardedAt: null,
+  arrivedAt: null,
 };
 
 export const confirmed: Booking = {
@@ -36,6 +39,7 @@ export const offer: Offer = {
   commission: 0,
   status: 'sent',
   bookingId: null,
+  chatKey: 'o00000000-0000-4000-8000-0000000000c1',
 };
 
 export const wallet: Wallet = {

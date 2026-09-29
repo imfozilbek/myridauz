@@ -5,6 +5,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { IconTile } from '../icon-tile';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import '../market/market.css';
@@ -47,10 +48,11 @@ type ScreenProps = {
   readonly onBack: () => void;
   readonly onAccept: () => void;
   readonly onDecline: () => void;
+  readonly onChat: () => void;
 };
 
 // One offer: the passenger accepts it (a trip and a confirmed booking appear) or declines it.
-export function OfferScreen({ offer, onBack, onAccept, onDecline }: ScreenProps) {
+export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat }: ScreenProps) {
   useScreenView('bookings.offer');
   const { t, formatMoney } = useI18n();
   const { driver } = offer;
@@ -83,6 +85,9 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline }: ScreenProps)
             subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
           >
             {driver.firstName}
+          </Cell>
+          <Cell before={<IconTile name="chat" />} onClick={onChat}>
+            {t('chat.open')}
           </Cell>
         </Section>
       </List>

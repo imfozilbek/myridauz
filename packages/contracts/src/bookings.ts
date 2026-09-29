@@ -49,6 +49,11 @@ export const bookingSchema = z.object({
   meetingPoint: pointSchema.nullable(),
   pickup: pointSchema.nullable(),
   plate: z.string().nullable(),
+  // The chat of the booking (docs/07): the offer's chat when it came from an offer.
+  chatKey: z.string(),
+  // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
+  boardedAt: z.number().int().nullable(),
+  arrivedAt: z.number().int().nullable(),
 });
 export type Booking = z.infer<typeof bookingSchema>;
 export const bookingsSchema = z.object({ bookings: z.array(bookingSchema) });

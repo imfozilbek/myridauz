@@ -1,4 +1,4 @@
-import type { Booking, Trip } from '@platform/contracts';
+import { chatKeyOfBooking, chatKeyOfOffer, type Booking, type Trip } from '@platform/contracts';
 import { holdsSeats, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, TripFacts } from './ports';
 
@@ -54,6 +54,9 @@ export async function bookingViews(
         meetingPoint: open ? loaded.facts.meetingPoint : null,
         pickup: open || viewer === 'passenger' ? record.pickup : null,
         plate: open && viewer !== 'driver' ? await plateOf(loaded.facts.driverId) : null,
+        chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
+        boardedAt: record.boardedAt,
+        arrivedAt: record.arrivedAt,
       };
     }),
   );

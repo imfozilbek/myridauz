@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
+import { ChatScreen } from '../chat/chat-screen';
 import { SentOffers } from '../bookings/sent-offers';
 import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
@@ -40,6 +41,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
   );
   const [opened, setOpened] = useState<Opened | null>(null);
+  const [chatKey, setChatKey] = useState<string | null>(null);
   const cancel = async (trip: Trip) => {
     try {
       await market.cancelTrip(trip.id);
@@ -50,6 +52,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     setOpened(null);
     reload();
   };
+  if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (opened?.booking) {
     const { trip, booking } = opened;
     const close = (changed: boolean) => {
@@ -87,7 +90,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
         {t('common.myTrips')}
       </Title>
       <List>
-        <SentOffers offers={offers} />
+        <SentOffers offers={offers} onOpen={(offer) => setChatKey(offer.chatKey)} />
         {trips.map((trip) => (
           <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ trip })} />
         ))}

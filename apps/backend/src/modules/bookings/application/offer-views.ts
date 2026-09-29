@@ -1,4 +1,4 @@
-import type { Offer } from '@platform/contracts';
+import { chatKeyOfOffer, type Offer } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import type { BookingsDeps, RequestFacts } from './ports';
 
@@ -35,6 +35,7 @@ export async function offerViews(
         commission: deps.wallet.commission(offer.price, request.seats),
         status: offerStatusAt(offer, request.open, now),
         bookingId: offer.bookingId,
+        chatKey: chatKeyOfOffer(offer.id),
       };
     }),
   );

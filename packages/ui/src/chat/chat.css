@@ -1,0 +1,79 @@
+/* A chat like Telegram (docs/21): bubbles, the input at the bottom, only theme colors. */
+.chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.chat-title {
+  padding: 16px 20px 8px;
+}
+
+.chat-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px 88px;
+}
+
+.chat-bubble {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.chat-me {
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+  background: var(--tgui--button_color);
+  color: var(--tgui--button_text_color);
+}
+
+.chat-other {
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  background: var(--tgui--section_bg_color);
+  color: var(--tgui--text_color);
+}
+
+.chat-time {
+  display: block;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.chat-system,
+.chat-empty {
+  align-self: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: var(--tgui--bg_color);
+  color: var(--tgui--hint_color);
+}
+
+.chat-warning {
+  flex-basis: 100%;
+  padding: 0 4px;
+  color: var(--tgui--destructive_text_color);
+}
+
+.chat-input {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  background: var(--tgui--bg_color);
+}
+
+.chat-input > :not(.chat-warning, button) {
+  flex: 1;
+}

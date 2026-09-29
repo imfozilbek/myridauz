@@ -6,7 +6,8 @@
       "ignoreDependencies": ["wrangler"]
     },
     "apps/backend": {
-      "entry": ["src/index.ts"]
+      "entry": ["src/index.ts"],
+      "ignoreDependencies": ["cloudflare"]
     },
     "brands/*/brand-kit": {
       "entry": ["tools/map-data.mjs"]

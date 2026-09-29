@@ -3,15 +3,20 @@ import { driverTripCancelPath } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { bookingCommission } from '../billing';
+import { postSystemEvent } from '../chat';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
+import { notify } from '../notifications';
 import { markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
 import { cancelFor, driverTripIds, publishFor, tripFacts, tripViewsOf } from '../trips';
+import { tellCloseOnes } from '../shares';
 import { peopleOf } from '../users';
 import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
 import { answer } from './application/answer';
-import { setPickup } from './application/accept';
+import { rememberPickupMessage, setPickup } from './application/accept';
+import { chatMember } from './application/chat-member';
+import { passengerView } from './application/progress';
 import type { BookingsDeps } from './application/ports';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -47,11 +52,11 @@ const bookingsDeps = (env: Bindings): BookingsDeps => ({
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
   notify: telegramNotifier({
-    fetch: (input, init) => fetch(input, init),
     brand: loadBrand(env.BRAND),
-    passengerToken: env.PASSENGER_BOT_TOKEN,
-    driverToken: env.DRIVER_BOT_TOKEN,
+    notify: (jobs) => notify(env, jobs),
+    system: (key, event) => postSystemEvent(env, key, event),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
+    closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
   }),
   now: Date.now,
   newId: () => crypto.randomUUID(),
@@ -85,3 +90,10 @@ export const pickupFromBot = (
   lat: number,
   lng: number,
 ) => setPickup(bookingsDeps(env), passengerId, messageId, { lat, lng });
+
+// For the chat: who may open it (docs/07). For the queue: the id of the confirmation message.
+export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
+  chatMember(bookingsDeps(env), key, userId);
+export const pickupMessageSent = (env: Bindings, bookingId: string, messageId: number) =>
+  rememberPickupMessage(bookingsDeps(env), bookingId, messageId);
+export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);

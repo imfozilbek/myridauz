@@ -1,4 +1,5 @@
 import type { MiniApp, TeamRole } from '@platform/contracts';
+import type { NotificationJob } from './modules/notifications/application/job';
 import type { TelegramUser } from './shared/auth/telegram-fields';
 
 // Cloudflare bindings, vars and secrets of the Worker (brands/<brand>/wrangler.toml).
@@ -8,6 +9,9 @@ export type Bindings = {
   readonly ANALYTICS?: AnalyticsEngineDataset;
   readonly DB?: D1Database;
   readonly MEDIA?: R2Bucket;
+  // One Durable Object per booking chat (docs/07) and the queue of bot messages (docs/03).
+  readonly CHATS?: DurableObjectNamespace;
+  readonly NOTIFICATIONS?: Queue<NotificationJob>;
   readonly PASSENGER_BOT_TOKEN?: string;
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;

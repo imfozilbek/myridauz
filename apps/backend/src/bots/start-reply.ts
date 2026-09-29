@@ -9,6 +9,10 @@ const START_TEXT = {
   admin: 'bot.admin.start',
 } as const;
 
+// A close person opens the passenger Mini App to follow a trip, no registration (docs/43).
+const FOLLOW_PAYLOAD = /^follow_([A-Za-z0-9_-]{43})$/u;
+const FOLLOW_PARAM = 'follow';
+
 const miniAppUrl = (brand: BrandConfig, role: BotRole) => `https://${appHost(brand, role)}`;
 export const openButton = (brand: BrandConfig, role: BotRole) => ({
   text: t('bot.open'),
@@ -25,13 +29,26 @@ type StartContext = {
   readonly brand: BrandConfig;
   readonly role: BotRole;
   readonly chatId: number;
+  // "/start follow_<token>" from the card of a shared trip (docs/43).
+  readonly payload?: string;
   // support: a person outside the team writes to the admin bot, it is the support contact (docs/02).
   readonly access: 'allowed' | 'support' | 'blocked';
 };
 
 // The answer to /start goes back in the webhook response: no extra request to Telegram (docs/03).
-export function startReply({ brand, role, chatId, access }: StartContext) {
+export function startReply({ brand, role, chatId, access, payload = '' }: StartContext) {
   if (access === 'blocked') return { method: 'sendMessage', chat_id: chatId, text: t('bot.blocked') };
+  const follow = FOLLOW_PAYLOAD.exec(payload);
+  if (role === 'passenger' && follow) {
+    const url = `${miniAppUrl(brand, role)}/?${FOLLOW_PARAM}=${follow[1]}`;
+    const button = { text: t('bot.share.follow'), web_app: { url } };
+    return {
+      method: 'sendMessage',
+      chat_id: chatId,
+      text: t('bot.share.open'),
+      reply_markup: { inline_keyboard: [[button]] },
+    };
+  }
   if (access === 'support') {
     return { method: 'sendMessage', chat_id: chatId, text: t('bot.support.welcome', { brand: brand.name }) };
   }
