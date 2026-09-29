@@ -50,3 +50,28 @@ test('admin: main screen and prices', async ({ page }) => {
   await expect(page.getByText('→').first()).toBeVisible();
   await shot('5-preview');
 });
+
+test('driver: looks around while the application is checked', async ({ page }) => {
+  await mockApi(page, 'active', 'pending');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(DRIVER.port)));
+  const shot = shooter(page, 'driver-pending');
+  await expect(page.getByText(TEXT.pending)).toBeVisible();
+  await shot('1-home');
+  await page.getByText(TEXT.passengerRequests, { exact: true }).click();
+  await expect(page.getByText(TEXT.pendingRequests)).toBeVisible();
+  await shot('2-requests');
+});
+
+test('admin: the trips of the team', async ({ page }) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(ADMIN.port)));
+  const shot = shooter(page, 'team-trips');
+  await page.getByText(TEXT.management).click();
+  await page.getByText(TEXT.teamTrips, { exact: true }).click();
+  await expect(page.getByText('Bekzod')).toBeVisible();
+  await shot('1-list');
+  await page.getByText('Jasur').click();
+  await shot('2-trip');
+});

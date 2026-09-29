@@ -1,5 +1,5 @@
 import type { RideRequest } from '@platform/contracts';
-import { Button, Caption, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
+import { Button, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -7,6 +7,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
+import { FactChips, statusIcon, type Fact } from './fact-chips';
 import { RouteView } from './route-view';
 import { noonOf } from './when';
 
@@ -22,9 +23,9 @@ type RequestCardProps = {
 export function RequestCard({ request, showStatus = false, onOpen }: RequestCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { passenger } = request;
-  const facts = [
-    t('market.request.seats', { count: String(request.seats) }),
-    ...(showStatus ? [t(`market.status.${request.status}`)] : []),
+  const facts: readonly Fact[] = [
+    ['passengers', t('market.request.seats', { count: String(request.seats) })],
+    ...(showStatus ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
   ];
   return (
     <Section>
@@ -36,6 +37,7 @@ export function RequestCard({ request, showStatus = false, onOpen }: RequestCard
           </Text>
         </div>
         <RouteView from={request.from} to={request.to} />
+        <FactChips facts={facts} />
         <div className="trip-card-foot">
           <ProfilePhoto
             userId={passenger.id}
@@ -44,7 +46,6 @@ export function RequestCard({ request, showStatus = false, onOpen }: RequestCard
             size={PHOTO_SIZE}
           />
           <Text className="trip-card-driver">{passenger.firstName}</Text>
-          <Caption className="trip-card-hint trip-card-facts">{facts.join(' · ')}</Caption>
         </div>
       </Tappable>
     </Section>

@@ -1,4 +1,5 @@
 import {
+  ADMIN_TRIPS_PATH,
   DRIVER_REQUESTS_PATH,
   DRIVER_TRIPS_PATH,
   driverTripCancelPath,
@@ -27,7 +28,7 @@ const query = (params: Record<string, string | undefined>) =>
     Object.entries(params).filter((entry): entry is [string, string] => entry[1] !== undefined),
   );
 
-// Trips, ride requests and the recommended price (docs/09, G07), for the passenger and the driver apps.
+// Trips, ride requests and the recommended price (docs/09, G07), for the three Mini Apps.
 export function createMarketClient(options: SignedOptions) {
   const { request, post } = signedRequest(options);
   const trip = async (response: Response) => tripSchema.parse(await response.json());
@@ -53,6 +54,9 @@ export function createMarketClient(options: SignedOptions) {
       rideRequest(await post(PASSENGER_REQUESTS_PATH, input)),
     cancelRequest: async (id: string): Promise<RideRequest> =>
       rideRequest(await post(passengerRequestCancelPath(id), {})),
+    // The admin Mini App: the trips from yesterday on, to look at (not to approve).
+    teamTrips: async (): Promise<Trip[]> =>
+      tripsSchema.parse(await (await request(ADMIN_TRIPS_PATH)).json()).trips,
   };
 }
 

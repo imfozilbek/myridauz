@@ -3,31 +3,40 @@ import { Caption, Tappable, Text } from '@telegram-apps/telegram-ui';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { CarSwatch } from '../driver/car-swatch';
+import { FactChips, statusIcon, type Fact } from './fact-chips';
 import { RouteView } from './route-view';
 
 const PHOTO_SIZE = 40;
 
 type TripCardProps = { readonly trip: Trip; readonly showStatus?: boolean; readonly onOpen: () => void };
 
-// One trip in a list: the day and the price, A and B with the times, the driver, the car and the seats.
+// One trip in a list, everything a person decides by: the day, the distance and the price,
+// A and B with the times, the driver's comment, the driver and the car, the seats and the marks.
 export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
-  const facts = [
-    t('market.trip.seats', { count: String(trip.seats) }),
-    ...(trip.woman ? [t('market.search.woman')] : []),
-    ...(showStatus ? [t(`market.status.${trip.status}`)] : []),
+  const facts: readonly Fact[] = [
+    ['passengers', t('market.trip.seats', { count: String(trip.seats) })],
+    ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
+    ...(trip.hasMeetingPoint ? [['destination', t('market.trip.meeting')] as const] : []),
+    ...(showStatus ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
   ];
   return (
     <Section>
       <Tappable Component="div" className="trip-card" interactiveAnimation="background" onClick={onOpen}>
         <div className="trip-card-head">
-          <Text weight="2">{formatDate(new Date(trip.departAt))}</Text>
+          <span>
+            <Text weight="2">{formatDate(new Date(trip.departAt))}</Text>
+            <Caption className="trip-card-hint">{` · ${t('market.trip.km', { km: String(trip.km) })}`}</Caption>
+          </span>
           <Text weight="1" className="trip-price">
             {formatMoney(trip.price)}
           </Text>
         </div>
         <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
+        {trip.comment ? <Caption className="trip-card-comment">{trip.comment}</Caption> : null}
+        <FactChips facts={facts} />
         <div className="trip-card-foot">
           <ProfilePhoto
             userId={driver.id}
@@ -37,11 +46,11 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
           />
           <span className="trip-card-driver">
             <Text>{driver.firstName}</Text>
-            <Caption className="trip-card-hint">
+            <Caption className="trip-card-hint trip-card-car">
+              <CarSwatch color={driver.car.color} />
               {`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
             </Caption>
           </span>
-          <Caption className="trip-card-hint trip-card-facts">{facts.join(' · ')}</Caption>
         </div>
       </Tappable>
     </Section>

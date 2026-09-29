@@ -1,4 +1,5 @@
 import {
+  ADMIN_TRIPS_PATH,
   DRIVER_TRIPS_PATH,
   TRIPS_PATH,
   tripInputSchema,
@@ -9,9 +10,10 @@ import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { TripsDeps } from '../application/ports';
 import { publishTrip } from '../application/publish';
-import { cancelTrip, myTrips, searchTrips, tripDetail } from '../application/read';
+import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from '../application/read';
 
 const STATUS = {
+  'auth.not_admin': 403,
   'trips.not_found': 404,
   'trips.invalid_input': 400,
   'trips.not_driver': 403,
@@ -53,5 +55,10 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
     .get(`${TRIPS_PATH}/${ONE}`, async (context) => {
       const trip = await tripDetail(deps(context.env), context.req.param('id'));
       return trip ? context.json(trip) : fail(context, 'trips.not_found');
-    });
+    })
+    .get(ADMIN_TRIPS_PATH, async (context) =>
+      context.get('session').isAdmin
+        ? context.json({ trips: await teamTrips(deps(context.env)) })
+        : fail(context, 'auth.not_admin'),
+    );
 }

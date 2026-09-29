@@ -13,6 +13,11 @@ export function createMemoryTrips(): TripRepository {
       [...trips.values()]
         .filter((trip) => trip.status === 'active' && trip.departAt >= from && trip.departAt < to)
         .sort((a, b) => a.departAt - b.departAt),
+    since: async (from, limit) =>
+      [...trips.values()]
+        .filter((trip) => trip.departAt >= from)
+        .sort((a, b) => a.departAt - b.departAt)
+        .slice(0, limit),
     completeOver: async (now) => {
       for (const trip of trips.values())
         if ((trip.status === 'active' || trip.status === 'full') && trip.endsAt <= now)

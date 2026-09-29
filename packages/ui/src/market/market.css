@@ -54,31 +54,48 @@
   white-space: nowrap;
 }
 
-/* Point A and point B: the place, its region and the time (owner decision 29.09.2026). */
+/* Point A (green) and point B (red): the place, its region and the time (owner decision 29.09.2026). */
 .route {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   padding: 4px 0;
 }
 
-/* The text of a stop takes the whole row, so the time stands at the right edge. */
-.route > li {
-  gap: 16px;
-}
-
-.route > li > :last-child {
-  flex: 1;
-  min-width: 0;
-}
-
 .route-stop {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
+}
+
+.route-mark {
+  display: flex;
+  flex: none;
+  padding-top: 2px;
+}
+
+/* A thin line from A down to B. */
+.route-stop:first-child .route-mark::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  bottom: -10px;
+  left: 9px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--tgui--divider);
+}
+
+.route-place {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .route-time {
   flex: none;
-  font-weight: 600;
-  color: var(--tgui--text_color);
 }
 
 /* A trip in a list is a card of its own: tap anywhere to open it. */
@@ -114,10 +131,44 @@
   color: var(--tgui--hint_color);
 }
 
+.trip-card-comment {
+  overflow: hidden;
+  color: var(--tgui--hint_color);
+  font-style: italic;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Seats, "ayol bor", the meeting point: quiet marks, an icon always with its words (docs/19). */
 .trip-card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.trip-fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--tgui--secondary_bg_color);
+  color: var(--tgui--text_color);
+}
+
+.trip-card-car {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trip-card-car .car-swatch {
+  display: inline-block;
   flex: none;
-  max-width: 45%;
-  text-align: right;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--tgui--outline);
 }
 
 .route-summary {

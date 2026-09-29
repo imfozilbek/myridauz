@@ -20,11 +20,11 @@ const driver: Driver = {
   editCar: () => undefined,
 };
 
-function setup(gender: 'male' | 'female' = 'male') {
+function setup(gender: 'male' | 'female' = 'male', status: Driver['application']['status'] = 'approved') {
   const publishTrip = vi.fn<MarketClient['publishTrip']>(async () => trip);
   const clients = testClients({ market: { recommend: async () => recommendation, publishTrip } });
   const result = renderMarket(
-    <DriverContext.Provider value={driver}>
+    <DriverContext.Provider value={{ ...driver, application: { ...driver.application, status } }}>
       <NewTripFlow onBack={() => undefined} />
     </DriverContext.Provider>,
     clients,
@@ -81,5 +81,22 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
       await tap(step);
     expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
     expect(screen.queryByText('Mashinada ayol bormi?')).toBeNull();
+  });
+
+  it('lets a driver whose application is checked try everything but publishing', async () => {
+    const { publishTrip } = setup('male', 'pending');
+    await chooseRoute();
+    for (const step of [
+      /^Ertaga/,
+      'Davom etish',
+      'Davom etish',
+      'Davom etish',
+      'Yoʻq',
+      'Izohsiz davom etish',
+    ])
+      await tap(step);
+    expect(await screen.findByText('Ariza tasdiqlangach safarni eʼlon qila olasiz.')).toBeTruthy();
+    expect(screen.queryByText('Eʼlon qilish')).toBeNull();
+    expect(publishTrip).not.toHaveBeenCalled();
   });
 });

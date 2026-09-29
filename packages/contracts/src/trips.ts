@@ -7,6 +7,8 @@ import { dateSchema } from './tashkent-time';
 export const DRIVER_TRIPS_PATH = '/driver/trips';
 export const driverTripCancelPath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/cancel`;
 export const TRIPS_PATH = '/trips';
+// The team sees the trips of yesterday, today and later; trips are not approved (owner decision 29.09.2026).
+export const ADMIN_TRIPS_PATH = '/admin/trips';
 export const tripPath = (id: string) => `${TRIPS_PATH}/${id}`;
 
 export const TRIP_STATUSES = ['active', 'full', 'completed', 'cancelled'] as const;

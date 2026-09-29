@@ -1,4 +1,11 @@
-import { DAY_MS, tashkentDayStart, type Car, type Trip, type TripSearch } from '@platform/contracts';
+import {
+  DAY_MS,
+  tashkentDate,
+  tashkentDayStart,
+  type Car,
+  type Trip,
+  type TripSearch,
+} from '@platform/contracts';
 import type { Person } from '../../users';
 import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, type TripRecord } from '../domain/trip';
@@ -45,6 +52,13 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
 export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {
   const trip = await deps.trips.find(id);
   return trip ? (await views(deps, [trip]))[0] : undefined;
+}
+
+// The team looks at the trips from yesterday on; nothing waits for its approval (owner decision 29.09.2026).
+const TEAM_LIST_LIMIT = 200;
+export async function teamTrips(deps: TripsDeps): Promise<Trip[]> {
+  const yesterday = tashkentDayStart(tashkentDate(deps.now() - DAY_MS));
+  return views(deps, await deps.trips.since(yesterday, TEAM_LIST_LIMIT));
 }
 
 // "Mening safarlarim" of a driver: the newest first.

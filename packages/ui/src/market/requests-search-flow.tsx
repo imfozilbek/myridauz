@@ -5,6 +5,7 @@ import { List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { usePending } from '../driver/driver-context';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
@@ -12,6 +13,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DateStep } from './date-step';
+import { PendingLock } from './pending-lock';
 import { PlacesGate } from './places-gate';
 import { RequestCard, RequestScreen } from './request-card';
 import { RouteView } from './route-view';
@@ -23,6 +25,8 @@ export function RequestsSearchFlow({ onBack }: { readonly onBack: () => void }) 
   const [route, setRoute] = useState<Route | null>(null);
   const [date, setDate] = useState<string | null>(null);
   const [now] = useState(Date.now);
+  const pending = usePending();
+  if (pending) return <PendingLock onBack={onBack} />;
   if (!route) return <RouteScreen allowWholeRegion onBack={onBack} onDone={setRoute} />;
   if (!date) return <DateStep now={now} onBack={() => setRoute(null)} onDone={setDate} />;
   return (

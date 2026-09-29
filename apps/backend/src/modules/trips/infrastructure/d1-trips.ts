@@ -97,6 +97,13 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
+  since: async (from, limit) =>
+    (
+      await db
+        .prepare('SELECT * FROM trips WHERE depart_at >= ? ORDER BY depart_at LIMIT ?')
+        .bind(from, limit)
+        .all<Row>()
+    ).results.map(toTrip),
   completeOver: async (now) => {
     await db
       .prepare("UPDATE trips SET status = 'completed' WHERE status IN ('active', 'full') AND ends_at <= ?")

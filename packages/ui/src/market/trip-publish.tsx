@@ -6,6 +6,7 @@ import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { usePending } from '../driver/driver-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
@@ -28,6 +29,7 @@ export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
   const { market } = useApiClients();
   const { t, formatMoney } = useI18n();
   const when = useWhenLabel();
+  const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const [published, setPublished] = useState(false);
   const publish = async () => {
@@ -79,7 +81,11 @@ export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
         </Section>
       </List>
       {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('market.review.publish')} onClick={() => void publish()} />
+      {pending ? (
+        <Text className="step-hint step-note">{t('drivers.status.pending.publish')}</Text>
+      ) : (
+        <MainButton text={t('market.review.publish')} onClick={() => void publish()} />
+      )}
     </StepLayout>
   );
 }
