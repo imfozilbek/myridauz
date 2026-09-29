@@ -55,6 +55,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     expect(JSON.stringify(told?.body.reply_markup)).toContain(`?trip=${published.id}`);
     const [post] = sentTo(SAMARQAND);
     expect(JSON.stringify(post?.body.reply_markup)).toContain(`startapp=trip_${published.id}`);
+    expect(post?.body.parse_mode).toBe('HTML');
     expect(sentTo(TOSHKENT_REGION)).toEqual([]);
     const booking = await read<{ id: string }>(
       call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 2 })),

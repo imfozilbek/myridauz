@@ -17,6 +17,6 @@ export type ChannelsDeps = {
   readonly places: () => Promise<ReadonlyMap<string, Place>>;
   readonly trip: (id: string) => Promise<Trip | undefined>;
   readonly posts: ChannelPostStore;
-  readonly render: (trip: Trip, places: ReadonlyMap<string, Place>) => { text: string; markup?: object };
+  readonly render: (trip: Trip, places: ReadonlyMap<string, Place>) => { text: string; markup: object };
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
 };

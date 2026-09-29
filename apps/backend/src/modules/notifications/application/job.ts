@@ -18,6 +18,8 @@ export type NotificationJob = {
   // A person, or a channel as "@username" (docs/15).
   readonly chatId: number | string;
   readonly text: string;
+  // The text has HTML marks (bold): a channel post (docs/15).
+  readonly html?: boolean;
   // Set: the message with this id is edited instead of a new one sent (a channel post, docs/15).
   readonly edit?: number;
   readonly markup?: object;

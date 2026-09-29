@@ -1,11 +1,12 @@
 import { ApiError, type SubscriptionsClient } from '@platform/api-client';
-import type { Subscription } from '@platform/contracts';
+import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FindTripFlow } from '../market/find-trip-flow';
 import { chooseRoute, renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
+import { SubscribeLink } from './subscribe-link';
 import { SubscriptionsLink } from './subscriptions-link';
 
 afterEach(() => {
@@ -99,5 +100,24 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       testClients({}),
     );
     expect(screen.getByText('Asosiy')).toBeTruthy();
+  });
+
+  it('subscribes to the route of a channel post; an old post gives today', async () => {
+    window.history.replaceState(null, '', '/#tgWebAppStartParam=sub_1726_1730_2020-01-01');
+    const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
+    renderMarket(
+      <SubscribeLink enabled>
+        <p>Asosiy</p>
+      </SubscribeLink>,
+      testClients({ subscriptions: { subscribe } }),
+    );
+    await tap(/^Faqat/);
+    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(subscribe).toHaveBeenCalledWith({
+      from: '1726',
+      to: '1730',
+      date: tashkentDate(Date.now()),
+      woman: false,
+    });
   });
 });

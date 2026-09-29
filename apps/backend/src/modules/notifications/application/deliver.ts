@@ -26,8 +26,8 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
       body: JSON.stringify({
         chat_id: job.chatId,
         text: job.text,
+        ...(job.html ? { parse_mode: 'HTML' } : {}),
         ...(job.edit === undefined ? {} : { message_id: job.edit }),
-        // An edit without a keyboard takes the button away (a full or cancelled trip, docs/15).
         ...(job.markup ? { reply_markup: job.markup } : {}),
       }),
     });
