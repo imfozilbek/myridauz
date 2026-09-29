@@ -12,7 +12,7 @@ const PLACEHOLDER_ICON: Record<CarPhotoKind, IconName> = {
   side: 'carSide',
   interior: 'carInterior',
 };
-const PLACEHOLDER_ICON_SIZE = 56;
+const PLACEHOLDER_ICON_SIZE = 36;
 const ACTION_ICON_SIZE = 16;
 
 type PhotoSlotProps = {
@@ -25,7 +25,7 @@ type PhotoSlotProps = {
   readonly onTake: () => void;
 };
 
-// One photo to take: a frame with a hint of what to shoot, or the photo itself.
+// One photo to take, as a compact row: a small frame (an icon or the photo) and what to shoot.
 // A photo the team asked to retake has a red frame and the reason under it (docs/04).
 export function PhotoSlot({ kind, taken, version, reasons, disabled, onTake }: PhotoSlotProps) {
   const { t } = useI18n();
@@ -34,30 +34,23 @@ export function PhotoSlot({ kind, taken, version, reasons, disabled, onTake }: P
   const url = useBlobUrl(taken ? () => drivers.getPhoto(kind) : null, `${kind}:${version}`);
   const problem = hasProblem(reasons, kind);
   return (
-    <div className="photo-slot">
-      <button
-        type="button"
-        className={problem ? 'photo-frame photo-frame-problem' : 'photo-frame'}
-        disabled={disabled}
-        onClick={onTake}
-      >
+    <button type="button" className="photo-slot" disabled={disabled} onClick={onTake}>
+      <span className={problem ? 'photo-frame photo-frame-problem' : 'photo-frame'}>
         {url ? (
           <img src={url} alt={t(`drivers.photo.${kind}`)} />
         ) : (
-          <span className="photo-placeholder">
-            <Icon name={PLACEHOLDER_ICON[kind]} size={PLACEHOLDER_ICON_SIZE} color={colors.textMuted} />
-            <Caption className="photo-placeholder-hint">{t(`drivers.photo.${kind}.hint`)}</Caption>
-          </span>
+          <Icon name={PLACEHOLDER_ICON[kind]} size={PLACEHOLDER_ICON_SIZE} color={colors.textMuted} />
         )}
+      </span>
+      <span className="photo-text">
+        <Text weight="2">{t(`drivers.photo.${kind}`)}</Text>
+        <Caption className="photo-hint">{t(`drivers.photo.${kind}.hint`)}</Caption>
+        <ProblemNote reasons={reasons} place={kind} />
         <span className="photo-action">
           <Icon name="camera" size={ACTION_ICON_SIZE} />
           {t(taken ? 'drivers.photo.retake' : 'drivers.photo.take')}
         </span>
-      </button>
-      <Text weight="2" className="photo-label">
-        {t(`drivers.photo.${kind}`)}
-      </Text>
-      <ProblemNote reasons={reasons} place={kind} />
-    </div>
+      </span>
+    </button>
   );
 }
