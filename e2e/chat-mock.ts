@@ -28,8 +28,9 @@ export async function mockChat(page: Page) {
     let id = HISTORY.length;
     ws.onMessage((raw) => {
       const { text } = JSON.parse(String(raw)) as { text: string };
-      const masked = /\d{2}\s?\d{3}\s?\d{2}\s?\d{2}/u.test(text);
-      const shown = text.replace(/\+?\d[\d\s-]{7,}\d/gu, '***');
+      // Like the real room (docs/07): phones and @usernames become "***".
+      const shown = text.replace(/\+?\d[\d\s-]{7,}\d/gu, '***').replace(/@\w{3,}/gu, '***');
+      const masked = shown !== text;
       id += 1;
       ws.send(
         JSON.stringify({
