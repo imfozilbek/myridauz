@@ -17,6 +17,8 @@ export const theme: BrandTheme = {
     text: '#1F2937',
     textMuted: '#6B7280',
     danger: '#DC2626',
+    routeFrom: '#16A34A',
+    routeTo: '#DC2626',
   },
   // Owner decision 29.09.2026: the driver app is amber, the admin app is graphite (docs/20).
   apps: {

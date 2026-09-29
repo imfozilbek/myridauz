@@ -40,6 +40,17 @@ jobs:
       - uses: ./.github/actions/setup
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
+
+  # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
+  screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm screenshots
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -89,9 +100,10 @@ jobs:
 
   # Production deploy (docs/32): only from main, only after every gate is green,
   # only through the Environment "production" that the owner approves. Pull requests never reach this job.
+  # The brand kit and the screenshots are media for people: the deploy does not wait for them (docs/45).
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [checks, e2e, brand-kit, secrets]
+    needs: [checks, e2e, secrets]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production

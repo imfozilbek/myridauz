@@ -6,26 +6,30 @@ import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { usePending } from '../driver/driver-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
 import type { TripDraft } from './new-trip-flow';
+import { RouteView } from './route-view';
 import { useWhenLabel } from './when';
 
 type TripPublishProps = {
   readonly draft: TripDraft;
+  readonly km: number;
   readonly onBack: () => void;
   readonly onClose: () => void;
 };
 
 // Everything on one screen before publishing; then a short "done" with the meeting point hint.
-export function TripPublish({ draft, onBack, onClose }: TripPublishProps) {
+export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
   useScreenView('market.review');
   const { track } = useAnalytics();
   const { market } = useApiClients();
   const { t, formatMoney } = useI18n();
   const when = useWhenLabel();
+  const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const [published, setPublished] = useState(false);
   const publish = async () => {
@@ -62,9 +66,9 @@ export function TripPublish({ draft, onBack, onClose }: TripPublishProps) {
       <BackButton onClick={onBack} />
       <List>
         <Section>
-          <Cell multiline description={`${draft.route.from.name} → ${draft.route.to.name}`}>
-            {t('market.review.route')}
-          </Cell>
+          <div className="route-summary">
+            <RouteView from={draft.route.from.id} to={draft.route.to.id} departAt={draft.departAt} km={km} />
+          </div>
           {line(t('market.review.when'), when(draft.departAt))}
           {line(t('market.review.seats'), String(draft.seats))}
           {line(t('market.review.price'), formatMoney(draft.price))}
@@ -77,7 +81,11 @@ export function TripPublish({ draft, onBack, onClose }: TripPublishProps) {
         </Section>
       </List>
       {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('market.review.publish')} onClick={() => void publish()} />
+      {pending ? (
+        <Text className="step-hint step-note">{t('drivers.status.pending.publish')}</Text>
+      ) : (
+        <MainButton text={t('market.review.publish')} onClick={() => void publish()} />
+      )}
     </StepLayout>
   );
 }

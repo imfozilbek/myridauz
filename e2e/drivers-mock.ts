@@ -3,7 +3,7 @@ import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
 
 // changes: the team asked to retake the face and the front photo and to check the plate.
-export type DriverStart = 'none' | 'approved' | 'changes';
+export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const allPhotos = { front: true, side: true, interior: true };
@@ -17,6 +17,7 @@ const CHANGES = {
 };
 const START = {
   none: null,
+  pending: { status: 'pending', car, photos: allPhotos, reasons: [] },
   approved: { status: 'approved', car, photos: allPhotos, reasons: [] },
   changes: CHANGES,
 };

@@ -10,7 +10,7 @@ export function CarCell() {
   const driver = useDriver();
   const { t } = useI18n();
   const car = driver?.application.car;
-  if (!driver || !car) return null;
+  if (!driver || !car || driver.application.status !== 'approved') return null;
   return (
     <Section>
       <Cell

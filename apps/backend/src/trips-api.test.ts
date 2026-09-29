@@ -50,6 +50,14 @@ describe('trips and requests API (docs/09)', () => {
     ).toBe(403);
   });
 
+  it('shows the trips to the team only; the team does not approve trips', async () => {
+    await registerUser(900);
+    expect((await call('/admin/trips', PASSENGER, { app: 'admin' })).status).toBe(403);
+    const response = await call('/admin/trips', 900, { app: 'admin' });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ trips: [] });
+  });
+
   it('lets a passenger publish, see and cancel a request', async () => {
     await registerUser(PASSENGER);
     const request = {

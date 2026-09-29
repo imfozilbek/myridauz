@@ -2,6 +2,7 @@ import {
   DriverGate,
   MyTripsScreen,
   NewTripFlow,
+  PendingNotice,
   RequestsSearchFlow,
   StartFlow,
   type StartAction,
@@ -35,11 +36,11 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
-// Only an approved driver sees the main screen; before that the application (docs/04, G06).
+// The main screen after the application is sent; while it is checked a note says what waits (docs/04).
 export function StartPage() {
   return (
     <DriverGate>
-      <StartFlow actions={ACTIONS} />
+      <StartFlow actions={ACTIONS} notice={<PendingNotice />} />
     </DriverGate>
   );
 }

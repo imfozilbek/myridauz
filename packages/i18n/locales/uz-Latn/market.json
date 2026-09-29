@@ -66,5 +66,6 @@
   "request.published.title": "Soʻrov qoldirildi",
   "request.published.hint": "Haydovchilar uni koʻradi va sizga taklif yuboradi.",
   "request.cancel": "Soʻrovni bekor qilish",
-  "request.cancelled": "Soʻrov bekor qilindi"
+  "request.cancelled": "Soʻrov bekor qilindi",
+  "trip.arrival": "≈ {time}"
 }

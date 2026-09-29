@@ -42,7 +42,7 @@ const request = {
 export async function mockMarket(page: Page) {
   const published: object[] = [];
   const found = [
-    tripOf('1', 'Jasur', false, 26),
+    tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true }),
     tripOf('2', 'Nodira', true, 29, { comment: 'Katta yuk olmayman' }),
   ];
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
@@ -60,6 +60,9 @@ export async function mockMarket(page: Page) {
     published.push(trip);
     return json(route, trip, 201);
   });
+  await page.route('**/api/admin/trips', (route) =>
+    json(route, { trips: [...found, { ...tripOf('3', 'Bekzod', false, 20), status: 'cancelled' }] }),
+  );
   await page.route('**/api/driver/requests?*', (route) => json(route, { requests: [request] }));
   await page.route('**/api/passenger/requests', (route) =>
     route.request().method() === 'GET'

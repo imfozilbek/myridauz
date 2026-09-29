@@ -3,6 +3,7 @@ export { Button, Cell, Input, List, Modal, Section } from './components';
 export { useAnalytics, useScreenView } from './context/analytics-context';
 export { useBrand } from './context/brand-context';
 export { DriverGate } from './driver/driver-gate';
+export { PendingNotice } from './driver/pending-notice';
 export { ApplicationsScreen } from './moderation/applications-screen';
 export { linkedApplication } from './moderation/linked-application';
 export { FindTripFlow } from './market/find-trip-flow';

@@ -16,6 +16,9 @@ export type BrandColors = {
   readonly text: HexColor;
   readonly textMuted: HexColor;
   readonly danger: HexColor;
+  // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
+  readonly routeFrom: HexColor;
+  readonly routeTo: HexColor;
 };
 
 // Each Mini App has its own main color, so a person always knows where they are (docs/20).

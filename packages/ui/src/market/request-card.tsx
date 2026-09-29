@@ -1,5 +1,5 @@
 import type { RideRequest } from '@platform/contracts';
-import { Button, Text, Title } from '@telegram-apps/telegram-ui';
+import { Button, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -7,43 +7,48 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
-import { usePlaceName } from './places-gate';
+import { FactChips, statusIcon, type Fact } from './fact-chips';
+import { RouteView } from './route-view';
 import { noonOf } from './when';
 
-const PHOTO_SIZE = 44;
+const PHOTO_SIZE = 40;
 
-// One request in a list: who, where, which day, how many people, the price (docs/09).
-export function RequestCard({
-  request,
-  showStatus = false,
-  onOpen,
-}: {
+type RequestCardProps = {
   readonly request: RideRequest;
   readonly showStatus?: boolean;
   readonly onOpen: () => void;
-}) {
+};
+
+// One request in a list: the day and the price, A and B, who goes and how many people (docs/09).
+export function RequestCard({ request, showStatus = false, onOpen }: RequestCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
-  const place = usePlaceName();
   const { passenger } = request;
-  const details = [passenger.firstName, ...(showStatus ? [t(`market.status.${request.status}`)] : [])];
+  const facts: readonly Fact[] = [
+    ['passengers', t('market.request.seats', { count: String(request.seats) })],
+    ...(showStatus ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
+  ];
   return (
-    <Cell
-      multiline
-      before={
-        <ProfilePhoto
-          userId={passenger.id}
-          name={passenger.firstName}
-          hasAvatar={passenger.hasAvatar}
-          size={PHOTO_SIZE}
-        />
-      }
-      subtitle={`${formatDate(noonOf(request.date))} · ${t('market.request.seats', { count: String(request.seats) })}`}
-      description={details.join(' · ')}
-      after={<CellValue>{formatMoney(request.price)}</CellValue>}
-      onClick={onOpen}
-    >
-      {`${place(request.from, false)} → ${place(request.to, false)}`}
-    </Cell>
+    <Section>
+      <Tappable Component="div" className="trip-card" interactiveAnimation="background" onClick={onOpen}>
+        <div className="trip-card-head">
+          <Text weight="2">{formatDate(noonOf(request.date))}</Text>
+          <Text weight="1" className="trip-price">
+            {formatMoney(request.price)}
+          </Text>
+        </div>
+        <RouteView from={request.from} to={request.to} />
+        <FactChips facts={facts} />
+        <div className="trip-card-foot">
+          <ProfilePhoto
+            userId={passenger.id}
+            name={passenger.firstName}
+            hasAvatar={passenger.hasAvatar}
+            size={PHOTO_SIZE}
+          />
+          <Text className="trip-card-driver">{passenger.firstName}</Text>
+        </div>
+      </Tappable>
+    </Section>
   );
 }
 
@@ -57,17 +62,20 @@ type RequestScreenProps = {
 export function RequestScreen({ request, onBack, onCancel }: RequestScreenProps) {
   useScreenView('market.request');
   const { t, formatMoney, formatDate } = useI18n();
-  const place = usePlaceName();
   const [asked, setAsked] = useState(false);
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
       <BackButton onClick={onBack} />
-      <Title weight="1" className="market-title">{`${place(request.from)} → ${place(request.to)}`}</Title>
+      <Title weight="1" className="market-title">
+        {formatDate(noonOf(request.date))}
+      </Title>
       <Text className="market-subtitle">{t('market.trip.km', { km: String(request.km) })}</Text>
       <List>
         <Section>
-          {line(t('market.review.when'), formatDate(noonOf(request.date)))}
+          <div className="route-summary">
+            <RouteView from={request.from} to={request.to} />
+          </div>
           {line(t('market.requestSeats.title'), String(request.seats))}
           {line(t('market.review.price'), formatMoney(request.price))}
           {line(t('market.review.status'), t(`market.status.${request.status}`))}

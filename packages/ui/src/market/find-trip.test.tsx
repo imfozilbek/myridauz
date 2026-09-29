@@ -16,11 +16,14 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', () => 
     );
     await chooseRoute(true);
     await tap(/^Bugun/);
-    expect(await screen.findByText('Chilonzor → Fargʻona shahri')).toBeTruthy();
+    expect(await screen.findByText('Jasur')).toBeTruthy();
+    // Every stop shows two levels: the place and its region, and the arrival is approximate.
+    expect(screen.getAllByText('Toshkent shahri').length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^≈ \d\d:\d\d$/).length).toBeGreaterThan(0);
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726269', to: '1730' });
     fireEvent.click(screen.getByRole('checkbox'));
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0]).toMatchObject({ woman: '1' }));
-    await tap('Chilonzor → Fargʻona shahri');
+    await tap('Jasur');
     expect(await screen.findByText('Jasur')).toBeTruthy();
     expect(screen.getByText('Uchrashuv joyi belgilangan')).toBeTruthy();
     await tap('Joy band qilish');

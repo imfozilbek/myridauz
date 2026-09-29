@@ -1,5 +1,6 @@
 import {
   Armchair,
+  Banknote,
   Ban,
   Camera,
   Car,
@@ -58,6 +59,7 @@ const ICONS = {
   carInterior: Armchair,
   less: Minus,
   more: Plus,
+  price: Banknote,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

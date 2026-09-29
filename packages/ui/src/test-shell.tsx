@@ -45,6 +45,7 @@ export const testClients = (overrides: {
     myRequests: NOT_USED,
     publishRequest: NOT_USED,
     cancelRequest: NOT_USED,
+    teamTrips: NOT_USED,
     ...overrides.market,
   },
   pricing: {

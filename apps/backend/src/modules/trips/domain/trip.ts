@@ -1,4 +1,4 @@
-import { DAY_MS, TRIP_DAYS_AHEAD, type Trip } from '@platform/contracts';
+import { arrivalAt, DAY_MS, TRIP_DAYS_AHEAD, type Trip } from '@platform/contracts';
 
 // A published trip (docs/35). The price stays as published: a new formula is only for new trips (docs/23).
 export type TripRecord = {
@@ -21,13 +21,9 @@ export type TripRecord = {
   readonly createdAt: number;
 };
 
-const HOUR_MS = 60 * 60 * 1000;
-// An average speed on Uzbek roads, only to know when a trip is surely over.
-const ROAD_KMH = 60;
-const AFTER_ARRIVAL_MS = 2 * HOUR_MS;
+const AFTER_ARRIVAL_MS = 2 * 60 * 60 * 1000;
 
-export const endsAt = (departAt: number, km: number) =>
-  departAt + Math.ceil((km / ROAD_KMH) * HOUR_MS) + AFTER_ARRIVAL_MS;
+export const endsAt = (departAt: number, km: number) => arrivalAt(departAt, km) + AFTER_ARRIVAL_MS;
 
 // The time of a new trip: in the future and not too far (docs/35).
 export function departError(departAt: number, now: number): 'trips.in_past' | 'trips.invalid_input' | null {

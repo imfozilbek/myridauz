@@ -2,6 +2,7 @@ import type { MarketClient } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
 import { renderMarket, tap, trip } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
@@ -31,7 +32,7 @@ describe('Mening safarlarim (docs/35)', () => {
       testClients({ market: { myTrips, cancelTrip } }),
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
-    await tap('Chilonzor → Fargʻona shahri');
+    await tap('Jasur');
     await tap('Safarni bekor qilish');
     expect(cancelTrip).toHaveBeenCalledWith('t1');
     expect(myTrips).toHaveBeenCalledTimes(2);
@@ -44,7 +45,7 @@ describe('Mening safarlarim (docs/35)', () => {
       <MyRequestsScreen onBack={() => undefined} />,
       testClients({ market: { myRequests, cancelRequest } }),
     );
-    await tap('Chilonzor → Fargʻona shahri');
+    await tap('Dilnoza');
     expect(screen.getByText('Faol')).toBeTruthy();
     await tap('Soʻrovni bekor qilish');
     expect(cancelRequest).toHaveBeenCalledWith('r1');
@@ -69,9 +70,30 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       /^Ertaga/,
     ])
       await tap(step);
-    await tap('Chilonzor → Fargʻona shahri');
+    await tap('Dilnoza');
     await tap('Taklif yuborish');
     expect(screen.getByText('Yoʻlovchiga taklif yuborish tez orada ishga tushadi.')).toBeTruthy();
     expect(searchRequests.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
+  });
+
+  it('keeps the requests private while the application of the driver is checked', async () => {
+    const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => [request]);
+    const pending: Driver = {
+      application: {
+        status: 'pending',
+        car: null,
+        photos: { front: true, side: true, interior: true },
+        reasons: [],
+      },
+      editCar: () => undefined,
+    };
+    renderMarket(
+      <DriverContext.Provider value={pending}>
+        <RequestsSearchFlow onBack={() => undefined} />
+      </DriverContext.Provider>,
+      testClients({ market: { searchRequests } }),
+    );
+    expect(await screen.findByText('Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz.')).toBeTruthy();
+    expect(searchRequests).not.toHaveBeenCalled();
   });
 });

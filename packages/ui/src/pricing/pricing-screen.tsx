@@ -7,7 +7,8 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { PlacesGate, usePlaceName } from '../market/places-gate';
+import { PlacesGate } from '../market/places-gate';
+import { RouteView } from '../market/route-view';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -41,7 +42,6 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t, formatMoney } = useI18n();
   const { pricing } = useApiClients();
-  const place = usePlaceName();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
   const [mode, setMode] = useState<Mode>({ kind: 'view' });
@@ -133,7 +133,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
               description={direction.km === null ? undefined : t('pricing.km', { km: String(direction.km) })}
               onClick={() => setMode({ kind: 'direction', direction, failed: false })}
             >
-              {`${place(direction.from, false)} → ${place(direction.to, false)}`}
+              <RouteView from={direction.from} to={direction.to} />
             </Cell>
           ))}
         </Section>

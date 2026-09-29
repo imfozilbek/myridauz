@@ -9,7 +9,10 @@ import { StatusScreen } from './status-screen';
 
 type Loaded = { readonly application: DriverApplication | null };
 
-// Only an approved driver works in the driver Mini App (docs/04). Before that: the application or its status.
+const LOOKING_AROUND = new Set<DriverApplication['status']>(['approved', 'pending']);
+
+// An approved driver works in the driver Mini App (docs/04). A driver whose application is being checked
+// looks around the app; publishing waits for the approval. Before that: the application or what to fix.
 export function DriverGate({ children }: { readonly children: ReactNode }) {
   const { drivers } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
@@ -30,7 +33,7 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
   }, []);
   const application = loaded?.application ?? null;
   const driver = useMemo<Driver | null>(
-    () => (application?.status === 'approved' ? { application, editCar } : null),
+    () => (application && LOOKING_AROUND.has(application.status) ? { application, editCar } : null),
     [application, editCar],
   );
 

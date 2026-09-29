@@ -9,6 +9,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { DateStep } from './date-step';
 import { PriceStep } from './price-step';
 import { TimeStep } from './time-step';
+import { PlacesGate } from './places-gate';
 import { TripPublish } from './trip-publish';
 import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
 
@@ -116,8 +117,15 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
       );
     default: {
       const complete = completeDraft(draft);
-      return complete ? (
-        <TripPublish draft={complete} onBack={() => setStep('comment')} onClose={onBack} />
+      return complete && recommendation ? (
+        <PlacesGate>
+          <TripPublish
+            draft={complete}
+            km={recommendation.km}
+            onBack={() => setStep('comment')}
+            onClose={onBack}
+          />
+        </PlacesGate>
       ) : null;
     }
   }
