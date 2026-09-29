@@ -4,6 +4,8 @@ import { expireBookings } from './modules/bookings';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
 import { grantMissedBonuses } from './modules/drivers';
 import { expireRequests } from './modules/ride-requests';
+import { sendReminders } from './modules/reminders';
+import { sendWaitingSubscriptions } from './modules/route-subscriptions';
 import { completeTrips } from './modules/trips';
 import { burnBonuses } from './modules/wallet';
 
@@ -11,7 +13,8 @@ import { burnBonuses } from './modules/wallet';
 export { ChatRoom } from './modules/chat/infrastructure/chat-room';
 
 // Cloudflare Worker entry point: the API, and the Cron job that closes trips, requests and bookings
-// whose time is over, burns bonuses that are over and gives bonus 1 to approved drivers without it (docs/12, docs/35, brands/<brand>/wrangler.toml).
+// whose time is over, burns bonuses that are over, gives bonus 1 to approved drivers without it,
+// sends waiting subscription messages and trip reminders (docs/12, docs/24, docs/35, G10).
 export default {
   fetch: app.fetch,
   // Bot messages wait in the queue and go out at Telegram's pace (docs/03).
@@ -25,6 +28,8 @@ export default {
         expireBookings(env, now),
         burnBonuses(env),
         grantMissedBonuses(env),
+        sendWaitingSubscriptions(env),
+        sendReminders(env, now),
       ]),
     );
   },

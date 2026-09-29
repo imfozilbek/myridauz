@@ -9,7 +9,7 @@ import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { notify } from '../notifications';
 import { markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
-import { cancelFor, driverTripIds, publishFor, tripFacts, tripViewsOf } from '../trips';
+import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViewsOf } from '../trips';
 import { tellCloseOnes } from '../shares';
 import { peopleOf } from '../users';
 import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
@@ -17,6 +17,7 @@ import { answer } from './application/answer';
 import { rememberPickupMessage, setPickup } from './application/accept';
 import { chatMember } from './application/chat-member';
 import { passengerView } from './application/progress';
+import { bookingViews } from './application/views';
 import type { BookingsDeps } from './application/ports';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -26,6 +27,19 @@ import { bookingStore } from './infrastructure/store';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 
 const localOffers = createMemoryOffers();
+
+// A confirmed or cancelled booking changes the seats left: the channel posts follow (docs/15).
+const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsDeps['notify'] => ({
+  ...notifier,
+  confirmed: async (booking) => {
+    await notifier.confirmed(booking);
+    await tripChanged(env, booking.trip.id);
+  },
+  cancelled: async (booking, by) => {
+    await notifier.cancelled(booking, by);
+    await tripChanged(env, booking.trip.id);
+  },
+});
 
 const bookingsDeps = (env: Bindings): BookingsDeps => ({
   bookings: bookingStore(env),
@@ -51,13 +65,16 @@ const bookingsDeps = (env: Bindings): BookingsDeps => ({
   people: peopleOf(env),
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
-  notify: telegramNotifier({
-    brand: loadBrand(env.BRAND),
-    notify: (jobs) => notify(env, jobs),
-    system: (key, event) => postSystemEvent(env, key, event),
-    placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-    closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
-  }),
+  notify: seatsFollow(
+    env,
+    telegramNotifier({
+      brand: loadBrand(env.BRAND),
+      notify: (jobs) => notify(env, jobs),
+      system: (key, event) => postSystemEvent(env, key, event),
+      placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
+      closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
+    }),
+  ),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });
@@ -97,3 +114,12 @@ export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
 export const pickupMessageSent = (env: Bindings, bookingId: string, messageId: number) =>
   rememberPickupMessage(bookingsDeps(env), bookingId, messageId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
+
+// Confirmed bookings of these trips as their passengers see them: the reminders (G10).
+export const confirmedBookings = async (env: Bindings, tripIds: readonly string[]) => {
+  const deps = bookingsDeps(env);
+  const confirmed = (await deps.bookings.byTrips(tripIds)).filter(
+    (booking) => booking.status === 'confirmed',
+  );
+  return bookingViews(deps, confirmed, 'passenger');
+};

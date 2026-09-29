@@ -30,6 +30,7 @@ export function setup() {
   let price = 90000;
   let id = 0;
   const riders: Rider[] = [];
+  const events: string[] = [];
   const cars = new Map<number, Car>([
     [1, CAR],
     [2, CAR],
@@ -62,6 +63,7 @@ export function setup() {
     places: async () => PLACES,
     // The driver bot message about a trip: the driver answers it with the meeting point.
     announce: async () => 77,
+    changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
   };
@@ -72,5 +74,6 @@ export function setup() {
     setNow: (next: number) => void (now = next),
     setFormula: (next: number) => void (price = next),
     ride: (rider: Rider) => void riders.push(rider),
+    events,
   };
 }

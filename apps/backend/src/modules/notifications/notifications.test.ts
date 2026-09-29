@@ -20,6 +20,22 @@ describe('bot messages through the queue (docs/03)', () => {
     expect(urls).toEqual(['https://api.telegram.org/botd/sendMessage']);
   });
 
+  it('edits a channel post by its id', async () => {
+    const calls: { url: string; body: Record<string, unknown> }[] = [];
+    const fetch = async (input: string, init?: RequestInit) => {
+      calls.push({ url: input, body: JSON.parse(String(init?.body)) as Record<string, unknown> });
+      return Response.json({ ok: true, result: {} });
+    };
+    const post = { bot: 'passenger' as const, chatId: '@ch_buxoro', text: 'Joy qolmagan', edit: 31 };
+    expect(await deliver(fetch, TOKENS, post)).toEqual({ outcome: 'sent', messageId: null });
+    expect(calls).toEqual([
+      {
+        url: 'https://api.telegram.org/botp/editMessageText',
+        body: { chat_id: '@ch_buxoro', text: 'Joy qolmagan', message_id: 31 },
+      },
+    ]);
+  });
+
   it('waits when Telegram asks to, and drops what can never be sent', async () => {
     expect(await deliver(answer(429, { parameters: { retry_after: 7 } }), TOKENS, JOB)).toEqual({
       outcome: 'retry',
@@ -56,9 +72,9 @@ describe('bot messages through the queue (docs/03)', () => {
 
   it('remembers the confirmation message once it is sent, and reaches the whole team', async () => {
     const remembered: string[] = [];
-    handleAfterSent(
-      async (_env, after, messageId) => void remembered.push(`${after.bookingId} ${messageId}`),
-    );
+    handleAfterSent(async (_env, after, messageId) => {
+      if (after.type === 'pickup') remembered.push(`${after.bookingId} ${messageId}`);
+    });
     const chats: unknown[] = [];
     vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
       chats.push((JSON.parse(String(init?.body)) as { chat_id: number }).chat_id);

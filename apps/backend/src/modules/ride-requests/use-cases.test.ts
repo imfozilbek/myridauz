@@ -42,6 +42,7 @@ function setup() {
             },
           },
     places: async () => PLACES,
+    published: async () => undefined,
     newId: () => `request-${(id += 1)}`,
     now: () => now,
   };

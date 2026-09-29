@@ -88,6 +88,15 @@ export const d1Trips = (db: D1Database): TripRepository => ({
       .first<Row>();
     return row ? toTrip(row) : undefined;
   },
+  departing: async (from, to) =>
+    (
+      await db
+        .prepare(
+          "SELECT * FROM trips WHERE status IN ('active', 'full') AND depart_at >= ? AND depart_at < ?",
+        )
+        .bind(from, to)
+        .all<Row>()
+    ).results.map(toTrip),
   leaving: async (from, to) =>
     (
       await db

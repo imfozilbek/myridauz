@@ -10,3 +10,11 @@ export function forgetLaunchParam(name: string): void {
   url.searchParams.delete(name);
   window.history.replaceState(window.history.state, '', url);
 }
+
+// The start parameter of a t.me/<bot>?startapp=<value> link (a channel post, docs/15). Telegram
+// gives it to the Mini App in the address, as a query or a hash parameter.
+const START_PARAM = 'tgWebAppStartParam';
+export function startParam(): string | null {
+  const query = new URLSearchParams(window.location.search).get(START_PARAM);
+  return query ?? new URLSearchParams(window.location.hash.slice(1)).get(START_PARAM);
+}

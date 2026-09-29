@@ -5,7 +5,7 @@ type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 
 // From Chilonzor (Toshkent shahri) to Samarqand shahri, or the whole Samarqand region.
-async function chooseRoute(page: Page, wholeRegion = false) {
+export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

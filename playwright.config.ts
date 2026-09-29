@@ -20,6 +20,7 @@ export default defineConfig({
         'market-screenshots.spec.ts',
         'bookings-screenshots.spec.ts',
         'chat-screenshots.spec.ts',
+        'subscriptions-screenshots.spec.ts',
       ],
     },
   ],

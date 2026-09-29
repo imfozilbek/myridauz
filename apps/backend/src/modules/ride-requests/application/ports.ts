@@ -24,6 +24,8 @@ export type RequestsDeps = {
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;
+  // A request was published: drivers subscribed to its route hear about it (docs/24).
+  readonly published: (requestId: string) => Promise<void>;
   readonly newId: () => string;
   readonly now: () => number;
 };

@@ -11,3 +11,4 @@ export { createPricingClient, type PricingClient } from './pricing-client';
 export { createBookingsClient, type BookingsClient } from './bookings-client';
 export { createWalletClient, type WalletClient } from './wallet-client';
 export { createChatClient, type ChatClient } from './chat-client';
+export { createSubscriptionsClient, type SubscriptionsClient } from './subscriptions-client';

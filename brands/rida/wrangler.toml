@@ -10,6 +10,8 @@ routes = [{ pattern = "api.myrida.uz", custom_domain = true }]
 BRAND = "rida"
 # docs/05: "true" makes an avatar required for passengers too. Default: optional.
 PASSENGER_AVATAR_REQUIRED = "false"
+# Channel posts of new trips (docs/15): "on" only after the owner approved the post (docs/33).
+CHANNEL_POSTS = "off"
 
 [[d1_databases]]
 binding = "DB"

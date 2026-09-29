@@ -98,6 +98,7 @@ export async function cancelTrip(
   const next = cancel(trip, driverId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.trips.save(next);
+  await deps.changed(id, 'updated');
   const [view] = await views(deps, [next]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };
 }
