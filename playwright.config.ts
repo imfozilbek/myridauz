@@ -19,6 +19,7 @@ export default defineConfig({
         'drivers-screenshots.spec.ts',
         'market-screenshots.spec.ts',
         'bookings-screenshots.spec.ts',
+        'chat-screenshots.spec.ts',
       ],
     },
   ],
