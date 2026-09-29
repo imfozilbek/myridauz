@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StepLayout } from '../../account/step-layout';
 import { Cell, Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import type { IconName } from '../../icons';
+import { Icon, type IconName } from '../../icons';
 import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 
-export type Choice<T> = { readonly value: T; readonly label: string };
+// before: a picture next to the label, like a color dot.
+export type Choice<T> = { readonly value: T; readonly label: string; readonly before?: ReactNode };
 
 type ChoiceStepProps<T> = {
   readonly screen: string;
@@ -19,10 +20,21 @@ type ChoiceStepProps<T> = {
   readonly onDone: (value: T) => void;
   // "Boshqa": the person types a name that is not in the list.
   readonly other?: { readonly toValue: (text: string) => T | null };
+  // An answer chosen in advance: it has a tick, and "Davom etish" keeps it.
+  readonly selected?: T;
 };
 
 // One question, one tap (docs/19): choose, do not type. Typing only for "Boshqa".
-export function ChoiceStep<T>({ screen, icon, title, choices, onBack, onDone, other }: ChoiceStepProps<T>) {
+export function ChoiceStep<T>({
+  screen,
+  icon,
+  title,
+  choices,
+  onBack,
+  onDone,
+  other,
+  selected,
+}: ChoiceStepProps<T>) {
   useScreenView(screen);
   const { t } = useI18n();
   const [typing, setTyping] = useState(choices.length === 0);
@@ -58,7 +70,12 @@ export function ChoiceStep<T>({ screen, icon, title, choices, onBack, onDone, ot
           ) : (
             [
               ...choices.map((choice) => (
-                <Cell key={String(choice.value)} onClick={() => choose(choice.value)}>
+                <Cell
+                  key={String(choice.value)}
+                  {...(choice.before ? { before: choice.before } : {})}
+                  {...(choice.value === selected ? { after: <Icon name="selected" /> } : {})}
+                  onClick={() => choose(choice.value)}
+                >
                   {choice.label}
                 </Cell>
               )),
@@ -72,6 +89,9 @@ export function ChoiceStep<T>({ screen, icon, title, choices, onBack, onDone, ot
         </Section>
       </List>
       {typing ? <MainButton text={t('common.continue')} onClick={submit} /> : null}
+      {!typing && selected !== undefined ? (
+        <MainButton text={t('common.continue')} onClick={() => choose(selected)} />
+      ) : null}
     </StepLayout>
   );
 }

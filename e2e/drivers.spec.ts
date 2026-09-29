@@ -21,5 +21,7 @@ test('admin: the team opens an application and approves it', async ({ page }) =>
   await page.getByText(ADMIN.action).click();
   await page.getByText('Jasur').click();
   await page.getByText(TEXT.approve).click();
+  // The plate is compared with the front photo before approving (docs/50).
+  await page.locator('#tg-main-button', { hasText: TEXT.plateMatches }).click();
   await expect(page.getByText(TEXT.decided)).toBeVisible();
 });

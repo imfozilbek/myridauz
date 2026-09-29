@@ -20,7 +20,7 @@ const toView = (application: Application): DriverApplication => ({
     side: application.photos.side !== null,
     interior: application.photos.interior !== null,
   },
-  reason: application.reason,
+  reasons: [...application.reasons],
 });
 
 export async function myApplication(deps: DriversDeps, userId: number): Promise<DriverApplication | null> {

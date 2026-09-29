@@ -12,7 +12,6 @@ const car = {
   make: 'Chevrolet',
   model: 'Nexia',
   color: 'black',
-  year: 2018,
   plate: '10123ABC',
   seats: 4,
 } as const;
@@ -21,11 +20,11 @@ const application: ApplicationSummary = {
   firstName: 'Ali',
   status: 'pending',
   car,
-  reason: null,
+  reasons: [],
   submittedAt: 1,
 };
 
-function setup() {
+function setup(get?: (userId: number) => Promise<ApplicationSummary>) {
   const decide = vi.fn(
     async (_id: number, decision: DecisionInput) =>
       ({
@@ -35,7 +34,13 @@ function setup() {
   );
   const block = vi.fn(async () => undefined);
   const clients = testClients({
-    moderation: { queue: async () => [application], photo: async () => new Blob(['x']), decide, block },
+    moderation: {
+      queue: async () => [application],
+      photo: async () => new Blob(['x']),
+      decide,
+      block,
+      ...(get ? { get } : {}),
+    },
   });
   renderInShell(<ApplicationsScreen onBack={() => undefined} />, false, true, undefined, clients);
   return { decide, block };
@@ -48,17 +53,48 @@ describe('ApplicationsScreen (docs/04)', () => {
     expect(screen.getByText('Chevrolet Nexia')).toBeTruthy();
     expect((await screen.findAllByRole('img')).length).toBe(4);
     fireEvent.click(screen.getByText('Tasdiqlash'));
+    // The plate is compared with the front photo first (docs/50).
+    expect(await screen.findByText('Raqamni tekshiring')).toBeTruthy();
+    expect(screen.getByText('10 123 ABC')).toBeTruthy();
+    fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
     expect(decide).toHaveBeenCalledWith(5, { action: 'approve' });
   });
 
-  it('asks for changes with a chosen reason and blocks for 7 days', async () => {
+  it('fixes the plate by the photo and approves with it', async () => {
+    const { decide } = setup();
+    fireEvent.click(await screen.findByText('Ali'));
+    fireEvent.click(screen.getByText('Tasdiqlash'));
+    fireEvent.click(await screen.findByText('Raqamni tuzatish'));
+    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '10 124 abc' } });
+    fireEvent.click(screen.getByText('Davom etish'));
+    expect(await screen.findByText('Raqam rasm boʻyicha tuzatildi')).toBeTruthy();
+    expect(screen.getByText('10 124 ABC')).toBeTruthy();
+    fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
+    await screen.findByText('Javob yuborildi');
+    expect(decide).toHaveBeenCalledWith(5, { action: 'approve', plate: '10124ABC' });
+  });
+
+  it('opens the application of a link from the admin bot', async () => {
+    window.history.replaceState(null, '', '/?application=5');
+    setup(async () => application);
+    expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
+    expect(window.location.search).toBe('');
+  });
+
+  it('asks for changes with ticked reasons and blocks for 7 days', async () => {
     const { decide, block } = setup();
     fireEvent.click(await screen.findByText('Ali'));
     fireEvent.click(screen.getByText('Tuzatishni soʻrash'));
-    fireEvent.click(screen.getByText('Davlat raqami oʻqilmaydi'));
+    expect(screen.queryByText('Yuborish')).toBeNull();
+    fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
+    fireEvent.click(screen.getByText('Rasmda davlat raqami oʻqilmaydi'));
+    fireEvent.click(screen.getByText('Yuborish'));
     await screen.findByText('Javob yuborildi');
-    expect(decide).toHaveBeenCalledWith(5, { action: 'request_changes', reason: 'plate_not_readable' });
+    expect(decide).toHaveBeenCalledWith(5, {
+      action: 'request_changes',
+      reasons: ['plate_not_readable', 'interior_unclear'],
+    });
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByText('Ali'));
     fireEvent.click(screen.getByText('Bloklash'));

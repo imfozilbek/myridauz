@@ -18,8 +18,15 @@ export type BrandColors = {
   readonly danger: HexColor;
 };
 
+// Each Mini App has its own main color, so a person always knows where they are (docs/20).
+export type AppName = 'passenger' | 'driver' | 'admin';
+
 export type BrandTheme = {
   readonly colors: BrandColors;
+  // What an app changes in the colors above; an app not listed uses them as they are.
+  readonly apps: Readonly<Partial<Record<AppName, Partial<BrandColors>>>>;
+  // Real car paint colors for the color choice (docs/04): data, not the brand.
+  readonly carColors: Readonly<Record<string, HexColor>>;
   // Helper colors of illustrations and videos in the brand kit (docs/38): never in the product UI.
   readonly art: Readonly<Record<string, HexColor>>;
 };

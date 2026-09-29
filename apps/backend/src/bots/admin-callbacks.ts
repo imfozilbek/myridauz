@@ -1,3 +1,4 @@
+import { appHost } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import {
   cardMenu,
@@ -6,6 +7,7 @@ import {
   decisionLine,
   driversDeps,
   parseCardAction,
+  plateCheckMenu,
   reasonMenu,
 } from '../modules/drivers';
 import { changeModerator, teamRole } from '../modules/team';
@@ -31,7 +33,7 @@ async function onTeamButton(context: BotContext, query: BotCallback, data: strin
   return answer(query, t(action === 'add' ? 'bot.team.added' : 'bot.team.removed'));
 }
 
-// The buttons of the moderation card (docs/04): approve, reject with a reason, ask for changes.
+// The buttons of the moderation card (docs/04): approve, reject or ask for changes with ticked reasons.
 export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const token = context.env.ADMIN_BOT_TOKEN;
   const data = query.data ?? '';
@@ -42,9 +44,17 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const target = { chat_id: query.message.chat.id, message_id: query.message.message_id };
   const edit = (method: string, params: object) =>
     callTelegram(context.fetch, token, method, { ...target, ...params });
+  if (action.kind === 'none_picked') return answer(query, t('bot.moderation.pickReason'));
+  if (action.kind === 'check_plate') {
+    const adminUrl = `https://${appHost(context.brand, 'admin')}/`;
+    await edit('editMessageReplyMarkup', { reply_markup: plateCheckMenu(action.userId, adminUrl) });
+    return answer(query, t('bot.moderation.checkPlate'));
+  }
   if (action.kind !== 'decide') {
     const markup =
-      action.kind === 'menu' ? cardMenu(action.userId) : reasonMenu(action.userId, action.action);
+      action.kind === 'menu'
+        ? cardMenu(action.userId)
+        : reasonMenu(action.userId, action.action, action.picked);
     await edit('editMessageReplyMarkup', { reply_markup: markup });
     return answer(query);
   }

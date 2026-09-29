@@ -1,12 +1,6 @@
-import {
-  CAR_CATALOG,
-  CAR_COLORS,
-  CAR_YEAR_MIN,
-  carSchema,
-  MAX_SEATS,
-  type CarColor,
-} from '@platform/contracts';
+import { CAR_CATALOG, CAR_COLORS, carSchema, MAX_SEATS, type CarColor } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
+import type { ReactNode } from 'react';
 import type { Choice } from './steps/choice-step';
 
 type Translate = (key: TranslationKey) => string;
@@ -17,16 +11,11 @@ export const makeChoices = (): Choice<string>[] =>
 export const modelChoices = (make: string | undefined): Choice<string>[] =>
   (CAR_CATALOG[make ?? ''] ?? []).map((model) => ({ value: model, label: model }));
 
-export const colorChoices = (t: Translate): Choice<CarColor>[] =>
-  CAR_COLORS.map((color) => ({ value: color, label: t(`drivers.color.${color}`) }));
+export const colorChoices = (t: Translate, swatch: (color: CarColor) => ReactNode): Choice<CarColor>[] =>
+  CAR_COLORS.map((color) => ({ value: color, label: t(`drivers.color.${color}`), before: swatch(color) }));
 
-// The newest cars first: most drivers find their year without scrolling.
-export function yearChoices(now = new Date()): Choice<number>[] {
-  const years: Choice<number>[] = [];
-  for (let year = now.getFullYear(); year >= CAR_YEAR_MIN; year -= 1)
-    years.push({ value: year, label: String(year) });
-  return years;
-}
+// Most cars take 4 passengers: the answer is ready, a driver of a minivan changes it (docs/35).
+export const DEFAULT_SEATS = 4;
 
 export const seatChoices = (): Choice<number>[] =>
   Array.from({ length: MAX_SEATS }, (_, index) => ({ value: index + 1, label: String(index + 1) }));

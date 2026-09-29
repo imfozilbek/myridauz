@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { plateSchema } from './plate';
 
 // A driver application (docs/04). G06.
 export const DRIVER_APPLICATION_PATH = '/driver/application';
@@ -17,14 +18,28 @@ export const APPLICATION_STATUSES = [
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 // Reasons are codes with a text for people in the i18n catalog (docs/13): the moderator chooses, not types.
-export const MODERATION_REASONS = [
-  'face_not_visible',
-  'plate_not_readable',
-  'photos_unclear',
-  'car_mismatch',
-  'fake_profile',
-] as const;
-export type ModerationReason = (typeof MODERATION_REASONS)[number];
+// Each reason points to the place the driver fixes: a photo, the plate or the car data.
+// profile: the whole application, not one place.
+export type ProblemPlace = 'avatar' | CarPhotoKind | 'plate' | 'car' | 'profile';
+export const REASON_PLACE = {
+  face_not_visible: 'avatar',
+  front_unclear: 'front',
+  plate_not_readable: 'front',
+  side_unclear: 'side',
+  interior_unclear: 'interior',
+  plate_mismatch: 'plate',
+  car_mismatch: 'car',
+  fake_profile: 'profile',
+} as const satisfies Record<string, ProblemPlace>;
+export type ModerationReason = keyof typeof REASON_PLACE;
+export const MODERATION_REASONS = Object.keys(REASON_PLACE) as readonly ModerationReason[];
+const reasonSchema = z.enum(MODERATION_REASONS as [ModerationReason, ...ModerationReason[]]);
+// One or more reasons: a driver fixes everything in one go.
+export const reasonsSchema = z.array(reasonSchema).min(1).max(MODERATION_REASONS.length);
+
+// The reasons that point to one place, in the given order.
+export const reasonsAt = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
+  reasons.filter((reason) => REASON_PLACE[reason] === place);
 
 // Seats for passengers: up to 7 for minivans (docs/35).
 export const MAX_SEATS = 7;
@@ -41,16 +56,8 @@ export const CAR_COLORS = [
   'beige',
 ] as const;
 export type CarColor = (typeof CAR_COLORS)[number];
-export const CAR_YEAR_MIN = 1980;
 const NAME_MIN = 2;
 const NAME_MAX = 32;
-
-// Uzbek plates: "01 A 123 BC" (a person) or "01 123 ABC" (a company). Kept without spaces.
-const PLATE_PATTERN = /^\d{2}(?:[A-Z]\d{3}[A-Z]{2}|\d{3}[A-Z]{3})$/;
-const plateSchema = z
-  .string()
-  .transform((value) => value.toUpperCase().replace(/[\s-]/g, ''))
-  .pipe(z.string().regex(PLATE_PATTERN));
 
 const carNameSchema = z
   .string()
@@ -67,7 +74,6 @@ export const carSchema = z.object({
   make: carNameSchema,
   model: carNameSchema,
   color: z.enum(CAR_COLORS),
-  year: z.number().int().min(CAR_YEAR_MIN),
   plate: plateSchema,
   seats: z.number().int().min(1).max(MAX_SEATS),
 });
@@ -81,17 +87,9 @@ const driverApplicationSchema = z.object({
   status: z.enum(APPLICATION_STATUSES),
   car: carSchema.nullable(),
   photos: photosSchema,
-  reason: z.enum(MODERATION_REASONS).nullable(),
+  reasons: z.array(reasonSchema),
 });
 export type DriverApplication = z.infer<typeof driverApplicationSchema>;
 
 export const driverApplicationResponseSchema = z.object({ application: driverApplicationSchema.nullable() });
 export type DriverApplicationResponse = z.infer<typeof driverApplicationResponseSchema>;
-
-// A plate is stored without spaces and shown in groups, as on the car: "01 A 123 BC", "10 123 ABC".
-export function formatPlate(plate: string): string {
-  const person = /^(\d{2})([A-Z])(\d{3})([A-Z]{2})$/.exec(plate);
-  if (person) return person.slice(1).join(' ');
-  const company = /^(\d{2})(\d{3})([A-Z]{3})$/.exec(plate);
-  return company ? company.slice(1).join(' ') : plate;
-}

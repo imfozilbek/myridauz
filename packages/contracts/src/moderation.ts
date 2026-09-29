@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { APPLICATION_STATUSES, carSchema, MODERATION_REASONS, type CarPhotoKind } from './drivers';
+import { APPLICATION_STATUSES, carSchema, reasonsSchema, type CarPhotoKind } from './drivers';
+import { plateSchema } from './plate';
 
 // The team checks driver applications and blocks people (docs/04, docs/17). G06.
 export const ADMIN_APPLICATIONS_PATH = '/admin/applications';
@@ -17,7 +18,7 @@ export const applicationSummarySchema = z.object({
   firstName: z.string(),
   status: z.enum(APPLICATION_STATUSES),
   car: carSchema,
-  reason: z.enum(MODERATION_REASONS).nullable(),
+  reasons: z.array(reasonsSchema.element),
   submittedAt: z.number().int(),
 });
 export type ApplicationSummary = z.infer<typeof applicationSummarySchema>;
@@ -26,9 +27,10 @@ export const applicationQueueSchema = z.object({ applications: z.array(applicati
 export const DECISIONS = ['approve', 'reject', 'request_changes'] as const;
 export type Decision = (typeof DECISIONS)[number];
 export const decisionSchema = z.discriminatedUnion('action', [
-  z.object({ action: z.literal('approve') }),
-  z.object({ action: z.literal('reject'), reason: z.enum(MODERATION_REASONS) }),
-  z.object({ action: z.literal('request_changes'), reason: z.enum(MODERATION_REASONS) }),
+  // plate: the moderator read another plate on the front photo and fixed it before approving.
+  z.object({ action: z.literal('approve'), plate: plateSchema.optional() }),
+  z.object({ action: z.literal('reject'), reasons: reasonsSchema }),
+  z.object({ action: z.literal('request_changes'), reasons: reasonsSchema }),
 ]);
 export type DecisionInput = z.infer<typeof decisionSchema>;
 

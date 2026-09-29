@@ -5,11 +5,18 @@
   "approve": "Tasdiqlash",
   "reject": "Rad etish",
   "requestChanges": "Tuzatishni soʻrash",
-  "reason.title": "Sababni tanlang",
+  "reason.title": "Sabablarni tanlang",
+  "reason.hint": "Bir nechtasini tanlash mumkin. Haydovchi har bir sababni rasm yoki maʼlumot yonida koʻradi.",
   "block": "Bloklash",
   "block.title": "Qancha muddatga bloklaymiz?",
   "block.days": "{days} kun",
   "block.forever": "Butunlay",
   "decided": "Javob yuborildi",
-  "blocked": "Bloklandi"
+  "blocked": "Bloklandi",
+  "reason.send": "Yuborish",
+  "plateCheck.title": "Raqamni tekshiring",
+  "plateCheck.hint": "Rasmdagi raqam haydovchi yozgan raqamga mos keladimi?",
+  "plateCheck.approve": "Raqam mos, tasdiqlash",
+  "plateCheck.fix": "Raqamni tuzatish",
+  "plateCheck.fixed": "Raqam rasm boʻyicha tuzatildi"
 }

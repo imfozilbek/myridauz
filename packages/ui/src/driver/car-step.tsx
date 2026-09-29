@@ -1,9 +1,10 @@
 import type { CarInput, DriverStep } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { carName, colorChoices, makeChoices, modelChoices, seatChoices, yearChoices } from './car-choices';
+import { CarSwatch } from './car-swatch';
+import { carName, colorChoices, DEFAULT_SEATS, makeChoices, modelChoices, seatChoices } from './car-choices';
 import { ChoiceStep } from './steps/choice-step';
 
-export type CarStepName = 'make' | 'model' | 'color' | 'year' | 'seats';
+export type CarStepName = 'make' | 'model' | 'color' | 'seats';
 
 type CarStepProps = {
   readonly step: CarStepName;
@@ -12,7 +13,7 @@ type CarStepProps = {
   readonly onDone: (patch: Partial<CarInput>, passed?: DriverStep) => void;
 };
 
-// The car questions that are answered by one tap: make, model, color, year, seats.
+// The car questions that are answered by one tap: make, model, color, seats.
 export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
   const { t } = useI18n();
   const common = { screen: `driver.${step}`, onBack } as const;
@@ -45,18 +46,10 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
           {...common}
           icon="car"
           title={t('drivers.color.title')}
-          choices={colorChoices(t)}
+          choices={colorChoices(t, (color) => (
+            <CarSwatch color={color} />
+          ))}
           onDone={(color) => onDone({ color }, 'color')}
-        />
-      );
-    case 'year':
-      return (
-        <ChoiceStep
-          {...common}
-          icon="car"
-          title={t('drivers.year.title')}
-          choices={yearChoices()}
-          onDone={(year) => onDone({ year }, 'year')}
         />
       );
     default:
@@ -66,6 +59,7 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
           icon="passengers"
           title={t('drivers.seats.title')}
           choices={seatChoices()}
+          selected={car.seats ?? DEFAULT_SEATS}
           onDone={(seats) => onDone({ seats }, 'seats')}
         />
       );

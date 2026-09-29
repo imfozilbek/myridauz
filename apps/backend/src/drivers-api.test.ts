@@ -20,7 +20,6 @@ const car = {
   make: 'Chevrolet',
   model: 'Cobalt',
   color: 'white',
-  year: 2020,
   plate: '01 A 123 BC',
   seats: 4,
 };
@@ -71,9 +70,11 @@ describe('drivers API (docs/04)', () => {
     const approved = await call(decision, MODERATOR, {
       method: 'POST',
       app: 'admin',
-      ...json({ action: 'approve' }),
+      ...json({ action: 'approve', plate: '01 a 777 bc' }),
     });
     expect(approved.status).toBe(200);
+    // The plate fixed by the front photo is kept (docs/50).
+    expect(((await approved.json()) as { car: { plate: string } }).car.plate).toBe('01A777BC');
     const me = (await (await call('/me', APPLICANT, { app: 'driver' })).json()) as {
       profile: { roles: string[] };
     };

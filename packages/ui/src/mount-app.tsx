@@ -5,7 +5,7 @@ import {
   createModerationClient,
   createUsersClient,
 } from '@platform/api-client';
-import { loadBrand } from '@platform/brands';
+import { brandForApp, loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
 import { StrictMode, type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -26,7 +26,7 @@ type MountOptions = { readonly welcome?: Welcome };
 export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOptions = {}): void {
   const container = document.getElementById(ROOT_ID);
   if (!container) throw new Error('ui.root_missing');
-  const brand = loadBrand(import.meta.env.VITE_BRAND);
+  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app);
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();

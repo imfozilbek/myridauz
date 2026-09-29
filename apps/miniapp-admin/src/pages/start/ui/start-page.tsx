@@ -1,4 +1,4 @@
-import { ApplicationsScreen, StartFlow, type StartAction } from '@platform/ui';
+import { ApplicationsScreen, linkedApplication, StartFlow, type StartAction } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -27,5 +27,8 @@ const ACTIONS: readonly StartAction[] = [
 ];
 
 export function StartPage() {
-  return <StartFlow actions={ACTIONS} />;
+  // A link from the admin bot opens the applications at once (docs/50).
+  return (
+    <StartFlow actions={ACTIONS} {...(linkedApplication() === null ? {} : { opened: 'applications' })} />
+  );
 }

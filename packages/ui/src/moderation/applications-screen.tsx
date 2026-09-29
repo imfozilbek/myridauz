@@ -13,6 +13,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ApplicationScreen } from './application-screen';
+import { forgetLinkedApplication, linkedApplication } from './linked-application';
 
 // Applications waiting for the team, the oldest first (docs/04).
 export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) {
@@ -27,6 +28,12 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
     moderation.queue().then(setQueue, () => setFailed(true));
   }, [moderation]);
   useEffect(load, [load]);
+  useEffect(() => {
+    const linked = linkedApplication();
+    if (linked === null) return;
+    forgetLinkedApplication();
+    moderation.get(linked).then(setOpen, () => undefined);
+  }, [moderation]);
   const close = useCallback(() => {
     setOpen(null);
     load();

@@ -1,4 +1,4 @@
-import type { BrandConfig } from './brand-config';
+import type { AppName, BrandConfig } from './brand-config';
 import { brandConfig as rida } from './rida/brand.config.ts';
 
 export type { BrandColors, BrandConfig, HexColor } from './brand-config';
@@ -18,4 +18,10 @@ export function loadBrand(id: string = DEFAULT_BRAND_ID): BrandConfig {
   const brand = BRANDS[id];
   if (!brand) throw new UnknownBrandError(id);
   return brand;
+}
+
+// The brand as one Mini App sees it: its own main color over the common colors (docs/20).
+export function brandForApp(brand: BrandConfig, app: AppName): BrandConfig {
+  const colors = { ...brand.theme.colors, ...brand.theme.apps[app] };
+  return { ...brand, theme: { ...brand.theme, colors } };
 }

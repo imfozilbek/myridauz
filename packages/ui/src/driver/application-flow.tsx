@@ -1,3 +1,4 @@
+import './driver.css';
 import { carSchema, type CarInput, type DriverApplication, type DriverStep } from '@platform/contracts';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -7,25 +8,15 @@ import { useI18n } from '../context/i18n-context';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CarStep, type CarStepName } from './car-step';
+import { useReasons } from './use-reasons';
 import { AvatarStep } from './steps/avatar-step';
 import { PhotosStep } from './steps/photos-step';
 import { PlateStep } from './steps/plate-step';
 import { ReviewStep, type ReviewTarget } from './steps/review-step';
 
-const ORDER = [
-  'intro',
-  'make',
-  'model',
-  'color',
-  'year',
-  'plate',
-  'seats',
-  'avatar',
-  'photos',
-  'review',
-] as const;
+const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
 type Step = (typeof ORDER)[number];
-const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'year', 'seats'];
+const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
 const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 
 type ApplicationFlowProps = {
@@ -44,10 +35,12 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
   const [step, setStep] = useState<Step>(initial?.car ? 'review' : 'intro');
   const [failed, setFailed] = useState(false);
+  const { reasons, keepOnly, fixed } = useReasons(initial?.reasons ?? []);
   const reviewing = initial?.car !== null && initial?.car !== undefined;
 
   const done = (current: Step, patch: Partial<CarInput>, passed?: DriverStep) => {
     setCar((draft) => ({ ...draft, ...patch }));
+    if (Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
     if (passed) track({ name: 'driver_application_step', screen: 'driver', step: passed });
     // A new make needs its model; any other change goes back to the review.
     const following = ORDER[ORDER.indexOf(current) + 1] ?? 'review';
@@ -92,17 +85,24 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
       return (
         <PlateStep
           initial={car.plate ?? ''}
+          reasons={reasons}
           onBack={back('plate')}
           onDone={(plate) => done('plate', { plate }, 'plate')}
         />
       );
     case 'avatar':
-      return <AvatarStep onBack={back('avatar')} onDone={() => done('avatar', {}, 'avatar')} />;
+      return (
+        <AvatarStep reasons={reasons} onBack={back('avatar')} onDone={() => done('avatar', {}, 'avatar')} />
+      );
     case 'photos':
       return (
         <PhotosStep
           photos={photos}
-          onPhotos={(next) => setPhotos(next.photos)}
+          reasons={reasons}
+          onPhotos={(next) => {
+            setPhotos(next.photos);
+            keepOnly(next.reasons);
+          }}
           onBack={back('photos')}
           onDone={() => done('photos', {}, 'photos')}
         />
@@ -113,6 +113,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
       return (
         <ReviewStep
           car={complete.data}
+          reasons={reasons}
           recheck={initial?.status === 'approved'}
           failed={failed}
           onEdit={(target: ReviewTarget) => setStep(target)}

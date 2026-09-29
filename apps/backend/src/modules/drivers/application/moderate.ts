@@ -13,7 +13,7 @@ async function summary(deps: DriversDeps, application: Application): Promise<App
     firstName: person.firstName,
     status: application.status,
     car: application.car,
-    reason: application.reason,
+    reasons: [...application.reasons],
     submittedAt: application.submittedAt,
   };
 }
@@ -58,18 +58,20 @@ export async function decideApplication(
   await deps.applications.save(next);
   await deps.people.setDriver(userId, next.status === 'approved');
   if (next.status === 'approved') deps.driverApproved(userId);
-  await deps.notify.decided(next);
+  const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;
+  await deps.notify.decided(next, fixedPlate);
   const view = await summary(deps, next);
   return view ? { ok: true, value: view } : { ok: false, error: 'drivers.not_found' };
 }
 
-// A new face of an approved driver goes back to the team (docs/05).
+// A new face of an approved driver goes back to the team (docs/05); a face to retake is fixed.
 export async function avatarChanged(deps: DriversDeps, userId: number): Promise<void> {
   const application = await deps.applications.find(userId);
   const next = application ? afterAvatarChange(application, deps.now()) : null;
   const person = await deps.people.find(userId);
   if (!next || !person) return;
   await deps.applications.save(next);
+  if (next.status !== 'pending') return;
   await deps.people.setDriver(userId, false);
   await deps.notify.submitted(next, person);
 }

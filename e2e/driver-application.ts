@@ -1,10 +1,13 @@
-import { loadBrand } from '@platform/brands';
 import { expect, type Page } from '@playwright/test';
 import { TEXT } from './apps';
 
 type Shot = (name: string) => Promise<unknown>;
-// Any real picture works: the Mini App compresses it before the upload.
-const PHOTO = `brands/${loadBrand().id}/public/regions/1726.webp`;
+
+// Our camera screen is open and the fake camera shows a picture.
+async function cameraReady(page: Page) {
+  const shutter = page.getByRole('dialog').getByLabel(TEXT.shutter);
+  await expect(shutter).toBeEnabled();
+}
 
 // Goes through the driver application like a person: one answer per screen (G06).
 export async function applyAsDriver(page: Page, shot: Shot = async () => undefined) {
@@ -16,21 +19,39 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('2-make');
   await page.getByText('Chevrolet').click();
   await page.getByText('Cobalt').click();
+  await expect(page.locator('.car-swatch')).toHaveCount(10);
+  await shot('2-color');
   await page.getByText('Oq', { exact: true }).click();
-  await page.getByText('2021', { exact: true }).click();
-  await page.getByPlaceholder(TEXT.plateHint).fill('01 a 123 bc');
+  await shot('3-plate-empty');
+  await page.getByLabel(TEXT.plateField).fill('01a1');
+  await shot('3-plate-typing');
+  await page.getByLabel(TEXT.plateField).fill('011');
+  await shot('3-plate-company');
+  await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await shot('3-plate');
   await mainButton.click();
-  await page.getByText('4', { exact: true }).click();
-  await page.locator('input[capture=user]').setInputFiles(PHOTO);
+  // 4 seats are chosen in advance.
+  await expect(page.getByText(TEXT.seatsTitle)).toBeVisible();
+  await shot('3-seats');
+  await mainButton.click();
+  await page.getByText(TEXT.addPhoto).click();
+  await cameraReady(page);
+  await shot('4-avatar-camera');
+  await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
   await expect(mainButton).toBeVisible();
   await shot('4-avatar');
   await mainButton.click();
-  for (const kind of [TEXT.photoFront, TEXT.photoSide, TEXT.photoInterior]) {
-    await page.getByText(kind).click();
-    await page.locator('input[capture=environment]').setInputFiles(PHOTO);
+  await expect(page.getByText(TEXT.photoFront)).toBeVisible();
+  await shot('5-photos-empty');
+  for (const taken of [1, 2, 3]) {
+    await page.getByText(TEXT.take).first().click();
+    await cameraReady(page);
+    if (taken === 1) await shot('5-photos-camera');
+    await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
+    await expect(page.getByText(TEXT.retake)).toHaveCount(taken);
   }
   await expect(mainButton).toBeVisible();
+  await expect(page.locator('.photo-frame img')).toHaveCount(3);
   await shot('5-photos');
   await mainButton.click();
   await expect(page.getByText('01 A 123 BC')).toBeVisible();

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { carSchema, formatPlate } from './drivers';
+import { carSchema, reasonsAt } from './drivers';
+import { formatPlate } from './plate';
 import { blockSchema, decisionSchema } from './moderation';
 
 const car = {
   make: 'Chevrolet',
   model: 'Cobalt',
   color: 'white',
-  year: 2020,
   plate: '01 A 123 BC',
   seats: 4,
 };
@@ -32,12 +32,23 @@ describe('car of a driver (docs/04, docs/35)', () => {
 });
 
 describe('moderation input (docs/04, docs/17)', () => {
-  it('needs a reason for reject and changes, none for approve', () => {
+  it('needs one or more reasons for reject and changes, none for approve', () => {
     expect(decisionSchema.safeParse({ action: 'approve' }).success).toBe(true);
-    expect(decisionSchema.safeParse({ action: 'reject' }).success).toBe(false);
-    expect(decisionSchema.safeParse({ action: 'request_changes', reason: 'car_mismatch' }).success).toBe(
-      true,
-    );
+    expect(decisionSchema.parse({ action: 'approve', plate: '01 a 124 bc' })).toEqual({
+      action: 'approve',
+      plate: '01A124BC',
+    });
+    expect(decisionSchema.safeParse({ action: 'approve', plate: '01 A' }).success).toBe(false);
+    expect(decisionSchema.safeParse({ action: 'reject', reasons: [] }).success).toBe(false);
+    const changes = { action: 'request_changes', reasons: ['car_mismatch', 'side_unclear'] };
+    expect(decisionSchema.safeParse(changes).success).toBe(true);
+    expect(decisionSchema.safeParse({ action: 'reject', reasons: ['photos_unclear'] }).success).toBe(false);
+  });
+
+  it('points each reason to the place the driver fixes', () => {
+    const reasons = ['plate_not_readable', 'face_not_visible', 'front_unclear'] as const;
+    expect(reasonsAt(reasons, 'front')).toEqual(['plate_not_readable', 'front_unclear']);
+    expect(reasonsAt(reasons, 'side')).toEqual([]);
   });
 
   it('blocks for 1, 7, 30 days or for good', () => {

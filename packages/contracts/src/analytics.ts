@@ -7,16 +7,7 @@ export const MINI_APPS = ['passenger', 'driver', 'admin'] as const;
 export type MiniApp = (typeof MINI_APPS)[number];
 export const REGISTRATION_STEPS = ['consent', 'name', 'gender', 'phone', 'done'] as const;
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
-export const DRIVER_STEPS = [
-  'car',
-  'color',
-  'year',
-  'plate',
-  'seats',
-  'avatar',
-  'photos',
-  'submitted',
-] as const;
+export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).

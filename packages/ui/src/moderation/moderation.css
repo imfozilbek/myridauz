@@ -35,3 +35,28 @@
   padding-top: 4px;
   color: var(--tgui--hint_color);
 }
+
+/* The plate check: the front photo big, the plate under it as on the car (docs/50). */
+.plate-check {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  padding: 0 16px;
+}
+
+.plate-check-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.plate-check .plate {
+  margin: 0;
+}
+
+.plate-check-fixed {
+  color: var(--tgui--link_color);
+  text-align: center;
+}

@@ -1,10 +1,11 @@
 import { appHost, type BrandConfig } from '@platform/brands';
+import { formatPlate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { callTelegram, sendAlbum, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { Application } from '../domain/application';
 import type { ModerationNotifier, PeoplePort } from '../application/ports';
 import type { ImageStore } from '../../../shared/storage/image-store';
-import { cardMenu, cardText } from './moderation-card';
+import { cardMenu, cardText, reasonList } from './moderation-card';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -56,14 +57,18 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
         );
       }
     },
-    decided: async (application) => {
+    decided: async (application, fixedPlate) => {
       if (!driverToken || application.status === 'draft' || application.status === 'pending') return;
-      const reason = application.reason ? t(`drivers.reason.${application.reason}`) : '';
+      // One reason per line: the driver finds each one marked in the Mini App.
+      const reasons = reasonList(application.reasons, '\n').replace(/^/gm, '• ');
       const open = { text: t('bot.open'), web_app: { url: `https://${appHost(brand, 'driver')}` } };
       await quietly(
         callTelegram(fetch, driverToken, 'sendMessage', {
           chat_id: application.userId,
-          text: t(RESULT_TEXT[application.status], { reason }),
+          text: [
+            t(RESULT_TEXT[application.status], { reasons }),
+            ...(fixedPlate ? [t('bot.driver.plateFixed', { plate: formatPlate(fixedPlate) })] : []),
+          ].join('\n\n'),
           reply_markup: { inline_keyboard: [[open]] },
         }),
       );

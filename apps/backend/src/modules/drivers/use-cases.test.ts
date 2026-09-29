@@ -10,7 +10,6 @@ const CAR: Car = {
   make: 'Chevrolet',
   model: 'Cobalt',
   color: 'white',
-  year: 2020,
   plate: '01A123BC',
   seats: 4,
 };
@@ -32,7 +31,8 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
     },
     notify: {
       submitted: async (application) => void log.push(`submitted:${application.status}`),
-      decided: async (application) => void log.push(`decided:${application.status}`),
+      decided: async (application, fixedPlate) =>
+        void log.push(`decided:${application.status}${fixedPlate ? `:${fixedPlate}` : ''}`),
     },
     driverApproved: (userId) => void log.push(`approved:${userId}`),
     now: () => 1000,
@@ -63,30 +63,32 @@ describe('driver application (docs/04)', () => {
       ok: false,
       error: 'drivers.wrong_status',
     });
-    const decided = await decideApplication(deps, 900, 1, { action: 'approve' });
+    const decided = await decideApplication(deps, 900, 1, { action: 'approve', plate: '01A124BC' });
     expect(decided.ok && decided.value.status).toBe('approved');
     expect(drivers.has(1)).toBe(true);
-    expect(log).toEqual(['submitted:pending', 'approved:1', 'decided:approved']);
+    expect(decided.ok && decided.value.car.plate).toBe('01A124BC');
+    expect(log).toEqual(['submitted:pending', 'approved:1', 'decided:approved:01A124BC']);
     expect(await decideApplication(deps, 900, 1, { action: 'approve' })).toEqual({
       ok: false,
       error: 'drivers.wrong_status',
     });
   });
 
-  it('gives a reason on reject and changes, and takes the application again', async () => {
+  it('gives reasons on reject and changes, and takes the application again', async () => {
     const { deps, photos } = setup();
     await photos();
     await submitApplication(deps, 1, CAR);
-    await decideApplication(deps, 900, 1, { action: 'request_changes', reason: 'plate_not_readable' });
-    expect(await myApplication(deps, 1)).toMatchObject({
-      status: 'changes_requested',
-      reason: 'plate_not_readable',
-    });
+    const reasons = ['plate_not_readable', 'face_not_visible', 'interior_unclear'] as const;
+    await decideApplication(deps, 900, 1, { action: 'request_changes', reasons: [...reasons] });
+    expect(await myApplication(deps, 1)).toMatchObject({ status: 'changes_requested', reasons });
+    // A fixed place is no longer marked: a new front photo, then a new face.
     await uploadCarPhoto(deps, 1, 'front', jpeg);
+    await avatarChanged(deps, 1);
+    expect((await myApplication(deps, 1))?.reasons).toEqual(['interior_unclear']);
     const again = await submitApplication(deps, 1, { ...CAR, plate: '01 a 124 bc' });
-    expect(again.ok && again.value).toMatchObject({ status: 'pending', reason: null });
-    await decideApplication(deps, 900, 1, { action: 'reject', reason: 'fake_profile' });
-    expect(await myApplication(deps, 1)).toMatchObject({ status: 'rejected', reason: 'fake_profile' });
+    expect(again.ok && again.value).toMatchObject({ status: 'pending', reasons: [] });
+    await decideApplication(deps, 900, 1, { action: 'reject', reasons: ['fake_profile'] });
+    expect(await myApplication(deps, 1)).toMatchObject({ status: 'rejected', reasons: ['fake_profile'] });
   });
 
   it('sends an approved driver back to the check after a new car photo or a new face', async () => {

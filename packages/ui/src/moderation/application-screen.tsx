@@ -1,7 +1,6 @@
 import {
   BLOCK_DAYS,
   formatPlate,
-  MODERATION_REASONS,
   type ApplicationSummary,
   type BlockInput,
   type Decision,
@@ -19,8 +18,10 @@ import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
 import { PhotoGrid } from './photo-grid';
+import { ApproveFlow } from './approve-flow';
+import { ReasonsStep } from './reasons-step';
 
-type Mode = 'view' | Exclude<Decision, 'approve'> | 'block' | 'decided' | 'blocked';
+type Mode = 'view' | Decision | 'block' | 'decided' | 'blocked';
 type ApplicationScreenProps = { readonly application: ApplicationSummary; readonly onBack: () => void };
 
 // One application: the face, the car, the data and the decision (docs/04). Blocking too (docs/17).
@@ -54,20 +55,18 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
       </>
     );
   }
-  if (mode === 'reject' || mode === 'request_changes') {
-    const reasons = MODERATION_REASONS.map((reason) => ({
-      value: reason,
-      label: t(`drivers.reason.${reason}`),
-    }));
+  if (mode === 'approve') {
     return (
-      <ChoiceStep
-        screen="moderation.reason"
-        icon="applications"
-        title={t('moderation.reason.title')}
-        choices={reasons}
+      <ApproveFlow
+        application={application}
         onBack={() => setMode('view')}
-        onDone={(reason) => decide({ action: mode, reason })}
+        onApprove={(plate) => decide(plate ? { action: 'approve', plate } : { action: 'approve' })}
       />
+    );
+  }
+  if (mode === 'reject' || mode === 'request_changes') {
+    return (
+      <ReasonsStep onBack={() => setMode('view')} onDone={(reasons) => decide({ action: mode, reasons })} />
     );
   }
   if (mode === 'block') {
@@ -99,12 +98,11 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           <Cell after={<CellValue>{t(`drivers.color.${car.color}`)}</CellValue>}>
             {t('drivers.color.title')}
           </Cell>
-          <Cell after={<CellValue>{String(car.year)}</CellValue>}>{t('drivers.year.title')}</Cell>
           <Cell after={<CellValue>{formatPlate(car.plate)}</CellValue>}>{t('drivers.review.plate')}</Cell>
           <Cell after={<CellValue>{String(car.seats)}</CellValue>}>{t('drivers.review.seats')}</Cell>
         </Section>
         <Section>
-          <Cell onClick={() => decide({ action: 'approve' })}>{t('moderation.approve')}</Cell>
+          <Cell onClick={() => setMode('approve')}>{t('moderation.approve')}</Cell>
           <Cell onClick={() => setMode('reject')}>{t('moderation.reject')}</Cell>
           <Cell onClick={() => setMode('request_changes')}>{t('moderation.requestChanges')}</Cell>
           <Cell onClick={() => setMode('block')}>{t('moderation.block')}</Cell>

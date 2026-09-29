@@ -22,7 +22,8 @@ export async function mockApi(
   driver: DriverStart = 'approved',
 ) {
   let state = start;
-  let hasAvatar = false;
+  // A driver asked to fix the application already has a face photo.
+  let hasAvatar = driver === 'changes';
   const analytics: unknown[] = [];
   const registrations: unknown[] = [];
   const answer = () => {

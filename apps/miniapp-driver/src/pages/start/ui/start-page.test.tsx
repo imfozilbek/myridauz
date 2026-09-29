@@ -1,5 +1,5 @@
 import { renderInShell, testClients } from '@platform/ui/testing';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StartPage } from './start-page';
 
@@ -9,16 +9,15 @@ const car = {
   make: 'Chevrolet',
   model: 'Cobalt',
   color: 'white',
-  year: 2020,
   plate: '01A123BC',
   seats: 4,
 } as const;
 const approved = {
-  status: 'approved',
+  status: 'approved' as const,
   car,
   photos: { front: true, side: true, interior: true },
-  reason: null,
-} as const;
+  reasons: [],
+};
 const driver = testClients({ drivers: { getApplication: async () => approved } });
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 
@@ -28,7 +27,8 @@ describe('StartPage', () => {
     expect(await screen.findByText('Yangi safar')).toBeTruthy();
     for (const action of ['Yoʻlovchilar soʻrovlari', 'Mening safarlarim'])
       expect(screen.getByText(action)).toBeTruthy();
-    expect(tracked.map((event) => event.screen)).toEqual(['home']);
+    // The screen view is sent by an effect after the screen is drawn.
+    await waitFor(() => expect(tracked.map((event) => event.screen)).toEqual(['home']));
   });
 
   it('opens a section and comes back', async () => {

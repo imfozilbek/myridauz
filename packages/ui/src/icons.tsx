@@ -1,6 +1,8 @@
 import {
+  Armchair,
   Ban,
   Camera,
+  Car,
   CarFront,
   ChartColumn,
   Check,
@@ -50,6 +52,8 @@ const ICONS = {
   origin: CircleDot,
   destination: MapPin,
   car: CarFront,
+  carSide: Car,
+  carInterior: Armchair,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
