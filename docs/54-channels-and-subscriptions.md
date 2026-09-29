@@ -45,6 +45,7 @@
 
 - Mini App попутчика читает `tgWebAppStartParam=trip_<id>` и сразу открывает поездку с кнопкой «Joy band qilish».
 - «Назад» ведёт на главный экран.
+- В BotFather у бота попутчиков включено Main Mini App (`https://passenger.myrida.uz`), 29.09.2026.
 
 ## События аналитики (`29`)
 
