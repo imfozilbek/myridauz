@@ -4,11 +4,11 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
-import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { TeamTripsScreen } from '../market/team-trips-screen';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
+import { linkedStats, StatsScreen } from '../stats/stats-screen';
 import { PricingScreen } from './pricing-screen';
 import '../market/market.css';
 
@@ -19,19 +19,13 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('management');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const [open, setOpen] = useState<Open>('menu');
+  const linked = linkedStats();
+  const [open, setOpen] = useState<Open>(linked ? 'statistics' : 'menu');
   const menu = () => setOpen('menu');
   if (open === 'trips') return <TeamTripsScreen onBack={menu} />;
   if (open === 'pricing') return <PricingScreen onBack={menu} />;
   if (open === 'wallets') return <TeamWalletsScreen onBack={menu} />;
-  if (open === 'statistics') {
-    return (
-      <>
-        <BackButton onClick={menu} />
-        <EmptyState icon="statistics" title={t('common.admin.statistics')} description={t('common.soon')} />
-      </>
-    );
-  }
+  if (open === 'statistics') return <StatsScreen onBack={menu} period={linked ?? 'day'} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

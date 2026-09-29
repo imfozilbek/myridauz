@@ -38,7 +38,7 @@ export const driversDeps = (env: Bindings): DriversDeps => {
       people,
     }),
     driverApproved: async (userId) => {
-      recordServerEvent(env, 'driver_approved');
+      recordServerEvent(env, { name: 'driver_approved' });
       await welcomeBonus(env, userId);
     },
     now: Date.now,

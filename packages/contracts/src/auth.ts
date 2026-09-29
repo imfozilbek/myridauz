@@ -68,6 +68,7 @@ export const API_ERRORS = [
   'complaints.already',
   'complaints.invalid_input',
   'complaints.wrong_status',
+  'stats.invalid_input',
   'locations.not_found',
   'locations.invalid_input',
   ...ROUTE_ERRORS,

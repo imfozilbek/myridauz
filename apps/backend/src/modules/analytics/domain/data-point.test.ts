@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { toDataPoint } from './data-point';
+import { serverDataPoint, toDataPoint } from './data-point';
 
 const base = {
   app: 'admin',
@@ -20,5 +20,22 @@ describe('toDataPoint', () => {
 
   it('keeps the error code', () => {
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.at(-1)).toBe('render');
+  });
+
+  it('writes a bot event of the backend with its bot and id (G12)', () => {
+    const point = serverDataPoint({ name: 'bot_command', source: 'driver', code: 'start' }, 5);
+    expect(point).toEqual({
+      indexes: ['server'],
+      blobs: ['bot_command', 'driver', '', '', '', 'start'],
+      doubles: [5, 5],
+    });
+    expect(serverDataPoint({ name: 'driver_approved' }, 5).blobs).toEqual([
+      'driver_approved',
+      'server',
+      '',
+      '',
+      '',
+      '',
+    ]);
   });
 });

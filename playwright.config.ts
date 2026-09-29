@@ -22,6 +22,7 @@ export default defineConfig({
         'chat-screenshots.spec.ts',
         'subscriptions-screenshots.spec.ts',
         'feedback-screenshots.spec.ts',
+        'stats-screenshots.spec.ts',
       ],
     },
   ],

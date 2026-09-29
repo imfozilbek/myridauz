@@ -18,9 +18,13 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
   };
 }
 
-// An event of the backend itself (driver_approved): no Mini App, no session.
-export const serverDataPoint = (name: string, at: number): DataPoint => ({
+// An event of the backend itself: no Mini App, no session. A bot event names its bot and an id (G12).
+export type ServerEvent = { readonly name: string; readonly source?: string; readonly code?: string };
+export const serverDataPoint = (
+  { name, source = 'server', code = '' }: ServerEvent,
+  at: number,
+): DataPoint => ({
   indexes: ['server'],
-  blobs: [name, 'server', '', '', '', ''],
+  blobs: [name, source, '', '', '', code],
   doubles: [at, at],
 });

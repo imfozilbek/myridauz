@@ -32,4 +32,17 @@ describe('analyticsBatchSchema', () => {
     expect(analyticsBatchSchema.safeParse({ events }).success).toBe(false);
     expect(analyticsBatchSchema.safeParse({ events: [] }).success).toBe(false);
   });
+
+  it('drops personal fields and refuses free text in codes (G12, docs/29)', () => {
+    const extra = { ...event, phone: '+998901234567', name: 'screen_open', firstName: 'Ali' };
+    const [parsed] = analyticsBatchSchema.parse({ events: [extra] }).events;
+    expect(JSON.stringify(parsed)).not.toMatch(/998|Ali/);
+    const apiError = { ...event, name: 'api_error' };
+    expect(analyticsBatchSchema.safeParse({ events: [{ ...apiError, code: 'users.blocked' }] }).success).toBe(
+      true,
+    );
+    expect(analyticsBatchSchema.safeParse({ events: [{ ...apiError, code: 'Ali Valiyev' }] }).success).toBe(
+      false,
+    );
+  });
 });

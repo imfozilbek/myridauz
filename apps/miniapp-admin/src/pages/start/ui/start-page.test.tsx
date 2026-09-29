@@ -13,8 +13,9 @@ describe('StartPage', () => {
     expect(tracked.map((event) => event.screen)).toEqual(['home']);
   });
 
-  it('opens a section and comes back', () => {
-    renderInShell(<StartPage />);
+  it('opens a section and comes back', async () => {
+    const clients = testClients({ stats: { get: () => new Promise(() => undefined) } });
+    renderInShell(<StartPage />, false, true, undefined, clients);
     fireEvent.click(screen.getByText('Boshqaruv'));
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Arizalar')).toBeTruthy();
@@ -22,7 +23,8 @@ describe('StartPage', () => {
     fireEvent.click(screen.getByText('Boshqaruv'));
     expect(screen.getByText('Narxlar')).toBeTruthy();
     fireEvent.click(screen.getByText('Statistika'));
-    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
+    // The dashboard of G12 (docs/29): the periods show while the numbers load.
+    expect(await screen.findByText('24 soat')).toBeTruthy();
   });
 
   it('opens the queue of complaints (G11)', async () => {
@@ -37,5 +39,15 @@ describe('StartPage', () => {
     renderInShell(<StartPage />, false, true, undefined, clients);
     fireEvent.click(screen.getByText('Arizalar'));
     expect(await screen.findByText('Yangi ariza yoʻq')).toBeTruthy();
+  });
+
+  it('opens the dashboard at once from a signal of the admin bot (G12)', async () => {
+    window.history.replaceState(null, '', '/?stats=week');
+    const periods: string[] = [];
+    const get = (period: 'day' | 'week') => (periods.push(period), new Promise<never>(() => undefined));
+    renderInShell(<StartPage />, false, true, undefined, testClients({ stats: { get } }));
+    expect(await screen.findByText('7 kun')).toBeTruthy();
+    expect(periods).toEqual(['week']);
+    expect(window.location.search).toBe('');
   });
 });

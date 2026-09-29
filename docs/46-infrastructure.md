@@ -47,6 +47,7 @@
 | Секрет | Где | Кто видит |
 |---|---|---|
 | Токены 3 ботов, `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker (`wrangler secret`) | Только Worker |
+| `ANALYTICS_API_TOKEN` (только чтение аналитики), `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker (панель Cloudflare) | Только Worker |
 | `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `production` | Только job `deploy` на `main` |
 | Токен Claude и ключи для настройки | Переменные окружения сессии Claude | Только Claude |
 

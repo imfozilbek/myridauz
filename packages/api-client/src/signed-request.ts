@@ -8,19 +8,23 @@ export type SignedOptions = {
   readonly app: MiniApp;
   // Signed Telegram launch data of this Mini App: the only "login" (docs/32).
   readonly initData: string;
+  // Every error answer goes to the analytics as api_error (G12, docs/29).
+  readonly onError?: (code: string) => void;
 };
 
 const JSON_HEADERS = { 'content-type': 'application/json' };
 
 // Every call carries the Telegram signature; an error becomes an ApiError with the code of the API.
-export function signedRequest({ baseUrl, fetch, app, initData }: SignedOptions) {
+export function signedRequest({ baseUrl, fetch, app, initData, onError }: SignedOptions) {
   const base = `${baseUrl.replace(/\/$/, '')}/`;
   async function request(path: string, init: RequestInit = {}): Promise<Response> {
     const headers = { ...authHeaders(app, initData), ...(init.headers as Record<string, string>) };
     const response = await fetch(new URL(path.slice(1), base).toString(), { ...init, headers });
     if (response.ok) return response;
     const body = apiErrorSchema.safeParse(await response.json().catch(() => null));
-    throw new ApiError(response.status, body.success ? body.data.error : undefined);
+    const error = new ApiError(response.status, body.success ? body.data.error : undefined);
+    onError?.(error.message);
+    throw error;
   }
   return {
     request,
