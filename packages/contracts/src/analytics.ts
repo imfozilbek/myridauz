@@ -56,6 +56,15 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   // Bookings (G08): one event per step of the funnel; a refused confirmation carries the reason.
   z.object({ name: z.literal('booking_step'), step: z.enum(BOOKING_STEPS), ...context }),
   z.object({ name: z.literal('wallet_open'), ...context }),
+  // Chat (G09): an opened chat and the first message a person sends in it.
+  z.object({ name: z.literal('chat_open'), ...context }),
+  z.object({ name: z.literal('chat_first_message'), ...context }),
+  // "Yaqinlarimga yuborish" (G09, docs/43): shared, opened and followed by close people, the trip steps.
+  z.object({ name: z.literal('trip_shared'), ...context }),
+  z.object({ name: z.literal('share_opened'), ...context }),
+  z.object({ name: z.literal('share_follow'), ...context }),
+  z.object({ name: z.literal('boarded'), ...context }),
+  z.object({ name: z.literal('arrived'), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

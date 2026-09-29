@@ -7,9 +7,11 @@ import { useI18n } from '../context/i18n-context';
 import { RequestScreen } from '../market/request-card';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { ChatScreen } from '../chat/chat-screen';
 import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
 import { OfferScreen, OffersSection } from './offer-list';
+import { TripTools } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 
@@ -30,6 +32,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const { bookings, market } = useApiClients();
   const [offer, setOffer] = useState<Offer | null>(null);
   const [accepted, setAccepted] = useState(false);
+  const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
   const run = async (action: () => Promise<unknown>, after: () => void) => {
     try {
       await action();
@@ -51,6 +54,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
       </StepLayout>
     );
   }
+  if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
       void run(
@@ -67,6 +71,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
         onBack={() => setOffer(null)}
         onAccept={() => answer('accept')}
         onDecline={() => answer('decline')}
+        onChat={() => setTalk({ key: offer.chatKey, title: offer.driver.firstName })}
       />
     );
   }
@@ -98,5 +103,10 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
       },
     );
   const actions = cancellable(booking.status) ? [{ label: t('bookings.cancel'), onClick: cancel }] : [];
-  return <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions} />;
+  const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
+  return (
+    <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
+      <TripTools booking={booking} onChat={openChat} />
+    </BookingScreen>
+  );
 }

@@ -28,6 +28,8 @@ import {
   UserRound,
   Users,
   Wallet,
+  MessageCircle,
+  Share2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -62,6 +64,8 @@ const ICONS = {
   more: Plus,
   price: Banknote,
   wallet: Wallet,
+  chat: MessageCircle,
+  share: Share2,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

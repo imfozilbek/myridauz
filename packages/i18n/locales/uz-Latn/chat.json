@@ -1,0 +1,15 @@
+{
+  "title": "Chat",
+  "open": "Xabar yozish",
+  "placeholder": "Xabar",
+  "send": "Yuborish",
+  "empty": "Hali xabar yoʻq. Birinchi boʻlib yozing.",
+  "warning": "Telefon raqami va havolalarni yuborib boʻlmaydi. Ular yashirildi.",
+  "failed": "Chatga ulanib boʻlmadi.",
+  "retry": "Qayta urinish",
+  "system.requested": "Joy soʻraldi",
+  "system.offered": "Haydovchi taklif yubordi",
+  "system.confirmed": "Joy tasdiqlandi",
+  "system.declined": "Rad etildi",
+  "system.cancelled": "Bekor qilindi"
+}

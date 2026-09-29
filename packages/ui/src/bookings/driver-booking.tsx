@@ -8,10 +8,13 @@ import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { ChatScreen } from '../chat/chat-screen';
+import { Cell, Section } from '../components';
+import { IconTile } from '../icon-tile';
 import { BookingScreen, type BookingAction } from './booking-screen';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
-type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up';
+type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up' | 'chat';
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
 type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) => void };
 
@@ -35,6 +38,14 @@ export function DriverBooking({ booking, onClose }: Props) {
       else onClose(true);
     }
   };
+  if (step === 'chat')
+    return (
+      <ChatScreen
+        chatKey={booking.chatKey}
+        title={booking.passenger.firstName}
+        onBack={() => setStep('view')}
+      />
+    );
   if (step === 'top_up') return <TopUpScreen onBack={() => setStep('not_enough')} />;
   if (step === 'not_enough')
     return (
@@ -72,5 +83,13 @@ export function DriverBooking({ booking, onClose }: Props) {
       : booking.status === 'confirmed'
         ? [{ label: t('bookings.cancel'), onClick: () => void answer('cancel') }]
         : [];
-  return <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions} />;
+  return (
+    <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions}>
+      <Section>
+        <Cell before={<IconTile name="chat" />} onClick={() => setStep('chat')}>
+          {t('chat.open')}
+        </Cell>
+      </Section>
+    </BookingScreen>
+  );
 }

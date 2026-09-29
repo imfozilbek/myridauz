@@ -1,5 +1,6 @@
 import type { Booking, Point } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
+import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
@@ -19,10 +20,12 @@ type Props = {
   readonly side: 'passenger' | 'driver';
   readonly onBack: () => void;
   readonly actions: readonly BookingAction[];
+  // The chat and, for the passenger, sharing the trip (G09).
+  readonly children?: ReactNode;
 };
 
 // One booking (docs/35). The plate and the places open only after the confirmation (docs/07, docs/14).
-export function BookingScreen({ booking, side, onBack, actions }: Props) {
+export function BookingScreen({ booking, side, onBack, actions, children }: Props) {
   useScreenView(`bookings.${side}`);
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
   const { trip } = booking;
@@ -97,6 +100,7 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
             {person.name}
           </Cell>
         </Section>
+        {children}
       </List>
       <div className="step-note">
         {actions.map((action) => (

@@ -1,5 +1,6 @@
 import type {
   BookingsClient,
+  ChatClient,
   DriversClient,
   MarketClient,
   ModerationClient,
@@ -16,6 +17,7 @@ export type ApiClients = {
   readonly pricing: PricingClient;
   readonly bookings: BookingsClient;
   readonly wallet: WalletClient;
+  readonly chat: ChatClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

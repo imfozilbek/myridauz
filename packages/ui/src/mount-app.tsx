@@ -8,6 +8,7 @@ import {
   createPricingClient,
   createUsersClient,
   createWalletClient,
+  createChatClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
@@ -17,6 +18,8 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
+import { ChatLink } from './chat/chat-link';
+import { FollowScreen, followToken } from './follow/follow-screen';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -44,6 +47,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     pricing: createPricingClient(signed),
     bookings: createBookingsClient(signed),
     wallet: createWalletClient(signed),
+    chat: createChatClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
@@ -59,12 +63,18 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') void analytics.flush();
   });
+  // A close person from a shared trip card needs no registration (docs/43).
+  const follow = app === 'passenger' ? followToken() : null;
   createRoot(container).render(
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} locations={locations} clients={clients} session={session}>
-        {welcome ? (
+        {follow ? (
+          <FollowScreen token={follow} />
+        ) : welcome ? (
           <AccountGate app={app} client={users} welcome={welcome}>
-            <Page />
+            <ChatLink>
+              <Page />
+            </ChatLink>
           </AccountGate>
         ) : (
           <TeamGate client={users}>
