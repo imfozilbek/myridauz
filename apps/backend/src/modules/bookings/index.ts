@@ -62,7 +62,7 @@ export const bookingsModule = new Hono<AppEnv>()
   .route('/', offerRoutes(bookingsDeps));
 
 // The driver cancelled a trip: its requests are declined and its bookings cancelled "by the driver",
-// without a refund (docs/12, docs/35). Runs around the trips route, like the avatar watch.
+// the commissions go back to the wallet (docs/12, docs/35). Runs around the trips route, like the avatar watch.
 const CANCEL_PATH = driverTripCancelPath(':id');
 export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (context, next) => {
   await next();

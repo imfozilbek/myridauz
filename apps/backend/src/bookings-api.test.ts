@@ -51,7 +51,7 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     }
   });
 
-  it('cancels the bookings when the driver cancels the trip, without a refund', async () => {
+  it('cancels the bookings when the driver cancels the trip, with a refund', async () => {
     const trip = {
       from: '1726273',
       to: '1718401',
@@ -75,8 +75,9 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
       call('/passenger/bookings', PASSENGER),
     );
     expect(mine.bookings.find((booking) => booking.id === asked.id)?.status).toBe('cancelled_by_driver');
+    // Two seats at 90 000: 2 × 9 000 goes back to the bonus (owner decision 29.09.2026).
     expect((await read<{ bonus: number }>(call('/driver/wallet', DRIVER, { app: 'driver' }))).bonus).toBe(
-      before.bonus,
+      before.bonus + 18_000,
     );
   });
 

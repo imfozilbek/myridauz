@@ -1,5 +1,4 @@
 import { MAX_REQUESTED_BOOKINGS, type Booking } from '@platform/contracts';
-import { refundsCommission } from '../../billing';
 import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -69,8 +68,8 @@ export async function cancelByPassenger(
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
   const facts = await deps.trips.find(record.tripId);
-  if (facts && record.status === 'confirmed' && refundsCommission('passenger'))
-    await deps.wallet.refund(facts.driverId, id);
+  // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
+  if (facts && record.status === 'confirmed') await deps.wallet.refund(facts.driverId, id);
   const [forDriver] = await bookingViews(deps, [next], 'driver');
   if (forDriver) await deps.notify.cancelled(forDriver, 'passenger');
   const [view] = await bookingViews(deps, [next], 'passenger');

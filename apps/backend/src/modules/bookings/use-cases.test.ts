@@ -47,7 +47,7 @@ describe('a booking of seats (docs/35)', () => {
     expect((await wallet()).filter((op) => op.kind === 'commission')).toHaveLength(1);
   });
 
-  it('refunds when the passenger cancels, not when the driver does (docs/12)', async () => {
+  it('refunds when the passenger or the driver cancels (docs/12)', async () => {
     const { deps, addTrip, bonus, wallet } = setup();
     await bonus();
     const tripId = addTrip();
@@ -59,7 +59,7 @@ describe('a booking of seats (docs/35)', () => {
     value(await cancelByPassenger(deps, DILNOZA, first.id));
     expect(balanceOf(await wallet(), 'bonus')).toBe(491_000);
     expect(value(await answer(deps, DRIVER, second.id, 'driver_cancel')).status).toBe('cancelled_by_driver');
-    expect(balanceOf(await wallet(), 'bonus')).toBe(491_000);
+    expect(balanceOf(await wallet(), 'bonus')).toBe(500_000);
   });
 
   it('keeps the limits: not the own trip, free seats, one per trip, 3 waiting at once', async () => {

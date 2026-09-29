@@ -1,5 +1,4 @@
 import type { Booking } from '@platform/contracts';
-import { refundsCommission } from '../../billing';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -45,7 +44,8 @@ export async function confirm(
   return driverView(deps, next);
 }
 
-// A "no" to a request, or a cancel of a confirmed booking: no refund when the driver cancels (docs/12).
+// A "no" to a request, or a cancel of a confirmed booking: the commission goes back to the wallet
+// (docs/12, owner decision 29.09.2026).
 export async function answer(
   deps: BookingsDeps,
   driverId: number,
@@ -58,7 +58,7 @@ export async function answer(
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
-  if (record.status === 'confirmed' && refundsCommission('driver')) await deps.wallet.refund(driverId, id);
+  if (record.status === 'confirmed') await deps.wallet.refund(driverId, id);
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) {
     if (next.status === 'declined') await deps.notify.declined(forPassenger);
