@@ -8,7 +8,6 @@ type Row = {
   car_make: string | null;
   car_model: string | null;
   car_color: string | null;
-  car_year: number | null;
   car_plate: string | null;
   seats: number | null;
   photo_front: string | null;
@@ -25,12 +24,11 @@ const oneOf = <T extends string>(values: readonly T[], value: string | null): T 
 
 function toCar(row: Row): Car | null {
   const color = oneOf(CAR_COLORS, row.car_color);
-  if (!row.car_make || !row.car_model || !color || !row.car_year || !row.car_plate || !row.seats) return null;
+  if (!row.car_make || !row.car_model || !color || !row.car_plate || !row.seats) return null;
   return {
     make: row.car_make,
     model: row.car_model,
     color,
-    year: row.car_year,
     plate: row.car_plate,
     seats: row.seats,
   };
@@ -52,11 +50,11 @@ const toApplication = (row: Row): Application => ({
   updatedAt: row.updated_at,
 });
 
-const UPSERT = `INSERT INTO driver_applications (user_id, status, car_make, car_model, car_color, car_year,
+const UPSERT = `INSERT INTO driver_applications (user_id, status, car_make, car_model, car_color,
   car_plate, seats, photo_front, photo_side, photo_interior, reason, submitted_at, decided_by, updated_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (user_id) DO UPDATE SET status = excluded.status, car_make = excluded.car_make,
-  car_model = excluded.car_model, car_color = excluded.car_color, car_year = excluded.car_year,
+  car_model = excluded.car_model, car_color = excluded.car_color,
   car_plate = excluded.car_plate, seats = excluded.seats, photo_front = excluded.photo_front,
   photo_side = excluded.photo_side, photo_interior = excluded.photo_interior, reason = excluded.reason,
   submitted_at = excluded.submitted_at, decided_by = excluded.decided_by, updated_at = excluded.updated_at`;
@@ -80,7 +78,6 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
         car?.make ?? null,
         car?.model ?? null,
         car?.color ?? null,
-        car?.year ?? null,
         car?.plate ?? null,
         car?.seats ?? null,
         application.photos.front,

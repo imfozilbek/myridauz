@@ -12,7 +12,6 @@ const car = {
   make: 'Chevrolet',
   model: 'Nexia',
   color: 'black',
-  year: 2018,
   plate: '10123ABC',
   seats: 4,
 } as const;

@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test';
 // changes: the team asked to retake the face and the front photo and to check the plate.
 export type DriverStart = 'none' | 'approved' | 'changes';
 
-const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', year: 2021, plate: '01A123BC', seats: 4 };
+const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const allPhotos = { front: true, side: true, interior: true };
 const summary = { userId: 5, firstName: 'Jasur', status: 'pending', car, reasons: [], submittedAt: 1 };
 

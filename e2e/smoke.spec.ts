@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { brandForApp, loadBrand } from '@platform/brands';
 import { expect, test } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
@@ -6,10 +6,11 @@ import { register } from './registration';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
 
 const brand = loadBrand();
-const { colors } = brand.theme;
 
 for (const app of MINI_APPS) {
   test(`${app.name}: opens inside Telegram like Telegram itself`, async ({ page }) => {
+    // Each Mini App has its own main color (docs/20).
+    const { colors } = brandForApp(brand, app.name).theme;
     const api = await mockApi(page, app.welcome ? 'unregistered' : 'active');
     await mockTelegram(page);
     await page.goto(telegramUrl(appUrl(app.port)));

@@ -15,7 +15,7 @@ import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { hasProblem, ProblemNote } from '../problem-note';
 
-export type ReviewTarget = 'make' | 'color' | 'year' | 'plate' | 'seats' | 'avatar' | 'photos';
+export type ReviewTarget = 'make' | 'color' | 'plate' | 'seats' | 'avatar' | 'photos';
 
 type ReviewStepProps = {
   readonly car: CarInput;
@@ -61,7 +61,6 @@ export function ReviewStep({ car, reasons, recheck, failed, onEdit, onBack, onSe
         <Section>
           {line(t('drivers.review.car'), `${car.make} ${car.model}`, 'make', ['car'])}
           {line(t('drivers.color.title'), t(`drivers.color.${car.color}`), 'color')}
-          {line(t('drivers.year.title'), String(car.year), 'year')}
           {line(t('drivers.review.plate'), formatPlate(car.plate), 'plate', ['plate'])}
           {line(t('drivers.review.seats'), String(car.seats), 'seats')}
           {line(t('drivers.avatar.title'), t('drivers.photo.done'), 'avatar', ['avatar'])}

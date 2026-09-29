@@ -1,4 +1,6 @@
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { loadBrand } from '@platform/brands';
+import { CAR_COLORS } from '@platform/contracts';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { application, car, renderGate, shoot, tap } from './driver-test-kit';
 
@@ -8,7 +10,7 @@ afterEach(cleanup);
 describe('DriverGate: the application of a driver (docs/04)', () => {
   it('asks one question per screen and sends the application', async () => {
     const { submit, tracked, container } = renderGate(null);
-    for (const step of ['Boshlash', 'Chevrolet', 'Cobalt', 'Oq', '2020']) await tap(step);
+    for (const step of ['Boshlash', 'Chevrolet', 'Cobalt', 'Oq']) await tap(step);
     fireEvent.change(screen.getByPlaceholderText('01 A 123 BC'), {
       target: { value: '01 a 123 bc' },
     });
@@ -30,7 +32,6 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
     expect(steps.map((event) => ('step' in event ? event.step : ''))).toEqual([
       'car',
       'color',
-      'year',
       'plate',
       'seats',
       'avatar',
@@ -42,5 +43,10 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
   it('lets an approved driver in', async () => {
     renderGate(application({ status: 'approved', car, photos: { front: true, side: true, interior: true } }));
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
+  });
+
+  it('has a paint dot for every car color', () => {
+    const { carColors } = loadBrand().theme;
+    expect(CAR_COLORS.filter((color) => !carColors[color])).toEqual([]);
   });
 });

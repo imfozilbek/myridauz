@@ -18,7 +18,12 @@ export default defineConfig({
       },
       {
         extends: true,
-        test: { name: 'dom', environment: 'jsdom', include: ['{apps,packages}/*/src/**/*.test.tsx'] },
+        test: {
+          name: 'dom',
+          environment: 'jsdom',
+          include: ['{apps,packages}/*/src/**/*.test.tsx'],
+          setupFiles: ['packages/ui/src/dom-test-setup.ts'],
+        },
       },
     ],
     coverage: {

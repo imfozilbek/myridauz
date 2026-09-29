@@ -20,7 +20,6 @@ const car = {
   make: 'Chevrolet',
   model: 'Cobalt',
   color: 'white',
-  year: 2020,
   plate: '01 A 123 BC',
   seats: 4,
 };

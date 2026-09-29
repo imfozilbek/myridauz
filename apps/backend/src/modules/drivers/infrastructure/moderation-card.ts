@@ -40,7 +40,6 @@ export function cardText(application: { readonly car: Car | null }, firstName: s
     ...car,
     plate: formatPlate(car.plate),
     color,
-    year: String(car.year),
     seats: String(car.seats),
   });
 }

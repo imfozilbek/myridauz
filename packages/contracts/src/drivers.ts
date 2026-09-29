@@ -55,7 +55,6 @@ export const CAR_COLORS = [
   'beige',
 ] as const;
 export type CarColor = (typeof CAR_COLORS)[number];
-export const CAR_YEAR_MIN = 1980;
 const NAME_MIN = 2;
 const NAME_MAX = 32;
 
@@ -81,7 +80,6 @@ export const carSchema = z.object({
   make: carNameSchema,
   model: carNameSchema,
   color: z.enum(CAR_COLORS),
-  year: z.number().int().min(CAR_YEAR_MIN),
   plate: plateSchema,
   seats: z.number().int().min(1).max(MAX_SEATS),
 });

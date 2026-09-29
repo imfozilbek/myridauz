@@ -14,8 +14,9 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('2-make');
   await page.getByText('Chevrolet').click();
   await page.getByText('Cobalt').click();
+  await expect(page.locator('.car-swatch')).toHaveCount(10);
+  await shot('2-color');
   await page.getByText('Oq', { exact: true }).click();
-  await page.getByText('2021', { exact: true }).click();
   await shot('3-plate-empty');
   await page.getByPlaceholder(TEXT.platePlaceholder).fill('01 a 123 bc');
   await shot('3-plate');

@@ -14,20 +14,9 @@ import { PhotosStep } from './steps/photos-step';
 import { PlateStep } from './steps/plate-step';
 import { ReviewStep, type ReviewTarget } from './steps/review-step';
 
-const ORDER = [
-  'intro',
-  'make',
-  'model',
-  'color',
-  'year',
-  'plate',
-  'seats',
-  'avatar',
-  'photos',
-  'review',
-] as const;
+const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
 type Step = (typeof ORDER)[number];
-const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'year', 'seats'];
+const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
 const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 
 type ApplicationFlowProps = {

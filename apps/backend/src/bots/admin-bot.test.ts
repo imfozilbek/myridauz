@@ -79,7 +79,6 @@ describe('admin bot: the moderation card (docs/04)', () => {
       make: 'Chevrolet',
       model: 'Nexia',
       color: 'black',
-      year: 2018,
       plate: '10 123 ABC',
       seats: 4,
     };

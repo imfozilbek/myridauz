@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { StepLayout } from '../../account/step-layout';
 import { Cell, Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
@@ -8,7 +8,8 @@ import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 
-export type Choice<T> = { readonly value: T; readonly label: string };
+// before: a picture next to the label, like a color dot.
+export type Choice<T> = { readonly value: T; readonly label: string; readonly before?: ReactNode };
 
 type ChoiceStepProps<T> = {
   readonly screen: string;
@@ -58,7 +59,11 @@ export function ChoiceStep<T>({ screen, icon, title, choices, onBack, onDone, ot
           ) : (
             [
               ...choices.map((choice) => (
-                <Cell key={String(choice.value)} onClick={() => choose(choice.value)}>
+                <Cell
+                  key={String(choice.value)}
+                  {...(choice.before ? { before: choice.before } : {})}
+                  onClick={() => choose(choice.value)}
+                >
                   {choice.label}
                 </Cell>
               )),

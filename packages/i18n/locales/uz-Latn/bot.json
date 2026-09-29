@@ -6,7 +6,7 @@
   "admin.denied": "Bu bot faqat {brand} jamoasi uchun.",
   "blocked": "Hisobingiz bloklangan.",
   "passenger.becomeDriver": "Haydovchi boʻlish",
-  "moderation.card": "Yangi ariza: {name}\n{make} {model}, {color}, {year}\nDavlat raqami: {plate}\nYoʻlovchi joylari: {seats}",
+  "moderation.card": "Yangi ariza: {name}\n{make} {model}, {color}\nDavlat raqami: {plate}\nYoʻlovchi joylari: {seats}",
   "moderation.approve": "Tasdiqlash",
   "moderation.reject": "Rad etish",
   "moderation.requestChanges": "Tuzatishni soʻrash",

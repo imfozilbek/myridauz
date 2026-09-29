@@ -42,7 +42,6 @@ export {
   APPLICATION_STATUSES,
   CAR_COLORS,
   CAR_PHOTO_KINDS,
-  CAR_YEAR_MIN,
   carSchema,
   DRIVER_APPLICATION_PATH,
   driverApplicationResponseSchema,

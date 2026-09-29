@@ -88,7 +88,6 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           <Cell after={<CellValue>{t(`drivers.color.${car.color}`)}</CellValue>}>
             {t('drivers.color.title')}
           </Cell>
-          <Cell after={<CellValue>{String(car.year)}</CellValue>}>{t('drivers.year.title')}</Cell>
           <Cell after={<CellValue>{formatPlate(car.plate)}</CellValue>}>{t('drivers.review.plate')}</Cell>
           <Cell after={<CellValue>{String(car.seats)}</CellValue>}>{t('drivers.review.seats')}</Cell>
         </Section>
