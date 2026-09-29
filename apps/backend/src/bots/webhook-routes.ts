@@ -39,7 +39,8 @@ export function webhookRoutes(fetch: Fetch) {
     const team = role === 'admin' ? await teamRole(context.env, fromId) : null;
     if (isStartCommand(message.text)) {
       const access = blocked ? 'blocked' : role === 'admin' && team === null ? 'support' : 'allowed';
-      return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access }));
+      const payload = message.text?.split(' ')[1] ?? '';
+      return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload }));
     }
     if (blocked) return context.json({});
     if (role === 'driver') return context.json(await onDriverMessage(bot, message));

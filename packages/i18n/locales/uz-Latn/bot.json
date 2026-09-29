@@ -53,5 +53,12 @@
   "offer.declined": "Yoʻlovchi taklifingizni rad etdi.",
   "chat.newMessage": "Sizga yangi xabar keldi. Javob berish uchun chatni oching.",
   "chat.open": "Chatni ochish",
-  "chat.contactAttempts": "{name} (ID {id}) chatda kontakt yuborishga {count} marta urindi.\nChat: {key}"
+  "chat.contactAttempts": "{name} (ID {id}) chatda kontakt yuborishga {count} marta urindi.\nChat: {key}",
+  "share.card": "{name} {brand} bilan yoʻlga chiqadi: {from} → {to}, {date} {time}.\nMashina: {car}, {plate}.\nHaydovchi: {driver}.",
+  "share.title": "Safarim haqida",
+  "share.follow": "Safarni kuzatish",
+  "share.open": "Kuzatish uchun ilovani oching.",
+  "share.boarded": "{name} mashinaga chiqdi: {car}, {plate}.",
+  "share.arrived": "{name} yetib keldi.",
+  "share.cancelled": "Safar bekor qilindi."
 }

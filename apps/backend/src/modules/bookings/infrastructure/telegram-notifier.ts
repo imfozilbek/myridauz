@@ -11,11 +11,12 @@ type Wiring = {
   readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
   readonly system: (key: string, event: ChatSystemEvent) => Promise<void>;
   readonly placeName: (id: string) => Promise<string>;
+  readonly closeOnes: (booking: Booking, update: 'boarded' | 'arrived' | 'cancelled') => Promise<void>;
 };
 
 // The bots tell the other side through the queue (docs/07, docs/03): names only, never a phone
 // or a username. The chat of the booking gets a line about it too.
-export function telegramNotifier({ brand, notify, system, placeName }: Wiring): BookingNotifier {
+export function telegramNotifier({ brand, notify, system, placeName, closeOnes }: Wiring): BookingNotifier {
   const open = (app: 'passenger' | 'driver') => ({
     inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
   });
@@ -60,6 +61,7 @@ export function telegramNotifier({ brand, notify, system, placeName }: Wiring): 
     },
     cancelled: async (booking, by) => {
       await system(booking.chatKey, 'cancelled');
+      await closeOnes(booking, 'cancelled');
       if (by === 'passenger')
         await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
       else await toPassenger(booking, t('bot.booking.cancelledByDriver', await about(booking)));
@@ -75,5 +77,6 @@ export function telegramNotifier({ brand, notify, system, placeName }: Wiring): 
       const text = t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined');
       await notify([{ bot: 'driver', chatId: driverId, text, markup: open('driver') }]);
     },
+    progress: (booking, step) => closeOnes(booking, step),
   };
 }

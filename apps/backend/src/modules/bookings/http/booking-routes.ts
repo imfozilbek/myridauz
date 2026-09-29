@@ -10,6 +10,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { answer, confirm, driverBookings, teamTripBookings } from '../application/answer';
 import type { BookingsDeps } from '../application/ports';
+import { markProgress } from '../application/progress';
 import { cancelByPassenger, passengerBookings, requestBooking } from '../application/request';
 import { failWith, ONE } from './fail';
 
@@ -46,6 +47,12 @@ export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
     .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/cancel`, async (context) => {
       const passengerId = context.get('session').user.id;
       const result = await cancelByPassenger(deps(context.env), passengerId, context.req.param('id'));
+      return result.ok ? context.json(result.value) : fail(context, result.error);
+    })
+    .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/:step{boarded|arrived}`, async (context) => {
+      const step = context.req.param('step') === 'boarded' ? 'boarded' : 'arrived';
+      const passengerId = context.get('session').user.id;
+      const result = await markProgress(deps(context.env), passengerId, context.req.param('id'), step);
       return result.ok ? context.json(result.value) : fail(context, result.error);
     })
     .get(DRIVER_BOOKINGS_PATH, async (context) =>
