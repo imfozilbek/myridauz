@@ -3,7 +3,7 @@ import type { Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
-import { postTrip, refreshPosts, rememberPost } from './application/channels';
+import { closeDeparted, postTrip, refreshPosts, rememberPost } from './application/channels';
 import type { ChannelsDeps } from './application/ports';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
 import { channelPost } from './infrastructure/post-text';
@@ -24,6 +24,7 @@ const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
     posts: env.DB ? d1ChannelPosts(env.DB) : localPosts,
     render: channelPost(brand.bots.passenger),
     send: (jobs) => notify(env, jobs),
+    now: () => Date.now(),
   };
 };
 
@@ -33,4 +34,6 @@ export const channels = (tripOf: TripOf) => ({
   changed: (env: Bindings, tripId: string) => refreshPosts(channelsDeps(env, tripOf), tripId),
   remember: (env: Bindings, post: { tripId: string; channel: string; shown: string }, messageId: number) =>
     rememberPost(channelsDeps(env, tripOf), { ...post, messageId }, post.shown),
+  // The Cron job: posts of trips that left stop offering seats (docs/15).
+  departed: (env: Bindings) => closeDeparted(channelsDeps(env, tripOf)),
 });

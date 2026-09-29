@@ -1,3 +1,4 @@
+import type { Trip } from '@platform/contracts';
 import { channelsOf, shownOf } from '../domain/route-channels';
 import type { ChannelPost, ChannelsDeps } from './ports';
 
@@ -7,7 +8,7 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
   if (!deps.enabled) return;
   const [trip, places] = await Promise.all([deps.trip(tripId), deps.places()]);
   if (!trip || trip.status !== 'active') return;
-  const { text, markup } = deps.render(trip, places);
+  const { text, markup } = deps.render(trip, places, deps.now());
   const shown = shownOf(trip);
   const channels = channelsOf(trip.from, trip.to, places, deps.channels);
   await deps.send(
@@ -22,11 +23,9 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
   );
 }
 
-async function edit(deps: ChannelsDeps, tripId: string, posts: readonly ChannelPost[], shown?: string) {
+async function edit(deps: ChannelsDeps, trip: Trip, posts: readonly ChannelPost[]) {
   if (posts.length === 0) return;
-  const [trip, places] = await Promise.all([deps.trip(tripId), deps.places()]);
-  if (!trip || shownOf(trip) === shown) return;
-  const { text, markup } = deps.render(trip, places);
+  const { text, markup } = deps.render(trip, await deps.places(), deps.now());
   await deps.send(
     posts.map((post) => ({
       bot: 'passenger' as const,
@@ -41,12 +40,23 @@ async function edit(deps: ChannelsDeps, tripId: string, posts: readonly ChannelP
 
 // Seats taken, the trip full or cancelled: every post of it is edited (docs/15).
 export async function refreshPosts(deps: ChannelsDeps, tripId: string): Promise<void> {
-  await edit(deps, tripId, await deps.posts.byTrip(tripId));
+  const trip = await deps.trip(tripId);
+  if (trip) await edit(deps, trip, await deps.posts.byTrip(tripId));
 }
 
 // Telegram gave the post its id. A trip that changed while the post waited in the queue
 // (a booking confirmed at once) is edited now: nothing else would edit it.
 export async function rememberPost(deps: ChannelsDeps, post: ChannelPost, shown: string): Promise<void> {
-  await deps.posts.save(post);
-  await edit(deps, post.tripId, [post], shown);
+  const trip = await deps.trip(post.tripId);
+  if (!trip) return;
+  await deps.posts.save(post, trip.departAt);
+  if (shownOf(trip) !== shown) await edit(deps, trip, [post]);
+}
+
+// The Cron job: a trip that left says so in its posts and stops offering seats, once (docs/15).
+export async function closeDeparted(deps: ChannelsDeps): Promise<void> {
+  for (const tripId of await deps.posts.departed(deps.now())) {
+    await refreshPosts(deps, tripId);
+    await deps.posts.close(tripId);
+  }
 }
