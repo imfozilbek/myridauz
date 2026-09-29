@@ -1,10 +1,6 @@
-import {
-  chatClientEventSchema,
-  type ChatMessage,
-  type ChatServerEvent,
-  type ChatSystemEvent,
-} from '@platform/contracts';
+import { type ChatMessage, type ChatServerEvent, type ChatSystemEvent } from '@platform/contracts';
 import { maskContacts } from '../domain/mask';
+import { callView } from './call-view';
 import {
   otherRole,
   SYSTEM_AUTHOR,
@@ -35,16 +31,17 @@ const broadcast = (deps: RoomDeps, message: StoredMessage) => {
 
 // A person opened the chat: the latest messages, the oldest first.
 export function joined(deps: RoomDeps, socket: ChatSocket): void {
-  const messages = deps.store.recent(HISTORY).map((message) => view(message, socket.member.userId));
-  send(socket, { type: 'history', messages });
+  const { userId, canCall } = socket.member;
+  const messages = deps.store.recent(HISTORY).map((message) => view(message, userId));
+  send(socket, { type: 'history', messages, canCall });
+  const call = callView(deps.store.call(), userId);
+  if (call) send(socket, { type: 'call', call });
 }
 
 // A message from a person: contacts hidden, everyone in the chat sees it, the other one hears of it.
-export async function received(deps: RoomDeps, from: ChatSocket, raw: string): Promise<void> {
-  const parsed = chatClientEventSchema.safeParse(safeJson(raw));
-  if (!parsed.success) return;
+export async function sendText(deps: RoomDeps, from: ChatSocket, raw: string): Promise<void> {
   const { member } = from;
-  const { text, masked } = maskContacts(parsed.data.text);
+  const { text, masked } = maskContacts(raw);
   const message = deps.store.add({ author: member.userId, text, event: null, masked, at: deps.now() });
   broadcast(deps, message);
   if (masked) await hidden(deps, from);
@@ -70,12 +67,4 @@ async function tellOther(deps: RoomDeps, member: Member) {
 export function systemEvent(deps: RoomDeps, event: ChatSystemEvent): void {
   const message = deps.store.add({ author: SYSTEM_AUTHOR, text: '', event, masked: false, at: deps.now() });
   broadcast(deps, message);
-}
-
-function safeJson(raw: string): unknown {
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
 }

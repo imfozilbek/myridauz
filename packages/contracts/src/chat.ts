@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { callClientEvents, callServerEvents } from './calls';
 
 // The chat of one booking (docs/07, G09): "b" + booking id, or "o" + offer id for the second way.
 export const CHAT_KEY = /^[bo][0-9a-f-]{36}$/u;
@@ -13,7 +14,15 @@ export const chatTicketSchema = z.object({ url: z.string() });
 
 export const MAX_CHAT_TEXT = 1000;
 // System lines about the booking, shown in the middle of the chat.
-export const CHAT_SYSTEM_EVENTS = ['requested', 'offered', 'confirmed', 'declined', 'cancelled'] as const;
+// missed_call: a call that did not happen (docs/08, G13).
+export const CHAT_SYSTEM_EVENTS = [
+  'requested',
+  'offered',
+  'confirmed',
+  'declined',
+  'cancelled',
+  'missed_call',
+] as const;
 export type ChatSystemEvent = (typeof CHAT_SYSTEM_EVENTS)[number];
 
 export const chatMessageSchema = z.object({
@@ -27,15 +36,17 @@ export type ChatMessage = z.infer<typeof chatMessageSchema>;
 
 // What the server sends on the socket. "warning": a contact was hidden in the sender's message.
 export const chatServerEventSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('history'), messages: z.array(chatMessageSchema) }),
+  // canCall: a voice call is open only after the booking is confirmed (docs/08).
+  z.object({ type: z.literal('history'), messages: z.array(chatMessageSchema), canCall: z.boolean() }),
   z.object({ type: z.literal('message'), message: chatMessageSchema }),
   z.object({ type: z.literal('warning') }),
+  ...callServerEvents,
 ]);
 export type ChatServerEvent = z.infer<typeof chatServerEventSchema>;
 
-// What the Mini App sends: only text, no voice (docs/07).
-export const chatClientEventSchema = z.object({
-  type: z.literal('send'),
-  text: z.string().trim().min(1).max(MAX_CHAT_TEXT),
-});
+// What the Mini App sends: a text, or a step of a call (docs/07, docs/08). The voice never goes here.
+export const chatClientEventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('send'), text: z.string().trim().min(1).max(MAX_CHAT_TEXT) }),
+  ...callClientEvents,
+]);
 export type ChatClientEvent = z.infer<typeof chatClientEventSchema>;

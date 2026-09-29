@@ -119,5 +119,8 @@
   "complaint.blockedForever": "Akkauntingiz butunlay bloklandi. Faol safarlar va bronlar bekor qilindi.",
   "complaint.resolved": "Shikoyatingiz koʻrib chiqildi. Rahmat!",
   "stats.errors": "⚠️ Xatolar koʻpaydi: soʻnggi soatda {hour} ta, odatda {usual} ta.",
-  "stats.drop": "⚠️ {funnel}: «{step}» qadamida {drop}% odam ketdi, odatda {usual}%."
+  "stats.drop": "⚠️ {funnel}: «{step}» qadamida {drop}% odam ketdi, odatda {usual}%.",
+  "call.incoming": "📞 Sizga qoʻngʻiroq qilishyapti. Javob berish uchun chatni oching.",
+  "call.answer": "Javob berish",
+  "call.missed": "Sizga qoʻngʻiroq qilishdi, lekin gaplasha olmadingiz. Chatda yozib qoʻying."
 }

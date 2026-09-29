@@ -1,4 +1,5 @@
-import type { Page, Route } from '@playwright/test';
+import type { Page, Route, WebSocketRoute } from '@playwright/test';
+import { playCall } from './call-mock';
 import { confirmed } from './bookings-mock';
 
 // The chat and the shared trip as the Mini Apps see them (G09). The chat socket is played by the test.
@@ -18,16 +19,22 @@ const HISTORY = [
 ];
 export const SHARE_TOKEN = 'e2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2e1';
 
+// The open chat socket: a test plays the other side of a call on it (G13).
+export const chatSocket: { current: WebSocketRoute | null } = { current: null };
+
 export async function mockChat(page: Page) {
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/chats/*/ticket', (route) =>
     json(route, { url: `ws://localhost:4199/chats/${KEY}/socket?ticket=e2e` }),
   );
   await page.routeWebSocket(/\/chats\/.+\/socket/u, (ws) => {
-    ws.send(JSON.stringify({ type: 'history', messages: HISTORY }));
+    chatSocket.current = ws;
+    ws.send(JSON.stringify({ type: 'history', messages: HISTORY, canCall: true }));
     let id = HISTORY.length;
     ws.onMessage((raw) => {
-      const { text } = JSON.parse(String(raw)) as { text: string };
+      const event = JSON.parse(String(raw)) as { type: string; text: string; action?: string };
+      if (event.type !== 'send') return playCall(ws, event.action ?? '');
+      const { text } = event;
       // Like the real room (docs/07): phones and @usernames become "***".
       const shown = text.replace(/\+?\d[\d\s-]{7,}\d/gu, '***').replace(/@\w{3,}/gu, '***');
       const masked = shown !== text;

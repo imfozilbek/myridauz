@@ -10,5 +10,6 @@
   "system.offered": "Haydovchi taklif yubordi",
   "system.confirmed": "Joy tasdiqlandi",
   "system.declined": "Rad etildi",
-  "system.cancelled": "Bekor qilindi"
+  "system.cancelled": "Bekor qilindi",
+  "system.missed_call": "Oʻtkazib yuborilgan qoʻngʻiroq"
 }

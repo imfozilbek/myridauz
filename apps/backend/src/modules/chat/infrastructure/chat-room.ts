@@ -1,12 +1,17 @@
+import { loadBrand } from '@platform/brands';
 import { DurableObject } from 'cloudflare:workers';
 import { CHAT_SYSTEM_EVENTS } from '@platform/contracts';
 import type { Bindings } from '../../../env';
 import type { ChatSocket, Member, RoomDeps } from '../application/ports';
-import { joined, received, systemEvent } from '../application/room';
+import { callLeft, callTimeout } from '../application/call-room';
+import { received } from '../application/dispatch';
+import { joined, systemEvent } from '../application/room';
 import { botSignals } from './bot-signals';
 import { sqlMessages } from './sql-messages';
 
 const HISTORY_LIMIT = 100;
+const SECOND = 1000;
+const KEY = 'key';
 
 // One Durable Object is one booking chat (docs/07). Sockets sleep between messages
 // (WebSocket Hibernation): a quiet chat costs nothing.
@@ -14,12 +19,20 @@ export class ChatRoom extends DurableObject<Bindings> {
   private readonly store = sqlMessages(this.ctx.storage.sql);
 
   private deps(key: string): RoomDeps {
+    const { calls } = loadBrand(this.env.BRAND);
     return {
       key,
       store: this.store,
-      sockets: () => this.ctx.getWebSockets().map((ws) => this.socket(ws)),
+      // A closing socket is not in the chat any more.
+      sockets: () =>
+        this.ctx
+          .getWebSockets()
+          .filter((ws) => ws.readyState === WebSocket.OPEN)
+          .map((ws) => this.socket(ws)),
       signals: botSignals(this.env),
       now: Date.now,
+      calls: { ringMs: calls.ringSeconds * SECOND, connectMs: calls.connectSeconds * SECOND },
+      wakeAt: (at) => void (at === null ? this.ctx.storage.deleteAlarm() : this.ctx.storage.setAlarm(at)),
     };
   }
 
@@ -39,6 +52,8 @@ export class ChatRoom extends DurableObject<Bindings> {
       return new Response(null, { status: 204 });
     }
     const member = JSON.parse(request.headers.get('x-chat-member') ?? 'null') as Member;
+    // The wake-up of a call does not know its chat: the key is kept (docs/08).
+    await this.ctx.storage.put(KEY, key);
     const pair = new WebSocketPair();
     const [client, server] = [pair[0], pair[1]];
     this.ctx.acceptWebSocket(server);
@@ -55,5 +70,12 @@ export class ChatRoom extends DurableObject<Bindings> {
 
   override async webSocketClose(ws: WebSocket, code: number): Promise<void> {
     ws.close(code);
+    const { member, key } = ws.deserializeAttachment() as { member: Member; key: string };
+    await callLeft(this.deps(key), member);
+  }
+
+  // A call nobody answered, or whose voice did not connect in time, ends here (docs/08).
+  override async alarm(): Promise<void> {
+    await callTimeout(this.deps((await this.ctx.storage.get<string>(KEY)) ?? ''));
   }
 }

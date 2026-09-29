@@ -1,5 +1,5 @@
 import { CHAT_SYSTEM_EVENTS, type ChatSystemEvent } from '@platform/contracts';
-import type { MessageStore, StoredMessage } from '../application/ports';
+import type { MessageStore, StoredCall, StoredMessage } from '../application/ports';
 
 // SQLite of the chat's Durable Object (docs/07): one database per booking.
 const SCHEMA = `
@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS messages (
   masked INTEGER NOT NULL DEFAULT 0,
   at INTEGER NOT NULL
 );
-CREATE TABLE IF NOT EXISTS notified (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL);`;
+CREATE TABLE IF NOT EXISTS notified (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS call_state (id INTEGER PRIMARY KEY CHECK (id = 1), body TEXT NOT NULL);`;
 
 type Row = { id: number; author: number; text: string; event: string | null; masked: number; at: number };
 const toMessage = (row: Row): StoredMessage => ({
@@ -57,5 +58,17 @@ export function sqlMessages(sql: SqlStorage): MessageStore {
         userId,
         at,
       ),
+    // One call at most per chat (docs/08).
+    call: () => {
+      const body = sql.exec<{ body: string }>('SELECT body FROM call_state WHERE id = 1').toArray()[0]?.body;
+      return body ? (JSON.parse(body) as StoredCall) : null;
+    },
+    saveCall: (call) =>
+      void (call
+        ? sql.exec(
+            'INSERT INTO call_state (id, body) VALUES (1, ?) ON CONFLICT (id) DO UPDATE SET body = excluded.body',
+            JSON.stringify(call),
+          )
+        : sql.exec('DELETE FROM call_state')),
   };
 }

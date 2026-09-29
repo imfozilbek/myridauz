@@ -27,6 +27,11 @@ export type Bindings = {
   readonly ANALYTICS_API_TOKEN?: string;
   readonly CF_ACCOUNT_ID?: string;
   readonly ANALYTICS_DATASET?: string;
+  // Voice calls through Cloudflare Realtime (docs/08, G13): the app and the TURN key, secrets.
+  readonly REALTIME_APP_ID?: string;
+  readonly REALTIME_APP_SECRET?: string;
+  readonly TURN_KEY_ID?: string;
+  readonly TURN_KEY_TOKEN?: string;
 };
 
 // Set by the Telegram auth middleware for API routes (shared/auth).

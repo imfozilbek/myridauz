@@ -1,6 +1,7 @@
 import account from '../locales/uz-Latn/account.json' with { type: 'json' };
 import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
+import calls from '../locales/uz-Latn/calls.json' with { type: 'json' };
 import chat from '../locales/uz-Latn/chat.json' with { type: 'json' };
 import common from '../locales/uz-Latn/common.json' with { type: 'json' };
 import complaints from '../locales/uz-Latn/complaints.json' with { type: 'json' };
@@ -22,6 +23,7 @@ const REFERENCE = {
   account,
   bookings,
   bot,
+  calls,
   chat,
   common,
   complaints,

@@ -12,6 +12,7 @@ import {
   createSubscriptionsClient,
   createFeedbackClient,
   createStatsClient,
+  createCallsClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
@@ -66,6 +67,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     subscriptions: createSubscriptionsClient(signed),
     feedback: createFeedbackClient(signed),
     stats: createStatsClient(signed),
+    calls: createCallsClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // Send what is left when Telegram hides or closes the app.

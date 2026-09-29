@@ -4,28 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { ChatScreen } from './chat-screen';
-
-// A socket that the test drives: what the Mini App sends, and what the chat answers.
-class FakeSocket extends EventTarget {
-  static last: FakeSocket | null = null;
-  readonly sent: string[] = [];
-  constructor(readonly url: string) {
-    super();
-    FakeSocket.last = this;
-  }
-  send(data: string) {
-    this.sent.push(data);
-  }
-  close() {
-    this.dispatchEvent(new Event('close'));
-  }
-  open() {
-    this.dispatchEvent(new Event('open'));
-  }
-  receive(data: object) {
-    this.dispatchEvent(new MessageEvent('message', { data: JSON.stringify(data) }));
-  }
-}
+import { FakeSocket } from './fake-socket';
 
 beforeEach(() => vi.stubGlobal('WebSocket', FakeSocket));
 afterEach(() => {
@@ -53,10 +32,13 @@ describe('the chat screen (docs/07)', () => {
           { id: 1, author: 'system', text: '', event: 'requested', at: 1 },
           { id: 2, author: 'other', text: 'Salom', event: null, at: 2 },
         ],
+        canCall: false,
       });
     });
     expect(screen.getByText('Joy soʻraldi')).toBeTruthy();
     expect(screen.getByText('Salom')).toBeTruthy();
+    // Not confirmed yet: no call button (docs/08).
+    expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
     fireEvent.change(screen.getByLabelText('Xabar'), { target: { value: 'Qayerda uchrashamiz?' } });
     fireEvent.click(screen.getByText('Yuborish'));
     expect(JSON.parse(socket.sent[0] ?? '{}')).toEqual({ type: 'send', text: 'Qayerda uchrashamiz?' });
