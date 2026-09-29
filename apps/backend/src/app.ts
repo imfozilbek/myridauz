@@ -14,6 +14,7 @@ import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
 import { pricingModule } from './modules/pricing';
 import { requestsModule } from './modules/ride-requests';
+import { subscriptionsModule } from './modules/route-subscriptions';
 import { sharesModule } from './modules/shares';
 import { teamRole } from './modules/team';
 import { tripsModule } from './modules/trips';
@@ -62,6 +63,7 @@ export const app = new Hono<AppEnv>()
   .route('/', tripCancelWatch)
   .route('/', tripsModule)
   .route('/', requestsModule)
+  .route('/', subscriptionsModule)
   .route('/', bookingsModule)
   .route('/', walletModule)
   .route('/', chatRoutes(chatMemberOf))

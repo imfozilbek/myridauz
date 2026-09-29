@@ -65,5 +65,12 @@
   "channel.woman": "👩 Mashinada ayol bor",
   "channel.full": "⛔ Joy qolmagan",
   "channel.cancelled": "❌ Safar bekor qilindi",
-  "channel.book": "Band qilish"
+  "channel.book": "Band qilish",
+  "subscription.trip": "Siz kutgan safar chiqdi.\n{from} → {to}\n{date}, soat {time}\nBoʻsh joylar: {seats}, bir joy {price}.",
+  "subscription.request": "Yoʻnalishingizda yangi soʻrov.\n{from} → {to}\n{date}, {seats} kishi, bir joy {price}.",
+  "subscription.manyTrips": "{from} → {to} yoʻnalishida yana {count} ta yangi safar bor.",
+  "subscription.manyRequests": "{from} → {to} yoʻnalishida yana {count} ta yangi soʻrov bor.",
+  "subscription.renew": "{from} → {to} obunangiz muddati tugadi. Xabar olishni davom ettirish uchun uni uzaytiring.",
+  "subscription.open": "Koʻrish",
+  "subscription.list": "Obunalar"
 }

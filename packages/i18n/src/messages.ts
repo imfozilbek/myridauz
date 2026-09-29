@@ -10,6 +10,7 @@ import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' 
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
+import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
 import type { Locale } from './config';
 
@@ -27,6 +28,7 @@ const REFERENCE = {
   places,
   pricing,
   share,
+  subscriptions,
   wallet,
 };
 type Namespaces = typeof REFERENCE;

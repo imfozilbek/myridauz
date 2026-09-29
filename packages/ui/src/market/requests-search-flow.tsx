@@ -9,6 +9,7 @@ import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
+import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -88,6 +89,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
           icon="passengers"
           title={t('market.requests.empty')}
           description={t('market.requests.emptyHint')}
+          action={<NotifyMe from={route.from.id} to={route.to.id} date={date} />}
         />
       ) : null}
     </div>

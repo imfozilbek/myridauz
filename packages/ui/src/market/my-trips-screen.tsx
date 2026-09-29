@@ -1,5 +1,5 @@
 import type { Booking, Trip } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
+import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -10,6 +10,8 @@ import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
+import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
+import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -42,6 +44,8 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
   );
   const [opened, setOpened] = useState<Opened | null>(null);
   const [chatKey, setChatKey] = useState<string | null>(null);
+  const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
+  if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   const cancel = async (trip: Trip) => {
     try {
       await market.cancelTrip(trip.id);
@@ -79,7 +83,16 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     return (
       <>
         <BackButton onClick={onBack} />
-        <EmptyState icon="myTrips" title={t('market.mine.empty')} description={t('market.mine.emptyHint')} />
+        <EmptyState
+          icon="myTrips"
+          title={t('market.mine.empty')}
+          description={t('market.mine.emptyHint')}
+          action={
+            <Button size="m" mode="bezeled" onClick={() => setSubscriptionsOpen(true)}>
+              {t('subscriptions.title')}
+            </Button>
+          }
+        />
       </>
     );
   }
@@ -94,6 +107,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
         {trips.map((trip) => (
           <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ trip })} />
         ))}
+        <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
       </List>
     </div>
   );

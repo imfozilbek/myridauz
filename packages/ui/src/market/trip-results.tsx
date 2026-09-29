@@ -7,6 +7,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
+import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -81,6 +82,7 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
           icon="search"
           title={t('market.search.empty')}
           description={t('market.search.emptyHint')}
+          action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
         />
       ) : null}
     </div>

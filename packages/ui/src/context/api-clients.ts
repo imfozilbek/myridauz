@@ -5,6 +5,7 @@ import type {
   MarketClient,
   ModerationClient,
   PricingClient,
+  SubscriptionsClient,
   WalletClient,
 } from '@platform/api-client';
 import { createContext, useContext } from 'react';
@@ -18,6 +19,7 @@ export type ApiClients = {
   readonly bookings: BookingsClient;
   readonly wallet: WalletClient;
   readonly chat: ChatClient;
+  readonly subscriptions: SubscriptionsClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

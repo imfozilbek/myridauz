@@ -14,5 +14,6 @@
   "bookings.wrong_status": "Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.",
   "bookings.invalid_input": "Vaqtni soʻrov kuniga va hozirdan keyinga qoʻying.",
   "wallet.not_enough": "Hamyonda komissiya uchun mablagʻ yetarli emas.",
-  "auth.not_owner": "Buni faqat loyiha egasi qila oladi."
+  "auth.not_owner": "Buni faqat loyiha egasi qila oladi.",
+  "subscriptions.too_many": "Obunalar soni chegaraga yetdi. Keraksizini oʻchiring."
 }

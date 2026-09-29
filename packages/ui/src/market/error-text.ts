@@ -17,6 +17,7 @@ const EXPLAINED: readonly string[] = [
   'bookings.invalid_input',
   'wallet.not_enough',
   'auth.not_owner',
+  'subscriptions.too_many',
 ];
 
 export function errorKey(error: unknown): TranslationKey {

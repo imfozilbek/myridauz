@@ -9,6 +9,7 @@ import {
   createUsersClient,
   createWalletClient,
   createChatClient,
+  createSubscriptionsClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
@@ -18,7 +19,7 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
-import { ChatLink } from './chat/chat-link';
+import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
 import { initTelegram } from './telegram/init-telegram';
 
@@ -48,6 +49,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     bookings: createBookingsClient(signed),
     wallet: createWalletClient(signed),
     chat: createChatClient(signed),
+    subscriptions: createSubscriptionsClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
@@ -70,9 +72,9 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
           // Only the passenger app is opened from a shared trip card (docs/43).
           <FollowGate enabled={app === 'passenger'}>
             <AccountGate app={app} client={users} welcome={welcome}>
-              <ChatLink>
+              <LaunchLinks app={app}>
                 <Page />
-              </ChatLink>
+              </LaunchLinks>
             </AccountGate>
           </FollowGate>
         ) : (

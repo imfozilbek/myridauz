@@ -4,6 +4,7 @@ import { expireBookings } from './modules/bookings';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
 import { grantMissedBonuses } from './modules/drivers';
 import { expireRequests } from './modules/ride-requests';
+import { sendWaitingSubscriptions } from './modules/route-subscriptions';
 import { completeTrips } from './modules/trips';
 import { burnBonuses } from './modules/wallet';
 
@@ -25,6 +26,7 @@ export default {
         expireBookings(env, now),
         burnBonuses(env),
         grantMissedBonuses(env),
+        sendWaitingSubscriptions(env),
       ]),
     );
   },

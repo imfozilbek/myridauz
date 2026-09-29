@@ -67,6 +67,9 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('share_join'), ...context }),
   z.object({ name: z.literal('boarded'), ...context }),
   z.object({ name: z.literal('arrived'), ...context }),
+  // Route subscriptions (G10, docs/24): "Xabar bering" and the list "Obunalar".
+  z.object({ name: z.literal('route_subscribed'), ...context }),
+  z.object({ name: z.literal('subscriptions_open'), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

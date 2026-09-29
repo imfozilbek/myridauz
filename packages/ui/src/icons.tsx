@@ -1,6 +1,7 @@
 import {
   Armchair,
   Banknote,
+  Bell,
   Ban,
   Camera,
   Car,
@@ -66,6 +67,7 @@ const ICONS = {
   wallet: Wallet,
   chat: MessageCircle,
   share: Share2,
+  subscriptions: Bell,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

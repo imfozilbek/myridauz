@@ -1,4 +1,4 @@
-import { Caption, Title } from '@telegram-apps/telegram-ui';
+import { Button, Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -7,6 +7,8 @@ import { PassengerOpen, type Opened } from '../bookings/passenger-open';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
+import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
+import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -34,6 +36,8 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
     Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
   );
   const [opened, setOpened] = useState<Opened | null>(null);
+  const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
+  if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (opened && value) {
     const close = (changed: boolean) => {
       setOpened(null);
@@ -52,6 +56,11 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
           icon="myTrips"
           title={t('market.mine.requestsEmpty')}
           description={t('market.mine.requestsEmptyHint')}
+          action={
+            <Button size="m" mode="bezeled" onClick={() => setSubscriptionsOpen(true)}>
+              {t('subscriptions.title')}
+            </Button>
+          }
         />
       </>
     );
@@ -81,6 +90,7 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
             onOpen={() => setOpened({ kind: 'request', request })}
           />
         ))}
+        <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
       </List>
     </div>
   );

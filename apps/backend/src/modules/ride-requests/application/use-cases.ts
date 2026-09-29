@@ -18,7 +18,7 @@ type PublishError =
   | 'locations.inside_city';
 
 // Other people see only the name and the face of the passenger (docs/07).
-async function views(deps: RequestsDeps, requests: readonly RequestRecord[]): Promise<RideRequest[]> {
+export async function views(deps: RequestsDeps, requests: readonly RequestRecord[]): Promise<RideRequest[]> {
   const now = deps.now();
   const found = await Promise.all(
     requests.map(async (request) => {
@@ -57,6 +57,7 @@ export async function publishRequest(
     createdAt: now,
   };
   await deps.requests.save(request);
+  await deps.published(request.id);
   const [view] = await views(deps, [request]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.invalid_input' };
 }
