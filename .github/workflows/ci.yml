@@ -98,12 +98,41 @@ jobs:
           tar -xzf "${archive}" gitleaks
       - run: ./gitleaks git --no-banner --redact
 
+  # Deploy only when something that goes to production changed: code, brands, dependencies,
+  # the deploy script. A merge of docs alone needs no deploy and no approval (owner decision 29.09.2026).
+  changes:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      deploy: ${{ steps.diff.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: diff
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$BEFORE" HEAD)"
+          echo "$changed"
+          if echo "$changed" | grep -Eq '^(apps/|packages/|brands/|scripts/deploy|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$)'; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # Production deploy (docs/32): only from main, only after every gate is green,
   # only through the Environment "production" that the owner approves. Pull requests never reach this job.
   # The brand kit and the screenshots are media for people: the deploy does not wait for them (docs/45).
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [checks, e2e, secrets]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.deploy == 'true'
+    needs: [checks, e2e, secrets, changes]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
