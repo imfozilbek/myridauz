@@ -16,7 +16,12 @@ export function StarsRow({ value, onChange }: Props) {
     <div className="stars-row">
       {STARS.map((stars) => (
         <button key={stars} type="button" aria-pressed={stars === value} onClick={() => onChange(stars)}>
-          <Icon name="star" size={BIG_STAR} color={stars <= value ? colors.accent : colors.textMuted} />
+          <Icon
+            name="star"
+            size={BIG_STAR}
+            filled={stars <= value}
+            color={stars <= value ? colors.accent : colors.textMuted}
+          />
           <Caption>{stars}</Caption>
         </button>
       ))}
@@ -34,6 +39,7 @@ export function ReviewStars({ stars }: { readonly stars: number }) {
           key={value}
           name="star"
           size={SMALL_STAR}
+          filled={value <= stars}
           color={value <= stars ? colors.accent : colors.textMuted}
         />
       ))}

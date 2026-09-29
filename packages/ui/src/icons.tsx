@@ -76,9 +76,15 @@ export type IconName = keyof typeof ICONS;
 
 const DEFAULT_SIZE = 24;
 
-type IconProps = { readonly name: IconName; readonly size?: number; readonly color?: string };
+type IconProps = {
+  readonly name: IconName;
+  readonly size?: number;
+  readonly color?: string;
+  // Filled with its color: a chosen star (docs/24).
+  readonly filled?: boolean;
+};
 
-export function Icon({ name, size = DEFAULT_SIZE, color = 'currentColor' }: IconProps) {
+export function Icon({ name, size = DEFAULT_SIZE, color = 'currentColor', filled = false }: IconProps) {
   const Component = ICONS[name];
-  return <Component size={size} color={color} aria-hidden />;
+  return <Component size={size} color={color} fill={filled ? color : 'none'} aria-hidden />;
 }

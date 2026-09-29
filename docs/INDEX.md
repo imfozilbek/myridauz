@@ -56,4 +56,5 @@
 | 52 | [52-bookings-and-wallet.md](52-bookings-and-wallet.md) | Бронь, предложения, кошелёк, комиссия, бонус (G08) |
 | 53 | [53-chat-and-share.md](53-chat-and-share.md) | Чат, маскировка, очередь уведомлений, «Поделиться поездкой» (G09) |
 | 54 | [54-channels-and-subscriptions.md](54-channels-and-subscriptions.md) | Каналы, подписки на маршрут, напоминания (G10) |
+| 55 | [55-ratings-and-complaints.md](55-ratings-and-complaints.md) | Рейтинг, отзывы, жалобы, блокировки (G11) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

@@ -1,6 +1,7 @@
 import type { Complaint } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
+import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -62,7 +63,7 @@ export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
               key={complaint.id}
               before={<IconTile name="complaints" tone={complaint.high ? 'accent' : 'brand'} />}
               subtitle={`${complaint.against.firstName} · ${formatDate(new Date(complaint.createdAt))}`}
-              after={complaint.high ? t('complaints.high') : undefined}
+              after={complaint.high ? <CellValue>{t('complaints.high')}</CellValue> : undefined}
               onClick={() => setOpen(complaint.id)}
             >
               {t(`complaints.reason.${complaint.reason}`)}

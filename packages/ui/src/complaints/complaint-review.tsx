@@ -1,6 +1,14 @@
-import type { ChatLine, Complaint, ComplaintDecision, Party } from '@platform/contracts';
+import {
+  CHAT_SYSTEM_EVENTS,
+  type ChatLine,
+  type ChatSystemEvent,
+  type Complaint,
+  type ComplaintDecision,
+  type Party,
+} from '@platform/contracts';
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
+import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useAnalytics } from '../context/analytics-context';
@@ -17,6 +25,8 @@ import { haptic } from '../telegram/feedback';
 import { DecisionSection } from './decision-section';
 
 const PHOTO_SIZE = 48;
+// A system line comes as its event (docs/35): the moderator reads it in words.
+const EVENT = new Set<string>(CHAT_SYSTEM_EVENTS);
 
 // One complaint for the moderator (docs/17): both sides with their faces and history, the chat
 // only on demand (the read goes to the log), then the decision.
@@ -37,6 +47,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
   const party = (header: string, person: Party) => (
     <Section header={header}>
       <Cell
+        multiline
         before={
           <ProfilePhoto
             userId={person.id}
@@ -49,7 +60,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
           trips: String(person.trips),
           complaints: String(person.complaints),
         })}
-        after={t(`complaints.${person.role}`)}
+        after={<CellValue>{t(`complaints.${person.role}`)}</CellValue>}
       >
         {person.firstName}
       </Cell>
@@ -72,6 +83,10 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
         <EmptyState icon="selected" title={t('complaints.decided')} />
       </>
     );
+  const lineText = (line: ChatLine) =>
+    line.author === null && EVENT.has(line.text)
+      ? t(`chat.system.${line.text as ChatSystemEvent}`)
+      : line.text;
   const nameOf = (author: number | null) =>
     author === complaint.author.id
       ? complaint.author.firstName
@@ -107,7 +122,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
             <Cell before={<Icon name="empty" />}>{t('complaints.chatEmpty')}</Cell>
           ) : (
             lines.map((line) => (
-              <Cell key={`${line.at}-${line.text}`} multiline subtitle={line.text}>
+              <Cell key={`${line.at}-${line.text}`} multiline subtitle={lineText(line)}>
                 {nameOf(line.author)}
               </Cell>
             ))

@@ -15,7 +15,7 @@
   "blind": "Izohingiz ikkala tomon baholagach yoki 14 kundan keyin koʻrinadi.",
   "sent": "Rahmat! Bahoyingiz saqlandi.",
   "complain": "Shikoyat qilish",
-  "rating": "{average, number} ({count})",
+  "rating": "{average} ({count})",
   "new": "Yangi",
   "list": "Izohlar",
   "empty": "Hali izoh yoʻq"

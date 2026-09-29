@@ -12,7 +12,7 @@ import { botAsker } from './infrastructure/bot-asker';
 import { d1Ratings } from './infrastructure/d1-ratings';
 import { createMemoryRatings } from './infrastructure/memory-ratings';
 
-const { t } = createI18n(DEFAULT_LOCALE);
+const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
 const localRatings = createMemoryRatings();
 
 // The rides and the names come from other modules: set by the app (module-events.ts).
@@ -34,7 +34,12 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
     ask: botAsker(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
     alertTeam: async (userId, rating) => {
       const name = (await names(env, [userId])).get(userId) ?? '';
-      const values = { name, id: String(userId), average: rating.average ?? 0, count: rating.count };
+      const values = {
+        name,
+        id: String(userId),
+        average: formatNumber(rating.average ?? 0),
+        count: rating.count,
+      };
       await notifyTeam(env, t('bot.rating.team', values));
     },
     mask: (text) => maskContacts(text).text,
