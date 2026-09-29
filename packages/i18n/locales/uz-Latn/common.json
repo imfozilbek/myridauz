@@ -24,6 +24,8 @@
   "admin.complaintsHint": "Foydalanuvchilar shikoyatlari",
   "admin.statistics": "Statistika",
   "admin.statisticsHint": "Kunlik va haftalik raqamlar",
+  "admin.management": "Boshqaruv",
+  "admin.managementHint": "Narxlar va statistika",
   "myTrips": "Mening safarlarim",
   "passenger.myTripsHint": "Band qilingan joylar va suhbatlar",
   "driver.myTripsHint": "Eʼlonlar va yoʻlovchilar"

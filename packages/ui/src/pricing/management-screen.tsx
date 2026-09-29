@@ -1,0 +1,58 @@
+import { Title } from '@telegram-apps/telegram-ui';
+import { useState } from 'react';
+import { Cell, List, Section } from '../components';
+import { useScreenView } from '../context/analytics-context';
+import { useI18n } from '../context/i18n-context';
+import { IconTile } from '../icon-tile';
+import { EmptyState } from '../states/empty-state';
+import { BackButton } from '../telegram/back-button';
+import { useScreenBackground } from '../telegram/screen-background';
+import { PricingScreen } from './pricing-screen';
+import '../market/market.css';
+
+type Open = 'menu' | 'pricing' | 'statistics';
+
+// The third action of the admin Mini App: at most 3 actions on the main screen (docs/19).
+export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
+  useScreenView('management');
+  useScreenBackground('grouped');
+  const { t } = useI18n();
+  const [open, setOpen] = useState<Open>('menu');
+  const menu = () => setOpen('menu');
+  if (open === 'pricing') return <PricingScreen onBack={menu} />;
+  if (open === 'statistics') {
+    return (
+      <>
+        <BackButton onClick={menu} />
+        <EmptyState icon="statistics" title={t('common.admin.statistics')} description={t('common.soon')} />
+      </>
+    );
+  }
+  return (
+    <div className="market">
+      <BackButton onClick={onBack} />
+      <Title weight="1" className="market-title">
+        {t('common.admin.management')}
+      </Title>
+      <List>
+        <Section>
+          <Cell
+            before={<IconTile name="trip" />}
+            subtitle={t('pricing.hint')}
+            multiline
+            onClick={() => setOpen('pricing')}
+          >
+            {t('pricing.title')}
+          </Cell>
+          <Cell
+            before={<IconTile name="statistics" tone="deep" />}
+            subtitle={t('common.admin.statisticsHint')}
+            onClick={() => setOpen('statistics')}
+          >
+            {t('common.admin.statistics')}
+          </Cell>
+        </Section>
+      </List>
+    </div>
+  );
+}

@@ -18,7 +18,10 @@ const approved = {
   photos: { front: true, side: true, interior: true },
   reasons: [],
 };
-const driver = testClients({ drivers: { getApplication: async () => approved } });
+const driver = testClients({
+  drivers: { getApplication: async () => approved },
+  market: { myTrips: async () => [] },
+});
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 
 describe('StartPage', () => {
@@ -34,7 +37,7 @@ describe('StartPage', () => {
   it('opens a section and comes back', async () => {
     renderApp();
     fireEvent.click(await screen.findByText('Mening safarlarim'));
-    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
+    expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(screen.getByText('Yangi safar'));
     expect(await screen.findByText('Qayerdan')).toBeTruthy();

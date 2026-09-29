@@ -9,6 +9,17 @@ export const REGISTRATION_STEPS = ['consent', 'name', 'gender', 'phone', 'done']
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
 export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
+export const TRIP_STEPS = [
+  'route',
+  'date',
+  'time',
+  'seats',
+  'price',
+  'woman',
+  'comment',
+  'published',
+] as const;
+export type TripStep = (typeof TRIP_STEPS)[number];
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
@@ -27,6 +38,10 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('registration_step'), step: z.enum(REGISTRATION_STEPS), ...context }),
   // Driver funnel (G06): one event per finished step of the application, up to "submitted".
   z.object({ name: z.literal('driver_application_step'), step: z.enum(DRIVER_STEPS), ...context }),
+  // Trips (G07): the steps of a new trip, a search and whether it found something, an opened trip.
+  z.object({ name: z.literal('trip_step'), step: z.enum(TRIP_STEPS), ...context }),
+  z.object({ name: z.literal('trip_search'), result: z.enum(['found', 'empty']), ...context }),
+  z.object({ name: z.literal('trip_open'), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

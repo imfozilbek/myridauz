@@ -13,6 +13,7 @@ export function createI18n(locale: Locale) {
     t,
     formatDate: formatters.formatDate,
     formatTime: formatters.formatTime,
+    formatWeekday: formatters.formatWeekday,
     formatMoney: (amount: number) => t('common.money', { amount: formatters.formatNumber(amount) }),
   };
 }

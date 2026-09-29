@@ -33,6 +33,8 @@ export const recommendationSchema = z.object({
   // The bounds a person may choose within (docs/09).
   minPrice: sum,
   maxPrice: sum,
+  // The step a person changes the price by, the same as the rounding of the formula.
+  roundStep: sum,
 });
 export type Recommendation = z.infer<typeof recommendationSchema>;
 

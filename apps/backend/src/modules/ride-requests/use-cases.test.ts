@@ -30,7 +30,16 @@ function setup() {
         ? { ok: false, error: 'locations.same_place' }
         : {
             ok: true,
-            value: { from, to, km: 300, price: 90000, source: 'formula', minPrice: 30000, maxPrice: 600000 },
+            value: {
+              from,
+              to,
+              km: 300,
+              price: 90000,
+              source: 'formula',
+              minPrice: 30000,
+              maxPrice: 600000,
+              roundStep: 5000,
+            },
           },
     places: async () => PLACES,
     newId: () => `request-${(id += 1)}`,

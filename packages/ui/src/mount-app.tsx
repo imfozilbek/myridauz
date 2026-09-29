@@ -2,7 +2,9 @@ import {
   createAnalyticsClient,
   createDriversClient,
   createLocationsClient,
+  createMarketClient,
   createModerationClient,
+  createPricingClient,
   createUsersClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
@@ -33,7 +35,12 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
   const signed = { baseUrl, fetch, app, initData: session.initData };
   const users = createUsersClient(signed);
-  const clients = { drivers: createDriversClient(signed), moderation: createModerationClient(signed) };
+  const clients = {
+    drivers: createDriversClient(signed),
+    moderation: createModerationClient(signed),
+    market: createMarketClient(signed),
+    pricing: createPricingClient(signed),
+  };
   const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
     baseUrl,

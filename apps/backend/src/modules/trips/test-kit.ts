@@ -53,6 +53,7 @@ export function setup() {
         source: 'formula',
         minPrice: 30000,
         maxPrice: 600000,
+        roundStep: 5000,
       };
       return { ok: true, value };
     },

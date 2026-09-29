@@ -17,6 +17,8 @@ import {
   MapPin,
   Phone,
   MessageSquarePlus,
+  Minus,
+  Plus,
   Route,
   Search,
   ShieldCheck,
@@ -54,6 +56,8 @@ const ICONS = {
   car: CarFront,
   carSide: Car,
   carInterior: Armchair,
+  less: Minus,
+  more: Plus,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

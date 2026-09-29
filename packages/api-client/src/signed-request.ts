@@ -26,6 +26,8 @@ export function signedRequest({ baseUrl, fetch, app, initData }: SignedOptions) 
     request,
     post: (path: string, body: unknown) =>
       request(path, { method: 'POST', body: JSON.stringify(body), headers: JSON_HEADERS }),
+    putJson: (path: string, body: unknown) =>
+      request(path, { method: 'PUT', body: JSON.stringify(body), headers: JSON_HEADERS }),
     put: (path: string, image: Blob) =>
       request(path, { method: 'PUT', body: image, headers: { 'content-type': image.type } }),
   };

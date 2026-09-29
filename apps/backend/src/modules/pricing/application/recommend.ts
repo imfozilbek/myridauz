@@ -25,7 +25,11 @@ export async function recommendPrice(
   if (!km.ok) return km;
   const variables = await deps.variables.get(deps.pricing, deps.now());
   const manual = await manualFor(deps, from, to);
-  const bounds = { minPrice: variables.minPrice, maxPrice: variables.maxPrice };
+  const bounds = {
+    minPrice: variables.minPrice,
+    maxPrice: variables.maxPrice,
+    roundStep: variables.roundStep,
+  };
   const base = { from, to, km: km.value, ...bounds };
   return manual === undefined
     ? { ok: true, value: { ...base, price: deps.strategy(km.value, variables), source: 'formula' } }

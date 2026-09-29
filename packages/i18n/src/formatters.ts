@@ -4,6 +4,7 @@ import { TIME_ZONE, type Locale } from './config';
 export function createFormatters(locale: Locale) {
   const number = new Intl.NumberFormat(locale);
   const date = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', timeZone: TIME_ZONE });
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: TIME_ZONE });
   const time = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
@@ -14,5 +15,6 @@ export function createFormatters(locale: Locale) {
     formatNumber: (value: number) => number.format(value),
     formatDate: (value: Date) => date.format(value),
     formatTime: (value: Date) => time.format(value),
+    formatWeekday: (value: Date) => weekday.format(value),
   };
 }

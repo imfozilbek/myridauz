@@ -1,9 +1,8 @@
-import { tashkentDate, tashkentTime } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { sendText, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { TripRecord } from '../domain/trip';
 
-const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
+const { t, formatMoney, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 
 type Wiring = {
   readonly fetch: Fetch;
@@ -20,8 +19,8 @@ export const telegramAnnouncer =
     const text = t('bot.trip.published', {
       from: await placeName(trip.from),
       to: await placeName(trip.to),
-      date: tashkentDate(trip.departAt),
-      time: tashkentTime(trip.departAt),
+      date: formatDate(new Date(trip.departAt)),
+      time: formatTime(new Date(trip.departAt)),
       price: formatMoney(trip.price),
     });
     try {

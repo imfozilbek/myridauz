@@ -4,10 +4,12 @@ export {
   MAX_ANALYTICS_BATCH,
   MINI_APPS,
   DRIVER_STEPS,
+  TRIP_STEPS,
   REGISTRATION_STEPS,
   type AnalyticsBatch,
   type AnalyticsEvent,
   type DriverStep,
+  type TripStep,
   type MiniApp,
   type RegistrationStep,
 } from './analytics';
