@@ -34,8 +34,8 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
       (opened) => {
         stream = opened;
         if (!active || !video.current) return opened.getTracks().forEach((track) => track.stop());
+        // The shutter waits for the first frames (onLoadedData): until then there is nothing to shoot.
         video.current.srcObject = opened;
-        setState('live');
       },
       () => setState('failed'),
     );
@@ -59,7 +59,14 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
 
   return (
     <div className="camera" role="dialog" aria-label={title}>
-      <video ref={video} className={`camera-video camera-${facing}`} autoPlay playsInline muted />
+      <video
+        ref={video}
+        className={`camera-video camera-${facing}`}
+        autoPlay
+        playsInline
+        muted
+        onLoadedData={() => setState('live')}
+      />
       <span className={`camera-guide camera-guide-${guide}`} />
       <div className="camera-top">
         <Text weight="2">{title}</Text>

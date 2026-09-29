@@ -31,6 +31,9 @@ describe('CameraScreen (docs/47)', () => {
     const { onPhoto, container, unmount } = camera(async () => ({ getTracks: () => [{ stop }] }));
     expect(container.querySelector('.camera-guide-face')).toBeTruthy();
     const shutter = screen.getByLabelText('Rasmga olish');
+    // No frames yet: nothing to shoot.
+    expect((shutter as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.loadedData(container.querySelector('video') as HTMLVideoElement);
     await waitFor(() => expect((shutter as HTMLButtonElement).disabled).toBe(false));
     fireEvent.click(shutter);
     expect(draw).toHaveBeenCalled();
