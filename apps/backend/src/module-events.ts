@@ -1,11 +1,19 @@
-import { pickupMessageSent, rideOfBooking, ridesOfTrips } from './modules/bookings';
+import {
+  cancelAllOf,
+  passengerRideCount,
+  pickupMessageSent,
+  rideOfBooking,
+  ridesOfTrips,
+} from './modules/bookings';
+import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { channels } from './modules/channels';
 import { handleAfterSent } from './modules/notifications';
 import { handleRequestPublished, requestViewOf } from './modules/ride-requests';
 import { requestPublished, tripPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
-import { handleTripChange, tripsEnded, tripViewsOf, wireTripStanding } from './modules/trips';
+import { driverTripIds, handleTripChange, tripsEnded, tripViewsOf, wireTripStanding } from './modules/trips';
 import { peopleOf } from './modules/users';
+import { refundNoShow } from './modules/wallet';
 import type { Bindings } from './env';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -55,5 +63,15 @@ wireRatings({
 // Trips show the driver's rating; complaints hide a person from the search (docs/17, docs/24).
 wireTripStanding((env) => ({
   ratings: (ids) => ratingsOfPeople(env, ids),
-  hidden: async () => new Set(),
+  hidden: (ids) => hiddenByComplaints(env, ids),
 }));
+
+// Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
+// commission back (docs/17, docs/35).
+wireComplaints({
+  ride: rideOfBooking,
+  trips: async (env, userId, side) =>
+    side === 'driver' ? (await driverTripIds(env, userId)).length : passengerRideCount(env, userId),
+  cancelAll: cancelAllOf,
+  refund: refundNoShow,
+});

@@ -56,7 +56,7 @@ describe('registration', () => {
     const { deps, users } = setup();
     const foreign = { ...input, contact: { userId: 2, phone: '998900000000' } };
     expect(await register(deps, ali, foreign)).toEqual({ ok: false, error: 'users.invalid_contact' });
-    users.blockPhone('+998901234567', { until: null });
+    await users.blockPhone('+998901234567', { until: null }, 0);
     expect(await register(deps, ali, input)).toEqual({ ok: false, error: 'users.blocked' });
   });
 });
@@ -71,7 +71,7 @@ describe('blocking (docs/17)', () => {
     expect(await getMe(deps, ali, settings)).toEqual({ state: 'blocked', until: NOW + 10 });
     await users.save({ ...user, block: { until: NOW - 10 } });
     expect(await checkAccess(deps, 1)).toBeNull();
-    users.blockPhone('+998901234567', { until: null });
+    await users.blockPhone('+998901234567', { until: null }, 0);
     expect(await checkAccess(deps, 1)).toEqual({ until: null });
     expect(await checkAccess(deps, 99)).toBeNull();
   });

@@ -10,6 +10,8 @@ export type Ride = {
   readonly departAt: number;
   readonly endsAt: number;
   readonly over: boolean;
+  // The commission of the booking: given back by hand on a no-show (docs/35).
+  readonly commission: number;
   // The chat of the booking, or of the offer it came from (docs/07).
   readonly chatKey: string;
 };
@@ -31,6 +33,7 @@ export async function rideOf(deps: BookingsDeps, bookingId: string): Promise<Rid
     departAt,
     endsAt,
     over,
+    commission: booking.commission,
     chatKey: chatKeyOf(booking),
   };
 }
@@ -49,6 +52,8 @@ export async function ridesOf(deps: BookingsDeps, trips: readonly EndedTrip[]): 
     if (!trip) return [];
     const { driverId, departAt, endsAt } = trip;
     const ride = { bookingId: booking.id, tripId: trip.id, driverId, passengerId: booking.passengerId };
-    return [{ ...ride, departAt, endsAt, over: true, chatKey: chatKeyOf(booking) }];
+    return [
+      { ...ride, departAt, endsAt, over: true, commission: booking.commission, chatKey: chatKeyOf(booking) },
+    ];
   });
 }

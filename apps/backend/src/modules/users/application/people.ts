@@ -27,9 +27,15 @@ export function people(deps: UsersDeps) {
     },
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),
-    // days: 1, 7 or 30; null blocks for good (docs/17).
-    block: (id: number, days: number | null) =>
-      update(id, { block: { until: days === null ? null : deps.now() + days * DAY_MS } }),
+    // days: 1, 7 or 30; null blocks for good. The phone is blocked too: a new account with the same
+    // number cannot come back (docs/17).
+    block: async (id: number, days: number | null) => {
+      const now = deps.now();
+      const block = { until: days === null ? null : now + days * DAY_MS };
+      await update(id, { block });
+      const user = await deps.users.find(id);
+      if (user) await deps.users.blockPhone(user.phone, block, now);
+    },
     avatar: (key: string) => deps.avatars.get(key),
   };
 }

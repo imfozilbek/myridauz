@@ -111,5 +111,11 @@
   "rating.thanks": "Rahmat! Siz {stars} ⭐ qoʻydingiz.",
   "rating.complain": "Shikoyat qilish",
   "rating.late": "Baholash muddati tugagan.",
-  "rating.team": "{name} (ID {id}) reytingi past: ⭐ {average, number} ({count} ta baho). Profilni tekshiring."
+  "rating.team": "{name} (ID {id}) reytingi past: ⭐ {average, number} ({count} ta baho). Profilni tekshiring.",
+  "complaint.open": "Koʻrish",
+  "complaint.urgent": "⚠️ Muhim shikoyat: {reason}. {name} (ID {id}) haqida.",
+  "complaint.warning": "Sizga shikoyat tushdi. Iltimos, qoidalarga amal qiling: takrorlansa, akkaunt bloklanadi.",
+  "complaint.blocked": "Akkauntingiz {date} gacha bloklandi. Faol safarlar va bronlar bekor qilindi.",
+  "complaint.blockedForever": "Akkauntingiz butunlay bloklandi. Faol safarlar va bronlar bekor qilindi.",
+  "complaint.resolved": "Shikoyatingiz koʻrib chiqildi. Rahmat!"
 }

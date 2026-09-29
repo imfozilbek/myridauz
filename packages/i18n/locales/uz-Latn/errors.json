@@ -15,5 +15,8 @@
   "bookings.invalid_input": "Vaqtni soʻrov kuniga va hozirdan keyinga qoʻying.",
   "wallet.not_enough": "Hamyonda komissiya uchun mablagʻ yetarli emas.",
   "auth.not_owner": "Buni faqat loyiha egasi qila oladi.",
-  "subscriptions.too_many": "Obunalar soni chegaraga yetdi. Keraksizini oʻchiring."
+  "subscriptions.too_many": "Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.",
+  "reviews.not_over": "Safar hali tugamagan. Keyinroq baholang.",
+  "reviews.too_late": "Baholash muddati tugagan.",
+  "complaints.already": "Bu safar boʻyicha shikoyatingiz allaqachon yuborilgan."
 }

@@ -1,0 +1,22 @@
+{
+  "title": "Safarni baholang",
+  "about": "{name} bilan safar",
+  "driver": "Haydovchi",
+  "passenger": "Yoʻlovchi",
+  "tagsTitle": "Nima yoqdi?",
+  "tag.on_time": "Vaqtida",
+  "tag.careful": "Ehtiyotkor haydash",
+  "tag.clean_car": "Toza mashina",
+  "tag.polite": "Xushmuomala",
+  "tag.tidy": "Ozoda",
+  "textTitle": "Izoh",
+  "textPlaceholder": "Safar haqida qisqacha yozing (ixtiyoriy)",
+  "send": "Yuborish",
+  "blind": "Izohingiz ikkala tomon baholagach yoki 14 kundan keyin koʻrinadi.",
+  "sent": "Rahmat! Bahoyingiz saqlandi.",
+  "complain": "Shikoyat qilish",
+  "rating": "{average, number} ({count})",
+  "new": "Yangi",
+  "list": "Izohlar",
+  "empty": "Hali izoh yoʻq"
+}

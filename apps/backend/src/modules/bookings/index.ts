@@ -4,6 +4,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
 import { rememberPickupMessage, setPickup } from './application/accept';
+import { cancelEverything } from './application/cancel-all';
 import { chatMember } from './application/chat-member';
 import { passengerView } from './application/progress';
 import { rideOf, ridesOf } from './application/rides';
@@ -62,3 +63,12 @@ export type { Ride } from './application/rides';
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
 export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]) =>
   ridesOf(bookingsDeps(env), trips);
+
+// A blocked person: live trips and open bookings are cancelled (docs/17, G11).
+export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(bookingsDeps(env), userId);
+
+// The history of a passenger for a moderator: how many rides they took (docs/17).
+export const passengerRideCount = async (env: Bindings, passengerId: number) =>
+  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(
+    (booking) => booking.status === 'confirmed' || booking.status === 'completed',
+  ).length;
