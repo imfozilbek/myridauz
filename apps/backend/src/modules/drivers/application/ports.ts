@@ -31,7 +31,8 @@ export type DriversDeps = {
   readonly people: PeoplePort;
   readonly notify: ModerationNotifier;
   // driver_approved: the bonus of month 1 starts from it in G08 (docs/12).
-  readonly driverApproved: (userId: number) => void;
+  // The approval event and bonus 1 of the welcome promo (docs/12).
+  readonly driverApproved: (userId: number) => Promise<void>;
   readonly now: () => number;
   readonly newId: () => string;
 };

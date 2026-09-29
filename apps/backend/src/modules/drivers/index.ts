@@ -7,6 +7,7 @@ import { r2Images } from '../../shared/storage/r2-images';
 import { recordServerEvent } from '../analytics';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
+import { welcomeBonus } from '../wallet';
 import { avatarChanged } from './application/moderate';
 import type { DriversDeps } from './application/ports';
 import { adminRoutes } from './http/admin-routes';
@@ -36,7 +37,10 @@ export const driversDeps = (env: Bindings): DriversDeps => {
       photos,
       people,
     }),
-    driverApproved: () => recordServerEvent(env, 'driver_approved'),
+    driverApproved: async (userId) => {
+      recordServerEvent(env, 'driver_approved');
+      await welcomeBonus(env, userId);
+    },
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };

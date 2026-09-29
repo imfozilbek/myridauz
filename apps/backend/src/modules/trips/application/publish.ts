@@ -1,7 +1,7 @@
 import { MAX_ACTIVE_TRIPS, type Trip, type TripInput } from '@platform/contracts';
 import { departError, endsAt, isLive, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
-import { tripView } from './views';
+import { NO_RIDERS, tripView } from './views';
 
 export type PublishError =
   | 'trips.not_driver'
@@ -51,5 +51,5 @@ export async function publishTrip(
   await deps.trips.save(trip);
   const meetingMessageId = await deps.announce(trip);
   if (meetingMessageId !== null) await deps.trips.save({ ...trip, meetingMessageId });
-  return { ok: true, value: tripView(trip, driver, car, now) };
+  return { ok: true, value: tripView(trip, driver, car, now, NO_RIDERS) };
 }

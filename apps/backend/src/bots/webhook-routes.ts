@@ -9,6 +9,7 @@ import type { Fetch } from '../shared/telegram/telegram-api';
 import { onAdminCallback } from './admin-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onDriverMessage } from './driver-messages';
+import { onPassengerMessage } from './passenger-messages';
 import type { BotContext } from './bot-context';
 import { isBotRole } from './bot-roles';
 import { startReply } from './start-reply';
@@ -42,6 +43,7 @@ export function webhookRoutes(fetch: Fetch) {
     }
     if (blocked) return context.json({});
     if (role === 'driver') return context.json(await onDriverMessage(bot, message));
+    if (role === 'passenger') return context.json(await onPassengerMessage(bot, message));
     if (role !== 'admin') return context.json({});
     return context.json(await onAdminMessage(bot, message, team));
   });

@@ -52,6 +52,8 @@ export const tripSchema = z.object({
   departAt: z.number().int(),
   km: z.number().int(),
   seats: z.number().int(),
+  // Seats not taken by confirmed bookings (G08).
+  seatsLeft: z.number().int(),
   price,
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),

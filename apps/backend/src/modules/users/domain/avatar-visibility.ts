@@ -1,6 +1,6 @@
 import type { User } from './user';
 
-// How the viewer is linked to the owner of the photo. Trips arrive in G07; until then: none.
+// How the viewer is linked to the owner of the photo: passengers of one trip ride together (G08).
 export type TripRelation = 'co_passenger' | 'trip_driver' | 'none';
 
 type Viewer = { readonly id: number; readonly isAdmin: boolean };

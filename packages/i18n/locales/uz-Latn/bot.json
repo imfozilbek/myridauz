@@ -41,5 +41,14 @@
   "moderation.pickReason": "Kamida bitta sababni tanlang.",
   "trip.published": "Safaringiz eʼlon qilindi: {from} → {to}, {date} soat {time}, bir joy {price}.\n\nUmumiy uchrashuv joyini belgilash uchun shu xabarga javoban lokatsiya yuboring (ixtiyoriy). Yoʻlovchilar uni joy band qilingandan keyin koʻradi.",
   "trip.meetingSaved": "Uchrashuv joyi saqlandi.",
-  "trip.meetingHint": "Lokatsiyani safar haqidagi xabarga javoban yuboring."
+  "trip.meetingHint": "Lokatsiyani safar haqidagi xabarga javoban yuboring.",
+  "booking.requested": "Yangi soʻrov: {name}, {seats} ta joy.\n{from} → {to}\n{date}, soat {time}\n\nJavob berish uchun ilovani oching.",
+  "booking.confirmed": "Joyingiz tasdiqlandi.\n{from} → {to}\n{date}, soat {time}\nMashina: {car}, davlat raqami {plate}.\n\nOʻz uchrashuv joyingizni lokatsiya qilib shu xabarga javob sifatida yuboring.",
+  "booking.declined": "Haydovchi soʻrovingizni qabul qila olmadi: {from} → {to}, {date}. Boshqa safarni toping.",
+  "booking.cancelledByPassenger": "{name} bronni bekor qildi: {from} → {to}, {date}. Komissiya hamyoningizga qaytarildi.",
+  "booking.cancelledByDriver": "Haydovchi bronni bekor qildi: {from} → {to}, {date}. Boshqa safarni toping.",
+  "booking.pickupSaved": "Uchrashuv joyingiz saqlandi. Haydovchi uni koʻradi.",
+  "offer.new": "Soʻrovingizga haydovchidan taklif keldi. Koʻrish uchun ilovani oching.",
+  "offer.accepted": "Yoʻlovchi taklifingizni qabul qildi. Safar yaratildi, joy tasdiqlandi.",
+  "offer.declined": "Yoʻlovchi taklifingizni rad etdi."
 }

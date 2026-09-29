@@ -1,4 +1,4 @@
-import type { TripRelations, UserRepository } from '../application/ports';
+import type { UserRepository } from '../application/ports';
 import type { Block, User } from '../domain/user';
 
 // In memory: tests and local runs without D1 and R2.
@@ -16,4 +16,3 @@ export function createMemoryUsers(): UserRepository & {
 }
 
 // Trips arrive in G07: until then nobody shares a trip with anybody.
-export const noTripRelations: TripRelations = { relation: async () => 'none' };

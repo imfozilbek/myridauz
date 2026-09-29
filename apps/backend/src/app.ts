@@ -6,6 +6,7 @@ import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
 import { analyticsModule } from './modules/analytics';
+import { bookingsModule, tripCancelWatch } from './modules/bookings';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
@@ -14,6 +15,7 @@ import { requestsModule } from './modules/ride-requests';
 import { teamRole } from './modules/team';
 import { tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
+import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
@@ -48,8 +50,12 @@ export const app = new Hono<AppEnv>()
   .route('/', driversModule)
   .route('/', locationsModule(auth))
   .route('/', pricingModule)
+  // The cancel watch goes before trips: it wraps the cancel route of the trips module.
+  .route('/', tripCancelWatch)
   .route('/', tripsModule)
   .route('/', requestsModule)
+  .route('/', bookingsModule)
+  .route('/', walletModule)
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',

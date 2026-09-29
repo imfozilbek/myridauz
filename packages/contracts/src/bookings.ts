@@ -1,0 +1,54 @@
+import { z } from 'zod';
+import { MAX_SEATS } from './drivers';
+import { tripSchema } from './trips';
+
+// A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
+// request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
+export const PASSENGER_BOOKINGS_PATH = '/passenger/bookings';
+export const tripBookingsPath = (tripId: string) => `/trips/${tripId}/bookings`;
+export const passengerBookingCancelPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/cancel`;
+export const DRIVER_BOOKINGS_PATH = '/driver/bookings';
+export const DRIVER_BOOKING_ACTIONS = ['confirm', 'decline', 'cancel'] as const;
+export type DriverBookingAction = (typeof DRIVER_BOOKING_ACTIONS)[number];
+export const driverBookingPath = (id: string, action: DriverBookingAction) =>
+  `${DRIVER_BOOKINGS_PATH}/${id}/${action}`;
+
+export const BOOKING_STATUSES = [
+  'requested',
+  'confirmed',
+  'completed',
+  'declined',
+  'expired',
+  'cancelled_by_passenger',
+  'cancelled_by_driver',
+] as const;
+export type BookingStatus = (typeof BOOKING_STATUSES)[number];
+// A passenger waits for at most this many answers at once (docs/35).
+export const MAX_REQUESTED_BOOKINGS = 3;
+// A request without an answer expires after this time or at the departure (docs/35).
+export const BOOKING_ANSWER_HOURS = 24;
+
+export const bookingInputSchema = z.object({ seats: z.number().int().min(1).max(MAX_SEATS) });
+export type BookingInput = z.input<typeof bookingInputSchema>;
+
+export const pointSchema = z.object({ lat: z.number(), lng: z.number() });
+export type Point = z.infer<typeof pointSchema>;
+
+// The other side sees the name and the photo by docs/05, never a phone or a username.
+// Places and the plate open only after the confirmation (docs/07, docs/14).
+export const bookingSchema = z.object({
+  id: z.string(),
+  trip: tripSchema,
+  passenger: z.object({ id: z.number().int(), firstName: z.string(), hasAvatar: z.boolean() }),
+  seats: z.number().int(),
+  // The driver's share per seat and the driver's commission for the whole booking (docs/12).
+  price: z.number().int(),
+  commission: z.number().int(),
+  status: z.enum(BOOKING_STATUSES),
+  createdAt: z.number().int(),
+  meetingPoint: pointSchema.nullable(),
+  pickup: pointSchema.nullable(),
+  plate: z.string().nullable(),
+});
+export type Booking = z.infer<typeof bookingSchema>;
+export const bookingsSchema = z.object({ bookings: z.array(bookingSchema) });

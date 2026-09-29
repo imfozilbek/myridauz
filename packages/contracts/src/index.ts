@@ -109,8 +109,11 @@ export {
   type RegistrationInput,
   type UserRole,
 } from './users';
-// The market of G07: prices, trips, requests, Tashkent time (all their exports are public API).
+// The market of G07 and G08: prices, trips, requests, bookings, offers, the wallet, Tashkent time.
+export * from './bookings';
+export * from './offers';
 export * from './pricing';
 export * from './ride-requests';
 export * from './tashkent-time';
 export * from './trips';
+export * from './wallet';

@@ -57,7 +57,7 @@ export async function decideApplication(
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);
   await deps.people.setDriver(userId, next.status === 'approved');
-  if (next.status === 'approved') deps.driverApproved(userId);
+  if (next.status === 'approved') await deps.driverApproved(userId);
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;
   await deps.notify.decided(next, fixedPlate);
   const view = await summary(deps, next);

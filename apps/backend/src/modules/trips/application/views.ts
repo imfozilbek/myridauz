@@ -2,8 +2,14 @@ import type { Car, Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import { statusAt, type TripRecord } from '../domain/trip';
 
+// Seats taken by confirmed bookings and whether a woman is among the passengers (G08).
+export type Riders = { readonly seats: number; readonly woman: boolean };
+export const NO_RIDERS: Riders = { seats: 0, woman: false };
+
 // What other people see of a trip: the driver's name, face and car, never the plate (docs/07).
-export function tripView(trip: TripRecord, driver: Person, car: Car, now: number): Trip {
+export function tripView(trip: TripRecord, driver: Person, car: Car, now: number, riders: Riders): Trip {
+  const seatsLeft = Math.max(0, trip.seats - riders.seats);
+  const status = statusAt(trip, now);
   return {
     id: trip.id,
     driver: {
@@ -17,11 +23,13 @@ export function tripView(trip: TripRecord, driver: Person, car: Car, now: number
     departAt: trip.departAt,
     km: trip.km,
     seats: trip.seats,
+    seatsLeft,
     price: trip.price,
-    // A woman driver or a woman the driver takes along (docs/06). Bookings add more in G08.
-    woman: driver.gender === 'female' || trip.womanOnBoard,
+    // The 3 rules of docs/06: a woman driver, a woman the driver takes along, a woman with a
+    // confirmed booking. Only the fact, no name.
+    woman: driver.gender === 'female' || trip.womanOnBoard || riders.woman,
     hasMeetingPoint: trip.meetingPoint !== null,
     comment: trip.comment,
-    status: statusAt(trip, now),
+    status: status === 'active' && seatsLeft === 0 ? 'full' : status,
   };
 }

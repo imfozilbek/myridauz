@@ -20,6 +20,18 @@ export const TRIP_STEPS = [
   'published',
 ] as const;
 export type TripStep = (typeof TRIP_STEPS)[number];
+// The booking funnel (G08): both ways, from the first tap to the confirmation.
+export const BOOKING_STEPS = [
+  'seats',
+  'requested',
+  'confirmed',
+  'declined',
+  'cancelled',
+  'offer_sent',
+  'offer_accepted',
+  'offer_declined',
+] as const;
+export type BookingStep = (typeof BOOKING_STEPS)[number];
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
@@ -42,6 +54,9 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('trip_step'), step: z.enum(TRIP_STEPS), ...context }),
   z.object({ name: z.literal('trip_search'), result: z.enum(['found', 'empty']), ...context }),
   z.object({ name: z.literal('trip_open'), ...context }),
+  // Bookings (G08): one event per step of the funnel; a refused confirmation carries the reason.
+  z.object({ name: z.literal('booking_step'), step: z.enum(BOOKING_STEPS), ...context }),
+  z.object({ name: z.literal('wallet_open'), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 
