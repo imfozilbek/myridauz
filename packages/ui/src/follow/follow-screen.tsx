@@ -23,17 +23,23 @@ import '../market/market.css';
 // The token of a shared trip, when a close person came from the card (docs/43).
 export const followToken = () => launchParam('follow', SHARE_TOKEN);
 
+type Props = {
+  readonly token: string;
+  // "Men ham yoʻlga chiqaman": the close person leaves the card for the registration (docs/18).
+  readonly onJoin: () => void;
+};
+
 // A close person follows the trip without registration (docs/43): where, when, with whom and how
 // it goes. "Xabar olish" lets the bot tell each step.
-export function FollowScreen({ token }: { readonly token: string }) {
+export function FollowScreen(props: Props) {
   return (
     <PlacesGate>
-      <Follow token={token} />
+      <Follow {...props} />
     </PlacesGate>
   );
 }
 
-function Follow({ token }: { readonly token: string }) {
+function Follow({ token, onJoin }: Props) {
   useScreenView('share.follow');
   useScreenBackground('grouped');
   const { t, formatDate } = useI18n();
@@ -42,9 +48,16 @@ function Follow({ token }: { readonly token: string }) {
   const { value, failed } = useLoad(() => chat.sharedTrip(token));
   const [note, setNote] = useState<'follow.subscribed' | 'follow.full' | null>(null);
   useEffect(() => track({ name: 'share_opened', screen: 'share.follow' }), [track]);
+  const join = () => {
+    track({ name: 'share_join', screen: 'share.follow' });
+    onJoin();
+  };
   if (failed) {
     return (
-      <EmptyState icon="trip" title={t('share.follow.closed')} description={t('share.follow.closedHint')} />
+      <>
+        <EmptyState icon="trip" title={t('share.follow.closed')} description={t('share.follow.closedHint')} />
+        <JoinNote onJoin={join} />
+      </>
     );
   }
   if (!value) return <ScreenSkeleton />;
@@ -106,6 +119,19 @@ function Follow({ token }: { readonly token: string }) {
           </>
         )}
       </div>
+      <JoinNote onJoin={join} />
+    </div>
+  );
+}
+
+function JoinNote({ onJoin }: { readonly onJoin: () => void }) {
+  const { t } = useI18n();
+  return (
+    <div className="step-note">
+      <Button mode="plain" size="l" stretched onClick={onJoin}>
+        {t('share.follow.join')}
+      </Button>
+      <Text className="step-hint">{t('share.follow.joinHint')}</Text>
     </div>
   );
 }

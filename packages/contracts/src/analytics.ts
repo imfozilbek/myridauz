@@ -59,10 +59,12 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   // Chat (G09): an opened chat and the first message a person sends in it.
   z.object({ name: z.literal('chat_open'), ...context }),
   z.object({ name: z.literal('chat_first_message'), ...context }),
-  // "Yaqinlarimga yuborish" (G09, docs/43): shared, opened and followed by close people, the trip steps.
+  // "Yaqinlarimga yuborish" (G09, docs/43): shared, opened and followed by close people, the trip steps;
+  // share_join: a close person goes on to the registration (docs/18).
   z.object({ name: z.literal('trip_shared'), ...context }),
   z.object({ name: z.literal('share_opened'), ...context }),
   z.object({ name: z.literal('share_follow'), ...context }),
+  z.object({ name: z.literal('share_join'), ...context }),
   z.object({ name: z.literal('boarded'), ...context }),
   z.object({ name: z.literal('arrived'), ...context }),
 ]);

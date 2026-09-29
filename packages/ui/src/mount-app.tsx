@@ -19,7 +19,7 @@ import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
 import { ChatLink } from './chat/chat-link';
-import { FollowScreen, followToken } from './follow/follow-screen';
+import { FollowGate } from './follow/follow-gate';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -63,19 +63,18 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') void analytics.flush();
   });
-  // A close person from a shared trip card needs no registration (docs/43).
-  const follow = app === 'passenger' ? followToken() : null;
   createRoot(container).render(
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} locations={locations} clients={clients} session={session}>
-        {follow ? (
-          <FollowScreen token={follow} />
-        ) : welcome ? (
-          <AccountGate app={app} client={users} welcome={welcome}>
-            <ChatLink>
-              <Page />
-            </ChatLink>
-          </AccountGate>
+        {welcome ? (
+          // Only the passenger app is opened from a shared trip card (docs/43).
+          <FollowGate enabled={app === 'passenger'}>
+            <AccountGate app={app} client={users} welcome={welcome}>
+              <ChatLink>
+                <Page />
+              </ChatLink>
+            </AccountGate>
+          </FollowGate>
         ) : (
           <TeamGate client={users}>
             <Page />
