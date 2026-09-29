@@ -26,6 +26,7 @@ export function createMemoryRatings(): RatingStore {
     review: async (bookingId, raterId) => reviews.get(key(bookingId, raterId)),
     saveReview: async (review) => void reviews.set(key(review.bookingId, review.raterId), review),
     about: async (ids) => [...reviews.values()].filter((review) => ids.includes(review.rateeId)),
+    by: async (raterId) => [...reviews.values()].filter((review) => review.raterId === raterId),
     writtenBy: async (ids) =>
       new Set(
         [...reviews.values()]

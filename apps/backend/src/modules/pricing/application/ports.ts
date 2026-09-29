@@ -19,6 +19,8 @@ export type PricingRepository = {
   ): Promise<void>;
 };
 
+export type RealPrice = { readonly from: string; readonly to: string; readonly price: number };
+
 export type RouteKmError = RouteError | 'locations.not_found';
 
 // What pricing needs from the locations module.
@@ -34,6 +36,8 @@ export type PricingDeps = {
   readonly variables: VariablesCache;
   // Directions shown in "было → стало" and in the admin table (docs/16).
   readonly mainDirections: readonly (readonly [string, string])[];
+  // Prices of real trips since a time: the median hint of the admin table (docs/09).
+  readonly realPrices: (since: number) => Promise<readonly RealPrice[]>;
   readonly now: () => number;
 };
 

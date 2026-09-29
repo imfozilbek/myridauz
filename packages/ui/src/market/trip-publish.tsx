@@ -8,7 +8,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
 import { BackButton } from '../telegram/back-button';
-import { MainButton } from '../telegram/bottom-button';
+import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
 import type { TripDraft } from './new-trip-flow';
@@ -20,10 +20,14 @@ type TripPublishProps = {
   readonly km: number;
   readonly onBack: () => void;
   readonly onClose: () => void;
+  // "Qaytish safari": the same trip the other way, one tap after publishing (docs/40, question 43).
+  readonly onReturn: () => void;
+  // This trip is the way back of the one just published.
+  readonly isReturn: boolean;
 };
 
 // Everything on one screen before publishing; then a short "done" with the meeting point hint.
-export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
+export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: TripPublishProps) {
   useScreenView('market.review');
   const { track } = useAnalytics();
   const { market } = useApiClients();
@@ -46,6 +50,7 @@ export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
         comment,
       });
       track({ name: 'trip_step', screen: 'market.review', step: 'published' });
+      if (isReturn) track({ name: 'return_trip_created', screen: 'market.review' });
       haptic.success();
       setPublished(true);
     } catch (caught) {
@@ -57,6 +62,7 @@ export function TripPublish({ draft, km, onBack, onClose }: TripPublishProps) {
     return (
       <StepLayout icon="selected" title={t('market.published.title')} hint={t('market.published.hint')}>
         <MainButton text={t('market.done')} onClick={onClose} />
+        {isReturn ? null : <SecondaryButton text={t('market.published.return')} onClick={onReturn} />}
       </StepLayout>
     );
   }

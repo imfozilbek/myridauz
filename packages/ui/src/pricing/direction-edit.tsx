@@ -2,7 +2,7 @@ import type { Direction } from '@platform/contracts';
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Input, List, Section } from '../components';
+import { Cell, Input, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { RouteView } from '../market/route-view';
@@ -44,6 +44,7 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
             onChange={(event) => setValue(event.target.value)}
           />
         </Section>
+        <MedianHint direction={direction} />
       </List>
       {failed ? <Text className="step-error">{t('errors.trips.price_out_of_bounds')}</Text> : null}
       {direction.manual === null ? null : (
@@ -57,5 +58,17 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
         <MainButton text={t('pricing.directionSave')} onClick={() => onSave(price)} />
       ) : null}
     </StepLayout>
+  );
+}
+
+// The median of real prices: only a hint while the team edits the table (docs/09, question 39).
+function MedianHint({ direction }: { readonly direction: Direction }) {
+  const { t, formatMoney } = useI18n();
+  const count = String(direction.medianTrips);
+  if (direction.median === null) return <Section footer={t('pricing.medianFew', { count })} />;
+  return (
+    <Section header={t('pricing.median')} footer={t('pricing.medianHint', { count })}>
+      <Cell>{formatMoney(direction.median)}</Cell>
+    </Section>
   );
 }

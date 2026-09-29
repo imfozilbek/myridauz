@@ -10,6 +10,7 @@ import { DateStep } from './date-step';
 import { PriceStep } from './price-step';
 import { TimeStep } from './time-step';
 import { PlacesGate } from './places-gate';
+import { returnDraft } from './return-trip';
 import { TripPublish } from './trip-publish';
 import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
 
@@ -41,6 +42,7 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
   const [step, setStep] = useState<Step>('route');
   const [draft, setDraft] = useState<Partial<TripDraft>>({});
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [isReturn, setIsReturn] = useState(false);
   const [now] = useState(Date.now);
   const next = (passed: TripStep, patch: Partial<TripDraft>, to: Step) => {
     track({ name: 'trip_step', screen: `market.${passed}`, step: passed });
@@ -78,7 +80,7 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
           now={Date.now()}
           {...(draft.time ? { initial: draft.time } : {})}
           onBack={() => setStep('date')}
-          onDone={(departAt, time) => next('time', { departAt, time }, 'seats')}
+          onDone={(departAt, time) => next('time', { departAt, time }, isReturn ? 'review' : 'seats')}
         />
       );
     case 'seats':
@@ -122,8 +124,14 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
           <TripPublish
             draft={complete}
             km={recommendation.km}
-            onBack={() => setStep('comment')}
+            onBack={() => setStep(isReturn ? 'time' : 'comment')}
             onClose={onBack}
+            isReturn={isReturn}
+            onReturn={() => {
+              setDraft(returnDraft(complete));
+              setIsReturn(true);
+              setStep('date');
+            }}
           />
         </PlacesGate>
       ) : null;

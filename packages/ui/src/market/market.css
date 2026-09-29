@@ -51,6 +51,12 @@
   color: var(--tgui--link_color);
 }
 
+.trip-card-prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
 .trip-price {
   font-weight: 600;
   color: var(--tgui--text_color);

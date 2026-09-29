@@ -1,6 +1,7 @@
 import { DRIVER_TAGS, PASSENGER_TAGS, REVIEW_TEXT_MAX, type ReviewTarget } from '@platform/contracts';
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
+import { FavoriteCell } from '../comfort/favorite-cell';
 import { Cell, Input, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -61,6 +62,11 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
       <div className="market">
         <BackButton onClick={onBack} />
         <EmptyState icon="star" title={t('reviews.sent')} description={t('reviews.blind')} />
+        {target.rateeRole === 'driver' ? (
+          <List>
+            <FavoriteCell driverId={target.rateeId} screen="reviews.form" />
+          </List>
+        ) : null}
       </div>
     );
   return (

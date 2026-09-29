@@ -30,5 +30,8 @@
   "start": "Boshlangʻich qiymatlar",
   "current": "Hozirgi",
   "rollback": "Shu versiyaga qaytish",
-  "rolledBack": "Qaytarildi"
+  "rolledBack": "Qaytarildi",
+  "median": "Haqiqiy narxlar medianasi",
+  "medianHint": "Oxirgi 30 kundagi {count} ta safar boʻyicha. Faqat maʼlumot uchun.",
+  "medianFew": "Mediana uchun 30 kunda kamida 10 ta safar kerak. Hozir: {count} ta."
 }

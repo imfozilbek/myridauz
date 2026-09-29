@@ -27,6 +27,8 @@ export type RatingStore = {
   review(bookingId: string, raterId: number): Promise<StoredReview | undefined>;
   saveReview(review: StoredReview): Promise<void>;
   about(userIds: readonly number[]): Promise<StoredReview[]>;
+  // Every review this person wrote: "Safarlar tarixi" shows the stars given (G18).
+  by(raterId: number): Promise<StoredReview[]>;
   // "booking:rater" of every review these people wrote: the other side of the blind rule.
   writtenBy(userIds: readonly number[]): Promise<Set<string>>;
   hide(reviewId: string): Promise<boolean>;

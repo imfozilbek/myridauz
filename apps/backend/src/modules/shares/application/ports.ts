@@ -1,32 +1,56 @@
-import type { Booking } from '@platform/contracts';
+import type { Booking, Point, Trip } from '@platform/contracts';
 import type { NotificationJob } from '../../notifications';
-import type { ShareRecord } from '../domain/share';
+import type { ShareRecord, ShareSubject } from '../domain/share';
 
 // Ports of the shares module: D1 in production, memory in tests.
 export type ShareRepository = {
   save(share: ShareRecord): Promise<void>;
   find(tokenHash: string): Promise<ShareRecord | undefined>;
-  // "Ulashishni toʻxtatish": every link of the booking stops working, close people hear no more.
-  revoke(bookingId: string, at: number): Promise<void>;
-  followers(bookingId: string): Promise<number[]>;
-  follow(bookingId: string, telegramId: number, at: number): Promise<void>;
+  // "Ulashishni toʻxtatish": every link of the subject stops working, close people hear no more.
+  revoke(subject: ShareSubject, at: number): Promise<void>;
+  followers(subject: ShareSubject): Promise<number[]>;
+  follow(subject: ShareSubject, telegramId: number, at: number): Promise<void>;
 };
 
 export type ShareUpdate = 'boarded' | 'arrived' | 'cancelled';
 
+// The driver's own trip as the family sees it (G18): the name, the car and the plate, never a phone.
+export type DriverTrip = {
+  readonly id: string;
+  readonly driverId: number;
+  readonly driverName: string;
+  readonly car: Trip['driver']['car'];
+  readonly plate: string;
+  readonly from: string;
+  readonly to: string;
+  readonly departAt: number;
+  readonly km: number;
+  readonly meetingPoint: Point | null;
+  readonly status: Trip['status'];
+};
+
 // The texts of the card and of the bot messages to close people (docs/43), in the language files.
 export type ShareTexts = {
   card(booking: Booking): Promise<string>;
+  driverCard(trip: DriverTrip): Promise<string>;
   update(booking: Booking, update: ShareUpdate): string;
+  cancelled(): string;
 };
 
 export type SharesDeps = {
   readonly shares: ShareRepository;
   // The booking as its passenger sees it: the plate opens after the confirmation (docs/07).
   readonly booking: (id: string) => Promise<Booking | undefined>;
+  readonly driverTrip: (id: string) => Promise<DriverTrip | undefined>;
   readonly texts: ShareTexts;
-  // Telegram keeps the card for the "send to a chat" window; null: the plain link is used.
-  readonly prepare: (passengerId: number, text: string, link: string) => Promise<string | null>;
+  // Telegram keeps the card for the "send to a chat" window of the Mini App's own bot;
+  // null: the plain link is used.
+  readonly prepare: (
+    bot: 'passenger' | 'driver',
+    userId: number,
+    text: string,
+    link: string,
+  ) => Promise<string | null>;
   readonly link: (token: string) => string;
   readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
   readonly now: () => number;

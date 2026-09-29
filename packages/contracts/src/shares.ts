@@ -8,6 +8,9 @@ export const bookingSharePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id
 export const bookingShareStopPath = (id: string) => `${bookingSharePath(id)}/stop`;
 export const bookingBoardedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/boarded`;
 export const bookingArrivedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/arrived`;
+// The driver shares a trip with the family the same way (docs/43). G18.
+export const driverTripSharePath = (tripId: string) => `/driver/trips/${tripId}/share`;
+export const driverTripShareStopPath = (tripId: string) => `${driverTripSharePath(tripId)}/stop`;
 export const SHARED_TRIPS_PATH = '/shared';
 export const sharedTripPath = (token: string) => `${SHARED_TRIPS_PATH}/${token}`;
 export const sharedTripFollowPath = (token: string) => `${sharedTripPath(token)}/follow`;
@@ -31,6 +34,7 @@ export const SHARE_STATUSES = [
 export type ShareStatus = (typeof SHARE_STATUSES)[number];
 
 // What close people see (docs/43): never a phone, the chat or the passenger's own pickup point.
+// passengerName: the one who shared, the passenger of a booking or the driver of the trip (G18).
 export const sharedTripSchema = z.object({
   passengerName: z.string(),
   from: locationIdSchema,

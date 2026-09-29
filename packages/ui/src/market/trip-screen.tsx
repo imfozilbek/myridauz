@@ -2,6 +2,7 @@ import type { Trip } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, type ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
+import { FavoriteCell } from '../comfort/favorite-cell';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -51,6 +52,9 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
           </div>
           {line(t('market.review.seats'), String(trip.seatsLeft))}
           {line(t('market.review.price'), formatMoney(trip.price))}
+          {trip.recommendedPrice === null
+            ? null
+            : line(t('market.trip.recommended'), formatMoney(trip.recommendedPrice))}
           {trip.woman ? <Cell>{t('market.search.woman')}</Cell> : null}
           {trip.hasMeetingPoint ? <Cell>{t('market.trip.meeting')}</Cell> : null}
           {trip.comment ? (
@@ -76,6 +80,7 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
             {driver.firstName}
           </Cell>
         </Section>
+        {onBook && !readOnly ? <FavoriteCell driverId={driver.id} screen="market.trip" /> : null}
         <PersonReviews userId={driver.id} />
         {children}
       </List>

@@ -5,6 +5,7 @@ import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
 import { ChatScreen } from '../chat/chat-screen';
+import { DriverShare } from '../comfort/driver-share';
 import { SentOffers } from '../bookings/sent-offers';
 import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
@@ -69,6 +70,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     const { trip } = opened;
     return (
       <TripScreen trip={trip} onBack={() => setOpened(null)} onCancel={() => void cancel(trip)}>
+        <DriverShare trip={trip} />
         <TripBookings
           bookings={value[1].filter((booking) => booking.trip.id === trip.id)}
           onOpen={(booking) => setOpened({ trip, booking })}

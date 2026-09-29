@@ -6,6 +6,8 @@ import {
   bookingShareStopPath,
   chatTicketPath,
   chatTicketSchema,
+  driverTripSharePath,
+  driverTripShareStopPath,
   sharedTripFollowPath,
   sharedTripPath,
   sharedTripSchema,
@@ -28,6 +30,11 @@ export function createChatClient(options: SignedOptions) {
       shareSchema.parse(await (await post(bookingSharePath(bookingId), {})).json()),
     stopSharing: async (bookingId: string): Promise<void> =>
       void (await post(bookingShareStopPath(bookingId), {})),
+    // The driver shares a trip with the family the same way (G18).
+    shareTrip: async (tripId: string): Promise<Share> =>
+      shareSchema.parse(await (await post(driverTripSharePath(tripId), {})).json()),
+    stopTripSharing: async (tripId: string): Promise<void> =>
+      void (await post(driverTripShareStopPath(tripId), {})),
     boarded: async (bookingId: string): Promise<Booking> =>
       booking(await post(bookingBoardedPath(bookingId), {})),
     arrived: async (bookingId: string): Promise<Booking> =>

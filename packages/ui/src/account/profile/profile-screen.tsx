@@ -7,6 +7,8 @@ import { BackButton } from '../../telegram/back-button';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useAccount } from '../account-context';
 import { CellValue, formatPhone } from '../cell-value';
+import { HistoryEntry } from '../../comfort/comfort-entries';
+import { HistoryScreen } from '../../comfort/history-screen';
 import { CarCell, WalletCell } from '../../driver/car-cell';
 import { WalletScreen } from '../../wallet/wallet-screen';
 import { AvatarPicker } from './avatar-picker';
@@ -18,9 +20,10 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const account = useAccount();
   const { t } = useI18n();
-  const [wallet, setWallet] = useState(false);
+  const [open, setOpen] = useState<'wallet' | 'history' | null>(null);
   if (!account) return null;
-  if (wallet) return <WalletScreen onBack={() => setWallet(false)} />;
+  if (open === 'wallet') return <WalletScreen onBack={() => setOpen(null)} />;
+  if (open === 'history') return <HistoryScreen onBack={() => setOpen(null)} />;
   const { profile } = account;
   const rating = profile.rating === null ? t('account.profile.newRating') : String(profile.rating);
   return (
@@ -39,8 +42,9 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
             {t('account.profile.phone')}
           </Cell>
         </Section>
+        <HistoryEntry onOpen={() => setOpen('history')} />
         <CarCell />
-        <WalletCell onOpen={() => setWallet(true)} />
+        <WalletCell onOpen={() => setOpen('wallet')} />
       </List>
     </div>
   );

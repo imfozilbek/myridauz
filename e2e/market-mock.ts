@@ -28,6 +28,7 @@ export const tripOf = (id: string, name: string, woman: boolean, hours: number, 
   seats: 3,
   seatsLeft: 3,
   price: 90000,
+  recommendedPrice: 90000,
   woman,
   hasMeetingPoint: false,
   comment: '',
@@ -50,7 +51,7 @@ export async function mockMarket(page: Page) {
   const published: object[] = [];
   const found = [
     tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true }),
-    tripOf('2', 'Nodira', true, 29, { comment: 'Katta yuk olmayman' }),
+    tripOf('2', 'Nodira', true, 29, { comment: 'Katta yuk olmayman', price: 100000 }),
   ];
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/prices/recommendation?*', (route) =>
@@ -97,7 +98,14 @@ export async function mockMarket(page: Page) {
   });
   await page.route('**/api/admin/pricing/directions', (route) =>
     json(route, {
-      directions: rows.map((row) => ({ ...row, formula: perKm(row.km, variables), manual: null })),
+      // The first direction has enough real trips for the median hint (G18, docs/09).
+      directions: rows.map((row, index) => ({
+        ...row,
+        formula: perKm(row.km, variables),
+        manual: null,
+        median: index === 0 ? perKm(row.km, variables) + 5000 : null,
+        medianTrips: index === 0 ? 14 : 3,
+      })),
     }),
   );
   return { published };

@@ -8,7 +8,7 @@ type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 export async function prepareCard(
   fetch: Fetch,
   token: string | undefined,
-  passengerId: number,
+  userId: number,
   text: string,
   link: string,
 ): Promise<string | null> {
@@ -25,7 +25,7 @@ export async function prepareCard(
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        user_id: passengerId,
+        user_id: userId,
         result,
         allow_user_chats: true,
         allow_group_chats: true,

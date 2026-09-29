@@ -56,6 +56,7 @@ export function setup() {
       ...base,
       driver,
       seatsLeft: seats - taken,
+      recommendedPrice: null,
       hasMeetingPoint: facts.meetingPoint !== null,
       status: 'active',
     };

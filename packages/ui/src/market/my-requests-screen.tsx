@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { BookingCard } from '../bookings/booking-card';
+import { FavoritesEntry } from '../comfort/comfort-entries';
+import { FavoritesScreen } from '../comfort/favorites-screen';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -37,7 +39,9 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
   );
   const [opened, setOpened] = useState<Opened | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
+  if (favoritesOpen) return <FavoritesScreen onBack={() => setFavoritesOpen(false)} />;
   if (opened && value) {
     const close = (changed: boolean) => {
       setOpened(null);
@@ -62,6 +66,9 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
             </Button>
           }
         />
+        <List>
+          <FavoritesEntry onOpen={() => setFavoritesOpen(true)} />
+        </List>
       </>
     );
   }
@@ -91,6 +98,7 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
           />
         ))}
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
+        <FavoritesEntry onOpen={() => setFavoritesOpen(true)} />
       </List>
     </div>
   );

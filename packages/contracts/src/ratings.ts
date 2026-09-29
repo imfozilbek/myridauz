@@ -56,6 +56,8 @@ export type UserReviews = z.infer<typeof userReviewsSchema>;
 // The review screen of a ride: whom the person rates and what they wrote before.
 export const reviewPath = (bookingId: string) => `${REVIEWS_PATH}/${bookingId}`;
 export const reviewTargetSchema = z.object({
+  // The driver's id lets the passenger save the driver after the review (G18, docs/18).
+  rateeId: z.number().int(),
   rateeName: z.string(),
   rateeRole: z.enum(['driver', 'passenger']),
   mine: z.object({ stars: z.number().int(), tags: z.array(z.string()), text: z.string() }).nullable(),

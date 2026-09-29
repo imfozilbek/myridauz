@@ -31,9 +31,16 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
             <Text weight="2">{formatDate(new Date(trip.departAt))}</Text>
             <Caption className="trip-card-hint">{` · ${t('market.trip.km', { km: String(trip.km) })}`}</Caption>
           </span>
-          <Text weight="1" className="trip-price">
-            {formatMoney(trip.price)}
-          </Text>
+          <span className="trip-card-prices">
+            <Text weight="1" className="trip-price">
+              {formatMoney(trip.price)}
+            </Text>
+            {trip.recommendedPrice === null ? null : (
+              <Caption className="trip-card-hint">
+                {t('market.trip.recommendedShort', { price: formatMoney(trip.recommendedPrice) })}
+              </Caption>
+            )}
+          </span>
         </div>
         <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
         {trip.comment ? <Caption className="trip-card-comment">{trip.comment}</Caption> : null}

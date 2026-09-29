@@ -16,7 +16,15 @@ const state: PricingState = {
     { version: 1, variables: V, changedBy: null, changedAt: 0 },
   ],
 };
-const direction: Direction = { from: '1726269', to: '1730401', km: 320, formula: 95000, manual: null };
+const direction: Direction = {
+  from: '1726269',
+  to: '1730401',
+  km: 320,
+  formula: 95000,
+  manual: null,
+  median: 90000,
+  medianTrips: 12,
+};
 
 function setup() {
   const pricing = {
