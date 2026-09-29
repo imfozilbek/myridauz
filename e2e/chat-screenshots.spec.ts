@@ -36,6 +36,7 @@ test('passenger: Yetib keldim and stop sharing', async ({ page }) => {
   await shot('2-arrived');
   await page.getByText(t('share.stop')).click();
   await expect(page.getByText(t('share.stopped'))).toBeVisible();
+  await expect(page.getByText(t('share.stop'))).toBeHidden();
   await shot('3-stopped');
 });
 
@@ -67,7 +68,7 @@ test('passenger: the chat cannot connect', async ({ page }) => {
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
   await page.getByText(t('chat.open')).click();
-  await expect(page.getByText(t('errors.generic.title'))).toBeVisible();
+  await expect(page.getByText(t('chat.failed'))).toBeVisible();
   await shooter(page, 'chat')('5-failed');
 });
 

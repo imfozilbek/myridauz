@@ -134,5 +134,8 @@ describe('the passenger shares the trip (docs/43)', () => {
     await tap('Ulashishni toʻxtatish');
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);
+    expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
+    await tap('Yaqinlarimga yuborish');
+    expect(await screen.findByText('Ulashishni toʻxtatish')).toBeTruthy();
   });
 });

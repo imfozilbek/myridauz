@@ -23,7 +23,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   const [text, setText] = useState('');
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => end.current?.scrollIntoView?.({ block: 'end' }), [messages.length]);
-  if (state === 'failed') return <ErrorScreen onRetry={retry} />;
+  if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} />;
   const submit = () => {
     const value = text.trim();
     if (value.length === 0) return;

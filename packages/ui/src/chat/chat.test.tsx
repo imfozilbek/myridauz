@@ -80,7 +80,8 @@ describe('the chat screen (docs/07)', () => {
       <ChatScreen chatKey={KEY} onBack={() => undefined} />,
       testClients({ chat: { socketUrl: failing } }),
     );
-    fireEvent.click(await screen.findByText('Qayta urinish'));
+    expect(await screen.findByText('Chatga ulanib boʻlmadi')).toBeTruthy();
+    fireEvent.click(screen.getByText('Qayta urinish'));
     expect(failing).toHaveBeenCalledTimes(2);
   });
 });
