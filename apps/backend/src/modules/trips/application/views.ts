@@ -1,4 +1,4 @@
-import type { Car, Trip } from '@platform/contracts';
+import { NO_RATING, type Car, type Rating, type Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import { statusAt, type TripRecord } from '../domain/trip';
 
@@ -7,7 +7,14 @@ export type Riders = { readonly seats: number; readonly woman: boolean };
 export const NO_RIDERS: Riders = { seats: 0, woman: false };
 
 // What other people see of a trip: the driver's name, face and car, never the plate (docs/07).
-export function tripView(trip: TripRecord, driver: Person, car: Car, now: number, riders: Riders): Trip {
+export function tripView(
+  trip: TripRecord,
+  driver: Person,
+  car: Car,
+  now: number,
+  riders: Riders,
+  rating: Rating = NO_RATING,
+): Trip {
   const seatsLeft = Math.max(0, trip.seats - riders.seats);
   const status = statusAt(trip, now);
   return {
@@ -17,6 +24,7 @@ export function tripView(trip: TripRecord, driver: Person, car: Car, now: number
       firstName: driver.firstName,
       hasAvatar: driver.avatarKey !== null,
       car: { make: car.make, model: car.model, color: car.color },
+      rating,
     },
     from: trip.from,
     to: trip.to,

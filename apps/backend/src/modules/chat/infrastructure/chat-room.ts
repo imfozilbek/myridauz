@@ -6,6 +6,8 @@ import { joined, received, systemEvent } from '../application/room';
 import { botSignals } from './bot-signals';
 import { sqlMessages } from './sql-messages';
 
+const HISTORY_LIMIT = 100;
+
 // One Durable Object is one booking chat (docs/07). Sockets sleep between messages
 // (WebSocket Hibernation): a quiet chat costs nothing.
 export class ChatRoom extends DurableObject<Bindings> {
@@ -28,6 +30,8 @@ export class ChatRoom extends DurableObject<Bindings> {
 
   override async fetch(request: Request): Promise<Response> {
     const key = request.headers.get('x-chat-key') ?? '';
+    // The team reads a chat only on a complaint; the backend writes that to the log first (docs/07).
+    if (new URL(request.url).pathname === '/history') return Response.json(this.store.recent(HISTORY_LIMIT));
     if (new URL(request.url).pathname === '/system') {
       const { event } = (await request.json()) as { event: string };
       const known = CHAT_SYSTEM_EVENTS.find((item) => item === event);

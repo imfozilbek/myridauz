@@ -5,7 +5,7 @@ import type { TranslationKey } from './messages';
 type Translate = (key: TranslationKey, values?: MessageValues) => string;
 
 // Webviews often ship Intl without Uzbek data ("90,000", "M09 30"), so names of months
-// and weekdays and the thousands separator come from the catalog (docs/13, docs/25).
+// and weekdays and the thousands and decimal separators come from the catalog (docs/13, docs/25).
 export function createFormatters(locale: Locale, t: Translate) {
   const number = new Intl.NumberFormat(locale);
   // Only digits are read from these parts, so they do not depend on locale data.
@@ -30,7 +30,13 @@ export function createFormatters(locale: Locale, t: Translate) {
     formatNumber: (value: number) =>
       number
         .formatToParts(value)
-        .map((part) => (part.type === 'group' ? t('common.format.thousands') : part.value))
+        .map((part) =>
+          part.type === 'group'
+            ? t('common.format.thousands')
+            : part.type === 'decimal'
+              ? t('common.format.decimal')
+              : part.value,
+        )
         .join(''),
     formatDate: (value: Date) => {
       const parts = dayParts(value);

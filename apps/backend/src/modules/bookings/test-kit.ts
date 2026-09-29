@@ -1,5 +1,5 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
-import type { Car, Trip } from '@platform/contracts';
+import { NO_RATING, type Car, type Trip } from '@platform/contracts';
 import type { Person } from '../users';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
@@ -50,7 +50,7 @@ export function setup() {
       .filter((booking) => booking.status === 'confirmed')
       .reduce((sum, booking) => sum + booking.seats, 0);
     const { id: tripId, from, to, departAt, km, seats, price } = facts;
-    const driver = { id: facts.driverId, firstName: 'Jasur', hasAvatar: true, car: CAR };
+    const driver = { id: facts.driverId, firstName: 'Jasur', hasAvatar: true, car: CAR, rating: NO_RATING };
     const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
     return {
       ...base,
@@ -67,6 +67,7 @@ export function setup() {
       from: '1726273',
       to: '1718401',
       departAt: NOW + 30 * HOUR,
+      endsAt: NOW + 37 * HOUR,
       km: 300,
       seats: 3,
       price: 90_000,

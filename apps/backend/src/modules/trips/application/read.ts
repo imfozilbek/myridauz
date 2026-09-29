@@ -33,7 +33,10 @@ async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<
 
 export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
   const now = deps.now();
-  const riders = await ridersOf(deps, trips);
+  const [riders, ratings] = await Promise.all([
+    ridersOf(deps, trips),
+    deps.ratings([...new Set(trips.map((trip) => trip.driverId))]),
+  ]);
   const drivers = new Map<number, Promise<DriverInfo>>();
   const driverOf = (id: number) => {
     const known = drivers.get(id);
@@ -45,14 +48,16 @@ export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Prom
   const found = await Promise.all(
     trips.map(async (trip) => {
       const [driver, car] = await driverOf(trip.driverId);
-      return driver && car ? tripView(trip, driver, car, now, riders.get(trip.id) ?? NO_RIDERS) : null;
+      if (!driver || !car) return null;
+      return tripView(trip, driver, car, now, riders.get(trip.id) ?? NO_RIDERS, ratings.get(trip.driverId));
     }),
   );
   return found.filter((trip) => trip !== null);
 }
 
 // A passenger's search: the day in Tashkent, places or regions, "Mashinada ayol bor" (docs/06, docs/14).
-// The earliest first; drivers with a high rating go first once ratings exist (G14).
+// By the hour of departure; within the same hour a higher rating goes first (docs/24). People with
+// complaints from 3 different people wait for the moderator out of the search (docs/17).
 export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<Trip[]> {
   const start = Math.max(tashkentDayStart(search.date), deps.now());
   const [trips, places] = await Promise.all([
@@ -63,9 +68,17 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
     (trip) => placeMatches(trip.from, search.from, places) && placeMatches(trip.to, search.to, places),
   );
   // A full trip is not in the search: nothing to book there.
-  const found = (await views(deps, fits)).filter((trip) => trip.seatsLeft > 0);
+  const hidden = await deps.hidden([...new Set(fits.map((trip) => trip.driverId))]);
+  const shown = fits.filter((trip) => !hidden.has(trip.driverId));
+  const found = (await views(deps, shown)).filter((trip) => trip.seatsLeft > 0).sort(byHourThenRating);
   return search.woman ? found.filter((trip) => trip.woman) : found;
 }
+
+const HOUR_MS = 60 * 60 * 1000;
+const byHourThenRating = (a: Trip, b: Trip) =>
+  Math.floor(a.departAt / HOUR_MS) - Math.floor(b.departAt / HOUR_MS) ||
+  (b.driver.rating.average ?? 0) - (a.driver.rating.average ?? 0) ||
+  a.departAt - b.departAt;
 
 export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {
   const trip = await deps.trips.find(id);

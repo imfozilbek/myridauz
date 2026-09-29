@@ -21,6 +21,7 @@ export default defineConfig({
         'bookings-screenshots.spec.ts',
         'chat-screenshots.spec.ts',
         'subscriptions-screenshots.spec.ts',
+        'feedback-screenshots.spec.ts',
       ],
     },
   ],

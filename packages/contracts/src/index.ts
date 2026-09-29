@@ -120,3 +120,5 @@ export * from './wallet';
 export * from './chat';
 export * from './shares';
 export * from './subscriptions';
+export * from './ratings';
+export * from './complaints';

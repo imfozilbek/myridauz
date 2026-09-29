@@ -3,7 +3,7 @@ import type { Bindings } from '../../env';
 import { peopleOf } from '../users';
 import type { WalletDeps } from './application/ports';
 import { grantMissedWelcome } from './application/missed';
-import { burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { adjust, burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
@@ -33,3 +33,12 @@ export const welcomeBonus = (env: Bindings, driverId: number) => grantWelcome(wa
 export const burnBonuses = (env: Bindings) => burnExpired(walletDeps(env));
 export const missedWelcome = (env: Bindings, approved: readonly number[]) =>
   grantMissedWelcome(walletDeps(env), approved);
+
+// A no-show on a complaint: the moderator gives the commission back by hand (admin_adjustment, docs/35).
+export const refundNoShow = (
+  env: Bindings,
+  moderatorId: number,
+  driverId: number,
+  amount: number,
+  reason: string,
+) => adjust(walletDeps(env), moderatorId, driverId, { balance: 'main', amount, reason });

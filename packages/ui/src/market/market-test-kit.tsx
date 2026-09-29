@@ -42,6 +42,7 @@ export const trip: Trip = {
     firstName: 'Jasur',
     hasAvatar: false,
     car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },
+    rating: { average: 4.8, count: 37 },
   },
   from: '1726269',
   to: '1730401',

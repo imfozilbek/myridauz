@@ -1,0 +1,62 @@
+import { loadBrand } from '@platform/brands';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import type { Bindings } from '../../env';
+import { maskContacts } from '../chat';
+import { notify, notifyTeam } from '../notifications';
+import { askRatings } from './application/ask';
+import type { RatingsDeps, Ride } from './application/ports';
+import { rate } from './application/rate';
+import { ratingsOf } from './application/read';
+import { reviewRoutes } from './http/review-routes';
+import { botAsker } from './infrastructure/bot-asker';
+import { d1Ratings } from './infrastructure/d1-ratings';
+import { createMemoryRatings } from './infrastructure/memory-ratings';
+
+const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
+const localRatings = createMemoryRatings();
+
+// The rides and the names come from other modules: set by the app (module-events.ts).
+type Wiring = {
+  ended: (env: Bindings, from: number, to: number) => Promise<Ride[]>;
+  ride: (env: Bindings, bookingId: string) => Promise<Ride | undefined>;
+  names: (env: Bindings, ids: readonly number[]) => Promise<Map<number, string>>;
+};
+let wiring: Wiring | undefined;
+export const wireRatings = (next: Wiring) => void (wiring = next);
+
+const ratingsDeps = (env: Bindings): RatingsDeps => {
+  if (!wiring) throw new Error('ratings.not_wired');
+  const { ended, ride, names } = wiring;
+  return {
+    store: env.DB ? d1Ratings(env.DB) : localRatings,
+    rides: { ended: (from, to) => ended(env, from, to), find: (id) => ride(env, id) },
+    names: (ids) => names(env, ids),
+    ask: botAsker(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
+    alertTeam: async (userId, rating) => {
+      const name = (await names(env, [userId])).get(userId) ?? '';
+      const values = {
+        name,
+        id: String(userId),
+        average: formatNumber(rating.average ?? 0),
+        count: rating.count,
+      };
+      await notifyTeam(env, t('bot.rating.team', values));
+    },
+    mask: (text) => maskContacts(text).text,
+    now: Date.now,
+    newId: () => crypto.randomUUID(),
+  };
+};
+
+export const ratingsModule = reviewRoutes(ratingsDeps);
+
+// The Cron job: ask both sides of rides that ended, remind once (docs/24).
+export const askForRatings = (env: Bindings) => askRatings(ratingsDeps(env));
+
+// A press of 1 … 5 in the bot (bots/rating-callbacks.ts).
+export const rateFromBot = (env: Bindings, raterId: number, bookingId: string, stars: number) =>
+  rate(ratingsDeps(env), raterId, { bookingId, stars, tags: [], text: '' }, true);
+
+// "⭐ 4,8 (37)" of drivers: the trip search and the channel posts (docs/24, docs/54).
+export const ratingsOfPeople = (env: Bindings, ids: readonly number[]) => ratingsOf(ratingsDeps(env), ids);
+export { COMPLAIN_PARAM, RATE_PREFIX, REVIEW_PARAM } from './infrastructure/bot-asker';

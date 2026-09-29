@@ -10,6 +10,7 @@ import { onAdminCallback } from './admin-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onDriverMessage } from './driver-messages';
 import { onPassengerMessage } from './passenger-messages';
+import { onRatingCallback } from './rating-callbacks';
 import type { BotContext } from './bot-context';
 import { isBotRole } from './bot-roles';
 import { startReply } from './start-reply';
@@ -31,7 +32,10 @@ export function webhookRoutes(fetch: Fetch) {
     if (!update.success) return context.json({});
     const bot: BotContext = { env: context.env, brand: loadBrand(context.env.BRAND), fetch };
     const query = update.data.callback_query;
-    if (query) return context.json(role === 'admin' ? await onAdminCallback(bot, query) : {});
+    if (query)
+      return context.json(
+        role === 'admin' ? await onAdminCallback(bot, query) : await onRatingCallback(bot, role, query),
+      );
     const message = update.data.message;
     if (!message) return context.json({});
     const fromId = message.from?.id ?? 0;

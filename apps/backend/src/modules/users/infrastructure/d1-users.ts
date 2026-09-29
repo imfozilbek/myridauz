@@ -67,6 +67,12 @@ export const d1Users = (db: D1Database): UserRepository => ({
       )
       .run();
   },
+  blockPhone: async (phone, block, at) => {
+    await db
+      .prepare('INSERT OR REPLACE INTO blocked_phones (phone, blocked_until, created_at) VALUES (?, ?, ?)')
+      .bind(phone, block.until, at)
+      .run();
+  },
   phoneBlock: async (phone) => {
     const row = await db
       .prepare('SELECT blocked_until FROM blocked_phones WHERE phone = ?')

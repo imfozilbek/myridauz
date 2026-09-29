@@ -3,12 +3,14 @@ import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import chat from '../locales/uz-Latn/chat.json' with { type: 'json' };
 import common from '../locales/uz-Latn/common.json' with { type: 'json' };
+import complaints from '../locales/uz-Latn/complaints.json' with { type: 'json' };
 import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
 import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
+import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
@@ -21,12 +23,14 @@ const REFERENCE = {
   bot,
   chat,
   common,
+  complaints,
   drivers,
   errors,
   market,
   moderation,
   places,
   pricing,
+  reviews,
   share,
   subscriptions,
   wallet,

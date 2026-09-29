@@ -18,6 +18,10 @@ export function createMemoryTrips(): TripRepository {
         (trip) =>
           (trip.status === 'active' || trip.status === 'full') && trip.departAt >= from && trip.departAt < to,
       ),
+    ended: async (from, to) =>
+      [...trips.values()].filter(
+        (trip) => trip.status !== 'cancelled' && trip.endsAt >= from && trip.endsAt < to,
+      ),
     since: async (from, limit) =>
       [...trips.values()]
         .filter((trip) => trip.departAt >= from)

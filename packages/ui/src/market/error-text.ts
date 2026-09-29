@@ -18,6 +18,9 @@ const EXPLAINED: readonly string[] = [
   'wallet.not_enough',
   'auth.not_owner',
   'subscriptions.too_many',
+  'reviews.not_over',
+  'reviews.too_late',
+  'complaints.already',
 ];
 
 export function errorKey(error: unknown): TranslationKey {

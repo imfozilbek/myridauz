@@ -14,7 +14,13 @@ const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white' };
 const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 1_800_000) * 1_800_000;
 export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-00000000000${id}`,
-  driver: { id: Number(id) + 10, firstName: name, hasAvatar: false, car },
+  driver: {
+    id: Number(id) + 10,
+    firstName: name,
+    hasAvatar: false,
+    car,
+    rating: { average: 4.9, count: 23 },
+  },
   from: CHILONZOR,
   to: SAMARQAND,
   departAt: inHours(hours),

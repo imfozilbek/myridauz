@@ -2,7 +2,7 @@ import { arrivalAt, tashkentDate, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import { postState, regionOf } from '../domain/route-channels';
 
-const { t, formatMoney, formatDate, formatWeekday, formatTime } = createI18n(DEFAULT_LOCALE);
+const { t, formatMoney, formatDate, formatWeekday, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 
 type Place = { readonly name: string; readonly parentId: string | null };
 type Places = ReadonlyMap<string, Place>;
@@ -41,6 +41,12 @@ function details(trip: Trip): string[] {
     t('bot.channel.car', { car: escape(`${make} ${model}, ${paint}`) }),
     // Every driver who posts has passed the check of the team (docs/04).
     t('bot.channel.verified'),
+    trip.driver.rating.average === null
+      ? t('bot.channel.newDriver')
+      : t('bot.channel.rating', {
+          average: formatNumber(trip.driver.rating.average),
+          count: trip.driver.rating.count,
+        }),
     ...(trip.woman ? [t('bot.channel.woman')] : []),
     ...(trip.hasMeetingPoint ? [t('bot.channel.meeting')] : []),
   ];

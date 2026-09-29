@@ -6,6 +6,7 @@ export { DriverGate } from './driver/driver-gate';
 export { PendingNotice } from './driver/pending-notice';
 export { ApplicationsScreen } from './moderation/applications-screen';
 export { linkedApplication } from './moderation/linked-application';
+export { ComplaintsScreen, linkedComplaint } from './complaints/complaints-screen';
 export { FindTripFlow } from './market/find-trip-flow';
 export { MyRequestsScreen } from './market/my-requests-screen';
 export { MyTripsScreen } from './market/my-trips-screen';

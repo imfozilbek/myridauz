@@ -1,0 +1,30 @@
+.rating-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--tgui--hint_color);
+}
+
+/* Five stars with their numbers under them: a tap chooses, nothing to type (docs/19). */
+.stars-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 20px;
+}
+
+.stars-row button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  color: var(--tgui--hint_color);
+  font: inherit;
+}
+
+.review-stars {
+  display: inline-flex;
+  gap: 2px;
+}

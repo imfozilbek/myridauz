@@ -45,6 +45,8 @@ export function setup() {
     riders: async (tripIds) => riders.filter((rider) => tripIds.includes(rider.tripId)),
     people: { find: async (userId) => people.get(userId) },
     approvedCar: async (userId) => cars.get(userId) ?? null,
+    ratings: async () => new Map(),
+    hidden: async () => new Set(),
     recommend: async (from, to) => {
       if (from.startsWith('1726') && to.startsWith('1726'))
         return { ok: false, error: 'locations.inside_city' };

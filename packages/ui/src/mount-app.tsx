@@ -10,6 +10,7 @@ import {
   createWalletClient,
   createChatClient,
   createSubscriptionsClient,
+  createFeedbackClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
@@ -50,6 +51,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     wallet: createWalletClient(signed),
     chat: createChatClient(signed),
     subscriptions: createSubscriptionsClient(signed),
+    feedback: createFeedbackClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({

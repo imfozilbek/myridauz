@@ -4,6 +4,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { CarSwatch } from '../driver/car-swatch';
+import { RatingBadge } from '../feedback/rating-badge';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
 import { RouteView } from './route-view';
 
@@ -46,6 +47,7 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
           />
           <span className="trip-card-driver">
             <Text>{driver.firstName}</Text>
+            <RatingBadge rating={driver.rating} />
             <Caption className="trip-card-hint trip-card-car">
               <CarSwatch color={driver.car.color} />
               {`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}

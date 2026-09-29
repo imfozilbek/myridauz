@@ -15,8 +15,7 @@ describe('StartPage', () => {
 
   it('opens a section and comes back', () => {
     renderInShell(<StartPage />);
-    fireEvent.click(screen.getByText('Shikoyatlar'));
-    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
+    fireEvent.click(screen.getByText('Boshqaruv'));
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Arizalar')).toBeTruthy();
     // Prices and statistics share the third action (docs/19: at most 3).
@@ -24,6 +23,13 @@ describe('StartPage', () => {
     expect(screen.getByText('Narxlar')).toBeTruthy();
     fireEvent.click(screen.getByText('Statistika'));
     expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
+  });
+
+  it('opens the queue of complaints (G11)', async () => {
+    const clients = testClients({ feedback: { queue: async () => [] } });
+    renderInShell(<StartPage />, false, true, undefined, clients);
+    fireEvent.click(screen.getByText('Shikoyatlar'));
+    expect(await screen.findByText('Yangi shikoyat yoʻq')).toBeTruthy();
   });
 
   it('opens the queue of driver applications (G06)', async () => {

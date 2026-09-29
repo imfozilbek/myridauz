@@ -6,6 +6,8 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { PersonReviews } from '../feedback/driver-reviews';
+import { RatingBadge } from '../feedback/rating-badge';
 import { BackButton } from '../telegram/back-button';
 import { RouteView } from './route-view';
 import './market.css';
@@ -69,10 +71,12 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
               />
             }
             subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
+            after={<RatingBadge rating={driver.rating} />}
           >
             {driver.firstName}
           </Cell>
         </Section>
+        <PersonReviews userId={driver.id} />
         {children}
       </List>
       <div className="step-note">

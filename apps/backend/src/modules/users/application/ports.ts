@@ -8,6 +8,7 @@ export type UserRepository = {
   save(user: User): Promise<void>;
   // A block by phone stops a new account with the same number (docs/17).
   phoneBlock(phone: string): Promise<Block | null>;
+  blockPhone(phone: string, block: Block, at: number): Promise<void>;
 };
 
 // How two people are linked by trips (G07). Used only for photo visibility (docs/05).

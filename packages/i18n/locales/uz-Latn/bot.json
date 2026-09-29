@@ -69,6 +69,8 @@
   "channel.price": "💰 Bir joy: {price}",
   "channel.car": "🚘 {car}",
   "channel.verified": "✅ Tekshirilgan haydovchi",
+  "channel.rating": "⭐ {average} ({count} ta baho)",
+  "channel.newDriver": "🆕 Yangi haydovchi",
   "channel.woman": "👩 Mashinada ayol bor",
   "channel.meeting": "📌 Uchrashuv joyi belgilangan",
   "channel.full": "⛔ Joy qolmagan",
@@ -102,5 +104,18 @@
   "reminder.passengerDay": "Eslatma: safaringiz bor.\n{from} → {to}\n{date}, soat {time}\nMashina: {car}, davlat raqami {plate}.",
   "reminder.passengerSoon": "Safaringizga 2 soatdan kam vaqt qoldi: {from} → {to}, soat {time}.\nMashina: {car}, davlat raqami {plate}. Uchrashuv joyiga vaqtida boring.",
   "reminder.driverDay": "Eslatma: safaringiz bor.\n{from} → {to}\n{date}, soat {time}\nYoʻlovchilar: {count} kishi.",
-  "reminder.driverSoon": "Safaringizga 2 soatdan kam vaqt qoldi: {from} → {to}, soat {time}. Yoʻlovchilar: {count} kishi."
+  "reminder.driverSoon": "Safaringizga 2 soatdan kam vaqt qoldi: {from} → {to}, soat {time}. Yoʻlovchilar: {count} kishi.",
+  "rating.ask": "{name} bilan safar qanday oʻtdi? Baholang:",
+  "rating.remind": "Eslatma: {name} bilan safarni hali baholamadingiz.",
+  "rating.review": "Izoh qoldirish",
+  "rating.thanks": "Rahmat! Siz {stars} ⭐ qoʻydingiz.",
+  "rating.complain": "Shikoyat qilish",
+  "rating.late": "Baholash muddati tugagan.",
+  "rating.team": "{name} (ID {id}) reytingi past: ⭐ {average} ({count} ta baho). Profilni tekshiring.",
+  "complaint.open": "Koʻrish",
+  "complaint.urgent": "⚠️ Muhim shikoyat: {reason}. {name} (ID {id}) haqida.",
+  "complaint.warning": "Sizga shikoyat tushdi. Iltimos, qoidalarga amal qiling: takrorlansa, akkaunt bloklanadi.",
+  "complaint.blocked": "Akkauntingiz {date} gacha bloklandi. Faol safarlar va bronlar bekor qilindi.",
+  "complaint.blockedForever": "Akkauntingiz butunlay bloklandi. Faol safarlar va bronlar bekor qilindi.",
+  "complaint.resolved": "Shikoyatingiz koʻrib chiqildi. Rahmat!"
 }

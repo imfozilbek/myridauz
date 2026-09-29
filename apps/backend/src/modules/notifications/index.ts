@@ -35,11 +35,11 @@ export async function notify(env: Bindings, jobs: readonly NotificationJob[]): P
 }
 
 // A message for every team member through the admin bot (docs/02).
-export async function notifyTeam(env: Bindings, text: string): Promise<void> {
+export async function notifyTeam(env: Bindings, text: string, markup?: object): Promise<void> {
   const team = await teamMembers(env);
   await notify(
     env,
-    team.map((member) => ({ bot: 'admin' as const, chatId: member.id, text })),
+    team.map((member) => ({ bot: 'admin' as const, chatId: member.id, text, ...(markup ? { markup } : {}) })),
   );
 }
 

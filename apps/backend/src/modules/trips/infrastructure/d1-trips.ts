@@ -97,6 +97,13 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
+  ended: async (from, to) =>
+    (
+      await db
+        .prepare("SELECT * FROM trips WHERE status != 'cancelled' AND ends_at >= ? AND ends_at < ?")
+        .bind(from, to)
+        .all<Row>()
+    ).results.map(toTrip),
   leaving: async (from, to) =>
     (
       await db
