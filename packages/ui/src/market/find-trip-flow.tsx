@@ -1,5 +1,6 @@
 import type { Trip } from '@platform/contracts';
 import { useState } from 'react';
+import { BookFlow } from '../bookings/book-flow';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { DateStep } from './date-step';
 import { PlacesGate } from './places-gate';
@@ -9,7 +10,13 @@ import { TripScreen } from './trip-screen';
 type Screen =
   | { readonly step: 'route' }
   | { readonly step: 'date'; readonly route: Route }
-  | { readonly step: 'results'; readonly route: Route; readonly date: string; readonly open?: Trip };
+  | {
+      readonly step: 'results';
+      readonly route: Route;
+      readonly date: string;
+      readonly open?: Trip;
+      readonly booking?: boolean;
+    };
 
 // A passenger looks for a trip: route (a place or a whole region), a day, the list (docs/14).
 export function FindTripFlow({ onBack }: { readonly onBack: () => void }) {
@@ -29,11 +36,22 @@ export function FindTripFlow({ onBack }: { readonly onBack: () => void }) {
       />
     );
   }
-  const { route, date, open } = screen;
+  const { route, date, open, booking } = screen;
+  const results = () => setScreen({ step: 'results', route, date });
   return (
     <PlacesGate>
-      {open ? (
-        <TripScreen trip={open} onBack={() => setScreen({ step: 'results', route, date })} />
+      {open && booking ? (
+        <BookFlow
+          trip={open}
+          onBack={() => setScreen({ step: 'results', route, date, open })}
+          onClose={results}
+        />
+      ) : open ? (
+        <TripScreen
+          trip={open}
+          onBack={results}
+          onBook={() => setScreen({ step: 'results', route, date, open, booking: true })}
+        />
       ) : (
         <TripResults
           route={route}

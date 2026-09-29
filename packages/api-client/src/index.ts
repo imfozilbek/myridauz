@@ -8,3 +8,5 @@ export { createModerationClient, type ModerationClient } from './moderation-clie
 export { createUsersClient, type UsersClient } from './users-client';
 export { createMarketClient, type MarketClient } from './market-client';
 export { createPricingClient, type PricingClient } from './pricing-client';
+export { createBookingsClient, type BookingsClient } from './bookings-client';
+export { createWalletClient, type WalletClient } from './wallet-client';

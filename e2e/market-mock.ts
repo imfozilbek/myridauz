@@ -20,6 +20,7 @@ const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: 
   departAt: inHours(hours),
   km: KM,
   seats: 3,
+  seatsLeft: 3,
   price: 90000,
   woman,
   hasMeetingPoint: false,

@@ -1,11 +1,13 @@
 import {
   createAnalyticsClient,
+  createBookingsClient,
   createDriversClient,
   createLocationsClient,
   createMarketClient,
   createModerationClient,
   createPricingClient,
   createUsersClient,
+  createWalletClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import type { MiniApp } from '@platform/contracts';
@@ -40,6 +42,8 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     moderation: createModerationClient(signed),
     market: createMarketClient(signed),
     pricing: createPricingClient(signed),
+    bookings: createBookingsClient(signed),
+    wallet: createWalletClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   const analytics = createAnalyticsClient({
