@@ -7,6 +7,8 @@ export const haptic = {
   tap: () => void hapticFeedback.impactOccurred.ifAvailable('light'),
   success: () => void hapticFeedback.notificationOccurred.ifAvailable('success'),
   error: () => void hapticFeedback.notificationOccurred.ifAvailable('error'),
+  // An incoming call shakes the phone with each ring (docs/08).
+  ring: () => void hapticFeedback.notificationOccurred.ifAvailable('warning'),
 };
 
 // "Are you sure?" in the native Telegram window (docs/19, principle 9).
