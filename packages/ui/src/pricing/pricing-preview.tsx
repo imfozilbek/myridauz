@@ -1,6 +1,5 @@
 import type { PricingPreview } from '@platform/contracts';
 import { Title, Text } from '@telegram-apps/telegram-ui';
-import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
@@ -33,10 +32,10 @@ export function PricingPreviewScreen({ preview, onBack, onSave }: PricingPreview
             <Cell
               key={`${row.from}:${row.to}`}
               multiline
-              subtitle={t('pricing.km', { km: String(row.km) })}
-              after={<CellValue>{`${formatMoney(row.before)} → ${formatMoney(row.after)}`}</CellValue>}
+              subtitle={`${formatMoney(row.before)} → ${formatMoney(row.after)}`}
+              description={t('pricing.km', { km: String(row.km) })}
             >
-              {place(row.to)}
+              {place(row.to, false)}
             </Cell>
           ))}
         </Section>

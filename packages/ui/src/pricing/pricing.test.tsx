@@ -55,7 +55,7 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     const pricing = setup();
     pricing.setDirection.mockRejectedValueOnce(new ApiError(422, 'pricing.out_of_bounds'));
     await tap('Narxlar');
-    await tap('Chilonzor, Toshkent shahri → Fargʻona shahri, Fargʻona viloyati');
+    await tap('Chilonzor → Fargʻona shahri');
     fireEvent.change(screen.getByDisplayValue('95000'), { target: { value: '700000' } });
     await tap('Narxni saqlash');
     expect(await screen.findByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeTruthy();

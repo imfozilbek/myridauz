@@ -38,7 +38,7 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
       after={<CellValue>{formatMoney(trip.price)}</CellValue>}
       onClick={onOpen}
     >
-      {`${place(trip.from)} → ${place(trip.to)}`}
+      {`${place(trip.from, false)} → ${place(trip.to, false)}`}
     </Cell>
   );
 }

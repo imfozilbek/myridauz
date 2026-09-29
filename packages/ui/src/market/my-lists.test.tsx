@@ -31,7 +31,7 @@ describe('Mening safarlarim (docs/35)', () => {
       testClients({ market: { myTrips, cancelTrip } }),
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
-    await tap('Chilonzor, Toshkent shahri → Fargʻona shahri, Fargʻona viloyati');
+    await tap('Chilonzor → Fargʻona shahri');
     await tap('Safarni bekor qilish');
     expect(cancelTrip).toHaveBeenCalledWith('t1');
     expect(myTrips).toHaveBeenCalledTimes(2);
@@ -44,7 +44,7 @@ describe('Mening safarlarim (docs/35)', () => {
       <MyRequestsScreen onBack={() => undefined} />,
       testClients({ market: { myRequests, cancelRequest } }),
     );
-    await tap('Chilonzor, Toshkent shahri → Fargʻona shahri, Fargʻona viloyati');
+    await tap('Chilonzor → Fargʻona shahri');
     expect(screen.getByText('Faol')).toBeTruthy();
     await tap('Soʻrovni bekor qilish');
     expect(cancelRequest).toHaveBeenCalledWith('r1');
@@ -69,7 +69,7 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       /^Ertaga/,
     ])
       await tap(step);
-    await tap('Chilonzor, Toshkent shahri → Fargʻona shahri, Fargʻona viloyati');
+    await tap('Chilonzor → Fargʻona shahri');
     await tap('Taklif yuborish');
     expect(screen.getByText('Yoʻlovchiga taklif yuborish tez orada ishga tushadi.')).toBeTruthy();
     expect(searchRequests.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });

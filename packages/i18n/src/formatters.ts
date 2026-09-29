@@ -1,20 +1,42 @@
 import { TIME_ZONE, type Locale } from './config';
+import type { MessageValues } from './format-message';
+import type { TranslationKey } from './messages';
 
-// Formats come from Intl, never by hand (docs/13, docs/25): 150 000, 27-sentabr, 14:30.
-export function createFormatters(locale: Locale) {
+type Translate = (key: TranslationKey, values?: MessageValues) => string;
+
+// Webviews often ship Intl without Uzbek data ("90,000", "M09 30"), so names of months
+// and weekdays and the thousands separator come from the catalog (docs/13, docs/25).
+export function createFormatters(locale: Locale, t: Translate) {
   const number = new Intl.NumberFormat(locale);
-  const date = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', timeZone: TIME_ZONE });
-  const weekday = new Intl.DateTimeFormat(locale, { weekday: 'long', timeZone: TIME_ZONE });
+  // Only digits are read from these parts, so they do not depend on locale data.
+  const day = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    timeZone: TIME_ZONE,
+  });
   const time = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
     hourCycle: 'h23',
     timeZone: TIME_ZONE,
   });
+  const dayParts = (value: Date) => {
+    const parts = Object.fromEntries(day.formatToParts(value).map((part) => [part.type, Number(part.value)]));
+    const [year = 0, month = 0, date = 0] = [parts.year, parts.month, parts.day];
+    return { month, day: date, weekday: new Date(Date.UTC(year, month - 1, date)).getUTCDay() };
+  };
   return {
-    formatNumber: (value: number) => number.format(value),
-    formatDate: (value: Date) => date.format(value),
+    formatNumber: (value: number) =>
+      number
+        .formatToParts(value)
+        .map((part) => (part.type === 'group' ? t('common.format.thousands') : part.value))
+        .join(''),
+    formatDate: (value: Date) => {
+      const parts = dayParts(value);
+      return t('common.format.date', { day: parts.day, month: parts.month });
+    },
     formatTime: (value: Date) => time.format(value),
-    formatWeekday: (value: Date) => weekday.format(value),
+    formatWeekday: (value: Date) => t('common.format.weekday', { weekday: dayParts(value).weekday }),
   };
 }

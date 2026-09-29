@@ -42,7 +42,7 @@ export function RequestCard({
       after={<CellValue>{formatMoney(request.price)}</CellValue>}
       onClick={onOpen}
     >
-      {`${place(request.from)} → ${place(request.to)}`}
+      {`${place(request.from, false)} → ${place(request.to, false)}`}
     </Cell>
   );
 }

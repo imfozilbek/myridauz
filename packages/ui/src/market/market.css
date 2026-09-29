@@ -28,6 +28,7 @@
 
 .price-value {
   flex: 1;
+  white-space: nowrap;
   font-size: 28px;
   text-align: center;
 }
@@ -46,4 +47,9 @@
 .trip-price {
   font-weight: 600;
   color: var(--tgui--text_color);
+}
+
+/* A sum is read as one piece: "90 000 soʻm" never breaks into two lines. */
+.market .cell-value {
+  white-space: nowrap;
 }

@@ -125,17 +125,15 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
             <Cell
               key={`${direction.from}:${direction.to}`}
               multiline
-              subtitle={direction.km === null ? undefined : t('pricing.km', { km: String(direction.km) })}
-              after={
-                <CellValue>
-                  {direction.manual === null
-                    ? t('pricing.formula', { price: formatMoney(direction.formula ?? 0) })
-                    : t('pricing.manual', { price: formatMoney(direction.manual) })}
-                </CellValue>
+              subtitle={
+                direction.manual === null
+                  ? t('pricing.formula', { price: formatMoney(direction.formula ?? 0) })
+                  : t('pricing.manual', { price: formatMoney(direction.manual) })
               }
+              description={direction.km === null ? undefined : t('pricing.km', { km: String(direction.km) })}
               onClick={() => setMode({ kind: 'direction', direction, failed: false })}
             >
-              {`${place(direction.from)} → ${place(direction.to)}`}
+              {`${place(direction.from, false)} → ${place(direction.to, false)}`}
             </Cell>
           ))}
         </Section>

@@ -29,7 +29,7 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
   return (
     <StepLayout
       icon="trip"
-      title={`${place(direction.from)} → ${place(direction.to)}`}
+      title={`${place(direction.from, false)} → ${place(direction.to, false)}`}
       {...(hint ? { hint } : {})}
     >
       <BackButton onClick={onBack} />

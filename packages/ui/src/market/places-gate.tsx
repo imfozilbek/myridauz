@@ -15,13 +15,14 @@ export function PlacesGate({ children }: { readonly children: ReactNode }) {
 }
 
 // "Chilonzor, Toshkent shahri": the place and its region; a region alone for a whole region.
+// Lists show the place alone ("Chilonzor"): the short line fits a phone screen.
 export function usePlaceName() {
   const directory = useContext(PlacesContext);
   if (!directory) throw new Error('ui.places_missing');
-  return (id: string) => {
+  return (id: string, withRegion = true) => {
     const place = directory.find(id);
     if (!place) return id;
     const region = place.parentId === null ? undefined : directory.find(place.parentId);
-    return region ? `${place.name}, ${region.name}` : place.name;
+    return region && withRegion ? `${place.name}, ${region.name}` : place.name;
   };
 }

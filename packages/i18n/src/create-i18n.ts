@@ -5,9 +5,9 @@ import { CATALOGS, lookup, type TranslationKey } from './messages';
 
 export function createI18n(locale: Locale) {
   const catalog = CATALOGS[locale];
-  const formatters = createFormatters(locale);
   const t = (key: TranslationKey, values?: MessageValues) =>
     formatMessage(lookup(catalog, key), locale, values);
+  const formatters = createFormatters(locale, t);
   return {
     locale,
     t,
