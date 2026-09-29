@@ -78,4 +78,17 @@ describe('chat access (docs/07)', () => {
     const toPassenger = sent.filter((message) => message.chatId === PASSENGER);
     expect(toPassenger.map((message) => message.token)).toEqual([testEnv.PASSENGER_BOT_TOKEN]);
   });
+
+  it('opens a voice call only after the confirmation, only to the two people (G13)', async () => {
+    const { bookings } = await read<{ bookings: { id: string; chatKey: string }[] }>(
+      call('/passenger/bookings', PASSENGER),
+    );
+    const booking = bookings[0];
+    const ice = (id: number, miniApp = 'passenger') =>
+      call(`/calls/${booking?.chatKey ?? ''}/ice`, id, { app: miniApp, ...json({}) });
+    // Confirmed above: a member may call; Realtime is not set up in tests, so 503 and not 403.
+    expect((await ice(PASSENGER)).status).toBe(503);
+    expect((await ice(DRIVER, 'driver')).status).toBe(503);
+    expect((await ice(STRANGER)).status).toBe(403);
+  });
 });

@@ -8,6 +8,9 @@ import { ErrorScreen } from '../states/error-screen';
 import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
+import { CallPanel } from '../call/call-panel';
+import { useCall } from '../call/use-call';
+import { Icon } from '../icons';
 import { useChat } from './use-chat';
 import './chat.css';
 
@@ -19,7 +22,9 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { messages, state, warning, send, retry } = useChat(chatKey);
+  const { messages, state, warning, send, retry, calling } = useChat(chatKey);
+  const controls = useCall(chatKey, calling);
+  const name = title ?? t('chat.title');
   const [text, setText] = useState('');
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => end.current?.scrollIntoView?.({ block: 'end' }), [messages.length]);
@@ -35,9 +40,30 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   return (
     <div className="chat">
       <BackButton onClick={onBack} />
-      <Title weight="2" className="chat-title">
-        {title ?? t('chat.title')}
-      </Title>
+      <div className="chat-head">
+        <Title weight="2">{name}</Title>
+        {/* A voice call only after the confirmation; phone numbers are never shown (docs/08). */}
+        {calling.canCall && !calling.call ? (
+          <Button
+            size="s"
+            mode="bezeled"
+            before={<Icon name="call" size={20} />}
+            onClick={() => void controls.ring()}
+          >
+            {t('calls.call')}
+          </Button>
+        ) : null}
+      </div>
+      {calling.call || calling.ended ? (
+        <CallPanel
+          name={name}
+          call={calling.call}
+          ended={calling.ended}
+          controls={controls}
+          onChat={calling.dismiss}
+        />
+      ) : null}
+      {controls.noMicrophone ? <Text className="chat-warning">{t('calls.noMicrophone')}</Text> : null}
       <div className="chat-messages">
         {messages.length === 0 ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
         {messages.map((message) => (

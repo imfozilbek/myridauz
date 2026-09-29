@@ -8,6 +8,7 @@ import type { AppEnv } from './env';
 import './module-events';
 import { analyticsModule } from './modules/analytics';
 import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from './modules/bookings';
+import { callsModule, callsReady } from './modules/calls';
 import { chatRoutes } from './modules/chat';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
@@ -51,6 +52,7 @@ export const app = new Hono<AppEnv>()
   .use('/complaints', allowMiniApps, auth, blockedGuard)
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
+  .use('/calls/*', allowMiniApps, auth, blockedGuard)
   // Close people read a shared trip without registration; "Xabar olish" needs the signature (docs/43).
   .use('/shared/*', allowMiniApps)
   .use('/shared/:token/follow', auth)
@@ -75,7 +77,17 @@ export const app = new Hono<AppEnv>()
   .route('/', statsModule)
   .route('/', bookingsModule)
   .route('/', walletModule)
-  .route('/', chatRoutes(chatMemberOf))
+  .route(
+    '/',
+    chatRoutes(async (env, key, userId) => {
+      const member = await chatMemberOf(env, key, userId);
+      return member && { ...member, canCall: member.canCall && callsReady(env) };
+    }),
+  )
+  .route(
+    '/',
+    callsModule(async (env, key, userId) => (await chatMemberOf(env, key, userId))?.canCall === true),
+  )
   .route('/', sharesModule(bookingForShare))
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(

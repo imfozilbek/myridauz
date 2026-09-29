@@ -60,6 +60,10 @@ export type AlertRules = {
   readonly repeatHours: number;
 };
 
+// Voice calls (docs/08): an unanswered ring ends after ringSeconds, a call whose voice did not
+// connect ends after connectSeconds; then the chat takes over.
+type CallRules = { readonly ringSeconds: number; readonly connectSeconds: number };
+
 export type BrandConfig = {
   readonly id: string;
   readonly name: string;
@@ -79,4 +83,5 @@ export type BrandConfig = {
   readonly channels: Readonly<Record<string, string>>;
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
+  readonly calls: CallRules;
 };

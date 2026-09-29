@@ -17,7 +17,11 @@ import {
   Inbox,
   Languages,
   MapPin,
+  Mic,
+  MicOff,
   Phone,
+  PhoneCall,
+  PhoneOff,
   MessageSquarePlus,
   Minus,
   Plus,
@@ -70,6 +74,11 @@ const ICONS = {
   share: Share2,
   subscriptions: Bell,
   star: Star,
+  // A voice call (docs/08): start, hang up, microphone on and off.
+  call: PhoneCall,
+  hangUp: PhoneOff,
+  microphone: Mic,
+  muted: MicOff,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

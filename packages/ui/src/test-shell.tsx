@@ -24,6 +24,7 @@ export const testClients = (overrides: {
   readonly subscriptions?: Partial<ApiClients['subscriptions']>;
   readonly feedback?: Partial<ApiClients['feedback']>;
   readonly stats?: Partial<ApiClients['stats']>;
+  readonly calls?: Partial<ApiClients['calls']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -106,6 +107,7 @@ export const testClients = (overrides: {
     ...overrides.feedback,
   },
   stats: { get: NOT_USED, ...overrides.stats },
+  calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
 });
 const NO_CLIENTS = testClients({});
 

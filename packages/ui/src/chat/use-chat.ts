@@ -1,4 +1,12 @@
-import { chatServerEventSchema, type ChatMessage } from '@platform/contracts';
+import {
+  chatServerEventSchema,
+  type CallEnding,
+  type CallTrack,
+  type CallView,
+  type ChatClientEvent,
+  type ChatMessage,
+  type ChatServerEvent,
+} from '@platform/contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -12,9 +20,26 @@ export function useChat(key: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [state, setState] = useState<ChatState>('connecting');
   const [warning, setWarning] = useState(false);
+  // The voice call of this chat (docs/08): open after the confirmation, its state, how it ended.
+  const [canCall, setCanCall] = useState(false);
+  const [call, setCall] = useState<CallView | null>(null);
+  const [ended, setEnded] = useState<CallEnding | null>(null);
+  const onTrack = useRef<(track: CallTrack) => void>(() => undefined);
   const socket = useRef<WebSocket | null>(null);
   const [attempt, setAttempt] = useState(0);
 
+  const handle = (data: ChatServerEvent) => {
+    if (data.type === 'history') {
+      setMessages(data.messages);
+      setCanCall(data.canCall);
+    } else if (data.type === 'message') setMessages((list) => [...list, data.message]);
+    else if (data.type === 'warning') setWarning(true);
+    else if (data.type === 'call') {
+      setCall(data.call);
+      if (data.call) setEnded(null);
+    } else if (data.type === 'callEnded') setEnded(data.reason);
+    else onTrack.current(data.track);
+  };
   useEffect(() => {
     let closed = false;
     setState('connecting');
@@ -28,10 +53,7 @@ export function useChat(key: string) {
         ws.addEventListener('message', (event: MessageEvent<string>) => {
           const parsed = chatServerEventSchema.safeParse(JSON.parse(event.data));
           if (!parsed.success) return;
-          const data = parsed.data;
-          if (data.type === 'history') setMessages(data.messages);
-          else if (data.type === 'message') setMessages((list) => [...list, data.message]);
-          else setWarning(true);
+          handle(parsed.data);
         });
       },
       () => !closed && setState('failed'),
@@ -57,5 +79,12 @@ export function useChat(key: string) {
     [messages, state, track],
   );
   const retry = useCallback(() => setAttempt((value) => value + 1), []);
-  return { messages, state, warning, send, retry };
+  // A step of a call on the same socket: the voice itself never goes here.
+  const emit = useCallback((event: Exclude<ChatClientEvent, { type: 'send' }>) => {
+    socket.current?.send(JSON.stringify(event));
+  }, []);
+  const calling = { canCall, call, ended, emit, onTrack, dismiss: () => setEnded(null) };
+  return { messages, state, warning, send, retry, calling };
 }
+
+export type ChatCalling = ReturnType<typeof useChat>['calling'];

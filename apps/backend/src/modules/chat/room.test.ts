@@ -1,43 +1,8 @@
-import type { ChatServerEvent } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
-import type { ChatSocket, Member, RoomDeps } from './application/ports';
-import { joined, received, systemEvent } from './application/room';
+import { systemEvent } from './application/room';
 import { signTicket, verifyTicket } from './application/ticket';
+import { DRIVER, MINUTE, PASSENGER, room } from './chat-test-kit';
 import { MASK } from './domain/mask';
-import { createMemoryMessages } from './infrastructure/memory-messages';
-
-const PASSENGER: Member = { userId: 10, role: 'passenger', otherId: 1 };
-const DRIVER: Member = { userId: 1, role: 'driver', otherId: 10 };
-const MINUTE = 60 * 1000;
-
-function room() {
-  let now = Date.parse('2026-10-01T05:00:00Z');
-  const open: ChatSocket[] = [];
-  const inbox = new Map<number, ChatServerEvent[]>();
-  const signals: string[] = [];
-  const deps: RoomDeps = {
-    key: 'b00000000-0000-0000-0000-000000000001',
-    store: createMemoryMessages(),
-    sockets: () => open,
-    signals: {
-      newMessage: async (to) => void signals.push(`new to ${to.role} ${to.userId}`),
-      contactAttempts: async (userId, _key, count) => void signals.push(`attempts ${userId} ${count}`),
-    },
-    now: () => now,
-  };
-  const connect = (member: Member) => {
-    const socket: ChatSocket = {
-      member,
-      send: (data) => inbox.set(member.userId, [...(inbox.get(member.userId) ?? []), JSON.parse(data)]),
-    };
-    open.push(socket);
-    joined(deps, socket);
-    return socket;
-  };
-  const say = (socket: ChatSocket, text: string) =>
-    received(deps, socket, JSON.stringify({ type: 'send', text }));
-  return { deps, connect, say, inbox, signals, later: (ms: number) => void (now += ms), open };
-}
 
 describe('the chat of a booking (docs/07)', () => {
   it('delivers a message to both sides at once, as "me" and "other"', async () => {
@@ -72,7 +37,7 @@ describe('the chat of a booking (docs/07)', () => {
     await say(passenger, 'Salom');
     await say(passenger, 'Javob bering');
     expect(signals).toEqual(['new to driver 1']);
-    later(6 * MINUTE);
+    await later(6 * MINUTE);
     await say(passenger, 'Kutyapman');
     expect(signals).toEqual(['new to driver 1', 'new to driver 1']);
     const driver = connect(DRIVER);
@@ -81,12 +46,11 @@ describe('the chat of a booking (docs/07)', () => {
   });
 
   it('keeps the history, system lines included, and ignores anything but text', async () => {
-    const { deps, connect, say, inbox } = room();
+    const { deps, connect, say, emit, inbox } = room();
     const passenger = connect(PASSENGER);
     await say(passenger, 'Salom');
     systemEvent(deps, 'confirmed');
-    await received(deps, passenger, 'not json');
-    await received(deps, passenger, JSON.stringify({ type: 'voice', data: 'x' }));
+    await emit(passenger, { type: 'voice', data: 'x' });
     connect(DRIVER);
     const history = inbox.get(1)?.[0];
     expect(history).toMatchObject({

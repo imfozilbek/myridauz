@@ -1,0 +1,18 @@
+{
+  "call": "Qoʻngʻiroq",
+  "calling": "Qoʻngʻiroq qilinmoqda…",
+  "incoming": "Sizga qoʻngʻiroq qilishyapti",
+  "connecting": "Ulanmoqda…",
+  "answer": "Javob berish",
+  "decline": "Rad etish",
+  "hangUp": "Tugatish",
+  "mute": "Ovozni oʻchirish",
+  "unmute": "Ovozni yoqish",
+  "keepOpen": "Ilovani yopmang: qoʻngʻiroq uziladi.",
+  "noMicrophone": "Mikrofonga ruxsat bering. Hozircha chatda yozing.",
+  "ended.declined": "Qoʻngʻiroq rad etildi",
+  "ended.missed": "Javob berilmadi",
+  "ended.failed": "Ulanib boʻlmadi",
+  "ended.ended": "Qoʻngʻiroq tugadi",
+  "writeChat": "Chatga yozish"
+}

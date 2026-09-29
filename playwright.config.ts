@@ -23,6 +23,7 @@ export default defineConfig({
         'subscriptions-screenshots.spec.ts',
         'feedback-screenshots.spec.ts',
         'stats-screenshots.spec.ts',
+        'call-screenshots.spec.ts',
       ],
     },
   ],
