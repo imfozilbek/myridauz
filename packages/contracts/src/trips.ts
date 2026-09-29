@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ratingSchema } from './ratings';
 import { CAR_COLORS, MAX_SEATS } from './drivers';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
@@ -46,6 +47,8 @@ export const tripSchema = z.object({
     firstName: z.string(),
     hasAvatar: z.boolean(),
     car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),
+    // "⭐ 4,8 (37)" or "Yangi" (docs/24, G11).
+    rating: ratingSchema,
   }),
   from: locationIdSchema,
   to: locationIdSchema,

@@ -126,6 +126,10 @@ describe('admin bot: the moderation card (docs/04)', () => {
     ]) {
       expect((await reply(await send('admin', press(OWNER, data)))).text).toBeUndefined();
     }
-    expect(await reply(await send('passenger', press(OWNER, `mod:${APPLICANT}:approve`)))).toEqual({});
+    // Other bots only stop the spinner of a button they do not know: no moderation there.
+    expect(await reply(await send('passenger', press(OWNER, `mod:${APPLICANT}:approve`)))).toEqual({
+      method: 'answerCallbackQuery',
+      callback_query_id: 'q',
+    });
   });
 });

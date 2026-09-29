@@ -13,6 +13,7 @@ import { avatarWatch, driversModule } from './modules/drivers';
 import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
 import { pricingModule } from './modules/pricing';
+import { ratingsModule } from './modules/ratings';
 import { requestsModule } from './modules/ride-requests';
 import { subscriptionsModule } from './modules/route-subscriptions';
 import { sharesModule } from './modules/shares';
@@ -43,6 +44,8 @@ export const app = new Hono<AppEnv>()
   .use('/passenger/*', allowMiniApps, auth, blockedGuard)
   .use('/trips', allowMiniApps, auth, blockedGuard)
   .use('/trips/*', allowMiniApps, auth, blockedGuard)
+  .use('/reviews/*', allowMiniApps, auth, blockedGuard)
+  .use('/reviews', allowMiniApps, auth, blockedGuard)
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
   // Close people read a shared trip without registration; "Xabar olish" needs the signature (docs/43).
@@ -64,6 +67,7 @@ export const app = new Hono<AppEnv>()
   .route('/', tripsModule)
   .route('/', requestsModule)
   .route('/', subscriptionsModule)
+  .route('/', ratingsModule)
   .route('/', bookingsModule)
   .route('/', walletModule)
   .route('/', chatRoutes(chatMemberOf))

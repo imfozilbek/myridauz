@@ -41,6 +41,9 @@ function details(trip: Trip): string[] {
     t('bot.channel.car', { car: escape(`${make} ${model}, ${paint}`) }),
     // Every driver who posts has passed the check of the team (docs/04).
     t('bot.channel.verified'),
+    trip.driver.rating.average === null
+      ? t('bot.channel.newDriver')
+      : t('bot.channel.rating', { average: trip.driver.rating.average, count: trip.driver.rating.count }),
     ...(trip.woman ? [t('bot.channel.woman')] : []),
     ...(trip.hasMeetingPoint ? [t('bot.channel.meeting')] : []),
   ];

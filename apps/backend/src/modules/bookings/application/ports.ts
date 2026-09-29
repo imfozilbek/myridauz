@@ -33,6 +33,7 @@ export type TripFacts = {
   readonly km: number;
   readonly seats: number;
   readonly price: number;
+  readonly endsAt: number;
   readonly live: boolean;
   readonly over: boolean;
   readonly meetingPoint: Point | null;

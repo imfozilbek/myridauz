@@ -26,12 +26,19 @@ export const handleTripChange = (handler: ChangeHandler) => void (onChange = han
 // A booking was confirmed or cancelled: the seats left changed (G08).
 export const tripChanged = (env: Bindings, tripId: string) => onChange(env, tripId, 'updated');
 
+// Ratings and complaints come from their modules, set by the app (module-events.ts), G11.
+type Standing = Pick<TripsDeps, 'ratings' | 'hidden'>;
+type StandingOf = (env: Bindings) => Standing;
+let standingOf: StandingOf = () => ({ ratings: async () => new Map(), hidden: async () => new Set() });
+export const wireTripStanding = (next: StandingOf) => void (standingOf = next);
+
 const tripsDeps = (env: Bindings): TripsDeps => ({
   trips: env.DB ? d1Trips(env.DB) : localTrips,
   riders: async (tripIds) =>
     (await bookingStore(env).byTrips(tripIds)).filter((booking) => booking.status === 'confirmed'),
   people: peopleOf(env),
   approvedCar: (driverId) => approvedCar(env, driverId),
+  ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),
   places: () => placesOf(env),
   announce: telegramAnnouncer({
@@ -65,7 +72,21 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const now = Date.now();
   const { driverId, from, to, departAt, km, seats, price, meetingPoint } = trip;
   const over = statusAt(trip, now) === 'completed';
-  return { id, driverId, from, to, departAt, km, seats, price, meetingPoint, live: isLive(trip, now), over };
+  const { endsAt } = trip;
+  return {
+    id,
+    driverId,
+    from,
+    to,
+    departAt,
+    km,
+    seats,
+    price,
+    meetingPoint,
+    endsAt,
+    live: isLive(trip, now),
+    over,
+  };
 };
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
@@ -89,3 +110,12 @@ export const tripsDeparting = async (env: Bindings, from: number, to: number) =>
     env,
     (await tripsDeps(env).trips.departing(from, to)).map((trip) => trip.id),
   );
+
+// Trips that ended in [from, to): the ratings ask their riders (docs/24, G11).
+export const tripsEnded = async (env: Bindings, from: number, to: number) =>
+  (await tripsDeps(env).trips.ended(from, to)).map(({ id, driverId, departAt, endsAt }) => ({
+    id,
+    driverId,
+    departAt,
+    endsAt,
+  }));

@@ -1,4 +1,4 @@
-import type { Car, Recommendation, RouteError } from '@platform/contracts';
+import type { Car, Rating, Recommendation, RouteError } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 
@@ -12,6 +12,8 @@ export type TripRepository = {
   leaving(from: number, to: number): Promise<TripRecord[]>;
   // Active or full trips leaving between the two times: their reminders (G10).
   departing(from: number, to: number): Promise<TripRecord[]>;
+  // Trips that ended in [from, to), not cancelled: the ratings ask about them (docs/24).
+  ended(from: number, to: number): Promise<TripRecord[]>;
   // Every trip leaving from this time on, whatever its status, the earliest first (the team's list).
   since(from: number, limit: number): Promise<TripRecord[]>;
   // The Cron job: trips over by now become completed (docs/35).
@@ -28,6 +30,9 @@ export type TripsDeps = {
   readonly riders: (tripIds: readonly string[]) => Promise<readonly Rider[]>;
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
+  // "⭐ 4,8 (37)" of drivers and the people hidden from search by complaints (docs/17, docs/24).
+  readonly ratings: (driverIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
+  readonly hidden: (driverIds: readonly number[]) => Promise<ReadonlySet<number>>;
   readonly recommend: (
     from: string,
     to: string,

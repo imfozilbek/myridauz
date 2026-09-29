@@ -1,83 +1,16 @@
-import { loadBrand } from '@platform/brands';
 import { driverTripCancelPath } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { bookingCommission } from '../billing';
-import { postSystemEvent } from '../chat';
-import { approvedCar } from '../drivers';
-import { placesOf } from '../locations';
-import { recommendationFor } from '../pricing';
-import { notify } from '../notifications';
-import { markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
-import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViewsOf } from '../trips';
-import { tellCloseOnes } from '../shares';
-import { peopleOf } from '../users';
-import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
 import { answer } from './application/answer';
+import { bookingsDeps } from './deps';
 import { rememberPickupMessage, setPickup } from './application/accept';
 import { chatMember } from './application/chat-member';
 import { passengerView } from './application/progress';
+import { rideOf, ridesOf } from './application/rides';
 import { bookingViews } from './application/views';
-import type { BookingsDeps } from './application/ports';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
-import { d1Offers } from './infrastructure/d1-offers';
-import { createMemoryOffers } from './infrastructure/memory-bookings';
 import { bookingStore } from './infrastructure/store';
-import { telegramNotifier } from './infrastructure/telegram-notifier';
-
-const localOffers = createMemoryOffers();
-
-// A confirmed or cancelled booking changes the seats left: the channel posts follow (docs/15).
-const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsDeps['notify'] => ({
-  ...notifier,
-  confirmed: async (booking) => {
-    await notifier.confirmed(booking);
-    await tripChanged(env, booking.trip.id);
-  },
-  cancelled: async (booking, by) => {
-    await notifier.cancelled(booking, by);
-    await tripChanged(env, booking.trip.id);
-  },
-});
-
-const bookingsDeps = (env: Bindings): BookingsDeps => ({
-  bookings: bookingStore(env),
-  offers: env.DB ? d1Offers(env.DB) : localOffers,
-  trips: {
-    find: (id) => tripFacts(env, id),
-    ofDriver: (driverId) => driverTripIds(env, driverId),
-    views: (ids) => tripViewsOf(env, ids),
-    publish: (driverId, input) => publishFor(env, driverId, input),
-    cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
-  },
-  requests: {
-    find: (id) => requestFacts(env, id),
-    ofPassenger: (passengerId) => passengerRequestFacts(env, passengerId),
-    matched: (id) => markMatched(env, id),
-  },
-  wallet: {
-    commission: bookingCommission(env),
-    canAfford: (driverId, amount) => walletCanAfford(env, driverId, amount),
-    charge: (driverId, bookingId, amount) => chargeCommission(env, driverId, bookingId, amount),
-    refund: (driverId, bookingId) => refundCommission(env, driverId, bookingId),
-  },
-  people: peopleOf(env),
-  approvedCar: (driverId) => approvedCar(env, driverId),
-  recommend: (from, to) => recommendationFor(env, from, to),
-  notify: seatsFollow(
-    env,
-    telegramNotifier({
-      brand: loadBrand(env.BRAND),
-      notify: (jobs) => notify(env, jobs),
-      system: (key, event) => postSystemEvent(env, key, event),
-      placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-      closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
-    }),
-  ),
-  now: Date.now,
-  newId: () => crypto.randomUUID(),
-});
 
 export const bookingsModule = new Hono<AppEnv>()
   .route('/', bookingRoutes(bookingsDeps))
@@ -123,3 +56,9 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
   );
   return bookingViews(deps, confirmed, 'passenger');
 };
+
+// Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
+export type { Ride } from './application/rides';
+export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
+export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]) =>
+  ridesOf(bookingsDeps(env), trips);

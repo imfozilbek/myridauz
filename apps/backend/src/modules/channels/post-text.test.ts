@@ -29,6 +29,7 @@ describe('the channel post (docs/15)', () => {
       '💰 Bir joy: <b>85 000 soʻm</b>',
       '🚘 Chevrolet Cobalt, oq',
       '✅ Tekshirilgan haydovchi',
+      '🆕 Yangi haydovchi',
       '👩 Mashinada ayol bor',
       '📌 Uchrashuv joyi belgilangan',
       '',
@@ -56,6 +57,11 @@ describe('the channel post (docs/15)', () => {
     expect(full.markup).toEqual({ inline_keyboard: [[subscribe]] });
     const cancelled = post({ ...TRIP, status: 'cancelled' }, PLACES, BEFORE);
     expect(cancelled.text.startsWith('<b>❌ Safar bekor qilindi</b>')).toBe(true);
+  });
+
+  it('shows the rating of a driver with 3 and more ratings', () => {
+    const rated = { ...TRIP, driver: { ...TRIP.driver, rating: { average: 4.8, count: 37 } } };
+    expect(post(rated, PLACES, BEFORE).text.replace(/\s/gu, ' ')).toContain('⭐ 4,8 (37 ta baho)');
   });
 
   it('warns about the last seat and says when the trip has left', () => {
