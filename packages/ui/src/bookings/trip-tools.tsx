@@ -18,6 +18,8 @@ export function TripTools({ booking: initial, onChat }: Props) {
   const { chat } = useApiClients();
   const [booking, setBooking] = useState(initial);
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
+  // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
+  const [sharing, setSharing] = useState(true);
   const confirmed = booking.status === 'confirmed';
   const run = async (action: () => Promise<void>, after: 'told' | 'stopped' | null) => {
     try {
@@ -33,12 +35,18 @@ export function TripTools({ booking: initial, onChat }: Props) {
       const { preparedMessageId, link } = await chat.share(booking.id);
       track({ name: 'trip_shared', screen: 'bookings.passenger' });
       await shareCard(preparedMessageId, link);
+      setSharing(true);
     }, null);
   const step = (name: 'boarded' | 'arrived') =>
     run(async () => {
       setBooking(await chat[name](booking.id));
       track({ name, screen: 'bookings.passenger' });
     }, 'told');
+  const stop = () =>
+    run(async () => {
+      await chat.stopSharing(booking.id);
+      setSharing(false);
+    }, 'stopped');
   return (
     <Section footer={note ? t(`share.${note}`) : undefined}>
       <Cell before={<IconTile name="chat" />} onClick={onChat}>
@@ -63,12 +71,11 @@ export function TripTools({ booking: initial, onChat }: Props) {
               {t('share.arrived')}
             </Cell>
           ) : null}
-          <Cell
-            before={<IconTile name="blocked" />}
-            onClick={() => void run(() => chat.stopSharing(booking.id), 'stopped')}
-          >
-            {t('share.stop')}
-          </Cell>
+          {sharing ? (
+            <Cell before={<IconTile name="blocked" />} onClick={() => void stop()}>
+              {t('share.stop')}
+            </Cell>
+          ) : null}
         </>
       ) : null}
     </Section>
