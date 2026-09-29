@@ -52,4 +52,5 @@
 | 48 | [48-locations-directory.md](48-locations-directory.md) | Справочник мест: регионы, районы, расстояния, выбор места |
 | 49 | [49-lessons-learned-3.md](49-lessons-learned-3.md) | Уроки: продолжение журнала (№21 и дальше) |
 | 50 | [50-drivers-and-moderation.md](50-drivers-and-moderation.md) | Заявка водителя, модерация, поддержка, команда |
+| 51 | [51-trips-and-pricing.md](51-trips-and-pricing.md) | Поездки, заявки, поиск, движок цен и админка цен (G07) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |
