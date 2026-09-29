@@ -20,6 +20,9 @@ handleTripChange(async (env, tripId, event) => {
   if (trip) await tripPublished(env, trip);
 });
 
+// The Cron job: channel posts of trips that left say so (docs/15).
+export const closeDepartedPosts = (env: Bindings) => tripChannels.departed(env);
+
 // A published request reaches subscribed drivers (docs/24).
 handleRequestPublished(async (env, requestId) => {
   const request = await requestViewOf(env, requestId);

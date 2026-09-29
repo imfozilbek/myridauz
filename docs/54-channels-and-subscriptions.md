@@ -11,9 +11,12 @@
 | Что публикуем | только поездки водителей; заявки попутчиков нет |
 | Кто публикует | бот попутчиков, через очередь `rida-notifications` |
 | Вид поста | регионы жирным; районы; дата; отправление и ≈ прибытие; места; цена; машина; «Mashinada ayol bor»; «Uchrashuv joyi belgilangan»; хэштеги регионов (владелец одобрил 29.09.2026) |
-| Кнопки | «Joy band qilish»: `startapp=trip_<id>`; «🔔 Shu yoʻnalishga obuna»: `startapp=sub_<регион>_<регион>_<день>` |
+| Кнопки | «Joy band qilish»: `startapp=trip_<id>`; «📤 Doʻstga yuborish»: окно Telegram «поделиться» со ссылкой на поездку; «🔔 Shu yoʻnalishga obuna»: `startapp=sub_<регион>_<регион>_<день>` |
+| Доверие | «✅ Tekshirilgan haydovchi»: каждый водитель прошёл проверку (`04`). Рейтинг «⭐ 4,8» добавит G11 |
 | Контакты | в посте нет: ни телефона, ни имени, ни госномера |
+| Последнее место | «🔥 Faqat 1 ta joy qoldi» |
 | Мест нет | пост меняется: «⛔ Joy qolmagan», маршрут и день, остаётся только кнопка подписки |
+| Поездка началась | Cron (каждые 15 минут) меняет пост один раз: «🚗 Safar boshlandi», остаётся только кнопка подписки |
 | Отмена | пост меняется: «❌ Safar bekor qilindi», остаётся только кнопка подписки |
 | Хэштеги | ключи `bot.channel.tag.<СОАТО>`; без «ʻ» (Telegram обрывает хэштег): `#Fargona` |
 | Включение | переменная `CHANNEL_POSTS` в `wrangler.toml`: `off` до согласия владельца |
@@ -60,6 +63,6 @@
 |---|---|
 | Контракты | `packages/contracts/src/subscriptions.ts` |
 | Backend | `apps/backend/src/modules/channels`, `route-subscriptions`, `reminders`; связи: `module-events.ts` |
-| База | `apps/backend/migrations/0010_channels_subscriptions.sql` |
+| База | `apps/backend/migrations/0010_channels_subscriptions.sql`, `0011_channel_posts_started.sql` |
 | Экраны | `packages/ui/src/subscriptions`, `market/trip-link.tsx`, `launch-links.tsx` |
 | Каналы бренда | `brands/rida/brand.config.ts` (`channels`) |

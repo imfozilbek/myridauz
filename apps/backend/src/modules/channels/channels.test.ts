@@ -1,15 +1,19 @@
 import type { Trip } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from '../notifications';
-import { postTrip, refreshPosts, rememberPost } from './application/channels';
+import { closeDeparted, postTrip, refreshPosts, rememberPost } from './application/channels';
 import type { ChannelsDeps } from './application/ports';
 import { channelsOf } from './domain/route-channels';
 import { createMemoryChannelPosts } from './infrastructure/channel-posts';
 import { channelPost } from './infrastructure/post-text';
 import { CHANNELS, PLACES, TRIP } from './channels-fixtures';
 
+// Before the trip leaves (TRIP departs 2.10.2026 08:30 in Tashkent).
+const BEFORE = Date.parse('2026-10-01T00:00:00Z');
+
 function setup(trip: Trip = TRIP, enabled = true) {
   let now = trip;
+  let clock = BEFORE;
   const sent: NotificationJob[] = [];
   const deps: ChannelsDeps = {
     enabled,
@@ -19,8 +23,10 @@ function setup(trip: Trip = TRIP, enabled = true) {
     posts: createMemoryChannelPosts(),
     render: channelPost('test_bot'),
     send: async (jobs) => void sent.push(...jobs),
+    now: () => clock,
   };
-  return { deps, sent, change: (next: Partial<Trip>) => void (now = { ...now, ...next }) };
+  const change = (next: Partial<Trip>) => void (now = { ...now, ...next });
+  return { deps, sent, change, later: (ms: number) => void (clock = ms) };
 }
 
 describe('the channels of a trip (docs/15)', () => {
@@ -41,9 +47,9 @@ describe('posting and editing through the queue (docs/15)', () => {
       type: 'channelPost',
       tripId: 'trip-1',
       channel: 'ch_buxoro',
-      shown: 'open 3 true',
+      shown: 'active 3 true',
     });
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_buxoro', messageId: 41 }, 'open 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_buxoro', messageId: 41 }, 'active 3 true');
     expect(sent).toHaveLength(1);
     change({ seatsLeft: 0, status: 'full' });
     await refreshPosts(deps, 'trip-1');
@@ -56,7 +62,7 @@ describe('posting and editing through the queue (docs/15)', () => {
   it('edits at once a post whose trip changed while it waited in the queue', async () => {
     const { deps, sent, change } = setup();
     change({ seatsLeft: 2 });
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'open 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
     expect(sent).toHaveLength(1);
     expect(sent[0]?.text).toContain('💺 <b>2</b> ta boʻsh joy');
   });
@@ -69,5 +75,18 @@ describe('posting and editing through the queue (docs/15)', () => {
     await postTrip(cancelled.deps, 'trip-1');
     await refreshPosts(cancelled.deps, 'trip-1');
     expect(cancelled.sent).toEqual([]);
+  });
+
+  it('says once in its posts that a trip has left, without "Joy band qilish"', async () => {
+    const { deps, sent, later } = setup();
+    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
+    await closeDeparted(deps);
+    expect(sent).toEqual([]);
+    later(TRIP.departAt);
+    await closeDeparted(deps);
+    await closeDeparted(deps);
+    expect(sent).toHaveLength(1);
+    expect(sent[0]?.text.startsWith('<b>🚗 Safar boshlandi</b>')).toBe(true);
+    expect(JSON.stringify(sent[0]?.markup)).not.toContain('startapp=trip_');
   });
 });

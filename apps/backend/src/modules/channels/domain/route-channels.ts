@@ -16,14 +16,16 @@ export function channelsOf(
   return [...regions].map((region) => channels[region]).filter((channel) => channel !== undefined);
 }
 
-// What a post says about a trip now: seats to book, no seats, or no trip any more (docs/15).
-export type PostState = 'open' | 'full' | 'cancelled';
+// What a post says about a trip now: seats to book, no seats, the trip left, or no trip (docs/15).
+export type PostState = 'open' | 'full' | 'started' | 'cancelled';
 type Status = 'active' | 'full' | 'completed' | 'cancelled';
+type PostedTrip = { readonly status: Status; readonly seatsLeft: number; readonly departAt: number };
 // What a post shows, in short: when it differs from the trip now, the post is edited.
 export const shownOf = (trip: { status: Status; seatsLeft: number; woman: boolean }) =>
-  `${postState(trip)} ${trip.seatsLeft} ${trip.woman}`;
+  `${trip.status} ${trip.seatsLeft} ${trip.woman}`;
 
-export const postState = (trip: { readonly status: Status; readonly seatsLeft: number }): PostState => {
+export const postState = (trip: PostedTrip, now: number): PostState => {
   if (trip.status === 'cancelled') return 'cancelled';
+  if (trip.status === 'completed' || trip.departAt <= now) return 'started';
   return trip.status === 'full' || trip.seatsLeft <= 0 ? 'full' : 'open';
 };
