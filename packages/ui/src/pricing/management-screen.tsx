@@ -8,10 +8,11 @@ import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { TeamTripsScreen } from '../market/team-trips-screen';
+import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
 import { PricingScreen } from './pricing-screen';
 import '../market/market.css';
 
-type Open = 'menu' | 'trips' | 'pricing' | 'statistics';
+type Open = 'menu' | 'trips' | 'pricing' | 'wallets' | 'statistics';
 
 // The third action of the admin Mini App: at most 3 actions on the main screen (docs/19).
 export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
@@ -22,6 +23,7 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
   const menu = () => setOpen('menu');
   if (open === 'trips') return <TeamTripsScreen onBack={menu} />;
   if (open === 'pricing') return <PricingScreen onBack={menu} />;
+  if (open === 'wallets') return <TeamWalletsScreen onBack={menu} />;
   if (open === 'statistics') {
     return (
       <>
@@ -52,6 +54,13 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
             onClick={() => setOpen('pricing')}
           >
             {t('pricing.title')}
+          </Cell>
+          <Cell
+            before={<IconTile name="wallet" />}
+            subtitle={t('wallet.team.hint')}
+            onClick={() => setOpen('wallets')}
+          >
+            {t('wallet.team.title')}
           </Cell>
           <Cell
             before={<IconTile name="statistics" tone="deep" />}

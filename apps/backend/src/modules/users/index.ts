@@ -10,7 +10,8 @@ import { userRoutes } from './http/user-routes';
 import { d1Users } from './infrastructure/d1-users';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
-import { createMemoryUsers, noTripRelations } from './infrastructure/memory-stores';
+import { createMemoryUsers } from './infrastructure/memory-stores';
+import { bookingStore, rideTogether } from '../bookings/infrastructure/store';
 
 // Without D1 and R2 (local runs, tests) the module keeps its data in memory.
 export const localUsers = createMemoryUsers();
@@ -19,7 +20,11 @@ const localAvatars = createMemoryImages();
 const usersDeps = (env: Bindings): UsersDeps => ({
   users: env.DB ? d1Users(env.DB) : localUsers,
   avatars: env.MEDIA ? r2Images(env.MEDIA) : localAvatars,
-  trips: noTripRelations,
+  // Passengers with confirmed bookings on one trip see each other's photos (docs/05).
+  trips: {
+    relation: async (viewerId, ownerId) =>
+      (await rideTogether(bookingStore(env), viewerId, ownerId)) ? 'co_passenger' : 'none',
+  },
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

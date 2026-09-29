@@ -10,6 +10,13 @@ const EXPLAINED: readonly string[] = [
   'trips.not_driver',
   'locations.same_place',
   'locations.inside_city',
+  'bookings.no_seats',
+  'bookings.too_many',
+  'bookings.own_trip',
+  'bookings.wrong_status',
+  'bookings.invalid_input',
+  'wallet.not_enough',
+  'auth.not_owner',
 ];
 
 export function errorKey(error: unknown): TranslationKey {

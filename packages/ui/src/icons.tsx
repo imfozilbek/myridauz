@@ -27,6 +27,7 @@ import {
   Ticket,
   UserRound,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -60,6 +61,7 @@ const ICONS = {
   less: Minus,
   more: Plus,
   price: Banknote,
+  wallet: Wallet,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

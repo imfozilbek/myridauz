@@ -1,4 +1,4 @@
-import { closingBehavior, hapticFeedback, popup } from '@telegram-apps/sdk-react';
+import { closingBehavior, hapticFeedback, openLink, popup } from '@telegram-apps/sdk-react';
 
 const CONFIRM_ID = 'confirm';
 
@@ -20,4 +20,9 @@ export async function confirm(message: string, confirmText: string): Promise<boo
 export function protectFromClosing(enabled: boolean): void {
   if (enabled) closingBehavior.enableConfirmation.ifAvailable();
   else closingBehavior.disableConfirmation.ifAvailable();
+}
+
+// A map or another site opens in Telegram's own browser; outside Telegram, in a new tab (docs/21).
+export function openExternal(url: string): void {
+  if (openLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
 }

@@ -7,5 +7,12 @@
   "trips.too_many_seats": "Boʻsh joylar mashinangizdagidan koʻp boʻlmasin.",
   "trips.price_out_of_bounds": "Narx ruxsat etilgan chegarada boʻlsin.",
   "trips.in_past": "Bu vaqt oʻtib ketgan. Keyinroq vaqtni tanlang.",
-  "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak."
+  "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak.",
+  "bookings.no_seats": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
+  "bookings.too_many": "Javob kutayotgan soʻrovlar soni chegaraga yetdi. Haydovchilar javobini kuting.",
+  "bookings.own_trip": "Oʻz safaringizga joy soʻray olmaysiz.",
+  "bookings.wrong_status": "Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.",
+  "bookings.invalid_input": "Vaqtni soʻrov kuniga va hozirdan keyinga qoʻying.",
+  "wallet.not_enough": "Hamyonda komissiya uchun mablagʻ yetarli emas.",
+  "auth.not_owner": "Buni faqat loyiha egasi qila oladi."
 }

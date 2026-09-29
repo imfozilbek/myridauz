@@ -10,13 +10,30 @@ import type { Person } from '../../users';
 import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
-import { tripView } from './views';
+import { NO_RIDERS, tripView, type Riders } from './views';
 
 type DriverInfo = readonly [Person | undefined, Car | null];
 
 // Views of many trips: the driver and the car are read once per driver.
-async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
+async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, Riders>> {
+  const riders = await deps.riders(trips.map((trip) => trip.id));
+  const women = await Promise.all(
+    riders.map(async (rider) => (await deps.people.find(rider.passengerId))?.gender === 'female'),
+  );
+  const byTrip = new Map<string, Riders>();
+  riders.forEach((rider, index) => {
+    const known = byTrip.get(rider.tripId) ?? { seats: 0, woman: false };
+    byTrip.set(rider.tripId, {
+      seats: known.seats + rider.seats,
+      woman: known.woman || women[index] === true,
+    });
+  });
+  return byTrip;
+}
+
+export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
   const now = deps.now();
+  const riders = await ridersOf(deps, trips);
   const drivers = new Map<number, Promise<DriverInfo>>();
   const driverOf = (id: number) => {
     const known = drivers.get(id);
@@ -28,7 +45,7 @@ async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Tri
   const found = await Promise.all(
     trips.map(async (trip) => {
       const [driver, car] = await driverOf(trip.driverId);
-      return driver && car ? tripView(trip, driver, car, now) : null;
+      return driver && car ? tripView(trip, driver, car, now, riders.get(trip.id) ?? NO_RIDERS) : null;
     }),
   );
   return found.filter((trip) => trip !== null);
@@ -45,7 +62,8 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
   const fits = trips.filter(
     (trip) => placeMatches(trip.from, search.from, places) && placeMatches(trip.to, search.to, places),
   );
-  const found = await views(deps, fits);
+  // A full trip is not in the search: nothing to book there.
+  const found = (await views(deps, fits)).filter((trip) => trip.seatsLeft > 0);
   return search.woman ? found.filter((trip) => trip.woman) : found;
 }
 

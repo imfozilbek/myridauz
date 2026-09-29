@@ -1,7 +1,8 @@
 import type { AppName, BrandConfig } from './brand-config';
 import { brandConfig as rida } from './rida/brand.config.ts';
 
-export type { BrandColors, BrandConfig, HexColor } from './brand-config';
+export type { BrandColors, BrandConfig, CommissionRule, HexColor, PromoRule } from './brand-config';
+export { commissionFor } from './commission.ts';
 export { apiHost, appHost } from './hosts.ts';
 
 const BRANDS: Readonly<Record<string, BrandConfig>> = { [rida.id]: rida };

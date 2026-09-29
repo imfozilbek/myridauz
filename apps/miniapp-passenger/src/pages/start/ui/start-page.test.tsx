@@ -14,7 +14,10 @@ describe('StartPage', () => {
   });
 
   it('opens a section and comes back', async () => {
-    const clients = testClients({ market: { myRequests: async () => [] } });
+    const clients = testClients({
+      market: { myRequests: async () => [] },
+      bookings: { myBookings: async () => [], myOffers: async () => [] },
+    });
     renderInShell(<StartPage />, false, true, undefined, clients);
     fireEvent.click(screen.getByText('Mening safarlarim'));
     expect(await screen.findByText('Hali soʻrovlaringiz yoʻq')).toBeTruthy();

@@ -1,10 +1,11 @@
-import type { MarketClient } from '@platform/api-client';
+import type { BookingsClient, MarketClient } from '@platform/api-client';
+import { offer } from '../bookings/booking-test-kit';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
-import { renderMarket, tap, trip } from './market-test-kit';
+import { recommendation, renderMarket, tap, trip } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { MyTripsScreen } from './my-trips-screen';
 import { RequestsSearchFlow } from './requests-search-flow';
@@ -29,7 +30,10 @@ describe('Mening safarlarim (docs/35)', () => {
     const myTrips = vi.fn(async () => [trip]);
     renderMarket(
       <MyTripsScreen onBack={() => undefined} />,
-      testClients({ market: { myTrips, cancelTrip } }),
+      testClients({
+        market: { myTrips, cancelTrip },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
     await tap('Jasur');
@@ -43,7 +47,10 @@ describe('Mening safarlarim (docs/35)', () => {
     const myRequests = vi.fn(async () => [request]);
     renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,
-      testClients({ market: { myRequests, cancelRequest } }),
+      testClients({
+        market: { myRequests, cancelRequest },
+        bookings: { myBookings: async () => [], myOffers: async () => [] },
+      }),
     );
     await tap('Dilnoza');
     expect(screen.getByText('Faol')).toBeTruthy();
@@ -53,11 +60,15 @@ describe('Mening safarlarim (docs/35)', () => {
 });
 
 describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
-  it('shows the requests of a day and says an offer comes later', async () => {
+  it('shows the requests of a day and sends an offer with the commission', async () => {
     const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => [request]);
+    const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
     renderMarket(
       <RequestsSearchFlow onBack={() => undefined} />,
-      testClients({ market: { searchRequests } }),
+      testClients({
+        market: { searchRequests, recommend: async () => recommendation },
+        bookings: { sendOffer },
+      }),
     );
     for (const step of [
       'Qayerdan',
@@ -72,7 +83,13 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       await tap(step);
     await tap('Dilnoza');
     await tap('Taklif yuborish');
-    expect(screen.getByText('Yoʻlovchiga taklif yuborish tez orada ishga tushadi.')).toBeTruthy();
+    await tap('Davom etish');
+    await tap('Davom etish');
+    // 10% of 95 000 per seat, 2 seats (docs/12).
+    expect(await screen.findByText(/19\s000/)).toBeTruthy();
+    await tap('Taklif yuborish');
+    expect(await screen.findByText('Taklif yuborildi')).toBeTruthy();
+    expect(sendOffer.mock.calls[0]?.[1]).toMatchObject({ price: 95000 });
     expect(searchRequests.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
   });
 

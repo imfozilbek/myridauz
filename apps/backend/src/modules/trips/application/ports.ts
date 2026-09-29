@@ -16,8 +16,12 @@ export type TripRepository = {
   completeOver(now: number): Promise<void>;
 };
 
+// A confirmed booking holds seats and gives "ayol bor" when a woman rides (docs/06). G08.
+export type Rider = { readonly tripId: string; readonly passengerId: number; readonly seats: number };
+
 export type TripsDeps = {
   readonly trips: TripRepository;
+  readonly riders: (tripIds: readonly string[]) => Promise<readonly Rider[]>;
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
   readonly recommend: (

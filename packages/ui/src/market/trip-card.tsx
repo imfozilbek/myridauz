@@ -17,7 +17,7 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const facts: readonly Fact[] = [
-    ['passengers', t('market.trip.seats', { count: String(trip.seats) })],
+    ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
     ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
     ...(trip.hasMeetingPoint ? [['destination', t('market.trip.meeting')] as const] : []),
     ...(showStatus ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),

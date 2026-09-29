@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { mockDrivers, type DriverStart } from './drivers-mock';
+import { mockBookings } from './bookings-mock';
 import { mockMarket } from './market-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
@@ -64,5 +65,6 @@ export async function mockApi(
   );
   const drivers = await mockDrivers(page, driver);
   const market = await mockMarket(page);
-  return { analytics, registrations, ...drivers, ...market };
+  const bookings = await mockBookings(page);
+  return { analytics, registrations, ...drivers, ...market, ...bookings };
 }

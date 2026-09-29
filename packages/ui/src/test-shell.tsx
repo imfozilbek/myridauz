@@ -18,6 +18,8 @@ export const testClients = (overrides: {
   readonly moderation?: Partial<ApiClients['moderation']>;
   readonly market?: Partial<ApiClients['market']>;
   readonly pricing?: Partial<ApiClients['pricing']>;
+  readonly bookings?: Partial<ApiClients['bookings']>;
+  readonly wallet?: Partial<ApiClients['wallet']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -57,6 +59,20 @@ export const testClients = (overrides: {
     setDirection: NOT_USED,
     ...overrides.pricing,
   },
+  bookings: {
+    book: NOT_USED,
+    myBookings: NOT_USED,
+    cancelMine: NOT_USED,
+    driverBookings: NOT_USED,
+    answer: NOT_USED,
+    tripBookings: NOT_USED,
+    sendOffer: NOT_USED,
+    driverOffers: NOT_USED,
+    myOffers: NOT_USED,
+    answerOffer: NOT_USED,
+    ...overrides.bookings,
+  },
+  wallet: { mine: NOT_USED, all: NOT_USED, of: NOT_USED, adjust: NOT_USED, ...overrides.wallet },
 });
 const NO_CLIENTS = testClients({});
 

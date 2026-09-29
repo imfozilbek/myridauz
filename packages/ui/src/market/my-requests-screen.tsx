@@ -1,22 +1,22 @@
-import type { RideRequest } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
+import { Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
+import { BookingCard } from '../bookings/booking-card';
+import { PassengerOpen, type Opened } from '../bookings/passenger-open';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
-import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
-import { RequestCard, RequestScreen } from './request-card';
-import { useList } from './use-list';
+import { RequestCard } from './request-card';
+import { useLoad } from './use-list';
 import './market.css';
 
-// "Mening safarlarim" of a passenger: the requests (bookings come in G08); an open one can be cancelled.
+// "Mening safarlarim" of a passenger: the booked seats, then the requests with drivers' offers.
 export function MyRequestsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <PlacesGate>
@@ -29,24 +29,22 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
   useScreenView('market.my_requests');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { market } = useApiClients();
-  const { items, failed, reload } = useList(() => market.myRequests());
-  const [open, setOpen] = useState<RideRequest | null>(null);
-  const cancel = async (request: RideRequest) => {
-    try {
-      await market.cancelRequest(request.id);
-      haptic.success();
-    } catch {
-      haptic.error();
-    }
-    setOpen(null);
-    reload();
-  };
-  if (open)
-    return <RequestScreen request={open} onBack={() => setOpen(null)} onCancel={() => void cancel(open)} />;
+  const { market, bookings } = useApiClients();
+  const { value, failed, reload } = useLoad(() =>
+    Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
+  );
+  const [opened, setOpened] = useState<Opened | null>(null);
+  if (opened && value) {
+    const close = (changed: boolean) => {
+      setOpened(null);
+      if (changed) reload();
+    };
+    return <PassengerOpen opened={opened} offers={value[2]} onClose={close} />;
+  }
   if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!items) return <ScreenSkeleton />;
-  if (items.length === 0) {
+  if (!value) return <ScreenSkeleton />;
+  const [booked, requests] = value;
+  if (booked.length === 0 && requests.length === 0) {
     return (
       <>
         <BackButton onClick={onBack} />
@@ -65,8 +63,23 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
         {t('common.myTrips')}
       </Title>
       <List>
-        {items.map((request) => (
-          <RequestCard key={request.id} request={request} showStatus onOpen={() => setOpen(request)} />
+        {booked.length > 0 ? <Caption className="market-group">{t('bookings.mine')}</Caption> : null}
+        {booked.map((booking) => (
+          <BookingCard
+            key={booking.id}
+            booking={booking}
+            side="passenger"
+            onOpen={() => setOpened({ kind: 'booking', booking })}
+          />
+        ))}
+        {requests.length > 0 ? <Caption className="market-group">{t('market.mine.requests')}</Caption> : null}
+        {requests.map((request) => (
+          <RequestCard
+            key={request.id}
+            request={request}
+            showStatus
+            onOpen={() => setOpened({ kind: 'request', request })}
+          />
         ))}
       </List>
     </div>

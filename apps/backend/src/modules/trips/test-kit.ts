@@ -1,7 +1,7 @@
 // Test helper: trips with two approved drivers (a man and a woman) and a fake price engine.
 import type { Car, Recommendation } from '@platform/contracts';
 import type { Person } from '../users';
-import type { TripsDeps } from './application/ports';
+import type { Rider, TripsDeps } from './application/ports';
 import { createMemoryTrips } from './infrastructure/memory-trips';
 
 export const HOUR = 60 * 60 * 1000;
@@ -29,6 +29,7 @@ export function setup() {
   let now = NOW;
   let price = 90000;
   let id = 0;
+  const riders: Rider[] = [];
   const cars = new Map<number, Car>([
     [1, CAR],
     [2, CAR],
@@ -40,6 +41,7 @@ export function setup() {
   ]);
   const deps: TripsDeps = {
     trips: createMemoryTrips(),
+    riders: async (tripIds) => riders.filter((rider) => tripIds.includes(rider.tripId)),
     people: { find: async (userId) => people.get(userId) },
     approvedCar: async (userId) => cars.get(userId) ?? null,
     recommend: async (from, to) => {
@@ -69,5 +71,6 @@ export function setup() {
     trip: { ...trip, departAt: NOW + 3 * HOUR },
     setNow: (next: number) => void (now = next),
     setFormula: (next: number) => void (price = next),
+    ride: (rider: Rider) => void riders.push(rider),
   };
 }

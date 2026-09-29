@@ -21,6 +21,7 @@ const approved = {
 const driver = testClients({
   drivers: { getApplication: async () => approved },
   market: { myTrips: async () => [] },
+  bookings: { driverBookings: async () => [], driverOffers: async () => [] },
 });
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 

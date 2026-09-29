@@ -1,4 +1,5 @@
 import { Text, Title } from '@telegram-apps/telegram-ui';
+import { useState } from 'react';
 import { Cell, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
@@ -6,17 +7,20 @@ import { BackButton } from '../../telegram/back-button';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useAccount } from '../account-context';
 import { CellValue, formatPhone } from '../cell-value';
-import { CarCell } from '../../driver/car-cell';
+import { CarCell, WalletCell } from '../../driver/car-cell';
+import { WalletScreen } from '../../wallet/wallet-screen';
 import { AvatarPicker } from './avatar-picker';
 import { ProfilePhoto } from './profile-photo';
 
-// Own profile: photo, name, rating. The phone is shown only here, to its owner (docs/07).
+// Own profile: photo, name, rating; a driver's car and "Hamyon". The phone is shown only here, to its owner (docs/07).
 export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('profile');
   useScreenBackground('grouped');
   const account = useAccount();
   const { t } = useI18n();
+  const [wallet, setWallet] = useState(false);
   if (!account) return null;
+  if (wallet) return <WalletScreen onBack={() => setWallet(false)} />;
   const { profile } = account;
   const rating = profile.rating === null ? t('account.profile.newRating') : String(profile.rating);
   return (
@@ -36,6 +40,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
           </Cell>
         </Section>
         <CarCell />
+        <WalletCell onOpen={() => setWallet(true)} />
       </List>
     </div>
   );

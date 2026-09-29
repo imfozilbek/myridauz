@@ -69,6 +69,20 @@ describe('finding trips (docs/06, docs/14)', () => {
     setNow(NOW + 4 * HOUR);
     expect(await searchTrips(deps, search)).toEqual([]);
   });
+
+  it('adds "ayol bor" for a woman with a confirmed booking and hides a full trip (G08)', async () => {
+    const { deps, trip, ride } = setup();
+    const published = await publishTrip(deps, 1, trip);
+    const tripId = published.ok ? published.value.id : '';
+    const search = { from: '1726', to: '1718', date: '2026-10-01', woman: '1' as const };
+    expect(await searchTrips(deps, search)).toEqual([]);
+    // Passenger 2 is a woman: her confirmed booking gives the mark, only the fact (docs/06).
+    ride({ tripId, passengerId: 2, seats: 1 });
+    expect(await searchTrips(deps, search)).toMatchObject([{ woman: true, seatsLeft: 2, status: 'active' }]);
+    ride({ tripId, passengerId: 3, seats: 2 });
+    expect(await tripDetail(deps, tripId)).toMatchObject({ seatsLeft: 0, status: 'full' });
+    expect(await searchTrips(deps, { ...search, woman: undefined })).toEqual([]);
+  });
 });
 
 describe('my trips and the end of a trip (docs/35)', () => {

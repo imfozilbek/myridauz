@@ -1,4 +1,5 @@
 import account from '../locales/uz-Latn/account.json' with { type: 'json' };
+import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import common from '../locales/uz-Latn/common.json' with { type: 'json' };
 import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
@@ -7,10 +8,23 @@ import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
+import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
-const REFERENCE = { account, bot, common, drivers, errors, market, moderation, places, pricing };
+const REFERENCE = {
+  account,
+  bookings,
+  bot,
+  common,
+  drivers,
+  errors,
+  market,
+  moderation,
+  places,
+  pricing,
+  wallet,
+};
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {
   [N in keyof Namespaces]: `${N & string}.${keyof Namespaces[N] & string}`;

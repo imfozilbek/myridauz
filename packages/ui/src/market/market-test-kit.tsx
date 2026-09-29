@@ -48,6 +48,7 @@ export const trip: Trip = {
   departAt: Date.parse('2026-10-02T03:00:00Z'),
   km: 320,
   seats: 3,
+  seatsLeft: 3,
   price: 95000,
   woman: true,
   hasMeetingPoint: true,

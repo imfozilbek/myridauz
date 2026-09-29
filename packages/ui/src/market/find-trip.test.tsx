@@ -1,4 +1,5 @@
-import type { MarketClient } from '@platform/api-client';
+import type { BookingsClient, MarketClient } from '@platform/api-client';
+import { booking } from '../bookings/booking-test-kit';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testClients } from '../test-shell';
@@ -10,9 +11,10 @@ afterEach(cleanup);
 describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', () => {
   it('searches a whole region on a day, filters "ayol bor" and opens a trip', async () => {
     const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => [trip]);
+    const book = vi.fn<BookingsClient['book']>(async () => booking);
     const { tracked } = renderMarket(
       <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips } }),
+      testClients({ market: { searchTrips }, bookings: { book } }),
     );
     await chooseRoute(true);
     await tap(/^Bugun/);
@@ -27,7 +29,16 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', () => 
     expect(await screen.findByText('Jasur')).toBeTruthy();
     expect(screen.getByText('Uchrashuv joyi belgilangan')).toBeTruthy();
     await tap('Joy band qilish');
-    expect(screen.getByText('Joy band qilish tez orada ishga tushadi.')).toBeTruthy();
+    await tap('2 kishi');
+    expect(await screen.findByText('Joy soʻrash')).toBeTruthy();
+    expect(screen.getByText(/190\s000/)).toBeTruthy();
+    await tap('Soʻrov yuborish');
+    expect(await screen.findByText('Soʻrov yuborildi')).toBeTruthy();
+    expect(book).toHaveBeenCalledWith('t1', 2);
+    expect(tracked.filter((event) => event.name === 'booking_step').map((event) => event.step)).toEqual([
+      'seats',
+      'requested',
+    ]);
     expect(tracked.some((event) => event.name === 'trip_open')).toBe(true);
     expect(tracked.find((event) => event.name === 'trip_search')).toMatchObject({ result: 'found' });
   });
