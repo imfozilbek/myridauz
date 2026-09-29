@@ -11,5 +11,9 @@ export function createMemoryApplications(): ApplicationRepository {
       [...applications.values()]
         .filter((application) => application.status === 'pending')
         .sort((a, b) => (a.submittedAt ?? 0) - (b.submittedAt ?? 0)),
+    approved: async () =>
+      [...applications.values()]
+        .filter((application) => application.status === 'approved')
+        .map((a) => a.userId),
   };
 }

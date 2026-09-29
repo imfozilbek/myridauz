@@ -96,4 +96,10 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
       .all<Row>();
     return rows.results.map(toApplication);
   },
+  approved: async () =>
+    (
+      await db
+        .prepare("SELECT user_id FROM driver_applications WHERE status = 'approved'")
+        .all<{ user_id: number }>()
+    ).results.map((row) => row.user_id),
 });
