@@ -8,6 +8,7 @@ import { IconTile } from '../icon-tile';
 import { errorKey } from '../market/error-text';
 import { noonOf } from '../market/when';
 import { haptic } from '../telegram/feedback';
+import './subscriptions.css';
 
 type Props = {
   readonly from: string;
@@ -44,8 +45,9 @@ export function NotifyMe({ from, to, date, woman = false }: Props) {
         {t('subscriptions.notify')}
       </Button>
     );
-  if (step === 'done') return <Text className="step-hint">{t('subscriptions.done')}</Text>;
-  if (typeof step === 'object') return <Text className="step-hint">{t(errorKey(step.failed))}</Text>;
+  if (step === 'done') return <Text className="step-hint notify-note">{t('subscriptions.done')}</Text>;
+  if (typeof step === 'object')
+    return <Text className="step-hint notify-note">{t(errorKey(step.failed))}</Text>;
   return (
     <Section header={t('subscriptions.when.title')}>
       <Cell before={<IconTile name="subscriptions" />} onClick={() => void subscribe(date)}>

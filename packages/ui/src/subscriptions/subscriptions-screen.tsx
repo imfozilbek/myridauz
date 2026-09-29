@@ -19,7 +19,7 @@ import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import '../market/market.css';
 
-// "Obunalar" (docs/24): the routes a person waits on; renew "any date", delete what is not needed.
+// "Obunalar" (docs/24): the routes a person waits on; renew an expired "any date", delete the rest.
 export function SubscriptionsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <PlacesGate>
@@ -95,7 +95,7 @@ function SubscriptionCard({ subscription, onChange }: CardProps) {
         <RouteView from={subscription.from} to={subscription.to} />
         <FactChips facts={facts} />
       </div>
-      {date === null ? (
+      {expired ? (
         <Cell
           before={<IconTile name="subscriptions" />}
           onClick={() => void act(() => subscriptions.renew(subscription.id))}
