@@ -45,7 +45,6 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
         ))}
         <div ref={end} />
       </div>
-      {warning ? <Text className="chat-warning">{t('chat.warning')}</Text> : null}
       <form
         className="chat-input"
         onSubmit={(event) => {
@@ -53,6 +52,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
           submit();
         }}
       >
+        {warning ? <Text className="chat-warning">{t('chat.warning')}</Text> : null}
         <Input
           aria-label={t('chat.placeholder')}
           placeholder={t('chat.placeholder')}

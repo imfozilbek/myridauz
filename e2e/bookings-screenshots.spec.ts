@@ -3,6 +3,8 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mockBookings } from './bookings-mock';
 import { bookSeats, confirmBooking, openWallet, passengerTrips, teamWallets } from './bookings';
+import { followTrip, passengerChat } from './chat';
+import { SHARE_TOKEN } from './chat-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const [PASSENGER, DRIVER, ADMIN] = MINI_APPS;
@@ -53,4 +55,17 @@ test('admin: Hamyonlar', async ({ page }) => {
   await mockApi(page, 'active');
   await open(page, ADMIN.port);
   await teamWallets(page, shooter(page, 'team-wallets'));
+});
+
+test('passenger: chat, hidden phone, Mashinaga chiqdim', async ({ page }) => {
+  await mockApi(page, 'active');
+  await open(page, PASSENGER.port);
+  await passengerChat(page, shooter(page, 'chat'));
+});
+
+test('close person: follows a shared trip', async ({ page }) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?follow=${SHARE_TOKEN}`));
+  await followTrip(page, shooter(page, 'follow'));
 });

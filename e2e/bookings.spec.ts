@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { bookSeats, confirmBooking } from './bookings';
+import { passengerChat } from './chat';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const [PASSENGER, DRIVER] = MINI_APPS;
@@ -21,4 +22,11 @@ test('a driver confirms a booking with the commission', async ({ page }) => {
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await confirmBooking(page);
   expect(answered.at(-1)).toContain('/confirm');
+});
+
+test('a passenger writes in the chat and a phone is hidden', async ({ page }) => {
+  await mockApi(page, 'active');
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+  await passengerChat(page);
 });

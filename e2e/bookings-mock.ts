@@ -22,7 +22,7 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   arrivedAt: null,
   ...extra,
 });
-const confirmed = booking('2', 'confirmed', {
+export const confirmed = booking('2', 'confirmed', {
   commission: 0,
   meetingPoint: { lat: 41.2856, lng: 69.2034 },
   plate: '01A123BC',

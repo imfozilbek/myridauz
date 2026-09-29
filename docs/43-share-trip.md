@@ -74,7 +74,7 @@
 
 - Bot API `savePreparedInlineMessage` и Mini App `shareMessage`: родное окно
   Telegram. Запасной путь: ссылка `https://t.me/share/url`.
-- Кнопка карточки: `https://t.me/<бот попутчиков>?startapp=follow_<токен>`.
+- Кнопка карточки: `https://t.me/<бот попутчиков>?start=follow_<токен>`: бот отвечает кнопкой Mini App (как сделано: `53`).
 - Таблицы: `trip_shares` (бронь, хэш токена, срок, отзыв) и
   `share_followers` (кто получает сообщения).
 - В брони: время `boarded_at` и `arrived_at` (`35`).
