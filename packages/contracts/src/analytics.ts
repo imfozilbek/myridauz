@@ -21,7 +21,7 @@ export const TRIP_STEPS = [
 ] as const;
 export type TripStep = (typeof TRIP_STEPS)[number];
 // The booking funnel (G08): both ways, from the first tap to the confirmation.
-export const BOOKING_STEPS = [
+const BOOKING_STEPS = [
   'seats',
   'requested',
   'confirmed',
@@ -31,7 +31,6 @@ export const BOOKING_STEPS = [
   'offer_accepted',
   'offer_declined',
 ] as const;
-export type BookingStep = (typeof BOOKING_STEPS)[number];
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);

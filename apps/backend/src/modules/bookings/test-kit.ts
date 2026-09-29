@@ -1,12 +1,13 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
 import type { Car, Trip } from '@platform/contracts';
 import type { Person } from '../users';
-import { commissionFor } from '../billing/domain/commission';
+import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
 import type { BookingsDeps, RequestFacts, TripFacts } from './application/ports';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
+import { fakeNotifier, fakeRecommend } from './test-fakes';
 
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
@@ -51,7 +52,13 @@ export function setup() {
     const { id: tripId, from, to, departAt, km, seats, price } = facts;
     const driver = { id: facts.driverId, firstName: 'Jasur', hasAvatar: true, car: CAR };
     const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
-    return { ...base, driver, seatsLeft: seats - taken, hasMeetingPoint: facts.meetingPoint !== null, status: 'active' };
+    return {
+      ...base,
+      driver,
+      seatsLeft: seats - taken,
+      hasMeetingPoint: facts.meetingPoint !== null,
+      status: 'active',
+    };
   };
   const addTrip = (extra: Partial<TripFacts> = {}) => {
     const facts: TripFacts = {
@@ -76,7 +83,8 @@ export function setup() {
     offers: createMemoryOffers(),
     trips: {
       find: async (tripId) => trips.get(tripId),
-      ofDriver: async (driverId) => [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
+      ofDriver: async (driverId) =>
+        [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
       views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
       publish: async (driverId, input) => {
         const tripId = addTrip({ ...input, driverId, meetingPoint: null });
@@ -100,18 +108,8 @@ export function setup() {
     },
     people: { find: async (userId) => people.get(userId) },
     approvedCar: async (userId) => (userId === DRIVER ? CAR : null),
-    recommend: async (from, to) => ({
-      ok: true,
-      value: { from, to, km: 300, price: 90_000, source: 'formula', minPrice: 30_000, maxPrice: 600_000, roundStep: 5000 },
-    }),
-    notify: {
-      requested: async (booking) => void notes.push(`driver: request ${booking.passenger.firstName}`),
-      confirmed: async (booking) => (notes.push(`passenger: confirmed ${booking.plate}`), 555),
-      declined: async () => void notes.push('passenger: declined'),
-      cancelled: async (_booking, by) => void notes.push(`cancelled by ${by}`),
-      offered: async (passengerId) => void notes.push(`offer to ${passengerId}`),
-      offerAnswered: async (_driverId, accepted) => void notes.push(`offer ${accepted ? 'accepted' : 'declined'}`),
-    },
+    recommend: fakeRecommend,
+    notify: fakeNotifier(notes),
     now: () => now,
     newId,
   };

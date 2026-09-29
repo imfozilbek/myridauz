@@ -10,6 +10,12 @@ const { t } = createI18n(DEFAULT_LOCALE);
 export async function onPassengerMessage(context: BotContext, message: BotMessage) {
   const { location, reply_to_message: replyTo, from } = message;
   if (!location || !from || !replyTo) return {};
-  const saved = await pickupFromBot(context.env, from.id, replyTo.message_id, location.latitude, location.longitude);
+  const saved = await pickupFromBot(
+    context.env,
+    from.id,
+    replyTo.message_id,
+    location.latitude,
+    location.longitude,
+  );
   return saved ? sendMessage(message.chat.id, t('bot.booking.pickupSaved')) : {};
 }

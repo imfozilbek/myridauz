@@ -63,7 +63,10 @@ export const driverTripIds = async (env: Bindings, driverId: number) =>
 export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));
-  return views(deps, found.filter((trip) => trip !== undefined));
+  return views(
+    deps,
+    found.filter((trip) => trip !== undefined),
+  );
 };
 export const publishFor = (env: Bindings, driverId: number, input: Required<TripInput>) =>
   publishTrip(tripsDeps(env), driverId, input);

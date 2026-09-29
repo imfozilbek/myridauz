@@ -1,8 +1,11 @@
-import type { Trip } from '@platform/contracts';
+import type { Booking, Trip } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
+import { DriverBooking } from '../bookings/driver-booking';
+import { SentOffers } from '../bookings/sent-offers';
+import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
@@ -14,10 +17,10 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
 import { TripCard } from './trip-card';
 import { TripScreen } from './trip-screen';
-import { useList } from './use-list';
+import { useLoad } from './use-list';
 import './market.css';
 
-// "Mening safarlarim" of a driver: every trip with its status; an active one can be cancelled (docs/35).
+// "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
 export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <PlacesGate>
@@ -26,13 +29,17 @@ export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
   );
 }
 
+type Opened = { readonly trip: Trip; readonly booking?: Booking };
+
 function MyTrips({ onBack }: { readonly onBack: () => void }) {
   useScreenView('market.my_trips');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { market } = useApiClients();
-  const { items, failed, reload } = useList(() => market.myTrips());
-  const [open, setOpen] = useState<Trip | null>(null);
+  const { market, bookings } = useApiClients();
+  const { value, failed, reload } = useLoad(() =>
+    Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
+  );
+  const [opened, setOpened] = useState<Opened | null>(null);
   const cancel = async (trip: Trip) => {
     try {
       await market.cancelTrip(trip.id);
@@ -40,13 +47,32 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     } catch {
       haptic.error();
     }
-    setOpen(null);
+    setOpened(null);
     reload();
   };
-  if (open) return <TripScreen trip={open} onBack={() => setOpen(null)} onCancel={() => void cancel(open)} />;
+  if (opened?.booking) {
+    const { trip, booking } = opened;
+    const close = (changed: boolean) => {
+      setOpened(changed ? null : { trip });
+      if (changed) reload();
+    };
+    return <DriverBooking booking={booking} onClose={close} />;
+  }
+  if (opened && value) {
+    const { trip } = opened;
+    return (
+      <TripScreen trip={trip} onBack={() => setOpened(null)} onCancel={() => void cancel(trip)}>
+        <TripBookings
+          bookings={value[1].filter((booking) => booking.trip.id === trip.id)}
+          onOpen={(booking) => setOpened({ trip, booking })}
+        />
+      </TripScreen>
+    );
+  }
   if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!items) return <ScreenSkeleton />;
-  if (items.length === 0) {
+  if (!value) return <ScreenSkeleton />;
+  const [trips, , offers] = value;
+  if (trips.length === 0 && offers.length === 0) {
     return (
       <>
         <BackButton onClick={onBack} />
@@ -61,8 +87,9 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
         {t('common.myTrips')}
       </Title>
       <List>
-        {items.map((trip) => (
-          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpen(trip)} />
+        <SentOffers offers={offers} />
+        {trips.map((trip) => (
+          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ trip })} />
         ))}
       </List>
     </div>

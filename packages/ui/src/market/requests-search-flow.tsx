@@ -1,6 +1,7 @@
 import type { RideRequest } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
+import { OfferFlow } from '../bookings/offer-flow';
 import { List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -53,7 +54,17 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
     market.searchRequests({ from: route.from.id, to: route.to.id, date }),
   );
   const [open, setOpen] = useState<RideRequest | null>(null);
-  if (open) return <RequestScreen request={open} onBack={() => setOpen(null)} />;
+  const [offering, setOffering] = useState(false);
+  if (open && offering) {
+    const close = () => {
+      setOffering(false);
+      setOpen(null);
+      reload();
+    };
+    return <OfferFlow request={open} onBack={() => setOffering(false)} onClose={close} />;
+  }
+  if (open)
+    return <RequestScreen request={open} onBack={() => setOpen(null)} onOffer={() => setOffering(true)} />;
   if (failed) return <ErrorScreen onRetry={reload} />;
   if (!items) return <ScreenSkeleton />;
   return (

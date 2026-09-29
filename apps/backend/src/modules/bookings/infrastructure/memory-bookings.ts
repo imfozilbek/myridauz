@@ -31,7 +31,8 @@ export function createMemoryOffers(): OfferRepository {
   return {
     save: async (offer) => void rows.set(offer.id, offer),
     find: async (id) => rows.get(id),
-    byRequests: async (requestIds) => [...rows.values()].filter((offer) => requestIds.includes(offer.requestId)),
+    byRequests: async (requestIds) =>
+      [...rows.values()].filter((offer) => requestIds.includes(offer.requestId)),
     byDriver: async (driverId) => [...rows.values()].filter((offer) => offer.driverId === driverId),
   };
 }

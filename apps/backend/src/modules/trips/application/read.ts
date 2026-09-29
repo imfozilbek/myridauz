@@ -23,7 +23,10 @@ async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<
   const byTrip = new Map<string, Riders>();
   riders.forEach((rider, index) => {
     const known = byTrip.get(rider.tripId) ?? { seats: 0, woman: false };
-    byTrip.set(rider.tripId, { seats: known.seats + rider.seats, woman: known.woman || women[index] === true });
+    byTrip.set(rider.tripId, {
+      seats: known.seats + rider.seats,
+      woman: known.woman || women[index] === true,
+    });
   });
   return byTrip;
 }

@@ -1,6 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
+import { TeamTripBookings } from '../bookings/trip-bookings';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -32,7 +33,13 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const { market } = useApiClients();
   const { items, failed, reload } = useList(() => market.teamTrips());
   const [open, setOpen] = useState<Trip | null>(null);
-  if (open) return <TripScreen trip={open} readOnly onBack={() => setOpen(null)} />;
+  if (open) {
+    return (
+      <TripScreen trip={open} readOnly onBack={() => setOpen(null)}>
+        <TeamTripBookings tripId={open.id} />
+      </TripScreen>
+    );
+  }
   if (failed) return <ErrorScreen onRetry={reload} />;
   if (!items) return <ScreenSkeleton />;
   return (

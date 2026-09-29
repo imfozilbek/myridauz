@@ -27,15 +27,28 @@ const toBooking = (row: Row): BookingRecord => ({
   commission: row.commission,
   status: row.status,
   expiresAt: row.expires_at,
-  pickup: row.pickup_lat === null || row.pickup_lng === null ? null : { lat: row.pickup_lat, lng: row.pickup_lng },
+  pickup:
+    row.pickup_lat === null || row.pickup_lng === null ? null : { lat: row.pickup_lat, lng: row.pickup_lng },
   pickupMessageId: row.pickup_message_id,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
 
 const values = (b: BookingRecord) =>
-  [b.tripId, b.passengerId, b.seats, b.price, b.commission, b.status, b.expiresAt,
-    b.pickup?.lat ?? null, b.pickup?.lng ?? null, b.pickupMessageId, b.createdAt, b.updatedAt] as const;
+  [
+    b.tripId,
+    b.passengerId,
+    b.seats,
+    b.price,
+    b.commission,
+    b.status,
+    b.expiresAt,
+    b.pickup?.lat ?? null,
+    b.pickup?.lng ?? null,
+    b.pickupMessageId,
+    b.createdAt,
+    b.updatedAt,
+  ] as const;
 
 const UPSERT = `INSERT INTO bookings (trip_id, passenger_id, seats, price, commission, status, expires_at,
     pickup_lat, pickup_lng, pickup_message_id, created_at, updated_at, id)
@@ -49,7 +62,10 @@ const all = async (statement: D1PreparedStatement) => (await statement.all<Row>(
 // Table bookings (migrations/0008_bookings_wallet.sql).
 export const d1Bookings = (db: D1Database): BookingRepository => ({
   save: async (booking) => {
-    await db.prepare(UPSERT).bind(...values(booking), booking.id).run();
+    await db
+      .prepare(UPSERT)
+      .bind(...values(booking), booking.id)
+      .run();
   },
   replace: async (booking, expected) => {
     const result = await db
@@ -81,7 +97,9 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
   },
   expireOver: async (now) => {
     await db
-      .prepare("UPDATE bookings SET status = 'expired', updated_at = ? WHERE status = 'requested' AND expires_at <= ?")
+      .prepare(
+        "UPDATE bookings SET status = 'expired', updated_at = ? WHERE status = 'requested' AND expires_at <= ?",
+      )
       .bind(now, now)
       .run();
   },

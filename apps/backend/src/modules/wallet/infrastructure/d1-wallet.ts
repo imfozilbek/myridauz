@@ -68,7 +68,7 @@ export const d1Wallet = (db: D1Database): WalletRepository => ({
     }
   },
   drivers: async () =>
-    (await db.prepare('SELECT DISTINCT driver_id FROM wallet_operations').all<{ driver_id: number }>()).results.map(
-      (row) => row.driver_id,
-    ),
+    (
+      await db.prepare('SELECT DISTINCT driver_id FROM wallet_operations').all<{ driver_id: number }>()
+    ).results.map((row) => row.driver_id),
 });

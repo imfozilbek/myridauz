@@ -78,5 +78,10 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
 export const expireBookings = (env: Bindings, now: number) => bookingStore(env).expireOver(now);
 
 // A location the passenger sent to the passenger bot as an answer to the confirmation (docs/14).
-export const pickupFromBot = (env: Bindings, passengerId: number, messageId: number, lat: number, lng: number) =>
-  setPickup(bookingsDeps(env), passengerId, messageId, { lat, lng });
+export const pickupFromBot = (
+  env: Bindings,
+  passengerId: number,
+  messageId: number,
+  lat: number,
+  lng: number,
+) => setPickup(bookingsDeps(env), passengerId, messageId, { lat, lng });

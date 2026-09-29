@@ -12,10 +12,16 @@ async function sentToMe(deps: BookingsDeps, passengerId: number, id: string): Pr
   const offer = await deps.offers.find(id);
   const request = offer ? await deps.requests.find(offer.requestId) : undefined;
   if (!offer || request?.passengerId !== passengerId) return 'bookings.not_found';
-  return offerStatusAt(offer, request.open, deps.now()) === 'sent' ? { offer, request } : 'bookings.wrong_status';
+  return offerStatusAt(offer, request.open, deps.now()) === 'sent'
+    ? { offer, request }
+    : 'bookings.wrong_status';
 }
 
-async function view(deps: BookingsDeps, offer: OfferRecord, request: RequestFacts): Promise<Result<Offer, AcceptError>> {
+async function view(
+  deps: BookingsDeps,
+  offer: OfferRecord,
+  request: RequestFacts,
+): Promise<Result<Offer, AcceptError>> {
   const [shown] = await offerViews(deps, [offer], [request]);
   return shown ? { ok: true, value: shown } : { ok: false, error: 'bookings.not_found' };
 }

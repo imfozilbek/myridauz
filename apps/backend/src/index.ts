@@ -12,7 +12,12 @@ export default {
   scheduled: async (_controller, env, context) => {
     const now = Date.now();
     context.waitUntil(
-      Promise.all([completeTrips(env, now), expireRequests(env, now), expireBookings(env, now), burnBonuses(env)]),
+      Promise.all([
+        completeTrips(env, now),
+        expireRequests(env, now),
+        expireBookings(env, now),
+        burnBonuses(env),
+      ]),
     );
   },
 } satisfies ExportedHandler<Bindings>;

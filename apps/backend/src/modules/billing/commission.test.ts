@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { commissionFor, refundsCommission } from './domain/commission';
+import { commissionFor } from '@platform/brands';
+import { refundsCommission } from './domain/commission';
 
 const RULE = { percent: 10, minPerSeat: 3000 };
 

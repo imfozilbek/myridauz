@@ -1,6 +1,6 @@
 import type { RideRequest } from '@platform/contracts';
 import { Button, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
-import { useState } from 'react';
+import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
@@ -56,13 +56,16 @@ type RequestScreenProps = {
   readonly request: RideRequest;
   readonly onBack: () => void;
   readonly onCancel?: () => void;
+  // A driver offers a time and a price (docs/35).
+  readonly onOffer?: () => void;
+  // Drivers' offers for the passenger's own request.
+  readonly children?: ReactNode;
 };
 
-// One request. The passenger cancels an open one; a driver sends an offer in G08.
-export function RequestScreen({ request, onBack, onCancel }: RequestScreenProps) {
+// One request. The passenger cancels an open one and answers offers; a driver sends an offer.
+export function RequestScreen({ request, onBack, onCancel, onOffer, children }: RequestScreenProps) {
   useScreenView('market.request');
   const { t, formatMoney, formatDate } = useI18n();
-  const [asked, setAsked] = useState(false);
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
@@ -80,6 +83,7 @@ export function RequestScreen({ request, onBack, onCancel }: RequestScreenProps)
           {line(t('market.review.price'), formatMoney(request.price))}
           {line(t('market.review.status'), t(`market.status.${request.status}`))}
         </Section>
+        {children}
       </List>
       <div className="step-note">
         {onCancel && request.status === 'open' ? (
@@ -87,12 +91,11 @@ export function RequestScreen({ request, onBack, onCancel }: RequestScreenProps)
             {t('market.request.cancel')}
           </Button>
         ) : null}
-        {onCancel ? null : (
-          <Button size="l" stretched onClick={() => setAsked(true)}>
+        {onOffer && request.status === 'open' ? (
+          <Button size="l" stretched onClick={onOffer}>
             {t('market.request.offer')}
           </Button>
-        )}
-        {asked ? <Text className="step-hint">{t('market.request.offerSoon')}</Text> : null}
+        ) : null}
       </div>
     </div>
   );

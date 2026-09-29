@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { adjust, burnExpired, canAfford, charge, grantWelcome, refund, walletView } from './application/wallet';
+import {
+  adjust,
+  burnExpired,
+  canAfford,
+  charge,
+  grantWelcome,
+  refund,
+  walletView,
+} from './application/wallet';
 import type { WalletDeps } from './application/ports';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 

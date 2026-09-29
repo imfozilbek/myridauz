@@ -24,3 +24,17 @@ export function CarCell() {
     </Section>
   );
 }
+
+// In the profile of an approved driver: "Hamyon", not a 4th main action (G08).
+export function WalletCell({ onOpen }: { readonly onOpen: () => void }) {
+  const driver = useDriver();
+  const { t } = useI18n();
+  if (driver?.application.status !== 'approved') return null;
+  return (
+    <Section>
+      <Cell before={<IconTile name="wallet" />} subtitle={t('wallet.hint')} onClick={onOpen}>
+        {t('wallet.title')}
+      </Cell>
+    </Section>
+  );
+}

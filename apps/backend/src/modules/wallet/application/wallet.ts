@@ -15,7 +15,12 @@ const row = (deps: WalletDeps, driverId: number, input: Row): Operation => ({
   ...input,
 });
 const grantRow = (deps: WalletDeps, driverId: number, grant: Grant) =>
-  row(deps, driverId, { kind: 'bonus_grant', balance: 'bonus', amount: grant.amount, expiresAt: grant.expiresAt });
+  row(deps, driverId, {
+    kind: 'bonus_grant',
+    balance: 'bonus',
+    amount: grant.amount,
+    expiresAt: grant.expiresAt,
+  });
 
 export async function walletView(deps: WalletDeps, driverId: number): Promise<Wallet> {
   const operations = await deps.wallet.operations(driverId);
@@ -70,7 +75,9 @@ export async function charge(
   if (!split) return 'not_enough';
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => split[balance] > 0)
-    .map((balance) => row(deps, driverId, { kind: 'commission', balance, amount: -split[balance], bookingId }));
+    .map((balance) =>
+      row(deps, driverId, { kind: 'commission', balance, amount: -split[balance], bookingId }),
+    );
   if (!(await deps.wallet.append(rows))) return 'duplicate';
   const next = nextGrant([...operations, ...rows], deps.promo, deps.now());
   if (next) await deps.wallet.append([grantRow(deps, driverId, next)]);
@@ -97,7 +104,9 @@ export async function burnExpired(deps: WalletDeps): Promise<void> {
   for (const driverId of await deps.wallet.drivers()) {
     const amount = burnable(await deps.wallet.operations(driverId), deps.now());
     if (amount > 0) {
-      await deps.wallet.append([row(deps, driverId, { kind: 'bonus_expired', balance: 'bonus', amount: -amount })]);
+      await deps.wallet.append([
+        row(deps, driverId, { kind: 'bonus_expired', balance: 'bonus', amount: -amount }),
+      ]);
     }
   }
 }
@@ -118,7 +127,9 @@ export async function adjust(
   const lives = input.balance === 'bonus' && input.amount > 0;
   const expiresAt = lives ? deps.now() + deps.promo.days * DAY_MS : null;
   const { balance, amount, reason } = input;
-  await deps.wallet.append([row(deps, driverId, { kind, balance, amount, reason, createdBy: ownerId, expiresAt })]);
+  await deps.wallet.append([
+    row(deps, driverId, { kind, balance, amount, reason, createdBy: ownerId, expiresAt }),
+  ]);
   return 'ok';
 }
 
@@ -126,7 +137,10 @@ export async function adminWallets(deps: WalletDeps): Promise<AdminWallets['wall
   const drivers = await deps.wallet.drivers();
   return Promise.all(
     drivers.map(async (driverId) => {
-      const [operations, person] = await Promise.all([deps.wallet.operations(driverId), deps.people.find(driverId)]);
+      const [operations, person] = await Promise.all([
+        deps.wallet.operations(driverId),
+        deps.people.find(driverId),
+      ]);
       const sum = (balance: BalanceKind) => balanceOf(operations, balance);
       return { driverId, firstName: person?.firstName ?? '', bonus: sum('bonus'), main: sum('main') };
     }),

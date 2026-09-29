@@ -35,8 +35,16 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET status = excluded.status, booking_id = excluded.booking_id`,
       )
-      .bind(offer.id, offer.requestId, offer.driverId, offer.departAt, offer.price, offer.status,
-        offer.bookingId, offer.createdAt)
+      .bind(
+        offer.id,
+        offer.requestId,
+        offer.driverId,
+        offer.departAt,
+        offer.price,
+        offer.status,
+        offer.bookingId,
+        offer.createdAt,
+      )
       .run();
   },
   find: async (id) => {

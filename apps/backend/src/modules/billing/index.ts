@@ -1,8 +1,7 @@
-import { loadBrand } from '@platform/brands';
+import { commissionFor, loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
-import { commissionFor } from './domain/commission';
 
-export { refundsCommission, type Canceller } from './domain/commission';
+export { refundsCommission } from './domain/commission';
 
 // The monetization model of the brand (docs/12, docs/22). Only "commission" exists today;
 // a subscription becomes a new strategy when it is decided.

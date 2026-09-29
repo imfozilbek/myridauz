@@ -66,7 +66,8 @@ export async function cancelByPassenger(
   if (record?.passengerId !== passengerId) return { ok: false, error: 'bookings.not_found' };
   const next = move(record, 'passenger_cancel', deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
-  if (!(await deps.bookings.replace(next, record.status))) return { ok: false, error: 'bookings.wrong_status' };
+  if (!(await deps.bookings.replace(next, record.status)))
+    return { ok: false, error: 'bookings.wrong_status' };
   const facts = await deps.trips.find(record.tripId);
   if (facts && record.status === 'confirmed' && refundsCommission('passenger'))
     await deps.wallet.refund(facts.driverId, id);
@@ -79,5 +80,9 @@ export async function cancelByPassenger(
 // "Mening safarlarim" of a passenger: the newest first.
 export async function passengerBookings(deps: BookingsDeps, passengerId: number): Promise<Booking[]> {
   const records = await deps.bookings.byPassenger(passengerId);
-  return bookingViews(deps, [...records].sort((a, b) => b.createdAt - a.createdAt), 'passenger');
+  return bookingViews(
+    deps,
+    [...records].sort((a, b) => b.createdAt - a.createdAt),
+    'passenger',
+  );
 }

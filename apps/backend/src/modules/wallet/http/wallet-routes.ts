@@ -1,9 +1,4 @@
-import {
-  ADMIN_WALLETS_PATH,
-  adjustmentSchema,
-  WALLET_PATH,
-  type ApiErrorCode,
-} from '@platform/contracts';
+import { ADMIN_WALLETS_PATH, adjustmentSchema, WALLET_PATH, type ApiErrorCode } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { WalletDeps } from '../application/ports';
@@ -32,7 +27,9 @@ export function walletRoutes(deps: (env: Bindings) => WalletDeps) {
     .use(ADMIN_WALLETS_PATH, async (context, next) =>
       context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
     )
-    .get(ADMIN_WALLETS_PATH, async (context) => context.json({ wallets: await adminWallets(deps(context.env)) }))
+    .get(ADMIN_WALLETS_PATH, async (context) =>
+      context.json({ wallets: await adminWallets(deps(context.env)) }),
+    )
     .get(ONE, async (context) => context.json(await walletView(deps(context.env), driverOf(context))))
     .post(`${ONE}/adjust`, async (context) => {
       const session = context.get('session');

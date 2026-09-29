@@ -32,7 +32,8 @@ export function createBookingsClient(options: SignedOptions) {
     book: async (tripId: string, seats: number): Promise<Booking> =>
       booking(await post(tripBookingsPath(tripId), { seats })),
     myBookings: async (): Promise<Booking[]> => bookings(await request(PASSENGER_BOOKINGS_PATH)),
-    cancelMine: async (id: string): Promise<Booking> => booking(await post(passengerBookingCancelPath(id), {})),
+    cancelMine: async (id: string): Promise<Booking> =>
+      booking(await post(passengerBookingCancelPath(id), {})),
     driverBookings: async (): Promise<Booking[]> => bookings(await request(DRIVER_BOOKINGS_PATH)),
     answer: async (id: string, action: DriverBookingAction): Promise<Booking> =>
       booking(await post(driverBookingPath(id, action), {})),

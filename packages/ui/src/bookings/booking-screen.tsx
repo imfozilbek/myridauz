@@ -30,7 +30,13 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   const place = (label: string, point: Point | null) =>
     point ? (
-      <Cell Component="a" href={mapUrl(point)} target="_blank" rel="noreferrer" subtitle={t('bookings.openMap')}>
+      <Cell
+        Component="a"
+        href={mapUrl(point)}
+        target="_blank"
+        rel="noreferrer"
+        subtitle={t('bookings.openMap')}
+      >
         {label}
       </Cell>
     ) : (
@@ -38,8 +44,18 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
     );
   const person =
     side === 'passenger'
-      ? { id: trip.driver.id, name: trip.driver.firstName, avatar: trip.driver.hasAvatar, car: trip.driver.car }
-      : { id: booking.passenger.id, name: booking.passenger.firstName, avatar: booking.passenger.hasAvatar, car: null };
+      ? {
+          id: trip.driver.id,
+          name: trip.driver.firstName,
+          avatar: trip.driver.hasAvatar,
+          car: trip.driver.car,
+        }
+      : {
+          id: booking.passenger.id,
+          name: booking.passenger.firstName,
+          avatar: booking.passenger.hasAvatar,
+          car: null,
+        };
   return (
     <div className="market">
       <BackButton onClick={onBack} />
@@ -67,8 +83,19 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>
           <Cell
-            before={<ProfilePhoto userId={person.id} name={person.name} hasAvatar={person.avatar} size={PHOTO_SIZE} />}
-            subtitle={person.car ? `${person.car.make} ${person.car.model}, ${t(`drivers.color.${person.car.color}`)}` : undefined}
+            before={
+              <ProfilePhoto
+                userId={person.id}
+                name={person.name}
+                hasAvatar={person.avatar}
+                size={PHOTO_SIZE}
+              />
+            }
+            subtitle={
+              person.car
+                ? `${person.car.make} ${person.car.model}, ${t(`drivers.color.${person.car.color}`)}`
+                : undefined
+            }
           >
             {person.name}
           </Cell>
@@ -76,7 +103,13 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
       </List>
       <div className="step-note">
         {actions.map((action) => (
-          <Button key={action.label} mode={action.main ? 'filled' : 'bezeled'} size="l" stretched onClick={action.onClick}>
+          <Button
+            key={action.label}
+            mode={action.main ? 'filled' : 'bezeled'}
+            size="l"
+            stretched
+            onClick={action.onClick}
+          >
             {action.label}
           </Button>
         ))}

@@ -16,7 +16,13 @@ type Wiring = {
 
 // The bots tell the other side (docs/07): names only, never a phone or a username.
 // A person who never opened the bot gets nothing; the booking works anyway.
-export function telegramNotifier({ fetch, brand, passengerToken, driverToken, placeName }: Wiring): BookingNotifier {
+export function telegramNotifier({
+  fetch,
+  brand,
+  passengerToken,
+  driverToken,
+  placeName,
+}: Wiring): BookingNotifier {
   const open = (app: 'passenger' | 'driver') => ({
     inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
   });
@@ -42,7 +48,8 @@ export function telegramNotifier({ fetch, brand, passengerToken, driverToken, pl
   const toPassenger = (booking: Booking, text: string) =>
     send(passengerToken, booking.passenger.id, text, open('passenger'));
   return {
-    requested: async (booking) => void (await toDriver(booking, t('bot.booking.requested', await about(booking)))),
+    requested: async (booking) =>
+      void (await toDriver(booking, t('bot.booking.requested', await about(booking)))),
     confirmed: async (booking) => {
       const { car } = booking.trip.driver;
       const text = t('bot.booking.confirmed', {
@@ -53,13 +60,21 @@ export function telegramNotifier({ fetch, brand, passengerToken, driverToken, pl
       // No button: the passenger answers this very message with the pickup point (docs/14).
       return send(passengerToken, booking.passenger.id, text);
     },
-    declined: async (booking) => void (await toPassenger(booking, t('bot.booking.declined', await about(booking)))),
+    declined: async (booking) =>
+      void (await toPassenger(booking, t('bot.booking.declined', await about(booking)))),
     cancelled: async (booking, by) => {
-      if (by === 'passenger') await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
+      if (by === 'passenger')
+        await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
       else await toPassenger(booking, t('bot.booking.cancelledByDriver', await about(booking)));
     },
-    offered: async (passengerId) => void (await send(passengerToken, passengerId, t('bot.offer.new'), open('passenger'))),
+    offered: async (passengerId) =>
+      void (await send(passengerToken, passengerId, t('bot.offer.new'), open('passenger'))),
     offerAnswered: async (driverId, accepted) =>
-      void (await send(driverToken, driverId, t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined'), open('driver'))),
+      void (await send(
+        driverToken,
+        driverId,
+        t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined'),
+        open('driver'),
+      )),
   };
 }

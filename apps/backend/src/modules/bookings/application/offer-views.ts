@@ -12,7 +12,10 @@ export async function offerViews(
   const views = await Promise.all(
     offers.map(async (offer): Promise<Offer | null> => {
       const request = requests.find((item) => item.id === offer.requestId);
-      const [driver, car] = await Promise.all([deps.people.find(offer.driverId), deps.approvedCar(offer.driverId)]);
+      const [driver, car] = await Promise.all([
+        deps.people.find(offer.driverId),
+        deps.approvedCar(offer.driverId),
+      ]);
       if (!request || !driver || !car) return null;
       return {
         id: offer.id,

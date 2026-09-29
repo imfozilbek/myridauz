@@ -21,7 +21,10 @@ describe('a booking of seats (docs/35)', () => {
     expect(notes).toContain('driver: request Dilnoza');
     const [waiting] = await driverBookings(deps, DRIVER);
     // 10% of 90 000 per seat, 2 seats; the driver never sees a passenger's photo (docs/05).
-    expect(waiting).toMatchObject({ commission: 18_000, passenger: { firstName: 'Dilnoza', hasAvatar: false } });
+    expect(waiting).toMatchObject({
+      commission: 18_000,
+      passenger: { firstName: 'Dilnoza', hasAvatar: false },
+    });
     const confirmed = value(await confirm(deps, DRIVER, asked.id));
     expect(confirmed).toMatchObject({ status: 'confirmed', plate: null, trip: { seatsLeft: 1 } });
     const [mine] = await passengerBookings(deps, DILNOZA);
@@ -65,7 +68,10 @@ describe('a booking of seats (docs/35)', () => {
     expect(await requestBooking(deps, DRIVER, tripId, 1)).toEqual({ ok: false, error: 'bookings.own_trip' });
     expect(await requestBooking(deps, OLIM, tripId, 4)).toEqual({ ok: false, error: 'bookings.no_seats' });
     value(await requestBooking(deps, OLIM, tripId, 1));
-    expect(await requestBooking(deps, OLIM, tripId, 1)).toEqual({ ok: false, error: 'bookings.wrong_status' });
+    expect(await requestBooking(deps, OLIM, tripId, 1)).toEqual({
+      ok: false,
+      error: 'bookings.wrong_status',
+    });
     value(await requestBooking(deps, OLIM, addTrip(), 1));
     value(await requestBooking(deps, OLIM, addTrip(), 1));
     expect(await requestBooking(deps, OLIM, addTrip(), 1)).toEqual({ ok: false, error: 'bookings.too_many' });
@@ -81,7 +87,10 @@ describe('a booking of seats (docs/35)', () => {
     setNow(NOW + 25 * HOUR);
     expect((await passengerBookings(deps, DILNOZA))[0]?.status).toBe('expired');
     expect(await confirm(deps, DRIVER, asked.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
-    expect(await answer(deps, DRIVER, asked.id, 'decline')).toEqual({ ok: false, error: 'bookings.wrong_status' });
+    expect(await answer(deps, DRIVER, asked.id, 'decline')).toEqual({
+      ok: false,
+      error: 'bookings.wrong_status',
+    });
   });
 });
 

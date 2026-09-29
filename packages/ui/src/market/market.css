@@ -15,6 +15,13 @@
   color: var(--tgui--hint_color);
 }
 
+.market-group {
+  display: block;
+  padding: 12px 20px 0;
+  color: var(--tgui--section_header_text_color);
+  text-transform: uppercase;
+}
+
 .price-field {
   display: flex;
   align-items: center;

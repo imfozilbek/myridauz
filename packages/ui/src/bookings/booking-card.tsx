@@ -9,7 +9,11 @@ import { bookingIcon } from './booking-status';
 import '../market/market.css';
 
 const PHOTO_SIZE = 40;
-type Props = { readonly booking: Booking; readonly side: 'passenger' | 'driver'; readonly onOpen: () => void };
+type Props = {
+  readonly booking: Booking;
+  readonly side: 'passenger' | 'driver';
+  readonly onOpen: () => void;
+};
 
 // One booking in a list: the day and the status, A and B, who is on the other side.
 export function BookingCard({ booking, side, onOpen }: Props) {

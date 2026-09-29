@@ -13,7 +13,10 @@ describe('a driver offers on a request (docs/35)', () => {
   it('sends only with money, on the request day, within the price bounds, once', async () => {
     const { deps, addRequest, bonus } = setup();
     const requestId = addRequest();
-    expect(await sendOffer(deps, DRIVER, requestId, offer)).toEqual({ ok: false, error: 'wallet.not_enough' });
+    expect(await sendOffer(deps, DRIVER, requestId, offer)).toEqual({
+      ok: false,
+      error: 'wallet.not_enough',
+    });
     await bonus();
     expect(await sendOffer(deps, ALI, requestId, offer)).toEqual({ ok: false, error: 'trips.not_driver' });
     expect(await sendOffer(deps, DRIVER, requestId, { ...offer, departAt: NOW + 50 * HOUR })).toEqual({
@@ -25,7 +28,10 @@ describe('a driver offers on a request (docs/35)', () => {
       error: 'trips.price_out_of_bounds',
     });
     expect((await sendOffer(deps, DRIVER, requestId, offer)).ok).toBe(true);
-    expect(await sendOffer(deps, DRIVER, requestId, offer)).toEqual({ ok: false, error: 'bookings.wrong_status' });
+    expect(await sendOffer(deps, DRIVER, requestId, offer)).toEqual({
+      ok: false,
+      error: 'bookings.wrong_status',
+    });
     expect(await driverOffers(deps, DRIVER)).toHaveLength(1);
   });
 
@@ -40,9 +46,16 @@ describe('a driver offers on a request (docs/35)', () => {
     expect(accepted).toMatchObject({ ok: true, value: { status: 'accepted' } });
     const [booking] = await passengerBookings(deps, DILNOZA);
     // The car has 4 seats: 2 are booked, the other 2 are open to other passengers.
-    expect(booking).toMatchObject({ status: 'confirmed', seats: 2, plate: '01A123BC', trip: { seatsLeft: 2 } });
+    expect(booking).toMatchObject({
+      status: 'confirmed',
+      seats: 2,
+      plate: '01A123BC',
+      trip: { seatsLeft: 2 },
+    });
     expect(balanceOf(await wallet(), 'bonus')).toBe(481_000);
-    expect(notes).toEqual(expect.arrayContaining(['offer to 10', 'offer accepted', 'passenger: confirmed 01A123BC']));
+    expect(notes).toEqual(
+      expect.arrayContaining(['offer to 10', 'offer accepted', 'passenger: confirmed 01A123BC']),
+    );
     expect(await acceptOffer(deps, DILNOZA, sent.ok ? sent.value.id : '')).toEqual({
       ok: false,
       error: 'bookings.wrong_status',

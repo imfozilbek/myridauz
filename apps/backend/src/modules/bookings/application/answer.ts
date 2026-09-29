@@ -4,11 +4,7 @@ import { move, statusAt, type BookingAction, type BookingRecord } from '../domai
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 
-type AnswerError =
-  | 'bookings.not_found'
-  | 'bookings.wrong_status'
-  | 'bookings.no_seats'
-  | 'wallet.not_enough';
+type AnswerError = 'bookings.not_found' | 'bookings.wrong_status' | 'bookings.no_seats' | 'wallet.not_enough';
 
 async function mine(deps: BookingsDeps, driverId: number, id: string) {
   const record = await deps.bookings.find(id);
@@ -30,7 +26,8 @@ export async function confirm(
 ): Promise<Result<Booking, AnswerError>> {
   const record = await mine(deps, driverId, id);
   if (!record) return { ok: false, error: 'bookings.not_found' };
-  if (statusAt(record, deps.now(), false) !== 'requested') return { ok: false, error: 'bookings.wrong_status' };
+  if (statusAt(record, deps.now(), false) !== 'requested')
+    return { ok: false, error: 'bookings.wrong_status' };
   const [trip] = await deps.trips.views([record.tripId]);
   if (!trip || trip.seatsLeft < record.seats) return { ok: false, error: 'bookings.no_seats' };
   const charged = await deps.wallet.charge(driverId, id, record.commission);
@@ -59,7 +56,8 @@ export async function answer(
   if (!record) return { ok: false, error: 'bookings.not_found' };
   const next = move(record, action, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
-  if (!(await deps.bookings.replace(next, record.status))) return { ok: false, error: 'bookings.wrong_status' };
+  if (!(await deps.bookings.replace(next, record.status)))
+    return { ok: false, error: 'bookings.wrong_status' };
   if (record.status === 'confirmed' && refundsCommission('driver')) await deps.wallet.refund(driverId, id);
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) {
@@ -72,7 +70,11 @@ export async function answer(
 // Bookings on the driver's trips, the newest first.
 export async function driverBookings(deps: BookingsDeps, driverId: number): Promise<Booking[]> {
   const records = await deps.bookings.byTrips(await deps.trips.ofDriver(driverId));
-  return bookingViews(deps, [...records].sort((a, b) => b.createdAt - a.createdAt), 'driver');
+  return bookingViews(
+    deps,
+    [...records].sort((a, b) => b.createdAt - a.createdAt),
+    'driver',
+  );
 }
 
 // The team looks at the bookings of a trip (owner decision 29.09.2026: trips are not approved).

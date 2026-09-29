@@ -54,7 +54,12 @@ export function BookFlow({ trip, onBack, onClose }: Props) {
   return <BookReview trip={trip} seats={seats} onBack={() => setSeats(null)} onSent={() => setSent(true)} />;
 }
 
-type ReviewProps = { readonly trip: Trip; readonly seats: number; readonly onBack: () => void; readonly onSent: () => void };
+type ReviewProps = {
+  readonly trip: Trip;
+  readonly seats: number;
+  readonly onBack: () => void;
+  readonly onSent: () => void;
+};
 
 function BookReview({ trip, seats, onBack, onSent }: ReviewProps) {
   useScreenView('bookings.review');

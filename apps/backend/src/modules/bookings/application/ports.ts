@@ -74,7 +74,12 @@ export type BookingsDeps = {
   };
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
-  readonly recommend: (from: string, to: string) => Promise<{ ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' }>;
+  readonly recommend: (
+    from: string,
+    to: string,
+  ) => Promise<
+    { ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' }
+  >;
   readonly notify: BookingNotifier;
   readonly now: () => number;
   readonly newId: () => string;

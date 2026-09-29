@@ -13,7 +13,7 @@
   "kind.admin_adjustment": "Tuzatish",
   "topUp": "Hisobni toʻldirish",
   "topUp.title": "Hisobni toʻldirish",
-  "topUp.hint": "Hozircha hisobni toʻldirish ishlamaydi. Bonus tugasa, Rida qoʻllab-quvvatlash xizmatiga yozing: bonusni qoʻlda qoʻshamiz.",
+  "topUp.hint": "Hozircha hisobni toʻldirish ishlamaydi. Bonus tugasa, qoʻllab-quvvatlash xizmatiga yozing: bonusni qoʻlda qoʻshamiz.",
   "notEnough.title": "Hamyonda mablagʻ yetarli emas",
   "notEnough.hint": "Bu joyni tasdiqlash uchun {amount} komissiya kerak.",
   "team.title": "Hamyonlar",

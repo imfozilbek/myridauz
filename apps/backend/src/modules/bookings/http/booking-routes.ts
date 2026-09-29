@@ -32,7 +32,12 @@ export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
       const input = bookingInputSchema.safeParse(await context.req.json().catch(() => null));
       if (!input.success) return fail(context, 'bookings.invalid_input');
       const passengerId = context.get('session').user.id;
-      const result = await requestBooking(deps(context.env), passengerId, context.req.param('id'), input.data.seats);
+      const result = await requestBooking(
+        deps(context.env),
+        passengerId,
+        context.req.param('id'),
+        input.data.seats,
+      );
       return result.ok ? context.json(result.value, 201) : fail(context, result.error);
     })
     .get(PASSENGER_BOOKINGS_PATH, async (context) =>
