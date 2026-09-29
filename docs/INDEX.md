@@ -53,4 +53,5 @@
 | 49 | [49-lessons-learned-3.md](49-lessons-learned-3.md) | Уроки: продолжение журнала (№21 и дальше) |
 | 50 | [50-drivers-and-moderation.md](50-drivers-and-moderation.md) | Заявка водителя, модерация, поддержка, команда |
 | 51 | [51-trips-and-pricing.md](51-trips-and-pricing.md) | Поездки, заявки, поиск, движок цен и админка цен (G07) |
+| 52 | [52-bookings-and-wallet.md](52-bookings-and-wallet.md) | Бронь, предложения, кошелёк, комиссия, бонус (G08) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |
