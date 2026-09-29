@@ -1,0 +1,119 @@
+/* Our camera: the picture on the whole screen, a frame of where to put the face or the car. */
+.camera {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  overflow: hidden;
+  background: rgb(0 0 0);
+  color: rgb(255 255 255);
+}
+
+.camera-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A selfie is shown like a mirror, as every phone camera does. */
+.camera-user {
+  transform: scaleX(-1);
+}
+
+/* The frame; the shadow darkens everything around it. */
+.camera-guide {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  border: 3px dashed rgb(255 255 255);
+  box-shadow: 0 0 0 200vmax rgb(0 0 0 / 45%);
+  transform: translate(-50%, -50%);
+}
+
+.camera-guide-face {
+  width: 64vw;
+  height: 84vw;
+  border-radius: 50%;
+}
+
+.camera-guide-front,
+.camera-guide-interior {
+  width: 86vw;
+  height: 64vw;
+  border-radius: 24px;
+}
+
+.camera-guide-side {
+  width: 92vw;
+  height: 46vw;
+  border-radius: 24px;
+}
+
+/* The plate place on the front photo. */
+.camera-guide-front::after {
+  position: absolute;
+  bottom: 12%;
+  left: 50%;
+  width: 34%;
+  height: 12%;
+  border: 2px solid rgb(255 255 255);
+  border-radius: 6px;
+  content: '';
+  transform: translateX(-50%);
+}
+
+.camera-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 24px 24px 0;
+  text-align: center;
+}
+
+.camera-failed {
+  position: absolute;
+  top: 46%;
+  right: 24px;
+  left: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.camera-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 24px 24px 40px;
+}
+
+.camera-close {
+  justify-self: start;
+  color: rgb(255 255 255);
+}
+
+.camera-shutter {
+  width: 76px;
+  height: 76px;
+  border: 6px solid rgb(255 255 255 / 60%);
+  border-radius: 50%;
+  background: rgb(255 255 255);
+  background-clip: padding-box;
+  cursor: pointer;
+}
+
+.camera-shutter:disabled {
+  opacity: 0.4;
+}

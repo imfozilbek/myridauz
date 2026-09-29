@@ -11,11 +11,14 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
   it('asks one question per screen and sends the application', async () => {
     const { submit, tracked, container } = renderGate(null);
     for (const step of ['Boshlash', 'Chevrolet', 'Cobalt', 'Oq']) await tap(step);
-    fireEvent.change(screen.getByPlaceholderText('01 A 123 BC'), {
-      target: { value: '01 a 123 bc' },
-    });
+    // Only Latin capitals and digits stay in the plate, whatever the keyboard gives.
+    const plate = screen.getByPlaceholderText('01 A 123 BC');
+    fireEvent.change(plate, { target: { value: '01 a 123 bcЖ!' } });
+    expect(screen.getByDisplayValue('01 A 123 BC')).toBeTruthy();
     await tap('Davom etish');
-    await tap('4');
+    // 4 seats are chosen in advance: "Davom etish" keeps them.
+    expect(await screen.findByText('Yoʻlovchilar uchun nechta joy bor?')).toBeTruthy();
+    await tap('Davom etish');
     await tap('Davom etish');
     // Each photo has a frame with a hint of what to shoot until it is taken.
     expect(screen.getByText('Raqam aniq koʻrinsin')).toBeTruthy();

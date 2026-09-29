@@ -9,6 +9,10 @@ import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { hasProblem, ProblemNote } from '../problem-note';
 
+// Plates have Latin capitals and digits only: anything else is dropped as the driver types.
+const PLATE_MAX_LENGTH = 12;
+const plateInput = (text: string) => text.toUpperCase().replace(/[^A-Z0-9 ]/g, '');
+
 type PlateStepProps = {
   readonly initial: string;
   readonly reasons: readonly ModerationReason[];
@@ -39,10 +43,11 @@ export function PlateStep({ initial, reasons, onBack, onDone }: PlateStepProps) 
           placeholder={t('drivers.plate.placeholder')}
           aria-label={t('drivers.plate.title')}
           autoCapitalize="characters"
+          maxLength={PLATE_MAX_LENGTH}
           autoComplete="off"
           spellCheck={false}
           onChange={(event) => {
-            setValue(event.target.value.toUpperCase());
+            setValue(plateInput(event.target.value));
             setInvalid(false);
           }}
         />

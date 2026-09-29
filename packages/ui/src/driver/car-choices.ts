@@ -14,6 +14,9 @@ export const modelChoices = (make: string | undefined): Choice<string>[] =>
 export const colorChoices = (t: Translate, swatch: (color: CarColor) => ReactNode): Choice<CarColor>[] =>
   CAR_COLORS.map((color) => ({ value: color, label: t(`drivers.color.${color}`), before: swatch(color) }));
 
+// Most cars take 4 passengers: the answer is ready, a driver of a minivan changes it (docs/35).
+export const DEFAULT_SEATS = 4;
+
 export const seatChoices = (): Choice<number>[] =>
   Array.from({ length: MAX_SEATS }, (_, index) => ({ value: index + 1, label: String(index + 1) }));
 

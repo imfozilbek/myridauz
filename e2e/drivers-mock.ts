@@ -22,7 +22,7 @@ const START = {
 };
 
 // Any real picture works: the Mini App compresses it before the upload.
-export const PHOTO = `brands/${loadBrand().id}/public/regions/1726.webp`;
+const PHOTO = `brands/${loadBrand().id}/public/regions/1726.webp`;
 
 // The driver application and the team queue as the Mini Apps see them (G06).
 export async function mockDrivers(page: Page, start: DriverStart) {

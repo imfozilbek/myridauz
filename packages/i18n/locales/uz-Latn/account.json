@@ -30,6 +30,8 @@
   "profile.phoneHint": "Raqamingizni faqat siz koʻrasiz.",
   "avatar.add": "Rasm qoʻshish",
   "avatar.change": "Rasmni almashtirish",
+  "avatar.cameraTitle": "Yuzingiz rasmi",
+  "avatar.cameraHint": "Yuzingizni ramka ichiga joylang",
   "avatar.rules": "Yuzingiz aniq koʻrinsin: qora koʻzoynak va niqobsiz, kadrda boshqa odamlar boʻlmasin.",
   "avatar.failed": "Rasmni yuklab boʻlmadi. Qayta urinib koʻring.",
   "avatar.phoneOnly": "Rasm telefonning old kamerasida olinadi. Uni telefoningizdagi Telegramdan qoʻshing.",

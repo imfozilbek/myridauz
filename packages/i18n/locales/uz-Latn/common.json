@@ -1,6 +1,9 @@
 {
   "continue": "Davom etish",
   "back": "Orqaga",
+  "camera.shoot": "Rasmga olish",
+  "camera.denied": "Kamera ochilmadi. Telefon kamerasi bilan oling.",
+  "camera.native": "Telefon kamerasini ochish",
   "retry": "Qayta urinish",
   "money": "{amount} soʻm",
   "language": "Til",

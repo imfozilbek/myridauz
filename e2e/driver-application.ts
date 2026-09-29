@@ -1,8 +1,13 @@
 import { expect, type Page } from '@playwright/test';
 import { TEXT } from './apps';
-import { PHOTO } from './drivers-mock';
 
 type Shot = (name: string) => Promise<unknown>;
+
+// Our camera screen is open and the fake camera shows a picture.
+async function cameraReady(page: Page) {
+  const shutter = page.getByRole('dialog').getByLabel(TEXT.shutter);
+  await expect(shutter).toBeEnabled();
+}
 
 // Goes through the driver application like a person: one answer per screen (G06).
 export async function applyAsDriver(page: Page, shot: Shot = async () => undefined) {
@@ -21,8 +26,14 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await page.getByPlaceholder(TEXT.platePlaceholder).fill('01 a 123 bc');
   await shot('3-plate');
   await mainButton.click();
-  await page.getByText('4', { exact: true }).click();
-  await page.locator('input[capture=user]').setInputFiles(PHOTO);
+  // 4 seats are chosen in advance.
+  await expect(page.getByText(TEXT.seatsTitle)).toBeVisible();
+  await shot('3-seats');
+  await mainButton.click();
+  await page.getByText(TEXT.addPhoto).click();
+  await cameraReady(page);
+  await shot('4-avatar-camera');
+  await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
   await expect(mainButton).toBeVisible();
   await shot('4-avatar');
   await mainButton.click();
@@ -30,7 +41,9 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('5-photos-empty');
   for (const taken of [1, 2, 3]) {
     await page.getByText(TEXT.take).first().click();
-    await page.locator('input[capture=environment]').setInputFiles(PHOTO);
+    await cameraReady(page);
+    if (taken === 1) await shot('5-photos-camera');
+    await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
     await expect(page.getByText(TEXT.retake)).toHaveCount(taken);
   }
   await expect(mainButton).toBeVisible();
