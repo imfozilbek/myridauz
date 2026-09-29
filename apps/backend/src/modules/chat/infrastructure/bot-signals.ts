@@ -7,7 +7,7 @@ import type { ChatSignals } from '../application/ports';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 // The Mini App opens this chat at once (docs/07).
-export const CHAT_PARAM = 'chat';
+const CHAT_PARAM = 'chat';
 
 // The passenger hears from the passenger bot, the driver from the driver bot (docs/07).
 export const botSignals = (env: Bindings): ChatSignals => ({

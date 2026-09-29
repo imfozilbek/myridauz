@@ -11,7 +11,7 @@ const START_TEXT = {
 
 // A close person opens the passenger Mini App to follow a trip, no registration (docs/43).
 const FOLLOW_PAYLOAD = /^follow_([A-Za-z0-9_-]{43})$/u;
-export const FOLLOW_PARAM = 'follow';
+const FOLLOW_PARAM = 'follow';
 
 const miniAppUrl = (brand: BrandConfig, role: BotRole) => `https://${appHost(brand, role)}`;
 export const openButton = (brand: BrandConfig, role: BotRole) => ({

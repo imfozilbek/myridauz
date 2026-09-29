@@ -2,7 +2,7 @@ import type { Member, Role } from './ports';
 
 // A short-lived ticket for the chat socket (docs/07): a browser WebSocket cannot send the
 // Telegram signature, so the signed API call gives a ticket and the socket shows it.
-export const TICKET_SECONDS = 60;
+const TICKET_SECONDS = 60;
 type Payload = { readonly key: string; readonly member: Member; readonly exp: number };
 
 const encoder = new TextEncoder();

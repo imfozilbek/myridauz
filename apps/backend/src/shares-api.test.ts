@@ -44,7 +44,7 @@ async function confirmedBooking() {
   return { booking, share };
 }
 const tokenOf = (link: string) => link.split('follow_')[1] ?? '';
-const shared = (token: string) => app.request(`/shared/${token}`, {}, testEnv);
+const shared = async (token: string) => app.request(`/shared/${token}`, {}, testEnv);
 
 describe('"Yaqinlarimga yuborish" (docs/43)', () => {
   it('shows the trip only by its token, without phones, and to at most 5 close people', async () => {

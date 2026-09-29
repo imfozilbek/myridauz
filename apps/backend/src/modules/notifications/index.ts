@@ -3,7 +3,7 @@ import { teamMembers } from '../team';
 import { deliver, type Tokens } from './application/deliver';
 import type { AfterSentHandler, NotificationJob } from './application/job';
 
-export type { AfterSent, NotificationJob } from './application/job';
+export type { NotificationJob } from './application/job';
 
 const tokensOf = (env: Bindings): Tokens => ({
   passenger: env.PASSENGER_BOT_TOKEN,
