@@ -45,8 +45,11 @@ export async function publishTrip(
     km,
     status: 'active',
     meetingPoint: null,
+    meetingMessageId: null,
     createdAt: now,
   };
   await deps.trips.save(trip);
+  const meetingMessageId = await deps.announce(trip);
+  if (meetingMessageId !== null) await deps.trips.save({ ...trip, meetingMessageId });
   return { ok: true, value: tripView(trip, driver, car, now) };
 }

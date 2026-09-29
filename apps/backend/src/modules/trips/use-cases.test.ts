@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { setMeetingPoint } from './application/meeting-point';
 import { publishTrip } from './application/publish';
 import { cancelTrip, myTrips, searchTrips, tripDetail } from './application/read';
 import { HOUR, NOW, setup } from './test-kit';
@@ -85,5 +86,17 @@ describe('my trips and the end of a trip (docs/35)', () => {
     expect((await tripDetail(deps, firstId))?.status).toBe('completed');
     await deps.trips.completeOver(NOW + 10 * HOUR);
     expect((await myTrips(deps, 1)).map((item) => item.status)).toEqual(['cancelled', 'completed']);
+  });
+});
+
+describe('the meeting point from the driver bot (docs/14)', () => {
+  it('saves a location sent as an answer to the trip message of this driver', async () => {
+    const { deps, trip } = setup();
+    const published = await publishTrip(deps, 1, trip);
+    const id = published.ok ? published.value.id : '';
+    expect(await setMeetingPoint(deps, 2, 77, { lat: 41.3, lng: 69.2 })).toBe('not_found');
+    expect(await setMeetingPoint(deps, 1, 76, { lat: 41.3, lng: 69.2 })).toBe('not_found');
+    expect(await setMeetingPoint(deps, 1, 77, { lat: 41.3, lng: 69.2 })).toBe('saved');
+    expect((await tripDetail(deps, id))?.hasMeetingPoint).toBe(true);
   });
 });

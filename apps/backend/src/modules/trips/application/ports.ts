@@ -7,6 +7,7 @@ export type TripRepository = {
   save(trip: TripRecord): Promise<void>;
   find(id: string): Promise<TripRecord | undefined>;
   byDriver(driverId: number): Promise<TripRecord[]>;
+  byMeetingMessage(driverId: number, messageId: number): Promise<TripRecord | undefined>;
   // Active trips leaving between the two times, the earliest first.
   leaving(from: number, to: number): Promise<TripRecord[]>;
   // The Cron job: trips over by now become completed (docs/35).
@@ -24,6 +25,8 @@ export type TripsDeps = {
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;
+  // The driver bot tells about the new trip; the id of that message, or null if it was not sent.
+  readonly announce: (trip: TripRecord) => Promise<number | null>;
   readonly newId: () => string;
   readonly now: () => number;
 };

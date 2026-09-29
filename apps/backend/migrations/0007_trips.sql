@@ -14,6 +14,8 @@ CREATE TABLE trips (
   status TEXT NOT NULL CHECK (status IN ('active', 'full', 'completed', 'cancelled')),
   meeting_lat REAL,
   meeting_lng REAL,
+  -- The driver bot message about the trip: the driver answers it with the meeting point (docs/14).
+  meeting_message_id INTEGER,
   created_at INTEGER NOT NULL
 );
 CREATE INDEX trips_search ON trips (status, depart_at);

@@ -16,6 +16,8 @@ export type TripRecord = {
   readonly comment: string;
   readonly status: Trip['status'];
   readonly meetingPoint: { readonly lat: number; readonly lng: number } | null;
+  // The driver bot message the driver answers with the meeting point (docs/14).
+  readonly meetingMessageId: number | null;
   readonly createdAt: number;
 };
 

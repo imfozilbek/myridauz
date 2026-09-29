@@ -17,6 +17,7 @@ type Row = {
   status: string;
   meeting_lat: number | null;
   meeting_lng: number | null;
+  meeting_message_id: number | null;
   created_at: number;
 };
 
@@ -37,14 +38,15 @@ const toTrip = (row: Row): TripRecord => ({
     row.meeting_lat === null || row.meeting_lng === null
       ? null
       : { lat: row.meeting_lat, lng: row.meeting_lng },
+  meetingMessageId: row.meeting_message_id,
   createdAt: row.created_at,
 });
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
-  woman_on_board, comment, status, meeting_lat, meeting_lng, created_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  woman_on_board, comment, status, meeting_lat, meeting_lng, meeting_message_id, created_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, meeting_lat = excluded.meeting_lat,
-  meeting_lng = excluded.meeting_lng`;
+  meeting_lng = excluded.meeting_lng, meeting_message_id = excluded.meeting_message_id`;
 
 // Table trips (migrations/0007_trips.sql). Route and price never change after publishing (docs/23).
 export const d1Trips = (db: D1Database): TripRepository => ({
@@ -66,6 +68,7 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         trip.status,
         trip.meetingPoint?.lat ?? null,
         trip.meetingPoint?.lng ?? null,
+        trip.meetingMessageId,
         trip.createdAt,
       )
       .run();
@@ -78,6 +81,13 @@ export const d1Trips = (db: D1Database): TripRepository => ({
     (await db.prepare('SELECT * FROM trips WHERE driver_id = ?').bind(driverId).all<Row>()).results.map(
       toTrip,
     ),
+  byMeetingMessage: async (driverId, messageId) => {
+    const row = await db
+      .prepare('SELECT * FROM trips WHERE driver_id = ? AND meeting_message_id = ?')
+      .bind(driverId, messageId)
+      .first<Row>();
+    return row ? toTrip(row) : undefined;
+  },
   leaving: async (from, to) =>
     (
       await db

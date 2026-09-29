@@ -7,6 +7,8 @@ export function createMemoryTrips(): TripRepository {
     save: async (trip) => void trips.set(trip.id, trip),
     find: async (id) => trips.get(id),
     byDriver: async (driverId) => [...trips.values()].filter((trip) => trip.driverId === driverId),
+    byMeetingMessage: async (driverId, messageId) =>
+      [...trips.values()].find((trip) => trip.driverId === driverId && trip.meetingMessageId === messageId),
     leaving: async (from, to) =>
       [...trips.values()]
         .filter((trip) => trip.status === 'active' && trip.departAt >= from && trip.departAt < to)

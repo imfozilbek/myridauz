@@ -57,6 +57,8 @@ export function setup() {
       return { ok: true, value };
     },
     places: async () => PLACES,
+    // The driver bot message about a trip: the driver answers it with the meeting point.
+    announce: async () => 77,
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
   };
