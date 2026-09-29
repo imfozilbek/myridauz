@@ -23,8 +23,7 @@ export type StoredReview = {
 
 // "Slepaya" publication: a review shows once the other side reviewed the same ride too,
 // or BLIND_DAYS passed. Nobody answers a bad review with revenge (docs/24).
-export const counterpartKey = (review: StoredReview) => `${review.bookingId}:${review.rateeId}`;
-export const ownKey = (review: StoredReview) => `${review.bookingId}:${review.raterId}`;
+const counterpartKey = (review: StoredReview) => `${review.bookingId}:${review.rateeId}`;
 export const isPublished = (review: StoredReview, answered: ReadonlySet<string>, now: number) =>
   !review.hidden && (answered.has(counterpartKey(review)) || review.createdAt + BLIND_DAYS * DAY_MS <= now);
 

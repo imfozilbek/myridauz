@@ -31,6 +31,7 @@ import {
   Wallet,
   MessageCircle,
   Share2,
+  Star,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -68,6 +69,7 @@ const ICONS = {
   chat: MessageCircle,
   share: Share2,
   subscriptions: Bell,
+  star: Star,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

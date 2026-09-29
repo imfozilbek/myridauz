@@ -4,15 +4,16 @@ import { Cell, Section } from '../components';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 
-type Props = { readonly booking: Booking; readonly onChat: () => void };
+type Props = { readonly booking: Booking; readonly onChat: () => void; readonly onComplain: () => void };
 
 // Under a passenger's booking: the chat, and for a confirmed one "Yaqinlarimga yuborish" with
 // "Mashinaga chiqdim" and "Yetib keldim" for the close people (docs/07, docs/43).
-export function TripTools({ booking: initial, onChat }: Props) {
+export function TripTools({ booking: initial, onChat, onComplain }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
@@ -78,6 +79,7 @@ export function TripTools({ booking: initial, onChat }: Props) {
           ) : null}
         </>
       ) : null}
+      {canComplain(booking.status) ? <ComplainCell onClick={onComplain} /> : null}
     </Section>
   );
 }

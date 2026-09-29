@@ -8,13 +8,15 @@ import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { ComplainCell, canComplain } from '../feedback/complain-cell';
+import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
 import { Cell, Section } from '../components';
 import { IconTile } from '../icon-tile';
 import { BookingScreen, type BookingAction } from './booking-screen';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
-type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up' | 'chat';
+type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up' | 'chat' | 'complain';
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
 type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) => void };
 
@@ -46,6 +48,7 @@ export function DriverBooking({ booking, onClose }: Props) {
         onBack={() => setStep('view')}
       />
     );
+  if (step === 'complain') return <ComplaintScreen bookingId={booking.id} onBack={() => setStep('view')} />;
   if (step === 'top_up') return <TopUpScreen onBack={() => setStep('not_enough')} />;
   if (step === 'not_enough')
     return (
@@ -89,6 +92,7 @@ export function DriverBooking({ booking, onClose }: Props) {
         <Cell before={<IconTile name="chat" />} onClick={() => setStep('chat')}>
           {t('chat.open')}
         </Cell>
+        {canComplain(booking.status) ? <ComplainCell onClick={() => setStep('complain')} /> : null}
       </Section>
     </BookingScreen>
   );

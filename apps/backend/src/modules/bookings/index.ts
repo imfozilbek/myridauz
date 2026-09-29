@@ -59,7 +59,6 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
 };
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
-export type { Ride } from './application/rides';
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
 export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]) =>
   ridesOf(bookingsDeps(env), trips);

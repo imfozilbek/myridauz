@@ -2,6 +2,7 @@ import type {
   BookingsClient,
   ChatClient,
   DriversClient,
+  FeedbackClient,
   MarketClient,
   ModerationClient,
   PricingClient,
@@ -20,6 +21,7 @@ export type ApiClients = {
   readonly wallet: WalletClient;
   readonly chat: ChatClient;
   readonly subscriptions: SubscriptionsClient;
+  readonly feedback: FeedbackClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

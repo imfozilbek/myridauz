@@ -8,6 +8,7 @@ import { RequestScreen } from '../market/request-card';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { ChatScreen } from '../chat/chat-screen';
+import { ComplaintScreen } from '../feedback/complaint-screen';
 import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
 import { OfferScreen, OffersSection } from './offer-list';
@@ -33,6 +34,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const [offer, setOffer] = useState<Offer | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
+  const [complaint, setComplaint] = useState<string | null>(null);
   const run = async (action: () => Promise<unknown>, after: () => void) => {
     try {
       await action();
@@ -54,6 +56,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
       </StepLayout>
     );
   }
+  if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
@@ -106,7 +109,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
   return (
     <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
-      <TripTools booking={booking} onChat={openChat} />
+      <TripTools booking={booking} onChat={openChat} onComplain={() => setComplaint(booking.id)} />
     </BookingScreen>
   );
 }

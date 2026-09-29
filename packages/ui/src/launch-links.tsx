@@ -1,6 +1,7 @@
 import type { MiniApp } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { ChatLink } from './chat/chat-link';
+import { FeedbackLink } from './feedback/feedback-link';
 import { TripLink } from './market/trip-link';
 import { SubscribeLink } from './subscriptions/subscribe-link';
 import { SubscriptionsLink } from './subscriptions/subscriptions-link';
@@ -12,7 +13,9 @@ export function LaunchLinks({ app, children }: { readonly app: MiniApp; readonly
     <ChatLink>
       <TripLink enabled={app === 'passenger'}>
         <SubscribeLink enabled={app === 'passenger'}>
-          <SubscriptionsLink>{children}</SubscriptionsLink>
+          <FeedbackLink enabled={app !== 'admin'}>
+            <SubscriptionsLink>{children}</SubscriptionsLink>
+          </FeedbackLink>
         </SubscribeLink>
       </TripLink>
     </ChatLink>

@@ -1,6 +1,8 @@
 import {
   ApplicationsScreen,
+  ComplaintsScreen,
   linkedApplication,
+  linkedComplaint,
   ManagementScreen,
   StartFlow,
   type StartAction,
@@ -22,6 +24,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.admin.complaints',
     hintKey: 'common.admin.complaintsHint',
+    Screen: ComplaintsScreen,
   },
   // Prices and statistics share one action: at most 3 on the main screen (docs/19).
   {
@@ -34,9 +37,11 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
+// A link from the admin bot opens the applications or a complaint at once (docs/17, docs/50).
+const opened = () =>
+  linkedComplaint() ? 'complaints' : linkedApplication() === null ? null : 'applications';
+
 export function StartPage() {
-  // A link from the admin bot opens the applications at once (docs/50).
-  return (
-    <StartFlow actions={ACTIONS} {...(linkedApplication() === null ? {} : { opened: 'applications' })} />
-  );
+  const open = opened();
+  return <StartFlow actions={ACTIONS} {...(open === null ? {} : { opened: open })} />;
 }

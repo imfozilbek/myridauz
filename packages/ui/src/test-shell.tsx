@@ -22,6 +22,7 @@ export const testClients = (overrides: {
   readonly wallet?: Partial<ApiClients['wallet']>;
   readonly chat?: Partial<ApiClients['chat']>;
   readonly subscriptions?: Partial<ApiClients['subscriptions']>;
+  readonly feedback?: Partial<ApiClients['feedback']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -91,6 +92,17 @@ export const testClients = (overrides: {
     remove: NOT_USED,
     renew: NOT_USED,
     ...overrides.subscriptions,
+  },
+  feedback: {
+    target: NOT_USED,
+    review: NOT_USED,
+    reviewsOf: NOT_USED,
+    complain: NOT_USED,
+    queue: NOT_USED,
+    complaint: NOT_USED,
+    chat: NOT_USED,
+    decide: NOT_USED,
+    ...overrides.feedback,
   },
 });
 const NO_CLIENTS = testClients({});
