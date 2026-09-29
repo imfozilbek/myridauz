@@ -1,9 +1,11 @@
-import type {
-  ApplicationStatus,
-  Car,
-  CarPhotoKind,
-  DecisionInput,
-  ModerationReason,
+import {
+  REASON_PLACE,
+  type ApplicationStatus,
+  type Car,
+  type CarPhotoKind,
+  type DecisionInput,
+  type ModerationReason,
+  type ProblemPlace,
 } from '@platform/contracts';
 
 // A driver application (docs/04): one per person, edited in place.
@@ -14,7 +16,8 @@ export type Application = {
   readonly status: ApplicationStatus;
   readonly car: Car | null;
   readonly photos: CarPhotos;
-  readonly reason: ModerationReason | null;
+  // Why the team said no: each reason points to a photo or a field (none while waiting or approved).
+  readonly reasons: readonly ModerationReason[];
   readonly submittedAt: number | null;
   readonly decidedBy: number | null;
   readonly updatedAt: number;
@@ -25,13 +28,16 @@ export const emptyApplication = (userId: number, now: number): Application => ({
   status: 'draft',
   car: null,
   photos: { front: null, side: null, interior: null },
-  reason: null,
+  reasons: [],
   submittedAt: null,
   decidedBy: null,
   updatedAt: now,
 });
 
 const hasAllPhotos = (photos: CarPhotos) => Object.values(photos).every((key) => key !== null);
+// A fixed place is no longer a problem: the driver sees only what is left to fix.
+const fixed = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
+  reasons.filter((reason) => REASON_PLACE[reason] !== place);
 
 // A new photo of an approved car is a change of the car: it goes back to the check (docs/04).
 // While the team checks the application, it does not change under their eyes.
@@ -43,7 +49,8 @@ export function withPhoto(
 ): Application | 'drivers.wrong_status' {
   if (application.status === 'pending') return 'drivers.wrong_status';
   const status = application.status === 'approved' ? 'draft' : application.status;
-  return { ...application, status, photos: { ...application.photos, [kind]: key }, updatedAt: now };
+  const photos = { ...application.photos, [kind]: key };
+  return { ...application, status, photos, reasons: fixed(application.reasons, kind), updatedAt: now };
 }
 
 export type SubmitError = 'drivers.incomplete' | 'drivers.wrong_status';
@@ -57,7 +64,7 @@ export function submit(
 ): Application | SubmitError {
   if (application.status === 'pending') return 'drivers.wrong_status';
   if (!hasAvatar || !hasAllPhotos(application.photos)) return 'drivers.incomplete';
-  return { ...application, status: 'pending', car, reason: null, submittedAt: now, updatedAt: now };
+  return { ...application, status: 'pending', car, reasons: [], submittedAt: now, updatedAt: now };
 }
 
 const DECIDED: Record<DecisionInput['action'], ApplicationStatus> = {
@@ -74,12 +81,22 @@ export function decide(
   now: number,
 ): Application | 'drivers.wrong_status' {
   if (application.status !== 'pending') return 'drivers.wrong_status';
-  const reason = decision.action === 'approve' ? null : decision.reason;
-  return { ...application, status: DECIDED[decision.action], reason, decidedBy: moderatorId, updatedAt: now };
+  const reasons = decision.action === 'approve' ? [] : decision.reasons;
+  return {
+    ...application,
+    status: DECIDED[decision.action],
+    reasons,
+    decidedBy: moderatorId,
+    updatedAt: now,
+  };
 }
 
-// A new face of an approved driver is checked again (docs/05). Other statuses wait for the next submit.
+// A new face of an approved driver is checked again (docs/05). Other statuses wait for the next submit,
+// but a face the team asked to retake is fixed now. null: nothing changes.
 export function afterAvatarChange(application: Application, now: number): Application | null {
-  if (application.status !== 'approved') return null;
-  return { ...application, status: 'pending', submittedAt: now, updatedAt: now };
+  if (application.status === 'approved') {
+    return { ...application, status: 'pending', submittedAt: now, updatedAt: now };
+  }
+  const reasons = fixed(application.reasons, 'avatar');
+  return reasons.length === application.reasons.length ? null : { ...application, reasons, updatedAt: now };
 }

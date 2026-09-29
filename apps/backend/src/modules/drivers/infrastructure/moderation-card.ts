@@ -11,17 +11,25 @@ import type { Application } from '../domain/application';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// Buttons of the card carry "mod:<user id>:<action>[:<reason>]", well under the 64 bytes of Telegram.
+// Buttons of the card carry "mod:<user id>:<action>[:<picked>[:send]]", well under the 64 bytes of Telegram.
+// picked: the chosen reasons as bits of their place in MODERATION_REASONS.
 const PREFIX = 'mod';
+const SEND = 'send';
+type Refusal = Exclude<Decision, 'approve'>;
 export type CardAction =
   | { readonly userId: number; readonly kind: 'decide'; readonly decision: DecisionInput }
-  | { readonly userId: number; readonly kind: 'reasons'; readonly action: Exclude<Decision, 'approve'> }
-  | { readonly userId: number; readonly kind: 'menu' };
+  | { readonly userId: number; readonly kind: 'pick'; readonly action: Refusal; readonly picked: number }
+  | { readonly userId: number; readonly kind: 'menu' }
+  // "Yuborish" before any reason is ticked.
+  | { readonly userId: number; readonly kind: 'none_picked' };
 
 const button = (text: string, ...parts: (string | number)[]) => ({
   text,
   callback_data: [PREFIX, ...parts].join(':'),
 });
+const ALL_PICKED = (1 << MODERATION_REASONS.length) - 1;
+const pickedReasons = (picked: number): ModerationReason[] =>
+  MODERATION_REASONS.filter((_, index) => (picked & (1 << index)) !== 0);
 
 export function cardText(application: { readonly car: Car | null }, firstName: string): string {
   const car = application.car;
@@ -47,31 +55,44 @@ export const cardMenu = (userId: number) => ({
   ],
 });
 
-// The moderator chooses a reason, never types it (docs/19): the driver gets it in their language.
-export const reasonMenu = (userId: number, action: Exclude<Decision, 'approve'>) => ({
+// The moderator ticks one or more reasons, never types them (docs/19): the driver sees each one
+// next to the photo or the field to fix.
+export const reasonMenu = (userId: number, action: Refusal, picked: number) => ({
   inline_keyboard: [
-    ...MODERATION_REASONS.map((reason) => [button(t(`drivers.reason.${reason}`), userId, action, reason)]),
-    [button(t('bot.moderation.back'), userId, 'menu')],
+    ...MODERATION_REASONS.map((reason, index) => {
+      const bit = 1 << index;
+      const text = t(`drivers.reason.${reason}`);
+      const label = (picked & bit) !== 0 ? t('bot.moderation.picked', { reason: text }) : text;
+      return [button(label, userId, action, picked ^ bit)];
+    }),
+    [
+      button(t('bot.moderation.back'), userId, 'menu'),
+      button(t('bot.moderation.send'), userId, action, picked, SEND),
+    ],
   ],
 });
 
-export function decisionLine(application: Pick<Application, 'status' | 'reason'>): string {
-  const reason = application.reason ? t(`drivers.reason.${application.reason}`) : '';
+export const reasonList = (reasons: readonly ModerationReason[], separator: string) =>
+  reasons.map((reason) => t(`drivers.reason.${reason}`)).join(separator);
+
+export function decisionLine(application: Pick<Application, 'status' | 'reasons'>): string {
+  const reasons = reasonList(application.reasons, ', ');
   if (application.status === 'approved') return t('bot.moderation.approved');
-  if (application.status === 'rejected') return t('bot.moderation.rejected', { reason });
-  return t('bot.moderation.changesRequested', { reason });
+  if (application.status === 'rejected') return t('bot.moderation.rejected', { reasons });
+  return t('bot.moderation.changesRequested', { reasons });
 }
 
-const isReason = (value: string | undefined): value is ModerationReason =>
-  (MODERATION_REASONS as readonly string[]).includes(value ?? '');
-
 export function parseCardAction(data: string): CardAction | null {
-  const [prefix, id, action, reason] = data.split(':');
+  const [prefix, id, action, bits, send] = data.split(':');
   const userId = Number(id);
   if (prefix !== PREFIX || !Number.isInteger(userId) || userId <= 0) return null;
   if (action === 'menu') return { userId, kind: 'menu' };
   if (action === 'approve') return { userId, kind: 'decide', decision: { action } };
   if (action !== 'reject' && action !== 'request_changes') return null;
-  if (reason === undefined) return { userId, kind: 'reasons', action };
-  return isReason(reason) ? { userId, kind: 'decide', decision: { action, reason } } : null;
+  const picked = Number(bits ?? 0);
+  if (!Number.isInteger(picked) || picked < 0 || picked > ALL_PICKED) return null;
+  if (send !== SEND) return { userId, kind: 'pick', action, picked };
+  const reasons = pickedReasons(picked);
+  if (reasons.length === 0) return { userId, kind: 'none_picked' };
+  return { userId, kind: 'decide', decision: { action, reasons } };
 }

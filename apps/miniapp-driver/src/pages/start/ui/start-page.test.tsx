@@ -14,11 +14,11 @@ const car = {
   seats: 4,
 } as const;
 const approved = {
-  status: 'approved',
+  status: 'approved' as const,
   car,
   photos: { front: true, side: true, interior: true },
-  reason: null,
-} as const;
+  reasons: [],
+};
 const driver = testClients({ drivers: { getApplication: async () => approved } });
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 

@@ -21,7 +21,7 @@ const application: ApplicationSummary = {
   firstName: 'Ali',
   status: 'pending',
   car,
-  reason: null,
+  reasons: [],
   submittedAt: 1,
 };
 
@@ -52,13 +52,19 @@ describe('ApplicationsScreen (docs/04)', () => {
     expect(decide).toHaveBeenCalledWith(5, { action: 'approve' });
   });
 
-  it('asks for changes with a chosen reason and blocks for 7 days', async () => {
+  it('asks for changes with ticked reasons and blocks for 7 days', async () => {
     const { decide, block } = setup();
     fireEvent.click(await screen.findByText('Ali'));
     fireEvent.click(screen.getByText('Tuzatishni soʻrash'));
-    fireEvent.click(screen.getByText('Davlat raqami oʻqilmaydi'));
+    expect(screen.queryByText('Yuborish')).toBeNull();
+    fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
+    fireEvent.click(screen.getByText('Rasmda davlat raqami oʻqilmaydi'));
+    fireEvent.click(screen.getByText('Yuborish'));
     await screen.findByText('Javob yuborildi');
-    expect(decide).toHaveBeenCalledWith(5, { action: 'request_changes', reason: 'plate_not_readable' });
+    expect(decide).toHaveBeenCalledWith(5, {
+      action: 'request_changes',
+      reasons: ['plate_not_readable', 'interior_unclear'],
+    });
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByText('Ali'));
     fireEvent.click(screen.getByText('Bloklash'));

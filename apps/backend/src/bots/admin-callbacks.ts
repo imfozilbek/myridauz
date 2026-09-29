@@ -31,7 +31,7 @@ async function onTeamButton(context: BotContext, query: BotCallback, data: strin
   return answer(query, t(action === 'add' ? 'bot.team.added' : 'bot.team.removed'));
 }
 
-// The buttons of the moderation card (docs/04): approve, reject with a reason, ask for changes.
+// The buttons of the moderation card (docs/04): approve, reject or ask for changes with ticked reasons.
 export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const token = context.env.ADMIN_BOT_TOKEN;
   const data = query.data ?? '';
@@ -42,9 +42,12 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const target = { chat_id: query.message.chat.id, message_id: query.message.message_id };
   const edit = (method: string, params: object) =>
     callTelegram(context.fetch, token, method, { ...target, ...params });
+  if (action.kind === 'none_picked') return answer(query, t('bot.moderation.pickReason'));
   if (action.kind !== 'decide') {
     const markup =
-      action.kind === 'menu' ? cardMenu(action.userId) : reasonMenu(action.userId, action.action);
+      action.kind === 'menu'
+        ? cardMenu(action.userId)
+        : reasonMenu(action.userId, action.action, action.picked);
     await edit('editMessageReplyMarkup', { reply_markup: markup });
     return answer(query);
   }

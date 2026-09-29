@@ -17,14 +17,28 @@ export const APPLICATION_STATUSES = [
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
 // Reasons are codes with a text for people in the i18n catalog (docs/13): the moderator chooses, not types.
-export const MODERATION_REASONS = [
-  'face_not_visible',
-  'plate_not_readable',
-  'photos_unclear',
-  'car_mismatch',
-  'fake_profile',
-] as const;
-export type ModerationReason = (typeof MODERATION_REASONS)[number];
+// Each reason points to the place the driver fixes: a photo, the plate or the car data.
+// profile: the whole application, not one place.
+export type ProblemPlace = 'avatar' | CarPhotoKind | 'plate' | 'car' | 'profile';
+export const REASON_PLACE = {
+  face_not_visible: 'avatar',
+  front_unclear: 'front',
+  plate_not_readable: 'front',
+  side_unclear: 'side',
+  interior_unclear: 'interior',
+  plate_mismatch: 'plate',
+  car_mismatch: 'car',
+  fake_profile: 'profile',
+} as const satisfies Record<string, ProblemPlace>;
+export type ModerationReason = keyof typeof REASON_PLACE;
+export const MODERATION_REASONS = Object.keys(REASON_PLACE) as readonly ModerationReason[];
+const reasonSchema = z.enum(MODERATION_REASONS as [ModerationReason, ...ModerationReason[]]);
+// One or more reasons: a driver fixes everything in one go.
+export const reasonsSchema = z.array(reasonSchema).min(1).max(MODERATION_REASONS.length);
+
+// The reasons that point to one place, in the given order.
+export const reasonsAt = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
+  reasons.filter((reason) => REASON_PLACE[reason] === place);
 
 // Seats for passengers: up to 7 for minivans (docs/35).
 export const MAX_SEATS = 7;
@@ -81,7 +95,7 @@ const driverApplicationSchema = z.object({
   status: z.enum(APPLICATION_STATUSES),
   car: carSchema.nullable(),
   photos: photosSchema,
-  reason: z.enum(MODERATION_REASONS).nullable(),
+  reasons: z.array(reasonSchema),
 });
 export type DriverApplication = z.infer<typeof driverApplicationSchema>;
 

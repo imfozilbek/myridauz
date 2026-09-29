@@ -1,10 +1,8 @@
-import { loadBrand } from '@platform/brands';
 import { expect, type Page } from '@playwright/test';
 import { TEXT } from './apps';
+import { PHOTO } from './drivers-mock';
 
 type Shot = (name: string) => Promise<unknown>;
-// Any real picture works: the Mini App compresses it before the upload.
-const PHOTO = `brands/${loadBrand().id}/public/regions/1726.webp`;
 
 // Goes through the driver application like a person: one answer per screen (G06).
 export async function applyAsDriver(page: Page, shot: Shot = async () => undefined) {
@@ -18,7 +16,8 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await page.getByText('Cobalt').click();
   await page.getByText('Oq', { exact: true }).click();
   await page.getByText('2021', { exact: true }).click();
-  await page.getByPlaceholder(TEXT.plateHint).fill('01 a 123 bc');
+  await shot('3-plate-empty');
+  await page.getByPlaceholder(TEXT.platePlaceholder).fill('01 a 123 bc');
   await shot('3-plate');
   await mainButton.click();
   await page.getByText('4', { exact: true }).click();
@@ -26,11 +25,15 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await expect(mainButton).toBeVisible();
   await shot('4-avatar');
   await mainButton.click();
-  for (const kind of [TEXT.photoFront, TEXT.photoSide, TEXT.photoInterior]) {
-    await page.getByText(kind).click();
+  await expect(page.getByText(TEXT.photoFront)).toBeVisible();
+  await shot('5-photos-empty');
+  for (const taken of [1, 2, 3]) {
+    await page.getByText(TEXT.take).first().click();
     await page.locator('input[capture=environment]').setInputFiles(PHOTO);
+    await expect(page.getByText(TEXT.retake)).toHaveCount(taken);
   }
   await expect(mainButton).toBeVisible();
+  await expect(page.locator('.photo-frame img')).toHaveCount(3);
   await shot('5-photos');
   await mainButton.click();
   await expect(page.getByText('01 A 123 BC')).toBeVisible();

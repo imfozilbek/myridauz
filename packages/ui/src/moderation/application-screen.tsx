@@ -1,7 +1,6 @@
 import {
   BLOCK_DAYS,
   formatPlate,
-  MODERATION_REASONS,
   type ApplicationSummary,
   type BlockInput,
   type Decision,
@@ -19,6 +18,7 @@ import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
 import { PhotoGrid } from './photo-grid';
+import { ReasonsStep } from './reasons-step';
 
 type Mode = 'view' | Exclude<Decision, 'approve'> | 'block' | 'decided' | 'blocked';
 type ApplicationScreenProps = { readonly application: ApplicationSummary; readonly onBack: () => void };
@@ -55,19 +55,8 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
     );
   }
   if (mode === 'reject' || mode === 'request_changes') {
-    const reasons = MODERATION_REASONS.map((reason) => ({
-      value: reason,
-      label: t(`drivers.reason.${reason}`),
-    }));
     return (
-      <ChoiceStep
-        screen="moderation.reason"
-        icon="applications"
-        title={t('moderation.reason.title')}
-        choices={reasons}
-        onBack={() => setMode('view')}
-        onDone={(reason) => decide({ action: mode, reason })}
-      />
+      <ReasonsStep onBack={() => setMode('view')} onDone={(reasons) => decide({ action: mode, reasons })} />
     );
   }
   if (mode === 'block') {

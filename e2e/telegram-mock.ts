@@ -90,3 +90,12 @@ export function telegramEvents(page: Page, type: string): Promise<Record<string,
     type,
   );
 }
+
+// The back arrow in the Telegram header, as a person taps it.
+export function pressBack(page: Page): Promise<void> {
+  return page.evaluate(() =>
+    (
+      window as unknown as { Telegram: { WebView: { receiveEvent: (t: string, d: unknown) => void } } }
+    ).Telegram.WebView.receiveEvent('back_button_pressed', undefined),
+  );
+}

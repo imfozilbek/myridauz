@@ -1,25 +1,27 @@
-import { carSchema } from '@platform/contracts';
+import { carSchema, formatPlate, type ModerationReason } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
 import { StepLayout } from '../../account/step-layout';
-import { Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
+import { hasProblem, ProblemNote } from '../problem-note';
 
 type PlateStepProps = {
   readonly initial: string;
+  readonly reasons: readonly ModerationReason[];
   readonly onBack: () => void;
   readonly onDone: (plate: string) => void;
 };
 
 // The plate is the only thing a driver types: it is unique to the car (docs/04).
-export function PlateStep({ initial, onBack, onDone }: PlateStepProps) {
+// The field looks like an Uzbek plate, with an example inside.
+export function PlateStep({ initial, reasons, onBack, onDone }: PlateStepProps) {
   useScreenView('driver.plate');
   const { t } = useI18n();
-  const [value, setValue] = useState(initial);
+  const [value, setValue] = useState(formatPlate(initial));
   const [invalid, setInvalid] = useState(false);
   const submit = useCallback(() => {
     const plate = carSchema.shape.plate.safeParse(value);
@@ -30,19 +32,25 @@ export function PlateStep({ initial, onBack, onDone }: PlateStepProps) {
   return (
     <StepLayout icon="car" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
       <BackButton onClick={onBack} />
-      <List>
-        <Section>
-          <Input
-            placeholder={t('drivers.plate.hint')}
-            value={value}
-            status={invalid ? 'error' : 'default'}
-            onChange={(event) => {
-              setValue(event.target.value);
-              setInvalid(false);
-            }}
-          />
-        </Section>
-      </List>
+      <label className={invalid || hasProblem(reasons, 'plate') ? 'plate plate-problem' : 'plate'}>
+        <input
+          className="plate-input"
+          value={value}
+          placeholder={t('drivers.plate.placeholder')}
+          aria-label={t('drivers.plate.title')}
+          autoCapitalize="characters"
+          autoComplete="off"
+          spellCheck={false}
+          onChange={(event) => {
+            setValue(event.target.value.toUpperCase());
+            setInvalid(false);
+          }}
+        />
+        <span className="plate-country">{t('drivers.plate.country')}</span>
+      </label>
+      <span className="step-note">
+        <ProblemNote reasons={reasons} place="plate" />
+      </span>
       {invalid ? <Text className="step-error">{t('drivers.plate.invalid')}</Text> : null}
       <MainButton text={t('common.continue')} onClick={submit} />
     </StepLayout>

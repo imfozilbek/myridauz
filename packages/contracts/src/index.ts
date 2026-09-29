@@ -50,6 +50,8 @@ export {
   formatPlate,
   MAX_SEATS,
   MODERATION_REASONS,
+  REASON_PLACE,
+  reasonsAt,
   type ApplicationStatus,
   type Car,
   type CarColor,
@@ -58,6 +60,7 @@ export {
   type DriverApplication,
   type DriverApplicationResponse,
   type ModerationReason,
+  type ProblemPlace,
 } from './drivers';
 export {
   ADMIN_APPLICATIONS_PATH,

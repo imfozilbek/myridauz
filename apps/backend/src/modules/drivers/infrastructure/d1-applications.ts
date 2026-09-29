@@ -36,12 +36,17 @@ function toCar(row: Row): Car | null {
   };
 }
 
+// The reasons are kept in one column, comma separated; a code that is no longer known is dropped.
+const REASON_SEPARATOR = ',';
+const toReasons = (value: string | null) =>
+  (value ?? '').split(REASON_SEPARATOR).flatMap((code) => oneOf(MODERATION_REASONS, code) ?? []);
+
 const toApplication = (row: Row): Application => ({
   userId: row.user_id,
   status: oneOf(APPLICATION_STATUSES, row.status) ?? 'draft',
   car: toCar(row),
   photos: { front: row.photo_front, side: row.photo_side, interior: row.photo_interior },
-  reason: oneOf(MODERATION_REASONS, row.reason),
+  reasons: toReasons(row.reason),
   submittedAt: row.submitted_at,
   decidedBy: row.decided_by,
   updatedAt: row.updated_at,
@@ -81,7 +86,7 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
         application.photos.front,
         application.photos.side,
         application.photos.interior,
-        application.reason,
+        application.reasons.length > 0 ? application.reasons.join(REASON_SEPARATOR) : null,
         application.submittedAt,
         application.decidedBy,
         application.updatedAt,

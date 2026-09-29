@@ -17,9 +17,9 @@ const application = {
   status: 'pending',
   car,
   photos: { front: true, side: true, interior: true },
-  reason: null,
+  reasons: [],
 };
-const summary = { userId: 5, firstName: 'Ali', status: 'pending', car, reason: null, submittedAt: 1 };
+const summary = { userId: 5, firstName: 'Ali', status: 'pending', car, reasons: [], submittedAt: 1 };
 
 describe('createDriversClient', () => {
   it('reads, uploads and submits the own application, signed', async () => {

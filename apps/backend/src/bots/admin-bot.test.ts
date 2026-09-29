@@ -59,7 +59,7 @@ describe('admin bot: the team (docs/02, question 36)', () => {
 });
 
 describe('admin bot: the moderation card (docs/04)', () => {
-  it('rejects with a chosen reason and tells the driver in the driver bot', async () => {
+  it('rejects with ticked reasons and tells the driver in the driver bot', async () => {
     await registerUser(APPLICANT);
     await call('/me/avatar', APPLICANT, {
       method: 'PUT',
@@ -95,11 +95,17 @@ describe('admin bot: the moderation card (docs/04)', () => {
     });
     expect(telegram.calls.at(-1)?.method).toBe('editMessageReplyMarkup');
     await send('admin', press(OWNER, `mod:${APPLICANT}:menu`));
-    const decided = await reply(
-      await send('admin', press(OWNER, `mod:${APPLICANT}:reject:plate_not_readable`)),
+    // Bits: 4 = plate_not_readable, 8 = side_unclear (their places in MODERATION_REASONS).
+    await send('admin', press(OWNER, `mod:${APPLICANT}:reject:4`));
+    expect(JSON.stringify(telegram.calls.at(-1)?.body)).toContain('✅ Rasmda davlat raqami oʻqilmaydi');
+    const empty = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:reject:0:send`)));
+    expect(empty.text).toBe('Kamida bitta sababni tanlang.');
+    const decided = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:reject:12:send`)));
+    expect(decided.text).toBe(
+      'Rad etildi: Rasmda davlat raqami oʻqilmaydi, Yon tomondan olingan rasm tiniq emas',
     );
-    expect(decided.text).toBe('Rad etildi: Davlat raqami oʻqilmaydi');
-    expect(telegram.sentTo(APPLICANT).at(-1)?.body.text).toContain('Davlat raqami oʻqilmaydi');
+    const told = telegram.sentTo(APPLICANT).at(-1)?.body.text;
+    expect(told).toContain('• Rasmda davlat raqami oʻqilmaydi\n• Yon tomondan olingan rasm tiniq emas');
     const again = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:approve`)));
     expect(again.text).toBe('Bu arizaga javob berilgan.');
   });
@@ -108,7 +114,13 @@ describe('admin bot: the moderation card (docs/04)', () => {
     expect(
       (await reply(await send('admin', press(PERSON, `mod:${APPLICANT}:approve`)))).text,
     ).toBeUndefined();
-    for (const data of ['mod:x:approve', 'mod:1:fly', 'mod:1:reject:bad', 'team:fly:1']) {
+    for (const data of [
+      'mod:x:approve',
+      'mod:1:fly',
+      'mod:1:reject:bad',
+      'mod:1:reject:999:send',
+      'team:fly:1',
+    ]) {
       expect((await reply(await send('admin', press(OWNER, data)))).text).toBeUndefined();
     }
     expect(await reply(await send('passenger', press(OWNER, `mod:${APPLICANT}:approve`)))).toEqual({});
