@@ -1,0 +1,85 @@
+import type { MarketClient } from '@platform/api-client';
+import { DAY_MS, tashkentDate, tashkentDayStart } from '@platform/contracts';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { DriverContext, type Driver } from '../driver/driver-context';
+import { testClients } from '../test-shell';
+import { chooseRoute, recommendation, renderMarket, tap, trip } from './market-test-kit';
+import { NewTripFlow } from './new-trip-flow';
+
+afterEach(cleanup);
+
+const HOUR = 60 * 60 * 1000;
+const driver: Driver = {
+  application: {
+    status: 'approved',
+    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 },
+    photos: { front: true, side: true, interior: true },
+    reasons: [],
+  },
+  editCar: () => undefined,
+};
+
+function setup(gender: 'male' | 'female' = 'male') {
+  const publishTrip = vi.fn<MarketClient['publishTrip']>(async () => trip);
+  const clients = testClients({ market: { recommend: async () => recommendation, publishTrip } });
+  const result = renderMarket(
+    <DriverContext.Provider value={driver}>
+      <NewTripFlow onBack={() => undefined} />
+    </DriverContext.Provider>,
+    clients,
+    gender,
+  );
+  return { ...result, publishTrip };
+}
+
+describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
+  it('asks the route, day, time, seats, price, woman, comment and publishes', async () => {
+    const { publishTrip, tracked } = setup();
+    await chooseRoute();
+    await tap(/^Ertaga/);
+    await tap('Davom etish');
+    // The seats of the car are chosen in advance.
+    expect(await screen.findByText('Nechta boʻsh joy bor?')).toBeTruthy();
+    await tap('Davom etish');
+    // The price field is filled with the recommendation; + adds one step.
+    expect(await screen.findByText(/Tavsiya: 95/)).toBeTruthy();
+    fireEvent.click(screen.getByLabelText('Oshirish'));
+    await tap('Davom etish');
+    await tap('Yoʻq');
+    await tap('Izohsiz davom etish');
+    await tap('Eʼlon qilish');
+    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + 8 * HOUR;
+    expect(publishTrip).toHaveBeenCalledWith({
+      from: '1726269',
+      to: '1730401',
+      departAt,
+      seats: 4,
+      price: 100000,
+      womanOnBoard: false,
+      comment: '',
+    });
+    const steps = tracked
+      .filter((event) => event.name === 'trip_step')
+      .map((event) => ('step' in event ? event.step : ''));
+    expect(steps).toEqual(['route', 'date', 'time', 'seats', 'price', 'woman', 'comment', 'published']);
+  });
+
+  it('skips the woman question for a woman driver and shows an error of the API', async () => {
+    const { publishTrip } = setup('female');
+    publishTrip.mockRejectedValueOnce(new Error('offline'));
+    await chooseRoute();
+    for (const step of [
+      /^Ertaga/,
+      'Davom etish',
+      'Davom etish',
+      'Davom etish',
+      'Izohsiz davom etish',
+      'Eʼlon qilish',
+    ])
+      await tap(step);
+    expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
+    expect(screen.queryByText('Mashinada ayol bormi?')).toBeNull();
+  });
+});

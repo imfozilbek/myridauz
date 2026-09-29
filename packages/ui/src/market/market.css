@@ -1,0 +1,55 @@
+/* Trips and requests: lists like Telegram, a big price with steps (docs/19, docs/21). */
+.market {
+  min-height: 100vh;
+  padding-bottom: 120px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.market-title {
+  padding: 16px 20px 4px;
+}
+
+.market-subtitle {
+  display: block;
+  padding: 0 20px 12px;
+  color: var(--tgui--hint_color);
+}
+
+.price-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 16px 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--tgui--section_bg_color);
+}
+
+.price-value {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 28px;
+  text-align: center;
+}
+
+.price-out {
+  color: var(--tgui--destructive_text_color);
+}
+
+.woman-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--tgui--link_color);
+}
+
+.trip-price {
+  font-weight: 600;
+  color: var(--tgui--text_color);
+}
+
+/* A sum is read as one piece: "90 000 soʻm" never breaks into two lines. */
+.market .cell-value {
+  white-space: nowrap;
+}

@@ -10,8 +10,6 @@ export type StartAction = {
   readonly tone: Tone;
   readonly labelKey: TranslationKey;
   readonly hintKey: TranslationKey;
-  // The section starts with "from" and "to" (G05); wholeRegion: a search may cover a whole region.
-  readonly route?: { readonly wholeRegion: boolean };
-  // A ready section of its own (G06: applications in the admin Mini App).
+  // The section; without it the action says the section comes soon.
   readonly Screen?: ComponentType<{ readonly onBack: () => void }>;
 };

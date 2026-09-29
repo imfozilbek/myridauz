@@ -16,6 +16,8 @@ const NOT_USED = async (): Promise<never> => {
 export const testClients = (overrides: {
   readonly drivers?: Partial<ApiClients['drivers']>;
   readonly moderation?: Partial<ApiClients['moderation']>;
+  readonly market?: Partial<ApiClients['market']>;
+  readonly pricing?: Partial<ApiClients['pricing']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -31,6 +33,28 @@ export const testClients = (overrides: {
     decide: NOT_USED,
     block: NOT_USED,
     ...overrides.moderation,
+  },
+  market: {
+    recommend: NOT_USED,
+    searchTrips: NOT_USED,
+    trip: NOT_USED,
+    myTrips: NOT_USED,
+    publishTrip: NOT_USED,
+    cancelTrip: NOT_USED,
+    searchRequests: NOT_USED,
+    myRequests: NOT_USED,
+    publishRequest: NOT_USED,
+    cancelRequest: NOT_USED,
+    ...overrides.market,
+  },
+  pricing: {
+    state: NOT_USED,
+    preview: NOT_USED,
+    save: NOT_USED,
+    rollback: NOT_USED,
+    directions: NOT_USED,
+    setDirection: NOT_USED,
+    ...overrides.pricing,
   },
 });
 const NO_CLIENTS = testClients({});

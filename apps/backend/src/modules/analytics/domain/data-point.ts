@@ -8,8 +8,9 @@ export type DataPoint = {
 };
 
 export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoint {
-  // The detail of an event: an error code or a funnel step (docs/29).
-  const code = 'code' in event ? event.code : 'step' in event ? event.step : '';
+  // The detail of an event: an error code, a funnel step or a search result (docs/29).
+  const code =
+    'code' in event ? event.code : 'step' in event ? event.step : 'result' in event ? event.result : '';
   return {
     indexes: [event.app],
     blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code],

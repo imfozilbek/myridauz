@@ -1,4 +1,11 @@
-import { DriverGate, StartFlow, type StartAction } from '@platform/ui';
+import {
+  DriverGate,
+  MyTripsScreen,
+  NewTripFlow,
+  RequestsSearchFlow,
+  StartFlow,
+  type StartAction,
+} from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -8,7 +15,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.driver.newTrip',
     hintKey: 'common.driver.newTripHint',
-    route: { wholeRegion: false },
+    Screen: NewTripFlow,
   },
   {
     id: 'passenger_requests',
@@ -16,7 +23,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
-    route: { wholeRegion: true },
+    Screen: RequestsSearchFlow,
   },
   {
     id: 'my_trips',
@@ -24,6 +31,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.driver.myTripsHint',
+    Screen: MyTripsScreen,
   },
 ];
 

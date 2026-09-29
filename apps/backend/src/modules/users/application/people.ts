@@ -1,8 +1,15 @@
+import type { Gender } from '@platform/contracts';
 import type { User } from '../domain/user';
 import type { UsersDeps } from './ports';
 
 // What other modules may know about a person: never the phone (docs/07).
-export type Person = { readonly id: number; readonly firstName: string; readonly avatarKey: string | null };
+export type Person = {
+  readonly id: number;
+  readonly firstName: string;
+  readonly avatarKey: string | null;
+  // Only for "Mashinada ayol bor" (docs/06): never shown to other people.
+  readonly gender: Gender;
+};
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -15,7 +22,8 @@ export function people(deps: UsersDeps) {
   return {
     find: async (id: number): Promise<Person | undefined> => {
       const user = await deps.users.find(id);
-      return user ? { id: user.id, firstName: user.firstName, avatarKey: user.avatarKey } : undefined;
+      if (!user) return undefined;
+      return { id: user.id, firstName: user.firstName, avatarKey: user.avatarKey, gender: user.gender };
     },
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),

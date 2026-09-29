@@ -20,5 +20,12 @@ describe('createI18n', () => {
   it('formats date and time in Uzbekistan time', () => {
     expect(i18n.formatDate(TASHKENT_AFTERNOON)).toBe('27-sentabr');
     expect(i18n.formatTime(TASHKENT_AFTERNOON)).toBe('14:30');
+    expect(i18n.formatWeekday(TASHKENT_AFTERNOON)).toBe('yakshanba');
+  });
+
+  it('takes the Tashkent day, not the UTC day', () => {
+    const tashkentEarlyMorning = new Date('2026-12-31T20:30:00Z');
+    expect(i18n.formatDate(tashkentEarlyMorning)).toBe('1-yanvar');
+    expect(i18n.formatWeekday(tashkentEarlyMorning)).toBe('juma');
   });
 });

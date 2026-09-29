@@ -1,4 +1,4 @@
-import { StartFlow, type StartAction } from '@platform/ui';
+import { FindTripFlow, MyRequestsScreen, NewRequestFlow, StartFlow, type StartAction } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -8,7 +8,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.passenger.findTrip',
     hintKey: 'common.passenger.findTripHint',
-    route: { wholeRegion: true },
+    Screen: FindTripFlow,
   },
   {
     id: 'leave_request',
@@ -16,7 +16,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.passenger.leaveRequest',
     hintKey: 'common.passenger.leaveRequestHint',
-    route: { wholeRegion: false },
+    Screen: NewRequestFlow,
   },
   {
     id: 'my_trips',
@@ -24,6 +24,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.passenger.myTripsHint',
+    Screen: MyRequestsScreen,
   },
 ];
 

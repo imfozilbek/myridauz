@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { mockDrivers, type DriverStart } from './drivers-mock';
+import { mockMarket } from './market-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
 const settings = { passengerAvatarRequired: false };
@@ -62,5 +63,6 @@ export async function mockApi(
     route.fulfill({ json: { version: '1', locations: directory } }),
   );
   const drivers = await mockDrivers(page, driver);
-  return { analytics, registrations, ...drivers };
+  const market = await mockMarket(page);
+  return { analytics, registrations, ...drivers, ...market };
 }

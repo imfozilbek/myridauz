@@ -8,7 +8,7 @@ afterEach(cleanup);
 describe('StartPage', () => {
   it('opens the main screen with 3 actions', () => {
     const { tracked } = renderInShell(<StartPage />);
-    for (const action of ['Arizalar', 'Shikoyatlar', 'Statistika'])
+    for (const action of ['Arizalar', 'Shikoyatlar', 'Boshqaruv'])
       expect(screen.getByText(action)).toBeTruthy();
     expect(tracked.map((event) => event.screen)).toEqual(['home']);
   });
@@ -19,6 +19,11 @@ describe('StartPage', () => {
     expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Arizalar')).toBeTruthy();
+    // Prices and statistics share the third action (docs/19: at most 3).
+    fireEvent.click(screen.getByText('Boshqaruv'));
+    expect(screen.getByText('Narxlar')).toBeTruthy();
+    fireEvent.click(screen.getByText('Statistika'));
+    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
   });
 
   it('opens the queue of driver applications (G06)', async () => {

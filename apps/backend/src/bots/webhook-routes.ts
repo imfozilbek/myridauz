@@ -8,6 +8,7 @@ import { botToken } from '../shared/telegram/bot-config';
 import type { Fetch } from '../shared/telegram/telegram-api';
 import { onAdminCallback } from './admin-callbacks';
 import { onAdminMessage } from './admin-messages';
+import { onDriverMessage } from './driver-messages';
 import type { BotContext } from './bot-context';
 import { isBotRole } from './bot-roles';
 import { startReply } from './start-reply';
@@ -39,7 +40,9 @@ export function webhookRoutes(fetch: Fetch) {
       const access = blocked ? 'blocked' : role === 'admin' && team === null ? 'support' : 'allowed';
       return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access }));
     }
-    if (role !== 'admin' || blocked) return context.json({});
+    if (blocked) return context.json({});
+    if (role === 'driver') return context.json(await onDriverMessage(bot, message));
+    if (role !== 'admin') return context.json({});
     return context.json(await onAdminMessage(bot, message, team));
   });
 }

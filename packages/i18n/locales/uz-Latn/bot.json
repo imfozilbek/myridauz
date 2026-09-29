@@ -38,5 +38,8 @@
   "team.removed": "Moderator olib tashlandi.",
   "team.onlyOwner": "Buni faqat egasi qila oladi.",
   "moderation.picked": "✅ {reason}",
-  "moderation.pickReason": "Kamida bitta sababni tanlang."
+  "moderation.pickReason": "Kamida bitta sababni tanlang.",
+  "trip.published": "Safaringiz eʼlon qilindi: {from} → {to}, {date} soat {time}, bir joy {price}.\n\nUmumiy uchrashuv joyini belgilash uchun shu xabarga javoban lokatsiya yuboring (ixtiyoriy). Yoʻlovchilar uni joy band qilingandan keyin koʻradi.",
+  "trip.meetingSaved": "Uchrashuv joyi saqlandi.",
+  "trip.meetingHint": "Lokatsiyani safar haqidagi xabarga javoban yuboring."
 }

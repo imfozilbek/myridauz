@@ -1,4 +1,10 @@
-import { ApplicationsScreen, linkedApplication, StartFlow, type StartAction } from '@platform/ui';
+import {
+  ApplicationsScreen,
+  linkedApplication,
+  ManagementScreen,
+  StartFlow,
+  type StartAction,
+} from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -17,12 +23,14 @@ const ACTIONS: readonly StartAction[] = [
     labelKey: 'common.admin.complaints',
     hintKey: 'common.admin.complaintsHint',
   },
+  // Prices and statistics share one action: at most 3 on the main screen (docs/19).
   {
-    id: 'statistics',
+    id: 'management',
     icon: 'statistics',
     tone: 'deep',
-    labelKey: 'common.admin.statistics',
-    hintKey: 'common.admin.statisticsHint',
+    labelKey: 'common.admin.management',
+    hintKey: 'common.admin.managementHint',
+    Screen: ManagementScreen,
   },
 ];
 

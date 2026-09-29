@@ -1,0 +1,87 @@
+import type { Trip } from '@platform/contracts';
+import { Text, Title } from '@telegram-apps/telegram-ui';
+import { useCallback, useEffect, useState } from 'react';
+import { Cell, List, Section, Switch } from '../components';
+import { useAnalytics, useScreenView } from '../context/analytics-context';
+import { useApiClients } from '../context/api-clients';
+import { useI18n } from '../context/i18n-context';
+import type { Route } from '../places/route-screen';
+import { EmptyState } from '../states/empty-state';
+import { ErrorScreen } from '../states/error-screen';
+import { ScreenSkeleton } from '../states/screen-skeleton';
+import { BackButton } from '../telegram/back-button';
+import { useScreenBackground } from '../telegram/screen-background';
+import { TripCard } from './trip-card';
+import { useDayLabel } from './when';
+import './market.css';
+
+type TripResultsProps = {
+  readonly route: Route;
+  readonly date: string;
+  readonly now: number;
+  readonly onBack: () => void;
+  readonly onOpen: (trip: Trip) => void;
+};
+
+// Trips of the day on this route; "Mashinada ayol bor" is a filter of its own (docs/06).
+export function TripResults({ route, date, now, onBack, onOpen }: TripResultsProps) {
+  useScreenView('market.results');
+  useScreenBackground('grouped');
+  const { t } = useI18n();
+  const { track } = useAnalytics();
+  const { market } = useApiClients();
+  const dayLabel = useDayLabel();
+  const [woman, setWoman] = useState(false);
+  const [trips, setTrips] = useState<Trip[] | null>(null);
+  const [failed, setFailed] = useState(false);
+  const load = useCallback(() => {
+    setFailed(false);
+    setTrips(null);
+    const search = { from: route.from.id, to: route.to.id, date, ...(woman ? { woman: '1' as const } : {}) };
+    market.searchTrips(search).then(
+      (found) => {
+        track({
+          name: 'trip_search',
+          screen: 'market.results',
+          result: found.length > 0 ? 'found' : 'empty',
+        });
+        setTrips(found);
+      },
+      () => setFailed(true),
+    );
+  }, [market, route, date, woman, track]);
+  useEffect(load, [load]);
+  if (failed) return <ErrorScreen onRetry={load} />;
+  return (
+    <div className="market">
+      <BackButton onClick={onBack} />
+      <Title weight="1" className="market-title">{`${route.from.name} → ${route.to.name}`}</Title>
+      <Text className="market-subtitle">{dayLabel(date, now)}</Text>
+      <List>
+        <Section>
+          <Cell
+            Component="label"
+            after={<Switch checked={woman} onChange={(event) => setWoman(event.target.checked)} />}
+          >
+            {t('market.search.woman')}
+          </Cell>
+        </Section>
+        {trips && trips.length > 0 ? (
+          <Section>
+            {trips.map((trip) => (
+              <TripCard key={trip.id} trip={trip} onOpen={() => onOpen(trip)} />
+            ))}
+          </Section>
+        ) : null}
+      </List>
+      {trips === null ? <ScreenSkeleton /> : null}
+      {trips?.length === 0 ? (
+        <EmptyState
+          icon="search"
+          title={t('market.search.empty')}
+          description={t('market.search.emptyHint')}
+        />
+      ) : null}
+    </div>
+  );
+}

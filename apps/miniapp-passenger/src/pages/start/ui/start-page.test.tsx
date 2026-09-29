@@ -1,4 +1,4 @@
-import { renderInShell } from '@platform/ui/testing';
+import { renderInShell, testClients } from '@platform/ui/testing';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StartPage } from './start-page';
@@ -14,9 +14,10 @@ describe('StartPage', () => {
   });
 
   it('opens a section and comes back', async () => {
-    renderInShell(<StartPage />);
+    const clients = testClients({ market: { myRequests: async () => [] } });
+    renderInShell(<StartPage />, false, true, undefined, clients);
     fireEvent.click(screen.getByText('Mening safarlarim'));
-    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
+    expect(await screen.findByText('Hali soʻrovlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(screen.getByText('Safar topish'));
     expect(await screen.findByText('Qayerdan')).toBeTruthy();

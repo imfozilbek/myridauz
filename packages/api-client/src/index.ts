@@ -6,3 +6,5 @@ export { createLocationsClient, type LocationsClient } from './locations-client'
 export type { Fetch } from './fetch';
 export { createModerationClient, type ModerationClient } from './moderation-client';
 export { createUsersClient, type UsersClient } from './users-client';
+export { createMarketClient, type MarketClient } from './market-client';
+export { createPricingClient, type PricingClient } from './pricing-client';

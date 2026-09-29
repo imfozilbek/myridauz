@@ -1,6 +1,7 @@
 import type { MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { cachedDirectory } from './application/directory';
+import { cachedDirectory, indexById } from './application/directory';
+import { getDistance } from './application/distance';
 import type { LocationsDeps } from './application/ports';
 import { locationRoutes } from './http/location-routes';
 import { d1Locations } from './infrastructure/d1-locations';
@@ -17,5 +18,14 @@ const locationsDeps = (env: Bindings): LocationsDeps => ({
   now: Date.now,
 });
 
+const directory = cachedDirectory(DIRECTORY_TTL_MS);
+const LOCALE = 'uz-Latn';
+
 export const locationsModule = (auth: MiddlewareHandler<AppEnv>) =>
-  locationRoutes({ deps: locationsDeps, directory: cachedDirectory(DIRECTORY_TTL_MS), auth });
+  locationRoutes({ deps: locationsDeps, directory, auth });
+
+// For other modules: the places by id, and the road km of a possible trip (docs/14, docs/48).
+export const placesOf = async (env: Bindings) =>
+  indexById((await directory(locationsDeps(env), LOCALE)).locations);
+export const routeKm = (env: Bindings, from: string, to: string) =>
+  getDistance(locationsDeps(env), directory, from, to);

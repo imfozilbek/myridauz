@@ -1,0 +1,35 @@
+import type { Car, Recommendation, RouteError } from '@platform/contracts';
+import type { Person } from '../../users';
+import type { TripRecord } from '../domain/trip';
+
+// Ports of the trips module: D1 in production, memory in tests.
+export type TripRepository = {
+  save(trip: TripRecord): Promise<void>;
+  find(id: string): Promise<TripRecord | undefined>;
+  byDriver(driverId: number): Promise<TripRecord[]>;
+  byMeetingMessage(driverId: number, messageId: number): Promise<TripRecord | undefined>;
+  // Active trips leaving between the two times, the earliest first.
+  leaving(from: number, to: number): Promise<TripRecord[]>;
+  // The Cron job: trips over by now become completed (docs/35).
+  completeOver(now: number): Promise<void>;
+};
+
+export type TripsDeps = {
+  readonly trips: TripRepository;
+  readonly people: { find(id: number): Promise<Person | undefined> };
+  readonly approvedCar: (driverId: number) => Promise<Car | null>;
+  readonly recommend: (
+    from: string,
+    to: string,
+  ) => Promise<Result<Recommendation, RouteError | 'locations.not_found'>>;
+  readonly places: () => Promise<
+    ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
+  >;
+  // The driver bot tells about the new trip; the id of that message, or null if it was not sent.
+  readonly announce: (trip: TripRecord) => Promise<number | null>;
+  readonly newId: () => string;
+  readonly now: () => number;
+};
+
+export type Result<T, E extends string> =
+  { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: E };

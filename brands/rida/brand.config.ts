@@ -10,4 +10,5 @@ export const brandConfig: BrandConfig = {
   theme,
   regionPhotos: true,
   bots: { passenger: 'myrida_bot', driver: 'myrida_haydovchi_bot', admin: 'myrida_admin_bot' },
+  pricing: 'per-km',
 };

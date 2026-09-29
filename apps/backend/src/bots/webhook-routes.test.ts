@@ -80,4 +80,20 @@ describe('POST /telegram/:role', () => {
     expect(await (await send('passenger', { edited_message: {} })).json()).toEqual({});
     expect((await send('passenger', 'not an update')).status).toBe(200);
   });
+
+  it('asks the driver to answer the trip message with the meeting point (docs/14)', async () => {
+    const location = (replyTo?: number) => ({
+      message: {
+        message_id: 5,
+        chat: { id: 42 },
+        from: { id: 7 },
+        location: { latitude: 41.3, longitude: 69.2 },
+        ...(replyTo ? { reply_to_message: { message_id: replyTo } } : {}),
+      },
+    });
+    const hint = 'Lokatsiyani safar haqidagi xabarga javoban yuboring.';
+    expect(((await (await send('driver', location())).json()) as { text: string }).text).toBe(hint);
+    expect(((await (await send('driver', location(3))).json()) as { text: string }).text).toBe(hint);
+    expect(await (await send('driver', start(7, 'salom'))).json()).toEqual({});
+  });
 });
