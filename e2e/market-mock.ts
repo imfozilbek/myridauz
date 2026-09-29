@@ -12,7 +12,7 @@ const perKm = (km: number, v = V) =>
 const MAIN_KM = [35, 120, 200, 290, 300, 320, 350, 465, 490, 570, 700, 1000, 1150, 420];
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white' };
 const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 1_800_000) * 1_800_000;
-const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
+export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-00000000000${id}`,
   driver: { id: Number(id) + 10, firstName: name, hasAvatar: false, car },
   from: CHILONZOR,
@@ -28,7 +28,7 @@ const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: 
   status: 'active',
   ...extra,
 });
-const request = {
+export const request = {
   id: '00000000-0000-4000-8000-0000000000a1',
   passenger: { id: 31, firstName: 'Madina', hasAvatar: false },
   from: CHILONZOR,

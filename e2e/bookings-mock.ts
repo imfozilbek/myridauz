@@ -1,0 +1,92 @@
+import type { Page, Route } from '@playwright/test';
+import { request, tripOf } from './market-mock';
+
+// Bookings, offers and the wallet as the Mini Apps see them (G08).
+const HOUR = 3_600_000;
+const trip = tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true });
+const passenger = { id: 31, firstName: 'Madina', hasAvatar: false };
+const booking = (id: string, status: string, extra: object = {}) => ({
+  id: `00000000-0000-4000-8000-0000000000b${id}`,
+  trip,
+  passenger,
+  seats: 2,
+  price: 90000,
+  commission: 18000,
+  status,
+  createdAt: Date.now() - HOUR,
+  meetingPoint: null,
+  pickup: null,
+  plate: null,
+  ...extra,
+});
+const confirmed = booking('2', 'confirmed', {
+  commission: 0,
+  meetingPoint: { lat: 41.2856, lng: 69.2034 },
+  plate: '01A123BC',
+});
+const offer = {
+  id: '00000000-0000-4000-8000-0000000000c1',
+  requestId: request.id,
+  driver: { id: 11, firstName: 'Jasur', hasAvatar: false, car: trip.driver.car },
+  from: request.from,
+  to: request.to,
+  departAt: Date.parse(`${request.date}T03:30:00Z`),
+  km: request.km,
+  seats: request.seats,
+  price: 85000,
+  commission: 0,
+  status: 'sent',
+  bookingId: null,
+};
+const operation = (
+  id: string,
+  kind: string,
+  amount: number,
+  hoursAgo: number,
+  reason: string | null = null,
+) => ({
+  id,
+  kind,
+  balance: 'bonus',
+  amount,
+  bookingId: null,
+  reason,
+  createdAt: Date.now() - hoursAgo * HOUR,
+});
+const wallet = (bonus: number) => ({
+  bonus,
+  main: 0,
+  bonusExpiresAt: Date.now() + 29 * 24 * HOUR,
+  operations:
+    bonus === 0 ? [] : [operation('w2', 'commission', -18000, 1), operation('w1', 'bonus_grant', 500000, 30)],
+});
+
+export async function mockBookings(page: Page, money = true) {
+  const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
+  const answered: string[] = [];
+  await page.route('**/api/trips/*/bookings', (route) => json(route, booking('1', 'requested'), 201));
+  await page.route('**/api/passenger/bookings', (route) => json(route, { bookings: [confirmed] }));
+  await page.route('**/api/passenger/offers', (route) => json(route, { offers: [offer] }));
+  await page.route('**/api/passenger/offers/*/*', (route) =>
+    json(route, { ...offer, status: 'accepted', bookingId: confirmed.id }),
+  );
+  await page.route('**/api/driver/bookings', (route) =>
+    json(route, { bookings: [booking('1', 'requested')] }),
+  );
+  await page.route('**/api/driver/bookings/*/*', (route) => {
+    answered.push(route.request().url());
+    return money
+      ? json(route, { ...booking('1', 'confirmed'), plate: '01A123BC' })
+      : json(route, { error: 'wallet.not_enough' }, 402);
+  });
+  await page.route('**/api/driver/offers', (route) => json(route, { offers: [] }));
+  await page.route('**/api/driver/requests/*/offers', (route) => json(route, offer, 201));
+  await page.route('**/api/driver/wallet', (route) => json(route, wallet(money ? 482000 : 0)));
+  await page.route('**/api/admin/wallets', (route) =>
+    json(route, { wallets: [{ driverId: 11, firstName: 'Jasur', bonus: 482000, main: 0 }] }),
+  );
+  await page.route('**/api/admin/wallets/*', (route) => json(route, wallet(482000)));
+  await page.route('**/api/admin/wallets/*/adjust', (route) => json(route, wallet(582000)));
+  await page.route('**/api/admin/trips/*/bookings', (route) => json(route, { bookings: [confirmed] }));
+  return { trip, answered };
+}

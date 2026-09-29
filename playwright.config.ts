@@ -11,10 +11,15 @@ export default defineConfig({
   reporter: process.env['CI'] ? 'github' : 'list',
   use: { ...PHONE, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
   projects: [
-    { name: 'smoke', testMatch: ['smoke.spec.ts', 'drivers.spec.ts', 'market.spec.ts'] },
+    { name: 'smoke', testMatch: ['smoke.spec.ts', 'drivers.spec.ts', 'market.spec.ts', 'bookings.spec.ts'] },
     {
       name: 'screenshots',
-      testMatch: ['screenshots.spec.ts', 'drivers-screenshots.spec.ts', 'market-screenshots.spec.ts'],
+      testMatch: [
+        'screenshots.spec.ts',
+        'drivers-screenshots.spec.ts',
+        'market-screenshots.spec.ts',
+        'bookings-screenshots.spec.ts',
+      ],
     },
   ],
   webServer: MINI_APPS.map(({ name, port }) => {

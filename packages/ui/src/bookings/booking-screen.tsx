@@ -8,6 +8,7 @@ import { useI18n } from '../context/i18n-context';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
+import { openExternal } from '../telegram/feedback';
 import { mapUrl } from './map-link';
 import '../market/market.css';
 
@@ -30,13 +31,7 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   const place = (label: string, point: Point | null) =>
     point ? (
-      <Cell
-        Component="a"
-        href={mapUrl(point)}
-        target="_blank"
-        rel="noreferrer"
-        subtitle={t('bookings.openMap')}
-      >
+      <Cell onClick={() => openExternal(mapUrl(point))} subtitle={t('bookings.openMap')}>
         {label}
       </Cell>
     ) : (
@@ -75,10 +70,12 @@ export function BookingScreen({ booking, side, onBack, actions }: Props) {
         {open ? (
           <Section footer={side === 'passenger' && !booking.pickup ? t('bookings.pickupHint') : undefined}>
             {booking.plate ? (
-              <Cell after={<PlateView plate={booking.plate} />}>{t('bookings.plate')}</Cell>
+              <Cell multiline description={<PlateView plate={booking.plate} small />}>
+                {t('bookings.plate')}
+              </Cell>
             ) : null}
             {side === 'passenger' ? place(t('bookings.meeting'), booking.meetingPoint) : null}
-            {place(t('bookings.pickup'), booking.pickup)}
+            {place(t(side === 'passenger' ? 'bookings.pickup.mine' : 'bookings.pickup'), booking.pickup)}
           </Section>
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>

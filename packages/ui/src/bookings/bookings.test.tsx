@@ -34,7 +34,9 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
     await tap('Jasur');
     expect(screen.getByText('Davlat raqami')).toBeTruthy();
-    expect(screen.getByText('Uchrashuv joyi').closest('a')?.getAttribute('href')).toContain('41.3');
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    await tap('Uchrashuv joyi');
+    expect(open.mock.calls[0]?.[0]).toContain('41.3');
     // The passenger never sees the driver's commission.
     expect(screen.queryByText('Komissiya')).toBeNull();
     await tap('Joyni bekor qilish');
