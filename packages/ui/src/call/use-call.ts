@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChatCalling } from '../chat/use-chat';
 import { useApiClients } from '../context/api-clients';
+import { startTone, unlockTones } from './call-tones';
 import { voiceLink, type VoiceLink } from './voice-link';
 
 // The Mini App side of a call (docs/08): the microphone once per call, the voice starts when the
@@ -13,6 +14,13 @@ export function useCall(key: string, chat: ChatCalling) {
   const [noMicrophone, setNoMicrophone] = useState(false);
   const { emit } = chat;
   const status = chat.call?.status ?? null;
+  const caller = chat.call?.caller ?? null;
+
+  // Ringback for the caller, a ring for the callee, only while it rings (docs/08).
+  useEffect(() => {
+    if (status !== 'ringing' || !caller) return undefined;
+    return startTone(caller === 'me' ? 'ringback' : 'ring');
+  }, [status, caller]);
 
   const voice = () =>
     (link.current ??= voiceLink(
@@ -36,6 +44,8 @@ export function useCall(key: string, chat: ChatCalling) {
 
   // No microphone, no call: the other side hears that it failed, this side goes back to the chat.
   const withMicrophone = async (then: () => void, otherwise: () => void = () => undefined) => {
+    // The tap itself opens the sound on iPhone.
+    unlockTones();
     try {
       setNoMicrophone(false);
       await voice().microphone();
