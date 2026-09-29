@@ -43,3 +43,4 @@ export const isBlocked = async (env: Bindings, telegramId: number) =>
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));
 export const blockedGuard = guard;
+export type { Person } from './application/people';

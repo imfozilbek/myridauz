@@ -1,5 +1,5 @@
 # Cloudflare settings of the brand (docs/22). Secrets are set with `wrangler secret`, never here (docs/32).
-# Queues, Durable Objects and Cron come in the goals that first need them (docs/03).
+# Queues and Durable Objects come in the goals that first need them (docs/03).
 name = "rida-backend"
 main = "../../apps/backend/src/index.ts"
 compatibility_date = "2026-09-01"
@@ -26,6 +26,10 @@ bucket_name = "rida-media"
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 dataset = "rida_analytics"
+
+# Every 15 minutes: trips and requests whose time is over are closed (docs/35).
+[triggers]
+crons = ["*/15 * * * *"]
 
 [observability]
 enabled = true

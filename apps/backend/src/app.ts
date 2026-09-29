@@ -9,7 +9,10 @@ import { analyticsModule } from './modules/analytics';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { healthModule } from './modules/health';
 import { locationsModule } from './modules/locations';
+import { pricingModule } from './modules/pricing';
+import { requestsModule } from './modules/ride-requests';
 import { teamRole } from './modules/team';
+import { tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { telegramAuth } from './shared/auth/telegram-auth';
 
@@ -30,6 +33,10 @@ export const app = new Hono<AppEnv>()
   .use('/users/*', allowMiniApps, auth)
   .use('/driver/*', allowMiniApps, auth, blockedGuard)
   .use('/admin/*', allowMiniApps, auth, blockedGuard)
+  .use('/prices/*', allowMiniApps, auth, blockedGuard)
+  .use('/passenger/*', allowMiniApps, auth, blockedGuard)
+  .use('/trips', allowMiniApps, auth, blockedGuard)
+  .use('/trips/*', allowMiniApps, auth, blockedGuard)
   // The directory is public: no personal data. Only a change of a distance checks the signature.
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
@@ -40,6 +47,9 @@ export const app = new Hono<AppEnv>()
   .route('/', usersModule)
   .route('/', driversModule)
   .route('/', locationsModule(auth))
+  .route('/', pricingModule)
+  .route('/', tripsModule)
+  .route('/', requestsModule)
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',

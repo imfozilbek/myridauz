@@ -64,3 +64,9 @@ export {
   reasonMenu,
 } from './infrastructure/moderation-card';
 export { decideApplication } from './application/moderate';
+
+// The car of an approved driver, for trips (docs/04): null for everyone else.
+export const approvedCar = async (env: Bindings, userId: number) => {
+  const application = await driversDeps(env).applications.find(userId);
+  return application?.status === 'approved' ? application.car : null;
+};

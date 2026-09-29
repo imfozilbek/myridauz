@@ -31,6 +31,9 @@ export type BrandTheme = {
   readonly art: Readonly<Record<string, HexColor>>;
 };
 
+// How the recommended price is counted (docs/23): one strategy today.
+type PricingStrategy = 'per-km';
+
 export type BrandConfig = {
   readonly id: string;
   readonly name: string;
@@ -42,4 +45,5 @@ export type BrandConfig = {
   readonly regionPhotos: boolean;
   // Telegram usernames of the three bots (docs/02, docs/46): deep links between them.
   readonly bots: { readonly passenger: string; readonly driver: string; readonly admin: string };
+  readonly pricing: PricingStrategy;
 };
