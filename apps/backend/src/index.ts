@@ -1,15 +1,21 @@
 import { app } from './app';
 import type { Bindings } from './env';
 import { expireBookings } from './modules/bookings';
+import { consumeNotifications, type NotificationJob } from './modules/notifications';
 import { grantMissedBonuses } from './modules/drivers';
 import { expireRequests } from './modules/ride-requests';
 import { completeTrips } from './modules/trips';
 import { burnBonuses } from './modules/wallet';
 
+// The chat of a booking is a Durable Object class of this Worker (docs/07).
+export { ChatRoom } from './modules/chat/infrastructure/chat-room';
+
 // Cloudflare Worker entry point: the API, and the Cron job that closes trips, requests and bookings
 // whose time is over, burns bonuses that are over and gives bonus 1 to approved drivers without it (docs/12, docs/35, brands/<brand>/wrangler.toml).
 export default {
   fetch: app.fetch,
+  // Bot messages wait in the queue and go out at Telegram's pace (docs/03).
+  queue: consumeNotifications,
   scheduled: async (_controller, env, context) => {
     const now = Date.now();
     context.waitUntil(
@@ -22,4 +28,4 @@ export default {
       ]),
     );
   },
-} satisfies ExportedHandler<Bindings>;
+} satisfies ExportedHandler<Bindings, NotificationJob>;

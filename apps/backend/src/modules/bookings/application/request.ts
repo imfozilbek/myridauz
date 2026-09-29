@@ -44,6 +44,9 @@ export async function requestBooking(
     expiresAt: answerDeadline(facts.departAt, now),
     pickup: null,
     pickupMessageId: null,
+    offerId: null,
+    boardedAt: null,
+    arrivedAt: null,
     createdAt: now,
     updatedAt: now,
   };

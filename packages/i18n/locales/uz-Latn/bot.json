@@ -50,5 +50,8 @@
   "booking.pickupSaved": "Uchrashuv joyingiz saqlandi. Haydovchi uni koʻradi.",
   "offer.new": "Soʻrovingizga haydovchidan taklif keldi. Koʻrish uchun ilovani oching.",
   "offer.accepted": "Yoʻlovchi taklifingizni qabul qildi. Safar yaratildi, joy tasdiqlandi.",
-  "offer.declined": "Yoʻlovchi taklifingizni rad etdi."
+  "offer.declined": "Yoʻlovchi taklifingizni rad etdi.",
+  "chat.newMessage": "Sizga yangi xabar keldi. Javob berish uchun chatni oching.",
+  "chat.open": "Chatni ochish",
+  "chat.contactAttempts": "{name} (ID {id}) chatda kontakt yuborishga {count} marta urindi.\nChat: {key}"
 }

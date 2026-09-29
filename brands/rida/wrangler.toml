@@ -1,5 +1,4 @@
 # Cloudflare settings of the brand (docs/22). Secrets are set with `wrangler secret`, never here (docs/32).
-# Queues and Durable Objects come in the goals that first need them (docs/03).
 name = "rida-backend"
 main = "../../apps/backend/src/index.ts"
 compatibility_date = "2026-09-01"
@@ -26,6 +25,27 @@ bucket_name = "rida-media"
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 dataset = "rida_analytics"
+
+# One Durable Object with SQLite per booking chat (docs/07).
+[[durable_objects.bindings]]
+name = "CHATS"
+class_name = "ChatRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatRoom"]
+
+# Bot messages wait here and go out at Telegram's pace (docs/03). The queue is created once:
+# wrangler queues create rida-notifications (docs/46).
+[[queues.producers]]
+binding = "NOTIFICATIONS"
+queue = "rida-notifications"
+
+[[queues.consumers]]
+queue = "rida-notifications"
+max_batch_size = 10
+max_batch_timeout = 2
+max_retries = 5
 
 # Every 15 minutes: trips and requests whose time is over are closed (docs/35).
 [triggers]

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceOf } from '../wallet/domain/ledger';
 import { answer, confirm, driverBookings } from './application/answer';
-import { setPickup } from './application/accept';
+import { rememberPickupMessage, setPickup } from './application/accept';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
 import { rideTogether } from './infrastructure/store';
 import { ALI, DILNOZA, DRIVER, HOUR, NOW, OLIM, setup } from './test-kit';
@@ -32,6 +32,7 @@ describe('a booking of seats (docs/35)', () => {
     expect(balanceOf(await wallet(), 'bonus')).toBe(482_000);
     expect(notes).toContain('passenger: confirmed 01A123BC');
     // The passenger answers the confirmation with the own pickup point; the driver sees it.
+    await rememberPickupMessage(deps, asked.id, 555);
     expect(await setPickup(deps, DILNOZA, 555, { lat: 41.2, lng: 69.1 })).toBe(true);
     expect((await driverBookings(deps, DRIVER))[0]?.pickup).toEqual({ lat: 41.2, lng: 69.1 });
   });

@@ -117,3 +117,4 @@ export * from './ride-requests';
 export * from './tashkent-time';
 export * from './trips';
 export * from './wallet';
+export * from './chat';

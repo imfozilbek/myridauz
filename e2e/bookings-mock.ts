@@ -17,6 +17,9 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   meetingPoint: null,
   pickup: null,
   plate: null,
+  chatKey: `b00000000-0000-4000-8000-0000000000b${id}`,
+  boardedAt: null,
+  arrivedAt: null,
   ...extra,
 });
 const confirmed = booking('2', 'confirmed', {
@@ -37,6 +40,7 @@ const offer = {
   commission: 0,
   status: 'sent',
   bookingId: null,
+  chatKey: 'o00000000-0000-4000-8000-0000000000c1',
 };
 const operation = (
   id: string,

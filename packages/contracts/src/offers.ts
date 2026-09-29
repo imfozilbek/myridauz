@@ -40,6 +40,7 @@ export const offerSchema = z.object({
   status: z.enum(OFFER_STATUSES),
   // The booking made when the passenger accepted.
   bookingId: z.string().nullable(),
+  chatKey: z.string(),
 });
 export type Offer = z.infer<typeof offerSchema>;
 export const offersSchema = z.object({ offers: z.array(offerSchema) });

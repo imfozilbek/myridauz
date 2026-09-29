@@ -39,8 +39,7 @@ export async function confirm(
     return { ok: false, error: 'bookings.wrong_status' };
   }
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
-  const messageId = forPassenger ? await deps.notify.confirmed(forPassenger) : null;
-  if (messageId !== null) await deps.bookings.save({ ...next, pickupMessageId: messageId });
+  if (forPassenger) await deps.notify.confirmed(forPassenger);
   return driverView(deps, next);
 }
 
