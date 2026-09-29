@@ -69,7 +69,7 @@ describe('a voice call in the chat (docs/08, G13)', () => {
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'accept' }));
     act(() => socket.receive({ type: 'call', call: { status: 'connecting', caller: 'other' } }));
     await waitFor(() => expect(sent().some((event) => event.type === 'callTrack')).toBe(true));
-    act(() => FakePeer.last?.becomes('connected'));
+    act(() => FakePeer.last?.hears());
     expect(sent()).toContainEqual({ type: 'call', action: 'connected' });
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'other' } }));
     expect(screen.getByText('00:00')).toBeTruthy();

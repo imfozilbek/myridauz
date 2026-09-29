@@ -20,8 +20,14 @@ export class FakePeer {
     return { type: 'answer', sdp: 'local-answer' };
   }
   async setLocalDescription() {}
+  // Realtime answers the first offer, then the connection comes up.
   async setRemoteDescription(description: { sdp: string }) {
     this.remote.push(description.sdp);
+    if (this.remote.length === 1) queueMicrotask(() => this.becomes('connected'));
+  }
+  // The other voice arrives.
+  hears() {
+    this.ontrack?.({ streams: [fakeStream()], track: fakeTrack() });
   }
   close() {
     this.closed = true;

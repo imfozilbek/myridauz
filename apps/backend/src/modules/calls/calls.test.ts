@@ -19,7 +19,7 @@ function recorder(answers: unknown[]) {
       asked.push({
         url,
         method: init?.method ?? '',
-        body: JSON.parse(String(init?.body)),
+        body: init?.body === undefined ? undefined : JSON.parse(String(init.body)),
         auth: headers.authorization ?? '',
       });
       return Response.json(answers.shift() ?? {});
@@ -44,6 +44,15 @@ describe('Cloudflare Realtime (docs/08, G13)', () => {
       tracks: [{ location: 'local', mid: '0', trackName: 'voice-10' }],
     });
     expect(asked[0]?.auth).toBe('Bearer app-secret');
+    // Realtime refuses a new session with any body, even an empty one.
+    expect(asked[0]?.body).toBeUndefined();
+  });
+
+  it('says the other voice is not ready while Realtime cannot find its track', async () => {
+    const { api } = recorder([{ tracks: [{ errorCode: 'not_found_track_error' }] }]);
+    await expect(api.pull('s1', { sessionId: 's2', trackName: 'voice-1' })).rejects.toThrow(
+      'calls.track_not_ready',
+    );
   });
 
   it('pulls the other voice, renegotiates and gives short TURN credentials', async () => {
