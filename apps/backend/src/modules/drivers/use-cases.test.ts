@@ -31,7 +31,8 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
     },
     notify: {
       submitted: async (application) => void log.push(`submitted:${application.status}`),
-      decided: async (application) => void log.push(`decided:${application.status}`),
+      decided: async (application, fixedPlate) =>
+        void log.push(`decided:${application.status}${fixedPlate ? `:${fixedPlate}` : ''}`),
     },
     driverApproved: (userId) => void log.push(`approved:${userId}`),
     now: () => 1000,
@@ -62,10 +63,11 @@ describe('driver application (docs/04)', () => {
       ok: false,
       error: 'drivers.wrong_status',
     });
-    const decided = await decideApplication(deps, 900, 1, { action: 'approve' });
+    const decided = await decideApplication(deps, 900, 1, { action: 'approve', plate: '01A124BC' });
     expect(decided.ok && decided.value.status).toBe('approved');
     expect(drivers.has(1)).toBe(true);
-    expect(log).toEqual(['submitted:pending', 'approved:1', 'decided:approved']);
+    expect(decided.ok && decided.value.car.plate).toBe('01A124BC');
+    expect(log).toEqual(['submitted:pending', 'approved:1', 'decided:approved:01A124BC']);
     expect(await decideApplication(deps, 900, 1, { action: 'approve' })).toEqual({
       ok: false,
       error: 'drivers.wrong_status',

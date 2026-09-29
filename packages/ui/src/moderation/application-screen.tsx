@@ -18,9 +18,10 @@ import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
 import { PhotoGrid } from './photo-grid';
+import { ApproveFlow } from './approve-flow';
 import { ReasonsStep } from './reasons-step';
 
-type Mode = 'view' | Exclude<Decision, 'approve'> | 'block' | 'decided' | 'blocked';
+type Mode = 'view' | Decision | 'block' | 'decided' | 'blocked';
 type ApplicationScreenProps = { readonly application: ApplicationSummary; readonly onBack: () => void };
 
 // One application: the face, the car, the data and the decision (docs/04). Blocking too (docs/17).
@@ -52,6 +53,15 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           title={t(mode === 'decided' ? 'moderation.decided' : 'moderation.blocked')}
         />
       </>
+    );
+  }
+  if (mode === 'approve') {
+    return (
+      <ApproveFlow
+        application={application}
+        onBack={() => setMode('view')}
+        onApprove={(plate) => decide(plate ? { action: 'approve', plate } : { action: 'approve' })}
+      />
     );
   }
   if (mode === 'reject' || mode === 'request_changes') {
@@ -92,7 +102,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           <Cell after={<CellValue>{String(car.seats)}</CellValue>}>{t('drivers.review.seats')}</Cell>
         </Section>
         <Section>
-          <Cell onClick={() => decide({ action: 'approve' })}>{t('moderation.approve')}</Cell>
+          <Cell onClick={() => setMode('approve')}>{t('moderation.approve')}</Cell>
           <Cell onClick={() => setMode('reject')}>{t('moderation.reject')}</Cell>
           <Cell onClick={() => setMode('request_changes')}>{t('moderation.requestChanges')}</Cell>
           <Cell onClick={() => setMode('block')}>{t('moderation.block')}</Cell>

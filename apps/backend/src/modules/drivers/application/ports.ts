@@ -21,7 +21,8 @@ export type PeoplePort = {
 // The team gets a card in the admin bot, the driver gets the answer from the driver bot (docs/04).
 export type ModerationNotifier = {
   submitted(application: Application, person: Person): Promise<void>;
-  decided(application: Application): Promise<void>;
+  // fixedPlate: the plate the team fixed on approval, null when it stayed as the driver wrote it.
+  decided(application: Application, fixedPlate: string | null): Promise<void>;
 };
 
 export type DriversDeps = {

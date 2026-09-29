@@ -14,13 +14,15 @@ type PlateStepProps = {
   readonly reasons: readonly ModerationReason[];
   readonly onBack: () => void;
   readonly onDone: (plate: string) => void;
+  // The admin app uses the same field to fix a plate (docs/50).
+  readonly screen?: string;
 };
 
 // The plate is the only thing a driver types: it is unique to the car (docs/04).
 // The field looks like an Uzbek plate. Each place takes only a digit or only a letter,
 // and the rest of the example stays grey after what is typed (maskPlate, docs/50).
-export function PlateStep({ initial, reasons, onBack, onDone }: PlateStepProps) {
-  useScreenView('driver.plate');
+export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.plate' }: PlateStepProps) {
+  useScreenView(screen);
   const { t } = useI18n();
   const [value, setValue] = useState(formatPlate(initial));
   const [invalid, setInvalid] = useState(false);

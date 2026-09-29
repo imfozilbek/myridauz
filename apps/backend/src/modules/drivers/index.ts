@@ -60,6 +60,7 @@ export {
   cardText,
   decisionLine,
   parseCardAction,
+  plateCheckMenu,
   reasonMenu,
 } from './infrastructure/moderation-card';
 export { decideApplication } from './application/moderate';

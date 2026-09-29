@@ -45,6 +45,7 @@ export const TEXT = {
   reasonFront: t('drivers.reason.front_unclear'),
   reasonPlate: t('drivers.reason.plate_not_readable'),
   approve: t('moderation.approve'),
+  plateMatches: t('moderation.plateCheck.approve'),
   decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;

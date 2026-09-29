@@ -48,9 +48,9 @@ export async function mockDrivers(page: Page, start: DriverStart) {
   await page.route('**/api/admin/applications', (route) =>
     route.fulfill({ json: { applications: [summary] } }),
   );
-  // Photos of a test application do not exist: the grid shows its empty frames.
+  // The same real picture stands for every photo of the test application.
   await page.route('**/api/admin/applications/*/photos/*', (route) =>
-    route.fulfill({ status: 404, json: {} }),
+    route.fulfill({ contentType: 'image/webp', body: readFileSync(PHOTO) }),
   );
   await page.route('**/api/admin/applications/*/decision', (route) =>
     route.fulfill({ json: { ...summary, status: 'approved' } }),

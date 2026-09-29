@@ -34,6 +34,11 @@ describe('car of a driver (docs/04, docs/35)', () => {
 describe('moderation input (docs/04, docs/17)', () => {
   it('needs one or more reasons for reject and changes, none for approve', () => {
     expect(decisionSchema.safeParse({ action: 'approve' }).success).toBe(true);
+    expect(decisionSchema.parse({ action: 'approve', plate: '01 a 124 bc' })).toEqual({
+      action: 'approve',
+      plate: '01A124BC',
+    });
+    expect(decisionSchema.safeParse({ action: 'approve', plate: '01 A' }).success).toBe(false);
     expect(decisionSchema.safeParse({ action: 'reject', reasons: [] }).success).toBe(false);
     const changes = { action: 'request_changes', reasons: ['car_mismatch', 'side_unclear'] };
     expect(decisionSchema.safeParse(changes).success).toBe(true);

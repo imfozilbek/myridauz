@@ -24,7 +24,7 @@ const application: ApplicationSummary = {
   submittedAt: 1,
 };
 
-function setup() {
+function setup(get?: (userId: number) => Promise<ApplicationSummary>) {
   const decide = vi.fn(
     async (_id: number, decision: DecisionInput) =>
       ({
@@ -34,7 +34,13 @@ function setup() {
   );
   const block = vi.fn(async () => undefined);
   const clients = testClients({
-    moderation: { queue: async () => [application], photo: async () => new Blob(['x']), decide, block },
+    moderation: {
+      queue: async () => [application],
+      photo: async () => new Blob(['x']),
+      decide,
+      block,
+      ...(get ? { get } : {}),
+    },
   });
   renderInShell(<ApplicationsScreen onBack={() => undefined} />, false, true, undefined, clients);
   return { decide, block };
@@ -47,8 +53,33 @@ describe('ApplicationsScreen (docs/04)', () => {
     expect(screen.getByText('Chevrolet Nexia')).toBeTruthy();
     expect((await screen.findAllByRole('img')).length).toBe(4);
     fireEvent.click(screen.getByText('Tasdiqlash'));
+    // The plate is compared with the front photo first (docs/50).
+    expect(await screen.findByText('Raqamni tekshiring')).toBeTruthy();
+    expect(screen.getByText('10 123 ABC')).toBeTruthy();
+    fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
     expect(decide).toHaveBeenCalledWith(5, { action: 'approve' });
+  });
+
+  it('fixes the plate by the photo and approves with it', async () => {
+    const { decide } = setup();
+    fireEvent.click(await screen.findByText('Ali'));
+    fireEvent.click(screen.getByText('Tasdiqlash'));
+    fireEvent.click(await screen.findByText('Raqamni tuzatish'));
+    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '10 124 abc' } });
+    fireEvent.click(screen.getByText('Davom etish'));
+    expect(await screen.findByText('Raqam rasm boʻyicha tuzatildi')).toBeTruthy();
+    expect(screen.getByText('10 124 ABC')).toBeTruthy();
+    fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
+    await screen.findByText('Javob yuborildi');
+    expect(decide).toHaveBeenCalledWith(5, { action: 'approve', plate: '10124ABC' });
+  });
+
+  it('opens the application of a link from the admin bot', async () => {
+    window.history.replaceState(null, '', '/?application=5');
+    setup(async () => application);
+    expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
+    expect(window.location.search).toBe('');
   });
 
   it('asks for changes with ticked reasons and blocks for 7 days', async () => {

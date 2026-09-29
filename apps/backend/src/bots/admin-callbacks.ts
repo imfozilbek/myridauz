@@ -1,3 +1,4 @@
+import { appHost } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import {
   cardMenu,
@@ -6,6 +7,7 @@ import {
   decisionLine,
   driversDeps,
   parseCardAction,
+  plateCheckMenu,
   reasonMenu,
 } from '../modules/drivers';
 import { changeModerator, teamRole } from '../modules/team';
@@ -43,6 +45,11 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const edit = (method: string, params: object) =>
     callTelegram(context.fetch, token, method, { ...target, ...params });
   if (action.kind === 'none_picked') return answer(query, t('bot.moderation.pickReason'));
+  if (action.kind === 'check_plate') {
+    const adminUrl = `https://${appHost(context.brand, 'admin')}/`;
+    await edit('editMessageReplyMarkup', { reply_markup: plateCheckMenu(action.userId, adminUrl) });
+    return answer(query, t('bot.moderation.checkPlate'));
+  }
   if (action.kind !== 'decide') {
     const markup =
       action.kind === 'menu'

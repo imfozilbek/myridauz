@@ -82,13 +82,11 @@ export function decide(
 ): Application | 'drivers.wrong_status' {
   if (application.status !== 'pending') return 'drivers.wrong_status';
   const reasons = decision.action === 'approve' ? [] : decision.reasons;
-  return {
-    ...application,
-    status: DECIDED[decision.action],
-    reasons,
-    decidedBy: moderatorId,
-    updatedAt: now,
-  };
+  // The team may fix the plate by the front photo before approving (docs/50).
+  const plate = decision.action === 'approve' ? decision.plate : undefined;
+  const car = plate && application.car ? { ...application.car, plate } : application.car;
+  const status = DECIDED[decision.action];
+  return { ...application, status, car, reasons, decidedBy: moderatorId, updatedAt: now };
 }
 
 // A new face of an approved driver is checked again (docs/05). Other statuses wait for the next submit,

@@ -183,3 +183,9 @@
     inset 0 0 0 1px var(--tgui--outline),
     0 0 0 1px var(--tgui--outline);
 }
+
+/* A plate shown, not typed: the same look without the ghost. */
+.plate-view .plate-input {
+  display: block;
+  text-align: center;
+}

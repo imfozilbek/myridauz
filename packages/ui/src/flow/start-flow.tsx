@@ -7,13 +7,20 @@ import { HomeScreen } from './home-screen';
 import { SoonScreen } from './soon-screen';
 import type { StartAction } from './start-action';
 
-type StartFlowProps = { readonly actions: readonly StartAction[] };
+type StartFlowProps = {
+  readonly actions: readonly StartAction[];
+  // The section to open at once, for a link from a bot (docs/50).
+  readonly opened?: string;
+};
 type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly step: 'route' | 'soon' };
 
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
-export function StartFlow({ actions }: StartFlowProps) {
-  const [screen, setScreen] = useState<Screen>('home');
+export function StartFlow({ actions, opened }: StartFlowProps) {
+  const [screen, setScreen] = useState<Screen>(() => {
+    const action = actions.find((item) => item.id === opened);
+    return action ? { action, step: 'soon' } : 'home';
+  });
   const openHome = useCallback(() => setScreen('home'), []);
   const openProfile = useCallback(() => setScreen('profile'), []);
   const openAction = useCallback((action: StartAction) => {

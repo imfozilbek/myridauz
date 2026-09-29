@@ -105,7 +105,11 @@ describe('admin bot: the moderation card (docs/04)', () => {
     );
     const told = telegram.sentTo(APPLICANT).at(-1)?.body.text;
     expect(told).toContain('• Rasmda davlat raqami oʻqilmaydi\n• Yon tomondan olingan rasm tiniq emas');
-    const again = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:approve`)));
+    // "Tasdiqlash" first asks to compare the plate; the fix opens the admin Mini App on this application.
+    const check = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:approve`)));
+    expect(check.text).toBe('Rasmdagi davlat raqamini kartadagi raqam bilan solishtiring.');
+    expect(JSON.stringify(telegram.calls.at(-1)?.body)).toContain(`?application=${APPLICANT}`);
+    const again = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:approve:ok`)));
     expect(again.text).toBe('Bu arizaga javob berilgan.');
   });
 

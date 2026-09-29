@@ -11,15 +11,19 @@ import type { Application } from '../domain/application';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// Buttons of the card carry "mod:<user id>:<action>[:<picked>[:send]]", well under the 64 bytes of Telegram.
+// Buttons of the card carry "mod:<user id>:<action>[:<picked>[:send]]" or "mod:<user id>:approve[:ok]",
+// well under the 64 bytes of Telegram.
 // picked: the chosen reasons as bits of their place in MODERATION_REASONS.
 const PREFIX = 'mod';
 const SEND = 'send';
+const CHECKED = 'ok';
 type Refusal = Exclude<Decision, 'approve'>;
 export type CardAction =
   | { readonly userId: number; readonly kind: 'decide'; readonly decision: DecisionInput }
   | { readonly userId: number; readonly kind: 'pick'; readonly action: Refusal; readonly picked: number }
   | { readonly userId: number; readonly kind: 'menu' }
+  // "Tasdiqlash" asks first to compare the plate with the front photo.
+  | { readonly userId: number; readonly kind: 'check_plate' }
   // "Yuborish" before any reason is ticked.
   | { readonly userId: number; readonly kind: 'none_picked' };
 
@@ -51,6 +55,16 @@ export const cardMenu = (userId: number) => ({
       button(t('bot.moderation.reject'), userId, 'reject'),
       button(t('bot.moderation.requestChanges'), userId, 'request_changes'),
     ],
+  ],
+});
+
+// Before approving, the moderator compares the plate in the card with the front photo (docs/50).
+// A wrong plate is fixed in the admin Mini App, opened right on this application.
+export const plateCheckMenu = (userId: number, adminUrl: string) => ({
+  inline_keyboard: [
+    [button(t('bot.moderation.plateMatches'), userId, 'approve', CHECKED)],
+    [{ text: t('bot.moderation.fixPlate'), web_app: { url: `${adminUrl}?application=${userId}` } }],
+    [button(t('bot.moderation.back'), userId, 'menu')],
   ],
 });
 
@@ -86,7 +100,11 @@ export function parseCardAction(data: string): CardAction | null {
   const userId = Number(id);
   if (prefix !== PREFIX || !Number.isInteger(userId) || userId <= 0) return null;
   if (action === 'menu') return { userId, kind: 'menu' };
-  if (action === 'approve') return { userId, kind: 'decide', decision: { action } };
+  if (action === 'approve') {
+    return bits === CHECKED
+      ? { userId, kind: 'decide', decision: { action } }
+      : { userId, kind: 'check_plate' };
+  }
   if (action !== 'reject' && action !== 'request_changes') return null;
   const picked = Number(bits ?? 0);
   if (!Number.isInteger(picked) || picked < 0 || picked > ALL_PICKED) return null;

@@ -1,4 +1,5 @@
 import { appHost, type BrandConfig } from '@platform/brands';
+import { formatPlate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { callTelegram, sendAlbum, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { Application } from '../domain/application';
@@ -56,7 +57,7 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
         );
       }
     },
-    decided: async (application) => {
+    decided: async (application, fixedPlate) => {
       if (!driverToken || application.status === 'draft' || application.status === 'pending') return;
       // One reason per line: the driver finds each one marked in the Mini App.
       const reasons = reasonList(application.reasons, '\n').replace(/^/gm, '• ');
@@ -64,7 +65,10 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
       await quietly(
         callTelegram(fetch, driverToken, 'sendMessage', {
           chat_id: application.userId,
-          text: t(RESULT_TEXT[application.status], { reasons }),
+          text: [
+            t(RESULT_TEXT[application.status], { reasons }),
+            ...(fixedPlate ? [t('bot.driver.plateFixed', { plate: formatPlate(fixedPlate) })] : []),
+          ].join('\n\n'),
           reply_markup: { inline_keyboard: [[open]] },
         }),
       );

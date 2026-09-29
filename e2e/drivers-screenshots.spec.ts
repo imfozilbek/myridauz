@@ -51,9 +51,14 @@ test('moderation: screenshots', async ({ page }) => {
   await page.getByText('Jasur').click();
   await page.mouse.move(0, 0);
   await page.screenshot({ path: 'screenshots/moderation-2-application.png', fullPage: true });
+  await page.getByText(TEXT.approve).click();
+  await expect(page.locator('#tg-main-button')).toHaveText(TEXT.plateMatches);
+  await page.mouse.move(0, 0);
+  await page.screenshot({ path: 'screenshots/moderation-3-plate-check.png', fullPage: true });
+  await pressBack(page);
   await page.getByText(TEXT.requestChanges).click();
   await page.getByText(TEXT.reasonFront).click();
   await page.getByText(TEXT.reasonPlate).click();
   await page.mouse.move(0, 0);
-  await page.screenshot({ path: 'screenshots/moderation-3-reasons.png', fullPage: true });
+  await page.screenshot({ path: 'screenshots/moderation-4-reasons.png', fullPage: true });
 });
