@@ -17,6 +17,7 @@ import { answer } from './application/answer';
 import { rememberPickupMessage, setPickup } from './application/accept';
 import { chatMember } from './application/chat-member';
 import { passengerView } from './application/progress';
+import { bookingViews } from './application/views';
 import type { BookingsDeps } from './application/ports';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -113,3 +114,12 @@ export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
 export const pickupMessageSent = (env: Bindings, bookingId: string, messageId: number) =>
   rememberPickupMessage(bookingsDeps(env), bookingId, messageId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
+
+// Confirmed bookings of these trips as their passengers see them: the reminders (G10).
+export const confirmedBookings = async (env: Bindings, tripIds: readonly string[]) => {
+  const deps = bookingsDeps(env);
+  const confirmed = (await deps.bookings.byTrips(tripIds)).filter(
+    (booking) => booking.status === 'confirmed',
+  );
+  return bookingViews(deps, confirmed, 'passenger');
+};

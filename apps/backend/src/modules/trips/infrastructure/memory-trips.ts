@@ -13,6 +13,11 @@ export function createMemoryTrips(): TripRepository {
       [...trips.values()]
         .filter((trip) => trip.status === 'active' && trip.departAt >= from && trip.departAt < to)
         .sort((a, b) => a.departAt - b.departAt),
+    departing: async (from, to) =>
+      [...trips.values()].filter(
+        (trip) =>
+          (trip.status === 'active' || trip.status === 'full') && trip.departAt >= from && trip.departAt < to,
+      ),
     since: async (from, limit) =>
       [...trips.values()]
         .filter((trip) => trip.departAt >= from)

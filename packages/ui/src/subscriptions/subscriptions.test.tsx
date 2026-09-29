@@ -1,0 +1,103 @@
+import { ApiError, type SubscriptionsClient } from '@platform/api-client';
+import type { Subscription } from '@platform/contracts';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { FindTripFlow } from '../market/find-trip-flow';
+import { chooseRoute, renderMarket, tap, trip } from '../market/market-test-kit';
+import { TripLink } from '../market/trip-link';
+import { testClients } from '../test-shell';
+import { SubscriptionsLink } from './subscriptions-link';
+
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, '', '/');
+});
+
+const ANY: Subscription = {
+  id: 's1',
+  kind: 'trips',
+  from: '1726269',
+  to: '1730',
+  date: null,
+  woman: true,
+  expiresAt: Date.parse('2026-10-31T12:00:00Z'),
+  expired: true,
+};
+
+describe('"Xabar bering" (docs/24)', () => {
+  it('subscribes to the searched route for the day or any day', async () => {
+    const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
+    const { tracked } = renderMarket(
+      <FindTripFlow onBack={() => undefined} />,
+      testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
+    );
+    await chooseRoute(true);
+    await tap(/^Bugun/);
+    await tap('Xabar bering');
+    await tap('Istalgan kun');
+    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730', date: null, woman: false });
+    expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
+  });
+
+  it('explains the limit of 5 subscriptions', async () => {
+    const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => {
+      throw new ApiError(409, 'subscriptions.too_many');
+    });
+    renderMarket(
+      <FindTripFlow onBack={() => undefined} />,
+      testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
+    );
+    await chooseRoute(true);
+    await tap(/^Bugun/);
+    await tap('Xabar bering');
+    await tap(/^Faqat/);
+    expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();
+  });
+});
+
+describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () => {
+  it('opens the list from the bot, renews "any date" and deletes', async () => {
+    window.history.replaceState(null, '', '/?subscriptions=1');
+    let list = [ANY];
+    const renew = vi.fn<SubscriptionsClient['renew']>(async () => ({ ...ANY, expired: false }));
+    const remove = vi.fn<SubscriptionsClient['remove']>(async () => void (list = []));
+    const mine = vi.fn<SubscriptionsClient['mine']>(async () => list);
+    renderMarket(
+      <SubscriptionsLink>
+        <p>Asosiy</p>
+      </SubscriptionsLink>,
+      testClients({ subscriptions: { mine, renew, remove } }),
+    );
+    expect(await screen.findByText('Obunalar')).toBeTruthy();
+    expect(screen.getByText('Muddati tugagan')).toBeTruthy();
+    expect(screen.getByText('Mashinada ayol bor')).toBeTruthy();
+    await tap('Uzaytirish');
+    expect(renew).toHaveBeenCalledWith('s1');
+    // The list comes again after a change.
+    await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
+    await tap('Oʻchirish');
+    expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+  });
+
+  it('opens the trip of a channel post, ready to book', async () => {
+    window.history.replaceState(null, '', `/?tgWebAppStartParam=trip_${trip.id}`);
+    const tripOf = vi.fn(async () => trip);
+    renderMarket(
+      <TripLink enabled>
+        <p>Asosiy</p>
+      </TripLink>,
+      testClients({ market: { trip: tripOf } }),
+    );
+    expect(await screen.findByText('Joy band qilish')).toBeTruthy();
+    expect(tripOf).toHaveBeenCalledWith(trip.id);
+    cleanup();
+    renderMarket(
+      <TripLink enabled={false}>
+        <p>Asosiy</p>
+      </TripLink>,
+      testClients({}),
+    );
+    expect(screen.getByText('Asosiy')).toBeTruthy();
+  });
+});

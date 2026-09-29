@@ -82,3 +82,10 @@ export const publishFor = (env: Bindings, driverId: number, input: Required<Trip
 export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
   await cancelTrip(tripsDeps(env), driverId, tripId);
 };
+
+// Trips with riders that leave soon: the reminders of the Cron job (G10).
+export const tripsDeparting = async (env: Bindings, from: number, to: number) =>
+  tripViewsOf(
+    env,
+    (await tripsDeps(env).trips.departing(from, to)).map((trip) => trip.id),
+  );

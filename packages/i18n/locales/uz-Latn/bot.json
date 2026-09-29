@@ -72,5 +72,9 @@
   "subscription.manyRequests": "{from} → {to} yoʻnalishida yana {count} ta yangi soʻrov bor.",
   "subscription.renew": "{from} → {to} obunangiz muddati tugadi. Xabar olishni davom ettirish uchun uni uzaytiring.",
   "subscription.open": "Koʻrish",
-  "subscription.list": "Obunalar"
+  "subscription.list": "Obunalar",
+  "reminder.passengerDay": "Eslatma: safaringiz bor.\n{from} → {to}\n{date}, soat {time}\nMashina: {car}, davlat raqami {plate}.",
+  "reminder.passengerSoon": "Safaringizga 2 soatdan kam vaqt qoldi: {from} → {to}, soat {time}.\nMashina: {car}, davlat raqami {plate}. Uchrashuv joyiga vaqtida boring.",
+  "reminder.driverDay": "Eslatma: safaringiz bor.\n{from} → {to}\n{date}, soat {time}\nYoʻlovchilar: {count} kishi.",
+  "reminder.driverSoon": "Safaringizga 2 soatdan kam vaqt qoldi: {from} → {to}, soat {time}. Yoʻlovchilar: {count} kishi."
 }

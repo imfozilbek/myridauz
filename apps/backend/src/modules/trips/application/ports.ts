@@ -10,6 +10,8 @@ export type TripRepository = {
   byMeetingMessage(driverId: number, messageId: number): Promise<TripRecord | undefined>;
   // Active trips leaving between the two times, the earliest first.
   leaving(from: number, to: number): Promise<TripRecord[]>;
+  // Active or full trips leaving between the two times: their reminders (G10).
+  departing(from: number, to: number): Promise<TripRecord[]>;
   // Every trip leaving from this time on, whatever its status, the earliest first (the team's list).
   since(from: number, limit: number): Promise<TripRecord[]>;
   // The Cron job: trips over by now become completed (docs/35).

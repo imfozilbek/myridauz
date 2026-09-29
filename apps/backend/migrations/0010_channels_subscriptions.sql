@@ -25,3 +25,9 @@ CREATE TABLE route_subscriptions (
 );
 CREATE INDEX route_subscriptions_user ON route_subscriptions (user_id, kind);
 CREATE INDEX route_subscriptions_live ON route_subscriptions (kind, expired, expires_at);
+
+-- Reminders about a trip a day and 2 hours before it: each key is sent once.
+CREATE TABLE trip_reminders (
+  key TEXT PRIMARY KEY,
+  sent_at INTEGER NOT NULL
+);
