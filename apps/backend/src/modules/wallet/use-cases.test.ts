@@ -8,6 +8,7 @@ import {
   refund,
   walletView,
 } from './application/wallet';
+import { grantMissedWelcome } from './application/missed';
 import type { WalletDeps } from './application/ports';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 
@@ -34,6 +35,15 @@ function setup(promo = PROMO) {
 }
 
 describe('the wallet of a driver (docs/12)', () => {
+  it('gives bonus 1 to a driver approved before wallets existed, only once', async () => {
+    const { deps, balances } = setup();
+    await grantWelcome(deps, 2);
+    await grantMissedWelcome(deps, [1, 2]);
+    await grantMissedWelcome(deps, [1, 2]);
+    expect(await balances()).toEqual({ bonus: 500_000, main: 0 });
+    expect((await walletView(deps, 2)).bonus).toBe(500_000);
+  });
+
   it('gives bonus 1 once at the approval and spends the bonus first', async () => {
     const { deps, balances } = setup();
     await grantWelcome(deps, 1);

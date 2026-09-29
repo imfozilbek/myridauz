@@ -7,6 +7,8 @@ export type ApplicationRepository = {
   save(application: Application): Promise<void>;
   // Applications waiting for the team, the oldest first.
   queue(): Promise<Application[]>;
+  // Ids of approved drivers, for the wallet's Cron job (docs/12).
+  approved(): Promise<number[]>;
 };
 
 // The users module, seen from here: a name and a face, never a phone (docs/07).

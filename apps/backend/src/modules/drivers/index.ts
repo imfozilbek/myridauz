@@ -7,7 +7,7 @@ import { r2Images } from '../../shared/storage/r2-images';
 import { recordServerEvent } from '../analytics';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
-import { welcomeBonus } from '../wallet';
+import { missedWelcome, welcomeBonus } from '../wallet';
 import { avatarChanged } from './application/moderate';
 import type { DriversDeps } from './application/ports';
 import { adminRoutes } from './http/admin-routes';
@@ -68,6 +68,10 @@ export {
   reasonMenu,
 } from './infrastructure/moderation-card';
 export { decideApplication } from './application/moderate';
+
+// The Cron job: approved drivers without a wallet get bonus 1 (docs/12).
+export const grantMissedBonuses = async (env: Bindings) =>
+  missedWelcome(env, await driversDeps(env).applications.approved());
 
 // The car of an approved driver, for trips (docs/04): null for everyone else.
 export const approvedCar = async (env: Bindings, userId: number) => {
