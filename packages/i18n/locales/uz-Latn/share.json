@@ -23,5 +23,7 @@
   "follow.subscribed": "Xabarlar yoqildi",
   "follow.full": "Bu safarni allaqachon 5 kishi kuzatmoqda.",
   "follow.closed": "Bu safar endi koʻrinmaydi",
-  "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan."
+  "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan.",
+  "follow.join": "Men ham yoʻlga chiqaman",
+  "follow.joinHint": "Roʻyxatdan oʻting va oʻzingizga safar toping."
 }

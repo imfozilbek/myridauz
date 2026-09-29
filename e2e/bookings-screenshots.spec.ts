@@ -64,7 +64,7 @@ test('passenger: chat, hidden phone, Mashinaga chiqdim', async ({ page }) => {
 });
 
 test('close person: follows a shared trip', async ({ page }) => {
-  await mockApi(page, 'active');
+  await mockApi(page, 'unregistered');
   await mockTelegram(page);
   await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?follow=${SHARE_TOKEN}`));
   await followTrip(page, shooter(page, 'follow'));

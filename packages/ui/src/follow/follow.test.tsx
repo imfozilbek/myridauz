@@ -6,6 +6,7 @@ import { confirmed } from '../bookings/booking-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
+import { FollowGate } from './follow-gate';
 import { FollowScreen } from './follow-screen';
 
 afterEach(cleanup);
@@ -28,7 +29,7 @@ describe('close people follow a shared trip (docs/43)', () => {
   it('see the trip without registration and ask for bot messages', async () => {
     const follow = vi.fn<ChatClient['follow']>(async () => undefined);
     const { tracked } = renderMarket(
-      <FollowScreen token={TOKEN} />,
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
     expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
@@ -47,7 +48,7 @@ describe('close people follow a shared trip (docs/43)', () => {
       throw new ApiError(409, 'shares.too_many');
     });
     renderMarket(
-      <FollowScreen token={TOKEN} />,
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
     await tap('Xabar olish');
@@ -56,8 +57,53 @@ describe('close people follow a shared trip (docs/43)', () => {
     const closed = vi.fn<ChatClient['sharedTrip']>(async () => {
       throw new ApiError(404, 'shares.not_found');
     });
-    renderMarket(<FollowScreen token={TOKEN} />, testClients({ chat: { sharedTrip: closed } }));
+    renderMarket(
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
+      testClients({ chat: { sharedTrip: closed } }),
+    );
     expect(await screen.findByText('Bu safar endi koʻrinmaydi')).toBeTruthy();
+  });
+});
+
+describe('a close person becomes a passenger (docs/18)', () => {
+  it('leaves the card for the usual app with the registration', async () => {
+    window.history.replaceState(null, '', `/?follow=${TOKEN}`);
+    const { tracked } = renderMarket(
+      <FollowGate enabled>
+        <p>Roʻyxatdan oʻtish</p>
+      </FollowGate>,
+      testClients({ chat: { sharedTrip: async () => TRIP } }),
+    );
+    expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
+    await tap('Men ham yoʻlga chiqaman');
+    expect(screen.getByText('Roʻyxatdan oʻtish')).toBeTruthy();
+    expect(screen.queryByText('Dilnozaning safari')).toBeNull();
+    expect(tracked.map((event) => event.name)).toContain('share_join');
+    window.history.replaceState(null, '', '/');
+  });
+
+  it('skips the card in the other apps and when the link is closed', async () => {
+    window.history.replaceState(null, '', `/?follow=${TOKEN}`);
+    renderMarket(
+      <FollowGate enabled={false}>
+        <p>Haydovchi</p>
+      </FollowGate>,
+      testClients({}),
+    );
+    expect(screen.getByText('Haydovchi')).toBeTruthy();
+    cleanup();
+    const closed = vi.fn<ChatClient['sharedTrip']>(async () => {
+      throw new ApiError(404, 'shares.not_found');
+    });
+    renderMarket(
+      <FollowGate enabled>
+        <p>Roʻyxatdan oʻtish</p>
+      </FollowGate>,
+      testClients({ chat: { sharedTrip: closed } }),
+    );
+    await tap('Men ham yoʻlga chiqaman');
+    expect(screen.getByText('Roʻyxatdan oʻtish')).toBeTruthy();
+    window.history.replaceState(null, '', '/');
   });
 });
 

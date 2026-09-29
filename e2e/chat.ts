@@ -33,4 +33,8 @@ export async function followTrip(page: Page, shot: Shot = none) {
   await page.getByText(t('share.follow.subscribe')).click();
   await expect(page.getByText(t('share.follow.subscribed'))).toBeVisible();
   await shot('2-subscribed');
+  // "Men ham yoʻlga chiqaman" leads to the registration of a new passenger (docs/18).
+  await page.getByText(t('share.follow.join')).click();
+  await expect(page.getByText(t('common.passenger.welcome'))).toBeVisible();
+  await shot('3-join');
 }
