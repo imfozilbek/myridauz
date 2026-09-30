@@ -80,7 +80,7 @@
 | `ADMIN_BOT_TOKEN` | Токен админ-бота |
 
 - Права токена Cloudflare (Custom token): на аккаунт: Workers Scripts,
-  Workers KV, Workers R2, D1, Pages, Queues, Realtime, чтение аналитики
+  Workers KV, Workers R2 Storage (Edit: запись карты, `67`), D1, Pages, Queues, Realtime, чтение аналитики
   и настроек; на зону `myrida.uz`: DNS, Workers Routes, чтение зоны.
 - Токены ботов Claude сам кладёт в Cloudflare (`wrangler secret`).
 - **Решение владельца на время разработки:** ключи можно передать в чате.
