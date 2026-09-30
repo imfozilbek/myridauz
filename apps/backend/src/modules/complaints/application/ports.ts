@@ -52,6 +52,12 @@ export type ComplaintsDeps = {
       cause: { readonly by: number; readonly reason: string },
     ): Promise<void>;
     releasePhone(id: number): Promise<void>;
+    // Only the owner lifts a block; the journal keeps every step (docs/65 C).
+    unblock(id: number, cause: { readonly by: number; readonly reason: string }): Promise<void>;
+    blocks(id: number): Promise<{
+      readonly active: { readonly until: number | null } | null;
+      readonly entries: readonly { until: number | null; by: number; reason: string; at: number }[];
+    }>;
   };
   // A member of the team is blocked only by the owner (docs/02).
   readonly isTeam: (userId: number) => Promise<boolean>;

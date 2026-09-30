@@ -124,6 +124,9 @@ export async function setPickup(
 ): Promise<boolean> {
   const booking = await deps.bookings.byPickupMessage(passengerId, messageId);
   if (!booking) return false;
-  await deps.bookings.save({ ...booking, pickup: point, updatedAt: deps.now() });
+  const saved = { ...booking, pickup: point, updatedAt: deps.now() };
+  await deps.bookings.save(saved);
+  const [forDriver] = await bookingViews(deps, [saved], 'driver');
+  if (forDriver) await deps.notify.pickup(forDriver);
   return true;
 }

@@ -48,6 +48,7 @@
   "booking.cancelledByPassenger": "{name} band qilingan joyni bekor qildi: {from} → {to}, {date}. Komissiya hamyoningizga qaytarildi.",
   "booking.cancelledByDriver": "Haydovchi band qilingan joyingizni bekor qildi: {from} → {to}, {date}. Boshqa safarni toping.",
   "booking.pickupSaved": "Uchrashuv joyingiz saqlandi. Haydovchi uni koʻradi.",
+  "booking.pickupForDriver": "{name} oʻz uchrashuv joyini yubordi: {from} → {to}, {date}, soat {time}.\n\nJoyni koʻrish uchun ilovani oching.",
   "offer.new": "Soʻrovingizga haydovchidan taklif keldi. Koʻrish uchun ilovani oching.",
   "offer.accepted": "Yoʻlovchi taklifingizni qabul qildi. Safar yaratildi, joy tasdiqlandi.",
   "offer.declined": "Yoʻlovchi taklifingizni rad etdi.",

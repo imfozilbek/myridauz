@@ -11,11 +11,11 @@ export const haptic = {
   ring: () => void hapticFeedback.notificationOccurred.ifAvailable('warning'),
 };
 
-// "Are you sure?" in the native Telegram window (docs/19, principle 9).
+// "Are you sure?" in the native Telegram window (docs/19, principle 9); outside Telegram, the browser's.
 export async function confirm(message: string, confirmText: string): Promise<boolean> {
-  const buttons = [{ id: CONFIRM_ID, type: 'default', text: confirmText }, { type: 'cancel' }] as const;
+  const buttons = [{ id: CONFIRM_ID, type: 'destructive', text: confirmText }, { type: 'cancel' }] as const;
   const shown = popup.show.ifAvailable({ message, buttons: [...buttons] });
-  return shown?.[0] === true ? (await shown[1]) === CONFIRM_ID : false;
+  return shown?.[0] === true ? (await shown[1]) === CONFIRM_ID : window.confirm(message);
 }
 
 // Asks before closing when a form has unsaved data (docs/21).

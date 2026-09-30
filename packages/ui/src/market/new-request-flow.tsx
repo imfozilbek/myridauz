@@ -86,7 +86,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
     );
   }
   if (step === 'price') {
-    if (!recommendation) return <ScreenSkeleton />;
+    if (!recommendation) return <ScreenSkeleton onBack={() => setStep('seats')} />;
     const initial = price ? { initial: price } : {};
     return (
       <PriceStep

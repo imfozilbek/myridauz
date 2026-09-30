@@ -25,8 +25,9 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   const { value, failed, reload } = useLoad(() => channels.list());
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
-  if (failed || directory.status === 'error') return <ErrorScreen onRetry={() => (reload(), retry())} />;
-  if (!value || directory.status !== 'ready') return <ScreenSkeleton />;
+  if (failed || directory.status === 'error')
+    return <ErrorScreen onRetry={() => (reload(), retry())} onBack={onBack} />;
+  if (!value || directory.status !== 'ready') return <ScreenSkeleton onBack={onBack} />;
   if (open)
     return (
       <ChannelEdit

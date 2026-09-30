@@ -48,6 +48,19 @@ export function people(deps: UsersDeps) {
       if (phone) await deps.users.blockPhone(phone, stronger(await deps.users.phoneBlock(phone)), now);
       await deps.users.logBlock({ userId: id, until: wanted.until, ...cause, at: now });
     },
+    // The owner lifts a block; the journal keeps it: "until" is the moment it was lifted (docs/65 C).
+    unblock: async (id: number, cause: { readonly by: number; readonly reason: string }) => {
+      const now = deps.now();
+      await deps.users.unblockId(id, now);
+      const phone = (await deps.users.find(id))?.phone ?? (await deps.users.heldPhone(id));
+      if (phone) await deps.users.unblockPhone(phone);
+      await deps.users.logBlock({ userId: id, until: now, ...cause, at: now });
+    },
+    // The block now and every block before it, for the team (docs/65 C).
+    blocks: async (id: number) => ({
+      active: activeBlock([await deps.users.idBlock(id)], deps.now()),
+      entries: await deps.users.blockLog(id),
+    }),
     // The complaint against a deleted account ended: its phone is not kept any more (docs/58).
     releasePhone: (id: number) => deps.users.releasePhone(id),
     avatar: (key: string) => deps.avatars.get(key),

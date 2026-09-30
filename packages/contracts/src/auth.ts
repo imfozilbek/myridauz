@@ -49,6 +49,7 @@ export const API_ERRORS = [
   'bookings.no_seats',
   'bookings.own_trip',
   'bookings.wrong_status',
+  'bookings.departed',
   'wallet.not_enough',
   'wallet.invalid_input',
   'auth.not_owner',

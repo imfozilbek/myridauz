@@ -22,6 +22,7 @@ const STATUS = {
   'bookings.no_seats': 409,
   'bookings.own_trip': 422,
   'bookings.wrong_status': 409,
+  'bookings.departed': 409,
   'wallet.not_enough': 402,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const fail = failWith(STATUS);

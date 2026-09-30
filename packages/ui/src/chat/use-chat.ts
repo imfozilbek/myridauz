@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { reconnectDelay } from './reconnect';
 
 export type ChatState = 'connecting' | 'open' | 'failed';
 
@@ -40,26 +41,40 @@ export function useChat(key: string) {
     } else if (data.type === 'callEnded') setEnded(data.reason);
     else onTrack.current(data.track);
   };
+  // A chat that was open and dropped reconnects by itself; a chat that never opened shows the error.
+  const failures = useRef(0);
+  const wasOpen = useRef(false);
   useEffect(() => {
     let closed = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const lost = () => {
+      if (closed) return;
+      const delay = wasOpen.current ? reconnectDelay(failures.current) : null;
+      failures.current += 1;
+      if (delay === null) return setState('failed');
+      setState('connecting');
+      timer = setTimeout(() => setAttempt((value) => value + 1), delay);
+    };
     setState('connecting');
-    chat.socketUrl(key).then(
-      (url) => {
-        if (closed) return;
-        const ws = new WebSocket(url);
-        socket.current = ws;
-        ws.addEventListener('open', () => setState('open'));
-        ws.addEventListener('close', () => !closed && setState('failed'));
-        ws.addEventListener('message', (event: MessageEvent<string>) => {
-          const parsed = chatServerEventSchema.safeParse(JSON.parse(event.data));
-          if (!parsed.success) return;
-          handle(parsed.data);
-        });
-      },
-      () => !closed && setState('failed'),
-    );
+    chat.socketUrl(key).then((url) => {
+      if (closed) return;
+      const ws = new WebSocket(url);
+      socket.current = ws;
+      ws.addEventListener('open', () => {
+        failures.current = 0;
+        wasOpen.current = true;
+        setState('open');
+      });
+      ws.addEventListener('close', lost);
+      ws.addEventListener('message', (event: MessageEvent<string>) => {
+        const parsed = chatServerEventSchema.safeParse(JSON.parse(event.data));
+        if (!parsed.success) return;
+        handle(parsed.data);
+      });
+    }, lost);
     return () => {
       closed = true;
+      clearTimeout(timer);
       socket.current?.close();
       socket.current = null;
     };
@@ -78,7 +93,10 @@ export function useChat(key: string) {
     },
     [messages, state, track],
   );
-  const retry = useCallback(() => setAttempt((value) => value + 1), []);
+  const retry = useCallback(() => {
+    failures.current = 0;
+    setAttempt((value) => value + 1);
+  }, []);
   // A step of a call on the same socket: the voice itself never goes here.
   const emit = useCallback((event: Exclude<ChatClientEvent, { type: 'send' }>) => {
     socket.current?.send(JSON.stringify(event));

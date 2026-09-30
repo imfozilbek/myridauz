@@ -28,8 +28,8 @@ type RouteScreenProps = {
 // "From" and "to" of a trip or a search. A trip inside one city is refused right away (docs/14).
 export function RouteScreen(props: RouteScreenProps) {
   const [state, retry] = useDirectory();
-  if (state.status === 'loading') return <ScreenSkeleton />;
-  if (state.status === 'error') return <ErrorScreen onRetry={retry} />;
+  if (state.status === 'loading') return <ScreenSkeleton onBack={props.onBack} />;
+  if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={props.onBack} />;
   return <RouteForm {...props} directory={state.directory} />;
 }
 

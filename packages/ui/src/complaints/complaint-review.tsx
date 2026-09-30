@@ -17,6 +17,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
+import { BlockJournal } from '../moderation/block-journal';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -33,8 +34,8 @@ const EVENT = new Set<string>(CHAT_SYSTEM_EVENTS);
 export function ComplaintReview({ id, onBack }: { readonly id: string; readonly onBack: () => void }) {
   const { feedback } = useApiClients();
   const { value, failed, reload } = useLoad(() => feedback.complaint(id));
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return <Review complaint={value} onBack={onBack} />;
 }
 
@@ -109,6 +110,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
           </Section>
         ) : null}
         {party(t('complaints.against'), complaint.against)}
+        <BlockJournal userId={complaint.against.id} />
         {party(t('complaints.author'), complaint.author)}
         <Section footer={t('complaints.chatNote')}>
           {lines === null ? (

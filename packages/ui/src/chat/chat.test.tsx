@@ -66,4 +66,33 @@ describe('the chat screen (docs/07)', () => {
     fireEvent.click(screen.getByText('Qayta urinish'));
     expect(failing).toHaveBeenCalledTimes(2);
   });
+
+  it('comes back by itself after the connection drops, keeping the messages (docs/65 B7)', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    renderMarket(<ChatScreen chatKey={KEY} onBack={() => undefined} />, testClients({ chat: { socketUrl } }));
+    await vi.waitFor(() => expect(FakeSocket.last).toBeTruthy());
+    const first = FakeSocket.last;
+    act(() => {
+      first?.open();
+      first?.receive({
+        type: 'message',
+        message: { id: 1, author: 'other', text: 'Salom', event: null, at: 1 },
+      });
+      first?.close();
+    });
+    expect(screen.queryByText('Chatga ulanib boʻlmadi')).toBeNull();
+    expect(screen.getByText('Salom')).toBeTruthy();
+    await act(async () => void (await vi.advanceTimersByTimeAsync(1000)));
+    expect(FakeSocket.last).not.toBe(first);
+    vi.useRealTimers();
+  });
+
+  it('keeps "back" on the error screen: a bad network never locks the person in (docs/65 B1)', async () => {
+    const onBack = vi.fn();
+    const failing = vi.fn<ChatClient['socketUrl']>(async () => Promise.reject(new Error('down')));
+    renderMarket(<ChatScreen chatKey={KEY} onBack={onBack} />, testClients({ chat: { socketUrl: failing } }));
+    await screen.findByText('Chatga ulanib boʻlmadi');
+    fireEvent.click(screen.getByText('Orqaga'));
+    expect(onBack).toHaveBeenCalled();
+  });
 });

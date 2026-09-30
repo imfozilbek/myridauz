@@ -1,7 +1,16 @@
-import { appHost, type BrandConfig } from '@platform/brands';
-import { chatKeyOfOffer, formatPlate, type Booking, type ChatSystemEvent } from '@platform/contracts';
+import type { BrandConfig } from '@platform/brands';
+import {
+  BOOKING_LINK,
+  chatKeyOfOffer,
+  formatPlate,
+  OFFER_LINK,
+  type AppLink,
+  type Booking,
+  type ChatSystemEvent,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
+import { openButton } from '../../../shared/telegram/open-button';
 import type { BookingNotifier } from '../application/ports';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
@@ -20,9 +29,8 @@ type Wiring = {
 // or a username. The chat of the booking gets a line about it too.
 export function telegramNotifier(wiring: Wiring): BookingNotifier {
   const { brand, notify, system, placeName, closeOnes, telegramId } = wiring;
-  const open = (app: 'passenger' | 'driver') => ({
-    inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
-  });
+  const open = (app: 'passenger' | 'driver', link?: AppLink) => openButton(brand, app, t('bot.open'), link);
+  const onBooking = (booking: Booking) => ({ name: BOOKING_LINK, id: booking.id });
   const about = async (booking: Booking) => ({
     from: await placeName(booking.trip.from),
     to: await placeName(booking.trip.to),
@@ -36,9 +44,9 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     if (chatId !== undefined) await notify([{ bot, chatId, text, ...after }]);
   };
   const toDriver = (booking: Booking, text: string) =>
-    send('driver', booking.trip.driver.id, text, { markup: open('driver') });
+    send('driver', booking.trip.driver.id, text, { markup: open('driver', onBooking(booking)) });
   const toPassenger = (booking: Booking, text: string) =>
-    send('passenger', booking.passenger.id, text, { markup: open('passenger') });
+    send('passenger', booking.passenger.id, text, { markup: open('passenger', onBooking(booking)) });
   return {
     requested: async (booking) => {
       await system(booking.chatKey, 'requested');
@@ -71,14 +79,21 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     offered: async (passengerId, offerId) => {
       await system(chatKeyOfOffer(offerId), 'offered');
       await notify([
-        { bot: 'passenger', chatId: passengerId, text: t('bot.offer.new'), markup: open('passenger') },
+        {
+          bot: 'passenger',
+          chatId: passengerId,
+          text: t('bot.offer.new'),
+          markup: open('passenger', { name: OFFER_LINK, id: offerId }),
+        },
       ]);
     },
     offerAnswered: async (driverId, accepted, offerId) => {
       if (!accepted) await system(chatKeyOfOffer(offerId), 'declined');
       const text = t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined');
-      await notify([{ bot: 'driver', chatId: driverId, text, markup: open('driver') }]);
+      const markup = open('driver', { name: OFFER_LINK, id: offerId });
+      await notify([{ bot: 'driver', chatId: driverId, text, markup }]);
     },
     progress: (booking, step) => closeOnes(booking, step),
+    pickup: async (booking) => toDriver(booking, t('bot.booking.pickupForDriver', await about(booking))),
   };
 }

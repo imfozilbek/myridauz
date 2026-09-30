@@ -9,6 +9,7 @@ import { notify } from '../notifications';
 import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
 import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViewsOf } from '../trips';
 import { tellCloseOnes } from '../shares';
+import { ratingsOfPeople } from '../ratings';
 import { peopleOf } from '../users';
 import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
 import type { BookingsDeps } from './application/ports';
@@ -55,6 +56,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
     refund: (driverId, bookingId) => refundCommission(env, driverId, bookingId),
   },
   people: peopleOf(env),
+  ratings: (ids) => ratingsOfPeople(env, ids),
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
   notify: seatsFollow(

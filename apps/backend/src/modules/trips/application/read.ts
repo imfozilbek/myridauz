@@ -4,6 +4,7 @@ import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { NO_RIDERS, tripView, type Riders } from './views';
+import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 // Views of many trips: the driver and the car are read once per driver.
 async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, Riders>> {
@@ -107,12 +108,12 @@ export async function teamTrips(deps: TripsDeps): Promise<Trip[]> {
   return views(deps, await deps.trips.since(yesterday, TEAM_LIST_LIMIT));
 }
 
-// "Mening safarlarim" of a driver: the newest first.
+// "Mening safarlarim" of a driver: the trips ahead first, then the past ones (docs/65 B6).
 export async function myTrips(deps: TripsDeps, driverId: number): Promise<Trip[]> {
   const trips = await deps.trips.byDriver(driverId);
   return views(
     deps,
-    [...trips].sort((a, b) => b.departAt - a.departAt),
+    upcomingFirst(trips, (trip) => trip.departAt, deps.now()),
   );
 }
 

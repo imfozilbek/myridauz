@@ -47,6 +47,8 @@ export const bookingSchema = z.object({
   commission: z.number().int(),
   status: z.enum(BOOKING_STATUSES),
   createdAt: z.number().int(),
+  // Until when the driver answers a request (docs/35): the driver sees the deadline (docs/65 C).
+  expiresAt: z.number().int(),
   meetingPoint: pointSchema.nullable(),
   pickup: pointSchema.nullable(),
   plate: z.string().nullable(),

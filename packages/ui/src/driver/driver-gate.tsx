@@ -1,6 +1,7 @@
 import type { DriverApplication } from '@platform/contracts';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useApiClients } from '../context/api-clients';
+import { useFeedChange } from '../feed/feed-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { ApplicationFlow } from './application-flow';
@@ -26,6 +27,14 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
     );
   }, [drivers]);
   useEffect(load, [load]);
+  // The team's decision shows at once (docs/64, lesson 36); a form being filled is never replaced.
+  useFeedChange(() => {
+    if (!editing)
+      drivers.getApplication().then(
+        (application) => setLoaded({ application }),
+        () => undefined,
+      );
+  });
   const editCar = useCallback(() => setEditing(true), []);
   const submitted = useCallback((application: DriverApplication) => {
     setLoaded({ application });

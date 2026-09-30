@@ -37,7 +37,8 @@ describe('registration and profile over HTTP', () => {
     expect(own).toMatchObject({ state: 'active', profile: { phone: '+9989020' } });
     const other = await (await call(`/users/${await pid(20)}`, 21)).json();
     expect(other).toEqual({ id: await pid(20), firstName: 'Ali', hasAvatar: false, rating: null });
-    expect(JSON.stringify(other)).not.toMatch(/phone|username|998/);
+    // The random public id may hold any digits: the rest of the profile is checked for the phone.
+    expect(JSON.stringify({ ...(other as object), id: null })).not.toMatch(/phone|username|998/);
     // The Telegram ID opens nothing: only the random public id does (docs/65 A3).
     expect((await call('/users/20', 21)).status).toBe(404);
     expect((await call('/users/404', 21)).status).toBe(404);

@@ -17,7 +17,7 @@ import '../market/market.css';
 // "Safarlar tarixi" (docs/18): past trips with whom and the stars both ways.
 export function HistoryScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <History onBack={onBack} />
     </PlacesGate>
   );
@@ -29,8 +29,8 @@ function History({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { comfort } = useApiClients();
   const { value, failed, reload } = useLoad(() => comfort.history());
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.length === 0) {
     return (
       <>

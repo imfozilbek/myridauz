@@ -16,16 +16,19 @@ const PHOTO_SIZE = 40;
 type RequestCardProps = {
   readonly request: RideRequest;
   readonly showStatus?: boolean;
+  // Drivers' offers waiting for the passenger's answer (docs/65 C).
+  readonly offers?: number;
   readonly onOpen: () => void;
 };
 
 // One request in a list: the day and the price, A and B, who goes and how many people (docs/09).
-export function RequestCard({ request, showStatus = false, onOpen }: RequestCardProps) {
+export function RequestCard({ request, showStatus = false, offers = 0, onOpen }: RequestCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { passenger } = request;
   const facts: readonly Fact[] = [
     ['passengers', t('market.request.seats', { count: String(request.seats) })],
     ...(showStatus ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
+    ...(offers > 0 ? [['car', t('market.request.offers', { count: String(offers) })] as const] : []),
   ];
   return (
     <Section>

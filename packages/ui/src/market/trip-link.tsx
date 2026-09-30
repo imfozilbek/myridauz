@@ -29,7 +29,7 @@ export function TripLink({ enabled, children }: { readonly enabled: boolean; rea
     setId(null);
   };
   return (
-    <PlacesGate>
+    <PlacesGate onBack={close}>
       <TripById id={id} onClose={close} />
     </PlacesGate>
   );
@@ -40,8 +40,8 @@ export function TripById({ id, onClose }: { readonly id: string; readonly onClos
   const { market } = useApiClients();
   const { value, failed, reload } = useLoad(() => market.trip(id));
   const [booking, setBooking] = useState(false);
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
+  if (!value) return <ScreenSkeleton onBack={onClose} />;
   if (booking) return <BookFlow trip={value} onBack={() => setBooking(false)} onClose={onClose} />;
   return <TripScreen trip={value} onBack={onClose} onBook={() => setBooking(true)} />;
 }

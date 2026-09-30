@@ -4,6 +4,7 @@ import { Cell, Section, Switch } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { IconTile, type Tone } from '../icon-tile';
 import type { IconName } from '../icons';
+import { allowBlock } from '../moderation/ask-block';
 
 type ChoiceKey = 'none' | 'warning' | 'block1' | 'block7' | 'block30' | 'blockForever';
 type Props = { readonly noShow: boolean; readonly onDecide: (decision: ComplaintDecision) => void };
@@ -31,7 +32,10 @@ export function DecisionSection({ noShow, onDecide }: Props) {
         <Cell
           key={choice.key}
           before={<IconTile name={choice.icon} tone={choice.tone} />}
-          onClick={() => onDecide({ ...choice.decision, refund })}
+          onClick={async () => {
+            const days = choice.decision.action === 'block' ? (choice.decision.days ?? null) : 0;
+            if (await allowBlock(days, t)) onDecide({ ...choice.decision, refund });
+          }}
         >
           {t(`complaints.${choice.key}`)}
         </Cell>

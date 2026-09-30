@@ -22,7 +22,7 @@ const PHOTO_SIZE = 40;
 // "Sevimli haydovchilar" (docs/18): the saved drivers and their trips; a trip opens ready to book.
 export function FavoritesScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <Favorites onBack={onBack} />
     </PlacesGate>
   );
@@ -36,8 +36,8 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   const { value, failed, reload } = useLoad(() => comfort.favorites());
   const [opened, setOpened] = useState<string | null>(null);
   if (opened) return <TripById id={opened} onClose={() => setOpened(null)} />;
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.drivers.length === 0) {
     return (
       <>

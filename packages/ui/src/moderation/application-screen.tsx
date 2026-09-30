@@ -8,6 +8,9 @@ import {
 } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
+import { allowBlock } from './ask-block';
+import { ApplicationHistory } from './application-history';
+import { BlockJournal } from './block-journal';
 import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -42,7 +45,9 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
     }
   };
   const decide = (decision: DecisionInput) => void act(moderation.decide(userId, decision), 'decided');
-  const block = (days: BlockInput['days']) => void act(moderation.block(userId, days), 'blocked');
+  const block = async (days: BlockInput['days']) => {
+    if (await allowBlock(days ?? null, t)) await act(moderation.block(userId, days), 'blocked');
+  };
 
   if (mode === 'decided' || mode === 'blocked') {
     return (
@@ -93,6 +98,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
       </Title>
       <PhotoGrid userId={userId} />
       <List>
+        <ApplicationHistory userId={userId} />
         <Section>
           <Cell after={<CellValue>{`${car.make} ${car.model}`}</CellValue>}>{t('drivers.review.car')}</Cell>
           <Cell after={<CellValue>{t(`drivers.color.${car.color}`)}</CellValue>}>
@@ -107,6 +113,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           <Cell onClick={() => setMode('request_changes')}>{t('moderation.requestChanges')}</Cell>
           <Cell onClick={() => setMode('block')}>{t('moderation.block')}</Cell>
         </Section>
+        <BlockJournal userId={userId} />
       </List>
     </div>
   );

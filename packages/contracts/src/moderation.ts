@@ -10,6 +10,23 @@ export const adminPhotoPath = (userId: PersonId, kind: CarPhotoKind | 'avatar') 
   `${adminApplicationPath(userId)}/photos/${kind}`;
 export const adminDecisionPath = (userId: PersonId) => `${adminApplicationPath(userId)}/decision`;
 export const adminBlockPath = (userId: PersonId) => `/admin/users/${userId}/block`;
+export const adminBlocksPath = (userId: PersonId) => `/admin/users/${userId}/blocks`;
+export const adminUnblockPath = (userId: PersonId) => `/admin/users/${userId}/unblock`;
+
+// The block now and every block before it: who, when, until when, why (docs/65 C).
+const BLOCK_REASONS = ['admin', 'complaint', 'unblock'] as const;
+export const blockJournalSchema = z.object({
+  active: z.object({ until: z.number().int().nullable() }).nullable(),
+  entries: z.array(
+    z.object({
+      until: z.number().int().nullable(),
+      reason: z.enum(BLOCK_REASONS),
+      by: z.string(),
+      at: z.number().int(),
+    }),
+  ),
+});
+export type BlockJournal = z.infer<typeof blockJournalSchema>;
 
 export const TEAM_ROLES = ['owner', 'moderator'] as const;
 export type TeamRole = (typeof TEAM_ROLES)[number];
@@ -24,6 +41,20 @@ export const applicationSummarySchema = z.object({
 });
 export type ApplicationSummary = z.infer<typeof applicationSummarySchema>;
 export const applicationQueueSchema = z.object({ applications: z.array(applicationSummarySchema) });
+
+// One application opened by the team: every earlier decision and how many other people sent the
+// same plate (docs/65 C).
+export const applicationDetailSchema = applicationSummarySchema.extend({
+  history: z.array(
+    z.object({
+      status: z.enum(APPLICATION_STATUSES),
+      reasons: z.array(reasonsSchema.element),
+      at: z.number().int(),
+    }),
+  ),
+  samePlate: z.number().int(),
+});
+export type ApplicationDetail = z.infer<typeof applicationDetailSchema>;
 
 export const DECISIONS = ['approve', 'reject', 'request_changes'] as const;
 export type Decision = (typeof DECISIONS)[number];

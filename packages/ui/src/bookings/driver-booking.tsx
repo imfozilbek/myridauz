@@ -1,13 +1,17 @@
 import type { Booking, DriverBookingAction } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
-import { useState } from 'react';
+import { Text } from '@telegram-apps/telegram-ui';
+import { useEffect, useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
+import { confirm, haptic } from '../telegram/feedback';
+import { errorKey } from '../market/error-text';
+import { ActionFailure } from '../states/action-failure';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
@@ -23,12 +27,24 @@ type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) =
 // The driver answers a booking (docs/35): "Joyni tasdiqlaysizmi?" with the commission, then the
 // charge; without money, the way to top up. A confirmed one can still be cancelled: the commission goes back.
 export function DriverBooking({ booking, onClose }: Props) {
-  const { t, formatMoney } = useI18n();
+  const { t, formatMoney, formatDate, formatTime } = useI18n();
   const { track } = useAnalytics();
-  const { bookings } = useApiClients();
+  const { bookings, wallet } = useApiClients();
   const [step, setStep] = useState<Step>('view');
+  // The balance next to the commission: the driver knows before tapping (docs/65 C).
+  const [balance, setBalance] = useState<number | null>(null);
+  useEffect(() => {
+    if (step === 'confirm')
+      wallet.mine().then(
+        (mine) => setBalance(mine.bonus + mine.main),
+        () => undefined,
+      );
+  }, [step, wallet]);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
+  // A failed answer keeps the booking open with the reason (docs/65 B3).
   const answer = async (action: DriverBookingAction) => {
     try {
+      setFailure(null);
       await bookings.answer(booking.id, action);
       track({ name: 'booking_step', screen: 'bookings.driver', step: STEP_OF[action] });
       haptic.success();
@@ -37,7 +53,10 @@ export function DriverBooking({ booking, onClose }: Props) {
     } catch (caught) {
       haptic.error();
       if (caught instanceof ApiError && caught.code === 'wallet.not_enough') setStep('not_enough');
-      else onClose(true);
+      else {
+        setFailure(errorKey(caught));
+        setStep('view');
+      }
     }
   };
   if (step === 'chat')
@@ -73,10 +92,17 @@ export function DriverBooking({ booking, onClose }: Props) {
         hint={t('bookings.confirm.hint', { amount: formatMoney(booking.commission) })}
       >
         <BackButton onClick={() => setStep('view')} />
+        {balance === null ? null : (
+          <Text className="step-note">{t('bookings.confirm.balance', { amount: formatMoney(balance) })}</Text>
+        )}
         <MainButton text={t('bookings.confirm')} onClick={() => answer('confirm')} />
       </StepLayout>
     );
   }
+  // A cancel of a confirmed seat is asked first (docs/65 B4).
+  const cancel = async () => {
+    if (await confirm(t('bookings.driverCancelAsk'), t('bookings.cancel'))) await answer('cancel');
+  };
   const actions: BookingAction[] =
     booking.status === 'requested'
       ? [
@@ -84,10 +110,21 @@ export function DriverBooking({ booking, onClose }: Props) {
           { label: t('bookings.decline'), onClick: () => void answer('decline') },
         ]
       : booking.status === 'confirmed'
-        ? [{ label: t('bookings.cancel'), onClick: () => void answer('cancel') }]
+        ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
         : [];
   return (
     <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions}>
+      <ActionFailure error={failure} />
+      {booking.status === 'requested' ? (
+        <Section>
+          <Cell
+            before={<IconTile name="history" />}
+            after={formatDate(new Date(booking.expiresAt)) + ', ' + formatTime(new Date(booking.expiresAt))}
+          >
+            {t('bookings.answerUntil')}
+          </Cell>
+        </Section>
+      ) : null}
       <Section>
         <Cell before={<IconTile name="chat" />} onClick={() => setStep('chat')}>
           {t('chat.open')}

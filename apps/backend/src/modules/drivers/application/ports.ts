@@ -9,7 +9,19 @@ export type ApplicationRepository = {
   queue(): Promise<Application[]>;
   // Ids of approved drivers, for the wallet's Cron job (docs/12).
   approved(): Promise<number[]>;
+  // How many other people sent the same plate: a warning for the team (docs/65 C).
+  samePlate(plate: string, userId: number): Promise<number>;
 };
+
+// One decision of the team on an application (docs/65 C); rows are only added.
+export type Decided = {
+  readonly userId: number;
+  readonly status: Application['status'];
+  readonly reasons: readonly string[];
+  readonly by: number;
+  readonly at: number;
+};
+export type DecisionLog = { add(entry: Decided): Promise<void>; of(userId: number): Promise<Decided[]> };
 
 // The users module, seen from here: a name and a face, never a phone (docs/07).
 export type Person = {
@@ -35,6 +47,7 @@ export type ModerationNotifier = {
 
 export type DriversDeps = {
   readonly applications: ApplicationRepository;
+  readonly decisions: DecisionLog;
   readonly photos: ImageStore;
   readonly people: PeoplePort;
   readonly notify: ModerationNotifier;

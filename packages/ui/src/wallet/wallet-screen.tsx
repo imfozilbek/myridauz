@@ -25,8 +25,8 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   const [topUp, setTopUp] = useState(false);
   useEffect(() => track({ name: 'wallet_open', screen: 'wallet' }), [track]);
   if (topUp) return <TopUpScreen onBack={() => setTopUp(false)} />;
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

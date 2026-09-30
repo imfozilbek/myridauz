@@ -21,4 +21,11 @@ describe('screen states', () => {
     const { container } = renderInShell(<ScreenSkeleton />);
     expect(container.querySelector('[aria-busy="true"]')?.children).toHaveLength(4);
   });
+
+  it('keeps "back" while an inner screen loads (docs/65 B1)', () => {
+    const onBack = vi.fn();
+    renderInShell(<ScreenSkeleton onBack={onBack} />);
+    fireEvent.click(screen.getByText('Orqaga'));
+    expect(onBack).toHaveBeenCalled();
+  });
 });

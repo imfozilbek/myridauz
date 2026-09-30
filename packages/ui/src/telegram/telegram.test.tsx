@@ -130,8 +130,11 @@ describe('Telegram wrappers', () => {
 
   it('asks in the native window, vibrates and protects from closing', async () => {
     await expect(confirm('Bekor qilasizmi?', 'Ha')).resolves.toBe(true);
+    // Outside Telegram the browser asks: "no" keeps everything as it was.
+    vi.stubGlobal('confirm', () => false);
     sdk.popup.show.ifAvailable.mockReturnValueOnce([false, undefined] as never);
     await expect(confirm('Bekor qilasizmi?', 'Ha')).resolves.toBe(false);
+    vi.unstubAllGlobals();
     haptic.tap();
     haptic.success();
     protectFromClosing(true);

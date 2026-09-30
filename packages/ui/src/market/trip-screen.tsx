@@ -37,6 +37,15 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
   useEffect(() => track({ name: 'trip_open', screen: 'market.trip' }), [track]);
   const { driver } = trip;
   const live = trip.status === 'active' || trip.status === 'full';
+  // A trip on the road takes nobody: an old link or "Sevimli" shows why (docs/65 B8).
+  const departed = trip.departAt <= Date.now();
+  // A trip from a channel or a link that takes nobody says why (docs/65 C).
+  const closed =
+    trip.status !== 'active'
+      ? t(`market.trip.closed.${trip.status}`)
+      : departed
+        ? t('market.trip.departed')
+        : null;
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
@@ -90,11 +99,12 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
             {t('market.trip.cancel')}
           </Button>
         ) : null}
-        {onBook && !readOnly && trip.status === 'active' ? (
+        {onBook && !readOnly && !closed ? (
           <Button size="l" stretched onClick={onBook}>
             {t('market.trip.book')}
           </Button>
         ) : null}
+        {onBook && !readOnly && closed ? <Text>{closed}</Text> : null}
       </div>
     </div>
   );

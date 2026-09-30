@@ -41,6 +41,8 @@ export const testClients = (overrides: {
     photo: NOT_USED,
     decide: NOT_USED,
     block: NOT_USED,
+    blocks: NOT_USED,
+    unblock: NOT_USED,
     ...overrides.moderation,
   },
   market: {

@@ -43,8 +43,8 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
   }, [load]);
 
   if (open) return <ApplicationScreen application={open} onBack={close} />;
-  if (failed) return <ErrorScreen onRetry={load} />;
-  if (!queue) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
+  if (!queue) return <ScreenSkeleton onBack={onBack} />;
   return <QueueView queue={queue} onOpen={setOpen} onBack={onBack} title={t('common.admin.applications')} />;
 }
 

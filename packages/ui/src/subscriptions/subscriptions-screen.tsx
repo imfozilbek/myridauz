@@ -22,7 +22,7 @@ import '../market/market.css';
 // "Obunalar" (docs/24): the routes a person waits on; renew an expired "any date", delete the rest.
 export function SubscriptionsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <Subscriptions onBack={onBack} />
     </PlacesGate>
   );
@@ -36,8 +36,8 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { subscriptions } = useApiClients();
   const { value, failed, reload } = useLoad(() => subscriptions.mine());
   useEffect(() => track({ name: 'subscriptions_open', screen: 'subscriptions' }), [track]);
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

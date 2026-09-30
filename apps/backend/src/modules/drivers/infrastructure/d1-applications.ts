@@ -102,4 +102,13 @@ export const d1Applications = (db: D1Database): ApplicationRepository => ({
         .prepare("SELECT user_id FROM driver_applications WHERE status = 'approved'")
         .all<{ user_id: number }>()
     ).results.map((row) => row.user_id),
+  samePlate: async (plate, userId) =>
+    (
+      await db
+        .prepare(
+          "SELECT COUNT(*) AS n FROM driver_applications WHERE car_plate = ? AND user_id != ? AND status != 'draft'",
+        )
+        .bind(plate, userId)
+        .first<{ n: number }>()
+    )?.n ?? 0,
 });

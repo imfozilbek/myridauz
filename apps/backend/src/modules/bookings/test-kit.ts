@@ -107,6 +107,7 @@ export function setup() {
     },
     people: { find: async (userId) => people.get(userId) },
     approvedCar: async (userId) => (userId === DRIVER && approved ? CAR : null),
+    ratings: async () => new Map(),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
     now: () => now,

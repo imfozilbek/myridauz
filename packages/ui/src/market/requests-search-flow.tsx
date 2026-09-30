@@ -32,7 +32,7 @@ export function RequestsSearchFlow({ onBack }: { readonly onBack: () => void }) 
   if (!route) return <RouteScreen allowWholeRegion onBack={onBack} onDone={setRoute} />;
   if (!date) return <DateStep now={now} onBack={() => setRoute(null)} onDone={setDate} />;
   return (
-    <PlacesGate>
+    <PlacesGate onBack={() => setDate(null)}>
       <Requests route={route} date={date} now={now} onBack={() => setDate(null)} />
     </PlacesGate>
   );
@@ -66,8 +66,8 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
   }
   if (open)
     return <RequestScreen request={open} onBack={() => setOpen(null)} onOffer={() => setOffering(true)} />;
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!items) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!items) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />
