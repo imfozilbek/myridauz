@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build.mjs",
     "promo": "node promo/build.mjs",
-    "landing": "node landing/build.mjs"
+    "landing": "node landing/build.mjs",
+    "cuts": "node promo/cuts.mjs"
   },
   "dependencies": {
     "lucide-static": "1.48.0",
