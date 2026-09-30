@@ -1,0 +1,27 @@
+import type { CarInput } from '@platform/contracts';
+import { asksSeats } from './car-choices';
+
+// The screens of the application, one question each (docs/04, docs/50).
+const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
+export type Step = (typeof ORDER)[number];
+
+// Seats are asked only for a model typed after "Boshqa": a model from the list has its seats.
+const shown = (step: Step, car: Partial<CarInput>) => step !== 'seats' || asksSeats(car);
+
+// The screen after an answer. A make from the list asks its model; a popular car answers both at once.
+export function nextStep(
+  current: Step,
+  car: Partial<CarInput>,
+  withModel: boolean,
+  reviewing: boolean,
+): Step {
+  if (current === 'make' && !withModel) return 'model';
+  if (reviewing) return current === 'model' && asksSeats(car) ? 'seats' : 'review';
+  const from = current === 'make' ? ORDER.indexOf('model') : ORDER.indexOf(current);
+  return ORDER.slice(from + 1).find((step) => shown(step, car)) ?? 'review';
+}
+
+export function previousStep(current: Step, car: Partial<CarInput>): Step {
+  const before = ORDER.slice(0, ORDER.indexOf(current)).filter((step) => shown(step, car));
+  return before.at(-1) ?? 'intro';
+}

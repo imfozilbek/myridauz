@@ -13,6 +13,7 @@ import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
+import { asksSeats } from '../car-choices';
 import { hasProblem, ProblemNote } from '../problem-note';
 
 export type ReviewTarget = 'make' | 'color' | 'plate' | 'seats' | 'avatar' | 'photos';
@@ -62,7 +63,7 @@ export function ReviewStep({ car, reasons, recheck, failed, onEdit, onBack, onSe
           {line(t('drivers.review.car'), `${car.make} ${car.model}`, 'make', ['car'])}
           {line(t('drivers.color.title'), t(`drivers.color.${car.color}`), 'color')}
           {line(t('drivers.review.plate'), formatPlate(car.plate), 'plate', ['plate'])}
-          {line(t('drivers.review.seats'), String(car.seats), 'seats')}
+          {line(t('drivers.review.seats'), String(car.seats), asksSeats(car) ? 'seats' : 'make')}
           {line(t('drivers.avatar.title'), t('drivers.photo.done'), 'avatar', ['avatar'])}
           {line(t('drivers.photos.title'), t('drivers.photo.done'), 'photos', CAR_PHOTO_KINDS)}
         </Section>

@@ -74,6 +74,17 @@ describe('driver application (docs/04)', () => {
     });
   });
 
+  it('takes the seats of a model from the list, and the answer for a typed model', async () => {
+    const send = async (car: Car) => {
+      const { deps, photos } = setup();
+      await photos();
+      const sent = await submitApplication(deps, 1, car);
+      return sent.ok ? sent.value.car?.seats : sent.error;
+    };
+    expect(await send({ ...CAR, model: 'Damas', seats: 7 })).toBe(6);
+    expect(await send({ ...CAR, make: 'Isuzu', model: 'Grafter', seats: 7 })).toBe(7);
+  });
+
   it('gives reasons on reject and changes, and takes the application again', async () => {
     const { deps, photos } = setup();
     await photos();

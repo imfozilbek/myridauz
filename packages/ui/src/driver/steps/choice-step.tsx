@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { CellValue } from '../../account/cell-value';
 import { StepLayout } from '../../account/step-layout';
 import { Cell, Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
@@ -8,8 +9,13 @@ import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 
-// before: a picture next to the label, like a color dot.
-export type Choice<T> = { readonly value: T; readonly label: string; readonly before?: ReactNode };
+// before: a picture next to the label, like a color dot; after: a short fact on the right, like the seats.
+export type Choice<T> = {
+  readonly value: T;
+  readonly label: string;
+  readonly before?: ReactNode;
+  readonly after?: string;
+};
 
 type ChoiceStepProps<T> = {
   readonly screen: string;
@@ -22,6 +28,9 @@ type ChoiceStepProps<T> = {
   readonly other?: { readonly toValue: (text: string) => T | null };
   // An answer chosen in advance: it has a tick, and "Davom etish" keeps it.
   readonly selected?: T;
+  // A section above the list, like the popular cars, and the title of the list under it.
+  readonly lead?: ReactNode;
+  readonly header?: string;
 };
 
 // One question, one tap (docs/19): choose, do not type. Typing only for "Boshqa".
@@ -34,6 +43,8 @@ export function ChoiceStep<T>({
   onDone,
   other,
   selected,
+  lead,
+  header,
 }: ChoiceStepProps<T>) {
   useScreenView(screen);
   const { t } = useI18n();
@@ -56,7 +67,8 @@ export function ChoiceStep<T>({
     <StepLayout icon={icon} title={title}>
       <BackButton onClick={typing && choices.length > 0 ? () => setTyping(false) : onBack} />
       <List>
-        <Section>
+        {typing ? null : lead}
+        <Section {...(header && !typing ? { header } : {})}>
           {typing ? (
             <Input
               placeholder={t('drivers.other.placeholder')}
@@ -73,7 +85,11 @@ export function ChoiceStep<T>({
                 <Cell
                   key={String(choice.value)}
                   {...(choice.before ? { before: choice.before } : {})}
-                  {...(choice.value === selected ? { after: <Icon name="selected" /> } : {})}
+                  {...(choice.value === selected
+                    ? { after: <Icon name="selected" /> }
+                    : choice.after
+                      ? { after: <CellValue>{choice.after}</CellValue> }
+                      : {})}
                   onClick={() => choose(choice.value)}
                 >
                   {choice.label}
