@@ -65,4 +65,4 @@
 | 61 | [61-capacity.md](61-capacity.md) | Нагрузка на запуск: 2 000 активных, лимиты бесплатного тарифа, совет включить $5 |
 | 62 | [62-launch-checklist.md](62-launch-checklist.md) | Чек-лист запуска: готово, профиль ботов в BotFather, что ждёт бета-теста и недели 18 |
 | 63 | [63-district-channels.md](63-district-channels.md) | 20 зон каналов: правила группировки, население, один пост в нескольких каналах, экран «Kanallar» |
-| goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |
+| goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G19, OPS) |
