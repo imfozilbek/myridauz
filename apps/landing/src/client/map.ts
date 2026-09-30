@@ -78,16 +78,16 @@ export function initMap(root: HTMLElement, load: Fetch = (url) => fetch(url)) {
     text('[data-name=to]', to?.textContent ?? '');
     drawRoad(from, to);
     const route = [from?.value ?? '', to?.value ?? ''];
-    // Only codes and usernames go into a link: nothing of the page is read as a URL (CodeQL).
+    // Only codes and usernames go into a link, escaped: nothing of the page is read as a URL (CodeQL).
     if (route.every((code) => SOATO.test(code)))
       find<HTMLAnchorElement>('[data-go]')?.setAttribute(
         'href',
-        `${data['bot'] ?? ''}?startapp=find_${route.join('_')}`,
+        `${data['bot'] ?? ''}?startapp=find_${route.map(encodeURIComponent).join('_')}`,
       );
     const found = to?.dataset['channel'] ?? from?.dataset['channel'];
     const channel = found && USERNAME.test(found) ? found : undefined;
     const link = find<HTMLAnchorElement>('[data-channel-link]');
-    if (link && channel) link.href = `https://t.me/${channel}`;
+    if (link && channel) link.href = `https://t.me/${encodeURIComponent(channel)}`;
     link?.toggleAttribute('hidden', !channel);
     const places = [from?.dataset['place'] ?? '', to?.dataset['place'] ?? ''] as const;
     const key = places.join('_');
