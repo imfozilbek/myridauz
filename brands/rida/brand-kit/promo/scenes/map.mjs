@@ -25,13 +25,16 @@ function route(c) {
   return { d: `M${hx} ${hy}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`, point };
 }
 
-// Exported for the first screen of the landing (docs/59).
-export function map(t, { dim = 1, highlight } = {}) {
+// The roads from Toshkent: the landing moves lights along them over its still map (docs/60).
+export const roads = () => ({ hub: HUB, routes: DEST.map((c) => route(c).d) });
+
+// Exported for the first screen of the landing (docs/59); "still" leaves out what moves.
+export function map(t, { dim = 1, highlight, still = false } = {}) {
   const regions = `<g transform="translate(${X0} ${Y0}) scale(${S})">` +
     MAP.regions.map((r) => `<path d="${r.d}" fill="${C.mint}" stroke="${C.white}" stroke-width="3" stroke-linejoin="round"/>`).join('') + '</g>';
   const routes = DEST.map((c, i) => {
     const r = route(c), p = enter(t, 0.8 + i * 0.12, 0.7), hot = highlight === c.id;
-    const comet = p >= 1 && !highlight ? [0, 1, 2, 3, 4].map((k) => {
+    const comet = p >= 1 && !highlight && !still ? [0, 1, 2, 3, 4].map((k) => {
       const [x, y] = r.point((((t * 0.35 + i * 0.17 - k * 0.018) % 1) + 1) % 1);
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${7 - k}" fill="${C.amber}" opacity="${(1 - k * 0.2).toFixed(2)}"/>`;
     }).join('') : '';
@@ -46,7 +49,7 @@ export function map(t, { dim = 1, highlight } = {}) {
   }).join('');
   const pulse = (t % 1) * 60;
   return g(g(regions, { o: enter(t, 0, 0.6) }) + routes + g(labels, { o: enter(t, 1.2, 0.5) }) +
-    `<circle cx="${HUB[0]}" cy="${HUB[1]}" r="${16 + pulse}" fill="none" stroke="${C.teal}" stroke-width="4" opacity="${(1 - pulse / 60).toFixed(2)}"/>` +
+    (still ? '' : `<circle cx="${HUB[0]}" cy="${HUB[1]}" r="${16 + pulse}" fill="none" stroke="${C.teal}" stroke-width="4" opacity="${(1 - pulse / 60).toFixed(2)}"/>`) +
     `<circle cx="${HUB[0]}" cy="${HUB[1]}" r="16" fill="${C.teal}"/>`, { o: dim });
 }
 

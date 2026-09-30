@@ -4,7 +4,12 @@ export const sections = `.hero{padding:24px 0 32px;background:linear-gradient(va
 .slogan{display:inline-block;background:var(--accent);color:var(--text);font-weight:700;font-size:14px;
 padding:4px 12px;border-radius:999px;margin-bottom:16px}
 .lead{color:var(--muted);font-size:18px;margin-bottom:24px}
-.hero-art img{border-radius:24px;animation:drive 4s ease-in-out infinite}
+.hero-art{position:relative;animation:drive 4s ease-in-out infinite}
+.hero-art img{border-radius:24px;display:block;width:100%;height:auto}
+.hero-live{position:absolute;inset:0;width:100%;height:100%}
+.hero-live .light{fill:var(--accent);filter:drop-shadow(0 0 6px var(--accent))}
+.hero-live .pulse{fill:none;stroke:var(--brand);stroke-width:4;transform-box:fill-box;transform-origin:center;animation:pulse 2s ease-out infinite}
+@keyframes pulse{from{transform:scale(1);opacity:1}to{transform:scale(4);opacity:0}}
 @keyframes drive{50%{transform:translateY(-6px)}}
 .facts{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:24px;color:var(--brand-text);font-weight:600;font-size:15px}
 .facts li{display:flex;align-items:center;gap:6px}

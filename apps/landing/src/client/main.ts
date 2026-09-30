@@ -1,3 +1,4 @@
+import { initCount } from './count';
 import { initHow } from './how';
 import { initMap } from './map';
 import { initPains } from './pains';
@@ -13,3 +14,4 @@ if (how) initHow(how, !calm);
 const map = document.querySelector<HTMLElement>('[data-map]');
 if (map) void initMap(map);
 initReveal(document);
+initCount(document, !calm);

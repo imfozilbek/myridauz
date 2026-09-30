@@ -1,4 +1,4 @@
-import type { MapData } from './map-data';
+import type { HeroRoads, MapData } from './map-data';
 
 // A small map for tests: Toshkent and Samarqand (docs/59).
 export const MAP: MapData = {
@@ -12,4 +12,11 @@ export const MAP: MapData = {
     { id: 'toshkent', name: 'Toshkent', soato: '1726', place: '1726273', x: 71, y: 31 },
     { id: 'samarqand', name: 'Samarqand', soato: '1718', place: '1718401', x: 63, y: 44 },
   ],
+};
+
+// Two roads of the first screen picture.
+export const ROADS: HeroRoads = {
+  box: { x: 20, y: 540, width: 1040, height: 740 },
+  hub: [809, 921],
+  routes: ['M809 921Q700 900 600 1000', 'M809 921Q900 910 980 960'],
 };

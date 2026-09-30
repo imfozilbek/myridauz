@@ -1,7 +1,9 @@
 // Frame of every page: type, header, buttons, cards, footer, documents.
-export const base = `*{box-sizing:border-box;margin:0}
+// The font of the brand is brands/<brand>/landing/fonts/brand.woff2 (docs/60); system fonts until it loads.
+export const base = `@font-face{font-family:Brand;src:url(/fonts/brand.woff2) format("woff2");font-weight:300 900;font-display:swap}
+*{box-sizing:border-box;margin:0}
 html{scroll-behavior:smooth}
-body{font:17px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+body{font:17px/1.5 Brand,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 color:var(--text);background:var(--bg);-webkit-text-size-adjust:100%}
 a{color:var(--brand-text)}
 img{max-width:100%;height:auto;display:block}

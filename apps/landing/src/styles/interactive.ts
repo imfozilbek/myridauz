@@ -41,7 +41,7 @@ transform:translateY(110%);transition:transform .3s}
 .actions.compact .button{padding:12px 8px;font-size:16px}
 .js .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}
 .js .reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.js .reveal{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.hero-live{display:none}.js .reveal{opacity:1;transform:none}}
 @media (min-width:720px){h1{font-size:54px}h2{font-size:36px}section{padding:80px 0}
 .hero-grid{grid-template-columns:1.1fr 1fr}.actions{grid-template-columns:1fr 1fr;max-width:520px}
 .path.shown{grid-template-columns:340px 1fr}.map-grid{grid-template-columns:1.4fr 1fr}

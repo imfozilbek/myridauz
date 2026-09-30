@@ -3,6 +3,8 @@ import type { I18n } from '@platform/i18n';
 import { art } from '../art';
 import { escape, telegramLink } from '../html';
 import { icon, type IconName } from '../icons';
+import type { HeroRoads } from '../map-data';
+import { heroLive } from './hero-live';
 
 const FACTS = ['checked', 'phone', 'telegram'] as const satisfies readonly IconName[];
 
@@ -14,8 +16,8 @@ export function actions({ bots }: BrandConfig, { t }: I18n, className = 'actions
 </div>`;
 }
 
-// The first screen: what it is in one line, the two buttons and the car on the road.
-export function hero(brand: BrandConfig, i18n: I18n) {
+// The first screen: what it is in one line, the two buttons and the whole country on the move.
+export function hero(brand: BrandConfig, i18n: I18n, roads: HeroRoads) {
   const { t } = i18n;
   const facts = FACTS.map((key) => `<li>${icon(key)}${escape(t(`landing.hero.${key}`))}</li>`).join('');
   return `<section class="hero" id="top"><div class="wrap hero-grid">
@@ -26,7 +28,7 @@ export function hero(brand: BrandConfig, i18n: I18n) {
 ${actions(brand, i18n)}
 <p class="hint">${escape(t('landing.cta.hint'))}</p>
 </div>
-<div class="hero-art">${art({ name: 'hero-map', alt: t('landing.hero.art'), size: 'hero' }, { eager: true })}</div>
+<div class="hero-art">${art({ name: 'hero-map', alt: t('landing.hero.art'), size: 'hero' }, { eager: true })}${heroLive(roads)}</div>
 </div>
 <ul class="facts wrap">${facts}</ul>
 </section>`;

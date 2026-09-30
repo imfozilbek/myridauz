@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 import { svg } from '../lib/palette.mjs';
 import { W, H } from '../promo/kit.mjs';
 import { phone } from '../promo/phone.mjs';
-import { map } from '../promo/scenes/map.mjs';
+import { map, roads } from '../promo/scenes/map.mjs';
 import { finale } from '../promo/scenes/finale.mjs';
 import { search } from '../promo/screens/search.mjs';
 import { results } from '../promo/screens/results.mjs';
@@ -54,7 +54,9 @@ async function save(name, body, clip, width) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-await save('hero-map', svg(W, H, map(3.3)), MAP_BOX, W);
+await save('hero-map', svg(W, H, map(3.3, { still: true })), MAP_BOX, W);
+// The roads of that picture in its own box: the landing moves the lights along them (docs/60).
+fs.writeFileSync(new URL('../data/hero-roads.json', import.meta.url), `${JSON.stringify({ box: MAP_BOX, ...roads() })}\n`);
 // The crowd of people that becomes the R, before it turns into the logo.
 await save('crowd', svg(W, H, finale(3.8)), { x: 0, y: 520, width: W, height: 880 }, 900);
 for (const [name, screen] of Object.entries(PHONES)) {

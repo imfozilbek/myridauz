@@ -3,25 +3,30 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { escape } from './html';
 import { renderSite } from './site';
-import { MAP } from './test-map';
+import { MAP, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
 const site = renderSite(brand, {
   year: 2027,
   map: MAP,
+  roads: ROADS,
   channels: { rida_samarqand: { title: 'Samarqand', code: '30' } },
   script: 'run()',
 });
 const home = site['index.html'] ?? '';
 
 describe('landing (G15)', () => {
-  it('has the main page and the three documents', () => {
+  it('has the main page, the directions, the three documents and the files for search engines', () => {
     expect(Object.keys(site).sort()).toEqual([
       'consent/index.html',
       'index.html',
       'offer/index.html',
       'privacy/index.html',
+      'robots.txt',
+      'sitemap.xml',
+      'yonalish/samarqand-toshkent/index.html',
+      'yonalish/toshkent-samarqand/index.html',
     ]);
   });
 
@@ -73,7 +78,8 @@ describe('landing (G15)', () => {
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     expect(offer).not.toContain('<script>');
     const text = (html: string) => html.replace(/data-[\w-]+="[^"]*"/gu, '');
-    for (const html of Object.values(site)) expect(text(html)).not.toMatch(/(?<!\{)\{\w+\}(?!\})/u);
+    for (const html of Object.values(site).filter((file) => file.includes('<html')))
+      expect(text(html)).not.toMatch(/(?<!\{)\{\w+\}(?!\})/u);
   });
 
   it('never lets a text become markup', () => {

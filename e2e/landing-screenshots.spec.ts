@@ -10,9 +10,11 @@ test('landing: screenshots on a phone', async ({ page }) => {
   await page.goto(appUrl(LANDING_PORT));
   await page.screenshot({ path: shot('1-first-screen') });
   for (const [name, selector] of [
+    ['1-numbers', '.numbers'],
     ['2-pains', '.pains'],
     ['3-how', '.how'],
     ['4-map', '.map'],
+    ['4-directions', '.directions'],
     ['5-driver', '.driver-side'],
     ['6-safety', '.safety'],
     ['7-telegram', '.telegram'],
@@ -21,10 +23,19 @@ test('landing: screenshots on a phone', async ({ page }) => {
   ] as const) {
     const section = page.locator(selector);
     await section.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(name === '2-pains' ? 2600 : 700);
+    await page.waitForTimeout(name === '2-pains' ? 2600 : 1500);
     await section.screenshot({ path: shot(name) });
   }
   await expect(page.locator('[data-price]')).not.toBeEmpty();
+});
+
+test('landing: a direction page on a phone', async ({ page }) => {
+  await mockPrices(page);
+  await page.goto(`${appUrl(LANDING_PORT)}/yonalish/toshkent-samarqand/`);
+  await page.screenshot({ path: shot('12-direction-first') });
+  await page.locator('.map').scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-price]')).not.toBeEmpty();
+  await page.locator('.map').screenshot({ path: shot('13-direction-map') });
 });
 
 test('landing: screenshots on a computer', async ({ page }) => {
