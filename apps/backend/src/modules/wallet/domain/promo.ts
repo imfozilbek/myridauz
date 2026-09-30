@@ -30,6 +30,8 @@ export function nextGrant(operations: readonly Operation[], rule: PromoRule, now
   if (!first || !latest || given.length >= rule.grants) return null;
   if (balanceOf(operations, 'bonus') > 0) return null;
   if (latest.expiresAt === null || now >= latest.expiresAt) return null;
+  // A bonus closed before its time (a deleted account) was not spent: no next one (docs/65 A5).
+  if (operations.some((op) => op.kind === 'bonus_expired' && op.createdAt >= latest.createdAt)) return null;
   return now < first.createdAt + rule.windowDays * DAY_MS ? grant(rule, now) : null;
 }
 
