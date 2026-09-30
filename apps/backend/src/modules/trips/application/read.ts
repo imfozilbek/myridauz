@@ -1,18 +1,9 @@
-import {
-  DAY_MS,
-  tashkentDate,
-  tashkentDayStart,
-  type Car,
-  type Trip,
-  type TripSearch,
-} from '@platform/contracts';
+import { DAY_MS, tashkentDate, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
 import type { Person } from '../../users';
 import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { NO_RIDERS, tripView, type Riders } from './views';
-
-type DriverInfo = readonly [Person | undefined, Car | null];
 
 // Views of many trips: the driver and the car are read once per driver.
 async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, Riders>> {
@@ -51,17 +42,18 @@ export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Prom
     deps.ratings([...new Set(trips.map((trip) => trip.driverId))]),
     recommendedOf(deps, trips),
   ]);
-  const drivers = new Map<number, Promise<DriverInfo>>();
+  const drivers = new Map<number, Promise<Person | undefined>>();
   const driverOf = (id: number) => {
     const known = drivers.get(id);
     if (known) return known;
-    const loading = Promise.all([deps.people.find(id), deps.approvedCar(id)] as const);
+    const loading = deps.people.find(id);
     drivers.set(id, loading);
     return loading;
   };
   const found = await Promise.all(
     trips.map(async (trip) => {
-      const [driver, car] = await driverOf(trip.driverId);
+      // The car kept in the trip: a new check of the driver hides nothing (docs/65 A1).
+      const [driver, car] = [await driverOf(trip.driverId), trip.car];
       if (!driver || !car) return null;
       const price = recommended.get(`${trip.from}:${trip.to}`) ?? null;
       return tripView(

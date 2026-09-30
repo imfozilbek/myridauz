@@ -8,6 +8,7 @@ import {
   type AdminWallets,
   type Adjustment,
   type Wallet,
+  type PersonId,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -19,8 +20,8 @@ export function createWalletClient(options: SignedOptions) {
     mine: async (): Promise<Wallet> => wallet(await request(WALLET_PATH)),
     all: async (): Promise<AdminWallets['wallets']> =>
       adminWalletsSchema.parse(await (await request(ADMIN_WALLETS_PATH)).json()).wallets,
-    of: async (driverId: number): Promise<Wallet> => wallet(await request(adminWalletPath(driverId))),
-    adjust: async (driverId: number, input: Adjustment): Promise<Wallet> =>
+    of: async (driverId: PersonId): Promise<Wallet> => wallet(await request(adminWalletPath(driverId))),
+    adjust: async (driverId: PersonId, input: Adjustment): Promise<Wallet> =>
       wallet(await post(adminWalletAdjustPath(driverId), input)),
   };
 }

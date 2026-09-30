@@ -18,7 +18,7 @@ export function chatRoutes(memberOf: MemberOf) {
       if (!chatKeySchema.safeParse(key).success) return fail('chat.not_member', 403);
       const member = await memberOf(context.env, key, context.get('session').user.id);
       if (!member) return fail('chat.not_member', 403);
-      const ticket = await signTicket(secretOf(context.env), key, member, Date.now());
+      const ticket = await signTicket(secretOf(context.env), key, member.userId, Date.now());
       const url = new URL(chatSocketPath(key), context.req.url);
       url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
       url.searchParams.set('ticket', ticket);
@@ -26,12 +26,14 @@ export function chatRoutes(memberOf: MemberOf) {
     })
     .get('/chats/:key/socket', async (context) => {
       const key = context.req.param('key');
-      const member = await verifyTicket(
+      const userId = await verifyTicket(
         secretOf(context.env),
         key,
         context.req.query('ticket') ?? '',
         Date.now(),
       );
+      // The other side is found again on the server: the ticket never names it.
+      const member = userId === null ? null : await memberOf(context.env, key, userId);
       if (!member) return fail('chat.invalid_ticket', 403);
       if (context.req.header('upgrade') !== 'websocket') return fail('chat.invalid_ticket', 400);
       const chats = context.env.CHATS;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { personIdSchema } from './person-id';
 import { BLOCK_DAYS } from './moderation';
 
 // Complaints and the moderator's decisions (docs/17). G11.
@@ -38,7 +39,7 @@ export type ComplaintStatus = (typeof COMPLAINT_STATUSES)[number];
 
 // A side of a complaint as the moderator sees it: never the phone (docs/07).
 export const partySchema = z.object({
-  id: z.number().int(),
+  id: personIdSchema,
   firstName: z.string(),
   hasAvatar: z.boolean(),
   role: z.enum(['driver', 'passenger']),
@@ -64,7 +65,7 @@ export const complaintQueueSchema = z.object({ complaints: z.array(complaintSche
 
 // The chat of the booking, read only for this complaint and written to the log (docs/07).
 export const chatLineSchema = z.object({
-  author: z.number().int().nullable(),
+  author: personIdSchema.nullable(),
   text: z.string(),
   at: z.number().int(),
 });

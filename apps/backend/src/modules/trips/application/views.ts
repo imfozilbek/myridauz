@@ -1,6 +1,6 @@
-import { NO_RATING, type Car, type Rating, type Trip } from '@platform/contracts';
+import { NO_RATING, type Rating, type Trip } from '@platform/contracts';
 import type { Person } from '../../users';
-import { statusAt, type TripRecord } from '../domain/trip';
+import { statusAt, type TripCar, type TripRecord } from '../domain/trip';
 
 // Seats taken by confirmed bookings and whether a woman is among the passengers (G08).
 export type Riders = { readonly seats: number; readonly woman: boolean };
@@ -10,7 +10,7 @@ export const NO_RIDERS: Riders = { seats: 0, woman: false };
 export function tripView(
   trip: TripRecord,
   driver: Person,
-  car: Car,
+  car: TripCar,
   now: number,
   riders: Riders,
   rating: Rating = NO_RATING,
@@ -21,7 +21,7 @@ export function tripView(
   return {
     id: trip.id,
     driver: {
-      id: driver.id,
+      id: driver.publicId,
       firstName: driver.firstName,
       hasAvatar: driver.avatarKey !== null,
       car: { make: car.make, model: car.model, color: car.color },

@@ -9,6 +9,7 @@ import { Hono, type MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { Directory } from '../application/directory';
 import { getDistance, updateDistance } from '../application/distance';
+import { ownerOnly } from '../../../shared/auth/owner-only';
 import type { LocationsDeps } from '../application/ports';
 
 const STATUS = {
@@ -16,7 +17,7 @@ const STATUS = {
   'locations.invalid_input': 400,
   'locations.same_place': 422,
   'locations.inside_city': 422,
-  'auth.not_admin': 403,
+  'auth.not_owner': 403,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 const NOT_MODIFIED = 304;
@@ -49,11 +50,11 @@ export function locationRoutes({ deps, directory, auth }: Wiring) {
         ? context.json(result.value)
         : context.json({ error: result.error }, STATUS[result.error]);
     })
-    .put(LOCATION_DISTANCE_PATH, auth, async (context) => {
+    .put(LOCATION_DISTANCE_PATH, auth, ownerOnly, async (context) => {
       const input = distanceSchema.safeParse(await context.req.json().catch(() => null));
       if (!input.success)
         return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
-      const caller = { isAdmin: context.get('session').isAdmin };
+      const caller = { isOwner: context.get('session').teamRole === 'owner' };
       const result = await updateDistance(deps(context.env), directory, caller, input.data);
       return result.ok
         ? context.json(result.value)

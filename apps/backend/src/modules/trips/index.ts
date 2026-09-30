@@ -1,6 +1,7 @@
 import type { TripInput } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { bookingStore } from '../bookings/infrastructure/store';
+import { maskContacts } from '../chat';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
@@ -48,6 +49,7 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
   }),
   changed: (tripId, event) => onChange(env, tripId, event),
+  mask: (text) => maskContacts(text).text,
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });
@@ -84,6 +86,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
     seats,
     price,
     meetingPoint,
+    plate: trip.car?.plate ?? null,
     endsAt,
     live: isLive(trip, now),
     over,

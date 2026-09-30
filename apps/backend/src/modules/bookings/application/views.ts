@@ -25,11 +25,6 @@ export async function bookingViews(
 ): Promise<Booking[]> {
   const now = deps.now();
   const trips = await tripsOf(deps, records);
-  const plates = new Map<number, string | null>();
-  const plateOf = async (driverId: number) => {
-    if (!plates.has(driverId)) plates.set(driverId, (await deps.approvedCar(driverId))?.plate ?? null);
-    return plates.get(driverId) ?? null;
-  };
   const views = await Promise.all(
     records.map(async (record): Promise<Booking | null> => {
       const loaded = trips.get(record.tripId);
@@ -42,7 +37,7 @@ export async function bookingViews(
         trip: loaded.trip,
         // The driver never sees a passenger's photo (docs/05).
         passenger: {
-          id: passenger.id,
+          id: passenger.publicId,
           firstName: passenger.firstName,
           hasAvatar: viewer !== 'driver' && passenger.avatarKey !== null,
         },
@@ -53,7 +48,7 @@ export async function bookingViews(
         createdAt: record.createdAt,
         meetingPoint: open ? loaded.facts.meetingPoint : null,
         pickup: open || viewer === 'passenger' ? record.pickup : null,
-        plate: open && viewer !== 'driver' ? await plateOf(loaded.facts.driverId) : null,
+        plate: open && viewer !== 'driver' ? loaded.facts.plate : null,
         chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,

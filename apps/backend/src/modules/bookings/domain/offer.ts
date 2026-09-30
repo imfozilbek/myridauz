@@ -1,4 +1,7 @@
-import type { Offer } from '@platform/contracts';
+import type { Car, Offer } from '@platform/contracts';
+
+// The car the team approved when the offer was sent: a new check of the driver keeps it (docs/65 A1).
+export type OfferCar = Pick<Car, 'make' | 'model' | 'color'>;
 
 // A driver's offer on a passenger's request (docs/35): a time and a price per seat.
 export type OfferRecord = {
@@ -7,6 +10,8 @@ export type OfferRecord = {
   readonly driverId: number;
   readonly departAt: number;
   readonly price: number;
+  // null only for an offer of a deleted driver made before the car was kept in the offer.
+  readonly car: OfferCar | null;
   readonly status: Offer['status'];
   readonly bookingId: string | null;
   readonly createdAt: number;

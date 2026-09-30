@@ -10,7 +10,7 @@ import { mockMarket } from './market-mock';
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
 const settings = { passengerAvatarRequired: false };
 const profile = {
-  id: 1,
+  id: '00000000000000000000000000000001',
   firstName: 'Dilnoza',
   gender: 'female',
   phone: '+998901234567',

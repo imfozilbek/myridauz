@@ -90,7 +90,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
         </Section>
       </List>
       {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('bookings.offer.send')} onClick={() => void send()} />
+      <MainButton text={t('bookings.offer.send')} onClick={send} />
     </StepLayout>
   );
 }

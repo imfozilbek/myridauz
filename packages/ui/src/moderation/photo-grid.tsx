@@ -1,4 +1,4 @@
-import { CAR_PHOTO_KINDS, type CarPhotoKind } from '@platform/contracts';
+import { CAR_PHOTO_KINDS, type CarPhotoKind, type PersonId } from '@platform/contracts';
 import { Caption } from '@telegram-apps/telegram-ui';
 import type { TranslationKey } from '@platform/i18n';
 import { useApiClients } from '../context/api-clients';
@@ -14,7 +14,7 @@ const LABELS: Record<Kind, TranslationKey> = {
   interior: 'drivers.photo.interior',
 };
 
-function Photo({ userId, kind }: { readonly userId: number; readonly kind: Kind }) {
+function Photo({ userId, kind }: { readonly userId: PersonId; readonly kind: Kind }) {
   const { moderation } = useApiClients();
   const { t } = useI18n();
   const url = useBlobUrl(() => moderation.photo(userId, kind), `${userId}:${kind}`);
@@ -27,7 +27,7 @@ function Photo({ userId, kind }: { readonly userId: number; readonly kind: Kind 
 }
 
 // The face and the car side by side: the moderator compares them with the data (docs/04).
-export function PhotoGrid({ userId }: { readonly userId: number }) {
+export function PhotoGrid({ userId }: { readonly userId: PersonId }) {
   return (
     <div className="moderation-grid">
       {KINDS.map((kind) => (

@@ -7,7 +7,14 @@ export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const allPhotos = { front: true, side: true, interior: true };
-const summary = { userId: 5, firstName: 'Jasur', status: 'pending', car, reasons: [], submittedAt: 1 };
+const summary = {
+  userId: '00000000000000000000000000000005',
+  firstName: 'Jasur',
+  status: 'pending',
+  car,
+  reasons: [],
+  submittedAt: 1,
+};
 
 const CHANGES = {
   status: 'changes_requested',

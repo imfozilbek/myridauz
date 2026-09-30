@@ -60,7 +60,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
-      void run(
+      run(
         () => bookings.answerOffer(offer.id, action),
         () => {
           track({ name: 'booking_step', screen: 'bookings.offer', step: OFFER_STEP[action] });

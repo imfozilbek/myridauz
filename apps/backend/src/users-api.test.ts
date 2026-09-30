@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
-import { call, initData, nowSeconds as now, registerUser, testEnv as env } from './test-api';
+import { call, initData, nowSeconds as now, pid, registerUser, testEnv as env } from './test-api';
 import { localUsers } from './modules/users';
 import { signTelegramData } from './shared/auth/test-signing';
 
@@ -35,9 +35,11 @@ describe('registration and profile over HTTP', () => {
     expect((await registerUser(20)).status).toBe(409);
     const own = await (await call('/me', 20)).json();
     expect(own).toMatchObject({ state: 'active', profile: { phone: '+9989020' } });
-    const other = await (await call('/users/20', 21)).json();
-    expect(other).toEqual({ id: 20, firstName: 'Ali', hasAvatar: false, rating: null });
+    const other = await (await call(`/users/${await pid(20)}`, 21)).json();
+    expect(other).toEqual({ id: await pid(20), firstName: 'Ali', hasAvatar: false, rating: null });
     expect(JSON.stringify(other)).not.toMatch(/phone|username|998/);
+    // The Telegram ID opens nothing: only the random public id does (docs/65 A3).
+    expect((await call('/users/20', 21)).status).toBe(404);
     expect((await call('/users/404', 21)).status).toBe(404);
   });
 
@@ -68,10 +70,10 @@ describe('registration and profile over HTTP', () => {
     await registerUser(40);
     const put = { method: 'PUT', body: new Uint8Array(100), headers: { 'content-type': 'image/jpeg' } };
     expect((await call('/me/avatar', 40, put)).status).toBe(204);
-    const mine = await call('/users/40/avatar', 40);
+    const mine = await call(`/users/${await pid(40)}/avatar`, 40);
     expect(mine.status).toBe(200);
     expect(mine.headers.get('cache-control')).toContain('private');
-    expect((await call('/users/40/avatar', 41)).status).toBe(404);
+    expect((await call(`/users/${await pid(40)}/avatar`, 41)).status).toBe(404);
     const big = { ...put, headers: { 'content-type': 'image/jpeg', 'content-length': String(400 * 1024) } };
     expect((await call('/me/avatar', 40, big)).status).toBe(413);
     const access = {

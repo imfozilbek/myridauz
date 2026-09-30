@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 const TARGET: ReviewTarget = {
-  rateeId: 7,
+  rateeId: '00000000000000000000000000000007',
   rateeName: 'Jasur',
   rateeRole: 'driver',
   mine: { stars: 2, tags: [], text: '' },

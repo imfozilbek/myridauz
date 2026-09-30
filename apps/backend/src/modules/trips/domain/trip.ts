@@ -1,4 +1,7 @@
-import { arrivalAt, DAY_MS, TRIP_DAYS_AHEAD, type Trip } from '@platform/contracts';
+import { arrivalAt, DAY_MS, TRIP_DAYS_AHEAD, type Car, type Trip } from '@platform/contracts';
+
+// The car the team approved when the trip was published: a new check of the driver keeps it (docs/65 A1).
+export type TripCar = Pick<Car, 'make' | 'model' | 'color' | 'plate'>;
 
 // A published trip (docs/35). The price stays as published: a new formula is only for new trips (docs/23).
 export type TripRecord = {
@@ -14,6 +17,8 @@ export type TripRecord = {
   readonly price: number;
   readonly womanOnBoard: boolean;
   readonly comment: string;
+  // null only for a trip of a deleted driver made before the car was kept in the trip.
+  readonly car: TripCar | null;
   readonly status: Trip['status'];
   readonly meetingPoint: { readonly lat: number; readonly lng: number } | null;
   // The driver bot message the driver answers with the meeting point (docs/14).

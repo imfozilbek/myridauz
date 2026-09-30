@@ -30,8 +30,8 @@ export const reviewRoutes = (deps: (env: Bindings) => RatingsDeps) =>
       return result === 'ok' ? context.body(null, 204) : fail(result);
     })
     .get('/users/:id/reviews', async (context) => {
-      const userId = Number(context.req.param('id'));
-      if (!Number.isInteger(userId)) return fail('reviews.not_found');
+      const userId = await deps(context.env).people.idOf(context.req.param('id'));
+      if (userId === undefined) return fail('reviews.not_found');
       return context.json(await reviewsOf(deps(context.env), userId));
     })
     .post('/admin/reviews/:id/hide', async (context) => {

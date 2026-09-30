@@ -1,5 +1,6 @@
-import type { AdminWallets, Adjustment, BalanceKind, OperationKind, Wallet } from '@platform/contracts';
+import type { Adjustment, OperationKind, Wallet } from '@platform/contracts';
 import { balanceOf, chargedFor, splitCharge, type Operation } from '../domain/ledger';
+import { appendCharge } from './append-charge';
 import { bonusExpiresAt, burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
 import type { WalletDeps } from './ports';
 
@@ -78,7 +79,8 @@ export async function charge(
     .map((balance) =>
       row(deps, driverId, { kind: 'commission', balance, amount: -split[balance], bookingId }),
     );
-  if (!(await deps.wallet.append(rows))) return 'duplicate';
+  const appended = await appendCharge(deps.wallet, rows);
+  if (appended !== 'ok') return appended;
   const next = nextGrant([...operations, ...rows], deps.promo, deps.now());
   if (next) await deps.wallet.append([grantRow(deps, driverId, next)]);
   return 'ok';
@@ -131,18 +133,4 @@ export async function adjust(
     row(deps, driverId, { kind, balance, amount, reason, createdBy: ownerId, expiresAt }),
   ]);
   return 'ok';
-}
-
-export async function adminWallets(deps: WalletDeps): Promise<AdminWallets['wallets']> {
-  const drivers = await deps.wallet.drivers();
-  return Promise.all(
-    drivers.map(async (driverId) => {
-      const [operations, person] = await Promise.all([
-        deps.wallet.operations(driverId),
-        deps.people.find(driverId),
-      ]);
-      const sum = (balance: BalanceKind) => balanceOf(operations, balance);
-      return { driverId, firstName: person?.firstName ?? '', bonus: sum('bonus'), main: sum('main') };
-    }),
-  );
 }

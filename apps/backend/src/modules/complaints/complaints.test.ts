@@ -4,6 +4,7 @@ import { fileComplaint, hiddenFromSearch } from './application/file';
 import { complaintChat, complaintQueue, decide, openComplaint } from './application/moderate';
 import type { ComplaintsDeps, Ride } from './application/ports';
 import { createMemoryComplaints } from './infrastructure/memory-complaints';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 const NOW = Date.parse('2026-10-05T12:00:00Z');
 const DRIVER = 1;
@@ -18,6 +19,10 @@ const ride = (n: number): Ride => ({
   chatKey: `b${n}`,
 });
 
+// A moderator, not the owner: a member of the team is blocked only by the owner (docs/02).
+const BY_MODERATOR = { id: MODERATOR, owner: false };
+const TEAM_MEMBER = 102;
+
 function setup() {
   const rides = [1, 2, 3, 4].map(ride);
   const store = createMemoryComplaints();
@@ -25,10 +30,18 @@ function setup() {
   const deps: ComplaintsDeps = {
     store,
     ride: async (id) => rides.find((known) => known.bookingId === id),
+    filedRide: async (id) => rides.find((known) => known.bookingId === id),
     people: {
-      find: async (id) => ({ firstName: id === DRIVER ? 'Jasur' : `P${id}`, avatarKey: null }),
+      find: async (id) => ({
+        publicId: publicIdOf(id),
+        firstName: id === DRIVER ? 'Jasur' : `P${id}`,
+        avatarKey: null,
+      }),
+      idOf: idOfPublic,
       block: async (id, days) => void log.push(`block ${id} ${days}`),
+      releasePhone: async () => undefined,
     },
+    isTeam: async (id) => id === TEAM_MEMBER,
     trips: async (_id, side) => (side === 'driver' ? 12 : 3),
     chat: async () => [{ author: DRIVER, text: 'Salom', at: NOW }],
     cancelAll: async (id) => void log.push(`cancel ${id}`),
@@ -63,7 +76,7 @@ describe('complaints (docs/17)', () => {
     await fileComplaint(deps, 103, input('b3'));
     expect(await hiddenFromSearch(deps, [DRIVER, 55])).toEqual(new Set([DRIVER]));
     const [first] = await complaintQueue(deps);
-    await decide(deps, MODERATOR, first?.id ?? '', { action: 'none', refund: false });
+    await decide(deps, BY_MODERATOR, first?.id ?? '', { action: 'none', refund: false });
     expect(await hiddenFromSearch(deps, [DRIVER])).toEqual(new Set());
   });
 
@@ -82,7 +95,9 @@ describe('complaints (docs/17)', () => {
     const filed = await fileComplaint(deps, 101, input('b1'));
     const id = typeof filed === 'string' ? '' : filed.id;
     expect(await complaintChat(deps, MODERATOR, 'nope')).toBeUndefined();
-    expect(await complaintChat(deps, MODERATOR, id)).toEqual([{ author: DRIVER, text: 'Salom', at: NOW }]);
+    expect(await complaintChat(deps, MODERATOR, id)).toEqual([
+      { author: publicIdOf(DRIVER), text: 'Salom', at: NOW },
+    ]);
     expect(store.reads).toEqual([{ complaintId: id, moderatorId: MODERATOR, at: NOW }]);
     expect((await openComplaint(deps, id))?.status).toBe('in_review');
   });
@@ -91,7 +106,7 @@ describe('complaints (docs/17)', () => {
     const { deps, log } = setup();
     const filed = await fileComplaint(deps, DRIVER, input('b1'));
     const id = typeof filed === 'string' ? '' : filed.id;
-    expect(await decide(deps, MODERATOR, id, { action: 'block', days: 7, refund: true })).toBe('ok');
+    expect(await decide(deps, BY_MODERATOR, id, { action: 'block', days: 7, refund: true })).toBe('ok');
     expect(log).toEqual([
       'block 101 7',
       'cancel 101',
@@ -100,14 +115,23 @@ describe('complaints (docs/17)', () => {
       `resolved ${DRIVER}`,
     ]);
     expect((await deps.store.find(id))?.decision).toBe('block:7:refund');
-    expect(await decide(deps, MODERATOR, id, { action: 'warning', refund: false })).toBe(
+    expect(await decide(deps, BY_MODERATOR, id, { action: 'warning', refund: false })).toBe(
       'complaints.wrong_status',
     );
     const other = await fileComplaint(deps, 102, input('b2'));
-    await decide(deps, MODERATOR, typeof other === 'string' ? '' : other.id, {
+    await decide(deps, BY_MODERATOR, typeof other === 'string' ? '' : other.id, {
       action: 'warning',
       refund: true,
     });
     expect(log.slice(5)).toEqual([`warning ${DRIVER} driver`, 'resolved 102']);
+  });
+
+  it('decides a complaint once when two moderators tap at the same moment (docs/65 A4)', async () => {
+    const { deps, log } = setup();
+    const filed = await fileComplaint(deps, DRIVER, input('b1'));
+    const id = typeof filed === 'string' ? '' : filed.id;
+    const twice = () => decide(deps, BY_MODERATOR, id, { action: 'block', days: 7, refund: true });
+    expect((await Promise.all([twice(), twice()])).sort()).toEqual(['complaints.wrong_status', 'ok']);
+    expect(log.filter((line) => /^(refund|block )/.test(line))).toHaveLength(2);
   });
 });

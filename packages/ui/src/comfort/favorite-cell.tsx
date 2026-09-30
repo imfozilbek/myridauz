@@ -1,3 +1,4 @@
+import type { PersonId } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { Cell, Section } from '../components';
 import { useAnalytics } from '../context/analytics-context';
@@ -6,7 +7,7 @@ import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 
-type Props = { readonly driverId: number; readonly screen: string };
+type Props = { readonly driverId: PersonId; readonly screen: string };
 
 // "Sevimli haydovchilarga qoʻshish" (docs/18): on the trip screen and after the review.
 export function FavoriteCell({ driverId, screen }: Props) {

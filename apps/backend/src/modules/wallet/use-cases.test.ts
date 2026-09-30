@@ -11,6 +11,7 @@ import {
 import { grantMissedWelcome } from './application/missed';
 import type { WalletDeps } from './application/ports';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 const DAY = 24 * 60 * 60 * 1000;
 const START = Date.parse('2026-10-01T05:00:00Z');
@@ -22,7 +23,7 @@ function setup(promo = PROMO) {
   const deps: WalletDeps = {
     wallet: createMemoryWallet(),
     promo,
-    people: { find: async () => ({ firstName: 'Jasur' }) },
+    people: { find: async (id) => ({ firstName: 'Jasur', publicId: publicIdOf(id) }), idOf: idOfPublic },
     now: () => now,
     newId: () => `op-${(id += 1)}`,
   };

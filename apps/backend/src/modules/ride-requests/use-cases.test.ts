@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { RequestsDeps } from './application/ports';
 import { cancelRequest, myRequests, publishRequest, searchRequests } from './application/use-cases';
 import { createMemoryRequests } from './infrastructure/memory-requests';
+import { publicIdOf } from '../../test-people';
 
 // 2026-10-01 06:00 in Tashkent.
 const NOW = Date.parse('2026-10-01T01:00:00Z');
@@ -22,7 +23,13 @@ function setup() {
   const deps: RequestsDeps = {
     requests: createMemoryRequests(),
     people: {
-      find: async (userId) => ({ id: userId, firstName: `P${userId}`, avatarKey: null, gender: 'female' }),
+      find: async (userId) => ({
+        id: userId,
+        publicId: publicIdOf(userId),
+        firstName: `P${userId}`,
+        avatarKey: null,
+        gender: 'female',
+      }),
     },
     approvedCar: async (userId) => (userId === 9 ? CAR : null),
     recommend: async (from, to) =>

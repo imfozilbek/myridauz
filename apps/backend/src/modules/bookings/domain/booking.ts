@@ -47,12 +47,16 @@ const MOVES: Moves = {
   driver_cancel: { requested: 'declined', confirmed: 'cancelled_by_driver' },
 };
 
+// A confirmed booking is not cancelled after the departure: the ride happened or it is a complaint,
+// never a refund by a tap (docs/65 A4).
 export function move(
   booking: BookingRecord,
   action: BookingAction,
   now: number,
+  departAt: number,
 ): BookingRecord | 'bookings.wrong_status' {
   const status = statusAt(booking, now, false);
+  if (status === 'confirmed' && action !== 'confirm' && departAt <= now) return 'bookings.wrong_status';
   const next = MOVES[action][status];
   return next ? { ...booking, status: next, updatedAt: now } : 'bookings.wrong_status';
 }

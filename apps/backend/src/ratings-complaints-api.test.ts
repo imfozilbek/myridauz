@@ -3,7 +3,7 @@ import { json, OWNER, approvedDriver, read } from './bookings-test-api';
 import { botSender } from './bots/test-bot';
 import { askForRatings } from './modules/ratings';
 import { signTelegramData } from './shared/auth/test-signing';
-import { call, nowSeconds, registerUser, testEnv } from './test-api';
+import { call, nowSeconds, pid, registerUser, testEnv } from './test-api';
 
 // Every Telegram call of the flow: questions, answers to buttons, the team signal.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -80,9 +80,13 @@ describe('ratings and complaints through the API (docs/17, docs/24)', () => {
       PASSENGER,
       json({ bookingId, stars: 2, tags: ['on_time'], text: 'Tel: 998901112233' }),
     );
-    expect((await read<{ reviews: unknown[] }>(call(`/users/${DRIVER}/reviews`, OTHER))).reviews).toEqual([]);
+    expect(
+      (await read<{ reviews: unknown[] }>(call(`/users/${await pid(DRIVER)}/reviews`, OTHER))).reviews,
+    ).toEqual([]);
     await call('/reviews', DRIVER, { app: 'driver', ...json({ bookingId, stars: 5 }) });
-    const shown = await read<{ reviews: { text: string }[] }>(call(`/users/${DRIVER}/reviews`, OTHER));
+    const shown = await read<{ reviews: { text: string }[] }>(
+      call(`/users/${await pid(DRIVER)}/reviews`, OTHER),
+    );
     expect(shown.reviews.map((item) => item.text)).toEqual(['Tel: ***']);
 
     const upcoming = await ride(OTHER, Date.now() + 30 * HOUR);

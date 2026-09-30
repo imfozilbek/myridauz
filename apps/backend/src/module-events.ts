@@ -3,6 +3,7 @@ import {
   cancelAllOf,
   passengerRideCount,
   pickupMessageSent,
+  filedRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
 } from './modules/bookings';
@@ -65,7 +66,7 @@ wireFavorites({
     const { firstName, avatarKey } = person;
     const rating = ratings.get(id) ?? NO_RATING;
     return {
-      id,
+      id: person.publicId,
       firstName,
       hasAvatar: avatarKey !== null,
       car: { make: car.make, model: car.model, color: car.color },
@@ -115,6 +116,7 @@ wireTripStanding((env) => ({
 // commission back (docs/17, docs/35).
 wireComplaints({
   ride: rideOfBooking,
+  filedRide: filedRideOfBooking,
   trips: async (env, userId, side) =>
     side === 'driver' ? (await driverTripIds(env, userId)).length : passengerRideCount(env, userId),
   cancelAll: cancelAllOf,

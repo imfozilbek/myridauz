@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { remindTrips, type RemindersDeps } from './application/remind';
 import { dueReminder } from './domain/due';
 import { createMemoryFirst } from './infrastructure/reminder-store';
+import { publicIdOf } from '../../test-people';
 
 const HOUR = 3_600_000;
 // 2026-10-01 10:00 in Tashkent: day time.
@@ -21,9 +22,9 @@ describe('when a trip is reminded (G10)', () => {
   });
 });
 
-const trip = (id: string, departAt: number) => ({ id, departAt, driver: { id: 1 } }) as Trip;
+const trip = (id: string, departAt: number) => ({ id, departAt, driver: { id: publicIdOf(1) } }) as Trip;
 const booking = (id: string, tripId: string, seats: number) =>
-  ({ id, seats, trip: { id: tripId }, passenger: { id: 50 } }) as Booking;
+  ({ id, seats, trip: { id: tripId }, passenger: { id: publicIdOf(50) } }) as Booking;
 
 describe('sending reminders once (G10)', () => {
   it('tells each passenger and the driver once, and nobody about a trip without riders', async () => {

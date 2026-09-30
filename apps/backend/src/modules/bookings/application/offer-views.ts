@@ -12,16 +12,14 @@ export async function offerViews(
   const views = await Promise.all(
     offers.map(async (offer): Promise<Offer | null> => {
       const request = requests.find((item) => item.id === offer.requestId);
-      const [driver, car] = await Promise.all([
-        deps.people.find(offer.driverId),
-        deps.approvedCar(offer.driverId),
-      ]);
+      // The car kept in the offer: a new check of the driver hides nothing (docs/65 A1).
+      const [driver, car] = [await deps.people.find(offer.driverId), offer.car];
       if (!request || !driver || !car) return null;
       return {
         id: offer.id,
         requestId: offer.requestId,
         driver: {
-          id: driver.id,
+          id: driver.publicId,
           firstName: driver.firstName,
           hasAvatar: driver.avatarKey !== null,
           car: { make: car.make, model: car.model, color: car.color },

@@ -1,6 +1,7 @@
 import { ADMIN_CHANNELS_PATH, type ApiErrorCode } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { ownerOnly } from '../../../shared/auth/owner-only';
 import { allChannels, removeChannel, saveChannel, type TeamChannelsDeps } from '../application/team';
 
 const STATUS = {
@@ -26,12 +27,12 @@ export function channelRoutes(deps: (env: Bindings) => Promise<TeamChannelsDeps>
     .get(ADMIN_CHANNELS_PATH, async (context) =>
       context.json({ channels: await allChannels(await deps(context.env)) }),
     )
-    .put(one, async (context) => {
+    .put(one, ownerOnly, async (context) => {
       const input = await context.req.json().catch(() => null);
       const result = await saveChannel(await deps(context.env), context.req.param('username'), input);
       return result.ok ? context.json(result.value) : fail(context, result.error);
     })
-    .delete(one, async (context) =>
+    .delete(one, ownerOnly, async (context) =>
       (await removeChannel(await deps(context.env), context.req.param('username')))
         ? context.body(null, 204)
         : fail(context, 'channels.not_found'),

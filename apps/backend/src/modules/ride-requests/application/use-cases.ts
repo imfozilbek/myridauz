@@ -24,7 +24,11 @@ export async function views(deps: RequestsDeps, requests: readonly RequestRecord
     requests.map(async (request) => {
       const person = await deps.people.find(request.passengerId);
       if (!person) return null;
-      const passenger = { id: person.id, firstName: person.firstName, hasAvatar: person.avatarKey !== null };
+      const passenger = {
+        id: person.publicId,
+        firstName: person.firstName,
+        hasAvatar: person.avatarKey !== null,
+      };
       const { id, from, to, date, km, seats, price } = request;
       return { id, passenger, from, to, date, km, seats, price, status: statusAt(request, now) };
     }),

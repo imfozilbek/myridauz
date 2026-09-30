@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { changeModerator } from './modules/team';
-import { call, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv } from './test-api';
 
 // The bots are called for real in production: here a fake Telegram answers.
 vi.stubGlobal('fetch', fakeTelegram().fetch);
@@ -47,7 +47,7 @@ describe('drivers API (docs/04)', () => {
   });
 
   it('shows applications and their photos only to the team', async () => {
-    for (const path of ['/admin/applications', `/admin/applications/${APPLICANT}/photos/front`]) {
+    for (const path of ['/admin/applications', `/admin/applications/${await pid(APPLICANT)}/photos/front`]) {
       expect((await call(path, STRANGER, { app: 'passenger' })).status).toBe(403);
       expect((await call(path, OWNER, { app: 'admin' })).status).toBe(200);
     }
@@ -55,15 +55,15 @@ describe('drivers API (docs/04)', () => {
     expect((await call('/driver/application/photos/front', STRANGER, { app: 'driver' })).status).toBe(404);
     expect((await call('/driver/application/photos/front', APPLICANT, { app: 'driver' })).status).toBe(200);
     const queue = (await (await call('/admin/applications', OWNER, { app: 'admin' })).json()) as {
-      applications: { userId: number }[];
+      applications: { userId: string }[];
     };
-    expect(queue.applications.map((item) => item.userId)).toContain(APPLICANT);
+    expect(queue.applications.map((item) => item.userId)).toContain(await pid(APPLICANT));
   });
 
   it('lets a moderator added by the owner decide, and makes the person a driver', async () => {
     expect(await changeModerator(testEnv, STRANGER, MODERATOR, true)).toBe('team.not_owner');
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
-    const decision = `/admin/applications/${APPLICANT}/decision`;
+    const decision = `/admin/applications/${await pid(APPLICANT)}/decision`;
     expect(
       (await call(decision, MODERATOR, { method: 'POST', app: 'admin', ...json({ action: 'x' }) })).status,
     ).toBe(400);
@@ -90,7 +90,7 @@ describe('drivers API (docs/04)', () => {
   });
 
   it('lets the team block a person', async () => {
-    const block = `/admin/users/${APPLICANT}/block`;
+    const block = `/admin/users/${await pid(APPLICANT)}/block`;
     expect((await call(block, OWNER, { method: 'POST', app: 'admin', ...json({ days: 3 }) })).status).toBe(
       400,
     );

@@ -84,7 +84,7 @@ describe('avatar', () => {
     await register(deps, ali, input);
     expect(await setAvatar(deps, ali, jpeg(10))).toEqual({ ok: true });
     expect(await setAvatar(deps, ali, jpeg(10))).toEqual({ ok: true });
-    expect(avatars.keys()).toEqual(['avatars/1/id2']);
+    expect(avatars.keys()).toEqual(['avatars/1/id3']);
     expect(await setAvatar(deps, ali, jpeg(400 * 1024))).toEqual({
       ok: false,
       error: 'users.avatar_too_large',
@@ -123,7 +123,12 @@ describe('profile and write access', () => {
     expect(await setWriteAccess(deps, ali, true)).toEqual({ ok: false, error: 'users.not_registered' });
     await register(deps, ali, input);
     const shown = await getPublicProfile(deps, 1);
-    expect(shown.ok && shown.profile).toEqual({ id: 1, firstName: 'Ali', hasAvatar: false, rating: null });
+    expect(shown.ok && shown.profile).toEqual({
+      id: 'id1',
+      firstName: 'Ali',
+      hasAvatar: false,
+      rating: null,
+    });
     expect(await setWriteAccess(deps, ali, true)).toEqual({ ok: true });
     expect((await users.find(1))?.writeAccess).toBe(true);
     expect(await setWriteAccess(deps, ali, true)).toEqual({ ok: true });

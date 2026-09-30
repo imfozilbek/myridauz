@@ -9,6 +9,7 @@ import { IconTile } from '../icon-tile';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import '../market/market.css';
+import { useOneAtATime } from '../telegram/one-at-a-time';
 
 const PHOTO_SIZE = 40;
 const BIG_PHOTO_SIZE = 56;
@@ -46,8 +47,9 @@ export function OffersSection({ offers, onOpen }: ListProps) {
 type ScreenProps = {
   readonly offer: Offer;
   readonly onBack: () => void;
-  readonly onAccept: () => void;
-  readonly onDecline: () => void;
+  // Each answer runs once: a second tap while it runs does nothing (docs/65 A4).
+  readonly onAccept: () => unknown;
+  readonly onDecline: () => unknown;
   readonly onChat: () => void;
 };
 
@@ -56,6 +58,9 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat }: Scre
   useScreenView('bookings.offer');
   const { t, formatMoney } = useI18n();
   const { driver } = offer;
+  const accept = useOneAtATime(onAccept);
+  const decline = useOneAtATime(onDecline);
+  const busy = accept.busy || decline.busy;
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
@@ -92,10 +97,17 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat }: Scre
         </Section>
       </List>
       <div className="step-note">
-        <Button size="l" stretched onClick={onAccept}>
+        <Button size="l" stretched loading={accept.busy} disabled={busy} onClick={accept.run}>
           {t('bookings.offer.accept')}
         </Button>
-        <Button mode="bezeled" size="l" stretched onClick={onDecline}>
+        <Button
+          mode="bezeled"
+          size="l"
+          stretched
+          loading={decline.busy}
+          disabled={busy}
+          onClick={decline.run}
+        >
           {t('bookings.offer.decline')}
         </Button>
       </div>

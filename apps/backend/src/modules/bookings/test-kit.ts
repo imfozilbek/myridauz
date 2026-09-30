@@ -1,46 +1,38 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
 import { NO_RATING, type Car, type Trip } from '@platform/contracts';
-import type { Person } from '../users';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
 import type { BookingsDeps, RequestFacts, TripFacts } from './application/ports';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
-import { fakeNotifier, fakeRecommend } from './test-fakes';
+import { DILNOZA, DRIVER, fakeNotifier, fakePeople, fakeRecommend } from './test-fakes';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
 export const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-const person = (id: number, firstName: string, gender: Person['gender']): Person => ({
-  id,
-  firstName,
-  avatarKey: `avatars/${id}`,
-  gender,
-});
-export const DRIVER = 1;
-export const DILNOZA = 10;
-export const ALI = 11;
-export const OLIM = 12;
+export { ALI, DILNOZA, DRIVER, OLIM } from './test-fakes';
 
 export function setup() {
   let now = NOW;
+  let approved = true;
   let id = 0;
   const newId = () => `00000000-0000-0000-0000-${String((id += 1)).padStart(12, '0')}`;
-  const people = new Map([
-    [DRIVER, person(DRIVER, 'Jasur', 'male')],
-    [DILNOZA, person(DILNOZA, 'Dilnoza', 'female')],
-    [ALI, person(ALI, 'Ali', 'male')],
-    [OLIM, person(OLIM, 'Olim', 'male')],
-  ]);
+  const people = fakePeople();
   const trips = new Map<string, TripFacts>();
   const requests = new Map<string, RequestFacts>();
   const notes: string[] = [];
+  const close = (requestId: string, passengerId?: number) => {
+    const request = requests.get(requestId);
+    if (request && (passengerId ?? request.passengerId) === request.passengerId)
+      requests.set(requestId, { ...request, open: false });
+  };
   const walletDeps: WalletDeps = {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
-    people: { find: async (userId) => people.get(userId) },
+    people: { find: async (userId) => people.get(userId), idOf: idOfPublic },
     now: () => now,
     newId,
   };
@@ -50,7 +42,13 @@ export function setup() {
       .filter((booking) => booking.status === 'confirmed')
       .reduce((sum, booking) => sum + booking.seats, 0);
     const { id: tripId, from, to, departAt, km, seats, price } = facts;
-    const driver = { id: facts.driverId, firstName: 'Jasur', hasAvatar: true, car: CAR, rating: NO_RATING };
+    const driver = {
+      id: publicIdOf(facts.driverId),
+      firstName: 'Jasur',
+      hasAvatar: true,
+      car: CAR,
+      rating: NO_RATING,
+    };
     const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
     return {
       ...base,
@@ -75,6 +73,7 @@ export function setup() {
       live: true,
       over: false,
       meetingPoint: { lat: 41.3, lng: 69.2 },
+      plate: '01A123BC',
       ...extra,
     };
     trips.set(facts.id, facts);
@@ -97,10 +96,8 @@ export function setup() {
     requests: {
       find: async (requestId) => requests.get(requestId),
       ofPassenger: async (passengerId) => [...requests.values()].filter((r) => r.passengerId === passengerId),
-      matched: async (requestId) => {
-        const request = requests.get(requestId);
-        if (request) requests.set(requestId, { ...request, open: false });
-      },
+      matched: async (requestId) => close(requestId),
+      cancel: async (passengerId, requestId) => close(requestId, passengerId),
     },
     wallet: {
       commission: (price, seats) => commissionFor({ percent: 10, minPerSeat: 3000 }, price, seats),
@@ -109,7 +106,7 @@ export function setup() {
       refund: (driverId, bookingId) => refund(walletDeps, driverId, bookingId),
     },
     people: { find: async (userId) => people.get(userId) },
-    approvedCar: async (userId) => (userId === DRIVER ? CAR : null),
+    approvedCar: async (userId) => (userId === DRIVER && approved ? CAR : null),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
     now: () => now,
@@ -137,6 +134,11 @@ export function setup() {
     addRequest,
     bonus: () => grantWelcome(walletDeps, DRIVER),
     wallet: () => walletDeps.wallet.operations(DRIVER),
+    // The driver spent part of the bonus on earlier trips.
+    spend: (amount: number) => charge(walletDeps, DRIVER, newId(), amount),
     setNow: (next: number) => void (now = next),
+    requestOpen: (requestId: string) => requests.get(requestId)?.open,
+    // A new face or car photo: the driver goes to the team's check again (docs/05).
+    recheck: () => void (approved = false),
   };
 }

@@ -33,6 +33,7 @@ export async function favoritesOf(deps: FavoritesDeps, passengerId: number): Pro
 
 // A new trip of a saved driver: every passenger who saved the driver hears about it.
 export async function tellFans(deps: FavoritesDeps, trip: Trip): Promise<void> {
-  const fans = await deps.store.fansOf(trip.driver.id);
+  const driverId = await deps.idOf(trip.driver.id);
+  const fans = driverId === undefined ? [] : await deps.store.fansOf(driverId);
   if (fans.length > 0) await deps.tell(fans, trip);
 }

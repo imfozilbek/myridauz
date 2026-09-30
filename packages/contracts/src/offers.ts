@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { personIdSchema } from './person-id';
 import { CAR_COLORS } from './drivers';
 import { locationIdSchema } from './locations';
 import { DRIVER_REQUESTS_PATH } from './ride-requests';
@@ -25,7 +26,7 @@ export const offerSchema = z.object({
   id: z.string(),
   requestId: z.string(),
   driver: z.object({
-    id: z.number().int(),
+    id: personIdSchema,
     firstName: z.string(),
     hasAvatar: z.boolean(),
     car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),

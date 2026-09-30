@@ -4,7 +4,7 @@ import { request, tripOf } from './market-mock';
 // Bookings, offers and the wallet as the Mini Apps see them (G08).
 const HOUR = 3_600_000;
 const trip = tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true });
-const passenger = { id: 31, firstName: 'Madina', hasAvatar: false };
+const passenger = { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false };
 const booking = (id: string, status: string, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-0000000000b${id}`,
   trip,
@@ -30,7 +30,12 @@ export const confirmed = booking('2', 'confirmed', {
 const offer = {
   id: '00000000-0000-4000-8000-0000000000c1',
   requestId: request.id,
-  driver: { id: 11, firstName: 'Jasur', hasAvatar: false, car: trip.driver.car },
+  driver: {
+    id: '0000000000000000000000000000000b',
+    firstName: 'Jasur',
+    hasAvatar: false,
+    car: trip.driver.car,
+  },
   from: request.from,
   to: request.to,
   departAt: Date.parse(`${request.date}T03:30:00Z`),
@@ -87,7 +92,9 @@ export async function mockBookings(page: Page, money = true) {
   await page.route('**/api/driver/requests/*/offers', (route) => json(route, offer, 201));
   await page.route('**/api/driver/wallet', (route) => json(route, wallet(money ? 482000 : 0)));
   await page.route('**/api/admin/wallets', (route) =>
-    json(route, { wallets: [{ driverId: 11, firstName: 'Jasur', bonus: 482000, main: 0 }] }),
+    json(route, {
+      wallets: [{ driverId: '0000000000000000000000000000000b', firstName: 'Jasur', bonus: 482000, main: 0 }],
+    }),
   );
   await page.route('**/api/admin/wallets/*', (route) => json(route, wallet(482000)));
   await page.route('**/api/admin/wallets/*/adjust', (route) => json(route, wallet(582000)));

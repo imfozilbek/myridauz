@@ -73,7 +73,7 @@ export function DriverBooking({ booking, onClose }: Props) {
         hint={t('bookings.confirm.hint', { amount: formatMoney(booking.commission) })}
       >
         <BackButton onClick={() => setStep('view')} />
-        <MainButton text={t('bookings.confirm')} onClick={() => void answer('confirm')} />
+        <MainButton text={t('bookings.confirm')} onClick={() => answer('confirm')} />
       </StepLayout>
     );
   }

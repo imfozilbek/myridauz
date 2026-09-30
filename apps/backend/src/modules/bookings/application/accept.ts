@@ -36,6 +36,20 @@ export async function acceptOffer(
   const found = await sentToMe(deps, passengerId, id);
   if (typeof found === 'string') return { ok: false, error: found };
   const { offer, request } = found;
+  // The offer is taken in one step first: a second tap finds it accepted (docs/65 A4).
+  const taken: OfferRecord = { ...offer, status: 'accepted' };
+  if (!(await deps.offers.replace(taken, 'sent'))) return { ok: false, error: 'bookings.wrong_status' };
+  const result = await acceptTaken(deps, passengerId, offer, request);
+  if (!result.ok) await deps.offers.replace(offer, 'accepted');
+  return result;
+}
+
+async function acceptTaken(
+  deps: BookingsDeps,
+  passengerId: number,
+  offer: OfferRecord,
+  request: RequestFacts,
+): Promise<Result<Offer, AcceptError>> {
   const commission = deps.wallet.commission(offer.price, request.seats);
   const car = await deps.approvedCar(offer.driverId);
   if (!car || !(await deps.wallet.canAfford(offer.driverId, commission)))

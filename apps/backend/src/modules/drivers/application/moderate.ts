@@ -9,7 +9,7 @@ async function summary(deps: DriversDeps, application: Application): Promise<App
   const person = await deps.people.find(application.userId);
   if (!person || !application.car || application.submittedAt === null) return undefined;
   return {
-    userId: application.userId,
+    userId: person.publicId,
     firstName: person.firstName,
     status: application.status,
     car: application.car,

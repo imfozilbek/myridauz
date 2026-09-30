@@ -68,8 +68,13 @@ describe('the ticket of the chat socket', () => {
   const now = Date.parse('2026-10-01T05:00:00Z');
 
   it('opens only its own chat, only for a minute, only unchanged', async () => {
-    const ticket = await signTicket('secret', key, PASSENGER, now);
-    expect(await verifyTicket('secret', key, ticket, now)).toEqual(PASSENGER);
+    const ticket = await signTicket('secret', key, PASSENGER.userId, now);
+    expect(await verifyTicket('secret', key, ticket, now)).toBe(PASSENGER.userId);
+    // The browser reads the ticket: it never names the other person (docs/65 A3).
+    const [body] = ticket.split('.');
+    const payload = atob((body ?? '').replaceAll('-', '+').replaceAll('_', '/'));
+    expect(JSON.parse(payload)).toMatchObject({ data: { key, userId: PASSENGER.userId } });
+    expect(payload).not.toContain('otherId');
     expect(await verifyTicket('secret', 'o00000000-0000-0000-0000-000000000001', ticket, now)).toBeNull();
     expect(await verifyTicket('secret', key, ticket, now + 2 * MINUTE)).toBeNull();
     expect(await verifyTicket('other', key, ticket, now)).toBeNull();

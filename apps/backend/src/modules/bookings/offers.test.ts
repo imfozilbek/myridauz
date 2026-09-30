@@ -2,12 +2,30 @@ import { describe, expect, it } from 'vitest';
 import { balanceOf } from '../wallet/domain/ledger';
 import { acceptOffer, declineOffer } from './application/accept';
 import { driverOffers, passengerOffers, sendOffer } from './application/offers';
-import { passengerBookings } from './application/request';
+import { confirm } from './application/answer';
+import { passengerBookings, requestBooking } from './application/request';
 import { ALI, DILNOZA, DRIVER, HOUR, NOW, setup } from './test-kit';
 
 // 2026-10-02 08:00 in Tashkent: the day of the request.
 const ON_THE_DAY = NOW + 26 * HOUR;
 const offer = { departAt: ON_THE_DAY, price: 95_000 };
+
+describe('a driver on a new check (docs/65 A1)', () => {
+  it('keeps the plate of a confirmed booking and the car of a sent offer', async () => {
+    const { deps, addTrip, addRequest, bonus, recheck } = setup();
+    await bonus();
+    const booked = await requestBooking(deps, DILNOZA, addTrip(), 1);
+    await confirm(deps, DRIVER, booked.ok ? booked.value.id : '');
+    await sendOffer(deps, DRIVER, addRequest({ passengerId: ALI }), offer);
+    recheck();
+    expect((await passengerBookings(deps, DILNOZA))[0]?.plate).toBe('01A123BC');
+    expect((await passengerOffers(deps, ALI))[0]?.driver.car.model).toBe('Cobalt');
+    expect(await sendOffer(deps, DRIVER, addRequest(), offer)).toEqual({
+      ok: false,
+      error: 'trips.not_driver',
+    });
+  });
+});
 
 describe('a driver offers on a request (docs/35)', () => {
   it('sends only with money, on the request day, within the price bounds, once', async () => {

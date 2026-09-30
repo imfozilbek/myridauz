@@ -15,7 +15,7 @@ vi.mock('../telegram/permissions', () => permissions);
 
 const settings = { passengerAvatarRequired: false };
 const profile = {
-  id: 7,
+  id: '00000000000000000000000000000007',
   firstName: 'Dilnoza',
   gender: 'female' as const,
   phone: '+998901234567',

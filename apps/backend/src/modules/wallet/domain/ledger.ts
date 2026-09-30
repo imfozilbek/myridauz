@@ -17,6 +17,9 @@ export type Operation = {
 
 export type Split = Readonly<Record<BalanceKind, number>>;
 
+// The database refuses a commission that would take a balance below zero (migrations/0018).
+export const OVERDRAW = 'wallet.overdraw';
+
 export const balanceOf = (operations: readonly Operation[], balance: BalanceKind) =>
   operations.reduce((sum, operation) => (operation.balance === balance ? sum + operation.amount : sum), 0);
 

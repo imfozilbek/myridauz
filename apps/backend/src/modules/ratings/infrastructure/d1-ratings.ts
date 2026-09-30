@@ -1,5 +1,6 @@
 import type { Ask, RatingStore } from '../application/ports';
 import type { StoredReview } from '../domain/rating';
+import { allIn } from '../../../shared/storage/in-list';
 
 type ReviewRow = {
   id: string;
@@ -33,18 +34,14 @@ const toAsk = (row: AskRow): Ask => ({
   rateeId: row.ratee_id,
   askedAt: row.asked_at,
 });
-const marks = (count: number) => Array.from({ length: count }, () => '?').join(', ');
 
 // Tables rating_asks, reviews and rating_flags (migrations/0012_ratings_complaints.sql).
 export const d1Ratings = (db: D1Database): RatingStore => ({
   askedBookings: async (ids) => {
-    if (ids.length === 0) return new Set();
-    const sql = `SELECT DISTINCT booking_id FROM rating_asks WHERE booking_id IN (${marks(ids.length)})`;
-    const { results } = await db
-      .prepare(sql)
-      .bind(...ids)
-      .all<{ booking_id: string }>();
-    return new Set(results.map((row) => row.booking_id));
+    const sql = (marks: string) =>
+      `SELECT DISTINCT booking_id FROM rating_asks WHERE booking_id IN (${marks})`;
+    const rows = await allIn<{ booking_id: string }>(db, sql, ids);
+    return new Set(rows.map((row) => row.booking_id));
   },
   saveAsks: async (asks) => {
     const insert = db.prepare(
@@ -90,27 +87,17 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
       .run();
   },
   about: async (ids) => {
-    if (ids.length === 0) return [];
-    const sql = `SELECT * FROM reviews WHERE ratee_id IN (${marks(ids.length)})`;
-    return (
-      await db
-        .prepare(sql)
-        .bind(...ids)
-        .all<ReviewRow>()
-    ).results.map(toReview);
+    const sql = (marks: string) => `SELECT * FROM reviews WHERE ratee_id IN (${marks})`;
+    return (await allIn<ReviewRow>(db, sql, ids)).map(toReview);
   },
   by: async (raterId) =>
     (await db.prepare('SELECT * FROM reviews WHERE rater_id = ?').bind(raterId).all<ReviewRow>()).results.map(
       toReview,
     ),
   writtenBy: async (ids) => {
-    if (ids.length === 0) return new Set();
-    const sql = `SELECT booking_id, rater_id FROM reviews WHERE rater_id IN (${marks(ids.length)})`;
-    const { results } = await db
-      .prepare(sql)
-      .bind(...ids)
-      .all<{ booking_id: string; rater_id: number }>();
-    return new Set(results.map((row) => `${row.booking_id}:${row.rater_id}`));
+    const sql = (marks: string) => `SELECT booking_id, rater_id FROM reviews WHERE rater_id IN (${marks})`;
+    const rows = await allIn<{ booking_id: string; rater_id: number }>(db, sql, ids);
+    return new Set(rows.map((row) => `${row.booking_id}:${row.rater_id}`));
   },
   hide: async (id) => {
     const result = await db.prepare('UPDATE reviews SET hidden = 1 WHERE id = ?').bind(id).run();
@@ -120,5 +107,11 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
     const sql = 'INSERT OR IGNORE INTO rating_flags (user_id, flagged_at) VALUES (?, ?)';
     const result = await db.prepare(sql).bind(userId, at).run();
     return result.meta.changes > 0;
+  },
+  forget: async (userId) => {
+    await db.batch([
+      db.prepare('DELETE FROM reviews WHERE rater_id = ?1 OR ratee_id = ?1').bind(userId),
+      db.prepare('DELETE FROM rating_flags WHERE user_id = ?').bind(userId),
+    ]);
   },
 });

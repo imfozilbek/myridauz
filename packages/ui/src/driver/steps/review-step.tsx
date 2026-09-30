@@ -25,7 +25,7 @@ type ReviewStepProps = {
   readonly failed: boolean;
   readonly onEdit: (target: ReviewTarget) => void;
   readonly onBack?: () => void;
-  readonly onSend: () => void;
+  readonly onSend: () => Promise<void>;
 };
 
 // Everything on one screen before sending; a tap on a line changes it (docs/19).

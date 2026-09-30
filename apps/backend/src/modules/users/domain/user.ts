@@ -5,6 +5,8 @@ export type Block = { readonly until: number | null }; // until: epoch ms, null:
 
 export type User = {
   readonly id: number;
+  // What the apps see instead of the Telegram ID (docs/65 A3).
+  readonly publicId: string;
   readonly firstName: string;
   readonly gender: Gender;
   readonly phone: string;
@@ -27,6 +29,15 @@ export function rolesOf(user: User, isAdmin: boolean): UserRole[] {
 }
 
 // A temporary block ends by itself (1, 7 or 30 days, docs/17).
+// One line of the block journal (docs/65 A5).
+export type BlockEntry = {
+  readonly userId: number;
+  readonly until: number | null;
+  readonly by: number;
+  readonly reason: string;
+  readonly at: number;
+};
+
 export function activeBlock(blocks: ReadonlyArray<Block | null>, now: number): Block | null {
   const active = blocks.filter((block): block is Block => block !== null && (block.until ?? Infinity) > now);
   if (active.some((block) => block.until === null)) return { until: null };

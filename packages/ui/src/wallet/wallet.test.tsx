@@ -45,7 +45,7 @@ describe('"Hamyon" of a driver (docs/12)', () => {
 });
 
 describe('"Hamyonlar" for the team (docs/12)', () => {
-  const owner = { driverId: 7, firstName: 'Jasur', bonus: 481000, main: 0 };
+  const owner = { driverId: '00000000000000000000000000000007', firstName: 'Jasur', bonus: 481000, main: 0 };
 
   it('lets an owner add a bonus by hand with a reason', async () => {
     const adjust = vi.fn<WalletClient['adjust']>(async () => wallet);
@@ -61,7 +61,11 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     });
     fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Yoʻlovchi kelmadi' } });
     await tap('Saqlash');
-    expect(adjust).toHaveBeenCalledWith(7, { balance: 'bonus', amount: 100000, reason: 'Yoʻlovchi kelmadi' });
+    expect(adjust).toHaveBeenCalledWith('00000000000000000000000000000007', {
+      balance: 'bonus',
+      amount: 100000,
+      reason: 'Yoʻlovchi kelmadi',
+    });
   });
 
   it('tells a moderator that only an owner can do it', async () => {

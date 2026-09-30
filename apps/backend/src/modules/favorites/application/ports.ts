@@ -20,6 +20,8 @@ export type FavoritesDeps = {
   readonly upcoming: (driverIds: readonly number[]) => Promise<Trip[]>;
   // The passenger bot tells about a new trip of a saved driver.
   readonly tell: (passengerIds: readonly number[], trip: Trip) => Promise<void>;
+  // The Telegram ID behind a public id from a path or a view (docs/65 A3).
+  readonly idOf: (publicId: string) => Promise<number | undefined>;
   readonly now: () => number;
 };
 

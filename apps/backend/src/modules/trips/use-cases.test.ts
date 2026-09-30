@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { familyView } from './application/driver-trips';
 import { setMeetingPoint } from './application/meeting-point';
 import { publishTrip } from './application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from './application/read';
 import { HOUR, NOW, setup } from './test-kit';
+import { publicIdOf } from '../../test-people';
 
 describe('publishing a trip (docs/09, docs/35)', () => {
   it('lets only an approved driver publish, within the car seats, the price bounds and in the future', async () => {
@@ -32,6 +34,14 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     expect(published.ok && published.value).toMatchObject({ km: 300, status: 'active', woman: false });
   });
 
+  it('hides phones and links in the comment: every searcher reads it (docs/07)', async () => {
+    const { deps, trip } = setup();
+    const published = await publishTrip(deps, 1, { ...trip, comment: 'tel 90 123 45 67, @ali_uz' });
+    const comment = published.ok ? published.value.comment : '';
+    expect(comment).not.toMatch(/123|ali_uz/);
+    expect((await tripDetail(deps, published.ok ? published.value.id : ''))?.comment).toBe(comment);
+  });
+
   it('keeps at most 5 active trips of a driver', async () => {
     const { deps, trip } = setup();
     for (let index = 0; index < 5; index += 1) await publishTrip(deps, 1, trip);
@@ -47,17 +57,33 @@ describe('publishing a trip (docs/09, docs/35)', () => {
   });
 });
 
+describe('a driver on a new check (docs/65 A1)', () => {
+  it('keeps his trips with the approved car in search, detail, his list and the family view', async () => {
+    const { deps, trip, recheck } = setup();
+    const published = await publishTrip(deps, 1, trip);
+    const id = published.ok ? published.value.id : '';
+    recheck(1);
+    const search = { from: '1726273', to: '1718401', date: '2026-10-01' };
+    expect((await searchTrips(deps, search)).map((item) => item.id)).toEqual([id]);
+    expect((await tripDetail(deps, id))?.driver.car.model).toBe('Cobalt');
+    expect((await myTrips(deps, 1)).map((item) => item.id)).toEqual([id]);
+    expect((await familyView(deps, id))?.plate).toBe('01A123BC');
+    // Only a new trip waits for the team.
+    expect(await publishTrip(deps, 1, trip)).toEqual({ ok: false, error: 'trips.not_driver' });
+  });
+});
+
 describe('finding trips (docs/06, docs/14)', () => {
   it('finds by a place or a region, the whole of Tashkent for any district, and filters "ayol bor"', async () => {
     const { deps, trip } = setup();
     await publishTrip(deps, 1, trip);
     await publishTrip(deps, 2, { ...trip, to: '1718233', departAt: NOW + 5 * HOUR });
     const search = { from: '1726294', to: '1718', date: '2026-10-01' };
-    expect((await searchTrips(deps, search)).map((item) => item.driver.id)).toEqual([1, 2]);
-    expect((await searchTrips(deps, { ...search, to: '1718401' })).map((item) => item.driver.id)).toEqual([
-      1,
-    ]);
-    expect((await searchTrips(deps, { ...search, woman: '1' })).map((item) => item.driver.id)).toEqual([2]);
+    const drivers = async (query: typeof search & { woman?: '1' }) =>
+      (await searchTrips(deps, query)).map((item) => item.driver.id);
+    expect(await drivers(search)).toEqual([publicIdOf(1), publicIdOf(2)]);
+    expect(await drivers({ ...search, to: '1718401' })).toEqual([publicIdOf(1)]);
+    expect(await drivers({ ...search, woman: '1' })).toEqual([publicIdOf(2)]);
     expect(await searchTrips(deps, { ...search, date: '2026-10-02' })).toEqual([]);
   });
 

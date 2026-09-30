@@ -1,20 +1,21 @@
 import { z } from 'zod';
+import { personIdSchema, type PersonId } from './person-id';
 import { APPLICATION_STATUSES, carSchema, reasonsSchema, type CarPhotoKind } from './drivers';
 import { plateSchema } from './plate';
 
 // The team checks driver applications and blocks people (docs/04, docs/17). G06.
 export const ADMIN_APPLICATIONS_PATH = '/admin/applications';
-export const adminApplicationPath = (userId: number) => `${ADMIN_APPLICATIONS_PATH}/${userId}`;
-export const adminPhotoPath = (userId: number, kind: CarPhotoKind | 'avatar') =>
+export const adminApplicationPath = (userId: PersonId) => `${ADMIN_APPLICATIONS_PATH}/${userId}`;
+export const adminPhotoPath = (userId: PersonId, kind: CarPhotoKind | 'avatar') =>
   `${adminApplicationPath(userId)}/photos/${kind}`;
-export const adminDecisionPath = (userId: number) => `${adminApplicationPath(userId)}/decision`;
-export const adminBlockPath = (userId: number) => `/admin/users/${userId}/block`;
+export const adminDecisionPath = (userId: PersonId) => `${adminApplicationPath(userId)}/decision`;
+export const adminBlockPath = (userId: PersonId) => `/admin/users/${userId}/block`;
 
 export const TEAM_ROLES = ['owner', 'moderator'] as const;
 export type TeamRole = (typeof TEAM_ROLES)[number];
 
 export const applicationSummarySchema = z.object({
-  userId: z.number().int(),
+  userId: personIdSchema,
   firstName: z.string(),
   status: z.enum(APPLICATION_STATUSES),
   car: carSchema,

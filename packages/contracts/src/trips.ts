@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { personIdSchema } from './person-id';
 import { ratingSchema } from './ratings';
 import { CAR_COLORS, MAX_SEATS } from './drivers';
 import { locationIdSchema } from './locations';
@@ -43,7 +44,7 @@ export type TripInput = z.input<typeof tripInputSchema>;
 export const tripSchema = z.object({
   id: z.string(),
   driver: z.object({
-    id: z.number().int(),
+    id: personIdSchema,
     firstName: z.string(),
     hasAvatar: z.boolean(),
     car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),

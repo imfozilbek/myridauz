@@ -6,6 +6,7 @@ import { activeBlock, normalizePhone, rolesOf, type User } from './user';
 const NOW = 1_000_000;
 const sampleUser: User = {
   id: 1,
+  publicId: 'p1',
   firstName: 'Dilnoza',
   gender: 'female',
   phone: '+998901234567',
@@ -66,7 +67,7 @@ describe('profiles', () => {
   it('gives the phone only to the owner', () => {
     expect(toMyProfile(sampleUser, false)).toMatchObject({ phone: '+998901234567', rating: null });
     const shown = toPublicProfile(sampleUser);
-    expect(shown).toEqual({ id: 1, firstName: 'Dilnoza', hasAvatar: true, rating: null });
+    expect(shown).toEqual({ id: 'p1', firstName: 'Dilnoza', hasAvatar: true, rating: null });
     expect(JSON.stringify(shown)).not.toContain('998');
   });
 });

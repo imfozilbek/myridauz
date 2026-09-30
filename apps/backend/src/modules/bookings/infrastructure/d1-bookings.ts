@@ -1,6 +1,7 @@
 import type { BookingStatus } from '@platform/contracts';
 import type { BookingRepository } from '../application/ports';
 import type { BookingRecord } from '../domain/booking';
+import { allIn } from '../../../shared/storage/in-list';
 
 type Row = {
   id: string;
@@ -69,6 +70,11 @@ const UPSERT = `INSERT INTO bookings (trip_id, passenger_id, seats, price, commi
 const all = async (statement: D1PreparedStatement) => (await statement.all<Row>()).results.map(toBooking);
 
 // Table bookings (migrations/0008_bookings_wallet.sql).
+// One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4).
+const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', updated_at = ?1
+  WHERE id = ?2 AND status = 'requested' AND seats + (SELECT COALESCE(SUM(seats), 0) FROM bookings
+  WHERE trip_id = ?3 AND status = 'confirmed') <= ?4`;
+
 export const d1Bookings = (db: D1Database): BookingRepository => ({
   save: async (booking) => {
     await db
@@ -83,18 +89,21 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
       .run();
     return result.meta.changes === 1;
   },
+  confirmWithin: async (booking, tripSeats) => {
+    const result = await db
+      .prepare(CONFIRM_WITHIN)
+      .bind(booking.updatedAt, booking.id, booking.tripId, tripSeats)
+      .run();
+    return result.meta.changes === 1;
+  },
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<Row>();
     return row ? toBooking(row) : undefined;
   },
   byTrips: async (tripIds) =>
-    tripIds.length === 0
-      ? []
-      : all(
-          db
-            .prepare(`SELECT * FROM bookings WHERE trip_id IN (${tripIds.map(() => '?').join(', ')})`)
-            .bind(...tripIds),
-        ),
+    (await allIn<Row>(db, (marks) => `SELECT * FROM bookings WHERE trip_id IN (${marks})`, tripIds)).map(
+      toBooking,
+    ),
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
   byPickupMessage: async (passengerId, messageId) => {

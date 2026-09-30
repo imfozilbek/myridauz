@@ -15,7 +15,7 @@ const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 
 export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-00000000000${id}`,
   driver: {
-    id: Number(id) + 10,
+    id: (Number(id) + 10).toString(16).padStart(32, '0'),
     firstName: name,
     hasAvatar: false,
     car,
@@ -37,7 +37,7 @@ export const tripOf = (id: string, name: string, woman: boolean, hours: number, 
 });
 export const request = {
   id: '00000000-0000-4000-8000-0000000000a1',
-  passenger: { id: 31, firstName: 'Madina', hasAvatar: false },
+  passenger: { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false },
   from: CHILONZOR,
   to: SAMARQAND,
   date: new Date(Date.now() + 5 * 3_600_000 + 86_400_000).toISOString().slice(0, 10),

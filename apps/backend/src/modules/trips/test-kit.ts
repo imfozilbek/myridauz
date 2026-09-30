@@ -1,8 +1,10 @@
 // Test helper: trips with two approved drivers (a man and a woman) and a fake price engine.
 import type { Car, Recommendation } from '@platform/contracts';
+import { maskContacts } from '../chat/domain/mask';
 import type { Person } from '../users';
 import type { Rider, TripsDeps } from './application/ports';
 import { createMemoryTrips } from './infrastructure/memory-trips';
+import { publicIdOf } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
@@ -10,6 +12,7 @@ export const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const person = (id: number, gender: Person['gender']): Person => ({
   id,
+  publicId: publicIdOf(id),
   firstName: `P${id}`,
   avatarKey: null,
   gender,
@@ -66,6 +69,7 @@ export function setup() {
     // The driver bot message about a trip: the driver answers it with the meeting point.
     announce: async () => 77,
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
+    mask: (text) => maskContacts(text).text,
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
   };
@@ -75,6 +79,8 @@ export function setup() {
     trip: { ...trip, departAt: NOW + 3 * HOUR },
     setNow: (next: number) => void (now = next),
     setFormula: (next: number) => void (price = next),
+    // A new face or car photo: the driver goes to the team's check again (docs/05).
+    recheck: (userId: number) => void cars.delete(userId),
     ride: (rider: Rider) => void riders.push(rider),
     events,
   };

@@ -111,6 +111,7 @@ export {
   type UserRole,
 } from './users';
 // The market of G07 and G08: prices, trips, requests, bookings, offers, the wallet, Tashkent time.
+export * from './person-id';
 export * from './bookings';
 export * from './offers';
 export * from './pricing';

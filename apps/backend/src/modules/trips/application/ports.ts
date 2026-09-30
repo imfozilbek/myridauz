@@ -44,6 +44,8 @@ export type TripsDeps = {
   readonly announce: (trip: TripRecord) => Promise<number | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
   readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
+  // Phones and links hidden in the comment: every searcher reads it (docs/07).
+  readonly mask: (text: string) => string;
   readonly newId: () => string;
   readonly now: () => number;
 };

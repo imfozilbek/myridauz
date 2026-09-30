@@ -39,10 +39,13 @@ export type ShareTexts = {
   cancelled(): string;
 };
 
+// The view has the public id only; the owner check needs the Telegram ID (docs/65 A3).
+export type SharedBooking = { readonly view: Booking; readonly passengerId: number };
+
 export type SharesDeps = {
   readonly shares: ShareRepository;
   // The booking as its passenger sees it: the plate opens after the confirmation (docs/07).
-  readonly booking: (id: string) => Promise<Booking | undefined>;
+  readonly booking: (id: string) => Promise<SharedBooking | undefined>;
   readonly driverTrip: (id: string) => Promise<DriverTrip | undefined>;
   readonly texts: ShareTexts;
   // Telegram keeps the card for the "send to a chat" window of the Mini App's own bot;

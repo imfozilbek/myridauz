@@ -87,7 +87,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
     line.author === null && EVENT.has(line.text)
       ? t(`chat.system.${line.text as ChatSystemEvent}`)
       : line.text;
-  const nameOf = (author: number | null) =>
+  const nameOf = (author: string | null) =>
     author === complaint.author.id
       ? complaint.author.firstName
       : author === null

@@ -18,7 +18,8 @@ const application = {
   photos: { front: true, side: true, interior: true },
   reasons: [],
 };
-const summary = { userId: 5, firstName: 'Ali', status: 'pending', car, reasons: [], submittedAt: 1 };
+const PERSON = '0123456789abcdef0123456789abcdef';
+const summary = { userId: PERSON, firstName: 'Ali', status: 'pending', car, reasons: [], submittedAt: 1 };
 
 describe('createDriversClient', () => {
   it('reads, uploads and submits the own application, signed', async () => {
@@ -57,16 +58,16 @@ describe('createModerationClient', () => {
       .mockResolvedValueOnce(new Response(new Blob(['x'])));
     const client = createModerationClient({ ...options, app: 'admin', fetch });
     expect(await client.queue()).toEqual([summary]);
-    expect(await client.get(5)).toEqual(summary);
-    expect((await client.decide(5, { action: 'approve' })).status).toBe('approved');
-    await client.block(5, 7);
-    expect((await client.photo(5, 'avatar')).size).toBe(1);
+    expect(await client.get(PERSON)).toEqual(summary);
+    expect((await client.decide(PERSON, { action: 'approve' })).status).toBe('approved');
+    await client.block(PERSON, 7);
+    expect((await client.photo(PERSON, 'avatar')).size).toBe(1);
     expect(fetch.mock.calls.map(([url]) => url)).toEqual([
       'https://api.test/admin/applications',
-      'https://api.test/admin/applications/5',
-      'https://api.test/admin/applications/5/decision',
-      'https://api.test/admin/users/5/block',
-      'https://api.test/admin/applications/5/photos/avatar',
+      `https://api.test/admin/applications/${PERSON}`,
+      `https://api.test/admin/applications/${PERSON}/decision`,
+      `https://api.test/admin/users/${PERSON}/block`,
+      `https://api.test/admin/applications/${PERSON}/photos/avatar`,
     ]);
   });
 });

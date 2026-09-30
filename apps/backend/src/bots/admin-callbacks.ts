@@ -11,6 +11,7 @@ import {
   reasonMenu,
 } from '../modules/drivers';
 import { changeModerator, teamRole } from '../modules/team';
+import { peopleOf } from '../modules/users';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import type { BotContext } from './bot-context';
 import type { BotCallback } from './telegram-update';
@@ -47,7 +48,9 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   if (action.kind === 'none_picked') return answer(query, t('bot.moderation.pickReason'));
   if (action.kind === 'check_plate') {
     const adminUrl = `https://${appHost(context.brand, 'admin')}/`;
-    await edit('editMessageReplyMarkup', { reply_markup: plateCheckMenu(action.userId, adminUrl) });
+    const publicId = (await peopleOf(context.env).find(action.userId))?.publicId ?? '';
+    const menu = plateCheckMenu(action.userId, publicId, adminUrl);
+    await edit('editMessageReplyMarkup', { reply_markup: menu });
     return answer(query, t('bot.moderation.checkPlate'));
   }
   if (action.kind !== 'decide') {

@@ -2,8 +2,8 @@ import type { Page, Route } from '@playwright/test';
 
 // Ratings, reviews and complaints as the Mini Apps see them (G11).
 const DAY = 24 * 3_600_000;
-const party = (id: number, firstName: string, role: 'driver' | 'passenger', trips: number) => ({
-  id,
+const party = (n: number, firstName: string, role: 'driver' | 'passenger', trips: number) => ({
+  id: n.toString(16).padStart(32, '0'),
   firstName,
   hasAvatar: false,
   role,
@@ -38,7 +38,12 @@ const REVIEWS = [
 export async function mockFeedback(page: Page) {
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/reviews/b1', (route) =>
-    json(route, { rateeId: 7, rateeName: 'Jasur', rateeRole: 'driver', mine: null }),
+    json(route, {
+      rateeId: '00000000000000000000000000000007',
+      rateeName: 'Jasur',
+      rateeRole: 'driver',
+      mine: null,
+    }),
   );
   await page.route('**/api/reviews', (route) => route.fulfill({ status: 204 }));
   await page.route('**/api/complaints', (route) => json(route, { id: 'c9' }, 201));
@@ -51,8 +56,16 @@ export async function mockFeedback(page: Page) {
     json(route, {
       lines: [
         { author: null, text: 'confirmed', at: Date.now() - 2 * DAY },
-        { author: 101, text: 'Assalomu alaykum, soat 8 da chiqamanmi?', at: Date.now() - 2 * DAY },
-        { author: 11, text: 'Ha, tezroq boʻling, kutib oʻtirmayman.', at: Date.now() - 2 * DAY },
+        {
+          author: '00000000000000000000000000000065',
+          text: 'Assalomu alaykum, soat 8 da chiqamanmi?',
+          at: Date.now() - 2 * DAY,
+        },
+        {
+          author: '0000000000000000000000000000000b',
+          text: 'Ha, tezroq boʻling, kutib oʻtirmayman.',
+          at: Date.now() - 2 * DAY,
+        },
       ],
     }),
   );

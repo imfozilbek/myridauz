@@ -30,8 +30,8 @@ const usersDeps = (env: Bindings): UsersDeps => ({
 });
 
 // The other modules forget a deleted person: set by the app (module-events.ts).
-type ForgetOf = (env: Bindings, userId: number) => Promise<void>;
-let forgetOf: ForgetOf = async () => undefined;
+type ForgetOf = (env: Bindings, userId: number) => Promise<{ readonly holdPhone: boolean }>;
+let forgetOf: ForgetOf = async () => ({ holdPhone: false });
 export const wireAccountDeletion = (next: ForgetOf) => void (forgetOf = next);
 
 const settings = (env: Bindings) => ({ passengerAvatarRequired: env.PASSENGER_AVATAR_REQUIRED === 'true' });

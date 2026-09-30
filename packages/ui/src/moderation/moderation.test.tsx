@@ -16,7 +16,7 @@ const car = {
   seats: 4,
 } as const;
 const application: ApplicationSummary = {
-  userId: 5,
+  userId: '00000000000000000000000000000005',
   firstName: 'Ali',
   status: 'pending',
   car,
@@ -24,9 +24,9 @@ const application: ApplicationSummary = {
   submittedAt: 1,
 };
 
-function setup(get?: (userId: number) => Promise<ApplicationSummary>) {
+function setup(get?: (userId: string) => Promise<ApplicationSummary>) {
   const decide = vi.fn(
-    async (_id: number, decision: DecisionInput) =>
+    async (_id: string, decision: DecisionInput) =>
       ({
         ...application,
         status: decision.action === 'approve' ? 'approved' : 'rejected',
@@ -58,7 +58,7 @@ describe('ApplicationsScreen (docs/04)', () => {
     expect(screen.getByText('10 123 ABC')).toBeTruthy();
     fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
-    expect(decide).toHaveBeenCalledWith(5, { action: 'approve' });
+    expect(decide).toHaveBeenCalledWith('00000000000000000000000000000005', { action: 'approve' });
   });
 
   it('fixes the plate by the photo and approves with it', async () => {
@@ -72,11 +72,14 @@ describe('ApplicationsScreen (docs/04)', () => {
     expect(screen.getByText('10 124 ABC')).toBeTruthy();
     fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     await screen.findByText('Javob yuborildi');
-    expect(decide).toHaveBeenCalledWith(5, { action: 'approve', plate: '10124ABC' });
+    expect(decide).toHaveBeenCalledWith('00000000000000000000000000000005', {
+      action: 'approve',
+      plate: '10124ABC',
+    });
   });
 
   it('opens the application of a link from the admin bot', async () => {
-    window.history.replaceState(null, '', '/?application=5');
+    window.history.replaceState(null, '', '/?application=00000000000000000000000000000005');
     setup(async () => application);
     expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
     expect(window.location.search).toBe('');
@@ -91,7 +94,7 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(screen.getByText('Rasmda davlat raqami oʻqilmaydi'));
     fireEvent.click(screen.getByText('Yuborish'));
     await screen.findByText('Javob yuborildi');
-    expect(decide).toHaveBeenCalledWith(5, {
+    expect(decide).toHaveBeenCalledWith('00000000000000000000000000000005', {
       action: 'request_changes',
       reasons: ['plate_not_readable', 'interior_unclear'],
     });
@@ -100,6 +103,6 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(screen.getByText('Bloklash'));
     fireEvent.click(screen.getByText('7 kun'));
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
-    expect(block).toHaveBeenCalledWith(5, 7);
+    expect(block).toHaveBeenCalledWith('00000000000000000000000000000005', 7);
   });
 });

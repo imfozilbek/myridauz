@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read, seen } from './bookings-test-api';
-import { call, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv } from './test-api';
 
 // Every Telegram call: bot messages about trips and the prepared cards.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -46,12 +46,16 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     await registerUser(STRANGER);
-    const put = (id: number) => call(`/passenger/favorites/${id}`, PASSENGER, { method: 'PUT' });
+    const put = async (id: number) =>
+      call(`/passenger/favorites/${await pid(id)}`, PASSENGER, { method: 'PUT' });
     expect((await put(PASSENGER)).status).toBe(404);
     expect((await put(STRANGER)).status).toBe(404);
     expect((await put(DRIVER)).status).toBe(204);
     expect((await put(DRIVER)).status).toBe(204);
-    expect(await favorites()).toMatchObject({ drivers: [{ id: DRIVER, firstName: 'Ali' }], trips: [] });
+    expect(await favorites()).toMatchObject({
+      drivers: [{ id: await pid(DRIVER), firstName: 'Ali' }],
+      trips: [],
+    });
     telegram.length = 0;
     const trip = await publish();
     expect(trip.recommendedPrice).toBeGreaterThan(0);
@@ -60,8 +64,12 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     expect(String(told[0]?.body.text)).toContain('Sevimli haydovchingiz Ali yangi safar');
     expect(JSON.stringify(told[0]?.body.reply_markup)).toContain(`?trip=${trip.id}`);
     expect((await favorites()).trips.map((item) => item.id)).toEqual([trip.id]);
-    expect((await call(`/passenger/favorites/${DRIVER}`, PASSENGER, { method: 'DELETE' })).status).toBe(204);
-    expect((await call(`/passenger/favorites/${DRIVER}`, PASSENGER, { method: 'DELETE' })).status).toBe(404);
+    expect(
+      (await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'DELETE' })).status,
+    ).toBe(204);
+    expect(
+      (await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'DELETE' })).status,
+    ).toBe(404);
     telegram.length = 0;
     await publish();
     expect(toPassenger()).toEqual([]);
