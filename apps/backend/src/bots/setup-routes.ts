@@ -5,6 +5,7 @@ import { safeEqual } from '../shared/http/safe-equal';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
 import { botToken } from '../shared/telegram/bot-config';
 import { BOT_ROLES } from './bot-roles';
+import { botCommands } from './documents-reply';
 import { openButton } from './start-reply';
 
 const SETUP_HEADER = 'x-setup-secret';
@@ -34,6 +35,8 @@ export function setupRoutes(fetch: Fetch) {
         await callTelegram(fetch, token, 'setChatMenuButton', {
           menu_button: { type: 'web_app', ...openButton(brand, role) },
         });
+        // "/hujjatlar" opens the legal documents (docs/30).
+        await callTelegram(fetch, token, 'setMyCommands', { commands: botCommands() });
       }
       configured.push(role);
     }

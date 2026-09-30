@@ -1,5 +1,11 @@
 import { loadBrand } from '@platform/brands';
-import { tashkentDate, tashkentTime, type RideRequest, type Trip } from '@platform/contracts';
+import {
+  SUBSCRIPTION_KINDS,
+  tashkentDate,
+  tashkentTime,
+  type RideRequest,
+  type Trip,
+} from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placeMatches } from '../../shared/places/place-match';
 import { placesOf } from '../locations';
@@ -59,3 +65,11 @@ export const requestPublished = (env: Bindings, request: RideRequest) =>
 
 // The Cron job: waiting matches together, renewal offers, dated subscriptions that are over.
 export const sendWaitingSubscriptions = (env: Bindings) => sendWaiting(subscriptionsDeps(env));
+
+// A deleted account (docs/30): its subscriptions go.
+export const forgetSubscriptions = async (env: Bindings, userId: number) => {
+  const { subscriptions } = subscriptionsDeps(env);
+  for (const kind of SUBSCRIPTION_KINDS)
+    for (const subscription of await subscriptions.byUser(userId, kind))
+      await subscriptions.remove(subscription.id);
+};

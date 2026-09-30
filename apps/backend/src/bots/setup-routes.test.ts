@@ -38,6 +38,15 @@ describe('POST /telegram/setup', () => {
       'https://api.telegram.org/botp/setChatMenuButton',
       'https://api.telegram.org/botd/setChatMenuButton',
     ]);
+    const commands = calls.filter((call) => call.url.endsWith('/setMyCommands'));
+    expect(commands.map((call) => call.url)).toEqual([
+      'https://api.telegram.org/botp/setMyCommands',
+      'https://api.telegram.org/botd/setMyCommands',
+    ]);
+    expect(commands[0]?.body.commands).toContainEqual({
+      command: 'hujjatlar',
+      description: 'Hujjatlar: oferta va maxfiylik',
+    });
   });
 
   it('refuses without the secret', async () => {

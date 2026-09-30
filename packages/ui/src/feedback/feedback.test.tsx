@@ -52,7 +52,7 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
       tags: ['on_time'],
       text: 'Yaxshi yoʻl',
     });
-    expect(await screen.findByText(/Bahoyingiz saqlandi/u)).toBeTruthy();
+    expect(await screen.findByText(/Bahongiz saqlandi/u)).toBeTruthy();
     expect(tracked.some((event) => event.name === 'review_sent')).toBe(true);
   });
 

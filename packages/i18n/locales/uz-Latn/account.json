@@ -1,10 +1,6 @@
 {
   "consent.title": "Shartlar bilan tanishing",
   "consent.text": "{brand} xizmatidan foydalanish uchun quyidagi hujjatlarga rozilik bering.",
-  "consent.offer": "Ommaviy oferta",
-  "consent.privacy": "Maxfiylik siyosati",
-  "consent.personalData": "Shaxsiy maʼlumotlarga rozilik",
-  "consent.soon": "Tez orada",
   "consent.accept": "Roziman",
   "name.title": "Ismingiz",
   "name.hint": "Ismingizni safar sheriklaringiz koʻradi. Familiya shart emas.",
@@ -36,5 +32,13 @@
   "avatar.failed": "Rasmni yuklab boʻlmadi. Qayta urinib koʻring.",
   "avatar.phoneOnly": "Rasm telefonning old kamerasida olinadi. Uni telefoningizdagi Telegramdan qoʻshing.",
   "avatar.requiredTitle": "Rasmingizni qoʻshing",
-  "avatar.requiredText": "Safar sheriklaringiz sizni tanishi uchun rasm kerak."
+  "avatar.requiredText": "Safar sheriklaringiz sizni tanishi uchun rasm kerak.",
+  "profile.documents": "Hujjatlar",
+  "delete.open": "Maʼlumotlarimni oʻchirish",
+  "delete.title": "Maʼlumotlaringiz oʻchirilsinmi?",
+  "delete.hint": "Ism, telefon raqami, rasm, chatlar va mashina maʼlumotlari oʻchiriladi. Faol safarlar va band qilingan joylar bekor boʻladi. Buni qaytarib boʻlmaydi.",
+  "delete.confirm": "Oʻchirish",
+  "delete.done": "Maʼlumotlaringiz oʻchirildi",
+  "delete.doneHint": "Xohlasangiz, istalgan vaqtda qaytadan roʻyxatdan oʻtishingiz mumkin.",
+  "delete.close": "Yopish"
 }

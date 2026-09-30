@@ -10,6 +10,8 @@ export type ShareRepository = {
   revoke(subject: ShareSubject, at: number): Promise<void>;
   followers(subject: ShareSubject): Promise<number[]>;
   follow(subject: ShareSubject, telegramId: number, at: number): Promise<void>;
+  // A deleted account (docs/30): it follows no trip any more.
+  unfollowAll(telegramId: number): Promise<void>;
 };
 
 export type ShareUpdate = 'boarded' | 'arrived' | 'cancelled';

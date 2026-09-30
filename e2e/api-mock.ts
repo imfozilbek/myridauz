@@ -39,7 +39,11 @@ export async function mockApi(
     analytics.push(route.request().postDataJSON());
     await route.fulfill({ status: 204 });
   });
-  await page.route('**/api/me', (route) => route.fulfill({ json: answer() }));
+  await page.route('**/api/me', (route) =>
+    route.request().method() === 'DELETE'
+      ? route.fulfill({ status: 204 })
+      : route.fulfill({ json: answer() }),
+  );
   await page.route('**/api/me/registration', async (route) => {
     registrations.push(route.request().postDataJSON());
     state = 'active';

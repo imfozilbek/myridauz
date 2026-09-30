@@ -8,6 +8,7 @@ import common from '../locales/uz-Latn/common.json' with { type: 'json' };
 import complaints from '../locales/uz-Latn/complaints.json' with { type: 'json' };
 import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
+import legal from '../locales/uz-Latn/legal.json' with { type: 'json' };
 import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
@@ -31,6 +32,7 @@ const REFERENCE = {
   complaints,
   drivers,
   errors,
+  legal,
   market,
   moderation,
   places,

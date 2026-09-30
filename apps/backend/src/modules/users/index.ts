@@ -29,6 +29,11 @@ const usersDeps = (env: Bindings): UsersDeps => ({
   newId: () => crypto.randomUUID(),
 });
 
+// The other modules forget a deleted person: set by the app (module-events.ts).
+type ForgetOf = (env: Bindings, userId: number) => Promise<void>;
+let forgetOf: ForgetOf = async () => undefined;
+export const wireAccountDeletion = (next: ForgetOf) => void (forgetOf = next);
+
 const settings = (env: Bindings) => ({ passengerAvatarRequired: env.PASSENGER_AVATAR_REQUIRED === 'true' });
 
 // Routes need the Telegram session (shared/auth) set before them.
@@ -38,7 +43,7 @@ export const usersModule = new Hono<AppEnv>()
     context.req.method === 'GET' && context.req.path === ME_PATH ? next() : guard(context, next),
   )
   .use('/users/*', guard)
-  .route('/', meRoutes({ deps: usersDeps, settings }))
+  .route('/', meRoutes({ deps: usersDeps, settings, forget: (env) => (userId) => forgetOf(env, userId) }))
   .route('/', userRoutes(usersDeps));
 
 // For the bots: a blocked person gets "account blocked" in every bot too (docs/17).

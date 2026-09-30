@@ -5,6 +5,7 @@ import { cors } from 'hono/cors';
 import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
+import './account-deletion';
 import './module-events';
 import { analyticsModule } from './modules/analytics';
 import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from './modules/bookings';

@@ -17,6 +17,13 @@ export function createMemoryShares(): ShareRepository {
       followers.delete(keyOf(subject));
     },
     followers: async (subject) => followers.get(keyOf(subject)) ?? [],
+    unfollowAll: async (telegramId) => {
+      for (const [key, list] of followers)
+        followers.set(
+          key,
+          list.filter((id) => id !== telegramId),
+        );
+    },
     follow: async (subject, telegramId) => {
       const list = followers.get(keyOf(subject)) ?? [];
       if (!list.includes(telegramId)) followers.set(keyOf(subject), [...list, telegramId]);

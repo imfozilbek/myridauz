@@ -75,6 +75,18 @@ describe('POST /telegram/:role', () => {
     }
   });
 
+  it('sends the three documents on /hujjatlar, readable before the registration (docs/30)', async () => {
+    for (const role of ['passenger', 'driver'] as const) {
+      const reply = (await (await send(role, start(3, '/hujjatlar'))).json()) as Reply;
+      const urls = reply.reply_markup.inline_keyboard.map((row) => row[0]?.web_app.url);
+      expect(urls).toEqual(
+        ['offer', 'privacy', 'consent'].map((doc) => `https://${role}.${brand.domain}/?doc=${doc}`),
+      );
+    }
+    const admin = (await (await send('admin', start(9, '/hujjatlar'))).json()) as { text?: string };
+    expect(admin.text).not.toContain('Ommaviy oferta');
+  });
+
   it('answers other updates with an empty 200, so Telegram does not retry', async () => {
     expect(await (await send('passenger', start(1, 'salom'))).json()).toEqual({});
     expect(await (await send('passenger', { edited_message: {} })).json()).toEqual({});

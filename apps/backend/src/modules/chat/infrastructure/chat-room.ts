@@ -45,6 +45,11 @@ export class ChatRoom extends DurableObject<Bindings> {
     const key = request.headers.get('x-chat-key') ?? '';
     // The team reads a chat only on a complaint; the backend writes that to the log first (docs/07).
     if (new URL(request.url).pathname === '/history') return Response.json(this.store.recent(HISTORY_LIMIT));
+    // A deleted account (docs/30): the whole chat of its booking goes.
+    if (new URL(request.url).pathname === '/forget') {
+      await this.ctx.storage.deleteAll();
+      return new Response(null, { status: 204 });
+    }
     if (new URL(request.url).pathname === '/system') {
       const { event } = (await request.json()) as { event: string };
       const known = CHAT_SYSTEM_EVENTS.find((item) => item === event);

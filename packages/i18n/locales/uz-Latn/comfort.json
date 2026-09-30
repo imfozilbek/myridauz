@@ -13,6 +13,6 @@
   "history.hint": "Oʻtgan safarlar va baholar",
   "history.empty": "Hali oʻtgan safar yoʻq",
   "history.emptyHint": "Safar tugagach, u shu yerda koʻrinadi.",
-  "history.given": "Bahoingiz: ⭐ {stars}",
+  "history.given": "Bahongiz: ⭐ {stars}",
   "history.received": "Sizga baho: ⭐ {stars}"
 }

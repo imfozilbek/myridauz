@@ -64,6 +64,14 @@ export type AlertRules = {
 // connect ends after connectSeconds; then the chat takes over.
 type CallRules = { readonly ringSeconds: number; readonly connectSeconds: number };
 
+// The party of the legal documents (docs/30): filled when the owner has them, placeholders until then.
+type Company = {
+  readonly legalName: string;
+  readonly form: string;
+  readonly stir: string;
+  readonly address: string;
+};
+
 export type BrandConfig = {
   readonly id: string;
   readonly name: string;
@@ -84,4 +92,5 @@ export type BrandConfig = {
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
   readonly calls: CallRules;
+  readonly company: Company;
 };

@@ -35,4 +35,11 @@ export const brandConfig: BrandConfig = {
   alerts: { errorGrowth: 3, minErrors: 10, dropGrowth: 20, minPeople: 20, repeatHours: 6 },
   // docs/08: no answer in 30 seconds or no voice in 15 seconds: the call ends, the chat stays.
   calls: { ringSeconds: 30, connectSeconds: 15 },
+  // docs/30: the requisites are placeholders until the owner has them (owner decision).
+  company: {
+    legalName: '{{company_legal_name}}',
+    form: '{{company_form}}',
+    stir: '{{company_stir}}',
+    address: '{{company_address}}',
+  },
 };

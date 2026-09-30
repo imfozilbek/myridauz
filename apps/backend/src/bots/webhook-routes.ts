@@ -14,6 +14,7 @@ import { onPassengerMessage } from './passenger-messages';
 import { onRatingCallback } from './rating-callbacks';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
+import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { isBotRole } from './bot-roles';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema } from './telegram-update';
@@ -51,6 +52,8 @@ export function webhookRoutes(fetch: Fetch) {
       return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload }));
     }
     if (blocked) return context.json({});
+    if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
+      return context.json(documentsReply(bot.brand, role, message.chat.id));
     if (role === 'driver') return context.json(await onDriverMessage(bot, message));
     if (role === 'passenger') return context.json(await onPassengerMessage(bot, message));
     if (role !== 'admin') return context.json({});

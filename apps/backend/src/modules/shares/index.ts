@@ -58,3 +58,6 @@ export const tellTripFamily = (env: Bindings, tripId: string, driverTripOf: Driv
 // For bookings: "mashinaga chiqdi", "yetib keldi", "bekor qilindi" to close people (docs/43).
 export const tellCloseOnes = (env: Bindings, booking: Booking, update: ShareUpdate) =>
   tellFollowers(base(env), booking, update);
+
+// A deleted account (docs/30): it follows no shared trip any more.
+export const forgetFollows = (env: Bindings, telegramId: number) => base(env).shares.unfollowAll(telegramId);
