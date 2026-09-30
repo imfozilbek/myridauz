@@ -27,6 +27,12 @@ export const d1Favorites = (db: D1Database): FavoriteStore => {
       ),
     fansOf: (driverId) =>
       ids('SELECT passenger_id AS id FROM favorite_drivers WHERE driver_id = ?', driverId),
+    forget: async (userId) => {
+      await db
+        .prepare('DELETE FROM favorite_drivers WHERE passenger_id = ? OR driver_id = ?')
+        .bind(userId, userId)
+        .run();
+    },
   };
 };
 
@@ -51,5 +57,9 @@ export function createMemoryFavorites(): FavoriteStore {
         .map((item) => item.driverId),
     fansOf: async (driverId) =>
       saved.filter((item) => item.driverId === driverId).map((item) => item.passengerId),
+    forget: async (userId) => {
+      const kept = saved.filter((item) => item.passengerId !== userId && item.driverId !== userId);
+      saved.splice(0, saved.length, ...kept);
+    },
   };
 }

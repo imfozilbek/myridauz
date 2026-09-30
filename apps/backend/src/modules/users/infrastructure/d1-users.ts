@@ -36,7 +36,10 @@ const toUser = (row: UserRow): User => ({
 // Table users (migrations/0002_users.sql).
 export const d1Users = (db: D1Database): UserRepository => ({
   find: async (id) => {
-    const row = await db.prepare('SELECT * FROM users WHERE id = ?').bind(id).first<UserRow>();
+    const row = await db
+      .prepare('SELECT * FROM users WHERE id = ? AND deleted_at IS NULL')
+      .bind(id)
+      .first<UserRow>();
     return row ? toUser(row) : undefined;
   },
   save: async (user) => {
@@ -48,7 +51,8 @@ export const d1Users = (db: D1Database): UserRepository => ({
          ON CONFLICT (id) DO UPDATE SET first_name = excluded.first_name, gender = excluded.gender,
            phone = excluded.phone, is_driver = excluded.is_driver, blocked = excluded.blocked,
            blocked_until = excluded.blocked_until, avatar_key = excluded.avatar_key,
-           write_access = excluded.write_access, updated_at = excluded.updated_at`,
+           write_access = excluded.write_access, consent_at = excluded.consent_at,
+           updated_at = excluded.updated_at, deleted_at = NULL`,
       )
       .bind(
         user.id,
@@ -65,6 +69,15 @@ export const d1Users = (db: D1Database): UserRepository => ({
         user.createdAt,
         user.updatedAt,
       )
+      .run();
+  },
+  erase: async (id, at) => {
+    await db
+      .prepare(
+        `UPDATE users SET first_name = '', phone = '', avatar_key = NULL, is_driver = 0, write_access = 0,
+           updated_at = ?, deleted_at = ? WHERE id = ?`,
+      )
+      .bind(at, at, id)
       .run();
   },
   blockPhone: async (phone, block, at) => {

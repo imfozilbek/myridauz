@@ -1,25 +1,22 @@
-import type { TranslationKey } from '@platform/i18n';
-import { Cell, List, Section } from '../../components';
+import type { LegalDocument } from '@platform/contracts';
+import { useState } from 'react';
+import { List } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
-import { Icon } from '../../icons';
+import { LegalLinks } from '../../legal/legal-links';
+import { LegalScreen } from '../../legal/legal-screen';
 import { MainButton } from '../../telegram/bottom-button';
-import { CellValue } from '../cell-value';
 import { StepLayout } from '../step-layout';
 
-// The documents are written in G14 (docs/30): until then the links say "soon".
-const DOCUMENTS: readonly TranslationKey[] = [
-  'account.consent.offer',
-  'account.consent.privacy',
-  'account.consent.personalData',
-];
-
-// Consent is required by the personal data law (docs/30): "Roziman" accepts the documents.
+// Consent is required by the personal data law (docs/30): "Roziman" accepts the documents,
+// each of them opens before that.
 export function ConsentStep({ onAccept }: { readonly onAccept: () => void }) {
   useScreenView('registration.consent');
   const { t } = useI18n();
   const brand = useBrand();
+  const [reading, setReading] = useState<LegalDocument | null>(null);
+  if (reading) return <LegalScreen document={reading} onBack={() => setReading(null)} />;
   return (
     <StepLayout
       icon="document"
@@ -27,18 +24,7 @@ export function ConsentStep({ onAccept }: { readonly onAccept: () => void }) {
       hint={t('account.consent.text', { brand: brand.name })}
     >
       <List>
-        <Section>
-          {DOCUMENTS.map((key) => (
-            <Cell
-              key={key}
-              before={<Icon name="document" color={brand.theme.colors.brand} />}
-              after={<CellValue>{t('account.consent.soon')}</CellValue>}
-              multiline
-            >
-              {t(key)}
-            </Cell>
-          ))}
-        </Section>
+        <LegalLinks onOpen={setReading} />
       </List>
       <MainButton text={t('account.consent.accept')} onClick={onAccept} />
     </StepLayout>

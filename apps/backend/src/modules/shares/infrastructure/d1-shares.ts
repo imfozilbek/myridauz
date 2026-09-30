@@ -54,6 +54,13 @@ export const d1Shares = (db: D1Database): ShareRepository => {
         .all<{ telegram_id: number }>();
       return rows.results.map((row) => row.telegram_id);
     },
+    unfollowAll: async (telegramId) => {
+      await db.batch(
+        Object.values(TABLES).map((table) =>
+          db.prepare(`DELETE FROM ${table.followers} WHERE telegram_id = ?`).bind(telegramId),
+        ),
+      );
+    },
     follow: async (subject, telegramId, at) => {
       const table = TABLES[subject.kind];
       await db

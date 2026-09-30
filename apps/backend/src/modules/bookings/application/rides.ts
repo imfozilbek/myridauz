@@ -17,7 +17,8 @@ export type Ride = {
 };
 
 const rode = (booking: BookingRecord) => booking.status === 'confirmed' || booking.status === 'completed';
-const chatKeyOf = (booking: BookingRecord) => (booking.offerId ? `o${booking.offerId}` : `b${booking.id}`);
+export const chatKeyOf = (booking: BookingRecord) =>
+  booking.offerId ? `o${booking.offerId}` : `b${booking.id}`;
 
 export async function rideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
   const booking = await deps.bookings.find(bookingId);

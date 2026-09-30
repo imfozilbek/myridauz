@@ -35,6 +35,7 @@ function fakeClient(me: MeResponse | Error) {
     register: vi.fn<(input: RegistrationInput) => Promise<MeResponse>>(async () => active),
     uploadAvatar: vi.fn(async () => undefined),
     setWriteAccess: vi.fn(async () => undefined),
+    deleteMe: vi.fn(async () => undefined),
     getAvatar: vi.fn(async () => new Blob(['x'])),
   };
 }

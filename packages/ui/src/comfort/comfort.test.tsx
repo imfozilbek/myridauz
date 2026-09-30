@@ -65,7 +65,7 @@ describe('"Safarlar tarixi" (docs/18)', () => {
     );
     expect(await screen.findByText('Safarlar tarixi')).toBeTruthy();
     expect(screen.getByText('Jasur')).toBeTruthy();
-    expect(screen.getByText('Bahoingiz: ⭐ 5 · Sizga baho: ⭐ 4,5')).toBeTruthy();
+    expect(screen.getByText('Bahongiz: ⭐ 5 · Sizga baho: ⭐ 4,5')).toBeTruthy();
     cleanup();
     renderMarket(
       <HistoryScreen onBack={() => undefined} />,

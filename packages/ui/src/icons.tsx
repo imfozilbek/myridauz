@@ -32,6 +32,7 @@ import {
   ShieldCheck,
   SquarePlus,
   Ticket,
+  Trash2,
   UserRound,
   Users,
   Wallet,
@@ -84,6 +85,8 @@ const ICONS = {
   hangUp: PhoneOff,
   microphone: Mic,
   muted: MicOff,
+  // "Maʼlumotlarimni oʻchirish" in the profile (docs/30).
+  erase: Trash2,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

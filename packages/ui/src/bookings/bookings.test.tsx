@@ -69,7 +69,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
       bookings: { driverBookings: async () => [booking], driverOffers: async () => [offer], answer },
     });
 
-  it('confirms after "Ishonchingiz komilmi?" with the commission', async () => {
+  it('confirms after "Joyni tasdiqlaysizmi?" with the commission', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => confirmed);
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     expect(await screen.findByText('Yuborilgan takliflar')).toBeTruthy();
@@ -78,7 +78,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     // The driver never sees a passenger's contacts, only the name.
     expect(screen.queryByText(/\+998/)).toBeNull();
     await tap('Tasdiqlash');
-    expect(screen.getByText('Ishonchingiz komilmi?')).toBeTruthy();
+    expect(screen.getByText('Joyni tasdiqlaysizmi?')).toBeTruthy();
     expect(screen.getByText(/19\s000/)).toBeTruthy();
     await tap('Tasdiqlash');
     expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();

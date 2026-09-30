@@ -59,3 +59,10 @@ export async function postSystemEvent(env: Bindings, key: string, event: ChatSys
     console.warn(String(error));
   }
 }
+
+// "Maʼlumotlarimni oʻchirish" (docs/30): the messages of a chat go. Without Durable Objects nothing happens.
+export async function forgetChat(env: Bindings, key: string): Promise<void> {
+  const chats = env.CHATS;
+  if (chats)
+    await chats.get(chats.idFromName(key)).fetch(new Request('https://chat/forget', { method: 'POST' }));
+}

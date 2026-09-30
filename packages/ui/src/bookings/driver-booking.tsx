@@ -20,7 +20,7 @@ type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up' | 'chat' 
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
 type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) => void };
 
-// The driver answers a booking (docs/35): "Ishonchingiz komilmi?" with the commission, then the
+// The driver answers a booking (docs/35): "Joyni tasdiqlaysizmi?" with the commission, then the
 // charge; without money, the way to top up. A confirmed one can still be cancelled: the commission goes back.
 export function DriverBooking({ booking, onClose }: Props) {
   const { t, formatMoney } = useI18n();

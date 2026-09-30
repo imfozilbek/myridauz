@@ -6,6 +6,7 @@ import { bookingsDeps } from './deps';
 import { rememberPickupMessage, setPickup } from './application/accept';
 import { cancelEverything } from './application/cancel-all';
 import { chatMember } from './application/chat-member';
+import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { rideOf, ridesOf } from './application/rides';
@@ -76,3 +77,6 @@ export const passengerRideCount = async (env: Bindings, passengerId: number) =>
 // "Safarlar tarixi" (G18): the rides of a person that are over.
 export const pastRidesOf = (env: Bindings, userId: number, side: 'passenger' | 'driver') =>
   pastRides(bookingsDeps(env), userId, side);
+
+// "Maʼlumotlarimni oʻchirish" (docs/30): every chat of the person.
+export const chatsOf = (env: Bindings, userId: number) => chatKeysOf(bookingsDeps(env), userId);

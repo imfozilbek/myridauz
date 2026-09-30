@@ -28,7 +28,7 @@
   "none": "Hali soʻrov yoʻq",
   "confirm": "Tasdiqlash",
   "decline": "Rad etish",
-  "confirm.title": "Ishonchingiz komilmi?",
+  "confirm.title": "Joyni tasdiqlaysizmi?",
   "confirm.hint": "Tasdiqlasangiz, hamyoningizdan {amount} komissiya olinadi. Yoʻlovchiga davlat raqamingiz va uchrashuv joyi koʻrinadi.",
   "confirmed.title": "Joy tasdiqlandi",
   "confirmed.hint": "Yoʻlovchi oʻz uchrashuv joyini yuborsa, shu yerda koʻrasiz.",

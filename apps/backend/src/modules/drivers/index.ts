@@ -10,6 +10,7 @@ import { peopleOf } from '../users';
 import { missedWelcome, welcomeBonus } from '../wallet';
 import { avatarChanged } from './application/moderate';
 import type { DriversDeps } from './application/ports';
+import { emptyApplication } from './domain/application';
 import { adminRoutes } from './http/admin-routes';
 import { driverRoutes } from './http/driver-routes';
 import { createMemoryApplications } from './infrastructure/memory-applications';
@@ -77,4 +78,13 @@ export const grantMissedBonuses = async (env: Bindings) =>
 export const approvedCar = async (env: Bindings, userId: number) => {
   const application = await driversDeps(env).applications.find(userId);
   return application?.status === 'approved' ? application.car : null;
+};
+
+// "Maʼlumotlarimni oʻchirish" (docs/30): the car photos and the plate go, the application starts over.
+export const forgetDriver = async (env: Bindings, userId: number) => {
+  const deps = driversDeps(env);
+  const application = await deps.applications.find(userId);
+  if (!application) return;
+  for (const key of Object.values(application.photos)) if (key) await deps.photos.delete(key);
+  await deps.applications.save(emptyApplication(userId, deps.now()));
 };

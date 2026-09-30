@@ -25,6 +25,7 @@ export default defineConfig({
         'stats-screenshots.spec.ts',
         'call-screenshots.spec.ts',
         'comfort-screenshots.spec.ts',
+        'legal-screenshots.spec.ts',
       ],
     },
   ],

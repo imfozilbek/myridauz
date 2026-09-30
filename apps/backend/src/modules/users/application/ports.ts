@@ -4,8 +4,11 @@ import type { Block, User } from '../domain/user';
 
 // Ports of the users module: D1 and R2 in production, memory in tests and local runs.
 export type UserRepository = {
+  // A deleted account is not found: the person may register again.
   find(id: number): Promise<User | undefined>;
   save(user: User): Promise<void>;
+  // "Maʼlumotlarimni oʻchirish": the name, the phone and the photo go, the row stays (docs/30).
+  erase(id: number, at: number): Promise<void>;
   // A block by phone stops a new account with the same number (docs/17).
   phoneBlock(phone: string): Promise<Block | null>;
   blockPhone(phone: string, block: Block, at: number): Promise<void>;

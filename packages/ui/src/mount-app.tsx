@@ -25,6 +25,7 @@ import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
 import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
+import { LegalGate } from './legal/legal-gate';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -82,11 +83,13 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
         {welcome ? (
           // Only the passenger app is opened from a shared trip card (docs/43).
           <FollowGate enabled={app === 'passenger'}>
-            <AccountGate app={app} client={users} welcome={welcome}>
-              <LaunchLinks app={app}>
-                <Page />
-              </LaunchLinks>
-            </AccountGate>
+            <LegalGate>
+              <AccountGate app={app} client={users} welcome={welcome}>
+                <LaunchLinks app={app}>
+                  <Page />
+                </LaunchLinks>
+              </AccountGate>
+            </LegalGate>
           </FollowGate>
         ) : (
           <TeamGate client={users}>

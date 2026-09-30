@@ -8,6 +8,7 @@ export function createMemoryUsers(): UserRepository {
   return {
     find: async (id) => users.get(id),
     save: async (user) => void users.set(user.id, user),
+    erase: async (id) => void users.delete(id),
     phoneBlock: async (phone) => phoneBlocks.get(phone) ?? null,
     blockPhone: async (phone, block) => void phoneBlocks.set(phone, block),
   };

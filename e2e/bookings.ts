@@ -62,7 +62,7 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await shot('5-accepted');
 }
 
-// The driver opens the own trip, a booking of Madina, confirms after "Ishonchingiz komilmi?".
+// The driver opens the own trip, a booking of Madina, confirms after "Joyni tasdiqlaysizmi?".
 export async function confirmBooking(page: Page, shot: Shot = none, money = true) {
   const mainButton = page.locator('#tg-main-button');
   await page.getByText(B.myTrips).click();

@@ -25,6 +25,7 @@ function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
     register: vi.fn(),
     uploadAvatar: vi.fn(async () => undefined),
     setWriteAccess: vi.fn(),
+    deleteMe: vi.fn(async () => undefined),
     getAvatar: vi.fn(async () => new Blob(['x'], { type: 'image/jpeg' })),
   } satisfies UsersClient;
   const account: Account = {
@@ -96,5 +97,32 @@ describe('profile', () => {
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasm qoʻshish')).toBeTruthy();
     expect(document.querySelector('input[type=file]')?.getAttribute('capture')).toBe('user');
+  });
+});
+
+describe('delete my data (docs/30)', () => {
+  it('explains what is removed, removes it and starts again', async () => {
+    const reload = vi.fn();
+    Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
+    const { client } = renderProfile();
+    fireEvent.click(screen.getByText('Dilnoza'));
+    fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
+    expect(screen.getByText(/Buni qaytarib boʻlmaydi/)).toBeTruthy();
+    client.deleteMe.mockRejectedValueOnce(new Error('offline'));
+    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
+    expect(screen.getByText(/qayta urinib/)).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
+    expect(client.deleteMe).toHaveBeenCalledTimes(2);
+    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
+    fireEvent.click(screen.getByText('Yopish'));
+    expect(reload).toHaveBeenCalled();
+  });
+
+  it('opens a legal document from the profile', () => {
+    renderProfile();
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(screen.getByText('Hujjatlar')).toBeTruthy();
+    fireEvent.click(screen.getByText('Maxfiylik siyosati'));
+    expect(screen.getByText(/Tahrir 1\.0/)).toBeTruthy();
   });
 });

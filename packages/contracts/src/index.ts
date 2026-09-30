@@ -127,3 +127,4 @@ export * from './stats';
 export * from './calls';
 export * from './favorites';
 export * from './history';
+export * from './legal';

@@ -68,6 +68,7 @@ const account = (gender: 'male' | 'female'): Account => ({
     register: unused,
     uploadAvatar: unused,
     setWriteAccess: unused,
+    deleteMe: unused,
     getAvatar: unused,
   } as UsersClient,
   profile: {

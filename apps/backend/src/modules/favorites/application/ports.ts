@@ -8,6 +8,8 @@ export type FavoriteStore = {
   driversOf(passengerId: number): Promise<number[]>;
   // The passengers who saved a driver: they hear about the driver's new trip.
   fansOf(driverId: number): Promise<number[]>;
+  // A deleted account: every saved pair with this person goes (docs/30).
+  forget(userId: number): Promise<void>;
 };
 
 export type FavoritesDeps = {

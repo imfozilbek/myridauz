@@ -35,3 +35,6 @@ export const favoritesModule = favoriteRoutes(favoritesDeps);
 
 // A new trip: the passengers who saved its driver hear about it (docs/18).
 export const tellFavoriteFans = (env: Bindings, trip: Trip) => tellFans(favoritesDeps(env), trip);
+
+// A deleted account (docs/30): its saved drivers and its place in others' lists go.
+export const forgetFavorites = (env: Bindings, userId: number) => favoritesDeps(env).store.forget(userId);

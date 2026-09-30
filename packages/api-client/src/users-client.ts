@@ -25,6 +25,10 @@ export function createUsersClient(options: SignedOptions) {
     async setWriteAccess(allowed: boolean): Promise<void> {
       await post(WRITE_ACCESS_PATH, { allowed });
     },
+    // "Maʼlumotlarimni oʻchirish" (docs/30).
+    async deleteMe(): Promise<void> {
+      await request(ME_PATH, { method: 'DELETE' });
+    },
     // The photo needs the Telegram signature, so it is loaded as a blob, not by an <img> link.
     async getAvatar(userId: number): Promise<Blob> {
       return (await request(userAvatarPath(userId))).blob();
