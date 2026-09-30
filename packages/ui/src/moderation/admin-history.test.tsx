@@ -35,7 +35,7 @@ describe('what the team sees about a person (docs/65 C)', () => {
           samePlate: 2,
         }),
         blocks: async () => ({
-          active: { until: null },
+          active: unblock.mock.calls.length > 0 ? null : { until: null },
           entries: [{ until: null, reason: 'complaint', by: 'Owner', at: 2 * DAY }],
         }),
         unblock,
@@ -52,5 +52,7 @@ describe('what the team sees about a person (docs/65 C)', () => {
     vi.stubGlobal('confirm', () => true);
     fireEvent.click(screen.getByText('Blokdan chiqarish'));
     await vi.waitFor(() => expect(unblock).toHaveBeenCalledWith(USER));
+    // Blocked before, not now: the journal does not say "never blocked".
+    expect(await screen.findByText('Hozir bloklanmagan')).toBeTruthy();
   });
 });

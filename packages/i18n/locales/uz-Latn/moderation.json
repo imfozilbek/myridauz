@@ -29,12 +29,14 @@
   "samePlate": "Bu davlat raqami yana {count} kishining arizasida bor. Tekshiring.",
   "blocks.title": "Bloklar tarixi",
   "blocks.none": "Hech qachon bloklanmagan",
+  "blocks.notNow": "Hozir bloklanmagan",
   "blocks.activeForever": "Hozir butunlay bloklangan",
   "blocks.activeUntil": "Hozir {date}gacha bloklangan",
   "blocks.reason.admin": "Admin bloklagan",
   "blocks.reason.complaint": "Shikoyat boʻyicha bloklangan",
   "blocks.reason.unblock": "Blokdan chiqarilgan",
   "blocks.forever": "Butunlay",
+  "blocks.until": "{date}gacha",
   "unblock": "Blokdan chiqarish",
   "unblockAsk": "Blokdan chiqarasizmi? U yana safar qila oladi."
 }

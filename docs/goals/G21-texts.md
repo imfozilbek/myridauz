@@ -44,11 +44,13 @@
 | `moderation.samePlate` | Bu davlat raqami yana {count} kishining arizasida bor. Tekshiring. | Этот номер машины есть ещё у N человек |
 | `moderation.blocks.title` | Bloklar tarixi | Журнал блокировок |
 | `moderation.blocks.none` | Hech qachon bloklanmagan | Ни разу не блокировали |
+| `moderation.blocks.notNow` | Hozir bloklanmagan | Сейчас не заблокирован (блоки были раньше) |
 | `moderation.blocks.activeForever` | Hozir butunlay bloklangan | Сейчас заблокирован навсегда |
 | `moderation.blocks.activeUntil` | Hozir {date}gacha bloklangan | Сейчас заблокирован до даты |
 | `moderation.blocks.reason.admin` | Admin bloklagan | Заблокировал админ |
 | `moderation.blocks.reason.complaint` | Shikoyat boʻyicha bloklangan | Блок по жалобе |
 | `moderation.blocks.reason.unblock` | Blokdan chiqarilgan | Разблокирован |
 | `moderation.blocks.forever` | Butunlay | Навсегда |
+| `moderation.blocks.until` | {date}gacha | До даты (конец блока) |
 | `moderation.unblock` | Blokdan chiqarish | Кнопка «Разблокировать» |
 | `moderation.unblockAsk` | Blokdan chiqarasizmi? U yana safar qila oladi. | Разблокировать? Он снова сможет ездить |

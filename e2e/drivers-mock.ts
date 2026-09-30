@@ -5,6 +5,7 @@ import type { Page } from '@playwright/test';
 // changes: the team asked to retake the face and the front photo and to check the plate.
 export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 
+const DAY = 24 * 60 * 60 * 1000;
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const allPhotos = { front: true, side: true, interior: true };
 const summary = {
@@ -55,6 +56,26 @@ export async function mockDrivers(page: Page, start: DriverStart) {
   });
   await page.route('**/api/admin/applications', (route) =>
     route.fulfill({ json: { applications: [summary] } }),
+  );
+  // The team sees earlier decisions, the same plate at another person and the blocks (docs/65 C).
+  await page.route('**/api/admin/applications/*', (route) =>
+    route.fulfill({
+      json: {
+        ...summary,
+        samePlate: 1,
+        history: [{ status: 'changes_requested', reasons: ['face_not_visible'], at: Date.now() - DAY }],
+      },
+    }),
+  );
+  await page.route('**/api/admin/users/*/blocks', (route) =>
+    route.fulfill({
+      json: {
+        active: null,
+        entries: [
+          { until: Date.now() - 20 * DAY, reason: 'complaint', by: 'Moderator', at: Date.now() - 27 * DAY },
+        ],
+      },
+    }),
   );
   // The same real picture stands for every photo of the test application.
   await page.route('**/api/admin/applications/*/photos/*', (route) =>

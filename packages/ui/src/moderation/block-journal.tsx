@@ -1,7 +1,6 @@
 import type { TranslationKey } from '@platform/i18n';
 import type { PersonId } from '@platform/contracts';
 import { useState } from 'react';
-import { CellValue } from '../account/cell-value';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -36,7 +35,9 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
     ? active.until === null
       ? t('moderation.blocks.activeForever')
       : t('moderation.blocks.activeUntil', { date: formatDate(new Date(active.until)) })
-    : t('moderation.blocks.none');
+    : value.entries.length > 0
+      ? t('moderation.blocks.notNow')
+      : t('moderation.blocks.none');
   return (
     <>
       <Section header={t('moderation.blocks.title')}>
@@ -44,13 +45,14 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
         {value.entries.map((entry) => (
           <Cell
             key={entry.at}
+            multiline
             subtitle={`${entry.by}, ${formatDate(new Date(entry.at))}`}
-            after={
-              entry.reason === 'unblock' ? null : (
-                <CellValue>
-                  {entry.until === null ? t('moderation.blocks.forever') : formatDate(new Date(entry.until))}
-                </CellValue>
-              )
+            description={
+              entry.reason === 'unblock'
+                ? undefined
+                : entry.until === null
+                  ? t('moderation.blocks.forever')
+                  : t('moderation.blocks.until', { date: formatDate(new Date(entry.until)) })
             }
           >
             {t(`moderation.blocks.reason.${entry.reason}`)}
