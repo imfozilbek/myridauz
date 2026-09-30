@@ -7,6 +7,9 @@ export const ADMIN_PRICING_PATH = '/admin/pricing';
 export const ADMIN_PRICING_PREVIEW_PATH = '/admin/pricing/preview';
 export const ADMIN_PRICING_ROLLBACK_PATH = '/admin/pricing/rollback';
 export const ADMIN_DIRECTIONS_PATH = '/admin/pricing/directions';
+// The landing (docs/59): distance and recommended price between two places. Public, no personal data.
+export const PUBLIC_PRICE_PATH = '/public/price';
+export type PublicPrice = { from: string; to: string; km: number; price: number };
 
 // Wide technical bounds only: the team sets the real values in the admin Mini App (docs/16).
 const MAX_SUM = 10_000_000;

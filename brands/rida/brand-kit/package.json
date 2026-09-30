@@ -5,7 +5,8 @@
   "description": "Rida brand kit generator: SVG masters, PNG renders, motion videos, promo film (docs/38, docs/41)",
   "scripts": {
     "build": "node build.mjs",
-    "promo": "node promo/build.mjs"
+    "promo": "node promo/build.mjs",
+    "landing": "node landing/build.mjs"
   },
   "dependencies": {
     "lucide-static": "1.48.0",

@@ -16,7 +16,7 @@ const run = (command, args, env = {}) =>
   execFileSync(command, args, { stdio: 'inherit', env: { ...process.env, ...env } });
 const wrangler = (...args) => run('pnpm', ['exec', 'wrangler', ...args]);
 
-run('pnpm', ['--filter', './apps/miniapp-*', 'build'], {
+run('pnpm', ['--filter', './apps/miniapp-*', '--filter', './apps/landing', 'build'], {
   VITE_BRAND: brand.id,
   VITE_API_URL: `https://${apiHost(brand)}`,
   VITE_APP_VERSION: process.env.GITHUB_SHA?.slice(0, 7) ?? 'local',
@@ -39,4 +39,20 @@ for (const app of apps) {
   );
   await ensurePagesDomain(project, appHost(brand, app), brand.domain);
 }
+
+// The landing lives on the brand domain itself, www leads to the same pages (G15, docs/59).
+const landing = `${brand.id}-landing`;
+await ensurePagesProject(landing);
+wrangler(
+  'pages',
+  'deploy',
+  'apps/landing/dist',
+  '--project-name',
+  landing,
+  '--branch',
+  'main',
+  '--commit-dirty=true',
+);
+for (const host of [brand.domain, `www.${brand.domain}`])
+  await ensurePagesDomain(landing, host, brand.domain);
 console.log(`deploy: ${brand.id} done`);

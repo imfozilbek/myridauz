@@ -15,7 +15,8 @@
 | `pnpm screenshots` | Скриншоты экранов в `screenshots/` (для владельца, `33`) |
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
-| `pnpm run deploy --brand=rida` | Деплой бренда: сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами. В CI: job `deploy` |
+| `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
+| `pnpm run deploy --brand=rida` | Деплой бренда: сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами и лендинг. В CI: job `deploy` |
 | `pnpm run setup-bots --brand=rida` | Вебхуки и кнопки меню 3 ботов. Один раз после первого деплоя и при смене настроек ботов. Нужен `TELEGRAM_WEBHOOK_SECRET` |
 
 - Для `check:secrets` локально нужен файл `gitleaks` (v8.30.1) в `PATH`.

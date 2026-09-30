@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import type { Location } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
@@ -62,5 +63,28 @@ describe('pricing API (docs/23)', () => {
     expect(put.status).toBe(200);
     const recommended = await call('/prices/recommendation?from=1718401&to=1726273', 5, 'passenger');
     expect(await recommended.json()).toMatchObject({ price: 100000, source: 'manual' });
+  });
+});
+
+describe('public prices for the landing (docs/59)', () => {
+  it('gives the price of two places without a signature, cached, and only to the brand site', async () => {
+    const site = `https://${loadBrand().domain}`;
+    const ask = (query: string, origin = site) =>
+      app.request(`/public/price?${query}`, { headers: { origin } }, env);
+    const response = await ask('from=1726273&to=1718401');
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toContain('max-age=3600');
+    expect(response.headers.get('access-control-allow-origin')).toBe(site);
+    // The same recommendation as in the Mini Apps: the team changed the formula in the test above.
+    expect(await response.json()).toEqual({
+      from: '1726273',
+      to: '1718401',
+      km: 300,
+      price: expect.any(Number),
+    });
+    expect((await ask('from=1726273&to=1718')).status).toBe(404);
+    expect((await ask('from=x')).status).toBe(400);
+    const other = await ask('from=1726273&to=1718401', 'https://evil.uz');
+    expect(other.headers.get('access-control-allow-origin')).toBeNull();
   });
 });

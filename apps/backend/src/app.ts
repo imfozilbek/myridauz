@@ -36,6 +36,13 @@ const allowMiniApps = cors({
     return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
   },
 });
+// The landing on the brand domain reads public prices (docs/59).
+const allowLanding = cors({
+  origin: (origin, context) => {
+    const { domain } = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
+    return [`https://${domain}`, `https://www.${domain}`].includes(origin) ? origin : null;
+  },
+});
 const auth = telegramAuth(Date.now, teamRole);
 
 export const app = new Hono<AppEnv>()
@@ -60,6 +67,7 @@ export const app = new Hono<AppEnv>()
   .use('/shared/*', allowMiniApps)
   .use('/shared/:token/follow', auth)
   // The directory is public: no personal data. Only a change of a distance checks the signature.
+  .use('/public/*', allowLanding)
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
   .route('/', healthModule)
