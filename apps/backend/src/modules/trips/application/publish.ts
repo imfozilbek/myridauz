@@ -39,6 +39,7 @@ export async function publishTrip(
   if (live.length >= MAX_ACTIVE_TRIPS) return { ok: false, error: 'trips.too_many' };
   const trip: TripRecord = {
     ...input,
+    comment: deps.mask(input.comment),
     id: deps.newId(),
     driverId,
     endsAt: endsAt(input.departAt, km),

@@ -22,6 +22,7 @@ import {
   setDirection,
 } from '../application/admin';
 import type { PricingDeps } from '../application/ports';
+import { ownerOnly } from '../../../shared/auth/owner-only';
 import { recommendPrice } from '../application/recommend';
 
 const STATUS = {
@@ -67,7 +68,7 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
         context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
       )
       .get(ADMIN_PRICING_PATH, async (context) => context.json(await pricingState(deps(context.env))))
-      .post(ADMIN_PRICING_PATH, async (context) => {
+      .post(ADMIN_PRICING_PATH, ownerOnly, async (context) => {
         const input = pricingVariablesSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const by = context.get('session').user.id;
@@ -78,7 +79,7 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
         if (!input.success) return fail(context, 'pricing.invalid_input');
         return context.json(await preview(deps(context.env), input.data));
       })
-      .post(ADMIN_PRICING_ROLLBACK_PATH, async (context) => {
+      .post(ADMIN_PRICING_ROLLBACK_PATH, ownerOnly, async (context) => {
         const input = rollbackSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const result = await rollback(deps(context.env), input.data.version, context.get('session').user.id);
@@ -87,7 +88,7 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
       .get(ADMIN_DIRECTIONS_PATH, async (context) =>
         context.json({ directions: await directions(deps(context.env)) }),
       )
-      .put(ADMIN_DIRECTIONS_PATH, async (context) => {
+      .put(ADMIN_DIRECTIONS_PATH, ownerOnly, async (context) => {
         const input = directionPriceSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const result = await setDirection(deps(context.env), input.data, context.get('session').user.id);

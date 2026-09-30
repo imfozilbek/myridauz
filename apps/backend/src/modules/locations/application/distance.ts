@@ -3,7 +3,7 @@ import { indexById, type Directory } from './directory';
 import type { LocationsDeps, Result } from './ports';
 
 type DistanceError = RouteError | 'locations.not_found';
-type Caller = { readonly isAdmin: boolean };
+type Caller = { readonly isOwner: boolean };
 
 const DEFAULT_LOCALE = 'uz-Latn';
 const LEVEL_2 = new Set(['district', 'city']);
@@ -38,14 +38,14 @@ export async function getDistance(
     : { ok: true, value: { from, to, km } };
 }
 
-// Only the team corrects a distance (docs/16: "правится админом").
+// Only the owner corrects a distance: it moves every price (docs/16, docs/65 A6).
 export async function updateDistance(
   deps: LocationsDeps,
   directory: Directory,
   caller: Caller,
   input: Distance,
-): Promise<Result<Distance, DistanceError | 'auth.not_admin'>> {
-  if (!caller.isAdmin) return { ok: false, error: 'auth.not_admin' };
+): Promise<Result<Distance, DistanceError | 'auth.not_owner'>> {
+  if (!caller.isOwner) return { ok: false, error: 'auth.not_owner' };
   const error = await checkPair(deps, directory, input.from, input.to);
   if (error) return { ok: false, error };
   await deps.locations.saveDistance(...ordered(input.from, input.to), input.km, deps.now());

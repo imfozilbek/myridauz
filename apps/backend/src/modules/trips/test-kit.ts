@@ -1,5 +1,6 @@
 // Test helper: trips with two approved drivers (a man and a woman) and a fake price engine.
 import type { Car, Recommendation } from '@platform/contracts';
+import { maskContacts } from '../chat/domain/mask';
 import type { Person } from '../users';
 import type { Rider, TripsDeps } from './application/ports';
 import { createMemoryTrips } from './infrastructure/memory-trips';
@@ -66,6 +67,7 @@ export function setup() {
     // The driver bot message about a trip: the driver answers it with the meeting point.
     announce: async () => 77,
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
+    mask: (text) => maskContacts(text).text,
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
   };

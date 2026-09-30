@@ -32,6 +32,14 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     expect(published.ok && published.value).toMatchObject({ km: 300, status: 'active', woman: false });
   });
 
+  it('hides phones and links in the comment: every searcher reads it (docs/07)', async () => {
+    const { deps, trip } = setup();
+    const published = await publishTrip(deps, 1, { ...trip, comment: 'tel 90 123 45 67, @ali_uz' });
+    const comment = published.ok ? published.value.comment : '';
+    expect(comment).not.toMatch(/123|ali_uz/);
+    expect((await tripDetail(deps, published.ok ? published.value.id : ''))?.comment).toBe(comment);
+  });
+
   it('keeps at most 5 active trips of a driver', async () => {
     const { deps, trip } = setup();
     for (let index = 0; index < 5; index += 1) await publishTrip(deps, 1, trip);
