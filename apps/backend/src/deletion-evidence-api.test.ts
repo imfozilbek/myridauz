@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
 import { signTelegramData } from './shared/auth/test-signing';
-import { call, initData, nowSeconds, registerUser, testEnv } from './test-api';
+import { call, initData, nowSeconds, registerUser, testEnv, doorBooking } from './test-api';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
 afterAll(() => vi.unstubAllGlobals());
@@ -17,6 +17,7 @@ const trip = {
   seats: 3,
   price: 90_000,
   womanOnBoard: false,
+  pickupMode: 'both',
   comment: '',
 };
 
@@ -47,7 +48,7 @@ describe('deleting the account during a complaint (docs/17, docs/65 A5)', () => 
       call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }),
     );
     const booking = await read<{ id: string; chatKey: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const filed = await call('/complaints', PASSENGER, json({ bookingId: booking.id, reason: 'harassment' }));

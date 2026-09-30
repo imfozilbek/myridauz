@@ -1,12 +1,15 @@
 import type {
   Booking,
   Car,
+  Pitak,
   Point,
   Recommendation,
   RouteError,
   Trip,
   TripInput,
   Rating,
+  PickupMode,
+  Where,
 } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
@@ -23,7 +26,6 @@ export type BookingRepository = {
   find(id: string): Promise<BookingRecord | undefined>;
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
   byPassenger(passengerId: number): Promise<BookingRecord[]>;
-  byPickupMessage(passengerId: number, messageId: number): Promise<BookingRecord | undefined>;
   // The Cron job: requests without an answer in time become expired (docs/35), without points.
   expireOver(now: number): Promise<void>;
   // The erasure of points (docs/69): which bookings made before this time still keep points.
@@ -54,7 +56,7 @@ export type TripFacts = {
   readonly endsAt: number;
   readonly live: boolean;
   readonly over: boolean;
-  readonly meetingPoint: Point | null;
+  readonly pickupMode: PickupMode;
   // The plate of the car kept in the trip (docs/65 A1).
   readonly plate: string | null;
 };
@@ -66,6 +68,10 @@ export type RequestFacts = {
   readonly date: string;
   readonly km: number;
   readonly seats: number;
+  // The way and the points of the passenger (docs/70): the booking of an accepted offer takes them.
+  readonly pickupMode: PickupMode;
+  readonly pickup: Point | null;
+  readonly dropoff: Point | null;
   readonly open: boolean;
 };
 
@@ -105,6 +111,13 @@ export type BookingsDeps = {
     { ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' }
   >;
   readonly notify: BookingNotifier;
+  // The names of a point and where a point of a trip may lie (docs/69), from the map module.
+  readonly places: {
+    describe(point: Point): Promise<Where>;
+    fits(point: Point, placeId: string): boolean;
+  };
+  // The pitak a booking fixed, even if the team closed it later (docs/72).
+  readonly pitak: (id: string) => Promise<Pitak | null>;
   readonly now: () => number;
   readonly newId: () => string;
 };
@@ -120,8 +133,6 @@ export type BookingNotifier = {
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for the passenger's close people (docs/43).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
-  // The passenger sent the own pickup point: the driver hears it and sees it (docs/14, docs/65 C).
-  pickup(booking: Booking): Promise<void>;
 };
 
 export type Result<T, E extends string> =

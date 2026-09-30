@@ -20,7 +20,6 @@ export type BookingRow = {
   dropoff_lat: number | null;
   dropoff_lng: number | null;
   dropoff_name: string | null;
-  pickup_message_id: number | null;
   offer_id: string | null;
   boarded_at: number | null;
   arrived_at: number | null;
@@ -59,7 +58,6 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   pickupNamed: namedOf(row.pickup_name),
   dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
   dropoffNamed: namedOf(row.dropoff_name),
-  pickupMessageId: row.pickup_message_id,
   offerId: row.offer_id,
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
@@ -100,7 +98,6 @@ export const rowValues = (b: BookingRecord) =>
     b.mode,
     b.pitakId,
     ...pointValues(b),
-    b.pickupMessageId,
     b.offerId,
     b.boardedAt,
     b.arrivedAt,
@@ -118,7 +115,6 @@ export const ROW_COLUMNS = [
   'pickup_mode',
   'pitak_id',
   ...POINT_COLUMNS,
-  'pickup_message_id',
   'offer_id',
   'boarded_at',
   'arrived_at',

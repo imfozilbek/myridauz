@@ -1,4 +1,4 @@
-import { REQUEST_STATUSES } from '@platform/contracts';
+import { PICKUP_MODES, REQUEST_STATUSES } from '@platform/contracts';
 import type { RequestRepository } from '../application/ports';
 import type { RequestRecord } from '../domain/ride-request';
 
@@ -13,8 +13,16 @@ type Row = {
   seats: number;
   price: number;
   status: string;
+  pickup_mode: string;
+  pickup_lat: number | null;
+  pickup_lng: number | null;
+  dropoff_lat: number | null;
+  dropoff_lng: number | null;
   created_at: number;
 };
+
+const pointOf = (lat: number | null, lng: number | null) =>
+  lat === null || lng === null ? null : { lat, lng };
 
 const toRequest = (row: Row): RequestRecord => ({
   id: row.id,
@@ -27,12 +35,18 @@ const toRequest = (row: Row): RequestRecord => ({
   seats: row.seats,
   price: row.price,
   status: REQUEST_STATUSES.find((status) => status === row.status) ?? 'cancelled',
+  pickupMode: PICKUP_MODES.find((mode) => mode === row.pickup_mode) ?? 'both',
+  pickup: pointOf(row.pickup_lat, row.pickup_lng),
+  dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
   createdAt: row.created_at,
 });
 
 const UPSERT = `INSERT INTO ride_requests (id, passenger_id, from_id, to_id, date, expires_at, km, seats, price,
-  status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  ON CONFLICT (id) DO UPDATE SET status = excluded.status`;
+  status, pickup_mode, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng, created_at)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT (id) DO UPDATE SET status = excluded.status, pickup_lat = excluded.pickup_lat,
+  pickup_lng = excluded.pickup_lng, dropoff_lat = excluded.dropoff_lat, dropoff_lng = excluded.dropoff_lng`;
+const NO_POINTS = 'pickup_lat = NULL, pickup_lng = NULL, dropoff_lat = NULL, dropoff_lng = NULL';
 
 // Table ride_requests (migrations/0007_trips.sql).
 export const d1Requests = (db: D1Database): RequestRepository => ({
@@ -50,6 +64,11 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
         request.seats,
         request.price,
         request.status,
+        request.pickupMode,
+        request.pickup?.lat ?? null,
+        request.pickup?.lng ?? null,
+        request.dropoff?.lat ?? null,
+        request.dropoff?.lng ?? null,
         request.createdAt,
       )
       .run();
@@ -71,8 +90,13 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
     ).results.map(toRequest),
   expireOver: async (now) => {
     await db
-      .prepare("UPDATE ride_requests SET status = 'expired' WHERE status = 'open' AND expires_at <= ?")
+      .prepare(
+        `UPDATE ride_requests SET status = 'expired', ${NO_POINTS} WHERE status = 'open' AND expires_at <= ?`,
+      )
       .bind(now)
       .run();
+  },
+  erasePointsOf: async (passengerId) => {
+    await db.prepare(`UPDATE ride_requests SET ${NO_POINTS} WHERE passenger_id = ?`).bind(passengerId).run();
   },
 });

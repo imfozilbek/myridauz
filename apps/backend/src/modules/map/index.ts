@@ -6,7 +6,7 @@ import { whereRoutes } from './http/where-routes';
 import { whereIs } from './application/point-name';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
 import { districtBorders } from './infrastructure/district-borders';
-import { districtName, regionOfDistrict } from './infrastructure/district-names';
+import { districtName, pointFits, regionOfDistrict } from './infrastructure/district-names';
 import { districtAt } from './domain/borders';
 import type { Point } from '@platform/contracts';
 import { edgeCache } from './infrastructure/edge-cache';
@@ -55,3 +55,5 @@ export const regionOf = (point: Point) => {
 export const describePoint = (env: Bindings, point: Point) =>
   whereIs({ index: indexOf(env), borders: districtBorders(), districtName }, point);
 export { isRegionId } from './infrastructure/district-names';
+// A point of a trip lies in its district, its city or near its center (docs/69).
+export const pointFitsPlace = (point: Point, placeId: string) => pointFits(point, districtOf(point), placeId);

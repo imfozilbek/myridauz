@@ -3,7 +3,7 @@ import { json, OWNER, approvedDriver, read } from './bookings-test-api';
 import { botSender } from './bots/test-bot';
 import { askForRatings } from './modules/ratings';
 import { signTelegramData } from './shared/auth/test-signing';
-import { call, nowSeconds, pid, registerUser, testEnv } from './test-api';
+import { call, nowSeconds, pid, registerUser, testEnv, doorBooking } from './test-api';
 
 // Every Telegram call of the flow: questions, answers to buttons, the team signal.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -33,6 +33,7 @@ const trip = (departAt: number) =>
     seats: 2,
     price: 90_000,
     womanOnBoard: false,
+    pickupMode: 'both',
     comment: '',
   });
 const press = (fromId: number, data: string) => ({
@@ -49,7 +50,7 @@ async function ride(passengerId: number, departAt: number) {
     call('/driver/trips', DRIVER, { app: 'driver', ...trip(departAt) }),
   );
   const booking = await read<{ id: string }>(
-    call(`/trips/${published.id}/bookings`, passengerId, json({ seats: 1 })),
+    call(`/trips/${published.id}/bookings`, passengerId, json(doorBooking(1))),
   );
   await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
   return { tripId: published.id, bookingId: booking.id };

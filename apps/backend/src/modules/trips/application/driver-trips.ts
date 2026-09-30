@@ -1,7 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { isLive, statusAt } from '../domain/trip';
 import type { TripsDeps } from './ports';
-import { views } from './read';
+import { views } from './views-of';
 
 // The driver's trip as the family sees it when the driver shares it (G18, docs/43):
 // the name, the car and the plate; never a phone.
@@ -10,7 +10,7 @@ export async function familyView(deps: TripsDeps, id: string) {
   if (!trip) return undefined;
   const [driver, car] = [await deps.people.find(trip.driverId), trip.car];
   if (!driver || !car) return undefined;
-  const { driverId, from, to, departAt, km, meetingPoint } = trip;
+  const { driverId, from, to, departAt, km } = trip;
   return {
     id,
     driverId,
@@ -21,7 +21,6 @@ export async function familyView(deps: TripsDeps, id: string) {
     to,
     departAt,
     km,
-    meetingPoint,
     status: statusAt(trip, deps.now()),
   };
 }

@@ -1,4 +1,4 @@
-import type { Car, Rating, Recommendation, RouteError } from '@platform/contracts';
+import type { Car, Pitak, Rating, Recommendation, RouteError } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 
@@ -7,7 +7,6 @@ export type TripRepository = {
   save(trip: TripRecord): Promise<void>;
   find(id: string): Promise<TripRecord | undefined>;
   byDriver(driverId: number): Promise<TripRecord[]>;
-  byMeetingMessage(driverId: number, messageId: number): Promise<TripRecord | undefined>;
   // Active trips leaving between the two times, the earliest first.
   leaving(from: number, to: number): Promise<TripRecord[]>;
   // Active or full trips leaving between the two times: their reminders (G10).
@@ -40,8 +39,10 @@ export type TripsDeps = {
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;
-  // The driver bot tells about the new trip; the id of that message, or null if it was not sent.
-  readonly announce: (trip: TripRecord) => Promise<number | null>;
+  // The driver bot tells about the new trip.
+  readonly announce: (trip: TripRecord) => Promise<void>;
+  // The main pitak of the direction «region A → region B», when people may see it (docs/72).
+  readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
   readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
   // Phones and links hidden in the comment: every searcher reads it (docs/07).

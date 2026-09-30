@@ -4,6 +4,7 @@ import { ratingSchema } from './ratings';
 import { CAR_COLORS, MAX_SEATS } from './drivers';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
+import { pickupModeSchema, pitakSchema } from './pickup';
 
 // A trip a driver publishes (docs/09, docs/35). G07.
 export const DRIVER_TRIPS_PATH = '/driver/trips';
@@ -37,6 +38,8 @@ export const tripInputSchema = z.object({
   // "With me goes a woman": a relative without Telegram (docs/06).
   womanOnBoard: z.boolean(),
   comment: z.string().trim().max(COMMENT_MAX),
+  // How the driver picks people up (docs/70): the pitak of the direction, around the city, or both.
+  pickupMode: pickupModeSchema,
 });
 export type TripInput = z.input<typeof tripInputSchema>;
 
@@ -63,7 +66,9 @@ export const tripSchema = z.object({
   recommendedPrice: z.number().int().nullable(),
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),
-  hasMeetingPoint: z.boolean(),
+  pickupMode: pickupModeSchema,
+  // The main pitak of the direction, when the driver takes people there (docs/70, docs/72).
+  pitak: pitakSchema.nullable(),
   comment: z.string(),
   status: z.enum(TRIP_STATUSES),
 });

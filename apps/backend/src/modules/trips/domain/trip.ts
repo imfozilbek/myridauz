@@ -1,4 +1,11 @@
-import { arrivalAt, DAY_MS, TRIP_DAYS_AHEAD, type Car, type Trip } from '@platform/contracts';
+import {
+  arrivalAt,
+  DAY_MS,
+  TRIP_DAYS_AHEAD,
+  type Car,
+  type PickupMode,
+  type Trip,
+} from '@platform/contracts';
 
 // The car the team approved when the trip was published: a new check of the driver keeps it (docs/65 A1).
 export type TripCar = Pick<Car, 'make' | 'model' | 'color' | 'plate'>;
@@ -20,9 +27,9 @@ export type TripRecord = {
   // null only for a trip of a deleted driver made before the car was kept in the trip.
   readonly car: TripCar | null;
   readonly status: Trip['status'];
-  readonly meetingPoint: { readonly lat: number; readonly lng: number } | null;
-  // The driver bot message the driver answers with the meeting point (docs/14).
-  readonly meetingMessageId: number | null;
+  // How the driver picks people up (docs/70): the pitak of the direction, around the city, or both.
+  // The driver sets no points: the system takes the pitak of the direction by itself.
+  readonly pickupMode: PickupMode;
   readonly createdAt: number;
 };
 

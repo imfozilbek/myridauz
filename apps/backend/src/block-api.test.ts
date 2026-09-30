@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
 import { changeModerator } from './modules/team';
-import { call, pid, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv, doorBooking } from './test-api';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -26,12 +26,12 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     await registerUser(PASSENGER);
     await registerUser(MODERATOR);
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
-    const input = { ...trip, womanOnBoard: false, comment: '' };
+    const input = { ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' };
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(input) }),
     );
     const asked = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const before = telegram.sentTo(PASSENGER).length;

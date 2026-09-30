@@ -74,7 +74,6 @@
   "channel.rating": "⭐ {average} ({count} ta baho)",
   "channel.newDriver": "🆕 Yangi haydovchi",
   "channel.woman": "👩 Mashinada ayol bor",
-  "channel.meeting": "📌 Uchrashuv joyi belgilangan",
   "channel.full": "⛔ Joy qolmagan",
   "channel.cancelled": "❌ Safar bekor qilindi",
   "channel.started": "🚗 Safar boshlandi",
@@ -137,5 +136,8 @@
   "profile.driver.description": "Baribir yoʻlga chiqasiz. Boʻsh joylarni yoʻlovchilarga bering va yoʻl xarajatini qoplang.\n\nSafarni bir daqiqada eʼlon qilasiz. Pitakda kutish shart emas. Yoʻlovchilar sizni qidiruvda va hudud kanalida topadi.\n\nBoshlash uchun «Ochish» tugmasini bosing.",
   "profile.admin.name": "{brand} Jamoa",
   "profile.admin.short": "{brand} jamoasi uchun boshqaruv paneli.",
-  "profile.admin.description": "{brand} jamoasi uchun boshqaruv paneli: arizalar, shikoyatlar, narxlar va statistika. Bu bot faqat jamoa aʼzolari uchun."
+  "profile.admin.description": "{brand} jamoasi uchun boshqaruv paneli: arizalar, shikoyatlar, narxlar va statistika. Bu bot faqat jamoa aʼzolari uchun.",
+  "channel.door": "🏠 Uyingizdan olib ketadi",
+  "channel.pitak": "🚏 {pitak}dan olib ketadi",
+  "channel.doorOrPitak": "🏠 Uyingizdan yoki 🚏 {pitak}dan olib ketadi"
 }

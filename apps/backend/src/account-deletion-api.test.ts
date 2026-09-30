@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { localUsers } from './modules/users';
-import { call, initData, pid, registerUser, testEnv } from './test-api';
+import { call, initData, pid, registerUser, testEnv, doorBooking } from './test-api';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
 afterAll(() => vi.unstubAllGlobals());
@@ -16,6 +16,7 @@ const trip = {
   seats: 3,
   price: 90_000,
   womanOnBoard: false,
+  pickupMode: 'both',
   comment: '',
 };
 
@@ -48,7 +49,7 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
       call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }),
     );
     const booking = await read<{ id: string; chatKey: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'PUT' });
     const route = { from: '1726', to: '1718', date: null, woman: false };

@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { signalledNotifier } from './modules/drivers/infrastructure/signalled-notifier';
 import { signTicket } from './shared/auth/signed-ticket';
-import { call, pid, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv, doorBooking } from './test-api';
 import { app } from './app';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
@@ -61,12 +61,12 @@ describe('the personal channel (docs/64, G19)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, price: 90_000, womanOnBoard: false, comment: '' }),
+        ...json({ ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'both', comment: '' }),
       }),
     );
     seen.length = 0;
     const booking = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, { ...json({ seats: 1 }), env }),
+      call(`/trips/${published.id}/bookings`, PASSENGER, { ...json(doorBooking(1)), env }),
     );
     expect(seen).toContainEqual({ name: `u${DRIVER}`, path: '/signal', app: 'driver' });
     expect(seen.some((item) => item.name === `u${PASSENGER}`)).toBe(false);

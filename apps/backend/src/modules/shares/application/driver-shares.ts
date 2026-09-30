@@ -35,7 +35,8 @@ export function driverShared(trip: DriverTrip, followers: number, now: number): 
     km: trip.km,
     driver: { firstName: trip.driverName, car: trip.car },
     plate: trip.plate,
-    meetingPoint: trip.meetingPoint,
+    // The driver takes many people: no single meeting place to show (docs/70).
+    meetingPoint: null,
     status: driverShareStatus(trip, now),
     followers,
   };

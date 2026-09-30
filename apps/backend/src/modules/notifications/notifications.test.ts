@@ -70,11 +70,9 @@ describe('bot messages through the queue (docs/03)', () => {
     expect(done).toEqual(['retry 3', 'ack']);
   });
 
-  it('remembers the confirmation message once it is sent, and reaches the whole team', async () => {
+  it('remembers a channel post once it is sent, and reaches the whole team', async () => {
     const remembered: string[] = [];
-    handleAfterSent(async (_env, after, messageId) => {
-      if (after.type === 'pickup') remembered.push(`${after.bookingId} ${messageId}`);
-    });
+    handleAfterSent(async (_env, after, messageId) => void remembered.push(`${after.tripId} ${messageId}`));
     const chats: unknown[] = [];
     vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
       chats.push((JSON.parse(String(init?.body)) as { chat_id: number }).chat_id);
@@ -82,9 +80,14 @@ describe('bot messages through the queue (docs/03)', () => {
     });
     const env = { PASSENGER_BOT_TOKEN: 'p', ADMIN_BOT_TOKEN: 'a', ADMIN_TELEGRAM_IDS: '900,901' };
     await notify(env, [
-      { bot: 'passenger', chatId: 3, text: 'ok', after: { type: 'pickup', bookingId: 'b1' } },
+      {
+        bot: 'passenger',
+        chatId: 3,
+        text: 'ok',
+        after: { type: 'channelPost', tripId: 't1', channel: '@c', shown: 'ok' },
+      },
     ]);
-    expect(remembered).toEqual(['b1 12']);
+    expect(remembered).toEqual(['t1 12']);
     await notifyTeam(env, 'Diqqat');
     expect(chats).toEqual([3, 900, 901]);
   });

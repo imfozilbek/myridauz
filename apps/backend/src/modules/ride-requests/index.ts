@@ -3,12 +3,14 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
+import { pointFitsPlace } from '../map';
+import { pitakOf } from '../pitaks';
 import type { RequestsDeps } from './application/ports';
 import { cancelRequest, views } from './application/use-cases';
 import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
-import { isOpen, type RequestRecord } from './domain/ride-request';
+import { isOpen, withoutPoints, type RequestRecord } from './domain/ride-request';
 
 // Without D1 (tests) requests live in memory.
 const localRequests = createMemoryRequests();
@@ -24,6 +26,8 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
   places: () => placesOf(env),
+  pitakOf: (from, to) => pitakOf(env, from, to),
+  fits: pointFitsPlace,
   published: (requestId) => onPublished(env, requestId),
   newId: () => crypto.randomUUID(),
   now: Date.now,
@@ -43,6 +47,9 @@ const factsOf = (request: RequestRecord, now: number) => ({
   date: request.date,
   km: request.km,
   seats: request.seats,
+  pickupMode: request.pickupMode,
+  pickup: request.pickup,
+  dropoff: request.dropoff,
   open: isOpen(request, now),
 });
 export const requestFacts = async (env: Bindings, id: string) => {
@@ -54,8 +61,13 @@ export const passengerRequestFacts = async (env: Bindings, passengerId: number) 
 export const markMatched = async (env: Bindings, id: string) => {
   const { requests } = requestsDeps(env);
   const request = await requests.find(id);
-  if (request) await requests.save({ ...request, status: 'matched' });
+  // The booking of the accepted offer took the points over (docs/69).
+  if (request) await requests.save(withoutPoints({ ...request, status: 'matched' }));
 };
+
+// "Maʼlumotlarimni oʻchirish" (docs/30): the points of the person's requests go at once.
+export const eraseRequestPointsOf = (env: Bindings, passengerId: number) =>
+  requestsDeps(env).requests.erasePointsOf(passengerId);
 
 // A request as drivers see it: for route subscriptions (docs/24).
 export const requestViewOf = async (env: Bindings, id: string) => {

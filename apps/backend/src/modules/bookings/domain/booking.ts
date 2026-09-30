@@ -27,7 +27,6 @@ export type BookingRecord = {
   readonly pickupNamed: Named | null;
   readonly dropoff: Point | null;
   readonly dropoffNamed: Named | null;
-  readonly pickupMessageId: number | null;
   // The offer this booking came from: its chat is the offer's chat (docs/07).
   readonly offerId: string | null;
   // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).

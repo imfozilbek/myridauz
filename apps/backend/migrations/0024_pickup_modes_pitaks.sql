@@ -14,12 +14,13 @@ ALTER TABLE bookings ADD COLUMN pickup_name TEXT;
 ALTER TABLE bookings ADD COLUMN dropoff_lat REAL;
 ALTER TABLE bookings ADD COLUMN dropoff_lng REAL;
 ALTER TABLE bookings ADD COLUMN dropoff_name TEXT;
+-- A request keeps its points while it is open; the booking of an accepted offer takes them over.
 ALTER TABLE ride_requests ADD COLUMN pickup_lat REAL;
 ALTER TABLE ride_requests ADD COLUMN pickup_lng REAL;
-ALTER TABLE ride_requests ADD COLUMN pickup_name TEXT;
 ALTER TABLE ride_requests ADD COLUMN dropoff_lat REAL;
 ALTER TABLE ride_requests ADD COLUMN dropoff_lng REAL;
-ALTER TABLE ride_requests ADD COLUMN dropoff_name TEXT;
+-- The meeting point of the driver is gone (docs/70: the driver sets no points): erased.
+UPDATE trips SET meeting_lat = NULL, meeting_lng = NULL, meeting_message_id = NULL;
 -- The Cron job finds the old bookings that still keep points without reading the others.
 CREATE INDEX bookings_points ON bookings (created_at)
   WHERE pickup_lat IS NOT NULL OR dropoff_lat IS NOT NULL;

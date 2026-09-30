@@ -66,14 +66,26 @@ export function setup() {
       return { ok: true, value };
     },
     places: async () => PLACES,
-    // The driver bot message about a trip: the driver answers it with the meeting point.
-    announce: async () => 77,
+    announce: async () => undefined,
+    // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.
+    pitakOf: async (from, to) =>
+      from === '1726' && to === '1718'
+        ? { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } }
+        : null,
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
     mask: (text) => maskContacts(text).text,
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
   };
-  const trip = { from: '1726273', to: '1718401', seats: 3, price: 90000, womanOnBoard: false, comment: '' };
+  const trip = {
+    from: '1726273',
+    to: '1718401',
+    seats: 3,
+    price: 90000,
+    womanOnBoard: false,
+    comment: '',
+    pickupMode: 'both' as const,
+  };
   return {
     deps,
     trip: { ...trip, departAt: NOW + 3 * HOUR },

@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { sendReminders } from './modules/reminders';
-import { call, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv, doorBooking } from './test-api';
 
 const telegram: { chat: unknown; text: string }[] = [];
 vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
@@ -32,13 +32,14 @@ describe('trip reminders (G10)', () => {
       seats: 3,
       price: 90_000,
       womanOnBoard: false,
+      pickupMode: 'both',
       comment: '',
     };
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }),
     );
     const booking = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 2 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(2))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     telegram.length = 0;

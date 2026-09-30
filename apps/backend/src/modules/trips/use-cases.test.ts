@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { familyView } from './application/driver-trips';
-import { setMeetingPoint } from './application/meeting-point';
 import { publishTrip } from './application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from './application/read';
 import { HOUR, NOW, setup } from './test-kit';
@@ -133,14 +132,12 @@ describe('my trips and the end of a trip (docs/35)', () => {
   });
 });
 
-describe('the meeting point from the driver bot (docs/14)', () => {
-  it('saves a location sent as an answer to the trip message of this driver', async () => {
+describe('the way a driver picks people up (G24, docs/70)', () => {
+  it('shows the pitak of the direction unless the driver takes people only at the door', async () => {
     const { deps, trip } = setup();
-    const published = await publishTrip(deps, 1, trip);
-    const id = published.ok ? published.value.id : '';
-    expect(await setMeetingPoint(deps, 2, 77, { lat: 41.3, lng: 69.2 })).toBe('not_found');
-    expect(await setMeetingPoint(deps, 1, 76, { lat: 41.3, lng: 69.2 })).toBe('not_found');
-    expect(await setMeetingPoint(deps, 1, 77, { lat: 41.3, lng: 69.2 })).toBe('saved');
-    expect((await tripDetail(deps, id))?.hasMeetingPoint).toBe(true);
+    const both = await publishTrip(deps, 1, trip);
+    expect(both.ok && both.value).toMatchObject({ pickupMode: 'both', pitak: { id: 'toshkent-avtovokzal' } });
+    const door = await publishTrip(deps, 1, { ...trip, pickupMode: 'door' });
+    expect(door.ok && door.value).toMatchObject({ pickupMode: 'door', pitak: null });
   });
 });

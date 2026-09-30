@@ -1,4 +1,4 @@
-import { CAR_COLORS, TRIP_STATUSES } from '@platform/contracts';
+import { CAR_COLORS, PICKUP_MODES, TRIP_STATUSES } from '@platform/contracts';
 import type { TripRepository } from '../application/ports';
 import type { TripCar, TripRecord } from '../domain/trip';
 
@@ -19,9 +19,7 @@ type Row = {
   car_color: string | null;
   car_plate: string | null;
   status: string;
-  meeting_lat: number | null;
-  meeting_lng: number | null;
-  meeting_message_id: number | null;
+  pickup_mode: string;
   created_at: number;
 };
 
@@ -45,20 +43,14 @@ const toTrip = (row: Row): TripRecord => ({
   comment: row.comment,
   car: carOf(row),
   status: TRIP_STATUSES.find((status) => status === row.status) ?? 'cancelled',
-  meetingPoint:
-    row.meeting_lat === null || row.meeting_lng === null
-      ? null
-      : { lat: row.meeting_lat, lng: row.meeting_lng },
-  meetingMessageId: row.meeting_message_id,
+  pickupMode: PICKUP_MODES.find((mode) => mode === row.pickup_mode) ?? 'both',
   createdAt: row.created_at,
 });
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
-  woman_on_board, comment, status, meeting_lat, meeting_lng, meeting_message_id, created_at,
-  car_make, car_model, car_color, car_plate)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  ON CONFLICT (id) DO UPDATE SET status = excluded.status, meeting_lat = excluded.meeting_lat,
-  meeting_lng = excluded.meeting_lng, meeting_message_id = excluded.meeting_message_id`;
+  woman_on_board, comment, status, pickup_mode, created_at, car_make, car_model, car_color, car_plate)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT (id) DO UPDATE SET status = excluded.status`;
 
 // Table trips (migrations/0007_trips.sql). Route and price never change after publishing (docs/23).
 export const d1Trips = (db: D1Database): TripRepository => ({
@@ -78,9 +70,7 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         trip.womanOnBoard ? 1 : 0,
         trip.comment,
         trip.status,
-        trip.meetingPoint?.lat ?? null,
-        trip.meetingPoint?.lng ?? null,
-        trip.meetingMessageId,
+        trip.pickupMode,
         trip.createdAt,
         trip.car?.make ?? null,
         trip.car?.model ?? null,
@@ -97,13 +87,6 @@ export const d1Trips = (db: D1Database): TripRepository => ({
     (await db.prepare('SELECT * FROM trips WHERE driver_id = ?').bind(driverId).all<Row>()).results.map(
       toTrip,
     ),
-  byMeetingMessage: async (driverId, messageId) => {
-    const row = await db
-      .prepare('SELECT * FROM trips WHERE driver_id = ? AND meeting_message_id = ?')
-      .bind(driverId, messageId)
-      .first<Row>();
-    return row ? toTrip(row) : undefined;
-  },
   departing: async (from, to) =>
     (
       await db

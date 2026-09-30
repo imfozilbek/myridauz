@@ -1,4 +1,12 @@
-import { chatKeyOfBooking, chatKeyOfOffer, type Booking, type Trip } from '@platform/contracts';
+import {
+  chatKeyOfBooking,
+  chatKeyOfOffer,
+  type BookedPlace,
+  type Booking,
+  type Point,
+  type Trip,
+} from '@platform/contracts';
+import type { Named } from '../domain/booking';
 import { holdsSeats, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, TripFacts } from './ports';
 
@@ -18,6 +26,17 @@ async function tripsOf(deps: BookingsDeps, records: readonly BookingRecord[]) {
   return loaded;
 }
 
+// The passenger sees the own points; the driver the area until the confirmation, then the point
+// and its name (docs/70); the team only the area (docs/14). Erased points show nothing.
+function place(point: Point | null, named: Named | null, whole: boolean): BookedPlace | null {
+  if (!point && !named) return null;
+  return {
+    point: whole ? point : null,
+    name: whole ? (named?.name ?? null) : null,
+    area: named?.area ?? null,
+  };
+}
+
 export async function bookingViews(
   deps: BookingsDeps,
   records: readonly BookingRecord[],
@@ -25,6 +44,8 @@ export async function bookingViews(
 ): Promise<Booking[]> {
   const now = deps.now();
   const trips = await tripsOf(deps, records);
+  const pitakIds = [...new Set(records.flatMap((record) => (record.pitakId ? [record.pitakId] : [])))];
+  const pitaks = new Map(await Promise.all(pitakIds.map(async (id) => [id, await deps.pitak(id)] as const)));
   const views = await Promise.all(
     records.map(async (record): Promise<Booking | null> => {
       const loaded = trips.get(record.tripId);
@@ -32,6 +53,7 @@ export async function bookingViews(
       if (!loaded || !passenger) return null;
       const status = statusAt(record, now, loaded.facts.over);
       const open = holdsSeats(status);
+      const whole = viewer === 'passenger' || (viewer === 'driver' && open);
       return {
         id: record.id,
         trip: loaded.trip,
@@ -47,8 +69,10 @@ export async function bookingViews(
         status,
         createdAt: record.createdAt,
         expiresAt: record.expiresAt,
-        meetingPoint: open ? loaded.facts.meetingPoint : null,
-        pickup: open || viewer === 'passenger' ? record.pickup : null,
+        mode: record.mode,
+        pitak: record.pitakId ? (pitaks.get(record.pitakId) ?? null) : null,
+        pickup: place(record.pickup, record.pickupNamed, whole),
+        dropoff: place(record.dropoff, record.dropoffNamed, whole),
         plate: open && viewer !== 'driver' ? loaded.facts.plate : null,
         chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
         boardedAt: record.boardedAt,

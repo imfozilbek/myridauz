@@ -1,7 +1,8 @@
-import { MAX_REQUESTED_BOOKINGS, type Booking } from '@platform/contracts';
+import { MAX_REQUESTED_BOOKINGS, type Booking, type BookingInput } from '@platform/contracts';
 import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
+import { chosenPoints, type PointsError } from './booking-points';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 type RequestError =
@@ -10,20 +11,22 @@ type RequestError =
   | 'bookings.own_trip'
   | 'bookings.no_seats'
   | 'bookings.too_many'
-  | 'bookings.wrong_status';
+  | 'bookings.wrong_status'
+  | PointsError;
 
 const isWaiting = (booking: BookingRecord, now: number) => statusAt(booking, now, false) === 'requested';
 const isHolding = (booking: BookingRecord, now: number) =>
   isWaiting(booking, now) || booking.status === 'confirmed';
 
 // A passenger asks for seats (docs/35): a live trip of someone else, enough free seats,
-// one booking per trip, at most 3 waiting requests at once.
+// one booking per trip, at most 3 waiting requests at once; the way and the points fixed (docs/70).
 export async function requestBooking(
   deps: BookingsDeps,
   passengerId: number,
   tripId: string,
-  seats: number,
+  input: BookingInput,
 ): Promise<Result<Booking, RequestError>> {
+  const { seats } = input;
   const now = deps.now();
   const facts = await deps.trips.find(tripId);
   if (!facts?.live) return { ok: false, error: 'bookings.not_found' };
@@ -37,6 +40,8 @@ export async function requestBooking(
     return { ok: false, error: 'bookings.wrong_status' };
   if (mine.filter((booking) => isWaiting(booking, now)).length >= MAX_REQUESTED_BOOKINGS)
     return { ok: false, error: 'bookings.too_many' };
+  const points = await chosenPoints(deps, trip, input);
+  if (!points.ok) return points;
   const record: BookingRecord = {
     id: deps.newId(),
     tripId,
@@ -46,13 +51,7 @@ export async function requestBooking(
     commission: deps.wallet.commission(facts.price, seats),
     status: 'requested',
     expiresAt: answerDeadline(facts.departAt, now),
-    mode: null,
-    pitakId: null,
-    pickup: null,
-    pickupNamed: null,
-    dropoff: null,
-    dropoffNamed: null,
-    pickupMessageId: null,
+    ...points.value,
     offerId: null,
     boardedAt: null,
     arrivedAt: null,

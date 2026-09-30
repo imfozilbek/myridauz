@@ -1,7 +1,7 @@
 import { channelOf, loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
-import { call, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv, doorBooking, REQUEST_WAY } from './test-api';
 
 // Every Telegram call: messages of the bots and the channel posts.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -30,6 +30,7 @@ const trip = (departAt: number) =>
     seats: 2,
     price: 90_000,
     womanOnBoard: false,
+    pickupMode: 'both',
     comment: '',
   });
 const sentTo = (chatId: number | string) => telegram.filter((item) => item.body.chat_id === chatId);
@@ -58,7 +59,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     expect(post?.body.parse_mode).toBe('HTML');
     expect(sentTo(TOSHKENT_REGION)).toEqual([]);
     const booking = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 2 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(2))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const edit = telegram.find((item) => item.method === 'editMessageText');
@@ -76,7 +77,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     await call(
       '/passenger/requests',
       PASSENGER,
-      json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000 }),
+      json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000, ...REQUEST_WAY }),
     );
     expect(String(sentTo(DRIVER)[0]?.body.text)).toContain('Yoʻnalishingizda yangi soʻrov');
     const mine = await read<{ subscriptions: { id: string }[] }>(

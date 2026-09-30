@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
-import { rememberPickupMessage, setPickup } from './application/pickup';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { chatMember } from './application/chat-member';
@@ -42,20 +41,9 @@ export const erasePastPoints = (env: Bindings, now: number, complained: Readonly
 // "Maʼlumotlarimni oʻchirish" (docs/30): every point of the person goes at once.
 export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env).erasePointsOf(userId);
 
-// A location the passenger sent to the passenger bot as an answer to the confirmation (docs/14).
-export const pickupFromBot = (
-  env: Bindings,
-  passengerId: number,
-  messageId: number,
-  lat: number,
-  lng: number,
-) => setPickup(bookingsDeps(env), passengerId, messageId, { lat, lng });
-
-// For the chat: who may open it (docs/07). For the queue: the id of the confirmation message.
+// For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
-export const pickupMessageSent = (env: Bindings, bookingId: string, messageId: number) =>
-  rememberPickupMessage(bookingsDeps(env), bookingId, messageId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
 // Confirmed bookings of these trips as their passengers see them: the reminders (G10).

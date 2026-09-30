@@ -4,7 +4,7 @@ import { acceptOffer, declineOffer } from './application/accept';
 import { driverOffers, passengerOffers, sendOffer } from './application/offers';
 import { confirm } from './application/answer';
 import { passengerBookings, requestBooking } from './application/request';
-import { ALI, DILNOZA, DRIVER, HOUR, NOW, setup } from './test-kit';
+import { ALI, DILNOZA, DRIVER, HOUR, NOW, setup, seats } from './test-kit';
 
 // 2026-10-02 08:00 in Tashkent: the day of the request.
 const ON_THE_DAY = NOW + 26 * HOUR;
@@ -14,7 +14,7 @@ describe('a driver on a new check (docs/65 A1)', () => {
   it('keeps the plate of a confirmed booking and the car of a sent offer', async () => {
     const { deps, addTrip, addRequest, bonus, recheck } = setup();
     await bonus();
-    const booked = await requestBooking(deps, DILNOZA, addTrip(), 1);
+    const booked = await requestBooking(deps, DILNOZA, addTrip(), seats(1));
     await confirm(deps, DRIVER, booked.ok ? booked.value.id : '');
     await sendOffer(deps, DRIVER, addRequest({ passengerId: ALI }), offer);
     recheck();

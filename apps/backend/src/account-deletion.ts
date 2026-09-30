@@ -4,6 +4,7 @@ import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
 import { forgetFavorites } from './modules/favorites';
 import { forgetRatings } from './modules/ratings';
+import { eraseRequestPointsOf } from './modules/ride-requests';
 import { forgetSubscriptions } from './modules/route-subscriptions';
 import { forgetFollows } from './modules/shares';
 import { wireAccountDeletion } from './modules/users';
@@ -20,6 +21,7 @@ wireAccountDeletion(async (env, userId) => {
   await cancelAllOf(env, userId);
   // The points go at once, even under a complaint: the chat stays the evidence (docs/69).
   await erasePointsOf(env, userId);
+  await eraseRequestPointsOf(env, userId);
   for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);

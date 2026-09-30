@@ -4,6 +4,7 @@ import {
   tashkentDayStart,
   type RequestSearch,
   type RideRequest,
+  type Point,
   type RideRequestInput,
 } from '@platform/contracts';
 import { placeMatches } from '../../../shared/places/place-match';
@@ -18,7 +19,9 @@ type PublishError =
   | 'trips.too_many'
   | 'locations.not_found'
   | 'locations.same_place'
-  | 'locations.inside_city';
+  | 'locations.inside_city'
+  | 'bookings.wrong_mode'
+  | 'bookings.outside_area';
 
 // Other people see only the name and the face of the passenger (docs/07).
 export async function views(deps: RequestsDeps, requests: readonly RequestRecord[]): Promise<RideRequest[]> {
@@ -32,11 +35,25 @@ export async function views(deps: RequestsDeps, requests: readonly RequestRecord
         firstName: person.firstName,
         hasAvatar: person.avatarKey !== null,
       };
-      const { id, from, to, date, km, seats, price } = request;
-      return { id, passenger, from, to, date, km, seats, price, status: statusAt(request, now) };
+      const { id, from, to, date, km, seats, price, pickupMode } = request;
+      return { id, passenger, from, to, date, km, seats, price, pickupMode, status: statusAt(request, now) };
     }),
   );
   return found.filter((request) => request !== null);
+}
+
+const plain = ({ lat, lng }: Point) => ({ lat, lng });
+
+// The way of a request (docs/70): «Pitakdan» only where the direction has a pitak; a point at the
+// door unless only the pitak suits; the points in the districts of the route (docs/69).
+async function wayError(deps: RequestsDeps, input: Required<RideRequestInput>) {
+  const places = await deps.places();
+  const regionOf = (id: string) => places.get(id)?.parentId ?? id;
+  const pitak = await deps.pitakOf(regionOf(input.from), regionOf(input.to));
+  if (input.pickupMode === 'pitak' && !pitak) return 'bookings.wrong_mode';
+  if (input.pickupMode !== 'pitak' && !input.pickup) return 'bookings.wrong_mode';
+  const pickupFits = input.pickupMode === 'pitak' || (input.pickup && deps.fits(input.pickup, input.from));
+  return pickupFits && deps.fits(input.dropoff, input.to) ? null : 'bookings.outside_area';
 }
 
 export async function publishRequest(
@@ -54,8 +71,12 @@ export async function publishRequest(
     return { ok: false, error: 'trips.price_out_of_bounds' };
   const open = (await deps.requests.byPassenger(passengerId)).filter((request) => isOpen(request, now));
   if (open.length >= MAX_OPEN_REQUESTS) return { ok: false, error: 'trips.too_many' };
+  const pointsError = await wayError(deps, input);
+  if (pointsError) return { ok: false, error: pointsError };
   const request: RequestRecord = {
     ...input,
+    pickup: input.pickupMode === 'pitak' || !input.pickup ? null : plain(input.pickup),
+    dropoff: plain(input.dropoff),
     id: deps.newId(),
     passengerId,
     expiresAt: expiresAt(input.date),

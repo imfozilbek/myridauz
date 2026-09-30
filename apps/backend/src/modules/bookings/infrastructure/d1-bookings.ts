@@ -15,7 +15,7 @@ const NO_POINTS = POINT_COLUMNS.map((column) => `${column} = NULL`).join(', ');
 const SET_POINTS = POINT_COLUMNS.map((column) => `${column} = ?`).join(', ');
 const UPSERT = `INSERT INTO bookings (${ROW_COLUMNS.join(', ')}, id) VALUES (${marks(ROW_COLUMNS.length + 1)})
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, ${POINT_COLUMNS.map((c) => `${c} = excluded.${c}`).join(', ')},
-    pickup_message_id = excluded.pickup_message_id, boarded_at = excluded.boarded_at,
+    boarded_at = excluded.boarded_at,
     arrived_at = excluded.arrived_at, updated_at = excluded.updated_at`;
 // One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4).
 const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', updated_at = ?1
@@ -62,13 +62,6 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
     ),
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
-  byPickupMessage: async (passengerId, messageId) => {
-    const row = await db
-      .prepare('SELECT * FROM bookings WHERE passenger_id = ? AND pickup_message_id = ?')
-      .bind(passengerId, messageId)
-      .first<BookingRow>();
-    return row ? toBooking(row) : undefined;
-  },
   expireOver: async (now) => {
     await db.prepare(EXPIRE).bind(now).run();
   },

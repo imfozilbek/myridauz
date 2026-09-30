@@ -2,7 +2,7 @@ import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
-import { call, registerUser } from './test-api';
+import { call, registerUser, REQUEST_WAY } from './test-api';
 
 vi.stubGlobal('fetch', fakeTelegram().fetch);
 afterAll(() => vi.unstubAllGlobals());
@@ -25,7 +25,7 @@ describe('offers API (docs/35, G08)', () => {
       call(
         '/passenger/requests',
         PASSENGER,
-        json({ from: '1726273', to: '1718401', date, seats: 2, price: PRICE }),
+        json({ from: '1726273', to: '1718401', date, seats: 2, price: PRICE, ...REQUEST_WAY }),
       ),
     );
     const departAt = Date.parse(`${date}T04:00:00Z`);
@@ -64,7 +64,7 @@ describe('offers API (docs/35, G08)', () => {
       call(
         '/passenger/requests',
         PASSENGER,
-        json({ from: '1726273', to: '1718401', date, seats: 1, price: PRICE }),
+        json({ from: '1726273', to: '1718401', date, seats: 1, price: PRICE, ...REQUEST_WAY }),
       ),
     );
     const offer = await read<Offer>(

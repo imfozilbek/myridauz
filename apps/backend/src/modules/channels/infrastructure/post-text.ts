@@ -48,8 +48,15 @@ function details(trip: Trip): string[] {
           count: trip.driver.rating.count,
         }),
     ...(trip.woman ? [t('bot.channel.woman')] : []),
-    ...(trip.hasMeetingPoint ? [t('bot.channel.meeting')] : []),
+    wayLine(trip),
   ];
+}
+
+// How the driver picks people up (docs/70): at the door, at the pitak of the direction, or both.
+function wayLine(trip: Trip): string {
+  const pitak = trip.pitak ? escape(trip.pitak.name) : null;
+  if (trip.pickupMode === 'door' || !pitak) return t('bot.channel.door');
+  return t(trip.pickupMode === 'pitak' ? 'bot.channel.pitak' : 'bot.channel.doorOrPitak', { pitak });
 }
 
 // #Samarqand: a tap shows every trip of the region in the channel.

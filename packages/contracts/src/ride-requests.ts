@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { personIdSchema } from './person-id';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
+import { pickupModeSchema } from './pickup';
+import { pointInputSchema } from './point';
 
 // "Ищу поездку": a request a passenger publishes, drivers find it (docs/09, docs/35). G07.
 export const PASSENGER_REQUESTS_PATH = '/passenger/requests';
@@ -18,6 +20,11 @@ export const rideRequestInputSchema = z.object({
   date: dateSchema,
   seats: z.number().int().min(1).max(REQUEST_MAX_SEATS),
   price: z.number().int().min(1),
+  // How the passenger wants to be picked up and where they go (docs/70): the start point is
+  // needed unless only the pitak suits; the drop-off point always.
+  pickupMode: pickupModeSchema,
+  pickup: pointInputSchema.nullable(),
+  dropoff: pointInputSchema,
 });
 export type RideRequestInput = z.input<typeof rideRequestInputSchema>;
 
@@ -30,6 +37,7 @@ export const rideRequestSchema = z.object({
   km: z.number().int(),
   seats: z.number().int(),
   price: z.number().int(),
+  pickupMode: pickupModeSchema,
   status: z.enum(REQUEST_STATUSES),
 });
 export type RideRequest = z.infer<typeof rideRequestSchema>;

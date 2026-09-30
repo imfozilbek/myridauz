@@ -1,5 +1,5 @@
 import type { RequestRepository } from '../application/ports';
-import type { RequestRecord } from '../domain/ride-request';
+import { withoutPoints, type RequestRecord } from '../domain/ride-request';
 
 export function createMemoryRequests(): RequestRepository {
   const requests = new Map<string, RequestRecord>();
@@ -15,7 +15,11 @@ export function createMemoryRequests(): RequestRepository {
     expireOver: async (now) => {
       for (const request of requests.values())
         if (request.status === 'open' && request.expiresAt <= now)
-          requests.set(request.id, { ...request, status: 'expired' });
+          requests.set(request.id, withoutPoints({ ...request, status: 'expired' }));
+    },
+    erasePointsOf: async (passengerId) => {
+      for (const request of requests.values())
+        if (request.passengerId === passengerId) requests.set(request.id, withoutPoints(request));
     },
   };
 }

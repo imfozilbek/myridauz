@@ -24,8 +24,6 @@ export function createMemoryBookings(): BookingRepository {
     find: async (id) => rows.get(id),
     byTrips: async (tripIds) => list().filter((booking) => tripIds.includes(booking.tripId)),
     byPassenger: async (passengerId) => list().filter((booking) => booking.passengerId === passengerId),
-    byPickupMessage: async (passengerId, messageId) =>
-      list().find((booking) => booking.passengerId === passengerId && booking.pickupMessageId === messageId),
     expireOver: async (now) => {
       for (const booking of list())
         if (booking.status === 'requested' && booking.expiresAt <= now)
