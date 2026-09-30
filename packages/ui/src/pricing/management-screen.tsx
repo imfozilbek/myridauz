@@ -10,10 +10,11 @@ import { TeamTripsScreen } from '../market/team-trips-screen';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
 import { linkedStats, StatsScreen } from '../stats/stats-screen';
 import { ChannelsScreen } from '../channels/channels-screen';
+import { PitaksScreen } from '../pitaks/pitaks-screen';
 import { PricingScreen } from './pricing-screen';
 import '../market/market.css';
 
-type Open = 'menu' | 'trips' | 'pricing' | 'wallets' | 'channels' | 'statistics';
+type Open = 'menu' | 'trips' | 'pricing' | 'wallets' | 'channels' | 'pitaks' | 'statistics';
 
 // The third action of the admin Mini App: at most 3 actions on the main screen (docs/19).
 export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
@@ -27,6 +28,7 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
   if (open === 'pricing') return <PricingScreen onBack={menu} />;
   if (open === 'wallets') return <TeamWalletsScreen onBack={menu} />;
   if (open === 'channels') return <ChannelsScreen onBack={menu} />;
+  if (open === 'pitaks') return <PitaksScreen onBack={menu} />;
   if (open === 'statistics') return <StatsScreen onBack={menu} period={linked ?? 'day'} />;
   return (
     <div className="market">
@@ -65,6 +67,13 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
             onClick={() => setOpen('channels')}
           >
             {t('channels.title')}
+          </Cell>
+          <Cell
+            before={<IconTile name="pickup" />}
+            subtitle={t('pitaks.hint')}
+            onClick={() => setOpen('pitaks')}
+          >
+            {t('pitaks.title')}
           </Cell>
           <Cell
             before={<IconTile name="statistics" tone="deep" />}

@@ -20,7 +20,9 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
             ? event.method
             : 'length' in event
               ? String(event.length)
-              : '';
+              : 'navigator' in event
+                ? event.navigator
+                : '';
   return {
     indexes: [event.app],
     blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code],

@@ -21,7 +21,6 @@ export function navigatorUrl(navigator: Navigator, stops: readonly Point[]): str
   const google = stops.slice(0, GOOGLE_STOPS);
   const destination = google.at(-1) ?? last;
   const waypoints = google.slice(0, -1).map(at).join('|');
-  const query = new URLSearchParams({ api: '1', destination: at(destination), travelmode: 'driving' });
-  if (waypoints) query.set('waypoints', waypoints);
-  return `https://www.google.com/maps/dir/?${query.toString()}`;
+  const via = waypoints ? `&waypoints=${encodeURIComponent(waypoints)}` : '';
+  return `https://www.google.com/maps/dir/?api=1&destination=${at(destination)}&travelmode=driving${via}`;
 }

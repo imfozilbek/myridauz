@@ -13,6 +13,7 @@ import landing from '../locales/uz-Latn/landing.json' with { type: 'json' };
 import legal from '../locales/uz-Latn/legal.json' with { type: 'json' };
 import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
+import pitaks from '../locales/uz-Latn/pitaks.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
@@ -40,6 +41,7 @@ const REFERENCE = {
   legal,
   market,
   moderation,
+  pitaks,
   places,
   pricing,
   reviews,

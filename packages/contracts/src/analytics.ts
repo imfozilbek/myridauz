@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { NAVIGATORS } from './navigator';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
 export const ANALYTICS_PATH = '/analytics';
@@ -93,6 +94,8 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('place_point_saved'), method: z.enum(POINT_METHODS), ...context }),
   z.object({ name: z.literal('place_search_empty'), length: z.number().int().min(0).max(100), ...context }),
   z.object({ name: z.literal('way_step'), step: z.enum(WAY_STEPS), ...context }),
+  // «Yoʻl koʻrsatish» of the driver: which navigator opened the stops (docs/70).
+  z.object({ name: z.literal('route_opened'), navigator: z.enum(NAVIGATORS), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

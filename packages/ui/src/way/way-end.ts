@@ -13,11 +13,11 @@ export type Way = { readonly from: WayEnd; readonly to: WayEnd; readonly mode: P
 // The km people see between two points: straight line with the road factor (docs/70).
 export const ROAD_KM = ROAD_FACTOR;
 
-// «Chorsu bozori yaqinida», «Qatortol mahallasi», or the district when nothing is known.
+// «Chorsu bozori yaqinida», «Qatortol mahallasi», or the district (or any text) when nothing is known.
 export function useNameText() {
   const { t } = useI18n();
-  return (name: PlaceName | null, place: Location) => {
-    if (!name) return place.name;
+  return (name: PlaceName | null, place: Location | string) => {
+    if (!name) return typeof place === 'string' ? place : place.name;
     return name.step === 'landmark' || name.step === 'settlement'
       ? t('way.near', { name: name.name })
       : name.name;

@@ -37,3 +37,24 @@
   left: 8px;
   bottom: 8px;
 }
+/* «Safar xaritasi» of the driver (docs/70): the map on top, the stops under it. */
+.trip-map .trip-map-box {
+  position: relative;
+  height: 42vh;
+}
+.trip-map-tabs {
+  padding: 12px 16px 0;
+}
+.trip-map-number {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--tgui--secondary_bg_color);
+  font-weight: 600;
+}
+.trip-map-move {
+  display: flex;
+  gap: 4px;
+}

@@ -37,6 +37,7 @@
   "book.fixed": "Bron qilingandan keyin joylarni oʻzgartirib boʻlmaydi. Kerak boʻlsa, bronni bekor qilib, qaytadan bron qiling.",
   "driver.area": "{area} atrofi · +{km} km",
   "driver.areaOnly": "{area} atrofi",
+  "driver.extra": "+{km} km",
   "driver.fits": "Bu safarga mos",
   "driver.others": "Boshqa soʻrovlar",
   "trip.mode.title": "Yoʻlovchilarni qayerdan olasiz?",

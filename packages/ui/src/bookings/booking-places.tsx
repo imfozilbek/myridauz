@@ -4,18 +4,15 @@ import { Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { openExternal } from '../telegram/feedback';
+import { useNameText } from '../way/way-end';
 import { mapUrl } from './map-link';
 
 // The way and the points of a booking (G24, docs/70): fixed at the booking. The driver sees the
 // area and the extra km until the confirmation, then the point that opens in a map.
 export function BookingPlaces({ booking }: { readonly booking: Booking }) {
   const { t } = useI18n();
-  const nameOf = (name: PlaceName | null) =>
-    !name
-      ? ''
-      : name.step === 'landmark' || name.step === 'settlement'
-        ? t('way.near', { name: name.name })
-        : name.name;
+  const nameText = useNameText();
+  const nameOf = (name: PlaceName | null) => nameText(name, '');
   const extra = booking.extraKm === null ? null : String(booking.extraKm);
   const cell = (label: string, icon: 'origin' | 'destination', title: string, point: Point | null) =>
     point ? (

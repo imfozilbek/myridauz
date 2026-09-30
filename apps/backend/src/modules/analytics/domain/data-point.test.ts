@@ -22,6 +22,13 @@ describe('toDataPoint', () => {
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.at(-1)).toBe('render');
   });
 
+  it('keeps the way of a point, the length of an empty search and the navigator (G24)', () => {
+    const detail = (event: Parameters<typeof toDataPoint>[0]) => toDataPoint(event, 0).blobs.at(-1);
+    expect(detail({ name: 'place_point_saved', method: 'search', ...base })).toBe('search');
+    expect(detail({ name: 'place_search_empty', length: 7, ...base })).toBe('7');
+    expect(detail({ name: 'route_opened', navigator: 'yandex', ...base })).toBe('yandex');
+  });
+
   it('writes a bot event of the backend with its bot and id (G12)', () => {
     const point = serverDataPoint({ name: 'bot_command', source: 'driver', code: 'start' }, 5);
     expect(point).toEqual({
