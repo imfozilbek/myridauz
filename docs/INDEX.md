@@ -38,7 +38,7 @@
 | 34 | [34-git-workflow.md](34-git-workflow.md) | Git: ветка на каждую цель, слияние в main |
 | 35 | [35-trip-booking-lifecycle.md](35-trip-booking-lifecycle.md) | Жизненный цикл поездки, заявки и брони |
 | 36 | [36-logo.md](36-logo.md) | Логотип: монограмма R, формы, цвета, все места использования |
-| 37 | [37-channels-pack.md](37-channels-pack.md) | Пакет для 13 каналов: тексты, картинки, настройки |
+| 37 | [37-channels-pack.md](37-channels-pack.md) | Пакет каналов: тексты, картинки, настройки (сделан для 13, 20 зон: `63`) |
 | 38 | [38-brand-kit.md](38-brand-kit.md) | Бренд-пакет и моушн |
 | 39 | [39-saved-links.md](39-saved-links.md) | Сохранённые ссылки владельца |
 | 40 | [40-product-deep-dive.md](40-product-deep-dive.md) | Продукт глубоко: для кого, боли, прорыв, рынок, риски |
@@ -64,5 +64,5 @@
 | 60 | [60-landing-growth.md](60-landing-growth.md) | Лендинг v2: страницы направлений для поиска, JSON-LD, шрифт бренда, живая карта, цифры |
 | 61 | [61-capacity.md](61-capacity.md) | Нагрузка на запуск: 2 000 активных, лимиты бесплатного тарифа, совет включить $5 |
 | 62 | [62-launch-checklist.md](62-launch-checklist.md) | Чек-лист запуска: готово, профиль ботов в BotFather, что ждёт бета-теста и недели 18 |
-| 63 | [63-district-channels.md](63-district-channels.md) | Каналы районов: 177 каналов, один пост в нескольких каналах, лимит Telegram 10/20 публичных каналов |
+| 63 | [63-district-channels.md](63-district-channels.md) | 20 зон каналов: правила группировки, население, один пост в нескольких каналах, экран «Kanallar» |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |
