@@ -22,7 +22,8 @@ test('consent: each document opens before "Roziman"', async ({ page }) => {
   await shot('1-consent');
   await page.getByText(t('legal.offer.title')).click();
   await expect(page.getByText(`1. ${t('legal.offer.1.title')}`)).toBeVisible();
-  await shot('2-offer');
+  // The first screen of the document: the whole text is in the review file (OPS-03).
+  await page.screenshot({ path: 'screenshots/legal-2-offer.png' });
 });
 
 test('a bot link opens the privacy policy', async ({ page }) => {
