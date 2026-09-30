@@ -2,7 +2,7 @@ import { escape } from './html';
 
 // Pictures from the promo drawings (docs/59), in brands/<brand>/landing/art.
 const SIZES = {
-  hero: [1080, 700],
+  hero: [1080, 769],
   crowd: [900, 733],
   phone: [560, 951],
 } as const;

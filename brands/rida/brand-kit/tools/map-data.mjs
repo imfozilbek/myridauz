@@ -5,15 +5,16 @@ import fs from 'node:fs';
 const WIDTH = 1000;
 const LAT0 = 41; // projection latitude (degrees)
 const TOLERANCE = 0.015; // simplification tolerance (degrees)
-// Region centers, channel codes (docs/37) and SOATO region codes (docs/48); Toshkent city has no channel.
+// Region centers: channel codes (docs/37), SOATO region codes and the center place (docs/48).
+// Toshkent city has no channel; its place is the start of the main directions (docs/16).
 const CITIES = [
-  ['toshkent', 'Toshkent', 41.311, 69.280, null, '1726'], ['nurafshon', 'Nurafshon', 41.043, 69.358, '10', '1727'],
-  ['andijon', 'Andijon', 40.782, 72.344, '60', '1703'], ['buxoro', 'Buxoro', 39.775, 64.429, '80', '1706'],
-  ['fargona', 'Fargʻona', 40.386, 71.786, '40', '1730'], ['jizzax', 'Jizzax', 40.116, 67.842, '25', '1708'],
-  ['urganch', 'Urganch', 41.550, 60.633, '90', '1733'], ['namangan', 'Namangan', 40.998, 71.673, '50', '1714'],
-  ['navoiy', 'Navoiy', 40.084, 65.379, '85', '1712'], ['qarshi', 'Qarshi', 38.861, 65.789, '70', '1710'],
-  ['samarqand', 'Samarqand', 39.654, 66.960, '30', '1718'], ['guliston', 'Guliston', 40.490, 68.784, '20', '1724'],
-  ['termiz', 'Termiz', 37.224, 67.278, '75', '1722'], ['nukus', 'Nukus', 42.460, 59.610, '95', '1735']
+  ['toshkent', 'Toshkent', 41.311, 69.280, null, '1726', '1726273'], ['nurafshon', 'Nurafshon', 41.043, 69.358, '10', '1727', '1727401'],
+  ['andijon', 'Andijon', 40.782, 72.344, '60', '1703', '1703401'], ['buxoro', 'Buxoro', 39.775, 64.429, '80', '1706', '1706401'],
+  ['fargona', 'Fargʻona', 40.386, 71.786, '40', '1730', '1730401'], ['jizzax', 'Jizzax', 40.116, 67.842, '25', '1708', '1708401'],
+  ['urganch', 'Urganch', 41.550, 60.633, '90', '1733', '1733401'], ['namangan', 'Namangan', 40.998, 71.673, '50', '1714', '1714401'],
+  ['navoiy', 'Navoiy', 40.084, 65.379, '85', '1712', '1712401'], ['qarshi', 'Qarshi', 38.861, 65.789, '70', '1710', '1710401'],
+  ['samarqand', 'Samarqand', 39.654, 66.960, '30', '1718', '1718401'], ['guliston', 'Guliston', 40.490, 68.784, '20', '1724', '1724401'],
+  ['termiz', 'Termiz', 37.224, 67.278, '75', '1722', '1722401'], ['nukus', 'Nukus', 42.460, 59.610, '95', '1735', '1735401']
 ];
 // ISO 3166-2 of Natural Earth to SOATO region codes: the landing links regions to prices (docs/59).
 const SOATO = {
@@ -56,9 +57,9 @@ const out = {
   regions: regions.map((f) => ({
     iso: f.properties.iso_3166_2, soato: SOATO[f.properties.iso_3166_2], d: rings(f.geometry).map(path).join('')
   })),
-  cities: CITIES.map(([id, name, lat, lon, code, soato]) => {
+  cities: CITIES.map(([id, name, lat, lon, code, soato, place]) => {
     const [x, y] = project([lon, lat]);
-    return { id, name, code, soato, x: +x.toFixed(1), y: +y.toFixed(1) };
+    return { id, name, code, soato, place, x: +x.toFixed(1), y: +y.toFixed(1) };
   })
 };
 // One region or city per line keeps diffs readable.

@@ -52,10 +52,11 @@ export function safety(brand: BrandConfig, i18n: I18n) {
 export function telegram(brand: BrandConfig, i18n: I18n, titles: ChannelTitles) {
   const { t } = i18n;
   const chips = Object.values(brand.channels)
-    .map(
-      (user) =>
-        `<li><a href="${telegramLink(user)}">${icon('telegram')}${escape(titles[user] ?? user)}</a></li>`,
-    )
+    .map((user) => {
+      const channel = titles[user];
+      const code = channel ? `<b class="code">${escape(channel.code)}</b>` : icon('telegram');
+      return `<li><a href="${telegramLink(user)}">${code}${escape(channel?.title ?? user)}</a></li>`;
+    })
     .join('');
   return `<section class="telegram"><div class="wrap tg-grid">
 <div class="phone single">${art({ name: 'phone-telegram', alt: t('landing.telegram.title'), size: 'phone' }, { className: 'screen shown' })}</div>

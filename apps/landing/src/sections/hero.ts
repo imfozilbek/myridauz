@@ -26,7 +26,7 @@ export function hero(brand: BrandConfig, i18n: I18n) {
 ${actions(brand, i18n)}
 <p class="hint">${escape(t('landing.cta.hint'))}</p>
 </div>
-<div class="hero-art">${art({ name: 'hero', alt: t('landing.hero.art'), size: 'hero' }, { eager: true })}</div>
+<div class="hero-art">${art({ name: 'hero-map', alt: t('landing.hero.art'), size: 'hero' }, { eager: true })}</div>
 </div>
 <ul class="facts wrap">${facts}</ul>
 </section>`;

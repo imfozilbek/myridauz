@@ -57,22 +57,35 @@ describe('landing script (docs/59)', () => {
     );
   });
 
-  it('shows the live price of a region, the sum for the seats and the region channel', async () => {
+  it('shows the road, the live price of the pair, the sum for the seats and opens the bot with the route', async () => {
     const root = mount(mapSection(MAP, brand, i18n));
-    const directions = [{ from: '1726273', to: '1718401', km: 300, price: 90_000 }];
-    await initMap(root, async () => ({ ok: true, json: async () => ({ directions }) }));
+    const asked: string[] = [];
+    await initMap(root, async (url) => {
+      asked.push(url);
+      return { ok: true, json: async () => ({ from: '1726273', to: '1718401', km: 300, price: 90_000 }) };
+    });
+    expect(asked).toEqual([`https://api.${brand.domain}/public/price?from=1726273&to=1718401`]);
+    expect(text('[data-name=from]')).toBe('Toshkent');
+    expect(text('[data-name=to]')).toBe('Samarqand');
     expect(text('[data-km-value]')).toBe('≈ 300 km');
     expect(text('[data-price]')).toMatch(/^≈ 90\s000 soʻm$/u);
     click('[data-more]');
-    expect(text('[data-count]')).toBe('4');
     expect(text('[data-total]')).toMatch(/^≈ 360\s000 soʻm$/u);
     click('[data-less]');
     click('[data-less]');
     expect(text('[data-seats-label]')).toContain('2');
     expect(document.querySelector('[data-route]')?.getAttribute('d')).toContain('M71 31');
+    expect(document.querySelector('[data-go]')?.getAttribute('href')).toBe(
+      `https://t.me/${brand.bots.passenger}?startapp=find_1726_1718`,
+    );
     expect(document.querySelector<HTMLAnchorElement>('[data-channel-link]')?.href).toContain(
       brand.channels['1718'] ?? '',
     );
+    click('[data-swap]');
+    await vi.waitFor(() => expect(text('[data-name=from]')).toBe('Samarqand'));
+    expect(document.querySelector('[data-go]')?.getAttribute('href')).toContain('find_1718_1726');
+    document.querySelector<SVGElement>('[data-region="1718"]')?.dispatchEvent(new Event('click'));
+    await vi.waitFor(() => expect(text('[data-name=from]')).toBe('Toshkent'));
   });
 
   it('keeps the map without prices when the API does not answer', async () => {
@@ -81,8 +94,8 @@ describe('landing script (docs/59)', () => {
       throw new Error('offline');
     });
     expect(document.querySelector('[data-price-row]')?.hasAttribute('hidden')).toBe(true);
-    expect(text('[data-to]')).toBe('Samarqand');
-    await initMap(root, async () => ({ ok: false, json: async () => ({}) }));
+    expect(text('[data-name=to]')).toBe('Samarqand');
+    await initMap(mount(mapSection(MAP, brand, i18n)), async () => ({ ok: false, json: async () => ({}) }));
     expect(document.querySelector('[data-price-row]')?.hasAttribute('hidden')).toBe(true);
   });
 });

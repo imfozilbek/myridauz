@@ -32,10 +32,12 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
     'src',
     '/art/phone-requests.webp',
   );
-  await page.getByRole('button', { name: 'Buxoro' }).click();
-  await expect(page.locator('[data-to]')).toHaveText('Buxoro');
+  await page.getByLabel(t('places.to')).selectOption({ label: 'Buxoro' });
+  await expect(page.locator('[data-name=to]')).toHaveText('Buxoro');
   await expect(page.locator('[data-km-value]')).toHaveText('≈ 570 km');
   await expect(page.locator('[data-price]')).toHaveText(/170\s000/u);
+  const go = page.getByRole('link', { name: t('landing.map.go') });
+  await expect(go).toHaveAttribute('href', `https://t.me/${brand.bots.passenger}?startapp=find_1726_1706`);
   await expect(page.locator('[data-channel-link]')).toHaveAttribute(
     'href',
     `https://t.me/${brand.channels['1706']}`,

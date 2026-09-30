@@ -14,7 +14,10 @@ const data = (file: string) =>
   JSON.parse(readFileSync(from(`../../../brands/${brand.id}/brand-kit/data/${file}`), 'utf8'));
 const map = data('uzbekistan.json') as MapData;
 const channels: ChannelTitles = Object.fromEntries(
-  (data('regions.json') as { user: string; title: string }[]).map((region) => [region.user, region.title]),
+  (data('regions.json') as { user: string; title: string; code: string }[]).map(({ user, title, code }) => [
+    user,
+    { title, code },
+  ]),
 );
 const script = readFileSync(from('../.client/app.js'), 'utf8').trim();
 rmSync(dist, { recursive: true, force: true });

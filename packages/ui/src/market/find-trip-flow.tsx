@@ -18,9 +18,14 @@ type Screen =
       readonly booking?: boolean;
     };
 
+type Props = { readonly onBack: () => void; readonly initial?: Route | undefined };
+
 // A passenger looks for a trip: route (a place or a whole region), a day, the list (docs/14).
-export function FindTripFlow({ onBack }: { readonly onBack: () => void }) {
-  const [screen, setScreen] = useState<Screen>({ step: 'route' });
+// A link of the landing brings the route already chosen (docs/59).
+export function FindTripFlow({ onBack, initial }: Props) {
+  const [screen, setScreen] = useState<Screen>(
+    initial ? { step: 'date', route: initial } : { step: 'route' },
+  );
   const [now] = useState(Date.now);
   if (screen.step === 'route')
     return (

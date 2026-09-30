@@ -10,7 +10,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 const site = renderSite(brand, {
   year: 2027,
   map: MAP,
-  channels: { rida_samarqand: 'Samarqand' },
+  channels: { rida_samarqand: { title: 'Samarqand', code: '30' } },
   script: 'run()',
 });
 const home = site['index.html'] ?? '';
@@ -43,14 +43,15 @@ describe('landing (G15)', () => {
     expect(home).toContain('src="/art/phone-search.webp"');
     expect(home).toContain('src="/art/phone-requests.webp"');
     expect(home).toContain('data-region="1718"');
-    expect(home).toContain(`href="https://t.me/${brand.channels['1718'] ?? ''}"`);
-    expect(home).toContain('Samarqand</a></li>');
+    expect(home).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1726_1718"`);
+    expect(home).toContain('src="/art/hero-map.webp"');
+    expect(home).toContain('<b class="code">30</b>Samarqand</a></li>');
     expect(home.match(/<details/gu)).toHaveLength(7);
     expect(home).toContain('<script>run()</script>');
   });
 
   it('asks the public API for prices and gives the script templates, not texts', () => {
-    expect(home).toContain(`data-api="https://api.${brand.domain}/public/directions"`);
+    expect(home).toContain(`data-api="https://api.${brand.domain}/public/price"`);
     expect(home).toContain('data-money="{amount} soʻm"');
     expect(home).toContain('data-km="≈ {km} km"');
   });

@@ -7,15 +7,15 @@ export type MapData = {
     readonly id: string;
     readonly name: string;
     readonly soato: string;
+    // The center place of the region: prices are counted between these places (docs/16).
+    readonly place: string;
     readonly x: number;
     readonly y: number;
   }[];
 };
 
-// The region names of the channels (brand kit data/regions.json, docs/37), by channel.
-export type ChannelTitles = Readonly<Record<string, string>>;
+// The region name and the car plate code of each channel (brand kit data/regions.json, docs/37).
+export type ChannelTitles = Readonly<Record<string, { readonly title: string; readonly code: string }>>;
 
-// Trips start in Toshkent: the main directions lead from the capital to every region (docs/16).
-export const ORIGIN = '1726';
 // The direction of the promo video is chosen first: Toshkent → Samarqand (docs/41).
-export const FIRST_REGION = '1718';
+export const FIRST_ROUTE = { from: '1726', to: '1718' } as const;

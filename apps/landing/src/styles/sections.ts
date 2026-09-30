@@ -42,10 +42,16 @@ display:grid;place-items:center;background:var(--bg);color:var(--brand-text);fon
 .map{background:var(--grouped)}
 .map-grid{display:grid;gap:20px;align-items:start}
 .uz{width:100%;height:auto;background:var(--bg);border-radius:24px;padding:8px}
+.route-form{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:16px}
+.place-select{display:grid;gap:4px;font-size:14px;color:var(--muted);font-weight:600}
+.place-select select{font:inherit;font-size:17px;color:var(--text);font-weight:700;padding:12px 14px;border-radius:14px;
+border:0;background:var(--bg);width:100%;appearance:none;cursor:pointer}
+.swap{width:44px;height:44px;border-radius:50%;border:0;background:var(--bg);color:var(--brand-text);display:grid;
+place-items:center;cursor:pointer;transform:rotate(90deg)}
 .region{fill:var(--soft);stroke:var(--mint);stroke-width:2;cursor:pointer;transition:fill .2s}
-.region:hover,.region:focus{fill:var(--mint);outline:none}
-.region.selected{fill:var(--brand)}
-.region.origin{fill:var(--grouped);cursor:default}
+.region:hover{fill:var(--mint)}
+.region.from{fill:var(--mint)}
+.region.to{fill:var(--brand)}
 .route-line{fill:none;stroke:var(--driver);stroke-width:5;stroke-dasharray:12 10;stroke-linecap:round;animation:road 1s linear infinite}
 @keyframes road{to{stroke-dashoffset:-22}}
 .city-dot{fill:var(--brand-text);pointer-events:none;opacity:.6}

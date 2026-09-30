@@ -67,18 +67,24 @@ describe('pricing API (docs/23)', () => {
 });
 
 describe('public prices for the landing (docs/59)', () => {
-  it('shows the main directions without a signature, cached, and only to the brand site', async () => {
+  it('gives the price of two places without a signature, cached, and only to the brand site', async () => {
     const site = `https://${loadBrand().domain}`;
-    const response = await app.request('/public/directions', { headers: { origin: site } }, env);
+    const ask = (query: string, origin = site) =>
+      app.request(`/public/price?${query}`, { headers: { origin } }, env);
+    const response = await ask('from=1726273&to=1718401');
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toContain('max-age=3600');
     expect(response.headers.get('access-control-allow-origin')).toBe(site);
-    const { directions } = (await response.json()) as {
-      directions: { to: string; km: number; price: number }[];
-    };
     // The same recommendation as in the Mini Apps: the team changed the formula in the test above.
-    expect(directions).toEqual([{ from: '1726273', to: '1718401', km: 300, price: expect.any(Number) }]);
-    const other = await app.request('/public/directions', { headers: { origin: 'https://evil.uz' } }, env);
+    expect(await response.json()).toEqual({
+      from: '1726273',
+      to: '1718401',
+      km: 300,
+      price: expect.any(Number),
+    });
+    expect((await ask('from=1726273&to=1718')).status).toBe(404);
+    expect((await ask('from=x')).status).toBe(400);
+    const other = await ask('from=1726273&to=1718401', 'https://evil.uz');
     expect(other.headers.get('access-control-allow-origin')).toBeNull();
   });
 });

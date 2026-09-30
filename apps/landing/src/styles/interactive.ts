@@ -12,6 +12,7 @@ export const interactive = `.map-card{background:var(--bg);border-radius:24px;pa
 .stepper{display:flex;align-items:center;gap:12px}
 .stepper button{width:40px;height:40px;border-radius:50%;border:0;background:var(--bg);display:grid;place-items:center;cursor:pointer;color:var(--text)}
 .stepper output{font-size:22px;font-weight:800;min-width:1ch;text-align:center}
+.go-hint{color:var(--muted);font-size:14px;margin-top:-4px}
 .channel{display:flex;align-items:center;gap:8px;font-weight:700;text-decoration:none}
 .driver-side{background:linear-gradient(var(--driver-soft),var(--bg))}
 .telegram{background:var(--soft)}
@@ -21,6 +22,7 @@ export const interactive = `.map-card{background:var(--bg);border-radius:24px;pa
 .chips a{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--bg);
 text-decoration:none;font-weight:600;font-size:15px}
 .chips svg{width:16px;height:16px}
+.chips .code{background:var(--strong);color:var(--bg);border-radius:8px;padding:0 6px;font-size:13px}
 details{background:var(--grouped);border-radius:16px;padding:0 18px;margin-bottom:8px}
 summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;font-weight:700;cursor:pointer}
 summary::-webkit-details-marker{display:none}

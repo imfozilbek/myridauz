@@ -8,6 +8,7 @@ import {
   Hourglass,
   MapPin,
   Minus,
+  ArrowUpDown,
   Plus,
   Repeat,
   Search,
@@ -40,6 +41,7 @@ const ICONS = {
   less: Minus,
   more: Plus,
   open: ChevronDown,
+  swap: ArrowUpDown,
 } as const;
 
 export type IconName = keyof typeof ICONS;

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 
-// The public prices of the API (docs/59), with the start prices of docs/16.
+// The public prices of the API (docs/59): the start prices from Toshkent of docs/16.
 const DIRECTIONS = [
   ['1727401', 35, 30_000],
   ['1724401', 120, 35_000],
@@ -17,9 +17,12 @@ const DIRECTIONS = [
   ['1735401', 1150, 345_000],
 ] as const;
 
+// The public price of a pair: from Toshkent the prices of docs/16, between regions the same formula.
 export async function mockPrices(page: Page) {
-  const directions = DIRECTIONS.map(([to, km, price]) => ({ from: '1726273', to, km, price }));
-  await page.route('**/public/directions', (route) =>
-    route.fulfill({ json: { directions }, headers: { 'access-control-allow-origin': '*' } }),
-  );
+  await page.route('**/public/price?*', (route) => {
+    const url = new URL(route.request().url());
+    const [from, to] = [url.searchParams.get('from') ?? '', url.searchParams.get('to') ?? ''];
+    const [, km = 0, price = 0] = DIRECTIONS.find(([place]) => place === to || place === from) ?? [];
+    return route.fulfill({ json: { from, to, km, price }, headers: { 'access-control-allow-origin': '*' } });
+  });
 }

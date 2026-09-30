@@ -25,7 +25,8 @@ function route(c) {
   return { d: `M${hx} ${hy}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`, point };
 }
 
-function map(t, { dim = 1, highlight } = {}) {
+// Exported for the first screen of the landing (docs/59).
+export function map(t, { dim = 1, highlight } = {}) {
   const regions = `<g transform="translate(${X0} ${Y0}) scale(${S})">` +
     MAP.regions.map((r) => `<path d="${r.d}" fill="${C.mint}" stroke="${C.white}" stroke-width="3" stroke-linejoin="round"/>`).join('') + '</g>';
   const routes = DEST.map((c, i) => {
