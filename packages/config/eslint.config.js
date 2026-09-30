@@ -71,6 +71,7 @@ export default tseslint.config(
   {
     ignores: [
       '**/dist/**',
+      'apps/landing/.render/**',
       '**/coverage/**',
       'brands/*/brand-kit/kit/**',
       'playwright-report/**',

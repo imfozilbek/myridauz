@@ -10,6 +10,7 @@
 | `passenger.myrida.uz` | Mini App попутчика | Pages `rida-passenger` |
 | `driver.myrida.uz` | Mini App водителя | Pages `rida-driver` |
 | `admin.myrida.uz` | Mini App админа | Pages `rida-admin` |
+| `myrida.uz`, `www.myrida.uz` | Лендинг и документы (`59`) | Pages `rida-landing` |
 
 - Адреса строятся из домена бренда: `brands/hosts.ts` (`22`).
 - `myrida.uz` зарегистрирован в Eskiz, DNS в Cloudflare (OPS-01).

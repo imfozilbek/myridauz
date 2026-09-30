@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { appUrl, MINI_APPS } from './e2e/apps';
+import { appUrl, LANDING_PORT, MINI_APPS } from './e2e/apps';
 
 const PHONE = { ...devices['Pixel 7'], browserName: 'chromium' as const };
 // A fake camera that is always allowed: tests take photos with our camera screen (docs/47).
@@ -11,7 +11,16 @@ export default defineConfig({
   reporter: process.env['CI'] ? 'github' : 'list',
   use: { ...PHONE, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
   projects: [
-    { name: 'smoke', testMatch: ['smoke.spec.ts', 'drivers.spec.ts', 'market.spec.ts', 'bookings.spec.ts'] },
+    {
+      name: 'smoke',
+      testMatch: [
+        'smoke.spec.ts',
+        'drivers.spec.ts',
+        'market.spec.ts',
+        'bookings.spec.ts',
+        'landing.spec.ts',
+      ],
+    },
     {
       name: 'screenshots',
       testMatch: [
@@ -26,11 +35,18 @@ export default defineConfig({
         'call-screenshots.spec.ts',
         'comfort-screenshots.spec.ts',
         'legal-screenshots.spec.ts',
+        'landing-screenshots.spec.ts',
       ],
     },
   ],
-  webServer: MINI_APPS.map(({ name, port }) => {
-    const app = `pnpm --filter @platform/miniapp-${name}`;
-    return { command: `${app} build && ${app} preview --port ${port} --strictPort`, url: appUrl(port) };
-  }),
+  webServer: [
+    ...MINI_APPS.map(({ name, port }) => {
+      const app = `pnpm --filter @platform/miniapp-${name}`;
+      return { command: `${app} build && ${app} preview --port ${port} --strictPort`, url: appUrl(port) };
+    }),
+    {
+      command: `pnpm --filter @platform/landing build && pnpm --filter @platform/landing preview --port ${LANDING_PORT} --strictPort`,
+      url: appUrl(LANDING_PORT),
+    },
+  ],
 });

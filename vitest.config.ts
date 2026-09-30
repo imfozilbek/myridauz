@@ -34,7 +34,13 @@ export default defineConfig({
         'brands/*/*.ts',
         'scripts/text-rules.mjs',
       ],
-      exclude: ['**/*.test.{ts,tsx}', '**/*.d.ts', 'apps/*/src/index.ts', 'apps/miniapp-*/src/app/main.tsx'],
+      exclude: [
+        '**/*.test.{ts,tsx}',
+        '**/*.d.ts',
+        'apps/*/src/index.ts',
+        'apps/miniapp-*/src/app/main.tsx',
+        'apps/landing/src/prerender.ts',
+      ],
       thresholds: {
         lines: DEFAULT_THRESHOLD,
         functions: DEFAULT_THRESHOLD,

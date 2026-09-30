@@ -67,3 +67,6 @@ export const TEXT = {
   decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;
+
+// The landing (G15) is plain HTML, served on its own port.
+export const LANDING_PORT = 4104;

@@ -3,7 +3,7 @@ import { Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { Icon } from '../icons';
-import { titleOf } from './legal-texts';
+import { legalTitle } from '@platform/i18n';
 
 type Props = { readonly onOpen: (document: LegalDocument) => void; readonly header?: string };
 
@@ -20,7 +20,7 @@ export function LegalLinks({ onOpen, header }: Props) {
           multiline
           onClick={() => onOpen(document)}
         >
-          {t(titleOf(document))}
+          {t(legalTitle(document))}
         </Cell>
       ))}
     </Section>
