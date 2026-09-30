@@ -3,9 +3,12 @@ import type { AppEnv, Bindings } from '../../env';
 import { mapRoutes } from './http/map-routes';
 import { searchRoutes } from './http/search-routes';
 import { whereRoutes } from './http/where-routes';
+import { whereIs } from './application/point-name';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
 import { districtBorders } from './infrastructure/district-borders';
-import { districtName } from './infrastructure/district-names';
+import { districtName, regionOfDistrict } from './infrastructure/district-names';
+import { districtAt } from './domain/borders';
+import type { Point } from '@platform/contracts';
 import { edgeCache } from './infrastructure/edge-cache';
 import { localMapFiles, noCache } from './infrastructure/memory-map-files';
 import { memoryPlaceIndex } from './infrastructure/memory-place-index';
@@ -41,3 +44,14 @@ export const mapModule = new Hono<AppEnv>()
     })),
   );
 export { localMapFiles };
+
+// The district and the region of a point by the borders (G24): null abroad.
+export const districtOf = (point: Point) => districtAt(districtBorders(), point);
+export const regionOf = (point: Point) => {
+  const district = districtOf(point);
+  return district === null ? null : (regionOfDistrict(district) ?? null);
+};
+// The name of a point and its area (docs/69) for a booking.
+export const describePoint = (env: Bindings, point: Point) =>
+  whereIs({ index: indexOf(env), borders: districtBorders(), districtName }, point);
+export { isRegionId } from './infrastructure/district-names';

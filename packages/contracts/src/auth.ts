@@ -80,6 +80,8 @@ export const API_ERRORS = [
   'locations.not_found',
   'locations.invalid_input',
   'map.invalid_input',
+  'pitaks.not_found',
+  'pitaks.invalid_input',
   'channels.not_found',
   'channels.invalid_input',
   'channels.bot_not_admin',

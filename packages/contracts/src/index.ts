@@ -145,3 +145,4 @@ export * from './map-search';
 export * from './search-key';
 export * from './map-where';
 export * from './pickup';
+export * from './pitaks';
