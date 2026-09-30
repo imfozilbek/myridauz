@@ -4,6 +4,7 @@ import type { AppEnv } from '../env';
 import { safeEqual } from '../shared/http/safe-equal';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
 import { botToken } from '../shared/telegram/bot-config';
+import { botProfile } from './bot-profile';
 import { BOT_ROLES } from './bot-roles';
 import { botCommands } from './documents-reply';
 import { openButton } from './start-reply';
@@ -30,6 +31,11 @@ export function setupRoutes(fetch: Fetch) {
         allowed_updates: ['message', 'callback_query'],
         drop_pending_updates: true,
       });
+      // The name, the text of an empty chat and the profile line (G16).
+      const { name, description, short_description } = botProfile(brand, role);
+      await callTelegram(fetch, token, 'setMyName', { name });
+      await callTelegram(fetch, token, 'setMyDescription', { description });
+      await callTelegram(fetch, token, 'setMyShortDescription', { short_description });
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.
       if (role !== 'admin') {
         await callTelegram(fetch, token, 'setChatMenuButton', {

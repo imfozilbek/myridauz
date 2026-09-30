@@ -19,6 +19,7 @@ export default defineConfig({
         'market.spec.ts',
         'bookings.spec.ts',
         'landing.spec.ts',
+        'launch.spec.ts',
       ],
     },
     {

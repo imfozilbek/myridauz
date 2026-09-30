@@ -62,4 +62,6 @@
 | 58 | [58-legal-documents-and-deletion.md](58-legal-documents-and-deletion.md) | Оферта, конфиденциальность, согласие в Mini App и ботах; удаление своих данных (G14) |
 | 59 | [59-landing.md](59-landing.md) | Лендинг myrida.uz: разделы, интерактивы, живые цены, картинки из ролика (G15) |
 | 60 | [60-landing-growth.md](60-landing-growth.md) | Лендинг v2: страницы направлений для поиска, JSON-LD, шрифт бренда, живая карта, цифры |
+| 61 | [61-capacity.md](61-capacity.md) | Нагрузка на запуск: 2 000 активных, лимиты бесплатного тарифа, совет включить $5 |
+| 62 | [62-launch-checklist.md](62-launch-checklist.md) | Чек-лист запуска: готово, профиль ботов в BotFather, что ждёт бета-теста и недели 18 |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |
