@@ -1,4 +1,5 @@
 import type { Booking, DriverBookingAction } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -7,7 +8,9 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
+import { confirm, haptic } from '../telegram/feedback';
+import { errorKey } from '../market/error-text';
+import { ActionFailure } from '../states/action-failure';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
@@ -27,8 +30,11 @@ export function DriverBooking({ booking, onClose }: Props) {
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const [step, setStep] = useState<Step>('view');
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
+  // A failed answer keeps the booking open with the reason (docs/65 B3).
   const answer = async (action: DriverBookingAction) => {
     try {
+      setFailure(null);
       await bookings.answer(booking.id, action);
       track({ name: 'booking_step', screen: 'bookings.driver', step: STEP_OF[action] });
       haptic.success();
@@ -37,7 +43,10 @@ export function DriverBooking({ booking, onClose }: Props) {
     } catch (caught) {
       haptic.error();
       if (caught instanceof ApiError && caught.code === 'wallet.not_enough') setStep('not_enough');
-      else onClose(true);
+      else {
+        setFailure(errorKey(caught));
+        setStep('view');
+      }
     }
   };
   if (step === 'chat')
@@ -77,6 +86,10 @@ export function DriverBooking({ booking, onClose }: Props) {
       </StepLayout>
     );
   }
+  // A cancel of a confirmed seat is asked first (docs/65 B4).
+  const cancel = async () => {
+    if (await confirm(t('bookings.driverCancelAsk'), t('bookings.cancel'))) await answer('cancel');
+  };
   const actions: BookingAction[] =
     booking.status === 'requested'
       ? [
@@ -84,10 +97,11 @@ export function DriverBooking({ booking, onClose }: Props) {
           { label: t('bookings.decline'), onClick: () => void answer('decline') },
         ]
       : booking.status === 'confirmed'
-        ? [{ label: t('bookings.cancel'), onClick: () => void answer('cancel') }]
+        ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
         : [];
   return (
     <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions}>
+      <ActionFailure error={failure} />
       <Section>
         <Cell before={<IconTile name="chat" />} onClick={() => setStep('chat')}>
           {t('chat.open')}

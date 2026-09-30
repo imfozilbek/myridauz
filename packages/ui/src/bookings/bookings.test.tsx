@@ -39,9 +39,13 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     expect(open.mock.calls[0]?.[0]).toContain('41.3');
     // The passenger never sees the driver's commission.
     expect(screen.queryByText('Komissiya')).toBeNull();
+    vi.stubGlobal('confirm', () => true);
     await tap('Joyni bekor qilish');
+    vi.unstubAllGlobals();
     expect(cancelMine).toHaveBeenCalledWith('b1');
-    expect(tracked.some((event) => event.name === 'booking_step' && event.step === 'cancelled')).toBe(true);
+    await vi.waitFor(() =>
+      expect(tracked.some((event) => event.name === 'booking_step' && event.step === 'cancelled')).toBe(true),
+    );
   });
 
   it('accepts a driver offer on the own request', async () => {

@@ -1,3 +1,4 @@
+import type { Booking, RideRequest } from '@platform/contracts';
 import { Button, Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
@@ -29,6 +30,18 @@ export function MyRequestsScreen({ onBack }: { readonly onBack: () => void }) {
   );
 }
 
+type OpenedId = { readonly kind: Opened['kind']; readonly id: string };
+
+// The latest copy of what is open; gone from the lists (a request that ended): nothing.
+function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly RideRequest[]): Opened | null {
+  if (open.kind === 'booking') {
+    const booking = booked.find((item) => item.id === open.id);
+    return booking ? { kind: 'booking', booking } : null;
+  }
+  const request = requests.find((item) => item.id === open.id);
+  return request ? { kind: 'request', request } : null;
+}
+
 function MyRequests({ onBack }: { readonly onBack: () => void }) {
   useScreenView('market.my_requests');
   useScreenBackground('grouped');
@@ -37,7 +50,9 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
   const { value, failed, reload } = useLoad(() =>
     Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
   );
-  const [opened, setOpened] = useState<Opened | null>(null);
+  // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
+  const [openedId, setOpened] = useState<OpenedId | null>(null);
+  const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
@@ -85,7 +100,7 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
             key={booking.id}
             booking={booking}
             side="passenger"
-            onOpen={() => setOpened({ kind: 'booking', booking })}
+            onOpen={() => setOpened({ kind: 'booking', id: booking.id })}
           />
         ))}
         {requests.length > 0 ? <Caption className="market-group">{t('market.mine.requests')}</Caption> : null}
@@ -94,7 +109,7 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
             key={request.id}
             request={request}
             showStatus
-            onOpen={() => setOpened({ kind: 'request', request })}
+            onOpen={() => setOpened({ kind: 'request', id: request.id })}
           />
         ))}
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />

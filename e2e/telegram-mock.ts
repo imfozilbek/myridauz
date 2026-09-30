@@ -58,6 +58,8 @@ const MOCK = String(() => {
             is_state_stable: true,
           });
         if (type === 'web_app_request_safe_area') reply('safe_area_changed', insets);
+        // "Are you sure?": the person taps the first button, as the scenario goes on (docs/65 B4).
+        if (type === 'web_app_open_popup') reply('popup_closed', { button_id: data.buttons?.[0]?.id });
         if (type === 'web_app_request_content_safe_area') reply('content_safe_area_changed', insets);
         if (type === 'web_app_request_theme') reply('theme_changed', { theme_params: {} });
         // Phone sharing (requestContact) and bot messages (requestWriteAccess), as a person allows them.

@@ -1,4 +1,5 @@
 import type { Offer } from '@platform/contracts';
+import type { ReactNode } from 'react';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -51,10 +52,12 @@ type ScreenProps = {
   readonly onAccept: () => unknown;
   readonly onDecline: () => unknown;
   readonly onChat: () => void;
+  // A reason why the last answer did not work (docs/65 B3).
+  readonly children?: ReactNode;
 };
 
 // One offer: the passenger accepts it (a trip and a confirmed booking appear) or declines it.
-export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat }: ScreenProps) {
+export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, children }: ScreenProps) {
   useScreenView('bookings.offer');
   const { t, formatMoney } = useI18n();
   const { driver } = offer;
@@ -95,6 +98,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat }: Scre
             {t('chat.open')}
           </Cell>
         </Section>
+        {children}
       </List>
       <div className="step-note">
         <Button size="l" stretched loading={accept.busy} disabled={busy} onClick={accept.run}>

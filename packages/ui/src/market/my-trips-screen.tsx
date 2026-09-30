@@ -1,4 +1,5 @@
-import type { Booking, Trip } from '@platform/contracts';
+import type { Trip } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
@@ -16,7 +17,9 @@ import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
-import { haptic } from '../telegram/feedback';
+import { confirm, haptic } from '../telegram/feedback';
+import { ActionFailure } from '../states/action-failure';
+import { errorKey } from './error-text';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
 import { TripCard } from './trip-card';
@@ -33,7 +36,8 @@ export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
   );
 }
 
-type Opened = { readonly trip: Trip; readonly booking?: Booking };
+// What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
+type Opened = { readonly tripId: string; readonly bookingId?: string };
 
 function MyTrips({ onBack }: { readonly onBack: () => void }) {
   useScreenView('market.my_trips');
@@ -44,36 +48,43 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
     Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
   );
   const [opened, setOpened] = useState<Opened | null>(null);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
+  const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
+  const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
-  const cancel = async (trip: Trip) => {
+  // A cancel is asked first; a failed one keeps the trip open with the reason (docs/65 B3, B4).
+  const cancel = async (open: Trip) => {
+    if (!(await confirm(t('market.trip.cancelAsk'), t('market.trip.cancel')))) return;
     try {
-      await market.cancelTrip(trip.id);
+      setFailure(null);
+      await market.cancelTrip(open.id);
       haptic.success();
-    } catch {
+      setOpened(null);
+      reload();
+    } catch (caught) {
       haptic.error();
+      setFailure(errorKey(caught));
     }
-    setOpened(null);
-    reload();
   };
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
-  if (opened?.booking) {
-    const { trip, booking } = opened;
+  if (trip && booking) {
     const close = (changed: boolean) => {
-      setOpened(changed ? null : { trip });
+      setOpened({ tripId: trip.id });
       if (changed) reload();
     };
     return <DriverBooking booking={booking} onClose={close} />;
   }
-  if (opened && value) {
-    const { trip } = opened;
+  if (trip && value) {
+    const back = () => (setOpened(null), setFailure(null));
     return (
-      <TripScreen trip={trip} onBack={() => setOpened(null)} onCancel={() => void cancel(trip)}>
+      <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)}>
+        <ActionFailure error={failure} />
         <DriverShare trip={trip} />
         <TripBookings
-          bookings={value[1].filter((booking) => booking.trip.id === trip.id)}
-          onOpen={(booking) => setOpened({ trip, booking })}
+          bookings={value[1].filter((item) => item.trip.id === trip.id)}
+          onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
         />
       </TripScreen>
     );
@@ -107,7 +118,7 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
       <List>
         <SentOffers offers={offers} onOpen={(offer) => setChatKey(offer.chatKey)} />
         {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ trip })} />
+          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ tripId: trip.id })} />
         ))}
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
       </List>

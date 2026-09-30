@@ -69,5 +69,6 @@
   "trip.arrival": "≈ {time}",
   "trip.recommended": "Tavsiya etilgan narx",
   "trip.recommendedShort": "Tavsiya: {price}",
-  "published.return": "Qaytish safari"
+  "published.return": "Qaytish safari",
+  "trip.cancelAsk": "Safarni bekor qilasizmi? Barcha yoʻlovchilar xabar oladi."
 }

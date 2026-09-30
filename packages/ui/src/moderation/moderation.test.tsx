@@ -101,6 +101,11 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByText('Ali'));
     fireEvent.click(screen.getByText('Bloklash'));
+    // A block for good is asked first: "no" blocks nobody (docs/65 B4).
+    vi.stubGlobal('confirm', () => false);
+    fireEvent.click(screen.getByText('Butunlay'));
+    vi.unstubAllGlobals();
+    expect(block).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('7 kun'));
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
     expect(block).toHaveBeenCalledWith('00000000000000000000000000000005', 7);

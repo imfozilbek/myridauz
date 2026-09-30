@@ -37,9 +37,11 @@ describe('Mening safarlarim (docs/35)', () => {
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
     await tap('Jasur');
+    vi.stubGlobal('confirm', () => true);
     await tap('Safarni bekor qilish');
+    vi.unstubAllGlobals();
     expect(cancelTrip).toHaveBeenCalledWith('t1');
-    expect(myTrips).toHaveBeenCalledTimes(2);
+    await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
   });
 
   it('lets a passenger cancel an open request', async () => {
