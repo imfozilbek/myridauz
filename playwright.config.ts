@@ -37,6 +37,7 @@ export default defineConfig({
         'comfort-screenshots.spec.ts',
         'legal-screenshots.spec.ts',
         'landing-screenshots.spec.ts',
+        'channels-screenshots.spec.ts',
       ],
     },
   ],

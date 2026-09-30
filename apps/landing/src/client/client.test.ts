@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { how } from '../sections/how';
@@ -79,7 +79,7 @@ describe('landing script (docs/59)', () => {
       `https://t.me/${brand.bots.passenger}?startapp=find_1726_1718`,
     );
     expect(document.querySelector<HTMLAnchorElement>('[data-channel-link]')?.href).toContain(
-      brand.channels['1718'] ?? '',
+      channelOf(brand, '1718401')?.username ?? '',
     );
     click('[data-swap]');
     await vi.waitFor(() => expect(text('[data-name=from]')).toBe('Samarqand'));

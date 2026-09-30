@@ -1,0 +1,17 @@
+{
+  "title": "Kanallar",
+  "hint": "Qaysi kanalga qaysi joylarning safarlari chiqadi",
+  "fixed": "Asosiy kanal",
+  "places": "{count} ta joy",
+  "add": "Kanal qoʻshish",
+  "username": "Kanal manzili, @ belgisisiz",
+  "name": "Kanal nomi",
+  "placesTitle": "Joylar",
+  "placesHint": "Bu joylardan va bu joylarga safarlar kanalga chiqadi.",
+  "region": "Viloyatni tanlang",
+  "near": "Yaqin tumanlarni qoʻshish",
+  "save": "Saqlash",
+  "remove": "Kanalni oʻchirish",
+  "empty": "Hozircha tuman kanallari yoʻq.",
+  "botHint": "Avval botni kanalga administrator qilib qoʻshing."
+}

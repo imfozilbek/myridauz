@@ -1,13 +1,18 @@
-import type { BrandConfig } from '@platform/brands';
+import { channelOf, type BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
 import { escape, telegramLink } from '../html';
 import { icon } from '../icons';
-import type { Route } from '../map-data';
+import type { MapData, Route } from '../map-data';
 
 // The card next to the map: the route, the distance, the price for one seat and for a full car,
 // the channel of the region, and the button into the bot with the route.
-export function routeCard(brand: BrandConfig, i18n: I18n, route: Route) {
+export function routeCard(brand: BrandConfig, i18n: I18n, route: Route, map: MapData) {
   const { t } = i18n;
+  const zone = (soato: string) => {
+    const city = map.cities.find((item) => item.soato === soato);
+    return city && channelOf(brand, city.place, city.soato);
+  };
+  const channel = zone(route.to) ?? zone(route.from);
   const start = `${telegramLink(brand.bots.passenger)}?startapp=find_${route.from}_${route.to}`;
   return `<div class="map-card" aria-live="polite">
 <p class="route-name">${icon('place')}<span data-name="from"></span><span class="arrow">→</span><b data-name="to"></b></p>
@@ -25,6 +30,6 @@ export function routeCard(brand: BrandConfig, i18n: I18n, route: Route) {
 </div>
 <a class="button" data-go href="${start}">${escape(t('landing.map.go'))}</a>
 <small class="go-hint">${escape(t('landing.map.goHint', { brand: brand.name }))}</small>
-<a class="channel" data-channel-link href="${telegramLink(brand.channels[route.to] ?? brand.channels[route.from] ?? brand.bots.passenger)}">${icon('telegram')}<span>${escape(t('landing.map.channel'))}</span></a>
+<a class="channel" data-channel-link href="${telegramLink(channel?.username ?? brand.bots.passenger)}">${icon('telegram')}<span>${escape(t('landing.map.channel'))}</span></a>
 </div>`;
 }

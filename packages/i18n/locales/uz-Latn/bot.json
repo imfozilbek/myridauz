@@ -133,7 +133,7 @@
   "profile.passenger.description": "{brand} bilan yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas.\n\n✅ Har bir haydovchi tekshiriladi.\n👩 «Mashinada ayol bor» belgisi bor.\n🔒 Telefon raqamingiz boshqalarga koʻrinmaydi.\n\nSafar topish uchun «Ochish» tugmasini bosing.",
   "profile.driver.name": "{brand} Haydovchi",
   "profile.driver.short": "Safaringizga yoʻlovchi oling, yoʻl xarajatini birga koʻtaring. {slogan}.",
-  "profile.driver.description": "Baribir yoʻlga chiqasiz. Boʻsh joylarni yoʻlovchilarga bering va yoʻl xarajatini qoplang.\n\nSafarni bir daqiqada eʼlon qilasiz. Pitakda kutish shart emas. Yoʻlovchilar sizni qidiruvda va viloyat kanalida topadi.\n\nBoshlash uchun «Ochish» tugmasini bosing.",
+  "profile.driver.description": "Baribir yoʻlga chiqasiz. Boʻsh joylarni yoʻlovchilarga bering va yoʻl xarajatini qoplang.\n\nSafarni bir daqiqada eʼlon qilasiz. Pitakda kutish shart emas. Yoʻlovchilar sizni qidiruvda va hudud kanalida topadi.\n\nBoshlash uchun «Ochish» tugmasini bosing.",
   "profile.admin.name": "{brand} Jamoa",
   "profile.admin.short": "{brand} jamoasi uchun boshqaruv paneli.",
   "profile.admin.description": "{brand} jamoasi uchun boshqaruv paneli: arizalar, shikoyatlar, narxlar va statistika. Bu bot faqat jamoa aʼzolari uchun."

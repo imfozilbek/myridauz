@@ -13,7 +13,7 @@ export function numbers(brand: BrandConfig, { t }: I18n, map: MapData, all: read
   const facts: [TranslationKey, number][] = [
     ['landing.numbers.regions', map.regions.length],
     ['landing.numbers.directions', all.length],
-    ['landing.numbers.channels', Object.keys(brand.channels).length],
+    ['landing.numbers.channels', brand.channels.length],
     ['landing.numbers.minute', MINUTES_TO_PUBLISH],
   ];
   const items = facts

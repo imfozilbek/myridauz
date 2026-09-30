@@ -21,6 +21,8 @@ const EXPLAINED: readonly string[] = [
   'reviews.not_over',
   'reviews.too_late',
   'complaints.already',
+  'channels.bot_not_admin',
+  'channels.invalid_input',
 ];
 
 export function errorKey(error: unknown): TranslationKey {

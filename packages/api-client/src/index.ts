@@ -7,6 +7,7 @@ export type { Fetch } from './fetch';
 export { createModerationClient, type ModerationClient } from './moderation-client';
 export { createUsersClient, type UsersClient } from './users-client';
 export { createMarketClient, type MarketClient } from './market-client';
+export { createChannelsClient, type ChannelsClient } from './channels-client';
 export { createPricingClient, type PricingClient } from './pricing-client';
 export { createBookingsClient, type BookingsClient } from './bookings-client';
 export { createWalletClient, type WalletClient } from './wallet-client';

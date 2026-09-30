@@ -122,6 +122,7 @@ export * from './chat';
 export * from './shares';
 export * from './subscriptions';
 export * from './ratings';
+export * from './channels';
 export * from './complaints';
 export * from './stats';
 export * from './calls';

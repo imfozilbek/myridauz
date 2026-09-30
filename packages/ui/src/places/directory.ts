@@ -5,6 +5,7 @@ import { createContext, useContext } from 'react';
 // The directory of regions and places, ready for the picker (docs/14).
 export type PlaceDirectory = {
   readonly regions: readonly Location[];
+  readonly all: readonly Location[];
   readonly find: (id: string) => Location | undefined;
   readonly inside: (regionId: string) => readonly Location[];
   readonly search: (query: string) => readonly Location[];
@@ -22,6 +23,7 @@ export function buildDirectory(locations: readonly Location[]): PlaceDirectory {
   }
   return {
     regions: locations.filter((location) => location.parentId === null),
+    all: locations,
     find: (id) => byId.get(id),
     inside: (regionId) => children.get(regionId) ?? [],
     search: (query) =>

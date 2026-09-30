@@ -11,7 +11,6 @@ const site = renderSite(brand, {
   year: 2027,
   map: MAP,
   roads: ROADS,
-  channels: { rida_samarqand: { title: 'Samarqand', code: '30' } },
   script: 'run()',
 });
 const home = site['index.html'] ?? '';

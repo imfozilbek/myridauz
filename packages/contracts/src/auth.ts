@@ -76,6 +76,9 @@ export const API_ERRORS = [
   'calls.unavailable',
   'locations.not_found',
   'locations.invalid_input',
+  'channels.not_found',
+  'channels.invalid_input',
+  'channels.bot_not_admin',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

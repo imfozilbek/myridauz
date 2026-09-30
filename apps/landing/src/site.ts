@@ -5,21 +5,18 @@ import { directionPage, directionQuestions } from './direction-page';
 import { directions } from './directions';
 import { documentPage } from './document';
 import { home } from './home';
-import type { ChannelTitles, HeroRoads, MapData } from './map-data';
+import type { HeroRoads, MapData } from './map-data';
 import { page } from './page';
 import { searchFiles } from './search-files';
 import { questions } from './sections/faq';
 import { breadcrumbs, faqPage, organization } from './structured-data';
 
-type Build = { year: number; map: MapData; roads: HeroRoads; channels: ChannelTitles; script: string };
+type Build = { year: number; map: MapData; roads: HeroRoads; script: string };
 
 // Every file of the landing in dist: the main page, a page of every direction (docs/60),
 // the three documents and the files for search engines.
 // The map and the script come from the build (prerender.ts), so rendering stays a pure function.
-export function renderSite(
-  brand: BrandConfig,
-  { year, map, roads, channels, script }: Build,
-): Record<string, string> {
+export function renderSite(brand: BrandConfig, { year, map, roads, script }: Build): Record<string, string> {
   const i18n = createI18n(DEFAULT_LOCALE);
   const { t } = i18n;
   const all = directions(map);
@@ -31,7 +28,7 @@ export function renderSite(
       year,
       title: t('landing.title', { brand: brand.name }),
       path: '/',
-      body: home(brand, i18n, { map, roads, channels, all, items }),
+      body: home(brand, i18n, { map, roads, all, items }),
       head: organization(brand, t('landing.description', { brand: brand.name })) + faqPage(items),
       script,
     }),

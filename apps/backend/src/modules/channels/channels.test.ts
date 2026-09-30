@@ -17,7 +17,7 @@ function setup(trip: Trip = TRIP, enabled = true) {
   const sent: NotificationJob[] = [];
   const deps: ChannelsDeps = {
     enabled,
-    channels: CHANNELS,
+    channels: async () => CHANNELS,
     places: async () => PLACES,
     trip: async (id) => (id === now.id ? now : undefined),
     posts: createMemoryChannelPosts(),
@@ -35,6 +35,38 @@ describe('the channels of a trip (docs/15)', () => {
     expect(channelsOf('1718401', '1706401', PLACES, CHANNELS)).toEqual(['ch_samarqand', 'ch_buxoro']);
     expect(channelsOf('1718401', '1718', PLACES, CHANNELS)).toEqual(['ch_samarqand']);
     expect(channelsOf('1726269', '1726', PLACES, CHANNELS)).toEqual([]);
+  });
+});
+
+describe('one post in several district channels (docs/63)', () => {
+  it('reaches every channel whose list has a place of the trip or its region', () => {
+    const places = new Map([
+      ...PLACES,
+      ['1710', { name: 'Qashqadaryo viloyati', parentId: null }],
+      ['1710224', { name: 'Kitob', parentId: '1710' }],
+      ['1710245', { name: 'Shahrisabz', parentId: '1710' }],
+      ['1710250', { name: 'Yakkabogʻ', parentId: '1710' }],
+    ]);
+    const near = ['1710224', '1710245', '1710250'];
+    const channels = [
+      { username: 'ch_qashqadaryo', places: ['1710'] },
+      { username: 'ch_kitob', places: near },
+      { username: 'ch_shahrisabz', places: near },
+      { username: 'ch_yakkabog', places: ['1710250', '1710245'] },
+      { username: 'ch_samarqand', places: ['1718'] },
+    ];
+    expect(channelsOf('1726269', '1710245', places, channels)).toEqual([
+      'ch_qashqadaryo',
+      'ch_kitob',
+      'ch_shahrisabz',
+      'ch_yakkabog',
+    ]);
+    expect(channelsOf('1710224', '1718401', places, channels)).toEqual([
+      'ch_qashqadaryo',
+      'ch_kitob',
+      'ch_shahrisabz',
+      'ch_samarqand',
+    ]);
   });
 });
 

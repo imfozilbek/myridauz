@@ -6,11 +6,11 @@ import type { ChannelPost, ChannelsDeps } from './ports';
 // once Telegram gives it (docs/15). Only drivers' trips: passengers' requests never go there.
 export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void> {
   if (!deps.enabled) return;
-  const [trip, places] = await Promise.all([deps.trip(tripId), deps.places()]);
+  const [trip, places, list] = await Promise.all([deps.trip(tripId), deps.places(), deps.channels()]);
   if (!trip || trip.status !== 'active') return;
   const { text, markup } = deps.render(trip, places, deps.now());
   const shown = shownOf(trip);
-  const channels = channelsOf(trip.from, trip.to, places, deps.channels);
+  const channels = channelsOf(trip.from, trip.to, places, list);
   await deps.send(
     channels.map((channel) => ({
       bot: 'passenger' as const,

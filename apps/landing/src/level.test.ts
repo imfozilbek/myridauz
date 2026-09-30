@@ -8,8 +8,7 @@ import { MAP, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const home =
-  renderSite(brand, { year: 2027, map: MAP, roads: ROADS, channels: {}, script: '' })['index.html'] ?? '';
+const home = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, script: '' })['index.html'] ?? '';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -29,7 +28,7 @@ describe('the level of the landing (docs/60)', () => {
 
   it('shows only true numbers taken from the data of the brand', () => {
     expect(home).toContain(`<b data-count-up="2">2</b><span>${t('landing.numbers.regions')}</span>`);
-    expect(home).toContain(`<b data-count-up="${Object.keys(brand.channels).length}">`);
+    expect(home).toContain(`<b data-count-up="${brand.channels.length}">`);
     expect(home).toContain(`<b data-count-up="1">1</b><span>${t('landing.numbers.minute')}</span>`);
   });
 
