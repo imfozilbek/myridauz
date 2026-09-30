@@ -40,6 +40,8 @@ describe('«Qayerdan / Qayerga» over the map (G24, docs/71)', { timeout: 20_000
     await tap('Yangi Margʻilon');
     expect(calls.search).toHaveBeenCalledWith('Маргилан', HERE);
     await waitFor(() => expect(map.clipped()).toBe(true));
+    // The map of the start was cut by its district: the cut goes before the move to another one.
+    expect(map.log().join(' ')).toMatch(/clip unclip move.* clip$/u);
     await here('Yangi Margʻilon');
     await tap('Pitakdan');
     expect(await screen.findByText(/Qoʻyliq pitagi · \d+ km/)).toBeTruthy();

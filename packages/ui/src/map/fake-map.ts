@@ -11,6 +11,8 @@ export function fakeMap(failures = 0) {
   let left = failures;
   let marks: readonly MapMark[] = [];
   let clipped = false;
+  // What happened to the map, in order: a cut, its removal, a move.
+  const log: string[] = [];
   const listeners: (() => void)[] = [];
   const engine = vi.fn<MapEngine>(async (_box, _source, start) => {
     if (left-- > 0) throw new Error('map.failed');
@@ -19,14 +21,18 @@ export function fakeMap(failures = 0) {
       center: () => center,
       onMove: (listener) => void listeners.push(listener),
       moveTo: (point) => {
+        log.push('move');
         center = point;
         for (const listener of listeners) listener();
       },
-      clip: (parts) => void (clipped = parts !== null),
+      clip: (parts) => {
+        clipped = parts !== null;
+        log.push(clipped ? 'clip' : 'unclip');
+      },
       show: (shown) => void (marks = shown),
       fit: () => undefined,
       remove: () => undefined,
     };
   });
-  return { engine, at: () => center, marks: () => marks, clipped: () => clipped };
+  return { engine, at: () => center, marks: () => marks, clipped: () => clipped, log: () => log };
 }

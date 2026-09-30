@@ -23,9 +23,10 @@ export const TEXT = {
   profile: t('account.profile.open'),
   blocked: t('account.blocked.title'),
   from: t('places.from'),
+  // G24: the search starts on the map; the list of districts is the other way.
+  wayList: t('way.list'),
   to: t('places.to'),
   search: t('places.search'),
-  wholeCity: t('places.wholeCity'),
   insideCity: t('errors.locations.inside_city'),
   becomeDriver: t('drivers.intro.title'),
   start: t('drivers.intro.start'),

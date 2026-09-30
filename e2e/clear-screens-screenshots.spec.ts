@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { chooseRoute } from './market';
+import { chooseWay } from './market';
 import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -36,7 +36,7 @@ test('passenger: a trip without seats says why', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await page.getByText(TEXT.findTrip).click();
-  await chooseRoute(page, true);
+  await chooseWay(page);
   await page.getByText(TEXT.tomorrow).click();
   await page.getByText('Bekzod', { exact: false }).click();
   await expect(page.getByText(t('market.trip.closed.full'))).toBeVisible();

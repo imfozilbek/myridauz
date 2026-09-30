@@ -119,25 +119,28 @@ function WayForm({ done, onBack, onDone, directory }: Props & { readonly directo
     <div className="pickup-map">
       <BackButton onClick={onBack} />
       <WayMap from={from} to={to} pitak={mode === 'door' ? null : (pitak ?? null)} />
-      <WayCard
-        from={from}
-        to={to}
-        mode={mode}
-        pitak={pitak}
-        here={here}
-        onPick={setEditing}
-        onMode={changeMode}
-      />
+      {/* The card and the other way by the list: at the top, the bottom is for the main button. */}
+      <div className="way-top">
+        <WayCard
+          from={from}
+          to={to}
+          mode={mode}
+          pitak={pitak}
+          here={here}
+          onPick={setEditing}
+          onMode={changeMode}
+        />
+        <div className="way-list">
+          <Button mode="white" size="s" onClick={() => setEditing('list')}>
+            {t('way.list')}
+          </Button>
+        </div>
+      </div>
       {note ? (
         <Text className="way-pin-name" role="alert">
           {t(note)}
         </Text>
       ) : null}
-      <div className="way-list">
-        <Button mode="white" size="s" onClick={() => setEditing('list')}>
-          {t('way.list')}
-        </Button>
-      </div>
       <MainButton text={t(done)} onClick={submit} />
     </div>
   );

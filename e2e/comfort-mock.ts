@@ -32,7 +32,7 @@ export async function mockComfort(page: Page) {
   await page.route('**/api/passenger/favorites', (route) =>
     json(route, {
       drivers: saved.has(11) ? [jasur] : [],
-      trips: saved.has(11) ? [tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true })] : [],
+      trips: saved.has(11) ? [tripOf('1', 'Jasur', false, 26)] : [],
     }),
   );
   await page.route('**/api/passenger/favorites/*', (route) => {

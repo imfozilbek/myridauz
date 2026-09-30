@@ -20,7 +20,8 @@ export type MapView = {
   moveTo(point: Point): void;
   clip(parts: BorderParts | null): void;
   show(marks: readonly MapMark[], line: readonly Point[] | null): void;
-  fit(points: readonly Point[]): void;
+  // covered: the share of the height at the top hidden by a card.
+  fit(points: readonly Point[], covered?: number): void;
   remove(): void;
 };
 

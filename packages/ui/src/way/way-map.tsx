@@ -7,6 +7,8 @@ import { useMapView } from '../map/use-map-view';
 import type { WayEnd } from './way-end';
 
 const TASHKENT = { lat: 41.3111, lng: 69.2797 };
+// The card over the map takes about this share of its height (docs/71).
+const CARD_SHARE = 0.4;
 
 // The map behind the card (docs/71): the start, the end, the line between them and the pitak.
 // Without a map the card still works: the map is only a picture here.
@@ -25,7 +27,10 @@ export function WayMap({ from, to, pitak }: { from: WayEnd | null; to: WayEnd | 
       ...(pitak ? [{ point: pitak.point, color: colors.text, label: t('way.mark.pitak') }] : []),
     ];
     view.show(marks, a && b ? [a, b] : null);
-    view.fit(marks.map((mark) => mark.point));
+    view.fit(
+      marks.map((mark) => mark.point),
+      CARD_SHARE,
+    );
   }, [view, from, to, pitak, colors, t]);
   return <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />;
 }

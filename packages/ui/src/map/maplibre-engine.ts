@@ -11,6 +11,8 @@ import { clip, fit, show } from './map-overlays';
 const START_ZOOM = 16;
 // No answer in this time: the map says it did not load, never an endless empty box.
 const LOAD_TIMEOUT_MS = 15_000;
+// Farther than this (in degrees, about 20 km) the map jumps: a long flight takes seconds.
+const FLY_DEGREES = 0.2;
 let protocol: Protocol | null = null;
 
 const view = (map: MapLibreMap, colors: MapColors): MapView => ({
@@ -19,10 +21,16 @@ const view = (map: MapLibreMap, colors: MapColors): MapView => ({
     return { lat, lng };
   },
   onMove: (listener) => void map.on('moveend', listener),
-  moveTo: ({ lat, lng }) => void map.flyTo({ center: [lng, lat], zoom: START_ZOOM }),
+  moveTo: ({ lat, lng }) => {
+    const now = map.getCenter();
+    const far = Math.abs(now.lat - lat) + Math.abs(now.lng - lng) > FLY_DEGREES;
+    const target = { center: [lng, lat] as [number, number], zoom: START_ZOOM };
+    if (far) map.jumpTo(target);
+    else map.flyTo(target);
+  },
   clip: (parts) => clip(map, colors, parts),
   show: (marks, line) => show(map, colors, marks, line),
-  fit: (points) => fit(map, points),
+  fit: (points, covered) => fit(map, points, covered),
   remove: () => map.remove(),
 });
 

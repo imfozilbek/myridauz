@@ -1,9 +1,15 @@
 /* The screen of the start and the end over the map (G24, docs/71). */
-.way-card {
+.way-top {
   position: absolute;
   top: 8px;
   left: 8px;
   right: 8px;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.way-card {
+  justify-self: stretch;
   display: grid;
   gap: 8px;
   padding: 8px;
@@ -32,10 +38,9 @@
   text-align: center;
   pointer-events: none;
 }
-.way-list {
-  position: absolute;
-  left: 8px;
-  bottom: 8px;
+/* The list of districts stands out of the card, like a button over the map. */
+.way-list > button {
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
 }
 /* «Safar xaritasi» of the driver (docs/70): the map on top, the stops under it. */
 .trip-map .trip-map-box {

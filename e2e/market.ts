@@ -1,5 +1,8 @@
 import { expect, type Page } from '@playwright/test';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
+
+const { t } = createI18n(DEFAULT_LOCALE);
 
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
@@ -15,11 +18,21 @@ export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.locator('#tg-main-button').click();
 }
 
+// «Qayerdan / Qayerga» over the map (G24) by its other way, the list of districts: their centers
+// stand for the points.
+export async function chooseWay(page: Page) {
+  await page.getByText(t('way.list')).click();
+  await chooseRoute(page);
+  await page.locator('#tg-main-button').click();
+}
+
 // A driver publishes a trip, one question per screen (G07). The test person is a woman: no woman step.
 export async function publishTrip(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
   await page.getByText(TEXT.newTrip).click();
   await chooseRoute(page);
+  await shot('2-mode');
+  await page.getByText(t('way.trip.mode.both')).click();
   await expect(page.getByText(TEXT.tomorrow)).toBeVisible();
   await shot('2-date');
   await page.getByText(TEXT.tomorrow).click();
@@ -41,10 +54,12 @@ export async function publishTrip(page: Page, shot: Shot = none) {
   await shot('8-published');
 }
 
-// A passenger finds trips of tomorrow to the whole Samarqand region and filters "ayol bor".
+// A passenger finds trips of tomorrow to Samarqand shahri and filters "ayol bor".
 export async function findTrips(page: Page, shot: Shot = none) {
   await page.getByText(TEXT.findTrip).click();
-  await chooseRoute(page, true);
+  await expect(page.getByText(t('way.list'))).toBeVisible();
+  await shot('1-way');
+  await chooseWay(page);
   await page.getByText(TEXT.tomorrow).click();
   await expect(page.getByText('Jasur', { exact: false })).toBeVisible();
   await shot('2-results');

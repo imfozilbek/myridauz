@@ -4,7 +4,7 @@ import { tripOf } from './market-mock';
 // Route subscriptions as the Mini Apps see them (G10): the search finds nothing, "Xabar bering".
 const CHILONZOR = '1726269';
 const DAY = 24 * 3_600_000;
-export const LINKED = tripOf('5', 'Jasur', true, 30, { hasMeetingPoint: true });
+export const LINKED = tripOf('5', 'Jasur', true, 30);
 
 export async function mockSubscriptions(page: Page, emptySearch: boolean) {
   const list: object[] = [

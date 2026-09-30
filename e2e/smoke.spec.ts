@@ -60,6 +60,7 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
   await page.getByText(MINI_APPS[0].action).click();
+  await page.getByText(TEXT.wayList).click();
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

@@ -113,8 +113,10 @@ export function show(
   );
 }
 
-export function fit(map: MapLibreMap, points: readonly Point[]) {
+// covered: the share of the map height at the top under a card; the marks stay below it.
+export function fit(map: MapLibreMap, points: readonly Point[], covered = 0) {
   if (points.length === 0) return;
+  const top = FIT_PADDING + Math.round(map.getContainer().clientHeight * covered);
   const lngs = points.map((point) => point.lng);
   const lats = points.map((point) => point.lat);
   map.fitBounds(
@@ -122,6 +124,11 @@ export function fit(map: MapLibreMap, points: readonly Point[]) {
       [Math.min(...lngs), Math.min(...lats)],
       [Math.max(...lngs), Math.max(...lats)],
     ],
-    { padding: FIT_PADDING, maxZoom: 15 },
+    // At once: a flight across the country takes seconds and shows nothing.
+    {
+      padding: { top, bottom: FIT_PADDING, left: FIT_PADDING, right: FIT_PADDING },
+      maxZoom: 15,
+      animate: false,
+    },
   );
 }

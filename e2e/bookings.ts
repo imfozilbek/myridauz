@@ -35,6 +35,8 @@ export async function bookSeats(page: Page, shot: Shot = none) {
   await expect(page.getByText(B.seats)).toBeVisible();
   await shot('1-seats');
   await page.getByText(B.twoSeats).click();
+  // The trip takes people both ways: the passenger chooses «Uyimdan» (G24, docs/70).
+  await page.getByText(t('way.mode.door')).click();
   await expect(mainButton).toBeVisible();
   await shot('2-review');
   await mainButton.click();

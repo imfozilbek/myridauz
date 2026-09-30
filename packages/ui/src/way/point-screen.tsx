@@ -45,17 +45,23 @@ export function PointScreen({ title, start, find, onBack, onPick }: Props) {
   const nameText = useNameText();
   const [note, setNote] = useState<TranslationKey | null>(null);
   const method = useRef<Method>('map');
+  // A search, a recent place or the location may lie in another district: the cut goes away
+  // before the move, and the border of the district under the pin comes back once it is known.
+  const clipped = useRef<string | null>(null);
   const district = where?.district ?? null;
   useEffect(() => {
-    if (!view || !district) return;
+    if (!view || !district || clipped.current === district) return;
+    clipped.current = district;
     map.border(district).then(
       (border) => view.clip(border.parts),
       () => view.clip(null),
     );
-  }, [view, district, map]);
+  }, [view, district, where, map]);
   const moveTo = (point: Point, how: Method) => {
     method.current = how;
     setNote(null);
+    clipped.current = null;
+    view?.clip(null);
     view?.moveTo(point);
   };
   const locate = async () => {

@@ -1,7 +1,4 @@
 {
-  "title": "Qayerdan va qayerga",
-  "from": "Qayerdan",
-  "to": "Qayerga",
   "fromEmpty": "Qayerdan ketasiz?",
   "toEmpty": "Qayerga borasiz?",
   "here": "Siz turgan joy",
