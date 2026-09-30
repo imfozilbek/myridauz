@@ -19,6 +19,7 @@ import {
   Inbox,
   Languages,
   MapPin,
+  Megaphone,
   Mic,
   MicOff,
   Phone,
@@ -87,6 +88,8 @@ const ICONS = {
   muted: MicOff,
   // "Maʼlumotlarimni oʻchirish" in the profile (docs/30).
   erase: Trash2,
+  // A Telegram channel of the team (docs/63).
+  channel: Megaphone,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

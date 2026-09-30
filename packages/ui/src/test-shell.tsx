@@ -18,6 +18,7 @@ export const testClients = (overrides: {
   readonly moderation?: Partial<ApiClients['moderation']>;
   readonly market?: Partial<ApiClients['market']>;
   readonly pricing?: Partial<ApiClients['pricing']>;
+  readonly channels?: Partial<ApiClients['channels']>;
   readonly bookings?: Partial<ApiClients['bookings']>;
   readonly wallet?: Partial<ApiClients['wallet']>;
   readonly chat?: Partial<ApiClients['chat']>;
@@ -65,6 +66,7 @@ export const testClients = (overrides: {
     setDirection: NOT_USED,
     ...overrides.pricing,
   },
+  channels: { list: NOT_USED, save: NOT_USED, remove: NOT_USED, ...overrides.channels },
   bookings: {
     book: NOT_USED,
     myBookings: NOT_USED,

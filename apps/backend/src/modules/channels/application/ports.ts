@@ -1,5 +1,6 @@
 import type { Trip } from '@platform/contracts';
 import type { NotificationJob } from '../../notifications';
+import type { ChannelCoverage } from '../domain/route-channels';
 
 // The message id of each channel post of a trip, to edit it later (docs/15).
 export type ChannelPost = { readonly tripId: string; readonly channel: string; readonly messageId: number };
@@ -16,7 +17,8 @@ type Place = { readonly name: string; readonly parentId: string | null };
 export type ChannelsDeps = {
   // Autoposting starts only when the owner switches it on (docs/33, public action).
   readonly enabled: boolean;
-  readonly channels: Readonly<Record<string, string>>;
+  // The 13 region channels of the brand and the channels the team added (docs/63).
+  readonly channels: () => Promise<readonly ChannelCoverage[]>;
   readonly places: () => Promise<ReadonlyMap<string, Place>>;
   readonly trip: (id: string) => Promise<Trip | undefined>;
   readonly posts: ChannelPostStore;

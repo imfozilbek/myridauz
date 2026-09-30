@@ -10,6 +10,7 @@ import './module-events';
 import { analyticsModule } from './modules/analytics';
 import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
+import { channelsModule } from './modules/channels';
 import { chatRoutes } from './modules/chat';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
@@ -78,6 +79,7 @@ export const app = new Hono<AppEnv>()
   .route('/', driversModule)
   .route('/', locationsModule(auth))
   .route('/', pricingModule)
+  .route('/', channelsModule)
   // The cancel watch goes before trips: it wraps the cancel route of the trips module.
   .route('/', tripCancelWatch)
   .route('/', tripsModule)

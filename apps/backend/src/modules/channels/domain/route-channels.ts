@@ -4,16 +4,30 @@ type Places = ReadonlyMap<string, Place>;
 
 export const regionOf = (id: string, places: Places) => places.get(id)?.parentId ?? id;
 
-// The channels of a trip (docs/15): the channel of the region it leaves and of the region it goes
-// to, once each. A region without a channel (Toshkent shahri) gives none.
+// A channel and the places it covers: a region, districts or both (docs/63).
+export type ChannelCoverage = { readonly username: string; readonly places: readonly string[] };
+
+// A place and every place above it: a district, then its region.
+function lineOf(id: string, places: Places): string[] {
+  const line: string[] = [];
+  for (let at: string | null = id; at !== null && !line.includes(at); at = places.get(at)?.parentId ?? null)
+    line.push(at);
+  return line;
+}
+
+// The channels of a trip (docs/15, docs/63): every channel whose list has the place the trip leaves
+// or goes to, or a place above it. One post can go to several channels; each channel gets it once.
+// Toshkent shahri has no channel, so a trip there reaches only the channels of the other end.
 export function channelsOf(
   from: string,
   to: string,
   places: Places,
-  channels: Readonly<Record<string, string>>,
+  channels: readonly ChannelCoverage[],
 ): string[] {
-  const regions = new Set([regionOf(from, places), regionOf(to, places)]);
-  return [...regions].map((region) => channels[region]).filter((channel) => channel !== undefined);
+  const reached = new Set([...lineOf(from, places), ...lineOf(to, places)]);
+  return channels
+    .filter((channel) => channel.places.some((place) => reached.has(place)))
+    .map((c) => c.username);
 }
 
 // What a post says about a trip now: seats to book, no seats, the trip left, or no trip (docs/15).

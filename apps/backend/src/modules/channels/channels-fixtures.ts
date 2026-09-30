@@ -9,7 +9,10 @@ export const PLACES = new Map([
   ['1706', { name: 'Buxoro viloyati', parentId: null }],
   ['1706401', { name: 'Buxoro shahri', parentId: '1706' }],
 ]);
-export const CHANNELS = { '1718': 'ch_samarqand', '1706': 'ch_buxoro' };
+export const CHANNELS = [
+  { username: 'ch_samarqand', places: ['1718'] },
+  { username: 'ch_buxoro', places: ['1706'] },
+];
 export const TRIP: Trip = {
   id: 'trip-1',
   driver: {

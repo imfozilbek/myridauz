@@ -1,6 +1,7 @@
 import type {
   BookingsClient,
   CallsClient,
+  ChannelsClient,
   ChatClient,
   ComfortClient,
   DriversClient,
@@ -20,6 +21,7 @@ export type ApiClients = {
   readonly moderation: ModerationClient;
   readonly market: MarketClient;
   readonly pricing: PricingClient;
+  readonly channels: ChannelsClient;
   readonly bookings: BookingsClient;
   readonly wallet: WalletClient;
   readonly chat: ChatClient;
