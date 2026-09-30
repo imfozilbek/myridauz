@@ -21,6 +21,7 @@ describe('the district and the name of a point on the map (G24, docs/69)', () =>
     expect(whereSchema.parse(await response.json())).toEqual({
       district: '1726277',
       name: { step: 'landmark', name: 'Chorsu bozori' },
+      area: { step: 'district', name: 'Shayxontohur' },
     });
   });
 

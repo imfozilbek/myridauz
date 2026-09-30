@@ -1,4 +1,4 @@
-import { cancelAllOf, chatsOf, filedRideOfBooking } from './modules/bookings';
+import { cancelAllOf, chatsOf, erasePointsOf, filedRideOfBooking } from './modules/bookings';
 import { forgetChat } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
@@ -18,6 +18,8 @@ wireAccountDeletion(async (env, userId) => {
   const evidence = new Set(rides.map((ride) => ride?.chatKey));
   // Live trips and bookings end the same way as on a block: the other side hears it (docs/17).
   await cancelAllOf(env, userId);
+  // The points go at once, even under a complaint: the chat stays the evidence (docs/69).
+  await erasePointsOf(env, userId);
   for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);

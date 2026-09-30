@@ -10,9 +10,11 @@ export type PlaceNameStep = (typeof PLACE_NAME_STEPS)[number];
 export const placeNameSchema = z.object({ step: z.enum(PLACE_NAME_STEPS), name: z.string().min(1) });
 export type PlaceName = z.infer<typeof placeNameSchema>;
 
-// The district by the borders (null abroad) and the name of the point.
+// The district by the borders (null abroad), the name of the point and its area: the name
+// without landmarks and streets, what the driver sees before the confirmation (docs/70).
 export const whereSchema = z.object({
   district: locationIdSchema.nullable(),
   name: placeNameSchema.nullable(),
+  area: placeNameSchema.nullable(),
 });
 export type Where = z.infer<typeof whereSchema>;

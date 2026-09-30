@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { personIdSchema } from './person-id';
 import { MAX_SEATS } from './drivers';
 import { tripSchema } from './trips';
+import { pointInputSchema, pointSchema } from './point';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
 // request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
@@ -34,12 +35,7 @@ export const BOOKING_ANSWER_HOURS = 24;
 export const bookingInputSchema = z.object({ seats: z.number().int().min(1).max(MAX_SEATS) });
 export type BookingInput = z.input<typeof bookingInputSchema>;
 
-export const pointSchema = z.object({ lat: z.number(), lng: z.number() });
-export const pickupInputSchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
-});
-export type Point = z.infer<typeof pointSchema>;
+export const pickupInputSchema = pointInputSchema;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.
 // Places and the plate open only after the confirmation (docs/07, docs/14).

@@ -37,20 +37,35 @@ export type NameDeps = {
   readonly districtName: (id: string) => string | undefined;
 };
 
+async function settlementNear(index: PlaceIndex, point: Point): Promise<PlaceName | null> {
+  const quarter = { column: 'cell', list: nearCells(point) } as const;
+  const [settlement] = await index.around({ cells: quarter, kinds: ['settlement'], near: point }, 1);
+  return settlement && metresBetween(point, settlement.point) <= SETTLEMENT_METRES
+    ? { step: 'settlement', name: settlement.name }
+    : null;
+}
+
+// The name of the point by the whole ladder, and its area: the ladder without landmarks and
+// streets. The driver sees only the area before the confirmation (docs/70).
 export async function whereIs({ index, borders, districtName }: NameDeps, point: Point): Promise<Where> {
   const district = districtAt(borders, point);
-  if (district === null) return { district, name: null };
+  if (district === null) return { district, name: null, area: null };
   const kinds = STEPS.flatMap((step) => step.kinds);
   const cells = { column: 'fine', list: nearFineCells(point) } as const;
   const around = await index.around({ cells, kinds, near: point }, AROUND_LIMIT);
-  for (const { step, kinds: stepKinds, metres } of STEPS) {
-    const found = pick(around, point, stepKinds, metres);
-    if (found) return { district, name: { step, name: found.name } };
-  }
-  const quarter = { column: 'cell', list: nearCells(point) } as const;
-  const [settlement] = await index.around({ cells: quarter, kinds: ['settlement'], near: point }, 1);
-  if (settlement && metresBetween(point, settlement.point) <= SETTLEMENT_METRES)
-    return { district, name: { step: 'settlement', name: settlement.name } };
-  const name = districtName(district);
-  return { district, name: name ? { step: 'district', name } : null };
+  const named = (step: PlaceName['step']) => {
+    const rule = STEPS.find((each) => each.step === step);
+    const found = rule && pick(around, point, rule.kinds, rule.metres);
+    return found ? { step, name: found.name } : null;
+  };
+  const mahalla = named('mahalla');
+  // Without a mahalla both the name and the area may end at the settlement.
+  const settlement = mahalla ? null : await settlementNear(index, point);
+  const own = districtName(district);
+  const last: PlaceName | null = own ? { step: 'district', name: own } : null;
+  return {
+    district,
+    name: named('landmark') ?? mahalla ?? named('street') ?? settlement ?? last,
+    area: mahalla ?? settlement ?? last,
+  };
 }

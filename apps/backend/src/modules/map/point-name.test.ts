@@ -26,6 +26,7 @@ describe('the name of a point: the ladder of docs/69 (G24)', () => {
     expect(await where(rows).answer).toEqual({
       district: SHAYXONTOHUR,
       name: { step: 'landmark', name: 'Chorsu bozori' },
+      area: { step: 'district', name: 'Shayxontohur' },
     });
   });
 
@@ -40,17 +41,18 @@ describe('the name of a point: the ladder of docs/69 (G24)', () => {
   });
 
   it('takes the settlement within 3 km, else the district, and reads the index twice at most', async () => {
-    const village = placeRow('Qoʻshtepa', 'settlement', north(2500));
-    const near = where([village]);
-    expect((await near.answer).name).toEqual({ step: 'settlement', name: 'Qoʻshtepa' });
+    const near = where([placeRow('Qoʻshtepa', 'settlement', north(2500))]);
+    const village = { step: 'settlement', name: 'Qoʻshtepa' };
+    expect(await near.answer).toMatchObject({ name: village, area: village });
     expect(near.around).toHaveBeenCalledTimes(2);
     const far = await where([placeRow('Uzoq qishloq', 'settlement', north(3500))]).answer;
-    expect(far).toEqual({ district: SHAYXONTOHUR, name: { step: 'district', name: 'Shayxontohur' } });
+    const own = { step: 'district', name: 'Shayxontohur' };
+    expect(far).toEqual({ district: SHAYXONTOHUR, name: own, area: own });
   });
 
   it('knows no district and no name abroad, without reading the index', async () => {
     const abroad = where([], { lat: 43.2389, lng: 76.8897 });
-    expect(await abroad.answer).toEqual({ district: null, name: null });
+    expect(await abroad.answer).toEqual({ district: null, name: null, area: null });
     expect(abroad.around).not.toHaveBeenCalled();
   });
 });

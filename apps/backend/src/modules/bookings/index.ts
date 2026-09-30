@@ -5,6 +5,7 @@ import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
 import { rememberPickupMessage, setPickup } from './application/pickup';
 import { cancelEverything } from './application/cancel-all';
+import { eraseOldPoints } from './application/erase';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
@@ -34,6 +35,12 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
 
 // The Cron job (docs/35): requests without an answer in time become expired.
 export const expireBookings = (env: Bindings, now: number) => bookingStore(env).expireOver(now);
+
+// The Cron job (docs/69): points 30 days after the trip go, except under an open complaint.
+export const erasePastPoints = (env: Bindings, now: number, complained: ReadonlySet<string>) =>
+  eraseOldPoints(bookingsDeps(env), now, complained);
+// "Maʼlumotlarimni oʻchirish" (docs/30): every point of the person goes at once.
+export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env).erasePointsOf(userId);
 
 // A location the passenger sent to the passenger bot as an answer to the confirmation (docs/14).
 export const pickupFromBot = (

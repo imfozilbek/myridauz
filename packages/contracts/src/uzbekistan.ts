@@ -1,5 +1,5 @@
 import border from './uzbekistan-border.json' with { type: 'json' };
-import type { Point } from './bookings';
+import type { Point } from './point';
 
 // The border of Uzbekistan from OpenStreetMap (relation 196240), simplified to about 1 km:
 // polygons of rings of [lng, lat]. A pickup point is taken inside it (docs/14, G22).

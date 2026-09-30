@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { pointSchema } from './bookings';
+import { pointSchema } from './point';
 import { locationIdSchema } from './locations';
 
 // Search by name on the map (G23, docs/67): names from the same OpenStreetMap data, in D1.

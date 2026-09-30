@@ -65,3 +65,7 @@ export const openComplaintsOf = async (env: Bindings, userId: number) =>
   (await complaintsDeps(env).store.open()).filter(
     (complaint) => complaint.authorId === userId || complaint.againstId === userId,
   );
+
+// The rides of open complaints keep their points until the decision (docs/69).
+export const bookingsUnderComplaint = async (env: Bindings) =>
+  new Set((await complaintsDeps(env).store.open()).map((complaint) => complaint.bookingId));

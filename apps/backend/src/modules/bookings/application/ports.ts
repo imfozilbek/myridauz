@@ -24,8 +24,12 @@ export type BookingRepository = {
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
   byPassenger(passengerId: number): Promise<BookingRecord[]>;
   byPickupMessage(passengerId: number, messageId: number): Promise<BookingRecord | undefined>;
-  // The Cron job: requests without an answer in time become expired (docs/35).
+  // The Cron job: requests without an answer in time become expired (docs/35), without points.
   expireOver(now: number): Promise<void>;
+  // The erasure of points (docs/69): which bookings made before this time still keep points.
+  keepingPoints(before: number): Promise<{ readonly id: string; readonly tripId: string }[]>;
+  erasePoints(ids: readonly string[]): Promise<void>;
+  erasePointsOf(passengerId: number): Promise<void>;
 };
 
 export type OfferRepository = {
