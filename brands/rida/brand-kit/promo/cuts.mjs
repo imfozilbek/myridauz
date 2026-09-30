@@ -8,9 +8,11 @@ const MASTER = `${OUT}/rida-promo-1080x1920.mp4`;
 const JOIN = 0.08; // seconds of sound fade at each join: no click between the parts
 const END = 0.8; // seconds of the last sound fade
 
+// A part ends before the circle wipe into the next scene starts (wipe in kit.mjs): no flash of its color.
+const WIPE = 0.45;
 // The seconds of the master (docs/41 timing): the question, the passenger, the driver, trust, the logo.
-const QUESTION = [0, 2.4], HOOK = [0, 7.96], PASSENGER = [17.77, 27.19], DRIVER = [27.19, 37.3];
-const TRUST = [37.3, 44.5], LOGO = [57.3, 60.94], CROWD = [56.0, 60.94], FINALE = [55.0, 60.94];
+const QUESTION = [0, 2.2], HOOK = [0, 7.96 - WIPE], PASSENGER = [17.77, 27.19 - WIPE], DRIVER = [27.19, 37.3 - WIPE];
+const TRUST = [37.3, 44.5], LOGO = [57.1, 60.94], CROWD = [55.6, 60.94], FINALE = [54.6, 60.94];
 
 const CUTS = {
   'rida-promo-6s': [QUESTION, LOGO],

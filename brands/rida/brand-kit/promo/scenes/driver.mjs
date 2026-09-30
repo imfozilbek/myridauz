@@ -34,8 +34,9 @@ function app(t) {
   const lift = onPublish ? enter(t, TAP - 0.5, 0.4) * leave(t, 3.85, 0.5) : 0;
   const cam = 420 * (1 - enter(t, 0, 0.6)) - 360 * lift + Math.sin(t * 1.4) * 8;
   const tilt = 6 * (1 - enter(t, 0, 0.9)) + Math.sin(t * 0.9) * 0.6;
-  return stage(t, C.amberStrong) + flash(t, 0, { max: 0.5 }) + phone(screen, { cam, zoom, fy, tilt }) +
-    g(stepCaption(i + 1, K.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) });
+  // The caption lies under the phone: when the camera lifts the phone, it never shows through the screen.
+  return stage(t, C.amberStrong) + flash(t, 0, { max: 0.5 }) +
+    g(stepCaption(i + 1, K.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) }) + phone(screen, { cam, zoom, fy, tilt });
 }
 
 // Solutions on the road: the full car leaves without waiting, then turns back with people too.

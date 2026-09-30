@@ -23,6 +23,7 @@ export function passenger(t) {
   const cam = 420 * (1 - enter(t, 0, 0.7)) - 360 * lift + Math.sin(t * 1.4) * 8;
   const tilt = -6 * (1 - enter(t, 0, 0.9)) + Math.sin(t * 0.9) * 0.6;
   const zoom = 1 + (z - 1) * push;
-  return stage(t) + phone(content, { cam, zoom, fy, tilt }) +
-    g(stepCaption(i + 1, COPY.passenger.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) });
+  // The caption lies under the phone: when the camera lifts the phone, it never shows through the screen.
+  return stage(t) + g(stepCaption(i + 1, COPY.passenger.steps[i], local), { o: Math.min(1 - lift, 1 - (zoom - 1) * 20) }) +
+    phone(content, { cam, zoom, fy, tilt });
 }
