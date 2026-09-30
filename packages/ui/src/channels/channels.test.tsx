@@ -57,7 +57,7 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
     const channels = setup([fixed]);
     await tap('Kanallar');
     expect(await screen.findByText('Hozircha tuman kanallari yoʻq.')).toBeTruthy();
-    expect(screen.getByText('@ch_qashqadaryo · Viloyat kanali')).toBeTruthy();
+    expect(screen.getByText('@ch_qashqadaryo · Asosiy kanal')).toBeTruthy();
     await tap('Kanal qoʻshish');
     fireEvent.change(field(0), { target: { value: '@ch_kitob' } });
     fireEvent.change(field(1), { target: { value: 'Kanal | Kitob' } });

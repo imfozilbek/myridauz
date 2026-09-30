@@ -1,7 +1,7 @@
 {
   "title": "Kanallar",
   "hint": "Qaysi kanalga qaysi joylarning safarlari chiqadi",
-  "fixed": "Viloyat kanali",
+  "fixed": "Asosiy kanal",
   "places": "{count} ta joy",
   "add": "Kanal qoʻshish",
   "username": "Kanal manzili, @ belgisisiz",
