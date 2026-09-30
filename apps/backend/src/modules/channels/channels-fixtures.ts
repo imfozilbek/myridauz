@@ -36,4 +36,5 @@ export const TRIP: Trip = {
   pitak: { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } },
   comment: '',
   status: 'active',
+  fit: null,
 };

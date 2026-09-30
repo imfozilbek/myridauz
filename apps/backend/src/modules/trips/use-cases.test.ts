@@ -102,9 +102,9 @@ describe('finding trips (docs/06, docs/14)', () => {
     const search = { from: '1726', to: '1718', date: '2026-10-01', woman: '1' as const };
     expect(await searchTrips(deps, search)).toEqual([]);
     // Passenger 2 is a woman: her confirmed booking gives the mark, only the fact (docs/06).
-    ride({ tripId, passengerId: 2, seats: 1 });
+    ride({ tripId, passengerId: 2, seats: 1, pickup: null, dropoff: null });
     expect(await searchTrips(deps, search)).toMatchObject([{ woman: true, seatsLeft: 2, status: 'active' }]);
-    ride({ tripId, passengerId: 3, seats: 2 });
+    ride({ tripId, passengerId: 3, seats: 2, pickup: null, dropoff: null });
     expect(await tripDetail(deps, tripId)).toMatchObject({ seatsLeft: 0, status: 'full' });
     expect(await searchTrips(deps, { ...search, woman: undefined })).toEqual([]);
   });

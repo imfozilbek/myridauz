@@ -102,5 +102,6 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     pickupMode: facts.pickupMode,
     pitak: facts.pickupMode === 'door' ? null : PITAK,
     status: 'active',
+    fit: null,
   };
 };
