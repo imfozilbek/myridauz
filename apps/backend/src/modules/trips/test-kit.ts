@@ -77,6 +77,8 @@ export function setup() {
     trip: { ...trip, departAt: NOW + 3 * HOUR },
     setNow: (next: number) => void (now = next),
     setFormula: (next: number) => void (price = next),
+    // A new face or car photo: the driver goes to the team's check again (docs/05).
+    recheck: (userId: number) => void cars.delete(userId),
     ride: (rider: Rider) => void riders.push(rider),
     events,
   };

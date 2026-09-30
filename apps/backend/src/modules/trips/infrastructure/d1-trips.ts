@@ -1,6 +1,6 @@
-import { TRIP_STATUSES } from '@platform/contracts';
+import { CAR_COLORS, TRIP_STATUSES } from '@platform/contracts';
 import type { TripRepository } from '../application/ports';
-import type { TripRecord } from '../domain/trip';
+import type { TripCar, TripRecord } from '../domain/trip';
 
 type Row = {
   id: string;
@@ -14,11 +14,21 @@ type Row = {
   price: number;
   woman_on_board: number;
   comment: string;
+  car_make: string | null;
+  car_model: string | null;
+  car_color: string | null;
+  car_plate: string | null;
   status: string;
   meeting_lat: number | null;
   meeting_lng: number | null;
   meeting_message_id: number | null;
   created_at: number;
+};
+
+const carOf = (row: Row): TripCar | null => {
+  const color = CAR_COLORS.find((item) => item === row.car_color);
+  if (row.car_make === null || row.car_model === null || !color || row.car_plate === null) return null;
+  return { make: row.car_make, model: row.car_model, color, plate: row.car_plate };
 };
 
 const toTrip = (row: Row): TripRecord => ({
@@ -33,6 +43,7 @@ const toTrip = (row: Row): TripRecord => ({
   price: row.price,
   womanOnBoard: row.woman_on_board === 1,
   comment: row.comment,
+  car: carOf(row),
   status: TRIP_STATUSES.find((status) => status === row.status) ?? 'cancelled',
   meetingPoint:
     row.meeting_lat === null || row.meeting_lng === null
@@ -43,8 +54,9 @@ const toTrip = (row: Row): TripRecord => ({
 });
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
-  woman_on_board, comment, status, meeting_lat, meeting_lng, meeting_message_id, created_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  woman_on_board, comment, status, meeting_lat, meeting_lng, meeting_message_id, created_at,
+  car_make, car_model, car_color, car_plate)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, meeting_lat = excluded.meeting_lat,
   meeting_lng = excluded.meeting_lng, meeting_message_id = excluded.meeting_message_id`;
 
@@ -70,6 +82,10 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         trip.meetingPoint?.lng ?? null,
         trip.meetingMessageId,
         trip.createdAt,
+        trip.car?.make ?? null,
+        trip.car?.model ?? null,
+        trip.car?.color ?? null,
+        trip.car?.plate ?? null,
       )
       .run();
   },

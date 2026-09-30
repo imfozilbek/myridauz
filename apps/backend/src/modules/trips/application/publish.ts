@@ -40,6 +40,7 @@ export async function publishTrip(
   const trip: TripRecord = {
     ...input,
     comment: deps.mask(input.comment),
+    car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     id: deps.newId(),
     driverId,
     endsAt: endsAt(input.departAt, km),

@@ -37,6 +37,8 @@ export type TripFacts = {
   readonly live: boolean;
   readonly over: boolean;
   readonly meetingPoint: Point | null;
+  // The plate of the car kept in the trip (docs/65 A1).
+  readonly plate: string | null;
 };
 export type RequestFacts = {
   readonly id: string;

@@ -86,6 +86,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
     seats,
     price,
     meetingPoint,
+    plate: trip.car?.plate ?? null,
     endsAt,
     live: isLive(trip, now),
     over,

@@ -26,6 +26,7 @@ export const OLIM = 12;
 
 export function setup() {
   let now = NOW;
+  let approved = true;
   let id = 0;
   const newId = () => `00000000-0000-0000-0000-${String((id += 1)).padStart(12, '0')}`;
   const people = new Map([
@@ -75,6 +76,7 @@ export function setup() {
       live: true,
       over: false,
       meetingPoint: { lat: 41.3, lng: 69.2 },
+      plate: '01A123BC',
       ...extra,
     };
     trips.set(facts.id, facts);
@@ -109,7 +111,7 @@ export function setup() {
       refund: (driverId, bookingId) => refund(walletDeps, driverId, bookingId),
     },
     people: { find: async (userId) => people.get(userId) },
-    approvedCar: async (userId) => (userId === DRIVER ? CAR : null),
+    approvedCar: async (userId) => (userId === DRIVER && approved ? CAR : null),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
     now: () => now,
@@ -138,5 +140,7 @@ export function setup() {
     bonus: () => grantWelcome(walletDeps, DRIVER),
     wallet: () => walletDeps.wallet.operations(DRIVER),
     setNow: (next: number) => void (now = next),
+    // A new face or car photo: the driver goes to the team's check again (docs/05).
+    recheck: () => void (approved = false),
   };
 }

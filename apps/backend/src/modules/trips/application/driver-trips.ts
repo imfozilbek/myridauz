@@ -8,7 +8,7 @@ import { views } from './read';
 export async function familyView(deps: TripsDeps, id: string) {
   const trip = await deps.trips.find(id);
   if (!trip) return undefined;
-  const [driver, car] = await Promise.all([deps.people.find(trip.driverId), deps.approvedCar(trip.driverId)]);
+  const [driver, car] = [await deps.people.find(trip.driverId), trip.car];
   if (!driver || !car) return undefined;
   const { driverId, from, to, departAt, km, meetingPoint } = trip;
   return {

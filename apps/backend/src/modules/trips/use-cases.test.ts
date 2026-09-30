@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { familyView } from './application/driver-trips';
 import { setMeetingPoint } from './application/meeting-point';
 import { publishTrip } from './application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from './application/read';
@@ -52,6 +53,22 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     setFormula(150000);
     const id = published.ok ? published.value.id : '';
     expect((await tripDetail(deps, id))?.price).toBe(90000);
+  });
+});
+
+describe('a driver on a new check (docs/65 A1)', () => {
+  it('keeps his trips with the approved car in search, detail, his list and the family view', async () => {
+    const { deps, trip, recheck } = setup();
+    const published = await publishTrip(deps, 1, trip);
+    const id = published.ok ? published.value.id : '';
+    recheck(1);
+    const search = { from: '1726273', to: '1718401', date: '2026-10-01' };
+    expect((await searchTrips(deps, search)).map((item) => item.id)).toEqual([id]);
+    expect((await tripDetail(deps, id))?.driver.car.model).toBe('Cobalt');
+    expect((await myTrips(deps, 1)).map((item) => item.id)).toEqual([id]);
+    expect((await familyView(deps, id))?.plate).toBe('01A123BC');
+    // Only a new trip waits for the team.
+    expect(await publishTrip(deps, 1, trip)).toEqual({ ok: false, error: 'trips.not_driver' });
   });
 });
 
