@@ -26,6 +26,12 @@ export function createMemoryUsers(): UserRepository {
       const user = users.get(id);
       if (user) users.set(id, { ...user, block });
     },
+    unblockId: async (id) => {
+      idBlocks.delete(id);
+      const user = users.get(id);
+      if (user) users.set(id, { ...user, block: null });
+    },
+    unblockPhone: async (phone) => void phoneBlocks.delete(phone),
     holdPhone: async (id, phone) => void held.set(id, phone),
     heldPhone: async (id) => held.get(id) ?? null,
     releasePhone: async (id) => void held.delete(id),

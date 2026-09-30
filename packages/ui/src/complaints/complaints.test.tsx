@@ -42,11 +42,14 @@ describe('complaints of the team (docs/17)', () => {
         chat,
         decide,
       },
+      moderation: { blocks: async () => ({ active: null, entries: [] }) },
     });
     const { tracked } = renderMarket(<ComplaintsScreen onBack={() => undefined} />, clients);
     expect(await screen.findByText('Muhim')).toBeTruthy();
     await tap('Haqorat, tahdid yoki bezovta qilish');
     expect(await screen.findAllByText('12 ta safar, 1 ta shikoyat')).toHaveLength(2);
+    // The team sees the blocks of the person the complaint is about (docs/65 C).
+    expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
     expect(chat).not.toHaveBeenCalled();
     await tap('Chatni koʻrish');
     expect(await screen.findByText('Tezroq chiq')).toBeTruthy();

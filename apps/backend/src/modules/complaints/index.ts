@@ -6,6 +6,7 @@ import { teamRole } from '../team';
 import { peopleOf } from '../users';
 import { hiddenFromSearch } from './application/file';
 import type { ComplaintsDeps, Ride, Side } from './application/ports';
+import { blockRoutes } from './http/block-routes';
 import { complaintRoutes } from './http/complaint-routes';
 import { botTeller } from './infrastructure/bot-teller';
 import { d1Complaints } from './infrastructure/d1-complaints';
@@ -53,7 +54,7 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
   };
 };
 
-export const complaintsModule = complaintRoutes(complaintsDeps);
+export const complaintsModule = complaintRoutes(complaintsDeps).route('/', blockRoutes(complaintsDeps));
 
 // Complaints from 3 different people in 30 days: out of the trip search (docs/17).
 export const hiddenByComplaints = (env: Bindings, ids: readonly number[]) =>

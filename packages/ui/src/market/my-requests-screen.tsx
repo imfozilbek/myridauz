@@ -124,6 +124,9 @@ function MyRequests({ onBack, link }: ScreenProps) {
               key={request.id}
               request={request}
               showStatus
+              offers={
+                value[2].filter((item) => item.requestId === request.id && item.status === 'sent').length
+              }
               onOpen={() => setOpened({ kind: 'request', id: request.id })}
             />
           )}

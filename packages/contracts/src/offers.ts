@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { personIdSchema } from './person-id';
 import { CAR_COLORS } from './drivers';
 import { locationIdSchema } from './locations';
+import { ratingSchema } from './ratings';
 import { DRIVER_REQUESTS_PATH } from './ride-requests';
 
 // The second way to a booking (docs/35): a driver offers a time and a price on a passenger's
@@ -30,6 +31,8 @@ export const offerSchema = z.object({
     firstName: z.string(),
     hasAvatar: z.boolean(),
     car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),
+    // "⭐ 4,8 (37)" or "Yangi": the passenger chooses a driver by it (docs/24, docs/65 C).
+    rating: ratingSchema,
   }),
   from: locationIdSchema,
   to: locationIdSchema,

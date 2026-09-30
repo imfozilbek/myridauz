@@ -7,6 +7,8 @@ type Blocks = Pick<
   | 'blockPhone'
   | 'idBlock'
   | 'blockId'
+  | 'unblockId'
+  | 'unblockPhone'
   | 'holdPhone'
   | 'heldPhone'
   | 'releasePhone'
@@ -49,6 +51,15 @@ export const d1Blocks = (db: D1Database): Blocks => ({
       .prepare('UPDATE users SET blocked = 1, blocked_until = ?, updated_at = ? WHERE id = ?')
       .bind(block.until, at, id)
       .run();
+  },
+  unblockId: async (id, at) => {
+    await db
+      .prepare('UPDATE users SET blocked = 0, blocked_until = NULL, updated_at = ? WHERE id = ?')
+      .bind(at, id)
+      .run();
+  },
+  unblockPhone: async (phone) => {
+    await db.prepare('DELETE FROM blocked_phones WHERE phone = ?').bind(phone).run();
   },
   holdPhone: async (id, phone, at) => {
     await db

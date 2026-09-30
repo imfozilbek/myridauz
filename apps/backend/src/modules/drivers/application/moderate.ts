@@ -1,4 +1,4 @@
-import type { ApplicationSummary, CarPhotoKind, DecisionInput } from '@platform/contracts';
+import type { ApplicationDetail, ApplicationSummary, CarPhotoKind, DecisionInput } from '@platform/contracts';
 import type { StoredImage } from '../../../shared/storage/image-store';
 import { afterAvatarChange, decide, type Application } from '../domain/application';
 import type { DriversDeps, Result } from './ports';
@@ -23,12 +23,24 @@ export async function queue(deps: DriversDeps): Promise<ApplicationSummary[]> {
   return items.filter((item): item is ApplicationSummary => item !== undefined);
 }
 
+// One application for the team: earlier decisions and the same plate elsewhere (docs/65 C).
 export async function applicationFor(
   deps: DriversDeps,
   userId: number,
-): Promise<ApplicationSummary | undefined> {
+): Promise<ApplicationDetail | undefined> {
   const application = await deps.applications.find(userId);
-  return application ? summary(deps, application) : undefined;
+  const view = application ? await summary(deps, application) : undefined;
+  if (!view) return undefined;
+  const [decided, samePlate] = await Promise.all([
+    deps.decisions.of(userId),
+    deps.applications.samePlate(view.car.plate, userId),
+  ]);
+  const history = decided.map(({ status, reasons, at }) => ({
+    status,
+    reasons: reasons as ApplicationSummary['reasons'],
+    at,
+  }));
+  return { ...view, history, samePlate };
 }
 
 // The team sees the face and the car of an applicant (docs/05: moderators see photos always).
@@ -56,6 +68,8 @@ export async function decideApplication(
   const next = decide(application, decision, moderatorId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);
+  const reasons = [...next.reasons];
+  await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now() });
   await deps.people.setDriver(userId, next.status === 'approved');
   if (next.status === 'approved') await deps.driverApproved(userId);
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;

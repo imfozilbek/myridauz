@@ -1,4 +1,13 @@
-import type { Booking, Car, Point, Recommendation, RouteError, Trip, TripInput } from '@platform/contracts';
+import type {
+  Booking,
+  Car,
+  Point,
+  Recommendation,
+  RouteError,
+  Trip,
+  TripInput,
+  Rating,
+} from '@platform/contracts';
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
@@ -83,6 +92,8 @@ export type BookingsDeps = {
   };
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
+  // The ratings of drivers for their offers (docs/24, docs/65 C).
+  readonly ratings: (driverIds: readonly number[]) => Promise<Map<number, Rating>>;
   readonly recommend: (
     from: string,
     to: string,
@@ -105,6 +116,8 @@ export type BookingNotifier = {
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for the passenger's close people (docs/43).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
+  // The passenger sent the own pickup point: the driver hears it and sees it (docs/14, docs/65 C).
+  pickup(booking: Booking): Promise<void>;
 };
 
 export type Result<T, E extends string> =

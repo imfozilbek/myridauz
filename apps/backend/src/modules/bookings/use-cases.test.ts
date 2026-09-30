@@ -35,6 +35,8 @@ describe('a booking of seats (docs/35)', () => {
     await rememberPickupMessage(deps, asked.id, 555);
     expect(await setPickup(deps, DILNOZA, 555, { lat: 41.2, lng: 69.1 })).toBe(true);
     expect((await driverBookings(deps, DRIVER))[0]?.pickup).toEqual({ lat: 41.2, lng: 69.1 });
+    // The driver hears about the pickup point at once (docs/65 C).
+    expect(notes).toContain('driver: pickup Dilnoza');
   });
 
   it('cannot be confirmed without money, and never charges twice', async () => {

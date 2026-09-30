@@ -13,13 +13,15 @@ import type { DriversDeps } from './application/ports';
 import { emptyApplication } from './domain/application';
 import { adminRoutes } from './http/admin-routes';
 import { driverRoutes } from './http/driver-routes';
-import { createMemoryApplications } from './infrastructure/memory-applications';
+import { createMemoryApplications, createMemoryDecisions } from './infrastructure/memory-applications';
+import { d1Decisions } from './infrastructure/d1-decisions';
 import { signalledNotifier } from './infrastructure/signalled-notifier';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { d1Applications } from './infrastructure/d1-applications';
 
 // Without D1 and R2 (tests) the module keeps its data in memory.
 const localApplications = createMemoryApplications();
+const localDecisions = createMemoryDecisions();
 const localPhotos = createMemoryImages();
 const NO_CONTENT = 204;
 
@@ -29,6 +31,7 @@ export const driversDeps = (env: Bindings): DriversDeps => {
   const teamIds = async () => (await teamMembers(env)).map((member) => member.id);
   return {
     applications: env.DB ? d1Applications(env.DB) : localApplications,
+    decisions: env.DB ? d1Decisions(env.DB) : localDecisions,
     photos,
     people,
     notify: signalledNotifier(

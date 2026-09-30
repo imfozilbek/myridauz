@@ -20,3 +20,20 @@ describe('a trip on the road (docs/65 B8)', () => {
     expect(screen.queryByText('Joy band qilish')).toBeNull();
   });
 });
+
+describe('a trip that takes nobody (docs/65 C)', () => {
+  it('says why it is closed', async () => {
+    renderMarket(
+      <PlacesGate>
+        <TripScreen
+          trip={{ ...trip, status: 'cancelled' }}
+          onBack={() => undefined}
+          onBook={() => undefined}
+        />
+      </PlacesGate>,
+      testClients({}),
+    );
+    expect(await screen.findByText('Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.')).toBeTruthy();
+    expect(screen.queryByText('Joy band qilish')).toBeNull();
+  });
+});

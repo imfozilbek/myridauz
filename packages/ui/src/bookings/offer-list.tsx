@@ -7,6 +7,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
+import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import '../market/market.css';
@@ -37,6 +38,7 @@ export function OffersSection({ offers, onOpen }: ListProps) {
           }
           subtitle={`${formatTime(new Date(offer.departAt))}, ${offer.driver.car.make} ${offer.driver.car.model}`}
           after={<CellValue>{formatMoney(offer.price)}</CellValue>}
+          description={<RatingBadge rating={offer.driver.rating} />}
         >
           {offer.driver.firstName}
         </Cell>
@@ -91,6 +93,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
               />
             }
             subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
+            after={<RatingBadge rating={driver.rating} />}
           >
             {driver.firstName}
           </Cell>

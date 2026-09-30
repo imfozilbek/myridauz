@@ -48,26 +48,34 @@ describe('createDriversClient', () => {
 });
 
 describe('createModerationClient', () => {
-  it('lists, decides and blocks for the team', async () => {
+  it('lists, decides, blocks and unblocks for the team', async () => {
+    const detail = { ...summary, history: [], samePlate: 1 };
+    const journal = { active: null, entries: [] };
     const fetch = vi
       .fn<Fetch>()
       .mockResolvedValueOnce(Response.json({ applications: [summary] }))
-      .mockResolvedValueOnce(Response.json(summary))
+      .mockResolvedValueOnce(Response.json(detail))
       .mockResolvedValueOnce(Response.json({ ...summary, status: 'approved' }))
       .mockResolvedValueOnce(new Response(null, { status: 204 }))
-      .mockResolvedValueOnce(new Response(new Blob(['x'])));
+      .mockResolvedValueOnce(new Response(new Blob(['x'])))
+      .mockResolvedValueOnce(Response.json(journal))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
     const client = createModerationClient({ ...options, app: 'admin', fetch });
     expect(await client.queue()).toEqual([summary]);
-    expect(await client.get(PERSON)).toEqual(summary);
+    expect(await client.get(PERSON)).toEqual(detail);
     expect((await client.decide(PERSON, { action: 'approve' })).status).toBe('approved');
     await client.block(PERSON, 7);
     expect((await client.photo(PERSON, 'avatar')).size).toBe(1);
+    expect(await client.blocks(PERSON)).toEqual(journal);
+    await client.unblock(PERSON);
     expect(fetch.mock.calls.map(([url]) => url)).toEqual([
       'https://api.test/admin/applications',
       `https://api.test/admin/applications/${PERSON}`,
       `https://api.test/admin/applications/${PERSON}/decision`,
       `https://api.test/admin/users/${PERSON}/block`,
       `https://api.test/admin/applications/${PERSON}/photos/avatar`,
+      `https://api.test/admin/users/${PERSON}/blocks`,
+      `https://api.test/admin/users/${PERSON}/unblock`,
     ]);
   });
 });

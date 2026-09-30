@@ -16,6 +16,9 @@ export type UserRepository = {
   // The block of the id, a deleted account too: the same Telegram account cannot come back (docs/65 A5).
   idBlock(id: number): Promise<Block | null>;
   blockId(id: number, block: Block, at: number): Promise<void>;
+  // The owner lifts a block: the id and the phone are free again (docs/65 C).
+  unblockId(id: number, at: number): Promise<void>;
+  unblockPhone(phone: string): Promise<void>;
   // The phone of a deleted account with an open complaint against it, until the complaint ends.
   holdPhone(id: number, phone: string, at: number): Promise<void>;
   heldPhone(id: number): Promise<string | null>;

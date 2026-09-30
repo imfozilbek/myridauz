@@ -1,4 +1,4 @@
-import { chatKeyOfOffer, type Offer } from '@platform/contracts';
+import { chatKeyOfOffer, NO_RATING, type Offer } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import type { BookingsDeps, RequestFacts } from './ports';
 
@@ -9,6 +9,7 @@ export async function offerViews(
   requests: readonly RequestFacts[],
 ): Promise<Offer[]> {
   const now = deps.now();
+  const ratings = await deps.ratings([...new Set(offers.map((offer) => offer.driverId))]);
   const views = await Promise.all(
     offers.map(async (offer): Promise<Offer | null> => {
       const request = requests.find((item) => item.id === offer.requestId);
@@ -23,6 +24,7 @@ export async function offerViews(
           firstName: driver.firstName,
           hasAvatar: driver.avatarKey !== null,
           car: { make: car.make, model: car.model, color: car.color },
+          rating: ratings.get(offer.driverId) ?? NO_RATING,
         },
         from: request.from,
         to: request.to,

@@ -1,4 +1,4 @@
-import type { ApplicationSummary, DecisionInput } from '@platform/contracts';
+import type { ApplicationDetail, ApplicationSummary, DecisionInput } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell, testClients } from '../test-shell';
@@ -24,7 +24,7 @@ const application: ApplicationSummary = {
   submittedAt: 1,
 };
 
-function setup(get?: (userId: string) => Promise<ApplicationSummary>) {
+function setup(get?: (userId: string) => Promise<ApplicationDetail>) {
   const decide = vi.fn(
     async (_id: string, decision: DecisionInput) =>
       ({
@@ -80,7 +80,7 @@ describe('ApplicationsScreen (docs/04)', () => {
 
   it('opens the application of a link from the admin bot', async () => {
     window.history.replaceState(null, '', '/?application=00000000000000000000000000000005');
-    setup(async () => application);
+    setup(async () => ({ ...application, history: [], samePlate: 0 }));
     expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
     expect(window.location.search).toBe('');
   });

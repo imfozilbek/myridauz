@@ -50,5 +50,7 @@
   "offer.status.declined": "Rad etildi",
   "offer.status.expired": "Muddati oʻtgan",
   "cancelAsk": "Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.",
-  "driverCancelAsk": "Joyni bekor qilasizmi? Yoʻlovchi bu haqda xabar oladi."
+  "driverCancelAsk": "Joyni bekor qilasizmi? Yoʻlovchi bu haqda xabar oladi.",
+  "answerUntil": "Javob berish muddati",
+  "confirm.balance": "Hamyoningizda: {amount}"
 }

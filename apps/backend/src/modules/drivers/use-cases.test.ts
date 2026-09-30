@@ -4,7 +4,7 @@ import { createMemoryImages } from '../../shared/storage/memory-images';
 import { myApplication, submitApplication, uploadCarPhoto } from './application/apply';
 import { applicantPhoto, avatarChanged, decideApplication, queue } from './application/moderate';
 import type { DriversDeps, Person } from './application/ports';
-import { createMemoryApplications } from './infrastructure/memory-applications';
+import { createMemoryApplications, createMemoryDecisions } from './infrastructure/memory-applications';
 import { idOfPublic, publicIdOf } from '../../test-people';
 
 const CAR: Car = {
@@ -25,6 +25,7 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
   let id = 0;
   const deps: DriversDeps = {
     applications: createMemoryApplications(),
+    decisions: createMemoryDecisions(),
     photos: createMemoryImages(),
     people: {
       find: async (userId) => persons.get(userId),

@@ -40,6 +40,8 @@ function setup() {
       idOf: idOfPublic,
       block: async (id, days) => void log.push(`block ${id} ${days}`),
       releasePhone: async () => undefined,
+      unblock: async (id) => void log.push(`unblock ${id}`),
+      blocks: async () => ({ active: null, entries: [] }),
     },
     isTeam: async (id) => id === TEAM_MEMBER,
     trips: async (_id, side) => (side === 'driver' ? 12 : 3),

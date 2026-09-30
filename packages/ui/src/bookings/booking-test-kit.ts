@@ -11,6 +11,7 @@ export const booking: Booking = {
   commission: 19000,
   status: 'requested',
   createdAt: Date.parse('2026-10-01T03:00:00Z'),
+  expiresAt: Date.parse('2026-10-02T03:00:00Z'),
   meetingPoint: null,
   pickup: null,
   plate: null,

@@ -46,6 +46,7 @@ export async function bookingViews(
         commission: viewer === 'passenger' ? 0 : record.commission,
         status,
         createdAt: record.createdAt,
+        expiresAt: record.expiresAt,
         meetingPoint: open ? loaded.facts.meetingPoint : null,
         pickup: open || viewer === 'passenger' ? record.pickup : null,
         plate: open && viewer !== 'driver' ? loaded.facts.plate : null,
