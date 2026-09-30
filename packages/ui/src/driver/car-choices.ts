@@ -1,4 +1,12 @@
-import { CAR_CATALOG, CAR_COLORS, carSchema, MAX_SEATS, type CarColor } from '@platform/contracts';
+import {
+  CAR_CATALOG,
+  CAR_COLORS,
+  CAR_SEATS,
+  carSchema,
+  MAX_SEATS,
+  type CarColor,
+  type CarInput,
+} from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ReactNode } from 'react';
 import type { Choice } from './steps/choice-step';
@@ -14,8 +22,13 @@ export const modelChoices = (make: string | undefined): Choice<string>[] =>
 export const colorChoices = (t: Translate, swatch: (color: CarColor) => ReactNode): Choice<CarColor>[] =>
   CAR_COLORS.map((color) => ({ value: color, label: t(`drivers.color.${color}`), before: swatch(color) }));
 
-// Most cars take 4 passengers: the answer is ready, a driver of a minivan changes it (docs/35).
-export const DEFAULT_SEATS = 4;
+// Most cars take 4 passengers. The answer is ready for the chosen model, the driver may change it (docs/35).
+const USUAL_SEATS = 4;
+export const seatsOf = (model: string | undefined): number => CAR_SEATS[model ?? ''] ?? USUAL_SEATS;
+
+// A new model brings its seats, unless the driver has already changed the ready answer.
+export const presetSeats = (car: Partial<CarInput>, model: string): Partial<CarInput> =>
+  car.seats === undefined || car.seats === seatsOf(car.model) ? { seats: seatsOf(model) } : {};
 
 export const seatChoices = (): Choice<number>[] =>
   Array.from({ length: MAX_SEATS }, (_, index) => ({ value: index + 1, label: String(index + 1) }));

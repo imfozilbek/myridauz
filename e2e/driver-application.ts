@@ -18,7 +18,7 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await expect(page.getByText('Chevrolet')).toBeVisible();
   await shot('2-make');
   await page.getByText('Chevrolet').click();
-  await page.getByText('Cobalt').click();
+  await page.getByText('Damas').click();
   await expect(page.locator('.car-swatch')).toHaveCount(10);
   await shot('2-color');
   await page.getByText('Oq', { exact: true }).click();
@@ -30,7 +30,7 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await shot('3-plate');
   await mainButton.click();
-  // 4 seats are chosen in advance.
+  // The seats of a Damas (6) are chosen in advance (docs/50).
   await expect(page.getByText(TEXT.seatsTitle)).toBeVisible();
   await shot('3-seats');
   await mainButton.click();
