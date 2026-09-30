@@ -1,4 +1,4 @@
-import type { Booking, Point } from '@platform/contracts';
+import type { Booking } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
@@ -6,12 +6,10 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
-import { openExternal } from '../telegram/feedback';
-import { mapUrl } from './map-link';
+import { BookingPlaces } from './booking-places';
 import '../market/market.css';
 
 const PHOTO_SIZE = 56;
@@ -23,26 +21,16 @@ type Props = {
   readonly actions: readonly BookingAction[];
   // The chat and, for the passenger, sharing the trip (G09).
   readonly children?: ReactNode;
-  // The passenger chooses the own pickup point on the map (G22).
-  readonly onPickOnMap?: () => void;
 };
 
 // One booking (docs/35). The plate and the places open only after the confirmation (docs/07, docs/14).
-export function BookingScreen({ booking, side, onBack, actions, children, onPickOnMap }: Props) {
+export function BookingScreen({ booking, side, onBack, actions, children }: Props) {
   useScreenView(`bookings.${side}`);
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
   const { trip } = booking;
   const day = new Date(trip.departAt);
   const open = booking.status === 'confirmed' || booking.status === 'completed';
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
-  const place = (label: string, point: Point | null) =>
-    point ? (
-      <Cell onClick={() => openExternal(mapUrl(point))} subtitle={t('bookings.openMap')}>
-        {label}
-      </Cell>
-    ) : (
-      line(label, t('bookings.noPoint'))
-    );
   const person =
     side === 'passenger'
       ? {
@@ -73,20 +61,12 @@ export function BookingScreen({ booking, side, onBack, actions, children, onPick
           {line(t('bookings.review.total'), formatMoney(booking.price * booking.seats))}
           {side === 'driver' ? line(t('bookings.offer.commission'), formatMoney(booking.commission)) : null}
         </Section>
-        {open ? (
-          <Section footer={side === 'passenger' && !booking.pickup ? t('bookings.pickupHint') : undefined}>
-            {booking.plate ? (
-              <Cell multiline description={<PlateView plate={booking.plate} small />}>
-                {t('bookings.plate')}
-              </Cell>
-            ) : null}
-            {side === 'passenger' ? place(t('bookings.meeting'), booking.meetingPoint) : null}
-            {place(t(side === 'passenger' ? 'bookings.pickup.mine' : 'bookings.pickup'), booking.pickup)}
-            {onPickOnMap ? (
-              <Cell before={<IconTile name="pickup" />} onClick={onPickOnMap}>
-                {t('bookings.map.pick')}
-              </Cell>
-            ) : null}
+        <BookingPlaces booking={booking} />
+        {open && booking.plate ? (
+          <Section>
+            <Cell multiline description={<PlateView plate={booking.plate} small />}>
+              {t('bookings.plate')}
+            </Cell>
           </Section>
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>

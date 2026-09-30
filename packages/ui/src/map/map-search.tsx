@@ -1,6 +1,8 @@
 import type { FoundPlace, Point } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { Cell, Input, Section } from '../components';
+import { useEffect } from 'react';
+import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
@@ -8,6 +10,7 @@ import { haptic } from '../telegram/feedback';
 import { usePlaceSearch } from './use-place-search';
 
 const SEARCH_ICON_SIZE = 20;
+const MAX_LENGTH = 100;
 
 type Props = { readonly near: Point; readonly onFound: (point: Point) => void };
 
@@ -16,7 +19,14 @@ type Props = { readonly near: Point; readonly onFound: (point: Point) => void };
 export function MapSearch({ near, onFound }: Props) {
   const { t } = useI18n();
   const { map } = useApiClients();
+  const { track } = useAnalytics();
   const { query, setQuery, result } = usePlaceSearch(map.search, near);
+  const empty = result.status === 'found' && result.places.length === 0;
+  // Only the length: the text may be an address (docs/69).
+  useEffect(() => {
+    if (empty)
+      track({ name: 'place_search_empty', screen: 'way.point', length: Math.min(query.length, MAX_LENGTH) });
+  }, [empty, query.length, track]);
   const choose = (place: FoundPlace) => {
     haptic.tap();
     setQuery('');

@@ -7,6 +7,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useFeedChange } from '../feed/feed-context';
 import type { Route } from '../places/route-screen';
+import type { Way } from '../way/way-end';
 import { EmptyState } from '../states/empty-state';
 import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
@@ -20,6 +21,8 @@ import './market.css';
 
 type TripResultsProps = {
   readonly route: Route;
+  // The way of the passenger: the trips that suit go first (docs/70). None from a landing link.
+  readonly way: Way | null;
   readonly date: string;
   readonly now: number;
   readonly onBack: () => void;
@@ -27,7 +30,7 @@ type TripResultsProps = {
 };
 
 // Trips of the day on this route; "Mashinada ayol bor" is a filter of its own (docs/06).
-export function TripResults({ route, date, now, onBack, onOpen }: TripResultsProps) {
+export function TripResults({ route, way, date, now, onBack, onOpen }: TripResultsProps) {
   useScreenView('market.results');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -38,8 +41,16 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   const [trips, setTrips] = useState<Trip[] | null>(null);
   const [failed, setFailed] = useState(false);
   const search = useMemo(
-    () => ({ from: route.from.id, to: route.to.id, date, ...(woman ? { woman: '1' as const } : {}) }),
-    [route, date, woman],
+    () => ({
+      from: route.from.id,
+      to: route.to.id,
+      date,
+      ...(woman ? { woman: '1' as const } : {}),
+      ...(way
+        ? { mode: way.mode, dropoff: way.to.point ?? undefined, pickup: way.from.point ?? undefined }
+        : {}),
+    }),
+    [route, date, woman, way],
   );
   const load = useCallback(() => {
     setFailed(false);

@@ -49,6 +49,7 @@ describe('funnelOf (docs/29)', () => {
     const steps = funnelOf('new_trip', [row('trip_step', 'driver', 'route', 10)]).steps;
     expect(steps.map((step) => step.step)).toEqual([
       'route',
+      'mode',
       'date',
       'time',
       'seats',

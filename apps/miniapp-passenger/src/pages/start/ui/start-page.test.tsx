@@ -23,6 +23,6 @@ describe('StartPage', () => {
     expect(await screen.findByText('Hali soʻrovlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(screen.getByText('Safar topish'));
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan ketasiz?')).toBeTruthy();
   });
 });

@@ -22,13 +22,16 @@ const DRIVER: Readonly<Record<(typeof FUNNEL_STEPS.driver)[number], StepMatch>> 
   confirmed: { name: 'booking_step', code: 'confirmed', by: 'events' },
 };
 const newTripStep = (step: string): StepMatch => ({ name: 'trip_step', code: step, by: 'sessions' });
+const wayStep = (step: string): StepMatch => ({ name: 'way_step', code: step, by: 'sessions' });
 
 const matchOf = (id: FunnelId, step: FunnelStepId): StepMatch =>
   id === 'passenger'
     ? PASSENGER[step as keyof typeof PASSENGER]
     : id === 'driver'
       ? DRIVER[step as keyof typeof DRIVER]
-      : newTripStep(step);
+      : id === 'way'
+        ? wayStep(step)
+        : newTripStep(step);
 
 // Who did not come from the previous step, in percent. More on a later step is no drop.
 const dropOf = (previous: number, current: number) =>

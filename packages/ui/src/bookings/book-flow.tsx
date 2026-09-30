@@ -1,29 +1,33 @@
-import type { Trip } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
+import { commonModes, type BookingMode, type Trip } from '@platform/contracts';
 import { useState } from 'react';
-import { CellValue } from '../account/cell-value';
 import { StepLayout } from '../account/step-layout';
-import { Cell, List, Section } from '../components';
-import { useAnalytics, useScreenView } from '../context/analytics-context';
-import { useApiClients } from '../context/api-clients';
+import { useAnalytics } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
-import { errorKey } from '../market/error-text';
-import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
+import type { Way } from '../way/way-end';
+import { WayScreen } from '../way/way-screen';
+import { BookReview } from './book-review';
 import '../market/market.css';
 
 // A person asks for more than 4 seats rarely; the car decides the rest (docs/35).
 const MAX_ASKED = 4;
-type Props = { readonly trip: Trip; readonly onBack: () => void; readonly onClose: () => void };
+type Props = {
+  readonly trip: Trip;
+  // The start and the end chosen in the search; a trip opened by a link asks for them here.
+  readonly way: Way | null;
+  readonly onBack: () => void;
+  readonly onClose: () => void;
+};
 
-// A passenger books seats (docs/35): how many, a check with the total, sent. The driver answers.
-export function BookFlow({ trip, onBack, onClose }: Props) {
+// A passenger books seats (docs/35, docs/70): how many, the start and the end if not known yet,
+// the way when both suit, a check with everything, sent. After this nothing changes but a cancel.
+export function BookFlow({ trip, way: known, onBack, onClose }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const [seats, setSeats] = useState<number | null>(null);
+  const [way, setWay] = useState<Way | null>(known);
+  const [mode, setMode] = useState<BookingMode | null>(null);
   const [sent, setSent] = useState(false);
   if (sent) {
     return (
@@ -51,50 +55,38 @@ export function BookFlow({ trip, onBack, onClose }: Props) {
       />
     );
   }
-  return <BookReview trip={trip} seats={seats} onBack={() => setSeats(null)} onSent={() => setSent(true)} />;
-}
-
-type ReviewProps = {
-  readonly trip: Trip;
-  readonly seats: number;
-  readonly onBack: () => void;
-  readonly onSent: () => void;
-};
-
-function BookReview({ trip, seats, onBack, onSent }: ReviewProps) {
-  useScreenView('bookings.review');
-  const { t, formatMoney } = useI18n();
-  const { track } = useAnalytics();
-  const { bookings } = useApiClients();
-  const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
-  const send = async () => {
-    setError(null);
-    try {
-      await bookings.book(trip.id, seats);
-      track({ name: 'booking_step', screen: 'bookings.review', step: 'requested' });
-      haptic.success();
-      onSent();
-    } catch (caught) {
-      haptic.error();
-      setError(errorKey(caught));
-    }
-  };
-  const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
+  if (!way) return <WayScreen done="common.continue" onBack={() => setSeats(null)} onDone={setWay} />;
+  // «Pitakdan» needs the pitak of the direction; «Uyimdan» needs the point of the start.
+  const ways = commonModes(trip.pickupMode, way.mode).filter((each) =>
+    each === 'pitak' ? trip.pitak !== null : way.from.point !== null,
+  );
+  const chosen = mode ?? (ways.length === 1 ? ways[0] : null) ?? null;
+  const back = () => (known ? setSeats(null) : setWay(null));
+  if (!chosen && ways.length > 1) {
+    const choices = ways.map((each) => ({
+      value: each,
+      label: t(`way.mode.${each}`),
+      ...(each === 'pitak' && trip.pitak ? { after: trip.pitak.name } : {}),
+    }));
+    return (
+      <ChoiceStep
+        screen="bookings.mode"
+        icon="origin"
+        title={t('way.book.mode')}
+        choices={choices}
+        onBack={back}
+        onDone={setMode}
+      />
+    );
+  }
   return (
-    <StepLayout icon="myTrips" title={t('bookings.review.title')} hint={t('bookings.review.hint')}>
-      <BackButton onClick={onBack} />
-      <List>
-        <Section>
-          <div className="route-summary">
-            <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
-          </div>
-          {line(t('bookings.review.seats'), String(seats))}
-          {line(t('market.review.price'), formatMoney(trip.price))}
-          {line(t('bookings.review.total'), formatMoney(trip.price * seats))}
-        </Section>
-      </List>
-      {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('bookings.send')} onClick={send} />
-    </StepLayout>
+    <BookReview
+      trip={trip}
+      seats={seats}
+      way={way}
+      mode={chosen}
+      onBack={() => (mode ? setMode(null) : back())}
+      onSent={() => setSent(true)}
+    />
   );
 }

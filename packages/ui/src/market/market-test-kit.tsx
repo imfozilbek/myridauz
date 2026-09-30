@@ -53,9 +53,11 @@ export const trip: Trip = {
   price: 95000,
   recommendedPrice: 95000,
   woman: true,
-  hasMeetingPoint: true,
+  pickupMode: 'both',
+  pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } },
   comment: 'Katta yuk olmayman',
   status: 'active',
+  fit: null,
 };
 
 const unused = async (): Promise<never> => {
@@ -104,4 +106,12 @@ export async function chooseRoute(wholeRegion = false) {
     await tap(step);
   await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
   await tap('Davom etish');
+}
+
+// The same route through the list of districts under «Qayerdan / Qayerga» (G24): the other way
+// when the map does not load. The district centers become the points.
+export async function chooseWay(done = 'Safarlarni koʻrish') {
+  await tap('Roʻyxatdan tanlash');
+  await chooseRoute();
+  await tap(done);
 }

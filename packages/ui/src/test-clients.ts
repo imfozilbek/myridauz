@@ -20,6 +20,7 @@ export const testClients = (overrides: {
   readonly calls?: Partial<ApiClients['calls']>;
   readonly comfort?: Partial<ApiClients['comfort']>;
   readonly map?: Partial<ApiClients['map']>;
+  readonly pitaks?: Partial<ApiClients['pitaks']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -66,7 +67,6 @@ export const testClients = (overrides: {
     book: NOT_USED,
     myBookings: NOT_USED,
     cancelMine: NOT_USED,
-    setPickup: NOT_USED,
     driverBookings: NOT_USED,
     answer: NOT_USED,
     tripBookings: NOT_USED,
@@ -114,6 +114,17 @@ export const testClients = (overrides: {
     archiveUrl: 'https://api.test/map/archive.pmtiles',
     fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
     search: NOT_USED,
+    where: NOT_USED,
+    border: NOT_USED,
+    pitakOf: NOT_USED,
     ...overrides.map,
+  },
+  pitaks: {
+    all: NOT_USED,
+    add: NOT_USED,
+    change: NOT_USED,
+    direction: NOT_USED,
+    history: NOT_USED,
+    ...overrides.pitaks,
   },
 });

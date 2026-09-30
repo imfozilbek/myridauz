@@ -25,3 +25,13 @@ export const mapBorderPath = (districtId: string) => `/passenger/map/borders/${d
 const ringSchema = z.array(z.tuple([z.number(), z.number()]));
 export const borderSchema = z.object({ id: locationIdSchema, parts: z.array(z.array(ringSchema)) });
 export type Border = z.infer<typeof borderSchema>;
+
+// The last places a person chose (G24, docs/71): kept only on the phone, read back with care.
+export const recentPlacesSchema = z.array(
+  z.object({
+    point: z.object({ lat: z.number(), lng: z.number() }),
+    name: placeNameSchema.nullable(),
+    district: z.string(),
+  }),
+);
+export type RecentPlace = z.infer<typeof recentPlacesSchema>[number];

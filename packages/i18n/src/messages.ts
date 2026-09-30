@@ -20,6 +20,7 @@ import share from '../locales/uz-Latn/share.json' with { type: 'json' };
 import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
+import way from '../locales/uz-Latn/way.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -46,6 +47,7 @@ const REFERENCE = {
   stats,
   subscriptions,
   wallet,
+  way,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

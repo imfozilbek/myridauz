@@ -7,7 +7,7 @@ import { d1Pitaks } from './infrastructure/d1-pitaks';
 import { createMemoryPitaks } from './infrastructure/memory-pitaks';
 
 // Without D1 (tests) the pitaks live in memory.
-export const localPitaks = createMemoryPitaks();
+const localPitaks = createMemoryPitaks();
 
 const pitaksDeps = (env: Bindings): PitaksDeps => ({
   store: env.DB ? d1Pitaks(env.DB) : localPitaks,

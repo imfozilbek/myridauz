@@ -16,7 +16,7 @@ const SETTLEMENT_METRES = 3000;
 const AROUND_LIMIT = 60;
 const METRES_PER_DEGREE = 111_320;
 
-export const metresBetween = (a: Point, b: Point) => {
+const metresBetween = (a: Point, b: Point) => {
   const scale = Math.cos((a.lat * Math.PI) / 180);
   return Math.hypot(a.lat - b.lat, (a.lng - b.lng) * scale) * METRES_PER_DEGREE;
 };

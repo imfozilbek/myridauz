@@ -19,10 +19,11 @@ const request = {
   seats: 2,
   price: 95000,
   status: 'open' as const,
+  pickupMode: 'both' as const,
 };
 
 describe('a passenger in "Mening safarlarim" (docs/35)', () => {
-  it('sees a confirmed seat with the plate and the meeting point, and cancels it', async () => {
+  it('sees a confirmed seat with the plate and the own points, and cancels it', async () => {
     const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => booking);
     const { tracked } = renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,
@@ -35,8 +36,9 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     await tap('Jasur');
     expect(screen.getByText('Davlat raqami')).toBeTruthy();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Uchrashuv joyi');
-    expect(open.mock.calls[0]?.[0]).toContain('41.3');
+    // The points fixed at the booking open in a map (docs/70).
+    await tap('Olib ketish joyi');
+    expect(open.mock.calls[0]?.[0]).toContain('41.2856');
     // The passenger never sees the driver's commission.
     expect(screen.queryByText('Komissiya')).toBeNull();
     vi.stubGlobal('confirm', () => true);

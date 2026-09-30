@@ -3,8 +3,9 @@ import { addProtocol, Map as MapLibreMap, setWorkerUrl, type ErrorEvent as MapEr
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { Protocol } from 'pmtiles';
-import type { MapEngine, MapView } from './map-engine';
+import type { MapColors, MapEngine, MapView } from './map-engine';
 import { MAP_SOURCE, mapStyle } from './map-style';
+import { clip, fit, show } from './map-overlays';
 
 // Close enough to see the streets and the houses around the pin.
 const START_ZOOM = 16;
@@ -12,18 +13,21 @@ const START_ZOOM = 16;
 const LOAD_TIMEOUT_MS = 15_000;
 let protocol: Protocol | null = null;
 
-const view = (map: MapLibreMap): MapView => ({
+const view = (map: MapLibreMap, colors: MapColors): MapView => ({
   center: () => {
     const { lat, lng } = map.getCenter();
     return { lat, lng };
   },
   onMove: (listener) => void map.on('moveend', listener),
   moveTo: ({ lat, lng }) => void map.flyTo({ center: [lng, lat], zoom: START_ZOOM }),
+  clip: (parts) => clip(map, colors, parts),
+  show: (marks, line) => show(map, colors, marks, line),
+  fit: (points) => fit(map, points),
   remove: () => map.remove(),
 });
 
 // MapLibre over the PMTiles archive (G22, docs/67): the archive is read by parts from the API.
-export const maplibreEngine: MapEngine = (box, source, start) => {
+export const maplibreEngine: MapEngine = (box, source, start, colors) => {
   if (!protocol) {
     setWorkerUrl(workerUrl);
     protocol = new Protocol();
@@ -55,7 +59,7 @@ export const maplibreEngine: MapEngine = (box, source, start) => {
     map.once('load', () => {
       clearTimeout(timer);
       map.off('error', onError);
-      resolve(view(map));
+      resolve(view(map, colors));
     });
   });
 };

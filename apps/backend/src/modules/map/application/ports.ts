@@ -30,7 +30,7 @@ export type PlaceQuery = {
 };
 // What is around a point (G24): places of these kinds in these cells, nearest first. Fine cells
 // (about 1 km) for landmarks, mahallas and streets; quarter cells for settlements (3 km).
-export type AroundQuery = {
+type AroundQuery = {
   readonly cells: { readonly column: 'fine' | 'cell'; readonly list: readonly string[] };
   readonly kinds: readonly PlaceKind[];
   readonly near: Point;

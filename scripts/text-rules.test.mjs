@@ -35,3 +35,12 @@ describe('isTextFile', () => {
     expect(isTextFile('fonts/a.ttf')).toBe(false);
   });
 });
+
+describe('encoded data (G24)', () => {
+  it('does not read the letters of encoded borders as a brand name', () => {
+    expect(findViolations('apps/backend/seed/district-borders.json', '{"x":"abcacmexyz"}', ['acme'])).toEqual(
+      [],
+    );
+    expect(findViolations('apps/backend/seed/locations.json', '{"x":"acme"}', ['acme'])).toHaveLength(1);
+  });
+});

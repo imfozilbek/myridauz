@@ -3,6 +3,8 @@ import { loadBrand } from '@platform/brands';
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { AppShell } from './app-shell';
+import { fakeMap } from './map/fake-map';
+import { MapEngineContext } from './map/map-engine';
 import { testClients } from './test-clients';
 
 export { testClients };
@@ -36,7 +38,8 @@ export function renderInShell(
       clients={clients}
       session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '', hasCamera }}
     >
-      {children}
+      {/* jsdom draws no map: every map of a test is a fake one unless the test gives its own. */}
+      <MapEngineContext.Provider value={async () => fakeMap().engine}>{children}</MapEngineContext.Provider>
     </AppShell>,
   );
   return { ...result, tracked };

@@ -72,7 +72,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
       setOpened(null);
       if (changed) reload();
     };
-    return <PassengerOpen opened={opened} offers={value[2]} onClose={close} onChanged={reload} />;
+    return <PassengerOpen opened={opened} offers={value[2]} onClose={close} />;
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;

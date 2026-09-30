@@ -1,50 +1,59 @@
-import type { BookingsClient, MapClient } from '@platform/api-client';
-import type { Point } from '@platform/contracts';
+import type { MapClient } from '@platform/api-client';
+import type { FoundPlace, Point, Where } from '@platform/contracts';
 import { vi } from 'vitest';
-import { confirmed } from '../bookings/booking-test-kit';
-import { renderMarket, tap } from '../market/market-test-kit';
-import { MyRequestsScreen } from '../market/my-requests-screen';
+import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
-import { MapEngineContext, type MapEngine } from './map-engine';
+import type { Way } from '../way/way-end';
+import { WayScreen } from '../way/way-screen';
+import { fakeMap } from './fake-map';
+import { MapEngineContext } from './map-engine';
 
-export const TASHKENT = { lat: 41.3111, lng: 69.2797 };
+export { fakeMap } from './fake-map';
 
-// jsdom draws no map: a fake one keeps the point under the pin.
-export function fakeMap(failures = 0) {
-  let center: Point = TASHKENT;
-  let left = failures;
-  const engine = vi.fn<MapEngine>(async (_box, _source, start) => {
-    if (left-- > 0) throw new Error('map.failed');
-    center = start;
-    return {
-      center: () => center,
-      onMove: () => undefined,
-      moveTo: (point) => void (center = point),
-      remove: () => undefined,
-    };
-  });
-  return { engine, place: (point: Point) => void (center = point), at: () => center };
-}
-
-type Calls = {
-  readonly setPickup?: BookingsClient['setPickup'];
-  readonly search?: MapClient['search'];
+export const CHORSU: FoundPlace = {
+  name: 'Chorsu bozori',
+  kind: 'market',
+  area: 'Chilonzor',
+  district: '1726269',
+  point: { lat: 41.3265, lng: 69.2355 },
 };
+// Anything south of 41 is Fargʻona shahri, the rest Chilonzor (the small directory of the tests).
+const whereOf = async (point: Point): Promise<Where> =>
+  point.lat < 41
+    ? { district: '1730401', name: { step: 'mahalla', name: 'Yangi Margʻilon' }, area: null }
+    : { district: '1726269', name: { step: 'landmark', name: 'Chorsu bozori' }, area: null };
+export const FARGONA = { lat: 40.38, lng: 71.78 };
+const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
 
-// The passenger opens the confirmed booking and its map (G22).
-export async function openMap(map: ReturnType<typeof fakeMap>, { setPickup, search }: Calls = {}) {
-  const myBookings = vi.fn(async () => [confirmed]);
+type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf'>>;
+
+// The screen «Qayerdan / Qayerga» over a fake map (G24): what it gave back when done.
+export function openWay(map: ReturnType<typeof fakeMap>, calls: Calls = {}) {
+  const done: Way[] = [];
+  const mapCalls: Partial<MapClient> = {
+    where: vi.fn(whereOf),
+    border: async (id) => ({
+      id,
+      parts: [
+        [
+          [
+            [69, 41],
+            [70, 41],
+            [70, 42],
+            [69, 41],
+          ],
+        ],
+      ],
+    }),
+    pitakOf: vi.fn(async () => PITAK),
+    search: vi.fn(async () => [CHORSU]),
+    ...calls,
+  };
   renderMarket(
     <MapEngineContext.Provider value={async () => map.engine}>
-      <MyRequestsScreen onBack={() => undefined} />
+      <WayScreen done="way.see" onBack={() => undefined} onDone={(way) => void done.push(way)} />
     </MapEngineContext.Provider>,
-    testClients({
-      market: { myRequests: async () => [] },
-      bookings: { myBookings, myOffers: async () => [], ...(setPickup ? { setPickup } : {}) },
-      ...(search ? { map: { search } } : {}),
-    }),
+    testClients({ map: mapCalls }),
   );
-  await tap('Jasur');
-  await tap('Xaritada tanlash');
-  return myBookings;
+  return { done, calls: mapCalls };
 }

@@ -68,9 +68,11 @@ describe('the driver side (docs/40, docs/43)', () => {
       price: 95000,
       womanOnBoard: true,
       comment: 'Yuk yoʻq',
+      pickupMode: 'door' as const,
     };
     expect(returnDraft(draft)).toEqual({
       route: { from: to, to: from },
+      pickupMode: 'door',
       seats: 3,
       price: 95000,
       womanOnBoard: true,

@@ -12,8 +12,12 @@ export const booking: Booking = {
   status: 'requested',
   createdAt: Date.parse('2026-10-01T03:00:00Z'),
   expiresAt: Date.parse('2026-10-02T03:00:00Z'),
-  meetingPoint: null,
-  pickup: null,
+  mode: 'door',
+  pitak: null,
+  // Before the confirmation the driver sees the area only (docs/70).
+  pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
+  dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+  extraKm: 2,
   plate: null,
   chatKey: 'b00000000-0000-4000-8000-0000000000b1',
   boardedAt: null,
@@ -23,7 +27,17 @@ export const booking: Booking = {
 export const confirmed: Booking = {
   ...booking,
   status: 'confirmed',
-  meetingPoint: { lat: 41.3, lng: 69.2 },
+  pickup: {
+    point: { lat: 41.2856, lng: 69.2045 },
+    name: { step: 'landmark', name: 'Chilonzor bozori' },
+    area: { step: 'mahalla', name: 'Qatortol' },
+  },
+  dropoff: {
+    point: { lat: 39.6547, lng: 66.9758 },
+    name: { step: 'mahalla', name: 'Registon mahallasi' },
+    area: { step: 'mahalla', name: 'Registon mahallasi' },
+  },
+  extraKm: null,
   plate: '01A123BC',
 };
 

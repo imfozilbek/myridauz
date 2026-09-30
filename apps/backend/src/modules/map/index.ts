@@ -48,7 +48,7 @@ export const mapModule = new Hono<AppEnv>()
 export { localMapFiles };
 
 // The district and the region of a point by the borders (G24): null abroad.
-export const districtOf = (point: Point) => districtAt(districtBorders(), point);
+const districtOf = (point: Point) => districtAt(districtBorders(), point);
 export const regionOf = (point: Point) => {
   const district = districtOf(point);
   return district === null ? null : (regionOfDistrict(district) ?? null);

@@ -1,0 +1,39 @@
+/* The screen of the start and the end over the map (G24, docs/71). */
+.way-card {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--tgui--bg_color);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+}
+.way-card-label {
+  padding: 0 8px;
+}
+.way-card-note {
+  padding: 0 8px;
+  color: var(--tgui--hint_color);
+}
+/* The name of the place under the pin: always in view, never under a finger. */
+.way-pin-name {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 8px);
+  transform: translateX(-50%);
+  max-width: 80%;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--tgui--bg_color);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  text-align: center;
+  pointer-events: none;
+}
+.way-list {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+}

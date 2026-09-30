@@ -17,6 +17,7 @@ import {
   createCallsClient,
   createFeedClient,
   createMapClient,
+  createPitaksClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
@@ -78,6 +79,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     calls: createCallsClient(signed),
     comfort: createComfortClient(signed),
     map: createMapClient(signed),
+    pitaks: createPitaksClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).

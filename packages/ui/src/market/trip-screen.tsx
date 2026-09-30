@@ -11,6 +11,7 @@ import { PersonReviews } from '../feedback/driver-reviews';
 import { RatingBadge } from '../feedback/rating-badge';
 import { BackButton } from '../telegram/back-button';
 import { RouteView } from './route-view';
+import { useWayFacts } from './way-line';
 import './market.css';
 
 type TripScreenProps = {
@@ -33,6 +34,7 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
   useScreenView('market.trip');
   const { track } = useAnalytics();
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
+  const wayFacts = useWayFacts();
   const day = new Date(trip.departAt);
   useEffect(() => track({ name: 'trip_open', screen: 'market.trip' }), [track]);
   const { driver } = trip;
@@ -65,7 +67,9 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
             ? null
             : line(t('market.trip.recommended'), formatMoney(trip.recommendedPrice))}
           {trip.woman ? <Cell>{t('market.search.woman')}</Cell> : null}
-          {trip.hasMeetingPoint ? <Cell>{t('market.trip.meeting')}</Cell> : null}
+          {wayFacts(trip).map(([, text]) => (
+            <Cell key={text}>{text}</Cell>
+          ))}
           {trip.comment ? (
             <Cell multiline description={trip.comment}>
               {t('market.review.comment')}
