@@ -1,6 +1,7 @@
 import type { BookingStatus } from '@platform/contracts';
 import type { BookingRepository } from '../application/ports';
 import type { BookingRecord } from '../domain/booking';
+import { allIn } from '../../../shared/storage/in-list';
 
 type Row = {
   id: string;
@@ -88,13 +89,9 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
     return row ? toBooking(row) : undefined;
   },
   byTrips: async (tripIds) =>
-    tripIds.length === 0
-      ? []
-      : all(
-          db
-            .prepare(`SELECT * FROM bookings WHERE trip_id IN (${tripIds.map(() => '?').join(', ')})`)
-            .bind(...tripIds),
-        ),
+    (await allIn<Row>(db, (marks) => `SELECT * FROM bookings WHERE trip_id IN (${marks})`, tripIds)).map(
+      toBooking,
+    ),
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
   byPickupMessage: async (passengerId, messageId) => {

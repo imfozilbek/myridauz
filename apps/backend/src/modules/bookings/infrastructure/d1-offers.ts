@@ -1,6 +1,7 @@
 import type { Offer } from '@platform/contracts';
 import type { OfferRepository } from '../application/ports';
 import type { OfferRecord } from '../domain/offer';
+import { allIn } from '../../../shared/storage/in-list';
 
 type Row = {
   id: string;
@@ -52,12 +53,8 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
     return row ? toOffer(row) : undefined;
   },
   byRequests: async (requestIds) =>
-    requestIds.length === 0
-      ? []
-      : all(
-          db
-            .prepare(`SELECT * FROM offers WHERE request_id IN (${requestIds.map(() => '?').join(', ')})`)
-            .bind(...requestIds),
-        ),
+    (await allIn<Row>(db, (marks) => `SELECT * FROM offers WHERE request_id IN (${marks})`, requestIds)).map(
+      toOffer,
+    ),
   byDriver: async (driverId) => all(db.prepare('SELECT * FROM offers WHERE driver_id = ?').bind(driverId)),
 });

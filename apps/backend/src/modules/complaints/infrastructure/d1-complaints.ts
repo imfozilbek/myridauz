@@ -1,6 +1,7 @@
 import type { ComplaintReason, ComplaintStatus } from '@platform/contracts';
 import type { ComplaintStore } from '../application/ports';
 import type { ComplaintRecord } from '../domain/complaint';
+import { allIn } from '../../../shared/storage/in-list';
 
 type Row = {
   id: string;
@@ -29,7 +30,6 @@ const toComplaint = (row: Row): ComplaintRecord => ({
   createdAt: row.created_at,
   decidedAt: row.decided_at,
 });
-const marks = (count: number) => Array.from({ length: count }, () => '?').join(', ');
 
 // Tables complaints and complaint_chat_reads (migrations/0012_ratings_complaints.sql).
 export const d1Complaints = (db: D1Database): ComplaintStore => ({
@@ -68,14 +68,9 @@ export const d1Complaints = (db: D1Database): ComplaintStore => ({
       toComplaint,
     ),
   against: async (ids, since) => {
-    if (ids.length === 0) return [];
-    const sql = `SELECT * FROM complaints WHERE created_at >= ? AND against_id IN (${marks(ids.length)})`;
-    return (
-      await db
-        .prepare(sql)
-        .bind(since, ...ids)
-        .all<Row>()
-    ).results.map(toComplaint);
+    const sql = (marks: string) =>
+      `SELECT * FROM complaints WHERE created_at >= ? AND against_id IN (${marks})`;
+    return (await allIn<Row>(db, sql, ids, [since])).map(toComplaint);
   },
   countAgainst: async (userId) => {
     const sql = 'SELECT COUNT(*) AS count FROM complaints WHERE against_id = ?';
