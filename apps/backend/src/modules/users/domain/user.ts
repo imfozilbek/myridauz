@@ -5,6 +5,8 @@ export type Block = { readonly until: number | null }; // until: epoch ms, null:
 
 export type User = {
   readonly id: number;
+  // What the apps see instead of the Telegram ID (docs/65 A3).
+  readonly publicId: string;
   readonly firstName: string;
   readonly gender: Gender;
   readonly phone: string;

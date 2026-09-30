@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { personIdSchema } from './person-id';
 import { MAX_SEATS } from './drivers';
 import { tripSchema } from './trips';
 
@@ -39,7 +40,7 @@ export type Point = z.infer<typeof pointSchema>;
 export const bookingSchema = z.object({
   id: z.string(),
   trip: tripSchema,
-  passenger: z.object({ id: z.number().int(), firstName: z.string(), hasAvatar: z.boolean() }),
+  passenger: z.object({ id: personIdSchema, firstName: z.string(), hasAvatar: z.boolean() }),
   seats: z.number().int(),
   // The driver's share per seat and the driver's commission for the whole booking (docs/12).
   price: z.number().int(),

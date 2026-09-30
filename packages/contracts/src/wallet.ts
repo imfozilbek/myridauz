@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { personIdSchema, type PersonId } from './person-id';
 
 // The driver's wallet (docs/12): an append-only journal, the balance is the sum of it. G08.
 export const WALLET_PATH = '/driver/wallet';
 export const ADMIN_WALLETS_PATH = '/admin/wallets';
-export const adminWalletPath = (driverId: number) => `${ADMIN_WALLETS_PATH}/${driverId}`;
-export const adminWalletAdjustPath = (driverId: number) => `${adminWalletPath(driverId)}/adjust`;
+export const adminWalletPath = (driverId: PersonId) => `${ADMIN_WALLETS_PATH}/${driverId}`;
+export const adminWalletAdjustPath = (driverId: PersonId) => `${adminWalletPath(driverId)}/adjust`;
 
 export const BALANCES = ['bonus', 'main'] as const;
 export type BalanceKind = (typeof BALANCES)[number];
@@ -41,7 +42,7 @@ export type Wallet = z.infer<typeof walletSchema>;
 export const adminWalletsSchema = z.object({
   wallets: z.array(
     z.object({
-      driverId: z.number().int(),
+      driverId: personIdSchema,
       firstName: z.string(),
       bonus: z.number().int(),
       main: z.number().int(),

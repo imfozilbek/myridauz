@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, OWNER, read, seen } from './bookings-test-api';
-import { call, registerUser } from './test-api';
+import { call, pid, registerUser } from './test-api';
 
 vi.stubGlobal('fetch', fakeTelegram().fetch);
 afterAll(() => vi.unstubAllGlobals());
@@ -82,7 +82,7 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
   });
 
   it('lets only an owner correct a wallet, with a reason', async () => {
-    const adjust = `/admin/wallets/${DRIVER}/adjust`;
+    const adjust = `/admin/wallets/${await pid(DRIVER)}/adjust`;
     const body = { balance: 'main', amount: 50_000, reason: 'Kelmadi, qaytarildi' };
     expect((await call(adjust, PASSENGER, { app: 'admin', ...json(body) })).status).toBe(403);
     expect((await call(adjust, OWNER, { app: 'admin', ...json({ ...body, reason: '' }) })).status).toBe(400);

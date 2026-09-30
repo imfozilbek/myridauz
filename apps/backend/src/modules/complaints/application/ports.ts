@@ -1,4 +1,4 @@
-import type { ChatLine } from '@platform/contracts';
+import type { HistoryLine } from '../../chat';
 import type { ComplaintRecord } from '../domain/complaint';
 
 // A ride as the complaints see it: set by the app from the bookings module (module-events.ts).
@@ -39,7 +39,13 @@ export type ComplaintsDeps = {
   readonly ride: (bookingId: string) => Promise<Ride | undefined>;
   readonly filedRide: (bookingId: string) => Promise<Ride | undefined>;
   readonly people: {
-    find(id: number): Promise<{ readonly firstName: string; readonly avatarKey: string | null } | undefined>;
+    find(
+      id: number,
+    ): Promise<
+      { readonly publicId: string; readonly firstName: string; readonly avatarKey: string | null } | undefined
+    >;
+    // The Telegram ID behind a public id from an admin path (docs/65 A3).
+    idOf(publicId: string): Promise<number | undefined>;
     block(
       id: number,
       days: number | null,
@@ -51,7 +57,7 @@ export type ComplaintsDeps = {
   readonly isTeam: (userId: number) => Promise<boolean>;
   // How many trips a person drove or rode: the history for the moderator.
   readonly trips: (userId: number, side: Side) => Promise<number>;
-  readonly chat: (key: string) => Promise<ChatLine[]>;
+  readonly chat: (key: string) => Promise<HistoryLine[]>;
   readonly cancelAll: (userId: number) => Promise<void>;
   readonly refund: (
     moderatorId: number,

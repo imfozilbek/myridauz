@@ -38,7 +38,7 @@ export const recommendation = {
 export const trip: Trip = {
   id: 't1',
   driver: {
-    id: 7,
+    id: '00000000000000000000000000000007',
     firstName: 'Jasur',
     hasAvatar: false,
     car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },
@@ -72,7 +72,7 @@ const account = (gender: 'male' | 'female'): Account => ({
     getAvatar: unused,
   } as UsersClient,
   profile: {
-    id: 1,
+    id: '00000000000000000000000000000001',
     firstName: 'Ali',
     gender,
     phone: '+998901234567',

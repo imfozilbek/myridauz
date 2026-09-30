@@ -17,7 +17,8 @@ async function party(deps: ComplaintsDeps, userId: number, side: Side) {
     deps.store.countAgainst(userId),
   ]);
   const firstName = person?.firstName ?? '';
-  return { id: userId, firstName, hasAvatar: Boolean(person?.avatarKey), role: side, trips, complaints };
+  const id = person?.publicId ?? '';
+  return { id, firstName, hasAvatar: Boolean(person?.avatarKey), role: side, trips, complaints };
 }
 
 async function view(deps: ComplaintsDeps, complaint: ComplaintRecord): Promise<Complaint | null> {
@@ -55,7 +56,20 @@ export async function complaintChat(deps: ComplaintsDeps, moderatorId: number, i
   const ride = complaint ? await deps.filedRide(complaint.bookingId) : undefined;
   if (!complaint || !ride) return undefined;
   await deps.store.logChatRead(id, moderatorId, deps.now());
-  return deps.chat(ride.chatKey);
+  // The team sees who wrote by the public id, as in the complaint (docs/65 A3).
+  const [driver, passenger] = await Promise.all([
+    deps.people.find(ride.driverId),
+    deps.people.find(ride.passengerId),
+  ]);
+  const publicIds = new Map([
+    [ride.driverId, driver?.publicId ?? ''],
+    [ride.passengerId, passenger?.publicId ?? ''],
+  ]);
+  const lines = await deps.chat(ride.chatKey);
+  return lines.map((line) => ({
+    ...line,
+    author: line.author === null ? null : (publicIds.get(line.author) ?? null),
+  }));
 }
 
 // The decision (docs/17): nothing, a warning, or a block by Telegram ID and phone with the

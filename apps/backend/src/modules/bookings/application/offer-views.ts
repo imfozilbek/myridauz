@@ -19,7 +19,7 @@ export async function offerViews(
         id: offer.id,
         requestId: offer.requestId,
         driver: {
-          id: driver.id,
+          id: driver.publicId,
           firstName: driver.firstName,
           hasAvatar: driver.avatarKey !== null,
           car: { make: car.make, model: car.model, color: car.color },

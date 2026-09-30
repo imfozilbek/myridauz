@@ -22,7 +22,13 @@ const past = (id: string, days: number, people: string[], given: number | null, 
 export async function mockComfort(page: Page) {
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   const saved = new Set<number>([11]);
-  const jasur = { id: 11, firstName: 'Jasur', hasAvatar: false, car, rating: { average: 4.9, count: 23 } };
+  const jasur = {
+    id: '0000000000000000000000000000000b',
+    firstName: 'Jasur',
+    hasAvatar: false,
+    car,
+    rating: { average: 4.9, count: 23 },
+  };
   await page.route('**/api/passenger/favorites', (route) =>
     json(route, {
       drivers: saved.has(11) ? [jasur] : [],

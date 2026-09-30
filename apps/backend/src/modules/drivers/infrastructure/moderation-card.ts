@@ -59,11 +59,12 @@ export const cardMenu = (userId: number) => ({
 });
 
 // Before approving, the moderator compares the plate in the card with the front photo (docs/50).
-// A wrong plate is fixed in the admin Mini App, opened right on this application.
-export const plateCheckMenu = (userId: number, adminUrl: string) => ({
+// A wrong plate is fixed in the admin Mini App, opened right on this application by the public id
+// (docs/65 A3): the button data stays inside the bot, the link opens a page.
+export const plateCheckMenu = (userId: number, publicId: string, adminUrl: string) => ({
   inline_keyboard: [
     [button(t('bot.moderation.plateMatches'), userId, 'approve', CHECKED)],
-    [{ text: t('bot.moderation.fixPlate'), web_app: { url: `${adminUrl}?application=${userId}` } }],
+    [{ text: t('bot.moderation.fixPlate'), web_app: { url: `${adminUrl}?application=${publicId}` } }],
     [button(t('bot.moderation.back'), userId, 'menu')],
   ],
 });

@@ -11,6 +11,7 @@ export function createMemoryUsers(): UserRepository {
   const log: BlockEntry[] = [];
   return {
     find: async (id) => users.get(id),
+    byPublicId: async (publicId) => [...users.values()].find((user) => user.publicId === publicId),
     save: async (user) => {
       users.set(user.id, user);
       if (user.block) idBlocks.set(user.id, user.block);

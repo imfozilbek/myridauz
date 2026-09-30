@@ -44,6 +44,11 @@ export type RatingsDeps = {
     find(bookingId: string): Promise<Ride | undefined>;
   };
   readonly names: (ids: readonly number[]) => Promise<Map<number, string>>;
+  // The public id of a person and back: the apps never see a Telegram ID (docs/65 A3).
+  readonly people: {
+    publicId(id: number): Promise<string | undefined>;
+    idOf(publicId: string): Promise<number | undefined>;
+  };
   // The bot of the rater: the passenger bot for a passenger, the driver bot for a driver.
   readonly ask: (
     ask: Ask,

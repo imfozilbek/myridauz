@@ -29,15 +29,15 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     const save = vi.fn<ComfortClient['save']>(async () => undefined);
     const forget = vi.fn<ComfortClient['forget']>(async () => undefined);
     const { tracked } = renderMarket(
-      <FavoriteCell driverId={7} screen="market.trip" />,
+      <FavoriteCell driverId={'00000000000000000000000000000007'} screen="market.trip" />,
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }), save, forget } }),
     );
     await tap('Sevimli haydovchilarga qoʻshish');
-    expect(save).toHaveBeenCalledWith(7);
+    expect(save).toHaveBeenCalledWith('00000000000000000000000000000007');
     expect(await screen.findByText('Uning yangi safarlari haqida xabar beramiz.')).toBeTruthy();
     expect(tracked.map((event) => event.name)).toContain('favorite_driver');
     await tap('Sevimlilardan olib tashlash');
-    expect(forget).toHaveBeenCalledWith(7);
+    expect(forget).toHaveBeenCalledWith('00000000000000000000000000000007');
   });
 
   it('lists the saved drivers with their trips, or says how to save one', async () => {

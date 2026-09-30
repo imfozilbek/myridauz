@@ -12,9 +12,16 @@ export type ApplicationRepository = {
 };
 
 // The users module, seen from here: a name and a face, never a phone (docs/07).
-export type Person = { readonly id: number; readonly firstName: string; readonly avatarKey: string | null };
+export type Person = {
+  readonly id: number;
+  readonly publicId: string;
+  readonly firstName: string;
+  readonly avatarKey: string | null;
+};
 export type PeoplePort = {
   find(id: number): Promise<Person | undefined>;
+  // The Telegram ID behind a public id from an admin path (docs/65 A3).
+  idOf(publicId: string): Promise<number | undefined>;
   setDriver(id: number, isDriver: boolean): Promise<void>;
   avatar(key: string): Promise<StoredImage | undefined>;
 };

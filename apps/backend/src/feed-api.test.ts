@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { signalledNotifier } from './modules/drivers/infrastructure/signalled-notifier';
 import { signTicket } from './shared/auth/signed-ticket';
-import { call, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv } from './test-api';
 import { app } from './app';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
@@ -78,7 +78,7 @@ describe('the personal channel (docs/64, G19)', () => {
   it('tells a driver about a correction of the wallet by the owner', async () => {
     const { feeds, seen } = fakeFeeds();
     const body = { balance: 'main', amount: 10_000, reason: 'Kelmadi, qaytarildi' };
-    await call(`/admin/wallets/${DRIVER}/adjust`, OWNER, {
+    await call(`/admin/wallets/${await pid(DRIVER)}/adjust`, OWNER, {
       app: 'admin',
       ...json(body),
       env: { FEEDS: feeds },

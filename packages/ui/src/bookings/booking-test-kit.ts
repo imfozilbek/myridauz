@@ -5,7 +5,7 @@ import { trip } from '../market/market-test-kit';
 export const booking: Booking = {
   id: 'b1',
   trip,
-  passenger: { id: 9, firstName: 'Dilnoza', hasAvatar: false },
+  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
   seats: 2,
   price: 95000,
   commission: 19000,

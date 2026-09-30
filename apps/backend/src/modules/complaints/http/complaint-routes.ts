@@ -21,6 +21,7 @@ const STATUS = {
   'auth.not_admin': 403,
   'auth.not_owner': 403,
   'drivers.invalid_input': 400,
+  'users.not_found': 404,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const fail = (code: keyof typeof STATUS) => Response.json({ error: code }, { status: STATUS[code] });
 
@@ -72,11 +73,13 @@ export const complaintRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
     .use('/admin/users/*', async (context, next) =>
       context.get('session').isAdmin ? next() : fail('auth.not_admin'),
     )
-    .post('/admin/users/:id{[0-9]+}/block', async (context) => {
+    .post('/admin/users/:id{[0-9a-f]+}/block', async (context) => {
       const input = blockSchema.safeParse(await context.req.json().catch(() => null));
       if (!input.success) return fail('drivers.invalid_input');
       const { id, owner } = moderatorOf(context);
-      const userId = Number(context.req.param('id'));
+      // The path carries the public id (docs/65 A3).
+      const userId = await deps(context.env).people.idOf(context.req.param('id'));
+      if (userId === undefined) return fail('users.not_found');
       const order = {
         userId,
         days: input.data.days,

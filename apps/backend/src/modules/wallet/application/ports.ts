@@ -14,7 +14,11 @@ export type WalletRepository = {
 export type WalletDeps = {
   readonly wallet: WalletRepository;
   readonly promo: PromoRule;
-  readonly people: { find(id: number): Promise<{ firstName: string } | undefined> };
+  readonly people: {
+    find(id: number): Promise<{ firstName: string; publicId: string } | undefined>;
+    // The Telegram ID behind a public id from an admin path (docs/65 A3).
+    idOf(publicId: string): Promise<number | undefined>;
+  };
   readonly now: () => number;
   readonly newId: () => string;
 };

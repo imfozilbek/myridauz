@@ -2,6 +2,7 @@ import { loadBrand } from '@platform/brands';
 import { describe, expect, it } from 'vitest';
 import { localUsers } from '../modules/users';
 import { botEnv, botSender, fakeTelegram } from './test-bot';
+import { publicIdOf } from '../test-people';
 
 const brand = loadBrand();
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
@@ -54,6 +55,7 @@ describe('POST /telegram/:role', () => {
   it('tells a blocked person that the account is blocked, in every bot (docs/17)', async () => {
     await localUsers.save({
       id: 66,
+      publicId: publicIdOf(66),
       firstName: 'Ali',
       gender: 'male',
       phone: '+998900000066',

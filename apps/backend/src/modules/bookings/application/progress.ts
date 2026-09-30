@@ -31,9 +31,10 @@ export async function markProgress(
 }
 
 // The booking as its passenger sees it, for sharing the trip with close people (docs/43).
-export async function passengerView(deps: BookingsDeps, id: string): Promise<Booking | undefined> {
+export async function passengerView(deps: BookingsDeps, id: string) {
   const record = await deps.bookings.find(id);
   if (!record) return undefined;
   const [view] = await bookingViews(deps, [record], 'passenger');
-  return view;
+  // The view carries the public id only: the owner check needs the Telegram ID (docs/65 A3).
+  return view && { view, passengerId: record.passengerId };
 }

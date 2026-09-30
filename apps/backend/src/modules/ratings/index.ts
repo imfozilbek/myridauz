@@ -3,6 +3,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { maskContacts } from '../chat';
 import { notify, notifyTeam } from '../notifications';
+import { peopleOf } from '../users';
 import { askRatings } from './application/ask';
 import type { RatingsDeps, Ride } from './application/ports';
 import { rate } from './application/rate';
@@ -31,6 +32,10 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
     store: env.DB ? d1Ratings(env.DB) : localRatings,
     rides: { ended: (from, to) => ended(env, from, to), find: (id) => ride(env, id) },
     names: (ids) => names(env, ids),
+    people: {
+      publicId: async (id) => (await peopleOf(env).find(id))?.publicId,
+      idOf: (publicId) => peopleOf(env).idOf(publicId),
+    },
     ask: botAsker(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
     alertTeam: async (userId, rating) => {
       const name = (await names(env, [userId])).get(userId) ?? '';

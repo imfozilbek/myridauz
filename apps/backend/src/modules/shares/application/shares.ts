@@ -12,16 +12,15 @@ export async function createShare(
   passengerId: number,
   bookingId: string,
 ): Promise<Result<Share, ShareError>> {
-  const booking = await deps.booking(bookingId);
-  if (booking?.passenger.id !== passengerId) return { ok: false, error: 'shares.not_found' };
-  if (booking.status !== 'confirmed') return { ok: false, error: 'shares.wrong_status' };
-  const text = await deps.texts.card(booking);
+  const found = await deps.booking(bookingId);
+  if (found?.passengerId !== passengerId) return { ok: false, error: 'shares.not_found' };
+  if (found.view.status !== 'confirmed') return { ok: false, error: 'shares.wrong_status' };
+  const text = await deps.texts.card(found.view);
   return { ok: true, value: await issueLink(deps, { kind: 'booking', id: bookingId }, passengerId, text) };
 }
 
 export async function stopSharing(deps: SharesDeps, passengerId: number, bookingId: string) {
-  const booking = await deps.booking(bookingId);
-  if (booking?.passenger.id !== passengerId) return false;
+  if ((await deps.booking(bookingId))?.passengerId !== passengerId) return false;
   await deps.shares.revoke({ kind: 'booking', id: bookingId }, deps.now());
   return true;
 }
@@ -57,7 +56,7 @@ async function openShare(
     const view = trip ? driverShared(trip, followers, deps.now()) : null;
     return view && { subject, trip: view };
   }
-  const booking = await deps.booking(subject.id);
+  const booking = (await deps.booking(subject.id))?.view;
   const view = booking ? bookingShared(deps, booking, followers) : null;
   return view && { subject, trip: view };
 }

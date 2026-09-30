@@ -19,6 +19,7 @@ import {
   type ReviewInput,
   type ReviewTarget,
   type UserReviews,
+  type PersonId,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -29,7 +30,7 @@ export function createFeedbackClient(options: SignedOptions) {
     target: async (bookingId: string): Promise<ReviewTarget> =>
       reviewTargetSchema.parse(await (await request(reviewPath(bookingId))).json()),
     review: async (input: ReviewInput): Promise<void> => void (await post(REVIEWS_PATH, input)),
-    reviewsOf: async (userId: number): Promise<UserReviews> =>
+    reviewsOf: async (userId: PersonId): Promise<UserReviews> =>
       userReviewsSchema.parse(await (await request(userReviewsPath(userId))).json()),
     complain: async (input: ComplaintInput): Promise<void> => void (await post(COMPLAINTS_PATH, input)),
     queue: async (): Promise<Complaint[]> =>

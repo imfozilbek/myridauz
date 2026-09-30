@@ -1,4 +1,5 @@
 import type { Trip } from '@platform/contracts';
+import { publicIdOf } from '../../test-people';
 
 // A trip and the places of the channel tests (docs/15).
 export const PLACES = new Map([
@@ -16,7 +17,7 @@ export const CHANNELS = [
 export const TRIP: Trip = {
   id: 'trip-1',
   driver: {
-    id: 1,
+    id: publicIdOf(1),
     firstName: 'Jasur',
     hasAvatar: true,
     car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },

@@ -3,6 +3,7 @@ import type { Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
+import { peopleOf } from '../users';
 import { tellFans } from './application/favorites';
 import type { FavoritesDeps } from './application/ports';
 import { favoriteRoutes } from './http/favorite-routes';
@@ -28,6 +29,7 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
     send: (jobs) => notify(env, jobs),
   }),
+  idOf: (publicId) => peopleOf(env).idOf(publicId),
   now: Date.now,
 });
 

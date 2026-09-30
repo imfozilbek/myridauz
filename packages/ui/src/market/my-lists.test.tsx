@@ -14,7 +14,7 @@ afterEach(cleanup);
 
 const request: RideRequest = {
   id: 'r1',
-  passenger: { id: 9, firstName: 'Dilnoza', hasAvatar: false },
+  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
   from: '1726269',
   to: '1730401',
   date: '2026-10-02',

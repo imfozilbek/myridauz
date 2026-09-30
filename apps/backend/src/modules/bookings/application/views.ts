@@ -37,7 +37,7 @@ export async function bookingViews(
         trip: loaded.trip,
         // The driver never sees a passenger's photo (docs/05).
         passenger: {
-          id: passenger.id,
+          id: passenger.publicId,
           firstName: passenger.firstName,
           hasAvatar: viewer !== 'driver' && passenger.avatarKey !== null,
         },

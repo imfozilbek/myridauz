@@ -13,7 +13,7 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
     const publishRequest = vi.fn(async (input: RideRequestInput) => ({
       ...input,
       id: 'r1',
-      passenger: { id: 1, firstName: 'Ali', hasAvatar: false },
+      passenger: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: false },
       km: 320,
       status: 'open' as const,
     }));

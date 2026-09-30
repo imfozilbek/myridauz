@@ -7,6 +7,7 @@ import {
   PASSENGER_HISTORY_PATH,
   type Favorites,
   type HistoryItem,
+  type PersonId,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -17,9 +18,9 @@ export function createComfortClient(options: SignedOptions) {
   return {
     favorites: async (): Promise<Favorites> =>
       favoritesSchema.parse(await (await request(FAVORITES_PATH)).json()),
-    save: async (driverId: number): Promise<void> =>
+    save: async (driverId: PersonId): Promise<void> =>
       void (await request(favoritePath(driverId), { method: 'PUT' })),
-    forget: async (driverId: number): Promise<void> =>
+    forget: async (driverId: PersonId): Promise<void> =>
       void (await request(favoritePath(driverId), { method: 'DELETE' })),
     history: async (): Promise<HistoryItem[]> =>
       historySchema.parse(await (await request(history)).json()).trips,

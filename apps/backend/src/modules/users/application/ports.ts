@@ -6,6 +6,7 @@ import type { Block, BlockEntry, User } from '../domain/user';
 export type UserRepository = {
   // A deleted account is not found: the person may register again.
   find(id: number): Promise<User | undefined>;
+  byPublicId(publicId: string): Promise<User | undefined>;
   save(user: User): Promise<void>;
   // "Maʼlumotlarimni oʻchirish": the name, the phone and the photo go, the row stays (docs/30).
   erase(id: number, at: number): Promise<void>;

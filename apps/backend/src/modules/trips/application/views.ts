@@ -21,7 +21,7 @@ export function tripView(
   return {
     id: trip.id,
     driver: {
-      id: driver.id,
+      id: driver.publicId,
       firstName: driver.firstName,
       hasAvatar: driver.avatarKey !== null,
       car: { make: car.make, model: car.model, color: car.color },

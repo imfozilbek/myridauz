@@ -10,6 +10,7 @@ import type { Bindings } from '../../env';
 import { placeMatches } from '../../shared/places/place-match';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
+import { peopleOf } from '../users';
 import { matchNew, sendWaiting } from './application/notify';
 import type { SubscriptionsDeps } from './application/ports';
 import { subscriptionRoutes } from './http/subscription-routes';
@@ -36,10 +37,13 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
 export const subscriptionsModule = subscriptionRoutes(subscriptionsDeps);
 
 // A new trip: passengers subscribed to its route hear about it (docs/24).
-export const tripPublished = (env: Bindings, trip: Trip) =>
+// A view carries the public id: the owner's own route is skipped by the Telegram ID (docs/65 A3).
+const ownerOf = async (env: Bindings, publicId: string) => (await peopleOf(env).idOf(publicId)) ?? 0;
+
+export const tripPublished = async (env: Bindings, trip: Trip) =>
   matchNew(subscriptionsDeps(env), 'trips', {
     id: trip.id,
-    ownerId: trip.driver.id,
+    ownerId: await ownerOf(env, trip.driver.id),
     from: trip.from,
     to: trip.to,
     date: tashkentDate(trip.departAt),
@@ -50,10 +54,10 @@ export const tripPublished = (env: Bindings, trip: Trip) =>
   });
 
 // A new request: drivers subscribed to its route hear about it (docs/24).
-export const requestPublished = (env: Bindings, request: RideRequest) =>
+export const requestPublished = async (env: Bindings, request: RideRequest) =>
   matchNew(subscriptionsDeps(env), 'requests', {
     id: request.id,
-    ownerId: request.passenger.id,
+    ownerId: await ownerOf(env, request.passenger.id),
     from: request.from,
     to: request.to,
     date: request.date,

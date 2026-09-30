@@ -4,6 +4,7 @@ import { setMeetingPoint } from './application/meeting-point';
 import { publishTrip } from './application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from './application/read';
 import { HOUR, NOW, setup } from './test-kit';
+import { publicIdOf } from '../../test-people';
 
 describe('publishing a trip (docs/09, docs/35)', () => {
   it('lets only an approved driver publish, within the car seats, the price bounds and in the future', async () => {
@@ -78,11 +79,11 @@ describe('finding trips (docs/06, docs/14)', () => {
     await publishTrip(deps, 1, trip);
     await publishTrip(deps, 2, { ...trip, to: '1718233', departAt: NOW + 5 * HOUR });
     const search = { from: '1726294', to: '1718', date: '2026-10-01' };
-    expect((await searchTrips(deps, search)).map((item) => item.driver.id)).toEqual([1, 2]);
-    expect((await searchTrips(deps, { ...search, to: '1718401' })).map((item) => item.driver.id)).toEqual([
-      1,
-    ]);
-    expect((await searchTrips(deps, { ...search, woman: '1' })).map((item) => item.driver.id)).toEqual([2]);
+    const drivers = async (query: typeof search & { woman?: '1' }) =>
+      (await searchTrips(deps, query)).map((item) => item.driver.id);
+    expect(await drivers(search)).toEqual([publicIdOf(1), publicIdOf(2)]);
+    expect(await drivers({ ...search, to: '1718401' })).toEqual([publicIdOf(1)]);
+    expect(await drivers({ ...search, woman: '1' })).toEqual([publicIdOf(2)]);
     expect(await searchTrips(deps, { ...search, date: '2026-10-02' })).toEqual([]);
   });
 

@@ -1,5 +1,6 @@
 import { app } from './app';
 import { initDataFor, signTelegramData } from './shared/auth/test-signing';
+import { localUsers } from './modules/users';
 
 // Test helper: calls the assembled app as a Mini App does, signed like Telegram (docs/32).
 export const testEnv = {
@@ -44,3 +45,6 @@ export async function registerUser(id: number) {
     headers: { 'content-type': 'application/json' },
   });
 }
+
+// The public id of a registered test person: the apps and the paths use it (docs/65 A3).
+export const pid = async (id: number) => (await localUsers.find(id))?.publicId ?? 'none';

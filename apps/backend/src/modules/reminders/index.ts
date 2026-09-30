@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
+import { peopleOf } from '../users';
 import { confirmedBookings } from '../bookings';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
@@ -20,6 +21,7 @@ export const sendReminders = (env: Bindings, now: number) =>
       brand: loadBrand(env.BRAND),
       placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
       send: (jobs) => notify(env, jobs),
+      telegramId: (publicId) => peopleOf(env).idOf(publicId),
     }),
     now: () => now,
   });

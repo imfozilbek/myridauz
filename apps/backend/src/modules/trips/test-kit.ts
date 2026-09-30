@@ -4,6 +4,7 @@ import { maskContacts } from '../chat/domain/mask';
 import type { Person } from '../users';
 import type { Rider, TripsDeps } from './application/ports';
 import { createMemoryTrips } from './infrastructure/memory-trips';
+import { publicIdOf } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
@@ -11,6 +12,7 @@ export const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const person = (id: number, gender: Person['gender']): Person => ({
   id,
+  publicId: publicIdOf(id),
   firstName: `P${id}`,
   avatarKey: null,
   gender,

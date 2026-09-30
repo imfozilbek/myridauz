@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { personIdSchema, type PersonId } from './person-id';
 
 // Ratings and blind reviews after a trip (docs/24). G11.
 export const REVIEWS_PATH = '/reviews';
-export const userReviewsPath = (userId: number) => `/users/${userId}/reviews`;
+export const userReviewsPath = (userId: PersonId) => `/users/${userId}/reviews`;
 export const adminReviewHidePath = (reviewId: string) => `/admin/reviews/${reviewId}/hide`;
 
 export const STARS = [1, 2, 3, 4, 5] as const;
@@ -57,7 +58,7 @@ export type UserReviews = z.infer<typeof userReviewsSchema>;
 export const reviewPath = (bookingId: string) => `${REVIEWS_PATH}/${bookingId}`;
 export const reviewTargetSchema = z.object({
   // The driver's id lets the passenger save the driver after the review (G18, docs/18).
-  rateeId: z.number().int(),
+  rateeId: personIdSchema,
   rateeName: z.string(),
   rateeRole: z.enum(['driver', 'passenger']),
   mine: z.object({ stars: z.number().int(), tags: z.array(z.string()), text: z.string() }).nullable(),

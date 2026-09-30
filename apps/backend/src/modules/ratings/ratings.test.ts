@@ -6,6 +6,7 @@ import { rate } from './application/rate';
 import { ratingsOf, reviewsOf } from './application/read';
 import { ratingOf } from './domain/rating';
 import { createMemoryRatings } from './infrastructure/memory-ratings';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 const NOW = Date.parse('2026-10-05T12:00:00Z');
 const HOUR = 3_600_000;
@@ -29,6 +30,7 @@ function setup(rides: Ride[] = [ride(1)]) {
       find: async (id) => rides.find((known) => known.bookingId === id),
     },
     names: async (ids) => new Map(ids.map((id) => [id, id === DRIVER ? 'Jasur' : `P${id}`])),
+    people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
     ask: async (ask, name, rater, reminder) => void asked.push({ ask, name, rater, reminder }),
     alertTeam: async (userId) => void alerts.push(userId),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),

@@ -1,9 +1,10 @@
+import type { PersonId } from '@platform/contracts';
 import { useBrand } from '../../context/brand-context';
 import { Icon } from '../../icons';
 import { useAvatarUrl } from './use-avatar-url';
 
 type ProfilePhotoProps = {
-  readonly userId: number;
+  readonly userId: PersonId;
   readonly name: string;
   readonly hasAvatar: boolean;
   readonly size?: number;

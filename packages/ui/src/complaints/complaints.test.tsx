@@ -8,8 +8,8 @@ import { ComplaintsScreen } from './complaints-screen';
 
 afterEach(cleanup);
 
-const party = (id: number, firstName: string, role: 'driver' | 'passenger') => ({
-  id,
+const party = (n: number, firstName: string, role: 'driver' | 'passenger') => ({
+  id: n.toString(16).padStart(32, '0'),
   firstName,
   hasAvatar: false,
   role,
@@ -32,7 +32,9 @@ const complaint = (id: string, reason: Complaint['reason'], high: boolean): Comp
 describe('complaints of the team (docs/17)', () => {
   it('opens a complaint, shows the chat on demand and blocks for 7 days', async () => {
     const decide = vi.fn<FeedbackClient['decide']>(async () => undefined);
-    const chat = vi.fn<FeedbackClient['chat']>(async () => [{ author: 1, text: 'Tezroq chiq', at: 1 }]);
+    const chat = vi.fn<FeedbackClient['chat']>(async () => [
+      { author: '00000000000000000000000000000001', text: 'Tezroq chiq', at: 1 },
+    ]);
     const clients = testClients({
       feedback: {
         queue: async () => [complaint('c1', 'harassment', true), complaint('c2', 'no_show', false)],

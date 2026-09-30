@@ -1,12 +1,13 @@
 import { z } from 'zod';
+import { personIdSchema, type PersonId } from './person-id';
 
 // Users, registration and profile (docs/02, docs/05, docs/07, docs/17). G04.
 export const ME_PATH = '/me';
 export const REGISTRATION_PATH = '/me/registration';
 export const MY_AVATAR_PATH = '/me/avatar';
 export const WRITE_ACCESS_PATH = '/me/write-access';
-export const userPath = (id: number) => `/users/${id}`;
-export const userAvatarPath = (id: number) => `${userPath(id)}/avatar`;
+export const userPath = (id: PersonId) => `/users/${id}`;
+export const userAvatarPath = (id: PersonId) => `${userPath(id)}/avatar`;
 
 export const GENDERS = ['male', 'female'] as const;
 export type Gender = (typeof GENDERS)[number];
@@ -43,7 +44,7 @@ const settingsSchema = z.object({ passengerAvatarRequired: z.boolean() });
 
 // Only the owner sees their phone. Other people get publicProfileSchema.
 export const myProfileSchema = z.object({
-  id: z.number().int(),
+  id: personIdSchema,
   firstName: z.string(),
   gender: z.enum(GENDERS),
   phone: z.string(),
@@ -64,7 +65,7 @@ export const meResponseSchema = z.discriminatedUnion('state', [
 export type MeResponse = z.infer<typeof meResponseSchema>;
 
 export const publicProfileSchema = z.strictObject({
-  id: z.number().int(),
+  id: personIdSchema,
   firstName: z.string(),
   hasAvatar: z.boolean(),
   rating: z.number().nullable(),

@@ -1,4 +1,4 @@
-import type { Review } from '@platform/contracts';
+import type { Review, PersonId } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
@@ -9,7 +9,7 @@ import { ReviewStars } from './stars-row';
 const SHOWN = 3;
 
 // Published reviews of a person: nothing while loading, nothing without reviews.
-export function PersonReviews({ userId }: { readonly userId: number }) {
+export function PersonReviews({ userId }: { readonly userId: PersonId }) {
   const { t } = useI18n();
   const { feedback } = useApiClients();
   const [reviews, setReviews] = useState<readonly Review[]>([]);

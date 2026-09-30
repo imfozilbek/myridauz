@@ -65,6 +65,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
       system: (key, event) => postSystemEvent(env, key, event),
       placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
       closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
+      telegramId: (publicId) => peopleOf(env).idOf(publicId),
     }),
   ),
   now: Date.now,

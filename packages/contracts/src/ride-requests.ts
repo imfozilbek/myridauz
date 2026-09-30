@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { personIdSchema } from './person-id';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
 
@@ -22,7 +23,7 @@ export type RideRequestInput = z.input<typeof rideRequestInputSchema>;
 
 export const rideRequestSchema = z.object({
   id: z.string(),
-  passenger: z.object({ id: z.number().int(), firstName: z.string(), hasAvatar: z.boolean() }),
+  passenger: z.object({ id: personIdSchema, firstName: z.string(), hasAvatar: z.boolean() }),
   from: locationIdSchema,
   to: locationIdSchema,
   date: dateSchema,

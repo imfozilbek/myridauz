@@ -29,18 +29,21 @@ describe('registrationSchema', () => {
   });
 });
 
+const PERSON = '0123456789abcdef0123456789abcdef';
+
 describe('publicProfileSchema', () => {
-  it('never carries a phone or a username', () => {
-    const profile = { id: 1, firstName: 'Ali', hasAvatar: false, rating: null };
+  it('never carries a phone, a username or a Telegram ID', () => {
+    const profile = { id: PERSON, firstName: 'Ali', hasAvatar: false, rating: null };
     expect(publicProfileSchema.parse(profile)).toEqual(profile);
     expect(publicProfileSchema.safeParse({ ...profile, phone: '+998' }).success).toBe(false);
     expect(publicProfileSchema.safeParse({ ...profile, username: 'ali' }).success).toBe(false);
+    expect(publicProfileSchema.safeParse({ ...profile, id: 7 }).success).toBe(false);
   });
 });
 
 describe('paths and headers', () => {
   it('builds the avatar path and the auth headers', () => {
-    expect(userAvatarPath(7)).toBe('/users/7/avatar');
+    expect(userAvatarPath(PERSON)).toBe(`/users/${PERSON}/avatar`);
     expect(authHeaders('driver', 'a=1')).toEqual({ authorization: 'tma a=1', 'x-mini-app': 'driver' });
   });
 });

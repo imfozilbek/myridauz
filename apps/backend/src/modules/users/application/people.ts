@@ -5,6 +5,8 @@ import type { UsersDeps } from './ports';
 // What other modules may know about a person: never the phone (docs/07).
 export type Person = {
   readonly id: number;
+  // The only id other people see (docs/65 A3).
+  readonly publicId: string;
   readonly firstName: string;
   readonly avatarKey: string | null;
   // Only for "Mashinada ayol bor" (docs/06): never shown to other people.
@@ -23,8 +25,11 @@ export function people(deps: UsersDeps) {
     find: async (id: number): Promise<Person | undefined> => {
       const user = await deps.users.find(id);
       if (!user) return undefined;
-      return { id: user.id, firstName: user.firstName, avatarKey: user.avatarKey, gender: user.gender };
+      const { publicId, firstName, avatarKey, gender } = user;
+      return { id: user.id, publicId, firstName, avatarKey, gender };
     },
+    // The Telegram ID behind a public id from a path; undefined: no such person (docs/65 A3).
+    idOf: async (publicId: string) => (await deps.users.byPublicId(publicId))?.id,
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),
     // days: 1, 7 or 30; null blocks for good. The phone is blocked too: a new account with the same

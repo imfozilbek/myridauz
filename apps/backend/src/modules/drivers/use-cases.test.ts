@@ -5,6 +5,7 @@ import { myApplication, submitApplication, uploadCarPhoto } from './application/
 import { applicantPhoto, avatarChanged, decideApplication, queue } from './application/moderate';
 import type { DriversDeps, Person } from './application/ports';
 import { createMemoryApplications } from './infrastructure/memory-applications';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 const CAR: Car = {
   make: 'Chevrolet',
@@ -16,7 +17,9 @@ const CAR: Car = {
 const jpeg = { body: new ArrayBuffer(10), type: 'image/jpeg' };
 
 function setup(avatarKey: string | null = 'avatars/1/a') {
-  const persons = new Map<number, Person>([[1, { id: 1, firstName: 'Ali', avatarKey }]]);
+  const persons = new Map<number, Person>([
+    [1, { id: 1, publicId: publicIdOf(1), firstName: 'Ali', avatarKey }],
+  ]);
   const drivers = new Set<number>();
   const log: string[] = [];
   let id = 0;
@@ -25,6 +28,7 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
     photos: createMemoryImages(),
     people: {
       find: async (userId) => persons.get(userId),
+      idOf: idOfPublic,
       setDriver: async (userId, isDriver) => void (isDriver ? drivers.add(userId) : drivers.delete(userId)),
       avatar: async () => jpeg,
     },
@@ -57,7 +61,7 @@ describe('driver application (docs/04)', () => {
     await photos();
     const sent = await submitApplication(deps, 1, CAR);
     expect(sent.ok && sent.value.status).toBe('pending');
-    expect((await queue(deps)).map((item) => item.userId)).toEqual([1]);
+    expect((await queue(deps)).map((item) => item.userId)).toEqual([publicIdOf(1)]);
     expect(await uploadCarPhoto(deps, 1, 'front', jpeg)).toEqual({
       ok: false,
       error: 'drivers.wrong_status',

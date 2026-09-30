@@ -1,4 +1,4 @@
-import type { ApplicationSummary } from '@platform/contracts';
+import type { ApplicationSummary, PersonId } from '@platform/contracts';
 import { Button, Caption } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -50,7 +50,7 @@ export function ApproveFlow({ application, onBack, onApprove }: ApproveFlowProps
 }
 
 type PlateCheckProps = {
-  readonly userId: number;
+  readonly userId: PersonId;
   readonly plate: string;
   readonly fixed: boolean;
   readonly onBack: () => void;

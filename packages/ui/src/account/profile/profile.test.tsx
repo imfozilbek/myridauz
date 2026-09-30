@@ -9,7 +9,7 @@ const compress = vi.hoisted(() => ({ compressImage: vi.fn(async (file: Blob) => 
 vi.mock('./compress-image', () => compress);
 
 const profile = {
-  id: 7,
+  id: '00000000000000000000000000000007',
   firstName: 'Dilnoza',
   gender: 'female' as const,
   phone: '+998901234567',
@@ -65,7 +65,7 @@ describe('profile', () => {
     expect(screen.getByText('+998 90 123 45 67')).toBeTruthy();
     expect(screen.getByText('Raqamingizni faqat siz koʻrasiz.')).toBeTruthy();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
-    expect(client.getAvatar).toHaveBeenCalledWith(7);
+    expect(client.getAvatar).toHaveBeenCalledWith('00000000000000000000000000000007');
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Profil va rasm')).toBeTruthy();
   });

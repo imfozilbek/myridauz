@@ -36,7 +36,7 @@ const account: Account = {
     getAvatar: unused,
   } as UsersClient,
   profile: {
-    id: 1,
+    id: '00000000000000000000000000000001',
     firstName: 'Ali',
     gender: 'male',
     phone: '+998901234567',

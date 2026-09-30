@@ -66,7 +66,7 @@ wireFavorites({
     const { firstName, avatarKey } = person;
     const rating = ratings.get(id) ?? NO_RATING;
     return {
-      id,
+      id: person.publicId,
       firstName,
       hasAvatar: avatarKey !== null,
       car: { make: car.make, model: car.model, color: car.color },

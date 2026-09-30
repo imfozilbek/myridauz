@@ -7,6 +7,7 @@ import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
 import type { BookingsDeps, RequestFacts, TripFacts } from './application/ports';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
 import { DILNOZA, DRIVER, fakeNotifier, fakePeople, fakeRecommend } from './test-fakes';
+import { idOfPublic, publicIdOf } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
@@ -31,7 +32,7 @@ export function setup() {
   const walletDeps: WalletDeps = {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
-    people: { find: async (userId) => people.get(userId) },
+    people: { find: async (userId) => people.get(userId), idOf: idOfPublic },
     now: () => now,
     newId,
   };
@@ -41,7 +42,13 @@ export function setup() {
       .filter((booking) => booking.status === 'confirmed')
       .reduce((sum, booking) => sum + booking.seats, 0);
     const { id: tripId, from, to, departAt, km, seats, price } = facts;
-    const driver = { id: facts.driverId, firstName: 'Jasur', hasAvatar: true, car: CAR, rating: NO_RATING };
+    const driver = {
+      id: publicIdOf(facts.driverId),
+      firstName: 'Jasur',
+      hasAvatar: true,
+      car: CAR,
+      rating: NO_RATING,
+    };
     const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
     return {
       ...base,

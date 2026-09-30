@@ -10,6 +10,8 @@ type Wiring = {
   readonly brand: BrandConfig;
   readonly placeName: (id: string) => Promise<string>;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
+  // A view carries public ids; the bot writes to the Telegram ID behind one (docs/65 A3).
+  readonly telegramId: (publicId: string) => Promise<number | undefined>;
 };
 
 const KEYS = {
@@ -18,10 +20,14 @@ const KEYS = {
 } as const;
 
 // The passenger bot reminds a passenger, the driver bot a driver (docs/02); "Ochish" opens the app.
-export function botReminders({ brand, placeName, send }: Wiring): RemindersDeps['tell'] {
+export function botReminders({ brand, placeName, send, telegramId }: Wiring): RemindersDeps['tell'] {
   const open = (app: 'passenger' | 'driver') => ({
     inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
   });
+  const to = async (bot: 'passenger' | 'driver', publicId: string, text: string) => {
+    const chatId = await telegramId(publicId);
+    if (chatId !== undefined) await send([{ bot, chatId, text, markup: open(bot) }]);
+  };
   const about = async (trip: Trip) => ({
     from: await placeName(trip.from),
     to: await placeName(trip.to),
@@ -36,11 +42,11 @@ export function botReminders({ brand, placeName, send }: Wiring): RemindersDeps[
         car: `${car.make} ${car.model}`,
         plate: booking.plate ? formatPlate(booking.plate) : '',
       });
-      await send([{ bot: 'passenger', chatId: booking.passenger.id, text, markup: open('passenger') }]);
+      await to('passenger', booking.passenger.id, text);
     },
     driver: async (trip, riders, kind) => {
       const text = t(KEYS.driver[kind], { ...(await about(trip)), count: String(riders) });
-      await send([{ bot: 'driver', chatId: trip.driver.id, text, markup: open('driver') }]);
+      await to('driver', trip.driver.id, text);
     },
   };
 }

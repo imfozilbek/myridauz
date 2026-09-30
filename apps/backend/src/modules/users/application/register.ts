@@ -26,6 +26,7 @@ export async function register(
   if (activeBlock(blocks, now)) return { ok: false, error: 'users.blocked' };
   const user: User = {
     id: caller.id,
+    publicId: deps.newId().replaceAll('-', ''),
     firstName: input.firstName,
     gender: input.gender,
     phone,

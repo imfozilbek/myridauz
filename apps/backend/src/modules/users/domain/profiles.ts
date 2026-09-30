@@ -5,7 +5,7 @@ import { rolesOf, type User } from './user';
 const NO_RATING = null;
 
 export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
-  id: user.id,
+  id: user.publicId,
   firstName: user.firstName,
   gender: user.gender,
   phone: user.phone,
@@ -17,7 +17,7 @@ export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
 
 // What other people see: never a phone or a username (docs/07).
 export const toPublicProfile = (user: User): PublicProfile => ({
-  id: user.id,
+  id: user.publicId,
   firstName: user.firstName,
   hasAvatar: user.avatarKey !== null,
   rating: NO_RATING,

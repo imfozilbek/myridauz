@@ -12,11 +12,14 @@ type Wiring = {
   readonly system: (key: string, event: ChatSystemEvent) => Promise<void>;
   readonly placeName: (id: string) => Promise<string>;
   readonly closeOnes: (booking: Booking, update: 'boarded' | 'arrived' | 'cancelled') => Promise<void>;
+  // A view carries public ids; the bot writes to the Telegram ID behind one (docs/65 A3).
+  readonly telegramId: (publicId: string) => Promise<number | undefined>;
 };
 
 // The bots tell the other side through the queue (docs/07, docs/03): names only, never a phone
 // or a username. The chat of the booking gets a line about it too.
-export function telegramNotifier({ brand, notify, system, placeName, closeOnes }: Wiring): BookingNotifier {
+export function telegramNotifier(wiring: Wiring): BookingNotifier {
+  const { brand, notify, system, placeName, closeOnes, telegramId } = wiring;
   const open = (app: 'passenger' | 'driver') => ({
     inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
   });
@@ -28,10 +31,14 @@ export function telegramNotifier({ brand, notify, system, placeName, closeOnes }
     name: booking.passenger.firstName,
     seats: String(booking.seats),
   });
+  const send = async (bot: 'passenger' | 'driver', publicId: string, text: string, after?: object) => {
+    const chatId = await telegramId(publicId);
+    if (chatId !== undefined) await notify([{ bot, chatId, text, ...after }]);
+  };
   const toDriver = (booking: Booking, text: string) =>
-    notify([{ bot: 'driver', chatId: booking.trip.driver.id, text, markup: open('driver') }]);
+    send('driver', booking.trip.driver.id, text, { markup: open('driver') });
   const toPassenger = (booking: Booking, text: string) =>
-    notify([{ bot: 'passenger', chatId: booking.passenger.id, text, markup: open('passenger') }]);
+    send('passenger', booking.passenger.id, text, { markup: open('passenger') });
   return {
     requested: async (booking) => {
       await system(booking.chatKey, 'requested');
@@ -46,14 +53,9 @@ export function telegramNotifier({ brand, notify, system, placeName, closeOnes }
         plate: booking.plate ? formatPlate(booking.plate) : '',
       });
       // No button: the passenger answers this very message with the pickup point (docs/14).
-      await notify([
-        {
-          bot: 'passenger',
-          chatId: booking.passenger.id,
-          text,
-          after: { type: 'pickup', bookingId: booking.id },
-        },
-      ]);
+      await send('passenger', booking.passenger.id, text, {
+        after: { type: 'pickup', bookingId: booking.id },
+      });
     },
     declined: async (booking) => {
       await system(booking.chatKey, 'declined');

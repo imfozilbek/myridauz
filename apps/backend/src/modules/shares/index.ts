@@ -3,7 +3,7 @@ import type { Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
-import type { DriverTrip, SharesDeps, ShareUpdate } from './application/ports';
+import type { DriverTrip, SharedBooking, SharesDeps, ShareUpdate } from './application/ports';
 import { tellTripCancelled } from './application/driver-shares';
 import { tellFollowers } from './application/shares';
 import { shareRoutes } from './http/share-routes';
@@ -27,7 +27,7 @@ const base = (env: Bindings) => {
 };
 
 // The booking comes from the bookings module, the driver's trip from trips, given by the app (app.ts).
-type BookingOf = (env: Bindings, id: string) => Promise<Booking | undefined>;
+type BookingOf = (env: Bindings, id: string) => Promise<SharedBooking | undefined>;
 type DriverTripOf = (env: Bindings, id: string) => Promise<DriverTrip | undefined>;
 
 const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTripOf): SharesDeps => ({

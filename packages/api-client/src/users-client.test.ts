@@ -4,7 +4,7 @@ import type { Fetch } from './fetch';
 import { createUsersClient } from './users-client';
 
 const profile = {
-  id: 1,
+  id: '00000000000000000000000000000001',
   firstName: 'Ali',
   gender: 'male',
   phone: '+998',
@@ -51,7 +51,7 @@ describe('createUsersClient', () => {
 
   it('loads a photo as a blob', async () => {
     const { client } = setup(new Response('img', { headers: { 'content-type': 'image/jpeg' } }));
-    expect((await client.getAvatar(5)).size).toBe(3);
+    expect((await client.getAvatar('0123456789abcdef0123456789abcdef')).size).toBe(3);
   });
 
   it('turns API errors into codes', async () => {

@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, OWNER, read } from './bookings-test-api';
 import { changeModerator } from './modules/team';
-import { call, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv } from './test-api';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -35,7 +35,7 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     );
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const before = telegram.sentTo(PASSENGER).length;
-    expect((await call(`/admin/users/${DRIVER}/block`, MODERATOR, block(7))).status).toBe(204);
+    expect((await call(`/admin/users/${await pid(DRIVER)}/block`, MODERATOR, block(7))).status).toBe(204);
     const mine = await read<{ bookings: { id: string; status: string }[] }>(
       call('/passenger/bookings', PASSENGER),
     );
@@ -43,8 +43,8 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     expect(telegram.sentTo(PASSENGER).length).toBeGreaterThan(before);
     expect(telegram.sentTo(DRIVER).length).toBeGreaterThan(0);
     // A moderator never blocks a member of the team; the owner may.
-    const refused = await call(`/admin/users/${MODERATOR}/block`, MODERATOR, block(null));
+    const refused = await call(`/admin/users/${await pid(MODERATOR)}/block`, MODERATOR, block(null));
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
-    expect((await call(`/admin/users/${PASSENGER}/block`, OWNER, block(1))).status).toBe(204);
+    expect((await call(`/admin/users/${await pid(PASSENGER)}/block`, OWNER, block(1))).status).toBe(204);
   });
 });
