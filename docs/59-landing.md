@@ -61,6 +61,7 @@
 ## Аналитика
 
 - Cloudflare Web Analytics включена для всей зоны `myrida.uz` с автоустановкой. В коде ключа нет.
+- Скрипт `beacon.min.js` Cloudflare вставляет только в ответ браузеру. Проверка: `curl -H "Accept: text/html" -H "User-Agent: Mozilla/5.0"`, простой `curl` его не видит.
 
 ## Проверки
 
