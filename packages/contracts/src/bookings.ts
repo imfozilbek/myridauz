@@ -8,6 +8,8 @@ import { tripSchema } from './trips';
 export const PASSENGER_BOOKINGS_PATH = '/passenger/bookings';
 export const tripBookingsPath = (tripId: string) => `/trips/${tripId}/bookings`;
 export const passengerBookingCancelPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/cancel`;
+// The passenger's own pickup point, chosen on the map of the Mini App (docs/14, G22).
+export const passengerPickupPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/pickup`;
 export const DRIVER_BOOKINGS_PATH = '/driver/bookings';
 export const DRIVER_BOOKING_ACTIONS = ['confirm', 'decline', 'cancel'] as const;
 export type DriverBookingAction = (typeof DRIVER_BOOKING_ACTIONS)[number];
@@ -33,6 +35,10 @@ export const bookingInputSchema = z.object({ seats: z.number().int().min(1).max(
 export type BookingInput = z.input<typeof bookingInputSchema>;
 
 export const pointSchema = z.object({ lat: z.number(), lng: z.number() });
+export const pickupInputSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+});
 export type Point = z.infer<typeof pointSchema>;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.

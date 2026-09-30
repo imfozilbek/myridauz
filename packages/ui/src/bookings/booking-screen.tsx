@@ -6,6 +6,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { IconTile } from '../icon-tile';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
@@ -22,10 +23,12 @@ type Props = {
   readonly actions: readonly BookingAction[];
   // The chat and, for the passenger, sharing the trip (G09).
   readonly children?: ReactNode;
+  // The passenger chooses the own pickup point on the map (G22).
+  readonly onPickOnMap?: () => void;
 };
 
 // One booking (docs/35). The plate and the places open only after the confirmation (docs/07, docs/14).
-export function BookingScreen({ booking, side, onBack, actions, children }: Props) {
+export function BookingScreen({ booking, side, onBack, actions, children, onPickOnMap }: Props) {
   useScreenView(`bookings.${side}`);
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
   const { trip } = booking;
@@ -79,6 +82,11 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
             ) : null}
             {side === 'passenger' ? place(t('bookings.meeting'), booking.meetingPoint) : null}
             {place(t(side === 'passenger' ? 'bookings.pickup.mine' : 'bookings.pickup'), booking.pickup)}
+            {onPickOnMap ? (
+              <Cell before={<IconTile name="pickup" />} onClick={onPickOnMap}>
+                {t('bookings.map.pick')}
+              </Cell>
+            ) : null}
           </Section>
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>

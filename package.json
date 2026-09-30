@@ -20,6 +20,7 @@
     "e2e": "playwright test --project=smoke",
     "screenshots": "playwright test --project=screenshots",
     "deploy": "node scripts/deploy.mjs",
+    "map-data": "node scripts/map-data.mjs",
     "setup-bots": "node scripts/setup-bots.mjs",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },

@@ -19,6 +19,7 @@ import { feedRoutes } from './modules/feed';
 import { healthModule } from './modules/health';
 import { historyModule } from './modules/history';
 import { locationsModule } from './modules/locations';
+import { mapModule } from './modules/map';
 import { pricingModule } from './modules/pricing';
 import { ratingsModule } from './modules/ratings';
 import { requestsModule } from './modules/ride-requests';
@@ -32,12 +33,13 @@ import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
-const allowMiniApps = cors({
-  origin: (origin, context) => {
-    const brand = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
-    return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
-  },
-});
+const miniAppOrigin = (origin: string, context: { env: unknown }) => {
+  const brand = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
+  return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
+};
+const allowMiniApps = cors({ origin: miniAppOrigin });
+// The map library reads the parts of the archive: it needs to see where a part lies (G22).
+const allowMap = cors({ origin: miniAppOrigin, exposeHeaders: ['content-range', 'etag'] });
 // The landing on the brand domain reads public prices (docs/59).
 const allowLanding = cors({
   origin: (origin, context) => {
@@ -74,6 +76,7 @@ export const app = new Hono<AppEnv>()
   .use('/public/*', allowLanding)
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
+  .use('/map/*', allowMap)
   .route('/', healthModule)
   .route('/', analyticsModule)
   // The avatar watch goes before users: it wraps the avatar route of the users module.
@@ -81,6 +84,7 @@ export const app = new Hono<AppEnv>()
   .route('/', usersModule)
   .route('/', driversModule)
   .route('/', locationsModule(auth))
+  .route('/', mapModule)
   .route('/', pricingModule)
   .route('/', channelsModule)
   // The cancel watch goes before trips: it wraps the cancel route of the trips module.

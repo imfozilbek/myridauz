@@ -20,7 +20,7 @@
   "pickup": "Yoʻlovchining joyi",
   "pickup.mine": "Mening joyim",
   "openMap": "Xaritada ochish",
-  "pickupHint": "Oʻz uchrashuv joyingizni botdagi tasdiq xabariga javob sifatida yuboring.",
+  "pickupHint": "Uchrashuv joyingizni xaritada tanlang yoki botdagi tasdiq xabariga javob sifatida yuboring.",
   "noPoint": "Hali belgilanmagan",
   "cancel": "Joyni bekor qilish",
   "cancelled": "Joy bekor qilindi",
@@ -52,5 +52,15 @@
   "cancelAsk": "Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.",
   "driverCancelAsk": "Joyni bekor qilasizmi? Yoʻlovchi bu haqda xabar oladi.",
   "answerUntil": "Javob berish muddati",
-  "confirm.balance": "Hamyoningizda: {amount}"
+  "confirm.balance": "Hamyoningizda: {amount}",
+  "map.pick": "Xaritada tanlash",
+  "map.title": "Uchrashuv joyingiz",
+  "map.hint": "Xaritani suring: haydovchi sizni belgi turgan joyda kutadi.",
+  "map.here": "Shu yerda",
+  "map.mine": "Mening joylashuvim",
+  "map.noLocation": "Joylashuvingizni aniqlab boʻlmadi. Telegramda joylashuvga ruxsat bering yoki xaritani oʻzingiz suring.",
+  "map.outside": "Bu joy Oʻzbekistonda emas. Xaritani Oʻzbekistondagi joyga suring.",
+  "map.failed": "Xarita yuklanmadi",
+  "map.failedHint": "Qayta urinib koʻring yoki uchrashuv joyini botdagi tasdiq xabariga javob sifatida yuboring.",
+  "map.credit": "© OpenStreetMap"
 }

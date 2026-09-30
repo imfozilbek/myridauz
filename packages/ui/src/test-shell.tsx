@@ -1,122 +1,16 @@
 import { createAnalyticsClient, type AnalyticsInput, type LocationsClient } from '@platform/api-client';
-import type { ApiClients } from './context/api-clients';
 import { loadBrand } from '@platform/brands';
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { AppShell } from './app-shell';
+import { testClients } from './test-clients';
+
+export { testClients };
 
 // Test helper: renders UI inside the real shell and collects tracked analytics events.
 // Without a directory the place picker shows no regions; tests of places pass their own.
 const NO_LOCATIONS: LocationsClient = { getLocations: async () => ({ version: '0', locations: [] }) };
 
-const NOT_USED = async (): Promise<never> => {
-  throw new Error('test.client_not_used');
-};
-// Tests of the driver and the team screens replace only the calls they need.
-export const testClients = (overrides: {
-  readonly drivers?: Partial<ApiClients['drivers']>;
-  readonly moderation?: Partial<ApiClients['moderation']>;
-  readonly market?: Partial<ApiClients['market']>;
-  readonly pricing?: Partial<ApiClients['pricing']>;
-  readonly channels?: Partial<ApiClients['channels']>;
-  readonly bookings?: Partial<ApiClients['bookings']>;
-  readonly wallet?: Partial<ApiClients['wallet']>;
-  readonly chat?: Partial<ApiClients['chat']>;
-  readonly subscriptions?: Partial<ApiClients['subscriptions']>;
-  readonly feedback?: Partial<ApiClients['feedback']>;
-  readonly stats?: Partial<ApiClients['stats']>;
-  readonly calls?: Partial<ApiClients['calls']>;
-  readonly comfort?: Partial<ApiClients['comfort']>;
-}): ApiClients => ({
-  drivers: {
-    getApplication: NOT_USED,
-    uploadPhoto: NOT_USED,
-    submit: NOT_USED,
-    getPhoto: NOT_USED,
-    ...overrides.drivers,
-  },
-  moderation: {
-    queue: NOT_USED,
-    get: NOT_USED,
-    photo: NOT_USED,
-    decide: NOT_USED,
-    block: NOT_USED,
-    blocks: NOT_USED,
-    unblock: NOT_USED,
-    ...overrides.moderation,
-  },
-  market: {
-    recommend: NOT_USED,
-    searchTrips: NOT_USED,
-    trip: NOT_USED,
-    myTrips: NOT_USED,
-    publishTrip: NOT_USED,
-    cancelTrip: NOT_USED,
-    searchRequests: NOT_USED,
-    myRequests: NOT_USED,
-    publishRequest: NOT_USED,
-    cancelRequest: NOT_USED,
-    teamTrips: NOT_USED,
-    ...overrides.market,
-  },
-  pricing: {
-    state: NOT_USED,
-    preview: NOT_USED,
-    save: NOT_USED,
-    rollback: NOT_USED,
-    directions: NOT_USED,
-    setDirection: NOT_USED,
-    ...overrides.pricing,
-  },
-  channels: { list: NOT_USED, save: NOT_USED, remove: NOT_USED, ...overrides.channels },
-  bookings: {
-    book: NOT_USED,
-    myBookings: NOT_USED,
-    cancelMine: NOT_USED,
-    driverBookings: NOT_USED,
-    answer: NOT_USED,
-    tripBookings: NOT_USED,
-    sendOffer: NOT_USED,
-    driverOffers: NOT_USED,
-    myOffers: NOT_USED,
-    answerOffer: NOT_USED,
-    ...overrides.bookings,
-  },
-  wallet: { mine: NOT_USED, all: NOT_USED, of: NOT_USED, adjust: NOT_USED, ...overrides.wallet },
-  chat: {
-    socketUrl: NOT_USED,
-    share: NOT_USED,
-    stopSharing: NOT_USED,
-    shareTrip: NOT_USED,
-    stopTripSharing: NOT_USED,
-    boarded: NOT_USED,
-    arrived: NOT_USED,
-    sharedTrip: NOT_USED,
-    follow: NOT_USED,
-    ...overrides.chat,
-  },
-  subscriptions: {
-    mine: NOT_USED,
-    subscribe: NOT_USED,
-    remove: NOT_USED,
-    renew: NOT_USED,
-    ...overrides.subscriptions,
-  },
-  feedback: {
-    target: NOT_USED,
-    review: NOT_USED,
-    reviewsOf: NOT_USED,
-    complain: NOT_USED,
-    queue: NOT_USED,
-    complaint: NOT_USED,
-    chat: NOT_USED,
-    decide: NOT_USED,
-    ...overrides.feedback,
-  },
-  stats: { get: NOT_USED, ...overrides.stats },
-  calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
-  comfort: { favorites: NOT_USED, save: NOT_USED, forget: NOT_USED, history: NOT_USED, ...overrides.comfort },
-});
 const NO_CLIENTS = testClients({});
 
 export function renderInShell(

@@ -21,6 +21,7 @@ export default defineConfig({
         'landing.spec.ts',
         'launch.spec.ts',
         'realtime.spec.ts',
+        'map.spec.ts',
       ],
     },
     {
