@@ -6,6 +6,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { useFeedChange } from '../feed/feed-context';
 import { IconTile } from '../icon-tile';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
@@ -28,6 +29,8 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
     moderation.queue().then(setQueue, () => setFailed(true));
   }, [moderation]);
   useEffect(load, [load]);
+  // A new application or another moderator's decision: the queue refreshes quietly (docs/64).
+  useFeedChange(() => void moderation.queue().then(setQueue, () => undefined));
   useEffect(() => {
     const linked = linkedApplication();
     if (linked === null) return;

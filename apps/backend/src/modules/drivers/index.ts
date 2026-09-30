@@ -14,6 +14,7 @@ import { emptyApplication } from './domain/application';
 import { adminRoutes } from './http/admin-routes';
 import { driverRoutes } from './http/driver-routes';
 import { createMemoryApplications } from './infrastructure/memory-applications';
+import { signalledNotifier } from './infrastructure/signalled-notifier';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { d1Applications } from './infrastructure/d1-applications';
 
@@ -25,19 +26,24 @@ const NO_CONTENT = 204;
 export const driversDeps = (env: Bindings): DriversDeps => {
   const people = peopleOf(env);
   const photos = env.MEDIA ? r2Images(env.MEDIA) : localPhotos;
+  const teamIds = async () => (await teamMembers(env)).map((member) => member.id);
   return {
     applications: env.DB ? d1Applications(env.DB) : localApplications,
     photos,
     people,
-    notify: telegramNotifier({
-      fetch: (input, init) => fetch(input, init),
-      brand: loadBrand(env.BRAND),
-      adminToken: env.ADMIN_BOT_TOKEN,
-      driverToken: env.DRIVER_BOT_TOKEN,
-      teamIds: async () => (await teamMembers(env)).map((member) => member.id),
-      photos,
-      people,
-    }),
+    notify: signalledNotifier(
+      env,
+      telegramNotifier({
+        fetch: (input, init) => fetch(input, init),
+        brand: loadBrand(env.BRAND),
+        adminToken: env.ADMIN_BOT_TOKEN,
+        driverToken: env.DRIVER_BOT_TOKEN,
+        teamIds,
+        photos,
+        people,
+      }),
+      teamIds,
+    ),
     driverApproved: async (userId) => {
       recordServerEvent(env, { name: 'driver_approved' });
       await welcomeBonus(env, userId);

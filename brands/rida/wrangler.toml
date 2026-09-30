@@ -35,9 +35,18 @@ dataset = "rida_analytics"
 name = "CHATS"
 class_name = "ChatRoom"
 
+# One Durable Object per person: live updates of the Mini App screens (docs/64, G19).
+[[durable_objects.bindings]]
+name = "FEEDS"
+class_name = "UserFeed"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["ChatRoom"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["UserFeed"]
 
 # Bot messages wait here and go out at Telegram's pace (docs/03). The queue is created once:
 # wrangler queues create rida-notifications (docs/46).

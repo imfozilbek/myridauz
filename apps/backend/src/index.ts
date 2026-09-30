@@ -14,6 +14,8 @@ import { burnBonuses } from './modules/wallet';
 
 // The chat of a booking is a Durable Object class of this Worker (docs/07).
 export { ChatRoom } from './modules/chat/infrastructure/chat-room';
+// The personal channel of a person: live updates of the screens (docs/64, G19).
+export { UserFeed } from './modules/feed/infrastructure/user-feed';
 
 // Cloudflare Worker entry point: the API, and the Cron job that closes trips, requests and bookings
 // whose time is over, burns bonuses that are over, gives bonus 1 to approved drivers without it,

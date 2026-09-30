@@ -11,6 +11,8 @@ export type Bindings = {
   readonly MEDIA?: R2Bucket;
   // One Durable Object per booking chat (docs/07) and the queue of bot messages (docs/03).
   readonly CHATS?: DurableObjectNamespace;
+  // One Durable Object per person: "something changed" to the open Mini Apps (docs/64, G19).
+  readonly FEEDS?: DurableObjectNamespace;
   readonly NOTIFICATIONS?: Queue<NotificationJob>;
   readonly PASSENGER_BOT_TOKEN?: string;
   readonly DRIVER_BOT_TOKEN?: string;

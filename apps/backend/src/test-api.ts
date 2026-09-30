@@ -21,13 +21,14 @@ const TOKENS: Readonly<Record<string, string>> = {
 export async function call(
   path: string,
   id: number,
-  init: RequestInit & { app?: string; data?: string } = {},
+  // env: bindings on top of the test ones, like a fake Durable Object namespace.
+  { env, ...init }: RequestInit & { app?: string; data?: string; env?: object } = {},
 ) {
   const miniApp = init.app ?? 'passenger';
   const headers = new Headers(init.headers);
   headers.set('authorization', `tma ${init.data ?? (await initData(id, TOKENS[miniApp]))}`);
   headers.set('x-mini-app', miniApp);
-  return app.request(path, { ...init, headers }, testEnv);
+  return app.request(path, { ...init, headers }, { ...testEnv, ...env });
 }
 
 export async function registerUser(id: number) {

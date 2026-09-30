@@ -20,6 +20,7 @@ export default defineConfig({
         'bookings.spec.ts',
         'landing.spec.ts',
         'launch.spec.ts',
+        'realtime.spec.ts',
       ],
     },
     {
