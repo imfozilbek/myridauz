@@ -4,7 +4,7 @@ import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
 import type { RequestsDeps } from './application/ports';
-import { views } from './application/use-cases';
+import { cancelRequest, views } from './application/use-cases';
 import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
@@ -63,3 +63,7 @@ export const requestViewOf = async (env: Bindings, id: string) => {
   const request = await deps.requests.find(id);
   return request ? (await views(deps, [request]))[0] : undefined;
 };
+
+// A blocked or deleted passenger: the open request ends (docs/65 A5).
+export const cancelRequestOf = (env: Bindings, passengerId: number, id: string) =>
+  cancelRequest(requestsDeps(env), passengerId, id);

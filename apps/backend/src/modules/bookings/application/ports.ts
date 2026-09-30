@@ -73,6 +73,7 @@ export type BookingsDeps = {
     find(id: string): Promise<RequestFacts | undefined>;
     ofPassenger(passengerId: number): Promise<RequestFacts[]>;
     matched(id: string): Promise<void>;
+    cancel(passengerId: number, id: string): Promise<void>;
   };
   readonly wallet: {
     commission(price: number, seats: number): number;

@@ -6,7 +6,7 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { notify } from '../notifications';
-import { markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
+import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
 import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViewsOf } from '../trips';
 import { tellCloseOnes } from '../shares';
 import { peopleOf } from '../users';
@@ -46,6 +46,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
     find: (id) => requestFacts(env, id),
     ofPassenger: (passengerId) => passengerRequestFacts(env, passengerId),
     matched: (id) => markMatched(env, id),
+    cancel: async (passengerId, id) => void (await cancelRequestOf(env, passengerId, id)),
   },
   wallet: {
     commission: bookingCommission(env),

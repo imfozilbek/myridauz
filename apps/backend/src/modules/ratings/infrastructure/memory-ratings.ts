@@ -43,5 +43,10 @@ export function createMemoryRatings(): RatingStore {
       flags.add(userId);
       return true;
     },
+    forget: async (userId) => {
+      for (const [id, review] of reviews)
+        if (review.raterId === userId || review.rateeId === userId) reviews.delete(id);
+      flags.delete(userId);
+    },
   };
 }

@@ -1,10 +1,13 @@
 import type { Complaint, complaintDecisionSchema } from '@platform/contracts';
 import type { z } from 'zod';
 import { isHigh, queueOrder, type ComplaintRecord } from '../domain/complaint';
+import { blockPerson } from './block';
 import type { ComplaintsDeps, Ride, Side } from './ports';
 
+// Who decides: a moderator, or the owner who may also block a member of the team.
+export type Moderator = { readonly id: number; readonly owner: boolean };
+
 type Decision = z.output<typeof complaintDecisionSchema>;
-const DAY_MS = 24 * 60 * 60 * 1000;
 const sideOf = (ride: Ride, userId: number): Side => (userId === ride.driverId ? 'driver' : 'passenger');
 
 async function party(deps: ComplaintsDeps, userId: number, side: Side) {
@@ -18,7 +21,7 @@ async function party(deps: ComplaintsDeps, userId: number, side: Side) {
 }
 
 async function view(deps: ComplaintsDeps, complaint: ComplaintRecord): Promise<Complaint | null> {
-  const ride = await deps.ride(complaint.bookingId);
+  const ride = await deps.filedRide(complaint.bookingId);
   if (!ride) return null;
   const { id, reason, comment, status, createdAt, authorId, againstId } = complaint;
   const [author, against] = await Promise.all([
@@ -49,7 +52,7 @@ export async function openComplaint(deps: ComplaintsDeps, id: string) {
 // The chat of the ride, only through its complaint, and every read goes to the log (docs/07).
 export async function complaintChat(deps: ComplaintsDeps, moderatorId: number, id: string) {
   const complaint = await deps.store.find(id);
-  const ride = complaint ? await deps.ride(complaint.bookingId) : undefined;
+  const ride = complaint ? await deps.filedRide(complaint.bookingId) : undefined;
   if (!complaint || !ride) return undefined;
   await deps.store.logChatRead(id, moderatorId, deps.now());
   return deps.chat(ride.chatKey);
@@ -57,13 +60,16 @@ export async function complaintChat(deps: ComplaintsDeps, moderatorId: number, i
 
 // The decision (docs/17): nothing, a warning, or a block by Telegram ID and phone with the
 // person's live trips and bookings cancelled. A no-show may give the driver the commission back.
-export async function decide(deps: ComplaintsDeps, moderatorId: number, id: string, decision: Decision) {
+export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: string, decision: Decision) {
+  const moderatorId = moderator.id;
   const complaint = await deps.store.find(id);
-  const ride = complaint ? await deps.ride(complaint.bookingId) : undefined;
+  const ride = complaint ? await deps.filedRide(complaint.bookingId) : undefined;
   if (!complaint || !ride) return 'complaints.not_found' as const;
   if (complaint.status === 'resolved') return 'complaints.wrong_status' as const;
   const against = complaint.againstId;
   const side = sideOf(ride, against);
+  if (decision.action === 'block' && !moderator.owner && (await deps.isTeam(against)))
+    return 'auth.not_owner' as const;
   const now = deps.now();
   const days = decision.action === 'block' ? (decision.days ?? null) : null;
   const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
@@ -75,10 +81,18 @@ export async function decide(deps: ComplaintsDeps, moderatorId: number, id: stri
     return 'complaints.wrong_status' as const;
   if (decision.action === 'warning') await deps.tell.warning(against, side);
   if (decision.action === 'block') {
-    await deps.people.block(against, days);
-    await deps.cancelAll(against);
-    await deps.tell.blocked(against, side, days === null ? null : now + days * DAY_MS);
+    const reason = `complaint:${complaint.id}`;
+    await blockPerson(deps, {
+      userId: against,
+      days,
+      by: moderatorId,
+      byOwner: moderator.owner,
+      reason,
+      side,
+    });
   }
+  // A deleted account kept its phone for this complaint only (docs/58).
+  await deps.people.releasePhone(against);
   if (refund) await deps.refund(moderatorId, ride.driverId, ride.commission, `no_show:${complaint.id}`);
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
   return 'ok' as const;

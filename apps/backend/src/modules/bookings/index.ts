@@ -9,7 +9,7 @@ import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
-import { rideOf, ridesOf } from './application/rides';
+import { filedRideOf, rideOf, ridesOf } from './application/rides';
 import { bookingViews } from './application/views';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -62,6 +62,8 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
+export const filedRideOfBooking = (env: Bindings, bookingId: string) =>
+  filedRideOf(bookingsDeps(env), bookingId);
 export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]) =>
   ridesOf(bookingsDeps(env), trips);
 

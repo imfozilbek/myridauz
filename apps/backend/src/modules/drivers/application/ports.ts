@@ -16,7 +16,6 @@ export type Person = { readonly id: number; readonly firstName: string; readonly
 export type PeoplePort = {
   find(id: number): Promise<Person | undefined>;
   setDriver(id: number, isDriver: boolean): Promise<void>;
-  block(id: number, days: number | null): Promise<void>;
   avatar(key: string): Promise<StoredImage | undefined>;
 };
 

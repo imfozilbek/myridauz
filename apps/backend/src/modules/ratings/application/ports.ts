@@ -33,6 +33,8 @@ export type RatingStore = {
   writtenBy(userIds: readonly number[]): Promise<Set<string>>;
   hide(reviewId: string): Promise<boolean>;
   flag(userId: number, at: number): Promise<boolean>;
+  // A deleted account: the reviews it wrote and the reviews about it go (docs/65 A5).
+  forget(userId: number): Promise<void>;
 };
 
 export type RatingsDeps = {

@@ -1,5 +1,5 @@
 import type { Gender } from '@platform/contracts';
-import type { User } from '../domain/user';
+import { activeBlock, type Block, type User } from '../domain/user';
 import type { UsersDeps } from './ports';
 
 // What other modules may know about a person: never the phone (docs/07).
@@ -28,14 +28,23 @@ export function people(deps: UsersDeps) {
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),
     // days: 1, 7 or 30; null blocks for good. The phone is blocked too: a new account with the same
-    // number cannot come back (docs/17).
-    block: async (id: number, days: number | null) => {
+    // number cannot come back (docs/17). A block is never weaker than the one before, and it works on
+    // a deleted account by its id and its held phone (docs/65 A5).
+    block: async (
+      id: number,
+      days: number | null,
+      cause: { readonly by: number; readonly reason: string },
+    ) => {
       const now = deps.now();
-      const block = { until: days === null ? null : now + days * DAY_MS };
-      await update(id, { block });
-      const user = await deps.users.find(id);
-      if (user) await deps.users.blockPhone(user.phone, block, now);
+      const wanted = { until: days === null ? null : now + days * DAY_MS };
+      const stronger = (before: Block | null) => activeBlock([before, wanted], now) ?? wanted;
+      await deps.users.blockId(id, stronger(await deps.users.idBlock(id)), now);
+      const phone = (await deps.users.find(id))?.phone ?? (await deps.users.heldPhone(id));
+      if (phone) await deps.users.blockPhone(phone, stronger(await deps.users.phoneBlock(phone)), now);
+      await deps.users.logBlock({ userId: id, until: wanted.until, ...cause, at: now });
     },
+    // The complaint against a deleted account ended: its phone is not kept any more (docs/58).
+    releasePhone: (id: number) => deps.users.releasePhone(id),
     avatar: (key: string) => deps.avatars.get(key),
   };
 }

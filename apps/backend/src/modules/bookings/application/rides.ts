@@ -22,12 +22,24 @@ export const chatKeyOf = (booking: BookingRecord) =>
 
 export async function rideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
   const booking = await deps.bookings.find(bookingId);
-  if (!booking || !rode(booking)) return undefined;
+  return booking && rode(booking) ? asRide(deps, booking) : undefined;
+}
+
+// The ride of a filed complaint stays after a later cancel: the team still decides it (docs/65 A5).
+export async function filedRideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
+  const booking = await deps.bookings.find(bookingId);
+  if (!booking) return undefined;
+  const ride = await asRide(deps, booking);
+  // A cancel already gave the commission back: a no-show decision gives nothing more (docs/35).
+  return ride && { ...ride, commission: rode(booking) ? ride.commission : 0 };
+}
+
+async function asRide(deps: BookingsDeps, booking: BookingRecord): Promise<Ride | undefined> {
   const trip = await deps.trips.find(booking.tripId);
   if (!trip) return undefined;
   const { driverId, departAt, endsAt, over } = trip;
   return {
-    bookingId,
+    bookingId: booking.id,
     tripId: trip.id,
     driverId,
     passengerId: booking.passengerId,

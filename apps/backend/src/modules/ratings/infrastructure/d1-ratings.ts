@@ -108,4 +108,10 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
     const result = await db.prepare(sql).bind(userId, at).run();
     return result.meta.changes > 0;
   },
+  forget: async (userId) => {
+    await db.batch([
+      db.prepare('DELETE FROM reviews WHERE rater_id = ?1 OR ratee_id = ?1').bind(userId),
+      db.prepare('DELETE FROM rating_flags WHERE user_id = ?').bind(userId),
+    ]);
+  },
 });

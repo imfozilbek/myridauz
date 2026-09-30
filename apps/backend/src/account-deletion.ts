@@ -1,19 +1,30 @@
-import { cancelAllOf, chatsOf } from './modules/bookings';
+import { cancelAllOf, chatsOf, filedRideOfBooking } from './modules/bookings';
 import { forgetChat } from './modules/chat';
+import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
 import { forgetFavorites } from './modules/favorites';
+import { forgetRatings } from './modules/ratings';
 import { forgetSubscriptions } from './modules/route-subscriptions';
 import { forgetFollows } from './modules/shares';
 import { wireAccountDeletion } from './modules/users';
+import { closeWalletOf } from './modules/wallet';
 
 // "Maʼlumotlarimni oʻchirish" (docs/30): what each module forgets of a deleted person. Here, next to
 // module-events.ts, because it knows every module. The users module erases the profile itself.
 wireAccountDeletion(async (env, userId) => {
+  const open = await openComplaintsOf(env, userId);
+  // The chat of an open complaint waits for the decision: it is the evidence (docs/65 A5).
+  const rides = await Promise.all(open.map((complaint) => filedRideOfBooking(env, complaint.bookingId)));
+  const evidence = new Set(rides.map((ride) => ride?.chatKey));
   // Live trips and bookings end the same way as on a block: the other side hears it (docs/17).
   await cancelAllOf(env, userId);
-  for (const key of await chatsOf(env, userId)) await forgetChat(env, key);
+  for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);
   await forgetFollows(env, userId);
+  // A new account of the same person starts without old reviews and money (docs/65 A5).
+  await forgetRatings(env, userId);
+  await closeWalletOf(env, userId);
+  return { holdPhone: open.some((complaint) => complaint.againstId === userId) };
 });

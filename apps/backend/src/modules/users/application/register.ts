@@ -22,7 +22,8 @@ export async function register(
   if (input.contact.userId !== caller.id) return { ok: false, error: 'users.invalid_contact' };
   const phone = normalizePhone(input.contact.phone);
   const now = deps.now();
-  if (activeBlock([await deps.users.phoneBlock(phone)], now)) return { ok: false, error: 'users.blocked' };
+  const blocks = [await deps.users.phoneBlock(phone), await deps.users.idBlock(caller.id)];
+  if (activeBlock(blocks, now)) return { ok: false, error: 'users.blocked' };
   const user: User = {
     id: caller.id,
     firstName: input.firstName,

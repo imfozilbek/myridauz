@@ -1,6 +1,5 @@
 import {
   ADMIN_APPLICATIONS_PATH,
-  blockSchema,
   CAR_PHOTO_KINDS,
   decisionSchema,
   type CarPhotoKind,
@@ -12,7 +11,6 @@ import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
 
 const ONE = `${ADMIN_APPLICATIONS_PATH}/:id{[0-9]+}`;
-const NO_CONTENT = 204;
 const isPhoto = (value: string): value is CarPhotoKind | 'avatar' =>
   value === 'avatar' || (CAR_PHOTO_KINDS as readonly string[]).includes(value);
 
@@ -41,11 +39,5 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
       const userId = Number(context.req.param('id'));
       const result = await decideApplication(deps(context.env), moderator, userId, decision.data);
       return result.ok ? context.json(result.value) : fail(context, result.error);
-    })
-    .post('/admin/users/:id{[0-9]+}/block', async (context) => {
-      const input = blockSchema.safeParse(await context.req.json().catch(() => null));
-      if (!input.success) return fail(context, 'drivers.invalid_input');
-      await deps(context.env).people.block(Number(context.req.param('id')), input.data.days);
-      return context.body(null, NO_CONTENT);
     });
 }

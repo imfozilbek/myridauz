@@ -26,7 +26,6 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
     people: {
       find: async (userId) => persons.get(userId),
       setDriver: async (userId, isDriver) => void (isDriver ? drivers.add(userId) : drivers.delete(userId)),
-      block: async (userId, days) => void log.push(`block:${userId}:${days}`),
       avatar: async () => jpeg,
     },
     notify: {

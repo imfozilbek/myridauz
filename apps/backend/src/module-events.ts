@@ -3,6 +3,7 @@ import {
   cancelAllOf,
   passengerRideCount,
   pickupMessageSent,
+  filedRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
 } from './modules/bookings';
@@ -115,6 +116,7 @@ wireTripStanding((env) => ({
 // commission back (docs/17, docs/35).
 wireComplaints({
   ride: rideOfBooking,
+  filedRide: filedRideOfBooking,
   trips: async (env, userId, side) =>
     side === 'driver' ? (await driverTripIds(env, userId)).length : passengerRideCount(env, userId),
   cancelAll: cancelAllOf,

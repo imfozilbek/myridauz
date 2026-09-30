@@ -2,6 +2,7 @@ import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { peopleOf } from '../users';
 import type { WalletDeps } from './application/ports';
+import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { adjust, burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
 import { walletRoutes } from './http/wallet-routes';
@@ -42,3 +43,6 @@ export const refundNoShow = (
   amount: number,
   reason: string,
 ) => adjust(walletDeps(env), moderatorId, driverId, { balance: 'main', amount, reason });
+
+// A deleted account: both balances go to zero (docs/65 A5).
+export const closeWalletOf = (env: Bindings, driverId: number) => closeWallet(walletDeps(env), driverId);

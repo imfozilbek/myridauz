@@ -63,3 +63,6 @@ export { COMPLAIN_PARAM, RATE_PREFIX, REVIEW_PARAM } from './infrastructure/bot-
 
 // "Safarlar tarixi" (G18): the stars given and the published stars got, per booking.
 export const starsOf = (env: Bindings, userId: number) => starsOfRides(ratingsDeps(env), userId);
+
+// "Maʼlumotlarimni oʻchirish": a new account of the same person starts without old reviews (docs/65 A5).
+export const forgetRatings = (env: Bindings, userId: number) => ratingsDeps(env).store.forget(userId);

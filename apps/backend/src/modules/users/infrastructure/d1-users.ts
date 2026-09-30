@@ -1,5 +1,6 @@
 import type { UserRepository } from '../application/ports';
 import type { Block, User } from '../domain/user';
+import { d1Blocks } from './d1-blocks';
 
 type UserRow = {
   id: number;
@@ -80,17 +81,5 @@ export const d1Users = (db: D1Database): UserRepository => ({
       .bind(at, at, id)
       .run();
   },
-  blockPhone: async (phone, block, at) => {
-    await db
-      .prepare('INSERT OR REPLACE INTO blocked_phones (phone, blocked_until, created_at) VALUES (?, ?, ?)')
-      .bind(phone, block.until, at)
-      .run();
-  },
-  phoneBlock: async (phone) => {
-    const row = await db
-      .prepare('SELECT blocked_until FROM blocked_phones WHERE phone = ?')
-      .bind(phone)
-      .first<{ blocked_until: number | null }>();
-    return row ? { until: row.blocked_until } : null;
-  },
+  ...d1Blocks(db),
 });

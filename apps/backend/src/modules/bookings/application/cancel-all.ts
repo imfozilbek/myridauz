@@ -5,7 +5,8 @@ import { cancelByPassenger } from './request';
 const OPEN = new Set(['requested', 'confirmed']);
 
 // A blocked person (docs/17): every live trip of theirs is cancelled with its bookings, and every
-// open booking of theirs too. The other sides hear it from the usual bot messages; commissions go back.
+// open booking, request and sent offer of theirs too (docs/65 A5). The other sides hear it from the
+// usual bot messages; commissions go back.
 export async function cancelEverything(deps: BookingsDeps, userId: number): Promise<void> {
   for (const tripId of await deps.trips.ofDriver(userId)) {
     const trip = await deps.trips.find(tripId);
@@ -18,4 +19,8 @@ export async function cancelEverything(deps: BookingsDeps, userId: number): Prom
     const trip = OPEN.has(booking.status) ? await deps.trips.find(booking.tripId) : undefined;
     if (trip?.live) await cancelByPassenger(deps, userId, booking.id);
   }
+  for (const request of await deps.requests.ofPassenger(userId))
+    if (request.open) await deps.requests.cancel(userId, request.id);
+  for (const offer of await deps.offers.byDriver(userId))
+    if (offer.status === 'sent') await deps.offers.replace({ ...offer, status: 'expired' }, 'sent');
 }
