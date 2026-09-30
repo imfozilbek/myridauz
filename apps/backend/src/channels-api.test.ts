@@ -43,9 +43,7 @@ describe('channels of the team (docs/63)', () => {
   it('shows the region channels of the brand to the team only', async () => {
     expect((await call('', 5)).status).toBe(403);
     const { channels } = (await (await call('', 900)).json()) as { channels: Channel[] };
-    expect(channels.filter((channel) => channel.fixed)).toHaveLength(
-      Object.keys(loadBrand().channels).length,
-    );
+    expect(channels.filter((channel) => channel.fixed)).toHaveLength(loadBrand().channels.length);
   });
 
   it('adds a district channel once the bot is its admin, and removes it', async () => {
@@ -53,7 +51,7 @@ describe('channels of the team (docs/63)', () => {
     expect((await put('ch_nobot', kitob)).status).toBe(422);
     expect((await put('ab', kitob)).status).toBe(400);
     expect((await put('ch_kitob', { ...kitob, places: ['1799999'] })).status).toBe(404);
-    expect((await put(Object.values(loadBrand().channels)[0] ?? '', kitob)).status).toBe(400);
+    expect((await put(loadBrand().channels[0]?.username ?? '', kitob)).status).toBe(400);
     const saved = await put('ch_kitob', kitob);
     expect(await saved.json()).toEqual({
       ...kitob,

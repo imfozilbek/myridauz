@@ -1,7 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
 import type { Direction } from './directions';
-import type { ChannelTitles, HeroRoads, MapData } from './map-data';
+import type { HeroRoads, MapData } from './map-data';
 import { driver, final, safety, telegram } from './sections/cards';
 import { directionsSection } from './sections/directions';
 import { faq, type Question } from './sections/faq';
@@ -18,12 +18,11 @@ export function home(
   parts: {
     map: MapData;
     roads: HeroRoads;
-    channels: ChannelTitles;
     all: readonly Direction[];
     items: readonly Question[];
   },
 ) {
-  const { map, roads, channels, all, items } = parts;
+  const { map, roads, all, items } = parts;
   return [
     hero(brand, i18n, roads),
     numbers(brand, i18n, map, all),
@@ -33,7 +32,7 @@ export function home(
     directionsSection(all, i18n),
     driver(brand, i18n),
     safety(brand, i18n),
-    telegram(brand, i18n, channels),
+    telegram(brand, i18n),
     faq(items, i18n),
     final(brand, i18n),
     // On a phone the two buttons stay at hand after the first screen.

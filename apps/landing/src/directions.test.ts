@@ -8,7 +8,7 @@ import { MAP, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, channels: {}, script: 'run()' });
+const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, script: 'run()' });
 const page = site['yonalish/samarqand-toshkent/index.html'] ?? '';
 const values = { from: 'Samarqand', to: 'Toshkent', brand: brand.name };
 const jsonLd = (html: string) =>

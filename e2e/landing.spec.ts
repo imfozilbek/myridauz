@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { appUrl, LANDING_PORT } from './apps';
 import { mockPrices } from './landing-mock';
@@ -43,7 +43,7 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
   await expect(go).toHaveAttribute('href', `https://t.me/${brand.bots.passenger}?startapp=find_1726_1706`);
   await expect(page.locator('[data-channel-link]')).toHaveAttribute(
     'href',
-    `https://t.me/${brand.channels['1706']}`,
+    `https://t.me/${channelOf(brand, '1706401')?.username ?? ''}`,
   );
 });
 

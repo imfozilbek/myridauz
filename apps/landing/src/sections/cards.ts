@@ -3,7 +3,6 @@ import type { I18n, TranslationKey } from '@platform/i18n';
 import { art } from '../art';
 import { escape, telegramLink } from '../html';
 import { icon, type IconName } from '../icons';
-import type { ChannelTitles } from '../map-data';
 import { actions } from './hero';
 
 type Values = Record<string, string>;
@@ -48,15 +47,14 @@ export function safety(brand: BrandConfig, i18n: I18n) {
 </div></section>`;
 }
 
-// "Hammasi Telegramda": the phone with the channels and a chip for every region channel (docs/15).
-export function telegram(brand: BrandConfig, i18n: I18n, titles: ChannelTitles) {
+// "Hammasi Telegramda": the phone with the channels and a chip for every channel zone (docs/63).
+export function telegram(brand: BrandConfig, i18n: I18n) {
   const { t } = i18n;
-  const chips = Object.values(brand.channels)
-    .map((user) => {
-      const channel = titles[user];
-      const code = channel ? `<b class="code">${escape(channel.code)}</b>` : icon('telegram');
-      return `<li><a href="${telegramLink(user)}">${code}${escape(channel?.title ?? user)}</a></li>`;
-    })
+  const chips = brand.channels
+    .map(
+      ({ username, title, code }) =>
+        `<li><a href="${telegramLink(username)}"><b class="code">${escape(code)}</b>${escape(title)}</a></li>`,
+    )
     .join('');
   return `<section class="telegram"><div class="wrap tg-grid">
 <div class="phone single">${art({ name: 'phone-telegram', alt: t('landing.telegram.title'), size: 'phone' }, { className: 'screen shown' })}</div>

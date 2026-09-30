@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { call, registerUser, testEnv } from './test-api';
@@ -15,10 +15,10 @@ afterAll(() => vi.unstubAllGlobals());
 // The owner approved the post: autoposting is on in this test (docs/33).
 Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
 
-// The channels of Samarqand viloyati and Toshkent viloyati in the brand config (docs/37).
-const { channels } = loadBrand();
-const SAMARQAND = `@${channels['1718'] ?? ''}`;
-const TOSHKENT_REGION = `@${channels['1727'] ?? ''}`;
+// The zones of Samarqand and of Nurafshon (Toshkent viloyati) in the brand config (docs/63).
+const brand = loadBrand();
+const SAMARQAND = `@${channelOf(brand, '1718401')?.username ?? ''}`;
+const TOSHKENT_REGION = `@${channelOf(brand, '1727401')?.username ?? ''}`;
 const DRIVER = 71;
 const PASSENGER = 72;
 const tomorrow = () => new Date(Date.now() + 29 * 3_600_000).toISOString().slice(0, 10);

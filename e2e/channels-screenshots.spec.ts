@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { loadBrand } from '@platform/brands';
-import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
@@ -13,14 +12,8 @@ const shot = (page: Page) => async (name: string) => {
   await page.mouse.move(0, 0);
   await page.screenshot({ path: `screenshots/channels-${name}.png`, fullPage: true });
 };
-// The region channels of the brand and one district channel of the team (docs/63).
-const fixed = Object.entries(brand.channels).map(([place, username]) => ({
-  username,
-  // The API names a region channel after its region, like the real backend.
-  title: locations.find((location) => location.id === place)?.name ?? username,
-  places: [place],
-  fixed: true,
-}));
+// The channel zones of the brand and one district channel of the team (docs/63).
+const fixed = brand.channels.map(({ username, title, places }) => ({ username, title, places, fixed: true }));
 const shahrisabz = {
   username: 'ch_shahrisabz',
   title: 'Kanal | Shahrisabz',

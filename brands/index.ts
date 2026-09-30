@@ -3,12 +3,14 @@ import { brandConfig as rida } from './rida/brand.config.ts';
 
 export type {
   AlertRules,
+  BrandChannel,
   BrandColors,
   BrandConfig,
   CommissionRule,
   HexColor,
   PromoRule,
 } from './brand-config';
+export { channelOf } from './channels.ts';
 export { commissionFor } from './commission.ts';
 export { apiHost, appHost } from './hosts.ts';
 

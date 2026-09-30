@@ -9,8 +9,8 @@ export type TeamChannelStore = {
 };
 
 export type TeamChannelsDeps = {
-  // The 13 region channels of the brand config: region SOATO code → username (docs/15).
-  readonly fixed: Readonly<Record<string, string>>;
+  // The channel zones of the brand config (docs/63): changed only in the code.
+  readonly fixed: readonly TeamChannel[];
   readonly titleOf: (placeId: string) => string | undefined;
   readonly store: TeamChannelStore;
   // Whether the passenger bot can post there: it must be an admin of the channel.
@@ -22,14 +22,9 @@ type ChannelError = 'channels.invalid_input' | 'locations.not_found' | 'channels
 type Result = { ok: true; value: Channel } | { ok: false; error: ChannelError };
 
 const fixedOf = (deps: TeamChannelsDeps): Channel[] =>
-  Object.entries(deps.fixed).map(([place, username]) => ({
-    username,
-    title: deps.titleOf(place) ?? username,
-    places: [place],
-    fixed: true,
-  }));
+  deps.fixed.map(({ username, title, places }) => ({ username, title, places: [...places], fixed: true }));
 
-// Every channel a trip can go to: the region channels first, then the team's (docs/63).
+// Every channel a trip can go to: the zones of the brand first, then the team's (docs/63).
 export async function allChannels(deps: TeamChannelsDeps): Promise<Channel[]> {
   const team = await deps.store.list();
   return [
@@ -41,7 +36,7 @@ export async function allChannels(deps: TeamChannelsDeps): Promise<Channel[]> {
 // The team adds or changes a channel: known places only, and the bot must already be its admin.
 export async function saveChannel(deps: TeamChannelsDeps, username: string, input: unknown): Promise<Result> {
   const parsed = channelInputSchema.safeParse(input);
-  const fixed = Object.values(deps.fixed).includes(username);
+  const fixed = deps.fixed.some((zone) => zone.username === username);
   if (!parsed.success || !CHANNEL_USERNAME.test(username) || fixed)
     return { ok: false, error: 'channels.invalid_input' };
   const places = [...new Set(parsed.data.places)];

@@ -1,4 +1,7 @@
 import type { BrandConfig } from '../brand-config';
+// 20 channel zones over all districts (owner decision 30.09.2026, docs/63): one zone per road
+// direction, every district in exactly one zone; Toshkent shahri has none (docs/15).
+import channels from './channels.json' with { type: 'json' };
 import { theme } from './theme.ts';
 
 export const brandConfig: BrandConfig = {
@@ -13,22 +16,7 @@ export const brandConfig: BrandConfig = {
   theme,
   regionPhotos: true,
   bots: { passenger: 'myrida_bot', driver: 'myrida_haydovchi_bot', admin: 'myrida_admin_bot' },
-  // docs/37: 13 channels, Toshkent shahri has none (owner decision, docs/15).
-  channels: {
-    '1727': 'rida_toshkentvil',
-    '1703': 'rida_andijon',
-    '1706': 'rida_buxoro',
-    '1730': 'rida_fargona',
-    '1708': 'rida_jizzax',
-    '1733': 'rida_xorazm',
-    '1714': 'rida_namangan',
-    '1712': 'rida_navoiy',
-    '1710': 'rida_qashqadaryo',
-    '1718': 'rida_samarqand',
-    '1724': 'rida_sirdaryo',
-    '1722': 'rida_surxondaryo',
-    '1735': 'rida_qoraqalpogiston',
-  },
+  channels,
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
   // from at least 20 people; the same signal once in 6 hours.

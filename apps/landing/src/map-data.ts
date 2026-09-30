@@ -14,9 +14,6 @@ export type MapData = {
   }[];
 };
 
-// The region name and the car plate code of each channel (brand kit data/regions.json, docs/37).
-export type ChannelTitles = Readonly<Record<string, { readonly title: string; readonly code: string }>>;
-
 // A pair of region SOATO codes.
 export type Route = { readonly from: string; readonly to: string };
 

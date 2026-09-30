@@ -1,8 +1,8 @@
 # 63. Каналы районов: один пост в нескольких каналах
 
-> **Кратко:** Просьба владельца 30.09.2026: канал на каждый район и город, один пост может уйти сразу в несколько каналов (пример: Kitob, Shahrisabz, Yakkabogʻ). По справочнику СОАТО получается 177 каналов. Код готов быстро, узкое место: Telegram разрешает одному аккаунту только 10 публичных каналов (20 с Premium). Механизм «канал = список мест» и экран «Kanallar» сделаны 30.09.2026. **Сколько каналов открывать: решение владельца.**
+> **Кратко:** Просьба владельца 30.09.2026: канал на каждый район и город, один пост может уйти сразу в несколько каналов (пример: Kitob, Shahrisabz, Yakkabogʻ). По справочнику СОАТО получается 177 каналов. Код готов быстро, узкое место: Telegram разрешает одному аккаунту только 10 публичных каналов (20 с Premium). Механизм «канал = список мест» и экран «Kanallar» сделаны 30.09.2026. **Решено: 20 зон** (владелец, 30.09.2026).
 
-Сейчас: 13 каналов по регионам (`15`, `37`).
+Сейчас в коде: 20 зон, список в `brands/rida/channels.json`, поиск зоны `channelOf` (`brands/channels.ts`).
 
 ## Сколько подразделений (справочник `48`)
 
@@ -65,13 +65,40 @@
 
 - 300 поездок в день × ~3 канала = ~900 постов. Queues: +2 700 операций в день, помещается в $5 (`61`).
 
-## Совет по запуску
+## Решение владельца 30.09: 20 зон вместо 177 каналов
 
-1. Запуск 01.02.2027 с 13 каналами регионов (уже готовы в плане, `37`).
-2. Код «канал = список мест» и экран «Kanallar»: сейчас, 2 … 3 дня, запас плана позволяет.
-3. Каналы районов открываем по мере спроса: сначала там, где больше поездок (данные `56`).
+Зоны по главным дорогам: крупные регионы делятся на 2 … 3 части. Каждый район ровно в одной зоне, у города Ташкента зоны нет.
+Откуда направления: из Ташкента во все областные центры, Ферганская долина, Самарканд → Шахрисабз, Бухара → Хива;
+автобусы из Ташкента идут и в Qiziltepa, Zarafshon, Uchquduq, Mirbozor, Denov, Xatirchi, Qorakoʻl (mintrans.uz).
+
+| # | Зона | Ссылка | Код | Районы |
+|---|---|---|---|---|
+| 1 | Andijon | t.me/rida_andijon | 60 | Oltinkoʻl, Andijon, Baliqchi, Boʻston, Buloqboshi, Jalaquduq, Izboskan, Ulugʻnor, Qoʻrgʻontepa, Asaka, Marhamat, Shahrixon, Paxtaobod, Xoʻjaobod, Xonobod |
+| 2 | Namangan | t.me/rida_namangan | 50 | Mingbuloq, Kosonsoy, Namangan, Norin, Pop, Toʻraqoʻrgʻon, Uychi, Uchqoʻrgʻon, Chortoq, Chust, Yangiqoʻrgʻon |
+| 3 | Fargʻona, Margʻilon | t.me/rida_fargona | 40 | Oltiariq, Qoʻshtepa, Bagʻdod, Quva, Rishton, Soʻx, Toshloq, Fargʻona, Yozyovon, Quvasoy, Margʻilon |
+| 4 | Qoʻqon | t.me/rida_qoqon | 40 | Buvayda, Beshariq, Uchkoʻprik, Oʻzbekiston, Dangʻara, Furqat, Qoʻqon |
+| 5 | Chirchiq, Boʻstonliq | t.me/rida_chirchiq | 10 | Boʻstonliq, Yuqori Chirchiq, Qibray, Parkent, Toshkent, Chirchiq |
+| 6 | Angren, Olmaliq, Bekobod | t.me/rida_angren | 10 | Ohangaron, Bekobod, Boʻka, Piskent, Olmaliq, Angren |
+| 7 | Yangiyoʻl, Chinoz, Nurafshon | t.me/rida_yangiyol | 10 | Oqqoʻrgʻon, Quyi Chirchiq, Zangiota, Oʻrta Chirchiq, Chinoz, Yangiyoʻl, Nurafshon |
+| 8 | Sirdaryo | t.me/rida_sirdaryo | 20 | Oqoltin, Boyovut, Sayxunobod, Guliston, Sardoba, Mirzaobod, Sirdaryo, Xovos, Shirin, Yangiyer |
+| 9 | Jizzax | t.me/rida_jizzax | 25 | Arnasoy, Baxmal, Gʻallaorol, Sharof Rashidov, Doʻstlik, Zomin, Zarbdor, Mirzachoʻl, Zafarobod, Paxtakor, Forish, Yangiobod, Jizzax |
+| 10 | Samarqand | t.me/rida_samarqand | 30 | Oqdaryo, Bulungʻur, Jomboy, Payariq, Pastdargʻom, Samarqand, Urgut, Toyloq |
+| 11 | Kattaqoʻrgʻon | t.me/rida_kattaqorgon | 30 | Ishtixon, Kattaqoʻrgʻon, Qoʻshrabot, Narpay, Paxtachi, Nurobod |
+| 12 | Navoiy | t.me/rida_navoiy | 85 | Konimex, Qiziltepa, Navbahor, Karmana, Nurota, Tomdi, Uchquduq, Xatirchi, Navoiy, Zarafshon, Gʻozgʻon |
+| 13 | Buxoro | t.me/rida_buxoro | 80 | Olot, Buxoro, Vobkent, Gʻijduvon, Kogon, Qorakoʻl, Qorovulbozor, Peshku, Romitan, Jondor, Shofirkon |
+| 14 | Qarshi | t.me/rida_qarshi | 70 | Gʻuzor, Dehqonobod, Qamashi, Qarshi, Koson, Mirishkor, Muborak, Nishon, Kasbi |
+| 15 | Shahrisabz, Kitob | t.me/rida_shahrisabz | 70 | Kitob, Koʻkdala, Chiroqchi, Shahrisabz, Yakkabogʻ |
+| 16 | Termiz | t.me/rida_termiz | 75 | Angor, Bandixon, Muzrabot, Jarqoʻrgʻon, Qumqoʻrgʻon, Qiziriq, Termiz, Sherobod |
+| 17 | Denov | t.me/rida_denov | 75 | Oltinsoy, Boysun, Denov, Sariosiyo, Uzun, Shoʻrchi |
+| 18 | Xorazm | t.me/rida_xorazm | 90 | Bogʻot, Gurlan, Qoʻshkoʻpir, Urganch, Hazorasp, Tuproqqalʼa, Xonqa, Xiva, Shovot, Yangiariq, Yangibozor |
+| 19 | Nukus | t.me/rida_nukus | 95 | Boʻzatov, Qoraoʻzak, Kegeyli, Qoʻngʻirot, Qanlikoʻl, Moʻynoq, Nukus, Taxiatosh, Taxtakoʻpir, Xoʻjayli, Chimboy, Shumanay |
+| 20 | Beruniy, Toʻrtkoʻl | t.me/rida_beruniy | 95 | Amudaryo, Beruniy, Toʻrtkoʻl, Ellikqalʼa |
+
+- 20 каналов: ровно лимит одного аккаунта с Premium (`20`).
+- Пост поездки уходит в зону «откуда» и в зону «куда». Поездка внутри зоны: один пост.
 
 ## Ждёт решения владельца (`33`)
 
-1. Все 177 каналов сразу или по мере спроса.
-2. Кто создаёт каналы: аккаунты команды с Premium или передача владения.
+1. Названия и ссылки 20 зон (публичные тексты, `33`).
+2. Тексты «viloyat kanali» стали неточными: лендинг (`numbers.channels`, `map.channel`, `telegram.text`, `how.driver.2.text`), админка (`channels.fixed`), профиль бота водителя. Новые тексты ждут согласия.
+3. Аватары и пакет `37` для 20 зон: после пункта 1.

@@ -72,6 +72,15 @@ type Company = {
   readonly address: string;
 };
 
+// A channel zone: the username without "@", its name, the plate code of its region (docs/36)
+// and the SOATO codes of its districts and cities.
+export type BrandChannel = {
+  readonly username: string;
+  readonly title: string;
+  readonly code: string;
+  readonly places: readonly string[];
+};
+
 export type BrandConfig = {
   readonly id: string;
   readonly name: string;
@@ -86,9 +95,8 @@ export type BrandConfig = {
   readonly regionPhotos: boolean;
   // Telegram usernames of the three bots (docs/02, docs/46): deep links between them.
   readonly bots: { readonly passenger: string; readonly driver: string; readonly admin: string };
-  // Telegram channels by region (docs/15, docs/37): the SOATO code of the region → the channel
-  // username without "@". A region without a channel (Toshkent shahri) is not listed.
-  readonly channels: Readonly<Record<string, string>>;
+  // Telegram channel zones (docs/15, docs/63): a trip goes to the zone of each end.
+  readonly channels: readonly BrandChannel[];
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
   readonly calls: CallRules;
