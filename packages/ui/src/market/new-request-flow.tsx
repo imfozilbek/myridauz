@@ -126,7 +126,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
           </Section>
         </List>
         {error ? <Text className="step-error">{t(error)}</Text> : null}
-        <MainButton text={t('market.request.publish')} onClick={() => void publish()} />
+        <MainButton text={t('market.request.publish')} onClick={publish} />
       </StepLayout>
     </PlacesGate>
   );

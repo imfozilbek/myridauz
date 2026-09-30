@@ -76,7 +76,7 @@ export function ComplaintScreen({ bookingId, onBack }: Props) {
         ) : null}
       </List>
       {reason && step !== 'busy' ? (
-        <MainButton text={t('complaints.send')} onClick={() => void send(reason)} />
+        <MainButton text={t('complaints.send')} onClick={() => send(reason)} />
       ) : null}
     </div>
   );

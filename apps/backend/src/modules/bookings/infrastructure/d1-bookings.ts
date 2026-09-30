@@ -70,6 +70,11 @@ const UPSERT = `INSERT INTO bookings (trip_id, passenger_id, seats, price, commi
 const all = async (statement: D1PreparedStatement) => (await statement.all<Row>()).results.map(toBooking);
 
 // Table bookings (migrations/0008_bookings_wallet.sql).
+// One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4).
+const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', updated_at = ?1
+  WHERE id = ?2 AND status = 'requested' AND seats + (SELECT COALESCE(SUM(seats), 0) FROM bookings
+  WHERE trip_id = ?3 AND status = 'confirmed') <= ?4`;
+
 export const d1Bookings = (db: D1Database): BookingRepository => ({
   save: async (booking) => {
     await db
@@ -81,6 +86,13 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
     const result = await db
       .prepare('UPDATE bookings SET status = ?, updated_at = ? WHERE id = ? AND status = ?')
       .bind(booking.status, booking.updatedAt, booking.id, expected)
+      .run();
+    return result.meta.changes === 1;
+  },
+  confirmWithin: async (booking, tripSeats) => {
+    const result = await db
+      .prepare(CONFIRM_WITHIN)
+      .bind(booking.updatedAt, booking.id, booking.tripId, tripSeats)
       .run();
     return result.meta.changes === 1;
   },

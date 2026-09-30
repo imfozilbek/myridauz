@@ -65,14 +65,14 @@ export async function cancelByPassenger(
   id: string,
 ): Promise<Result<Booking, 'bookings.not_found' | 'bookings.wrong_status'>> {
   const record = await deps.bookings.find(id);
-  if (record?.passengerId !== passengerId) return { ok: false, error: 'bookings.not_found' };
-  const next = move(record, 'passenger_cancel', deps.now());
+  const facts = record ? await deps.trips.find(record.tripId) : undefined;
+  if (record?.passengerId !== passengerId || !facts) return { ok: false, error: 'bookings.not_found' };
+  const next = move(record, 'passenger_cancel', deps.now(), facts.departAt);
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
-  const facts = await deps.trips.find(record.tripId);
   // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
-  if (facts && record.status === 'confirmed') await deps.wallet.refund(facts.driverId, id);
+  if (record.status === 'confirmed') await deps.wallet.refund(facts.driverId, id);
   const [forDriver] = await bookingViews(deps, [next], 'driver');
   if (forDriver) await deps.notify.cancelled(forDriver, 'passenger');
   const [view] = await bookingViews(deps, [next], 'passenger');

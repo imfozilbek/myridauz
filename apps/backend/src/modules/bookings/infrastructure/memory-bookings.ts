@@ -13,6 +13,14 @@ export function createMemoryBookings(): BookingRepository {
       rows.set(booking.id, booking);
       return true;
     },
+    confirmWithin: async (booking, tripSeats) => {
+      const taken = list()
+        .filter((other) => other.tripId === booking.tripId && other.status === 'confirmed')
+        .reduce((sum, other) => sum + other.seats, 0);
+      if (rows.get(booking.id)?.status !== 'requested' || taken + booking.seats > tripSeats) return false;
+      rows.set(booking.id, { ...booking, status: 'confirmed' });
+      return true;
+    },
     find: async (id) => rows.get(id),
     byTrips: async (tripIds) => list().filter((booking) => tripIds.includes(booking.tripId)),
     byPassenger: async (passengerId) => list().filter((booking) => booking.passengerId === passengerId),
@@ -30,6 +38,11 @@ export function createMemoryOffers(): OfferRepository {
   const rows = new Map<string, OfferRecord>();
   return {
     save: async (offer) => void rows.set(offer.id, offer),
+    replace: async (offer, expected) => {
+      if (rows.get(offer.id)?.status !== expected) return false;
+      rows.set(offer.id, offer);
+      return true;
+    },
     find: async (id) => rows.get(id),
     byRequests: async (requestIds) =>
       [...rows.values()].filter((offer) => requestIds.includes(offer.requestId)),

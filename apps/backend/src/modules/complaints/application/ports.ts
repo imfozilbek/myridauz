@@ -15,6 +15,8 @@ export type Side = 'driver' | 'passenger';
 
 export type ComplaintStore = {
   save(complaint: ComplaintRecord): Promise<void>;
+  // Writes the decision only if nobody decided before: two moderators at once, one decision (docs/65 A4).
+  resolve(complaint: ComplaintRecord): Promise<boolean>;
   find(id: string): Promise<ComplaintRecord | undefined>;
   ofAuthor(authorId: number, bookingId: string): Promise<ComplaintRecord | undefined>;
   open(): Promise<ComplaintRecord[]>;

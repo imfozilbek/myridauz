@@ -94,7 +94,7 @@ function BookReview({ trip, seats, onBack, onSent }: ReviewProps) {
         </Section>
       </List>
       {error ? <Text className="step-error">{t(error)}</Text> : null}
-      <MainButton text={t('bookings.send')} onClick={() => void send()} />
+      <MainButton text={t('bookings.send')} onClick={send} />
     </StepLayout>
   );
 }

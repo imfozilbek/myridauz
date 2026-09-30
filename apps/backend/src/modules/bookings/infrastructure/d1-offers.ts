@@ -63,6 +63,13 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
       )
       .run();
   },
+  replace: async (offer, expected) => {
+    const result = await db
+      .prepare('UPDATE offers SET status = ?, booking_id = ? WHERE id = ? AND status = ?')
+      .bind(offer.status, offer.bookingId, offer.id, expected)
+      .run();
+    return result.meta.changes === 1;
+  },
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM offers WHERE id = ?').bind(id).first<Row>();
     return row ? toOffer(row) : undefined;

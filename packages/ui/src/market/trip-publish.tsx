@@ -90,7 +90,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
       {pending ? (
         <Text className="step-hint step-note">{t('drivers.status.pending.publish')}</Text>
       ) : (
-        <MainButton text={t('market.review.publish')} onClick={() => void publish()} />
+        <MainButton text={t('market.review.publish')} onClick={publish} />
       )}
     </StepLayout>
   );

@@ -65,20 +65,21 @@ export async function decide(deps: ComplaintsDeps, moderatorId: number, id: stri
   const against = complaint.againstId;
   const side = sideOf(ride, against);
   const now = deps.now();
-  let label: string = decision.action;
+  const days = decision.action === 'block' ? (decision.days ?? null) : null;
+  const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
+  const refund =
+    decision.refund && complaint.reason === 'no_show' && side === 'passenger' && ride.commission > 0;
+  const decided = { decision: refund ? `${label}:refund` : label, decidedBy: moderatorId, decidedAt: now };
+  // The decision is written first, in one step: a second tap changes nothing (docs/65 A4).
+  if (!(await deps.store.resolve({ ...complaint, status: 'resolved', ...decided })))
+    return 'complaints.wrong_status' as const;
   if (decision.action === 'warning') await deps.tell.warning(against, side);
   if (decision.action === 'block') {
-    const days = decision.days ?? null;
     await deps.people.block(against, days);
     await deps.cancelAll(against);
     await deps.tell.blocked(against, side, days === null ? null : now + days * DAY_MS);
-    label = `block:${days ?? 'forever'}`;
   }
-  const refund =
-    decision.refund && complaint.reason === 'no_show' && side === 'passenger' && ride.commission > 0;
   if (refund) await deps.refund(moderatorId, ride.driverId, ride.commission, `no_show:${complaint.id}`);
-  const decided = { decision: refund ? `${label}:refund` : label, decidedBy: moderatorId, decidedAt: now };
-  await deps.store.save({ ...complaint, status: 'resolved', ...decided });
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
   return 'ok' as const;
 }

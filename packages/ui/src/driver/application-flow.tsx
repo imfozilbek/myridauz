@@ -117,7 +117,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           recheck={initial?.status === 'approved'}
           failed={failed}
           onEdit={(target: ReviewTarget) => setStep(target)}
-          onSend={() => void send()}
+          onSend={send}
           {...(onClose ? { onBack: onClose } : {})}
         />
       );

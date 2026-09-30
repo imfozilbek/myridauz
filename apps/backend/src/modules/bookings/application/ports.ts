@@ -8,6 +8,9 @@ export type BookingRepository = {
   save(booking: BookingRecord): Promise<void>;
   // Saves only if the booking still has the expected status: two answers at once cannot both win.
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;
+  // Confirms a requested booking only if its seats still fit into the trip: one step, two confirms
+  // at once cannot both take the last seat (docs/65 A4).
+  confirmWithin(booking: BookingRecord, tripSeats: number): Promise<boolean>;
   find(id: string): Promise<BookingRecord | undefined>;
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
   byPassenger(passengerId: number): Promise<BookingRecord[]>;
@@ -18,6 +21,8 @@ export type BookingRepository = {
 
 export type OfferRepository = {
   save(offer: OfferRecord): Promise<void>;
+  // Saves only if the offer still has the expected status: an offer is accepted once (docs/65 A4).
+  replace(offer: OfferRecord, expected: OfferRecord['status']): Promise<boolean>;
   find(id: string): Promise<OfferRecord | undefined>;
   byRequests(requestIds: readonly string[]): Promise<OfferRecord[]>;
   byDriver(driverId: number): Promise<OfferRecord[]>;

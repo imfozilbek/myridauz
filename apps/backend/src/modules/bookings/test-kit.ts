@@ -139,6 +139,8 @@ export function setup() {
     addRequest,
     bonus: () => grantWelcome(walletDeps, DRIVER),
     wallet: () => walletDeps.wallet.operations(DRIVER),
+    // The driver spent part of the bonus on earlier trips.
+    spend: (amount: number) => charge(walletDeps, DRIVER, newId(), amount),
     setNow: (next: number) => void (now = next),
     // A new face or car photo: the driver goes to the team's check again (docs/05).
     recheck: () => void (approved = false),

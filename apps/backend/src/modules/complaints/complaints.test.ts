@@ -110,4 +110,13 @@ describe('complaints (docs/17)', () => {
     });
     expect(log.slice(5)).toEqual([`warning ${DRIVER} driver`, 'resolved 102']);
   });
+
+  it('decides a complaint once when two moderators tap at the same moment (docs/65 A4)', async () => {
+    const { deps, log } = setup();
+    const filed = await fileComplaint(deps, DRIVER, input('b1'));
+    const id = typeof filed === 'string' ? '' : filed.id;
+    const twice = () => decide(deps, MODERATOR, id, { action: 'block', days: 7, refund: true });
+    expect((await Promise.all([twice(), twice()])).sort()).toEqual(['complaints.wrong_status', 'ok']);
+    expect(log.filter((line) => /^(refund|block )/.test(line))).toHaveLength(2);
+  });
 });

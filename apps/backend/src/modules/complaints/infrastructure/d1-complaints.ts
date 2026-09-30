@@ -54,6 +54,12 @@ export const d1Complaints = (db: D1Database): ComplaintStore => ({
       )
       .run();
   },
+  resolve: async (c) => {
+    const sql = `UPDATE complaints SET status = 'resolved', decision = ?, decided_by = ?, decided_at = ?
+      WHERE id = ? AND status != 'resolved'`;
+    const result = await db.prepare(sql).bind(c.decision, c.decidedBy, c.decidedAt, c.id).run();
+    return result.meta.changes === 1;
+  },
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM complaints WHERE id = ?').bind(id).first<Row>();
     return row ? toComplaint(row) : undefined;

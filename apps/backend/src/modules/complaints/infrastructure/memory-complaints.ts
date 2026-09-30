@@ -11,6 +11,11 @@ export function createMemoryComplaints(): ComplaintStore & { readonly reads: Cha
   return {
     reads,
     save: async (complaint) => void complaints.set(complaint.id, complaint),
+    resolve: async (complaint) => {
+      if (complaints.get(complaint.id)?.status === 'resolved') return false;
+      complaints.set(complaint.id, complaint);
+      return true;
+    },
     find: async (id) => complaints.get(id),
     ofAuthor: async (authorId, bookingId) =>
       all().find((known) => known.authorId === authorId && known.bookingId === bookingId),

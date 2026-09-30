@@ -8,7 +8,7 @@ type AnswerError = 'bookings.not_found' | 'bookings.wrong_status' | 'bookings.no
 async function mine(deps: BookingsDeps, driverId: number, id: string) {
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
-  return record && facts?.driverId === driverId ? record : undefined;
+  return record && facts?.driverId === driverId ? { record, facts } : undefined;
 }
 
 async function driverView(deps: BookingsDeps, record: BookingRecord): Promise<Result<Booking, AnswerError>> {
@@ -23,20 +23,24 @@ export async function confirm(
   driverId: number,
   id: string,
 ): Promise<Result<Booking, AnswerError>> {
-  const record = await mine(deps, driverId, id);
-  if (!record) return { ok: false, error: 'bookings.not_found' };
+  const found = await mine(deps, driverId, id);
+  if (!found) return { ok: false, error: 'bookings.not_found' };
+  const { record, facts } = found;
   if (statusAt(record, deps.now(), false) !== 'requested')
     return { ok: false, error: 'bookings.wrong_status' };
-  const [trip] = await deps.trips.views([record.tripId]);
-  if (!trip || trip.seatsLeft < record.seats) return { ok: false, error: 'bookings.no_seats' };
-  const charged = await deps.wallet.charge(driverId, id, record.commission);
-  if (charged === 'not_enough') return { ok: false, error: 'wallet.not_enough' };
-  if (charged === 'duplicate') return { ok: false, error: 'bookings.wrong_status' };
   const next: BookingRecord = { ...record, status: 'confirmed', updatedAt: deps.now() };
-  if (!(await deps.bookings.replace(next, 'requested'))) {
-    // The passenger cancelled in the same moment: the commission goes back.
-    await deps.wallet.refund(driverId, id);
-    return { ok: false, error: 'bookings.wrong_status' };
+  // The seat first, in one step with the count of seats; then the money (docs/65 A4).
+  if (!(await deps.bookings.confirmWithin(next, facts.seats))) {
+    const current = await deps.bookings.find(id);
+    return {
+      ok: false,
+      error: current?.status === 'requested' ? 'bookings.no_seats' : 'bookings.wrong_status',
+    };
+  }
+  const charged = await deps.wallet.charge(driverId, id, record.commission);
+  if (charged !== 'ok') {
+    await deps.bookings.replace(record, 'confirmed');
+    return { ok: false, error: charged === 'not_enough' ? 'wallet.not_enough' : 'bookings.wrong_status' };
   }
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) await deps.notify.confirmed(forPassenger);
@@ -51,9 +55,10 @@ export async function answer(
   id: string,
   action: Extract<BookingAction, 'decline' | 'driver_cancel'>,
 ): Promise<Result<Booking, AnswerError>> {
-  const record = await mine(deps, driverId, id);
-  if (!record) return { ok: false, error: 'bookings.not_found' };
-  const next = move(record, action, deps.now());
+  const found = await mine(deps, driverId, id);
+  if (!found) return { ok: false, error: 'bookings.not_found' };
+  const { record, facts } = found;
+  const next = move(record, action, deps.now(), facts.departAt);
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };

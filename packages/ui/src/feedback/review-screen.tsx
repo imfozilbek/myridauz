@@ -108,9 +108,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
           </Cell>
         </Section>
       </List>
-      {stars > 0 && step !== 'busy' ? (
-        <MainButton text={t('reviews.send')} onClick={() => void send()} />
-      ) : null}
+      {stars > 0 && step !== 'busy' ? <MainButton text={t('reviews.send')} onClick={send} /> : null}
     </div>
   );
 }
