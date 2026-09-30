@@ -79,7 +79,7 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
   await shot(money ? '4-confirmed' : '4-not-enough');
   if (money) return;
   await mainButton.click();
-  await expect(page.getByText(t('wallet.topUp.title'))).toBeVisible();
+  await expect(page.getByText(t('wallet.topUp.title'), { exact: true })).toBeVisible();
   await shot('5-top-up');
 }
 
