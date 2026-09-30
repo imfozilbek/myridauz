@@ -11,7 +11,7 @@ test('driver: a new driver sends the application and waits for the check', async
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await applyAsDriver(page);
-  expect(api.submitted).toEqual([expect.objectContaining({ plate: '01A123BC', seats: 4 })]);
+  expect(api.submitted).toEqual([expect.objectContaining({ model: 'Damas', plate: '01A123BC', seats: 6 })]);
 });
 
 test('admin: the team opens an application and approves it', async ({ page }) => {

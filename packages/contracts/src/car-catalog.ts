@@ -21,3 +21,13 @@ export const CAR_CATALOG: Readonly<Record<string, readonly string[]>> = {
   Haval: ['Jolion', 'H6', 'Dargo'],
   Lada: ['Vesta', 'Granta', 'Largus'],
 };
+
+// Seats for passengers of the models that differ from the usual 4 (owner decision 30.09.2026).
+// The smallest common version: a driver of a bigger one adds seats, a car never gets more than it has.
+export const CAR_SEATS: Readonly<Record<string, number>> = {
+  Damas: 6,
+  Captiva: 6,
+  Carnival: 6,
+  'Tiggo 8': 6,
+  Seagull: 3,
+};

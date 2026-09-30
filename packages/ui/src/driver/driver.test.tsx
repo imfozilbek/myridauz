@@ -16,7 +16,7 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
     fireEvent.change(plate, { target: { value: '01 a 123 bcЖ!' } });
     expect(screen.getByDisplayValue('01 A 123 BC')).toBeTruthy();
     await tap('Davom etish');
-    // 4 seats are chosen in advance: "Davom etish" keeps them.
+    // The seats of a Cobalt (4) are chosen in advance: "Davom etish" keeps them.
     expect(await screen.findByText('Yoʻlovchilar uchun nechta joy bor?')).toBeTruthy();
     await tap('Davom etish');
     await tap('Davom etish');
@@ -43,6 +43,20 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
       'photos',
       'submitted',
     ]);
+  });
+
+  it('has the seats of the chosen model ready: a Damas takes 6', async () => {
+    const { submit, container } = renderGate(null);
+    for (const step of ['Boshlash', 'Chevrolet', 'Damas', 'Oq']) await tap(step);
+    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01A123BC' } });
+    for (const step of ['Davom etish', 'Davom etish', 'Davom etish']) await tap(step);
+    for (const taken of [1, 2, 3]) {
+      shoot(container, 'Rasmga olish');
+      await waitFor(() => expect(screen.getAllByText('Qayta olish')).toHaveLength(taken));
+    }
+    await tap('Davom etish');
+    await tap('Yuborish');
+    await waitFor(() => expect(submit).toHaveBeenCalledWith({ ...car, model: 'Damas', seats: 6 }));
   });
 
   it('lets an approved driver in', async () => {
