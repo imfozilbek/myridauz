@@ -26,6 +26,7 @@
 ## Первая загрузка
 
 - Карта попадает в R2 только после запуска workflow «Map data» владельцем (GitHub → Actions → «Map data» → Run workflow, ветка `main`). До этого экран карты показывает «Xarita yuklanmadi» и путь через бота.
+- Ключу `CLOUDFLARE_API_TOKEN` в GitHub нужно право «Workers R2 Storage: Edit» (`32`), иначе запись в R2 ответит 403.
 
 ## Как обновить карту
 
