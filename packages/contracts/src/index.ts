@@ -140,3 +140,4 @@ export * from './history';
 export * from './legal';
 export * from './uzbekistan';
 export * from './map';
+export * from './map-search';

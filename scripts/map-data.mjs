@@ -1,6 +1,6 @@
 // The map of the Mini App (G22, docs/67): pnpm map-data --brand=<brand> [--dry-run]
 // Cuts Uzbekistan out of the Protomaps build of OpenStreetMap (the data date is in MAP_ARCHIVE),
-// takes the fonts of the labels and puts both into the private R2 bucket of the brand. Needs
+// fills the search index of place names in D1 from it (G23), takes the fonts of the labels and puts both into the private R2 bucket of the brand. Needs
 // CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; runs from the workflow "Map data" (docs/32).
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import { loadBrand } from '../brands/index.ts';
 import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
 import border from '../packages/contracts/src/uzbekistan-border.json' with { type: 'json' };
+import { writePlaceIndex } from './map-places.mjs';
 
 // The command line tool of PMTiles, pinned by version and checksum.
 const PMTILES = {
@@ -104,3 +105,21 @@ for (const font of MAP_FONTS)
     put(`map/fonts/${font}/${range}.pbf`, file, 'application/x-protobuf');
   }
 console.log(`map-data: ${MAP_ARCHIVE} (${Math.round(size / 1e6)} MB) and the fonts are in ${bucket}`);
+
+// The search by name (G23): the places of the same archive, the whole index made again in D1.
+const placesFile = join(WORK, 'places.sql');
+const places = await writePlaceIndex(archive, placesFile);
+run('pnpm', [
+  'exec',
+  'wrangler',
+  'd1',
+  'execute',
+  'DB',
+  '--remote',
+  '--yes',
+  '--config',
+  `brands/${brand.id}/wrangler.toml`,
+  '--file',
+  placesFile,
+]);
+console.log(`map-data: ${places} places are in the search index`);

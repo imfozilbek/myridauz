@@ -1,3 +1,4 @@
+import type { FoundPlace, Point } from '@platform/contracts';
 import type { ByteRange } from '../domain/byte-range';
 
 // The bytes of a map file (G22): the part asked for, where it starts and the size of the whole file.
@@ -19,3 +20,12 @@ export type MapCache = {
 };
 
 export type MapDeps = { readonly files: MapFiles; readonly cache: MapCache };
+
+// What the index is asked (G23): every word must start a word of the place; only in the cells when
+// there are cells; nearest to the point first when there is a point, else the shortest names.
+export type PlaceQuery = {
+  readonly words: readonly string[];
+  readonly cells: readonly string[] | null;
+  readonly near: Point | null;
+};
+export type PlaceIndex = { find(query: PlaceQuery, limit: number): Promise<FoundPlace[]> };

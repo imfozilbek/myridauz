@@ -77,7 +77,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     stats: createStatsClient(signed),
     calls: createCallsClient(signed),
     comfort: createComfortClient(signed),
-    map: createMapClient({ baseUrl }),
+    map: createMapClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).

@@ -8,8 +8,27 @@ const FIXTURES = 'e2e/fixtures/map';
 const archive = readFileSync(`${FIXTURES}/tashkent.pmtiles`);
 // Amir Temur square: inside the piece of the map the tests carry.
 const CENTER = { lat: 41.3111, lng: 69.2797 };
-export type MapState = { pickup: { lat: number; lng: number } | null; readonly saved: unknown[] };
-export const mapState = (): MapState => ({ pickup: null, saved: [] });
+export type MapState = {
+  pickup: { lat: number; lng: number } | null;
+  readonly saved: unknown[];
+  readonly searched: string[];
+};
+export const mapState = (): MapState => ({ pickup: null, saved: [], searched: [] });
+// Places of the search by name (G23) as the index has them: real names inside the piece of the map.
+export const FOUND = [
+  {
+    name: 'Mustaqillik maydoni',
+    kind: 'transport',
+    area: 'Yakkasaroy',
+    point: { lat: 41.31495, lng: 69.27107 },
+  },
+  {
+    name: "Mustaqillik shoh ko'chasi",
+    kind: 'street',
+    area: 'Mirobod',
+    point: { lat: 41.31352, lng: 69.27664 },
+  },
+];
 
 function part(route: Route) {
   const [, from, to] = /bytes=(\d+)-(\d+)/u.exec(route.request().headers().range ?? '') ?? [];
@@ -40,6 +59,10 @@ export async function mockMap(page: Page, state: MapState) {
     state.pickup = route.request().postDataJSON() as MapState['pickup'];
     state.saved.push(state.pickup);
     return json(route, mine());
+  });
+  await page.route('**/api/passenger/map/search?*', (route) => {
+    state.searched.push(new URL(route.request().url()).searchParams.get('q') ?? '');
+    return json(route, { places: FOUND });
   });
   await page.route('**/api/driver/bookings', (route) => json(route, { bookings: [mine()] }));
 }

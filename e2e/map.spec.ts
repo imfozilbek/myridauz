@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
-import { mapState, mockMap } from './map-mock';
+import { FOUND, mapState, mockMap } from './map-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -49,4 +49,29 @@ test('the passenger chooses the pickup point on the map, the driver sees it', as
   await expect(driver.getByText(t('bookings.pickup'), { exact: true })).toBeVisible();
   await expect(driver.getByText(t('bookings.openMap')).first()).toBeVisible();
   await shot(driver, '4-driver');
+});
+
+// G23: the passenger finds a place by name, written in Cyrillic; the map moves to it and it is saved.
+test('the passenger finds the pickup place by name and saves it', async ({ page }) => {
+  const state = mapState();
+  await mockApi(page, 'active');
+  await mockMap(page, state);
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+  await page.getByText(t('common.myTrips')).click();
+  await page.getByText('Jasur').first().click();
+  await page.getByText(t('bookings.map.pick')).click();
+  await drawn(page);
+  await page.getByPlaceholder(t('bookings.map.search')).fill('Мустақиллик');
+  await expect(page.getByText('Mustaqillik maydoni')).toBeVisible();
+  expect(state.searched).toEqual(['Мустақиллик']);
+  await shot(page, '5-search');
+  await page.getByText('Mustaqillik maydoni').click();
+  await expect(page.getByText("Mustaqillik shoh ko'chasi")).toBeHidden();
+  await drawn(page);
+  await shot(page, '6-found');
+  await page.locator('#tg-main-button', { hasText: t('bookings.map.here') }).click();
+  await expect.poll(() => state.saved.length).toBe(1);
+  expect(state.pickup?.lat).toBeCloseTo(FOUND[0]?.point.lat ?? 0, 4);
+  expect(state.pickup?.lng).toBeCloseTo(FOUND[0]?.point.lng ?? 0, 4);
 });

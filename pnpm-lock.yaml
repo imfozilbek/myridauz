@@ -12,6 +12,9 @@ importers:
 
   .:
     devDependencies:
+      '@mapbox/vector-tile':
+        specifier: 3.0.0
+        version: 3.0.0
       '@platform/brands':
         specifier: workspace:*
         version: link:brands
@@ -39,6 +42,12 @@ importers:
       knip:
         specifier: 6.38.0
         version: 6.38.0
+      pbf:
+        specifier: 5.1.2
+        version: 5.1.2
+      pmtiles:
+        specifier: 4.5.0
+        version: 4.5.0
       prettier:
         specifier: 3.9.9
         version: 3.9.9

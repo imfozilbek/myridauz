@@ -49,3 +49,14 @@
   color: var(--tgui--hint_color);
   pointer-events: none;
 }
+/* The search by name (G23): the field under the hint, the places found under it. The list
+   scrolls on its own and leaves the pin in view. */
+.pickup-map-search {
+  display: grid;
+  gap: 8px;
+  margin-top: 4px;
+}
+.pickup-map-found {
+  max-height: 40vh;
+  overflow-y: auto;
+}

@@ -1,4 +1,3 @@
-import { createMapClient } from '@platform/api-client';
 import type { ApiClients } from './context/api-clients';
 
 // Test helper: API clients where every call fails unless a test gives its own.
@@ -20,6 +19,7 @@ export const testClients = (overrides: {
   readonly stats?: Partial<ApiClients['stats']>;
   readonly calls?: Partial<ApiClients['calls']>;
   readonly comfort?: Partial<ApiClients['comfort']>;
+  readonly map?: Partial<ApiClients['map']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -110,5 +110,10 @@ export const testClients = (overrides: {
   stats: { get: NOT_USED, ...overrides.stats },
   calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
   comfort: { favorites: NOT_USED, save: NOT_USED, forget: NOT_USED, history: NOT_USED, ...overrides.comfort },
-  map: createMapClient({ baseUrl: 'https://api.test' }),
+  map: {
+    archiveUrl: 'https://api.test/map/archive.pmtiles',
+    fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
+    search: NOT_USED,
+    ...overrides.map,
+  },
 });

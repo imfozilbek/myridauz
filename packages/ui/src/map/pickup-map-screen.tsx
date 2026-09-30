@@ -15,6 +15,7 @@ import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
+import { MapSearch } from './map-search';
 import { useMapView } from './use-map-view';
 import './pickup-map.css';
 
@@ -83,6 +84,7 @@ export function PickupMapScreen({ booking, onBack, onSaved }: Props) {
         <div className="pickup-map-panel">
           <Text weight="2">{t('bookings.map.title')}</Text>
           <Caption>{t('bookings.map.hint')}</Caption>
+          <MapSearch near={start} onFound={(point) => view?.moveTo(point)} />
         </div>
         {note ? (
           <Text className="pickup-map-panel" role="alert">
