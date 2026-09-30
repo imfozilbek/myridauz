@@ -22,8 +22,10 @@ const FONT_RANGES = ['0-255', '256-511', '512-767', '1024-1279', '8192-8447'];
 // wrangler puts one object of at most 300 MB: the archive must stay under it.
 const MAX_OBJECT_BYTES = 300 * 1000 * 1000;
 const WORK = '.map-data';
-// The build server of Protomaps sometimes answers 500 or 524 in the middle of a download: try again.
-const EXTRACT_ATTEMPTS = 3;
+// The build server of Protomaps cuts a long answer (500, 524, stream reset): many small requests
+// (no overfetch, ~80 KB each) instead of few big ones, and a pause before trying again.
+const EXTRACT_ATTEMPTS = 5;
+const RETRY_PAUSE_SECONDS = 30;
 
 const brandArg = process.argv.find((arg) => arg.startsWith('--brand='));
 if (!brandArg) throw new Error('map-data: --brand=<brand> is required');
@@ -66,7 +68,7 @@ run('tar', ['xzf', join(WORK, 'pmtiles.tar.gz'), '-C', WORK, 'pmtiles']);
 const region = join(WORK, 'uzbekistan.geojson');
 writeFileSync(region, JSON.stringify({ type: 'MultiPolygon', coordinates: border }));
 const archive = join(WORK, MAP_ARCHIVE);
-const extract = ['extract', `${BUILDS}/${build}.pmtiles`, archive, `--region=${region}`];
+const extract = ['extract', `${BUILDS}/${build}.pmtiles`, archive, `--region=${region}`, '--overfetch=0'];
 for (let attempt = 1; ; attempt += 1) {
   try {
     run(join(WORK, 'pmtiles'), dryRun ? [...extract, '--dry-run'] : extract);
@@ -74,6 +76,7 @@ for (let attempt = 1; ; attempt += 1) {
   } catch (error) {
     if (attempt === EXTRACT_ATTEMPTS) throw error;
     console.log(`map-data: extract failed, attempt ${attempt + 1} of ${EXTRACT_ATTEMPTS}`);
+    run('sleep', [String(RETRY_PAUSE_SECONDS)]);
   }
 }
 if (dryRun) process.exit(0);
