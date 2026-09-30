@@ -23,6 +23,10 @@
 | Шрифты подписей | Noto Sans (обычный, средний, курсив): латиница, oʻ и gʻ, кириллица; `map/fonts/...` |
 | Лицензия | ODbL (данные), BSD (MapLibre, PMTiles, Protomaps Basemaps) |
 
+## Первая загрузка
+
+- Карта попадает в R2 только после запуска workflow «Map data» владельцем (GitHub → Actions → «Map data» → Run workflow, ветка `main`). До этого экран карты показывает «Xarita yuklanmadi» и путь через бота.
+
 ## Как обновить карту
 
 1. В `packages/contracts/src/map.ts` поменять `MAP_ARCHIVE` на новую дату сборки Protomaps.
