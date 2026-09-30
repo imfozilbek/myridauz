@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { FOUND, mapState, mockMap } from './map-mock';
 import { PITAK } from './market-mock';
-import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
+import { mockTelegram, pressBack, telegramEvents, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER, DRIVER] = MINI_APPS;
@@ -66,6 +66,16 @@ test('the passenger books from the door to the home, the places stay fixed', asy
 // Owner check 2: «Pitakdan» shows the pitak of the direction.
 test('the passenger who goes from a pitak sees the pitak of the direction', async ({ page }) => {
   await openWay(page);
+  // The map of a point shows its district only: the real border of the repository (docs/48).
+  await page.getByText('Qatortol').click();
+  await drawn(page);
+  await shot(page, '0-district');
+  // Farther out: the whole district, the rest shaded; the map does not go beyond it.
+  await page.mouse.move(200, 600);
+  for (let step = 0; step < 6; step += 1) await page.mouse.wheel(0, 600);
+  await page.waitForTimeout(TILES_MS);
+  await shot(page, '0-district-far');
+  await pressBack(page);
   await chooseHome(page);
   await page.getByText(t('way.mode.pitak')).click();
   await expect(page.getByText(new RegExp(`^${PITAK.name}`, 'u'))).toBeVisible();

@@ -1,6 +1,6 @@
 import type { GeoJSONSource, LngLatBoundsLike, Map as MapLibreMap } from 'maplibre-gl';
 import type { BorderParts, MapColors, MapMark } from './map-engine';
-import type { Point } from '@platform/contracts';
+import { UZBEKISTAN_PARTS, type Point } from '@platform/contracts';
 
 // The drawings over the map (G24, docs/71): a shade outside the district, marks and a line.
 const SHADE = 'overlay-shade';
@@ -60,14 +60,10 @@ function ensure(map: MapLibreMap, colors: MapColors) {
 
 const source = (map: MapLibreMap, id: string) => map.getSource(id) as GeoJSONSource;
 
-// Outside the district: shaded, and the map does not go far from it.
-export function clip(map: MapLibreMap, colors: MapColors, parts: BorderParts | null) {
+// Outside the district, or outside Uzbekistan without one: shaded, and the map does not go far.
+export function clip(map: MapLibreMap, colors: MapColors, district: BorderParts | null) {
   ensure(map, colors);
-  if (!parts) {
-    source(map, SHADE).setData(EMPTY);
-    map.setMaxBounds(null);
-    return;
-  }
+  const parts = district ?? UZBEKISTAN_PARTS;
   const outer = parts.map((part) => part[0] ?? []);
   source(map, SHADE).setData({
     type: 'Feature',

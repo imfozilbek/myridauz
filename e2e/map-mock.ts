@@ -1,5 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import type { Page, Route } from '@playwright/test';
+import BORDERS from '../apps/backend/seed/district-borders.json' with { type: 'json' };
+import { borderOf, districtAt } from '../apps/backend/src/modules/map/domain/borders';
 import { confirmed } from './bookings-mock';
 
 // The map of the pickup point (G22) as the Mini Apps see it: a small piece of Tashkent from the
@@ -26,11 +28,14 @@ export const FOUND = [
     point: { lat: 39.6547, lng: 66.9758 },
   },
 ];
-// South of Jizzax is Samarqand shahri, the rest Chilonzor: enough for the tests.
-const whereOf = (lat: number) =>
-  lat < 40.5
-    ? { district: '1718401', name: { step: 'landmark', name: 'Registon maydoni' }, area: null }
-    : { district: '1726294', name: { step: 'mahalla', name: 'Qatortol' }, area: null };
+const LINES = BORDERS.places as Record<string, string[][]>;
+const DISTRICTS = Object.entries(LINES).map(([id, lines]) => borderOf(id, lines));
+// The district by the real borders; the name: Registon in Samarqand, Qatortol in Tashkent.
+const whereOf = (lat: number, lng: number) => ({
+  district: districtAt(DISTRICTS, { lat, lng }),
+  name: lat < 40.5 ? { step: 'landmark', name: 'Registon maydoni' } : { step: 'mahalla', name: 'Qatortol' },
+  area: null,
+});
 const person = (id: string, firstName: string) => ({ id: id.padStart(32, '0'), firstName, hasAvatar: false });
 const at = (lat: number, lng: number, name: string) => ({
   point: { lat, lng },
@@ -105,8 +110,16 @@ export async function mockMap(page: Page, state: MapState) {
     });
   });
   await page.route('**/api/passenger/map/where?*', (route) => {
-    const [lat = '0'] = (new URL(route.request().url()).searchParams.get('at') ?? '').split(',');
-    return json(route, whereOf(Number(lat)));
+    const [lat = 0, lng = 0] = (new URL(route.request().url()).searchParams.get('at') ?? '')
+      .split(',')
+      .map(Number);
+    return json(route, whereOf(lat, lng));
+  });
+  // The real borders of the repository (G24, docs/48): the map of a point is cut by its district.
+  await page.route('**/api/passenger/map/borders/*', (route) => {
+    const id = new URL(route.request().url()).pathname.split('/').at(-1) ?? '';
+    const lines = LINES[id];
+    return lines ? json(route, { id, parts: borderOf(id, lines).parts }) : json(route, {}, 404);
   });
   await page.route('**/api/trips/*/bookings', (route) => {
     state.booked = route.request().postDataJSON() as Record<string, unknown>;

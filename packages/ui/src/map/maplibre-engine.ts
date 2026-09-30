@@ -67,7 +67,10 @@ export const maplibreEngine: MapEngine = (box, source, start, colors) => {
     map.once('load', () => {
       clearTimeout(timer);
       map.off('error', onError);
-      resolve(view(map, colors));
+      const shown = view(map, colors);
+      // Every map shows Uzbekistan only: the rest is shaded and out of reach.
+      shown.clip(null);
+      resolve(shown);
     });
   });
 };

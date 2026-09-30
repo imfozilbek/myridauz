@@ -18,6 +18,7 @@ export type MapView = {
   center(): Point;
   onMove(listener: () => void): void;
   moveTo(point: Point): void;
+  // The map of one district; null: the whole of Uzbekistan (every map starts so).
   clip(parts: BorderParts | null): void;
   show(marks: readonly MapMark[], line: readonly Point[] | null): void;
   // covered: the share of the height at the top hidden by a card.

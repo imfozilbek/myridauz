@@ -12,6 +12,9 @@ const KM_PER_DEGREE = 111.32;
 
 const coordinates = (vertex: readonly number[]) => [vertex[0] ?? 0, vertex[1] ?? 0] as const;
 
+// The same border for a map: outside it is shaded and out of reach (G24).
+export const UZBEKISTAN_PARTS = POLYGONS.map((polygon) => polygon.map((ring) => ring.map(coordinates)));
+
 // Even-odd rule: a ray to the east crosses the ring an odd number of times from inside.
 function crossesOdd(ring: Ring, { lat, lng }: Point): boolean {
   let inside = false;
