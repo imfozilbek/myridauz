@@ -60,5 +60,5 @@
 | 56 | [56-analytics-dashboard.md](56-analytics-dashboard.md) | Дашборд аналитики в админке и сигналы в админ-бот (G12) |
 | 57 | [57-comfort-and-retention.md](57-comfort-and-retention.md) | Любимый водитель, история, обратная поездка, цены рядом, медиана (G18) |
 | 58 | [58-legal-documents-and-deletion.md](58-legal-documents-and-deletion.md) | Оферта, конфиденциальность, согласие в Mini App и ботах; удаление своих данных (G14) |
-| 59 | [59-landing.md](59-landing.md) | Лендинг myrida.uz: блоки, сборка в HTML, документы, аналитика (G15) |
+| 59 | [59-landing.md](59-landing.md) | Лендинг myrida.uz: разделы, интерактивы, живые цены, картинки из ролика (G15) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

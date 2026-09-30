@@ -23,3 +23,4 @@ brands/*/wrangler.tmp.toml
 
 # Landing prerender bundle
 apps/landing/.render/
+apps/landing/.client/

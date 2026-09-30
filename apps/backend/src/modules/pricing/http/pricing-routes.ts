@@ -6,6 +6,7 @@ import {
   directionPriceSchema,
   distanceQuerySchema,
   PRICE_RECOMMENDATION_PATH,
+  PUBLIC_DIRECTIONS_PATH,
   pricingVariablesSchema,
   rollbackSchema,
   type ApiErrorCode,
@@ -21,6 +22,7 @@ import {
   setDirection,
 } from '../application/admin';
 import type { PricingDeps } from '../application/ports';
+import { publicDirections } from '../application/public';
 import { recommendPrice } from '../application/recommend';
 
 const STATUS = {
@@ -33,6 +35,9 @@ const STATUS = {
   'locations.inside_city': 422,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
+// The landing asks once an hour at most: the prices change only when the team changes the formula.
+const PUBLIC_CACHE = 'public, max-age=3600';
+
 const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.json({ error }, STATUS[error]);
 const body = (context: Context<AppEnv>) => context.req.json().catch(() => null);
 
@@ -44,6 +49,10 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
       if (!query.success) return fail(context, 'pricing.invalid_input');
       const result = await recommendPrice(deps(context.env), query.data.from, query.data.to);
       return result.ok ? context.json(result.value) : fail(context, result.error);
+    })
+    .get(PUBLIC_DIRECTIONS_PATH, async (context) => {
+      context.header('cache-control', PUBLIC_CACHE);
+      return context.json({ directions: await publicDirections(deps(context.env)) });
     })
     .use(`${ADMIN_PRICING_PATH}/*`, async (context, next) =>
       context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),

@@ -3,10 +3,16 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { escape } from './html';
 import { renderSite } from './site';
+import { MAP } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const site = renderSite(brand, 2027);
+const site = renderSite(brand, {
+  year: 2027,
+  map: MAP,
+  channels: { rida_samarqand: 'Samarqand' },
+  script: 'run()',
+});
 const home = site['index.html'] ?? '';
 
 describe('landing (G15)', () => {
@@ -24,15 +30,38 @@ describe('landing (G15)', () => {
     expect(home).toContain(`href="https://t.me/${brand.bots.driver}"`);
     expect(home).toContain(`href="https://t.me/${brand.bots.admin}"`);
     expect(home).toContain(escape(t('landing.cta.passenger')));
-    expect(home).toContain(escape(t('landing.safety.woman.title')));
   });
 
-  it('takes the name, the slogan, the domain and the colors from the brand config', () => {
+  it('shows every part: pains, steps with screens, map, driver, safety, channels, questions', () => {
+    for (const text of [
+      'landing.pains.title',
+      'landing.how.title',
+      'landing.map.title',
+      'landing.driver.title',
+    ] as const)
+      expect(home).toContain(escape(t(text)));
+    expect(home).toContain('src="/art/phone-search.webp"');
+    expect(home).toContain('src="/art/phone-requests.webp"');
+    expect(home).toContain('data-region="1718"');
+    expect(home).toContain(`href="https://t.me/${brand.channels['1718'] ?? ''}"`);
+    expect(home).toContain('Samarqand</a></li>');
+    expect(home.match(/<details/gu)).toHaveLength(7);
+    expect(home).toContain('<script>run()</script>');
+  });
+
+  it('asks the public API for prices and gives the script templates, not texts', () => {
+    expect(home).toContain(`data-api="https://api.${brand.domain}/public/directions"`);
+    expect(home).toContain('data-money="{amount} soʻm"');
+    expect(home).toContain('data-km="≈ {km} km"');
+  });
+
+  it('takes the name, the slogan, the domain, the numbers and the colors from the brand config', () => {
     expect(home).toContain(`<title>${escape(t('landing.title', { brand: brand.name }))}</title>`);
     expect(home).toContain(escape(brand.slogan));
     expect(home).toContain(`https://${brand.domain}/og-image.png`);
     expect(home).toContain(`--strong:${brand.theme.colors.brandStrong}`);
     expect(home).toContain(`--driver:${brand.theme.apps.driver?.brandStrong}`);
+    expect(home).toContain(`${brand.commission.percent} foizi`);
     expect(home).toContain('© 2027');
   });
 
@@ -41,7 +70,9 @@ describe('landing (G15)', () => {
     expect(offer).toContain(escape(t('legal.offer.title')));
     expect(offer).toContain('Tahrir 1.0');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
-    for (const html of Object.values(site)) expect(html).not.toMatch(/(?<!\{)\{\w+\}(?!\})/u);
+    expect(offer).not.toContain('<script>');
+    const text = (html: string) => html.replace(/data-[\w-]+="[^"]*"/gu, '');
+    for (const html of Object.values(site)) expect(text(html)).not.toMatch(/(?<!\{)\{\w+\}(?!\})/u);
   });
 
   it('never lets a text become markup', () => {

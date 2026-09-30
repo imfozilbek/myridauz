@@ -1,27 +1,45 @@
 import {
-  Banknote,
   CarFront,
+  ChevronDown,
+  Clock,
   EyeOff,
   Flag,
-  HeartHandshake,
+  Gift,
+  Hourglass,
+  MapPin,
+  Minus,
+  Plus,
+  Repeat,
   Search,
+  Send,
+  Share2,
   ShieldCheck,
+  TrendingUp,
   UserRound,
-  Users,
+  UserRoundX,
 } from 'lucide-static';
 
-// Icons only from Lucide (docs/19), always next to a text. aria-hidden: the text says it all.
+// Icons only from Lucide (docs/19), always next to a text; one meaning, one icon, as in the Mini Apps.
 const ICONS = {
-  together: Users,
-  share: Banknote,
-  notTaxi: HeartHandshake,
+  wait: Hourglass,
+  price: TrendingUp,
+  stranger: UserRoundX,
+  woman: UserRound,
+  empty: Repeat,
+  checked: ShieldCheck,
+  phone: EyeOff,
+  telegram: Send,
+  share: Share2,
+  complaints: Flag,
   passenger: Search,
   driver: CarFront,
-  checked: ShieldCheck,
-  // The same icon as "Mashinada ayol bor" in the Mini Apps.
-  woman: UserRound,
-  phone: EyeOff,
-  complaints: Flag,
+  pitak: Clock,
+  return: Repeat,
+  bonus: Gift,
+  place: MapPin,
+  less: Minus,
+  more: Plus,
+  open: ChevronDown,
 } as const;
 
 export type IconName = keyof typeof ICONS;

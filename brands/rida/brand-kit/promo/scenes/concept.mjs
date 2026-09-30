@@ -12,11 +12,11 @@ const K = COPY.concept;
 const ROAD = 900, SPEED = 300;
 const LINE_AT = [0, 4, 6]; // start of each line (local seconds)
 
-// Road sign on a post; x moves with the road.
-function sign(label, x, color) {
-  return `<rect x="${x - 6}" y="${ROAD - 170}" width="12" height="170" fill="${C.slate}"/>` +
-    `<rect x="${x - 150}" y="${ROAD - 260}" width="300" height="96" rx="18" fill="${color}"/>` +
-    text(label, { x, y: ROAD - 196, anchor: 'middle', fill: C.white, size: 46, maxWidth: 260 });
+// Road sign on a post; x moves with the road. The landing draws the same signs (docs/59).
+export function sign(label, x, color, road = ROAD) {
+  return `<rect x="${x - 6}" y="${road - 170}" width="12" height="170" fill="${C.slate}"/>` +
+    `<rect x="${x - 150}" y="${road - 260}" width="300" height="96" rx="18" fill="${color}"/>` +
+    text(label, { x, y: road - 196, anchor: 'middle', fill: C.white, size: 46, maxWidth: 260 });
 }
 
 export function concept(t, d) {

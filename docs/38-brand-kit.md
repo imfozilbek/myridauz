@@ -58,6 +58,7 @@
 | Боты Telegram | `telegram/`: 3 аватара, 3 картинки описания 640 × 360, экран загрузки (SVG, один контур) |
 | Каналы | `telegram/channels/`: 13 аватаров, 13 картинок к постам (`37`) |
 | Сайт | `web/`: favicon (svg, ico), иконка iPhone, 192, 512, превью ссылки 1200 × 630 |
+| Лендинг | `pnpm landing`: картинки из сцен ролика в `brands/rida/landing/art/` (`59`) |
 | Соцсети | `social/`: посты «Tez orada», запуск, «Mashinada ayol bor»; сторис для водителей и «Yangi safar» |
 | Печать | `print/`: наклейка на машину 200 мм, QR-плакат A4 (ведёт на https://myrida.uz) |
 | Моушн | `motion/`: 4 видео, слои SVG |

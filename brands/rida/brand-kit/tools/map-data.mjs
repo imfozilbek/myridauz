@@ -5,16 +5,21 @@ import fs from 'node:fs';
 const WIDTH = 1000;
 const LAT0 = 41; // projection latitude (degrees)
 const TOLERANCE = 0.015; // simplification tolerance (degrees)
-// Region centers and channel codes (docs/37); Toshkent city has no channel.
+// Region centers, channel codes (docs/37) and SOATO region codes (docs/48); Toshkent city has no channel.
 const CITIES = [
-  ['toshkent', 'Toshkent', 41.311, 69.280, null], ['nurafshon', 'Nurafshon', 41.043, 69.358, '10'],
-  ['andijon', 'Andijon', 40.782, 72.344, '60'], ['buxoro', 'Buxoro', 39.775, 64.429, '80'],
-  ['fargona', 'Fargʻona', 40.386, 71.786, '40'], ['jizzax', 'Jizzax', 40.116, 67.842, '25'],
-  ['urganch', 'Urganch', 41.550, 60.633, '90'], ['namangan', 'Namangan', 40.998, 71.673, '50'],
-  ['navoiy', 'Navoiy', 40.084, 65.379, '85'], ['qarshi', 'Qarshi', 38.861, 65.789, '70'],
-  ['samarqand', 'Samarqand', 39.654, 66.960, '30'], ['guliston', 'Guliston', 40.490, 68.784, '20'],
-  ['termiz', 'Termiz', 37.224, 67.278, '75'], ['nukus', 'Nukus', 42.460, 59.610, '95']
+  ['toshkent', 'Toshkent', 41.311, 69.280, null, '1726'], ['nurafshon', 'Nurafshon', 41.043, 69.358, '10', '1727'],
+  ['andijon', 'Andijon', 40.782, 72.344, '60', '1703'], ['buxoro', 'Buxoro', 39.775, 64.429, '80', '1706'],
+  ['fargona', 'Fargʻona', 40.386, 71.786, '40', '1730'], ['jizzax', 'Jizzax', 40.116, 67.842, '25', '1708'],
+  ['urganch', 'Urganch', 41.550, 60.633, '90', '1733'], ['namangan', 'Namangan', 40.998, 71.673, '50', '1714'],
+  ['navoiy', 'Navoiy', 40.084, 65.379, '85', '1712'], ['qarshi', 'Qarshi', 38.861, 65.789, '70', '1710'],
+  ['samarqand', 'Samarqand', 39.654, 66.960, '30', '1718'], ['guliston', 'Guliston', 40.490, 68.784, '20', '1724'],
+  ['termiz', 'Termiz', 37.224, 67.278, '75', '1722'], ['nukus', 'Nukus', 42.460, 59.610, '95', '1735']
 ];
+// ISO 3166-2 of Natural Earth to SOATO region codes: the landing links regions to prices (docs/59).
+const SOATO = {
+  'UZ-AN': '1703', 'UZ-BU': '1706', 'UZ-JI': '1708', 'UZ-QA': '1710', 'UZ-NW': '1712', 'UZ-NG': '1714', 'UZ-SA': '1718',
+  'UZ-SU': '1722', 'UZ-SI': '1724', 'UZ-TK': '1726', 'UZ-TO': '1727', 'UZ-FA': '1730', 'UZ-XO': '1733', 'UZ-QR': '1735'
+};
 
 const src = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const regions = src.features.filter((f) => f.properties.adm0_a3 === 'UZB');
@@ -48,10 +53,12 @@ const out = {
   source: 'Natural Earth 1:10m admin-1 (public domain), simplified',
   width: WIDTH,
   height: Math.round((maxLat - minLat) * k),
-  regions: regions.map((f) => ({ iso: f.properties.iso_3166_2, d: rings(f.geometry).map(path).join('') })),
-  cities: CITIES.map(([id, name, lat, lon, code]) => {
+  regions: regions.map((f) => ({
+    iso: f.properties.iso_3166_2, soato: SOATO[f.properties.iso_3166_2], d: rings(f.geometry).map(path).join('')
+  })),
+  cities: CITIES.map(([id, name, lat, lon, code, soato]) => {
     const [x, y] = project([lon, lat]);
-    return { id, name, code, x: +x.toFixed(1), y: +y.toFixed(1) };
+    return { id, name, code, soato, x: +x.toFixed(1), y: +y.toFixed(1) };
   })
 };
 // One region or city per line keeps diffs readable.

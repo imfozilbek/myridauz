@@ -1,20 +1,29 @@
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadBrand } from '@platform/brands';
+import type { ChannelTitles, MapData } from './map-data';
 import { renderSite } from './site';
 
-// Build step (docs/59): writes the pages of the brand to apps/landing/dist and copies its
-// icons and link preview from brands/<brand>/landing.
+// Build step (docs/59): writes the pages of the brand to apps/landing/dist with the inline script
+// and copies the icons and the pictures of brands/<brand>/landing.
 const brand = loadBrand(process.env['VITE_BRAND']);
-const dist = fileURLToPath(new URL('../dist/', import.meta.url));
+const from = (path: string) => fileURLToPath(new URL(path, import.meta.url));
+const dist = from('../dist/');
+const data = (file: string) =>
+  JSON.parse(readFileSync(from(`../../../brands/${brand.id}/brand-kit/data/${file}`), 'utf8'));
+const map = data('uzbekistan.json') as MapData;
+const channels: ChannelTitles = Object.fromEntries(
+  (data('regions.json') as { user: string; title: string }[]).map((region) => [region.user, region.title]),
+);
+const script = readFileSync(from('../.client/app.js'), 'utf8').trim();
 rmSync(dist, { recursive: true, force: true });
-for (const [file, html] of Object.entries(renderSite(brand, new Date().getFullYear()))) {
+for (const [file, html] of Object.entries(
+  renderSite(brand, { year: new Date().getFullYear(), map, channels, script }),
+)) {
   const path = `${dist}${file}`;
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, html);
 }
-cpSync(fileURLToPath(new URL(`../../../brands/${brand.id}/landing/`, import.meta.url)), dist, {
-  recursive: true,
-});
+cpSync(from(`../../../brands/${brand.id}/landing/`), dist, { recursive: true });
 console.log(`landing: ${brand.id} written to ${dist}`);

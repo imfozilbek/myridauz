@@ -11,11 +11,13 @@ type Page = {
   readonly title: string;
   readonly path: string;
   readonly body: string;
+  // The small script of the interactive parts, inline: one request for the whole page.
+  readonly script?: string;
 };
 
 // The frame of every page: head with the link preview, the header with the logo, the footer
 // with the documents and the contact (docs/30). CSS is inline: one request, a fast first screen.
-export function page({ brand, i18n, year, title, path, body }: Page) {
+export function page({ brand, i18n, year, title, path, body, script = '' }: Page) {
   const { t } = i18n;
   const url = `https://${brand.domain}${path}`;
   const description = escape(t('landing.description', { brand: brand.name }));
@@ -48,7 +50,8 @@ export function page({ brand, i18n, year, title, path, body }: Page) {
 <body>
 <header><div class="wrap"><a class="brand" href="/"><img src="/favicon.svg" alt="${escape(
     t('landing.logo', { brand: brand.name }),
-  )}" width="36" height="36">${escape(brand.name)}</a></div></header>
+  )}" width="36" height="36">${escape(brand.name)}</a>
+<a class="button small" href="${telegramLink(brand.bots.passenger)}">${escape(t('landing.cta.passenger'))}</a></div></header>
 <main>${body}</main>
 <footer><div class="wrap">
 <strong>${escape(t('landing.footer.documents'))}</strong>
@@ -56,6 +59,7 @@ export function page({ brand, i18n, year, title, path, body }: Page) {
 <p>${contact}</p>
 <p>${escape(t('landing.footer.copyright', { year: String(year), brand: brand.name }))}</p>
 </div></footer>
+${script ? `<script>${script}</script>` : ''}
 </body>
 </html>
 `;
