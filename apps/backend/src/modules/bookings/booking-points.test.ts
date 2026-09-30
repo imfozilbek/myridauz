@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cancelByPassenger, requestBooking } from './application/request';
-import { AWAY, DILNOZA, PITAK, seats, setup } from './test-kit';
+import { confirm, driverBookings } from './application/answer';
+import { ALI, AWAY, DILNOZA, DRIVER, OLIM, PITAK, seats, setup } from './test-kit';
 
 const ABROAD = { lat: 43.2389, lng: 76.8897 };
 // Inside Uzbekistan, but far from the districts of the route (the fake says: north of 45).
@@ -45,5 +46,23 @@ describe('the way and the points of a booking (G24, docs/70)', () => {
     await cancelByPassenger(deps, DILNOZA, first.ok ? first.value.id : '');
     const second = await requestBooking(deps, DILNOZA, tripId, seats(1, { mode: 'pitak', pickup: null }));
     expect(second.ok && second.value.mode).toBe('pitak');
+  });
+});
+
+describe('the requests of a driver by the extra way (G24, docs/70)', () => {
+  it('puts the request that adds the least way first and shows «+N km» only on requests', async () => {
+    const { deps, addTrip, bonus } = setup();
+    await bonus();
+    const tripId = addTrip();
+    const taken = await requestBooking(deps, OLIM, tripId, seats(1));
+    await confirm(deps, DRIVER, taken.ok ? taken.value.id : '');
+    const far = await requestBooking(deps, ALI, tripId, seats(1, { pickup: { lat: 41.39, lng: 69.4 } }));
+    const near = await requestBooking(deps, DILNOZA, tripId, seats(1));
+    const list = await driverBookings(deps, DRIVER);
+    expect(list.map((booking) => booking.id)).toEqual(
+      [near, far, taken].map((result) => (result.ok ? result.value.id : '')),
+    );
+    expect(list.map((booking) => booking.extraKm)).toEqual([0, expect.any(Number), null]);
+    expect(list[1]?.extraKm).toBeGreaterThan(10);
   });
 });

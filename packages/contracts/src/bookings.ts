@@ -61,6 +61,8 @@ export const bookingSchema = z.object({
   pitak: pitakSchema.nullable(),
   pickup: bookedPlaceSchema.nullable(),
   dropoff: bookedPlaceSchema.nullable(),
+  // For the driver, on a request: the km this passenger adds to the confirmed ones (docs/70).
+  extraKm: z.number().int().nullable(),
   plate: z.string().nullable(),
   // The chat of the booking (docs/07): the offer's chat when it came from an offer.
   chatKey: z.string(),

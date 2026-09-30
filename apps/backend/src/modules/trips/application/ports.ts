@@ -1,4 +1,4 @@
-import type { Car, Pitak, Rating, Recommendation, RouteError } from '@platform/contracts';
+import type { Car, Pitak, Point, Rating, Recommendation, RouteError } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 
@@ -22,7 +22,14 @@ export type TripRepository = {
 export type TripEvent = 'published' | 'updated';
 
 // A confirmed booking holds seats and gives "ayol bor" when a woman rides (docs/06). G08.
-export type Rider = { readonly tripId: string; readonly passengerId: number; readonly seats: number };
+// Its points (docs/70) measure the extra way of a new passenger.
+export type Rider = {
+  readonly tripId: string;
+  readonly passengerId: number;
+  readonly seats: number;
+  readonly pickup: Point | null;
+  readonly dropoff: Point | null;
+};
 
 export type TripsDeps = {
   readonly trips: TripRepository;
