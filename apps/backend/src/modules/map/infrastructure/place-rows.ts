@@ -1,7 +1,7 @@
 import type { PlaceKind, Point } from '@platform/contracts';
 import { placeCell } from '../domain/place-cell.ts';
 import { placeKind } from '../domain/place-kind.ts';
-import { searchKey } from '../domain/search-key.ts';
+import { searchKey } from '../../../../../../packages/contracts/src/search-key.ts';
 
 // The places of the search index (G23, docs/67), built by pnpm map-data from the same archive
 // as the map. Pure: the script reads the tiles, this decides what goes into D1.

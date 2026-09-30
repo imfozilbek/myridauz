@@ -1,9 +1,8 @@
-import { MAP_SEARCH_PATH, type Point } from '@platform/contracts';
+import { MAP_SEARCH_PATH, searchKey, type Point } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { MapCache, PlaceIndex } from '../application/ports';
 import { searchPlaces } from '../application/search-places';
-import { searchKey } from '../domain/search-key';
 
 // The search of places by name (G23, docs/67): the same word near the same start is one answer,
 // kept in the edge cache for a day and on the phone for an hour. The names are OpenStreetMap data.
