@@ -15,6 +15,7 @@ import {
   createFeedbackClient,
   createStatsClient,
   createCallsClient,
+  createFeedClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
@@ -24,9 +25,11 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
+import { FeedProvider } from './feed/feed-provider';
 import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
 import { LegalGate } from './legal/legal-gate';
+import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
 
 const ROOT_ID = 'root';
@@ -75,6 +78,8 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     comfort: createComfortClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
+  // The live channel is quiet: its failures never reach the error analytics (docs/64).
+  const feed = createFeedClient({ baseUrl, fetch, app, initData: session.initData });
   // Send what is left when Telegram hides or closes the app.
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') void analytics.flush();
@@ -82,22 +87,24 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   createRoot(container).render(
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} locations={locations} clients={clients} session={session}>
-        {welcome ? (
-          // Only the passenger app is opened from a shared trip card (docs/43).
-          <FollowGate enabled={app === 'passenger'}>
-            <LegalGate>
-              <AccountGate app={app} client={users} welcome={welcome}>
-                <LaunchLinks app={app}>
-                  <Page />
-                </LaunchLinks>
-              </AccountGate>
-            </LegalGate>
-          </FollowGate>
-        ) : (
-          <TeamGate client={users}>
-            <Page />
-          </TeamGate>
-        )}
+        <FeedProvider connect={feed.socketUrl} onWake={onAppVisible}>
+          {welcome ? (
+            // Only the passenger app is opened from a shared trip card (docs/43).
+            <FollowGate enabled={app === 'passenger'}>
+              <LegalGate>
+                <AccountGate app={app} client={users} welcome={welcome}>
+                  <LaunchLinks app={app}>
+                    <Page />
+                  </LaunchLinks>
+                </AccountGate>
+              </LegalGate>
+            </FollowGate>
+          ) : (
+            <TeamGate client={users}>
+              <Page />
+            </TeamGate>
+          )}
+        </FeedProvider>
       </AppShell>
     </StrictMode>,
   );

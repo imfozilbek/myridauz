@@ -119,6 +119,7 @@ export * from './tashkent-time';
 export * from './trips';
 export * from './wallet';
 export * from './chat';
+export * from './feed';
 export * from './shares';
 export * from './subscriptions';
 export * from './ratings';

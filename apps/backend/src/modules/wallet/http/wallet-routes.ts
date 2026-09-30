@@ -1,6 +1,7 @@
 import { ADMIN_WALLETS_PATH, adjustmentSchema, WALLET_PATH, type ApiErrorCode } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { sendSignals } from '../../feed';
 import type { WalletDeps } from '../application/ports';
 import { adjust, adminWallets, walletView } from '../application/wallet';
 
@@ -38,6 +39,8 @@ export function walletRoutes(deps: (env: Bindings) => WalletDeps) {
       if (!input.success) return fail(context, 'wallet.invalid_input');
       const result = await adjust(deps(context.env), session.user.id, driverOf(context), input.data);
       if (result !== 'ok') return fail(context, 'wallet.not_enough');
+      // The driver's open Hamyon shows the adjustment at once (docs/64).
+      await sendSignals(context.env, [{ userId: driverOf(context), app: 'driver' }]);
       return context.json(await walletView(deps(context.env), driverOf(context)));
     });
 }

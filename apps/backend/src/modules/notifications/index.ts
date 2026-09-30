@@ -1,4 +1,5 @@
 import type { Bindings } from '../../env';
+import { sendSignals, signalsOf } from '../feed';
 import { teamMembers } from '../team';
 import { deliver, type Tokens } from './application/deliver';
 import type { AfterSentHandler, NotificationJob } from './application/job';
@@ -25,8 +26,10 @@ async function deliverNow(env: Bindings, job: NotificationJob) {
 
 // Bot messages go through the queue (docs/03): a slow or busy Telegram never slows the API.
 // Without the queue (tests, local runs) they are sent at once.
+// The same moment the open Mini Apps of these people refresh their screens (docs/64, G19).
 export async function notify(env: Bindings, jobs: readonly NotificationJob[]): Promise<void> {
   if (jobs.length === 0) return;
+  await sendSignals(env, signalsOf(jobs));
   if (env.NOTIFICATIONS) {
     await env.NOTIFICATIONS.sendBatch(jobs.map((body) => ({ body })));
     return;

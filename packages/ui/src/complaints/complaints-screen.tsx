@@ -6,6 +6,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { useFeedChange } from '../feed/feed-context';
 import { IconTile } from '../icon-tile';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
@@ -35,6 +36,8 @@ export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
     feedback.queue().then(setQueue, () => setFailed(true));
   }, [feedback]);
   useEffect(load, [load]);
+  // Another moderator or a new complaint: the queue refreshes quietly (docs/64).
+  useFeedChange(() => void feedback.queue().then(setQueue, () => undefined));
   const close = () => {
     forgetLaunchParam(PARAM);
     setOpen(null);

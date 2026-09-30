@@ -54,6 +54,7 @@ export const API_ERRORS = [
   'auth.not_owner',
   'chat.not_member',
   'chat.invalid_ticket',
+  'feed.invalid_ticket',
   'shares.not_found',
   'shares.too_many',
   'shares.wrong_status',

@@ -4,6 +4,7 @@ import { mockDrivers, type DriverStart } from './drivers-mock';
 import { mockBookings } from './bookings-mock';
 import { mockChat } from './chat-mock';
 import { mockComfort } from './comfort-mock';
+import { mockFeed } from './feed-mock';
 import { mockMarket } from './market-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
@@ -74,5 +75,6 @@ export async function mockApi(
   const bookings = await mockBookings(page);
   await mockChat(page);
   await mockComfort(page);
-  return { analytics, registrations, ...drivers, ...market, ...bookings };
+  const feed = await mockFeed(page);
+  return { analytics, registrations, ...drivers, ...market, ...bookings, feed };
 }

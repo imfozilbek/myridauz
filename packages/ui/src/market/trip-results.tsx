@@ -1,10 +1,11 @@
 import type { Trip } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Cell, List, Section, Switch } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { useFeedChange } from '../feed/feed-context';
 import type { Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
 import { NotifyMe } from '../subscriptions/notify-me';
@@ -36,10 +37,13 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   const [woman, setWoman] = useState(false);
   const [trips, setTrips] = useState<Trip[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const search = useMemo(
+    () => ({ from: route.from.id, to: route.to.id, date, ...(woman ? { woman: '1' as const } : {}) }),
+    [route, date, woman],
+  );
   const load = useCallback(() => {
     setFailed(false);
     setTrips(null);
-    const search = { from: route.from.id, to: route.to.id, date, ...(woman ? { woman: '1' as const } : {}) };
     market.searchTrips(search).then(
       (found) => {
         track({
@@ -51,8 +55,10 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
       },
       () => setFailed(true),
     );
-  }, [market, route, date, woman, track]);
+  }, [market, search, track]);
   useEffect(load, [load]);
+  // Seats taken by others while the person looks: fresh results without the skeleton (docs/64).
+  useFeedChange(() => void market.searchTrips(search).then(setTrips, () => undefined));
   if (failed) return <ErrorScreen onRetry={load} />;
   return (
     <div className="market">

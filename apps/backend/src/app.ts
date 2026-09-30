@@ -15,6 +15,7 @@ import { chatRoutes } from './modules/chat';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { favoritesModule } from './modules/favorites';
+import { feedRoutes } from './modules/feed';
 import { healthModule } from './modules/health';
 import { historyModule } from './modules/history';
 import { locationsModule } from './modules/locations';
@@ -64,6 +65,8 @@ export const app = new Hono<AppEnv>()
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
   .use('/calls/*', allowMiniApps, auth, blockedGuard)
+  // The personal channel: the same ticket way as the chat (docs/64).
+  .use('/feed/ticket', allowMiniApps, auth, blockedGuard)
   // Close people read a shared trip without registration; "Xabar olish" needs the signature (docs/43).
   .use('/shared/*', allowMiniApps)
   .use('/shared/:token/follow', auth)
@@ -103,6 +106,7 @@ export const app = new Hono<AppEnv>()
     '/',
     callsModule(async (env, key, userId) => (await chatMemberOf(env, key, userId))?.canCall === true),
   )
+  .route('/', feedRoutes)
   .route('/', sharesModule(bookingForShare, tripForFamily))
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
