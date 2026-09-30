@@ -3,7 +3,16 @@ import {
   MAP_FONTS_PATH,
   MAP_PATH,
   MAP_SEARCH_PATH,
+  MAP_WHERE_PATH,
   placeSearchSchema,
+  whereSchema,
+  borderSchema,
+  mapBorderPath,
+  PITAK_OF_DIRECTION_PATH,
+  pitakOfDirectionSchema,
+  type Border,
+  type Pitak,
+  type Where,
   type FoundPlace,
   type Point,
 } from '@platform/contracts';
@@ -22,6 +31,19 @@ export function createMapClient(options: SignedOptions) {
       const asked = new URLSearchParams({ q: query, near: `${near.lat},${near.lng}` });
       const response = await request(`${MAP_SEARCH_PATH}?${asked.toString()}`);
       return placeSearchSchema.parse(await response.json()).places;
+    },
+    // The border of a district: its map is cut by it (docs/71).
+    border: async (districtId: string): Promise<Border> =>
+      borderSchema.parse(await (await request(mapBorderPath(districtId))).json()),
+    // The main pitak of a direction of regions, when people may see it (docs/72).
+    pitakOf: async (from: string, to: string): Promise<Pitak | null> => {
+      const response = await request(`${PITAK_OF_DIRECTION_PATH}?from=${from}&to=${to}`);
+      return pitakOfDirectionSchema.parse(await response.json()).pitak;
+    },
+    // The district and the name of a point under the pin (G24, docs/69).
+    where: async (point: Point): Promise<Where> => {
+      const response = await request(`${MAP_WHERE_PATH}?at=${point.lat},${point.lng}`);
+      return whereSchema.parse(await response.json());
     },
   };
 }

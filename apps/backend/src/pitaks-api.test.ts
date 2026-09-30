@@ -1,4 +1,10 @@
-import { ADMIN_PITAK_DIRECTIONS_PATH, ADMIN_PITAKS_PATH, adminPitaksSchema } from '@platform/contracts';
+import {
+  ADMIN_PITAK_DIRECTIONS_PATH,
+  ADMIN_PITAKS_PATH,
+  adminPitaksSchema,
+  PITAK_OF_DIRECTION_PATH,
+  pitakOfDirectionSchema,
+} from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { changeModerator } from './modules/team';
 import { call, registerUser, testEnv } from './test-api';
@@ -38,5 +44,16 @@ describe('the pitaks of the admin (G24, docs/72)', () => {
     await registerUser(PASSENGER);
     const response = await call(ADMIN_PITAKS_PATH, PASSENGER, { app: 'admin' });
     expect(response.status).toBe(403);
+  });
+});
+
+describe('the pitak of a direction for people (G24, docs/71)', () => {
+  it('answers the main pitak when people may see it, else nothing', async () => {
+    await registerUser(PASSENGER);
+    const ask = async (from: string, to: string) =>
+      pitakOfDirectionSchema.parse(
+        await (await call(`${PITAK_OF_DIRECTION_PATH}?from=${from}&to=${to}`, PASSENGER)).json(),
+      );
+    expect(await ask('1726', '1703')).toEqual({ pitak: null });
   });
 });

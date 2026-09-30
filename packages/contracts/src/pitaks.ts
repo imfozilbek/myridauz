@@ -9,6 +9,9 @@ export const ADMIN_PITAKS_PATH = '/admin/pitaks';
 export const adminPitakPath = (id: string) => `${ADMIN_PITAKS_PATH}/${id}`;
 export const ADMIN_PITAK_HISTORY_PATH = `${ADMIN_PITAKS_PATH}-history`;
 export const ADMIN_PITAK_DIRECTIONS_PATH = '/admin/pitak-directions';
+// The pitak of a direction for the screens of people: «Pitakdan» only where it exists (docs/71).
+export const PITAK_OF_DIRECTION_PATH = '/pitaks/direction';
+export const pitakOfDirectionSchema = z.object({ pitak: pitakSchema.nullable() });
 
 // «claude»: chosen by Claude without a check by people (owner decision 30.09.2026).
 export const PITAK_STATUSES = ['candidate', 'claude', 'checked', 'closed'] as const;

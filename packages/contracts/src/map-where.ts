@@ -18,3 +18,10 @@ export const whereSchema = z.object({
   area: placeNameSchema.nullable(),
 });
 export type Where = z.infer<typeof whereSchema>;
+
+// The border of a district (G24): the map of the district is cut by it (docs/71). Rings of
+// [lng, lat]; each part is its outer ring and its holes.
+export const mapBorderPath = (districtId: string) => `/passenger/map/borders/${districtId}`;
+const ringSchema = z.array(z.tuple([z.number(), z.number()]));
+export const borderSchema = z.object({ id: locationIdSchema, parts: z.array(z.array(ringSchema)) });
+export type Border = z.infer<typeof borderSchema>;

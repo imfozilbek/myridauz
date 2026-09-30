@@ -3,6 +3,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { mapRoutes } from './http/map-routes';
 import { searchRoutes } from './http/search-routes';
 import { whereRoutes } from './http/where-routes';
+import { borderRoutes } from './http/border-routes';
 import { whereIs } from './application/point-name';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
 import { districtBorders } from './infrastructure/district-borders';
@@ -42,7 +43,8 @@ export const mapModule = new Hono<AppEnv>()
       borders: districtBorders(),
       districtName,
     })),
-  );
+  )
+  .route('/', borderRoutes(districtBorders));
 export { localMapFiles };
 
 // The district and the region of a point by the borders (G24): null abroad.
