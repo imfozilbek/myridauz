@@ -1,5 +1,7 @@
 import {
+  DAY_MS,
   MAX_OPEN_REQUESTS,
+  tashkentDayStart,
   type RequestSearch,
   type RideRequest,
   type RideRequestInput,
@@ -7,6 +9,7 @@ import {
 import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, dateError, expiresAt, isOpen, statusAt, type RequestRecord } from '../domain/ride-request';
 import type { RequestsDeps, Result } from './ports';
+import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 type PublishError =
   | 'trips.invalid_input'
@@ -86,11 +89,9 @@ export async function searchRequests(
 }
 
 export async function myRequests(deps: RequestsDeps, passengerId: number): Promise<RideRequest[]> {
-  const requests = await deps.requests.byPassenger(passengerId);
-  return views(
-    deps,
-    [...requests].sort((a, b) => b.createdAt - a.createdAt),
-  );
+  // The requests ahead first, then the past ones; a request lasts until the end of its day (docs/65 B6).
+  const endOfDay = (request: RequestRecord) => tashkentDayStart(request.date) + DAY_MS - 1;
+  return views(deps, upcomingFirst(await deps.requests.byPassenger(passengerId), endOfDay, deps.now()));
 }
 
 export async function cancelRequest(

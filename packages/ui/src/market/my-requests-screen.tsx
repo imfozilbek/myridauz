@@ -1,4 +1,4 @@
-import type { Booking, RideRequest } from '@platform/contracts';
+import { BOOKING_LINK, OFFER_LINK, type AppLink, type Booking, type RideRequest } from '@platform/contracts';
 import { Button, Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { List } from '../components';
@@ -17,15 +17,19 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
+import { Paged } from './paged';
 import { RequestCard } from './request-card';
+import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
 
 // "Mening safarlarim" of a passenger: the booked seats, then the requests with drivers' offers.
-export function MyRequestsScreen({ onBack }: { readonly onBack: () => void }) {
+type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
+
+export function MyRequestsScreen({ onBack, link }: ScreenProps) {
   return (
     <PlacesGate onBack={onBack}>
-      <MyRequests onBack={onBack} />
+      <MyRequests onBack={onBack} {...(link ? { link } : {})} />
     </PlacesGate>
   );
 }
@@ -42,7 +46,7 @@ function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly Ri
   return request ? { kind: 'request', request } : null;
 }
 
-function MyRequests({ onBack }: { readonly onBack: () => void }) {
+function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -53,6 +57,12 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
+  // A bot button: a booking opens itself, a new offer opens its request (docs/65 B5).
+  useLinkOpen(link, value ?? null, (open, [, , offers]) => {
+    if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id });
+    const offer = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
+    if (offer) setOpened({ kind: 'request', id: offer.requestId });
+  });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
@@ -95,23 +105,29 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
       </Title>
       <List>
         {booked.length > 0 ? <Caption className="market-group">{t('bookings.mine')}</Caption> : null}
-        {booked.map((booking) => (
-          <BookingCard
-            key={booking.id}
-            booking={booking}
-            side="passenger"
-            onOpen={() => setOpened({ kind: 'booking', id: booking.id })}
-          />
-        ))}
+        <Paged
+          items={booked}
+          render={(booking) => (
+            <BookingCard
+              key={booking.id}
+              booking={booking}
+              side="passenger"
+              onOpen={() => setOpened({ kind: 'booking', id: booking.id })}
+            />
+          )}
+        />
         {requests.length > 0 ? <Caption className="market-group">{t('market.mine.requests')}</Caption> : null}
-        {requests.map((request) => (
-          <RequestCard
-            key={request.id}
-            request={request}
-            showStatus
-            onOpen={() => setOpened({ kind: 'request', id: request.id })}
-          />
-        ))}
+        <Paged
+          items={requests}
+          render={(request) => (
+            <RequestCard
+              key={request.id}
+              request={request}
+              showStatus
+              onOpen={() => setOpened({ kind: 'request', id: request.id })}
+            />
+          )}
+        />
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
         <FavoritesEntry onOpen={() => setFavoritesOpen(true)} />
       </List>

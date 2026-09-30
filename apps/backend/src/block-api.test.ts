@@ -41,6 +41,9 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     );
     expect(mine.bookings.find((booking) => booking.id === asked.id)?.status).toBe('cancelled_by_driver');
     expect(telegram.sentTo(PASSENGER).length).toBeGreaterThan(before);
+    // "Ochish" opens the cancelled booking itself, not the main screen (docs/65 B5).
+    expect(JSON.stringify(telegram.sentTo(PASSENGER).at(-1)?.body)).toContain(`?booking=${asked.id}`);
+    expect(JSON.stringify(telegram.sentTo(DRIVER))).toContain(`?booking=${asked.id}`);
     expect(telegram.sentTo(DRIVER).length).toBeGreaterThan(0);
     // A moderator never blocks a member of the team; the owner may.
     const refused = await call(`/admin/users/${await pid(MODERATOR)}/block`, MODERATOR, block(null));

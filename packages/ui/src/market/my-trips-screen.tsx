@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, OFFER_LINK, type AppLink, type Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
@@ -22,16 +22,20 @@ import { ActionFailure } from '../states/action-failure';
 import { errorKey } from './error-text';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
+import { Paged } from './paged';
 import { TripCard } from './trip-card';
 import { TripScreen } from './trip-screen';
+import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
 
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
-export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
+type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
+
+export function MyTripsScreen({ onBack, link }: ScreenProps) {
   return (
     <PlacesGate onBack={onBack}>
-      <MyTrips onBack={onBack} />
+      <MyTrips onBack={onBack} {...(link ? { link } : {})} />
     </PlacesGate>
   );
 }
@@ -39,7 +43,7 @@ export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
 type Opened = { readonly tripId: string; readonly bookingId?: string };
 
-function MyTrips({ onBack }: { readonly onBack: () => void }) {
+function MyTrips({ onBack, link }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -51,6 +55,14 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
+  // A bot button opens its booking, trip or the booking of an accepted offer (docs/65 B5).
+  useLinkOpen(link, value ?? null, (open, [, booked, offers]) => {
+    const bookingId =
+      open.name === OFFER_LINK ? offers.find((item) => item.id === open.id)?.bookingId : open.id;
+    const found = booked.find((item) => item.id === bookingId && open.name !== MY_TRIP_LINK);
+    if (found) setOpened({ tripId: found.trip.id, bookingId: found.id });
+    else if (open.name === MY_TRIP_LINK) setOpened({ tripId: open.id });
+  });
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
@@ -117,9 +129,12 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
       </Title>
       <List>
         <SentOffers offers={offers} onOpen={(offer) => setChatKey(offer.chatKey)} />
-        {trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ tripId: trip.id })} />
-        ))}
+        <Paged
+          items={trips}
+          render={(trip) => (
+            <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ tripId: trip.id })} />
+          )}
+        />
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
       </List>
     </div>

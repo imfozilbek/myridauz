@@ -33,7 +33,8 @@ export async function upcomingOf(deps: TripsDeps, driverIds: readonly number[]):
   const own = await Promise.all(
     driverIds.filter((id) => !hidden.has(id)).map((id) => deps.trips.byDriver(id)),
   );
-  const live = own.flat().filter((trip) => isLive(trip, now));
+  // Only trips that have not left yet: a saved driver's trip on the road takes nobody (docs/65 B8).
+  const live = own.flat().filter((trip) => isLive(trip, now) && trip.departAt > now);
   const shown = await views(deps, live);
   return shown.filter((trip) => trip.status === 'active').sort((a, b) => a.departAt - b.departAt);
 }

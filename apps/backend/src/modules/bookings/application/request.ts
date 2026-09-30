@@ -2,9 +2,11 @@ import { MAX_REQUESTED_BOOKINGS, type Booking } from '@platform/contracts';
 import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
+import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 type RequestError =
   | 'bookings.not_found'
+  | 'bookings.departed'
   | 'bookings.own_trip'
   | 'bookings.no_seats'
   | 'bookings.too_many'
@@ -25,6 +27,8 @@ export async function requestBooking(
   const now = deps.now();
   const facts = await deps.trips.find(tripId);
   if (!facts?.live) return { ok: false, error: 'bookings.not_found' };
+  // A trip that already left takes no seats: an old link or "Sevimli" opens it (docs/65 B8).
+  if (facts.departAt <= now) return { ok: false, error: 'bookings.departed' };
   if (facts.driverId === passengerId) return { ok: false, error: 'bookings.own_trip' };
   const [trip] = await deps.trips.views([tripId]);
   if (!trip || trip.seatsLeft < seats) return { ok: false, error: 'bookings.no_seats' };
@@ -79,12 +83,8 @@ export async function cancelByPassenger(
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
 }
 
-// "Mening safarlarim" of a passenger: the newest first.
+// "Mening safarlarim" of a passenger: the trips ahead first, then the past ones (docs/65 B6).
 export async function passengerBookings(deps: BookingsDeps, passengerId: number): Promise<Booking[]> {
-  const records = await deps.bookings.byPassenger(passengerId);
-  return bookingViews(
-    deps,
-    [...records].sort((a, b) => b.createdAt - a.createdAt),
-    'passenger',
-  );
+  const views = await bookingViews(deps, await deps.bookings.byPassenger(passengerId), 'passenger');
+  return upcomingFirst(views, (booking) => booking.trip.departAt, deps.now());
 }

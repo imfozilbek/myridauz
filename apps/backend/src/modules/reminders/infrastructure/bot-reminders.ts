@@ -1,7 +1,8 @@
-import { appHost, type BrandConfig } from '@platform/brands';
-import { formatPlate, type Trip } from '@platform/contracts';
+import type { BrandConfig } from '@platform/brands';
+import { BOOKING_LINK, formatPlate, MY_TRIP_LINK, type AppLink, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
+import { openButton } from '../../../shared/telegram/open-button';
 import type { RemindersDeps } from '../application/remind';
 
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
@@ -21,12 +22,10 @@ const KEYS = {
 
 // The passenger bot reminds a passenger, the driver bot a driver (docs/02); "Ochish" opens the app.
 export function botReminders({ brand, placeName, send, telegramId }: Wiring): RemindersDeps['tell'] {
-  const open = (app: 'passenger' | 'driver') => ({
-    inline_keyboard: [[{ text: t('bot.open'), web_app: { url: `https://${appHost(brand, app)}` } }]],
-  });
-  const to = async (bot: 'passenger' | 'driver', publicId: string, text: string) => {
+  const to = async (bot: 'passenger' | 'driver', publicId: string, text: string, link: AppLink) => {
     const chatId = await telegramId(publicId);
-    if (chatId !== undefined) await send([{ bot, chatId, text, markup: open(bot) }]);
+    const markup = openButton(brand, bot, t('bot.open'), link);
+    if (chatId !== undefined) await send([{ bot, chatId, text, markup }]);
   };
   const about = async (trip: Trip) => ({
     from: await placeName(trip.from),
@@ -42,11 +41,11 @@ export function botReminders({ brand, placeName, send, telegramId }: Wiring): Re
         car: `${car.make} ${car.model}`,
         plate: booking.plate ? formatPlate(booking.plate) : '',
       });
-      await to('passenger', booking.passenger.id, text);
+      await to('passenger', booking.passenger.id, text, { name: BOOKING_LINK, id: booking.id });
     },
     driver: async (trip, riders, kind) => {
       const text = t(KEYS.driver[kind], { ...(await about(trip)), count: String(riders) });
-      await to('driver', trip.driver.id, text);
+      await to('driver', trip.driver.id, text, { name: MY_TRIP_LINK, id: trip.id });
     },
   };
 }

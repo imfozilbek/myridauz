@@ -70,5 +70,7 @@
   "trip.recommended": "Tavsiya etilgan narx",
   "trip.recommendedShort": "Tavsiya: {price}",
   "published.return": "Qaytish safari",
-  "trip.cancelAsk": "Safarni bekor qilasizmi? Barcha yoʻlovchilar xabar oladi."
+  "trip.cancelAsk": "Safarni bekor qilasizmi? Barcha yoʻlovchilar xabar oladi.",
+  "mine.more": "Yana koʻrsatish",
+  "trip.departed": "Bu safar yoʻlga chiqqan. Joy band qilib boʻlmaydi."
 }
