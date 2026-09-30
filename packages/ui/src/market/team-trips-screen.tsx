@@ -20,7 +20,7 @@ import './market.css';
 // The admin Mini App: trips go out without approval, the team only looks at them (owner decision 29.09.2026).
 export function TeamTripsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <TeamTrips onBack={onBack} />
     </PlacesGate>
   );
@@ -40,8 +40,8 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
       </TripScreen>
     );
   }
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!items) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!items) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

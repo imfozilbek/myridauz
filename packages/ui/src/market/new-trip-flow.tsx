@@ -93,7 +93,7 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
         />
       );
     case 'price':
-      if (!recommendation) return <ScreenSkeleton />;
+      if (!recommendation) return <ScreenSkeleton onBack={() => setStep('seats')} />;
       return (
         <PriceStep
           recommendation={recommendation}

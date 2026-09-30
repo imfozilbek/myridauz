@@ -23,7 +23,7 @@ import './market.css';
 // "Mening safarlarim" of a passenger: the booked seats, then the requests with drivers' offers.
 export function MyRequestsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <MyRequests onBack={onBack} />
     </PlacesGate>
   );
@@ -49,8 +49,8 @@ function MyRequests({ onBack }: { readonly onBack: () => void }) {
     };
     return <PassengerOpen opened={opened} offers={value[2]} onClose={close} />;
   }
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   const [booked, requests] = value;
   if (booked.length === 0 && requests.length === 0) {
     return (

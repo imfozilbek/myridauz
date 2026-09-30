@@ -8,10 +8,18 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 const PlacesContext = createContext<PlaceDirectory | null>(null);
 
 // Trips and requests carry place ids; their names come from the directory, loaded once (docs/48).
-export function PlacesGate({ children }: { readonly children: ReactNode }) {
+// An inner screen passes its "back": the person is never locked in while places load (docs/65 B1).
+export function PlacesGate({
+  children,
+  onBack,
+}: {
+  readonly children: ReactNode;
+  readonly onBack?: () => void;
+}) {
   const [state, retry] = useDirectory();
-  if (state.status === 'loading') return <ScreenSkeleton />;
-  if (state.status === 'error') return <ErrorScreen onRetry={retry} />;
+  const back = onBack ? { onBack } : {};
+  if (state.status === 'loading') return <ScreenSkeleton {...back} />;
+  if (state.status === 'error') return <ErrorScreen onRetry={retry} {...back} />;
   return <PlacesContext.Provider value={state.directory}>{children}</PlacesContext.Provider>;
 }
 

@@ -34,7 +34,7 @@ export function SubscribeLink({
   const [route, setRoute] = useState(() => (enabled ? linkedRoute() : null));
   if (!route) return <>{children}</>;
   return (
-    <PlacesGate>
+    <PlacesGate onBack={() => setRoute(null)}>
       <SubscribeScreen route={route} onBack={() => setRoute(null)} />
     </PlacesGate>
   );

@@ -25,8 +25,8 @@ type Props = { readonly bookingId: string; readonly onBack: () => void; readonly
 export function ReviewScreen({ bookingId, onBack, onComplain }: Props) {
   const { feedback } = useApiClients();
   const { value, failed, reload } = useLoad(() => feedback.target(bookingId));
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return <ReviewForm bookingId={bookingId} target={value} onBack={onBack} onComplain={onComplain} />;
 }
 

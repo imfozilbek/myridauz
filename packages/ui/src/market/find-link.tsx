@@ -24,8 +24,8 @@ export function FindLink({ enabled, children }: { readonly enabled: boolean; rea
 // Unknown places start the search from the route, never with a wrong one.
 function LinkedSearch({ ids, onClose }: { readonly ids: Ids; readonly onClose: () => void }) {
   const [state, retry] = useDirectory();
-  if (state.status === 'loading') return <ScreenSkeleton />;
-  if (state.status === 'error') return <ErrorScreen onRetry={retry} />;
+  if (state.status === 'loading') return <ScreenSkeleton onBack={onClose} />;
+  if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={onClose} />;
   const from = state.directory.find(ids.from);
   const to = state.directory.find(ids.to);
   return <FindTripFlow onBack={onClose} initial={from && to ? { from, to } : undefined} />;

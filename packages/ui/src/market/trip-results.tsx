@@ -59,7 +59,7 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   useEffect(load, [load]);
   // Seats taken by others while the person looks: fresh results without the skeleton (docs/64).
   useFeedChange(() => void market.searchTrips(search).then(setTrips, () => undefined));
-  if (failed) return <ErrorScreen onRetry={load} />;
+  if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

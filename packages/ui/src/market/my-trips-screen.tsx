@@ -27,7 +27,7 @@ import './market.css';
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
 export function MyTripsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <MyTrips onBack={onBack} />
     </PlacesGate>
   );
@@ -78,8 +78,8 @@ function MyTrips({ onBack }: { readonly onBack: () => void }) {
       </TripScreen>
     );
   }
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   const [trips, , offers] = value;
   if (trips.length === 0 && offers.length === 0) {
     return (

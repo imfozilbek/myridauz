@@ -44,8 +44,8 @@ export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
     load();
   };
   if (open) return <ComplaintReview id={open} onBack={close} />;
-  if (failed) return <ErrorScreen onRetry={load} />;
-  if (!queue) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
+  if (!queue) return <ScreenSkeleton onBack={onBack} />;
   if (queue.length === 0)
     return (
       <>

@@ -31,7 +31,7 @@ const FIELDS = ['ratePerKm', 'roundStep', 'minPrice', 'maxPrice'] as const;
 // The price engine for the team: the formula, the directions, the history (docs/23).
 export function PricingScreen({ onBack }: { readonly onBack: () => void }) {
   return (
-    <PlacesGate>
+    <PlacesGate onBack={onBack}>
       <Pricing onBack={onBack} />
     </PlacesGate>
   );
@@ -67,8 +67,8 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
       },
     );
 
-  if (failed) return <ErrorScreen onRetry={load} />;
-  if (!loaded) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
+  if (!loaded) return <ScreenSkeleton onBack={onBack} />;
   const { variables } = loaded.state.current;
   if (mode.kind === 'edit') {
     const preview = (next: PricingVariables) =>

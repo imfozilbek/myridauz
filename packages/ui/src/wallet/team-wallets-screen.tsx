@@ -33,8 +33,8 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
     reload();
   };
   if (open) return <DriverWallet owner={open} onBack={close} />;
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />
@@ -86,8 +86,8 @@ function DriverWallet({ owner, onBack }: { readonly owner: Owner; readonly onBac
   };
   if (adjusting)
     return <AdjustForm error={error} onBack={() => setAdjusting(false)} onSave={(a) => void save(a)} />;
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />

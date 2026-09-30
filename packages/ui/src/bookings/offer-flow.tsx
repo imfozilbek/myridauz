@@ -47,7 +47,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
       </StepLayout>
     );
   }
-  if (!recommendation) return <ScreenSkeleton />;
+  if (!recommendation) return <ScreenSkeleton onBack={onBack} />;
   if (departAt === null) {
     return <TimeStep date={request.date} now={now} onBack={onBack} onDone={(at) => setDepartAt(at)} />;
   }

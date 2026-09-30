@@ -34,7 +34,7 @@ export function FeedbackLink({
   };
   if (open.screen === 'complain') return <ComplaintScreen bookingId={open.bookingId} onBack={close} />;
   return (
-    <PlacesGate>
+    <PlacesGate onBack={close}>
       <ReviewScreen
         bookingId={open.bookingId}
         onBack={close}
