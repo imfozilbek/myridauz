@@ -47,6 +47,6 @@ Definition of Done:
 
 ## Как сделано
 
-- Данные: `scripts/map-data.mjs`, workflow «Map data», 266 МБ, OSM 29.09.2026.
+- Данные: `scripts/map-data.mjs`, workflow «Map data», 243 МБ, OSM 31.03.2026.
 - Тесты: `uzbekistan.test.ts` (граница), `pickup-api.test.ts` (точка), `map-api.test.ts` (выдача частей), `pickup-map.test.tsx` (экран), `map-style.test.ts` (стиль), e2e `map.spec.ts` (попутчик и водитель).
 - Тексты на согласие: `G22-texts.md`. Уроки №42 и №43 (`../66`).
