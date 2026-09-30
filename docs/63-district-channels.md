@@ -78,26 +78,26 @@
 | 3 | Fargʻona, Margʻilon | t.me/rida_fargona | 40 | Oltiariq, Qoʻshtepa, Bagʻdod, Quva, Rishton, Soʻx, Toshloq, Fargʻona, Yozyovon, Quvasoy, Margʻilon |
 | 4 | Qoʻqon | t.me/rida_qoqon | 40 | Buvayda, Beshariq, Uchkoʻprik, Oʻzbekiston, Dangʻara, Furqat, Qoʻqon |
 | 5 | Chirchiq, Boʻstonliq | t.me/rida_chirchiq | 10 | Boʻstonliq, Yuqori Chirchiq, Qibray, Parkent, Toshkent, Chirchiq |
-| 6 | Angren, Olmaliq, Bekobod | t.me/rida_angren | 10 | Ohangaron, Bekobod, Boʻka, Piskent, Olmaliq, Angren |
-| 7 | Yangiyoʻl, Chinoz, Nurafshon | t.me/rida_yangiyol | 10 | Oqqoʻrgʻon, Quyi Chirchiq, Zangiota, Oʻrta Chirchiq, Chinoz, Yangiyoʻl, Nurafshon |
-| 8 | Sirdaryo | t.me/rida_sirdaryo | 20 | Oqoltin, Boyovut, Sayxunobod, Guliston, Sardoba, Mirzaobod, Sirdaryo, Xovos, Shirin, Yangiyer |
-| 9 | Jizzax | t.me/rida_jizzax | 25 | Arnasoy, Baxmal, Gʻallaorol, Sharof Rashidov, Doʻstlik, Zomin, Zarbdor, Mirzachoʻl, Zafarobod, Paxtakor, Forish, Yangiobod, Jizzax |
-| 10 | Samarqand | t.me/rida_samarqand | 30 | Oqdaryo, Bulungʻur, Jomboy, Payariq, Pastdargʻom, Samarqand, Urgut, Toyloq |
-| 11 | Kattaqoʻrgʻon | t.me/rida_kattaqorgon | 30 | Ishtixon, Kattaqoʻrgʻon, Qoʻshrabot, Narpay, Paxtachi, Nurobod |
-| 12 | Navoiy | t.me/rida_navoiy | 85 | Konimex, Qiziltepa, Navbahor, Karmana, Nurota, Tomdi, Uchquduq, Xatirchi, Navoiy, Zarafshon, Gʻozgʻon |
-| 13 | Buxoro | t.me/rida_buxoro | 80 | Olot, Buxoro, Vobkent, Gʻijduvon, Kogon, Qorakoʻl, Qorovulbozor, Peshku, Romitan, Jondor, Shofirkon |
-| 14 | Qarshi | t.me/rida_qarshi | 70 | Gʻuzor, Dehqonobod, Qamashi, Qarshi, Koson, Mirishkor, Muborak, Nishon, Kasbi |
-| 15 | Shahrisabz, Kitob | t.me/rida_shahrisabz | 70 | Kitob, Koʻkdala, Chiroqchi, Shahrisabz, Yakkabogʻ |
-| 16 | Termiz | t.me/rida_termiz | 75 | Angor, Bandixon, Muzrabot, Jarqoʻrgʻon, Qumqoʻrgʻon, Qiziriq, Termiz, Sherobod |
-| 17 | Denov | t.me/rida_denov | 75 | Oltinsoy, Boysun, Denov, Sariosiyo, Uzun, Shoʻrchi |
-| 18 | Xorazm | t.me/rida_xorazm | 90 | Bogʻot, Gurlan, Qoʻshkoʻpir, Urganch, Hazorasp, Tuproqqalʼa, Xonqa, Xiva, Shovot, Yangiariq, Yangibozor |
-| 19 | Nukus | t.me/rida_nukus | 95 | Boʻzatov, Qoraoʻzak, Kegeyli, Qoʻngʻirot, Qanlikoʻl, Moʻynoq, Nukus, Taxiatosh, Taxtakoʻpir, Xoʻjayli, Chimboy, Shumanay |
-| 20 | Beruniy, Toʻrtkoʻl | t.me/rida_beruniy | 95 | Amudaryo, Beruniy, Toʻrtkoʻl, Ellikqalʼa |
+| 6 | Angren, Olmaliq | t.me/rida_angren | 10 | Ohangaron, Olmaliq, Angren |
+| 7 | Bekobod | t.me/rida_bekobod | 10 | Bekobod, Boʻka, Piskent |
+| 8 | Yangiyoʻl, Chinoz, Nurafshon | t.me/rida_yangiyol | 10 | Oqqoʻrgʻon, Quyi Chirchiq, Zangiota, Oʻrta Chirchiq, Chinoz, Yangiyoʻl, Nurafshon |
+| 9 | Sirdaryo | t.me/rida_sirdaryo | 20 | Oqoltin, Boyovut, Sayxunobod, Guliston, Sardoba, Mirzaobod, Sirdaryo, Xovos, Shirin, Yangiyer |
+| 10 | Jizzax | t.me/rida_jizzax | 25 | Arnasoy, Baxmal, Gʻallaorol, Sharof Rashidov, Doʻstlik, Zomin, Zarbdor, Mirzachoʻl, Zafarobod, Paxtakor, Forish, Yangiobod, Jizzax |
+| 11 | Samarqand | t.me/rida_samarqand | 30 | Oqdaryo, Bulungʻur, Jomboy, Ishtixon, Kattaqoʻrgʻon, Qoʻshrabot, Narpay, Payariq, Pastdargʻom, Paxtachi, Samarqand, Nurobod, Urgut, Toyloq |
+| 12 | Navoiy | t.me/rida_navoiy | 85 | Konimex, Qiziltepa, Navbahor, Karmana, Nurota, Xatirchi, Navoiy, Gʻozgʻon |
+| 13 | Zarafshon, Uchquduq | t.me/rida_zarafshon | 85 | Tomdi, Uchquduq, Zarafshon |
+| 14 | Buxoro | t.me/rida_buxoro | 80 | Olot, Buxoro, Vobkent, Gʻijduvon, Kogon, Qorakoʻl, Qorovulbozor, Peshku, Romitan, Jondor, Shofirkon |
+| 15 | Qarshi | t.me/rida_qarshi | 70 | Gʻuzor, Dehqonobod, Qamashi, Qarshi, Koson, Mirishkor, Muborak, Nishon, Kasbi |
+| 16 | Shahrisabz, Kitob, Yakkabogʻ | t.me/rida_shahrisabz | 70 | Kitob, Koʻkdala, Chiroqchi, Shahrisabz, Yakkabogʻ |
+| 17 | Termiz | t.me/rida_termiz | 75 | Angor, Bandixon, Muzrabot, Jarqoʻrgʻon, Qumqoʻrgʻon, Qiziriq, Termiz, Sherobod |
+| 18 | Denov | t.me/rida_denov | 75 | Oltinsoy, Boysun, Denov, Sariosiyo, Uzun, Shoʻrchi |
+| 19 | Xorazm, Beruniy | t.me/rida_xorazm | 90 | Bogʻot, Gurlan, Qoʻshkoʻpir, Urganch, Hazorasp, Tuproqqalʼa, Xonqa, Xiva, Shovot, Yangiariq, Yangibozor, Amudaryo, Beruniy, Toʻrtkoʻl, Ellikqalʼa |
+| 20 | Nukus | t.me/rida_nukus | 95 | Boʻzatov, Qoraoʻzak, Kegeyli, Qoʻngʻirot, Qanlikoʻl, Moʻynoq, Nukus, Taxiatosh, Taxtakoʻpir, Xoʻjayli, Chimboy, Shumanay |
 
 - 20 каналов: ровно лимит одного аккаунта с Premium (`20`).
 - Пост поездки уходит в зону «откуда» и в зону «куда». Поездка внутри зоны: один пост.
 
-## Правила группировки (совет Claude, 30.09)
+## Правила группировки (одобрено владельцем 30.09)
 
 Главное: **один канал = одна дорога из Ташкента и один город, где садятся в машину.**
 
@@ -109,19 +109,19 @@
 | 4 | В канале достаточно поездок: пустой канал выглядит мёртвым (`18`) |
 | 5 | Не больше 20 каналов: лимит одного аккаунта с Premium |
 
-Проверка 20 зон (расстояния по прямой): три зоны нарушают правила.
+Проверка первых 20 зон (расстояния по прямой) нашла нарушения. Правки ниже одобрены и внесены в таблицу выше.
 
-| Сейчас | Проблема | Предложение |
+| Было | Проблема | Стало |
 |---|---|---|
 | Angren, Olmaliq, Bekobod | Bekobod на другой трассе, 100 км от Angren | Angren, Olmaliq и новая зона Bekobod (Boʻka, Piskent) |
 | Navoiy | Zarafshon, Uchquduq, Tomdi в 190 … 270 км | Новая зона Zarafshon, Uchquduq |
 | Kattaqoʻrgʻon | 79 км от Samarqand, та же трасса | Объединить с Samarqand |
 | Beruniy, Toʻrtkoʻl | Одна дорога с Xorazm | Объединить: Xorazm, Beruniy |
 
-- Итог: снова 20 зон. После запуска делим или объединяем по данным «Statistika» (`56`).
+- Итог: снова 20 зон. Зона Shahrisabz названа «Shahrisabz, Kitob, Yakkabogʻ». После запуска делим или объединяем по данным «Statistika» (`56`).
 
 ## Ждёт решения владельца (`33`)
 
-1. Правила группировки и 4 правки зон выше, затем названия и ссылки 20 зон (публичные тексты, `33`).
+1. Ссылки 20 каналов (публичные, `33`): владелец создаёт каналы.
 2. Тексты «viloyat kanali» стали неточными: лендинг (`numbers.channels`, `map.channel`, `telegram.text`, `how.driver.2.text`), админка (`channels.fixed`), профиль бота водителя. Новые тексты ждут согласия.
 3. Аватары и пакет `37` для 20 зон: после пункта 1.
