@@ -18,6 +18,7 @@ import {
   Flag,
   Inbox,
   Languages,
+  LocateFixed,
   MapPin,
   Megaphone,
   Mic,
@@ -67,6 +68,9 @@ const ICONS = {
   blocked: Ban,
   origin: CircleDot,
   destination: MapPin,
+  // The map of the pickup point (G22): the pin and "Mening joylashuvim".
+  pickup: MapPin,
+  locate: LocateFixed,
   car: CarFront,
   carSide: Car,
   carInterior: Armchair,

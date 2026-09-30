@@ -2,6 +2,7 @@ import type { Offer } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { CellValue } from '../account/cell-value';
+import { StepLayout } from '../account/step-layout';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -10,6 +11,7 @@ import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
+import { MainButton } from '../telegram/bottom-button';
 import '../market/market.css';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 
@@ -119,5 +121,19 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
         </Button>
       </div>
     </div>
+  );
+}
+
+// The passenger took an offer: the seat is confirmed, the trip is in "Mening safarlarim".
+export function OfferAccepted({ onDone }: { readonly onDone: () => void }) {
+  const { t } = useI18n();
+  return (
+    <StepLayout
+      icon="selected"
+      title={t('bookings.offer.accepted.title')}
+      hint={t('bookings.offer.accepted.hint')}
+    >
+      <MainButton text={t('market.done')} onClick={onDone} />
+    </StepLayout>
   );
 }

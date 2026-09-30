@@ -11,6 +11,7 @@ import {
   PASSENGER_OFFERS_PATH,
   passengerBookingCancelPath,
   passengerOfferPath,
+  passengerPickupPath,
   requestOffersPath,
   tripBookingsPath,
   type Booking,
@@ -18,6 +19,7 @@ import {
   type Offer,
   type OfferAction,
   type OfferInput,
+  type Point,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -34,6 +36,9 @@ export function createBookingsClient(options: SignedOptions) {
     myBookings: async (): Promise<Booking[]> => bookings(await request(PASSENGER_BOOKINGS_PATH)),
     cancelMine: async (id: string): Promise<Booking> =>
       booking(await post(passengerBookingCancelPath(id), {})),
+    // The pickup point chosen on the map (G22).
+    setPickup: async (id: string, point: Point): Promise<Booking> =>
+      booking(await post(passengerPickupPath(id), point)),
     driverBookings: async (): Promise<Booking[]> => bookings(await request(DRIVER_BOOKINGS_PATH)),
     answer: async (id: string, action: DriverBookingAction): Promise<Booking> =>
       booking(await post(driverBookingPath(id, action), {})),

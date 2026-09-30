@@ -108,25 +108,3 @@ export async function declineOffer(
   await deps.notify.offerAnswered(found.offer.driverId, false, found.offer.id);
   return view(deps, declined, found.request);
 }
-
-// The bot sent the confirmation: the passenger answers that very message with the pickup point.
-export async function rememberPickupMessage(deps: BookingsDeps, bookingId: string, messageId: number) {
-  const booking = await deps.bookings.find(bookingId);
-  if (booking) await deps.bookings.save({ ...booking, pickupMessageId: messageId });
-}
-
-// A location the passenger sent to the passenger bot as an answer to the confirmation (docs/14).
-export async function setPickup(
-  deps: BookingsDeps,
-  passengerId: number,
-  messageId: number,
-  point: { lat: number; lng: number },
-): Promise<boolean> {
-  const booking = await deps.bookings.byPickupMessage(passengerId, messageId);
-  if (!booking) return false;
-  const saved = { ...booking, pickup: point, updatedAt: deps.now() };
-  await deps.bookings.save(saved);
-  const [forDriver] = await bookingViews(deps, [saved], 'driver');
-  if (forDriver) await deps.notify.pickup(forDriver);
-  return true;
-}

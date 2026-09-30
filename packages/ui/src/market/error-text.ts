@@ -15,6 +15,7 @@ const EXPLAINED: readonly string[] = [
   'bookings.own_trip',
   'bookings.wrong_status',
   'bookings.departed',
+  'bookings.outside_country',
   'bookings.invalid_input',
   'wallet.not_enough',
   'auth.not_owner',

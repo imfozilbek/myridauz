@@ -1,20 +1,19 @@
 import type { Booking, Offer, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
-import { StepLayout } from '../account/step-layout';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { RequestScreen } from '../market/request-card';
-import { MainButton } from '../telegram/bottom-button';
 import { confirm, haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
+import { PickupMapScreen } from '../map/pickup-map-screen';
 import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
-import { OfferScreen, OffersSection } from './offer-list';
+import { OfferAccepted, OfferScreen, OffersSection } from './offer-list';
 import { TripTools } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
@@ -27,11 +26,13 @@ type Props = {
   readonly opened: Opened;
   readonly offers: readonly Offer[];
   readonly onClose: (changed: boolean) => void;
+  // Fresh data without closing the screen: after the pickup point is saved (G22).
+  readonly onChanged: () => void;
 };
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, onClose }: Props) {
+export function PassengerOpen({ opened, offers, onClose, onChanged }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
@@ -41,6 +42,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const [accepted, setAccepted] = useState(false);
   const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
   const [complaint, setComplaint] = useState<string | null>(null);
+  const [picking, setPicking] = useState(false);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
   const run = async (action: () => Promise<unknown>, after: () => void) => {
     try {
@@ -57,17 +59,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
     setFailure(null);
     setOfferId(next?.id ?? null);
   };
-  if (accepted) {
-    return (
-      <StepLayout
-        icon="selected"
-        title={t('bookings.offer.accepted.title')}
-        hint={t('bookings.offer.accepted.hint')}
-      >
-        <MainButton text={t('market.done')} onClick={() => onClose(true)} />
-      </StepLayout>
-    );
-  }
+  if (accepted) return <OfferAccepted onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
   if (offer) {
@@ -112,6 +104,13 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
     );
   }
   const { booking } = opened;
+  if (picking) {
+    const saved = () => {
+      setPicking(false);
+      onChanged();
+    };
+    return <PickupMapScreen booking={booking} onBack={() => setPicking(false)} onSaved={saved} />;
+  }
   // A cancel is asked first: one tap never loses a seat (docs/65 B4).
   const cancel = async () => {
     if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
@@ -128,7 +127,13 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
     : [];
   const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
   return (
-    <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
+    <BookingScreen
+      booking={booking}
+      side="passenger"
+      onBack={() => onClose(false)}
+      actions={actions}
+      {...(booking.status === 'confirmed' ? { onPickOnMap: () => setPicking(true) } : {})}
+    >
       <ActionFailure error={failure} />
       <TripTools booking={booking} onChat={openChat} onComplain={() => setComplaint(booking.id)} />
     </BookingScreen>

@@ -18,3 +18,4 @@ export { createFeedbackClient, type FeedbackClient } from './feedback-client';
 export { createStatsClient, type StatsClient } from './stats-client';
 export { createCallsClient, type CallsClient } from './calls-client';
 export { createFeedClient, type FeedClient } from './feed-client';
+export { createMapClient, type MapClient } from './map-client';

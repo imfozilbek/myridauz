@@ -25,6 +25,17 @@ const MOCK = String(() => {
     auth_date: '1790000000',
     hash: 'test',
   }).toString();
+  const LOCATION = {
+    latitude: 41.3113,
+    longitude: 69.2795,
+    altitude: null,
+    course: null,
+    speed: null,
+    horizontal_accuracy: 10,
+    vertical_accuracy: null,
+    course_accuracy: null,
+    speed_accuracy: null,
+  };
   Object.assign(window, { __tg: tg });
   const reply = (type: string, data: unknown) =>
     setTimeout(() =>
@@ -72,6 +83,11 @@ const MOCK = String(() => {
           reply('custom_method_invoked', { req_id: data.req_id, ...answer });
         }
         if (type === 'web_app_request_write_access') reply('write_access_requested', { status: 'allowed' });
+        // "Mening joylashuvim" (G22): the person allows the location, they stand in Tashkent.
+        if (type === 'web_app_check_location')
+          reply('location_checked', { available: true, access_requested: true, access_granted: true });
+        if (type === 'web_app_request_location')
+          reply('location_requested', { available: true, ...LOCATION });
         if (type === 'web_app_setup_main_button') {
           button.textContent = data.text;
           button.style.background = data.color;

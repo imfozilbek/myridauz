@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
-import { rememberPickupMessage, setPickup } from './application/accept';
+import { rememberPickupMessage, setPickup } from './application/pickup';
 import { cancelEverything } from './application/cancel-all';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';

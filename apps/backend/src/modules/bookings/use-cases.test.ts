@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceOf } from '../wallet/domain/ledger';
 import { answer, confirm, driverBookings } from './application/answer';
-import { rememberPickupMessage, setPickup } from './application/accept';
+import { rememberPickupMessage, setPickup } from './application/pickup';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
 import { rideTogether } from './infrastructure/store';
 import { ALI, DILNOZA, DRIVER, HOUR, NOW, OLIM, setup } from './test-kit';

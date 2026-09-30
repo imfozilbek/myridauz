@@ -22,5 +22,6 @@
   "channels.not_found": "Kanal topilmadi.",
   "channels.invalid_input": "Kanal nomi va joylarini tekshiring.",
   "channels.bot_not_admin": "Bot bu kanalda administrator emas. Botni kanalga administrator qilib qoʻshing, keyin qayta urinib koʻring.",
-  "bookings.departed": "Bu safar allaqachon yoʻlga chiqqan. Boshqa safarni tanlang."
+  "bookings.departed": "Bu safar allaqachon yoʻlga chiqqan. Boshqa safarni tanlang.",
+  "bookings.outside_country": "Bu joy Oʻzbekiston hududida emas. Xaritada boshqa joyni tanlang."
 }
