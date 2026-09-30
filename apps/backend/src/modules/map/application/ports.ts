@@ -1,4 +1,4 @@
-import type { FoundPlace, Point } from '@platform/contracts';
+import type { FoundPlace, PlaceKind, Point } from '@platform/contracts';
 import type { ByteRange } from '../domain/byte-range';
 
 // The bytes of a map file (G22): the part asked for, where it starts and the size of the whole file.
@@ -28,4 +28,14 @@ export type PlaceQuery = {
   readonly cells: readonly string[] | null;
   readonly near: Point | null;
 };
-export type PlaceIndex = { find(query: PlaceQuery, limit: number): Promise<FoundPlace[]> };
+// What is around a point (G24): places of these kinds in these cells, nearest first. Fine cells
+// (about 1 km) for landmarks, mahallas and streets; quarter cells for settlements (3 km).
+export type AroundQuery = {
+  readonly cells: { readonly column: 'fine' | 'cell'; readonly list: readonly string[] };
+  readonly kinds: readonly PlaceKind[];
+  readonly near: Point;
+};
+export type PlaceIndex = {
+  find(query: PlaceQuery, limit: number): Promise<FoundPlace[]>;
+  around(query: AroundQuery, limit: number): Promise<FoundPlace[]>;
+};

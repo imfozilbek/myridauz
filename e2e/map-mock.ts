@@ -20,12 +20,14 @@ export const FOUND = [
     name: 'Mustaqillik maydoni',
     kind: 'transport',
     area: 'Yakkasaroy',
+    district: '1726287',
     point: { lat: 41.31495, lng: 69.27107 },
   },
   {
     name: "Mustaqillik shoh ko'chasi",
     kind: 'street',
     area: 'Mirobod',
+    district: '1726273',
     point: { lat: 41.31352, lng: 69.27664 },
   },
 ];

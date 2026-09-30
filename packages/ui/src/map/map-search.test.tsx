@@ -12,6 +12,7 @@ const CHORSU: FoundPlace = {
   name: 'Chorsu bozori',
   kind: 'market',
   area: 'Shayxontohur',
+  district: '1726277',
   point: { lat: 41.3265, lng: 69.2355 },
 };
 const type = (text: string) =>

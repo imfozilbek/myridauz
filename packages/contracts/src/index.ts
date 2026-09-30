@@ -142,3 +142,4 @@ export * from './uzbekistan';
 export * from './map';
 export * from './map-search';
 export * from './search-key';
+export * from './map-where';

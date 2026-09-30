@@ -2,6 +2,7 @@ import { MAP_SEARCH_PATH, placeSearchSchema } from '@platform/contracts';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { app } from './app';
 import { localPlaces } from './modules/map';
+import { placeRow } from './modules/map/test-kit';
 import { call, registerUser, testEnv } from './test-api';
 
 const PERSON = 81;
@@ -13,22 +14,17 @@ const search = async (query: string) => {
 beforeAll(async () => {
   await registerUser(PERSON);
   localPlaces.push(
-    {
-      name: 'Chorsu bozori',
-      kind: 'market',
-      area: 'Shayxontohur',
-      point: { lat: 41.3265, lng: 69.2355 },
-      words: 'charsu bazari',
-      cell: '165x276',
-    },
-    {
-      name: 'Chorsu',
-      kind: 'mahalla',
-      area: 'Samarqand',
-      point: { lat: 39.65, lng: 66.96 },
-      words: 'charsu',
-      cell: '158x267',
-    },
+    placeRow(
+      'Chorsu bozori',
+      'market',
+      { lat: 41.3265, lng: 69.2355 },
+      {
+        area: 'Shayxontohur',
+        district: '1726277',
+        words: 'charsu bazari',
+      },
+    ),
+    placeRow('Chorsu', 'mahalla', { lat: 39.65, lng: 66.96 }, { area: 'Samarqand', words: 'charsu' }),
   );
 });
 
@@ -38,7 +34,7 @@ describe('the search of places on the map (G23, docs/67)', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, max-age=3600');
     expect(places.map((place) => place.name)).toEqual(['Chorsu bozori', 'Chorsu']);
-    expect(places[0]).toMatchObject({ kind: 'market', area: 'Shayxontohur' });
+    expect(places[0]).toMatchObject({ kind: 'market', area: 'Shayxontohur', district: '1726277' });
   });
 
   it('starts from Samarkand when the trip starts there, and takes a wrong start as none', async () => {

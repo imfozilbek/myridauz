@@ -2,7 +2,10 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { mapRoutes } from './http/map-routes';
 import { searchRoutes } from './http/search-routes';
+import { whereRoutes } from './http/where-routes';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
+import { districtBorders } from './infrastructure/district-borders';
+import { districtName } from './infrastructure/district-names';
 import { edgeCache } from './infrastructure/edge-cache';
 import { localMapFiles, noCache } from './infrastructure/memory-map-files';
 import { memoryPlaceIndex } from './infrastructure/memory-place-index';
@@ -12,9 +15,10 @@ import { r2MapFiles } from './infrastructure/r2-map-files';
 // Without D1 (tests) the search index is empty until a test fills it.
 export const localPlaces: PlaceRow[] = [];
 const cacheOf = () => (typeof caches === 'undefined' ? noCache : edgeCache(caches.default));
+const indexOf = (env: Bindings) => (env.DB ? d1PlaceIndex(env.DB) : memoryPlaceIndex(localPlaces));
 
-// The map of the Mini App (G22) and its search by name (G23): R2, D1 and the edge cache on
-// Cloudflare, memory in tests.
+// The map of the Mini App (G22), its search by name (G23) and the name of a point (G24): R2, D1,
+// the edge cache and the borders of districts on Cloudflare, memory in tests.
 export const mapModule = new Hono<AppEnv>()
   .route(
     '/',
@@ -25,9 +29,15 @@ export const mapModule = new Hono<AppEnv>()
   )
   .route(
     '/',
-    searchRoutes((env: Bindings) => ({
-      index: env.DB ? d1PlaceIndex(env.DB) : memoryPlaceIndex(localPlaces),
+    searchRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf() })),
+  )
+  .route(
+    '/',
+    whereRoutes((env: Bindings) => ({
+      index: indexOf(env),
       cache: cacheOf(),
+      borders: districtBorders(),
+      districtName,
     })),
   );
 export { localMapFiles };

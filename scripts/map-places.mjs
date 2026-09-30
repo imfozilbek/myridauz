@@ -6,7 +6,8 @@ import { VectorTile } from '@mapbox/vector-tile';
 import { PbfReader } from 'pbf';
 import { PMTiles } from 'pmtiles';
 import { placeIndexSql } from '../apps/backend/src/modules/map/infrastructure/place-index-sql.ts';
-import { collectPlaces } from '../apps/backend/src/modules/map/infrastructure/place-rows.ts';
+import { districtBorders } from '../apps/backend/src/modules/map/infrastructure/district-borders.ts';
+import { areaFinder, collectPlaces } from '../apps/backend/src/modules/map/infrastructure/place-rows.ts';
 import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
 import { insideUzbekistan } from '../packages/contracts/src/uzbekistan.ts';
 import border from '../packages/contracts/src/uzbekistan-border.json' with { type: 'json' };
@@ -88,7 +89,8 @@ export async function writePlaceIndex(archivePath, sqlPath) {
   const source = fileSource(archivePath);
   try {
     const areas = locations.filter((place) => place.parentId !== null);
-    const places = collectPlaces(await readThings(new PMTiles(source)), areas, insideUzbekistan);
+    const areaOf = areaFinder(areas, districtBorders());
+    const places = collectPlaces(await readThings(new PMTiles(source)), areaOf, insideUzbekistan);
     writeFileSync(sqlPath, placeIndexSql(places).join('\n'));
     return places.length;
   } finally {
