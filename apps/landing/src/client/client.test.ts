@@ -98,4 +98,16 @@ describe('landing script (docs/59)', () => {
     await initMap(mount(mapSection(MAP, brand, i18n)), async () => ({ ok: false, json: async () => ({}) }));
     expect(document.querySelector('[data-price-row]')?.hasAttribute('hidden')).toBe(true);
   });
+
+  it('puts only codes and usernames into the links', async () => {
+    const root = mount(mapSection(MAP, brand, i18n));
+    const target = root.querySelector<HTMLOptionElement>('[data-side=to] option[selected]');
+    if (target) {
+      target.value = 'javascript:alert(1)';
+      target.dataset['channel'] = '"><img>';
+    }
+    await initMap(root, async () => ({ ok: false, json: async () => ({}) }));
+    expect(document.querySelector('[data-go]')?.getAttribute('href')).toContain('find_1726_1718');
+    expect(document.querySelector('[data-channel-link]')?.getAttribute('href')).not.toContain('img');
+  });
 });
