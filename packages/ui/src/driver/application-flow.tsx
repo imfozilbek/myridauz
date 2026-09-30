@@ -8,14 +8,13 @@ import { useI18n } from '../context/i18n-context';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CarStep, type CarStepName } from './car-step';
+import { nextStep, previousStep, type Step } from './application-steps';
 import { useReasons } from './use-reasons';
 import { AvatarStep } from './steps/avatar-step';
 import { PhotosStep } from './steps/photos-step';
 import { PlateStep } from './steps/plate-step';
 import { ReviewStep, type ReviewTarget } from './steps/review-step';
 
-const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
-type Step = (typeof ORDER)[number];
 const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
 const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 
@@ -39,15 +38,14 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const reviewing = initial?.car !== null && initial?.car !== undefined;
 
   const done = (current: Step, patch: Partial<CarInput>, passed?: DriverStep) => {
-    setCar((draft) => ({ ...draft, ...patch }));
+    const next = { ...car, ...patch };
+    setCar(next);
     if (Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
     if (passed) track({ name: 'driver_application_step', screen: 'driver', step: passed });
     // A new make needs its model; any other change goes back to the review.
-    const following = ORDER[ORDER.indexOf(current) + 1] ?? 'review';
-    setStep(reviewing && current !== 'make' ? 'review' : following);
+    setStep(nextStep(current, next, 'model' in patch, reviewing));
   };
-  const back = (current: Step) => () =>
-    setStep(reviewing ? 'review' : (ORDER[ORDER.indexOf(current) - 1] ?? 'intro'));
+  const back = (current: Step) => () => setStep(reviewing ? 'review' : previousStep(current, car));
 
   const send = async () => {
     const parsed = carSchema.safeParse(car);
@@ -66,7 +64,9 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
 
   if (isCarStep(step)) {
     return (
+      // A new screen for each step: the typing of "Boshqa" does not stay on the next question.
       <CarStep
+        key={step}
         step={step}
         car={car}
         onBack={back(step)}

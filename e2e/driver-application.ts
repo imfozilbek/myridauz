@@ -15,10 +15,12 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await expect(page.getByText(TEXT.becomeDriver)).toBeVisible();
   await shot('1-intro');
   await mainButton.click();
-  await expect(page.getByText('Chevrolet')).toBeVisible();
+  await expect(page.getByText('Chevrolet', { exact: true })).toBeVisible();
   await shot('2-make');
-  await page.getByText('Chevrolet').click();
-  await page.getByText('Cobalt').click();
+  await page.getByText('Chevrolet', { exact: true }).click();
+  await expect(page.getByText('Damas', { exact: true })).toBeVisible();
+  await shot('2-model');
+  await page.getByText('Damas', { exact: true }).click();
   await expect(page.locator('.car-swatch')).toHaveCount(10);
   await shot('2-color');
   await page.getByText('Oq', { exact: true }).click();
@@ -29,10 +31,7 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('3-plate-company');
   await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await shot('3-plate');
-  await mainButton.click();
-  // 4 seats are chosen in advance.
-  await expect(page.getByText(TEXT.seatsTitle)).toBeVisible();
-  await shot('3-seats');
+  // A Damas has its 6 seats from the list: no seats question (docs/50).
   await mainButton.click();
   await page.getByText(TEXT.addPhoto).click();
   await cameraReady(page);

@@ -33,7 +33,6 @@ export const TEXT = {
   take: t('drivers.photo.take'),
   shutter: t('common.camera.shoot'),
   addPhoto: t('account.avatar.add'),
-  seatsTitle: t('drivers.seats.title'),
   retake: t('drivers.photo.retake'),
   send: t('drivers.review.send'),
   pending: t('drivers.status.pending.title'),

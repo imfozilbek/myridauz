@@ -16,9 +16,8 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
     fireEvent.change(plate, { target: { value: '01 a 123 bcЖ!' } });
     expect(screen.getByDisplayValue('01 A 123 BC')).toBeTruthy();
     await tap('Davom etish');
-    // 4 seats are chosen in advance: "Davom etish" keeps them.
-    expect(await screen.findByText('Yoʻlovchilar uchun nechta joy bor?')).toBeTruthy();
-    await tap('Davom etish');
+    // A Cobalt has 4 seats: no seats question, the avatar is next.
+    expect(screen.queryByText('Yoʻlovchilar uchun nechta joy bor?')).toBeNull();
     await tap('Davom etish');
     // Each photo has a frame with a hint of what to shoot until it is taken.
     expect(screen.getByText('Raqam aniq koʻrinsin')).toBeTruthy();
@@ -38,11 +37,45 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
       'car',
       'color',
       'plate',
-      'seats',
       'avatar',
       'photos',
       'submitted',
     ]);
+  });
+
+  it('takes a popular car by one tap and asks seats only for a typed model', async () => {
+    const { submit, container } = renderGate(null);
+    await tap('Boshlash');
+    // The seats are next to each model (owner decision 30.09.2026).
+    expect(screen.getByText('Ommabop modellar')).toBeTruthy();
+    expect(screen.getAllByText('6 ta joy')).toHaveLength(1);
+    await tap('Chevrolet Damas');
+    expect(await screen.findByText('Mashina rangi')).toBeTruthy();
+    await tap('Oq');
+    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01A123BC' } });
+    await tap('Davom etish');
+    await tap('Davom etish');
+    for (const taken of [1, 2, 3]) {
+      shoot(container, 'Rasmga olish');
+      await waitFor(() => expect(screen.getAllByText('Qayta olish')).toHaveLength(taken));
+    }
+    await tap('Davom etish');
+    expect(await screen.findByText('Chevrolet Damas')).toBeTruthy();
+    // A typed model has no seats in the list: the driver answers the seats question.
+    await tap('Mashina');
+    await tap('Boshqa');
+    fireEvent.change(screen.getByPlaceholderText('Nomini yozing'), { target: { value: 'Isuzu' } });
+    await tap('Davom etish');
+    fireEvent.change(screen.getByPlaceholderText('Nomini yozing'), { target: { value: 'Grafter' } });
+    await tap('Davom etish');
+    await tap('Oq');
+    await tap('Davom etish');
+    expect(await screen.findByText('Yoʻlovchilar uchun nechta joy bor?')).toBeTruthy();
+    await tap('7');
+    for (const step of ['Davom etish', 'Davom etish', 'Yuborish']) await tap(step);
+    await waitFor(() =>
+      expect(submit).toHaveBeenCalledWith({ ...car, make: 'Isuzu', model: 'Grafter', seats: 7 }),
+    );
   });
 
   it('lets an approved driver in', async () => {

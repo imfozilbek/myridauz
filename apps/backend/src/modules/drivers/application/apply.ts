@@ -1,5 +1,6 @@
 import {
   AVATAR_TYPES,
+  catalogSeats,
   MAX_AVATAR_BYTES,
   type Car,
   type CarPhotoKind,
@@ -53,6 +54,12 @@ export async function uploadCarPhoto(
   return { ok: true, value: toView(next) };
 }
 
+// A model from the list has its seats, whatever the phone sends (docs/50); a typed model keeps the answer.
+const withCatalogSeats = (car: Car): Car => ({
+  ...car,
+  seats: catalogSeats(car.make, car.model) ?? car.seats,
+});
+
 export async function submitApplication(
   deps: DriversDeps,
   userId: number,
@@ -61,7 +68,7 @@ export async function submitApplication(
   const person = await deps.people.find(userId);
   const current = await deps.applications.find(userId);
   if (!person || !current) return { ok: false, error: person ? 'drivers.incomplete' : 'drivers.not_found' };
-  const next = submit(current, car, person.avatarKey !== null, deps.now());
+  const next = submit(current, withCatalogSeats(car), person.avatarKey !== null, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);
   if (current.status === 'approved') await deps.people.setDriver(userId, false);
