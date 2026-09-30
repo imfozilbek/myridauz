@@ -58,4 +58,5 @@
 | 54 | [54-channels-and-subscriptions.md](54-channels-and-subscriptions.md) | Каналы, подписки на маршрут, напоминания (G10) |
 | 55 | [55-ratings-and-complaints.md](55-ratings-and-complaints.md) | Рейтинг, отзывы, жалобы, блокировки (G11) |
 | 56 | [56-analytics-dashboard.md](56-analytics-dashboard.md) | Дашборд аналитики в админке и сигналы в админ-бот (G12) |
+| 57 | [57-comfort-and-retention.md](57-comfort-and-retention.md) | Любимый водитель, история, обратная поездка, цены рядом, медиана (G18) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G18, OPS) |

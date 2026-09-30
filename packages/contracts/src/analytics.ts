@@ -79,6 +79,10 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('review_sent'), ...context }),
   z.object({ name: z.literal('complaint_sent'), ...context }),
   z.object({ name: z.literal('complaint_decided'), ...context }),
+  // Comfort and retention (G18, docs/18): a saved driver, a return trip, a driver's shared trip.
+  z.object({ name: z.literal('favorite_driver'), ...context }),
+  z.object({ name: z.literal('return_trip_created'), ...context }),
+  z.object({ name: z.literal('driver_trip_shared'), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

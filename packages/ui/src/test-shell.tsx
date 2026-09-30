@@ -25,6 +25,7 @@ export const testClients = (overrides: {
   readonly feedback?: Partial<ApiClients['feedback']>;
   readonly stats?: Partial<ApiClients['stats']>;
   readonly calls?: Partial<ApiClients['calls']>;
+  readonly comfort?: Partial<ApiClients['comfort']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -82,6 +83,8 @@ export const testClients = (overrides: {
     socketUrl: NOT_USED,
     share: NOT_USED,
     stopSharing: NOT_USED,
+    shareTrip: NOT_USED,
+    stopTripSharing: NOT_USED,
     boarded: NOT_USED,
     arrived: NOT_USED,
     sharedTrip: NOT_USED,
@@ -108,6 +111,7 @@ export const testClients = (overrides: {
   },
   stats: { get: NOT_USED, ...overrides.stats },
   calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
+  comfort: { favorites: NOT_USED, save: NOT_USED, forget: NOT_USED, history: NOT_USED, ...overrides.comfort },
 });
 const NO_CLIENTS = testClients({});
 

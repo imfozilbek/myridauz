@@ -30,12 +30,13 @@ export function TripLink({ enabled, children }: { readonly enabled: boolean; rea
   };
   return (
     <PlacesGate>
-      <LinkedTrip id={id} onClose={close} />
+      <TripById id={id} onClose={close} />
     </PlacesGate>
   );
 }
 
-function LinkedTrip({ id, onClose }: { readonly id: string; readonly onClose: () => void }) {
+// One trip by its id, ready to book: a link, or a trip of a saved driver (G18).
+export function TripById({ id, onClose }: { readonly id: string; readonly onClose: () => void }) {
   const { market } = useApiClients();
   const { value, failed, reload } = useLoad(() => market.trip(id));
   const [booking, setBooking] = useState(false);

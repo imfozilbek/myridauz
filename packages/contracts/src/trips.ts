@@ -58,6 +58,8 @@ export const tripSchema = z.object({
   // Seats not taken by confirmed bookings (G08).
   seatsLeft: z.number().int(),
   price,
+  // The recommended price of the route next to the driver's price (docs/40, question 44). G18.
+  recommendedPrice: z.number().int().nullable(),
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),
   hasMeetingPoint: z.boolean(),

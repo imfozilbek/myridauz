@@ -31,11 +31,25 @@ async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<
   return byTrip;
 }
 
+// The recommended price of each route once: shown next to the driver's price (docs/40, question 44).
+async function recommendedOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, number>> {
+  const routes = [...new Set(trips.map((trip) => `${trip.from}:${trip.to}`))];
+  const prices = await Promise.all(
+    routes.map(async (route) => {
+      const [from = '', to = ''] = route.split(':');
+      const found = await deps.recommend(from, to);
+      return found.ok ? ([route, found.value.price] as const) : null;
+    }),
+  );
+  return new Map(prices.filter((price) => price !== null));
+}
+
 export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
   const now = deps.now();
-  const [riders, ratings] = await Promise.all([
+  const [riders, ratings, recommended] = await Promise.all([
     ridersOf(deps, trips),
     deps.ratings([...new Set(trips.map((trip) => trip.driverId))]),
+    recommendedOf(deps, trips),
   ]);
   const drivers = new Map<number, Promise<DriverInfo>>();
   const driverOf = (id: number) => {
@@ -49,7 +63,16 @@ export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Prom
     trips.map(async (trip) => {
       const [driver, car] = await driverOf(trip.driverId);
       if (!driver || !car) return null;
-      return tripView(trip, driver, car, now, riders.get(trip.id) ?? NO_RIDERS, ratings.get(trip.driverId));
+      const price = recommended.get(`${trip.from}:${trip.to}`) ?? null;
+      return tripView(
+        trip,
+        driver,
+        car,
+        now,
+        riders.get(trip.id) ?? NO_RIDERS,
+        ratings.get(trip.driverId),
+        price,
+      );
     }),
   );
   return found.filter((trip) => trip !== null);

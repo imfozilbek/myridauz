@@ -64,6 +64,7 @@ export async function reviewTarget(deps: RatingsDeps, raterId: number, bookingId
   const rateeId = rateeOf(ride, raterId);
   const [names, mine] = await Promise.all([deps.names([rateeId]), deps.store.review(bookingId, raterId)]);
   const target: ReviewTarget = {
+    rateeId,
     rateeName: names.get(rateeId) ?? '',
     rateeRole: rateeId === ride.driverId ? 'driver' : 'passenger',
     mine: mine ? { stars: mine.stars, tags: [...mine.tags], text: mine.text } : null,

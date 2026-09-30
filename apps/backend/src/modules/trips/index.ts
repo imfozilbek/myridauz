@@ -9,6 +9,7 @@ import type { TripEvent, TripsDeps } from './application/ports';
 import { publishTrip } from './application/publish';
 import { cancelTrip, views } from './application/read';
 import { setMeetingPoint } from './application/meeting-point';
+import { familyView, upcomingOf } from './application/driver-trips';
 import { tripRoutes } from './http/trip-routes';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
@@ -119,3 +120,16 @@ export const tripsEnded = async (env: Bindings, from: number, to: number) =>
     departAt,
     endsAt,
   }));
+
+// The driver's trip as the family sees it when the driver shares it (G18, docs/43).
+export const tripForFamily = (env: Bindings, id: string) => familyView(tripsDeps(env), id);
+// Trips of saved drivers that still take passengers (G18, docs/18).
+export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>
+  upcomingOf(tripsDeps(env), driverIds);
+
+// Real prices of trips that left in [from, now), not cancelled: the team's median hint (docs/09).
+const REAL_PRICES_LIMIT = 5000;
+export const realPricesSince = async (env: Bindings, from: number) =>
+  (await tripsDeps(env).trips.since(from, REAL_PRICES_LIMIT))
+    .filter((trip) => trip.status !== 'cancelled' && trip.departAt <= Date.now())
+    .map(({ from: start, to, price }) => ({ from: start, to, price }));

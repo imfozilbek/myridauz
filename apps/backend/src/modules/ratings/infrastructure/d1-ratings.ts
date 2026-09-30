@@ -99,6 +99,10 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
         .all<ReviewRow>()
     ).results.map(toReview);
   },
+  by: async (raterId) =>
+    (await db.prepare('SELECT * FROM reviews WHERE rater_id = ?').bind(raterId).all<ReviewRow>()).results.map(
+      toReview,
+    ),
   writtenBy: async (ids) => {
     if (ids.length === 0) return new Set();
     const sql = `SELECT booking_id, rater_id FROM reviews WHERE rater_id IN (${marks(ids.length)})`;

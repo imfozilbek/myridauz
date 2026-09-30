@@ -25,5 +25,6 @@
   "follow.closed": "Bu safar endi koʻrinmaydi",
   "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan.",
   "follow.join": "Men ham yoʻlga chiqaman",
-  "follow.joinHint": "Roʻyxatdan oʻting va oʻzingizga safar toping."
+  "follow.joinHint": "Roʻyxatdan oʻting va oʻzingizga safar toping.",
+  "driverSendHint": "Oilangiz safaringizni kuzatib boradi"
 }

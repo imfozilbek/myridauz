@@ -6,6 +6,7 @@ import { bookingsDeps } from './deps';
 import { rememberPickupMessage, setPickup } from './application/accept';
 import { cancelEverything } from './application/cancel-all';
 import { chatMember } from './application/chat-member';
+import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { rideOf, ridesOf } from './application/rides';
 import { bookingViews } from './application/views';
@@ -71,3 +72,7 @@ export const passengerRideCount = async (env: Bindings, passengerId: number) =>
   (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(
     (booking) => booking.status === 'confirmed' || booking.status === 'completed',
   ).length;
+
+// "Safarlar tarixi" (G18): the rides of a person that are over.
+export const pastRidesOf = (env: Bindings, userId: number, side: 'passenger' | 'driver') =>
+  pastRides(bookingsDeps(env), userId, side);

@@ -10,6 +10,7 @@ import {
   createWalletClient,
   createChatClient,
   createSubscriptionsClient,
+  createComfortClient,
   createFeedbackClient,
   createStatsClient,
   createCallsClient,
@@ -68,6 +69,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     feedback: createFeedbackClient(signed),
     stats: createStatsClient(signed),
     calls: createCallsClient(signed),
+    comfort: createComfortClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // Send what is left when Telegram hides or closes the app.

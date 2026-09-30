@@ -38,3 +38,12 @@ export async function ratingsOf(deps: RatingsDeps, userIds: readonly number[]): 
     }),
   );
 }
+
+// "Safarlar tarixi" (G18): per booking, the stars a person gave, and the stars the person got
+// once they are published (the blind rule, docs/24).
+export async function starsOfRides(deps: RatingsDeps, userId: number) {
+  const [given, received] = await Promise.all([deps.store.by(userId), published(deps, [userId])]);
+  const byBooking = (reviews: readonly { bookingId: string; stars: number }[]) =>
+    new Map(reviews.map((review) => [review.bookingId, review.stars]));
+  return { given: byBooking(given), received: byBooking(received) };
+}

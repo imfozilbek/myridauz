@@ -1,9 +1,13 @@
-import { arrivalAt, type BookingStatus, type ShareStatus } from '@platform/contracts';
+import { arrivalAt, type BookingStatus, type ShareStatus, type Trip } from '@platform/contracts';
 
-// A share link of one booking (docs/43). Only the hash of the token is kept.
+// A passenger shares a booking; a driver shares a trip (docs/43, G18).
+export type ShareKind = 'booking' | 'trip';
+export type ShareSubject = { readonly kind: ShareKind; readonly id: string };
+
+// A share link (docs/43). Only the hash of the token is kept.
 export type ShareRecord = {
   readonly tokenHash: string;
-  readonly bookingId: string;
+  readonly subject: ShareSubject;
   readonly createdAt: number;
   readonly revokedAt: number | null;
 };
@@ -43,4 +47,13 @@ export function shareStatus(trip: Progress, now: number): ShareStatus {
   if (trip.status === 'completed') return 'completed';
   if (now >= trip.departAt) return 'on_the_way';
   return trip.boardedAt === null ? 'waiting' : 'boarded';
+}
+
+type DriverProgress = { readonly status: Trip['status']; readonly departAt: number; readonly km: number };
+
+// The driver has no "Mashinaga chiqdim" buttons: the family reads the clock and the trip status.
+export function driverShareStatus(trip: DriverProgress, now: number): ShareStatus {
+  if (trip.status === 'cancelled') return 'cancelled';
+  if (trip.status === 'completed' || now >= arrivalAt(trip.departAt, trip.km)) return 'completed';
+  return now >= trip.departAt ? 'on_the_way' : 'waiting';
 }

@@ -3,6 +3,7 @@ import locations from '../apps/backend/seed/locations.json' with { type: 'json' 
 import { mockDrivers, type DriverStart } from './drivers-mock';
 import { mockBookings } from './bookings-mock';
 import { mockChat } from './chat-mock';
+import { mockComfort } from './comfort-mock';
 import { mockMarket } from './market-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
@@ -68,5 +69,6 @@ export async function mockApi(
   const market = await mockMarket(page);
   const bookings = await mockBookings(page);
   await mockChat(page);
+  await mockComfort(page);
   return { analytics, registrations, ...drivers, ...market, ...bookings };
 }

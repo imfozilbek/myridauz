@@ -26,6 +26,7 @@ export const TRIP: Trip = {
   seats: 4,
   seatsLeft: 3,
   price: 85000,
+  recommendedPrice: null,
   woman: true,
   hasMeetingPoint: false,
   comment: '',

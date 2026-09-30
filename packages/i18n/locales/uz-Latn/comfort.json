@@ -1,0 +1,18 @@
+{
+  "favorite.add": "Sevimli haydovchilarga qoʻshish",
+  "favorite.remove": "Sevimlilardan olib tashlash",
+  "favorite.added": "Uning yangi safarlari haqida xabar beramiz.",
+  "favorites.title": "Sevimli haydovchilar",
+  "favorites.hint": "Ularning yangi safarlari haqida xabar olasiz",
+  "favorites.empty": "Hali sevimli haydovchi yoʻq",
+  "favorites.emptyHint": "Safar sahifasida haydovchini sevimlilarga qoʻshing.",
+  "favorites.drivers": "Haydovchilar",
+  "favorites.trips": "Ularning safarlari",
+  "favorites.noTrips": "Hozircha yangi safar yoʻq. Chiqishi bilan xabar beramiz.",
+  "history.title": "Safarlar tarixi",
+  "history.hint": "Oʻtgan safarlar va baholar",
+  "history.empty": "Hali oʻtgan safar yoʻq",
+  "history.emptyHint": "Safar tugagach, u shu yerda koʻrinadi.",
+  "history.given": "Bahoingiz: ⭐ {stars}",
+  "history.received": "Sizga baho: ⭐ {stars}"
+}

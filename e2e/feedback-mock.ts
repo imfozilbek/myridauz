@@ -38,7 +38,7 @@ const REVIEWS = [
 export async function mockFeedback(page: Page) {
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/reviews/b1', (route) =>
-    json(route, { rateeName: 'Jasur', rateeRole: 'driver', mine: null }),
+    json(route, { rateeId: 7, rateeName: 'Jasur', rateeRole: 'driver', mine: null }),
   );
   await page.route('**/api/reviews', (route) => route.fulfill({ status: 204 }));
   await page.route('**/api/complaints', (route) => json(route, { id: 'c9' }, 201));

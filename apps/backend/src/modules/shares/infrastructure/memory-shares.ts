@@ -1,5 +1,7 @@
 import type { ShareRepository } from '../application/ports';
-import type { ShareRecord } from '../domain/share';
+import type { ShareRecord, ShareSubject } from '../domain/share';
+
+const keyOf = (subject: ShareSubject) => `${subject.kind}:${subject.id}`;
 
 // In memory: tests and local runs without D1.
 export function createMemoryShares(): ShareRepository {
@@ -8,16 +10,16 @@ export function createMemoryShares(): ShareRepository {
   return {
     save: async (share) => void shares.set(share.tokenHash, share),
     find: async (tokenHash) => shares.get(tokenHash),
-    revoke: async (bookingId, at) => {
+    revoke: async (subject, at) => {
       for (const share of shares.values())
-        if (share.bookingId === bookingId && share.revokedAt === null)
+        if (keyOf(share.subject) === keyOf(subject) && share.revokedAt === null)
           shares.set(share.tokenHash, { ...share, revokedAt: at });
-      followers.delete(bookingId);
+      followers.delete(keyOf(subject));
     },
-    followers: async (bookingId) => followers.get(bookingId) ?? [],
-    follow: async (bookingId, telegramId) => {
-      const list = followers.get(bookingId) ?? [];
-      if (!list.includes(telegramId)) followers.set(bookingId, [...list, telegramId]);
+    followers: async (subject) => followers.get(keyOf(subject)) ?? [],
+    follow: async (subject, telegramId) => {
+      const list = followers.get(keyOf(subject)) ?? [];
+      if (!list.includes(telegramId)) followers.set(keyOf(subject), [...list, telegramId]);
     },
   };
 }

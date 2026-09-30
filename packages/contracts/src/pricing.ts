@@ -67,12 +67,19 @@ export const directionPriceSchema = z.object({
 });
 export type DirectionPrice = z.infer<typeof directionPriceSchema>;
 
+// A hint for the team: the median of real prices once a route has enough trips (docs/09, question 39).
+export const MEDIAN_MIN_TRIPS = 10;
+export const MEDIAN_DAYS = 30;
+
 const directionSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   km: z.number().int().nullable(),
   formula: sum.nullable(),
   manual: sum.nullable(),
+  // Null below MEDIAN_MIN_TRIPS trips in MEDIAN_DAYS days. Never goes into the recommendation.
+  median: sum.nullable(),
+  medianTrips: z.number().int(),
 });
 export type Direction = z.infer<typeof directionSchema>;
 export const directionsSchema = z.object({ directions: z.array(directionSchema) });

@@ -6,7 +6,7 @@ import { notify, notifyTeam } from '../notifications';
 import { askRatings } from './application/ask';
 import type { RatingsDeps, Ride } from './application/ports';
 import { rate } from './application/rate';
-import { ratingsOf } from './application/read';
+import { ratingsOf, starsOfRides } from './application/read';
 import { reviewRoutes } from './http/review-routes';
 import { botAsker } from './infrastructure/bot-asker';
 import { d1Ratings } from './infrastructure/d1-ratings';
@@ -60,3 +60,6 @@ export const rateFromBot = (env: Bindings, raterId: number, bookingId: string, s
 // "⭐ 4,8 (37)" of drivers: the trip search and the channel posts (docs/24, docs/54).
 export const ratingsOfPeople = (env: Bindings, ids: readonly number[]) => ratingsOf(ratingsDeps(env), ids);
 export { COMPLAIN_PARAM, RATE_PREFIX, REVIEW_PARAM } from './infrastructure/bot-asker';
+
+// "Safarlar tarixi" (G18): the stars given and the published stars got, per booking.
+export const starsOf = (env: Bindings, userId: number) => starsOfRides(ratingsDeps(env), userId);

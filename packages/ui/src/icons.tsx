@@ -13,6 +13,8 @@ import {
   CircleDot,
   ClipboardCheck,
   FileText,
+  Heart,
+  History,
   Flag,
   Inbox,
   Languages,
@@ -74,6 +76,9 @@ const ICONS = {
   share: Share2,
   subscriptions: Bell,
   star: Star,
+  // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18).
+  favorite: Heart,
+  history: History,
   // A voice call (docs/08): start, hang up, microphone on and off.
   call: PhoneCall,
   hangUp: PhoneOff,

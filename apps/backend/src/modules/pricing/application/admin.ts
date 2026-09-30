@@ -1,12 +1,15 @@
-import type {
-  Direction,
-  DirectionPrice,
-  PricingPreview,
-  PricingState,
-  PricingVariables,
+import {
+  DAY_MS,
+  MEDIAN_DAYS,
+  type Direction,
+  type DirectionPrice,
+  type PricingPreview,
+  type PricingState,
+  type PricingVariables,
 } from '@platform/contracts';
 import { orderedPair } from '../domain/direction';
 import { withinBounds } from '../domain/formula';
+import { medianPrice, onDirection } from '../domain/median';
 import type { PricingDeps, Result } from './ports';
 
 // The team changes the formula in one place (docs/23): every change is a new version.
@@ -53,10 +56,15 @@ export async function rollback(
   return { ok: true, value: await changeVariables(deps, old.variables, by) };
 }
 
-// The admin table: the main directions and every direction with the team's price.
+// The admin table: the main directions and every direction with the team's price,
+// with the median of real prices of the last MEDIAN_DAYS days as a hint (docs/09).
 export async function directions(deps: PricingDeps): Promise<Direction[]> {
   const variables = await deps.variables.get(deps.pricing, deps.now());
-  const manual = await deps.pricing.manualPrices();
+  const [manual, real, places] = await Promise.all([
+    deps.pricing.manualPrices(),
+    deps.realPrices(deps.now() - MEDIAN_DAYS * DAY_MS),
+    deps.places.places(),
+  ]);
   const pairs = new Map<string, readonly [string, string]>();
   for (const pair of [...deps.mainDirections, ...manual.map((item) => [item.from, item.to] as const)])
     pairs.set(orderedPair(...pair).join(':'), pair);
@@ -66,7 +74,17 @@ export async function directions(deps: PricingDeps): Promise<Direction[]> {
       const [a, b] = orderedPair(from, to);
       const own = manual.find((item) => item.from === a && item.to === b)?.price ?? null;
       const formula = km.ok ? deps.strategy(km.value, variables) : null;
-      return { from, to, km: km.ok ? km.value : null, formula, manual: own };
+      const prices = real.filter((trip) => onDirection(trip, from, to, places)).map((trip) => trip.price);
+      const median = medianPrice(prices);
+      return {
+        from,
+        to,
+        km: km.ok ? km.value : null,
+        formula,
+        manual: own,
+        median,
+        medianTrips: prices.length,
+      };
     }),
   );
 }

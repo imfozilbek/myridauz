@@ -30,6 +30,18 @@ export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promis
       plate: plateOf(booking),
       driver: booking.trip.driver.firstName,
     }),
+  driverCard: async (trip) =>
+    t('bot.share.driverCard', {
+      name: trip.driverName,
+      brand: brand.name,
+      from: await placeName(trip.from),
+      to: await placeName(trip.to),
+      date: formatDate(new Date(trip.departAt)),
+      time: formatTime(new Date(trip.departAt)),
+      car: `${trip.car.make} ${trip.car.model}`,
+      plate: formatPlate(trip.plate),
+    }),
+  cancelled: () => t('bot.share.cancelled'),
   update: (booking, update) =>
     t(UPDATE_TEXT[update], {
       name: booking.passenger.firstName,

@@ -15,6 +15,11 @@ const cache = variablesCache(VARIABLES_TTL_MS);
 // Without D1 (tests) the variables and the team's prices live in memory.
 const localPricing = createMemoryPricing();
 
+// Real trip prices come from the trips module, set by the app (module-events.ts).
+type RealPricesOf = (env: Bindings, since: number) => ReturnType<PricingDeps['realPrices']>;
+let realPricesOf: RealPricesOf = async () => [];
+export const wireRealPrices = (next: RealPricesOf) => void (realPricesOf = next);
+
 const pricingDeps = (env: Bindings): PricingDeps => ({
   pricing: env.DB ? d1Pricing(env.DB) : localPricing,
   places: {
@@ -27,6 +32,7 @@ const pricingDeps = (env: Bindings): PricingDeps => ({
   strategy: STRATEGIES[loadBrand(env.BRAND).pricing],
   variables: cache,
   mainDirections: MAIN_DIRECTIONS.map(([from = '', to = '']) => [from, to] as const),
+  realPrices: (since) => realPricesOf(env, since),
   now: Date.now,
 });
 

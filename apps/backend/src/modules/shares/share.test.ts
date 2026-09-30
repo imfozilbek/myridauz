@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { startReply } from '../../bots/start-reply';
 import { loadBrand } from '@platform/brands';
-import { hashToken, newToken, shareStatus } from './domain/share';
+import { driverShareStatus, hashToken, newToken, shareStatus } from './domain/share';
 
 const DEPART = Date.parse('2026-10-02T03:00:00Z');
 const trip = { status: 'confirmed' as const, departAt: DEPART, boardedAt: null, arrivedAt: null };
@@ -14,6 +14,15 @@ describe('what close people read (docs/43)', () => {
     expect(shareStatus({ ...trip, arrivedAt: DEPART + 9 }, DEPART + 10)).toBe('arrived');
     expect(shareStatus({ ...trip, status: 'completed' }, DEPART + 10)).toBe('completed');
     expect(shareStatus({ ...trip, status: 'cancelled_by_driver' }, DEPART - 1)).toBe('cancelled');
+  });
+
+  it('reads the clock for a driver, who has no "Mashinaga chiqdim" button (G18)', () => {
+    const own = { status: 'active' as const, departAt: DEPART, km: 300 };
+    expect(driverShareStatus(own, DEPART - 1)).toBe('waiting');
+    expect(driverShareStatus({ ...own, status: 'full' }, DEPART + 1)).toBe('on_the_way');
+    expect(driverShareStatus(own, DEPART + 6 * 3_600_000)).toBe('completed');
+    expect(driverShareStatus({ ...own, status: 'completed' }, DEPART + 1)).toBe('completed');
+    expect(driverShareStatus({ ...own, status: 'cancelled' }, DEPART - 1)).toBe('cancelled');
   });
 
   it('makes tokens nobody can guess and keeps only their hash', async () => {

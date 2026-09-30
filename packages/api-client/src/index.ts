@@ -12,6 +12,7 @@ export { createBookingsClient, type BookingsClient } from './bookings-client';
 export { createWalletClient, type WalletClient } from './wallet-client';
 export { createChatClient, type ChatClient } from './chat-client';
 export { createSubscriptionsClient, type SubscriptionsClient } from './subscriptions-client';
+export { createComfortClient, type ComfortClient } from './comfort-client';
 export { createFeedbackClient, type FeedbackClient } from './feedback-client';
 export { createStatsClient, type StatsClient } from './stats-client';
 export { createCallsClient, type CallsClient } from './calls-client';

@@ -125,3 +125,5 @@ export * from './ratings';
 export * from './complaints';
 export * from './stats';
 export * from './calls';
+export * from './favorites';
+export * from './history';

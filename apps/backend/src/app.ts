@@ -12,7 +12,9 @@ import { callsModule, callsReady } from './modules/calls';
 import { chatRoutes } from './modules/chat';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
+import { favoritesModule } from './modules/favorites';
 import { healthModule } from './modules/health';
+import { historyModule } from './modules/history';
 import { locationsModule } from './modules/locations';
 import { pricingModule } from './modules/pricing';
 import { ratingsModule } from './modules/ratings';
@@ -21,7 +23,7 @@ import { subscriptionsModule } from './modules/route-subscriptions';
 import { statsModule } from './modules/stats';
 import { sharesModule } from './modules/shares';
 import { teamRole } from './modules/team';
-import { tripsModule } from './modules/trips';
+import { tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
@@ -72,6 +74,8 @@ export const app = new Hono<AppEnv>()
   .route('/', tripsModule)
   .route('/', requestsModule)
   .route('/', subscriptionsModule)
+  .route('/', favoritesModule)
+  .route('/', historyModule)
   .route('/', ratingsModule)
   .route('/', complaintsModule)
   .route('/', statsModule)
@@ -88,7 +92,7 @@ export const app = new Hono<AppEnv>()
     '/',
     callsModule(async (env, key, userId) => (await chatMemberOf(env, key, userId))?.canCall === true),
   )
-  .route('/', sharesModule(bookingForShare))
+  .route('/', sharesModule(bookingForShare, tripForFamily))
   // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
   .route(
     '/',

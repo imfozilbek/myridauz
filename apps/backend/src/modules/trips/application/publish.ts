@@ -32,7 +32,7 @@ export async function publishTrip(
   if (timeError) return { ok: false, error: timeError };
   const recommendation = await deps.recommend(input.from, input.to);
   if (!recommendation.ok) return recommendation;
-  const { km, minPrice, maxPrice } = recommendation.value;
+  const { km, minPrice, maxPrice, price: recommended } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
   const live = (await deps.trips.byDriver(driverId)).filter((trip) => isLive(trip, now));
@@ -52,5 +52,5 @@ export async function publishTrip(
   const meetingMessageId = await deps.announce(trip);
   if (meetingMessageId !== null) await deps.trips.save({ ...trip, meetingMessageId });
   await deps.changed(trip.id, 'published');
-  return { ok: true, value: tripView(trip, driver, car, now, NO_RIDERS) };
+  return { ok: true, value: tripView(trip, driver, car, now, NO_RIDERS, undefined, recommended) };
 }

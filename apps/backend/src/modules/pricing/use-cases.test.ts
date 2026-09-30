@@ -36,6 +36,7 @@ function setup() {
     strategy: STRATEGIES['per-km'],
     variables: variablesCache(60_000),
     mainDirections: [['1701', '1801']],
+    realPrices: async () => [],
     now: () => 1000,
   };
   return deps;
@@ -109,7 +110,7 @@ describe('recommendation and the team prices (docs/09, docs/23)', () => {
     expect(back.ok && back.value.history).toHaveLength(3);
     expect(await rollback(deps, 9, 900)).toEqual({ ok: false, error: 'pricing.not_found' });
     expect(await directions(deps)).toEqual([
-      { from: '1701', to: '1801', km: 300, formula: 90000, manual: null },
+      { from: '1701', to: '1801', km: 300, formula: 90000, manual: null, median: null, medianTrips: 0 },
     ]);
   });
 });

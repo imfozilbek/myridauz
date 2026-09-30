@@ -14,6 +14,7 @@ export function tripView(
   now: number,
   riders: Riders,
   rating: Rating = NO_RATING,
+  recommendedPrice: number | null = null,
 ): Trip {
   const seatsLeft = Math.max(0, trip.seats - riders.seats);
   const status = statusAt(trip, now);
@@ -33,6 +34,7 @@ export function tripView(
     seats: trip.seats,
     seatsLeft,
     price: trip.price,
+    recommendedPrice,
     // The 3 rules of docs/06: a woman driver, a woman the driver takes along, a woman with a
     // confirmed booking. Only the fact, no name.
     woman: driver.gender === 'female' || trip.womanOnBoard || riders.woman,

@@ -38,7 +38,13 @@ const MOCK = String(() => {
   button.style.cssText =
     'position:fixed;left:16px;right:16px;bottom:16px;height:50px;border:0;border-radius:12px;font:600 17px system-ui;display:none;z-index:9';
   button.onclick = () => reply('main_button_pressed', undefined);
-  document.addEventListener('DOMContentLoaded', () => document.body.append(button));
+  // The secondary button stands above the main one, as in Telegram (G18: "Qaytish safari").
+  const second = document.createElement('button');
+  second.id = 'tg-secondary-button';
+  second.style.cssText =
+    'position:fixed;left:16px;right:16px;bottom:74px;height:50px;border:0;border-radius:12px;font:600 17px system-ui;display:none;z-index:9';
+  second.onclick = () => reply('secondary_button_pressed', undefined);
+  document.addEventListener('DOMContentLoaded', () => document.body.append(button, second));
   Object.assign(window, {
     TelegramWebviewProxy: {
       postEvent(type: string, raw?: string) {
@@ -69,6 +75,12 @@ const MOCK = String(() => {
           button.style.background = data.color;
           button.style.color = data.text_color;
           button.style.display = data.is_visible ? 'block' : 'none';
+        }
+        if (type === 'web_app_setup_secondary_button') {
+          second.textContent = data.text;
+          if (data.color) second.style.background = data.color;
+          if (data.text_color) second.style.color = data.text_color;
+          second.style.display = data.is_visible ? 'block' : 'none';
         }
       },
     },
