@@ -3,7 +3,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
-import { chooseRoute } from './market';
+import { chooseRoute, openOwnTrip } from './market';
 import { PITAK } from './market-mock';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
 
@@ -124,7 +124,7 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
-  await page.getByText('Jasur').first().click();
+  await openOwnTrip(page);
   const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
   await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
   await expect(page.getByText(/\+3 km/u)).toBeVisible();
