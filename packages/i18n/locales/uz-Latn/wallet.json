@@ -21,7 +21,10 @@
   "team.empty": "Hali hamyon yoʻq",
   "adjust.title": "Hamyonni tuzatish",
   "adjust.hint": "Faqat egasi. Sabab har doim tarixda koʻrinadi.",
-  "adjust.amount": "Summa, soʻm (ayirish uchun minus)",
+  "adjust.add": "Qoʻshish",
+  "adjust.take": "Ayirish",
+  "adjust.amount": "Summa, soʻm",
+  "adjust.newBalance": "Yangi balans",
   "adjust.reason": "Sabab",
   "adjust.save": "Saqlash",
   "adjust.saved": "Saqlandi"
