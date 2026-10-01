@@ -31,11 +31,16 @@
   "system": "Tizim",
   "decision": "Qaror",
   "none": "Chora koʻrilmasin",
+  "noneEffect": "Shikoyat yopiladi, unga hech narsa boʻlmaydi.",
   "warning": "Ogohlantirish",
+  "warningEffect": "Bot unga ogohlantirish yuboradi.",
   "block1": "1 kunga bloklash",
   "block7": "7 kunga bloklash",
   "block30": "30 kunga bloklash",
+  "blockEffect": "Hisobi {days}\u00a0kunga bloklanadi. Faol safarlari va band qilingan joylari bekor qilinadi.",
   "blockForever": "Butunlay bloklash",
+  "blockForeverEffect": "Hisobi butunlay bloklanadi. Faol safarlari va band qilingan joylari bekor qilinadi.",
   "refund": "Haydovchiga komissiyani qaytarish",
+  "refundEffect": "Yoʻlovchi kelmagan boʻlsa, komissiya haydovchining asosiy hisobiga qaytadi.",
   "decided": "Qaror saqlandi"
 }
