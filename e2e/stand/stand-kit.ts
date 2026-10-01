@@ -26,6 +26,12 @@ const tokenOf = (app: MiniApp): string => {
 };
 const now = () => Math.floor(Date.now() / SECOND);
 
+// Which bot used this token: passenger, driver or admin (the stub of Telegram keeps the token).
+export const botOfToken = (token: string): string => {
+  const key = Object.entries(tokens()).find(([, value]) => value === token)?.[0] ?? '';
+  return key.replace('_BOT_TOKEN', '').toLowerCase();
+};
+
 // The Telegram SDK reads launch data only with a signature field; it is signed like the rest.
 const SIGNATURE = 'stand';
 

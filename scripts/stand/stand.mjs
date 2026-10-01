@@ -7,6 +7,7 @@ import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadBrand } from '../../brands/index.ts';
 import { serveApp } from './serve-app.mjs';
+import { serveTelegram } from './telegram-stub.mjs';
 import {
   STAND_API_PORT,
   STAND_APPS,
@@ -15,6 +16,7 @@ import {
   STAND_MAP_READY,
   STAND_OWNER_ID,
   STAND_STATE,
+  STAND_TELEGRAM_PORT,
   STAND_VARS,
 } from './paths.ts';
 
@@ -60,7 +62,11 @@ const host = `localhost:${STAND_API_PORT}`;
 const api = `http://${host}`;
 // --local-upstream: the Worker sees its own address as the stand, not the domain of the brand, so
 // the addresses it builds (sockets of the chat and of the live screens) never point to production.
+// The bots talk to the stub of Telegram; --test-scheduled lets a scenario run the Cron at once.
+serveTelegram(STAND_TELEGRAM_PORT);
+const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
+dev.push('--var', telegram, '--test-scheduled');
 const worker = spawn('pnpm', ['exec', 'wrangler', ...dev, '--env-file', resolve(STAND_VARS)], {
   stdio: 'inherit',
 });

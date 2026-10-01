@@ -5,6 +5,7 @@ import { pressBack } from '../telegram-mock';
 import { answer, book, CHILONZOR, FARGONA, publishTrip } from './market-kit';
 import { BEKZOD, ZARINA } from './people';
 import { outsideCalls, openAs } from './stand-kit';
+import { botMessages } from './stand-tools';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const shot = (page: Page, name: string) =>
@@ -68,8 +69,11 @@ test('1b. the chat reconnects by itself after the connection drops', async ({ pa
 });
 
 test('3. a bot button opens its own booking', async ({ page }) => {
-  // «Ochish» under a bot message opens the Mini App at ?booking=<id> (docs/65 B5).
-  await openAs(page, 'passenger', ZARINA, { search: `?${BOOKING_LINK}=${booking.id}` });
+  // The passenger bot told Zarina her seat is confirmed; its button opens the Mini App (docs/65 B5).
+  const told = (await botMessages()).filter((m) => m.bot === 'passenger' && m.chatId === ZARINA.id);
+  const button = told.flatMap((m) => m.buttons).find((b) => b.url?.includes(`${BOOKING_LINK}=${booking.id}`));
+  expect(button?.url, 'a button of the bot opens this booking').toBeTruthy();
+  await openAs(page, 'passenger', ZARINA, { search: new URL(button?.url ?? '').search });
   await expect(page.getByText(t('chat.open'))).toBeVisible();
   await expect(page.getByText(BEKZOD.name).first()).toBeVisible();
   await shot(page, '3-bot-link');

@@ -1,4 +1,5 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { telegramUrl } from '../../../shared/telegram/api-url';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
@@ -21,7 +22,7 @@ export async function prepareCard(
     reply_markup: { inline_keyboard: [[{ text: t('bot.share.follow'), url: link }]] },
   };
   try {
-    const response = await fetch(`https://api.telegram.org/bot${token}/savePreparedInlineMessage`, {
+    const response = await fetch(telegramUrl(token, 'savePreparedInlineMessage'), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({

@@ -7,6 +7,8 @@ export const STAND_BASE = `${STAND_DIR}/base`;
 export const STAND_VARS = `${STAND_DIR}/dev.vars`;
 export const STAND_MAP_READY = `${STAND_STATE}/map-ready`;
 export const STAND_API_PORT = 8787;
+// The Bot API stub: the bots of the stand talk to it, not to Telegram.
+export const STAND_TELEGRAM_PORT = 8790;
 export const STAND_APPS = { passenger: 4201, driver: 4202, admin: 4203 };
 // The Telegram id of the owner on the stand: the team list of the backend (docs/02).
 export const STAND_OWNER_ID = 900001;

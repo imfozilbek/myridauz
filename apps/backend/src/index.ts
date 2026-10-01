@@ -12,6 +12,7 @@ import { sendReminders } from './modules/reminders';
 import { sendWaitingSubscriptions } from './modules/route-subscriptions';
 import { completeTrips } from './modules/trips';
 import { burnBonuses } from './modules/wallet';
+import { useTelegramApi } from './shared/telegram/api-url';
 
 // The chat of a booking is a Durable Object class of this Worker (docs/07).
 export { ChatRoom } from './modules/chat/infrastructure/chat-room';
@@ -25,10 +26,17 @@ export { UserFeed } from './modules/feed/infrastructure/user-feed';
 // erases the points of rides 30 days after the trip (docs/12, docs/15, docs/24, docs/29, docs/35,
 // docs/69, G10, G11, G12, G24).
 export default {
-  fetch: app.fetch,
+  fetch: (request, env, context) => {
+    useTelegramApi(env.TELEGRAM_API_URL);
+    return app.fetch(request, env, context);
+  },
   // Bot messages wait in the queue and go out at Telegram's pace (docs/03).
-  queue: consumeNotifications,
+  queue: (batch, env) => {
+    useTelegramApi(env.TELEGRAM_API_URL);
+    return consumeNotifications(batch, env);
+  },
   scheduled: async (_controller, env, context) => {
+    useTelegramApi(env.TELEGRAM_API_URL);
     const now = Date.now();
     context.waitUntil(
       Promise.all([
