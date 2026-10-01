@@ -39,7 +39,6 @@ test('places: screenshots', async ({ page }) => {
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await page.getByText(TEXT.wayList).click();
   await expect(page.getByText(TEXT.from)).toBeVisible();
   await shot('1-route');
   await page.getByText(TEXT.from).click();

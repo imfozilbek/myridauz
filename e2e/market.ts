@@ -7,7 +7,8 @@ const { t } = createI18n(DEFAULT_LOCALE);
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 
-// From Chilonzor (Toshkent shahri) to Samarqand shahri, or the whole Samarqand region.
+// From Chilonzor (Toshkent shahri) to Samarqand shahri, or the whole Samarqand region, by lists
+// (G26, docs/74). «Qayerdan» may be filled already by the place of the person: it is chosen again.
 export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
@@ -15,14 +16,6 @@ export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.getByText(TEXT.to).click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText(wholeRegion ? TEXT.wholeRegion : 'Samarqand shahri', { exact: true }).click();
-  await page.locator('#tg-main-button').click();
-}
-
-// «Qayerdan / Qayerga» over the map (G24) by its other way, the list of districts: their centers
-// stand for the points.
-export async function chooseWay(page: Page) {
-  await page.getByText(t('way.list')).click();
-  await chooseRoute(page);
   await page.locator('#tg-main-button').click();
 }
 
@@ -57,9 +50,9 @@ export async function publishTrip(page: Page, shot: Shot = none) {
 // A passenger finds trips of tomorrow to Samarqand shahri and filters "ayol bor".
 export async function findTrips(page: Page, shot: Shot = none) {
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await expect(page.getByText(t('way.list'))).toBeVisible();
-  await shot('1-way');
-  await chooseWay(page);
+  await expect(page.getByText(TEXT.from)).toBeVisible();
+  await shot('1-route');
+  await chooseRoute(page);
   await page.getByText(TEXT.tomorrow).click();
   await expect(page.getByText('Jasur', { exact: false })).toBeVisible();
   await shot('2-results');

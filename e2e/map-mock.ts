@@ -8,8 +8,13 @@ import { confirmed } from './bookings-mock';
 // real archive, read by parts like the API gives it, and the fonts of its labels.
 const FIXTURES = 'e2e/fixtures/map';
 const archive = readFileSync(`${FIXTURES}/tashkent.pmtiles`);
-export type MapState = { booked: Record<string, unknown> | null; readonly searched: string[] };
-export const mapState = (): MapState => ({ booked: null, searched: [] });
+// What the map was asked: the texts of the search and the zone each one stayed in (G26).
+export type MapState = {
+  booked: Record<string, unknown> | null;
+  readonly searched: string[];
+  readonly zones: string[];
+};
+export const mapState = (): MapState => ({ booked: null, searched: [], zones: [] });
 // Places of the search by name (G23) as the index has them: real names inside the piece of the map,
 // and the home of the passenger in Samarqand (G24).
 export const FOUND = [
@@ -28,8 +33,9 @@ export const FOUND = [
     point: { lat: 39.6547, lng: 66.9758 },
   },
 ];
-const LINES = BORDERS.places as Record<string, string[][]>;
-const DISTRICTS = Object.entries(LINES).map(([id, lines]) => borderOf(id, lines));
+const DISTRICTS = Object.entries(BORDERS.places as Record<string, string[][]>).map(([id, lines]) =>
+  borderOf(id, lines),
+);
 // The district by the real borders; the name: Registon in Samarqand, Qatortol in Tashkent.
 const whereOf = (lat: number, lng: number) => ({
   district: districtAt(DISTRICTS, { lat, lng }),
@@ -103,10 +109,16 @@ export async function mockMap(page: Page, state: MapState) {
     return existsSync(path) ? route.fulfill({ body: readFileSync(path) }) : route.fulfill({ status: 404 });
   });
   await page.route('**/api/passenger/map/search?*', (route) => {
-    state.searched.push(new URL(route.request().url()).searchParams.get('q') ?? '');
-    const query = state.searched.at(-1) ?? '';
+    const asked = new URL(route.request().url()).searchParams;
+    const query = asked.get('q') ?? '';
+    const zone = asked.get('zone') ?? '';
+    state.searched.push(query);
+    state.zones.push(zone);
+    const inZone = (place: (typeof FOUND)[number]) => place.district.startsWith(zone);
     return json(route, {
-      places: FOUND.filter((place) => /Регистон/u.test(query) === place.name.startsWith('Reg')),
+      places: FOUND.filter(
+        (place) => /Регистон/u.test(query) === place.name.startsWith('Reg') && inZone(place),
+      ),
     });
   });
   await page.route('**/api/passenger/map/where?*', (route) => {
@@ -115,11 +127,12 @@ export async function mockMap(page: Page, state: MapState) {
       .map(Number);
     return json(route, whereOf(lat, lng));
   });
-  // The real borders of the repository (G24, docs/48): the map of a point is cut by its district.
+  // The real borders of the repository (G24, docs/48): the map of a point is cut by its district;
+  // a region (Toshkent shahri, G26) is all its districts, as the backend gives it.
   await page.route('**/api/passenger/map/borders/*', (route) => {
     const id = new URL(route.request().url()).pathname.split('/').at(-1) ?? '';
-    const lines = LINES[id];
-    return lines ? json(route, { id, parts: borderOf(id, lines).parts }) : json(route, {}, 404);
+    const parts = DISTRICTS.filter((each) => each.id.startsWith(id)).flatMap((each) => each.parts);
+    return parts.length > 0 ? json(route, { id, parts }) : json(route, {}, 404);
   });
   await page.route('**/api/trips/*/bookings', (route) => {
     state.booked = route.request().postDataJSON() as Record<string, unknown>;

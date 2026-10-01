@@ -42,7 +42,9 @@ function scenarios(platform: 'android' | 'ios') {
     await expect(mainButton(page)).toHaveText(t('common.passenger.findTrip'));
     await shot(page, '1-passenger-empty');
     await page.getByText(t('way.toEmpty')).click();
-    await expect(page.getByText(t('way.point.to'))).toBeVisible();
+    // G26: the end opens the list of regions, not the map (docs/74).
+    await expect(page.getByText(t('places.toTitle'))).toBeVisible();
+    await expect(page.getByAltText('Samarqand viloyati')).toBeVisible();
   });
 
   // Owner check 2: the booking on the main screen changes its status by itself.

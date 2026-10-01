@@ -5,7 +5,9 @@ import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { RouteScreen } from './route-screen';
 
-const location = vi.hoisted(() => ({ knownPosition: vi.fn(async () => ({ lat: 41.3, lng: 69.2 })) }));
+const location = vi.hoisted(() => ({
+  knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
+}));
 vi.mock('../telegram/location', () => location);
 afterEach(cleanup);
 
