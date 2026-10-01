@@ -7,20 +7,20 @@ import type { ApiClients } from '../context/api-clients';
 import { renderInShell } from '../test-shell';
 
 // Test helper for trips and requests: a small directory, a trip, a person and the shell.
-const place = (id: string, parentId: string | null, name: string, oneCity = false): Location => ({
-  id,
-  parentId,
-  type: parentId === null ? 'region' : 'district',
-  name,
-  lat: 41,
-  lng: 69,
-  oneCity,
-});
+const TASHKENT = { lat: 41, lng: 69 };
+const FARGONA = { lat: 40.38, lng: 71.78 };
+const place = (
+  id: string,
+  parentId: string | null,
+  name: string,
+  { lat, lng } = TASHKENT,
+  oneCity = false,
+): Location => ({ id, parentId, type: parentId === null ? 'region' : 'district', name, lat, lng, oneCity });
 const LOCATIONS = [
-  place('1726', null, 'Toshkent shahri', true),
-  place('1730', null, 'Fargʻona viloyati'),
+  place('1726', null, 'Toshkent shahri', TASHKENT, true),
+  place('1730', null, 'Fargʻona viloyati', FARGONA),
   place('1726269', '1726', 'Chilonzor'),
-  place('1730401', '1730', 'Fargʻona shahri'),
+  place('1730401', '1730', 'Fargʻona shahri', FARGONA),
 ];
 export const locations = { getLocations: async () => ({ version: '1', locations: LOCATIONS }) };
 
@@ -107,10 +107,9 @@ export async function chooseRoute(wholeRegion = false) {
   await tap('Davom etish');
 }
 
-// The same route through the list of districts under «Qayerdan / Qayerga» (G24): the other way
-// when the map does not load. The district centers become the points.
-export async function chooseWay(done = 'Safarlarni koʻrish') {
+// A request (G24): the same route through the list of districts under «Qayerdan / Qayerga».
+export async function chooseWay() {
   await tap('Roʻyxatdan tanlash');
   await chooseRoute();
-  await tap(done);
+  await tap('Davom etish');
 }

@@ -15,6 +15,10 @@ function cityOf(place: Place, find: FindPlace): string | null {
   return parent?.oneCity ? parent.id : null;
 }
 
+// The zone of a point of a booking (G26, docs/74): the whole city for a place of Toshkent shahri,
+// else the place itself (a district, or a region chosen whole).
+export const zoneOf = (place: Place, find: FindPlace): string => cityOf(place, find) ?? place.id;
+
 export function checkRoute(from: Place, to: Place, find: FindPlace): RouteError | null {
   if (from.id === to.id) return 'locations.same_place';
   const city = cityOf(from, find);

@@ -12,8 +12,8 @@ export const FUNNEL_STEPS = {
   passenger: ['opened', 'searched', 'trip_opened', 'requested', 'chat', 'confirmed', 'boarded'],
   driver: ['opened', 'started', 'submitted', 'approved', 'trip_created', 'confirmed'],
   new_trip: TRIP_STEPS,
-  // The screen of the start and the end (G24): opened, start, end, way, the trips seen.
-  way: ['opened', 'from', 'to', 'mode', 'done'],
+  // The route of a search by lists (G26, docs/74): opened, start, end, the trips seen.
+  way: ['opened', 'from', 'to', 'done'],
 } as const satisfies Record<FunnelId, readonly string[]>;
 export type FunnelStepId = (typeof FUNNEL_STEPS)[FunnelId][number];
 const STEP_IDS = [...new Set(Object.values(FUNNEL_STEPS).flat())] as [FunnelStepId, ...FunnelStepId[]];

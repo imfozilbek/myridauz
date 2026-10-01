@@ -62,10 +62,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
     }
   };
 
-  if (step === 'route')
-    return (
-      <WayScreen done="common.continue" onBack={onBack} onDone={(value) => next({ way: value }, 'date')} />
-    );
+  if (step === 'route') return <WayScreen onBack={onBack} onDone={(value) => next({ way: value }, 'date')} />;
   if (step === 'date')
     return (
       <DateStep

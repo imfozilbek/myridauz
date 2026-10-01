@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
+import { PitakMap } from '../map/pitak-map';
 import type { Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 
@@ -13,7 +14,8 @@ type Props = {
 };
 
 // How the driver picks people up (docs/70). The driver never chooses the pitak: the system takes
-// the one of the direction; a direction without a pitak has only «around the city».
+// the one of the direction; a direction without a pitak has only «around the city». The pitak is
+// on a small map above the choices: the driver sees where they will wait (G26, docs/74).
 export function TripModeStep({ route, onBack, onDone }: Props) {
   const { t } = useI18n();
   const { map } = useApiClients();
@@ -35,6 +37,7 @@ export function TripModeStep({ route, onBack, onDone }: Props) {
       icon="origin"
       title={t('way.trip.mode.title')}
       choices={choices}
+      {...(pitak ? { lead: <PitakMap pitak={pitak} /> } : {})}
       onBack={onBack}
       onDone={onDone}
     />

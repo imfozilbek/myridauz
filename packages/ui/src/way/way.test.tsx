@@ -46,7 +46,7 @@ describe('«Qayerdan / Qayerga» over the map (G24, docs/71)', { timeout: 20_000
     await here('Yangi Margʻilon');
     await tap('Pitakdan');
     expect(await screen.findByText(/Qoʻyliq pitagi · \d+ km/)).toBeTruthy();
-    await tap('Safarlarni koʻrish');
+    await tap('Davom etish');
     expect(done[0]).toMatchObject({ mode: 'pitak', from: { point: HERE }, to: { place: { id: '1730401' } } });
   });
 
@@ -55,7 +55,7 @@ describe('«Qayerdan / Qayerga» over the map (G24, docs/71)', { timeout: 20_000
       pitakOf: vi.fn(async () => null),
       search: vi.fn(async () => [MARGILON]),
     });
-    await tap('Safarlarni koʻrish');
+    await tap('Davom etish');
     expect(await screen.findByRole('alert')).toBeTruthy();
     await tap('Qayerdan ketasiz?');
     await here('Chorsu bozori yaqinida');
@@ -65,7 +65,7 @@ describe('«Qayerdan / Qayerga» over the map (G24, docs/71)', { timeout: 20_000
     await here('Yangi Margʻilon');
     expect(await screen.findByText(/pitak yoʻq/)).toBeTruthy();
     expect(screen.queryByText('Pitakdan')).toBeNull();
-    await tap('Safarlarni koʻrish');
+    await tap('Davom etish');
     expect(done[0]?.mode).toBe('door');
   });
 

@@ -27,6 +27,10 @@ export type TripStep = (typeof TRIP_STEPS)[number];
 // The booking funnel (G08): both ways, from the first tap to the confirmation.
 const BOOKING_STEPS = [
   'seats',
+  // G26: the way and the points of the passenger come at the booking (docs/74).
+  'mode',
+  'pickup',
+  'dropoff',
   'requested',
   'confirmed',
   'declined',
@@ -38,7 +42,7 @@ const BOOKING_STEPS = [
 
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
 const POINT_METHODS = ['map', 'search', 'location', 'recent', 'auto'] as const;
-const WAY_STEPS = ['opened', 'from', 'to', 'mode', 'done'] as const;
+const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
 
 // Answers that are a normal state, not an error: they are not sent as api_error (G12).
 export const QUIET_API_ERRORS: readonly string[] = ['users.not_registered', 'drivers.not_found'];

@@ -27,31 +27,34 @@ const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, ln
 
 type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border'>>;
 
-// The screen «Qayerdan / Qayerga» over a fake map (G24): what it gave back when done.
-export function openWay(map: ReturnType<typeof fakeMap>, calls: Calls = {}) {
-  const done: Way[] = [];
-  const mapCalls: Partial<MapClient> = {
-    where: vi.fn(whereOf),
-    border: async (id) => ({
-      id,
-      parts: [
+// The map calls of the tests: the district by the point, a square border, the pitak, a search.
+export const testMap = (calls: Calls = {}): Partial<MapClient> => ({
+  where: vi.fn(whereOf),
+  border: async (id) => ({
+    id,
+    parts: [
+      [
         [
-          [
-            [69, 41],
-            [70, 41],
-            [70, 42],
-            [69, 41],
-          ],
+          [69, 41],
+          [70, 41],
+          [70, 42],
+          [69, 41],
         ],
       ],
-    }),
-    pitakOf: vi.fn(async () => PITAK),
-    search: vi.fn(async () => [CHORSU]),
-    ...calls,
-  };
+    ],
+  }),
+  pitakOf: vi.fn(async () => PITAK),
+  search: vi.fn(async () => [CHORSU]),
+  ...calls,
+});
+
+// The screen «Qayerdan / Qayerga» of a request over a fake map (G24): what it gave back when done.
+export function openWay(map: ReturnType<typeof fakeMap>, calls: Calls = {}) {
+  const done: Way[] = [];
+  const mapCalls = testMap(calls);
   renderMarket(
     <MapEngineContext.Provider value={async () => map.engine}>
-      <WayScreen done="way.see" onBack={() => undefined} onDone={(way) => void done.push(way)} />
+      <WayScreen onBack={() => undefined} onDone={(way) => void done.push(way)} />
     </MapEngineContext.Provider>,
     testClients({ map: mapCalls }),
   );

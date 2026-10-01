@@ -23,14 +23,15 @@ describe('the main screen of a passenger (G25)', { timeout: 20_000 }, () => {
     const { tracked } = passenger(async () => []);
     expect(await screen.findByText('Yoʻnalish')).toBeTruthy();
     await tap('Qayerga borasiz?');
-    expect(await screen.findByText('Uyingiz qayerda?')).toBeTruthy();
+    // The list of the end opens at once (G26, docs/74): the regions to choose from.
+    expect(await screen.findByText('Fargʻona viloyati')).toBeTruthy();
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'card' }));
   });
 
   it('starts the search at the start of the way from its line', async () => {
     passenger(async () => []);
     await tap('Qayerdan ketasiz?');
-    expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
 
   it('says what failed, keeps the main button and tries again', async () => {

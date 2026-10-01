@@ -27,6 +27,6 @@ describe('StartPage', () => {
     // No bookings: the main screen asks where to go (G25).
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
-    expect(await screen.findByText('Roʻyxatdan tanlash')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 });
