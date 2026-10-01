@@ -15,39 +15,7 @@ import { MainButton } from '../telegram/bottom-button';
 import '../market/market.css';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 
-const PHOTO_SIZE = 40;
 const BIG_PHOTO_SIZE = 56;
-
-type ListProps = { readonly offers: readonly Offer[]; readonly onOpen: (offer: Offer) => void };
-
-// Drivers' offers on the passenger's request (docs/35): who, what time, what price.
-export function OffersSection({ offers, onOpen }: ListProps) {
-  const { t, formatMoney, formatTime } = useI18n();
-  if (offers.length === 0) return null;
-  return (
-    <Section header={t('bookings.offer.list')}>
-      {offers.map((offer) => (
-        <Cell
-          key={offer.id}
-          onClick={() => onOpen(offer)}
-          before={
-            <ProfilePhoto
-              userId={offer.driver.id}
-              name={offer.driver.firstName}
-              hasAvatar={offer.driver.hasAvatar}
-              size={PHOTO_SIZE}
-            />
-          }
-          subtitle={`${formatTime(new Date(offer.departAt))}, ${offer.driver.car.make} ${offer.driver.car.model}`}
-          after={<CellValue>{formatMoney(offer.price)}</CellValue>}
-          description={<RatingBadge rating={offer.driver.rating} />}
-        >
-          {offer.driver.firstName}
-        </Cell>
-      ))}
-    </Section>
-  );
-}
 
 type ScreenProps = {
   readonly offer: Offer;

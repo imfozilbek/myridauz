@@ -31,7 +31,10 @@ function setup() {
     state: vi.fn(async () => state),
     directions: vi.fn(async () => [direction]),
     preview: vi.fn(async () => ({
-      rows: [{ from: '1726269', to: '1730401', km: 320, before: 95000, after: 130000 }],
+      rows: [
+        { from: '1726269', to: '1730401', km: 320, before: 95000, after: 130000 },
+        { from: '1726', to: '1730', km: 300, before: 90000, after: 90000 },
+      ],
     })),
     save: vi.fn(async () => state),
     rollback: vi.fn(async () => state),
@@ -48,13 +51,19 @@ function setup() {
 }
 
 describe('Narxlar: the price engine for the team (docs/23)', () => {
-  it('changes the formula after "было → стало"', async () => {
+  it('changes the formula after a preview of the new prices', async () => {
     const pricing = setup();
     await tap('Narxlar');
     await tap('Formulani oʻzgartirish');
-    fireEvent.change(screen.getByDisplayValue('300'), { target: { value: '400' } });
+    // Every field is named on every platform, not only by a header iOS hides (G27).
+    fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
+    expect(screen.getByLabelText('Eng koʻp narx')).toHaveProperty('value', '600000');
     await tap('Oʻzgarishni koʻrish');
-    expect(await screen.findByText(/→ 130/)).toBeTruthy();
+    // A plain title, the number of changed directions and the new price marked (docs/86 V13).
+    expect(await screen.findByText('Narxlar qanday oʻzgaradi')).toBeTruthy();
+    expect(screen.getByText('1 ta yoʻnalishda narx oʻzgaradi')).toBeTruthy();
+    expect(screen.getByText('130 000 soʻm').className).toBe('price-changed');
+    expect(screen.getByText('90 000 soʻm').className).not.toBe('price-changed');
     await tap('Saqlash');
     expect(pricing.save).toHaveBeenCalledWith({ ...V, ratePerKm: 400 });
   });
@@ -72,5 +81,15 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     expect(pricing.setDirection).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', price: 100000 });
     await tap('Shu versiyaga qaytish');
     expect(pricing.rollback).toHaveBeenCalledWith(1);
+  });
+
+  it('tells a moderator only the owner sets a price, not that it is out of bounds (docs/83 N05)', async () => {
+    const pricing = setup();
+    pricing.setDirection.mockRejectedValueOnce(new ApiError(403, 'auth.not_owner'));
+    await tap('Narxlar');
+    await tap(/^Formula: 95/);
+    await tap('Narxni saqlash');
+    expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
+    expect(screen.queryByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeNull();
   });
 });

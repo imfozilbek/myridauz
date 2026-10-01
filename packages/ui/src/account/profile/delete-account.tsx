@@ -1,9 +1,9 @@
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, Section } from '../../components';
+import { Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { IconTile } from '../../icon-tile';
+import { DangerCell } from '../../danger-cell';
 import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
@@ -15,9 +15,9 @@ export function DeleteAccountCell({ onOpen }: { readonly onOpen: () => void }) {
   const { t } = useI18n();
   return (
     <Section>
-      <Cell before={<IconTile name="erase" tone="deep" />} onClick={onOpen}>
+      <DangerCell icon="erase" onClick={onOpen}>
         {t('account.delete.open')}
-      </Cell>
+      </DangerCell>
     </Section>
   );
 }
@@ -54,7 +54,7 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
     <StepLayout icon="erase" title={t('account.delete.title')} hint={t('account.delete.hint')}>
       <BackButton onClick={onBack} />
       {stage === 'failed' ? <Text className="step-error">{t('errors.generic.description')}</Text> : null}
-      <MainButton text={t('account.delete.confirm')} onClick={erase} />
+      <MainButton text={t('account.delete.confirm')} onClick={erase} destructive />
     </StepLayout>
   );
 }

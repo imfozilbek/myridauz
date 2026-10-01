@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { findTrips, publishTrip } from './market';
+import { findTrips, publishTrip, openOwnTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -60,7 +60,7 @@ test('driver: "Qaytish safari" and the trip shared with the family', async ({ pa
   await expect(page.getByText(TEXT.published)).toBeVisible();
   await page.locator('#tg-main-button').click();
   await page.getByText(t('common.myTrips')).click();
-  await page.getByText('Dilnoza').first().click();
+  await openOwnTrip(page);
   await expect(page.getByText(t('share.driverSendHint'))).toBeVisible();
   await shot('7-driver-share');
 });

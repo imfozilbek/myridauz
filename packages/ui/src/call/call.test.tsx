@@ -1,4 +1,4 @@
-import type { CallsClient } from '@platform/api-client';
+import { ApiError, type CallsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChatScreen } from '../chat/chat-screen';
@@ -77,6 +77,24 @@ describe('a voice call in the chat (docs/08, G13)', () => {
     expect(screen.getByText('Ovozni yoqish')).toBeTruthy();
     fireEvent.click(screen.getByText('Tugatish'));
     expect(sent()).toContainEqual({ type: 'call', action: 'end' });
+  });
+
+  it('says the calls do not work now and sends to the chat (docs/86 T9)', async () => {
+    const ice = vi
+      .spyOn(calls as Required<typeof calls>, 'ice')
+      .mockRejectedValue(new ApiError(503, 'calls.unavailable'));
+    const { socket, sent } = await openChat();
+    act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
+    fireEvent.click(screen.getByText('Javob berish'));
+    await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'accept' }));
+    act(() => socket.receive({ type: 'call', call: { status: 'connecting', caller: 'other' } }));
+    await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'failed' }));
+    act(() => {
+      socket.receive({ type: 'call', call: null });
+      socket.receive({ type: 'callEnded', reason: 'failed' });
+    });
+    expect(screen.getByText('Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.')).toBeTruthy();
+    ice.mockRestore();
   });
 
   it('declines at once and says so when the microphone is refused', async () => {

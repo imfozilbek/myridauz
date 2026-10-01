@@ -1,5 +1,6 @@
 import { ApiError } from '@platform/api-client';
 import type { Direction, PricingPreview, PricingState, PricingVariables } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { CellValue } from '../account/cell-value';
@@ -7,6 +8,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { errorKey } from '../market/error-text';
 import { PlacesGate } from '../market/places-gate';
 import { RouteView } from '../market/route-view';
 import { ErrorScreen } from '../states/error-screen';
@@ -25,7 +27,7 @@ type Mode =
   | { readonly kind: 'view' }
   | { readonly kind: 'edit' }
   | { readonly kind: 'preview'; readonly next: PricingVariables; readonly preview: PricingPreview }
-  | { readonly kind: 'direction'; readonly direction: Direction; readonly failed: boolean };
+  | { readonly kind: 'direction'; readonly direction: Direction; readonly failed: TranslationKey | null };
 const FIELDS = ['ratePerKm', 'roundStep', 'minPrice', 'maxPrice'] as const;
 
 // The price engine for the team: the formula, the directions, the history (docs/23).
@@ -62,7 +64,8 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
       },
       (error: unknown) => {
         haptic.error();
-        if (mode.kind === 'direction' && error instanceof ApiError) setMode({ ...mode, failed: true });
+        if (mode.kind === 'direction' && error instanceof ApiError)
+          setMode({ ...mode, failed: errorKey(error) });
         else setFailed(true);
       },
     );
@@ -124,14 +127,13 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
           {loaded.directions.map((direction) => (
             <Cell
               key={`${direction.from}:${direction.to}`}
-              multiline
               subtitle={
                 direction.manual === null
                   ? t('pricing.formula', { price: formatMoney(direction.formula ?? 0) })
                   : t('pricing.manual', { price: formatMoney(direction.manual) })
               }
               description={direction.km === null ? undefined : t('pricing.km', { km: String(direction.km) })}
-              onClick={() => setMode({ kind: 'direction', direction, failed: false })}
+              onClick={() => setMode({ kind: 'direction', direction, failed: null })}
             >
               <RouteView from={direction.from} to={direction.to} />
             </Cell>

@@ -1,6 +1,6 @@
 import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
@@ -47,10 +47,30 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
         wallet: { mine: async () => wallet },
       }),
     );
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
+    // The rule about changing seats is the passenger's, not the driver's (G27).
+    expect(screen.queryByText(/^Bron qilingandan keyin/)).toBeNull();
     await tap('Tasdiqlash');
     expect(await screen.findByText(/Hamyoningizda: 481\s000/)).toBeTruthy();
+  });
+
+  it('a driver without the commission is led to top up, not to a «Tasdiqlash» that fails (G27)', async () => {
+    const answer = vi.fn(async () => booking);
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [trip] },
+        bookings: { driverBookings: async () => [booking], driverOffers: async () => [], answer },
+        wallet: { mine: async () => ({ ...wallet, bonus: 0, main: 0 }) },
+      }),
+    );
+    await openOwnTrip();
+    await tap('Dilnoza');
+    await tap('Tasdiqlash');
+    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    expect(screen.getByText('Hisobni toʻldirish')).toBeTruthy();
+    expect(answer).not.toHaveBeenCalled();
   });
 });

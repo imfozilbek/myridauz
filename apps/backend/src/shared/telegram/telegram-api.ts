@@ -1,3 +1,4 @@
+import { telegramUrl } from './api-url';
 export type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 
 // A Bot API call. Errors carry the Telegram method and code, never the token (docs/32).
@@ -7,7 +8,7 @@ export async function callTelegram(
   method: string,
   params: object,
 ): Promise<void> {
-  const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+  const response = await fetch(telegramUrl(token, method), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(params),
@@ -34,7 +35,7 @@ export async function sendAlbum(
     }),
   );
   form.append('media', JSON.stringify(media));
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMediaGroup`, {
+  const response = await fetch(telegramUrl(token, 'sendMediaGroup'), {
     method: 'POST',
     body: form,
   });
@@ -49,7 +50,7 @@ export async function sendText(
   text: string,
   markup?: object,
 ): Promise<number | undefined> {
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+  const response = await fetch(telegramUrl(token, 'sendMessage'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ chat_id: chatId, text, ...(markup ? { reply_markup: markup } : {}) }),

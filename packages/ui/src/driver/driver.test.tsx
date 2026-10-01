@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { loadBrand } from '@platform/brands';
 import { CAR_COLORS } from '@platform/contracts';
@@ -27,6 +28,10 @@ describe('DriverGate: the application of a driver (docs/04)', () => {
     }
     await tap('Davom etish');
     expect(await screen.findByText('01 A 123 BC')).toBeTruthy();
+    // The server misses a photo: the driver reads what to do, not «try later» (docs/86 T7).
+    submit.mockRejectedValueOnce(new ApiError(409, 'drivers.incomplete'));
+    await tap('Yuborish');
+    expect(await screen.findByText(/^Arizada hamma rasmlar/)).toBeTruthy();
     await tap('Yuborish');
     // While the application is checked the driver looks around the app (owner decision 29.09.2026).
     expect(await screen.findByText('Ariza tekshirilmoqda')).toBeTruthy();

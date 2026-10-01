@@ -22,10 +22,16 @@ import { RouteView } from './route-view';
 import { useList } from './use-list';
 import { useDayLabel } from './when';
 
+type FlowProps = {
+  readonly onBack: () => void;
+  // A bot link names the route and the day: the requests open at once (docs/83 N08).
+  readonly initial?: { readonly route: Route; readonly date: string };
+};
+
 // A driver looks for passengers on a route and a day (docs/09): route, day, the requests.
-export function RequestsSearchFlow({ onBack }: { readonly onBack: () => void }) {
-  const [route, setRoute] = useState<Route | null>(null);
-  const [date, setDate] = useState<string | null>(null);
+export function RequestsSearchFlow({ onBack, initial }: FlowProps) {
+  const [route, setRoute] = useState<Route | null>(initial?.route ?? null);
+  const [date, setDate] = useState<string | null>(initial?.date ?? null);
   const [now] = useState(Date.now);
   const pending = usePending();
   if (pending) return <PendingLock onBack={onBack} />;
@@ -75,7 +81,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
         {dayLabel(date, now)}
       </Title>
       <List>
-        <Section>
+        <Section footer={t('market.requests.hint')}>
           <div className="route-summary">
             <RouteView from={route.from.id} to={route.to.id} />
           </div>

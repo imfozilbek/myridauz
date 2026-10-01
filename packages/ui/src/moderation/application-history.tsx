@@ -17,7 +17,7 @@ export function ApplicationHistory({ userId }: { readonly userId: PersonId }) {
     <>
       {value.samePlate > 0 ? (
         <Section>
-          <Cell multiline before={<IconTile name="error" tone="accent" />}>
+          <Cell before={<IconTile name="error" tone="accent" />}>
             {t('moderation.samePlate', { count: String(value.samePlate) })}
           </Cell>
         </Section>

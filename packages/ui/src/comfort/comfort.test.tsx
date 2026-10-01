@@ -1,4 +1,4 @@
-import type { ComfortClient } from '@platform/api-client';
+import { ApiError, type ComfortClient } from '@platform/api-client';
 import type { HistoryItem } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -38,6 +38,18 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     expect(tracked.map((event) => event.name)).toContain('favorite_driver');
     await tap('Sevimlilardan olib tashlash');
     expect(forget).toHaveBeenCalledWith('00000000000000000000000000000007');
+  });
+
+  it('says why the 51st driver is not saved (docs/86 T3)', async () => {
+    const save = vi.fn<ComfortClient['save']>(async () => {
+      throw new ApiError(409, 'favorites.too_many');
+    });
+    renderMarket(
+      <FavoriteCell driverId={'00000000000000000000000000000007'} screen="market.trip" />,
+      testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }), save } }),
+    );
+    await tap('Sevimli haydovchilarga qoʻshish');
+    expect(await screen.findByText(/^Saqlangan haydovchilar soni chegaraga yetdi/)).toBeTruthy();
   });
 
   it('lists the saved drivers with their trips, or says how to save one', async () => {

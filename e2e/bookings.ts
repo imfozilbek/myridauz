@@ -2,7 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
-import { findTrips } from './market';
+import { findTrips, openOwnTrip } from './market';
 import { pressBack } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -78,22 +78,28 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await shot('5-accepted');
 }
 
-// The driver opens the own trip, a booking of Madina, confirms after "Joyni tasdiqlaysizmi?".
+// The driver opens the own trip, a booking of Madina, confirms after "Joyni tasdiqlaysizmi?";
+// without money, goes to top up.
 export async function confirmBooking(page: Page, shot: Shot = none, money = true) {
   const mainButton = page.locator('#tg-main-button');
   await page.getByText(B.myTrips).click();
-  await page.getByText('Jasur').first().click();
+  await openOwnTrip(page);
   await expect(page.getByText('Madina')).toBeVisible();
   await shot('1-trip');
   await page.getByText('Madina').click();
   await shot('2-booking');
   await page.getByText(B.confirm, { exact: true }).click();
-  await expect(page.getByText(B.sure)).toBeVisible();
-  await shot('3-sure');
-  await mainButton.click();
-  await expect(page.getByText(money ? B.confirmed : B.notEnough)).toBeVisible();
-  await shot(money ? '4-confirmed' : '4-not-enough');
-  if (money) return;
+  // Without money for the commission the way to top up comes at once, no «Tasdiqlash» (docs/83 N20).
+  if (money) {
+    await expect(page.getByText(B.sure)).toBeVisible();
+    await shot('3-sure');
+    await mainButton.click();
+    await expect(page.getByText(B.confirmed)).toBeVisible();
+    await shot('4-confirmed');
+    return;
+  }
+  await expect(page.getByText(B.notEnough)).toBeVisible();
+  await shot('4-not-enough');
   await mainButton.click();
   await expect(page.getByText(t('wallet.topUp.title'), { exact: true })).toBeVisible();
   await shot('5-top-up');
@@ -118,6 +124,7 @@ export async function teamWallets(page: Page, shot: Shot = none) {
   await expect(page.getByText(B.adjust)).toBeVisible();
   await shot('2-wallet');
   await page.getByText(B.adjust).click();
+  await page.getByText(t('wallet.adjust.add')).click();
   await page.getByLabel(t('wallet.adjust.amount')).fill('100000');
   await page.getByLabel(t('wallet.adjust.reason')).fill('Yoʻlovchi kelmadi');
   await shot('3-adjust');

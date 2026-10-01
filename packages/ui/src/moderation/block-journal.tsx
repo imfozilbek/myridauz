@@ -45,7 +45,6 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
         {value.entries.map((entry) => (
           <Cell
             key={entry.at}
-            multiline
             subtitle={`${entry.by}, ${formatDate(new Date(entry.at))}`}
             description={
               entry.reason === 'unblock'

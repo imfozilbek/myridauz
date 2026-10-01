@@ -23,7 +23,7 @@ const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', updated_at = ?
   WHERE trip_id = ?3 AND status = 'confirmed') <= ?4`;
 // A request without an answer ends, and its points with it (docs/69).
 const EXPIRE = `UPDATE bookings SET status = 'expired', ${NO_POINTS}, updated_at = ?1
-  WHERE status = 'requested' AND expires_at <= ?1`;
+  WHERE status = 'requested' AND expires_at <= ?1 RETURNING *`;
 const WITH_POINTS = `SELECT id, trip_id FROM bookings
   WHERE (pickup_lat IS NOT NULL OR dropoff_lat IS NOT NULL) AND created_at < ?`;
 
@@ -62,9 +62,7 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
     ),
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
-  expireOver: async (now) => {
-    await db.prepare(EXPIRE).bind(now).run();
-  },
+  expireOver: (now) => all(db.prepare(EXPIRE).bind(now)),
   keepingPoints: async (before) =>
     (await db.prepare(WITH_POINTS).bind(before).all<{ id: string; trip_id: string }>()).results.map(
       (row) => ({

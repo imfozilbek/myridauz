@@ -27,7 +27,8 @@ export type BookingRepository = {
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
   byPassenger(passengerId: number): Promise<BookingRecord[]>;
   // The Cron job: requests without an answer in time become expired (docs/35), without points.
-  expireOver(now: number): Promise<void>;
+  // The requests that were still waiting and are expired now: each passenger is told (docs/83 N03).
+  expireOver(now: number): Promise<BookingRecord[]>;
   // The erasure of points (docs/69): which bookings made before this time still keep points.
   keepingPoints(before: number): Promise<{ readonly id: string; readonly tripId: string }[]>;
   erasePoints(ids: readonly string[]): Promise<void>;
@@ -84,6 +85,8 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
+    // Trips not over yet: an accepted offer adds one (docs/35).
+    liveCount(driverId: number): Promise<number>;
     views(ids: readonly string[]): Promise<Trip[]>;
     publish(driverId: number, input: Required<TripInput>): Promise<Published>;
     cancel(driverId: number, tripId: string): Promise<void>;
@@ -128,6 +131,7 @@ export type BookingNotifier = {
   // The passenger answers this message with the pickup point (docs/14).
   confirmed(booking: Booking): Promise<void>;
   declined(booking: Booking): Promise<void>;
+  expired(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
   offered(passengerId: number, offerId: string): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;

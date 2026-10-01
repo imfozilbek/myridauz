@@ -98,6 +98,8 @@ export function renderMarket(ui: ReactNode, clients: ApiClients, gender: 'male' 
 }
 
 export const tap = async (text: string | RegExp) => fireEvent.click(await screen.findByText(text));
+// A card of the own trips has no driver on it (U6): it opens by its status.
+export const openOwnTrip = () => tap('Faol');
 
 // From Chilonzor (Toshkent shahri) to Fargʻona shahri, or to the whole Fargʻona region.
 export async function chooseRoute(wholeRegion = false) {

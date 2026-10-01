@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { renderInShell, testClients } from '../test-shell';
 import { DriverGate } from './driver-gate';
-import { PendingNotice } from './pending-notice';
+import { DriverNotice } from './driver-notice';
 
 // Test helper for the driver application: a registered person and a fake server.
 export const car = {
@@ -64,7 +64,7 @@ export function renderGate(initial: DriverApplication | null) {
   const result = renderInShell(
     <AccountContext.Provider value={account}>
       <DriverGate>
-        <PendingNotice />
+        <DriverNotice />
         <p data-testid="driver-home" />
       </DriverGate>
     </AccountContext.Provider>,

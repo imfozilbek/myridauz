@@ -3,7 +3,7 @@ import type { Booking } from '@platform/contracts';
 import { act, cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FeedContext } from '../feed/feed-context';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
@@ -111,7 +111,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Safarni bekor qilish');
     expect(cancelTrip).toHaveBeenCalledWith(trip.id);
     expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();

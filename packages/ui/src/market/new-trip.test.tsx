@@ -45,10 +45,14 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     await tap('Davom etish');
     // The price field is filled with the recommendation; + adds one step.
     expect(await screen.findByText(/Tavsiya: 95/)).toBeTruthy();
+    // The commission per seat by the rule of the brand, like the backend takes it (docs/86 V8).
+    expect(screen.getByText(/^Har bir joy uchun 9\s500\ssoʻm komissiya$/u)).toBeTruthy();
     fireEvent.click(screen.getByLabelText('Oshirish'));
+    expect(screen.getByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Davom etish');
     await tap('Yoʻq');
     await tap('Izohsiz davom etish');
+    expect(await screen.findByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Eʼlon qilish');
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + 8 * HOUR;

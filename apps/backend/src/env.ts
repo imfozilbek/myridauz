@@ -18,6 +18,8 @@ export type Bindings = {
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
+  // The Bot API of the local stand (docs/75); unset in production: Telegram itself.
+  readonly TELEGRAM_API_URL?: string;
   // Comma separated Telegram ids of the team: a secret, the repository is public (docs/32).
   readonly ADMIN_TELEGRAM_IDS?: string;
   // "true" makes an avatar required for passengers too (docs/05). Brand setting in wrangler.toml.

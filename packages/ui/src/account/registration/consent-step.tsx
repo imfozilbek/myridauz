@@ -1,3 +1,4 @@
+import { Text } from '@telegram-apps/telegram-ui';
 import type { LegalDocument } from '@platform/contracts';
 import { useState } from 'react';
 import { List } from '../../components';
@@ -23,6 +24,8 @@ export function ConsentStep({ onAccept }: { readonly onAccept: () => void }) {
       title={t('account.consent.title')}
       hint={t('account.consent.text', { brand: brand.name })}
     >
+      {/* The fear of the first minute: the phone number (docs/86 T13). */}
+      <Text className="step-note">{t('account.consent.hidden')}</Text>
       <List>
         <LegalLinks onOpen={setReading} />
       </List>

@@ -23,8 +23,12 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
     await chooseWay();
     await tap(/^Ertaga/);
     await tap('2');
+    // A passenger pays no commission: the price step does not speak of it (docs/12).
+    expect(await screen.findByText(/^Tavsiya/)).toBeTruthy();
+    expect(screen.queryByText(/komissiya/)).toBeNull();
     await tap('Davom etish');
     expect(await screen.findByText('Soʻrovni tekshiring')).toBeTruthy();
+    expect(screen.getByText('Haydovchilar vaqt va narx taklif qiladi.')).toBeTruthy();
     await tap('Soʻrov qoldirish');
     expect(
       await screen.findByText('Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.'),

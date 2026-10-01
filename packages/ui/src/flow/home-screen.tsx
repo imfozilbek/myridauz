@@ -3,6 +3,7 @@ import { ProfileCell } from '../account/profile/profile-cell';
 import { useChevron } from '../chevron';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
+import { usePending } from '../driver/driver-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -23,6 +24,7 @@ export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScre
   useScreenBackground('grouped');
   const { t } = useI18n();
   const chevron = useChevron();
+  const pending = usePending();
   return (
     <div className="home">
       <List>
@@ -30,17 +32,23 @@ export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScre
         {notice}
         {top}
         <Section>
-          {actions.map((action) => (
-            <Cell
-              key={action.id}
-              before={<IconTile name={action.icon} tone={action.tone} />}
-              subtitle={t(action.hintKey)}
-              after={chevron()}
-              onClick={() => onOpen(action)}
-            >
-              {t(action.labelKey)}
-            </Cell>
-          ))}
+          {actions.map((action) => {
+            // While the application is checked, an action that waits has a muted icon and says when
+            // it works; it still opens and explains (docs/86 V7).
+            const waiting = pending && action.waitsApproval;
+            const tile = <IconTile name={action.icon} tone={action.tone} />;
+            return (
+              <Cell
+                key={action.id}
+                before={waiting ? <span className="action-waiting">{tile}</span> : tile}
+                subtitle={t(waiting ? 'drivers.status.pending.after' : action.hintKey)}
+                after={chevron()}
+                onClick={() => onOpen(action)}
+              >
+                {t(action.labelKey)}
+              </Cell>
+            );
+          })}
         </Section>
         <LanguageSwitcher />
       </List>

@@ -51,12 +51,13 @@ export const isLive = (trip: TripRecord, now: number) =>
 export const statusAt = (trip: TripRecord, now: number): Trip['status'] =>
   (trip.status === 'active' || trip.status === 'full') && trip.endsAt <= now ? 'completed' : trip.status;
 
-// Only the driver cancels, only a trip that is not over (docs/35).
+// Only the driver cancels, only a trip that has not left yet (docs/35). A trip on the road keeps
+// its confirmed seats, as a booking does after the departure (docs/65 A4, docs/83 N02).
 export function cancel(
   trip: TripRecord,
   driverId: number,
   now: number,
 ): TripRecord | 'trips.not_found' | 'trips.wrong_status' {
   if (trip.driverId !== driverId) return 'trips.not_found';
-  return isLive(trip, now) ? { ...trip, status: 'cancelled' } : 'trips.wrong_status';
+  return isLive(trip, now) && trip.departAt > now ? { ...trip, status: 'cancelled' } : 'trips.wrong_status';
 }

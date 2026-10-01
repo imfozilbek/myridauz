@@ -47,7 +47,6 @@ export function HomeFailed({ onRetry }: { readonly onRetry: () => void }) {
     <div role="alert">
       <Section header={t('home.title')}>
         <Cell
-          multiline
           before={<IconTile name="error" tone="danger" />}
           subtitle={t('common.retry')}
           onClick={tap('retry', onRetry)}

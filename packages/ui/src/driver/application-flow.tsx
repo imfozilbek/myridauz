@@ -14,6 +14,8 @@ import { AvatarStep } from './steps/avatar-step';
 import { PhotosStep } from './steps/photos-step';
 import { PlateStep } from './steps/plate-step';
 import { ReviewStep, type ReviewTarget } from './steps/review-step';
+import type { TranslationKey } from '@platform/i18n';
+import { errorKey } from '../market/error-text';
 
 const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
 const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
@@ -33,7 +35,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const [car, setCar] = useState<Partial<CarInput>>(initial?.car ?? {});
   const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
   const [step, setStep] = useState<Step>(initial?.car ? 'review' : 'intro');
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   const { reasons, keepOnly, fixed } = useReasons(initial?.reasons ?? []);
   const reviewing = initial?.car !== null && initial?.car !== undefined;
 
@@ -49,16 +51,16 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
 
   const send = async () => {
     const parsed = carSchema.safeParse(car);
-    setFailed(false);
+    setFailure(null);
     try {
       if (!parsed.success) throw new Error('ui.car_incomplete');
       const application = await drivers.submit(parsed.data);
       track({ name: 'driver_application_step', screen: 'driver', step: 'submitted' });
       haptic.success();
       if (application) onSubmitted(application);
-    } catch {
+    } catch (caught) {
       haptic.error();
-      setFailed(true);
+      setFailure(errorKey(caught));
     }
   };
 
@@ -115,7 +117,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           car={complete.data}
           reasons={reasons}
           recheck={initial?.status === 'approved'}
-          failed={failed}
+          failure={failure}
           onEdit={(target: ReviewTarget) => setStep(target)}
           onSend={send}
           {...(onClose ? { onBack: onClose } : {})}

@@ -1,4 +1,4 @@
-import { closingBehavior, hapticFeedback, openLink, popup } from '@telegram-apps/sdk-react';
+import { closingBehavior, hapticFeedback, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
 
 const CONFIRM_ID = 'confirm';
 
@@ -36,4 +36,9 @@ export function protectFromClosing(enabled: boolean): void {
 // A map or another site opens in Telegram's own browser; outside Telegram, in a new tab (docs/21).
 export function openExternal(url: string): void {
   if (openLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
+}
+
+// A t.me link opens inside Telegram without leaving the Mini App (docs/21); outside Telegram, in a new tab.
+export function openInTelegram(url: string): void {
+  if (openTelegramLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
 }

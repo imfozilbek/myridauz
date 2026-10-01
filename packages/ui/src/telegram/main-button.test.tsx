@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -44,5 +45,13 @@ describe('the native main button', () => {
     sdk.listeners.at(-1)?.();
     expect(second).toHaveBeenCalled();
     expect(first).not.toHaveBeenCalled();
+  });
+
+  it('is red for a dangerous action, as Telegram allows (docs/86 V12)', () => {
+    renderInShell(<MainButton text="Oʻchirish" destructive onClick={() => undefined} />, true);
+    const { danger, bg } = loadBrand().theme.colors;
+    expect(sdk.mainButton.setParams.ifAvailable).toHaveBeenCalledWith(
+      expect.objectContaining({ backgroundColor: danger, textColor: bg }),
+    );
   });
 });

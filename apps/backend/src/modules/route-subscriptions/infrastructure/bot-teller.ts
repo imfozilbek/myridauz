@@ -1,4 +1,5 @@
 import { appHost, type BrandConfig } from '@platform/brands';
+import { REQUESTS_LINK, requestsLinkValue } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import type { SubscriptionTeller } from '../application/ports';
@@ -6,7 +7,7 @@ import type { SubscriptionRecord } from '../domain/subscription';
 
 const { t, formatMoney, formatDate } = createI18n(DEFAULT_LOCALE);
 
-// The Mini App opens a trip, or the list of subscriptions, at once (docs/24).
+// The Mini App opens a trip, the requests of a route and day, or the list of subscriptions, at once (docs/24).
 const TRIP_PARAM = 'trip';
 const SUBSCRIPTIONS_PARAM = 'subscriptions';
 
@@ -40,7 +41,9 @@ export const botTeller = ({ brand, placeName, send }: Wiring): SubscriptionTelle
       };
       const isTrip = subscription.kind === 'trips';
       const text = t(isTrip ? 'bot.subscription.trip' : 'bot.subscription.request', values);
-      const query = isTrip ? `?${TRIP_PARAM}=${match.id}` : '';
+      const query = isTrip
+        ? `?${TRIP_PARAM}=${match.id}`
+        : `?${REQUESTS_LINK}=${requestsLinkValue(match.from, match.to, match.date)}`;
       await tell(subscription, text, button(subscription, t('bot.subscription.open'), query));
     },
     many: async (subscription, count) => {

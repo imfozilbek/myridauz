@@ -7,7 +7,15 @@ import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { notify } from '../notifications';
 import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
-import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViewsOf } from '../trips';
+import {
+  cancelFor,
+  driverTripIds,
+  liveTripCount,
+  publishFor,
+  tripChanged,
+  tripFacts,
+  tripViewsOf,
+} from '../trips';
 import { tellCloseOnes } from '../shares';
 import { ratingsOfPeople } from '../ratings';
 import { peopleOf } from '../users';
@@ -41,6 +49,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   trips: {
     find: (id) => tripFacts(env, id),
     ofDriver: (driverId) => driverTripIds(env, driverId),
+    liveCount: (driverId) => liveTripCount(env, driverId),
     views: (ids) => tripViewsOf(env, ids),
     publish: (driverId, input) => publishFor(env, driverId, input),
     cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),

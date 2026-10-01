@@ -95,14 +95,14 @@ function MyTrips({ onBack, link }: ScreenProps) {
     const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
     if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
     return (
-      <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)}>
+      <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)} own>
         <ActionFailure error={failure} />
-        <DriverShare trip={trip} />
         <TripBookings
           bookings={ofTrip}
           onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
           onMap={() => setMapOpen(true)}
         />
+        <DriverShare trip={trip} />
       </TripScreen>
     );
   }
@@ -137,7 +137,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
         <Paged
           items={trips}
           render={(trip) => (
-            <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ tripId: trip.id })} />
+            <TripCard key={trip.id} trip={trip} own onOpen={() => setOpened({ tripId: trip.id })} />
           )}
         />
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />

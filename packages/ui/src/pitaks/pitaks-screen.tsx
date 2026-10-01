@@ -87,7 +87,6 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
           {value.pitaks.map((pitak) => (
             <Cell
               key={pitak.id}
-              multiline
               before={<IconTile name="pickup" tone={pitak.status === 'closed' ? 'deep' : 'brand'} />}
               subtitle={`${regionName(pitak.regionId)} · ${t(`pitaks.status.${pitak.status}`)}`}
               onClick={() => setOpen({ kind: 'pitak', pitak })}

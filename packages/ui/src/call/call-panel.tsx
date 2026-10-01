@@ -24,7 +24,9 @@ export function CallPanel({ name, call, ended, controls, onChat }: Props) {
   const { t } = useI18n();
   const talking = useTalkTime(call?.status === 'active');
   const status = !call
-    ? t(`calls.ended.${ended ?? 'ended'}`)
+    ? controls.unavailable
+      ? t('errors.calls.unavailable')
+      : t(`calls.ended.${ended ?? 'ended'}`)
     : call.status === 'active'
       ? clock(talking)
       : call.status === 'connecting'

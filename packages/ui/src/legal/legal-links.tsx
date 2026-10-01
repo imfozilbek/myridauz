@@ -18,7 +18,6 @@ export function LegalLinks({ onOpen, header }: Props) {
           key={document}
           before={<IconTile name="document" />}
           after={chevron()}
-          multiline
           onClick={() => onOpen(document)}
         >
           {t(legalTitle(document))}

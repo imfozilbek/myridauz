@@ -56,8 +56,8 @@ describe('landing (G15)', () => {
 
   it('asks the public API for prices and gives the script templates, not texts', () => {
     expect(home).toContain(`data-api="https://api.${brand.domain}/public/price"`);
-    expect(home).toContain('data-money="{amount} soʻm"');
-    expect(home).toContain('data-km="≈ {km} km"');
+    expect(home).toContain('data-money="{amount}\u00a0soʻm"');
+    expect(home).toContain('data-km="≈\u00a0{km}\u00a0km"');
   });
 
   it('takes the name, the slogan, the domain, the numbers and the colors from the brand config', () => {

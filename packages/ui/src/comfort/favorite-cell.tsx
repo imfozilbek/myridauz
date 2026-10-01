@@ -6,6 +6,8 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
+import type { TranslationKey } from '@platform/i18n';
+import { errorKey } from '../market/error-text';
 
 type Props = { readonly driverId: PersonId; readonly screen: string };
 
@@ -16,6 +18,7 @@ export function FavoriteCell({ driverId, screen }: Props) {
   const { comfort } = useApiClients();
   const [saved, setSaved] = useState<boolean | null>(null);
   const [added, setAdded] = useState(false);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   useEffect(() => {
     comfort.favorites().then(
       ({ drivers }) => setSaved(drivers.some((driver) => driver.id === driverId)),
@@ -25,6 +28,7 @@ export function FavoriteCell({ driverId, screen }: Props) {
   if (saved === null) return null;
   const toggle = async () => {
     try {
+      setFailure(null);
       if (saved) await comfort.forget(driverId);
       else {
         await comfort.save(driverId);
@@ -33,12 +37,14 @@ export function FavoriteCell({ driverId, screen }: Props) {
       haptic.success();
       setAdded(!saved);
       setSaved(!saved);
-    } catch {
+    } catch (caught) {
+      // The 51st saved driver hears why, not silence (docs/86 T3).
       haptic.error();
+      setFailure(errorKey(caught));
     }
   };
   return (
-    <Section footer={added ? t('comfort.favorite.added') : undefined}>
+    <Section footer={failure ? t(failure) : added ? t('comfort.favorite.added') : undefined}>
       <Cell before={<IconTile name="favorite" tone="accent" />} onClick={() => void toggle()}>
         {t(saved ? 'comfort.favorite.remove' : 'comfort.favorite.add')}
       </Cell>

@@ -5,7 +5,7 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
-import { recommendation, renderMarket, tap, trip } from './market-test-kit';
+import { recommendation, renderMarket, tap, trip, openOwnTrip } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { MyTripsScreen } from './my-trips-screen';
 import { RequestsSearchFlow } from './requests-search-flow';
@@ -26,6 +26,18 @@ const request: RideRequest = {
 };
 
 describe('Mening safarlarim (docs/35)', () => {
+  it('shows a driver the trips, not the driver himself on each card (U6)', async () => {
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [trip] },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
+    );
+    expect(await screen.findByText(/Faol/)).toBeTruthy();
+    expect(screen.queryByText('Jasur')).toBeNull();
+  });
+
   it('lets a driver cancel an active trip', async () => {
     const cancelTrip = vi.fn(async () => ({ ...trip, status: 'cancelled' as const }));
     const myTrips = vi.fn(async () => [trip]);
@@ -37,12 +49,25 @@ describe('Mening safarlarim (docs/35)', () => {
       }),
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
-    await tap('Jasur');
+    await openOwnTrip();
     vi.stubGlobal('confirm', () => true);
     await tap('Safarni bekor qilish');
     vi.unstubAllGlobals();
     expect(cancelTrip).toHaveBeenCalledWith('t1');
     await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
+  });
+
+  it('keeps a trip that already left: no cancel on the road (docs/83 N02)', async () => {
+    const onTheRoad = { ...trip, departAt: Date.now() - 60 * 60 * 1000 };
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [onTheRoad] },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
+    );
+    await openOwnTrip();
+    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
   });
 
   it('lets a passenger cancel an open request', async () => {
@@ -84,6 +109,7 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       /^Ertaga/,
     ])
       await tap(step);
+    expect(await screen.findByText('Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx.')).toBeTruthy();
     await tap('Dilnoza');
     await tap('Taklif yuborish');
     await tap('Davom etish');

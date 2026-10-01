@@ -17,6 +17,7 @@
   "blocked.title": "Hisobingiz bloklangan",
   "blocked.until": "Blok {date} kuni tugaydi.",
   "blocked.forever": "Savollar boʻlsa, qoʻllab-quvvatlash xizmatiga yozing.",
+  "support": "Qoʻllab-quvvatlashga yozish",
   "team.denied": "Bu boʻlim faqat {brand} jamoasi uchun.",
   "profile.title": "Profil",
   "profile.open": "Profil va rasm",
@@ -40,5 +41,8 @@
   "delete.confirm": "Oʻchirish",
   "delete.done": "Maʼlumotlaringiz oʻchirildi",
   "delete.doneHint": "Xohlasangiz, istalgan vaqtda qaytadan roʻyxatdan oʻtishingiz mumkin.",
-  "delete.close": "Yopish"
+  "delete.close": "Yopish",
+  "consent.hidden": "Raqamingiz hech kimga koʻrinmaydi.",
+  "avatar.passengerWhy": "Rasm bilan haydovchi tezroq tasdiqlaydi.",
+  "team.deniedHint": "Safar uchun yoʻlovchi yoki haydovchi botini oching."
 }

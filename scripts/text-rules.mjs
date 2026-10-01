@@ -14,7 +14,8 @@ export function isTextFile(path) {
 
 // Brand names are the folder names in brands/, so the check works for every brand.
 export function findViolations(path, content, brandIds) {
-  const brandWord = new RegExp(brandIds.join('|'), 'i');
+  // A word of its own: «tashqarida» is Uzbek, not the brand inside it (G27).
+  const brandWord = new RegExp(`(?<![\\p{L}\\p{N}])(${brandIds.join('|')})(?![\\p{L}\\p{N}])`, 'iu');
   const checkBrand = BRAND_FREE_DIRS.test(path) && !LINTED_CODE.test(path) && !ENCODED_DATA.test(path);
   return content.split('\n').flatMap((line, index) => {
     const where = `${path}:${index + 1}`;

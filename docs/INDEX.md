@@ -78,4 +78,16 @@
 | 73 | [73-pitak-candidates.md](73-pitak-candidates.md) | 42 кандидата в пятаки с точками и направлениями, уверенность А или Б |
 | 74 | [74-search-and-create-flow.md](74-search-and-create-flow.md) | Поиск и создание поездки: маршрут списками (область, район), точки при брони внутри района; водитель, попутчик, система; цель G26 |
 | 75 | [75-stand.md](75-stand.md) | Стенд: вся Rida локально (`pnpm stand`), сценарии целей на настоящем backend (`pnpm stand:check`), скриншоты |
+| 76 | [76-scenarios.md](76-scenarios.md) | Все сценарии всех людей (G27): метод шести сторон, роли и их задачи, как читать каталог |
+| 77 | [77-scenarios-passenger.md](77-scenarios-passenger.md) | Сценарии попутчика: вход, поиск, бронь, поездка, заявка, подписки |
+| 78 | [78-scenarios-driver.md](78-scenarios-driver.md) | Сценарии водителя: заявка, публикация, брони, предложения, кошелёк |
+| 79 | [79-scenarios-team.md](79-scenarios-team.md) | Сценарии команды: заявки водителей, жалобы, блоки, цены, пятаки, каналы, поддержка |
+| 80 | [80-scenarios-system.md](80-scenarios-system.md) | Сценарии системы и близких: боты, Cron, чат, звонки, живые экраны, каналы |
+| 81 | [81-scenarios-edges.md](81-scenarios-edges.md) | Края: злоупотребления, время и деньги, сбои |
+| 82 | [82-scenarios-combinations.md](82-scenarios-combinations.md) | Таблица сочетаний: что с чем проверено |
+| 83 | [83-scenarios-findings.md](83-scenarios-findings.md) | Находки G27: ошибки, упущения, оценки UX |
+| 84 | [84-lessons-learned-5.md](84-lessons-learned-5.md) | Журнал уроков: продолжение 5 (№59 и дальше) |
+| 85 | [85-cloudflare-free-features.md](85-cloudflare-free-features.md) | Бесплатные возможности Cloudflare, которые Rida не использует: находки и порядок |
+| 86 | [86-g27-texts.md](86-g27-texts.md) | G27: новые тексты на согласие владельца (ошибки, бот, подсказки) |
+| 87 | [87-g27-ux-scores.md](87-g27-ux-scores.md) | G27: оценки UX всех экранов по 4 вопросам |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

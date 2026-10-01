@@ -1,11 +1,10 @@
 import { ApiError, type UsersClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
-import type { MeResponse, RegistrationInput } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
 import { AccountGate } from './account-gate';
-import { TeamGate } from './team-gate';
+import { active, fakeClient, settings } from './account-test-kit';
 
 const permissions = vi.hoisted(() => ({
   requestSignedContact: vi.fn(async (): Promise<string | null> => 'contact=signed'),
@@ -13,34 +12,11 @@ const permissions = vi.hoisted(() => ({
 }));
 vi.mock('../telegram/permissions', () => permissions);
 
-const settings = { passengerAvatarRequired: false };
-const profile = {
-  id: '00000000000000000000000000000007',
-  firstName: 'Dilnoza',
-  gender: 'female' as const,
-  phone: '+998901234567',
-  roles: ['passenger' as const],
-  hasAvatar: false,
-  writeAccess: false,
-  rating: null,
-};
-const active: MeResponse = { state: 'active', profile, settings };
-
-function fakeClient(me: MeResponse | Error) {
-  return {
-    getMe: vi.fn(async () => {
-      if (me instanceof Error) throw me;
-      return me;
-    }),
-    register: vi.fn<(input: RegistrationInput) => Promise<MeResponse>>(async () => active),
-    uploadAvatar: vi.fn(async () => undefined),
-    setWriteAccess: vi.fn(async () => undefined),
-    deleteMe: vi.fn(async () => undefined),
-    getAvatar: vi.fn(async () => new Blob(['x'])),
-  };
-}
-
-const welcome = { icon: 'search', textKey: 'common.passenger.welcome' } as const;
+const welcome = {
+  icon: 'search',
+  textKey: 'common.passenger.welcome',
+  points: [{ icon: 'hidden', textKey: 'common.welcome.hidden' }],
+} as const;
 const gate = (client: UsersClient, app: 'passenger' | 'driver' = 'passenger') =>
   renderInShell(
     <AccountGate app={app} client={client} welcome={welcome}>
@@ -58,7 +34,10 @@ describe('AccountGate', () => {
     const brand = loadBrand();
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
     expect(screen.getByText('Safar toping')).toBeTruthy();
+    // What the person gets, before any question (docs/86 T11).
+    expect(screen.getByText('Telefon raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
     fireEvent.click(screen.getByText('Davom etish'));
+    expect(screen.getByText('Raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
     fireEvent.click(screen.getByText('Roziman'));
     const input = screen.getByDisplayValue('Dilnoza');
     fireEvent.change(input, { target: { value: 'Ali 998' } });
@@ -103,6 +82,11 @@ describe('AccountGate', () => {
     gate(fakeClient({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) }));
     expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
     expect(screen.getByText(/27-oktabr/)).toBeTruthy();
+    // A blocked person can still ask the team why (docs/86 V4).
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.admin}`);
+    open.mockRestore();
   });
 
   it('turns a blocked phone during registration into the block screen', async () => {
@@ -125,23 +109,5 @@ describe('AccountGate', () => {
     gate(failing);
     fireEvent.click(await screen.findByText('Qayta urinish'));
     await waitFor(() => expect(failing.getMe).toHaveBeenCalledTimes(2));
-  });
-});
-
-describe('TeamGate', () => {
-  const team = (client: UsersClient) =>
-    renderInShell(
-      <TeamGate client={client}>
-        <p>panel</p>
-      </TeamGate>,
-    );
-
-  it('opens the panel only for the team', async () => {
-    team(fakeClient(active));
-    expect(await screen.findByText('panel')).toBeTruthy();
-    team(fakeClient(new ApiError(403, 'auth.not_admin')));
-    expect(await screen.findByText(/faqat .* jamoasi uchun/)).toBeTruthy();
-    team(fakeClient(new ApiError(500)));
-    expect(await screen.findByText('Qayta urinish')).toBeTruthy();
   });
 });

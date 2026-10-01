@@ -36,7 +36,6 @@ export function StatusScreen({ application, onFix }: StatusScreenProps) {
               key={reason}
               className="cell-problem"
               before={<IconTile name="error" tone="accent" />}
-              multiline
               onClick={onFix}
             >
               {t(`drivers.reason.${reason}`)}

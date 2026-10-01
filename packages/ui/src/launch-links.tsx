@@ -4,6 +4,7 @@ import { ChatLink } from './chat/chat-link';
 import { FeedbackLink } from './feedback/feedback-link';
 import { BookingsLink } from './market/bookings-link';
 import { FindLink } from './market/find-link';
+import { RequestsLink } from './market/requests-link';
 import { TripLink } from './market/trip-link';
 import { SubscribeLink } from './subscriptions/subscribe-link';
 import { SubscriptionsLink } from './subscriptions/subscriptions-link';
@@ -18,7 +19,9 @@ export function LaunchLinks({ app, children }: { readonly app: MiniApp; readonly
           <FindLink enabled={app === 'passenger'}>
             <FeedbackLink enabled={app !== 'admin'}>
               <SubscriptionsLink>
-                <BookingsLink app={app}>{children}</BookingsLink>
+                <RequestsLink enabled={app === 'driver'}>
+                  <BookingsLink app={app}>{children}</BookingsLink>
+                </RequestsLink>
               </SubscriptionsLink>
             </FeedbackLink>
           </FindLink>

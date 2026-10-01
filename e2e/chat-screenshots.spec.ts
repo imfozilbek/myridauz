@@ -4,6 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { confirmed } from './bookings-mock';
 import { SHARE_TOKEN } from './chat-mock';
+import { openOwnTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -46,7 +47,7 @@ test('driver: the chat of a booking', async ({ page }) => {
   const shot = shooter(page, 'driver-chat');
   await open(page, appUrl(DRIVER.port));
   await page.getByText(t('common.myTrips')).click();
-  await page.getByText('Jasur').first().click();
+  await openOwnTrip(page);
   await page.getByText('Madina').click();
   await expect(page.getByText(t('chat.open'))).toBeVisible();
   await shot('1-booking');

@@ -1,8 +1,9 @@
+import type { TranslationKey } from '@platform/i18n';
 import type { Direction } from '@platform/contracts';
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { RouteView } from '../market/route-view';
@@ -11,7 +12,8 @@ import { MainButton } from '../telegram/bottom-button';
 
 type DirectionEditProps = {
   readonly direction: Direction;
-  readonly failed: boolean;
+  // The text of the refusal of the last save, or null.
+  readonly failed: TranslationKey | null;
   readonly onBack: () => void;
   // null removes the team's price: the formula works again.
   readonly onSave: (price: number | null) => void;
@@ -34,19 +36,17 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
             <RouteView from={direction.from} to={direction.to} />
           </div>
         </Section>
-        <Section>
-          <Input
-            header={t('pricing.directionPrice')}
-            type="number"
-            inputMode="numeric"
-            value={value}
-            status={failed ? 'error' : 'default'}
-            onChange={(event) => setValue(event.target.value)}
-          />
-        </Section>
+        <Field
+          label={t('pricing.directionPrice')}
+          type="number"
+          inputMode="numeric"
+          value={value}
+          status={failed === null ? 'default' : 'error'}
+          onChange={(event) => setValue(event.target.value)}
+        />
         <MedianHint direction={direction} />
       </List>
-      {failed ? <Text className="step-error">{t('errors.trips.price_out_of_bounds')}</Text> : null}
+      {failed === null ? null : <Text className="step-error">{t(failed)}</Text>}
       {direction.manual === null ? null : (
         <div className="step-note">
           <Button mode="plain" size="m" stretched onClick={() => onSave(null)}>

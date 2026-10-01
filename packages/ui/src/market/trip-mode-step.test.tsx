@@ -43,6 +43,13 @@ describe('the way a driver takes people (G26, docs/74)', () => {
     expect(container.querySelector('.pitak-map')).toBeTruthy();
   });
 
+  it('puts the pitak under the choice, not beside it: a 360 px phone shows the whole choice (N16)', async () => {
+    const container = open();
+    expect(await screen.findByText('Pitakdan olaman')).toBeTruthy();
+    expect(container.querySelectorAll('.cell-value')).toHaveLength(0);
+    expect(screen.getAllByText('Qoʻyliq pitagi').length).toBe(2);
+  });
+
   it('offers only «around the city» where the direction has no pitak', async () => {
     const container = open({ pitakOf: vi.fn(async () => null) });
     expect(await screen.findByText('Shahar boʻylab yigʻaman')).toBeTruthy();

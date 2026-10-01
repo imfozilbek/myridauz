@@ -1,9 +1,9 @@
 import {
   DriverGate,
   DriverHome,
+  DriverNotice,
   MyTripsScreen,
   NewTripFlow,
-  PendingNotice,
   RequestsSearchFlow,
   StartFlow,
   usePending,
@@ -18,6 +18,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'home.publish',
     hintKey: 'common.driver.newTripHint',
+    waitsApproval: true,
     Screen: NewTripFlow,
   },
   {
@@ -26,6 +27,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
+    waitsApproval: true,
     Screen: RequestsSearchFlow,
   },
   {
@@ -54,7 +56,7 @@ function DriverStart() {
   return (
     <StartFlow
       actions={ACTIONS}
-      notice={<PendingNotice />}
+      notice={<DriverNotice />}
       home={(go) => <DriverHome go={go} />}
       {...(pending ? {} : { covered: 'new_trip' })}
     />

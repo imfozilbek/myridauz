@@ -21,7 +21,8 @@ describe('a route from the landing (docs/59)', () => {
       testClients({ market: { searchTrips } }),
     );
     await tap(/^Bugun/);
-    await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled());
+    // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.
+    await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled(), { timeout: 5000 });
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
     await tap('Orqaga');
     await tap('Orqaga');

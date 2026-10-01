@@ -51,6 +51,12 @@ describe('complaints of the team (docs/17)', () => {
     // The team sees the blocks of the person the complaint is about (docs/65 C).
     expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
     expect(chat).not.toHaveBeenCalled();
+    // Under each decision: what happens to the person (docs/86 V9).
+    expect(screen.getByText('Shikoyat yopiladi, unga hech narsa boʻlmaydi.')).toBeTruthy();
+    expect(screen.getByText('Bot unga ogohlantirish yuboradi.')).toBeTruthy();
+    expect(screen.getByText(/^Hisobi 7\skunga bloklanadi\. Faol safarlari/u)).toBeTruthy();
+    expect(screen.getByText(/^Hisobi butunlay bloklanadi\./u)).toBeTruthy();
+    expect(screen.queryByText(/asosiy hisobiga qaytadi/u)).toBeNull();
     await tap('Chatni koʻrish');
     expect(await screen.findByText('Tezroq chiq')).toBeTruthy();
     await tap('7 kunga bloklash');
@@ -72,6 +78,9 @@ describe('complaints of the team (docs/17)', () => {
     });
     renderMarket(<ComplaintsScreen onBack={() => undefined} />, clients);
     await tap('Kelmadi');
+    expect(
+      await screen.findByText('Yoʻlovchi kelmagan boʻlsa, komissiya haydovchining asosiy hisobiga qaytadi.'),
+    ).toBeTruthy();
     await tap('Haydovchiga komissiyani qaytarish');
     await tap('Ogohlantirish');
     await waitFor(() => expect(decide).toHaveBeenCalledWith('c2', { action: 'warning', refund: true }));

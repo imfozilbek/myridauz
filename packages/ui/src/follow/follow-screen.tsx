@@ -96,9 +96,7 @@ function Follow({ token, onJoin }: Props) {
             {driver.firstName}
           </Cell>
           {value.plate ? (
-            <Cell multiline description={<PlateView plate={value.plate} small />}>
-              {t('share.follow.plate')}
-            </Cell>
+            <Cell description={<PlateView plate={value.plate} small />}>{t('share.follow.plate')}</Cell>
           ) : null}
           {meetingPoint ? (
             <Cell onClick={() => openExternal(mapUrl(meetingPoint))} subtitle={t('bookings.openMap')}>

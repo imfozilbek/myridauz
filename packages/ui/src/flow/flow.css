@@ -20,8 +20,36 @@
   color: var(--tgui--hint_color);
 }
 
+/* What the person gets: short lines with an icon, read at a glance (docs/86 T11, T12). */
+.welcome-points {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.welcome-points li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--tgui--link_color);
+}
+
+.welcome-points li span {
+  color: var(--tgui--text_color);
+}
+
 /* Main screen: grouped lists on the gray Telegram background. */
 .home {
   min-height: 100vh;
   background: var(--tgui--secondary_bg_color);
+}
+
+/* The icon of an action that waits for the approval of a driver: muted, the text stays readable (docs/86 V7). */
+.action-waiting {
+  display: grid;
+  opacity: 0.4;
 }

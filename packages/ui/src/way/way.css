@@ -5,12 +5,16 @@
   left: 8px;
   right: 8px;
   display: grid;
+  /* One column as wide as the screen: a long place name wraps, never pushes the card out (N14). */
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   justify-items: start;
 }
 .way-card {
   justify-self: stretch;
+  min-width: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   padding: 8px;
   border-radius: 16px;

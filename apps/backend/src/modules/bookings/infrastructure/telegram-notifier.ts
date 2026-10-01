@@ -66,6 +66,9 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       await system(booking.chatKey, 'declined');
       await toPassenger(booking, t('bot.booking.declined', await about(booking)));
     },
+    expired: async (booking) => {
+      await toPassenger(booking, t('bot.booking.expired', await about(booking)));
+    },
     cancelled: async (booking, by) => {
       await system(booking.chatKey, 'cancelled');
       await closeOnes(booking, 'cancelled');

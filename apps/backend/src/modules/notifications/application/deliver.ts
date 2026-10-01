@@ -1,4 +1,5 @@
 import type { NotificationJob } from './job';
+import { telegramUrl } from '../../../shared/telegram/api-url';
 
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 export type Tokens = Readonly<Record<NotificationJob['bot'], string | undefined>>;
@@ -20,7 +21,7 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   let response: Response;
   try {
     const method = job.edit === undefined ? 'sendMessage' : 'editMessageText';
-    response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+    response = await fetch(telegramUrl(token, method), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({

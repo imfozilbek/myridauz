@@ -21,6 +21,12 @@ describe('findViolations', () => {
     ]);
   });
 
+  it('finds the brand as a word, not inside another word of the text (G27)', () => {
+    expect(findViolations('packages/i18n/locales/x.json', '"a": "Acme bilan"', BRANDS)).toHaveLength(1);
+    expect(findViolations('packages/i18n/locales/x.json', '"a": "acme.uz"', BRANDS)).toHaveLength(1);
+    expect(findViolations('packages/i18n/locales/x.json', '"a": "tashqacmeda"', BRANDS)).toEqual([]);
+  });
+
   it('leaves the brand name to ESLint in code and allows it in brands and docs', () => {
     expect(findViolations('packages/x/src/a.ts', 'acme', BRANDS)).toEqual([]);
     expect(findViolations('brands/acme/x.json', 'Acme', BRANDS)).toEqual([]);

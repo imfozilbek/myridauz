@@ -16,6 +16,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import type { PlaceDirectory } from './directory';
 import { PlacePicker } from './place-picker';
 import { useHere } from './use-here';
+import { useOpenAtTop } from '../telegram/screen-top';
 import { useDirectory } from './use-directory';
 
 export type Route = { readonly from: Location; readonly to: Location };
@@ -53,6 +54,8 @@ function RouteForm({
   const from = chosenFrom ?? here;
   const [to, setTo] = useState<Location | null>(null);
   const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
+  // Back from a long list, the form shows «Qayerdan» again (docs/83 N22).
+  useOpenAtTop(picking);
   const [error, setError] = useState<RouteError | null>(null);
   const choose = useCallback(
     (place: Location) => {

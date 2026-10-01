@@ -63,3 +63,8 @@ export async function findTrips(page: Page, shot: Shot = none) {
   await expect(page.getByText(TEXT.book)).toBeVisible();
   await shot('4-trip');
 }
+
+// A card of the own trips of a driver has no driver on it (docs/83 U6): it opens by the card itself.
+export async function openOwnTrip(page: Page) {
+  await page.locator('.trip-card').first().click();
+}

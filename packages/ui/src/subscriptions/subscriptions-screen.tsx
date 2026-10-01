@@ -5,6 +5,7 @@ import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { DangerCell } from '../danger-cell';
 import { IconTile } from '../icon-tile';
 import { FactChips, type Fact } from '../market/fact-chips';
 import { PlacesGate } from '../market/places-gate';
@@ -103,12 +104,9 @@ function SubscriptionCard({ subscription, onChange }: CardProps) {
           {t('subscriptions.renew')}
         </Cell>
       ) : null}
-      <Cell
-        before={<IconTile name="blocked" />}
-        onClick={() => void act(() => subscriptions.remove(subscription.id))}
-      >
+      <DangerCell icon="blocked" onClick={() => void act(() => subscriptions.remove(subscription.id))}>
         {t('subscriptions.remove')}
-      </Cell>
+      </DangerCell>
     </Section>
   );
 }

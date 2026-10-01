@@ -47,7 +47,6 @@ export function HomeTrips({ rows, directory, onOpen }: Props) {
       {rows.map((row) => (
         <Cell
           key={row.id}
-          multiline
           before={<IconTile name={row.done ? 'selected' : 'trip'} tone={row.done ? 'brand' : 'accent'} />}
           subtitle={when(row.departAt, now)}
           description={row.detail}

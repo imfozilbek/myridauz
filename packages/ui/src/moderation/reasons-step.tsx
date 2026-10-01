@@ -33,7 +33,6 @@ export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
             <Cell
               key={reason}
               Component="label"
-              multiline
               before={<Multiselectable checked={picked.includes(reason)} onChange={() => toggle(reason)} />}
             >
               {t(`drivers.reason.${reason}`)}

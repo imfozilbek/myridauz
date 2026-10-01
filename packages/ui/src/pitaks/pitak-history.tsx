@@ -52,7 +52,6 @@ export function PitakHistory({ pitaks, directory, onBack }: Props) {
     return (
       <Cell
         key={`${change.at}-${index}`}
-        multiline
         subtitle={`${formatDate(at)} ${formatTime(at)}`}
         description={stateText(change)}
       >

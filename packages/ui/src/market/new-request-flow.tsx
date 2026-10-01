@@ -110,7 +110,11 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <PlacesGate>
-      <StepLayout icon="request" title={t('market.request.review.title')}>
+      <StepLayout
+        icon="request"
+        title={t('market.request.review.title')}
+        hint={t('market.request.review.hint')}
+      >
         <BackButton onClick={() => setStep('price')} />
         <List>
           <Section>

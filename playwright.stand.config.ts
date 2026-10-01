@@ -10,11 +10,19 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   globalSetup: './e2e/stand/seed.ts',
-  use: { ...devices['Pixel 7'], browserName: 'chromium', locale: 'uz-UZ' },
+  // A fake camera that is always allowed: the driver takes photos with our camera screen (docs/47).
+  use: {
+    ...devices['Pixel 7'],
+    browserName: 'chromium',
+    locale: 'uz-UZ',
+    launchOptions: { args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] },
+  },
   webServer: {
     // Every check starts from the clean stand: the same data each time.
     command: 'pnpm stand --fresh',
     url: `http://localhost:${STAND_API_PORT}/health`,
     timeout: BUILD_AND_START_MS,
+    // STAND_REUSE=1: the checks run on a stand already started by hand, to read its log (docs/75).
+    reuseExistingServer: process.env['STAND_REUSE'] === '1',
   },
 });

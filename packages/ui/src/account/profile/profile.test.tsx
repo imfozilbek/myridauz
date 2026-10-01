@@ -1,4 +1,4 @@
-import type { UsersClient } from '@platform/api-client';
+import { ApiError, type UsersClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StartFlow } from '../../flow/start-flow';
@@ -74,6 +74,8 @@ describe('profile', () => {
     const { client, account } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasmni almashtirish')).toBeTruthy();
+    // Why a passenger adds a photo (docs/86 T14).
+    expect(screen.getByText('Rasm bilan haydovchi tezroq tasdiqlaydi.')).toBeTruthy();
     const input = document.querySelector('input[type=file]') as HTMLInputElement;
     expect(input.getAttribute('capture')).toBe('user');
     const photo = new File(['x'], 'me.jpg', { type: 'image/jpeg' });
@@ -83,6 +85,10 @@ describe('profile', () => {
     client.uploadAvatar.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
     expect(screen.getByText('Rasmni yuklab boʻlmadi. Qayta urinib koʻring.')).toBeTruthy();
+    // A photo too large says so: another try of the same photo would not help (docs/86 T5).
+    client.uploadAvatar.mockRejectedValueOnce(new ApiError(413, 'users.avatar_too_large'));
+    await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
+    expect(screen.getByText('Rasm juda katta. Boshqa rasmni tanlang.')).toBeTruthy();
   });
 
   it('sends people on Telegram Desktop to the phone: no camera there', () => {
@@ -106,8 +112,11 @@ describe('delete my data (docs/30)', () => {
     Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
+    // The dangerous row and button are red, like in Telegram (docs/86 V12).
+    expect(screen.getByText('Maʼlumotlarimni oʻchirish').closest('.danger-text')).not.toBeNull();
     fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
     expect(screen.getByText(/Buni qaytarib boʻlmaydi/)).toBeTruthy();
+    expect(screen.getByText('Oʻchirish').closest('.danger-button')).not.toBeNull();
     client.deleteMe.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
     expect(screen.getByText(/qayta urinib/)).toBeTruthy();
