@@ -17,7 +17,8 @@ export const MINI_APPS = [
     name: 'driver',
     port: 4102,
     welcome: t('common.driver.welcome'),
-    action: t('common.driver.newTrip'),
+    // G25: an approved driver publishes from the main button, the list does not repeat it.
+    action: t('home.publish'),
     mainButton: t('home.publish'),
   },
   { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications'), mainButton: null },
@@ -54,7 +55,7 @@ export const TEXT = {
   reasonPlate: t('drivers.reason.plate_not_readable'),
   approve: t('moderation.approve'),
   wholeRegion: t('places.wholeRegion'),
-  newTrip: t('common.driver.newTrip'),
+  newTrip: t('home.publish'),
   findTrip: t('common.passenger.findTrip'),
   tomorrow: /^Ertaga/,
   tripSeatsTitle: t('market.seats.title'),

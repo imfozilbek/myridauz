@@ -1,4 +1,5 @@
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import type { Border } from '@platform/contracts';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
 import { CHORSU, FARGONA, fakeMap, openWay } from '../map/map-test-kit';
@@ -66,6 +67,43 @@ describe('«Qayerdan / Qayerga» over the map (G24, docs/71)', { timeout: 20_000
     expect(screen.queryByText('Pitakdan')).toBeNull();
     await tap('Safarlarni koʻrish');
     expect(done[0]?.mode).toBe('door');
+  });
+
+  it('keeps a late border of the old district from pulling the map back', async () => {
+    vi.mocked(requestPosition).mockResolvedValue(HERE);
+    const map = fakeMap();
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => void (release = resolve));
+    const square = (id: string): Border => ({
+      id,
+      parts: [
+        [
+          [
+            [69, 41],
+            [70, 41],
+            [70, 42],
+            [69, 41],
+          ],
+        ],
+      ],
+    });
+    openWay(map, {
+      search: vi.fn(async () => [MARGILON]),
+      // The border of the start comes only after the person moved to Margʻilon.
+      border: vi.fn(async (id: string) => (id === '1726269' ? gate.then(() => square(id)) : square(id))),
+    });
+    await screen.findByText('Siz turgan joy');
+    await tap('Qayerga borasiz?');
+    type('Margilan');
+    await tap('Yangi Margʻilon');
+    await waitFor(() => expect(map.clipped()).toBe(true));
+    // The late border arrives: give it the time to reach the map.
+    await act(async () => {
+      release();
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+    const afterMove = map.log().slice(map.log().lastIndexOf('move'));
+    expect(afterMove.filter((step) => step === 'clip')).toHaveLength(1);
   });
 
   it('keeps the last places on the phone and offers them next time', async () => {

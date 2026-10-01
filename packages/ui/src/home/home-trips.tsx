@@ -1,4 +1,4 @@
-import { Cell, Section } from '../components';
+import { Badge, Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useWhenLabel } from '../market/when';
@@ -11,6 +11,10 @@ type HomeRow = {
   readonly departAt: number;
   // The status of a booking, or the new requests of a trip.
   readonly detail: string;
+  // A confirmed booking: it shows at a glance, not only in the gray line.
+  readonly done?: boolean;
+  // The new requests of a trip: a counter like the unread one of Telegram.
+  readonly count?: number;
 };
 
 type Props = {
@@ -32,8 +36,9 @@ export function HomeTrips({ rows, more, directory, onOpen, onAll }: Props) {
       {rows.map((row) => (
         <Cell
           key={row.id}
-          before={<IconTile name="trip" tone="accent" />}
+          before={<IconTile name={row.done ? 'selected' : 'trip'} tone={row.done ? 'brand' : 'accent'} />}
           subtitle={`${when(row.departAt)} · ${row.detail}`}
+          {...(row.count ? { after: <Badge type="number">{String(row.count)}</Badge> } : {})}
           onClick={() => onOpen(row.id)}
         >
           {`${name(row.from)} → ${name(row.to)}`}

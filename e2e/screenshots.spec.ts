@@ -38,7 +38,7 @@ test('places: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
-  await page.getByText(MINI_APPS[0].action).first().click();
+  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
   await page.getByText(TEXT.wayList).click();
   await expect(page.getByText(TEXT.from)).toBeVisible();
   await shot('1-route');

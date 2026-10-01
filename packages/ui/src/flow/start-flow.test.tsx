@@ -1,5 +1,5 @@
-import { fireEvent, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it } from 'vitest';
 import { renderInShell } from '../test-shell';
 import { StartFlow } from './start-flow';
 
@@ -20,7 +20,15 @@ const ACTIONS = [
   },
 ] as const;
 
+afterEach(cleanup);
+
 describe('StartFlow', () => {
+  it('does not repeat the action the main button already does (G25)', () => {
+    renderInShell(<StartFlow actions={ACTIONS} covered="find_trip" />);
+    expect(screen.queryByText('Safar topish')).toBeNull();
+    expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+  });
+
   it('goes from the main screen to a section and back', () => {
     const { tracked } = renderInShell(<StartFlow actions={ACTIONS} />);
     expect(screen.getByText('Safar topish')).toBeTruthy();

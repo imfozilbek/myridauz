@@ -20,6 +20,21 @@ describe('the main screen of a passenger (G25)', { timeout: 20_000 }, () => {
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'card' }));
   });
 
+  it('starts the search at the start of the way from its line', async () => {
+    passenger(async () => []);
+    await tap('Qayerdan ketasiz?');
+    expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
+  });
+
+  it('keeps the place while loading and offers to try again after a failure', async () => {
+    let fail = true;
+    const { container } = passenger(async () => (fail ? Promise.reject(new Error('down')) : []));
+    expect(container.querySelector('[aria-busy="true"]')).toBeTruthy();
+    fail = false;
+    await tap('Qayta urinish');
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+  });
+
   it('shows the nearest booking, changes its status by itself and opens it', async () => {
     let status: typeof booking.status = 'requested';
     const { signal } = passenger(async () => [{ ...booking, status }]);
@@ -45,6 +60,8 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
   it('shows the nearest trip with its new requests and opens it', async () => {
     driver([trip], [booking, { ...booking, id: 'b2' }]);
     expect(await screen.findByText(/2 ta yangi soʻrov/u)).toBeTruthy();
+    // The counter beside the trip, like the unread one of Telegram.
+    expect(screen.getByText('2')).toBeTruthy();
     await tap('Chilonzor → Fargʻona shahri');
     expect(screen.getByText(linkOf({ name: MY_TRIP_LINK, id: trip.id }))).toBeTruthy();
   });
@@ -52,7 +69,7 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
   it('offers the last route of a driver whose trips are over', async () => {
     driver([{ ...trip, status: 'completed' }]);
     expect(await screen.findByText('Qayerga ketyapsiz?')).toBeTruthy();
-    expect(screen.getByText('Safar eʼlon qilish')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
     await tap('Oxirgi yoʻnalish');
     expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
   });
@@ -64,6 +81,6 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
     cleanup();
     driver([], [], true);
     await screen.findByText('Qayerga ketyapsiz?');
-    expect(screen.queryByText('Safar eʼlon qilish')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Safar eʼlon qilish' })).toBeNull();
   });
 });

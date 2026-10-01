@@ -14,12 +14,14 @@ type StartFlowProps = {
   readonly notice?: ReactNode;
   // The trips of the person or the main action, above the actions (G25).
   readonly home?: (go: HomeGo) => ReactNode;
+  // The action the main button already does: the list does not repeat it (G25).
+  readonly covered?: string;
 };
 type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly launch?: Launch };
 
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
-export function StartFlow({ actions, opened, notice, home }: StartFlowProps) {
+export function StartFlow({ actions, opened, notice, home, covered }: StartFlowProps) {
   const [screen, setScreen] = useState<Screen>(() => {
     const action = actions.find((item) => item.id === opened);
     return action ? { action } : 'home';
@@ -40,7 +42,7 @@ export function StartFlow({ actions, opened, notice, home }: StartFlowProps) {
   if (screen === 'home') {
     return (
       <HomeScreen
-        actions={actions}
+        actions={actions.filter((action) => action.id !== covered)}
         notice={notice}
         top={home?.(go)}
         onOpen={openAction}

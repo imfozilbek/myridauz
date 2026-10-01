@@ -23,7 +23,7 @@ import './way.css';
 
 type Props = {
   readonly done: TranslationKey;
-  readonly pickEnd?: boolean; // G25: the main screen asks for the end at once
+  readonly pick?: 'from' | 'to'; // G25: the main screen asks for a point at once
   readonly onBack: () => void;
   readonly onDone: (way: Way) => void;
 };
@@ -39,7 +39,7 @@ export function WayScreen(props: Props) {
   return <WayForm {...props} directory={state.directory} />;
 }
 
-function WayForm({ done, pickEnd = false, onBack, onDone, directory }: WayFormProps) {
+function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
   useScreenView('way.screen');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -49,7 +49,7 @@ function WayForm({ done, pickEnd = false, onBack, onDone, directory }: WayFormPr
   const [here, setHere] = useState(false);
   const [mode, setMode] = useState<PickupMode>('both');
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
-  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(pickEnd ? 'to' : null);
+  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(pick ?? null);
   const [note, setNote] = useState<TranslationKey | null>(null);
   useEffect(() => {
     track({ name: 'way_step', screen: 'way.screen', step: 'opened' });

@@ -52,9 +52,11 @@ export function PointScreen({ title, start, find, onBack, onPick }: Props) {
   useEffect(() => {
     if (!view || !district || clipped.current === district) return;
     clipped.current = district;
+    // A border that comes after the person moved to another place is stale: it would pull the map back.
+    const fresh = () => clipped.current === district;
     map.border(district).then(
-      (border) => view.clip(border.parts),
-      () => view.clip(null),
+      (border) => fresh() && view.clip(border.parts),
+      () => fresh() && view.clip(null),
     );
   }, [view, district, where, map]);
   const moveTo = (point: Point, how: Method) => {

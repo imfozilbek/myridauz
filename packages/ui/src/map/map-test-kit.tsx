@@ -25,7 +25,7 @@ const whereOf = async (point: Point): Promise<Where> =>
 export const FARGONA = { lat: 40.38, lng: 71.78 };
 const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
 
-type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf'>>;
+type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border'>>;
 
 // The screen «Qayerdan / Qayerga» over a fake map (G24): what it gave back when done.
 export function openWay(map: ReturnType<typeof fakeMap>, calls: Calls = {}) {

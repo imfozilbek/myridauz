@@ -10,8 +10,8 @@ describe('StartPage', () => {
     const { tracked } = renderInShell(<StartPage />);
     for (const action of ['Soʻrov qoldirish', 'Mening safarlarim'])
       expect(screen.getByText(action)).toBeTruthy();
-    // «Safar topish» is an action and the main button of the main screen (G25).
-    expect(screen.getAllByText('Safar topish')).toHaveLength(2);
+    // «Safar topish» is the main button now, the list does not repeat it (G25).
+    expect(screen.getAllByText('Safar topish')).toHaveLength(1);
     expect(tracked.map((event) => event.screen)).toEqual(['home']);
   });
 
@@ -26,7 +26,7 @@ describe('StartPage', () => {
     fireEvent.click(screen.getByText('Orqaga'));
     // No bookings: the main screen asks where to go (G25).
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    fireEvent.click(screen.getAllByText('Safar topish')[0] as HTMLElement);
+    fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
     expect(await screen.findByText('Roʻyxatdan tanlash')).toBeTruthy();
   });
 });

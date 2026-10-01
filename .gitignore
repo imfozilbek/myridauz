@@ -25,3 +25,4 @@ brands/*/wrangler.tmp.toml
 apps/landing/.render/
 apps/landing/.client/
 .map-data/
+.impeccable/

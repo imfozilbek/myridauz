@@ -10,6 +10,7 @@ import { useDirectory } from '../places/use-directory';
 import { MainButton } from '../telegram/bottom-button';
 import { knownPosition } from '../telegram/location';
 import { useNameText } from '../way/way-end';
+import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { nextBookings } from './home-items';
 import { useHomeTap } from './use-home-tap';
@@ -19,13 +20,17 @@ import { useHomeTap } from './use-home-tap';
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
   const { t } = useI18n();
   const { bookings } = useApiClients();
-  const { value } = useLoad(() => bookings.myBookings());
+  const { value, failed, reload } = useLoad(() => bookings.myBookings());
   const [state] = useDirectory();
   const tap = useHomeTap();
   const shown = value ? nextBookings(value) : null;
   return (
     <>
-      {!shown || state.status !== 'ready' ? null : shown.items.length > 0 ? (
+      {failed ? (
+        <HomeFailed onRetry={reload} />
+      ) : !shown || state.status !== 'ready' ? (
+        <HomeLoading />
+      ) : shown.items.length > 0 ? (
         <HomeTrips
           rows={shown.items.map((booking) => ({
             id: booking.id,
@@ -33,6 +38,7 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
             to: booking.trip.to,
             departAt: booking.trip.departAt,
             detail: t(`bookings.status.${booking.status}`),
+            done: booking.status === 'confirmed',
           }))}
           more={shown.more}
           directory={state.directory}
@@ -41,8 +47,8 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
         />
       ) : (
         <AskWay
-          onFrom={tap('card', () => go('find_trip'))}
-          onTo={tap('card', () => go('find_trip', { pickEnd: true }))}
+          onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
+          onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
         />
       )}
       <MainButton text={t('common.passenger.findTrip')} onClick={tap('main_button', () => go('find_trip'))} />
@@ -66,7 +72,7 @@ function AskWay({ onFrom, onTo }: { readonly onFrom: () => void; readonly onTo: 
     // Asked once, when the main screen opens.
   }, []);
   return (
-    <Section>
+    <Section header={t('common.passenger.findTrip')}>
       <Cell
         before={<IconTile name="origin" />}
         {...(here ? { subtitle: t('way.here') } : {})}

@@ -23,7 +23,7 @@ async function openWay(page: Page) {
   await mockMap(page, state);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.getByText(TEXT.findTrip).first().click();
+  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
   // A fills itself where the person stands (docs/71).
   await expect(page.getByText(t('way.here'))).toBeVisible();
   await expect(page.getByText('Qatortol')).toBeVisible();

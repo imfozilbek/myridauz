@@ -6,6 +6,7 @@ import {
   PendingNotice,
   RequestsSearchFlow,
   StartFlow,
+  usePending,
   type StartAction,
 } from '@platform/ui';
 
@@ -41,7 +42,21 @@ const ACTIONS: readonly StartAction[] = [
 export function StartPage() {
   return (
     <DriverGate>
-      <StartFlow actions={ACTIONS} notice={<PendingNotice />} home={(go) => <DriverHome go={go} />} />
+      <DriverStart />
     </DriverGate>
+  );
+}
+
+// An approved driver publishes from the main button, so the list does not repeat «Yangi safar»;
+// while the application is checked there is no main button and the action stays (G25).
+function DriverStart() {
+  const pending = usePending();
+  return (
+    <StartFlow
+      actions={ACTIONS}
+      notice={<PendingNotice />}
+      home={(go) => <DriverHome go={go} />}
+      {...(pending ? {} : { covered: 'new_trip' })}
+    />
   );
 }

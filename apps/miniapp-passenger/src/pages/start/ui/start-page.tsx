@@ -36,5 +36,6 @@ const ACTIONS: readonly StartAction[] = [
 ];
 
 export function StartPage() {
-  return <StartFlow actions={ACTIONS} home={(go) => <PassengerHome go={go} />} />;
+  // «Safar topish» is the main button of the main screen: the list does not repeat it (G25).
+  return <StartFlow actions={ACTIONS} covered="find_trip" home={(go) => <PassengerHome go={go} />} />;
 }

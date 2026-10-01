@@ -9,6 +9,7 @@ import { useLoad } from '../market/use-list';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { MainButton } from '../telegram/bottom-button';
+import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { lastRoute, nextTrips } from './home-items';
 import { useHomeTap } from './use-home-tap';
@@ -18,11 +19,20 @@ import { useHomeTap } from './use-home-tap';
 export function DriverHome({ go }: { readonly go: HomeGo }) {
   const { t } = useI18n();
   const { market, bookings } = useApiClients();
-  const { value } = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]));
+  const { value, failed, reload } = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]));
   const [state] = useDirectory();
   const pending = usePending();
   const tap = useHomeTap();
-  if (!value || state.status !== 'ready') return null;
+  const main = pending ? null : (
+    <MainButton text={t('home.publish')} onClick={tap('main_button', () => go('new_trip'))} />
+  );
+  if (failed || !value || state.status !== 'ready')
+    return (
+      <>
+        {failed ? <HomeFailed onRetry={reload} /> : <HomeLoading />}
+        {main}
+      </>
+    );
   const [trips, requests] = value;
   const shown = nextTrips(trips, requests);
   const rows = shown.items.map(({ trip, requests: count }) => ({
@@ -31,6 +41,7 @@ export function DriverHome({ go }: { readonly go: HomeGo }) {
     to: trip.to,
     departAt: trip.departAt,
     detail: count > 0 ? t('home.requests', { count: String(count) }) : t(`market.status.${trip.status}`),
+    count,
   }));
   return (
     <>
@@ -50,9 +61,7 @@ export function DriverHome({ go }: { readonly go: HomeGo }) {
           onLast={(route) => tap('last_route', () => go('new_trip', { route }))()}
         />
       )}
-      {pending ? null : (
-        <MainButton text={t('home.publish')} onClick={tap('main_button', () => go('new_trip'))} />
-      )}
+      {main}
     </>
   );
 }
@@ -71,7 +80,7 @@ function AskTrip({ last, directory, onNew, onLast }: AskProps) {
   const from = last ? directory.find(last.from) : undefined;
   const to = last ? directory.find(last.to) : undefined;
   return (
-    <Section>
+    <Section header={t('home.publish')}>
       <Cell before={<IconTile name="destination" tone="accent" />} onClick={onNew}>
         {t('home.driver.question')}
       </Cell>

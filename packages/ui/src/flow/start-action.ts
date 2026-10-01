@@ -16,10 +16,10 @@ export type StartAction = {
 };
 
 // How the main screen opens a section (G25): a booking or a trip by its link, the search right at
-// the end of the way, a new trip with a known route.
+// a point of the way, a new trip with a known route.
 export type Launch = {
   readonly link?: AppLink;
-  readonly pickEnd?: boolean;
+  readonly pick?: 'from' | 'to';
   readonly route?: { readonly from: Location; readonly to: Location };
 };
 // The block of the main screen opens the section of an action with what to show first.
