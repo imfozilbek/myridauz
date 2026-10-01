@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
+import { DriverTripMap } from '../bookings/driver-trip-map';
 import { ChatScreen } from '../chat/chat-screen';
 import { DriverShare } from '../comfort/driver-share';
 import { SentOffers } from '../bookings/sent-offers';
@@ -65,6 +66,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
   });
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   // A cancel is asked first; a failed one keeps the trip open with the reason (docs/65 B3, B4).
   const cancel = async (open: Trip) => {
@@ -89,14 +91,17 @@ function MyTrips({ onBack, link }: ScreenProps) {
     return <DriverBooking booking={booking} onClose={close} />;
   }
   if (trip && value) {
-    const back = () => (setOpened(null), setFailure(null));
+    const back = () => (setOpened(null), setFailure(null), setMapOpen(false));
+    const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
+    if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
     return (
       <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)}>
         <ActionFailure error={failure} />
         <DriverShare trip={trip} />
         <TripBookings
-          bookings={value[1].filter((item) => item.trip.id === trip.id)}
+          bookings={ofTrip}
           onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
+          onMap={() => setMapOpen(true)}
         />
       </TripScreen>
     );

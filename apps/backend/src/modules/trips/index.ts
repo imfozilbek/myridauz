@@ -6,10 +6,11 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
+import { pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { publishTrip } from './application/publish';
-import { cancelTrip, views } from './application/read';
-import { setMeetingPoint } from './application/meeting-point';
+import { cancelTrip } from './application/read';
+import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
 import { tripRoutes } from './http/trip-routes';
 import { d1Trips } from './infrastructure/d1-trips';
@@ -48,6 +49,7 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
     driverToken: env.DRIVER_BOT_TOKEN,
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
   }),
+  pitakOf: (from, to) => pitakOf(env, from, to),
   changed: (tripId, event) => onChange(env, tripId, event),
   mask: (text) => maskContacts(text).text,
   newId: () => crypto.randomUUID(),
@@ -57,15 +59,6 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
 export const tripsModule = tripRoutes(tripsDeps);
 
 // The Cron job (docs/35): trips over by now become completed.
-// A location the driver sent to the driver bot as an answer to a trip message (docs/14).
-export const meetingPointFromBot = (
-  env: Bindings,
-  driverId: number,
-  messageId: number,
-  lat: number,
-  lng: number,
-) => setMeetingPoint(tripsDeps(env), driverId, messageId, { lat, lng });
-
 export const completeTrips = (env: Bindings, now: number) => tripsDeps(env).trips.completeOver(now);
 
 // For bookings (G08): the facts of a trip, the views, a trip from an accepted offer, a cancel.
@@ -73,7 +66,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const trip = await tripsDeps(env).trips.find(id);
   if (!trip) return undefined;
   const now = Date.now();
-  const { driverId, from, to, departAt, km, seats, price, meetingPoint } = trip;
+  const { driverId, from, to, departAt, km, seats, price, pickupMode } = trip;
   const over = statusAt(trip, now) === 'completed';
   const { endsAt } = trip;
   return {
@@ -85,7 +78,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
     km,
     seats,
     price,
-    meetingPoint,
+    pickupMode,
     plate: trip.car?.plate ?? null,
     endsAt,
     live: isLive(trip, now),

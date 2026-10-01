@@ -11,7 +11,7 @@ import { BackButton } from '../telegram/back-button';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
-import type { TripDraft } from './new-trip-flow';
+import type { TripDraft } from './trip-draft';
 import { RouteView } from './route-view';
 import { useWhenLabel } from './when';
 
@@ -39,7 +39,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
   const publish = async () => {
     setError(null);
     try {
-      const { route, departAt, seats, price, womanOnBoard, comment } = draft;
+      const { route, departAt, seats, price, womanOnBoard, comment, pickupMode } = draft;
       await market.publishTrip({
         from: route.from.id,
         to: route.to.id,
@@ -48,6 +48,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
         price,
         womanOnBoard,
         comment,
+        pickupMode,
       });
       track({ name: 'trip_step', screen: 'market.review', step: 'published' });
       if (isReturn) track({ name: 'return_trip_created', screen: 'market.review' });

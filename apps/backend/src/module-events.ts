@@ -2,7 +2,6 @@ import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
   passengerRideCount,
-  pickupMessageSent,
   filedRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
@@ -85,13 +84,8 @@ handleRequestPublished(async (env, requestId) => {
   if (request) await requestPublished(env, request);
 });
 
-// Once Telegram gave a message its id: the passenger answers the confirmation with the pickup
-// point (docs/14); a channel post is remembered to be edited later (docs/15).
-handleAfterSent((env, after, messageId) =>
-  after.type === 'pickup'
-    ? pickupMessageSent(env, after.bookingId, messageId)
-    : tripChannels.remember(env, after, messageId),
-);
+// Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
+handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));
 
 // The ratings ask about rides of ended trips and show first names only (docs/24).
 wireRatings({

@@ -1,75 +1,10 @@
 import { DAY_MS, tashkentDate, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
-import type { Person } from '../../users';
 import { placeMatches } from '../../../shared/places/place-match';
-import { cancel, type TripRecord } from '../domain/trip';
+import { cancel } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
-import { NO_RIDERS, tripView, type Riders } from './views';
+import { views } from './views-of';
+import { withFit } from './search-fit';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
-
-// Views of many trips: the driver and the car are read once per driver.
-async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, Riders>> {
-  const riders = await deps.riders(trips.map((trip) => trip.id));
-  const women = await Promise.all(
-    riders.map(async (rider) => (await deps.people.find(rider.passengerId))?.gender === 'female'),
-  );
-  const byTrip = new Map<string, Riders>();
-  riders.forEach((rider, index) => {
-    const known = byTrip.get(rider.tripId) ?? { seats: 0, woman: false };
-    byTrip.set(rider.tripId, {
-      seats: known.seats + rider.seats,
-      woman: known.woman || women[index] === true,
-    });
-  });
-  return byTrip;
-}
-
-// The recommended price of each route once: shown next to the driver's price (docs/40, question 44).
-async function recommendedOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Map<string, number>> {
-  const routes = [...new Set(trips.map((trip) => `${trip.from}:${trip.to}`))];
-  const prices = await Promise.all(
-    routes.map(async (route) => {
-      const [from = '', to = ''] = route.split(':');
-      const found = await deps.recommend(from, to);
-      return found.ok ? ([route, found.value.price] as const) : null;
-    }),
-  );
-  return new Map(prices.filter((price) => price !== null));
-}
-
-export async function views(deps: TripsDeps, trips: readonly TripRecord[]): Promise<Trip[]> {
-  const now = deps.now();
-  const [riders, ratings, recommended] = await Promise.all([
-    ridersOf(deps, trips),
-    deps.ratings([...new Set(trips.map((trip) => trip.driverId))]),
-    recommendedOf(deps, trips),
-  ]);
-  const drivers = new Map<number, Promise<Person | undefined>>();
-  const driverOf = (id: number) => {
-    const known = drivers.get(id);
-    if (known) return known;
-    const loading = deps.people.find(id);
-    drivers.set(id, loading);
-    return loading;
-  };
-  const found = await Promise.all(
-    trips.map(async (trip) => {
-      // The car kept in the trip: a new check of the driver hides nothing (docs/65 A1).
-      const [driver, car] = [await driverOf(trip.driverId), trip.car];
-      if (!driver || !car) return null;
-      const price = recommended.get(`${trip.from}:${trip.to}`) ?? null;
-      return tripView(
-        trip,
-        driver,
-        car,
-        now,
-        riders.get(trip.id) ?? NO_RIDERS,
-        ratings.get(trip.driverId),
-        price,
-      );
-    }),
-  );
-  return found.filter((trip) => trip !== null);
-}
 
 // A passenger's search: the day in Tashkent, places or regions, "Mashinada ayol bor" (docs/06, docs/14).
 // By the hour of departure; within the same hour a higher rating goes first (docs/24). People with
@@ -87,7 +22,7 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
   const hidden = await deps.hidden([...new Set(fits.map((trip) => trip.driverId))]);
   const shown = fits.filter((trip) => !hidden.has(trip.driverId));
   const found = (await views(deps, shown)).filter((trip) => trip.seatsLeft > 0).sort(byHourThenRating);
-  return search.woman ? found.filter((trip) => trip.woman) : found;
+  return withFit(deps, search.woman ? found.filter((trip) => trip.woman) : found, search);
 }
 
 const HOUR_MS = 60 * 60 * 1000;

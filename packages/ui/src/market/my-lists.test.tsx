@@ -22,6 +22,7 @@ const request: RideRequest = {
   seats: 2,
   price: 95000,
   status: 'open',
+  pickupMode: 'both',
 };
 
 describe('Mening safarlarim (docs/35)', () => {

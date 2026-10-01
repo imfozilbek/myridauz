@@ -48,3 +48,9 @@ export async function registerUser(id: number) {
 
 // The public id of a registered test person: the apps and the paths use it (docs/65 A3).
 export const pid = async (id: number) => (await localUsers.find(id))?.publicId ?? 'none';
+
+// The route of the tests (G24, docs/70): from the door in Mirobod to a home in Samarkand.
+const MIROBOD = { lat: 41.292, lng: 69.279 };
+const SAMARQAND = { lat: 39.6547, lng: 66.9758 };
+export const doorBooking = (seats: number) => ({ seats, mode: 'door', pickup: MIROBOD, dropoff: SAMARQAND });
+export const REQUEST_WAY = { pickupMode: 'door', pickup: MIROBOD, dropoff: SAMARQAND } as const;

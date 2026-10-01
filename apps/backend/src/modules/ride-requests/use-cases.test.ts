@@ -8,6 +8,14 @@ import { publicIdOf } from '../../test-people';
 // 2026-10-01 06:00 in Tashkent.
 const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
+const HOME = { lat: 41.2856, lng: 69.2045 };
+const AWAY = { lat: 39.6547, lng: 66.9758 };
+const FAR_NORTH = { lat: 46, lng: 60 };
+const PITAK = {
+  id: 'toshkent-avtovokzal',
+  name: 'Toshkent avtovokzali',
+  point: { lat: 41.2569, lng: 69.1925 },
+};
 const PLACES = new Map(
   [
     { id: '1726', parentId: null, oneCity: true },
@@ -49,11 +57,23 @@ function setup() {
             },
           },
     places: async () => PLACES,
+    // Toshkent shahri → Samarqand viloyati has a pitak; a point far to the north is out of the route.
+    pitakOf: async (from, to) => (from === '1726' && to === '1718' ? PITAK : null),
+    fits: (point) => point.lat < 45,
     published: async () => undefined,
     newId: () => `request-${(id += 1)}`,
     now: () => now,
   };
-  const request = { from: '1726273', to: '1718401', date: '2026-10-01', seats: 1, price: 90000 };
+  const request = {
+    from: '1726273',
+    to: '1718401',
+    date: '2026-10-01',
+    seats: 1,
+    price: 90000,
+    pickupMode: 'door' as const,
+    pickup: HOME,
+    dropoff: AWAY,
+  };
   return { deps, request, setNow: (next: number) => void (now = next) };
 }
 
@@ -74,6 +94,23 @@ describe('ride requests (docs/09, docs/35)', () => {
     });
     for (let index = 0; index < 3; index += 1) expect((await publishRequest(deps, 1, request)).ok).toBe(true);
     expect(await publishRequest(deps, 1, request)).toEqual({ ok: false, error: 'trips.too_many' });
+  });
+
+  it('checks the way and the points (G24, docs/70)', async () => {
+    const { deps, request } = setup();
+    const wrong = { ok: false, error: 'bookings.wrong_mode' };
+    expect(await publishRequest(deps, 1, { ...request, pickup: null })).toEqual(wrong);
+    const noPitak = { ...request, from: '1718401', to: '1726273', pickupMode: 'pitak' as const };
+    expect(await publishRequest(deps, 1, noPitak)).toEqual(wrong);
+    const outside = { ok: false, error: 'bookings.outside_area' };
+    expect(await publishRequest(deps, 1, { ...request, dropoff: FAR_NORTH })).toEqual(outside);
+    const byPitak = await publishRequest(deps, 1, { ...request, pickupMode: 'pitak', pickup: HOME });
+    expect(byPitak.ok && byPitak.value.pickupMode).toBe('pitak');
+    // A pitak request keeps no point at the door; a cancelled request keeps no points (docs/69).
+    const [stored] = await deps.requests.byPassenger(1);
+    expect(stored?.pickup).toBeNull();
+    await cancelRequest(deps, 1, stored?.id ?? '');
+    expect((await deps.requests.find(stored?.id ?? ''))?.dropoff).toBeNull();
   });
 
   it('lets only an approved driver find requests by place or region', async () => {

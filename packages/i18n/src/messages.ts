@@ -13,6 +13,7 @@ import landing from '../locales/uz-Latn/landing.json' with { type: 'json' };
 import legal from '../locales/uz-Latn/legal.json' with { type: 'json' };
 import market from '../locales/uz-Latn/market.json' with { type: 'json' };
 import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' };
+import pitaks from '../locales/uz-Latn/pitaks.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
@@ -20,6 +21,7 @@ import share from '../locales/uz-Latn/share.json' with { type: 'json' };
 import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
+import way from '../locales/uz-Latn/way.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -39,6 +41,7 @@ const REFERENCE = {
   legal,
   market,
   moderation,
+  pitaks,
   places,
   pricing,
   reviews,
@@ -46,6 +49,7 @@ const REFERENCE = {
   stats,
   subscriptions,
   wallet,
+  way,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

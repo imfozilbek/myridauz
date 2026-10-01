@@ -21,6 +21,8 @@ const STATUS = {
   'locations.not_found': 404,
   'locations.same_place': 422,
   'locations.inside_city': 422,
+  'bookings.wrong_mode': 422,
+  'bookings.outside_area': 422,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.json({ error }, STATUS[error]);

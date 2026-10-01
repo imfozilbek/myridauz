@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
-import { call, registerUser } from './test-api';
+import { call, registerUser, doorBooking } from './test-api';
 
 vi.stubGlobal('fetch', fakeTelegram().fetch);
 afterAll(() => vi.unstubAllGlobals());
@@ -16,12 +16,12 @@ describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     const trip = { from: '1726273', to: '1718401', departAt: Date.now() + 5 * 3_600_000, seats: 3 };
-    const input = { ...trip, price: 90_000, womanOnBoard: false, comment: '' };
+    const input = { ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'both', comment: '' };
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(input) }),
     );
     const asked = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     // The driver retakes the selfie: the application goes to the team's check again.

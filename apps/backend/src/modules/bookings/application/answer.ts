@@ -2,6 +2,7 @@ import type { Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
+import { withExtraWay } from './extra-way';
 
 type AnswerError = 'bookings.not_found' | 'bookings.wrong_status' | 'bookings.no_seats' | 'wallet.not_enough';
 
@@ -71,14 +72,16 @@ export async function answer(
   return driverView(deps, next);
 }
 
-// Bookings on the driver's trips, the newest first.
+// Bookings on the driver's trips: the requests first, the ones that add the least way on top
+// («Bu safarga mos», docs/70), then the rest, the newest first.
 export async function driverBookings(deps: BookingsDeps, driverId: number): Promise<Booking[]> {
   const records = await deps.bookings.byTrips(await deps.trips.ofDriver(driverId));
-  return bookingViews(
+  const views = await bookingViews(
     deps,
     [...records].sort((a, b) => b.createdAt - a.createdAt),
     'driver',
   );
+  return withExtraWay(views, records);
 }
 
 // The team looks at the bookings of a trip (owner decision 29.09.2026: trips are not approved).

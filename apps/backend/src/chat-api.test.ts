@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { localUsers } from './modules/users';
-import { call, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv, doorBooking } from './test-api';
 import { app } from './app';
 
 // Every Telegram call, with the bot it came from: the token is in the address.
@@ -29,10 +29,13 @@ async function bookedChat() {
     price: 90_000,
   };
   const published = await read<{ id: string }>(
-    call('/driver/trips', DRIVER, { app: 'driver', ...json({ ...trip, womanOnBoard: false, comment: '' }) }),
+    call('/driver/trips', DRIVER, {
+      app: 'driver',
+      ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+    }),
   );
   return read<{ id: string; chatKey: string }>(
-    call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+    call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
   );
 }
 

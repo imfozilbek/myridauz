@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { NAVIGATORS } from './navigator';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
 export const ANALYTICS_PATH = '/analytics';
@@ -11,6 +12,7 @@ export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 export const TRIP_STEPS = [
   'route',
+  'mode',
   'date',
   'time',
   'seats',
@@ -31,6 +33,10 @@ const BOOKING_STEPS = [
   'offer_accepted',
   'offer_declined',
 ] as const;
+
+// The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
+const POINT_METHODS = ['map', 'search', 'location', 'recent', 'auto'] as const;
+const WAY_STEPS = ['opened', 'from', 'to', 'mode', 'done'] as const;
 
 // Answers that are a normal state, not an error: they are not sent as api_error (G12).
 export const QUIET_API_ERRORS: readonly string[] = ['users.not_registered', 'drivers.not_found'];
@@ -83,6 +89,13 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('favorite_driver'), ...context }),
   z.object({ name: z.literal('return_trip_created'), ...context }),
   z.object({ name: z.literal('driver_trip_shared'), ...context }),
+  // G24: the way of choosing a point; an empty search keeps only the length, never the text: it
+  // may be an address (docs/69).
+  z.object({ name: z.literal('place_point_saved'), method: z.enum(POINT_METHODS), ...context }),
+  z.object({ name: z.literal('place_search_empty'), length: z.number().int().min(0).max(100), ...context }),
+  z.object({ name: z.literal('way_step'), step: z.enum(WAY_STEPS), ...context }),
+  // «Yoʻl koʻrsatish» of the driver: which navigator opened the stops (docs/70).
+  z.object({ name: z.literal('route_opened'), navigator: z.enum(NAVIGATORS), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

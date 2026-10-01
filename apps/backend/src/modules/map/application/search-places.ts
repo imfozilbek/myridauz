@@ -1,6 +1,11 @@
-import { SEARCH_MIN_LETTERS, SEARCH_RESULTS, type FoundPlace, type Point } from '@platform/contracts';
+import {
+  SEARCH_MIN_LETTERS,
+  SEARCH_RESULTS,
+  searchKey,
+  type FoundPlace,
+  type Point,
+} from '@platform/contracts';
 import { nearCells } from '../domain/place-cell';
-import { searchKey } from '../domain/search-key';
 import type { PlaceIndex } from './ports';
 
 // The search of places by name on the map (G23, docs/67). Near the start of the trip first: a

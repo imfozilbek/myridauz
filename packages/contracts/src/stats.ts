@@ -5,13 +5,15 @@ import { TRIP_STEPS } from './analytics';
 export const ADMIN_STATS_PATH = '/admin/stats';
 export const STATS_PERIODS = ['day', 'week'] as const;
 export type StatsPeriod = (typeof STATS_PERIODS)[number];
-export const FUNNELS = ['passenger', 'driver', 'new_trip'] as const;
+export const FUNNELS = ['passenger', 'driver', 'new_trip', 'way'] as const;
 export type FunnelId = (typeof FUNNELS)[number];
 // The steps of each funnel (docs/29), in order.
 export const FUNNEL_STEPS = {
   passenger: ['opened', 'searched', 'trip_opened', 'requested', 'chat', 'confirmed', 'boarded'],
   driver: ['opened', 'started', 'submitted', 'approved', 'trip_created', 'confirmed'],
   new_trip: TRIP_STEPS,
+  // The screen of the start and the end (G24): opened, start, end, way, the trips seen.
+  way: ['opened', 'from', 'to', 'mode', 'done'],
 } as const satisfies Record<FunnelId, readonly string[]>;
 export type FunnelStepId = (typeof FUNNEL_STEPS)[FunnelId][number];
 const STEP_IDS = [...new Set(Object.values(FUNNEL_STEPS).flat())] as [FunnelStepId, ...FunnelStepId[]];

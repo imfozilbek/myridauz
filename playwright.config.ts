@@ -40,6 +40,7 @@ export default defineConfig({
         'legal-screenshots.spec.ts',
         'landing-screenshots.spec.ts',
         'channels-screenshots.spec.ts',
+        'pitaks-screenshots.spec.ts',
         'clear-screens-screenshots.spec.ts',
       ],
     },

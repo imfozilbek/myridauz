@@ -18,7 +18,7 @@ const post = channelPost('test_bot');
 
 describe('the channel post (docs/15)', () => {
   it('writes the post without contacts, with "Joy band qilish" and the route subscription', () => {
-    const { text, markup } = post({ ...TRIP, hasMeetingPoint: true }, PLACES, BEFORE);
+    const { text, markup } = post(TRIP, PLACES, BEFORE);
     expect(text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual([
       '<b>Toshkent shahri → Samarqand viloyati</b>',
       '📍 Chilonzor → Samarqand shahri',
@@ -31,7 +31,7 @@ describe('the channel post (docs/15)', () => {
       '✅ Tekshirilgan haydovchi',
       '🆕 Yangi haydovchi',
       '👩 Mashinada ayol bor',
-      '📌 Uchrashuv joyi belgilangan',
+      '🏠 Uyingizdan yoki 🚏 Toshkent avtovokzalidan olib ketadi',
       '',
       '#Toshkent #Samarqand',
     ]);

@@ -3,7 +3,7 @@ import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FindTripFlow } from '../market/find-trip-flow';
-import { chooseRoute, renderMarket, tap, trip } from '../market/market-test-kit';
+import { chooseWay, renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
 import { SubscribeLink } from './subscribe-link';
@@ -32,12 +32,12 @@ describe('"Xabar bering" (docs/24)', () => {
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
     );
-    await chooseRoute(true);
+    await chooseWay();
     await tap(/^Bugun/);
     await tap('Xabar bering');
     await tap('Istalgan kun');
     expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
-    expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730', date: null, woman: false });
+    expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730401', date: null, woman: false });
     expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
   });
 
@@ -49,7 +49,7 @@ describe('"Xabar bering" (docs/24)', () => {
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
     );
-    await chooseRoute(true);
+    await chooseWay();
     await tap(/^Bugun/);
     await tap('Xabar bering');
     await tap(/^Faqat/);

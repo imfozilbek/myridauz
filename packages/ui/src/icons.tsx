@@ -16,7 +16,10 @@ import {
   CarFront,
   ChartColumn,
   Check,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
+  Navigation,
   CircleAlert,
   CircleDot,
   ClipboardCheck,
@@ -112,6 +115,10 @@ const ICONS = {
   erase: Trash2,
   // A Telegram channel of the team (docs/63).
   channel: Megaphone,
+  // The stops of the driver (G24, docs/70): move one up or down, open the way in a navigator.
+  up: ChevronUp,
+  down: ChevronDown,
+  navigate: Navigation,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

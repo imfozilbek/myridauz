@@ -1,5 +1,5 @@
-import type { Offer } from '@platform/contracts';
-import type { BookingRecord } from '../domain/booking';
+import type { Offer, Point } from '@platform/contracts';
+import type { BookingRecord, Named } from '../domain/booking';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerViews } from './offer-views';
 import type { BookingsDeps, RequestFacts, Result } from './ports';
@@ -44,6 +44,26 @@ export async function acceptOffer(
   return result;
 }
 
+// The way and the points of the request become the booking's (docs/70): «Pitakdan» when the
+// passenger chose only the pitak, else the door with the point.
+async function offerPoints(deps: BookingsDeps, request: RequestFacts, pitakId: string | null) {
+  const describe = async (point: Point | null): Promise<Named | null> => {
+    if (!point) return null;
+    const { name, area } = await deps.places.describe(point);
+    return { name, area };
+  };
+  const byPitak = request.pickupMode === 'pitak' || !request.pickup;
+  const pickup = byPitak ? null : request.pickup;
+  return {
+    mode: byPitak ? ('pitak' as const) : ('door' as const),
+    pitakId: byPitak ? pitakId : null,
+    pickup,
+    pickupNamed: await describe(pickup),
+    dropoff: request.dropoff,
+    dropoffNamed: await describe(request.dropoff),
+  };
+}
+
 async function acceptTaken(
   deps: BookingsDeps,
   passengerId: number,
@@ -62,6 +82,8 @@ async function acceptTaken(
     price: offer.price,
     womanOnBoard: false,
     comment: '',
+    // The passenger chose the way already: the trip of the offer takes any (docs/70).
+    pickupMode: 'both',
   });
   if (!published.ok) return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
@@ -74,8 +96,7 @@ async function acceptTaken(
     commission,
     status: 'confirmed',
     expiresAt: offer.departAt,
-    pickup: null,
-    pickupMessageId: null,
+    ...(await offerPoints(deps, request, published.value.pitak?.id ?? null)),
     offerId: offer.id,
     boardedAt: null,
     arrivedAt: null,

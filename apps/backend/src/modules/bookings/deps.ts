@@ -11,6 +11,8 @@ import { cancelFor, driverTripIds, publishFor, tripChanged, tripFacts, tripViews
 import { tellCloseOnes } from '../shares';
 import { ratingsOfPeople } from '../ratings';
 import { peopleOf } from '../users';
+import { describePoint, pointFitsPlace } from '../map';
+import { pitakById } from '../pitaks';
 import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
 import type { BookingsDeps } from './application/ports';
 import { d1Offers } from './infrastructure/d1-offers';
@@ -70,6 +72,8 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
       telegramId: (publicId) => peopleOf(env).idOf(publicId),
     }),
   ),
+  places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
+  pitak: (id) => pitakById(env, id),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

@@ -1,5 +1,5 @@
 import type { BookingRepository, OfferRepository } from '../application/ports';
-import type { BookingRecord } from '../domain/booking';
+import { withoutPoints, type BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
 
 // The same rules as D1 without a database (tests and local runs).
@@ -24,12 +24,23 @@ export function createMemoryBookings(): BookingRepository {
     find: async (id) => rows.get(id),
     byTrips: async (tripIds) => list().filter((booking) => tripIds.includes(booking.tripId)),
     byPassenger: async (passengerId) => list().filter((booking) => booking.passengerId === passengerId),
-    byPickupMessage: async (passengerId, messageId) =>
-      list().find((booking) => booking.passengerId === passengerId && booking.pickupMessageId === messageId),
     expireOver: async (now) => {
       for (const booking of list())
         if (booking.status === 'requested' && booking.expiresAt <= now)
-          rows.set(booking.id, { ...booking, status: 'expired', updatedAt: now });
+          rows.set(booking.id, withoutPoints({ ...booking, status: 'expired', updatedAt: now }));
+    },
+    keepingPoints: async (before) =>
+      list()
+        .filter((booking) => booking.pickup !== null || booking.dropoff !== null)
+        .filter((booking) => booking.createdAt < before)
+        .map(({ id, tripId }) => ({ id, tripId })),
+    erasePoints: async (ids) => {
+      for (const booking of list())
+        if (ids.includes(booking.id)) rows.set(booking.id, withoutPoints(booking));
+    },
+    erasePointsOf: async (passengerId) => {
+      for (const booking of list())
+        if (booking.passengerId === passengerId) rows.set(booking.id, withoutPoints(booking));
     },
   };
 }

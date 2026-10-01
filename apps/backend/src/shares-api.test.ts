@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read, seen } from './bookings-test-api';
-import { call, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv, doorBooking } from './test-api';
 
 // Every Telegram call: the prepared card and the messages to close people.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -33,10 +33,13 @@ async function confirmedBooking() {
     price: 90_000,
   };
   const published = await read<{ id: string }>(
-    call('/driver/trips', DRIVER, { app: 'driver', ...json({ ...trip, womanOnBoard: false, comment: '' }) }),
+    call('/driver/trips', DRIVER, {
+      app: 'driver',
+      ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+    }),
   );
   const booking = await read<{ id: string }>(
-    call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+    call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
   );
   const share = () => call(`/passenger/bookings/${booking.id}/share`, PASSENGER, { method: 'POST' });
   expect((await share()).status).toBe(409);

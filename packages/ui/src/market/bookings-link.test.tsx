@@ -45,6 +45,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
       seats: 2,
       price: 95000,
       status: 'open' as const,
+      pickupMode: 'both' as const,
     };
     renderMarket(
       <BookingsLink app="passenger">

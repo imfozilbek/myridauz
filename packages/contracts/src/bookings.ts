@@ -2,14 +2,14 @@ import { z } from 'zod';
 import { personIdSchema } from './person-id';
 import { MAX_SEATS } from './drivers';
 import { tripSchema } from './trips';
+import { pointInputSchema } from './point';
+import { bookedPlaceSchema, bookingModeSchema, pitakSchema } from './pickup';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
 // request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
 export const PASSENGER_BOOKINGS_PATH = '/passenger/bookings';
 export const tripBookingsPath = (tripId: string) => `/trips/${tripId}/bookings`;
 export const passengerBookingCancelPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/cancel`;
-// The passenger's own pickup point, chosen on the map of the Mini App (docs/14, G22).
-export const passengerPickupPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/pickup`;
 export const DRIVER_BOOKINGS_PATH = '/driver/bookings';
 export const DRIVER_BOOKING_ACTIONS = ['confirm', 'decline', 'cancel'] as const;
 export type DriverBookingAction = (typeof DRIVER_BOOKING_ACTIONS)[number];
@@ -31,15 +31,15 @@ export const MAX_REQUESTED_BOOKINGS = 3;
 // A request without an answer expires after this time or at the departure (docs/35).
 export const BOOKING_ANSWER_HOURS = 24;
 
-export const bookingInputSchema = z.object({ seats: z.number().int().min(1).max(MAX_SEATS) });
-export type BookingInput = z.input<typeof bookingInputSchema>;
-
-export const pointSchema = z.object({ lat: z.number(), lng: z.number() });
-export const pickupInputSchema = z.object({
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
+// A booking fixes how the passenger is picked up and where they go (docs/70): from the pitak of
+// the direction, or from the door with a point; the drop-off is always a point at the door.
+export const bookingInputSchema = z.object({
+  seats: z.number().int().min(1).max(MAX_SEATS),
+  mode: bookingModeSchema,
+  pickup: pointInputSchema.nullable(),
+  dropoff: pointInputSchema,
 });
-export type Point = z.infer<typeof pointSchema>;
+export type BookingInput = z.input<typeof bookingInputSchema>;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.
 // Places and the plate open only after the confirmation (docs/07, docs/14).
@@ -55,8 +55,14 @@ export const bookingSchema = z.object({
   createdAt: z.number().int(),
   // Until when the driver answers a request (docs/35): the driver sees the deadline (docs/65 C).
   expiresAt: z.number().int(),
-  meetingPoint: pointSchema.nullable(),
-  pickup: pointSchema.nullable(),
+  // Fixed at the booking (docs/70). The driver sees the area of the points until the confirmation,
+  // then the points; everything is erased 30 days after the trip (docs/69).
+  mode: bookingModeSchema.nullable(),
+  pitak: pitakSchema.nullable(),
+  pickup: bookedPlaceSchema.nullable(),
+  dropoff: bookedPlaceSchema.nullable(),
+  // For the driver, on a request: the km this passenger adds to the confirmed ones (docs/70).
+  extraKm: z.number().int().nullable(),
   plate: z.string().nullable(),
   // The chat of the booking (docs/07): the offer's chat when it came from an offer.
   chatKey: z.string(),

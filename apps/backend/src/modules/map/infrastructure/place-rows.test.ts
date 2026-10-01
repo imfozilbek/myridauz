@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { collectPlaces, type RawPlace } from './place-rows';
+import { collectPlaces, areaFinder, type RawPlace } from './place-rows';
 
 const AREAS = [
-  { name: 'Chilonzor', lat: 41.28, lng: 69.2 },
-  { name: 'Yunusobod', lat: 41.36, lng: 69.29 },
+  { id: '1726294', name: 'Chilonzor', lat: 41.28, lng: 69.2 },
+  { id: '1726266', name: 'Yunusobod', lat: 41.36, lng: 69.29 },
 ];
+// Without borders every place takes the nearest center.
+const nearest = areaFinder(AREAS, []);
 const inside = (point: { lat: number; lng: number }) => point.lng < 71;
 const raw = (over: Partial<RawPlace>): RawPlace => ({
   layer: 'pois',
@@ -17,18 +19,20 @@ const raw = (over: Partial<RawPlace>): RawPlace => ({
 
 describe('the places of the search index from the map (G23)', () => {
   it('keeps the kind, the nearest district and the words of every spelling', () => {
-    const [place] = collectPlaces([raw({ names: ['Чиланзарский базар'] })], AREAS, inside);
+    const [place] = collectPlaces([raw({ names: ['Чиланзарский базар'] })], nearest, inside);
     expect(place).toMatchObject({
       name: 'Chilonzor bozori',
       kind: 'market',
+      district: '1726294',
       area: 'Chilonzor',
       cell: '165x276',
+      fine: '4128x6920',
     });
     expect(place?.words).toBe('chilanzar bazari chilanzarskiy bazar');
   });
 
   it('shows the Uzbek name when the map has one', () => {
-    const [place] = collectPlaces([raw({ name: 'Чорсу', uz: 'Chorsu' })], AREAS, inside);
+    const [place] = collectPlaces([raw({ name: 'Чорсу', uz: 'Chorsu' })], nearest, inside);
     expect(place?.name).toBe('Chorsu');
   });
 
@@ -44,7 +48,7 @@ describe('the places of the search index from the map (G23)', () => {
         raw({}),
         raw({ point: { lat: 41.3, lng: 69.25 } }),
       ],
-      AREAS,
+      nearest,
       inside,
     );
     expect(places.filter((place) => place.kind === 'street').map((place) => place.area)).toEqual([
@@ -57,7 +61,7 @@ describe('the places of the search index from the map (G23)', () => {
   it('leaves out what is not a place, has no name or lies outside Uzbekistan', () => {
     const places = collectPlaces(
       [raw({ layer: 'water', kind: 'river' }), raw({ name: ' ' }), raw({ point: { lat: 43.2, lng: 76.9 } })],
-      AREAS,
+      nearest,
       inside,
     );
     expect(places).toEqual([]);

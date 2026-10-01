@@ -1,7 +1,7 @@
 import { MAX_ACTIVE_TRIPS, type Trip, type TripInput } from '@platform/contracts';
 import { departError, endsAt, isLive, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
-import { NO_RIDERS, tripView } from './views';
+import { views } from './views-of';
 
 export type PublishError =
   | 'trips.not_driver'
@@ -14,9 +14,9 @@ export type PublishError =
   | 'locations.same_place'
   | 'locations.inside_city';
 
-type Input = Required<Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard'>> & {
-  readonly comment: string;
-};
+type Input = Required<
+  Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard' | 'pickupMode'>
+> & { readonly comment: string };
 
 // Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09).
 export async function publishTrip(
@@ -46,13 +46,13 @@ export async function publishTrip(
     endsAt: endsAt(input.departAt, km),
     km,
     status: 'active',
-    meetingPoint: null,
-    meetingMessageId: null,
     createdAt: now,
   };
   await deps.trips.save(trip);
-  const meetingMessageId = await deps.announce(trip);
-  if (meetingMessageId !== null) await deps.trips.save({ ...trip, meetingMessageId });
+  await deps.announce(trip);
   await deps.changed(trip.id, 'published');
-  return { ok: true, value: tripView(trip, driver, car, now, NO_RIDERS, undefined, recommended) };
+  const [view] = await views(deps, [trip]);
+  return view
+    ? { ok: true, value: { ...view, recommendedPrice: recommended } }
+    : { ok: false, error: 'trips.not_driver' };
 }

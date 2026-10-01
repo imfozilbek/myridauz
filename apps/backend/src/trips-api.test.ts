@@ -2,7 +2,7 @@ import { tashkentDate, type Location } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { app } from './app';
 import { localLocations } from './modules/locations';
-import { call, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv, REQUEST_WAY } from './test-api';
 
 const place = (id: string, parentId: string | null, oneCity = false): Location => ({
   id,
@@ -38,6 +38,7 @@ describe('trips and requests API (docs/09)', () => {
       seats: 2,
       price: 90000,
       womanOnBoard: false,
+      pickupMode: 'both',
       comment: '',
     };
     expect((await call('/driver/trips', PASSENGER, { ...json(trip), app: 'driver' })).status).toBe(403);
@@ -66,6 +67,7 @@ describe('trips and requests API (docs/09)', () => {
       date: tashkentDate(Date.now()),
       seats: 1,
       price: 90000,
+      ...REQUEST_WAY,
     };
     const created = await call('/passenger/requests', PASSENGER, json(request));
     expect(created.status).toBe(201);

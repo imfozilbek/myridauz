@@ -1,77 +1,113 @@
 import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS } from './apps';
+import { appUrl, MINI_APPS, TEXT } from './apps';
 import { FOUND, mapState, mockMap } from './map-mock';
-import { mockTelegram, telegramUrl } from './telegram-mock';
+import { PITAK } from './market-mock';
+import { mockTelegram, pressBack, telegramEvents, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER, DRIVER] = MINI_APPS;
-const shot = (page: Page, name: string) => page.screenshot({ path: `screenshots/map-${name}.png` });
+const shot = (page: Page, name: string) => page.screenshot({ path: `screenshots/way-${name}.png` });
 // The map is ready once its first tiles are in; the tiles around come a moment later.
 const TILES_MS = 1500;
 const drawn = async (page: Page) => {
-  await expect(page.locator('.pickup-map-box[data-state="ready"]')).toBeVisible();
+  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
   await page.waitForTimeout(TILES_MS);
 };
+const HOME = FOUND[1]?.point;
 
-// G22: the passenger puts the pin on the map, the driver sees the point in the booking.
-test('the passenger chooses the pickup point on the map, the driver sees it', async ({ page, context }) => {
+async function openWay(page: Page) {
   const state = mapState();
   await mockApi(page, 'active');
   await mockMap(page, state);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.getByText(t('common.myTrips')).click();
-  await page.getByText('Jasur').first().click();
-  await page.getByText(t('bookings.map.pick')).click();
-  await drawn(page);
-  await shot(page, '1-map');
-  await page.getByText(t('bookings.map.mine')).click();
-  await drawn(page);
-  await shot(page, '2-mine');
-  await page.locator('#tg-main-button', { hasText: t('bookings.map.here') }).click();
-  await expect.poll(() => state.saved.length).toBe(1);
-  expect(state.pickup?.lat).toBeCloseTo(41.3113, 3);
-  expect(state.pickup?.lng).toBeCloseTo(69.2795, 3);
-  await expect(page.getByText(t('bookings.plate'))).toBeVisible();
-  await shot(page, '3-booking');
+  await page.getByText(TEXT.findTrip).click();
+  // A fills itself where the person stands (docs/71).
+  await expect(page.getByText(t('way.here'))).toBeVisible();
+  await expect(page.getByText('Qatortol')).toBeVisible();
+  return state;
+}
 
-  const driver = await context.newPage();
-  const { published, trip } = await mockApi(driver, 'active');
-  published.push(trip);
-  await mockMap(driver, state);
-  await mockTelegram(driver);
-  await driver.goto(telegramUrl(appUrl(DRIVER.port)));
-  await driver.getByText(t('common.myTrips')).click();
-  await driver.getByText('Jasur').first().click();
-  await driver.getByText('Madina').click();
-  await expect(driver.getByText(t('bookings.pickup'), { exact: true })).toBeVisible();
-  await expect(driver.getByText(t('bookings.openMap')).first()).toBeVisible();
-  await shot(driver, '4-driver');
+// B: the home, found by a search in Cyrillic, the point taken under the pin.
+async function chooseHome(page: Page) {
+  await page.getByText(t('way.toEmpty')).click();
+  await page.getByPlaceholder(t('bookings.map.search')).fill('Регистон');
+  await page.getByText('Registon maydoni').click();
+  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+  await shot(page, '2-home');
+  await page.locator('#tg-main-button', { hasText: t('way.point.here') }).click();
+}
+
+// Owner check 1: A by the place, a search in Cyrillic, «Uyimdan», B at home, the booking; fixed after.
+test('the passenger books from the door to the home, the places stay fixed', async ({ page }) => {
+  const state = await openWay(page);
+  await drawn(page);
+  await shot(page, '1-start');
+  await chooseHome(page);
+  expect(state.searched).toContain('Регистон');
+  await page.getByText(t('way.mode.door')).click();
+  await page.waitForTimeout(TILES_MS);
+  await shot(page, '3-door');
+  await page.locator('#tg-main-button', { hasText: t('way.see') }).click();
+  await page.getByText(TEXT.tomorrow).click();
+  await page.getByText('Jasur', { exact: false }).first().click();
+  await page.getByText(TEXT.book).click();
+  await page.getByText(t('market.request.seats', { count: '1' })).click();
+  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await shot(page, '4-review');
+  await page.locator('#tg-main-button').click();
+  await expect(page.getByText(t('bookings.sent.title'))).toBeVisible();
+  expect(state.booked).toMatchObject({ seats: 1, mode: 'door', dropoff: HOME });
+  expect(state.booked?.pickup).toMatchObject({ lat: 41.3113, lng: 69.2795 });
 });
 
-// G23: the passenger finds a place by name, written in Cyrillic; the map moves to it and it is saved.
-test('the passenger finds the pickup place by name and saves it', async ({ page }) => {
-  const state = mapState();
-  await mockApi(page, 'active');
-  await mockMap(page, state);
+// Owner check 2: «Pitakdan» shows the pitak of the direction.
+test('the passenger who goes from a pitak sees the pitak of the direction', async ({ page }) => {
+  await openWay(page);
+  // The map of a point shows its district only: the real border of the repository (docs/48).
+  await page.getByText('Qatortol').click();
+  await drawn(page);
+  await shot(page, '0-district');
+  // Farther out: the whole district, the rest shaded; the map does not go beyond it.
+  await page.mouse.move(200, 600);
+  for (let step = 0; step < 6; step += 1) await page.mouse.wheel(0, 600);
+  await page.waitForTimeout(TILES_MS);
+  await shot(page, '0-district-far');
+  await pressBack(page);
+  await chooseHome(page);
+  await page.getByText(t('way.mode.pitak')).click();
+  await expect(page.getByText(new RegExp(`^${PITAK.name}`, 'u'))).toBeVisible();
+  await page.waitForTimeout(TILES_MS);
+  await shot(page, '5-pitak');
+});
+
+// Owner checks 3 and 4: the requests near the way first; the stops open in the chosen navigator;
+// a cancelled booking has no point any more.
+test('the driver sees the requests near the way first and opens the route', async ({ page }) => {
+  const { published, trip } = await mockApi(page, 'active');
+  published.push(trip);
+  await mockMap(page, mapState());
   await mockTelegram(page);
-  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+  await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
-  await page.getByText(t('bookings.map.pick')).click();
+  const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
+  await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
+  await expect(page.getByText(/\+3 km/u)).toBeVisible();
+  await shot(page, '6-requests');
+  await page.getByText(t('way.map.title')).click();
   await drawn(page);
-  await page.getByPlaceholder(t('bookings.map.search')).fill('Мустақиллик');
-  await expect(page.getByText('Mustaqillik maydoni')).toBeVisible();
-  expect(state.searched).toEqual(['Мустақиллик']);
-  await shot(page, '5-search');
-  await page.getByText('Mustaqillik maydoni').click();
-  await expect(page.getByText("Mustaqillik shoh ko'chasi")).toBeHidden();
-  await drawn(page);
-  await shot(page, '6-found');
-  await page.locator('#tg-main-button', { hasText: t('bookings.map.here') }).click();
-  await expect.poll(() => state.saved.length).toBe(1);
-  expect(state.pickup?.lat).toBeCloseTo(FOUND[0]?.point.lat ?? 0, 4);
-  expect(state.pickup?.lng).toBeCloseTo(FOUND[0]?.point.lng ?? 0, 4);
+  await expect(page.getByText('Chorsu')).toBeVisible();
+  await expect(page.getByText('Sardor')).toBeHidden();
+  await shot(page, '7-trip-map');
+  await page.locator('#tg-main-button', { hasText: t('way.map.go') }).click();
+  await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
+  const [opened] = await telegramEvents(page, 'web_app_open_link');
+  expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);
+  await expect(page.getByText(t('way.map.navigatorChange'))).toBeVisible();
+  await page.getByText(t('way.map.dropoffs')).click();
+  await expect(page.getByText('Registon mahallasi').first()).toBeVisible();
+  await shot(page, '8-dropoffs');
 });

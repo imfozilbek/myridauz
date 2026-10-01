@@ -1,4 +1,4 @@
-import type { Booking, Point, Trip } from '@platform/contracts';
+import type { Booking, Trip } from '@platform/contracts';
 import type { NotificationJob } from '../../notifications';
 import type { ShareRecord, ShareSubject } from '../domain/share';
 
@@ -27,7 +27,6 @@ export type DriverTrip = {
   readonly to: string;
   readonly departAt: number;
   readonly km: number;
-  readonly meetingPoint: Point | null;
   readonly status: Trip['status'];
 };
 

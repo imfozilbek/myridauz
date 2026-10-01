@@ -10,12 +10,12 @@ type Wiring = {
   readonly placeName: (id: string) => Promise<string>;
 };
 
-// The driver bot tells the driver the trip is published and asks for the meeting point (docs/14).
-// A driver who has never opened the bot gets nothing: the trip is published anyway.
+// The driver bot tells the driver the trip is published. A driver who has never opened the bot
+// gets nothing: the trip is published anyway.
 export const telegramAnnouncer =
   ({ fetch, driverToken, placeName }: Wiring) =>
-  async (trip: TripRecord): Promise<number | null> => {
-    if (!driverToken) return null;
+  async (trip: TripRecord): Promise<void> => {
+    if (!driverToken) return;
     const text = t('bot.trip.published', {
       from: await placeName(trip.from),
       to: await placeName(trip.to),
@@ -24,9 +24,8 @@ export const telegramAnnouncer =
       price: formatMoney(trip.price),
     });
     try {
-      return (await sendText(fetch, driverToken, trip.driverId, text)) ?? null;
+      await sendText(fetch, driverToken, trip.driverId, text);
     } catch (error) {
       console.warn(String(error));
-      return null;
     }
   };

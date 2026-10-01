@@ -18,6 +18,7 @@ const request = {
   seats: 2,
   price: 95000,
   status: 'open' as const,
+  pickupMode: 'both' as const,
 };
 
 describe('what people need to decide is on the screen (docs/65 C)', () => {

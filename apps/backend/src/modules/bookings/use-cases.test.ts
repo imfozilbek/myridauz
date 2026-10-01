@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { balanceOf } from '../wallet/domain/ledger';
 import { answer, confirm, driverBookings } from './application/answer';
-import { rememberPickupMessage, setPickup } from './application/pickup';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
 import { rideTogether } from './infrastructure/store';
-import { ALI, DILNOZA, DRIVER, HOUR, NOW, OLIM, setup } from './test-kit';
+import { ALI, AWAY, DILNOZA, DRIVER, HOME, HOUR, NOW, OLIM, seats, setup } from './test-kit';
+
+const NAMED_NAME = { step: 'mahalla', name: 'Qatortol' };
+const AREA = { step: 'district', name: 'Chilonzor' };
 
 const value = <T>(result: { ok: true; value: T } | { ok: false; error: string }) => {
   if (!result.ok) throw new Error(result.error);
@@ -16,8 +18,10 @@ describe('a booking of seats (docs/35)', () => {
     const { deps, addTrip, bonus, wallet, notes } = setup();
     await bonus();
     const tripId = addTrip();
-    const asked = value(await requestBooking(deps, DILNOZA, tripId, 2));
-    expect(asked).toMatchObject({ status: 'requested', commission: 0, meetingPoint: null, plate: null });
+    const asked = value(await requestBooking(deps, DILNOZA, tripId, seats(2)));
+    expect(asked).toMatchObject({ status: 'requested', commission: 0, mode: 'door', plate: null });
+    // The passenger sees the own points and their names at once (docs/70).
+    expect(asked.pickup).toEqual({ point: HOME, name: NAMED_NAME, area: AREA });
     expect(notes).toContain('driver: request Dilnoza');
     const [waiting] = await driverBookings(deps, DRIVER);
     // 10% of 90 000 per seat, 2 seats; the driver never sees a passenger's photo (docs/05).
@@ -25,24 +29,26 @@ describe('a booking of seats (docs/35)', () => {
       commission: 18_000,
       passenger: { firstName: 'Dilnoza', hasAvatar: false },
     });
+    // Before the confirmation the driver sees only the area of the points (docs/70).
+    expect(waiting?.pickup).toEqual({ point: null, name: null, area: AREA });
     const confirmed = value(await confirm(deps, DRIVER, asked.id));
     expect(confirmed).toMatchObject({ status: 'confirmed', plate: null, trip: { seatsLeft: 1 } });
     const [mine] = await passengerBookings(deps, DILNOZA);
-    expect(mine).toMatchObject({ plate: '01A123BC', meetingPoint: { lat: 41.3, lng: 69.2 } });
+    expect(mine).toMatchObject({ plate: '01A123BC', dropoff: { point: AWAY } });
     expect(balanceOf(await wallet(), 'bonus')).toBe(482_000);
     expect(notes).toContain('passenger: confirmed 01A123BC');
-    // The passenger answers the confirmation with the own pickup point; the driver sees it.
-    await rememberPickupMessage(deps, asked.id, 555);
-    expect(await setPickup(deps, DILNOZA, 555, { lat: 41.2, lng: 69.1 })).toBe(true);
-    expect((await driverBookings(deps, DRIVER))[0]?.pickup).toEqual({ lat: 41.2, lng: 69.1 });
-    // The driver hears about the pickup point at once (docs/65 C).
-    expect(notes).toContain('driver: pickup Dilnoza');
+    // After the confirmation the driver sees the point and its name.
+    expect((await driverBookings(deps, DRIVER))[0]?.pickup).toEqual({
+      point: HOME,
+      name: NAMED_NAME,
+      area: AREA,
+    });
   });
 
   it('cannot be confirmed without money, and never charges twice', async () => {
     const { deps, addTrip, bonus, wallet } = setup();
     const tripId = addTrip();
-    const asked = value(await requestBooking(deps, DILNOZA, tripId, 1));
+    const asked = value(await requestBooking(deps, DILNOZA, tripId, seats(1)));
     expect(await confirm(deps, DRIVER, asked.id)).toEqual({ ok: false, error: 'wallet.not_enough' });
     await bonus();
     const both = await Promise.all([confirm(deps, DRIVER, asked.id), confirm(deps, DRIVER, asked.id)]);
@@ -54,8 +60,8 @@ describe('a booking of seats (docs/35)', () => {
     const { deps, addTrip, bonus, wallet } = setup();
     await bonus();
     const tripId = addTrip();
-    const first = value(await requestBooking(deps, DILNOZA, tripId, 1));
-    const second = value(await requestBooking(deps, ALI, tripId, 1));
+    const first = value(await requestBooking(deps, DILNOZA, tripId, seats(1)));
+    const second = value(await requestBooking(deps, ALI, tripId, seats(1)));
     await confirm(deps, DRIVER, first.id);
     await confirm(deps, DRIVER, second.id);
     expect(balanceOf(await wallet(), 'bonus')).toBe(482_000);
@@ -68,23 +74,32 @@ describe('a booking of seats (docs/35)', () => {
   it('keeps the limits: not the own trip, free seats, one per trip, 3 waiting at once', async () => {
     const { deps, addTrip } = setup();
     const tripId = addTrip();
-    expect(await requestBooking(deps, DRIVER, tripId, 1)).toEqual({ ok: false, error: 'bookings.own_trip' });
-    expect(await requestBooking(deps, OLIM, tripId, 4)).toEqual({ ok: false, error: 'bookings.no_seats' });
-    value(await requestBooking(deps, OLIM, tripId, 1));
-    expect(await requestBooking(deps, OLIM, tripId, 1)).toEqual({
+    expect(await requestBooking(deps, DRIVER, tripId, seats(1))).toEqual({
+      ok: false,
+      error: 'bookings.own_trip',
+    });
+    expect(await requestBooking(deps, OLIM, tripId, seats(4))).toEqual({
+      ok: false,
+      error: 'bookings.no_seats',
+    });
+    value(await requestBooking(deps, OLIM, tripId, seats(1)));
+    expect(await requestBooking(deps, OLIM, tripId, seats(1))).toEqual({
       ok: false,
       error: 'bookings.wrong_status',
     });
-    value(await requestBooking(deps, OLIM, addTrip(), 1));
-    value(await requestBooking(deps, OLIM, addTrip(), 1));
-    expect(await requestBooking(deps, OLIM, addTrip(), 1)).toEqual({ ok: false, error: 'bookings.too_many' });
+    value(await requestBooking(deps, OLIM, addTrip(), seats(1)));
+    value(await requestBooking(deps, OLIM, addTrip(), seats(1)));
+    expect(await requestBooking(deps, OLIM, addTrip(), seats(1))).toEqual({
+      ok: false,
+      error: 'bookings.too_many',
+    });
   });
 
   it('expires a request without an answer after 24 hours or at the departure', async () => {
     const { deps, addTrip, bonus, setNow } = setup();
     await bonus();
-    const asked = value(await requestBooking(deps, DILNOZA, addTrip(), 1));
-    const soon = value(await requestBooking(deps, ALI, addTrip({ departAt: NOW + 3 * HOUR }), 1));
+    const asked = value(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
+    const soon = value(await requestBooking(deps, ALI, addTrip({ departAt: NOW + 3 * HOUR }), seats(1)));
     setNow(NOW + 4 * HOUR);
     expect(await confirm(deps, DRIVER, soon.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
     setNow(NOW + 25 * HOUR);
@@ -102,8 +117,8 @@ describe('photos of passengers (docs/05)', () => {
     const { deps, addTrip, bonus } = setup();
     await bonus();
     const tripId = addTrip();
-    const first = value(await requestBooking(deps, DILNOZA, tripId, 1));
-    const second = value(await requestBooking(deps, ALI, tripId, 1));
+    const first = value(await requestBooking(deps, DILNOZA, tripId, seats(1)));
+    const second = value(await requestBooking(deps, ALI, tripId, seats(1)));
     expect(await rideTogether(deps.bookings, DILNOZA, ALI)).toBe(false);
     await confirm(deps, DRIVER, first.id);
     await confirm(deps, DRIVER, second.id);

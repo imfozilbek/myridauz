@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { approvedDriver, json, OWNER, read, seen } from './bookings-test-api';
-import { call, pid, registerUser } from './test-api';
+import { call, pid, registerUser, doorBooking } from './test-api';
 
 vi.stubGlobal('fetch', fakeTelegram().fetch);
 afterAll(() => vi.unstubAllGlobals());
@@ -25,11 +25,11 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, womanOnBoard: false, comment: '' }),
+        ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
       }),
     );
     const asked = await read<{ id: string; status: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 1 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     expect(asked.status).toBe('requested');
     const confirmed = await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, {
@@ -62,11 +62,11 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, womanOnBoard: false, comment: '' }),
+        ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
       }),
     );
     const asked = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json({ seats: 2 })),
+      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(2))),
     );
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const before = await read<{ bonus: number }>(call('/driver/wallet', DRIVER, { app: 'driver' }));

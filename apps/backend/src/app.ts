@@ -20,6 +20,7 @@ import { healthModule } from './modules/health';
 import { historyModule } from './modules/history';
 import { locationsModule } from './modules/locations';
 import { mapModule } from './modules/map';
+import { pitaksModule } from './modules/pitaks';
 import { pricingModule } from './modules/pricing';
 import { ratingsModule } from './modules/ratings';
 import { requestsModule } from './modules/ride-requests';
@@ -59,6 +60,7 @@ export const app = new Hono<AppEnv>()
   .use('/admin/*', allowMiniApps, auth, blockedGuard)
   .use('/prices/*', allowMiniApps, auth, blockedGuard)
   .use('/passenger/*', allowMiniApps, auth, blockedGuard)
+  .use('/pitaks/*', allowMiniApps, auth, blockedGuard)
   .use('/trips', allowMiniApps, auth, blockedGuard)
   .use('/trips/*', allowMiniApps, auth, blockedGuard)
   .use('/reviews/*', allowMiniApps, auth, blockedGuard)
@@ -85,6 +87,7 @@ export const app = new Hono<AppEnv>()
   .route('/', driversModule)
   .route('/', locationsModule(auth))
   .route('/', mapModule)
+  .route('/', pitaksModule)
   .route('/', pricingModule)
   .route('/', channelsModule)
   // The cancel watch goes before trips: it wraps the cancel route of the trips module.

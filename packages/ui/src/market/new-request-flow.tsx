@@ -7,7 +7,8 @@ import { Cell, List, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
-import { RouteScreen, type Route } from '../places/route-screen';
+import type { Way } from '../way/way-end';
+import { WayScreen } from '../way/way-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
@@ -20,13 +21,14 @@ import { RouteView } from './route-view';
 import { noonOf } from './when';
 
 type Step = 'route' | 'date' | 'seats' | 'price' | 'review' | 'done';
-type Draft = { route?: Route; date?: string; seats?: number; price?: number };
+type Draft = { way?: Way; date?: string; seats?: number; price?: number };
 const SEATS = Array.from({ length: REQUEST_MAX_SEATS }, (_, index) => ({
   value: index + 1,
   label: String(index + 1),
 }));
 
-// "Soʻrov qoldirish": where, which day, how many people, the price (docs/09). Drivers find it.
+// "Soʻrov qoldirish": the start and the end over the map with the way of pickup (docs/70, docs/71),
+// which day, how many people, the price (docs/09). Drivers find it.
 export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
   const { t, formatMoney, formatDate } = useI18n();
   const { market } = useApiClients();
@@ -39,15 +41,19 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
     setDraft((value) => ({ ...value, ...patch }));
     setStep(to);
   };
-  const { route, date, seats, price } = draft;
+  const { way, date, seats, price } = draft;
   useEffect(() => {
-    if (route) market.recommend(route.from.id, route.to.id).then(setRecommendation, () => setStep('route'));
-  }, [route, market]);
+    if (way)
+      market.recommend(way.from.place.id, way.to.place.id).then(setRecommendation, () => setStep('route'));
+  }, [way, market]);
   const publish = async () => {
-    if (!route || !date || !seats || !price) return;
+    const dropoff = way?.to.point;
+    if (!way || !dropoff || !date || !seats || !price) return;
     setError(null);
     try {
-      await market.publishRequest({ from: route.from.id, to: route.to.id, date, seats, price });
+      const { from, to, mode } = way;
+      const where = { pickupMode: mode, pickup: mode === 'pitak' ? null : from.point, dropoff };
+      await market.publishRequest({ from: from.place.id, to: to.place.id, date, seats, price, ...where });
       haptic.success();
       setStep('done');
     } catch (caught) {
@@ -58,11 +64,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
 
   if (step === 'route')
     return (
-      <RouteScreen
-        allowWholeRegion={false}
-        onBack={onBack}
-        onDone={(value) => next({ route: value }, 'date')}
-      />
+      <WayScreen done="common.continue" onBack={onBack} onDone={(value) => next({ way: value }, 'date')} />
     );
   if (step === 'date')
     return (
@@ -115,9 +117,9 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
         <BackButton onClick={() => setStep('price')} />
         <List>
           <Section>
-            {route ? (
+            {way ? (
               <div className="route-summary">
-                <RouteView from={route.from.id} to={route.to.id} />
+                <RouteView from={way.from.place.id} to={way.to.place.id} />
               </div>
             ) : null}
             {line(t('market.review.when'), date ? formatDate(noonOf(date)) : '')}

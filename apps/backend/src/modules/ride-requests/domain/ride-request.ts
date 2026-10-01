@@ -3,6 +3,8 @@ import {
   tashkentDate,
   tashkentDayStart,
   TRIP_DAYS_AHEAD,
+  type PickupMode,
+  type Point,
   type RideRequest,
 } from '@platform/contracts';
 
@@ -18,8 +20,19 @@ export type RequestRecord = {
   readonly seats: number;
   readonly price: number;
   readonly status: RideRequest['status'];
+  // The way and the points of the passenger (docs/70): kept only while the request is open.
+  readonly pickupMode: PickupMode;
+  readonly pickup: Point | null;
+  readonly dropoff: Point | null;
   readonly createdAt: number;
 };
+
+// A request that is no longer open keeps no points: a booking took them or nobody needs them (docs/69).
+export const withoutPoints = (request: RequestRecord): RequestRecord => ({
+  ...request,
+  pickup: null,
+  dropoff: null,
+});
 
 export const expiresAt = (date: string) => tashkentDayStart(date) + DAY_MS;
 
@@ -42,5 +55,5 @@ export function cancel(
   now: number,
 ): RequestRecord | 'trips.not_found' | 'trips.wrong_status' {
   if (request.passengerId !== passengerId) return 'trips.not_found';
-  return isOpen(request, now) ? { ...request, status: 'cancelled' } : 'trips.wrong_status';
+  return isOpen(request, now) ? withoutPoints({ ...request, status: 'cancelled' }) : 'trips.wrong_status';
 }

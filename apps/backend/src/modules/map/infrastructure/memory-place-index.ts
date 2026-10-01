@@ -9,17 +9,25 @@ const flatDistance = (near: Point) => {
   return ({ point }: PlaceRow) => ((point.lng - near.lng) * scale) ** 2 + (point.lat - near.lat) ** 2;
 };
 
+const first = (rows: PlaceRow[], order: (row: PlaceRow) => number, limit: number) =>
+  rows
+    .sort((a, b) => order(a) - order(b))
+    .slice(0, limit)
+    .map(({ name, kind, area, district, point }) => ({ name, kind, area, district, point }));
+
 export const memoryPlaceIndex = (rows: readonly PlaceRow[]): PlaceIndex => ({
   find: async ({ words, cells, near }, limit) => {
     const order = near ? flatDistance(near) : (row: PlaceRow) => row.name.length;
-    return rows
+    const matched = rows
       .filter((row) => cells === null || cells.includes(row.cell))
       .filter((row) => {
         const own = row.words.split(' ');
         return words.every((word) => own.some((mine) => mine.startsWith(word)));
-      })
-      .sort((a, b) => order(a) - order(b))
-      .slice(0, limit)
-      .map(({ name, kind, area, point }) => ({ name, kind, area, point }));
+      });
+    return first(matched, order, limit);
+  },
+  around: async ({ cells, kinds, near }, limit) => {
+    const matched = rows.filter((row) => cells.list.includes(row[cells.column]) && kinds.includes(row.kind));
+    return first(matched, flatDistance(near), limit);
   },
 });

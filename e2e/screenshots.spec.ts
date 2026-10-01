@@ -39,6 +39,7 @@ test('places: screenshots', async ({ page }) => {
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
   await page.getByText(MINI_APPS[0].action).click();
+  await page.getByText(TEXT.wayList).click();
   await expect(page.getByText(TEXT.from)).toBeVisible();
   await shot('1-route');
   await page.getByText(TEXT.from).click();
@@ -55,7 +56,8 @@ test('places: screenshots', async ({ page }) => {
   await shot('5-chosen');
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
-  await page.getByText(TEXT.wholeCity).click();
+  // The list of the way screen has no «whole city»: a person takes a district (G24).
+  await page.getByText('Yunusobod').click();
   await page.getByText(TEXT.to).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

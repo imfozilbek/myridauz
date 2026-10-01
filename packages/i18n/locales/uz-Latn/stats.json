@@ -40,5 +40,10 @@
   "eventsOff": "Voronka va xatolarni koʻrish uchun analitika kaliti kerak.",
   "eventsFailed": "Analitika hozir javob bermadi. Birozdan keyin qayta oching.",
   "updated": "Yangilandi: {time}",
-  "open": "Statistikani ochish"
+  "open": "Statistikani ochish",
+  "funnel.way": "Qayerdan va qayerga",
+  "step.from": "Qayerdan tanladi",
+  "step.to": "Qayerga tanladi",
+  "step.mode": "Olib ketish usuli",
+  "step.done": "Safarlarni koʻrdi"
 }

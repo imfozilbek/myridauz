@@ -119,6 +119,7 @@ export {
 // The market of G07 and G08: prices, trips, requests, bookings, offers, the wallet, Tashkent time.
 export * from './person-id';
 export * from './launch-links';
+export * from './point';
 export * from './bookings';
 export * from './offers';
 export * from './pricing';
@@ -141,3 +142,9 @@ export * from './legal';
 export * from './uzbekistan';
 export * from './map';
 export * from './map-search';
+export * from './search-key';
+export * from './map-where';
+export * from './pickup';
+export * from './pitaks';
+export * from './route-math';
+export * from './navigator';

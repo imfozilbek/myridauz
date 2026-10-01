@@ -1,19 +1,29 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
-import { NO_RATING, type Car, type Trip } from '@platform/contracts';
+import type { Car, Trip } from '@platform/contracts';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
 import type { BookingsDeps, RequestFacts, TripFacts } from './application/ports';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
-import { DILNOZA, DRIVER, fakeNotifier, fakePeople, fakeRecommend } from './test-fakes';
-import { idOfPublic, publicIdOf } from '../../test-people';
+import {
+  AWAY,
+  DILNOZA,
+  DRIVER,
+  fakeNotifier,
+  fakePeople,
+  fakePlaces,
+  fakeRecommend,
+  fakeTripView,
+  HOME,
+  NOW,
+  PITAK,
+} from './test-fakes';
+import { idOfPublic } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
-// 2026-10-01 06:00 in Tashkent.
-export const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-export { ALI, DILNOZA, DRIVER, OLIM } from './test-fakes';
+export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, seats } from './test-fakes';
 
 export function setup() {
   let now = NOW;
@@ -41,23 +51,7 @@ export function setup() {
     const taken = (await bookings.byTrips([facts.id]))
       .filter((booking) => booking.status === 'confirmed')
       .reduce((sum, booking) => sum + booking.seats, 0);
-    const { id: tripId, from, to, departAt, km, seats, price } = facts;
-    const driver = {
-      id: publicIdOf(facts.driverId),
-      firstName: 'Jasur',
-      hasAvatar: true,
-      car: CAR,
-      rating: NO_RATING,
-    };
-    const base = { id: tripId, from, to, departAt, km, seats, price, comment: '', woman: false };
-    return {
-      ...base,
-      driver,
-      seatsLeft: seats - taken,
-      recommendedPrice: null,
-      hasMeetingPoint: facts.meetingPoint !== null,
-      status: 'active',
-    };
+    return fakeTripView(facts, taken);
   };
   const addTrip = (extra: Partial<TripFacts> = {}) => {
     const facts: TripFacts = {
@@ -72,7 +66,7 @@ export function setup() {
       price: 90_000,
       live: true,
       over: false,
-      meetingPoint: { lat: 41.3, lng: 69.2 },
+      pickupMode: 'both',
       plate: '01A123BC',
       ...extra,
     };
@@ -88,7 +82,7 @@ export function setup() {
         [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
       views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
       publish: async (driverId, input) => {
-        const tripId = addTrip({ ...input, driverId, meetingPoint: null });
+        const tripId = addTrip({ ...input, driverId });
         return { ok: true, value: await view(trips.get(tripId) as TripFacts) };
       },
       cancel: async (_driverId, tripId) => void notes.push(`trip cancelled ${tripId}`),
@@ -110,6 +104,8 @@ export function setup() {
     ratings: async () => new Map(),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
+    places: fakePlaces,
+    pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
     now: () => now,
     newId,
   };
@@ -122,6 +118,9 @@ export function setup() {
       date: '2026-10-02',
       km: 300,
       seats: 2,
+      pickupMode: 'both',
+      pickup: HOME,
+      dropoff: AWAY,
       open: true,
       ...extra,
     };

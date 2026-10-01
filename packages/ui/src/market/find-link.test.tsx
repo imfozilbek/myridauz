@@ -25,7 +25,7 @@ describe('a route from the landing (docs/59)', () => {
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
     await tap('Orqaga');
     await tap('Orqaga');
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan ketasiz?')).toBeTruthy();
   });
 
   it('starts from the route when a place is unknown, and keeps the main screen without a link', async () => {
@@ -36,7 +36,7 @@ describe('a route from the landing (docs/59)', () => {
       </FindLink>,
       testClients({}),
     );
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan ketasiz?')).toBeTruthy();
     cleanup();
     renderMarket(
       <FindLink enabled={false}>

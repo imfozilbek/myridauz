@@ -37,6 +37,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('asks the route, day, time, seats, price, woman, comment and publishes', async () => {
     const { publishTrip, tracked } = setup();
     await chooseRoute();
+    await tap('Shahar boʻylab yigʻaman');
     await tap(/^Ertaga/);
     await tap('Davom etish');
     // The seats of the car are chosen in advance.
@@ -53,6 +54,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + 8 * HOUR;
     expect(publishTrip).toHaveBeenCalledWith({
       from: '1726269',
+      pickupMode: 'door',
       to: '1730401',
       departAt,
       seats: 4,
@@ -63,13 +65,24 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     const steps = tracked
       .filter((event) => event.name === 'trip_step')
       .map((event) => ('step' in event ? event.step : ''));
-    expect(steps).toEqual(['route', 'date', 'time', 'seats', 'price', 'woman', 'comment', 'published']);
+    expect(steps).toEqual([
+      'route',
+      'mode',
+      'date',
+      'time',
+      'seats',
+      'price',
+      'woman',
+      'comment',
+      'published',
+    ]);
   });
 
   it('skips the woman question for a woman driver and shows an error of the API', async () => {
     const { publishTrip } = setup('female');
     publishTrip.mockRejectedValueOnce(new Error('offline'));
     await chooseRoute();
+    await tap('Shahar boʻylab yigʻaman');
     for (const step of [
       /^Ertaga/,
       'Davom etish',
@@ -86,6 +99,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('lets a driver whose application is checked try everything but publishing', async () => {
     const { publishTrip } = setup('male', 'pending');
     await chooseRoute();
+    await tap('Shahar boʻylab yigʻaman');
     for (const step of [
       /^Ertaga/,
       'Davom etish',

@@ -3,7 +3,7 @@ import { request, tripOf } from './market-mock';
 
 // Bookings, offers and the wallet as the Mini Apps see them (G08).
 const HOUR = 3_600_000;
-const trip = tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true });
+const trip = tripOf('1', 'Jasur', false, 26);
 const passenger = { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false };
 const booking = (id: string, status: string, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-0000000000b${id}`,
@@ -15,8 +15,12 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   status,
   createdAt: Date.now() - HOUR,
   expiresAt: Date.now() + 20 * HOUR,
-  meetingPoint: null,
-  pickup: null,
+  mode: 'door',
+  pitak: null,
+  // Until the confirmation the driver sees the area and the extra way only (docs/70).
+  pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
+  dropoff: { point: null, name: null, area: { step: 'mahalla', name: 'Registon mahallasi' } },
+  extraKm: 2,
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000b${id}`,
   boardedAt: null,
@@ -25,7 +29,17 @@ const booking = (id: string, status: string, extra: object = {}) => ({
 });
 export const confirmed = booking('2', 'confirmed', {
   commission: 0,
-  meetingPoint: { lat: 41.2856, lng: 69.2034 },
+  pickup: {
+    point: { lat: 41.2856, lng: 69.2034 },
+    name: { step: 'landmark', name: 'Chilonzor bozori' },
+    area: { step: 'mahalla', name: 'Qatortol' },
+  },
+  dropoff: {
+    point: { lat: 39.6547, lng: 66.9758 },
+    name: { step: 'mahalla', name: 'Registon mahallasi' },
+    area: { step: 'mahalla', name: 'Registon mahallasi' },
+  },
+  extraKm: null,
   plate: '01A123BC',
 });
 const offer = {

@@ -1,4 +1,3 @@
-import type { Point } from '@platform/contracts';
 import { createContext, useContext, type ReactNode } from 'react';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
@@ -38,14 +37,5 @@ export function usePlaceLabel() {
     const region = place.parentId === null ? undefined : directory.find(place.parentId);
     if (region) return { name: place.name, area: region.name };
     return { name: place.name, area: t(place.oneCity ? 'places.wholeCity' : 'places.wholeRegion') };
-  };
-}
-
-// The center of a place from the directory (docs/48): where a map opens first (G22).
-export function usePlacePoint() {
-  const directory = useContext(PlacesContext);
-  return (id: string): Point | null => {
-    const place = directory?.find(id);
-    return place ? { lat: place.lat, lng: place.lng } : null;
   };
 }

@@ -4,7 +4,7 @@ import { useAccount } from '../account/account-context';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useDriver } from '../driver/driver-context';
-import { RouteScreen, type Route } from '../places/route-screen';
+import { RouteScreen } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { DateStep } from './date-step';
 import { PriceStep } from './price-step';
@@ -13,26 +13,10 @@ import { PlacesGate } from './places-gate';
 import { returnDraft } from './return-trip';
 import { TripPublish } from './trip-publish';
 import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
+import { TripModeStep } from './trip-mode-step';
+import { completeDraft, type TripDraft } from './trip-draft';
 
-type Step = 'route' | 'date' | 'time' | 'seats' | 'price' | 'woman' | 'comment' | 'review';
-export type TripDraft = {
-  readonly route: Route;
-  readonly date: string;
-  readonly time: string;
-  readonly departAt: number;
-  readonly seats: number;
-  readonly price: number;
-  readonly womanOnBoard: boolean;
-  readonly comment: string;
-};
-
-// Every answer is there: the review can show and publish it. A woman driver skips the woman step.
-function completeDraft(draft: Partial<TripDraft>): TripDraft | null {
-  const { route, date, time, departAt, seats, price, comment } = draft;
-  if (!route || !date || !time || !departAt || !seats || !price || comment === undefined) return null;
-  return { route, date, time, departAt, seats, price, comment, womanOnBoard: draft.womanOnBoard ?? false };
-}
-
+type Step = 'route' | 'mode' | 'date' | 'time' | 'seats' | 'price' | 'woman' | 'comment' | 'review';
 // A new trip, one question per screen (docs/19): the answers of a step open the next one.
 export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
   const { track } = useAnalytics();
@@ -62,14 +46,22 @@ export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
         <RouteScreen
           allowWholeRegion={false}
           onBack={onBack}
-          onDone={(value) => next('route', { route: value }, 'date')}
+          onDone={(value) => next('route', { route: value }, 'mode')}
         />
       );
+    case 'mode':
+      return route ? (
+        <TripModeStep
+          route={route}
+          onBack={() => setStep('route')}
+          onDone={(pickupMode) => next('mode', { pickupMode }, 'date')}
+        />
+      ) : null;
     case 'date':
       return (
         <DateStep
           now={now}
-          onBack={() => setStep('route')}
+          onBack={() => setStep(isReturn ? 'route' : 'mode')}
           onDone={(date) => next('date', { date }, 'time')}
         />
       );

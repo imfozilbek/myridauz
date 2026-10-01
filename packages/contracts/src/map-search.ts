@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { pointSchema } from './bookings';
+import { pointSchema } from './point';
+import { locationIdSchema } from './locations';
 
 // Search by name on the map (G23, docs/67): names from the same OpenStreetMap data, in D1.
 export const MAP_SEARCH_PATH = '/passenger/map/search';
@@ -26,6 +27,8 @@ export const foundPlaceSchema = z.object({
   kind: z.enum(PLACE_KINDS),
   // The district or city around the place: two «Navoiy koʻchasi» differ by it.
   area: z.string().nullable(),
+  // Its id: choosing the place sets the district of the trip (G24).
+  district: locationIdSchema.nullable(),
   point: pointSchema,
 });
 export type FoundPlace = z.infer<typeof foundPlaceSchema>;

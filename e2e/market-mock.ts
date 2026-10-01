@@ -10,6 +10,8 @@ const perKm = (km: number, v = V) =>
   Math.min(v.maxPrice, Math.max(v.minPrice, Math.round((km * v.ratePerKm) / v.roundStep) * v.roundStep));
 // km of the main directions of docs/16, in the order of seed/main-directions.json.
 const MAIN_KM = [35, 120, 200, 290, 300, 320, 350, 465, 490, 570, 700, 1000, 1150, 420];
+// The main pitak of Toshkent → Samarqand (docs/73).
+export const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white' };
 const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 1_800_000) * 1_800_000;
 export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
@@ -30,7 +32,9 @@ export const tripOf = (id: string, name: string, woman: boolean, hours: number, 
   price: 90000,
   recommendedPrice: 90000,
   woman,
-  hasMeetingPoint: false,
+  pickupMode: 'both',
+  pitak: PITAK,
+  fit: null,
   comment: '',
   status: 'active',
   ...extra,
@@ -44,19 +48,26 @@ export const request = {
   km: KM,
   seats: 2,
   price: 90000,
+  pickupMode: 'door',
   status: 'open',
 };
 
 export async function mockMarket(page: Page) {
   const published: object[] = [];
   const found = [
-    tripOf('1', 'Jasur', false, 26, { hasMeetingPoint: true }),
+    tripOf('1', 'Jasur', false, 26),
     tripOf('2', 'Nodira', true, 29, { comment: 'Katta yuk olmayman', price: 100000 }),
   ];
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/prices/recommendation?*', (route) =>
     json(route, { from: CHILONZOR, to: SAMARQAND, km: KM, price: perKm(KM), source: 'formula', ...V }),
   );
+  // G24: the pitak of the direction, the district of a point, no borders (the map is not cut).
+  await page.route('**/api/pitaks/direction?*', (route) => json(route, { pitak: PITAK }));
+  await page.route('**/api/passenger/map/where?*', (route) =>
+    json(route, { district: CHILONZOR, name: { step: 'mahalla', name: 'Qatortol' }, area: null }),
+  );
+  await page.route('**/api/passenger/map/borders/*', (route) => json(route, {}, 404));
   await page.route('**/api/trips?*', (route) => {
     const woman = new URL(route.request().url()).searchParams.get('woman') === '1';
     return json(route, { trips: woman ? found.filter((trip) => trip.woman) : found });

@@ -42,6 +42,6 @@ export function TripById({ id, onClose }: { readonly id: string; readonly onClos
   const [booking, setBooking] = useState(false);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
   if (!value) return <ScreenSkeleton onBack={onClose} />;
-  if (booking) return <BookFlow trip={value} onBack={() => setBooking(false)} onClose={onClose} />;
+  if (booking) return <BookFlow trip={value} way={null} onBack={() => setBooking(false)} onClose={onClose} />;
   return <TripScreen trip={value} onBack={onClose} onBook={() => setBooking(true)} />;
 }

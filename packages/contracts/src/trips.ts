@@ -4,6 +4,7 @@ import { ratingSchema } from './ratings';
 import { CAR_COLORS, MAX_SEATS } from './drivers';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
+import { pickupModeSchema, pitakSchema } from './pickup';
 
 // A trip a driver publishes (docs/09, docs/35). G07.
 export const DRIVER_TRIPS_PATH = '/driver/trips';
@@ -37,6 +38,8 @@ export const tripInputSchema = z.object({
   // "With me goes a woman": a relative without Telegram (docs/06).
   womanOnBoard: z.boolean(),
   comment: z.string().trim().max(COMMENT_MAX),
+  // How the driver picks people up (docs/70): the pitak of the direction, around the city, or both.
+  pickupMode: pickupModeSchema,
 });
 export type TripInput = z.input<typeof tripInputSchema>;
 
@@ -63,18 +66,36 @@ export const tripSchema = z.object({
   recommendedPrice: z.number().int().nullable(),
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),
-  hasMeetingPoint: z.boolean(),
+  pickupMode: pickupModeSchema,
+  // The main pitak of the direction, when the driver takes people there (docs/70, docs/72).
+  pitak: pitakSchema.nullable(),
   comment: z.string(),
   status: z.enum(TRIP_STATUSES),
+  // Only in a search with the way of the passenger (docs/70): whether the way suits and how many
+  // km the passenger adds to the driver. Null everywhere else.
+  fit: z.object({ matches: z.boolean(), extraKm: z.number().int().nullable() }).nullable(),
 });
 export type Trip = z.infer<typeof tripSchema>;
 export const tripsSchema = z.object({ trips: z.array(tripSchema) });
 
 // Search: from and to may be a region (all its places) or a place (docs/14).
+// «lat,lng» in a query.
+const pointQuery = z
+  .string()
+  .regex(/^-?\d{1,2}(\.\d+)?,-?\d{1,3}(\.\d+)?$/u)
+  .transform((value) => {
+    const [lat = 0, lng = 0] = value.split(',').map(Number);
+    return { lat, lng };
+  });
+
 export const tripSearchSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   date: dateSchema,
   woman: z.enum(['1']).optional(),
+  // The way and the points of the passenger: the trips that suit go first (docs/70).
+  mode: pickupModeSchema.optional(),
+  pickup: pointQuery.optional(),
+  dropoff: pointQuery.optional(),
 });
 export type TripSearch = z.infer<typeof tripSearchSchema>;

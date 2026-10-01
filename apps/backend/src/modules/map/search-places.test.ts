@@ -1,20 +1,14 @@
 import type { FoundPlace } from '@platform/contracts';
 import { describe, expect, it, vi } from 'vitest';
 import { memoryPlaceIndex } from './infrastructure/memory-place-index';
-import type { PlaceRow } from './infrastructure/place-rows';
 import { searchPlaces } from './application/search-places';
+import { placeRow } from './test-kit';
 
 const TASHKENT = { lat: 41.3111, lng: 69.2797 };
-const place = (name: string, words: string, lat: number, lng: number, cell: string): PlaceRow => ({
-  name,
-  kind: 'market',
-  area: null,
-  point: { lat, lng },
-  words,
-  cell,
-});
-const chorsu = place('Chorsu bozori', 'charsu bazari', 41.3265, 69.2355, '165x276');
-const farChorsu = place('Chorsu', 'charsu', 39.65, 66.96, '158x267');
+const place = (name: string, words: string, lat: number, lng: number) =>
+  placeRow(name, 'market', { lat, lng }, { words });
+const chorsu = place('Chorsu bozori', 'charsu bazari', 41.3265, 69.2355);
+const farChorsu = place('Chorsu', 'charsu', 39.65, 66.96);
 const names = (places: readonly FoundPlace[]) => places.map((found) => found.name);
 
 describe('the search of places by name (G23, docs/67)', () => {
@@ -32,7 +26,7 @@ describe('the search of places by name (G23, docs/67)', () => {
 
   it('asks only near when there are enough places near', async () => {
     const many = Array.from({ length: 12 }, (_, index) =>
-      place(`${index + 1}-maktab`, `${index + 1} maktab`, 41.3 + index / 1000, 69.28, '165x277'),
+      place(`${index + 1}-maktab`, `${index + 1} maktab`, 41.3 + index / 1000, 69.28),
     );
     const index = memoryPlaceIndex([farChorsu, ...many]);
     const find = vi.spyOn(index, 'find');
@@ -49,7 +43,7 @@ describe('the search of places by name (G23, docs/67)', () => {
 
   it('takes the nearest of many near places, not the first ones found', async () => {
     const many = Array.from({ length: 30 }, (_, index) =>
-      place(`${index + 1}-maktab`, `${index + 1} maktab`, 41.2 + index / 200, 69.28, '165x277'),
+      place(`${index + 1}-maktab`, `${index + 1} maktab`, 41.2 + index / 200, 69.28),
     );
     const found = await searchPlaces(memoryPlaceIndex(many), 'maktab', TASHKENT);
     expect(found[0]?.name).toBe('23-maktab');

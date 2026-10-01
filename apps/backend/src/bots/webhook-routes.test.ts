@@ -95,7 +95,7 @@ describe('POST /telegram/:role', () => {
     expect((await send('passenger', 'not an update')).status).toBe(200);
   });
 
-  it('asks the driver to answer the trip message with the meeting point (docs/14)', async () => {
+  it('takes no location from people: the points come with the booking (docs/70)', async () => {
     const location = (replyTo?: number) => ({
       message: {
         message_id: 5,
@@ -105,11 +105,8 @@ describe('POST /telegram/:role', () => {
         ...(replyTo ? { reply_to_message: { message_id: replyTo } } : {}),
       },
     });
-    const hint = 'Lokatsiyani safar haqidagi xabarga javoban yuboring.';
-    expect(((await (await send('driver', location())).json()) as { text: string }).text).toBe(hint);
-    expect(((await (await send('driver', location(3))).json()) as { text: string }).text).toBe(hint);
+    expect(await (await send('driver', location(3))).json()).toEqual({});
     expect(await (await send('driver', start(7, 'salom'))).json()).toEqual({});
-    // A passenger's location counts only as an answer to a booking confirmation (G08).
     expect(await (await send('passenger', location())).json()).toEqual({});
     expect(await (await send('passenger', location(3))).json()).toEqual({});
   });

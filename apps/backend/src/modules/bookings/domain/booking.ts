@@ -1,4 +1,13 @@
-import { BOOKING_ANSWER_HOURS, type BookingStatus, type Point } from '@platform/contracts';
+import {
+  BOOKING_ANSWER_HOURS,
+  type BookingMode,
+  type BookingStatus,
+  type PlaceName,
+  type Point,
+} from '@platform/contracts';
+
+// The names of a point found at the booking (docs/69): the exact one and the area around it.
+export type Named = { readonly name: PlaceName | null; readonly area: PlaceName | null };
 
 // A booking of seats on a trip (docs/35). The price and the commission stay as at the request.
 export type BookingRecord = {
@@ -10,9 +19,14 @@ export type BookingRecord = {
   readonly commission: number;
   readonly status: BookingStatus;
   readonly expiresAt: number;
-  // The passenger's own pickup point, sent to the passenger bot after the confirmation (docs/14).
+  // How the passenger is picked up, fixed at the booking (docs/70): the pitak of the direction,
+  // or the door with its point. The drop-off is always a point at the door.
+  readonly mode: BookingMode | null;
+  readonly pitakId: string | null;
   readonly pickup: Point | null;
-  readonly pickupMessageId: number | null;
+  readonly pickupNamed: Named | null;
+  readonly dropoff: Point | null;
+  readonly dropoffNamed: Named | null;
   // The offer this booking came from: its chat is the offer's chat (docs/07).
   readonly offerId: string | null;
   // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
@@ -39,6 +53,16 @@ export const holdsSeats = (status: BookingStatus) => status === 'confirmed' || s
 export type BookingAction = 'confirm' | 'decline' | 'passenger_cancel' | 'driver_cancel';
 type Moves = Readonly<Record<BookingAction, Partial<Record<BookingStatus, BookingStatus>>>>;
 
+// The points and their names go at once when the ride will not happen (docs/69): only the district
+// of the route stays with the trip.
+export const withoutPoints = (booking: BookingRecord): BookingRecord => ({
+  ...booking,
+  pickup: null,
+  pickupNamed: null,
+  dropoff: null,
+  dropoffNamed: null,
+});
+
 // Who may move a booking where (docs/35). A cancelled request is "declined" when the driver does it.
 const MOVES: Moves = {
   confirm: { requested: 'confirmed' },
@@ -58,5 +82,7 @@ export function move(
   const status = statusAt(booking, now, false);
   if (status === 'confirmed' && action !== 'confirm' && departAt <= now) return 'bookings.wrong_status';
   const next = MOVES[action][status];
-  return next ? { ...booking, status: next, updatedAt: now } : 'bookings.wrong_status';
+  if (!next) return 'bookings.wrong_status';
+  const moved = { ...booking, status: next, updatedAt: now };
+  return next === 'confirmed' ? moved : withoutPoints(moved);
 }

@@ -60,10 +60,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
         car: `${car.make} ${car.model}`,
         plate: booking.plate ? formatPlate(booking.plate) : '',
       });
-      // No button: the passenger answers this very message with the pickup point (docs/14).
-      await send('passenger', booking.passenger.id, text, {
-        after: { type: 'pickup', bookingId: booking.id },
-      });
+      await toPassenger(booking, text);
     },
     declined: async (booking) => {
       await system(booking.chatKey, 'declined');
@@ -94,6 +91,5 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       await notify([{ bot: 'driver', chatId: driverId, text, markup }]);
     },
     progress: (booking, step) => closeOnes(booking, step),
-    pickup: async (booking) => toDriver(booking, t('bot.booking.pickupForDriver', await about(booking))),
   };
 }

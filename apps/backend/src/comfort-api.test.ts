@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read, seen } from './bookings-test-api';
-import { call, pid, registerUser, testEnv } from './test-api';
+import { call, pid, registerUser, testEnv, doorBooking } from './test-api';
 
 // Every Telegram call: bot messages about trips and the prepared cards.
 const telegram: { method: string; body: Record<string, unknown> }[] = [];
@@ -33,6 +33,7 @@ const publish = (departAt = Date.now() + 5 * HOUR) =>
         seats: 3,
         price: 90_000,
         womanOnBoard: false,
+        pickupMode: 'both',
         comment: '',
       }),
     }),
@@ -107,7 +108,7 @@ describe('"Safarlar tarixi" (docs/18)', () => {
   it('shows past rides and the stars, the received ones only once published', async () => {
     const trip = await publish();
     const booking = await read<{ id: string }>(
-      call(`/trips/${trip.id}/bookings`, PASSENGER, json({ seats: 2 })),
+      call(`/trips/${trip.id}/bookings`, PASSENGER, json(doorBooking(2))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const history = (id: number, side: 'passenger' | 'driver') =>

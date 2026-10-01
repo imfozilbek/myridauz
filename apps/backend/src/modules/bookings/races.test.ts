@@ -4,7 +4,7 @@ import { acceptOffer } from './application/accept';
 import { answer, confirm } from './application/answer';
 import { sendOffer } from './application/offers';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
-import { ALI, DILNOZA, DRIVER, HOUR, NOW, OLIM, setup } from './test-kit';
+import { ALI, DILNOZA, DRIVER, HOUR, NOW, OLIM, setup, seats } from './test-kit';
 
 const idOf = (result: { ok: boolean; value?: { id: string } }) =>
   result.ok && result.value ? result.value.id : '';
@@ -14,8 +14,8 @@ describe('two taps at the same moment (docs/65 A4)', () => {
     const { deps, addTrip, bonus, wallet } = setup();
     await bonus();
     const tripId = addTrip({ seats: 2 });
-    const first = idOf(await requestBooking(deps, DILNOZA, tripId, 2));
-    const second = idOf(await requestBooking(deps, ALI, tripId, 2));
+    const first = idOf(await requestBooking(deps, DILNOZA, tripId, seats(2)));
+    const second = idOf(await requestBooking(deps, ALI, tripId, seats(2)));
     const results = await Promise.all([confirm(deps, DRIVER, first), confirm(deps, DRIVER, second)]);
     expect(results.map((result) => result.ok).sort()).toEqual([false, true]);
     // One booking of 2 seats at 90 000: 18 000 from the bonus, never twice.
@@ -26,8 +26,8 @@ describe('two taps at the same moment (docs/65 A4)', () => {
     const { deps, addTrip, bonus, wallet, spend } = setup();
     await bonus();
     await spend(500_000 - 18_000);
-    const first = idOf(await requestBooking(deps, DILNOZA, addTrip(), 2));
-    const second = idOf(await requestBooking(deps, OLIM, addTrip(), 2));
+    const first = idOf(await requestBooking(deps, DILNOZA, addTrip(), seats(2)));
+    const second = idOf(await requestBooking(deps, OLIM, addTrip(), seats(2)));
     const results = await Promise.all([confirm(deps, DRIVER, first), confirm(deps, DRIVER, second)]);
     expect(results.filter((result) => result.ok)).toHaveLength(1);
     // One commission of 18 000; the empty bonus then brings the next grant of the promo (docs/12).
@@ -50,7 +50,7 @@ describe('two taps at the same moment (docs/65 A4)', () => {
     const { deps, addTrip, bonus, setNow } = setup();
     await bonus();
     const tripId = addTrip({ departAt: NOW + 2 * HOUR, endsAt: NOW + 9 * HOUR });
-    const booked = idOf(await requestBooking(deps, DILNOZA, tripId, 1));
+    const booked = idOf(await requestBooking(deps, DILNOZA, tripId, seats(1)));
     await confirm(deps, DRIVER, booked);
     setNow(NOW + 3 * HOUR);
     expect(await cancelByPassenger(deps, DILNOZA, booked)).toEqual({
