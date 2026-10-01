@@ -17,7 +17,17 @@ export function TripTools({ booking: initial, onChat, onComplain }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
-  const [booking, setBooking] = useState(initial);
+  // The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
+  // has just told («Mashinaga chiqdim», «Yetib keldim») shows before the screen has it.
+  const [told, setTold] = useState<Booking | null>(null);
+  const booking =
+    told?.id === initial.id
+      ? {
+          ...initial,
+          boardedAt: initial.boardedAt ?? told.boardedAt,
+          arrivedAt: initial.arrivedAt ?? told.arrivedAt,
+        }
+      : initial;
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
   // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
   const [sharing, setSharing] = useState(true);
@@ -40,7 +50,7 @@ export function TripTools({ booking: initial, onChat, onComplain }: Props) {
     }, null);
   const step = (name: 'boarded' | 'arrived') =>
     run(async () => {
-      setBooking(await chat[name](booking.id));
+      setTold(await chat[name](booking.id));
       track({ name, screen: 'bookings.passenger' });
     }, 'told');
   const stop = () =>

@@ -44,6 +44,28 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
     expect(await screen.findByText('Haydovchi bekor qildi')).toBeTruthy();
   });
 
+  it('hides the tools of a confirmed seat once the driver cancels it', async () => {
+    const channel = feed();
+    let mine: Booking[] = [confirmed];
+    renderMarket(
+      <FeedContext.Provider value={channel.subscribe}>
+        <MyRequestsScreen onBack={() => undefined} />
+      </FeedContext.Provider>,
+      testClients({
+        market: { myRequests: async () => [] },
+        bookings: { myBookings: async () => mine, myOffers: async () => [] },
+      }),
+    );
+    await tap('Jasur');
+    expect(screen.getByText('Mashinaga chiqdim')).toBeTruthy();
+    mine = [{ ...confirmed, status: 'cancelled_by_driver' }];
+    channel.fire();
+    await screen.findByText('Haydovchi bekor qildi');
+    // «Mashinaga chiqdim» and «Yetib keldim» are only for a seat that still goes (docs/65 B2).
+    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    expect(screen.queryByText('Yetib keldim')).toBeNull();
+  });
+
   it('asks before a cancel and keeps the seat on "no"', async () => {
     const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => confirmed);
     vi.stubGlobal('confirm', () => false);
