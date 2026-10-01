@@ -20,6 +20,8 @@ test('docs/82 ways: a pitak trip takes no seat from home, a city trip takes no s
   const cityOnly = await publishTrip(GAYRAT, CHILONZOR, SAMARQAND, 'door');
   const pitak = { seats: 1, mode: 'pitak' as const, pickup: null, dropoff: TO_SAMARQAND.dropoff };
   expect(await outcome(book(TIMUR, cityOnly, pitak))).toBe('bookings.wrong_mode');
+  // Toshkent → Urgut is the route of G26: its search must not meet this trip (docs/75).
+  await createMarketClient(await signedAs('driver', GAYRAT)).cancelTrip(pitakOnly.id);
 });
 
 test('C06, P12. a seat cancelled before the answer: the driver hears it; an empty day is empty', async () => {
