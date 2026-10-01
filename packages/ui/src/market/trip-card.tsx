@@ -14,7 +14,7 @@ const PHOTO_SIZE = 40;
 type TripCardProps = {
   readonly trip: Trip;
   readonly showStatus?: boolean;
-  // The own trips of a driver: the driver and the car are the same on every card (U6).
+  // The own trips of a driver: with the status; the driver and the car are the same on every card (U6).
   readonly own?: boolean;
   readonly onOpen: () => void;
 };
@@ -29,7 +29,7 @@ export function TripCard({ trip, showStatus = false, own = false, onOpen }: Trip
     ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
     ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
     ...wayFacts(trip),
-    ...(showStatus ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
+    ...(showStatus || own ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
   ];
   return (
     <Section>
