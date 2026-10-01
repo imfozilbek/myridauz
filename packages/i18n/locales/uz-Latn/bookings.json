@@ -34,6 +34,7 @@
   "offer.sent.title": "Taklif yuborildi",
   "offer.sent.hint": "Yoʻlovchining javobini bot orqali bilasiz.",
   "offer.list": "Haydovchilardan takliflar",
+  "offer.listHint": "Taklifni oching va qabul qiling",
   "offer.mine": "Yuborilgan takliflar",
   "offer.accept": "Qabul qilish",
   "offer.decline": "Rad etish",

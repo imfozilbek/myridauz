@@ -13,7 +13,8 @@ import { ComplaintScreen } from '../feedback/complaint-screen';
 import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
-import { OfferAccepted, OfferScreen, OffersSection } from './offer-list';
+import { OfferAccepted, OfferScreen } from './offer-list';
+import { OffersSection } from './offers-section';
 import { TripTools } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
