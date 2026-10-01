@@ -8,6 +8,7 @@ import { received } from '../application/dispatch';
 import { joined, systemEvent } from '../application/room';
 import { botSignals } from './bot-signals';
 import { sqlMessages } from './sql-messages';
+import { closeCodeFor } from '../../../shared/sockets/close-code';
 
 const HISTORY_LIMIT = 100;
 const SECOND = 1000;
@@ -74,7 +75,7 @@ export class ChatRoom extends DurableObject<Bindings> {
   }
 
   override async webSocketClose(ws: WebSocket, code: number): Promise<void> {
-    ws.close(code);
+    ws.close(closeCodeFor(code));
     const { member, key } = ws.deserializeAttachment() as { member: Member; key: string };
     await callLeft(this.deps(key), member);
   }

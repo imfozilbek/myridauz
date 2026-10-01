@@ -51,15 +51,32 @@ export const signedAs = async (app: MiniApp, person: Person) => ({
   initData: await initDataOf(app, person),
 });
 
-// Opens a Mini App of the stand as this person, as Telegram opens it on a phone.
+// The stand never reaches the outside (docs/75): a request or a socket to another host is stopped
+// and named, and the scenario fails on it (lesson 56).
+const outside = (url: URL) => url.hostname !== 'localhost';
+const leaks: string[] = [];
+async function guardOutside(page: Page) {
+  await page.route(outside, (route) => {
+    leaks.push(route.request().url());
+    return route.abort();
+  });
+  await page.routeWebSocket(outside, (socket) => {
+    leaks.push(socket.url());
+    return socket.close();
+  });
+}
+export const outsideCalls = (): readonly string[] => leaks.map((url) => new URL(url).host);
+
+// Opens a Mini App of the stand as this person, as Telegram opens it on a phone. search: what a bot
+// button adds to the address, such as ?booking=<id> (docs/65 B5).
 export async function openAs(
   page: Page,
   app: MiniApp,
   person: Person,
-  platform: 'android' | 'ios' = 'android',
+  { platform = 'android', search = '' }: { platform?: 'android' | 'ios'; search?: string } = {},
 ) {
+  await guardOutside(page);
   await mockTelegram(page, await contactOf(app, person));
-  await page.goto(
-    telegramUrl(`http://localhost:${STAND_APPS[app]}/`, platform, await initDataOf(app, person)),
-  );
+  const url = `http://localhost:${STAND_APPS[app]}/${search}`;
+  await page.goto(telegramUrl(url, platform, await initDataOf(app, person)));
 }
