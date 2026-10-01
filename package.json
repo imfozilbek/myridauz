@@ -22,11 +22,15 @@
     "deploy": "node scripts/deploy.mjs",
     "map-data": "node scripts/map-data.mjs",
     "setup-bots": "node scripts/setup-bots.mjs",
+    "stand": "node scripts/stand/stand.mjs",
+    "stand:check": "playwright test -c playwright.stand.config.ts",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },
   "devDependencies": {
     "@mapbox/vector-tile": "3.0.0",
+    "@platform/api-client": "workspace:*",
     "@platform/brands": "workspace:*",
+    "@platform/contracts": "workspace:*",
     "@platform/config": "workspace:*",
     "@platform/i18n": "workspace:*",
     "@playwright/test": "1.56.1",

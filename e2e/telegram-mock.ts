@@ -7,26 +7,30 @@ const INIT_DATA = new URLSearchParams({
   signature: 'test',
   hash: 'test',
 }).toString();
-const launch = (platform: 'android' | 'ios') =>
+const launch = (platform: 'android' | 'ios', initData: string) =>
   new URLSearchParams({
     tgWebAppPlatform: platform,
     tgWebAppVersion: '9.0',
     tgWebAppThemeParams: '{}',
-    tgWebAppData: INIT_DATA,
+    tgWebAppData: initData,
   }).toString();
 
 // Most people in Uzbekistan use Android: the main screens are shot on both (lesson 52).
-export const telegramUrl = (url: string, platform: 'android' | 'ios' = 'ios') => `${url}#${launch(platform)}`;
+// The stand (docs/75) passes launch data signed with its test bot token.
+export const telegramUrl = (url: string, platform: 'android' | 'ios' = 'ios', initData = INIT_DATA) =>
+  `${url}#${launch(platform, initData)}`;
 
 // A small Telegram client: answers SDK requests and draws the native header and main button,
 // so tests and screenshots see what a person sees inside Telegram.
-const MOCK = String(() => {
+const MOCK = String((signedContact: string | null) => {
   const tg = { events: [] as { type: string; data: Record<string, unknown> }[], phoneShared: false };
-  const CONTACT = new URLSearchParams({
-    contact: JSON.stringify({ user_id: 1, phone_number: '998901234567', first_name: 'Test' }),
-    auth_date: '1790000000',
-    hash: 'test',
-  }).toString();
+  const CONTACT =
+    signedContact ??
+    new URLSearchParams({
+      contact: JSON.stringify({ user_id: 1, phone_number: '998901234567', first_name: 'Test' }),
+      auth_date: '1790000000',
+      hash: 'test',
+    }).toString();
   const LOCATION = {
     latitude: 41.3113,
     longitude: 69.2795,
@@ -107,8 +111,9 @@ const MOCK = String(() => {
   });
 });
 
-export async function mockTelegram(page: Page): Promise<void> {
-  await page.addInitScript(`(${MOCK})()`);
+// contact: the shared phone signed like Telegram does, for the stand (docs/75).
+export async function mockTelegram(page: Page, contact: string | null = null): Promise<void> {
+  await page.addInitScript(`(${MOCK})(${JSON.stringify(contact)})`);
 }
 
 export function telegramEvents(page: Page, type: string): Promise<Record<string, unknown>[]> {

@@ -15,12 +15,18 @@ importers:
       '@mapbox/vector-tile':
         specifier: 3.0.0
         version: 3.0.0
+      '@platform/api-client':
+        specifier: workspace:*
+        version: link:packages/api-client
       '@platform/brands':
         specifier: workspace:*
         version: link:brands
       '@platform/config':
         specifier: workspace:*
         version: link:packages/config
+      '@platform/contracts':
+        specifier: workspace:*
+        version: link:packages/contracts
       '@platform/i18n':
         specifier: workspace:*
         version: link:packages/i18n

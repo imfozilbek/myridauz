@@ -1,4 +1,4 @@
-// The map of the Mini App (G22, docs/67): pnpm map-data --brand=<brand> [--dry-run]
+// The map of the Mini App (G22, docs/67): pnpm map-data --brand=<brand> [--dry-run] [--local]
 // Cuts Uzbekistan out of the Protomaps build of OpenStreetMap (the data date is in MAP_ARCHIVE),
 // fills the search index of place names in D1 from it (G23), takes the fonts of the labels and puts both into the private R2 bucket of the brand. Needs
 // CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; runs from the workflow "Map data" (docs/32).
@@ -10,6 +10,7 @@ import { loadBrand } from '../brands/index.ts';
 import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
 import border from '../packages/contracts/src/uzbekistan-border.json' with { type: 'json' };
 import { writePlaceIndex } from './map-places.mjs';
+import { STAND_STATE } from './stand/paths.ts';
 
 // The command line tool of PMTiles, pinned by version and checksum.
 const PMTILES = {
@@ -33,6 +34,8 @@ const brandArg = process.argv.find((arg) => arg.startsWith('--brand='));
 if (!brandArg) throw new Error('map-data: --brand=<brand> is required');
 const brand = loadBrand(brandArg.split('=')[1]);
 const dryRun = process.argv.includes('--dry-run');
+// --local fills the local stand instead of Cloudflare (docs/75): the same data, no keys needed.
+const target = process.argv.includes('--local') ? ['--local', '--persist-to', STAND_STATE] : ['--remote'];
 const config = readFileSync(`brands/${brand.id}/wrangler.toml`, 'utf8');
 const bucket = /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u.exec(config)?.[1];
 if (!bucket) throw new Error('map-data: no MEDIA bucket in wrangler.toml');
@@ -58,7 +61,7 @@ const put = (key, file, type) =>
     file,
     '--content-type',
     type,
-    '--remote',
+    ...target,
   ]);
 
 mkdirSync(WORK, { recursive: true });
@@ -115,7 +118,7 @@ run('pnpm', [
   'd1',
   'execute',
   'DB',
-  '--remote',
+  ...target,
   '--yes',
   '--config',
   `brands/${brand.id}/wrangler.toml`,
