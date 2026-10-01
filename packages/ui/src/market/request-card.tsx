@@ -7,6 +7,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
+import { MainButton } from '../telegram/bottom-button';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
 import { RouteView } from './route-view';
 import { noonOf } from './when';
@@ -65,7 +66,8 @@ type RequestScreenProps = {
   readonly children?: ReactNode;
 };
 
-// One request. The passenger cancels an open one and answers offers; a driver sends an offer.
+// One request. The passenger cancels an open one and answers offers; a driver sends an offer
+// from the native main button (docs/86 V6).
 export function RequestScreen({ request, onBack, onCancel, onOffer, children }: RequestScreenProps) {
   useScreenView('market.request');
   const { t, formatMoney, formatDate } = useI18n();
@@ -94,12 +96,10 @@ export function RequestScreen({ request, onBack, onCancel, onOffer, children }: 
             {t('market.request.cancel')}
           </Button>
         ) : null}
-        {onOffer && request.status === 'open' ? (
-          <Button size="l" stretched onClick={onOffer}>
-            {t('market.request.offer')}
-          </Button>
-        ) : null}
       </div>
+      {onOffer && request.status === 'open' ? (
+        <MainButton text={t('market.request.offer')} onClick={onOffer} />
+      ) : null}
     </div>
   );
 }
