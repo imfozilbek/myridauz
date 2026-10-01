@@ -43,6 +43,8 @@ export const DIYORA: Person = { id: 900237, name: 'Diyora', phone: '998901110237
 export const NARGIZA: Person = { id: 900238, name: 'Nargiza', phone: '998901110238' };
 // The screens of a driver show her seat and her request (e2e/stand/screens-driver.spec.ts).
 export const ROZA: Person = { id: 900239, name: 'Roza', phone: '998901110239' };
+// Blocked by the team in the scenarios of the bots (e2e/stand/bots.spec.ts).
+export const SANJAR: Person = { id: 900240, name: 'Sanjar', phone: '998901110240' };
 
 type Driver = { readonly person: Person; readonly plate: string; readonly gender: Gender };
 export const DRIVERS: readonly Driver[] = [
@@ -75,4 +77,4 @@ export const PASSENGERS: readonly Person[] = [
   ROZA,
 ];
 // Men among the passengers: «Mashinada ayol bor» is about them (docs/06).
-export const MEN: readonly Person[] = [TIMUR];
+export const MEN: readonly Person[] = [TIMUR, SANJAR];
