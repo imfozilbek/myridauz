@@ -7,7 +7,7 @@
 | Что | Статус |
 |---|---|
 | T1 … T17 | Сделаны, тесты; ждут проверки носителем |
-| V2 … V14 | Сделаны, тесты (V7, V8, V12: ветка `goal/g27-finish`) |
+| V2 … V14 | Сделаны, тесты, в `main` (PR #75) |
 | V1 | Ждёт реквизиты компании от владельца |
 
 Новые тексты V на проверку носителем: «Tasdiqlangandan keyin», «Ariza tasdiqlandi», «Boshlash uchun {amount} bonus berdik. Bonus komissiyaga ishlatiladi.» (V7); «Har bir joy uchun {amount} komissiya», «Komissiya yoʻlovchi joyini tasdiqlaganingizda olinadi: avval bonusdan, keyin asosiy hisobdan.» (V8).
