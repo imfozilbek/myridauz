@@ -27,9 +27,17 @@ beforeEach(async () => {
 
 describe('the place index in D1 (G24)', () => {
   it('finds by words near a point, with the district of the place', async () => {
-    const found = await index.find({ words: ['charsu'], cells: null, near: CHORSU }, 10);
+    const found = await index.find({ words: ['charsu'], cells: null, near: CHORSU, districts: null }, 10);
     expect(found.map((place) => place.name)).toEqual(['Chorsu bozori', 'Chorsu mahallasi', 'Chorsu']);
     expect(found[0]?.district).toBe('1726277');
+  });
+
+  it('finds only in the districts of a zone (G26)', async () => {
+    const found = await index.find(
+      { words: ['charsu'], cells: null, near: CHORSU, districts: ['1726277'] },
+      10,
+    );
+    expect(found.map((place) => place.name)).toEqual(['Chorsu bozori']);
   });
 
   it('finds what lies around a point by the fine cells and the kinds', async () => {

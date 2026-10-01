@@ -19,7 +19,6 @@ import {
   type RideRequestInput,
   type Trip,
   type TripInput,
-  type Point,
   type TripSearch,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
@@ -39,12 +38,8 @@ export function createMarketClient(options: SignedOptions) {
       recommendationSchema.parse(
         await (await request(`${PRICE_RECOMMENDATION_PATH}?${query({ from, to })}`)).json(),
       ),
-    // The points go as «lat,lng»: the trips that suit the way come first (docs/70).
-    searchTrips: async ({ pickup, dropoff, ...rest }: TripSearch): Promise<Trip[]> => {
-      const at = (point?: Point) => (point ? `${point.lat},${point.lng}` : undefined);
-      const asked = query({ ...rest, pickup: at(pickup), dropoff: at(dropoff) });
-      return tripsSchema.parse(await (await request(`${TRIPS_PATH}?${asked}`)).json()).trips;
-    },
+    searchTrips: async (search: TripSearch): Promise<Trip[]> =>
+      tripsSchema.parse(await (await request(`${TRIPS_PATH}?${query(search)}`)).json()).trips,
     trip: async (id: string): Promise<Trip> => trip(await request(tripPath(id))),
     myTrips: async (): Promise<Trip[]> =>
       tripsSchema.parse(await (await request(DRIVER_TRIPS_PATH)).json()).trips,

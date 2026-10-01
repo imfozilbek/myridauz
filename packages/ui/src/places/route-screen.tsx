@@ -15,6 +15,7 @@ import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import type { PlaceDirectory } from './directory';
 import { PlacePicker } from './place-picker';
+import { useHere } from './use-here';
 import { useDirectory } from './use-directory';
 
 export type Route = { readonly from: Location; readonly to: Location };
@@ -25,6 +26,8 @@ type RouteScreenProps = {
   readonly onDone: (route: Route) => void;
   // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
+  // Each end chosen, for the funnel of the search (G26).
+  readonly onEnd?: (end: 'from' | 'to') => void;
 };
 
 // "From" and "to" of a trip or a search. A trip inside one city is refused right away (docs/14).
@@ -41,9 +44,13 @@ function RouteForm({
   onBack,
   onDone,
   pick,
+  onEnd,
 }: RouteScreenProps & { directory: PlaceDirectory }) {
   const { t } = useI18n();
-  const [from, setFrom] = useState<Location | null>(null);
+  // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
+  const here = useHere(directory);
+  const [chosenFrom, setFrom] = useState<Location | null>(null);
+  const from = chosenFrom ?? here;
   const [to, setTo] = useState<Location | null>(null);
   const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
   const [error, setError] = useState<RouteError | null>(null);
@@ -53,11 +60,12 @@ function RouteForm({
       setFrom(next.from);
       setTo(next.to);
       setPicking(null);
+      if (picking) onEnd?.(picking);
       const found = next.from && next.to ? checkRoute(next.from, next.to, directory.find) : null;
       setError(found);
       if (found) haptic.error();
     },
-    [picking, from, to, directory],
+    [picking, from, to, directory, onEnd],
   );
   const submit = useCallback(() => {
     if (!from || !to || error) return haptic.error();

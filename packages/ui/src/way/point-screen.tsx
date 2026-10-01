@@ -1,7 +1,7 @@
 import type { Location, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -18,6 +18,7 @@ import { MapFailed } from './map-failed';
 import { RecentList } from './recent-list';
 import { rememberPlace } from './recent-places';
 import { useWhere } from './use-where';
+import { useClip } from './use-clip';
 import { useNameText, type WayEnd } from './way-end';
 import '../map/pickup-map.css';
 
@@ -28,42 +29,36 @@ type Props = {
   readonly title: TranslationKey;
   readonly start: Point;
   readonly find: (id: string) => Location | undefined;
+  // A booking (G26, docs/74): the map, the search and the last places stay inside this district or
+  // region; the point is checked against it.
+  readonly zone?: Location;
   readonly onBack: () => void;
   readonly onPick: (end: WayEnd) => void;
 };
 
 // One point on the map (G24, docs/71): the pin in the middle, its name under it, the map of its
 // district only. Search, the last places and «Mening joylashuvim» move the map; «Shu yerda» takes it.
-export function PointScreen({ title, start, find, onBack, onPick }: Props) {
+export function PointScreen({ title, start, find: findAny, zone, onBack, onPick }: Props) {
   useScreenView('way.point');
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { colors } = useBrand().theme;
   const { map } = useApiClients();
   const { box, view, failed, retry } = useMapView(map, start);
+  const find = (id: string) => {
+    const found = findAny(id);
+    return !zone || id === zone.id || found?.parentId === zone.id ? found : undefined;
+  };
   const { where, asking } = useWhere(view);
   const nameText = useNameText();
   const [note, setNote] = useState<TranslationKey | null>(null);
   const method = useRef<Method>('map');
-  // A search, a recent place or the location may lie in another district: the cut goes away
-  // before the move, and the border of the district under the pin comes back once it is known.
-  const clipped = useRef<string | null>(null);
   const district = where?.district ?? null;
-  useEffect(() => {
-    if (!view || !district || clipped.current === district) return;
-    clipped.current = district;
-    // A border that comes after the person moved to another place is stale: it would pull the map back.
-    const fresh = () => clipped.current === district;
-    map.border(district).then(
-      (border) => fresh() && view.clip(border.parts),
-      () => fresh() && view.clip(null),
-    );
-  }, [view, district, where, map]);
+  const unclip = useClip(view, where, zone?.id ?? null);
   const moveTo = (point: Point, how: Method) => {
     method.current = how;
     setNote(null);
-    clipped.current = null;
-    view?.clip(null);
+    unclip();
     view?.moveTo(point);
   };
   const locate = async () => {
@@ -72,8 +67,9 @@ export function PointScreen({ title, start, find, onBack, onPick }: Props) {
     else setNote('way.point.noLocation');
   };
   const place = district ? find(district) : undefined;
+  const outside = zone ? 'way.point.outsideZone' : 'way.point.outside';
   const take = () => {
-    if (!view || !where || !place) return (haptic.error(), setNote('way.point.outside'));
+    if (!view || !where || !place) return (haptic.error(), setNote(outside));
     const point = view.center();
     track({ name: 'place_point_saved', screen: 'way.point', method: method.current });
     rememberPlace({ point, name: where.name, district: place.id });
@@ -93,18 +89,22 @@ export function PointScreen({ title, start, find, onBack, onPick }: Props) {
           ? t('way.point.finding')
           : place
             ? nameText(where.name, place)
-            : t('way.point.outside')}
+            : t(outside, { zone: zone?.name ?? '' })}
       </Text>
       <div className="pickup-map-top">
         <div className="pickup-map-panel">
           <Text weight="2">{t(title)}</Text>
           <Caption>{t('way.point.hint')}</Caption>
-          <MapSearch near={start} onFound={(point) => moveTo(point, 'search')} />
+          <MapSearch
+            near={start}
+            {...(zone ? { zone: zone.id } : {})}
+            onFound={(point) => moveTo(point, 'search')}
+          />
           <RecentList find={find} onChoose={(point) => moveTo(point, 'recent')} />
         </div>
         {note ? (
           <Text className="pickup-map-panel" role="alert">
-            {t(note)}
+            {t(note, { zone: zone?.name ?? '' })}
           </Text>
         ) : null}
         <Button mode="white" size="m" before={<Icon name="locate" />} onClick={() => void locate()}>

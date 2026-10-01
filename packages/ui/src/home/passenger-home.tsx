@@ -1,5 +1,4 @@
-import { BOOKING_LINK, type Point } from '@platform/contracts';
-import { useEffect, useState } from 'react';
+import { BOOKING_LINK } from '@platform/contracts';
 import { useChevron } from '../chevron';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
@@ -7,9 +6,9 @@ import { useI18n } from '../context/i18n-context';
 import type { HomeGo } from '../flow/start-action';
 import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
+import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
-import { knownPosition } from '../telegram/location';
-import { useNameText } from '../way/way-end';
+import { useHere } from '../places/use-here';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { nextBookings } from './home-items';
@@ -33,6 +32,7 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
   if (shown.length === 0)
     return (
       <AskWay
+        directory={places.status === 'ready' ? places.directory : null}
         onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
         onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
       />
@@ -56,22 +56,18 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
   );
 }
 
-// «Qayerdan» filled by the place of the person when they allowed it before, «Qayerga borasiz?».
-function AskWay({ onFrom, onTo }: { readonly onFrom: () => void; readonly onTo: () => void }) {
+// «Qayerdan» filled by the district of the person when they allowed the place before, the same
+// the search list shows after the tap (G26, docs/74); «Qayerga borasiz?».
+type AskProps = {
+  readonly directory: PlaceDirectory | null;
+  readonly onFrom: () => void;
+  readonly onTo: () => void;
+};
+
+function AskWay({ directory, onFrom, onTo }: AskProps) {
   const { t } = useI18n();
-  const { map } = useApiClients();
-  const nameText = useNameText();
   const chevron = useChevron();
-  const [here, setHere] = useState<string | null>(null);
-  useEffect(() => {
-    let active = true;
-    void knownPosition().then(async (point: Point | null) => {
-      const where = point ? await map.where(point).catch(() => null) : null;
-      if (active && where?.name) setHere(nameText(where.name, ''));
-    });
-    return () => void (active = false);
-    // Asked once, when the main screen opens.
-  }, []);
+  const here = useHere(directory);
   return (
     <Section header={t('places.route')}>
       <Cell
@@ -80,7 +76,7 @@ function AskWay({ onFrom, onTo }: { readonly onFrom: () => void; readonly onTo: 
         after={chevron()}
         onClick={onFrom}
       >
-        {here ?? t('way.fromEmpty')}
+        {here?.name ?? t('way.fromEmpty')}
       </Cell>
       <Cell before={<IconTile name="destination" tone="accent" />} after={chevron()} onClick={onTo}>
         {t('way.toEmpty')}

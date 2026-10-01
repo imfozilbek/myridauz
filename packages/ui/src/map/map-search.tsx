@@ -12,15 +12,20 @@ import { usePlaceSearch } from './use-place-search';
 const SEARCH_ICON_SIZE = 20;
 const MAX_LENGTH = 100;
 
-type Props = { readonly near: Point; readonly onFound: (point: Point) => void };
+type Props = {
+  readonly near: Point;
+  // Only inside this district or region (G26, docs/74).
+  readonly zone?: string;
+  readonly onFound: (point: Point) => void;
+};
 
 // A place by name on the map (G23, docs/67): mahalla, street or landmark. The names are the ones
 // of the map; near the start of the trip first. A tap moves the map, the pin stays in the middle.
-export function MapSearch({ near, onFound }: Props) {
+export function MapSearch({ near, zone, onFound }: Props) {
   const { t } = useI18n();
   const { map } = useApiClients();
   const { track } = useAnalytics();
-  const { query, setQuery, result } = usePlaceSearch(map.search, near);
+  const { query, setQuery, result } = usePlaceSearch(map.search, near, zone);
   const empty = result.status === 'found' && result.places.length === 0;
   // Only the length: the text may be an address (docs/69).
   useEffect(() => {

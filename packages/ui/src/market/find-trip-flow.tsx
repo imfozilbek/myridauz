@@ -1,9 +1,8 @@
 import type { Trip } from '@platform/contracts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BookFlow } from '../bookings/book-flow';
-import type { Route } from '../places/route-screen';
-import { WayScreen } from '../way/way-screen';
-import type { Way } from '../way/way-end';
+import { useAnalytics } from '../context/analytics-context';
+import { RouteScreen, type Route } from '../places/route-screen';
 import { DateStep } from './date-step';
 import { PlacesGate } from './places-gate';
 import { TripResults } from './trip-results';
@@ -11,11 +10,10 @@ import { TripScreen } from './trip-screen';
 
 type Screen =
   | { readonly step: 'route' }
-  | { readonly step: 'date'; readonly route: Route; readonly way?: Way }
+  | { readonly step: 'date'; readonly route: Route }
   | {
       readonly step: 'results';
       readonly route: Route;
-      readonly way?: Way;
       readonly date: string;
       readonly open?: Trip;
       readonly booking?: boolean;
@@ -24,64 +22,70 @@ type Screen =
 type Props = {
   readonly onBack: () => void;
   readonly initial?: Route | undefined;
-  // From the main screen: a point of the way is asked at once (G25).
+  // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
 };
 
-// A passenger looks for a trip: the start and the end over the map (docs/71), a day, the list
-// with the trips that suit first (docs/70). A link of the landing brings the districts (docs/59).
-const routeOf = (way: Way): Route => ({ from: way.from.place, to: way.to.place });
-
+// A passenger looks for a trip (G26, docs/74): the route by lists, a day, all the trips of the
+// route. The points come only at the booking. A link of the landing brings the districts (docs/59).
 export function FindTripFlow({ onBack, initial, pick }: Props) {
+  const { track } = useAnalytics();
   const [screen, setScreen] = useState<Screen>(
     initial ? { step: 'date', route: initial } : { step: 'route' },
   );
   const [now] = useState(Date.now);
+  const step = (name: 'opened' | 'from' | 'to' | 'done') =>
+    track({ name: 'way_step', screen: 'market.route', step: name });
+  useEffect(() => {
+    if (!initial) step('opened');
+    // Once, when the search opens.
+  }, []);
   if (screen.step === 'route')
     return (
-      <WayScreen
-        done="way.see"
+      <RouteScreen
+        allowWholeRegion
         {...(pick ? { pick } : {})}
         onBack={onBack}
-        onDone={(way) => setScreen({ step: 'date', route: routeOf(way), way })}
+        onEnd={step}
+        onDone={(route) => {
+          step('done');
+          setScreen({ step: 'date', route });
+        }}
       />
     );
   if (screen.step === 'date') {
-    const { route, way } = screen;
+    const { route } = screen;
     return (
       <DateStep
         now={now}
         onBack={() => setScreen({ step: 'route' })}
-        onDone={(date) => setScreen({ step: 'results', route, date, ...(way ? { way } : {}) })}
+        onDone={(date) => setScreen({ step: 'results', route, date })}
       />
     );
   }
-  const { route, date, open, booking, way } = screen;
-  const kept = way ? { way } : {};
-  const results = () => setScreen({ step: 'results', route, date, ...kept });
+  const { route, date, open, booking } = screen;
+  const results = () => setScreen({ step: 'results', route, date });
   return (
     <PlacesGate>
       {open && booking ? (
         <BookFlow
           trip={open}
-          way={way ?? null}
-          onBack={() => setScreen({ step: 'results', route, date, open, ...kept })}
+          onBack={() => setScreen({ step: 'results', route, date, open })}
           onClose={results}
         />
       ) : open ? (
         <TripScreen
           trip={open}
           onBack={results}
-          onBook={() => setScreen({ step: 'results', route, date, open, booking: true, ...kept })}
+          onBook={() => setScreen({ step: 'results', route, date, open, booking: true })}
         />
       ) : (
         <TripResults
           route={route}
-          way={way ?? null}
           date={date}
           now={now}
-          onBack={() => setScreen({ step: 'date', route, ...kept })}
-          onOpen={(trip) => setScreen({ step: 'results', route, date, open: trip, ...kept })}
+          onBack={() => setScreen({ step: 'date', route })}
+          onOpen={(trip) => setScreen({ step: 'results', route, date, open: trip })}
         />
       )}
     </PlacesGate>

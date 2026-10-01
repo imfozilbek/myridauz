@@ -44,6 +44,16 @@ describe('the search of places on the map (G23, docs/67)', () => {
     expect(wrong.places.map((place) => place.name)).toEqual(['Chorsu', 'Chorsu bozori']);
   });
 
+  it('finds only inside the zone of the booking, the whole city for Toshkent (G26, docs/74)', async () => {
+    const city = await search('q=chorsu&near=39.65,66.97&zone=1726');
+    expect(city.places.map((place) => place.name)).toEqual(['Chorsu bozori']);
+    const district = await search('q=chorsu&zone=1726277');
+    expect(district.places.map((place) => place.name)).toEqual(['Chorsu bozori']);
+    expect((await search('q=chorsu&zone=1730401')).places).toEqual([]);
+    const unknown = await call(`${MAP_SEARCH_PATH}?q=chorsu&zone=99`, PERSON);
+    expect(unknown.status).toBe(400);
+  });
+
   it('gives nothing for one letter', async () => {
     expect((await search('q=c')).places).toEqual([]);
     expect((await search('near=41.3,69.2')).places).toEqual([]);

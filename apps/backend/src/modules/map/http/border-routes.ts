@@ -8,11 +8,17 @@ const NOT_FOUND = 404;
 const KEEP_ON_PHONE = 'private, max-age=86400';
 
 // The border of a district for the map of the district (G24, docs/71): the map is cut by it.
-export function borderRoutes(borders: () => readonly Border[]) {
+// A region (Toshkent shahri) is all its districts: the map of a booking there is the whole city (G26).
+export function borderRoutes(
+  borders: () => readonly Border[],
+  districtsOf: (id: string) => readonly string[] | null,
+) {
   return new Hono<AppEnv>().get(mapBorderPath(':id'), (context) => {
-    const border = borders().find((each) => each.id === context.req.param('id'));
-    if (!border) return context.json({ error: 'locations.not_found' }, NOT_FOUND);
+    const id = context.req.param('id') ?? '';
+    const ids = districtsOf(id) ?? [id];
+    const found = borders().filter((each) => ids.includes(each.id));
+    if (found.length === 0) return context.json({ error: 'locations.not_found' }, NOT_FOUND);
     context.header('cache-control', KEEP_ON_PHONE);
-    return context.json({ id: border.id, parts: border.parts });
+    return context.json({ id, parts: found.flatMap((border) => border.parts) });
   });
 }

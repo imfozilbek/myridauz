@@ -18,11 +18,17 @@ const KINDS: readonly string[] = PLACE_KINDS;
 const isKind = (kind: string): kind is PlaceKind => KINDS.includes(kind);
 const quoted = (word: string) => `"${word}"`;
 const SELECT = 'SELECT name, kind, area, district, lat, lng FROM map_places WHERE map_places MATCH ?1';
-const NEAREST = `${SELECT} ORDER BY (lat - ?3) * (lat - ?3) + (lng - ?4) * (lng - ?4) * ?5 LIMIT ?2`;
-const SHORTEST = `${SELECT} ORDER BY length(name) LIMIT ?2`;
+// The districts of a zone come from the directory, never from a person: safe in quotes too.
+const within = (districts: readonly string[] | null) =>
+  districts ? ` AND district IN (${districts.map((id) => `'${id}'`).join(', ')})` : '';
+const nearestSql = (zone: string) =>
+  `${SELECT}${zone} ORDER BY (lat - ?3) * (lat - ?3) + (lng - ?4) * (lng - ?4) * ?5 LIMIT ?2`;
+const shortestSql = (zone: string) => `${SELECT}${zone} ORDER BY length(name) LIMIT ?2`;
 
-const nearest = (db: D1Database, match: string, limit: number, near: Point) =>
-  db.prepare(NEAREST).bind(match, limit, near.lat, near.lng, Math.cos((near.lat * Math.PI) / 180) ** 2);
+const nearest = (db: D1Database, match: string, limit: number, near: Point, zone = '') =>
+  db
+    .prepare(nearestSql(zone))
+    .bind(match, limit, near.lat, near.lng, Math.cos((near.lat * Math.PI) / 180) ** 2);
 
 const found = (results: Row[]): FoundPlace[] =>
   results.flatMap(({ name, kind, area, district, lat, lng }) =>
@@ -37,9 +43,10 @@ function matchOf({ words, cells }: PlaceQuery) {
 export const d1PlaceIndex = (db: D1Database): PlaceIndex => ({
   find: async (query, limit) => {
     const { near } = query;
+    const zone = within(query.districts);
     const statement = near
-      ? nearest(db, matchOf(query), limit, near)
-      : db.prepare(SHORTEST).bind(matchOf(query), limit);
+      ? nearest(db, matchOf(query), limit, near, zone)
+      : db.prepare(shortestSql(zone)).bind(matchOf(query), limit);
     return found((await statement.all<Row>()).results);
   },
   // Cells and kinds are ours, never typed by a person: safe in quotes too.

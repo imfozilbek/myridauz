@@ -22,11 +22,13 @@ export type MapCache = {
 export type MapDeps = { readonly files: MapFiles; readonly cache: MapCache };
 
 // What the index is asked (G23): every word must start a word of the place; only in the cells when
-// there are cells; nearest to the point first when there is a point, else the shortest names.
+// there are cells; only in these districts when there are districts (G26); nearest to the point
+// first when there is a point, else the shortest names.
 export type PlaceQuery = {
   readonly words: readonly string[];
   readonly cells: readonly string[] | null;
   readonly near: Point | null;
+  readonly districts: readonly string[] | null;
 };
 // What is around a point (G24): places of these kinds in these cells, nearest first. Fine cells
 // (about 1 km) for landmarks, mahallas and streets; quarter cells for settlements (3 km).

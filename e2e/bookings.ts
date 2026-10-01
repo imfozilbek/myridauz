@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
+import { mapState, mockMap } from './map-mock';
 import { findTrips } from './market';
 import { pressBack } from './telegram-mock';
 
@@ -27,17 +28,30 @@ const B = {
   history: t('wallet.history'),
 };
 
-// A passenger books 2 seats on a found trip (G08): seats, the check, sent.
+// A passenger books 2 seats on a found trip (G26, docs/74): seats, «Uyimdan», the point at the door
+// on the map of Toshkent, the home found in Samarqand, the check, sent.
 export async function bookSeats(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
+  await mockMap(page, mapState());
   await findTrips(page);
   await page.getByText(TEXT.book).click();
   await expect(page.getByText(B.seats)).toBeVisible();
   await shot('1-seats');
   await page.getByText(B.twoSeats).click();
-  // The trip takes people both ways: the passenger chooses «Uyimdan» (G24, docs/70).
+  // The trip takes people both ways: the passenger chooses «Uyimdan» (docs/70).
   await page.getByText(t('way.mode.door')).click();
-  await expect(mainButton).toBeVisible();
+  await expect(page.getByText(t('way.point.from'))).toBeVisible();
+  await expect(page.locator('[data-state="ready"]')).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await shot('1a-pickup');
+  await mainButton.click();
+  await expect(page.getByText(t('way.point.to'))).toBeVisible();
+  await page.getByPlaceholder(t('bookings.map.search')).fill('Регистон');
+  await page.getByText('Registon maydoni', { exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+  await shot('1b-dropoff');
+  await mainButton.click();
+  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
   await shot('2-review');
   await mainButton.click();
   await expect(page.getByText(B.sent)).toBeVisible();

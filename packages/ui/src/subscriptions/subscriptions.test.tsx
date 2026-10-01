@@ -3,7 +3,7 @@ import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FindTripFlow } from '../market/find-trip-flow';
-import { chooseWay, renderMarket, tap, trip } from '../market/market-test-kit';
+import { chooseRoute, renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
 import { SubscribeLink } from './subscribe-link';
@@ -32,7 +32,7 @@ describe('"Xabar bering" (docs/24)', () => {
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
     );
-    await chooseWay();
+    await chooseRoute();
     await tap(/^Bugun/);
     await tap('Xabar bering');
     await tap('Istalgan kun');
@@ -49,7 +49,7 @@ describe('"Xabar bering" (docs/24)', () => {
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
     );
-    await chooseWay();
+    await chooseRoute();
     await tap(/^Bugun/);
     await tap('Xabar bering');
     await tap(/^Faqat/);

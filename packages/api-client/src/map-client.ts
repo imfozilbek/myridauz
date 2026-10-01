@@ -27,14 +27,16 @@ export function createMapClient(options: SignedOptions) {
     archiveUrl: `${base}${MAP_PATH}/${MAP_ARCHIVE}`,
     // The map library fills in {fontstack} and {range} itself.
     fontsUrl: `${base}${MAP_FONTS_PATH}/{fontstack}/{range}.pbf`,
-    search: async (query: string, near: Point): Promise<FoundPlace[]> => {
+    // With a zone (G26, docs/74) only inside it: a district or a region.
+    search: async (query: string, near: Point, zone?: string): Promise<FoundPlace[]> => {
       const asked = new URLSearchParams({ q: query, near: `${near.lat},${near.lng}` });
+      if (zone) asked.set('zone', zone);
       const response = await request(`${MAP_SEARCH_PATH}?${asked.toString()}`);
       return placeSearchSchema.parse(await response.json()).places;
     },
-    // The border of a district: its map is cut by it (docs/71).
-    border: async (districtId: string): Promise<Border> =>
-      borderSchema.parse(await (await request(mapBorderPath(districtId))).json()),
+    // The border of a district or of a whole region: its map is cut by it (docs/71, docs/74).
+    border: async (placeId: string): Promise<Border> =>
+      borderSchema.parse(await (await request(mapBorderPath(placeId))).json()),
     // The main pitak of a direction of regions, when people may see it (docs/72).
     pitakOf: async (from: string, to: string): Promise<Pitak | null> => {
       const response = await request(`${PITAK_OF_DIRECTION_PATH}?from=${from}&to=${to}`);

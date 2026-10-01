@@ -10,7 +10,7 @@ export type PlaceSearch =
   | { readonly status: 'found'; readonly places: readonly FoundPlace[] }
   | { readonly status: 'failed' };
 
-export function usePlaceSearch(search: MapClient['search'], near: Point) {
+export function usePlaceSearch(search: MapClient['search'], near: Point, zone?: string) {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<PlaceSearch>({ status: 'idle' });
   const asked = query.trim();
@@ -20,7 +20,7 @@ export function usePlaceSearch(search: MapClient['search'], near: Point) {
     if (asked.length < SEARCH_MIN_LETTERS) return undefined;
     let gone = false;
     const timer = setTimeout(() => {
-      search(asked, { lat, lng }).then(
+      (zone ? search(asked, { lat, lng }, zone) : search(asked, { lat, lng })).then(
         (places) => void (gone || setResult({ status: 'found', places })),
         () => void (gone || setResult({ status: 'failed' })),
       );
@@ -29,6 +29,6 @@ export function usePlaceSearch(search: MapClient['search'], near: Point) {
       gone = true;
       clearTimeout(timer);
     };
-  }, [search, asked, lat, lng]);
+  }, [search, asked, lat, lng, zone]);
   return { query, setQuery, result };
 }

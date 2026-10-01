@@ -20,7 +20,7 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
     publishRequest.mockRejectedValueOnce(new ApiError(409, 'trips.too_many'));
     const clients = testClients({ market: { recommend: async () => recommendation, publishRequest } });
     renderMarket(<NewRequestFlow onBack={() => undefined} />, clients);
-    await chooseWay('Davom etish');
+    await chooseWay();
     await tap(/^Ertaga/);
     await tap('2');
     await tap('Davom etish');

@@ -155,7 +155,8 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/68-place-selection.md` | Выбор места везде: маршрут, точки, названия, план G24 и G25 |
 | `docs/69-place-selection-details.md` | Выбор места: пути людей, крайние случаи, правила точек, хранение |
 | `docs/70-pickup-modes-and-matching.md` | По городу или с пятака, места попутчика, подбор рядом, план G25 и G26 |
-| `docs/71-route-screen-on-map.md` | Экран «Qayerdan / Qayerga» поверх карты, пятаки по районам |
+| `docs/71-route-screen-on-map.md` | Экран «Qayerdan / Qayerga» поверх карты: только заявка попутчика (G26) |
 | `docs/72-pitaks-and-live-directions.md` | Пятаки и живые направления: находки, решения, план |
 | `docs/73-pitak-candidates.md` | Кандидаты в пятаки с точками и направлениями |
+| `docs/74-search-and-create-flow.md` | Поиск и создание поездки: списки, точки при брони внутри района (G26) |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

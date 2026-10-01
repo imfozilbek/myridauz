@@ -1,7 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
-import { chooseRoute, chooseWay } from './market';
+import { chooseRoute } from './market';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 type Shot = (name: string) => Promise<unknown>;
@@ -10,7 +10,7 @@ const none: Shot = async () => undefined;
 // Nothing found: "Xabar bering", any day, done; then "Obunalar" in "Mening safarlarim" (docs/24).
 export async function passengerSubscribes(page: Page, shot: Shot = none) {
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await chooseWay(page);
+  await chooseRoute(page);
   await page.getByText(TEXT.tomorrow).click();
   await expect(page.getByText(t('subscriptions.notify'))).toBeVisible();
   await shot('1-empty');

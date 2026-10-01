@@ -22,16 +22,14 @@ import { centerOf, regionOf, type Way, type WayEnd } from './way-end';
 import './way.css';
 
 type Props = {
-  readonly done: TranslationKey;
-  readonly pick?: 'from' | 'to'; // G25: the main screen asks for a point at once
   readonly onBack: () => void;
   readonly onDone: (way: Way) => void;
 };
 
 type WayFormProps = Props & { readonly directory: PlaceDirectory };
 
-// «Qayerdan / Qayerga» (G24, docs/71): the start and the end over the map. Uses the directory
-// for the districts; without it the screen cannot name a place.
+// «Qayerdan / Qayerga» (G24, docs/71): the start and the end of a request of a passenger over the
+// map. The search of trips uses lists (G26, docs/74). Without the directory no place has a name.
 export function WayScreen(props: Props) {
   const [state, retry] = useDirectory();
   if (state.status === 'loading') return <ScreenSkeleton onBack={props.onBack} />;
@@ -39,7 +37,7 @@ export function WayScreen(props: Props) {
   return <WayForm {...props} directory={state.directory} />;
 }
 
-function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
+function WayForm({ onBack, onDone, directory }: WayFormProps) {
   useScreenView('way.screen');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -49,10 +47,9 @@ function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
   const [here, setHere] = useState(false);
   const [mode, setMode] = useState<PickupMode>('both');
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
-  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(pick ?? null);
+  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(null);
   const [note, setNote] = useState<TranslationKey | null>(null);
   useEffect(() => {
-    track({ name: 'way_step', screen: 'way.screen', step: 'opened' });
     let active = true;
     // The start fills itself where the person stands, when Telegram lets us know (docs/71).
     void requestPosition().then(async (point: Point | null) => {
@@ -78,7 +75,6 @@ function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
   // Without a pitak only the door is left (docs/70).
   useEffect(() => void (pitak === null && mode !== 'door' && setMode('door')), [pitak, mode]);
   const picked = (end: 'from' | 'to') => (chosen: WayEnd) => {
-    track({ name: 'way_step', screen: 'way.screen', step: end });
     if (end === 'from') setHere(false);
     (end === 'from' ? setFrom : setTo)(chosen);
     setNote(null);
@@ -111,13 +107,10 @@ function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
     );
   const submit = () => {
     if (!from || !to) return (haptic.error(), setNote(from ? 'way.needTo' : 'way.needFrom'));
-    track({ name: 'way_step', screen: 'way.screen', step: 'done' });
     return onDone({ from, to, mode });
   };
-  const changeMode = (next: PickupMode) => {
-    track({ name: 'way_step', screen: 'way.screen', step: 'mode' });
-    setMode(next);
-  };
+  // The funnel «way» is the search by lists now (G26): a request does not count in it.
+  const changeMode = (next: PickupMode) => setMode(next);
   return (
     <div className="pickup-map">
       <BackButton onClick={onBack} />
@@ -144,7 +137,7 @@ function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
           {t(note)}
         </Text>
       ) : null}
-      <MainButton text={t(done)} onClick={submit} />
+      <MainButton text={t('common.continue')} onClick={submit} />
     </div>
   );
 }

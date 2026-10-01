@@ -11,34 +11,35 @@ import { errorKey } from '../market/error-text';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
+import { PitakMap } from '../map/pitak-map';
 import { haptic } from '../telegram/feedback';
-import { useNameText, type Way } from '../way/way-end';
+import { useNameText, type WayEnd } from '../way/way-end';
 
 type Props = {
   readonly trip: Trip;
   readonly seats: number;
-  readonly way: Way;
-  // Null: the trip takes the passenger by no way the passenger chose (docs/70).
-  readonly mode: BookingMode | null;
+  readonly mode: BookingMode;
+  // The point at the door: only for «Uyimdan» (G26, docs/74).
+  readonly pickup: WayEnd | null;
+  readonly dropoff: WayEnd;
   readonly onBack: () => void;
   readonly onSent: () => void;
 };
 
 // The check before the request (docs/35): the seats, the money, where from and where to.
-export function BookReview({ trip, seats, way, mode, onBack, onSent }: Props) {
+export function BookReview({ trip, seats, mode, pickup, dropoff, onBack, onSent }: Props) {
   useScreenView('bookings.review');
   const { t, formatMoney } = useI18n();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const nameText = useNameText();
-  const [error, setError] = useState<ReturnType<typeof errorKey> | 'way.fit.other' | null>(null);
-  const dropoff = way.to.point;
+  const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const send = async () => {
     setError(null);
-    if (!mode || !dropoff) return (haptic.error(), setError('way.fit.other'));
+    if (!dropoff.point) return (haptic.error(), setError(errorKey(null)));
     try {
-      const pickup = mode === 'door' ? way.from.point : null;
-      await bookings.book(trip.id, { seats, mode, pickup, dropoff });
+      const at = mode === 'door' ? (pickup?.point ?? null) : null;
+      await bookings.book(trip.id, { seats, mode, pickup: at, dropoff: dropoff.point });
       track({ name: 'booking_step', screen: 'bookings.review', step: 'requested' });
       haptic.success();
       return onSent();
@@ -48,7 +49,8 @@ export function BookReview({ trip, seats, way, mode, onBack, onSent }: Props) {
     }
   };
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
-  const start = mode === 'pitak' && trip.pitak ? trip.pitak.name : nameText(way.from.name, way.from.place);
+  const pitak = mode === 'pitak' ? trip.pitak : null;
+  const start = pitak ? pitak.name : pickup ? nameText(pickup.name, pickup.place) : '';
   return (
     <StepLayout icon="myTrips" title={t('bookings.review.title')} hint={t('way.book.fixed')}>
       <BackButton onClick={onBack} />
@@ -58,7 +60,8 @@ export function BookReview({ trip, seats, way, mode, onBack, onSent }: Props) {
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
           </div>
           <Cell subtitle={start}>{t('way.book.pickup')}</Cell>
-          <Cell subtitle={nameText(way.to.name, way.to.place)}>{t('way.book.dropoff')}</Cell>
+          {pitak ? <PitakMap pitak={pitak} /> : null}
+          <Cell subtitle={nameText(dropoff.name, dropoff.place)}>{t('way.book.dropoff')}</Cell>
           {line(t('bookings.review.seats'), String(seats))}
           {line(t('market.review.price'), formatMoney(trip.price))}
           {line(t('bookings.review.total'), formatMoney(trip.price * seats))}

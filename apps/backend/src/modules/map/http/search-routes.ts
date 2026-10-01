@@ -12,18 +12,30 @@ const JSON_TYPE = 'application/json';
 // Two digits, about a kilometre: people starting from one quarter share the cache.
 const NEAR_DIGITS = 2;
 
-export type SearchDeps = { readonly index: PlaceIndex; readonly cache: MapCache };
+const BAD_REQUEST = 400;
+
+export type SearchDeps = {
+  readonly index: PlaceIndex;
+  readonly cache: MapCache;
+  // The districts of a zone of a booking (G26), null for an unknown place.
+  readonly districtsOf: (zone: string) => readonly string[] | null;
+};
 
 export function searchRoutes(deps: (env: Bindings) => SearchDeps) {
   return new Hono<AppEnv>().get(MAP_SEARCH_PATH, async (context) => {
     const query = context.req.query('q') ?? '';
     const near = parsePoint(context.req.query('near'), NEAR_DIGITS);
-    const { index, cache } = deps(context.env);
-    const key = `search/${encodeURIComponent(searchKey(query))}/${near ? `${near.lat},${near.lng}` : ''}`;
+    const { index, cache, districtsOf } = deps(context.env);
+    const zone = context.req.query('zone') ?? null;
+    const districts = zone === null ? null : districtsOf(zone);
+    if (zone !== null && districts === null)
+      return context.json({ error: 'locations.not_found' }, BAD_REQUEST);
+    const where = near ? `${near.lat},${near.lng}` : '';
+    const key = `search/${encodeURIComponent(searchKey(query))}/${where}/${zone ?? ''}`;
     const headers = { 'content-type': JSON_TYPE, 'cache-control': KEEP_ON_PHONE };
     const cached = await cache.match(key);
     if (cached) return context.body(cached.bytes, 200, headers);
-    const places = await searchPlaces(index, query, near);
+    const places = await searchPlaces(index, query, near, districts);
     const bytes = await new Response(JSON.stringify({ places })).arrayBuffer();
     await cache.put(key, { bytes, offset: 0, size: bytes.byteLength, etag: '', type: JSON_TYPE });
     return context.body(bytes, 200, headers);

@@ -71,31 +71,17 @@ export const tripSchema = z.object({
   pitak: pitakSchema.nullable(),
   comment: z.string(),
   status: z.enum(TRIP_STATUSES),
-  // Only in a search with the way of the passenger (docs/70): whether the way suits and how many
-  // km the passenger adds to the driver. Null everywhere else.
-  fit: z.object({ matches: z.boolean(), extraKm: z.number().int().nullable() }).nullable(),
 });
 export type Trip = z.infer<typeof tripSchema>;
 export const tripsSchema = z.object({ trips: z.array(tripSchema) });
 
-// Search: from and to may be a region (all its places) or a place (docs/14).
-// «lat,lng» in a query.
-const pointQuery = z
-  .string()
-  .regex(/^-?\d{1,2}(\.\d+)?,-?\d{1,3}(\.\d+)?$/u)
-  .transform((value) => {
-    const [lat = 0, lng = 0] = value.split(',').map(Number);
-    return { lat, lng };
-  });
+// Search: from and to may be a region (all its places) or a place (docs/14). The points of the
+// passenger come only at the booking (G26, docs/74): the search has none.
 
 export const tripSearchSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   date: dateSchema,
   woman: z.enum(['1']).optional(),
-  // The way and the points of the passenger: the trips that suit go first (docs/70).
-  mode: pickupModeSchema.optional(),
-  pickup: pointQuery.optional(),
-  dropoff: pointQuery.optional(),
 });
 export type TripSearch = z.infer<typeof tripSearchSchema>;
