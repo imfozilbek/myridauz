@@ -98,7 +98,7 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
         {children}
       </List>
       <div className="step-note">
-        {onCancel && live ? (
+        {onCancel && live && !departed ? (
           <Button mode="bezeled" size="l" stretched onClick={onCancel}>
             {t('market.trip.cancel')}
           </Button>

@@ -45,6 +45,19 @@ describe('Mening safarlarim (docs/35)', () => {
     await vi.waitFor(() => expect(myTrips).toHaveBeenCalledTimes(2));
   });
 
+  it('keeps a trip that already left: no cancel on the road (docs/83 N02)', async () => {
+    const onTheRoad = { ...trip, departAt: Date.now() - 60 * 60 * 1000 };
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [onTheRoad] },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
+    );
+    await tap('Jasur');
+    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+  });
+
   it('lets a passenger cancel an open request', async () => {
     const cancelRequest = vi.fn(async () => ({ ...request, status: 'cancelled' as const }));
     const myRequests = vi.fn(async () => [request]);

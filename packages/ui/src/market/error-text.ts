@@ -27,8 +27,12 @@ const EXPLAINED: readonly string[] = [
   'channels.invalid_input',
 ];
 
+// Codes that mean the same for a person as an explained one.
+const SAME_AS: Readonly<Record<string, string>> = { 'pricing.out_of_bounds': 'trips.price_out_of_bounds' };
+
 export function errorKey(error: unknown): TranslationKey {
-  const code = error instanceof ApiError ? error.code : undefined;
+  const answered = error instanceof ApiError ? error.code : undefined;
+  const code = answered ? (SAME_AS[answered] ?? answered) : undefined;
   return code && EXPLAINED.includes(code)
     ? (`errors.${code}` as TranslationKey)
     : 'errors.generic.description';

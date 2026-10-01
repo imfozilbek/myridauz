@@ -32,7 +32,7 @@ describe('prices next to each other (docs/40, question 44)', () => {
       <PlacesGate>
         <DirectionEdit
           direction={{ ...direction, median, medianTrips }}
-          failed={false}
+          failed={null}
           onBack={() => undefined}
           onSave={() => undefined}
         />

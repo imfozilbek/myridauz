@@ -73,4 +73,14 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     await tap('Shu versiyaga qaytish');
     expect(pricing.rollback).toHaveBeenCalledWith(1);
   });
+
+  it('tells a moderator only the owner sets a price, not that it is out of bounds (docs/83 N05)', async () => {
+    const pricing = setup();
+    pricing.setDirection.mockRejectedValueOnce(new ApiError(403, 'auth.not_owner'));
+    await tap('Narxlar');
+    await tap(/^Formula: 95/);
+    await tap('Narxni saqlash');
+    expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
+    expect(screen.queryByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeNull();
+  });
 });

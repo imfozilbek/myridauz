@@ -86,4 +86,5 @@
 | 81 | [81-scenarios-edges.md](81-scenarios-edges.md) | Края: злоупотребления, время и деньги, сбои |
 | 82 | [82-scenarios-combinations.md](82-scenarios-combinations.md) | Таблица сочетаний: что с чем проверено |
 | 83 | [83-scenarios-findings.md](83-scenarios-findings.md) | Находки G27: ошибки, упущения, оценки UX |
+| 84 | [84-lessons-learned-5.md](84-lessons-learned-5.md) | Журнал уроков: продолжение 5 (№59 и дальше) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
