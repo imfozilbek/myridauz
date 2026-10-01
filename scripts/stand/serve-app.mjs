@@ -3,7 +3,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer, request } from 'node:http';
 import { connect } from 'node:net';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, sep } from 'node:path';
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -19,7 +19,14 @@ const TYPES = {
 const fileOf = (root, url) => {
   const path = normalize(decodeURIComponent(new URL(url, 'http://stand').pathname));
   const file = join(root, path === '/' ? 'index.html' : path);
-  return file.startsWith(root) && existsSync(file) && statSync(file).isFile() ? file : null;
+  return file.startsWith(`${root}${sep}`) && existsSync(file) && statSync(file).isFile() ? file : null;
+};
+
+// Only the path and the query of a request go on: the host is always the backend of the stand, so
+// a full address in a request line cannot send the server elsewhere.
+const pathOf = (url) => {
+  const { pathname, search } = new URL(url, 'http://stand');
+  return `${pathname}${search}`;
 };
 
 export function serveApp({ root, port, api }) {
@@ -32,7 +39,13 @@ export function serveApp({ root, port, api }) {
       return;
     }
     const headers = { ...incoming.headers, host: backend.host };
-    const forward = request(new URL(incoming.url ?? '/', backend), { method: incoming.method, headers });
+    const forward = request({
+      hostname: backend.hostname,
+      port: backend.port,
+      path: pathOf(incoming.url ?? '/'),
+      method: incoming.method,
+      headers,
+    });
     forward.on('response', (answer) => {
       outgoing.writeHead(answer.statusCode ?? 502, answer.headers);
       answer.pipe(outgoing);
@@ -42,7 +55,7 @@ export function serveApp({ root, port, api }) {
   });
   server.on('upgrade', (incoming, socket, head) => {
     const upstream = connect(Number(backend.port), backend.hostname, () => {
-      const lines = [`${incoming.method} ${incoming.url} HTTP/1.1`];
+      const lines = [`${incoming.method} ${pathOf(incoming.url ?? '/')} HTTP/1.1`];
       for (let i = 0; i < incoming.rawHeaders.length; i += 2) {
         const name = incoming.rawHeaders[i];
         lines.push(`${name}: ${name.toLowerCase() === 'host' ? backend.host : incoming.rawHeaders[i + 1]}`);
