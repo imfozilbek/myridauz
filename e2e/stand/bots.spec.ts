@@ -1,38 +1,15 @@
-import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { createModerationClient, createSubscriptionsClient } from '@platform/api-client';
 import { CHILONZOR } from './market-kit';
 import { SAMARQAND, tomorrow, wordsOf } from './g27-kit';
 import { AZIZA, OWNER, SANJAR } from './people';
-import { signedAs, type Person } from './stand-kit';
+import { signedAs } from './stand-kit';
 import { botMessages, runCron, standRows, standSql } from './stand-tools';
-import { STAND_API_PORT, STAND_VARS } from '../../scripts/stand/paths.ts';
+import { buttons, say } from './bot-kit';
 
 // The bots (docs/80 S01 … S03) and the end of a subscription (docs/81 V12, docs/77 P71): Telegram
 // sends an update with the secret of the stand, the bot answers in the reply itself.
 test.describe.configure({ mode: 'serial' });
-const secret = () =>
-  readFileSync(STAND_VARS, 'utf8')
-    .split('\n')
-    .find((line) => line.startsWith('TELEGRAM_WEBHOOK_SECRET='))
-    ?.split('=')[1] ?? '';
-type Reply = { text?: string; reply_markup?: { inline_keyboard?: { text: string }[][] } };
-async function say(bot: string, person: Person, text: string): Promise<Reply> {
-  const message = {
-    message_id: 1,
-    date: 0,
-    text,
-    chat: { id: person.id, type: 'private' },
-    from: { id: person.id, first_name: person.name },
-  };
-  const response = await fetch(`http://localhost:${STAND_API_PORT}/telegram/${bot}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': secret() },
-    body: JSON.stringify({ update_id: 1, message }),
-  });
-  return (await response.json()) as Reply;
-}
-const buttons = (reply: Reply) => (reply.reply_markup?.inline_keyboard ?? []).flat().map((b) => b.text);
 
 test('S01, S03. /start greets with «Ochish», /hujjatlar gives the three documents', async () => {
   const start = await say('passenger', AZIZA, '/start');
