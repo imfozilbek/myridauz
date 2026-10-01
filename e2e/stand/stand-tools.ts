@@ -45,14 +45,32 @@ export async function botMessages(): Promise<BotMessage[]> {
 }
 export const clearBotMessages = async () => void (await fetch(TELEGRAM, { method: 'DELETE' }));
 
-// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes.
+// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes. The local Worker reloads
+// now and then after a write to its database from outside: then it waits for the Worker and asks once more.
+const API = `http://localhost:${STAND_API_PORT}`;
+const RELOAD_WAIT_MS = 30_000;
+async function workerBack(): Promise<void> {
+  const until = Date.now() + RELOAD_WAIT_MS;
+  while (Date.now() < until) {
+    if (
+      await fetch(`${API}/health`).then(
+        (r) => r.ok,
+        () => false,
+      )
+    )
+      return;
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+}
 export async function runCron(): Promise<void> {
-  const url = `http://localhost:${STAND_API_PORT}/__scheduled?cron=${encodeURIComponent(CRON)}`;
-  const response = await fetch(url);
+  const url = `${API}/__scheduled?cron=${encodeURIComponent(CRON)}`;
+  const response = await fetch(url).catch(async () => {
+    await workerBack();
+    return fetch(url);
+  });
   if (!response.ok) throw new Error(`stand: the Cron answered ${response.status}`);
 }
 
-// One SQL statement on the database of the stand: a scenario moves a time into the past.
 const d1 = (sql: string, json: boolean): string => {
   const config = `brands/${loadBrand().id}/wrangler.toml`;
   const args = ['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--persist-to', STAND_STATE];

@@ -16,5 +16,7 @@ export default defineConfig({
     command: 'pnpm stand --fresh',
     url: `http://localhost:${STAND_API_PORT}/health`,
     timeout: BUILD_AND_START_MS,
+    // STAND_REUSE=1: the checks run on a stand already started by hand, to read its log (docs/75).
+    reuseExistingServer: process.env['STAND_REUSE'] === '1',
   },
 });
