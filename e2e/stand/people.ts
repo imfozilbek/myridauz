@@ -33,6 +33,7 @@ export const BOBUR: Person = { id: 900107, name: 'Bobur', phone: '998901110107' 
 export const OYBEK: Person = { id: 900108, name: 'Oybek', phone: '998901110108' };
 export const JAHONGIR: Person = { id: 900109, name: 'Jahongir', phone: '998901110109' };
 export const GAYRAT: Person = { id: 900110, name: 'Gʻayrat', phone: '998901110110' };
+export const KOMIL: Person = { id: 900111, name: 'Komil', phone: '998901110111' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -59,6 +60,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: OYBEK, plate: '01H890IJ', gender: 'male' },
   { person: JAHONGIR, plate: '01I901JK', gender: 'male' },
   { person: GAYRAT, plate: '01J012KL', gender: 'male' },
+  { person: KOMIL, plate: '01K123MN', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,
