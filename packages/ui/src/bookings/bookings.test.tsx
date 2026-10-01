@@ -1,4 +1,5 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
+import { loadBrand } from '@platform/brands';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
@@ -116,6 +117,11 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     await tap('Hisobni toʻldirish');
     expect(screen.getByText(/qoʻllab-quvvatlash/)).toBeTruthy();
+    // The way out is one tap: the support chat of the brand opens (docs/86 V3).
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    await tap('Qoʻllab-quvvatlashga yozish');
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.admin}`);
+    open.mockRestore();
   });
 
   it('declines a booking', async () => {

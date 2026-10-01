@@ -82,6 +82,11 @@ describe('AccountGate', () => {
     gate(fakeClient({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) }));
     expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
     expect(screen.getByText(/27-oktabr/)).toBeTruthy();
+    // A blocked person can still ask the team why (docs/86 V4).
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.admin}`);
+    open.mockRestore();
   });
 
   it('turns a blocked phone during registration into the block screen', async () => {

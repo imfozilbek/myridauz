@@ -15,6 +15,13 @@
   color: var(--tgui--hint_color);
 }
 
+/* A short hint under a section header: what to do with the rows below. */
+.section-hint {
+  display: block;
+  padding: 0 24px 8px 22px;
+  color: var(--tgui--hint_color);
+}
+
 .market-group {
   display: block;
   padding: 12px 20px 0;
