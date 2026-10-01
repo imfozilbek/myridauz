@@ -73,7 +73,7 @@
 | 68 | [68-place-selection.md](68-place-selection.md) | Выбор места везде: маршрут, точки встречи, посадки и высадки, названия, просмотр; план G24 и G25 |
 | 69 | [69-place-selection-details.md](69-place-selection-details.md) | Выбор места: путь попутчика и водителя, лестница названий, синонимы, проверка и смена точек, хранение 30 дней |
 | 70 | [70-pickup-modes-and-matching.md](70-pickup-modes-and-matching.md) | Выбор места, итог: попутчик, водитель, система; пятак только у А, Б до дома; подбор рядом; навигатор; сделано в одной цели G24 |
-| 71 | [71-route-screen-on-map.md](71-route-screen-on-map.md) | Экран «Qayerdan / Qayerga» поверх карты: А и Б, способ посадки, пятаки по районам |
+| 71 | [71-route-screen-on-map.md](71-route-screen-on-map.md) | Экран «Qayerdan / Qayerga» поверх карты: с G26 только заявка попутчика «Soʻrov qoldirish» |
 | 72 | [72-pitaks-and-live-directions.md](72-pitaks-and-live-directions.md) | Пятаки и живые направления: находки, 10 решений, план; сделано в G24 (админка «Pitaklar») |
 | 73 | [73-pitak-candidates.md](73-pitak-candidates.md) | 42 кандидата в пятаки с точками и направлениями, уверенность А или Б |
 | 74 | [74-search-and-create-flow.md](74-search-and-create-flow.md) | Поиск и создание поездки: маршрут списками (область, район), точки при брони внутри района; водитель, попутчик, система; цель G26 |

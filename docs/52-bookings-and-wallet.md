@@ -65,7 +65,7 @@
 
 | Событие | Когда |
 |---|---|
-| `booking_step` | `seats`, `requested`, `confirmed`, `declined`, `cancelled`, `offer_sent`, `offer_accepted`, `offer_declined` |
+| `booking_step` | `seats`, `mode`, `pickup`, `dropoff` (G26, `74`), `requested`, `confirmed`, `declined`, `cancelled`, `offer_sent`, `offer_accepted`, `offer_declined` |
 | `wallet_open` | открыт «Hamyon» |
 
 ## Где код
