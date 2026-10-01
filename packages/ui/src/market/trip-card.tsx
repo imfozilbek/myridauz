@@ -11,11 +11,17 @@ import { useWayFacts } from './way-line';
 
 const PHOTO_SIZE = 40;
 
-type TripCardProps = { readonly trip: Trip; readonly showStatus?: boolean; readonly onOpen: () => void };
+type TripCardProps = {
+  readonly trip: Trip;
+  readonly showStatus?: boolean;
+  // The own trips of a driver: the driver and the car are the same on every card (U6).
+  readonly own?: boolean;
+  readonly onOpen: () => void;
+};
 
 // One trip in a list, everything a person decides by: the day, the distance and the price,
 // A and B with the times, the driver's comment, the driver and the car, the seats and the marks.
-export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
+export function TripCard({ trip, showStatus = false, own = false, onOpen }: TripCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const wayFacts = useWayFacts();
@@ -47,22 +53,24 @@ export function TripCard({ trip, showStatus = false, onOpen }: TripCardProps) {
         <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
         {trip.comment ? <Caption className="trip-card-comment">{trip.comment}</Caption> : null}
         <FactChips facts={facts} />
-        <div className="trip-card-foot">
-          <ProfilePhoto
-            userId={driver.id}
-            name={driver.firstName}
-            hasAvatar={driver.hasAvatar}
-            size={PHOTO_SIZE}
-          />
-          <span className="trip-card-driver">
-            <Text>{driver.firstName}</Text>
-            <RatingBadge rating={driver.rating} />
-            <Caption className="trip-card-hint trip-card-car">
-              <CarSwatch color={driver.car.color} />
-              {`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
-            </Caption>
-          </span>
-        </div>
+        {own ? null : (
+          <div className="trip-card-foot">
+            <ProfilePhoto
+              userId={driver.id}
+              name={driver.firstName}
+              hasAvatar={driver.hasAvatar}
+              size={PHOTO_SIZE}
+            />
+            <span className="trip-card-driver">
+              <Text>{driver.firstName}</Text>
+              <RatingBadge rating={driver.rating} />
+              <Caption className="trip-card-hint trip-card-car">
+                <CarSwatch color={driver.car.color} />
+                {`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
+              </Caption>
+            </span>
+          </div>
+        )}
       </Tappable>
     </Section>
   );

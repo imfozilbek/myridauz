@@ -1,6 +1,6 @@
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
@@ -47,7 +47,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
         wallet: { mine: async () => wallet },
       }),
     );
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
     await tap('Tasdiqlash');
@@ -64,7 +64,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
         wallet: { mine: async () => ({ ...wallet, bonus: 0, main: 0 }) },
       }),
     );
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     await tap('Tasdiqlash');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();

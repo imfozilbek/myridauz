@@ -5,7 +5,7 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
-import { recommendation, renderMarket, tap, trip } from './market-test-kit';
+import { recommendation, renderMarket, tap, trip, openOwnTrip } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { MyTripsScreen } from './my-trips-screen';
 import { RequestsSearchFlow } from './requests-search-flow';
@@ -26,6 +26,18 @@ const request: RideRequest = {
 };
 
 describe('Mening safarlarim (docs/35)', () => {
+  it('shows a driver the trips, not the driver himself on each card (U6)', async () => {
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [trip] },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
+    );
+    expect(await screen.findByText(/Faol/)).toBeTruthy();
+    expect(screen.queryByText('Jasur')).toBeNull();
+  });
+
   it('lets a driver cancel an active trip', async () => {
     const cancelTrip = vi.fn(async () => ({ ...trip, status: 'cancelled' as const }));
     const myTrips = vi.fn(async () => [trip]);
@@ -37,7 +49,7 @@ describe('Mening safarlarim (docs/35)', () => {
       }),
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
-    await tap('Jasur');
+    await openOwnTrip();
     vi.stubGlobal('confirm', () => true);
     await tap('Safarni bekor qilish');
     vi.unstubAllGlobals();
@@ -54,7 +66,7 @@ describe('Mening safarlarim (docs/35)', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    await tap('Jasur');
+    await openOwnTrip();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
   });
 

@@ -1,7 +1,7 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
@@ -50,6 +50,18 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     );
   });
 
+  it('sees until when the driver answers a waiting seat (U4)', async () => {
+    renderMarket(
+      <MyRequestsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myRequests: async () => [] },
+        bookings: { myBookings: async () => [booking], myOffers: async () => [] },
+      }),
+    );
+    await tap('Jasur');
+    expect(screen.getByText('Javob berish muddati')).toBeTruthy();
+  });
+
   it('accepts a driver offer on the own request', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'accepted' }));
     renderMarket(
@@ -79,7 +91,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => confirmed);
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     expect(await screen.findByText('Yuborilgan takliflar')).toBeTruthy();
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     // The driver never sees a passenger's contacts, only the name.
     expect(screen.queryByText(/\+998/)).toBeNull();
@@ -96,7 +108,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
       throw new ApiError(409, 'wallet.not_enough');
     });
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     await tap('Tasdiqlash');
     await tap('Tasdiqlash');
@@ -108,7 +120,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
   it('declines a booking', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => ({ ...booking, status: 'declined' }));
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
-    await tap('Jasur');
+    await openOwnTrip();
     await tap('Dilnoza');
     await tap('Rad etish');
     expect(answer).toHaveBeenCalledWith('b1', 'decline');

@@ -17,6 +17,7 @@ import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
 import { Cell, Section } from '../components';
 import { IconTile } from '../icon-tile';
+import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen, type BookingAction } from './booking-screen';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
@@ -27,7 +28,7 @@ type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) =
 // The driver answers a booking (docs/35): "Joyni tasdiqlaysizmi?" with the commission, then the
 // charge; without money, the way to top up. A confirmed one can still be cancelled: the commission goes back.
 export function DriverBooking({ booking, onClose }: Props) {
-  const { t, formatMoney, formatDate, formatTime } = useI18n();
+  const { t, formatMoney } = useI18n();
   const { track } = useAnalytics();
   const { bookings, wallet } = useApiClients();
   const [step, setStep] = useState<Step>('view');
@@ -120,16 +121,7 @@ export function DriverBooking({ booking, onClose }: Props) {
   return (
     <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
-      {booking.status === 'requested' ? (
-        <Section>
-          <Cell
-            before={<IconTile name="history" />}
-            after={formatDate(new Date(booking.expiresAt)) + ', ' + formatTime(new Date(booking.expiresAt))}
-          >
-            {t('bookings.answerUntil')}
-          </Cell>
-        </Section>
-      ) : null}
+      <AnswerDeadline booking={booking} />
       <Section>
         <Cell before={<IconTile name="chat" />} onClick={() => setStep('chat')}>
           {t('chat.open')}

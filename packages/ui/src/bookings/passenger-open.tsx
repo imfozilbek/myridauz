@@ -10,6 +10,7 @@ import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
+import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
 import { OfferAccepted, OfferScreen, OffersSection } from './offer-list';
@@ -118,6 +119,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   return (
     <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
+      <AnswerDeadline booking={booking} />
       <TripTools booking={booking} onChat={openChat} onComplain={() => setComplaint(booking.id)} />
     </BookingScreen>
   );

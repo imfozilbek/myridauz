@@ -137,7 +137,13 @@ function MyTrips({ onBack, link }: ScreenProps) {
         <Paged
           items={trips}
           render={(trip) => (
-            <TripCard key={trip.id} trip={trip} showStatus onOpen={() => setOpened({ tripId: trip.id })} />
+            <TripCard
+              key={trip.id}
+              trip={trip}
+              showStatus
+              own
+              onOpen={() => setOpened({ tripId: trip.id })}
+            />
           )}
         />
         <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
