@@ -52,6 +52,10 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(await screen.findByText('Ali'));
     expect(screen.getByText('Chevrolet Nexia')).toBeTruthy();
     expect((await screen.findAllByRole('img')).length).toBe(4);
+    // "Tasdiqlash" is the main button at the bottom, "Rad etish" a red row (docs/86 V10).
+    expect(screen.getByText('Rad etish').className).toBe('moderation-destructive');
+    expect(screen.getByText('Tuzatishni soʻrash').className).not.toBe('moderation-destructive');
+    expect(screen.getByText('Tasdiqlash').closest('button')).not.toBeNull();
     fireEvent.click(screen.getByText('Tasdiqlash'));
     // The plate is compared with the front photo first (docs/50).
     expect(await screen.findByText('Raqamni tekshiring')).toBeTruthy();

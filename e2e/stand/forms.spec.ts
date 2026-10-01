@@ -36,6 +36,6 @@ test('T17. «?application=» from the admin bot opens that application', async (
   const queue = await createModerationClient(await signedAs('admin', OWNER)).queue();
   const id = queue.find((a) => a.firstName === applicant.name)?.userId ?? '';
   await openAs(page, 'admin', OWNER, { search: `?application=${id}` });
-  await expect(page.getByText(TEXT.approve)).toBeVisible();
+  await expect(mainButton(page)).toHaveText(TEXT.approve);
   await expect(page.getByText(applicant.name).first()).toBeVisible();
 });

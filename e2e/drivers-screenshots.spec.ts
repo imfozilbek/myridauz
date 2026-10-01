@@ -51,7 +51,7 @@ test('moderation: screenshots', async ({ page }) => {
   await page.getByText('Jasur').click();
   await page.mouse.move(0, 0);
   await page.screenshot({ path: 'screenshots/moderation-2-application.png', fullPage: true });
-  await page.getByText(TEXT.approve).click();
+  await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   await expect(page.locator('#tg-main-button')).toHaveText(TEXT.plateMatches);
   await page.mouse.move(0, 0);
   await page.screenshot({ path: 'screenshots/moderation-3-plate-check.png', fullPage: true });

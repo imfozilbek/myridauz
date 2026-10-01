@@ -19,6 +19,7 @@ import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
 import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
+import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { PhotoGrid } from './photo-grid';
 import { ApproveFlow } from './approve-flow';
@@ -28,6 +29,7 @@ type Mode = 'view' | Decision | 'block' | 'decided' | 'blocked';
 type ApplicationScreenProps = { readonly application: ApplicationSummary; readonly onBack: () => void };
 
 // One application: the face, the car, the data and the decision (docs/04). Blocking too (docs/17).
+// Approving is the main button at the bottom, rejecting a red row as in Telegram (docs/86 V10).
 export function ApplicationScreen({ application, onBack }: ApplicationScreenProps) {
   useScreenView('moderation.application');
   const { t } = useI18n();
@@ -108,13 +110,15 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
           <Cell after={<CellValue>{String(car.seats)}</CellValue>}>{t('drivers.review.seats')}</Cell>
         </Section>
         <Section>
-          <Cell onClick={() => setMode('approve')}>{t('moderation.approve')}</Cell>
-          <Cell onClick={() => setMode('reject')}>{t('moderation.reject')}</Cell>
           <Cell onClick={() => setMode('request_changes')}>{t('moderation.requestChanges')}</Cell>
+          <Cell onClick={() => setMode('reject')}>
+            <span className="moderation-destructive">{t('moderation.reject')}</span>
+          </Cell>
           <Cell onClick={() => setMode('block')}>{t('moderation.block')}</Cell>
         </Section>
         <BlockJournal userId={userId} />
       </List>
+      <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} />
     </div>
   );
 }
