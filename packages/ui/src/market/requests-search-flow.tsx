@@ -81,7 +81,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
         {dayLabel(date, now)}
       </Title>
       <List>
-        <Section>
+        <Section footer={t('market.requests.hint')}>
           <div className="route-summary">
             <RouteView from={route.from.id} to={route.to.id} />
           </div>

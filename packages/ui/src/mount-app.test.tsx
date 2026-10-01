@@ -28,7 +28,9 @@ describe('mountApp', () => {
     document.body.innerHTML = '<div id="root"></div>';
     const fetch = vi.spyOn(window, 'fetch').mockImplementation(async () => Response.json(active));
     await act(async () =>
-      mountApp('driver', Page, { welcome: { icon: 'newTrip', textKey: 'common.driver.welcome' } }),
+      mountApp('driver', Page, {
+        welcome: { icon: 'newTrip', textKey: 'common.driver.welcome', points: [] },
+      }),
     );
     await waitFor(() => expect(document.body.textContent).toContain('sahifa'));
     expect(document.title).toBeTruthy();

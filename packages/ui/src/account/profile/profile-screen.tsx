@@ -40,6 +40,9 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
         <Title weight="1">{profile.firstName}</Title>
         <AvatarPicker />
         <Text className="step-hint">{t('account.avatar.rules')}</Text>
+        {account.app === 'passenger' ? (
+          <Text className="step-hint">{t('account.avatar.passengerWhy')}</Text>
+        ) : null}
       </div>
       <List>
         <Section footer={t('account.profile.phoneHint')}>

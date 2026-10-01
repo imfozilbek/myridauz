@@ -109,6 +109,7 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       /^Ertaga/,
     ])
       await tap(step);
+    expect(await screen.findByText('Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx.')).toBeTruthy();
     await tap('Dilnoza');
     await tap('Taklif yuborish');
     await tap('Davom etish');

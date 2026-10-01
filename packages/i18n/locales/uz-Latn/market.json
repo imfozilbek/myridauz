@@ -36,7 +36,7 @@
   "search.empty": "Bu kunga safar topilmadi",
   "search.emptyHint": "Soʻrov qoldiring: haydovchilar sizni topadi.",
   "trip.seats": "{count} ta boʻsh joy",
-  "trip.km": "≈\u00a0{km}\u00a0km",
+  "trip.km": "≈ {km} km",
   "trip.when": "{date}, soat {time}",
   "trip.whenToday": "Bugun, soat {time}",
   "trip.whenTomorrow": "Ertaga, soat {time}",
@@ -67,7 +67,7 @@
   "request.published.hint": "Haydovchilar uni koʻradi va sizga taklif yuboradi.",
   "request.cancel": "Soʻrovni bekor qilish",
   "request.cancelled": "Soʻrov bekor qilindi",
-  "trip.arrival": "≈\u00a0{time}",
+  "trip.arrival": "≈ {time}",
   "trip.recommended": "Tavsiya etilgan narx",
   "trip.recommendedShort": "Tavsiya: {price}",
   "published.return": "Qaytish safari",
@@ -77,5 +77,7 @@
   "request.offers": "{count} ta taklif",
   "trip.closed.full": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
   "trip.closed.cancelled": "Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.",
-  "trip.closed.completed": "Bu safar tugagan."
+  "trip.closed.completed": "Bu safar tugagan.",
+  "request.review.hint": "Haydovchilar vaqt va narx taklif qiladi.",
+  "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx."
 }

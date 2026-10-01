@@ -5,7 +5,7 @@
   "camera.denied": "Kamera ochilmadi. Telefon kamerasi bilan oling.",
   "camera.native": "Telefon kamerasini ochish",
   "retry": "Qayta urinish",
-  "money": "{amount}\u00a0soʻm",
+  "money": "{amount} soʻm",
   "language": "Til",
   "soon": "Bu boʻlim tez orada ishga tushadi.",
   "passenger.welcome": "Safar toping",
@@ -35,5 +35,10 @@
   "admin.trips": "Safarlar",
   "admin.tripsHint": "Kechadan boshlab barcha safarlar",
   "admin.tripsEmpty": "Hozircha safar yoʻq",
-  "route": "{from} → {to}"
+  "route": "{from} → {to}",
+  "welcome.verified": "Haydovchilar tekshirilgan.",
+  "welcome.shareCosts": "Yoʻl xarajatini birga boʻlamiz.",
+  "welcome.hidden": "Telefon raqamingiz hech kimga koʻrinmaydi.",
+  "welcome.costsBack": "Yoʻl xarajatingiz qaytadi.",
+  "welcome.bonus": "Boshlash uchun bonus beramiz."
 }

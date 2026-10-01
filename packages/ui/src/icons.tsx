@@ -16,6 +16,7 @@ import {
   CarFront,
   ChartColumn,
   Check,
+  EyeOff,
   ChevronDown,
   ChevronRight,
   ChevronUp,
@@ -113,6 +114,8 @@ const ICONS = {
   muted: MicOff,
   // "Maʼlumotlarimni oʻchirish" in the profile (docs/30).
   erase: Trash2,
+  // The phone number is never shown to anyone (docs/07).
+  hidden: EyeOff,
   // A Telegram channel of the team (docs/63).
   channel: Megaphone,
   // The stops of the driver (G24, docs/70): move one up or down, open the way in a navigator.

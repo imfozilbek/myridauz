@@ -28,7 +28,11 @@ export function TeamGate({ client, children }: TeamGateProps) {
   if (state === 'denied')
     return (
       <div className="center-screen">
-        <EmptyState icon="team" title={t('account.team.denied', { brand: brand.name })} />
+        <EmptyState
+          icon="team"
+          title={t('account.team.denied', { brand: brand.name })}
+          description={t('account.team.deniedHint')}
+        />
       </div>
     );
   return <>{children}</>;

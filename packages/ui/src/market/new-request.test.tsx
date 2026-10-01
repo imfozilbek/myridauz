@@ -25,6 +25,7 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
     await tap('2');
     await tap('Davom etish');
     expect(await screen.findByText('Soʻrovni tekshiring')).toBeTruthy();
+    expect(screen.getByText('Haydovchilar vaqt va narx taklif qiladi.')).toBeTruthy();
     await tap('Soʻrov qoldirish');
     expect(
       await screen.findByText('Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.'),

@@ -12,7 +12,13 @@ import { GenderStep } from './gender-step';
 import { NameStep } from './name-step';
 import { PhoneStep } from './phone-step';
 
-export type Welcome = { readonly icon: IconName; readonly textKey: TranslationKey };
+type WelcomePoint = { readonly icon: IconName; readonly textKey: TranslationKey };
+// The welcome: what the app is for, then what the person gets, before any question (docs/86 T11, T12).
+export type Welcome = {
+  readonly icon: IconName;
+  readonly textKey: TranslationKey;
+  readonly points: readonly WelcomePoint[];
+};
 
 type RegistrationFlowProps = {
   readonly welcome: Welcome;
@@ -75,8 +81,7 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
     [passed],
   );
 
-  if (screen === 'welcome')
-    return <WelcomeScreen icon={welcome.icon} textKey={welcome.textKey} onContinue={toConsent} />;
+  if (screen === 'welcome') return <WelcomeScreen welcome={welcome} onContinue={toConsent} />;
   if (screen === 'consent') return <ConsentStep onAccept={accept} />;
   if (screen === 'name') return <NameStep initial={name} onBack={toConsent} onDone={saveName} />;
   if (screen === 'gender') return <GenderStep onBack={toName} onDone={saveGender} />;
