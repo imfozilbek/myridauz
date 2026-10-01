@@ -70,11 +70,7 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
           {wayFacts(trip).map(([, text]) => (
             <Cell key={text}>{text}</Cell>
           ))}
-          {trip.comment ? (
-            <Cell multiline description={trip.comment}>
-              {t('market.review.comment')}
-            </Cell>
-          ) : null}
+          {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
           {onCancel || readOnly ? line(t('market.review.status'), t(`market.status.${trip.status}`)) : null}
         </Section>
         <Section header={t('market.trip.driver')}>

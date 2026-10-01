@@ -52,6 +52,9 @@
   box-sizing: border-box;
   width: 100%;
   padding: 24px 10px 8px;
+  /* «Qoraqalpogʻiston» is one long word: it fits a tile of a 360 px phone and never runs out (G27). */
+  font-size: clamp(13px, 4vw, 17px);
+  overflow-wrap: break-word;
   color: var(--tgui--button_text_color);
   background: linear-gradient(transparent, color-mix(in srgb, var(--tgui--text_color) 65%, transparent));
 }

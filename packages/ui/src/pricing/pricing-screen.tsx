@@ -127,7 +127,6 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
           {loaded.directions.map((direction) => (
             <Cell
               key={`${direction.from}:${direction.to}`}
-              multiline
               subtitle={
                 direction.manual === null
                   ? t('pricing.formula', { price: formatMoney(direction.formula ?? 0) })

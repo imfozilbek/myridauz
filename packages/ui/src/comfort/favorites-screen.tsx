@@ -78,7 +78,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
         </Section>
         {value.trips.length === 0 ? (
           <Section header={t('comfort.favorites.trips')}>
-            <Cell multiline>{t('comfort.favorites.noTrips')}</Cell>
+            <Cell>{t('comfort.favorites.noTrips')}</Cell>
           </Section>
         ) : null}
         {value.trips.map((trip) => (

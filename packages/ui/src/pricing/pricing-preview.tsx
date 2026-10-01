@@ -30,7 +30,6 @@ export function PricingPreviewScreen({ preview, onBack, onSave }: PricingPreview
           {preview.rows.map((row) => (
             <Cell
               key={`${row.from}:${row.to}`}
-              multiline
               subtitle={`${formatMoney(row.before)} → ${formatMoney(row.after)}`}
               description={t('pricing.km', { km: String(row.km) })}
             >

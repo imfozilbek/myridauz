@@ -29,7 +29,6 @@ export function PersonReviews({ userId }: { readonly userId: PersonId }) {
       {reviews.map((review) => (
         <Cell
           key={review.id}
-          multiline
           subtitle={review.text || undefined}
           after={<ReviewStars stars={review.stars} />}
         >

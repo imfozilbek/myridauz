@@ -80,11 +80,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
           {line(t('market.review.seats'), String(draft.seats))}
           {line(t('market.review.price'), formatMoney(draft.price))}
           {draft.womanOnBoard ? <Cell>{t('market.search.woman')}</Cell> : null}
-          {draft.comment ? (
-            <Cell multiline description={draft.comment}>
-              {t('market.review.comment')}
-            </Cell>
-          ) : null}
+          {draft.comment ? <Cell description={draft.comment}>{t('market.review.comment')}</Cell> : null}
         </Section>
       </List>
       {error ? <Text className="step-error">{t(error)}</Text> : null}

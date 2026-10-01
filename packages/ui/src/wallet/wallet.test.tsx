@@ -56,9 +56,11 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     await tap('Hamyonlar');
     await tap('Jasur');
     await tap('Hamyonni tuzatish');
-    fireEvent.change(screen.getByLabelText('Summa, soʻm (ayirish uchun minus)'), {
-      target: { value: '100000' },
-    });
+    const amount = screen.getByLabelText('Summa, soʻm (ayirish uchun minus)');
+    // The long label is a section header that wraps, not a field header cut on a 360 px phone (G27).
+    expect(amount.getAttribute('placeholder')).toBeNull();
+    expect(screen.getByText('Summa, soʻm (ayirish uchun minus)').closest('label')).toBeNull();
+    fireEvent.change(amount, { target: { value: '100000' } });
     fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Yoʻlovchi kelmadi' } });
     await tap('Saqlash');
     expect(adjust).toHaveBeenCalledWith('00000000000000000000000000000007', {

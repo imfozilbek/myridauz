@@ -40,20 +40,19 @@ export function AdjustForm({ error, onBack, onSave }: Props) {
             </Cell>
           ))}
         </Section>
-        <Section>
+        {/* The labels are section headers: they wrap, a field header is cut on a 360 px phone (G27). */}
+        <Section header={t('wallet.adjust.amount')}>
           <Input
-            header={t('wallet.adjust.amount')}
             aria-label={t('wallet.adjust.amount')}
-            placeholder={t('wallet.adjust.amount')}
             type="number"
             inputMode="numeric"
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
           />
+        </Section>
+        <Section header={t('wallet.adjust.reason')}>
           <Input
-            header={t('wallet.adjust.reason')}
             aria-label={t('wallet.adjust.reason')}
-            placeholder={t('wallet.adjust.reason')}
             value={reason}
             onChange={(event) => setReason(event.target.value)}
           />

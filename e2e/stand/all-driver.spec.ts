@@ -91,12 +91,12 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
   await shot(page, 'android', 'da46-review');
 });
 
-test('android: an empty wallet cannot confirm a seat', async ({ page }) => {
+test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
   await setBonus(MUROD, 0);
   await openHome(page, 'driver', MUROD, 'android', `?booking=${links['waiting']}`);
   await page.getByText(t('bookings.confirm')).first().click();
-  await shot(page, 'android', 'da50-confirm');
-  await mainButton(page).click();
+  await expect(page.getByText(t('wallet.notEnough.title'))).toBeInViewport();
+  await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await shot(page, 'android', 'da51-not-enough');
   await page.getByText(t('wallet.topUp')).first().click();
   await shot(page, 'android', 'da52-top-up');

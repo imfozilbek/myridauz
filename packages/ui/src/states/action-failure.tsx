@@ -11,9 +11,7 @@ export function ActionFailure({ error }: { readonly error: TranslationKey | null
   return (
     <div role="alert">
       <Section>
-        <Cell multiline before={<Icon name="error" />}>
-          {t(error)}
-        </Cell>
+        <Cell before={<Icon name="error" />}>{t(error)}</Cell>
       </Section>
     </div>
   );

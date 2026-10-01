@@ -64,9 +64,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
         <BookingPlaces booking={booking} />
         {open && booking.plate ? (
           <Section>
-            <Cell multiline description={<PlateView plate={booking.plate} small />}>
-              {t('bookings.plate')}
-            </Cell>
+            <Cell description={<PlateView plate={booking.plate} small />}>{t('bookings.plate')}</Cell>
           </Section>
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>

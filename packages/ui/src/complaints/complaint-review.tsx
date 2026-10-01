@@ -48,7 +48,6 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
   const party = (header: string, person: Party) => (
     <Section header={header}>
       <Cell
-        multiline
         before={
           <ProfilePhoto
             userId={person.id}
@@ -106,7 +105,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
       <List>
         {complaint.comment ? (
           <Section>
-            <Cell multiline>{complaint.comment}</Cell>
+            <Cell>{complaint.comment}</Cell>
           </Section>
         ) : null}
         {party(t('complaints.against'), complaint.against)}
@@ -124,7 +123,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
             <Cell before={<Icon name="empty" />}>{t('complaints.chatEmpty')}</Cell>
           ) : (
             lines.map((line) => (
-              <Cell key={`${line.at}-${line.text}`} multiline subtitle={lineText(line)}>
+              <Cell key={`${line.at}-${line.text}`} subtitle={lineText(line)}>
                 {nameOf(line.author)}
               </Cell>
             ))

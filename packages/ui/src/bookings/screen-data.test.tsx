@@ -1,5 +1,5 @@
 import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
@@ -52,5 +52,23 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
     await tap('Tasdiqlash');
     expect(await screen.findByText(/Hamyoningizda: 481\s000/)).toBeTruthy();
+  });
+
+  it('a driver without the commission is led to top up, not to a «Tasdiqlash» that fails (G27)', async () => {
+    const answer = vi.fn(async () => booking);
+    renderMarket(
+      <MyTripsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myTrips: async () => [trip] },
+        bookings: { driverBookings: async () => [booking], driverOffers: async () => [], answer },
+        wallet: { mine: async () => ({ ...wallet, bonus: 0, main: 0 }) },
+      }),
+    );
+    await tap('Jasur');
+    await tap('Dilnoza');
+    await tap('Tasdiqlash');
+    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    expect(screen.getByText('Hisobni toʻldirish')).toBeTruthy();
+    expect(answer).not.toHaveBeenCalled();
   });
 });

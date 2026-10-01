@@ -91,7 +91,6 @@ function AskTrip({ last, directory, onNew, onLast }: AskProps) {
       </Cell>
       {from && to ? (
         <Cell
-          multiline
           before={<IconTile name="history" />}
           subtitle={t('home.driver.last')}
           after={chevron()}

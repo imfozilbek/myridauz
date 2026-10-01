@@ -21,7 +21,6 @@ export function PricingHistory({ history, onRollback }: PricingHistoryProps) {
         return (
           <Cell
             key={item.version}
-            multiline
             subtitle={t('pricing.versionBy', { date: `${formatDate(at)} ${formatTime(at)}`, who })}
             description={values}
             after={

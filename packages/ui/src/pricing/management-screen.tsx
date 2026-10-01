@@ -48,7 +48,6 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
           <Cell
             before={<IconTile name="price" />}
             subtitle={t('pricing.hint')}
-            multiline
             onClick={() => setOpen('pricing')}
           >
             {t('pricing.title')}
@@ -63,7 +62,6 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
           <Cell
             before={<IconTile name="channel" />}
             subtitle={t('channels.hint')}
-            multiline
             onClick={() => setOpen('channels')}
           >
             {t('channels.title')}

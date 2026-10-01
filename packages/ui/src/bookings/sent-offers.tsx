@@ -17,7 +17,6 @@ export function SentOffers({ offers, onOpen }: Props) {
         <Cell
           key={offer.id}
           onClick={() => onOpen(offer)}
-          multiline
           description={<RouteView from={offer.from} to={offer.to} departAt={offer.departAt} km={offer.km} />}
           after={<CellValue>{formatMoney(offer.price)}</CellValue>}
         >

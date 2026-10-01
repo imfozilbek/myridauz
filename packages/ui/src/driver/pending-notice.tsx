@@ -11,7 +11,6 @@ export function PendingNotice() {
     <Section>
       <Cell
         before={<IconTile name="applications" tone="accent" />}
-        multiline
         subtitle={t('drivers.status.pending.explore')}
       >
         {t('drivers.status.pending.title')}

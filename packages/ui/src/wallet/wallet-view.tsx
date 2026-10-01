@@ -29,7 +29,6 @@ export function WalletView({ wallet, children }: Props) {
         {wallet.operations.map((operation) => (
           <Cell
             key={operation.id}
-            multiline
             subtitle={[
               formatDate(new Date(operation.createdAt)),
               t(`wallet.${operation.balance}`),

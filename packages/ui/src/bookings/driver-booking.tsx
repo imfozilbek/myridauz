@@ -31,15 +31,20 @@ export function DriverBooking({ booking, onClose }: Props) {
   const { track } = useAnalytics();
   const { bookings, wallet } = useApiClients();
   const [step, setStep] = useState<Step>('view');
-  // The balance next to the commission: the driver knows before tapping (docs/65 C).
+  // The balance next to the commission: the driver knows before tapping (docs/65 C). Less than the
+  // commission: straight to the way to top up, a «Tasdiqlash» would only fail (G27).
   const [balance, setBalance] = useState<number | null>(null);
   useEffect(() => {
     if (step === 'confirm')
       wallet.mine().then(
-        (mine) => setBalance(mine.bonus + mine.main),
+        (mine) => {
+          const total = mine.bonus + mine.main;
+          if (total < booking.commission) setStep('not_enough');
+          else setBalance(total);
+        },
         () => undefined,
       );
-  }, [step, wallet]);
+  }, [step, wallet, booking.commission]);
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   // A failed answer keeps the booking open with the reason (docs/65 B3).
   const answer = async (action: DriverBookingAction) => {

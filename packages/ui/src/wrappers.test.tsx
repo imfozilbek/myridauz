@@ -1,8 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { AppRoot } from '@telegram-apps/telegram-ui';
+import { AppRoot, Cell as TguiCell } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadBrand } from '@platform/brands';
+import { StepLayout } from './account/step-layout';
 import { Cell, Section } from './components';
 import { IconTile } from './icon-tile';
 import { renderInShell } from './test-shell';
@@ -51,6 +52,20 @@ describe('Section and Cell of packages/ui', () => {
     );
     expect(screen.queryByRole('button')).toBeNull();
   });
+
+  it('wraps a long subtitle instead of cutting it on a 360 px phone (G27)', () => {
+    const { container } = show(
+      <>
+        <Cell subtitle="Yoʻnalishingizdagi yoʻlovchilar">Bir</Cell>
+        <TguiCell multiline subtitle="Yoʻnalishingizdagi yoʻlovchilar">
+          Bir
+        </TguiCell>
+      </>,
+    );
+    const [ours, wrapped] = Array.from(container.firstElementChild?.children ?? []);
+    expect(ours?.className).toBeTruthy();
+    expect(ours?.className).toBe(wrapped?.className);
+  });
 });
 
 describe('IconTile', () => {
@@ -60,5 +75,13 @@ describe('IconTile', () => {
     const hex = loadBrand().theme.colors.accentStrong;
     const [red, green, blue] = [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
     expect(tile?.style.background).toBe(`rgb(${red}, ${green}, ${blue})`);
+  });
+});
+
+describe('StepLayout', () => {
+  it('opens at the top, so its question is seen whatever the last screen scrolled (G27)', () => {
+    const scroll = vi.spyOn(window, 'scrollTo');
+    renderInShell(<StepLayout icon="wallet" title="Joyni tasdiqlaysizmi?" />);
+    expect(scroll).toHaveBeenCalledWith(0, 0);
   });
 });

@@ -40,7 +40,6 @@ export function ReviewStep({ car, reasons, recheck, failed, onEdit, onBack, onSe
       <Cell
         className={problem ? 'cell-problem' : undefined}
         after={<CellValue>{problem ? t('drivers.status.fix') : value}</CellValue>}
-        multiline
         {...(problem ? { description: notes } : {})}
         onClick={() => onEdit(target)}
       >
