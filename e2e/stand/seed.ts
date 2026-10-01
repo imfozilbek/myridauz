@@ -18,7 +18,7 @@ export const PHOTO = new Blob([readFileSync(`brands/${loadBrand().id}/public/reg
 });
 const ALREADY = 'users.already_registered';
 
-async function register(app: MiniApp, person: Person, gender: Gender) {
+export async function register(app: MiniApp, person: Person, gender: Gender) {
   const users = createUsersClient(await signedAs(app, person));
   try {
     await users.register({
