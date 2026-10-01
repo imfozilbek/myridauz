@@ -13,6 +13,8 @@ export type BotMessage = {
   readonly bot: string;
   readonly method: string;
   readonly chatId: number | null;
+  // The chat as Telegram got it: a person's id or a channel's @username.
+  readonly chat: string;
   readonly text: string;
   readonly buttons: readonly Button[];
 };
@@ -30,6 +32,7 @@ const messageOf = ({ token, method, body }: Call): BotMessage => {
     bot: botOfToken(token),
     method,
     chatId: typeof chat === 'number' ? chat : null,
+    chat: String(chat ?? ''),
     text: String(body['text'] ?? ''),
     buttons,
   };
@@ -50,8 +53,18 @@ export async function runCron(): Promise<void> {
 }
 
 // One SQL statement on the database of the stand: a scenario moves a time into the past.
-export function standSql(sql: string): void {
+const d1 = (sql: string, json: boolean): string => {
   const config = `brands/${loadBrand().id}/wrangler.toml`;
   const args = ['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--persist-to', STAND_STATE];
-  execFileSync('pnpm', [...args, '--config', config, '--command', sql], { stdio: 'pipe' });
+  const output = json ? ['--json'] : [];
+  return execFileSync('pnpm', [...args, ...output, '--config', config, '--command', sql], {
+    stdio: 'pipe',
+    encoding: 'utf8',
+  });
+};
+export const standSql = (sql: string): void => void d1(sql, false);
+// The rows of one query on the database of the stand.
+export function standRows(sql: string): Record<string, unknown>[] {
+  const [result] = JSON.parse(d1(sql, true)) as { results: Record<string, unknown>[] }[];
+  return result?.results ?? [];
 }

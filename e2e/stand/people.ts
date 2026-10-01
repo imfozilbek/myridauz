@@ -31,6 +31,7 @@ export const RUSTAM: Person = { id: 900105, name: 'Rustam', phone: '998901110105
 export const NIGORA: Person = { id: 900106, name: 'Nigora', phone: '998901110106' };
 export const BOBUR: Person = { id: 900107, name: 'Bobur', phone: '998901110107' };
 export const OYBEK: Person = { id: 900108, name: 'Oybek', phone: '998901110108' };
+export const JAHONGIR: Person = { id: 900109, name: 'Jahongir', phone: '998901110109' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -39,6 +40,9 @@ export const TIMUR: Person = { id: 900235, name: 'Timur', phone: '998901110235' 
 // Leave Rida in a scenario: one deletes the account, one is blocked (docs/81 F07, F08).
 export const LAZIZA: Person = { id: 900236, name: 'Laziza', phone: '998901110236' };
 export const DIYORA: Person = { id: 900237, name: 'Diyora', phone: '998901110237' };
+export const NARGIZA: Person = { id: 900238, name: 'Nargiza', phone: '998901110238' };
+// The screens of a driver show her seat and her request (e2e/stand/screens-driver.spec.ts).
+export const ROZA: Person = { id: 900239, name: 'Roza', phone: '998901110239' };
 
 type Driver = { readonly person: Person; readonly plate: string; readonly gender: Gender };
 export const DRIVERS: readonly Driver[] = [
@@ -50,6 +54,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: NIGORA, plate: '01F678GH', gender: 'female' },
   { person: BOBUR, plate: '01G789HI', gender: 'male' },
   { person: OYBEK, plate: '01H890IJ', gender: 'male' },
+  { person: JAHONGIR, plate: '01I901JK', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,
@@ -66,6 +71,8 @@ export const PASSENGERS: readonly Person[] = [
   SEVARA,
   LAZIZA,
   DIYORA,
+  NARGIZA,
+  ROZA,
 ];
 // Men among the passengers: «Mashinada ayol bor» is about them (docs/06).
 export const MEN: readonly Person[] = [TIMUR];

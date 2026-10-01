@@ -35,11 +35,11 @@ export const botOfToken = (token: string): string => {
 // The Telegram SDK reads launch data only with a signature field; it is signed like the rest.
 const SIGNATURE = 'stand';
 
-const initDataOf = (app: MiniApp, person: Person) =>
+const initDataOf = (app: MiniApp, person: Person, signedAt = now()) =>
   signTelegramData(
     tokenOf(app),
     { user: { id: person.id, first_name: person.name, allows_write_to_pm: true }, signature: SIGNATURE },
-    now(),
+    signedAt,
   );
 
 export const contactOf = (app: MiniApp, person: Person) =>
@@ -55,6 +55,13 @@ export const signedAs = async (app: MiniApp, person: Person) => ({
   fetch: (input: string, init?: RequestInit) => fetch(input, init),
   app,
   initData: await initDataOf(app, person),
+});
+
+// A launch older than a day, as a Mini App left open since yesterday (docs/81 A11).
+const DAY_SECONDS = 24 * 60 * 60;
+export const staleSignedAs = async (app: MiniApp, person: Person) => ({
+  ...(await signedAs(app, person)),
+  initData: await initDataOf(app, person, now() - DAY_SECONDS - 60),
 });
 
 // The stand never reaches the outside (docs/75): a request or a socket to another host is stopped
