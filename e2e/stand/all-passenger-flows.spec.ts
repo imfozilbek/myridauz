@@ -77,5 +77,6 @@ test('a blocked person sees why and until when', async ({ page }) => {
   await createModerationClient(await signedAs('admin', OWNER)).block(String(row?.['public_id']), 7);
   await openHome(page, 'passenger', blocked, 'android');
   await expect(page.getByText(TEXT.blocked)).toBeVisible();
+  await expect(mainButton(page)).toHaveText(t('account.support'));
   await shot(page, 'android', 'pb30-blocked');
 });

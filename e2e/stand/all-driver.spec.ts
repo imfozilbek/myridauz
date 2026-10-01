@@ -99,6 +99,7 @@ test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fai
   await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await shot(page, 'android', 'da51-not-enough');
   await page.getByText(t('wallet.topUp')).first().click();
+  await expect(mainButton(page)).toHaveText(t('account.support'));
   await shot(page, 'android', 'da52-top-up');
   // The walks of passengers use Murod after this one: his bonus comes back.
   await setBonus(MUROD, WELCOME_BONUS);

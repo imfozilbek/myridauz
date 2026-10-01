@@ -1,4 +1,5 @@
-import { openTelegramLink, shareMessage } from '@telegram-apps/sdk-react';
+import { shareMessage } from '@telegram-apps/sdk-react';
+import { openInTelegram } from './feedback';
 
 // Telegram's own "send to a chat" window with the prepared card (docs/21, docs/43). An old client
 // gets the plain share link; outside Telegram a new tab opens.
@@ -14,6 +15,5 @@ export async function shareCard(preparedMessageId: string | null, link: string):
       return;
     }
   }
-  const url = `https://t.me/share/url?url=${encodeURIComponent(link)}`;
-  if (openTelegramLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
+  openInTelegram(`https://t.me/share/url?url=${encodeURIComponent(link)}`);
 }
