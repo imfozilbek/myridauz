@@ -5,6 +5,8 @@ import type { Person } from './stand-kit';
 // The people of the stand (docs/75). Each goal has its own driver and route, so the scenarios of
 // one goal never see the trips of another.
 export const OWNER: Person = { id: STAND_OWNER_ID, name: 'Ali', phone: '998900000001' };
+// A moderator of the team (G27, docs/79): made in the database of the stand, as the owner's button does.
+export const KAMRON: Person = { id: 900301, name: 'Kamron', phone: '998901110301' };
 
 // G26: the search by lists, Toshkent → Urgut.
 export const DRIVER: Person = { id: 900101, name: 'Jasur', phone: '998901110101' };
@@ -28,6 +30,7 @@ export const ULUGBEK: Person = { id: 900104, name: 'Ulugʻbek', phone: '99890111
 export const RUSTAM: Person = { id: 900105, name: 'Rustam', phone: '998901110105' };
 export const NIGORA: Person = { id: 900106, name: 'Nigora', phone: '998901110106' };
 export const BOBUR: Person = { id: 900107, name: 'Bobur', phone: '998901110107' };
+export const OYBEK: Person = { id: 900108, name: 'Oybek', phone: '998901110108' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -46,6 +49,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: RUSTAM, plate: '01E567FG', gender: 'male' },
   { person: NIGORA, plate: '01F678GH', gender: 'female' },
   { person: BOBUR, plate: '01G789HI', gender: 'male' },
+  { person: OYBEK, plate: '01H890IJ', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,
