@@ -42,10 +42,12 @@
   text-align: center;
 }
 
-/* The − and + keep a finger-sized square and never push each other out of the screen (N17). */
-.price-step {
+/* The − and + keep a finger-sized square and never push each other out of the screen (N17).
+   Inside .price-field: stronger than the size of a TelegramUI button. */
+.price-field .price-step {
   flex: none;
   width: 56px;
+  min-width: 56px;
   padding-inline: 0;
 }
 

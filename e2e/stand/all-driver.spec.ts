@@ -12,6 +12,7 @@ import type { Person } from './stand-kit';
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 const links: Record<string, string> = {};
+const WELCOME_BONUS = 500_000;
 const WAITING: Person = { id: 900704, name: 'Robiya', phone: '998901110704' };
 
 test.beforeAll(async () => {
@@ -94,5 +95,11 @@ test('android: an empty wallet cannot confirm a seat', async ({ page }) => {
   await setBonus(MUROD, 0);
   await openHome(page, 'driver', MUROD, 'android', `?booking=${links['waiting']}`);
   await page.getByText(t('bookings.confirm')).first().click();
-  await shot(page, 'android', 'da50-not-enough');
+  await shot(page, 'android', 'da50-confirm');
+  await mainButton(page).click();
+  await shot(page, 'android', 'da51-not-enough');
+  await page.getByText(t('wallet.topUp')).first().click();
+  await shot(page, 'android', 'da52-top-up');
+  // The walks of passengers use Murod after this one: his bonus comes back.
+  await setBonus(MUROD, WELCOME_BONUS);
 });
