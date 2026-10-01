@@ -80,6 +80,8 @@ export function setup() {
       find: async (tripId) => trips.get(tripId),
       ofDriver: async (driverId) =>
         [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
+      liveCount: async (driverId) =>
+        [...trips.values()].filter((t) => t.driverId === driverId && t.live).length,
       views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
       publish: async (driverId, input) => {
         const tripId = addTrip({ ...input, driverId });

@@ -87,6 +87,8 @@ export const tripFacts = async (env: Bindings, id: string) => {
 };
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
+export const liveTripCount = async (env: Bindings, driverId: number) =>
+  (await tripsDeps(env).trips.byDriver(driverId)).filter((trip) => isLive(trip, Date.now())).length;
 export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));

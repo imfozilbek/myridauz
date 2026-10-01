@@ -84,6 +84,8 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
+    // Trips not over yet: an accepted offer adds one (docs/35).
+    liveCount(driverId: number): Promise<number>;
     views(ids: readonly string[]): Promise<Trip[]>;
     publish(driverId: number, input: Required<TripInput>): Promise<Published>;
     cancel(driverId: number, tripId: string): Promise<void>;
