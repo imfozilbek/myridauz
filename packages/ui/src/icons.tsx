@@ -122,6 +122,8 @@ const ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
+  // The application of a driver is approved (docs/86 V7).
+  approved: ShieldCheck,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

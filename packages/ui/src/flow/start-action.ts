@@ -11,6 +11,8 @@ export type StartAction = {
   readonly tone: Tone;
   readonly labelKey: TranslationKey;
   readonly hintKey: TranslationKey;
+  // A driver waits for the approval of the application before this action works (docs/86 V7).
+  readonly waitsApproval?: true;
   // The section; without it the action says the section comes soon.
   readonly Screen?: ComponentType<{ readonly onBack: () => void } & Launch>;
 };

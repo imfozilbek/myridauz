@@ -47,3 +47,9 @@
   min-height: 100vh;
   background: var(--tgui--secondary_bg_color);
 }
+
+/* The icon of an action that waits for the approval of a driver: muted, the text stays readable (docs/86 V7). */
+.action-waiting {
+  display: grid;
+  opacity: 0.4;
+}

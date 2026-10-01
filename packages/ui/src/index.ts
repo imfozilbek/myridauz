@@ -4,7 +4,7 @@ export { useAnalytics, useScreenView } from './context/analytics-context';
 export { useBrand } from './context/brand-context';
 export { DriverGate } from './driver/driver-gate';
 export { usePending } from './driver/driver-context';
-export { PendingNotice } from './driver/pending-notice';
+export { DriverNotice } from './driver/driver-notice';
 export { ApplicationsScreen } from './moderation/applications-screen';
 export { linkedApplication } from './moderation/linked-application';
 export { ComplaintsScreen, linkedComplaint } from './complaints/complaints-screen';
