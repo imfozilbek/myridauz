@@ -34,7 +34,7 @@ async function register(app: MiniApp, person: Person, gender: Gender) {
 }
 
 // A driver sends the application: registration, photo, car photos, the car.
-async function apply(person: Person, plate: string, gender: Gender) {
+export async function apply(person: Person, plate: string, gender: Gender) {
   const users = await register('driver', person, gender);
   const drivers = createDriversClient(await signedAs('driver', person));
   if ((await drivers.getApplication())?.status === 'approved') return;
