@@ -1,10 +1,8 @@
-import { LargeTitle } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { ProfileCell } from '../account/profile/profile-cell';
 import { useChevron } from '../chevron';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
-import { useBrand } from '../context/brand-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -18,18 +16,15 @@ type HomeScreenProps = {
   readonly onProfile: () => void;
 };
 
-// At most 3 actions (docs/19).
+// At most 3 actions (docs/19). No big title: the Telegram header already names the app
+// (owner decision 01.10.2026), so the profile and the trips come first.
 export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const brand = useBrand();
   const chevron = useChevron();
   return (
     <div className="home">
-      <LargeTitle weight="1" className="home-title">
-        {brand.name}
-      </LargeTitle>
       <List>
         <ProfileCell onOpen={onProfile} />
         {notice}

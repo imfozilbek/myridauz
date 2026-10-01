@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderInShell } from '../test-shell';
@@ -29,6 +30,11 @@ describe('StartFlow', () => {
     expect(screen.getAllByText('Safar topish')).toHaveLength(1);
     expect(screen.getByRole('button', { name: 'Safar topish' }).tagName).toBe('BUTTON');
     expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+  });
+
+  it('starts with the profile, without a big title over it (owner decision 01.10.2026)', () => {
+    renderInShell(<StartFlow actions={ACTIONS} />);
+    expect(screen.queryByRole('heading', { name: loadBrand().name })).toBeNull();
   });
 
   it('goes from the main screen to a section and back', () => {

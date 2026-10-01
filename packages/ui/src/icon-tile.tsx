@@ -10,12 +10,13 @@ export const SIZES = {
 
 type IconTileProps = { readonly name: IconName; readonly tone?: Tone; readonly size?: keyof typeof SIZES };
 
-// A white icon on a colored rounded tile, like Telegram settings (docs/21).
+// A white icon on a colored rounded tile, like Telegram settings (docs/21). The second color
+// is its strong tone: a white icon on it stays readable (at least 3:1, docs/20).
 export function IconTile({ name, tone = 'brand', size = 'cell' }: IconTileProps) {
   const { colors } = useBrand().theme;
   const background = {
     brand: colors.brandStrong,
-    accent: colors.accent,
+    accent: colors.accentStrong,
     deep: colors.brandDeep,
     danger: colors.danger,
   }[tone];

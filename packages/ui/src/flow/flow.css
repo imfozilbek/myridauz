@@ -25,7 +25,3 @@
   min-height: 100vh;
   background: var(--tgui--secondary_bg_color);
 }
-
-.home-title {
-  padding: 16px 20px 4px;
-}

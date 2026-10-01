@@ -2,7 +2,10 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { loadBrand } from '@platform/brands';
 import { Cell, Section } from './components';
+import { IconTile } from './icon-tile';
+import { renderInShell } from './test-shell';
 
 afterEach(cleanup);
 const show = (node: ReactNode) => render(<AppRoot>{node}</AppRoot>);
@@ -47,5 +50,15 @@ describe('Section and Cell of packages/ui', () => {
       </>,
     );
     expect(screen.queryByRole('button')).toBeNull();
+  });
+});
+
+describe('IconTile', () => {
+  it('paints the second color in its strong tone, so the white icon stays readable', () => {
+    const { container } = renderInShell(<IconTile name="destination" tone="accent" />);
+    const tile = container.querySelector<HTMLElement>('span[style]');
+    const hex = loadBrand().theme.colors.accentStrong;
+    const [red, green, blue] = [1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16));
+    expect(tile?.style.background).toBe(`rgb(${red}, ${green}, ${blue})`);
   });
 });
