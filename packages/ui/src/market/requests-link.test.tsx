@@ -21,7 +21,8 @@ describe('a new request on a followed route (docs/83 N08)', { timeout: 20_000 },
       </RequestsLink>,
       testClients({ market: { searchRequests } }),
     );
-    await vi.waitFor(() => expect(searchRequests).toHaveBeenCalled());
+    // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.
+    await vi.waitFor(() => expect(searchRequests).toHaveBeenCalled(), { timeout: 5000 });
     expect(searchRequests.mock.calls[0]?.[0]).toEqual({ from: '1726', to: '1730', date: '2026-10-02' });
     // Back is the day, then the route: another day is one tap away.
     await tap('Orqaga');
