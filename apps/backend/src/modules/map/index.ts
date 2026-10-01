@@ -7,7 +7,7 @@ import { borderRoutes } from './http/border-routes';
 import { whereIs } from './application/point-name';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
 import { districtBorders } from './infrastructure/district-borders';
-import { districtName, pointFits, regionOfDistrict } from './infrastructure/district-names';
+import { districtName, districtsOf, pointFits, regionOfDistrict } from './infrastructure/district-names';
 import { districtAt } from './domain/borders';
 import type { Point } from '@platform/contracts';
 import { edgeCache } from './infrastructure/edge-cache';
@@ -33,7 +33,7 @@ export const mapModule = new Hono<AppEnv>()
   )
   .route(
     '/',
-    searchRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf() })),
+    searchRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf(), districtsOf })),
   )
   .route(
     '/',
@@ -44,7 +44,7 @@ export const mapModule = new Hono<AppEnv>()
       districtName,
     })),
   )
-  .route('/', borderRoutes(districtBorders));
+  .route('/', borderRoutes(districtBorders, districtsOf));
 export { localMapFiles };
 
 // The district and the region of a point by the borders (G24): null abroad.

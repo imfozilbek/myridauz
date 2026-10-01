@@ -26,8 +26,6 @@
   "card.door": "Uyingizdan olib ketadi",
   "card.pitak": "{pitak}dan olib ketadi",
   "card.both": "Uyingizdan yoki {pitak}dan",
-  "fit.other": "Boshqa usulda olib ketadi",
-  "fit.far": "Sizga uzoqroq: +{km} km",
   "book.mode": "Qayerdan olib ketsin?",
   "book.pickup": "Olib ketish joyi",
   "book.dropoff": "Tushirish joyi",

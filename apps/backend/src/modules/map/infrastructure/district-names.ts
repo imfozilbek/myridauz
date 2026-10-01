@@ -11,5 +11,12 @@ const oneCity = (id: string) => byId.get(id)?.oneCity === true;
 export const districtName = (id: string) => byId.get(id)?.name;
 export const regionOfDistrict = (id: string) => parentOf(id) ?? undefined;
 export const isRegionId = (id: string) => byId.has(id) && parentOf(id) === null;
+// The districts of a zone of a booking (G26, docs/74): a district itself, or every district of a
+// region (Toshkent shahri as one city); null for an unknown place.
+export function districtsOf(zone: string): readonly string[] | null {
+  if (!byId.has(zone)) return null;
+  if (parentOf(zone) !== null) return [zone];
+  return places.filter((place) => place.parentId === zone).map((place) => place.id);
+}
 export const pointFits = (point: Point, district: string | null, placeId: string) =>
   fitsPlace(point, district, byId.get(placeId), oneCity, parentOf);

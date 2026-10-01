@@ -45,4 +45,11 @@ describe('the border of a district for its map (G24, docs/71)', () => {
     expect(border.parts[0]?.[0]?.length).toBeGreaterThan(10);
     expect((await call(mapBorderPath('1726999'), PERSON)).status).toBe(404);
   });
+
+  it('gives the rings of all districts of Toshkent shahri for the map of the whole city (G26)', async () => {
+    const district = borderSchema.parse(await (await call(mapBorderPath('1726277'), PERSON)).json());
+    const city = borderSchema.parse(await (await call(mapBorderPath('1726'), PERSON)).json());
+    expect(city.id).toBe('1726');
+    expect(city.parts.length).toBeGreaterThan(district.parts.length);
+  });
 });

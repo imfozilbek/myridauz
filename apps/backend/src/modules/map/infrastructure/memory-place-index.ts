@@ -16,10 +16,11 @@ const first = (rows: PlaceRow[], order: (row: PlaceRow) => number, limit: number
     .map(({ name, kind, area, district, point }) => ({ name, kind, area, district, point }));
 
 export const memoryPlaceIndex = (rows: readonly PlaceRow[]): PlaceIndex => ({
-  find: async ({ words, cells, near }, limit) => {
+  find: async ({ words, cells, near, districts }, limit) => {
     const order = near ? flatDistance(near) : (row: PlaceRow) => row.name.length;
     const matched = rows
       .filter((row) => cells === null || cells.includes(row.cell))
+      .filter((row) => districts === null || (row.district !== null && districts.includes(row.district)))
       .filter((row) => {
         const own = row.words.split(' ');
         return words.every((word) => own.some((mine) => mine.startsWith(word)));
