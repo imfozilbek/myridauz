@@ -21,13 +21,18 @@ type Screen =
       readonly booking?: boolean;
     };
 
-type Props = { readonly onBack: () => void; readonly initial?: Route | undefined };
+type Props = {
+  readonly onBack: () => void;
+  readonly initial?: Route | undefined;
+  // From the main screen: the end of the way is asked at once (G25).
+  readonly pickEnd?: boolean;
+};
 
 // A passenger looks for a trip: the start and the end over the map (docs/71), a day, the list
 // with the trips that suit first (docs/70). A link of the landing brings the districts (docs/59).
 const routeOf = (way: Way): Route => ({ from: way.from.place, to: way.to.place });
 
-export function FindTripFlow({ onBack, initial }: Props) {
+export function FindTripFlow({ onBack, initial, pickEnd = false }: Props) {
   const [screen, setScreen] = useState<Screen>(
     initial ? { step: 'date', route: initial } : { step: 'route' },
   );
@@ -36,6 +41,7 @@ export function FindTripFlow({ onBack, initial }: Props) {
     return (
       <WayScreen
         done="way.see"
+        pickEnd={pickEnd}
         onBack={onBack}
         onDone={(way) => setScreen({ step: 'date', route: routeOf(way), way })}
       />

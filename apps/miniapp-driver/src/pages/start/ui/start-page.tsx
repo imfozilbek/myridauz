@@ -1,5 +1,6 @@
 import {
   DriverGate,
+  DriverHome,
   MyTripsScreen,
   NewTripFlow,
   PendingNotice,
@@ -40,7 +41,7 @@ const ACTIONS: readonly StartAction[] = [
 export function StartPage() {
   return (
     <DriverGate>
-      <StartFlow actions={ACTIONS} notice={<PendingNotice />} />
+      <StartFlow actions={ACTIONS} notice={<PendingNotice />} home={(go) => <DriverHome go={go} />} />
     </DriverGate>
   );
 }

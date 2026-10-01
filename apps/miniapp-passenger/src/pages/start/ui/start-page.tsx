@@ -1,4 +1,11 @@
-import { FindTripFlow, MyRequestsScreen, NewRequestFlow, StartFlow, type StartAction } from '@platform/ui';
+import {
+  FindTripFlow,
+  MyRequestsScreen,
+  NewRequestFlow,
+  PassengerHome,
+  StartFlow,
+  type StartAction,
+} from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
@@ -29,5 +36,5 @@ const ACTIONS: readonly StartAction[] = [
 ];
 
 export function StartPage() {
-  return <StartFlow actions={ACTIONS} />;
+  return <StartFlow actions={ACTIONS} home={(go) => <PassengerHome go={go} />} />;
 }

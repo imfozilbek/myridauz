@@ -14,12 +14,13 @@ import type { StartAction } from './start-action';
 type HomeScreenProps = {
   readonly actions: readonly StartAction[];
   readonly notice?: ReactNode;
+  readonly top?: ReactNode;
   readonly onOpen: (action: StartAction) => void;
   readonly onProfile: () => void;
 };
 
 // At most 3 actions (docs/19). A chevron only on iOS, like Telegram itself.
-export function HomeScreen({ actions, notice, onOpen, onProfile }: HomeScreenProps) {
+export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -34,6 +35,7 @@ export function HomeScreen({ actions, notice, onOpen, onProfile }: HomeScreenPro
       <List>
         <ProfileCell onOpen={onProfile} />
         {notice}
+        {top}
         <Section>
           {actions.map((action) => (
             <Cell

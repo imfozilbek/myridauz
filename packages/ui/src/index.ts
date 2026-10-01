@@ -17,6 +17,8 @@ export { linkedStats } from './stats/stats-screen';
 export { RequestsSearchFlow } from './market/requests-search-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';
+export { DriverHome } from './home/driver-home';
+export { PassengerHome } from './home/passenger-home';
 export { StartFlow } from './flow/start-flow';
 export { Icon, type IconName } from './icons';
 export { mountApp } from './mount-app';

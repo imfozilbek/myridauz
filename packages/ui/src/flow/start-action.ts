@@ -1,3 +1,4 @@
+import type { AppLink, Location } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
@@ -11,5 +12,15 @@ export type StartAction = {
   readonly labelKey: TranslationKey;
   readonly hintKey: TranslationKey;
   // The section; without it the action says the section comes soon.
-  readonly Screen?: ComponentType<{ readonly onBack: () => void }>;
+  readonly Screen?: ComponentType<{ readonly onBack: () => void } & Launch>;
 };
+
+// How the main screen opens a section (G25): a booking or a trip by its link, the search right at
+// the end of the way, a new trip with a known route.
+export type Launch = {
+  readonly link?: AppLink;
+  readonly pickEnd?: boolean;
+  readonly route?: { readonly from: Location; readonly to: Location };
+};
+// The block of the main screen opens the section of an action with what to show first.
+export type HomeGo = (actionId: string, launch?: Launch) => void;

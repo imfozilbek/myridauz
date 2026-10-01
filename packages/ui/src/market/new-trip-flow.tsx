@@ -4,7 +4,7 @@ import { useAccount } from '../account/account-context';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useDriver } from '../driver/driver-context';
-import { RouteScreen } from '../places/route-screen';
+import { RouteScreen, type Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { DateStep } from './date-step';
 import { PriceStep } from './price-step';
@@ -18,13 +18,20 @@ import { completeDraft, type TripDraft } from './trip-draft';
 
 type Step = 'route' | 'mode' | 'date' | 'time' | 'seats' | 'price' | 'woman' | 'comment' | 'review';
 // A new trip, one question per screen (docs/19): the answers of a step open the next one.
-export function NewTripFlow({ onBack }: { readonly onBack: () => void }) {
+export function NewTripFlow({
+  onBack,
+  route: known,
+}: {
+  readonly onBack: () => void;
+  readonly route?: Route;
+}) {
   const { track } = useAnalytics();
   const { market } = useApiClients();
   const car = useDriver()?.application.car;
   const woman = useAccount()?.profile.gender === 'female';
-  const [step, setStep] = useState<Step>('route');
-  const [draft, setDraft] = useState<Partial<TripDraft>>({});
+  // «Oxirgi yoʻnalish» of the main screen brings the route: the way of pickup comes first (G25).
+  const [step, setStep] = useState<Step>(known ? 'mode' : 'route');
+  const [draft, setDraft] = useState<Partial<TripDraft>>(known ? { route: known } : {});
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [isReturn, setIsReturn] = useState(false);
   const [now] = useState(Date.now);
