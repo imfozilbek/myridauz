@@ -38,7 +38,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   const places = directory.directory;
   const regionName = (id: string) => places.find(id)?.name ?? id;
   const title = ({ from, to }: PitakDirection) =>
-    t('pitaks.direction', { from: regionName(from), to: regionName(to) });
+    t('common.route', { from: regionName(from), to: regionName(to) });
   const back = (changed: boolean) => {
     setOpen(null);
     if (changed) reload();

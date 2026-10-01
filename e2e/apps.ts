@@ -10,9 +10,18 @@ export const MINI_APPS = [
     port: 4101,
     welcome: t('common.passenger.welcome'),
     action: t('common.passenger.findTrip'),
+    // G25: the main screen keeps the main action on the Telegram button.
+    mainButton: t('common.passenger.findTrip'),
   },
-  { name: 'driver', port: 4102, welcome: t('common.driver.welcome'), action: t('common.driver.newTrip') },
-  { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications') },
+  {
+    name: 'driver',
+    port: 4102,
+    welcome: t('common.driver.welcome'),
+    // G25: an approved driver publishes from the main button, the list does not repeat it.
+    action: t('home.publish'),
+    mainButton: t('home.publish'),
+  },
+  { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications'), mainButton: null },
 ] as const;
 
 export const TEXT = {
@@ -46,7 +55,7 @@ export const TEXT = {
   reasonPlate: t('drivers.reason.plate_not_readable'),
   approve: t('moderation.approve'),
   wholeRegion: t('places.wholeRegion'),
-  newTrip: t('common.driver.newTrip'),
+  newTrip: t('home.publish'),
   findTrip: t('common.passenger.findTrip'),
   tomorrow: /^Ertaga/,
   tripSeatsTitle: t('market.seats.title'),

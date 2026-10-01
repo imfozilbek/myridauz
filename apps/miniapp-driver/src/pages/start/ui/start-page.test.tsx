@@ -26,9 +26,11 @@ const driver = testClients({
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 
 describe('StartPage', () => {
-  it('opens the main screen with 3 actions for an approved driver', async () => {
+  it('opens the main screen with the main button and the other actions for an approved driver', async () => {
     const { tracked } = renderApp();
-    expect(await screen.findByText('Yangi safar')).toBeTruthy();
+    // «Yangi safar» is the main button «Safar eʼlon qilish» now, not repeated in the list (G25).
+    expect(await screen.findByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
+    expect(screen.queryByText('Yangi safar')).toBeNull();
     for (const action of ['Yoʻlovchilar soʻrovlari', 'Mening safarlarim'])
       expect(screen.getByText(action)).toBeTruthy();
     // The screen view is sent by an effect after the screen is drawn.
@@ -40,7 +42,7 @@ describe('StartPage', () => {
     fireEvent.click(await screen.findByText('Mening safarlarim'));
     expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
-    fireEvent.click(screen.getByText('Yangi safar'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Safar eʼlon qilish' }));
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 

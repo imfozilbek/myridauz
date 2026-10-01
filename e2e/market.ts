@@ -29,7 +29,7 @@ export async function chooseWay(page: Page) {
 // A driver publishes a trip, one question per screen (G07). The test person is a woman: no woman step.
 export async function publishTrip(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
-  await page.getByText(TEXT.newTrip).click();
+  await page.locator('#tg-main-button', { hasText: TEXT.newTrip }).click();
   await chooseRoute(page);
   await shot('2-mode');
   await page.getByText(t('way.trip.mode.both')).click();
@@ -56,7 +56,7 @@ export async function publishTrip(page: Page, shot: Shot = none) {
 
 // A passenger finds trips of tomorrow to Samarqand shahri and filters "ayol bor".
 export async function findTrips(page: Page, shot: Shot = none) {
-  await page.getByText(TEXT.findTrip).click();
+  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
   await expect(page.getByText(t('way.list'))).toBeVisible();
   await shot('1-way');
   await chooseWay(page);

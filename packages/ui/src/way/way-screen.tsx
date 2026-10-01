@@ -23,9 +23,12 @@ import './way.css';
 
 type Props = {
   readonly done: TranslationKey;
+  readonly pick?: 'from' | 'to'; // G25: the main screen asks for a point at once
   readonly onBack: () => void;
   readonly onDone: (way: Way) => void;
 };
+
+type WayFormProps = Props & { readonly directory: PlaceDirectory };
 
 // «Qayerdan / Qayerga» (G24, docs/71): the start and the end over the map. Uses the directory
 // for the districts; without it the screen cannot name a place.
@@ -36,7 +39,7 @@ export function WayScreen(props: Props) {
   return <WayForm {...props} directory={state.directory} />;
 }
 
-function WayForm({ done, onBack, onDone, directory }: Props & { readonly directory: PlaceDirectory }) {
+function WayForm({ done, pick, onBack, onDone, directory }: WayFormProps) {
   useScreenView('way.screen');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -46,7 +49,7 @@ function WayForm({ done, onBack, onDone, directory }: Props & { readonly directo
   const [here, setHere] = useState(false);
   const [mode, setMode] = useState<PickupMode>('both');
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
-  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(null);
+  const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(pick ?? null);
   const [note, setNote] = useState<TranslationKey | null>(null);
   useEffect(() => {
     track({ name: 'way_step', screen: 'way.screen', step: 'opened' });

@@ -35,3 +35,14 @@ export async function requestPosition(): Promise<Point | null> {
     return null;
   }
 }
+
+// Where the person stands, only when they already allowed it (G25): the main screen never asks.
+export async function knownPosition(): Promise<Point | null> {
+  try {
+    if (locationManager.mount.isAvailable() && !locationManager.isMounted())
+      await locationManager.mount({ timeout: CHECK_TIMEOUT_MS });
+    return locationManager.isAccessGranted() ? await requestPosition() : null;
+  } catch {
+    return null;
+  }
+}

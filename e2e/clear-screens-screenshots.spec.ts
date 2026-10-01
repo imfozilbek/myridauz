@@ -35,7 +35,7 @@ test('passenger: a trip without seats says why', async ({ page }) => {
   );
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.getByText(TEXT.findTrip).click();
+  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
   await chooseWay(page);
   await page.getByText(TEXT.tomorrow).click();
   await page.getByText('Bekzod', { exact: false }).click();

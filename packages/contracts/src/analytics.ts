@@ -10,6 +10,8 @@ export const REGISTRATION_STEPS = ['consent', 'name', 'gender', 'phone', 'done']
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
 export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
+// The main screen (G25): a trip of the block, the question card, the last route, the main button.
+const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry'] as const;
 export const TRIP_STEPS = [
   'route',
   'mode',
@@ -96,6 +98,8 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('way_step'), step: z.enum(WAY_STEPS), ...context }),
   // «Yoʻl koʻrsatish» of the driver: which navigator opened the stops (docs/70).
   z.object({ name: z.literal('route_opened'), navigator: z.enum(NAVIGATORS), ...context }),
+  // G25: what the person tapped on the main screen.
+  z.object({ name: z.literal('home_tap'), target: z.enum(HOME_TARGETS), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
 

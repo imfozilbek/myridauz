@@ -47,7 +47,7 @@ test('passenger: the rating on the trip and the reviews', async ({ page }) => {
   await mockFeedback(page);
   const shot = shooter(page, 'rating');
   await open(page, telegramUrl(appUrl(PASSENGER.port)));
-  await page.getByText(TEXT.findTrip).click();
+  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
   await chooseWay(page);
   await page.getByText(TEXT.tomorrow).click();
   await expect(page.getByText('Jasur').first()).toBeVisible();

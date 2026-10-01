@@ -16,7 +16,7 @@ test('driver: main screen and a new trip', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   const shot = shooter(page, 'trip-new');
-  await expect(page.getByText(TEXT.newTrip)).toBeVisible();
+  await expect(page.locator('#tg-main-button', { hasText: TEXT.newTrip })).toBeVisible();
   await shot('1-home');
   await publishTrip(page, shot);
 });
@@ -26,7 +26,7 @@ test('passenger: main screen and the search', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page, 'trip-search');
-  await expect(page.getByText(TEXT.findTrip)).toBeVisible();
+  await expect(page.getByText(TEXT.findTrip).first()).toBeVisible();
   await shot('1-home');
   await findTrips(page, shot);
 });

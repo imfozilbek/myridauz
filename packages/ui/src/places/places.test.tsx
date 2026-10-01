@@ -24,10 +24,15 @@ const LOCATIONS = [
   place('1730401', '1730', 'Fargʻona shahri'),
 ];
 
-function renderRoute(getLocations: LocationsClient['getLocations'], wholeRegion = false) {
+function renderRoute(getLocations: LocationsClient['getLocations'], wholeRegion = false, pick?: 'to') {
   const onDone = vi.fn<(route: Route) => void>();
   const result = renderInShell(
-    <RouteScreen allowWholeRegion={wholeRegion} onBack={() => undefined} onDone={onDone} />,
+    <RouteScreen
+      allowWholeRegion={wholeRegion}
+      {...(pick ? { pick } : {})}
+      onBack={() => undefined}
+      onDone={onDone}
+    />,
     false,
     true,
     { getLocations },
@@ -41,6 +46,12 @@ const choose = async (end: string, ...steps: string[]) => {
 };
 
 describe('RouteScreen (docs/14)', () => {
+  it('opens the list of the end at once when the main screen asks for it (G25)', async () => {
+    renderRoute(ready, false, 'to');
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    expect(screen.getByText('Fargʻona viloyati')).toBeTruthy();
+  });
+
   it('picks a region by photo, then a district', async () => {
     const { onDone } = renderRoute(ready);
     await choose('Qayerdan', 'Toshkent shahri', 'Chilonzor');

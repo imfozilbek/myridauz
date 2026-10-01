@@ -7,14 +7,16 @@ const INIT_DATA = new URLSearchParams({
   signature: 'test',
   hash: 'test',
 }).toString();
-const LAUNCH = new URLSearchParams({
-  tgWebAppPlatform: 'ios',
-  tgWebAppVersion: '9.0',
-  tgWebAppThemeParams: '{}',
-  tgWebAppData: INIT_DATA,
-}).toString();
+const launch = (platform: 'android' | 'ios') =>
+  new URLSearchParams({
+    tgWebAppPlatform: platform,
+    tgWebAppVersion: '9.0',
+    tgWebAppThemeParams: '{}',
+    tgWebAppData: INIT_DATA,
+  }).toString();
 
-export const telegramUrl = (url: string) => `${url}#${LAUNCH}`;
+// Most people in Uzbekistan use Android: the main screens are shot on both (lesson 52).
+export const telegramUrl = (url: string, platform: 'android' | 'ios' = 'ios') => `${url}#${launch(platform)}`;
 
 // A small Telegram client: answers SDK requests and draws the native header and main button,
 // so tests and screenshots see what a person sees inside Telegram.

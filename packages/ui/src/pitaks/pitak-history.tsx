@@ -37,7 +37,7 @@ export function PitakHistory({ pitaks, directory, onBack }: Props) {
     const [kind, rest = ''] = subject.split(':');
     if (kind === 'pitak') return pitakName(rest);
     const [from = '', to = ''] = rest.split('>');
-    return t('pitaks.direction', { from: regionName(from), to: regionName(to) });
+    return t('common.route', { from: regionName(from), to: regionName(to) });
   };
   const stateText = ({ subject, before, after }: PitakChange) => {
     if (after === null) return t('pitaks.removed');
