@@ -21,7 +21,7 @@ describe('findViolations', () => {
     ]);
   });
 
-  it('finds the brand as a word, not inside another word of the text (G27: «tashqarida»)', () => {
+  it('finds the brand as a word, not inside another word of the text (G27)', () => {
     expect(findViolations('packages/i18n/locales/x.json', '"a": "Acme bilan"', BRANDS)).toHaveLength(1);
     expect(findViolations('packages/i18n/locales/x.json', '"a": "acme.uz"', BRANDS)).toHaveLength(1);
     expect(findViolations('packages/i18n/locales/x.json', '"a": "tashqacmeda"', BRANDS)).toEqual([]);
