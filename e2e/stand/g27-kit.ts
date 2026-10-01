@@ -62,7 +62,7 @@ const TASHKENT = 5 * HOUR;
 const DAY = 24 * HOUR;
 export const tomorrow = () => tashkentDate(Date.now() + DAY);
 // 09:00 in Tashkent on that day.
-export const nineOn = (date: string) => Date.parse(`${date}T09:00:00Z`) - TASHKENT;
+const nineOn = (date: string) => Date.parse(`${date}T09:00:00Z`) - TASHKENT;
 
 export async function askRide(passenger: Person, date = tomorrow()) {
   const market = createMarketClient(await signedAs('passenger', passenger));
