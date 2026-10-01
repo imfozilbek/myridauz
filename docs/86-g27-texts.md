@@ -1,0 +1,51 @@
+# 86. G27: новые тексты на согласие владельца
+
+> **Кратко:** находки G27, которые нельзя закрыть без нового текста. Ниже черновики на узбекском (латиница, `docs/25`). Владелец отвечает по номеру: «да», «нет» или свой вариант. После «да» текст проверяет носитель, потом Claude делает экран, тест и урок. Код уже готов там, где текст не нужен (`docs/83`).
+
+## Как отвечать
+
+- Одно сообщение: номера через запятую. Пример: «T1 … T9 да, T12 нет».
+- Свой вариант: «T5: …».
+- Без ответа ничего не меняется: человек видит то же, что сейчас.
+
+## Ошибки без текста (N04)
+
+Сейчас человек видит общее «Birozdan keyin qayta urinib koʻring». Это неправда: повтор не поможет.
+
+| № | Код | Когда бывает | Черновик |
+|---|---|---|---|
+| T1 | `bookings.wrong_mode` | Способ посадки не тот, что у поездки | Bu safarda bunday olib ketish yoʻq. Boshqa usulni tanlang. |
+| T2 | `bookings.outside_area` | Точка посадки вне района поездки | Bu joy safar hududidan tashqarida. Yaqinroq joyni tanlang. |
+| T3 | `favorites.too_many` | 50 сохранённых водителей | Saqlangan haydovchilar soni chegaraga yetdi. Keraksizini oʻchiring. |
+| T4 | `shares.wrong_status` | Делиться поездкой уже нельзя | Bu safarni endi ulashib boʻlmaydi. |
+| T5 | `users.avatar_too_large` | Фото профиля слишком большое | Rasm juda katta. Boshqa rasmni tanlang. |
+| T6 | `drivers.photo_too_large` | Фото машины слишком большое | Rasm juda katta. Boshqa rasmni tanlang. |
+| T7 | `drivers.incomplete` | Заявка водителя без нужных фото | Arizada hamma rasmlar boʻlishi kerak. Yetishmayotganini qoʻshing. |
+| T8 | `trips.wrong_status` | Поездка уже изменилась | Bu safar allaqachon oʻzgargan. Roʻyxatni yangilang. |
+| T9 | `calls.unavailable` | Звонки временно не работают | Qoʻngʻiroq hozir ishlamayapti. Chatda yozing. |
+
+## Сообщение бота (N03)
+
+| № | Когда | Черновик |
+|---|---|---|
+| T10 | Бронь истекла: водитель не ответил вовремя | Haydovchi oʻz vaqtida javob bermadi, soʻrovingiz bekor qilindi. Boshqa safarni tanlang. Кнопка «Ochish» (поиск этого маршрута) |
+
+## Подсказки на экранах (U1, U2, U3, U5, U7)
+
+| № | Экран | Черновик |
+|---|---|---|
+| T11 | Приветствие попутчика (U1), 3 строки | Haydovchilar tekshirilgan. · Yoʻl xarajatini birga boʻlamiz. · Telefon raqamingiz hech kimga koʻrinmaydi. |
+| T12 | Приветствие водителя (U1), 3 строки | Yoʻl xarajatingiz qaytadi. · Boshlash uchun bonus beramiz. · Telefon raqamingiz hech kimga koʻrinmaydi. |
+| T13 | Согласие (U2), одна строка | Raqamingiz hech kimga koʻrinmaydi. |
+| T14 | Профиль, фото (U3) | Rasm bilan haydovchi tezroq tasdiqlaydi. |
+| T15 | Заявка попутчика (U5) | Haydovchilar vaqt va narx taklif qiladi. |
+| T16 | Запросы попутчиков у водителя (U5) | Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx. |
+| T17 | Админка открыта не командой (U7) | Bu ilova {brand} jamoasi uchun. Safar uchun yoʻlovchi yoki haydovchi botini oching. |
+
+## Решения без текста
+
+| № | Находка | Совет |
+|---|---|---|
+| R1 | N07: человек заблокировал бота, сообщения теряются | Отмечать «бот заблокирован» и не слать до `/start`. Делать после запуска. |
+| R2 | N12: геолокация в боте без обработчика | Не делать: всё делается в Mini App. |
+| R3 | N13: пополнения кошелька в приложении нет | Цель G17 (`docs/12`), до неё бонус добавляет владелец. |
