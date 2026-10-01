@@ -1,10 +1,10 @@
 import { expect } from '@playwright/test';
 import { createBookingsClient, createMarketClient, createWalletClient } from '@platform/api-client';
 import { tashkentDate, type Booking, type OfferAction } from '@platform/contracts';
-import { CHILONZOR } from './market-kit';
+import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
-import { botMessages } from './stand-tools';
+import { botMessages, standSql } from './stand-tools';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 
 // The tools of the G27 scenarios (docs/76 … 83): the route Toshkent → Samarqand, the error code a
@@ -80,3 +80,16 @@ export async function offerOn(driver: Person, requestId: string, date = tomorrow
 }
 export const answerOffer = async (passenger: Person, offerId: string, action: OfferAction) =>
   createBookingsClient(await signedAs('passenger', passenger)).answerOffer(offerId, action);
+
+// A trip of tomorrow with one confirmed seat: the start of the scenarios after a booking.
+export async function confirmedSeat(driver: Person, passenger: Person) {
+  const trip = await publishTrip(driver, CHILONZOR, SAMARQAND, 'door');
+  const seat = await book(passenger, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
+  return { trip, seat: await answer(driver, seat.id, 'confirm') };
+}
+// Moves a trip in time on the stand: it left, or it leaves soon.
+export const moveTrip = (tripId: string, departAt: number, endsAt: number) =>
+  standSql(`UPDATE trips SET depart_at = ${departAt}, ends_at = ${endsAt} WHERE id = '${tripId}'`);
+// A seat as its driver sees it: with the commission, and after the passenger left Rida.
+export const driverSeatOf = async (driver: Person, id: string): Promise<Booking | undefined> =>
+  (await createBookingsClient(await signedAs('driver', driver)).driverBookings()).find((b) => b.id === id);

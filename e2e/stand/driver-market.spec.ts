@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { createBookingsClient, createMarketClient } from '@platform/api-client';
+import { createMarketClient } from '@platform/api-client';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import {
   askRide,
   bookingOf,
+  driverSeatOf,
   MINUTE,
   offerOn,
   outcome,
@@ -25,9 +26,7 @@ const door = { seats: 1, mode: 'door' as const, ...TO_SAMARQAND };
 const WELCOME_BONUS = 500_000;
 const marketOf = async (driver: Person) => createMarketClient(await signedAs('driver', driver));
 const commissionOf = async (driver: Person, bookingId: string) =>
-  (await createBookingsClient(await signedAs('driver', driver)).driverBookings()).find(
-    (b) => b.id === bookingId,
-  )?.commission ?? 0;
+  (await driverSeatOf(driver, bookingId))?.commission ?? 0;
 
 test('D22 … D25. a trip in the past, too far, with too many seats or a price out of bounds', async () => {
   const market = await marketOf(ULUGBEK);

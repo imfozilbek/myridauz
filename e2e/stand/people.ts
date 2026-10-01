@@ -33,6 +33,9 @@ export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
 export const SEVARA: Person = { id: 900234, name: 'Sevara', phone: '998901110234' };
 export const TIMUR: Person = { id: 900235, name: 'Timur', phone: '998901110235' };
+// Leave Rida in a scenario: one deletes the account, one is blocked (docs/81 F07, F08).
+export const LAZIZA: Person = { id: 900236, name: 'Laziza', phone: '998901110236' };
+export const DIYORA: Person = { id: 900237, name: 'Diyora', phone: '998901110237' };
 
 type Driver = { readonly person: Person; readonly plate: string; readonly gender: Gender };
 export const DRIVERS: readonly Driver[] = [
@@ -57,6 +60,8 @@ export const PASSENGERS: readonly Person[] = [
   FERUZA,
   MALIKA,
   SEVARA,
+  LAZIZA,
+  DIYORA,
 ];
 // Men among the passengers: «Mashinada ayol bor» is about them (docs/06).
 export const MEN: readonly Person[] = [TIMUR];
