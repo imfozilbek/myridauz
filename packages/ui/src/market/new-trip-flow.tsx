@@ -21,9 +21,12 @@ type Step = 'route' | 'mode' | 'date' | 'time' | 'seats' | 'price' | 'woman' | '
 export function NewTripFlow({
   onBack,
   route: known,
+  pick,
 }: {
   readonly onBack: () => void;
   readonly route?: Route;
+  // «Qayerga ketyapsiz?» of the main screen opens the list of the end at once (G25).
+  readonly pick?: 'from' | 'to';
 }) {
   const { track } = useAnalytics();
   const { market } = useApiClients();
@@ -52,6 +55,7 @@ export function NewTripFlow({
       return (
         <RouteScreen
           allowWholeRegion={false}
+          {...(pick && !route ? { pick } : {})}
           onBack={onBack}
           onDone={(value) => next('route', { route: value }, 'mode')}
         />

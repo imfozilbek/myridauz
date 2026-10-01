@@ -25,7 +25,9 @@ afterEach(cleanup);
 describe('StartFlow', () => {
   it('does not repeat the action the main button already does (G25)', () => {
     renderInShell(<StartFlow actions={ACTIONS} covered="find_trip" />);
-    expect(screen.queryByText('Safar topish')).toBeNull();
+    // Only the main button says it: no row of the list repeats it.
+    expect(screen.getAllByText('Safar topish')).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'Safar topish' }).tagName).toBe('BUTTON');
     expect(screen.getByText('Mening safarlarim')).toBeTruthy();
   });
 

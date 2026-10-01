@@ -41,16 +41,20 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
     const { busy, run } = useOneAtATime(onClick);
+    // Shown once and hidden on leave: a new render only changes the text, the button never blinks.
     useEffect(() => {
       if (!inTelegram) return undefined;
-      const color = native.colored ? { backgroundColor: colors.brandStrong, textColor: colors.bg } : {};
-      native.setParams({ text, isVisible: true, ...color });
       const off = native.onClick(run);
       return () => {
         off();
         native.setParams({ isVisible: false });
       };
-    }, [inTelegram, text, run, colors]);
+    }, [inTelegram, run]);
+    useEffect(() => {
+      if (!inTelegram) return;
+      const color = native.colored ? { backgroundColor: colors.brandStrong, textColor: colors.bg } : {};
+      native.setParams({ text, isVisible: true, ...color });
+    }, [inTelegram, text, colors]);
     useEffect(() => {
       if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy });
     }, [inTelegram, busy]);

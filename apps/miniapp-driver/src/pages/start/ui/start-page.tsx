@@ -16,7 +16,7 @@ const ACTIONS: readonly StartAction[] = [
     id: 'new_trip',
     icon: 'newTrip',
     tone: 'brand',
-    labelKey: 'common.driver.newTrip',
+    labelKey: 'home.publish',
     hintKey: 'common.driver.newTripHint',
     Screen: NewTripFlow,
   },

@@ -23,6 +23,8 @@ type RouteScreenProps = {
   readonly allowWholeRegion: boolean;
   readonly onBack: () => void;
   readonly onDone: (route: Route) => void;
+  // From the main screen: the list of one end opens at once (G25).
+  readonly pick?: 'from' | 'to';
 };
 
 // "From" and "to" of a trip or a search. A trip inside one city is refused right away (docs/14).
@@ -38,11 +40,12 @@ function RouteForm({
   allowWholeRegion,
   onBack,
   onDone,
+  pick,
 }: RouteScreenProps & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   const [from, setFrom] = useState<Location | null>(null);
   const [to, setTo] = useState<Location | null>(null);
-  const [picking, setPicking] = useState<'from' | 'to' | null>(null);
+  const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
   const [error, setError] = useState<RouteError | null>(null);
   const choose = useCallback(
     (place: Location) => {

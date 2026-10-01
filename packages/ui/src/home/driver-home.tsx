@@ -1,4 +1,5 @@
-import { MY_TRIP_LINK } from '@platform/contracts';
+import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
+import { useChevron } from '../chevron';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -8,89 +9,95 @@ import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
-import { MainButton } from '../telegram/bottom-button';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
-import { lastRoute, nextTrips } from './home-items';
+import { lastRoute, nextTrips, type DriverItem } from './home-items';
 import { useHomeTap } from './use-home-tap';
 
 // The main screen of a driver (G25): the nearest trips with their new requests, or «Qayerga
-// ketyapsiz?» with the last route; «Safar eʼlon qilish» is the main button once the driver is approved.
+// ketyapsiz?» with the last route. «Safar eʼlon qilish» is the main button of the start flow;
+// a driver on the check is not invited to publish yet (the note above says why).
 export function DriverHome({ go }: { readonly go: HomeGo }) {
   const { t } = useI18n();
   const { market, bookings } = useApiClients();
   const { value, failed, reload } = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]));
-  const [state] = useDirectory();
+  const [places, retryPlaces] = useDirectory();
   const pending = usePending();
   const tap = useHomeTap();
-  const main = pending ? null : (
-    <MainButton text={t('home.publish')} onClick={tap('main_button', () => go('new_trip'))} />
-  );
-  if (failed || !value || state.status !== 'ready')
-    return (
-      <>
-        {failed ? <HomeFailed onRetry={reload} /> : <HomeLoading />}
-        {main}
-      </>
-    );
+  const retry = () => {
+    if (failed) reload();
+    if (places.status === 'error') retryPlaces();
+  };
+  if (failed) return <HomeFailed onRetry={retry} />;
+  if (!value) return <HomeLoading lines={[false]} />;
   const [trips, requests] = value;
   const shown = nextTrips(trips, requests);
-  const rows = shown.items.map(({ trip, requests: count }) => ({
-    id: trip.id,
-    from: trip.from,
-    to: trip.to,
-    departAt: trip.departAt,
-    detail: count > 0 ? t('home.requests', { count: String(count) }) : t(`market.status.${trip.status}`),
-    count,
-  }));
+  const last = lastRoute(trips);
+  if (shown.length === 0 && pending) return null;
+  // The names of the places come from the directory: rows with places wait for it.
+  if (shown.length > 0 || last) {
+    if (places.status === 'error') return <HomeFailed onRetry={retry} />;
+    if (places.status === 'loading') return <HomeLoading lines={shown.map(() => true)} />;
+  }
+  const directory = places.status === 'ready' ? places.directory : null;
+  const detail = ({ trip, requests: count }: DriverItem) => {
+    if (count > 0) return t('home.requests', { count: String(count) });
+    if (trip.status === 'full') return t('market.status.full');
+    return t('market.trip.seats', { count: String(trip.seatsLeft) });
+  };
+  if (shown.length > 0 && directory)
+    return (
+      <HomeTrips
+        rows={shown.map((item) => ({
+          id: item.trip.id,
+          from: item.trip.from,
+          to: item.trip.to,
+          departAt: item.trip.departAt,
+          detail: detail(item),
+          done: item.trip.status === 'full',
+          count: item.requests,
+        }))}
+        directory={directory}
+        onOpen={(id) => tap('item', () => go('my_trips', { link: { name: MY_TRIP_LINK, id } }))()}
+      />
+    );
   return (
-    <>
-      {rows.length > 0 ? (
-        <HomeTrips
-          rows={rows}
-          more={shown.more}
-          directory={state.directory}
-          onOpen={(id) => tap('item', () => go('my_trips', { link: { name: MY_TRIP_LINK, id } }))()}
-          onAll={tap('all', () => go('my_trips'))}
-        />
-      ) : (
-        <AskTrip
-          last={lastRoute(trips)}
-          directory={state.directory}
-          onNew={tap('card', () => go('new_trip'))}
-          onLast={(route) => tap('last_route', () => go('new_trip', { route }))()}
-        />
-      )}
-      {main}
-    </>
+    <AskTrip
+      last={last}
+      directory={directory}
+      onNew={tap('card', () => go('new_trip', { pick: 'to' }))}
+      onLast={(route) => tap('last_route', () => go('new_trip', { route }))()}
+    />
   );
 }
 
-type Ids = { readonly from: string; readonly to: string };
 type AskProps = {
-  readonly last: Ids | null;
-  readonly directory: PlaceDirectory;
+  readonly last: Pick<Trip, 'from' | 'to'> | null;
+  readonly directory: PlaceDirectory | null;
   readonly onNew: () => void;
   readonly onLast: (route: NonNullable<Launch['route']>) => void;
 };
 
-// «Qayerga ketyapsiz?» and, for a driver who drove before, the last route ready in one tap.
+// «Qayerga ketyapsiz?» opens the list of the end; for a driver who drove before, the last route.
 function AskTrip({ last, directory, onNew, onLast }: AskProps) {
   const { t } = useI18n();
-  const from = last ? directory.find(last.from) : undefined;
-  const to = last ? directory.find(last.to) : undefined;
+  const chevron = useChevron();
+  const from = last && directory?.find(last.from);
+  const to = last && directory?.find(last.to);
   return (
-    <Section header={t('home.publish')}>
-      <Cell before={<IconTile name="destination" tone="accent" />} onClick={onNew}>
+    <Section header={t('places.route')}>
+      <Cell before={<IconTile name="destination" tone="accent" />} after={chevron()} onClick={onNew}>
         {t('home.driver.question')}
       </Cell>
       {from && to ? (
         <Cell
+          multiline
           before={<IconTile name="history" />}
           subtitle={t('home.driver.last')}
+          after={chevron()}
           onClick={() => onLast({ from, to })}
         >
-          {`${from.name} → ${to.name}`}
+          {t('common.route', { from: from.name, to: to.name })}
         </Cell>
       ) : null}
     </Section>

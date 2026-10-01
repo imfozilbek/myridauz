@@ -2,7 +2,6 @@
   "title": "Pitaklar",
   "hint": "Har bir yoʻnalishning asosiy pitagi",
   "directions": "Yoʻnalishlar",
-  "direction": "{from} → {to}",
   "none": "Pitak yoʻq",
   "all": "Barcha pitaklar",
   "add": "Pitak qoʻshish",

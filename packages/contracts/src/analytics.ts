@@ -11,7 +11,7 @@ export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
 export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 // The main screen (G25): a trip of the block, the question card, the last route, the main button.
-const HOME_TARGETS = ['item', 'all', 'card', 'last_route', 'main_button'] as const;
+const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry'] as const;
 export const TRIP_STEPS = [
   'route',
   'mode',

@@ -38,6 +38,8 @@
   "trip.seats": "{count} ta boʻsh joy",
   "trip.km": "≈ {km} km",
   "trip.when": "{date}, soat {time}",
+  "trip.whenToday": "Bugun, soat {time}",
+  "trip.whenTomorrow": "Ertaga, soat {time}",
   "trip.driver": "Haydovchi",
   "trip.car": "Mashina",
   "trip.book": "Joy band qilish",

@@ -27,10 +27,8 @@ describe('the trips of the main screen (G25)', () => {
       booked('gone', tripAt('t4', 1), 'cancelled_by_driver'),
       booked('done', tripAt('t5', 0), 'completed'),
     ];
-    const shown = nextBookings(list);
-    expect(shown.items.map((item) => item.id)).toEqual(['soon', 'mid']);
-    expect(shown.more).toBe(true);
-    expect(nextBookings([])).toEqual({ items: [], more: false });
+    expect(nextBookings(list).map((item) => item.id)).toEqual(['soon', 'mid']);
+    expect(nextBookings([])).toEqual([]);
   });
 
   it('shows the two nearest live trips of a driver with their new requests', () => {
@@ -40,13 +38,10 @@ describe('the trips of the main screen (G25)', () => {
       booked('r2', tripAt('a', 10), 'requested'),
       booked('ok', tripAt('a', 10), 'confirmed'),
     ];
-    expect(nextTrips(trips, bookings)).toEqual({
-      items: [
-        { trip: trips[1], requests: 0 },
-        { trip: trips[0], requests: 2 },
-      ],
-      more: true,
-    });
+    expect(nextTrips(trips, bookings)).toEqual([
+      { trip: trips[1], requests: 0 },
+      { trip: trips[0], requests: 2 },
+    ]);
   });
 
   it('remembers the route of the last trip of a driver', () => {

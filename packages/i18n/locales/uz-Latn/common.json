@@ -14,7 +14,6 @@
   "passenger.leaveRequest": "Soʻrov qoldirish",
   "passenger.leaveRequestHint": "Haydovchilar sizni topadi",
   "driver.welcome": "Safaringizga yoʻlovchi toping",
-  "driver.newTrip": "Yangi safar",
   "driver.newTripHint": "Yoʻnalish, vaqt va boʻsh joylar",
   "driver.passengerRequests": "Yoʻlovchilar soʻrovlari",
   "driver.passengerRequestsHint": "Yoʻnalishingizdagi yoʻlovchilar",
@@ -35,5 +34,6 @@
   "format.decimal": ",",
   "admin.trips": "Safarlar",
   "admin.tripsHint": "Kechadan boshlab barcha safarlar",
-  "admin.tripsEmpty": "Hozircha safar yoʻq"
+  "admin.tripsEmpty": "Hozircha safar yoʻq",
+  "route": "{from} → {to}"
 }

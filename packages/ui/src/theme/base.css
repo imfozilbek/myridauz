@@ -26,3 +26,16 @@ textarea {
     var(--tg-viewport-safe-area-inset-bottom, 0px) + var(--tg-viewport-content-safe-area-inset-bottom, 0px)
   );
 }
+
+/* A row reached by the keyboard shows where it is; a tap shows nothing extra (docs/19). */
+.app-shell [role='button']:focus-visible {
+  outline: 2px solid var(--tgui--link_color);
+  outline-offset: -2px;
+}
+
+/* A counter and the iOS chevron side by side, like the unread count in Telegram. */
+.cell-after {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

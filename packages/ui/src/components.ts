@@ -2,13 +2,13 @@
 export {
   Badge,
   Button,
-  Cell,
   Input,
   List,
   Modal,
   Multiselectable,
-  Section,
   SegmentedControl,
   Skeleton,
   Switch,
 } from '@telegram-apps/telegram-ui';
+export { Cell } from './cell';
+export { Section } from './section';
