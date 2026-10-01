@@ -79,7 +79,10 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       PASSENGER,
       json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000, ...REQUEST_WAY }),
     );
-    expect(String(sentTo(DRIVER)[0]?.body.text)).toContain('Yoʻnalishingizda yangi soʻrov');
+    const [told] = sentTo(DRIVER);
+    expect(String(told?.body.text)).toContain('Yoʻnalishingizda yangi soʻrov');
+    // The button opens the requests of that route and day, not the main screen (docs/83 N08).
+    expect(JSON.stringify(told?.body.reply_markup)).toContain(`?requests=1726273_1718401_${route.date}`);
     const mine = await read<{ subscriptions: { id: string }[] }>(
       call('/driver/subscriptions', DRIVER, { app: 'driver' }),
     );
