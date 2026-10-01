@@ -13,7 +13,7 @@ import { contactOf, signedAs, type Person } from './stand-kit';
 // The people of the scenarios, made through the API of the stand like the apps make them (docs/75).
 const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white', seats: 4 } as const;
 // Any photo does on the stand: a region picture of the brand stands for a face and a car.
-const PHOTO = new Blob([readFileSync(`brands/${loadBrand().id}/public/regions/1726.webp`)], {
+export const PHOTO = new Blob([readFileSync(`brands/${loadBrand().id}/public/regions/1726.webp`)], {
   type: 'image/webp',
 });
 const ALREADY = 'users.already_registered';
