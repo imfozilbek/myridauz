@@ -127,7 +127,7 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await openOwnTrip(page);
   const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
   await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
-  await expect(page.getByText(/\+3 km/u)).toBeVisible();
+  await expect(page.getByText(/\+3\skm/u)).toBeVisible();
   await shot(page, '6-requests');
   await page.getByText(t('way.map.title')).click();
   await drawn(page);

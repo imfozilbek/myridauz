@@ -51,7 +51,7 @@
   "map.text": "Qayerdan va qayerga ketishingizni tanlang: xaritada yoʻnalish, masofa va bir joy narxi.",
   "map.swap": "Yoʻnalishni almashtirish",
   "map.price": "Bir joy",
-  "map.approx": "≈ {value}",
+  "map.approx": "≈\u00a0{value}",
   "map.priceHint": "Tavsiya etilgan narx. Aniq narxni haydovchi belgilaydi.",
   "map.seats": "Haydovchi {count} yoʻlovchi olsa",
   "map.less": "Kamroq yoʻlovchi",

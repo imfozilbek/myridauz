@@ -2,7 +2,7 @@ import type { Channel, Location } from '@platform/contracts';
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Cell, Input, List, Multiselectable, Section } from '../components';
+import { Cell, Field, List, Multiselectable, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -45,16 +45,14 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
     >
       <BackButton onClick={() => onBack(false)} />
       <List>
-        <Section>
-          {channel ? null : (
-            <Input
-              header={t('channels.username')}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          )}
-          <Input header={t('channels.name')} value={title} onChange={(e) => setTitle(e.target.value)} />
-        </Section>
+        {channel ? null : (
+          <Field
+            label={t('channels.username')}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        )}
+        <Field label={t('channels.name')} value={title} onChange={(e) => setTitle(e.target.value)} />
         <Section header={t('channels.placesTitle')} footer={t('channels.placesHint')}>
           {chosen.map((place) => (
             <Cell

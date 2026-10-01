@@ -5,7 +5,7 @@
   "camera.denied": "Kamera ochilmadi. Telefon kamerasi bilan oling.",
   "camera.native": "Telefon kamerasini ochish",
   "retry": "Qayta urinish",
-  "money": "{amount} soʻm",
+  "money": "{amount}\u00a0soʻm",
   "language": "Til",
   "soon": "Bu boʻlim tez orada ishga tushadi.",
   "passenger.welcome": "Safar toping",

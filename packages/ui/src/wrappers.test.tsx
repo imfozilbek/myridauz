@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadBrand } from '@platform/brands';
 import { StepLayout } from './account/step-layout';
-import { Cell, Section } from './components';
+import { Cell, Field, Section } from './components';
 import { IconTile } from './icon-tile';
 import { renderInShell } from './test-shell';
 
@@ -83,5 +83,13 @@ describe('StepLayout', () => {
     const scroll = vi.spyOn(window, 'scrollTo');
     renderInShell(<StepLayout icon="wallet" title="Joyni tasdiqlaysizmi?" />);
     expect(scroll).toHaveBeenCalledWith(0, 0);
+  });
+});
+
+describe('Field', () => {
+  it('shows its label on every platform as a section header and names the input (G27)', () => {
+    show(<Field label="Bir km narxi" value="300" onChange={() => undefined} />);
+    expect(screen.getByLabelText('Bir km narxi')).toHaveProperty('value', '300');
+    expect(screen.getByText('Bir km narxi').closest('label')).toBeNull();
   });
 });

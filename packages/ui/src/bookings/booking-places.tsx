@@ -7,9 +7,12 @@ import { openExternal } from '../telegram/feedback';
 import { useNameText } from '../way/way-end';
 import { mapUrl } from './map-link';
 
+type Props = { readonly booking: Booking; readonly side: 'passenger' | 'driver' };
+
 // The way and the points of a booking (G24, docs/70): fixed at the booking. The driver sees the
-// area and the extra km until the confirmation, then the point that opens in a map.
-export function BookingPlaces({ booking }: { readonly booking: Booking }) {
+// area and the extra km until the confirmation, then the point that opens in a map. The rule
+// about changing the points is told to the passenger only: it is their booking (G27).
+export function BookingPlaces({ booking, side }: Props) {
   const { t } = useI18n();
   const nameText = useNameText();
   const nameOf = (name: PlaceName | null) => nameText(name, '');
@@ -32,7 +35,7 @@ export function BookingPlaces({ booking }: { readonly booking: Booking }) {
   const { pitak, pickup, dropoff } = booking;
   if (!pitak && !pickup && !dropoff) return null;
   return (
-    <Section footer={t('way.book.fixed')}>
+    <Section {...(side === 'passenger' ? { footer: t('way.book.fixed') } : {})}>
       {pitak ? cell(t('way.book.pickup'), 'origin', pitak.name, pitak.point) : null}
       {!pitak && pickup ? cell(t('way.book.pickup'), 'origin', described(pickup), pickup.point) : null}
       {dropoff ? cell(t('way.book.dropoff'), 'destination', described(dropoff), dropoff.point) : null}

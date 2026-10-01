@@ -61,6 +61,15 @@ describe('RouteScreen (docs/14)', () => {
     expect(onDone.mock.calls[0]?.[0]).toMatchObject({ from: { id: '1726269' }, to: { id: '1730401' } });
   });
 
+  it('opens the form at the top after a long list, «Qayerdan» in sight (docs/83 N22)', async () => {
+    renderRoute(ready);
+    await choose('Qayerdan');
+    const scroll = vi.spyOn(window, 'scrollTo');
+    await choose('Toshkent shahri', 'Chilonzor');
+    expect(await screen.findByText('Davom etish')).toBeTruthy();
+    expect(scroll).toHaveBeenCalledWith(0, 0);
+  });
+
   it('refuses a trip inside Toshkent shahri right after "to"', async () => {
     const { onDone } = renderRoute(ready);
     await choose('Qayerdan', 'Toshkent shahri', 'Chilonzor');

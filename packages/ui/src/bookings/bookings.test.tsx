@@ -35,6 +35,7 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
     await tap('Jasur');
     expect(screen.getByText('Davlat raqami')).toBeTruthy();
+    expect(screen.getByText(/^Bron qilingandan keyin/)).toBeTruthy();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     // The points fixed at the booking open in a map (docs/70).
     await tap('Olib ketish joyi');

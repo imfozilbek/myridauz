@@ -14,7 +14,7 @@ describe('createI18n', () => {
   });
 
   it('formats money with a space between thousands', () => {
-    expect(i18n.formatMoney(150000)).toBe(`150${NBSP}000 soʻm`);
+    expect(i18n.formatMoney(150000)).toBe(`150${NBSP}000${NBSP}soʻm`);
   });
 
   it('formats date and time in Uzbekistan time', () => {

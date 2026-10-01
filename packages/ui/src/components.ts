@@ -11,4 +11,5 @@ export {
   Switch,
 } from '@telegram-apps/telegram-ui';
 export { Cell } from './cell';
+export { Field } from './field';
 export { Section } from './section';

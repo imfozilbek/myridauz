@@ -2,7 +2,7 @@ import { BALANCES, type Adjustment, type BalanceKind } from '@platform/contracts
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
@@ -40,23 +40,18 @@ export function AdjustForm({ error, onBack, onSave }: Props) {
             </Cell>
           ))}
         </Section>
-        {/* The labels are section headers: they wrap, a field header is cut on a 360 px phone (G27). */}
-        <Section header={t('wallet.adjust.amount')}>
-          <Input
-            aria-label={t('wallet.adjust.amount')}
-            type="number"
-            inputMode="numeric"
-            value={amount}
-            onChange={(event) => setAmount(event.target.value)}
-          />
-        </Section>
-        <Section header={t('wallet.adjust.reason')}>
-          <Input
-            aria-label={t('wallet.adjust.reason')}
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-          />
-        </Section>
+        <Field
+          label={t('wallet.adjust.amount')}
+          type="number"
+          inputMode="numeric"
+          value={amount}
+          onChange={(event) => setAmount(event.target.value)}
+        />
+        <Field
+          label={t('wallet.adjust.reason')}
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+        />
       </List>
       {error ? <Text className="step-error">{error}</Text> : null}
       {ready ? (

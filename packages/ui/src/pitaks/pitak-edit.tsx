@@ -3,7 +3,7 @@ import type { TranslationKey } from '@platform/i18n';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -65,8 +65,8 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
     <StepLayout icon="pickup" title={pitak ? pitak.name : t('pitaks.add')}>
       <BackButton onClick={() => onBack(false)} />
       <List>
+        <Field label={t('pitaks.name')} value={name} onChange={(e) => setName(e.target.value)} />
         <Section>
-          <Input header={t('pitaks.name')} value={name} onChange={(e) => setName(e.target.value)} />
           <Cell
             before={<Icon name="pickup" />}
             subtitle={where ?? (point ? region : t('pitaks.pointNone'))}

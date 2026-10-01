@@ -2,7 +2,7 @@ import { pricingVariablesSchema, type PricingVariables } from '@platform/contrac
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Input, List, Section } from '../components';
+import { Field, List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
@@ -37,22 +37,20 @@ export function VariablesEditor({ current, onBack, onPreview }: VariablesEditorP
     <StepLayout icon="statistics" title={t('pricing.editTitle')} hint={t('pricing.editHint')}>
       <BackButton onClick={onBack} />
       <List>
-        <Section>
-          {FIELDS.map((field) => (
-            <Input
-              key={field}
-              header={t(`pricing.${field}`)}
-              type="number"
-              inputMode="numeric"
-              value={values[field] ?? ''}
-              status={invalid ? 'error' : 'default'}
-              onChange={(event) => {
-                setValues((all) => ({ ...all, [field]: event.target.value }));
-                setInvalid(false);
-              }}
-            />
-          ))}
-        </Section>
+        {FIELDS.map((field) => (
+          <Field
+            key={field}
+            label={t(`pricing.${field}`)}
+            type="number"
+            inputMode="numeric"
+            value={values[field] ?? ''}
+            status={invalid ? 'error' : 'default'}
+            onChange={(event) => {
+              setValues((all) => ({ ...all, [field]: event.target.value }));
+              setInvalid(false);
+            }}
+          />
+        ))}
       </List>
       {invalid ? <Text className="step-error">{t('pricing.invalid')}</Text> : null}
       <MainButton text={t('pricing.preview')} onClick={submit} />

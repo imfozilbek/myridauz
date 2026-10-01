@@ -67,10 +67,10 @@ describe('landing script (docs/59)', () => {
     expect(asked).toEqual([`https://api.${brand.domain}/public/price?from=1726273&to=1718401`]);
     expect(text('[data-name=from]')).toBe('Toshkent');
     expect(text('[data-name=to]')).toBe('Samarqand');
-    expect(text('[data-km-value]')).toBe('≈ 300 km');
-    expect(text('[data-price]')).toMatch(/^≈ 90\s000 soʻm$/u);
+    expect(text('[data-km-value]')).toMatch(/^≈\s300\skm$/u);
+    expect(text('[data-price]')).toMatch(/^≈\s90\s000\ssoʻm$/u);
     click('[data-more]');
-    expect(text('[data-total]')).toMatch(/^≈ 360\s000 soʻm$/u);
+    expect(text('[data-total]')).toMatch(/^≈\s360\s000\ssoʻm$/u);
     click('[data-less]');
     click('[data-less]');
     expect(text('[data-seats-label]')).toContain('2');

@@ -19,7 +19,7 @@
   "directionsHint": "Qoʻlda qoʻyilgan narx formuladan ustun.",
   "formula": "Formula: {price}",
   "manual": "Qoʻlda: {price}",
-  "km": "≈ {km} km",
+  "km": "≈\u00a0{km}\u00a0km",
   "directionTitle": "Yoʻnalish narxi",
   "directionPrice": "Bir joy narxi, soʻm",
   "directionSave": "Narxni saqlash",

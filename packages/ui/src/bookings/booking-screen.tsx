@@ -61,7 +61,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
           {line(t('bookings.review.total'), formatMoney(booking.price * booking.seats))}
           {side === 'driver' ? line(t('bookings.offer.commission'), formatMoney(booking.commission)) : null}
         </Section>
-        <BookingPlaces booking={booking} />
+        <BookingPlaces booking={booking} side={side} />
         {open && booking.plate ? (
           <Section>
             <Cell description={<PlateView plate={booking.plate} small />}>{t('bookings.plate')}</Cell>

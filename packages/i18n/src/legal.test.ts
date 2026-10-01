@@ -26,7 +26,7 @@ describe('legal texts (docs/30)', () => {
   it('takes every number and name from the brand, not from the text', () => {
     const values = legalValues(i18n, brand);
     expect(values).toMatchObject({ brand: 'Yoʻl', adminBot: 'yol_admin_bot', percent: '7', grants: '2' });
-    expect(values.minPerSeat).toMatch(/^2\s000 soʻm$/u);
+    expect(values.minPerSeat).toMatch(/^2\s000\ssoʻm$/u);
     expect(values.company).toContain('STIR 123456789');
     const text = i18n.t('legal.offer.7.text', values);
     expect(text).toContain('7 foizi');

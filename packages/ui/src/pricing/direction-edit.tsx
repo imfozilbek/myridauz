@@ -3,7 +3,7 @@ import type { Direction } from '@platform/contracts';
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { RouteView } from '../market/route-view';
@@ -36,16 +36,14 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
             <RouteView from={direction.from} to={direction.to} />
           </div>
         </Section>
-        <Section>
-          <Input
-            header={t('pricing.directionPrice')}
-            type="number"
-            inputMode="numeric"
-            value={value}
-            status={failed === null ? 'default' : 'error'}
-            onChange={(event) => setValue(event.target.value)}
-          />
-        </Section>
+        <Field
+          label={t('pricing.directionPrice')}
+          type="number"
+          inputMode="numeric"
+          value={value}
+          status={failed === null ? 'default' : 'error'}
+          onChange={(event) => setValue(event.target.value)}
+        />
         <MedianHint direction={direction} />
       </List>
       {failed === null ? null : <Text className="step-error">{t(failed)}</Text>}

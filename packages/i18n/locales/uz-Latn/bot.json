@@ -61,7 +61,7 @@
   "share.cancelled": "Safar bekor qilindi.",
   "channel.places": "📍 {from} → {to}",
   "channel.date": "📅 {date}",
-  "channel.time": "🕗 Joʻnash: {depart}, yetib borish: ≈ {arrive}",
+  "channel.time": "🕗 Joʻnash: {depart}, yetib borish: ≈\u00a0{arrive}",
   "channel.seats": "💺 {seats} ta boʻsh joy",
   "channel.lastSeat": "🔥 Faqat {seats} ta joy qoldi",
   "channel.price": "💰 Bir joy: {price}",

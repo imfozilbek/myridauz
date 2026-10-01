@@ -4,6 +4,8 @@ import { CATALOGS, lookup, type TranslationKey } from './messages';
 
 const MODIFIER_LETTER_TURNED_COMMA = '\u02BB';
 const WRONG_APOSTROPHES = /[oOgG]['`\u2018\u2019\u02BC]/;
+// A number never parts from its unit or from «≈» on a narrow phone: a non breaking space joins them.
+const BREAKABLE_UNIT = /\} (km|soʻm)\b|≈ \{/u;
 
 const allMessages = (locale: (typeof ENABLED_LOCALES)[number]) =>
   Object.values(CATALOGS[locale]).flatMap((namespace) => Object.values(namespace));
@@ -17,5 +19,9 @@ describe('messages', () => {
     const messages = allMessages(locale);
     expect(messages.join(' ')).toContain(MODIFIER_LETTER_TURNED_COMMA);
     expect(messages.filter((message) => WRONG_APOSTROPHES.test(message))).toEqual([]);
+  });
+
+  it.each(ENABLED_LOCALES)('%s keeps a number with its unit on one line (G27)', (locale) => {
+    expect(allMessages(locale).filter((message) => BREAKABLE_UNIT.test(message))).toEqual([]);
   });
 });

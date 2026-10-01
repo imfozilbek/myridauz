@@ -52,7 +52,9 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     const pricing = setup();
     await tap('Narxlar');
     await tap('Formulani oʻzgartirish');
-    fireEvent.change(screen.getByDisplayValue('300'), { target: { value: '400' } });
+    // Every field is named on every platform, not only by a header iOS hides (G27).
+    fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
+    expect(screen.getByLabelText('Eng koʻp narx')).toHaveProperty('value', '600000');
     await tap('Oʻzgarishni koʻrish');
     expect(await screen.findByText(/→ 130/)).toBeTruthy();
     await tap('Saqlash');
