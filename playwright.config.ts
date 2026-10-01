@@ -43,6 +43,7 @@ export default defineConfig({
         'channels-screenshots.spec.ts',
         'pitaks-screenshots.spec.ts',
         'clear-screens-screenshots.spec.ts',
+        'search-android-screenshots.spec.ts',
       ],
     },
   ],
