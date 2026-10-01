@@ -23,6 +23,8 @@ type TripScreenProps = {
   readonly onBook?: () => void;
   // The team looks at a trip: no booking, no cancel (owner decision 29.09.2026).
   readonly readOnly?: boolean;
+  // The driver looks at the own trip: not at himself, his passengers come first (docs/86 V11).
+  readonly own?: boolean;
   // The bookings of the trip for its driver or the team (G08).
   readonly children?: ReactNode;
 };
@@ -30,7 +32,8 @@ type TripScreenProps = {
 const PHOTO_SIZE = 56;
 
 // Everything about one trip; a passenger books from here, its driver sees the bookings (docs/35).
-export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, children }: TripScreenProps) {
+export function TripScreen(props: TripScreenProps) {
+  const { trip, onBack, onCancel, onBook, readOnly = false, own = false, children } = props;
   useScreenView('market.trip');
   const { track } = useAnalytics();
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
@@ -73,24 +76,28 @@ export function TripScreen({ trip, onBack, onCancel, onBook, readOnly = false, c
           {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
           {onCancel || readOnly ? line(t('market.review.status'), t(`market.status.${trip.status}`)) : null}
         </Section>
-        <Section header={t('market.trip.driver')}>
-          <Cell
-            before={
-              <ProfilePhoto
-                userId={driver.id}
-                name={driver.firstName}
-                hasAvatar={driver.hasAvatar}
-                size={PHOTO_SIZE}
-              />
-            }
-            subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
-            after={<RatingBadge rating={driver.rating} />}
-          >
-            {driver.firstName}
-          </Cell>
-        </Section>
-        {onBook && !readOnly ? <FavoriteCell driverId={driver.id} screen="market.trip" /> : null}
-        <PersonReviews userId={driver.id} />
+        {own ? null : (
+          <>
+            <Section header={t('market.trip.driver')}>
+              <Cell
+                before={
+                  <ProfilePhoto
+                    userId={driver.id}
+                    name={driver.firstName}
+                    hasAvatar={driver.hasAvatar}
+                    size={PHOTO_SIZE}
+                  />
+                }
+                subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
+                after={<RatingBadge rating={driver.rating} />}
+              >
+                {driver.firstName}
+              </Cell>
+            </Section>
+            {onBook && !readOnly ? <FavoriteCell driverId={driver.id} screen="market.trip" /> : null}
+            <PersonReviews userId={driver.id} />
+          </>
+        )}
         {children}
       </List>
       <div className="step-note">
