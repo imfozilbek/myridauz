@@ -18,6 +18,12 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   // A map on the screen is drawn before the shot, its tiles too.
   await expect(page.locator('[data-state="loading"]')).toHaveCount(0);
   await page.waitForLoadState('networkidle');
+  // Photos come as blobs after the list: every picture is drawn before the shot.
+  await expect
+    .poll(() =>
+      page.evaluate(() => [...document.images].every((image) => image.complete && image.naturalWidth > 0)),
+    )
+    .toBe(true);
   // Nothing wider than the phone (lesson 52): the widest element must fit the screen.
   const overflow = await page.evaluate(() => {
     const right = (element: Element) => element.getBoundingClientRect().right;
