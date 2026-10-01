@@ -56,7 +56,7 @@ export async function publishTrip(page: Page, shot: Shot = none) {
 
 // A passenger finds trips of tomorrow to Samarqand shahri and filters "ayol bor".
 export async function findTrips(page: Page, shot: Shot = none) {
-  await page.getByText(TEXT.findTrip).click();
+  await page.getByText(TEXT.findTrip).first().click();
   await expect(page.getByText(t('way.list'))).toBeVisible();
   await shot('1-way');
   await chooseWay(page);

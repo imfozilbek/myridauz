@@ -22,6 +22,7 @@ export default defineConfig({
         'launch.spec.ts',
         'realtime.spec.ts',
         'map.spec.ts',
+        'home.spec.ts',
       ],
     },
     {

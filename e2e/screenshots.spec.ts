@@ -12,7 +12,7 @@ for (const app of MINI_APPS) {
     await page.goto(telegramUrl(appUrl(app.port)));
     const shot = (name: string) => page.screenshot({ path: `screenshots/miniapp-${app.name}-${name}.png` });
     if (app.welcome) await register(page, app.welcome, shot);
-    await expect(page.getByText(app.action)).toBeVisible();
+    await expect(page.getByText(app.action).first()).toBeVisible();
     await shot('6-home');
     if (!app.welcome) return;
     await page.getByText(TEXT.profile).click();
@@ -38,7 +38,7 @@ test('places: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
-  await page.getByText(MINI_APPS[0].action).click();
+  await page.getByText(MINI_APPS[0].action).first().click();
   await page.getByText(TEXT.wayList).click();
   await expect(page.getByText(TEXT.from)).toBeVisible();
   await shot('1-route');

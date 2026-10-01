@@ -61,7 +61,7 @@
 
 | Задача | Родной элемент Telegram (SDK) |
 |---|---|
-| Главное действие экрана | `MainButton` (кнопка внизу) |
+| Главное действие экрана | `MainButton` (кнопка внизу), и на главном экране тоже (G25) |
 | Второе действие | `SecondaryButton` |
 | Назад | `BackButton` в шапке Telegram |
 | Настройки | `SettingsButton` |
@@ -70,7 +70,7 @@
 | Не потерять данные формы | `enableClosingConfirmation` + отключать свайп закрытия |
 | Черновики | `CloudStorage` Telegram |
 | Поделиться поездкой (`43`) | `shareMessage`: родное окно выбора чата |
-| Точка встречи | Локация Telegram (`14-locations-and-routes.md`) |
+| Место человека | `LocationManager` Telegram; главный экран берёт его, только если доступ уже дан, сам не спрашивает (G25) |
 | Телефон | `requestContact` (без ввода руками) |
 
 ## Поведение как у Telegram

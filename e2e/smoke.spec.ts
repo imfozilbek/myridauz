@@ -29,8 +29,9 @@ for (const app of MINI_APPS) {
     }
     expect(await telegramEvents(page, 'web_app_set_header_color')).toContainEqual({ color: colors.bg });
     expect(await telegramEvents(page, 'web_app_set_bottom_bar_color')).toContainEqual({ color: colors.bg });
-    await expect(page.getByText(app.action)).toBeVisible();
-    await expect(mainButton).toBeHidden();
+    await expect(page.getByText(app.action).first()).toBeVisible();
+    if (app.mainButton) await expect(mainButton).toHaveText(app.mainButton);
+    else await expect(mainButton).toBeHidden();
 
     await page.evaluate(() => {
       Object.defineProperty(document, 'visibilityState', { value: 'hidden' });
@@ -59,7 +60,7 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await mockApi(page, 'active');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
-  await page.getByText(MINI_APPS[0].action).click();
+  await page.getByText(MINI_APPS[0].action).first().click();
   await page.getByText(TEXT.wayList).click();
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
