@@ -10,7 +10,8 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-describe('a new request on a followed route (docs/83 N08)', () => {
+// Several screens in one test: the first one loads TelegramUI, slow under coverage in CI.
+describe('a new request on a followed route (docs/83 N08)', { timeout: 20_000 }, () => {
   it('opens the requests of that route and day, back goes to the day', async () => {
     window.history.replaceState(null, '', '/?requests=1726_1730_2026-10-02');
     const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => []);
