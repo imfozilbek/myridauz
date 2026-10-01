@@ -36,6 +36,8 @@ export const GAYRAT: Person = { id: 900110, name: 'Gʻayrat', phone: '9989011101
 export const KOMIL: Person = { id: 900111, name: 'Komil', phone: '998901110111' };
 // The walk through every screen (e2e/stand/all-*.spec.ts).
 export const MUROD: Person = { id: 900112, name: 'Murod', phone: '998901110112' };
+// The driver of the admin walk only: the trips of Jahongir stay under the limit (lesson 63).
+export const SHERZOD: Person = { id: 900113, name: 'Sherzod', phone: '998901110113' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -65,6 +67,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: GAYRAT, plate: '01J012KL', gender: 'male' },
   { person: KOMIL, plate: '01K123MN', gender: 'male' },
   { person: MUROD, plate: '01L234NO', gender: 'male' },
+  { person: SHERZOD, plate: '01M345PQ', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,

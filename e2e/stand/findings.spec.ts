@@ -34,6 +34,8 @@ test('N02. a trip that already left cannot be cancelled away from its passengers
 });
 
 test('N03. a seat the driver never answered: the passenger hears it expired', async () => {
+  // Open finding: the bot text waits for the owner (docs/86 T10). This mark fails once it is fixed.
+  test.fail();
   const trip = await publishTrip(BEKZOD, CHILONZOR, FARGONA, 'door');
   const booking = await book(ZARINA, trip, { seats: 1, mode: 'door', ...POINTS });
   await clearBotMessages();

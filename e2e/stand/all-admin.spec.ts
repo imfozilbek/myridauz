@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 import { createFeedbackClient } from '@platform/api-client';
 import { confirmedSeat } from './g27-kit';
-import { JAHONGIR, MUROD, NARGIZA, OWNER } from './people';
+import { MUROD, NARGIZA, OWNER, SHERZOD } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, visit, type Platform } from './screen-tour';
 import { apply } from './seed';
 import { signedAs, type Person } from './stand-kit';
@@ -15,7 +15,7 @@ const APPLICANT: Person = { id: 900705, name: 'Sobir', phone: '998901110705' };
 
 test.beforeAll(async () => {
   await apply(APPLICANT, '01T789UV', 'male');
-  const { seat } = await confirmedSeat(JAHONGIR, NARGIZA);
+  const { seat } = await confirmedSeat(SHERZOD, NARGIZA);
   await createFeedbackClient(await signedAs('passenger', NARGIZA)).complain({
     bookingId: seat.id,
     reason: 'price_changed',
@@ -38,7 +38,7 @@ test('android: an application, its plate check and the reasons', async ({ page }
 test('android: a complaint', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
   await open(page, 'android', t('common.admin.complaints'), 'ta20-complaints');
-  await open(page, 'android', JAHONGIR.name, 'ta21-complaint');
+  await open(page, 'android', SHERZOD.name, 'ta21-complaint');
 });
 
 const management = async (page: Page, platform: Platform) => {
