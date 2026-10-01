@@ -40,6 +40,7 @@ export function PriceStep({ recommendation, initial, onBack, onDone }: PriceStep
         <Button
           mode="bezeled"
           size="l"
+          className="price-step"
           aria-label={t('market.price.less')}
           onClick={() => change(-roundStep)}
         >
@@ -48,7 +49,13 @@ export function PriceStep({ recommendation, initial, onBack, onDone }: PriceStep
         <Text weight="1" className={out ? 'price-value price-out' : 'price-value'}>
           {formatMoney(price)}
         </Text>
-        <Button mode="bezeled" size="l" aria-label={t('market.price.more')} onClick={() => change(roundStep)}>
+        <Button
+          mode="bezeled"
+          size="l"
+          className="price-step"
+          aria-label={t('market.price.more')}
+          onClick={() => change(roundStep)}
+        >
           <Icon name="more" />
         </Button>
       </div>

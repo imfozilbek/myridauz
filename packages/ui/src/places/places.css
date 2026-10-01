@@ -48,6 +48,8 @@
 /* The name stays readable on any photo: a soft dark fade at the bottom. */
 .region-name {
   position: relative;
+  /* The padding is inside the width: a long name never runs out of its tile (N15). */
+  box-sizing: border-box;
   width: 100%;
   padding: 24px 10px 8px;
   color: var(--tgui--button_text_color);

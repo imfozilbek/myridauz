@@ -1,3 +1,4 @@
+import { appendFileSync, mkdirSync } from 'node:fs';
 import { expect, type Page } from '@playwright/test';
 import type { MiniApp } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
@@ -36,11 +37,52 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
     return wide ? `${wide.tagName}.${wide.className}` : null;
   });
   expect.soft(overflow, `${name}: wider than the screen`).toBeNull();
+  // Texts cut with «…»: written down for the UX review, a long place name may be fine, a label not.
+  const cut = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>('body *')]
+      .filter((e) => e.children.length === 0 && e.scrollWidth > e.clientWidth + 1)
+      .map((e) => e.textContent?.trim() ?? '')
+      .filter(Boolean),
+  );
+  if (cut.length > 0) appendFileSync(CUT, cut.map((text) => `${platform}/${name}: ${text}\n`).join(''));
   await page.screenshot({ path: `screenshots/stand/g27/${platform}/${name}.png`, animations: 'disabled' });
+  await sendScreens(page);
 };
 
-export async function openHome(page: Page, app: MiniApp, person: Person, platform: Platform) {
-  await openAs(page, app, person, { platform });
+// The app sends its analytics when it goes to the background: the walk does that after each shot,
+// so the opened screens are written down at once.
+async function sendScreens(page: Page) {
+  const sent = page
+    .waitForRequest((r) => r.url().endsWith('/analytics'), { timeout: 2_000 })
+    .catch(() => null);
+  const setState = (state: string) =>
+    page.evaluate((value) => {
+      Object.defineProperty(document, 'visibilityState', { value, configurable: true });
+      document.dispatchEvent(new Event('visibilitychange'));
+    }, state);
+  await setState('hidden');
+  await sent;
+  await setState('visible');
+}
+
+// Every screen that reports «screen_open» is written down: the walk shows which screens it reached.
+const SEEN = 'screenshots/stand/g27/screens-seen.txt';
+const CUT = 'screenshots/stand/g27/texts-cut.txt';
+mkdirSync('screenshots/stand/g27', { recursive: true });
+function recordScreens(page: Page) {
+  page.on('request', (request) => {
+    if (!request.url().endsWith('/analytics') || request.method() !== 'POST') return;
+    const { events } = JSON.parse(request.postData() ?? '{"events":[]}') as {
+      events: { name: string; screen: string }[];
+    };
+    const opened = events.filter((e) => e.name === 'screen_open').map((e) => `${e.screen}\n`);
+    if (opened.length > 0) appendFileSync(SEEN, opened.join(''));
+  });
+}
+
+export async function openHome(page: Page, app: MiniApp, person: Person, platform: Platform, search = '') {
+  recordScreens(page);
+  await openAs(page, app, person, { platform, search });
   await page.waitForLoadState('networkidle');
 }
 

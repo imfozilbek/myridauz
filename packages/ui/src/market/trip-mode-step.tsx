@@ -29,7 +29,7 @@ export function TripModeStep({ route, onBack, onDone }: Props) {
   const choices = modes.map((mode) => ({
     value: mode,
     label: t(`way.trip.mode.${mode}`),
-    ...(mode !== 'door' && pitak ? { after: pitak.name } : {}),
+    ...(mode !== 'door' && pitak ? { subtitle: pitak.name } : {}),
   }));
   return (
     <ChoiceStep

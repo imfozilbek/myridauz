@@ -35,9 +35,18 @@
 
 .price-value {
   flex: 1;
+  min-width: 0;
   white-space: nowrap;
-  font-size: 28px;
+  /* «90 000 soʻm» and both buttons fit a 360 px phone (N17). */
+  font-size: clamp(22px, 6.5vw, 28px);
   text-align: center;
+}
+
+/* The − and + keep a finger-sized square and never push each other out of the screen (N17). */
+.price-step {
+  flex: none;
+  width: 56px;
+  padding-inline: 0;
 }
 
 .price-out {

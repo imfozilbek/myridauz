@@ -34,6 +34,8 @@ export const OYBEK: Person = { id: 900108, name: 'Oybek', phone: '998901110108' 
 export const JAHONGIR: Person = { id: 900109, name: 'Jahongir', phone: '998901110109' };
 export const GAYRAT: Person = { id: 900110, name: 'Gʻayrat', phone: '998901110110' };
 export const KOMIL: Person = { id: 900111, name: 'Komil', phone: '998901110111' };
+// The walk through every screen (e2e/stand/all-*.spec.ts).
+export const MUROD: Person = { id: 900112, name: 'Murod', phone: '998901110112' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -47,6 +49,7 @@ export const NARGIZA: Person = { id: 900238, name: 'Nargiza', phone: '9989011102
 export const ROZA: Person = { id: 900239, name: 'Roza', phone: '998901110239' };
 // Blocked by the team in the scenarios of the bots (e2e/stand/bots.spec.ts).
 export const SANJAR: Person = { id: 900240, name: 'Sanjar', phone: '998901110240' };
+export const ZEBO: Person = { id: 900241, name: 'Zebo', phone: '998901110241' };
 
 type Driver = { readonly person: Person; readonly plate: string; readonly gender: Gender };
 export const DRIVERS: readonly Driver[] = [
@@ -61,6 +64,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: JAHONGIR, plate: '01I901JK', gender: 'male' },
   { person: GAYRAT, plate: '01J012KL', gender: 'male' },
   { person: KOMIL, plate: '01K123MN', gender: 'male' },
+  { person: MUROD, plate: '01L234NO', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,
@@ -79,6 +83,7 @@ export const PASSENGERS: readonly Person[] = [
   DIYORA,
   NARGIZA,
   ROZA,
+  ZEBO,
 ];
 // Men among the passengers: «Mashinada ayol bor» is about them (docs/06).
 export const MEN: readonly Person[] = [TIMUR, SANJAR];
