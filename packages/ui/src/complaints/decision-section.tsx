@@ -10,6 +10,7 @@ type ChoiceKey = 'none' | 'warning' | 'block1' | 'block7' | 'block30' | 'blockFo
 type Props = { readonly noShow: boolean; readonly onDecide: (decision: ComplaintDecision) => void };
 
 // The decisions of docs/17, from the mildest; a no-show may give the driver the commission back.
+// Under each one what happens to the person, as the backend does it (docs/86 V9).
 export function DecisionSection({ noShow, onDecide }: Props) {
   const { t } = useI18n();
   const [refund, setRefund] = useState(false);
@@ -21,10 +22,21 @@ export function DecisionSection({ noShow, onDecide }: Props) {
     { key: 'block30', icon: 'blocked', tone: 'deep', decision: { action: 'block', days: 30 } },
     { key: 'blockForever', icon: 'blocked', tone: 'deep', decision: { action: 'block', days: null } },
   ];
+  const effect = (decision: ComplaintDecision) => {
+    if (decision.action !== 'block') return t(`complaints.${decision.action}Effect`);
+    const days = decision.days ?? null;
+    return days === null
+      ? t('complaints.blockForeverEffect')
+      : t('complaints.blockEffect', { days: String(days) });
+  };
   return (
     <Section header={t('complaints.decision')}>
       {noShow ? (
-        <Cell Component="label" after={<Switch checked={refund} onChange={() => setRefund(!refund)} />}>
+        <Cell
+          Component="label"
+          subtitle={t('complaints.refundEffect')}
+          after={<Switch checked={refund} onChange={() => setRefund(!refund)} />}
+        >
           {t('complaints.refund')}
         </Cell>
       ) : null}
@@ -32,6 +44,7 @@ export function DecisionSection({ noShow, onDecide }: Props) {
         <Cell
           key={choice.key}
           before={<IconTile name={choice.icon} tone={choice.tone} />}
+          subtitle={effect(choice.decision)}
           onClick={async () => {
             const days = choice.decision.action === 'block' ? (choice.decision.days ?? null) : 0;
             if (await allowBlock(days, t)) onDecide({ ...choice.decision, refund });

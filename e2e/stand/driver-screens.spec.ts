@@ -30,7 +30,7 @@ test('T15, T11, D07. the team approves in the admin Mini App; the driver can pub
   await page.getByText(t('common.admin.applications')).first().click();
   await page.getByText(NEWCOMER.name).first().click();
   await shot(page, 'android', 't20-application');
-  await page.getByText(TEXT.approve).click();
+  await mainButton(page).filter({ hasText: TEXT.approve }).click();
   await mainButton(page).filter({ hasText: TEXT.plateMatches }).click();
   await expect(page.getByText(TEXT.decided).first()).toBeVisible();
   // The driver opens the app on the own phone.

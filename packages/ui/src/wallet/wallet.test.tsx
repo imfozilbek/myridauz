@@ -47,7 +47,7 @@ describe('"Hamyon" of a driver (docs/12)', () => {
 describe('"Hamyonlar" for the team (docs/12)', () => {
   const owner = { driverId: '00000000000000000000000000000007', firstName: 'Jasur', bonus: 481000, main: 0 };
 
-  it('lets an owner add a bonus by hand with a reason', async () => {
+  it('lets an owner add a bonus by hand with a reason and shows the new balance', async () => {
     const adjust = vi.fn<WalletClient['adjust']>(async () => wallet);
     renderMarket(
       <ManagementScreen onBack={() => undefined} />,
@@ -56,12 +56,17 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     await tap('Hamyonlar');
     await tap('Jasur');
     await tap('Hamyonni tuzatish');
-    const amount = screen.getByLabelText('Summa, soʻm (ayirish uchun minus)');
-    // The long label is a section header that wraps, not a field header cut on a 360 px phone (G27).
+    const amount = screen.getByLabelText('Summa, soʻm');
+    // The label is a section header that wraps, not a field header cut on a 360 px phone (G27).
     expect(amount.getAttribute('placeholder')).toBeNull();
-    expect(screen.getByText('Summa, soʻm (ayirish uchun minus)').closest('label')).toBeNull();
+    expect(screen.getByText('Summa, soʻm').closest('label')).toBeNull();
     fireEvent.change(amount, { target: { value: '100000' } });
     fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Yoʻlovchi kelmadi' } });
+    // Adding or taking away is a choice, not a minus to remember (docs/86 V2).
+    expect(screen.queryByText('Saqlash')).toBeNull();
+    await tap('Qoʻshish');
+    expect(screen.getByText('Yangi balans')).toBeTruthy();
+    expect(screen.getByText(/^581\s000/)).toBeTruthy();
     await tap('Saqlash');
     expect(adjust).toHaveBeenCalledWith('00000000000000000000000000000007', {
       balance: 'bonus',
@@ -82,10 +87,10 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     await tap('Jasur');
     await tap('Hamyonni tuzatish');
     await tap('Asosiy hisob');
-    fireEvent.change(screen.getByLabelText('Summa, soʻm (ayirish uchun minus)'), {
-      target: { value: '-5000' },
-    });
+    await tap('Ayirish');
+    fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '5000' } });
     fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Xato' } });
+    expect(screen.getByText(/^-5\s000/)).toBeTruthy();
     await tap('Saqlash');
     expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
     expect(adjust.mock.calls[0]?.[1]).toMatchObject({ balance: 'main', amount: -5000 });

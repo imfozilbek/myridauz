@@ -56,8 +56,9 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
   it('adds a district channel with its close districts', async () => {
     const channels = setup([fixed]);
     await tap('Kanallar');
-    expect(await screen.findByText('Hozircha tuman kanallari yoʻq.')).toBeTruthy();
-    expect(screen.getByText('@ch_qashqadaryo · Asosiy kanal')).toBeTruthy();
+    expect(await screen.findByText('@ch_qashqadaryo · Asosiy kanal')).toBeTruthy();
+    // "No channels yet" is never shown above a filled list (docs/86 V14).
+    expect(screen.queryByText('Hozircha tuman kanallari yoʻq.')).toBeNull();
     await tap('Kanal qoʻshish');
     fireEvent.change(field(0), { target: { value: '@ch_kitob' } });
     fireEvent.change(field(1), { target: { value: 'Kanal | Kitob' } });
@@ -69,6 +70,13 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
       title: 'Kanal | Kitob',
       places: ['1710224', '1710245'],
     });
+  });
+
+  it('says there are no channels only when the list is empty', async () => {
+    setup([]);
+    await tap('Kanallar');
+    expect(await screen.findByText('Hozircha tuman kanallari yoʻq.')).toBeTruthy();
+    expect(screen.getByText('Kanal qoʻshish')).toBeTruthy();
   });
 
   it('says when the bot is not an admin of the channel', async () => {

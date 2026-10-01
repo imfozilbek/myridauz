@@ -17,6 +17,7 @@ import { ChannelEdit } from './channel-edit';
 import '../market/market.css';
 
 // "Kanallar" for the team (docs/63): the region channels and the district channels the team added.
+// "No channels yet" only when there is none at all, never above a filled list (docs/86 V14).
 export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('channels');
   useScreenBackground('grouped');
@@ -57,17 +58,16 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
         {t('channels.title')}
       </Title>
       <List>
-        {team.length === 0 ? (
-          <EmptyState icon="channel" title={t('channels.empty')} />
-        ) : (
-          <Section>{team.map(row)}</Section>
-        )}
+        {value.length === 0 ? <EmptyState icon="channel" title={t('channels.empty')} /> : null}
+        {team.length > 0 ? <Section>{team.map(row)}</Section> : null}
         <div className="step-note">
           <Button size="l" stretched onClick={() => setOpen('new')}>
             {t('channels.add')}
           </Button>
         </div>
-        <Section>{value.filter((channel) => channel.fixed).map(row)}</Section>
+        {value.length > team.length ? (
+          <Section>{value.filter((channel) => channel.fixed).map(row)}</Section>
+        ) : null}
       </List>
     </div>
   );

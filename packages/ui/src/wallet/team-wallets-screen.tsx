@@ -84,10 +84,17 @@ function DriverWallet({ owner, onBack }: { readonly owner: Owner; readonly onBac
       setError(t(errorKey(caught)));
     }
   };
-  if (adjusting)
-    return <AdjustForm error={error} onBack={() => setAdjusting(false)} onSave={(a) => void save(a)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
+  if (adjusting)
+    return (
+      <AdjustForm
+        current={value}
+        error={error}
+        onBack={() => setAdjusting(false)}
+        onSave={(a) => void save(a)}
+      />
+    );
   return (
     <div className="market">
       <BackButton onClick={onBack} />
