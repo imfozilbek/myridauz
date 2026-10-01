@@ -1,6 +1,7 @@
 import { MINI_APPS, type FeedEvent, type MiniApp } from '@platform/contracts';
 import { DurableObject } from 'cloudflare:workers';
 import type { Bindings } from '../../../env';
+import { closeCodeFor } from '../../../shared/sockets/close-code';
 
 const CHANGED: FeedEvent = { type: 'changed' };
 
@@ -33,6 +34,6 @@ export class UserFeed extends DurableObject<Bindings> {
   override async webSocketMessage(): Promise<void> {}
 
   override async webSocketClose(ws: WebSocket, code: number): Promise<void> {
-    ws.close(code);
+    ws.close(closeCodeFor(code));
   }
 }

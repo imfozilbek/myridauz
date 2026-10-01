@@ -56,12 +56,14 @@ if (!existsSync(STAND_BASE)) cpSync(STAND_STATE, STAND_BASE, { recursive: true }
 for (const app of Object.keys(STAND_APPS))
   run('pnpm', ['--filter', `@platform/miniapp-${app}`, 'build'], { VITE_API_URL: '/' });
 
-const api = `http://localhost:${STAND_API_PORT}`;
-const worker = spawn(
-  'pnpm',
-  ['exec', 'wrangler', 'dev', ...local, '--port', String(STAND_API_PORT), '--env-file', resolve(STAND_VARS)],
-  { stdio: 'inherit' },
-);
+const host = `localhost:${STAND_API_PORT}`;
+const api = `http://${host}`;
+// --local-upstream: the Worker sees its own address as the stand, not the domain of the brand, so
+// the addresses it builds (sockets of the chat and of the live screens) never point to production.
+const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
+const worker = spawn('pnpm', ['exec', 'wrangler', ...dev, '--env-file', resolve(STAND_VARS)], {
+  stdio: 'inherit',
+});
 worker.on('exit', (code) => process.exit(code ?? 1));
 for (const [app, port] of Object.entries(STAND_APPS)) {
   serveApp({ root: resolve(`apps/miniapp-${app}/dist`), port, api });

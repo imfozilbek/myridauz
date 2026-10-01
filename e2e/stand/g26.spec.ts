@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from '../apps';
-import { DILNOZA, DRIVER, MADINA, NODIRA } from './seed';
-import { openAs, signedAs, type Person } from './stand-kit';
+import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
+import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const PITAK = 'Toshkent avtovokzali';
@@ -19,6 +19,7 @@ async function pitakMapDrawn(page: Page) {
 // The four checks of the owner for G26 (docs/74) on the whole local Rida: a real backend, the real
 // directory, the map of Uzbekistan and its search index. The order matters: the trip comes first.
 test.describe.configure({ mode: 'serial' });
+test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 // From Chilonzor (Toshkent shahri) to Urgut (Samarqand viloyati), by lists.
 async function chooseRoute(page: Page) {
