@@ -20,7 +20,12 @@ type NativeButton = {
   readonly colored: boolean;
 };
 // An action that returns a promise keeps the button busy until it ends (docs/65 A4).
-type BottomButtonProps = { readonly text: string; readonly onClick: () => unknown };
+// A dangerous action (delete, remove) is red, like in Telegram itself (docs/86 V12).
+type BottomButtonProps = {
+  readonly text: string;
+  readonly onClick: () => unknown;
+  readonly destructive?: boolean;
+};
 
 const noop = () => undefined;
 const MAIN: NativeButton = {
@@ -37,7 +42,7 @@ const SECONDARY: NativeButton = {
 // The main action is the native Telegram button at the bottom (docs/19, docs/21).
 // Outside Telegram a TelegramUI button stands in for it, so the app also works in a browser.
 function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
-  return function BottomButton({ text, onClick }: BottomButtonProps) {
+  return function BottomButton({ text, onClick, destructive = false }: BottomButtonProps) {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
     const { busy, run } = useOneAtATime(onClick);
@@ -52,15 +57,24 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
     }, [inTelegram, run]);
     useEffect(() => {
       if (!inTelegram) return;
-      const color = native.colored ? { backgroundColor: colors.brandStrong, textColor: colors.bg } : {};
+      const background = destructive ? colors.danger : colors.brandStrong;
+      const color = native.colored ? { backgroundColor: background, textColor: colors.bg } : {};
       native.setParams({ text, isVisible: true, ...color });
-    }, [inTelegram, text, colors]);
+    }, [inTelegram, text, colors, destructive]);
     useEffect(() => {
       if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy });
     }, [inTelegram, busy]);
     if (inTelegram) return null;
     return (
-      <Button mode={mode} size="l" stretched loading={busy} disabled={busy} onClick={run}>
+      <Button
+        mode={mode}
+        size="l"
+        stretched
+        loading={busy}
+        disabled={busy}
+        onClick={run}
+        className={destructive ? 'danger-button' : undefined}
+      >
         {text}
       </Button>
     );

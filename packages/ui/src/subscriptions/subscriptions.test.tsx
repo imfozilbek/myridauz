@@ -77,6 +77,8 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     expect(renew).toHaveBeenCalledWith('s1');
     // The list comes again after a change.
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
+    // A removal is red, like in Telegram (docs/86 V12).
+    expect(screen.getByText('Oʻchirish').closest('.danger-text')).not.toBeNull();
     await tap('Oʻchirish');
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
   });

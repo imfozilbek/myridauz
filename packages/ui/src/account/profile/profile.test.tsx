@@ -112,8 +112,11 @@ describe('delete my data (docs/30)', () => {
     Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
+    // The dangerous row and button are red, like in Telegram (docs/86 V12).
+    expect(screen.getByText('Maʼlumotlarimni oʻchirish').closest('.danger-text')).not.toBeNull();
     fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
     expect(screen.getByText(/Buni qaytarib boʻlmaydi/)).toBeTruthy();
+    expect(screen.getByText('Oʻchirish').closest('.danger-button')).not.toBeNull();
     client.deleteMe.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
     expect(screen.getByText(/qayta urinib/)).toBeTruthy();

@@ -39,3 +39,12 @@ textarea {
   align-items: center;
   gap: 6px;
 }
+
+/* A dangerous action is red, like in Telegram (docs/86 V12): the brand danger color through the token. */
+.danger-text {
+  color: var(--tgui--destructive_text_color);
+}
+
+.danger-button {
+  --tgui--button_color: var(--tgui--destructive_text_color);
+}

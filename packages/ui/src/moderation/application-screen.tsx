@@ -112,7 +112,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
         <Section>
           <Cell onClick={() => setMode('request_changes')}>{t('moderation.requestChanges')}</Cell>
           <Cell onClick={() => setMode('reject')}>
-            <span className="moderation-destructive">{t('moderation.reject')}</span>
+            <span className="danger-text">{t('moderation.reject')}</span>
           </Cell>
           <Cell onClick={() => setMode('block')}>{t('moderation.block')}</Cell>
         </Section>

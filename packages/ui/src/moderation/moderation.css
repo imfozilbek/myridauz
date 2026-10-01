@@ -30,10 +30,6 @@
   background: var(--tgui--section_bg_color);
 }
 
-.moderation-destructive {
-  color: var(--tgui--destructive_text_color);
-}
-
 .moderation-caption {
   display: block;
   padding-top: 4px;
