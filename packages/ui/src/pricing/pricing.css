@@ -1,0 +1,5 @@
+/* The new price on a changed direction of the preview stands out (docs/86 V13). */
+.price-changed {
+  color: var(--tgui--link_color);
+  font-weight: 600;
+}
