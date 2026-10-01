@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import { useEffect, useRef, useState } from 'react';
 import type { ChatCalling } from '../chat/use-chat';
 import { useApiClients } from '../context/api-clients';
@@ -12,6 +13,8 @@ export function useCall(key: string, chat: ChatCalling) {
   const audio = useRef<HTMLAudioElement>(null);
   const [muted, setMuted] = useState(false);
   const [noMicrophone, setNoMicrophone] = useState(false);
+  // Calls switched off on the server: this side reads why and writes in the chat (docs/86 T9).
+  const [unavailable, setUnavailable] = useState(false);
   const { emit } = chat;
   const status = chat.call?.status ?? null;
   const caller = chat.call?.caller ?? null;
@@ -62,7 +65,10 @@ export function useCall(key: string, chat: ChatCalling) {
     if (status === 'connecting')
       voice()
         .start()
-        .catch(() => emit({ type: 'call', action: 'failed' }));
+        .catch((error: unknown) => {
+          setUnavailable(error instanceof ApiError && error.code === 'calls.unavailable');
+          emit({ type: 'call', action: 'failed' });
+        });
     if (status === null) {
       link.current?.stop();
       link.current = null;
@@ -80,6 +86,7 @@ export function useCall(key: string, chat: ChatCalling) {
     audio,
     muted,
     noMicrophone,
+    unavailable,
     ring: () => withMicrophone(() => emit({ type: 'call', action: 'ring' })),
     accept: () =>
       withMicrophone(

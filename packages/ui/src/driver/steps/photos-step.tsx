@@ -18,6 +18,8 @@ import { useHasCamera } from '../../telegram/in-telegram-context';
 import { usePhotoTaker } from '../../media/use-photo-taker';
 import { PhotoSlot } from '../photo-slot';
 import { hasProblem } from '../problem-note';
+import type { TranslationKey } from '@platform/i18n';
+import { errorKey } from '../../market/error-text';
 
 type PhotosStepProps = {
   readonly photos: DriverApplication['photos'];
@@ -37,20 +39,20 @@ export function PhotosStep({ photos, reasons, onPhotos, onBack, onDone }: Photos
   // The photo being taken: the camera answers later, the kind must not change meanwhile.
   const kind = useRef<CarPhotoKind>('front');
   const [busy, setBusy] = useState<CarPhotoKind | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   const [version, setVersion] = useState(0);
   const upload = async (file: Blob) => {
     const current = kind.current;
     setBusy(current);
-    setFailed(false);
+    setFailure(null);
     try {
       const next = await drivers.uploadPhoto(current, await compressImage(file, 'whole'));
       if (next) onPhotos(next);
       setVersion((value) => value + 1);
       haptic.success();
-    } catch {
+    } catch (caught) {
       haptic.error();
-      setFailed(true);
+      setFailure(errorKey(caught, 'drivers.photos.failed'));
     } finally {
       setBusy(null);
     }
@@ -83,7 +85,7 @@ export function PhotosStep({ photos, reasons, onPhotos, onBack, onDone }: Photos
           />
         ))}
       </div>
-      {failed ? <Text className="step-error">{t('drivers.photos.failed')}</Text> : null}
+      {failure ? <Text className="step-error">{t(failure)}</Text> : null}
       {ready && !camera.isOpen ? <MainButton text={t('common.continue')} onClick={onDone} /> : null}
     </StepLayout>
   );

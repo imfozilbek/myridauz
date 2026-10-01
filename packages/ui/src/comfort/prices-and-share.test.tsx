@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import type { Trip } from '@platform/contracts';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -97,5 +98,9 @@ describe('the driver side (docs/40, docs/43)', () => {
     await tap('Ulashishni toʻxtatish');
     expect(stopTripSharing).toHaveBeenCalledWith('t1');
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
+    // A trip that left cannot be shared: the driver reads it (docs/86 T4).
+    shareTrip.mockRejectedValueOnce(new ApiError(409, 'shares.wrong_status'));
+    await tap('Yaqinlarimga yuborish');
+    expect(await screen.findByText('Bu safarni endi ulashib boʻlmaydi.')).toBeTruthy();
   });
 });

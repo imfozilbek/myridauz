@@ -1,4 +1,4 @@
-import type { UsersClient } from '@platform/api-client';
+import { ApiError, type UsersClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StartFlow } from '../../flow/start-flow';
@@ -83,6 +83,10 @@ describe('profile', () => {
     client.uploadAvatar.mockRejectedValueOnce(new Error('offline'));
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
     expect(screen.getByText('Rasmni yuklab boʻlmadi. Qayta urinib koʻring.')).toBeTruthy();
+    // A photo too large says so: another try of the same photo would not help (docs/86 T5).
+    client.uploadAvatar.mockRejectedValueOnce(new ApiError(413, 'users.avatar_too_large'));
+    await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
+    expect(screen.getByText('Rasm juda katta. Boshqa rasmni tanlang.')).toBeTruthy();
   });
 
   it('sends people on Telegram Desktop to the phone: no camera there', () => {

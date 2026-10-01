@@ -7,6 +7,8 @@ import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
+import type { TranslationKey } from '@platform/i18n';
+import { errorKey } from '../market/error-text';
 
 // The driver sends the trip to the family the same way a passenger does (docs/43, G18):
 // the route, the car and the plate, never a phone.
@@ -16,13 +18,17 @@ export function DriverShare({ trip }: { readonly trip: Trip }) {
   const { chat } = useApiClients();
   const [shared, setShared] = useState(false);
   const [stopped, setStopped] = useState(false);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   if (trip.status !== 'active' && trip.status !== 'full') return null;
   const run = async (action: () => Promise<void>) => {
     try {
+      setFailure(null);
       await action();
       haptic.success();
-    } catch {
+    } catch (caught) {
+      // A trip that left cannot be shared any more: the driver reads it (docs/86 T4).
       haptic.error();
+      setFailure(errorKey(caught));
     }
   };
   const share = () =>
@@ -40,7 +46,10 @@ export function DriverShare({ trip }: { readonly trip: Trip }) {
       setStopped(true);
     });
   return (
-    <Section header={t('share.section')} footer={stopped ? t('share.stopped') : undefined}>
+    <Section
+      header={t('share.section')}
+      footer={failure ? t(failure) : stopped ? t('share.stopped') : undefined}
+    >
       <Cell
         before={<IconTile name="share" tone="accent" />}
         subtitle={t('share.driverSendHint')}

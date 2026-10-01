@@ -15,6 +15,7 @@ import { BackButton } from '../../telegram/back-button';
 import { MainButton } from '../../telegram/bottom-button';
 import { asksSeats } from '../car-choices';
 import { hasProblem, ProblemNote } from '../problem-note';
+import type { TranslationKey } from '@platform/i18n';
 
 export type ReviewTarget = 'make' | 'color' | 'plate' | 'seats' | 'avatar' | 'photos';
 
@@ -22,7 +23,7 @@ type ReviewStepProps = {
   readonly car: CarInput;
   readonly reasons: readonly ModerationReason[];
   readonly recheck: boolean;
-  readonly failed: boolean;
+  readonly failure: TranslationKey | null;
   readonly onEdit: (target: ReviewTarget) => void;
   readonly onBack?: () => void;
   readonly onSend: () => Promise<void>;
@@ -30,7 +31,7 @@ type ReviewStepProps = {
 
 // Everything on one screen before sending; a tap on a line changes it (docs/19).
 // A line the team asked to fix is red, with the reason under it (docs/04).
-export function ReviewStep({ car, reasons, recheck, failed, onEdit, onBack, onSend }: ReviewStepProps) {
+export function ReviewStep({ car, reasons, recheck, failure, onEdit, onBack, onSend }: ReviewStepProps) {
   useScreenView('driver.review');
   const { t } = useI18n();
   const line = (label: string, value: string, target: ReviewTarget, places: readonly ProblemPlace[] = []) => {
@@ -67,7 +68,7 @@ export function ReviewStep({ car, reasons, recheck, failed, onEdit, onBack, onSe
           {line(t('drivers.photos.title'), t('drivers.photo.done'), 'photos', CAR_PHOTO_KINDS)}
         </Section>
       </List>
-      {failed ? <Text className="step-error">{t('errors.generic.description')}</Text> : null}
+      {failure ? <Text className="step-error">{t(failure)}</Text> : null}
       <MainButton text={t('drivers.review.send')} onClick={onSend} />
     </StepLayout>
   );

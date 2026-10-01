@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { balanceOf } from '../wallet/domain/ledger';
 import { answer, confirm, driverBookings } from './application/answer';
+import { expireRequests } from './application/expire';
 import { cancelByPassenger, passengerBookings, requestBooking } from './application/request';
 import { rideTogether } from './infrastructure/store';
 import { ALI, AWAY, DILNOZA, DRIVER, HOME, HOUR, NOW, OLIM, seats, setup } from './test-kit';
@@ -96,7 +97,7 @@ describe('a booking of seats (docs/35)', () => {
   });
 
   it('expires a request without an answer after 24 hours or at the departure', async () => {
-    const { deps, addTrip, bonus, setNow } = setup();
+    const { deps, addTrip, bonus, setNow, notes } = setup();
     await bonus();
     const asked = value(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
     const soon = value(await requestBooking(deps, ALI, addTrip({ departAt: NOW + 3 * HOUR }), seats(1)));
@@ -104,6 +105,10 @@ describe('a booking of seats (docs/35)', () => {
     expect(await confirm(deps, DRIVER, soon.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
     setNow(NOW + 25 * HOUR);
     expect((await passengerBookings(deps, DILNOZA))[0]?.status).toBe('expired');
+    // The Cron ends both: each passenger hears it once, nobody is left waiting (docs/83 N03).
+    await expireRequests(deps, NOW + 25 * HOUR);
+    await expireRequests(deps, NOW + 26 * HOUR);
+    expect(notes.filter((note) => note === 'passenger: expired')).toHaveLength(2);
     expect(await confirm(deps, DRIVER, asked.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
     expect(await answer(deps, DRIVER, asked.id, 'decline')).toEqual({
       ok: false,

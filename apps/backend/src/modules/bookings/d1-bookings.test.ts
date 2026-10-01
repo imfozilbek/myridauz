@@ -71,9 +71,10 @@ describe('bookings in D1 (G24)', () => {
   it('expires a request without an answer and erases its points', async () => {
     const bookings = d1Bookings(db);
     await bookings.save(record());
-    await bookings.expireOver(NOW + 1000);
-    expect(await bookings.find('b1')).toEqual(
-      withoutPoints({ ...record(), status: 'expired', updatedAt: NOW + 1000 }),
-    );
+    const expired = withoutPoints({ ...record(), status: 'expired' as const, updatedAt: NOW + 1000 });
+    // The expired ones come back once: the passenger is told about each (docs/83 N03).
+    expect(await bookings.expireOver(NOW + 1000)).toEqual([expired]);
+    expect(await bookings.find('b1')).toEqual(expired);
+    expect(await bookings.expireOver(NOW + 2000)).toEqual([]);
   });
 });

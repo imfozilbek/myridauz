@@ -25,9 +25,11 @@ export function createMemoryBookings(): BookingRepository {
     byTrips: async (tripIds) => list().filter((booking) => tripIds.includes(booking.tripId)),
     byPassenger: async (passengerId) => list().filter((booking) => booking.passengerId === passengerId),
     expireOver: async (now) => {
-      for (const booking of list())
-        if (booking.status === 'requested' && booking.expiresAt <= now)
-          rows.set(booking.id, withoutPoints({ ...booking, status: 'expired', updatedAt: now }));
+      const expired = list()
+        .filter((booking) => booking.status === 'requested' && booking.expiresAt <= now)
+        .map((booking) => withoutPoints({ ...booking, status: 'expired' as const, updatedAt: now }));
+      for (const booking of expired) rows.set(booking.id, booking);
+      return expired;
     },
     keepingPoints: async (before) =>
       list()
