@@ -8,20 +8,24 @@ import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
+import { useSeatCommission } from './seat-commission';
 import './market.css';
 
 type PriceStepProps = {
   readonly recommendation: Recommendation;
   readonly initial?: number;
+  // A driver sees the commission of a seat at this price (docs/86 V8); a passenger pays none.
+  readonly commission?: boolean;
   readonly onBack: () => void;
   readonly onDone: (price: number) => void;
 };
 
 // The price per seat is ready: the recommendation (docs/09). The person may change it by steps,
 // only within the bounds; outside them the field is red and the bounds are shown.
-export function PriceStep({ recommendation, initial, onBack, onDone }: PriceStepProps) {
+export function PriceStep({ recommendation, initial, commission = false, onBack, onDone }: PriceStepProps) {
   useScreenView('market.price');
   const { t, formatMoney } = useI18n();
+  const seatCommission = useSeatCommission();
   const { minPrice, maxPrice, roundStep } = recommendation;
   const [price, setPrice] = useState(initial ?? recommendation.price);
   const out = price < minPrice || price > maxPrice;
@@ -62,6 +66,7 @@ export function PriceStep({ recommendation, initial, onBack, onDone }: PriceStep
       <Text className={out ? 'step-error step-note' : 'step-hint step-note'}>
         {t('market.price.bounds', { min: formatMoney(minPrice), max: formatMoney(maxPrice) })}
       </Text>
+      {commission && !out ? <Text className="step-hint step-note">{seatCommission(price)}</Text> : null}
       {out ? null : <MainButton text={t('common.continue')} onClick={() => onDone(price)} />}
     </StepLayout>
   );

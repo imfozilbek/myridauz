@@ -4,10 +4,15 @@ import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 
-type Props = { readonly wallet: Wallet; readonly children?: ReactNode };
+type Props = {
+  readonly wallet: Wallet;
+  // The rule of the commission under the balances, for the driver (docs/86 V8).
+  readonly rule?: string;
+  readonly children?: ReactNode;
+};
 
 // The two balances and the journal (docs/12): every sum with its reason, newest first.
-export function WalletView({ wallet, children }: Props) {
+export function WalletView({ wallet, rule, children }: Props) {
   const { t, formatMoney, formatDate } = useI18n();
   const signed = (amount: number) => (amount > 0 ? `+${formatMoney(amount)}` : formatMoney(amount));
   const until = wallet.bonusExpiresAt
@@ -15,7 +20,7 @@ export function WalletView({ wallet, children }: Props) {
     : undefined;
   return (
     <List>
-      <Section>
+      <Section footer={rule}>
         <Cell subtitle={until} after={<CellValue>{formatMoney(wallet.bonus)}</CellValue>}>
           {t('wallet.bonus')}
         </Cell>

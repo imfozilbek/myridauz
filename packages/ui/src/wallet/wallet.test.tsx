@@ -32,6 +32,12 @@ describe('"Hamyon" of a driver (docs/12)', () => {
     expect(await screen.findByText(/481\s000/)).toBeTruthy();
     expect(screen.getByText(/gacha$/)).toBeTruthy();
     expect(screen.getByText('Bonus berildi')).toBeTruthy();
+    // The rule of the commission in one line (docs/86 V8).
+    expect(
+      screen.getByText(
+        'Komissiya yoʻlovchi joyini tasdiqlaganingizda olinadi: avval bonusdan, keyin asosiy hisobdan.',
+      ),
+    ).toBeTruthy();
     expect(screen.getByText(/-19\s000/)).toBeTruthy();
     expect(tracked.some((event) => event.name === 'wallet_open')).toBe(true);
     await tap('Hisobni toʻldirish');

@@ -52,7 +52,14 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
     return <TimeStep date={request.date} now={now} onBack={onBack} onDone={(at) => setDepartAt(at)} />;
   }
   if (price === null) {
-    return <PriceStep recommendation={recommendation} onBack={() => setDepartAt(null)} onDone={setPrice} />;
+    return (
+      <PriceStep
+        recommendation={recommendation}
+        commission
+        onBack={() => setDepartAt(null)}
+        onDone={setPrice}
+      />
+    );
   }
   const fee = commissionFor(commission, price, request.seats);
   if (money === 'top_up') return <TopUpScreen onBack={() => setMoney('not_enough')} />;

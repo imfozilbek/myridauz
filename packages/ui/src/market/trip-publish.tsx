@@ -13,6 +13,7 @@ import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
 import type { TripDraft } from './trip-draft';
 import { RouteView } from './route-view';
+import { useSeatCommission } from './seat-commission';
 import { useWhenLabel } from './when';
 
 type TripPublishProps = {
@@ -33,6 +34,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
   const { market } = useApiClients();
   const { t, formatMoney } = useI18n();
   const when = useWhenLabel();
+  const seatCommission = useSeatCommission();
   const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const [published, setPublished] = useState(false);
@@ -72,7 +74,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
     <StepLayout icon="newTrip" title={t('market.review.title')}>
       <BackButton onClick={onBack} />
       <List>
-        <Section>
+        <Section footer={seatCommission(draft.price)}>
           <div className="route-summary">
             <RouteView from={draft.route.from.id} to={draft.route.to.id} departAt={draft.departAt} km={km} />
           </div>

@@ -33,7 +33,7 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
       <Title weight="1" className="market-title">
         {t('wallet.title')}
       </Title>
-      <WalletView wallet={value}>
+      <WalletView wallet={value} rule={t('wallet.rule')}>
         <Section>
           <Cell before={<IconTile name="wallet" />} onClick={() => setTopUp(true)}>
             {t('wallet.topUp')}

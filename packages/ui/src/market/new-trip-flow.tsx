@@ -101,6 +101,7 @@ export function NewTripFlow({
         <PriceStep
           recommendation={recommendation}
           {...(draft.price ? { initial: draft.price } : {})}
+          commission
           onBack={() => setStep('seats')}
           onDone={(price) => next('price', { price }, woman ? 'comment' : 'woman')}
         />

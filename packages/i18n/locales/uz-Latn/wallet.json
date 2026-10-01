@@ -3,6 +3,7 @@
   "hint": "Bonus, komissiya va tarix",
   "bonus": "Bonus",
   "main": "Asosiy hisob",
+  "rule": "Komissiya yoʻlovchi joyini tasdiqlaganingizda olinadi: avval bonusdan, keyin asosiy hisobdan.",
   "bonusUntil": "{date}gacha",
   "history": "Tarix",
   "empty": "Hali operatsiya yoʻq",
