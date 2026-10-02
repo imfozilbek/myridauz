@@ -58,7 +58,9 @@ const context = {
 };
 
 const analyticsEventSchema = z.discriminatedUnion('name', [
-  z.object({ name: z.literal('screen_open'), ...context }),
+  // The first screen of a launch says where the person came from: the kind of the startapp link,
+  // «direct» without one (docs/89 S3). Only the kind, never the ids of the link.
+  z.object({ name: z.literal('screen_open'), source: id.optional(), ...context }),
   z.object({ name: z.literal('client_error'), code: id, ...context }),
   // An answer of the API with an error (G12): its code and the last opened screen.
   z.object({ name: z.literal('api_error'), code: id, ...context }),
