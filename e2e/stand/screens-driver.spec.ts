@@ -23,7 +23,7 @@ test('a newcomer: welcome and the way to become a driver', async ({ page }) => {
   await openHome(page, 'driver', NEWCOMER, 'android');
   await shot(page, 'android', 'd01-welcome');
   await mainButton(page).click();
-  await shot(page, 'android', 'd02-consent');
+  await shot(page, 'android', 'd02-about');
 });
 
 for (const platform of PLATFORMS)

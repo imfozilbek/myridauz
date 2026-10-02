@@ -72,12 +72,9 @@ type ModerationRules = {
   readonly ownerMinutes: number;
 };
 
-// The party of the legal documents (docs/30): filled when the owner has them, placeholders until then.
+// The party of the legal documents (docs/30): the requisites come from the admin Mini App (G34); the
+// address answers people until the owner enters one there.
 type Company = {
-  readonly legalName: string;
-  readonly form: string;
-  readonly stir: string;
-  readonly address: string;
   readonly email: string;
 };
 

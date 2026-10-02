@@ -130,11 +130,12 @@ describe('delete my data (docs/30)', () => {
     expect(reload).toHaveBeenCalled();
   });
 
-  it('opens a legal document from the profile', () => {
+  it('opens a legal document from the profile', async () => {
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Hujjatlar')).toBeTruthy();
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
-    expect(screen.getByText(/Tahrir 1\.1/)).toBeTruthy();
+    // The edition comes with the requisites from the API (G34).
+    expect(await screen.findByText(/Tahrir 1\.1/)).toBeTruthy();
   });
 });

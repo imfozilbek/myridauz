@@ -55,3 +55,5 @@
 | T25 | Предпросмотр | Ofertada shunday koʻrinadi |
 | T26 | После сохранения | Saqlandi. Hujjatlar {version} tahririga oʻtdi. |
 | T27 | История | Oʻzgarishlar tarixi |
+| T28 | Подпись пункта меню (новое, на согласие) | Hujjatlardagi kompaniya nomi, STIR va manzil |
+| T29 | Ошибка формы (новое, на согласие) | Kompaniya rekvizitlarini tekshiring. |
