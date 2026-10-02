@@ -12,7 +12,8 @@ type Saved = {
   readonly dropoff: WayEnd | null;
 };
 
-const isPoint = (end: unknown) => end === null || typeof asRecord(asRecord(end)?.['place'])?.['id'] === 'string';
+const isPoint = (end: unknown) =>
+  end === null || typeof asRecord(asRecord(end)?.['place'])?.['id'] === 'string';
 
 // A booking kept as a draft of its trip (docs/94 F3, F8): the seats, the way and both points come
 // back on «Назад» and in a reopened app; a way the trip no longer has drops the draft.

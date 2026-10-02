@@ -42,7 +42,9 @@ export function RequestsSearchFlow({ onBack, initial }: FlowProps) {
       setRoute(value);
       setPicking(false);
     };
-    return <RouteScreen allowWholeRegion {...(route ? { initial: route } : {})} onBack={onBack} onDone={done} />;
+    return (
+      <RouteScreen allowWholeRegion {...(route ? { initial: route } : {})} onBack={onBack} onDone={done} />
+    );
   }
   if (!date) return <DateStep now={now} onBack={() => setPicking(true)} onDone={setDate} />;
   return (

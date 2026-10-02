@@ -102,6 +102,7 @@ function WayForm({ onBack, onDone, directory, initial }: WayFormProps) {
     return (
       <RouteScreen
         allowWholeRegion={false}
+        {...(from && to ? { initial: { from: from.place, to: to.place } } : {})}
         onBack={() => setEditing(null)}
         onDone={(route) => {
           setFrom(centerOf(route.from));

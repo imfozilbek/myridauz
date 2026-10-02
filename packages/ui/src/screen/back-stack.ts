@@ -10,8 +10,7 @@ export type NativeBack = {
 const owners: BackOwner[] = [];
 let detach: (() => void) | null = null;
 
-const topOwner = (): BackOwner | undefined =>
-  owners.findLast((owner) => owner.overlay) ?? owners.at(-1);
+const topOwner = (): BackOwner | undefined => owners.findLast((owner) => owner.overlay) ?? owners.at(-1);
 
 // The owner holds «Назад» until the returned release: the button hides when nobody holds it.
 export function claimBack(owner: BackOwner, native: NativeBack): () => void {
