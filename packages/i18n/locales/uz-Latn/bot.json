@@ -30,7 +30,7 @@
   "support.received": "Xabaringiz qabul qilindi. Tez orada javob beramiz.",
   "support.incoming": "Murojaat: {name} (ID {id})\n\n{text}",
   "support.reply": "Javob berish",
-  "support.replyPrompt": "Javobingizni yozing: matn yoki ovozli xabar.",
+  "support.replyPrompt": "Javobingizni yozing: matn, rasm yoki ovozli xabar.",
   "support.history": "Tarix",
   "support.historyTitle": "{name} (ID {id}): murojaatlar tarixi",
   "support.historyEmpty": "Oldingi yozishmalar yoʻq.",
