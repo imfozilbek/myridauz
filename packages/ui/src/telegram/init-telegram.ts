@@ -1,4 +1,5 @@
 import type { BrandColors } from '@platform/brands';
+import { syncFromCloud } from './device-storage';
 import { OUTSIDE_TELEGRAM, type TelegramSession } from './in-telegram-context';
 import {
   backButton,
@@ -37,6 +38,8 @@ export function initTelegram(colors: BrandColors): TelegramSession {
   // A swipe must not close the app by accident (docs/21).
   swipeBehavior.disableVertical.ifAvailable();
   miniApp.ready.ifAvailable();
+  // The small values of the person from their other phones (docs/88 L12); a failed sync keeps this phone's copy.
+  void syncFromCloud().catch(() => undefined);
   const telegramPlatform = retrieveLaunchParams().tgWebAppPlatform;
   const platform = APPLE_PLATFORMS.has(telegramPlatform) ? 'ios' : 'base';
   const hasCamera = PHONE_PLATFORMS.has(telegramPlatform);
