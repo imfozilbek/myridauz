@@ -35,10 +35,9 @@ test('driver fixes the application: screenshots', async ({ page }) => {
   await pressBack(page);
   await page.getByText(TEXT.photos, { exact: true }).click();
   await expect(page.locator('.photo-frame img')).toHaveCount(3);
+  // The face is the first photo of the same screen (G34).
+  await expect(page.getByText(TEXT.face, { exact: true })).toBeVisible();
   await shot('4-photos');
-  await pressBack(page);
-  await page.getByText(TEXT.avatar, { exact: true }).click();
-  await shot('5-avatar');
 });
 
 test('moderation: screenshots', async ({ page }) => {

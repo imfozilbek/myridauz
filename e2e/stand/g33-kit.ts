@@ -63,18 +63,18 @@ export async function waitBubbles(page: Page, count: number) {
 // A phone of its own: another person, nothing kept from the last one.
 export const phone = async (browser: Browser) => (await browser.newContext({ viewport: NARROW })).newPage();
 
-// A new driver up to the car photos: Chevrolet Damas, white, with a face photo.
+// A new driver up to the car photos: Chevrolet Damas, white, with a face photo. The face is the
+// first photo of the same screen (G34): «Rasmga olish» is left on the car photos only.
 export async function toCarPhotos(page: Page) {
   await page.getByText(TEXT.becomeDriver).first().click();
-  await mainButton(page).click();
   await page.getByText('Chevrolet', { exact: true }).click();
   await page.getByText('Damas', { exact: true }).click();
   await page.getByText('Oq', { exact: true }).click();
   await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await mainButton(page).click();
-  await page.getByText(TEXT.addPhoto).click();
+  await page.getByText(TEXT.face, { exact: true }).click();
   await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
-  await mainButton(page).click();
+  await expect(page.getByText(TEXT.retake)).toHaveCount(1);
 }
 
 // Ten drivers of their own, so the trips of G33 never meet the limits of other scenarios.

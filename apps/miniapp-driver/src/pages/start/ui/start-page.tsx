@@ -41,7 +41,8 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
-// The main screen after the application is sent; while it is checked a note says what waits (docs/04).
+// The main screen right after the registration (G34): before sending, the card of the application;
+// while it is checked, a note says what waits (docs/04).
 export function StartPage() {
   return (
     <DriverGate>
@@ -51,7 +52,7 @@ export function StartPage() {
 }
 
 // An approved driver publishes from the main button, so the list does not repeat «Yangi safar»;
-// while the application is checked there is no main button and the action stays (G25).
+// until the application is approved there is no main button and the action stays (G25).
 function DriverStart() {
   const pending = usePending();
   return (

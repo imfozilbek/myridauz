@@ -16,3 +16,6 @@ export const usePending = () => {
   const status = useDriver()?.application.status;
   return status === 'pending' || status === 'draft';
 };
+
+// A driver who has not sent the application yet (G34): asked to fill it, not told it is checked.
+export const useNotSent = () => useDriver()?.application.status === 'draft';

@@ -19,7 +19,8 @@ import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { useHasCamera } from '../../telegram/in-telegram-context';
-import { FaceSlot, useFaceShot } from '../face-shot';
+import { useFaceShot } from '../../account/profile/use-face-shot';
+import { FaceSlot } from '../face-shot';
 import { CarPhotoSlot } from '../photo-slot';
 import { hasProblem } from '../problem-note';
 

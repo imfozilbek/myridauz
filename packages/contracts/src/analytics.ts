@@ -9,7 +9,7 @@ export type MiniApp = (typeof MINI_APPS)[number];
 // G34: two screens. «consent» on the welcome, «about» when the answers are sent, then the phone.
 export const REGISTRATION_STEPS = ['consent', 'about', 'phone', 'done'] as const;
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
-export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
+export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 // The main screen (G25): a trip of the block, the question card, the last route, the main button.
 const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry'] as const;

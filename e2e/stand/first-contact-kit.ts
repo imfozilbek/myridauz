@@ -19,6 +19,7 @@ const STYLE = `
   .card { background: rgb(255, 255, 255); border-radius: 12px; overflow: hidden; align-self: center; width: 300px; }
   .card img { width: 100%; display: block; } .card p { margin: 10px 12px; white-space: pre-line; }
   .bubble { background: rgb(255, 255, 255); border-radius: 12px; padding: 8px 10px; max-width: 80%; white-space: pre-line; }
+  .photo { display: block; width: 100%; border-radius: 8px; margin-bottom: 6px; }
   .mine { align-self: flex-end; background: rgb(225, 254, 198); }
   .button { margin-top: 4px; background: rgba(0,0,0,.25); color: rgb(255, 255, 255); border-radius: 8px;
     padding: 8px; text-align: center; max-width: 80%; }
@@ -51,12 +52,19 @@ export const beforeStart = (page: Page, bot: Bot, description: string) =>
     'START',
   );
 
-// The chat after «Start»: the command of the person and the answer of the bot with its buttons.
-export function afterStart(page: Page, bot: Bot, reply: Reply) {
+// A picture of the bot is served by the landing from brands/<brand>/landing (G34): the stand reads
+// the same file instead of the internet.
+const landingImage = (url: string) =>
+  `data:image/png;base64,${readFileSync(`brands/${brand.id}/landing${new URL(url).pathname}`).toString('base64')}`;
+
+// The chat after a message of the person: the answer of the bot, its picture and buttons.
+export function answered(page: Page, bot: Bot, said: string, reply: Reply) {
   const buttons = (reply.reply_markup?.inline_keyboard ?? [])
     .flat()
     .map((button) => `<div class="button">${escape(button.text)}</div>`)
     .join('');
-  const answer = `<div class="bubble">${escape(reply.text ?? '')}</div>${buttons}`;
-  return draw(page, bot, `<div class="bubble mine">/start</div>${answer}`);
+  const picture = reply.photo ? `<img class="photo" src="${landingImage(reply.photo)}">` : '';
+  const words = escape(reply.caption ?? reply.text ?? '');
+  const answer = `<div class="bubble">${picture}${words}</div>${buttons}`;
+  return draw(page, bot, `<div class="bubble mine">${escape(said)}</div>${answer}`);
 }
