@@ -70,6 +70,7 @@ type Company = {
   readonly form: string;
   readonly stir: string;
   readonly address: string;
+  readonly email: string;
 };
 
 // A channel zone: the username without "@", its name, the plate code of its region (docs/36)

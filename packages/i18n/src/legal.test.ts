@@ -7,7 +7,13 @@ const i18n = createI18n(DEFAULT_LOCALE);
 const brand = {
   name: 'Yoʻl',
   bots: { support: 'yol_yordam_bot' },
-  company: { legalName: 'Yoʻl', form: 'MChJ', stir: '123456789', address: 'Toshkent' },
+  company: {
+    legalName: 'Yoʻl',
+    form: 'MChJ',
+    stir: '123456789',
+    address: 'Toshkent',
+    email: 'yol@example.uz',
+  },
   commission: { percent: 7, minPerSeat: 2000 },
   promo: { amount: 100_000, grants: 2, days: 10, windowDays: 60 },
 };
@@ -31,6 +37,8 @@ describe('legal texts (docs/30)', () => {
     const text = i18n.t('legal.offer.7.text', values);
     expect(text).toContain('7 foizi');
     expect(text).not.toMatch(/\{\w+\}/u);
+    expect(i18n.t('legal.offer.12.text', values)).toContain('yol@example.uz manziliga');
+    expect(i18n.t('legal.privacy.7.text', values)).toContain('yol@example.uz manziliga');
   });
 
   it('writes the edition with its date', () => {

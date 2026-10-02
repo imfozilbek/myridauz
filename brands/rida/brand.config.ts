@@ -34,5 +34,6 @@ export const brandConfig: BrandConfig = {
     form: '{{company_form}}',
     stir: '{{company_stir}}',
     address: '{{company_address}}',
+    email: 'myrida.llc@gmail.com',
   },
 };
