@@ -2,7 +2,7 @@ import { ApiError, type ChatClient } from '@platform/api-client';
 import type { SharedTrip } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { confirmed } from '../bookings/booking-test-kit';
+import { TRIP_DAY, confirmed } from '../bookings/booking-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
@@ -109,6 +109,7 @@ describe('a close person becomes a passenger (docs/18)', () => {
 
 describe('the passenger shares the trip (docs/43)', () => {
   it('sends the card, tells about getting in and stops sharing', async () => {
+    vi.setSystemTime(TRIP_DAY);
     const share = vi.fn<ChatClient['share']>(async () => ({
       preparedMessageId: null,
       link: 'https://t.me/x',

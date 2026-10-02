@@ -25,6 +25,9 @@ export const booking: Booking = {
   arrivedAt: null,
 };
 
+// The morning of the trip in Toshkent: «Mashinaga chiqdim» is there only on its day (docs/89 P7).
+export const TRIP_DAY = Date.parse('2026-10-02T01:00:00Z');
+
 export const confirmed: Booking = {
   ...booking,
   status: 'confirmed',
