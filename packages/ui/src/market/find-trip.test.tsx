@@ -12,7 +12,13 @@ afterEach(cleanup);
 
 describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { timeout: 20_000 }, () => {
   it('searches the route by lists on a day, filters "ayol bor" and opens a trip', async () => {
-    const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => [trip]);
+    const atPitak = {
+      ...trip,
+      id: 't2',
+      pickupMode: 'pitak' as const,
+      driver: { ...trip.driver, firstName: 'Bobur' },
+    };
+    const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => [trip, atPitak]);
     const { tracked } = renderMarket(
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips } }),
@@ -29,7 +35,12 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
       to: '1730401',
       date: expect.any(String),
     });
-    fireEvent.click(screen.getByRole('checkbox'));
+    // «Uyimdan olib ketsin» keeps only the trips that pick up at the door (docs/88 L5).
+    expect(screen.getByText('Bobur')).toBeTruthy();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Uyimdan olib ketsin' }));
+    expect(screen.queryByText('Bobur')).toBeNull();
+    expect(screen.getByText('Jasur')).toBeTruthy();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Mashinada ayol bor' }));
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0]).toMatchObject({ woman: '1' }));
     expect(tracked.filter((event) => event.name === 'way_step').map((event) => event.step)).toEqual([
       'opened',
