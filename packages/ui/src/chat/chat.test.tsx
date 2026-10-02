@@ -40,6 +40,8 @@ describe('the chat screen (docs/07)', () => {
     // Not confirmed yet: no call button (docs/08).
     expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
     expect(screen.getByLabelText('Xabar').tagName).toBe('TEXTAREA');
+    // One line like Telegram; it grows with the text.
+    expect(screen.getByLabelText('Xabar').getAttribute('rows')).toBe('1');
     fireEvent.change(screen.getByLabelText('Xabar'), { target: { value: 'Qayerda uchrashamiz?' } });
     // Send is an arrow like in Telegram; a screen reader still says «Yuborish» (docs/88 L10).
     expect(screen.queryByText('Yuborish')).toBeNull();

@@ -81,6 +81,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
         {warning ? <Text className="chat-warning">{t('chat.warning')}</Text> : null}
         <Textarea
           aria-label={t('chat.placeholder')}
+          rows={1}
           placeholder={t('chat.placeholder')}
           value={text}
           maxLength={MAX_CHAT_TEXT}
