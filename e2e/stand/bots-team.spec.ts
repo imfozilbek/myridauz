@@ -39,7 +39,7 @@ test('T60, T61. a person writes to the support bot, the team answers by a reply 
   expect(received.text).toBe(wordsOf('bot.support.received'));
   await expect.poll(() => told('admin', OWNER.id, 'safar topa olmayapman')).toBeTruthy();
   const [link] = standRows(
-    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support'`,
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support' AND team_chat_id = ${OWNER.id}`,
   );
   await say('admin', OWNER, 'Ertaga yangi safarlar boʻladi', Number(link?.['team_message_id']));
   await expect.poll(() => told('support', AZIZA.id, 'Ertaga yangi safarlar')).toBeTruthy();
@@ -59,7 +59,7 @@ test('a voice to the support bot and the voice answer of the team (G30)', async 
   await expect.poll(() => voiceTo('admin', OWNER.id)).toBeTruthy();
   expect((await voiceTo('admin', OWNER.id))?.text).toContain(wordsOf('bot.support.voice'));
   const [link] = standRows(
-    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} ORDER BY created_at DESC LIMIT 1`,
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND team_chat_id = ${OWNER.id} ORDER BY created_at DESC LIMIT 1`,
   );
   expect((await sayByVoice('admin', OWNER, Number(link?.['team_message_id']))).text).toBe(
     wordsOf('bot.support.sent'),
