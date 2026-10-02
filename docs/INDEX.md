@@ -93,4 +93,5 @@
 | 88 | [88-ui-library-improvements.md](88-ui-library-improvements.md) | Улучшения UX и UI готовыми элементами TelegramUI, Telegram SDK и Lucide |
 | 89 | [89-global-review.md](89-global-review.md) | Глобальный обход 02.10: 49 находок по попутчику, водителю, админке, лендингу и системе |
 | 90 | [90-filters-review.md](90-filters-review.md) | Фильтры, порядок и поиск на всех экранах: 42 находки, сначала ошибки |
+| 91 | [91-lessons-learned-6.md](91-lessons-learned-6.md) | Журнал уроков: продолжение 6 (№80 и дальше) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
