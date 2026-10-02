@@ -28,8 +28,8 @@ const run = (command, args, env = {}) =>
 const token = () => `${randomBytes(4).readUInt32BE()}:${randomBytes(24).toString('base64url')}`;
 
 mkdirSync(STAND_DIR, { recursive: true });
-// Made again when a bot is new (the support bot, G30): every bot needs its token.
-const LAST_BOT = 'SUPPORT_BOT_TOKEN=';
+// Made again when a value is new (the support bot, G30; calls, G33): every bot needs its token.
+const LAST_BOT = 'TURN_KEY_TOKEN=';
 if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_BOT)) {
   const vars = {
     PASSENGER_BOT_TOKEN: token(),
@@ -38,6 +38,11 @@ if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_B
     SUPPORT_BOT_TOKEN: token(),
     TELEGRAM_WEBHOOK_SECRET: randomBytes(16).toString('hex'),
     ADMIN_TELEGRAM_IDS: String(STAND_OWNER_ID),
+    // Calls are switched on with values that reach nothing: a call rings, but never connects (G33).
+    REALTIME_APP_ID: 'stand',
+    REALTIME_APP_SECRET: 'stand',
+    TURN_KEY_ID: 'stand',
+    TURN_KEY_TOKEN: 'stand',
   };
   writeFileSync(
     STAND_VARS,
