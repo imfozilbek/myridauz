@@ -1,4 +1,4 @@
-// Points the 3 bots at the deployed Worker (docs/45). Run after the first deploy and when bot settings change.
+// Points the bots at the deployed Worker (docs/45). Run after the first deploy and when bot settings change.
 // Needs TELEGRAM_WEBHOOK_SECRET; bot tokens stay in Cloudflare secrets (docs/32).
 import { apiHost, loadBrand } from '../brands/index.ts';
 
