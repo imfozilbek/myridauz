@@ -25,7 +25,8 @@ export type SupportDeps = {
   readonly now: () => number;
 };
 
-// Each team member gets a copy; a reply to any copy reaches the person.
+// Each given team member gets a copy; a reply to any copy reaches the person.
+// The answer goes back to the writer, who is returned to count the work (docs/92).
 export async function forwardToTeam(deps: SupportDeps, writer: Writer, content: Content): Promise<void> {
   for (const teamId of await deps.teamIds()) {
     const messageId = await deps.toTeam(teamId, content).catch(() => undefined);
@@ -38,9 +39,9 @@ export async function answerPerson(
   teamChatId: number,
   repliedMessageId: number,
   content: Content,
-): Promise<boolean> {
+): Promise<Writer | undefined> {
   const writer = await deps.links.writer(teamChatId, repliedMessageId);
-  if (writer === undefined) return false;
+  if (writer === undefined) return undefined;
   await deps.toWriter(writer.bot, writer.chatId, content);
-  return true;
+  return writer;
 }

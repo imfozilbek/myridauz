@@ -21,7 +21,12 @@ export type Decided = {
   readonly by: number;
   readonly at: number;
 };
-export type DecisionLog = { add(entry: Decided): Promise<void>; of(userId: number): Promise<Decided[]> };
+export type DecisionLog = {
+  add(entry: Decided): Promise<void>;
+  of(userId: number): Promise<Decided[]>;
+  // How many decisions each team member made in [from, to): the daily digest (docs/92).
+  countsBetween(from: number, to: number): Promise<Map<number, number>>;
+};
 
 // The users module, seen from here: a name and a face, never a phone (docs/07).
 export type Person = {

@@ -28,4 +28,13 @@ export const d1Decisions = (db: D1Database): DecisionLog => ({
       by: row.decided_by,
       at: row.decided_at,
     })),
+  countsBetween: async (from, to) => {
+    const { results } = await db
+      .prepare(
+        'SELECT decided_by, COUNT(*) AS count FROM application_log WHERE decided_at >= ? AND decided_at < ? GROUP BY decided_by',
+      )
+      .bind(from, to)
+      .all<{ decided_by: number; count: number }>();
+    return new Map(results.map((row) => [row.decided_by, row.count]));
+  },
 });

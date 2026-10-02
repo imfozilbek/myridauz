@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { MY_AVATAR_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
+import { assignTo } from '../assignments';
 import type { AppEnv, Bindings } from '../../env';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
@@ -41,7 +42,7 @@ export const driversDeps = (env: Bindings): DriversDeps => {
         brand: loadBrand(env.BRAND),
         adminToken: env.ADMIN_BOT_TOKEN,
         driverToken: env.DRIVER_BOT_TOKEN,
-        teamIds,
+        recipients: (userId) => assignTo(env, 'application', userId),
         photos,
         people,
       }),
@@ -82,6 +83,10 @@ export { decideApplication } from './application/moderate';
 // The Cron job: approved drivers without a wallet get bonus 1 (docs/12).
 export const grantMissedBonuses = async (env: Bindings) =>
   missedWelcome(env, await driversDeps(env).applications.approved());
+
+// Decisions of each team member in [from, to): the daily digest (docs/92).
+export const decisionsBetween = (env: Bindings, from: number, to: number) =>
+  driversDeps(env).decisions.countsBetween(from, to);
 
 // The car of an approved driver, for trips (docs/04): null for everyone else.
 export const approvedCar = async (env: Bindings, userId: number) => {

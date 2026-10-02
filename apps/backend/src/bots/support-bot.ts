@@ -1,5 +1,6 @@
 import type { BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { assignTo } from '../modules/assignments';
 import { forwardToTeam, supportDeps } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
@@ -15,8 +16,8 @@ export const toSupportBot = (brand: BrandConfig, chatId: number) =>
     inline_keyboard: [[{ text: t('bot.admin.toSupport'), url: `https://t.me/${brand.bots.support}` }]],
   });
 
-// A question to the team (docs/50): a text or a voice message. Every team member gets a copy in
-// the admin bot; the writer hears «qabul qilindi» from the support bot.
+// A question to the team (docs/50): a text or a voice message. The one assigned member gets a copy
+// in the admin bot (docs/92); the writer hears «qabul qilindi» from the support bot.
 async function toSupport(context: BotContext, message: BotMessage) {
   const chatId = message.chat.id;
   const voice = await voiceOf(context, SUPPORT_BOT, message);
@@ -26,7 +27,11 @@ async function toSupport(context: BotContext, message: BotMessage) {
     id: String(message.from?.id ?? chatId),
     text: message.text ?? t('bot.support.voice'),
   });
-  await forwardToTeam(supportDeps(context.env, context.fetch), { chatId, bot: SUPPORT_BOT }, { text, voice });
+  const deps = {
+    ...supportDeps(context.env, context.fetch),
+    teamIds: () => assignTo(context.env, 'support', chatId),
+  };
+  await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, { text, voice });
   return sendMessage(chatId, t('bot.support.received'));
 }
 

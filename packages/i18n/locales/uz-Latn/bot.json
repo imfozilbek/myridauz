@@ -145,5 +145,8 @@
   "profile.support.description": "{brand} yordam xizmati.\n\nSafar, bron, hamyon yoki hisob boʻyicha savolingizni shu yerga yozing. Jamoamiz shu bot orqali javob beradi.",
   "channel.door": "🏠 Uyingizdan olib ketadi",
   "channel.pitak": "🚏 {pitak}dan olib ketadi",
-  "channel.doorOrPitak": "🏠 Uyingizdan yoki 🚏 {pitak}dan olib ketadi"
+  "channel.doorOrPitak": "🏠 Uyingizdan yoki 🚏 {pitak}dan olib ketadi",
+  "digest.title": "📊 Jamoa ishi: {date}",
+  "digest.line": "{name}: murojaat {answered}/{total}, ariza {applications}",
+  "digest.open": "Javobsiz murojaatlar: {count}"
 }
