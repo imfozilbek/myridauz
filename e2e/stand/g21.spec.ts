@@ -80,8 +80,9 @@ test('3. a bot button opens its own booking', async ({ page }) => {
 });
 
 test('2. the driver cancels: the open screen of the passenger changes by itself', async ({ page }) => {
-  await openAs(page, 'passenger', ZARINA);
-  await openBooking(page);
+  // By its link: a seat of Zarina already on the road stands above it in the list (docs/90 F-D3).
+  await openAs(page, 'passenger', ZARINA, { search: `?${BOOKING_LINK}=${booking.id}` });
+  await expect(page.getByText(t('chat.open'))).toBeVisible();
   await shot(page, '2-before');
   await answer(BEKZOD, booking.id, 'cancel');
   // No reload: the signal of the backend refreshes the screen (docs/64).
