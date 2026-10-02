@@ -29,7 +29,7 @@
 | `bot.digest.line` | {name}: murojaat {answered}/{total}, ariza {applications} |
 | `bot.digest.open` | Javobsiz murojaatlar: {count} |
 
-## После приёмки: кнопка и «Operator N» (решение владельца 02.10.2026)
+## После приёмки: кнопка и «Operator N» (решение владельца 02.10.2026, тексты согласованы)
 
 | Ключ | Текст |
 |---|---|
