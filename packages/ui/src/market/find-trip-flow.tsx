@@ -22,16 +22,22 @@ type Screen =
 type Props = {
   readonly onBack: () => void;
   readonly initial?: Route | undefined;
+  // A bot button or «Shu kungi boshqa safarlar»: the trips of that day at once (docs/89 S10, P8).
+  readonly day?: string | undefined;
   // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
 };
 
 // A passenger looks for a trip (G26, docs/74): the route by lists, a day, all the trips of the
 // route. The points come only at the booking. A link of the landing brings the districts (docs/59).
-export function FindTripFlow({ onBack, initial, pick }: Props) {
+export function FindTripFlow({ onBack, initial, day, pick }: Props) {
   const { track } = useAnalytics();
   const [screen, setScreen] = useState<Screen>(
-    initial ? { step: 'date', route: initial } : { step: 'route' },
+    initial && day
+      ? { step: 'results', route: initial, date: day }
+      : initial
+        ? { step: 'date', route: initial }
+        : { step: 'route' },
   );
   const [now] = useState(Date.now);
   const [filters, setFilters] = useState<TripFilters>({ woman: false, door: false });

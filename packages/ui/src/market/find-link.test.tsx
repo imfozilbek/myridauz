@@ -29,6 +29,19 @@ describe('a route from the landing (docs/59)', () => {
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 
+  it('opens the trips of the route and the day from a bot button (docs/89 S10)', async () => {
+    window.history.replaceState(null, '', '/?find=1726_1730_2026-10-03');
+    const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => []);
+    renderMarket(
+      <FindLink enabled>
+        <p>Asosiy</p>
+      </FindLink>,
+      testClients({ market: { searchTrips } }),
+    );
+    await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled(), { timeout: 5000 });
+    expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730', date: '2026-10-03' });
+  });
+
   it('starts from the route when a place is unknown, and keeps the main screen without a link', async () => {
     window.history.replaceState(null, '', '/#tgWebAppStartParam=find_9999_1730');
     renderMarket(
