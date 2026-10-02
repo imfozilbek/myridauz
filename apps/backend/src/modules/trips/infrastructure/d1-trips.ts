@@ -112,11 +112,21 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
-  since: async (from, limit) =>
+  // Both read by the index trips_depart (migration 0028), not the whole table (docs/90 F-A6).
+  between: async (from, to, limit) =>
     (
       await db
-        .prepare('SELECT * FROM trips WHERE depart_at >= ? ORDER BY depart_at LIMIT ?')
-        .bind(from, limit)
+        .prepare('SELECT * FROM trips WHERE depart_at >= ? AND depart_at < ? ORDER BY depart_at LIMIT ?')
+        .bind(from, to, limit)
+        .all<Row>()
+    ).results.map(toTrip),
+  pricedBetween: async (from, to, limit) =>
+    (
+      await db
+        .prepare(
+          "SELECT * FROM trips WHERE depart_at >= ? AND depart_at < ? AND status != 'cancelled' ORDER BY depart_at DESC LIMIT ?",
+        )
+        .bind(from, to, limit)
         .all<Row>()
     ).results.map(toTrip),
   completeOver: async (now) => {

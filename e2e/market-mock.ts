@@ -1,4 +1,5 @@
 import type { Page, Route } from '@playwright/test';
+import { tashkentDate } from '@platform/contracts';
 import MAIN_DIRECTIONS from '../apps/backend/seed/main-directions.json' with { type: 'json' };
 
 // Trips, requests and prices as the Mini Apps see them (G07). Toshkent → Samarqand: ≈ 300 km (docs/16).
@@ -78,9 +79,12 @@ export async function mockMarket(page: Page) {
     published.push(trip);
     return json(route, trip, 201);
   });
-  await page.route('**/api/admin/trips', (route) =>
-    json(route, { trips: [...found, { ...tripOf('3', 'Bekzod', false, 20), status: 'cancelled' }] }),
-  );
+  // The team's list asks one day at a time (docs/90 F-A6): each trip comes on its own day.
+  const teamTrips = [...found, { ...tripOf('3', 'Bekzod', false, 20), status: 'cancelled' }];
+  await page.route('**/api/admin/trips?*', (route) => {
+    const date = new URL(route.request().url()).searchParams.get('date');
+    return json(route, { trips: teamTrips.filter((trip) => tashkentDate(trip.departAt) === date) });
+  });
   await page.route('**/api/driver/requests?*', (route) => json(route, { requests: [request] }));
   await page.route('**/api/passenger/requests', (route) =>
     route.request().method() === 'GET'

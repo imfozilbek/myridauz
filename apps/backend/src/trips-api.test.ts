@@ -54,7 +54,9 @@ describe('trips and requests API (docs/09)', () => {
   it('shows the trips to the team only; the team does not approve trips', async () => {
     await registerUser(900);
     expect((await call('/admin/trips', PASSENGER, { app: 'admin' })).status).toBe(403);
-    const response = await call('/admin/trips', 900, { app: 'admin' });
+    // One day at a time (docs/90 F-A6): a list without the day is a wrong question.
+    expect((await call('/admin/trips', 900, { app: 'admin' })).status).toBe(400);
+    const response = await call(`/admin/trips?date=${tashkentDate(Date.now())}`, 900, { app: 'admin' });
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ trips: [] });
   });

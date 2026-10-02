@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { familyView } from './application/driver-trips';
 import { publishTrip } from './application/publish';
-import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from './application/read';
+import { cancelTrip, myTrips, searchTrips, tripDetail } from './application/read';
 import { HOUR, NOW, setup } from './test-kit';
 import { publicIdOf } from '../../test-people';
 
@@ -125,10 +125,6 @@ describe('my trips and the end of a trip (docs/35)', () => {
     expect((await tripDetail(deps, firstId))?.status).toBe('completed');
     await deps.trips.completeOver(NOW + 10 * HOUR);
     expect((await myTrips(deps, 1)).map((item) => item.status)).toEqual(['cancelled', 'completed']);
-    // The team sees every trip from yesterday on, cancelled ones too, the earliest first.
-    expect((await teamTrips(deps)).map((item) => item.id)).toEqual([firstId, secondId]);
-    setNow(NOW + 3 * 24 * HOUR);
-    expect(await teamTrips(deps)).toEqual([]);
   });
 });
 

@@ -54,9 +54,9 @@ export function createMarketClient(options: SignedOptions) {
       rideRequest(await post(PASSENGER_REQUESTS_PATH, input)),
     cancelRequest: async (id: string): Promise<RideRequest> =>
       rideRequest(await post(passengerRequestCancelPath(id), {})),
-    // The admin Mini App: the trips from yesterday on, to look at (not to approve).
-    teamTrips: async (): Promise<Trip[]> =>
-      tripsSchema.parse(await (await request(ADMIN_TRIPS_PATH)).json()).trips,
+    // The admin Mini App: the trips of one day, to look at (not to approve).
+    teamTrips: async (date: string): Promise<Trip[]> =>
+      tripsSchema.parse(await (await request(`${ADMIN_TRIPS_PATH}?${query({ date })}`)).json()).trips,
   };
 }
 

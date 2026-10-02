@@ -20,10 +20,15 @@ export function createMemoryTrips(): TripRepository {
       [...trips.values()].filter(
         (trip) => trip.status !== 'cancelled' && trip.endsAt >= from && trip.endsAt < to,
       ),
-    since: async (from, limit) =>
+    between: async (from, to, limit) =>
       [...trips.values()]
-        .filter((trip) => trip.departAt >= from)
+        .filter((trip) => trip.departAt >= from && trip.departAt < to)
         .sort((a, b) => a.departAt - b.departAt)
+        .slice(0, limit),
+    pricedBetween: async (from, to, limit) =>
+      [...trips.values()]
+        .filter((trip) => trip.status !== 'cancelled' && trip.departAt >= from && trip.departAt < to)
+        .sort((a, b) => b.departAt - a.departAt)
         .slice(0, limit),
     completeOver: async (now) => {
       for (const trip of trips.values())
