@@ -5,7 +5,6 @@ import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { ChoiceStep } from '../driver/steps/choice-step';
 import { IconTile } from '../icon-tile';
 import { useMapView } from '../map/use-map-view';
 import { BackButton } from '../telegram/back-button';
@@ -14,6 +13,7 @@ import { requestPosition } from '../telegram/location';
 import { useScreenBackground } from '../telegram/screen-background';
 import { stopsInOrder, withMoved, type StopKind } from './driver-stops';
 import { StopList } from './stop-list';
+import { NavigatorSheet } from './navigator-sheet';
 import { useNavigator } from './use-navigator';
 import '../way/way.css';
 
@@ -48,17 +48,6 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
     view.show(marks, points.length > 1 ? points : null);
     view.fit(points);
   }, [view, shown, kind, colors]);
-  if (navigator.asking)
-    return (
-      <ChoiceStep
-        screen="bookings.navigator"
-        icon="navigate"
-        title={t('way.map.navigator')}
-        choices={navigator.navigators.map((id) => ({ value: id, label: t(`way.navigator.${id}`) }))}
-        onBack={navigator.cancel}
-        onDone={(chosen) => navigator.pick(chosen, navigator.asking)}
-      />
-    );
   const move = (index: number, by: -1 | 1) => {
     byHand.current = true;
     setStops((now) => ({ ...now, [kind]: withMoved(now[kind], index, by) }));
@@ -86,6 +75,7 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
           </Section>
         ) : null}
       </List>
+      <NavigatorSheet navigator={navigator} />
       {shown.length > 0 ? (
         <MainButton text={t('way.map.go')} onClick={() => navigator.go(shown.map((stop) => stop.point))} />
       ) : null}

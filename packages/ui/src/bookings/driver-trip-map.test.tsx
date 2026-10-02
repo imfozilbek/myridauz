@@ -51,6 +51,9 @@ describe('«Safar xaritasi» of the driver (G24, docs/70)', { timeout: 20_000 },
     expect(names).toEqual(['Qatortol', 'Yunusobod']);
     fireEvent.click(screen.getAllByLabelText('Pastga')[0] as HTMLElement);
     await tap('Yoʻl koʻrsatish');
+    // The choice opens as a sheet over the map: the stops stay in their place (docs/88 L13).
+    expect(await screen.findByRole('dialog')).toBeTruthy();
+    expect(screen.getByText('Qatortol')).toBeTruthy();
     await tap('Yandex');
     expect(openExternal).toHaveBeenCalledWith(
       'https://yandex.uz/maps/?rtext=~41.36,69.3~41.29,69.21&rtt=auto',
