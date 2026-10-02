@@ -13,6 +13,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { FilteredEmpty } from './filtered-empty';
 import { RouteView } from './route-view';
 import { TripCard } from './trip-card';
 import { useDayLabel } from './when';
@@ -111,13 +112,21 @@ export function TripResults({ route, filters, onFilters, date, now, onBack, onOp
         ))}
       </List>
       {trips === null ? <ScreenSkeleton /> : null}
-      {shown?.length === 0 ? (
-        <EmptyState
-          icon="search"
-          title={t('market.search.empty')}
-          description={t('market.search.emptyHint')}
-          action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
-        />
+      {trips && shown?.length === 0 ? (
+        <FilteredEmpty
+          route={route}
+          date={date}
+          filters={filters}
+          found={trips}
+          onClear={() => onFilters({ woman: false, door: false })}
+        >
+          <EmptyState
+            icon="search"
+            title={t('market.search.empty')}
+            description={t('market.search.emptyHint')}
+            action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
+          />
+        </FilteredEmpty>
       ) : null}
     </div>
   );
