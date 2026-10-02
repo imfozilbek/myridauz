@@ -1,34 +1,25 @@
 import { ApiError } from '@platform/api-client';
-import type { Direction, PricingPreview, PricingState, PricingVariables } from '@platform/contracts';
+import type { Direction, PricingPreview, PricingVariables } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { CellValue } from '../account/cell-value';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { PlacesGate } from '../market/places-gate';
-import { RouteView } from '../market/route-view';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DirectionEdit } from './direction-edit';
-import { PricingHistory } from './pricing-history';
 import { PricingPreviewScreen } from './pricing-preview';
+import { PricingView, type Loaded } from './pricing-view';
 import { VariablesEditor } from './variables-editor';
-import '../market/market.css';
 
-type Loaded = { readonly state: PricingState; readonly directions: Direction[] };
 type Mode =
   | { readonly kind: 'view' }
-  | { readonly kind: 'edit' }
+  | { readonly kind: 'edit'; readonly typed: PricingVariables | null }
   | { readonly kind: 'preview'; readonly next: PricingVariables; readonly preview: PricingPreview }
   | { readonly kind: 'direction'; readonly direction: Direction; readonly failed: TranslationKey | null };
-const FIELDS = ['ratePerKm', 'roundStep', 'minPrice', 'maxPrice'] as const;
 
 // The price engine for the team: the formula, the directions, the history (docs/23).
 export function PricingScreen({ onBack }: { readonly onBack: () => void }) {
@@ -42,7 +33,6 @@ export function PricingScreen({ onBack }: { readonly onBack: () => void }) {
 function Pricing({ onBack }: { readonly onBack: () => void }) {
   useScreenView('pricing');
   useScreenBackground('grouped');
-  const { t, formatMoney } = useI18n();
   const { pricing } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
@@ -82,6 +72,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
     return (
       <VariablesEditor
         current={variables}
+        typed={mode.typed}
         onBack={() => setMode({ kind: 'view' })}
         onPreview={(next) => void preview(next)}
       />
@@ -91,7 +82,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
     return (
       <PricingPreviewScreen
         preview={mode.preview}
-        onBack={() => setMode({ kind: 'edit' })}
+        onBack={() => setMode({ kind: 'edit', typed: mode.next })}
         onSave={() => void done(pricing.save(mode.next))}
       />
     );
@@ -108,42 +99,12 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
     );
   }
   return (
-    <div className="market">
-      <Screen onBack={onBack} />
-      <Title weight="1" className="market-title">
-        {t('pricing.title')}
-      </Title>
-      <Text className="market-subtitle">{t('pricing.hint')}</Text>
-      <List>
-        <Section header={t('pricing.variables')}>
-          {FIELDS.map((field) => (
-            <Cell key={field} after={<CellValue>{formatMoney(variables[field])}</CellValue>}>
-              {t(`pricing.${field}`)}
-            </Cell>
-          ))}
-          <Cell onClick={() => setMode({ kind: 'edit' })}>{t('pricing.edit')}</Cell>
-        </Section>
-        <Section header={t('pricing.directions')} footer={t('pricing.directionsHint')}>
-          {loaded.directions.map((direction) => (
-            <Cell
-              key={`${direction.from}:${direction.to}`}
-              subtitle={
-                direction.manual === null
-                  ? t('pricing.formula', { price: formatMoney(direction.formula ?? 0) })
-                  : t('pricing.manual', { price: formatMoney(direction.manual) })
-              }
-              description={direction.km === null ? undefined : t('pricing.km', { km: String(direction.km) })}
-              onClick={() => setMode({ kind: 'direction', direction, failed: null })}
-            >
-              <RouteView from={direction.from} to={direction.to} />
-            </Cell>
-          ))}
-        </Section>
-        <PricingHistory
-          history={loaded.state.history}
-          onRollback={(version) => void done(pricing.rollback(version))}
-        />
-      </List>
-    </div>
+    <PricingView
+      loaded={loaded}
+      onBack={onBack}
+      onEdit={() => setMode({ kind: 'edit', typed: null })}
+      onDirection={(direction) => setMode({ kind: 'direction', direction, failed: null })}
+      onRollback={(version) => void done(pricing.rollback(version))}
+    />
   );
 }

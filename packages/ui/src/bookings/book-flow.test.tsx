@@ -1,6 +1,6 @@
 import type { BookingsClient } from '@platform/api-client';
-import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
@@ -10,6 +10,7 @@ import { booking } from './booking-test-kit';
 import { BookFlow } from './book-flow';
 
 afterEach(cleanup);
+beforeEach(() => localStorage.clear());
 
 const FARGONA_WHERE = {
   district: '1730401',
@@ -33,6 +34,41 @@ const open = (
   );
   return { book, map };
 };
+
+describe('a booking keeps its answers (docs/94 F3, F8, S1)', { timeout: 20_000 }, () => {
+  it('«Назад» shows the way, the seats and the point chosen before; a closed app comes back', async () => {
+    open('both');
+    await tap('2 kishi');
+    await tap('Pitakdan');
+    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
+    await tap('Shu yerda');
+    await screen.findByText('Qoʻyliq pitagi');
+    await tap('Orqaga');
+    expect(await screen.findByText('Uyingiz qayerda?')).toBeTruthy();
+    await tap('Orqaga');
+    // The way and the seats have their tick: «Davom etish» keeps them.
+    await tap('Davom etish');
+    await screen.findByText('Uyingiz qayerda?');
+    await tap('Orqaga');
+    await tap('Orqaga');
+    // The seats chosen before; the way is known, the point is next.
+    await tap('Davom etish');
+    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Yangi Margʻilon'));
+    await tap('Shu yerda');
+    await screen.findByText('Qoʻyliq pitagi');
+    cleanup();
+    const { book } = open('both');
+    expect(await screen.findByText('Qoʻyliq pitagi')).toBeTruthy();
+    expect(screen.getByText('Oldingi yozganingiz tiklandi.')).toBeTruthy();
+    await tap('Soʻrov yuborish');
+    await screen.findByText('Soʻrov yuborildi');
+    expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ mode: 'pitak', seats: 2 }));
+    cleanup();
+    open('both');
+    await screen.findByText('2 kishi');
+    expect(screen.queryByText('Davom etish')).toBeNull();
+  });
+});
 
 describe('a booking with its points (G26, docs/74)', { timeout: 20_000 }, () => {
   it('asks no point at the door for «Pitakdan» and shows the pitak in the check', async () => {

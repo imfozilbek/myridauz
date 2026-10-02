@@ -12,7 +12,7 @@ export function PitakMap({ pitak }: { readonly pitak: Pitak }) {
   const { map } = useApiClients();
   const { colors } = useBrand().theme;
   const { t } = useI18n();
-  const { box, view } = useMapView(map, pitak.point);
+  const { box, view } = useMapView(map, pitak.point, true);
   useEffect(() => {
     view?.show([{ point: pitak.point, color: colors.text, label: t('way.mark.pitak') }], null);
   }, [view, pitak, colors, t]);

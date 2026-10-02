@@ -1,8 +1,5 @@
 import {
   chatServerEventSchema,
-  type CallEnding,
-  type CallTrack,
-  type CallView,
   type ChatClientEvent,
   type ChatMessage,
   type ChatServerEvent,
@@ -11,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { reconnectDelay } from './reconnect';
+import { useCallState } from './use-call-state';
 
 export type ChatState = 'connecting' | 'open' | 'failed';
 
@@ -21,25 +19,21 @@ export function useChat(key: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [state, setState] = useState<ChatState>('connecting');
   const [warning, setWarning] = useState(false);
-  // The voice call of this chat (docs/08): open after the confirmation, its state, how it ended.
-  const [canCall, setCanCall] = useState(false);
-  const [call, setCall] = useState<CallView | null>(null);
-  const [ended, setEnded] = useState<CallEnding | null>(null);
-  const onTrack = useRef<(track: CallTrack) => void>(() => undefined);
+  // Own messages the chat sent back: what the person wrote is delivered (docs/94 C3).
+  const [delivered, setDelivered] = useState(0);
+  const calls = useCallState();
   const socket = useRef<WebSocket | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   const handle = (data: ChatServerEvent) => {
     if (data.type === 'history') {
       setMessages(data.messages);
-      setCanCall(data.canCall);
-    } else if (data.type === 'message') setMessages((list) => [...list, data.message]);
-    else if (data.type === 'warning') setWarning(true);
-    else if (data.type === 'call') {
-      setCall(data.call);
-      if (data.call) setEnded(null);
-    } else if (data.type === 'callEnded') setEnded(data.reason);
-    else onTrack.current(data.track);
+      calls.setCanCall(data.canCall);
+    } else if (data.type === 'message') {
+      setMessages((list) => [...list, data.message]);
+      if (data.message.author === 'me') setDelivered((count) => count + 1);
+    } else if (data.type === 'warning') setWarning(true);
+    else calls.handle(data);
   };
   // A chat that was open and dropped reconnects by itself; a chat that never opened shows the error.
   const failures = useRef(0);
@@ -49,6 +43,7 @@ export function useChat(key: string) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const lost = () => {
       if (closed) return;
+      calls.lost();
       const delay = wasOpen.current ? reconnectDelay(failures.current) : null;
       failures.current += 1;
       if (delay === null) return setState('failed');
@@ -101,8 +96,9 @@ export function useChat(key: string) {
   const emit = useCallback((event: Exclude<ChatClientEvent, { type: 'send' }>) => {
     socket.current?.send(JSON.stringify(event));
   }, []);
-  const calling = { canCall, call, ended, emit, onTrack, dismiss: () => setEnded(null) };
-  return { messages, state, warning, send, retry, calling };
+  const { canCall, call, ended, onTrack, dismiss } = calls;
+  const calling = { canCall, call, ended, emit, onTrack, dismiss };
+  return { messages, state, warning, delivered, send, retry, calling };
 }
 
 export type ChatCalling = ReturnType<typeof useChat>['calling'];

@@ -91,6 +91,7 @@ export function DriverBooking({ booking, onClose, onMap }: Props) {
   if (step === 'confirmed') {
     return (
       <StepLayout icon="selected" title={t('bookings.confirmed.title')} hint={t('bookings.confirmed.hint')}>
+        <Screen onBack={() => onClose(true)} />
         <MainButton text={t('way.map.title')} onClick={onMap} />
         <SecondaryButton text={t('chat.open')} onClick={() => setStep('chat')} />
       </StepLayout>

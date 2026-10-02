@@ -9,49 +9,66 @@ import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
-import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { useDraft } from '../screen/draft';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { DraftNote } from './draft-note';
+import { checkReviewDraft, reviewDraftKey, type ReviewDraft } from './feedback-draft';
+import { SentScreen } from './sent-screen';
 import { StarsRow } from './stars-row';
 import '../market/market.css';
 
-type Props = { readonly bookingId: string; readonly onBack: () => void; readonly onComplain: () => void };
+type Props = {
+  readonly bookingId: string;
+  readonly onBack: () => void;
+  readonly onComplain: () => void;
+  readonly onClose?: (() => void) | undefined;
+};
 
 // "Safarni baholang" (docs/24): stars, quick tags, a short text; shown only when both sides rated.
-export function ReviewScreen({ bookingId, onBack, onComplain }: Props) {
+export function ReviewScreen({ bookingId, onBack, onComplain, onClose }: Props) {
   const { feedback } = useApiClients();
   const { value, failed, reload } = useLoad(() => feedback.target(bookingId));
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
-  return <ReviewForm bookingId={bookingId} target={value} onBack={onBack} onComplain={onComplain} />;
+  const form = { bookingId, onBack, onComplain, onClose };
+  return <ReviewForm {...form} target={value} />;
 }
 
 type FormProps = Props & { readonly target: ReviewTarget };
-type Step = 'edit' | 'busy' | 'sent' | { readonly failed: unknown };
+type Step = 'edit' | 'sent' | { readonly failed: unknown };
 
-function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
+function ReviewForm({ bookingId, target, onBack, onComplain, onClose }: FormProps) {
   useScreenView('reviews.form');
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { feedback } = useApiClients();
-  const [stars, setStars] = useState(target.mine?.stars ?? 0);
-  const [tags, setTags] = useState<readonly string[]>(target.mine?.tags ?? []);
-  const [text, setText] = useState(target.mine?.text ?? '');
+  const draft = useDraft(reviewDraftKey(bookingId), checkReviewDraft);
+  const [form, setForm] = useState<ReviewDraft>(
+    () => draft.restored ?? { stars: 0, tags: [], text: '', ...target.mine },
+  );
+  const { stars, tags, text } = form;
   const [step, setStep] = useState<Step>('edit');
   const offered = target.rateeRole === 'driver' ? DRIVER_TAGS : PASSENGER_TAGS;
+  const change = (patch: Partial<ReviewDraft>) => {
+    const next = { ...form, ...patch };
+    setForm(next);
+    draft.save(next);
+  };
   const toggle = (tag: string) => {
     haptic.select();
-    setTags(tags.includes(tag) ? tags.filter((known) => known !== tag) : [...tags, tag]);
+    change({ tags: tags.includes(tag) ? tags.filter((known) => known !== tag) : [...tags, tag] });
   };
+  // The promise keeps the loader on the button while sending (docs/94 C5).
   const send = async () => {
-    setStep('busy');
     try {
       await feedback.review({ bookingId, stars, tags: [...tags], text: text.trim() });
       track({ name: 'review_sent', screen: 'reviews.form' });
       haptic.success();
+      draft.clear();
       setStep('sent');
     } catch (error) {
       haptic.error();
@@ -60,15 +77,19 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
   };
   if (step === 'sent')
     return (
-      <div className="market">
-        <Screen onBack={onBack} />
-        <EmptyState icon="star" title={t('reviews.sent')} description={t('reviews.blind')} />
+      <SentScreen
+        icon="star"
+        title={t('reviews.sent')}
+        description={t('reviews.blind')}
+        onBack={onBack}
+        onClose={onClose}
+      >
         {target.rateeRole === 'driver' ? (
           <List>
             <FavoriteCell driverId={target.rateeId} screen="reviews.form" />
           </List>
         ) : null}
-      </div>
+      </SentScreen>
     );
   return (
     <div className="market">
@@ -77,9 +98,10 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
         {t('reviews.title')}
       </Title>
       <Text className="market-subtitle">{t('reviews.about', { name: target.rateeName })}</Text>
+      <DraftNote shown={draft.restored !== null} />
       <List>
         <Section>
-          <StarsRow value={stars} onChange={setStars} />
+          <StarsRow value={stars} onChange={(chosen) => change({ stars: chosen })} />
         </Section>
         <Section header={t('reviews.tagsTitle')}>
           {offered.map((tag) => (
@@ -97,7 +119,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
             placeholder={t('reviews.textPlaceholder')}
             value={text}
             maxLength={REVIEW_TEXT_MAX}
-            onChange={(event) => setText(event.target.value)}
+            onChange={(event) => change({ text: event.target.value })}
           />
         </Section>
         {typeof step === 'object' ? (
@@ -109,7 +131,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
           </Cell>
         </Section>
       </List>
-      {stars > 0 && step !== 'busy' ? <MainButton text={t('reviews.send')} onClick={send} /> : null}
+      {stars > 0 ? <MainButton text={t('reviews.send')} onClick={send} /> : null}
     </div>
   );
 }

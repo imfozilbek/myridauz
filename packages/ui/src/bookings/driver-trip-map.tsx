@@ -31,7 +31,8 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
   const [stops, setStops] = useState(() => stopsInOrder(bookings, null));
   const byHand = useRef(false);
   const shown = stops[kind];
-  const { box, view } = useMapView(map, shown[0]?.point ?? stops.dropoffs[0]?.point ?? { lat: 0, lng: 0 });
+  const start = shown[0]?.point ?? stops.dropoffs[0]?.point ?? { lat: 0, lng: 0 };
+  const { box, view } = useMapView(map, start, true);
   const navigator = useNavigator();
   // Where the driver stands orders the pickups, until the driver changes the order by hand.
   useEffect(() => {
@@ -54,7 +55,8 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
   };
   return (
     <div className="trip-map">
-      <Screen onBack={onBack} />
+      {/* The open sheet of navigators takes «Назад» and the main button first (docs/94 C6). */}
+      <Screen onBack={navigator.asking ? navigator.cancel : onBack} />
       <div ref={box} className="trip-map-box" data-state={view ? 'ready' : 'loading'} />
       <List>
         <div className="trip-map-tabs">
@@ -76,7 +78,7 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
         ) : null}
       </List>
       <NavigatorSheet navigator={navigator} />
-      {shown.length > 0 ? (
+      {shown.length > 0 && !navigator.asking ? (
         <MainButton text={t('way.map.go')} onClick={() => navigator.go(shown.map((stop) => stop.point))} />
       ) : null}
     </div>

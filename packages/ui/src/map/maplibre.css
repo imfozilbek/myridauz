@@ -1,0 +1,5 @@
+/* A small map inside a page moves with two fingers (docs/94 F11). The map library explains it in
+   English over the map; the product speaks Uzbek only, so its note is never shown. */
+.maplibregl-cooperative-gesture-screen {
+  display: none;
+}

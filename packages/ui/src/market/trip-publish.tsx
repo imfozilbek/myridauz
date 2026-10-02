@@ -21,6 +21,8 @@ type TripPublishProps = {
   readonly km: number;
   readonly onBack: () => void;
   readonly onClose: () => void;
+  // Published: the draft of this trip is gone (docs/94 F3).
+  readonly onPublished: () => void;
   // "Qaytish safari": the same trip the other way, one tap after publishing (docs/40, question 43).
   readonly onReturn: () => void;
   // This trip is the way back of the one just published.
@@ -28,7 +30,8 @@ type TripPublishProps = {
 };
 
 // Everything on one screen before publishing; then a short "done" with the meeting point hint.
-export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: TripPublishProps) {
+export function TripPublish(props: TripPublishProps) {
+  const { draft, km, onBack, onClose, onPublished, onReturn, isReturn } = props;
   useScreenView('market.review');
   const { track } = useAnalytics();
   const { market } = useApiClients();
@@ -55,6 +58,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
       track({ name: 'trip_step', screen: 'market.review', step: 'published' });
       if (isReturn) track({ name: 'return_trip_created', screen: 'market.review' });
       haptic.success();
+      onPublished();
       setPublished(true);
     } catch (caught) {
       haptic.error();
@@ -64,6 +68,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
   if (published) {
     return (
       <StepLayout icon="selected" title={t('market.published.title')} hint={t('market.published.hint')}>
+        <Screen onBack={onClose} />
         <MainButton text={t('market.done')} onClick={onClose} />
         {isReturn ? null : <SecondaryButton text={t('market.published.return')} onClick={onReturn} />}
       </StepLayout>

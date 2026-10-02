@@ -1,4 +1,5 @@
 import type { ModerationReason } from '@platform/contracts';
+import { useState } from 'react';
 import { useAccount } from '../../account/account-context';
 import { AvatarPicker } from '../../account/profile/avatar-picker';
 import { ProfilePhoto } from '../../account/profile/profile-photo';
@@ -23,6 +24,8 @@ export function AvatarStep({ reasons, onBack, onDone }: AvatarStepProps) {
   const account = useAccount();
   const profile = account?.profile;
   const hasAvatar = profile?.hasAvatar === true;
+  // «Davom etish» is not over the open camera, like on the photos of the car (docs/94 F7).
+  const [cameraOpen, setCameraOpen] = useState(false);
   return (
     <StepLayout icon="profile" title={t('drivers.avatar.title')} hint={t('drivers.avatar.hint')}>
       <Screen onBack={onBack} />
@@ -33,9 +36,9 @@ export function AvatarStep({ reasons, onBack, onDone }: AvatarStepProps) {
           ) : null}
         </span>
         <ProblemNote reasons={reasons} place="avatar" />
-        <AvatarPicker />
+        <AvatarPicker onCamera={setCameraOpen} />
       </div>
-      {hasAvatar ? <MainButton text={t('common.continue')} onClick={onDone} /> : null}
+      {hasAvatar && !cameraOpen ? <MainButton text={t('common.continue')} onClick={onDone} /> : null}
     </StepLayout>
   );
 }

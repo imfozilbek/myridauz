@@ -28,13 +28,13 @@ function History({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { comfort } = useApiClients();
-  const { value, failed, reload } = useLoad(() => comfort.history());
+  const { value, failed, reload, refresh } = useLoad(() => comfort.history());
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.length === 0) {
     return (
       <>
-        <Screen onBack={onBack} />
+        <Screen onBack={onBack} onRefresh={refresh} />
         <EmptyState
           icon="history"
           title={t('comfort.history.empty')}
@@ -45,7 +45,7 @@ function History({ onBack }: { readonly onBack: () => void }) {
   }
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('comfort.history.title')}
       </Title>

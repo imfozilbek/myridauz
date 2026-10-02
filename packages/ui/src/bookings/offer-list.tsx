@@ -115,6 +115,7 @@ export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
       title={t('bookings.offer.accepted.title')}
       hint={t('bookings.offer.accepted.hint')}
     >
+      <Screen onBack={onDone} />
       <MainButton text={t('market.done')} onClick={onDone} />
       {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => void share()} /> : null}
     </StepLayout>

@@ -10,7 +10,7 @@ import { MainButton } from '../telegram/bottom-button';
 type Step<T> = { readonly onBack: () => void; readonly onDone: (value: T) => void };
 
 // "Mashinada ayol bor": a woman goes along, a relative without Telegram (docs/06).
-export function WomanStep({ onBack, onDone }: Step<boolean>) {
+export function WomanStep({ selected, onBack, onDone }: Step<boolean> & { readonly selected?: boolean }) {
   const { t } = useI18n();
   return (
     <ChoiceStep
@@ -21,14 +21,21 @@ export function WomanStep({ onBack, onDone }: Step<boolean>) {
         { value: true, label: t('market.woman.yes') },
         { value: false, label: t('market.woman.no') },
       ]}
+      {...(selected === undefined ? {} : { selected })}
       onBack={onBack}
       onDone={onDone}
     />
   );
 }
 
+type CommentProps = Step<string> & {
+  readonly initial: string;
+  // Each letter goes to the draft: a closed app gives the comment back (docs/94 F3).
+  readonly onType: (text: string) => void;
+};
+
 // The only text of a trip, and it may stay empty (docs/19: typing only when it is needed).
-export function CommentStep({ initial, onBack, onDone }: Step<string> & { readonly initial: string }) {
+export function CommentStep({ initial, onType, onBack, onDone }: CommentProps) {
   const { t } = useI18n();
   const [text, setText] = useState(initial);
   return (
@@ -40,7 +47,10 @@ export function CommentStep({ initial, onBack, onDone }: Step<string> & { readon
             placeholder={t('market.comment.placeholder')}
             value={text}
             maxLength={COMMENT_MAX}
-            onChange={(event) => setText(event.target.value)}
+            onChange={(event) => {
+              setText(event.target.value);
+              onType(event.target.value);
+            }}
           />
         </Section>
       </List>

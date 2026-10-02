@@ -29,7 +29,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { pitaks } = useApiClients();
-  const { value, failed, reload } = useLoad(() => pitaks.all());
+  const { value, failed, reload, refresh } = useLoad(() => pitaks.all());
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Open | null>(null);
   if (failed || directory.status === 'error')
@@ -62,7 +62,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   const pitakName = (id: string | null) => value.pitaks.find((pitak) => pitak.id === id)?.name;
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('pitaks.title')}
       </Title>

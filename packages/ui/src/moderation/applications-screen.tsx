@@ -11,10 +11,15 @@ import { IconTile } from '../icon-tile';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { useForgetOnLeave } from '../market/list-leave';
+import { useKeepPlace } from '../screen/keep-place';
+import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ApplicationScreen, type Outcome } from './application-screen';
 import { forgetLinkedApplication, linkedApplication } from './linked-application';
+
+const QUEUE = 'moderation.queue';
 
 // Applications waiting for the team, the oldest first (docs/04).
 export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) {
@@ -25,13 +30,16 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
   const [failed, setFailed] = useState(false);
   const [open, setOpen] = useState<ApplicationSummary | null>(null);
   const [told, setTold] = useState<Outcome | null>(null);
+  useForgetOnLeave(QUEUE);
   const load = useCallback(() => {
     setFailed(false);
     moderation.queue().then(setQueue, () => setFailed(true));
   }, [moderation]);
   useEffect(load, [load]);
-  // A new application or another moderator's decision: the queue refreshes quietly (docs/64).
-  useFeedChange(() => void moderation.queue().then(setQueue, () => undefined));
+  // A new application, another moderator's decision, a closed application or a pull down: the queue
+  // refreshes quietly, the old one stays on the screen (docs/64, docs/94 F2).
+  const refresh = useCallback(() => moderation.queue().then(setQueue, () => undefined), [moderation]);
+  useFeedChange(() => void refresh());
   useEffect(() => {
     const linked = linkedApplication();
     if (linked === null) return;
@@ -40,8 +48,8 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
   }, [moderation]);
   const close = useCallback(() => {
     setOpen(null);
-    load();
-  }, [load]);
+    void refresh();
+  }, [refresh]);
   // The next application opens at once; the empty queue says so (docs/89 S9).
   const next = useCallback(
     (outcome: Outcome) => {
@@ -70,7 +78,13 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
   if (!queue) return <ScreenSkeleton onBack={onBack} />;
   return (
     <>
-      <QueueView queue={queue} onOpen={setOpen} onBack={onBack} title={t('common.admin.applications')} />
+      <QueueView
+        queue={queue}
+        onOpen={setOpen}
+        onBack={onBack}
+        onRefresh={refresh}
+        title={t('common.admin.applications')}
+      />
       {notice}
     </>
   );
@@ -81,15 +95,20 @@ type QueueViewProps = {
   readonly title: string;
   readonly onOpen: (application: ApplicationSummary) => void;
   readonly onBack: () => void;
+  readonly onRefresh: () => unknown;
 };
 
-function QueueView({ queue, title, onOpen, onBack }: QueueViewProps) {
+// Back from an application the queue stands at the same place; an application decided by another
+// moderator goes away without moving the row under the finger (docs/94 F2, S3).
+function QueueView({ queue, title, onOpen, onBack, onRefresh }: QueueViewProps) {
   useScreenView('moderation.queue');
   const { t } = useI18n();
+  useListPlace(QUEUE, true);
+  useKeepPlace(queue);
   if (queue.length === 0) {
     return (
       <>
-        <Screen onBack={onBack} />
+        <Screen onBack={onBack} onRefresh={onRefresh} />
         <EmptyState
           icon="applications"
           title={t('moderation.queue.empty')}
@@ -100,7 +119,7 @@ function QueueView({ queue, title, onOpen, onBack }: QueueViewProps) {
   }
   return (
     <div className="moderation">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={onRefresh} />
       <Title weight="1" className="moderation-title">
         {title}
       </Title>
@@ -109,6 +128,7 @@ function QueueView({ queue, title, onOpen, onBack }: QueueViewProps) {
           {queue.map((application) => (
             <Cell
               key={application.userId}
+              data-row={application.userId}
               before={<IconTile name="car" />}
               subtitle={`${application.car.make} ${application.car.model} · ${formatPlate(application.car.plate)}`}
               onClick={() => onOpen(application)}

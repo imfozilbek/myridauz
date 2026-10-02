@@ -6,6 +6,7 @@ import { Field, List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 
@@ -13,17 +14,20 @@ const FIELDS = ['ratePerKm', 'roundStep', 'minPrice', 'maxPrice'] as const;
 
 type VariablesEditorProps = {
   readonly current: PricingVariables;
+  // Back from the preview: the numbers typed before it (docs/94 B9).
+  readonly typed: PricingVariables | null;
   readonly onBack: () => void;
   readonly onPreview: (next: PricingVariables) => void;
 };
 
 // The four numbers of the formula (docs/23). Nothing is saved here: the next screen shows the effect.
-export function VariablesEditor({ current, onBack, onPreview }: VariablesEditorProps) {
+export function VariablesEditor({ current, typed, onBack, onPreview }: VariablesEditorProps) {
   useScreenView('pricing.edit');
   const { t } = useI18n();
   const [values, setValues] = useState(() =>
-    Object.fromEntries(FIELDS.map((field) => [field, String(current[field])])),
+    Object.fromEntries(FIELDS.map((field) => [field, String((typed ?? current)[field])])),
   );
+  const guard = useUnsavedGuard(FIELDS.some((field) => values[field] !== String(current[field])));
   const [invalid, setInvalid] = useState(false);
   const submit = () => {
     const parsed = pricingVariablesSchema.safeParse(
@@ -35,7 +39,7 @@ export function VariablesEditor({ current, onBack, onPreview }: VariablesEditorP
   };
   return (
     <StepLayout icon="statistics" title={t('pricing.editTitle')} hint={t('pricing.editHint')}>
-      <Screen onBack={onBack} />
+      <Screen onBack={guard(onBack)} />
       <List>
         {FIELDS.map((field) => (
           <Field

@@ -22,9 +22,12 @@ import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
 type Props = { readonly request: RideRequest; readonly onBack: () => void; readonly onClose: () => void };
 type Money = 'not_enough' | 'top_up' | null;
+type Step = 'time' | 'price' | 'review';
+type Time = { readonly at: number; readonly time: string };
 
 // A driver offers a time and a price on a request (docs/35): the time on the request's day,
 // the recommended price, a check with the commission. The passenger accepts or declines.
+// «Назад» shows the time and the price chosen before (docs/94 F8).
 export function OfferFlow({ request, onBack, onClose }: Props) {
   const { t, formatMoney } = useI18n();
   const { track } = useAnalytics();
@@ -32,7 +35,8 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   const { commission } = useBrand();
   const [now] = useState(Date.now);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [departAt, setDepartAt] = useState<number | null>(null);
+  const [step, setStep] = useState<Step>('time');
+  const [time, setTime] = useState<Time | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [money, setMoney] = useState<Money>(null);
   const [sent, setSent] = useState(false);
@@ -43,24 +47,41 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   if (sent) {
     return (
       <StepLayout icon="selected" title={t('bookings.offer.sent.title')} hint={t('bookings.offer.sent.hint')}>
+        <Screen onBack={onClose} />
         <MainButton text={t('market.done')} onClick={onClose} />
       </StepLayout>
     );
   }
   if (!recommendation) return <ScreenSkeleton onBack={onBack} />;
-  if (departAt === null) {
-    return <TimeStep date={request.date} now={now} onBack={onBack} onDone={(at) => setDepartAt(at)} />;
-  }
-  if (price === null) {
+  if (step === 'time' || !time) {
     return (
-      <PriceStep
-        recommendation={recommendation}
-        commission
-        onBack={() => setDepartAt(null)}
-        onDone={setPrice}
+      <TimeStep
+        date={request.date}
+        now={now}
+        {...(time ? { initial: time.time } : {})}
+        onBack={onBack}
+        onDone={(at, value) => {
+          setTime({ at, time: value });
+          setStep('price');
+        }}
       />
     );
   }
+  if (step === 'price' || price === null) {
+    return (
+      <PriceStep
+        recommendation={recommendation}
+        {...(price === null ? {} : { initial: price })}
+        commission
+        onBack={() => setStep('time')}
+        onDone={(value) => {
+          setPrice(value);
+          setStep('review');
+        }}
+      />
+    );
+  }
+  const departAt = time.at;
   const fee = commissionFor(commission, price, request.seats);
   if (money === 'top_up') return <TopUpScreen onBack={() => setMoney('not_enough')} />;
   if (money === 'not_enough')
@@ -85,7 +106,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
       title={t('bookings.offer.review.title')}
       hint={t('bookings.offer.review.hint')}
     >
-      <Screen onBack={() => setPrice(null)} />
+      <Screen onBack={() => setStep('price')} />
       <List>
         <Section>
           <div className="route-summary">

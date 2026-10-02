@@ -46,7 +46,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const busy = days.filter((day) => day.trips.length > 0);
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={reload} />
       <Title weight="1" className="market-title">
         {t('common.admin.trips')}
       </Title>

@@ -4,13 +4,14 @@ import { BookFlow } from '../bookings/book-flow';
 import { useApiClients } from '../context/api-clients';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { forgetLaunchParam, launchParam, startParam } from '../telegram/launch-param';
+import { freshStartParam, launchParam, useLinkOpened } from '../telegram/launch-param';
 import { LinkedSearch } from './find-link';
 import { PlacesGate } from './places-gate';
 import { TripScreen } from './trip-screen';
 import { useLoad } from './use-list';
 
 const PARAM = 'trip';
+const PARAMS = [PARAM];
 const TRIP_ID = /^[A-Za-z0-9-]{1,64}$/u;
 const START = /^trip_([A-Za-z0-9-]{1,64})$/u;
 
@@ -19,17 +20,15 @@ const START = /^trip_([A-Za-z0-9-]{1,64})$/u;
 function linkedTrip(): string | null {
   const fromBot = launchParam(PARAM, TRIP_ID);
   if (fromBot) return fromBot;
-  return START.exec(startParam() ?? '')?.[1] ?? null;
+  return START.exec(freshStartParam() ?? '')?.[1] ?? null;
 }
 
 // The passenger app opens that trip at once, ready to book; back goes to the main screen.
 export function TripLink({ enabled, children }: { readonly enabled: boolean; readonly children: ReactNode }) {
   const [id, setId] = useState(() => (enabled ? linkedTrip() : null));
+  useLinkOpened(id !== null, PARAMS);
   if (!id) return <>{children}</>;
-  const close = () => {
-    forgetLaunchParam(PARAM);
-    setId(null);
-  };
+  const close = () => setId(null);
   return (
     <PlacesGate onBack={close}>
       <TripById id={id} onClose={close} />

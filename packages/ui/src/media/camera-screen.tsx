@@ -1,7 +1,9 @@
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
+import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
+import { useInTelegram } from '../telegram/in-telegram-context';
 import './camera.css';
 
 // The frame drawn over the camera: where the face or the car should be.
@@ -23,8 +25,10 @@ type CameraScreenProps = {
 const JPEG_QUALITY = 0.92;
 
 // Our own camera inside the Mini App: the phone camera app cannot show a frame (docs/04, docs/47).
+// In Telegram its «Назад» closes the camera first and the step under it stays (docs/94 F6, F7).
 export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, onClose }: CameraScreenProps) {
   const { t } = useI18n();
+  const inTelegram = useInTelegram();
   const video = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<State>('starting');
   useEffect(() => {
@@ -59,6 +63,7 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
 
   return (
     <div className="camera" role="dialog" aria-label={title}>
+      {inTelegram ? <BackButton overlay onClick={onClose} /> : null}
       <video
         ref={video}
         className={`camera-video camera-${facing}`}

@@ -36,14 +36,14 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
-  const { value, failed, reload } = useLoad(() => subscriptions.mine());
+  const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine());
   const [removed, setRemoved] = useState<Subscription | null>(null);
   useEffect(() => track({ name: 'subscriptions_open', screen: 'subscriptions' }), [track]);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       {removed ? (
         <RemovedSnackbar removed={removed} onClose={() => setRemoved(null)} onRestored={reload} />
       ) : null}

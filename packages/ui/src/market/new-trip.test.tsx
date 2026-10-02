@@ -1,13 +1,15 @@
 import type { MarketClient } from '@platform/api-client';
 import { DAY_MS, tashkentDate, tashkentDayStart } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
 import { chooseRoute, recommendation, renderMarket, tap, trip } from './market-test-kit';
 import { NewTripFlow } from './new-trip-flow';
 
 afterEach(cleanup);
+// A draft of one test never opens the next one (docs/94 F3).
+beforeEach(() => localStorage.clear());
 
 const HOUR = 60 * 60 * 1000;
 const driver: Driver = {

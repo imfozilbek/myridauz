@@ -1,4 +1,4 @@
-import { hapticFeedback, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
+import { hapticFeedback, miniApp, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
 
 const CONFIRM_ID = 'confirm';
 
@@ -37,4 +37,9 @@ export function openExternal(url: string): void {
 // A t.me link opens inside Telegram without leaving the Mini App (docs/21); outside Telegram, in a new tab.
 export function openInTelegram(url: string): void {
   if (openTelegramLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
+}
+
+// The Mini App closes and the person is back in the bot chat (docs/94 C1); outside Telegram, nothing.
+export function closeApp(): void {
+  miniApp.close.ifAvailable();
 }

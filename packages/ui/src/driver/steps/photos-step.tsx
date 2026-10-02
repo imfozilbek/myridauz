@@ -66,7 +66,8 @@ export function PhotosStep({ photos, reasons, onPhotos, onBack, onDone }: Photos
   const ready = CAR_PHOTO_KINDS.every((item) => photos[item] && !hasProblem(reasons, item));
   return (
     <StepLayout icon="camera" title={t('drivers.photos.title')} hint={t('drivers.photos.hint')}>
-      {camera.isOpen ? null : <Screen onBack={onBack} />}
+      {/* The camera takes «Назад» over the step while it is open (docs/94 F6). */}
+      <Screen onBack={onBack} />
       {hasCamera ? (
         camera.element
       ) : (

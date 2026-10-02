@@ -9,6 +9,7 @@ import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import type { PlaceDirectory } from '../places/directory';
 import { Screen } from '../screen/screen';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 import { withNear } from './near';
 
@@ -28,6 +29,11 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
   const [places, setPlaces] = useState<readonly string[]>(channel?.places ?? []);
   const [region, setRegion] = useState<string | null>(null);
   const [error, setError] = useState<unknown>(null);
+  const guard = useUnsavedGuard(
+    username !== (channel?.username ?? '') ||
+      title !== (channel?.title ?? '') ||
+      places.join() !== (channel?.places ?? []).join(),
+  );
   const toggle = (id: string) =>
     setPlaces((now) => (now.includes(id) ? now.filter((one) => one !== id) : [...now, id]));
   const chosen = places.map(directory.find).filter((place): place is Location => place !== undefined);
@@ -43,7 +49,7 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
       title={channel ? channel.title : t('channels.add')}
       hint={t('channels.botHint')}
     >
-      <Screen onBack={() => onBack(false)} />
+      <Screen onBack={guard(() => onBack(false))} />
       <List>
         {channel ? null : (
           <Field

@@ -23,7 +23,7 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { channels } = useApiClients();
-  const { value, failed, reload } = useLoad(() => channels.list());
+  const { value, failed, reload, refresh } = useLoad(() => channels.list());
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
   if (failed || directory.status === 'error')
@@ -53,7 +53,7 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   const team = value.filter((channel) => !channel.fixed);
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('channels.title')}
       </Title>

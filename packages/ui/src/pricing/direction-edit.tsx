@@ -8,6 +8,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 
 type DirectionEditProps = {
@@ -23,13 +24,15 @@ type DirectionEditProps = {
 export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEditProps) {
   useScreenView('pricing.direction');
   const { t, formatMoney } = useI18n();
-  const [value, setValue] = useState(String(direction.manual ?? direction.formula ?? ''));
+  const [saved] = useState(String(direction.manual ?? direction.formula ?? ''));
+  const [value, setValue] = useState(saved);
+  const guard = useUnsavedGuard(value !== saved);
   const price = Number(value);
   const hint =
     direction.formula === null ? undefined : t('pricing.formula', { price: formatMoney(direction.formula) });
   return (
     <StepLayout icon="trip" title={t('pricing.directionTitle')} {...(hint ? { hint } : {})}>
-      <Screen onBack={onBack} />
+      <Screen onBack={guard(onBack)} />
       <List>
         <Section>
           <div className="route-summary">

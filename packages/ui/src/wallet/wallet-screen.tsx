@@ -21,7 +21,7 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { wallet } = useApiClients();
-  const { value, failed, reload } = useLoad(() => wallet.mine());
+  const { value, failed, reload, refresh } = useLoad(() => wallet.mine());
   const [topUp, setTopUp] = useState(false);
   useEffect(() => track({ name: 'wallet_open', screen: 'wallet' }), [track]);
   if (topUp) return <TopUpScreen onBack={() => setTopUp(false)} />;
@@ -29,7 +29,7 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('wallet.title')}
       </Title>

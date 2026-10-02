@@ -33,7 +33,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { comfort } = useApiClients();
-  const { value, failed, reload } = useLoad(() => comfort.favorites());
+  const { value, failed, reload, refresh } = useLoad(() => comfort.favorites());
   const [opened, setOpened] = useState<string | null>(null);
   if (opened) return <TripById id={opened} onClose={() => setOpened(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -41,7 +41,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   if (value.drivers.length === 0) {
     return (
       <>
-        <Screen onBack={onBack} />
+        <Screen onBack={onBack} onRefresh={refresh} />
         <EmptyState
           icon="favorite"
           title={t('comfort.favorites.empty')}
@@ -52,7 +52,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   }
   return (
     <div className="market">
-      <Screen onBack={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('comfort.favorites.title')}
       </Title>

@@ -1,30 +1,24 @@
 import { MY_TRIP_LINK, OFFER_LINK, type AppLink, type Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
 import { DriverTripMap } from '../bookings/driver-trip-map';
 import { ChatScreen } from '../chat/chat-screen';
 import { DriverShare } from '../comfort/driver-share';
-import { SentOffers } from '../bookings/sent-offers';
 import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { EmptyState } from '../states/empty-state';
-import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
 import { confirm, haptic } from '../telegram/feedback';
 import { ActionFailure } from '../states/action-failure';
 import { errorKey } from './error-text';
 import { useScreenBackground } from '../telegram/screen-background';
+import { useForgetOnLeave } from './list-leave';
+import { MY_TRIPS, MyTripsList } from './my-trips-list';
 import { PlacesGate } from './places-gate';
-import { Paged } from './paged';
-import { TripCard } from './trip-card';
 import { TripScreen } from './trip-screen';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
@@ -34,6 +28,7 @@ import './market.css';
 type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
 
 export function MyTripsScreen({ onBack, link }: ScreenProps) {
+  useForgetOnLeave(MY_TRIPS);
   return (
     <PlacesGate onBack={onBack}>
       <MyTrips onBack={onBack} {...(link ? { link } : {})} />
@@ -49,8 +44,9 @@ function MyTrips({ onBack, link }: ScreenProps) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { market, bookings } = useApiClients();
-  const { value, failed, reload } = useLoad(() =>
-    Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
+  const { value, failed, reload, refresh } = useLoad(
+    () => Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
+    MY_TRIPS,
   );
   const [opened, setOpened] = useState<Opened | null>(null);
   const [failure, setFailure] = useState<TranslationKey | null>(null);
@@ -110,39 +106,15 @@ function MyTrips({ onBack, link }: ScreenProps) {
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const [trips, , offers] = value;
-  if (trips.length === 0 && offers.length === 0) {
-    return (
-      <>
-        <Screen onBack={onBack} />
-        <EmptyState
-          icon="myTrips"
-          title={t('market.mine.empty')}
-          description={t('market.mine.emptyHint')}
-          action={
-            <Button size="m" mode="bezeled" onClick={() => setSubscriptionsOpen(true)}>
-              {t('subscriptions.title')}
-            </Button>
-          }
-        />
-      </>
-    );
-  }
   return (
-    <div className="market">
-      <Screen onBack={onBack} />
-      <Title weight="1" className="market-title">
-        {t('common.myTrips')}
-      </Title>
-      <List>
-        <SentOffers offers={offers} onOpen={(offer) => setChatKey(offer.chatKey)} />
-        <Paged
-          items={trips}
-          render={(trip) => (
-            <TripCard key={trip.id} trip={trip} own onOpen={() => setOpened({ tripId: trip.id })} />
-          )}
-        />
-        <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
-      </List>
-    </div>
+    <MyTripsList
+      trips={trips}
+      offers={offers}
+      onBack={onBack}
+      onRefresh={refresh}
+      onTrip={(item) => setOpened({ tripId: item.id })}
+      onOffer={(offer) => setChatKey(offer.chatKey)}
+      onSubscriptions={() => setSubscriptionsOpen(true)}
+    />
   );
 }

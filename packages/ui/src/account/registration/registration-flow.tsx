@@ -34,7 +34,8 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
   const { track } = useAnalytics();
   const [screen, setScreen] = useState<Screen>('welcome');
   const [name, setName] = useState(suggestedName);
-  const [gender, setGender] = useState<Gender>('male');
+  // None until chosen: back from the phone the step shows the answer (docs/94 B7).
+  const [gender, setGender] = useState<Gender | null>(null);
   const passed = useCallback(
     (step: RegistrationStep, next?: Screen) => {
       track({ name: 'registration_step', screen: 'registration', step });
@@ -45,6 +46,7 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
 
   const register = useCallback(
     async (contact: string) => {
+      if (!gender) return false;
       try {
         const me = await client.register({ consent: true, firstName: name, gender, contact });
         passed('phone');
@@ -62,6 +64,7 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
     [client, name, gender, passed, onFinished],
   );
 
+  const toWelcome = useCallback(() => setScreen('welcome'), []);
   const toConsent = useCallback(() => setScreen('consent'), []);
   const toName = useCallback(() => setScreen('name'), []);
   const toGender = useCallback(() => setScreen('gender'), []);
@@ -82,8 +85,8 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
   );
 
   if (screen === 'welcome') return <WelcomeScreen welcome={welcome} onContinue={toConsent} />;
-  if (screen === 'consent') return <ConsentStep onAccept={accept} />;
+  if (screen === 'consent') return <ConsentStep onBack={toWelcome} onAccept={accept} />;
   if (screen === 'name') return <NameStep initial={name} onBack={toConsent} onDone={saveName} />;
-  if (screen === 'gender') return <GenderStep onBack={toName} onDone={saveGender} />;
+  if (screen === 'gender') return <GenderStep selected={gender} onBack={toName} onDone={saveGender} />;
   return <PhoneStep onBack={toGender} onDone={register} />;
 }
