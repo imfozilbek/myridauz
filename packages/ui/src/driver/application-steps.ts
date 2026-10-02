@@ -5,6 +5,9 @@ import { asksSeats } from './car-choices';
 const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
 export type Step = (typeof ORDER)[number];
 
+// Where the application is: the bar on top of each screen (docs/88 L4).
+export const progressOf = (step: Step) => [ORDER.indexOf(step), ORDER.length] as const;
+
 // Seats are asked only for a model typed after "Boshqa": a model from the list has its seats.
 const shown = (step: Step, car: Partial<CarInput>) => step !== 'seats' || asksSeats(car);
 

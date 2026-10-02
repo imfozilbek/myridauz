@@ -15,12 +15,14 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DateStep } from './date-step';
 import { errorKey } from './error-text';
+import { useStepProgress } from '../flow/step-progress';
 import { PlacesGate } from './places-gate';
 import { PriceStep } from './price-step';
 import { RouteView } from './route-view';
 import { noonOf } from './when';
 
-type Step = 'route' | 'date' | 'seats' | 'price' | 'review' | 'done';
+const STEPS = ['route', 'date', 'seats', 'price', 'review'] as const;
+type Step = (typeof STEPS)[number] | 'done';
 type Draft = { way?: Way; date?: string; seats?: number; price?: number };
 const SEATS = Array.from({ length: REQUEST_MAX_SEATS }, (_, index) => ({
   value: index + 1,
@@ -41,6 +43,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
     setDraft((value) => ({ ...value, ...patch }));
     setStep(to);
   };
+  useStepProgress(step === 'done' ? -1 : STEPS.indexOf(step), STEPS.length);
   const { way, date, seats, price } = draft;
   useEffect(() => {
     if (way)

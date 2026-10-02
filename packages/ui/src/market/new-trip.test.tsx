@@ -39,6 +39,10 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     await chooseRoute();
     await tap('Shahar boʻylab yigʻaman');
     await tap(/^Ertaga/);
+    // A thin bar on top: how much of the trip is filled (docs/88 L4).
+    const filled = async () => Number((await screen.findByRole('progressbar')).getAttribute('aria-valuenow'));
+    const atTime = await filled();
+    expect(atTime).toBeGreaterThan(0);
     await tap('Davom etish');
     // The seats of the car are chosen in advance.
     expect(await screen.findByText('Nechta boʻsh joy bor?')).toBeTruthy();
@@ -52,6 +56,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     await tap('Davom etish');
     await tap('Yoʻq');
     expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
+    expect(await filled()).toBeGreaterThan(atTime);
     await tap('Izohsiz davom etish');
     expect(await screen.findByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Eʼlon qilish');

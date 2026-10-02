@@ -9,6 +9,7 @@ import { ApiClientsContext, type ApiClients } from './context/api-clients';
 import { BrandContext } from './context/brand-context';
 import { I18nProvider } from './context/i18n-context';
 import { LocationsClientContext } from './places/directory';
+import { StepProgressProvider } from './flow/step-progress';
 import { ErrorBoundary } from './states/error-boundary';
 import { ScreenSkeleton } from './states/screen-skeleton';
 import { OUTSIDE_TELEGRAM, TelegramContext, type TelegramSession } from './telegram/in-telegram-context';
@@ -45,9 +46,11 @@ export function AppShell({
             >
               <LocationsClientContext.Provider value={locations}>
                 <ApiClientsContext.Provider value={clients}>
-                  <ErrorBoundary>
-                    <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
-                  </ErrorBoundary>
+                  <StepProgressProvider>
+                    <ErrorBoundary>
+                      <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                    </ErrorBoundary>
+                  </StepProgressProvider>
                 </ApiClientsContext.Provider>
               </LocationsClientContext.Provider>
             </AppRoot>
