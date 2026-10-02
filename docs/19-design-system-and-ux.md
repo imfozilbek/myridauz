@@ -50,7 +50,7 @@
   `protectFromClosing`, `EmptyState`, `ErrorScreen`, `ScreenSkeleton`, `StartFlow`
   (приветствие, главный экран из 3 действий, раздел), `useI18n`, `useScreenView`.
 
-## Готовые элементы в работе (G28, `docs/88`)
+## Готовые элементы (G28, `docs/88`)
 
 | Задача | Элемент | Где в `packages/ui` |
 |---|---|---|
@@ -63,6 +63,8 @@
 | Выбор поверх экрана | `Modal` (лист снизу), в Telegram родное окно | `bookings/navigator-sheet.tsx` |
 | Разделы документа | `Accordion` | `legal/legal-section.tsx` |
 | Маленькие значения человека | Telegram CloudStorage с копией на телефоне | `telegram/device-storage.ts` |
+| Иконка на экране телефона | Telegram `addToHomeScreen` | `telegram/home-screen.ts` |
+| Поездка в историю Telegram | Telegram `shareStory`, картинка рисуется на canvas | `telegram/story.ts`, `comfort/story-picture.ts` |
 
 ## Принципы простоты (для людей без опыта в IT)
 

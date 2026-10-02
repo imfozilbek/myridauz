@@ -58,12 +58,14 @@
 
 | Что | Статус |
 |---|---|
-| L2, L3, L4, L6, L9 … L16, L18 | Сделаны, тесты; текстов нет или взяты готовые |
-| L5, L7, L8, L14, L17 | Сделаны, тесты; новые тексты ждут согласия владельца |
-| L1 | Ждёт решения владельца: backend сейчас шлёт сообщения всем, без `writeAccess`. Совет: слайдер выключает только новости подписок и напоминания, сообщения о брони приходят всегда |
+| L1 … L19 | Сделаны, у каждого тест |
+| L1 | Решение владельца 02.10: слайдер «Bot xabarlari» выключает новости подписок, новости любимых водителей и напоминания. Сообщения о брони и чате приходят всегда. Флаг `users.news_off`, `POST /me/news` |
+| L10 | Решение владельца 02.10: стрелка как в Telegram; подпись «Yuborish» для экранного чтения |
 | L13 | Выбор навигатора в Telegram уже идёт родным окном; лист снизу заменил только запасной список вне Telegram. Отдельного экрана «причина отмены» нет: отмену спрашивает родное окно |
-| L10 | Стрелка без видимой подписи, подпись «Yuborish» для экранного чтения: проверить с владельцем (правило «иконка с подписью», `docs/19`) |
-| L19 | Ждёт отдельного «да» владельца (публичное) |
+| L19 | Решение владельца 02.10: делать. Только водитель, только открытая поездка. Mini App рисует картинку как история бренд‑пакета (`38`), API хранит её в R2 и отдаёт Telegram по ссылке. Ссылка «Joy band qilish» открывает поездку у попутчика. Пассажир историю не публикует: его поездка видна только близким (`43`) |
 
-Новые тексты на проверку носителем: «Uyimdan olib ketsin» (L5); «Obunani oʻchirasizmi?», «Obuna oʻchirildi», «Qaytarish» (L7, L8); «Bosh ekranga qoʻshish», «{brand} telefoningiz ekranida turadi va bir bosishda ochiladi.» (L17); «Yopish» (тот же текст, что в профиле, L11).
+Тексты этапа 2 (L5, L7, L8, L11, L17) владелец согласовал 02.10.
 
+Новые тексты на согласие владельца: L1 «Bot xabarlari», «Yangiliklar va safar eslatmalari. Bron va chat xabarlari har doim keladi.», «Yangiliklar va safar eslatmalari kelmaydi. Bron va chat xabarlari har doim keladi.»; L19 «Hikoyaga joylash», «Doʻstlaringiz safarni koʻradi va joy band qiladi», «Yangi safar», подпись истории «{from} → {to}, {date} soat {time}. {seats} ta joy bor. Joy band qilish: {link}».
+
+Все новые тексты G28 на проверку носителем: «Uyimdan olib ketsin» (L5); «Obunani oʻchirasizmi?», «Obuna oʻchirildi», «Qaytarish» (L7, L8); «Bosh ekranga qoʻshish», «{brand} telefoningiz ekranida turadi va bir bosishda ochiladi.» (L17); тексты L1 и L19 выше.

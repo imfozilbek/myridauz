@@ -95,6 +95,8 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('favorite_driver'), ...context }),
   z.object({ name: z.literal('return_trip_created'), ...context }),
   z.object({ name: z.literal('driver_trip_shared'), ...context }),
+  // G28: a driver put an open trip into a Telegram story (docs/88 L19).
+  z.object({ name: z.literal('driver_trip_story'), ...context }),
   // G24: the way of choosing a point; an empty search keeps only the length, never the text: it
   // may be an address (docs/69).
   z.object({ name: z.literal('place_point_saved'), method: z.enum(POINT_METHODS), ...context }),

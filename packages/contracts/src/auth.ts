@@ -62,6 +62,7 @@ export const API_ERRORS = [
   'shares.not_found',
   'shares.too_many',
   'shares.wrong_status',
+  'shares.invalid_image',
   'favorites.not_found',
   'favorites.too_many',
   'subscriptions.not_found',

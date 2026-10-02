@@ -19,7 +19,7 @@
 |---|---|
 | Экраны | `screen_open` (Mini App, экран) |
 | Шаги | `registration_step`, `driver_application_step`, `trip_step`, `booking_step`, `way_step` (поиск списками: opened, from, to, done; G26) |
-| Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created`, `driver_trip_shared` |
+| Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created`, `driver_trip_shared`, `driver_trip_story` |
 | Ошибки | `client_error` (экран упал), `api_error` (код ответа API и последний открытый экран, G12) |
 | Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id) |
 | Сервер | `driver_approved` |

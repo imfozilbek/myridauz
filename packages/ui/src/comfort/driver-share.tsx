@@ -9,6 +9,7 @@ import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 import type { TranslationKey } from '@platform/i18n';
 import { errorKey } from '../market/error-text';
+import { TripStory } from './trip-story';
 
 // The driver sends the trip to the family the same way a passenger does (docs/43, G18):
 // the route, the car and the plate, never a phone.
@@ -57,6 +58,7 @@ export function DriverShare({ trip }: { readonly trip: Trip }) {
       >
         {t('share.send')}
       </Cell>
+      <TripStory trip={trip} onFailure={(caught) => setFailure(errorKey(caught))} />
       {shared ? (
         <Cell before={<IconTile name="blocked" />} onClick={() => void stop()}>
           {t('share.stop')}
