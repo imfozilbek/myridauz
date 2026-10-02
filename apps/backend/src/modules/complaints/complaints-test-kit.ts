@@ -7,7 +7,7 @@ import { idOfPublic, publicIdOf } from '../../test-people';
 export const NOW = Date.parse('2026-10-05T12:00:00Z');
 export const DRIVER = 1;
 export const MODERATOR = 900;
-export const ride = (n: number): Ride => ({
+const ride = (n: number): Ride => ({
   bookingId: `b${n}`,
   tripId: 't1',
   driverId: DRIVER,
