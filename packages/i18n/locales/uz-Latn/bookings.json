@@ -3,6 +3,7 @@
   "review.title": "Joy soʻrash",
   "review.seats": "Joylar",
   "review.total": "Jami",
+  "review.payHint": "Pulni haydovchiga safarda oʻzingiz berasiz. {brand} yoʻlovchidan pul olmaydi.",
   "send": "Soʻrov yuborish",
   "sent.title": "Soʻrov yuborildi",
   "sent.hint": "Haydovchining javobini bot orqali bilasiz.",

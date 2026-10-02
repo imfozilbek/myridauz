@@ -7,6 +7,7 @@ import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { usePayHint } from './pay-hint';
 import { errorKey } from '../market/error-text';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
@@ -30,6 +31,7 @@ type Props = {
 export function BookReview({ trip, seats, mode, pickup, dropoff, onBack, onSent }: Props) {
   useScreenView('bookings.review');
   const { t, formatMoney } = useI18n();
+  const payHint = usePayHint();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const nameText = useNameText();
@@ -55,7 +57,7 @@ export function BookReview({ trip, seats, mode, pickup, dropoff, onBack, onSent 
     <StepLayout icon="myTrips" title={t('bookings.review.title')} hint={t('way.book.fixed')}>
       <BackButton onClick={onBack} />
       <List>
-        <Section>
+        <Section footer={payHint}>
           <div className="route-summary">
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
           </div>

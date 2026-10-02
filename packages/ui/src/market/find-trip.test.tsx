@@ -87,6 +87,8 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
     await tap('Shu yerda');
     expect(await screen.findByText('Joy soʻrash')).toBeTruthy();
     expect(screen.getByText(/190\s000/)).toBeTruthy();
+    // How the passenger pays, under «Jami» (docs/89 P2).
+    expect(screen.getByText(/Pulni haydovchiga safarda/u)).toBeTruthy();
     await tap('Soʻrov yuborish');
     expect(await screen.findByText('Soʻrov yuborildi')).toBeTruthy();
     expect(book).toHaveBeenCalledWith('t1', {

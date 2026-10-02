@@ -7,6 +7,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { usePayHint } from './pay-hint';
 import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
@@ -32,6 +33,7 @@ type ScreenProps = {
 export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, children }: ScreenProps) {
   useScreenView('bookings.offer');
   const { t, formatMoney } = useI18n();
+  const payHint = usePayHint();
   const { driver } = offer;
   const accept = useOneAtATime(onAccept);
   const decline = useOneAtATime(onDecline);
@@ -44,7 +46,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
         {driver.firstName}
       </Title>
       <List>
-        <Section>
+        <Section footer={payHint}>
           <div className="route-summary">
             <RouteView from={offer.from} to={offer.to} departAt={offer.departAt} km={offer.km} />
           </div>

@@ -6,6 +6,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { usePayHint } from './pay-hint';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
@@ -28,6 +29,7 @@ type Props = {
 export function BookingScreen({ booking, side, onBack, actions, children }: Props) {
   useScreenView(`bookings.${side}`);
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
+  const payHint = usePayHint();
   const { trip } = booking;
   const day = new Date(trip.departAt);
   const open = booking.status === 'confirmed' || booking.status === 'completed';
@@ -55,7 +57,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
       <Text className="market-subtitle">{t(`bookings.status.${booking.status}`)}</Text>
       <List>
         <BookingTimeline booking={booking} />
-        <Section>
+        <Section footer={side === 'passenger' ? payHint : undefined}>
           <div className="route-summary">
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
           </div>
