@@ -96,4 +96,5 @@
 | 91 | [91-lessons-learned-6.md](91-lessons-learned-6.md) | Журнал уроков: продолжение 6 (№80 и дальше) |
 | 92 | [92-team-share.md](92-team-share.md) | Работа команды поровну: обращения и заявки одному человеку, дайджест в 00:00 |
 | 93 | [93-support-history.md](93-support-history.md) | Поддержка: фото, кнопка «Tarix» с историей обращений, хранение 90 дней |
+| 94 | [94-navigation-physics.md](94-navigation-physics.md) | Физика навигации: «Назад», прокрутка, закрытие приложения и окон; 37 находок (G33) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
