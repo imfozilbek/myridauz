@@ -18,7 +18,7 @@ export function initMap(root: HTMLElement, load: Fetch = (url) => fetch(url)) {
     from: find<HTMLSelectElement>('[data-side=from]'),
     to: find<HTMLSelectElement>('[data-side=to]'),
   };
-  const prices = new Map<string, PublicPrice | null>();
+  const prices = new Map<string, PublicPrice>();
   let count: number = SEATS.first;
 
   const option = (select: HTMLSelectElement | null) => select?.selectedOptions[0];
@@ -63,12 +63,13 @@ export function initMap(root: HTMLElement, load: Fetch = (url) => fetch(url)) {
     text('[data-total]', money(price.price * count));
   }
 
+  // Only an answer is kept: after a failure the next choice of the pair asks again (docs/90 F-A11).
   async function ask(key: string, from: string, to: string) {
     try {
       const response = await load(`${data['api'] ?? ''}?from=${from}&to=${to}`);
-      prices.set(key, response.ok ? ((await response.json()) as PublicPrice) : null);
+      if (response.ok) prices.set(key, (await response.json()) as PublicPrice);
     } catch {
-      prices.set(key, null);
+      // No internet for a moment: the price rows stay hidden, nothing is kept.
     }
   }
 

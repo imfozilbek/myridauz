@@ -13,8 +13,10 @@ export type TripRepository = {
   departing(from: number, to: number): Promise<TripRecord[]>;
   // Trips that ended in [from, to), not cancelled: the ratings ask about them (docs/24).
   ended(from: number, to: number): Promise<TripRecord[]>;
-  // Every trip leaving from this time on, whatever its status, the earliest first (the team's list).
-  since(from: number, limit: number): Promise<TripRecord[]>;
+  // Every trip leaving in [from, to), whatever its status, the earliest first: a day of the team.
+  between(from: number, to: number, limit: number): Promise<TripRecord[]>;
+  // Trips that left in [from, to), not cancelled, the latest first: the real prices (docs/09).
+  pricedBetween(from: number, to: number, limit: number): Promise<TripRecord[]>;
   // The Cron job: trips over by now become completed (docs/35).
   completeOver(now: number): Promise<void>;
 };

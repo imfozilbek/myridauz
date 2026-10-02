@@ -49,7 +49,7 @@ export const driversDeps = (env: Bindings): DriversDeps => {
     ),
     driverApproved: async (userId) => {
       recordServerEvent(env, { name: 'driver_approved' });
-      await welcomeBonus(env, userId);
+      return welcomeBonus(env, userId);
     },
     now: Date.now,
     newId: () => crypto.randomUUID(),

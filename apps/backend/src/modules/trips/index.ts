@@ -9,6 +9,7 @@ import { peopleOf } from '../users';
 import { pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { publishTrip } from './application/publish';
+import { realPrices } from './application/prices';
 import { cancelTrip } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
@@ -125,9 +126,5 @@ export const tripForFamily = (env: Bindings, id: string) => familyView(tripsDeps
 export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>
   upcomingOf(tripsDeps(env), driverIds);
 
-// Real prices of trips that left in [from, now), not cancelled: the team's median hint (docs/09).
-const REAL_PRICES_LIMIT = 5000;
-export const realPricesSince = async (env: Bindings, from: number) =>
-  (await tripsDeps(env).trips.since(from, REAL_PRICES_LIMIT))
-    .filter((trip) => trip.status !== 'cancelled' && trip.departAt <= Date.now())
-    .map(({ from: start, to, price }) => ({ from: start, to, price }));
+// Real prices of trips that left, not cancelled: the team's median hint (docs/09).
+export const realPricesSince = (env: Bindings, from: number) => realPrices(tripsDeps(env), from);

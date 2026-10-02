@@ -3,7 +3,14 @@ import { request, tripOf } from './market-mock';
 
 // Bookings, offers and the wallet as the Mini Apps see them (G08).
 const HOUR = 3_600_000;
+const MINUTE = 60_000;
+const DAY = 24 * HOUR;
+const TASHKENT_OFFSET = 5 * HOUR;
 const trip = tripOf('1', 'Jasur', false, 26);
+// The confirmed seat leaves later today in Toshkent: «Mashinaga chiqdim» is there only on the day
+// of the trip (docs/89 P7), and late in the evening the hour is the last minute of the day.
+const endOfToday = Math.floor((Date.now() + TASHKENT_OFFSET) / DAY) * DAY + DAY - TASHKENT_OFFSET;
+const today = tripOf('1', 'Jasur', false, 0, { departAt: Math.min(Date.now() + HOUR, endOfToday - MINUTE) });
 const passenger = { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false };
 const booking = (id: string, status: string, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-0000000000b${id}`,
@@ -29,6 +36,7 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   ...extra,
 });
 export const confirmed = booking('2', 'confirmed', {
+  trip: today,
   commission: 0,
   pickup: {
     point: { lat: 41.2856, lng: 69.2034 },

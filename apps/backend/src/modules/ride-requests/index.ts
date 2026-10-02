@@ -19,6 +19,10 @@ const localRequests = createMemoryRequests();
 type Published = (env: Bindings, requestId: string) => Promise<void>;
 let onPublished: Published = async () => undefined;
 export const handleRequestPublished = (handler: Published) => void (onPublished = handler);
+// People hidden by complaints (docs/17): set by the app, the complaints module knows them.
+type Hidden = (env: Bindings, userIds: readonly number[]) => Promise<ReadonlySet<number>>;
+let hiddenOf: Hidden = async () => new Set();
+export const wireHiddenRequesters = (hidden: Hidden) => void (hiddenOf = hidden);
 
 const requestsDeps = (env: Bindings): RequestsDeps => ({
   requests: env.DB ? d1Requests(env.DB) : localRequests,
@@ -29,6 +33,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   pitakOf: (from, to) => pitakOf(env, from, to),
   fits: pointFitsPlace,
   published: (requestId) => onPublished(env, requestId),
+  hidden: (userIds) => hiddenOf(env, userIds),
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });

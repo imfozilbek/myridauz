@@ -17,30 +17,36 @@ import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
-import { EmptyState } from '../states/empty-state';
 import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
-import { PhotoGrid } from './photo-grid';
+import { PhotoGrid, PhotoScreen, type PhotoKind } from './photo-grid';
 import { ApproveFlow } from './approve-flow';
 import { ReasonsStep } from './reasons-step';
 
-type Mode = 'view' | Decision | 'block' | 'decided' | 'blocked';
-type ApplicationScreenProps = { readonly application: ApplicationSummary; readonly onBack: () => void };
+type Mode = 'view' | Decision | 'block';
+export type Outcome = 'decided' | 'blocked';
+type ApplicationScreenProps = {
+  readonly application: ApplicationSummary;
+  readonly onBack: () => void;
+  // After a decision the queue opens the next application at once (docs/89 S9).
+  readonly onDone: (outcome: Outcome) => void;
+};
 
 // One application: the face, the car, the data and the decision (docs/04). Blocking too (docs/17).
 // Approving is the main button at the bottom, rejecting a red row as in Telegram (docs/86 V10).
-export function ApplicationScreen({ application, onBack }: ApplicationScreenProps) {
+export function ApplicationScreen({ application, onBack, onDone }: ApplicationScreenProps) {
   useScreenView('moderation.application');
   const { t } = useI18n();
   const { moderation } = useApiClients();
   const [mode, setMode] = useState<Mode>('view');
+  const [zoom, setZoom] = useState<PhotoKind | null>(null);
   const { car, userId } = application;
-  const act = async (work: Promise<unknown>, done: Mode) => {
+  const act = async (work: Promise<unknown>, outcome: Outcome) => {
     try {
       await work;
       haptic.success();
-      setMode(done);
+      onDone(outcome);
     } catch {
       haptic.error();
       setMode('view');
@@ -51,17 +57,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
     if (await allowBlock(days ?? null, t)) await act(moderation.block(userId, days), 'blocked');
   };
 
-  if (mode === 'decided' || mode === 'blocked') {
-    return (
-      <>
-        <BackButton onClick={onBack} />
-        <EmptyState
-          icon="selected"
-          title={t(mode === 'decided' ? 'moderation.decided' : 'moderation.blocked')}
-        />
-      </>
-    );
-  }
+  if (zoom) return <PhotoScreen userId={userId} kind={zoom} onBack={() => setZoom(null)} />;
   if (mode === 'approve') {
     return (
       <ApproveFlow
@@ -98,7 +94,7 @@ export function ApplicationScreen({ application, onBack }: ApplicationScreenProp
       <Title weight="1" className="moderation-title">
         {application.firstName}
       </Title>
-      <PhotoGrid userId={userId} />
+      <PhotoGrid userId={userId} onOpen={setZoom} />
       <List>
         <ApplicationHistory userId={userId} />
         <Section>

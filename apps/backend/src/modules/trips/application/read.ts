@@ -1,6 +1,6 @@
-import { DAY_MS, tashkentDate, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
+import { DAY_MS, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
 import { placeMatches } from '../../../shared/places/place-match';
-import { cancel } from '../domain/trip';
+import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
@@ -35,19 +35,23 @@ export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | un
   return trip ? (await views(deps, [trip]))[0] : undefined;
 }
 
-// The team looks at the trips from yesterday on; nothing waits for its approval (owner decision 29.09.2026).
-const TEAM_LIST_LIMIT = 200;
-export async function teamTrips(deps: TripsDeps): Promise<Trip[]> {
-  const yesterday = tashkentDayStart(tashkentDate(deps.now() - DAY_MS));
-  return views(deps, await deps.trips.since(yesterday, TEAM_LIST_LIMIT));
+// The team looks at the trips day by day; nothing waits for its approval (owner decision 29.09.2026).
+// A day is far below the limit: it only guards the Worker (docs/90 F-A6).
+const TEAM_DAY_LIMIT = 1000;
+export async function teamTrips(deps: TripsDeps, date: string): Promise<Trip[]> {
+  const start = tashkentDayStart(date);
+  return views(deps, await deps.trips.between(start, start + DAY_MS, TEAM_DAY_LIMIT));
 }
 
 // "Mening safarlarim" of a driver: the trips ahead first, then the past ones (docs/65 B6).
 export async function myTrips(deps: TripsDeps, driverId: number): Promise<Trip[]> {
   const trips = await deps.trips.byDriver(driverId);
+  const now = deps.now();
+  // A live trip on the road stays on top until it arrives (docs/90 F-D3).
+  const until = (trip: (typeof trips)[number]) => (isLive(trip, now) ? trip.endsAt : trip.departAt);
   return views(
     deps,
-    upcomingFirst(trips, (trip) => trip.departAt, deps.now()),
+    upcomingFirst(trips, (trip) => trip.departAt, now, until),
   );
 }
 

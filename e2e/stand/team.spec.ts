@@ -5,6 +5,7 @@ import {
   createPricingClient,
   createWalletClient,
 } from '@platform/api-client';
+import { DAY_MS, TRIP_DAYS_AHEAD, tashkentDate } from '@platform/contracts';
 import { confirmedSeat, outcome, SAMARQAND } from './g27-kit';
 import { CHILONZOR } from './market-kit';
 import { AZIZA, BOBUR, KAMRON, OWNER } from './people';
@@ -60,6 +61,11 @@ test('T44, T49. a wallet correction never goes below zero; the team sees every t
   const row = (await owner.all()).find((wallet) => wallet.firstName === BOBUR.name);
   const below = { balance: 'bonus' as const, amount: -((row?.bonus ?? 0) + 1), reason: 'stand G27' };
   expect(await outcome(owner.adjust(row?.driverId ?? '', below))).not.toBe('ok');
-  const trips = await createMarketClient(await admin(KAMRON)).teamTrips();
+  // The team reads the trips day by day, from yesterday to the last day of publishing (docs/90 F-A6).
+  const market = createMarketClient(await admin(KAMRON));
+  const days = Array.from({ length: TRIP_DAYS_AHEAD + 2 }, (_, index) =>
+    tashkentDate(Date.now() + (index - 1) * DAY_MS),
+  );
+  const trips = (await Promise.all(days.map((day) => market.teamTrips(day)))).flat();
   expect(trips.some((trip) => trip.driver.firstName === BOBUR.name)).toBe(true);
 });

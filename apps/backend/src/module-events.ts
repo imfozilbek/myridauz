@@ -11,7 +11,7 @@ import { channels } from './modules/channels';
 import { approvedCar } from './modules/drivers';
 import { tellFavoriteFans, wireFavorites } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
-import { handleRequestPublished, requestViewOf } from './modules/ride-requests';
+import { handleRequestPublished, requestViewOf, wireHiddenRequesters } from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
 import { requestPublished, tripPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
@@ -105,6 +105,7 @@ wireTripStanding((env) => ({
   ratings: (ids) => ratingsOfPeople(env, ids),
   hidden: (ids) => hiddenByComplaints(env, ids),
 }));
+wireHiddenRequesters(hiddenByComplaints);
 
 // Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
 // commission back (docs/17, docs/35).

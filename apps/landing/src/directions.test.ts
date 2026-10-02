@@ -39,6 +39,14 @@ describe('directions for search engines (docs/60)', () => {
     expect(page).toContain('<script>run()</script>');
   });
 
+  it('keeps the route on every passenger button of the page (docs/89 S4)', () => {
+    const passenger = `https://t.me/${brand.bots.passenger}`;
+    const links = [...page.matchAll(/href="([^"]+)"/gu)].map(([, href]) => href);
+    const bot = links.filter((href) => href?.startsWith(passenger));
+    expect(bot.length).toBeGreaterThan(3);
+    expect(bot.every((href) => href === `${passenger}?startapp=find_1718_1726`)).toBe(true);
+  });
+
   it('describes the pages in structured data: the brand, the questions, the path', () => {
     const home = jsonLd(site['index.html'] ?? '');
     expect(home.map((item) => item['@type'])).toEqual(['Organization', 'WebSite', 'FAQPage']);

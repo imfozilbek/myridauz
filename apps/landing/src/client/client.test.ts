@@ -99,6 +99,20 @@ describe('landing script (docs/59)', () => {
     expect(document.querySelector('[data-price-row]')?.hasAttribute('hidden')).toBe(true);
   });
 
+  it('asks again after a network error instead of hiding the price for good (docs/90 F-A11)', async () => {
+    const root = mount(mapSection(MAP, brand, i18n));
+    let online = false;
+    await initMap(root, async () => {
+      if (!online) throw new Error('offline');
+      return { ok: true, json: async () => ({ from: '1726273', to: '1718401', km: 300, price: 90_000 }) };
+    });
+    expect(document.querySelector('[data-price-row]')?.hasAttribute('hidden')).toBe(true);
+    online = true;
+    click('[data-swap]');
+    click('[data-swap]');
+    await vi.waitFor(() => expect(text('[data-price]')).toMatch(/^≈\s90\s000\ssoʻm$/u));
+  });
+
   it('puts only codes and usernames into the links', async () => {
     const root = mount(mapSection(MAP, brand, i18n));
     const target = root.querySelector<HTMLOptionElement>('[data-side=to] option[selected]');

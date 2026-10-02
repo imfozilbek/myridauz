@@ -60,8 +60,8 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
         <FindTripFlow onBack={() => undefined} />
       </MapEngineContext.Provider>,
       testClients({
-        market: { searchTrips: async () => [trip] },
-        bookings: { book },
+        market: { searchTrips: async () => [trip], myRequests: async () => [] },
+        bookings: { book, myBookings: async () => [booking], myOffers: async () => [] },
         map: testMap({ search }),
       }),
     );
@@ -87,8 +87,13 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
     await tap('Shu yerda');
     expect(await screen.findByText('Joy soʻrash')).toBeTruthy();
     expect(screen.getByText(/190\s000/)).toBeTruthy();
+    // How the passenger pays, under «Jami» (docs/89 P2).
+    expect(screen.getByText(/Pulni haydovchiga safarda/u)).toBeTruthy();
     await tap('Soʻrov yuborish');
     expect(await screen.findByText('Soʻrov yuborildi')).toBeTruthy();
+    // The main button opens the sent request, as the text calls (docs/89 P9).
+    await tap('Soʻrovni koʻrish');
+    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
     expect(book).toHaveBeenCalledWith('t1', {
       seats: 2,
       mode: 'door',

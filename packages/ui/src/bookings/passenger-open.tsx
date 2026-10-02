@@ -38,17 +38,18 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const [offerId, setOfferId] = useState<string | null>(null);
   const offer = offers.find((item) => item.id === offerId) ?? null;
   const [failure, setFailure] = useState<TranslationKey | null>(null);
-  const [accepted, setAccepted] = useState(false);
+  // The booking of an accepted offer: its card goes to the close people (docs/89 P9).
+  const [accepted, setAccepted] = useState<{ readonly bookingId: string | null } | null>(null);
   const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
   const [complaint, setComplaint] = useState<string | null>(null);
   const [told, setTold] = useState<Booking | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
-  const run = async (action: () => Promise<unknown>, after: () => void) => {
+  const run = async <T,>(action: () => Promise<T>, after: (result: T) => void) => {
     try {
       setFailure(null);
-      await action();
+      const result = await action();
       haptic.success();
-      after();
+      after(result);
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught));
@@ -58,16 +59,16 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
     setFailure(null);
     setOfferId(next?.id ?? null);
   };
-  if (accepted) return <OfferAccepted onDone={() => onClose(true)} />;
+  if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
       run(
         () => bookings.answerOffer(offer.id, action),
-        () => {
+        (answered) => {
           track({ name: 'booking_step', screen: 'bookings.offer', step: OFFER_STEP[action] });
-          if (action === 'accept') setAccepted(true);
+          if (action === 'accept') setAccepted({ bookingId: answered.bookingId });
           else onClose(true);
         },
       );

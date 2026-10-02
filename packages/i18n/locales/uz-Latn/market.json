@@ -37,6 +37,8 @@
   "search.woman": "Mashinada ayol bor",
   "search.empty": "Bu kunga safar topilmadi",
   "search.emptyHint": "Soʻrov qoldiring: haydovchilar sizni topadi.",
+  "search.filtered": "Filtr {count} ta safarni yashirdi",
+  "search.clearFilters": "Filtrni oʻchirish",
   "trip.seats": "{count} ta boʻsh joy",
   "trip.km": "≈ {km} km",
   "trip.when": "{date}, soat {time}",
@@ -80,6 +82,7 @@
   "trip.closed.full": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
   "trip.closed.cancelled": "Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.",
   "trip.closed.completed": "Bu safar tugagan.",
+  "trip.others": "Shu kungi boshqa safarlar",
   "request.review.hint": "Haydovchilar vaqt va narx taklif qiladi.",
   "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx."
 }

@@ -71,9 +71,9 @@ export async function decideApplication(
   const reasons = [...next.reasons];
   await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now() });
   await deps.people.setDriver(userId, next.status === 'approved');
-  if (next.status === 'approved') await deps.driverApproved(userId);
+  const bonus = next.status === 'approved' ? await deps.driverApproved(userId) : null;
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;
-  await deps.notify.decided(next, fixedPlate);
+  await deps.notify.decided(next, fixedPlate, bonus);
   const view = await summary(deps, next);
   return view ? { ok: true, value: view } : { ok: false, error: 'drivers.not_found' };
 }

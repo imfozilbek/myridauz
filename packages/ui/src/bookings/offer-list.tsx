@@ -7,11 +7,14 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
+import { usePayHint } from './pay-hint';
 import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
-import { MainButton } from '../telegram/bottom-button';
+import { MainButton, SecondaryButton } from '../telegram/bottom-button';
+import { haptic } from '../telegram/feedback';
+import { useShareTrip } from './use-share-trip';
 import '../market/market.css';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 
@@ -32,6 +35,7 @@ type ScreenProps = {
 export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, children }: ScreenProps) {
   useScreenView('bookings.offer');
   const { t, formatMoney } = useI18n();
+  const payHint = usePayHint();
   const { driver } = offer;
   const accept = useOneAtATime(onAccept);
   const decline = useOneAtATime(onDecline);
@@ -44,7 +48,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
         {driver.firstName}
       </Title>
       <List>
-        <Section>
+        <Section footer={payHint}>
           <div className="route-summary">
             <RouteView from={offer.from} to={offer.to} departAt={offer.departAt} km={offer.km} />
           </div>
@@ -92,9 +96,19 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
   );
 }
 
-// The passenger took an offer: the seat is confirmed, the trip is in "Mening safarlarim".
-export function OfferAccepted({ onDone }: { readonly onDone: () => void }) {
+// The passenger took an offer: the seat is confirmed, the trip is in "Mening safarlarim". The card
+// for the close people is one tap away (docs/89 P9).
+type AcceptedProps = { readonly bookingId: string | null; readonly onDone: () => void };
+export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
   const { t } = useI18n();
+  const shareTrip = useShareTrip();
+  const share = () =>
+    bookingId
+      ? shareTrip(bookingId).then(
+          () => haptic.success(),
+          () => haptic.error(),
+        )
+      : undefined;
   return (
     <StepLayout
       icon="selected"
@@ -102,6 +116,7 @@ export function OfferAccepted({ onDone }: { readonly onDone: () => void }) {
       hint={t('bookings.offer.accepted.hint')}
     >
       <MainButton text={t('market.done')} onClick={onDone} />
+      {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => void share()} /> : null}
     </StepLayout>
   );
 }

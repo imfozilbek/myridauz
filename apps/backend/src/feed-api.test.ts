@@ -103,7 +103,7 @@ describe('moderation signals (docs/64)', () => {
     await notifier.submitted(application, {} as never);
     expect(seen.map((item) => `${item.name}:${item.app}`)).toEqual(['u900:admin', 'u901:admin']);
     seen.length = 0;
-    await notifier.decided(application, null);
+    await notifier.decided(application, null, null);
     expect(seen.map((item) => `${item.name}:${item.app}`)).toEqual([
       'u55:driver',
       'u900:admin',

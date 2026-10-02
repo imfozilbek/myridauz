@@ -11,6 +11,7 @@ import { PersonReviews } from '../feedback/driver-reviews';
 import { RatingBadge } from '../feedback/rating-badge';
 import { Icon, type IconName } from '../icons';
 import { BackButton } from '../telegram/back-button';
+import { ClosedTrip } from './closed-trip';
 import { RouteView } from './route-view';
 import { useWayFacts } from './way-line';
 import './market.css';
@@ -20,8 +21,9 @@ type TripScreenProps = {
   readonly onBack: () => void;
   // The driver's own trip: it can be cancelled while it is active (docs/35).
   readonly onCancel?: () => void;
-  // A passenger books seats on it (G08).
+  // A passenger books seats on it (G08); a closed one leads to the other trips of its day (docs/89 P8).
   readonly onBook?: () => void;
+  readonly onOthers?: () => void;
   // The team looks at a trip: no booking, no cancel (owner decision 29.09.2026).
   readonly readOnly?: boolean;
   // The driver looks at the own trip: not at himself, his passengers come first (docs/86 V11).
@@ -34,7 +36,7 @@ const PHOTO_SIZE = 56;
 
 // Everything about one trip; a passenger books from here, its driver sees the bookings (docs/35).
 export function TripScreen(props: TripScreenProps) {
-  const { trip, onBack, onCancel, onBook, readOnly = false, own = false, children } = props;
+  const { trip, onBack, onCancel, onBook, onOthers, readOnly = false, own = false, children } = props;
   useScreenView('market.trip');
   const { track } = useAnalytics();
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
@@ -137,7 +139,9 @@ export function TripScreen(props: TripScreenProps) {
             {t('market.trip.book')}
           </Button>
         ) : null}
-        {onBook && !readOnly && closed ? <Text>{closed}</Text> : null}
+        {onBook && !readOnly && closed ? (
+          <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
+        ) : null}
       </div>
     </div>
   );

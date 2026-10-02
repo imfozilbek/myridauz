@@ -96,9 +96,11 @@ export async function refund(deps: WalletDeps, driverId: number, bookingId: stri
 }
 
 // Bonus 1 at the approval of the driver (docs/12).
-export async function grantWelcome(deps: WalletDeps, driverId: number): Promise<void> {
+// The grant, or null for a driver who had it already: the approval message names it (docs/89 D4).
+export async function grantWelcome(deps: WalletDeps, driverId: number): Promise<Grant | null> {
   const grant = welcomeGrant(await deps.wallet.operations(driverId), deps.promo, deps.now());
   if (grant) await deps.wallet.append([grantRow(deps, driverId, grant)]);
+  return grant;
 }
 
 // The Cron job: a bonus not spent in its days burns (docs/12).

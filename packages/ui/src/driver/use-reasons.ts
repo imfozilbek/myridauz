@@ -13,11 +13,13 @@ export function useReasons(initial: readonly ModerationReason[]) {
   const fixed = (place: ProblemPlace) =>
     setReasons((list) => list.filter((item) => REASON_PLACE[item] !== place));
 
-  // A new selfie: the application is read again to show only what is left to fix.
+  // A new selfie fixes the face at once (docs/89 D2); the application is read again to show only
+  // what is left to fix.
   const avatarVersion = useAccount()?.avatarVersion ?? 0;
   const first = useRef(avatarVersion);
   useEffect(() => {
     if (avatarVersion === first.current) return;
+    fixed('avatar');
     void drivers.getApplication().then(
       (application) => application && keepOnly(application.reasons),
       () => undefined,

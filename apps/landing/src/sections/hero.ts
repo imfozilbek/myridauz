@@ -1,7 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
 import { art } from '../art';
-import { escape, telegramLink } from '../html';
+import { escape, passengerLink, telegramLink } from '../html';
 import { icon, type IconName } from '../icons';
 import type { HeroRoads } from '../map-data';
 import { heroLive } from './hero-live';
@@ -9,9 +9,9 @@ import { heroLive } from './hero-live';
 const FACTS = ['checked', 'phone', 'telegram'] as const satisfies readonly IconName[];
 
 // Two ways in, both lead to Telegram: the passenger bot and the driver bot (docs/02).
-export function actions({ bots }: BrandConfig, { t }: I18n, className = 'actions') {
+export function actions({ bots }: BrandConfig, { t }: I18n, className = 'actions', start?: string) {
   return `<div class="${className}">
-<a class="button" href="${telegramLink(bots.passenger)}">${escape(t('landing.cta.passenger'))}</a>
+<a class="button" href="${passengerLink(bots.passenger, start)}">${escape(t('landing.cta.passenger'))}</a>
 <a class="button driver" href="${telegramLink(bots.driver)}">${escape(t('landing.cta.driver'))}</a>
 </div>`;
 }

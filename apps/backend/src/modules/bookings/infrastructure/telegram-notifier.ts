@@ -2,8 +2,11 @@ import type { BrandConfig } from '@platform/brands';
 import {
   BOOKING_LINK,
   chatKeyOfOffer,
+  FIND_LINK,
   formatPlate,
   OFFER_LINK,
+  requestsLinkValue,
+  tashkentDate,
   type AppLink,
   type Booking,
   type ChatSystemEvent,
@@ -47,10 +50,21 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     send('driver', booking.trip.driver.id, text, { markup: open('driver', onBooking(booking)) });
   const toPassenger = (booking: Booking, text: string) =>
     send('passenger', booking.passenger.id, text, { markup: open('passenger', onBooking(booking)) });
+  // A seat that ended: the button leads to the trips of the same route and day (docs/89 S10).
+  const findOther = ({ trip }: Booking) =>
+    openButton(brand, 'passenger', t('bot.findOther'), {
+      name: FIND_LINK,
+      id: requestsLinkValue(trip.from, trip.to, tashkentDate(trip.departAt)),
+    });
+  const lostSeat = (booking: Booking, text: string) =>
+    send('passenger', booking.passenger.id, text, { markup: findOther(booking) });
   return {
     requested: async (booking) => {
       await system(booking.chatKey, 'requested');
-      await toDriver(booking, t('bot.booking.requested', await about(booking)));
+      // Until when the driver answers (docs/89 D1).
+      const answerBy = new Date(booking.expiresAt);
+      const deadline = { answerDate: formatDate(answerBy), answerTime: formatTime(answerBy) };
+      await toDriver(booking, t('bot.booking.requested', { ...(await about(booking)), ...deadline }));
     },
     confirmed: async (booking) => {
       await system(booking.chatKey, 'confirmed');
@@ -64,17 +78,20 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     },
     declined: async (booking) => {
       await system(booking.chatKey, 'declined');
-      await toPassenger(booking, t('bot.booking.declined', await about(booking)));
+      await lostSeat(booking, t('bot.booking.declined', await about(booking)));
     },
     expired: async (booking) => {
-      await toPassenger(booking, t('bot.booking.expired', await about(booking)));
+      const facts = await about(booking);
+      await lostSeat(booking, t('bot.booking.expired', facts));
+      // The driver hears it too: the seat is free again (docs/89 S11).
+      await toDriver(booking, t('bot.booking.expiredDriver', facts));
     },
     cancelled: async (booking, by) => {
       await system(booking.chatKey, 'cancelled');
       await closeOnes(booking, 'cancelled');
       if (by === 'passenger')
         await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
-      else await toPassenger(booking, t('bot.booking.cancelledByDriver', await about(booking)));
+      else await lostSeat(booking, t('bot.booking.cancelledByDriver', await about(booking)));
     },
     offered: async (passengerId, offerId) => {
       await system(chatKeyOfOffer(offerId), 'offered');

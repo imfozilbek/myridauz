@@ -25,6 +25,9 @@ export const booking: Booking = {
   arrivedAt: null,
 };
 
+// The morning of the trip in Toshkent: «Mashinaga chiqdim» is there only on its day (docs/89 P7).
+export const TRIP_DAY = Date.parse('2026-10-02T01:00:00Z');
+
 export const confirmed: Booking = {
   ...booking,
   status: 'confirmed',
@@ -83,4 +86,18 @@ export const wallet: Wallet = {
       createdAt: Date.parse('2026-10-01T02:00:00Z'),
     },
   ],
+};
+
+// A request of the passenger with the offers of drivers (docs/09).
+export const request = {
+  id: 'r1',
+  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
+  from: '1726269',
+  to: '1730401',
+  date: '2026-10-02',
+  km: 320,
+  seats: 2,
+  price: 95000,
+  status: 'open' as const,
+  pickupMode: 'both' as const,
 };

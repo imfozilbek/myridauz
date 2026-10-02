@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { distanceSchema, locationSchema } from './locations';
-import { matchesPlace, normalizeSearch } from './place-search';
+import { matchesPlace } from './place-search';
 import { checkRoute } from './route-rule';
 
 const place = (id: string, parentId: string | null, oneCity = false) => ({ id, parentId, oneCity });
@@ -32,10 +32,14 @@ describe('checkRoute (docs/14)', () => {
 
 describe('place search', () => {
   it('reads every apostrophe as ʻ', () => {
-    for (const query of ["farg'ona", 'farg`ona', 'fargʼona', 'farg‘ona', 'farg’ona', 'FARGʻONA']) {
-      expect(normalizeSearch(query)).toBe('fargʻona');
+    for (const query of ["farg'ona", 'farg`ona', 'fargʼona', 'farg‘ona', 'farg’ona', 'FARGʻONA'])
       expect(matchesPlace('Fargʻona viloyati', query)).toBe(true);
-    }
+  });
+
+  it('finds the place in Cyrillic, Russian and English like the map (docs/90 F-P3)', () => {
+    for (const query of ['Самарканд', 'Samarkand', 'самарқанд'])
+      expect(matchesPlace('Samarqand viloyati', query)).toBe(true);
+    expect(matchesPlace('Toshkent shahri', 'Tashkent')).toBe(true);
   });
 
   it('matches the start of any word', () => {

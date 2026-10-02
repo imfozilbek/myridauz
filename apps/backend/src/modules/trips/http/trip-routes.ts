@@ -2,6 +2,7 @@ import {
   ADMIN_TRIPS_PATH,
   DRIVER_TRIPS_PATH,
   TRIPS_PATH,
+  dateSchema,
   tripInputSchema,
   tripSearchSchema,
   type ApiErrorCode,
@@ -56,9 +57,11 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
       const trip = await tripDetail(deps(context.env), context.req.param('id'));
       return trip ? context.json(trip) : fail(context, 'trips.not_found');
     })
-    .get(ADMIN_TRIPS_PATH, async (context) =>
-      context.get('session').isAdmin
-        ? context.json({ trips: await teamTrips(deps(context.env)) })
-        : fail(context, 'auth.not_admin'),
-    );
+    .get(ADMIN_TRIPS_PATH, async (context) => {
+      if (!context.get('session').isAdmin) return fail(context, 'auth.not_admin');
+      // One day of the team's list (docs/90 F-A6).
+      const date = dateSchema.safeParse(context.req.query('date'));
+      if (!date.success) return fail(context, 'trips.invalid_input');
+      return context.json({ trips: await teamTrips(deps(context.env), date.data) });
+    });
 }

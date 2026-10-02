@@ -13,13 +13,19 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { FilteredEmpty } from './filtered-empty';
 import { RouteView } from './route-view';
 import { TripCard } from './trip-card';
 import { useDayLabel } from './when';
 import './market.css';
 
+// The filters live in the flow: they stay after a trip is opened and closed (docs/90 F-P1).
+export type TripFilters = { readonly woman: boolean; readonly door: boolean };
+
 type TripResultsProps = {
   readonly route: Route;
+  readonly filters: TripFilters;
+  readonly onFilters: (filters: TripFilters) => void;
   readonly date: string;
   readonly now: number;
   readonly onBack: () => void;
@@ -27,16 +33,15 @@ type TripResultsProps = {
 };
 
 // Trips of the day on this route; "Mashinada ayol bor" is a filter of its own (docs/06).
-export function TripResults({ route, date, now, onBack, onOpen }: TripResultsProps) {
+export function TripResults({ route, filters, onFilters, date, now, onBack, onOpen }: TripResultsProps) {
   useScreenView('market.results');
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { market } = useApiClients();
   const dayLabel = useDayLabel();
-  const [woman, setWoman] = useState(false);
-  // Only the trips that pick up at the door: a filter of the phone, the list is already here (docs/88 L5).
-  const [door, setDoor] = useState(false);
+  // «Uyimdan olib ketsin» is a filter of the phone, the list is already here (docs/88 L5).
+  const { woman, door } = filters;
   const [trips, setTrips] = useState<Trip[] | null>(null);
   const [failed, setFailed] = useState(false);
   const search = useMemo(
@@ -81,13 +86,23 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
           </div>
           <Cell
             Component="label"
-            after={<Switch checked={woman} onChange={(event) => setWoman(event.target.checked)} />}
+            after={
+              <Switch
+                checked={woman}
+                onChange={(event) => onFilters({ ...filters, woman: event.target.checked })}
+              />
+            }
           >
             {t('market.search.woman')}
           </Cell>
           <Cell
             Component="label"
-            after={<Switch checked={door} onChange={(event) => setDoor(event.target.checked)} />}
+            after={
+              <Switch
+                checked={door}
+                onChange={(event) => onFilters({ ...filters, door: event.target.checked })}
+              />
+            }
           >
             {t('market.search.door')}
           </Cell>
@@ -97,13 +112,21 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
         ))}
       </List>
       {trips === null ? <ScreenSkeleton /> : null}
-      {shown?.length === 0 ? (
-        <EmptyState
-          icon="search"
-          title={t('market.search.empty')}
-          description={t('market.search.emptyHint')}
-          action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
-        />
+      {trips && shown?.length === 0 ? (
+        <FilteredEmpty
+          route={route}
+          date={date}
+          filters={filters}
+          found={trips}
+          onClear={() => onFilters({ woman: false, door: false })}
+        >
+          <EmptyState
+            icon="search"
+            title={t('market.search.empty')}
+            description={t('market.search.emptyHint')}
+            action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
+          />
+        </FilteredEmpty>
       ) : null}
     </div>
   );

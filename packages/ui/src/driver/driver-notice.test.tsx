@@ -7,6 +7,7 @@ import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { DriverContext, type Driver } from './driver-context';
 import { DriverNotice } from './driver-notice';
+import { wallet } from '../bookings/booking-test-kit';
 
 const ACTIONS: readonly StartAction[] = [
   {
@@ -32,7 +33,7 @@ const render = (driver: Driver) =>
     <DriverContext.Provider value={driver}>
       <StartFlow actions={ACTIONS} notice={<DriverNotice />} />
     </DriverContext.Provider>,
-    testClients({}),
+    testClients({ wallet: { mine: async () => wallet } }),
   );
 
 afterEach(() => {
@@ -55,10 +56,12 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
     );
   });
 
-  it('says once that the application is approved, with the bonus', () => {
+  it('says once that the application is approved, with the bonus and its last day (docs/89 D4)', async () => {
     render(approved);
     expect(screen.getByText('Ariza tasdiqlandi')).toBeTruthy();
-    expect(screen.getByText(/bonus berdik/).textContent).toContain('500\u00a0000\u00a0soʻm');
+    const bonus = await screen.findByText(/bonus berdik/);
+    expect(bonus.textContent).toContain('481\u00a0000\u00a0soʻm');
+    expect(bonus.textContent).toContain('31-oktabrgacha');
     expect(screen.queryByText('Tasdiqlangandan keyin')).toBeNull();
     cleanup();
     render(approved);

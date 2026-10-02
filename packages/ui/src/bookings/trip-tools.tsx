@@ -1,4 +1,4 @@
-import type { Booking } from '@platform/contracts';
+import { tashkentDate, tashkentDayStart, type Booking } from '@platform/contracts';
 import { useState } from 'react';
 import { Cell, Section } from '../components';
 import { useAnalytics } from '../context/analytics-context';
@@ -7,7 +7,7 @@ import { useI18n } from '../context/i18n-context';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
-import { shareCard } from '../telegram/share-card';
+import { useShareTrip } from './use-share-trip';
 
 type Props = {
   readonly booking: Booking;
@@ -28,16 +28,21 @@ export function withTold(booking: Booking, told: Booking | null): Booking {
   };
 }
 
+// «Mashinaga chiqdim» the day before the trip is a mistake (docs/89 P7): from its day on, by Toshkent.
+const tripDayCame = (departAt: number) => Date.now() >= tashkentDayStart(tashkentDate(departAt));
+
 // Under a passenger's booking: the chat, and for a confirmed one "Yaqinlarimga yuborish" with
 // "Mashinaga chiqdim" and "Yetib keldim" for the close people (docs/07, docs/43).
 export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
+  const shareTrip = useShareTrip();
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
   // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
   const [sharing, setSharing] = useState(true);
   const confirmed = booking.status === 'confirmed';
+  const onTheDay = tripDayCame(booking.trip.departAt);
   const run = async (action: () => Promise<void>, after: 'told' | 'stopped' | null) => {
     try {
       await action();
@@ -49,9 +54,7 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   };
   const share = () =>
     run(async () => {
-      const { preparedMessageId, link } = await chat.share(booking.id);
-      track({ name: 'trip_shared', screen: 'bookings.passenger' });
-      await shareCard(preparedMessageId, link);
+      await shareTrip(booking.id);
       setSharing(true);
     }, null);
   const step = (name: 'boarded' | 'arrived') =>
@@ -78,12 +81,12 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
           >
             {t('share.send')}
           </Cell>
-          {booking.boardedAt === null ? (
+          {onTheDay && booking.boardedAt === null ? (
             <Cell before={<IconTile name="carSide" />} onClick={() => void step('boarded')}>
               {t('share.boarded')}
             </Cell>
           ) : null}
-          {booking.arrivedAt === null ? (
+          {onTheDay && booking.arrivedAt === null ? (
             <Cell before={<IconTile name="destination" />} onClick={() => void step('arrived')}>
               {t('share.arrived')}
             </Cell>

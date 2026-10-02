@@ -1,7 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import { LEGAL_DOCUMENTS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, legalTitle } from '@platform/i18n';
-import { directionPage, directionQuestions } from './direction-page';
+import { directionPage, directionQuestions, startOf } from './direction-page';
 import { directions } from './directions';
 import { documentPage } from './document';
 import { home } from './home';
@@ -48,6 +48,7 @@ export function renderSite(brand: BrandConfig, { year, map, roads, script }: Bui
       description: t('landing.direction.description', values),
       path: current.path,
       body: directionPage(brand, i18n, { map, all, current, items: own }),
+      start: startOf(current),
       head: faqPage(own) + breadcrumbs(brand, trail),
       script,
     });

@@ -22,6 +22,9 @@ export function directionQuestions(brand: BrandConfig, i18n: I18n, { from, to }:
   return [...own, ...questions(brand, i18n).slice(0, 3)];
 }
 
+// The search of the Mini App with this route (docs/89 S4): every passenger button of the page.
+export const startOf = ({ from, to }: Direction) => `find_${from.soato}_${to.soato}`;
+
 // A page of one direction (docs/60): the route is already chosen on the map, the button opens
 // the bot with it, and the other directions are one tap away.
 export function directionPage(
@@ -36,13 +39,14 @@ export function directionPage(
 ) {
   const { t } = i18n;
   const values = { from: current.from.name, to: current.to.name, brand: brand.name };
+  const start = startOf(current);
   return [
     `<section class="hero direction-hero"><div class="wrap narrow">
 <nav class="crumbs"><a href="/">${escape(t('landing.document.home'))}</a><span>/</span><a href="/#directions">${escape(t('landing.directions.title'))}</a></nav>
 <span class="slogan">${escape(brand.slogan)}</span>
 <h1>${escape(t('landing.direction.title', values))}</h1>
 <p class="lead">${escape(t('landing.direction.text', values))}</p>
-${actions(brand, i18n)}
+${actions(brand, i18n, 'actions', start)}
 <p class="hint">${escape(t('landing.cta.hint'))}</p>
 </div></section>`,
     mapSection(map, brand, i18n, { from: current.from.soato, to: current.to.soato }),
@@ -50,7 +54,7 @@ ${actions(brand, i18n)}
     safety(brand, i18n),
     faq(items, i18n),
     directionsSection(all, i18n, current),
-    final(brand, i18n),
-    `<div class="sticky" data-sticky>${actions(brand, i18n, 'actions compact')}</div>`,
+    final(brand, i18n, start),
+    `<div class="sticky" data-sticky>${actions(brand, i18n, 'actions compact', start)}</div>`,
   ].join('\n');
 }

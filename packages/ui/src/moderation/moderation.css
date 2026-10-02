@@ -20,6 +20,15 @@
   margin: 0;
 }
 
+.moderation-photo-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+
 .moderation-photo img,
 .moderation-photo-empty {
   display: block;
@@ -34,6 +43,23 @@
   display: block;
   padding-top: 4px;
   color: var(--tgui--hint_color);
+}
+
+/* One photo on the whole screen (docs/89 S8): all of it is seen, nothing is cut. */
+.moderation-zoom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100vh;
+  padding: 8px 16px;
+  background: var(--tgui--secondary_bg_color);
+}
+
+.moderation-zoom img {
+  width: 100%;
+  max-height: 85vh;
+  border-radius: 12px;
+  object-fit: contain;
 }
 
 /* The plate check: the front photo big, the plate under it as on the car (docs/50). */

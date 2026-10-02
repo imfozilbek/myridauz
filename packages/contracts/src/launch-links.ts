@@ -11,3 +11,7 @@ export type AppLink = { readonly name: string; readonly id: string };
 export const REQUESTS_LINK = 'requests';
 export const REQUESTS_LINK_VALUE = /^(\d{2,10})_(\d{2,10})_(\d{4}-\d{2}-\d{2})$/u;
 export const requestsLinkValue = (from: string, to: string, date: string) => `${from}_${to}_${date}`;
+
+// «Boshqa safar topish» under a refused, burned or cancelled booking (docs/89 S10): the search of
+// the same route and day, ?find=<from>_<to>_<date>, the same value as the requests link.
+export const FIND_LINK = 'find';

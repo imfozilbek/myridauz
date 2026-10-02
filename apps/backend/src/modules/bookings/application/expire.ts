@@ -5,5 +5,6 @@ import { bookingViews } from './views';
 // trip, nobody is left waiting (docs/35, docs/83 N03).
 export async function expireRequests(deps: BookingsDeps, now: number): Promise<void> {
   const expired = await deps.bookings.expireOver(now);
+  expired.forEach(() => deps.track('expired'));
   for (const booking of await bookingViews(deps, expired, 'passenger')) await deps.notify.expired(booking);
 }

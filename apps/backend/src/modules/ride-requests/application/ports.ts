@@ -31,6 +31,8 @@ export type RequestsDeps = {
   readonly fits: (point: Point, placeId: string) => boolean;
   // A request was published: drivers subscribed to its route hear about it (docs/24).
   readonly published: (requestId: string) => Promise<void>;
+  // Complaints from 3 people hide a person from every search, of trips and of requests (docs/17).
+  readonly hidden: (userIds: readonly number[]) => Promise<ReadonlySet<number>>;
   readonly newId: () => string;
   readonly now: () => number;
 };

@@ -106,6 +106,7 @@ export function setup() {
     ratings: async () => new Map(),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
+    track: (step) => void notes.push(`step: ${step}`),
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
     now: () => now,

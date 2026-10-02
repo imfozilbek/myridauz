@@ -7,6 +7,7 @@ import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
 import { PassengersStack } from './passengers-stack';
+import { requestsInOrder, takenFirst } from './trip-bookings-order';
 
 const PHOTO_SIZE = 40;
 type Props = {
@@ -20,10 +21,10 @@ type Props = {
 // requests come first, by the extra way to the passengers already taken (G24, docs/70).
 export function TripBookings({ bookings, onOpen, onMap }: Props) {
   const { t } = useI18n();
-  const requested = bookings.filter((booking) => booking.status === 'requested');
+  const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const fits = requested.filter((booking) => (booking.extraKm ?? 0) <= FAR_EXTRA_KM);
   const others = requested.filter((booking) => (booking.extraKm ?? 0) > FAR_EXTRA_KM);
-  const rest = bookings.filter((booking) => booking.status !== 'requested');
+  const rest = takenFirst(bookings.filter((booking) => booking.status !== 'requested'));
   const row = (booking: Booking) => {
     const status = t(`bookings.status.${booking.status}`);
     const extra = booking.extraKm ? t('way.driver.extra', { km: String(booking.extraKm) }) : null;

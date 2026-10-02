@@ -2,6 +2,7 @@ import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { bookingCommission } from '../billing';
 import { postSystemEvent } from '../chat';
+import { recordServerEvent } from '../analytics';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
@@ -70,6 +71,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   ratings: (ids) => ratingsOfPeople(env, ids),
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
+  track: (step) => recordServerEvent(env, { name: 'booking_step', code: step }),
   notify: seatsFollow(
     env,
     telegramNotifier({

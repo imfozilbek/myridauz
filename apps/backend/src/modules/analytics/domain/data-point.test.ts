@@ -18,6 +18,10 @@ describe('toDataPoint', () => {
     });
   });
 
+  it('keeps where the person came from on the first screen (docs/89 S3)', () => {
+    expect(toDataPoint({ name: 'screen_open', source: 'find', ...base }, 0).blobs.at(-1)).toBe('find');
+  });
+
   it('keeps the error code', () => {
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.at(-1)).toBe('render');
   });

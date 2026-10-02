@@ -44,6 +44,8 @@ export default defineConfig({
         'pitaks-screenshots.spec.ts',
         'clear-screens-screenshots.spec.ts',
         'search-android-screenshots.spec.ts',
+        'g29-screenshots.spec.ts',
+        'g29-more-screenshots.spec.ts',
       ],
     },
   ],
