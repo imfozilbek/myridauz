@@ -26,7 +26,8 @@ describe('a new request on a followed route (docs/83 N08)', { timeout: 20_000 },
     expect(searchRequests.mock.calls[0]?.[0]).toEqual({ from: '1726', to: '1730', date: '2026-10-02' });
     // Back is the day, then the route: another day is one tap away.
     await tap('Orqaga');
-    expect(await screen.findByText(/^Bugun/)).toBeTruthy();
+    // The day screen is a new screen too: the same 5 s under coverage in CI.
+    expect(await screen.findByText(/^Bugun/, {}, { timeout: 5000 })).toBeTruthy();
   });
 
   it('starts from the route when a place is unknown; the passenger app ignores the link', async () => {
