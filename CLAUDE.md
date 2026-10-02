@@ -164,4 +164,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/85-cloudflare-free-features.md` | Бесплатные возможности Cloudflare, которые Rida не использует |
 | `docs/86-g27-texts.md` | G27: новые тексты на согласие владельца |
 | `docs/87-g27-ux-scores.md` | G27: оценки UX всех экранов по 4 вопросам |
+| `docs/88-ui-library-improvements.md` | Улучшения UX и UI готовыми элементами наших библиотек (Switch, Textarea, Progress …) |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |
