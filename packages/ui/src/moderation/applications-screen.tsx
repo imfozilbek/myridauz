@@ -2,7 +2,7 @@ import './moderation.css';
 import { formatPlate, type ApplicationSummary } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
-import { Cell, List, Section } from '../components';
+import { Cell, List, Section, Snackbar } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -13,7 +13,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
-import { ApplicationScreen } from './application-screen';
+import { ApplicationScreen, type Outcome } from './application-screen';
 import { forgetLinkedApplication, linkedApplication } from './linked-application';
 
 // Applications waiting for the team, the oldest first (docs/04).
@@ -24,6 +24,7 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
   const [queue, setQueue] = useState<ApplicationSummary[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [open, setOpen] = useState<ApplicationSummary | null>(null);
+  const [told, setTold] = useState<Outcome | null>(null);
   const load = useCallback(() => {
     setFailed(false);
     moderation.queue().then(setQueue, () => setFailed(true));
@@ -41,11 +42,38 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
     setOpen(null);
     load();
   }, [load]);
+  // The next application opens at once; the empty queue says so (docs/89 S9).
+  const next = useCallback(
+    (outcome: Outcome) => {
+      const done = open?.userId;
+      setTold(outcome);
+      moderation.queue().then(
+        (fresh) => {
+          setQueue(fresh);
+          setOpen(fresh.find((application) => application.userId !== done) ?? null);
+        },
+        () => close(),
+      );
+    },
+    [moderation, open, close],
+  );
+  const notice = told ? <Snackbar onClose={() => setTold(null)}>{t(`moderation.${told}`)}</Snackbar> : null;
 
-  if (open) return <ApplicationScreen application={open} onBack={close} />;
+  if (open)
+    return (
+      <>
+        <ApplicationScreen key={open.userId} application={open} onBack={close} onDone={next} />
+        {notice}
+      </>
+    );
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   if (!queue) return <ScreenSkeleton onBack={onBack} />;
-  return <QueueView queue={queue} onOpen={setOpen} onBack={onBack} title={t('common.admin.applications')} />;
+  return (
+    <>
+      <QueueView queue={queue} onOpen={setOpen} onBack={onBack} title={t('common.admin.applications')} />
+      {notice}
+    </>
+  );
 }
 
 type QueueViewProps = {
