@@ -17,7 +17,11 @@ describe('legal documents (docs/30)', () => {
     renderInShell(<LegalScreen document="offer" onBack={vi.fn()} />);
     expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
     expect(screen.getByText(/Tahrir 1\.0/)).toBeTruthy();
-    expect(screen.getByText('1. Umumiy qoidalar')).toBeTruthy();
+    // Each section opens by its title: the needed point is found faster (docs/88 L18).
+    const first = screen.getByText('1. Umumiy qoidalar').closest('[aria-expanded]');
+    expect(first?.getAttribute('aria-expanded')).toBe('false');
+    fireEvent.click(screen.getByText('1. Umumiy qoidalar'));
+    expect(first?.getAttribute('aria-expanded')).toBe('true');
     expect(screen.getByText(new RegExp(`${brand.commission.percent} foizi`))).toBeTruthy();
     expect(screen.getAllByText(new RegExp(brand.company.stir)).length).toBeGreaterThan(0);
   });

@@ -1,12 +1,13 @@
 import { LEGAL_EDITION, type LegalDocument } from '@platform/contracts';
 import { legalEdition, legalSections, legalTitle, legalValues } from '@platform/i18n';
-import { Caption, Text, Title } from '@telegram-apps/telegram-ui';
-import { List, Section } from '../components';
+import { Caption, Title } from '@telegram-apps/telegram-ui';
+import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { LegalSection } from './legal-section';
 import './legal.css';
 
 type Props = { readonly document: LegalDocument; readonly onBack: () => void };
@@ -26,9 +27,11 @@ export function LegalScreen({ document, onBack }: Props) {
       <Caption className="legal-edition">{legalEdition(i18n, LEGAL_EDITION)}</Caption>
       <List>
         {legalSections(document).map((section, index) => (
-          <Section key={section.title} header={`${index + 1}. ${i18n.t(section.title, values)}`}>
-            <Text className="legal-text">{i18n.t(section.text, values)}</Text>
-          </Section>
+          <LegalSection
+            key={section.title}
+            title={`${index + 1}. ${i18n.t(section.title, values)}`}
+            text={i18n.t(section.text, values)}
+          />
         ))}
       </List>
     </div>
