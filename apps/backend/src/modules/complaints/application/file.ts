@@ -32,9 +32,17 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
   return { id: complaint.id };
 }
 
-// People out of the search: complaints from 3 different people in 30 days (docs/17).
+// People out of the search: complaints from 3 different people in 30 days (docs/17). Only the
+// complaints the team can open count: one whose ride is gone never leaves the queue (docs/90 F-A1).
 export async function hiddenFromSearch(deps: ComplaintsDeps, userIds: readonly number[]) {
   if (userIds.length === 0) return new Set<number>();
   const now = deps.now();
-  return hiddenPeople(await deps.store.against(userIds, now - COMPLAINT_WINDOW_DAYS * DAY_MS), now);
+  const since = now - COMPLAINT_WINDOW_DAYS * DAY_MS;
+  // A decided complaint hides nobody: only the open ones need their ride.
+  const recent = (await deps.store.against(userIds, since)).filter((known) => known.status !== 'resolved');
+  const rides = await Promise.all(recent.map((complaint) => deps.filedRide(complaint.bookingId)));
+  return hiddenPeople(
+    recent.filter((_, index) => rides[index] !== undefined),
+    now,
+  );
 }
