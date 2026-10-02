@@ -64,12 +64,12 @@ export function telegram(brand: BrandConfig, i18n: I18n) {
 </div></section>`;
 }
 
-export function final(brand: BrandConfig, i18n: I18n) {
+export function final(brand: BrandConfig, i18n: I18n, start?: string) {
   const { t } = i18n;
   return `<section class="final"><div class="wrap">
 ${art({ name: 'crowd', alt: t('landing.final.art'), size: 'crowd' }, { className: 'crowd' })}
 <h2>${escape(t('landing.final.title'))}</h2>
 <p class="final-slogan">${escape(brand.slogan)}</p>
-${actions(brand, i18n)}
+${actions(brand, i18n, 'actions', start)}
 </div></section>`;
 }

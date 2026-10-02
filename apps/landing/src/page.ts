@@ -1,7 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import { LEGAL_DOCUMENTS } from '@platform/contracts';
 import type { I18n } from '@platform/i18n';
-import { escape, telegramLink } from './html';
+import { escape, passengerLink, telegramLink } from './html';
 import { styles } from './styles';
 
 type Page = {
@@ -17,6 +17,8 @@ type Page = {
   readonly head?: string;
   // The small script of the interactive parts, inline: one request for the whole page.
   readonly script?: string;
+  // A page of a direction: the passenger bot opens the search with the route (docs/89 S4).
+  readonly start?: string;
 };
 
 // The frame of every page: head with the link preview, the header with the logo, the footer
@@ -57,7 +59,7 @@ ${more.head ?? ''}
 <header><div class="wrap"><a class="brand" href="/"><img src="/favicon.svg" alt="${escape(
     t('landing.logo', { brand: brand.name }),
   )}" width="36" height="36">${escape(brand.name)}</a>
-<a class="button small" href="${telegramLink(brand.bots.passenger)}">${escape(t('landing.cta.passenger'))}</a></div></header>
+<a class="button small" href="${passengerLink(brand.bots.passenger, more.start)}">${escape(t('landing.cta.passenger'))}</a></div></header>
 <main>${body}</main>
 <footer><div class="wrap">
 <strong>${escape(t('landing.footer.documents'))}</strong>
