@@ -16,8 +16,8 @@ test.afterEach(() => expect(outsideCalls()).toEqual([]));
 const MALE = t('account.gender.male');
 const RECEIVED = 'Arizangiz qabul qilindi.';
 const NEWCOMERS: Record<Platform, Person> = {
-  android: { id: 900701, name: 'Rustam', phone: '998901110701' },
-  ios: { id: 900702, name: 'Jasur', phone: '998901110702' },
+  android: { id: 900791, name: 'Rustam', phone: '998901110791' },
+  ios: { id: 900792, name: 'Jasur', phone: '998901110792' },
 };
 
 async function shot(page: Page, name: string) {
