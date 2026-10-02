@@ -7,11 +7,12 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useMapView } from '../map/use-map-view';
+import { useDraft } from '../screen/draft';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { requestPosition } from '../telegram/location';
 import { useScreenBackground } from '../telegram/screen-background';
-import { stopsInOrder, withMoved, type StopKind } from './driver-stops';
+import { handOrderOf, inHandOrder, stopsInOrder, withMoved, type StopKind } from './driver-stops';
 import { StopList } from './stop-list';
 import { NavigatorSheet } from './navigator-sheet';
 import { useNavigator } from './use-navigator';
@@ -28,8 +29,18 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
   const { map } = useApiClients();
   const { colors } = useBrand().theme;
   const [kind, setKind] = useState<StopKind>('pickups');
-  const [stops, setStops] = useState(() => stopsInOrder(bookings, null));
-  const byHand = useRef(false);
+  // An order set by hand comes back after the system unloaded the app in a navigator (docs/94 C7).
+  const handOrder = useDraft(`stops:${bookings[0]?.trip.id ?? ''}`, handOrderOf);
+  const [stops, setStops] = useState(() => {
+    const order = stopsInOrder(bookings, null);
+    return handOrder.restored ? inHandOrder(order, handOrder.restored) : order;
+  });
+  const byHand = useRef(handOrder.restored !== null);
+  const { save } = handOrder;
+  useEffect(() => {
+    if (byHand.current)
+      save({ pickups: stops.pickups.map(({ id }) => id), dropoffs: stops.dropoffs.map(({ id }) => id) });
+  }, [stops, save]);
   const shown = stops[kind];
   const start = shown[0]?.point ?? stops.dropoffs[0]?.point ?? { lat: 0, lng: 0 };
   const { box, view } = useMapView(map, start, true);

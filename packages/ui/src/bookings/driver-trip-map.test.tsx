@@ -69,4 +69,22 @@ describe('«Safar xaritasi» of the driver (G24, docs/70)', { timeout: 20_000 },
     await tap('Tushirish');
     expect(await screen.findByText('Registon mahallasi')).toBeTruthy();
   });
+
+  it('keeps the order set by hand when the system unloaded the app in a navigator (docs/94 C7)', async () => {
+    vi.mocked(requestPosition).mockResolvedValue(HERE);
+    const names = () => screen.getAllByText(/Qatortol|Yunusobod/u).map((cell) => cell.textContent);
+    const first = renderInShell(
+      <DriverTripMap bookings={[FAR, NEAR]} onBack={() => undefined} />,
+      false,
+      true,
+    );
+    await vi.waitFor(() => expect(names()).toEqual(['Qatortol', 'Yunusobod']), { timeout: 5000 });
+    fireEvent.click(screen.getAllByLabelText('Pastga')[0] as HTMLElement);
+    expect(names()).toEqual(['Yunusobod', 'Qatortol']);
+    first.unmount();
+    renderInShell(<DriverTripMap bookings={[FAR, NEAR]} onBack={() => undefined} />, false, true);
+    // The place of the driver no longer reorders: the hand order wins.
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(names()).toEqual(['Yunusobod', 'Qatortol']);
+  });
 });
