@@ -18,7 +18,7 @@
 - Заблокированный человек тоже может писать в поддержку: блок спрашивают именно там.
 - Тесты: `support-bot.test.ts`, `modules/support/support.test.ts`, `admin-bot.test.ts`, `setup-routes.test.ts`, `webhook-routes.test.ts`, `e2e/stand/bots-team.spec.ts`.
 
-## Этап 2: тексты для носителя
+## Этап 2: тексты для носителя (согласованы владельцем 02.10.2026)
 
 | Ключ | Текст |
 |---|---|
