@@ -1,4 +1,4 @@
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StartFlow } from '../flow/start-flow';
 import type { StartAction } from '../flow/start-action';
@@ -44,6 +44,9 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
   it('marks the actions that wait for the approval, and keeps the others as they are', () => {
     render(pending);
     expect(screen.getByText('Ariza tekshirilmoqda')).toBeTruthy();
+    // A note with its own «Yopish», not a row of the list (docs/88 L11).
+    fireEvent.click(screen.getByRole('button', { name: 'Yopish' }));
+    expect(screen.queryByText('Ariza tekshirilmoqda')).toBeNull();
     expect(screen.getByText('Tasdiqlangandan keyin')).toBeTruthy();
     // Only the action that waits has a muted icon.
     expect(document.querySelectorAll('.action-waiting')).toHaveLength(1);

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Cell, Section } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { NoticeBanner } from '../notice-banner';
 import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
 
@@ -18,14 +17,12 @@ export function DriverNotice() {
 function PendingNotice() {
   const { t } = useI18n();
   return (
-    <Section>
-      <Cell
-        before={<IconTile name="applications" tone="accent" />}
-        subtitle={t('drivers.status.pending.explore')}
-      >
-        {t('drivers.status.pending.title')}
-      </Cell>
-    </Section>
+    <NoticeBanner
+      icon="applications"
+      tone="accent"
+      title={t('drivers.status.pending.title')}
+      text={t('drivers.status.pending.explore')}
+    />
   );
 }
 
@@ -37,13 +34,11 @@ function ApprovedNotice() {
   useEffect(markApprovalSeen, []);
   if (!shown) return null;
   return (
-    <Section>
-      <Cell
-        before={<IconTile name="approved" tone="brand" />}
-        subtitle={t('drivers.status.approved.bonus', { amount: formatMoney(promo.amount) })}
-      >
-        {t('drivers.status.approved.title')}
-      </Cell>
-    </Section>
+    <NoticeBanner
+      icon="approved"
+      tone="brand"
+      title={t('drivers.status.approved.title')}
+      text={t('drivers.status.approved.bonus', { amount: formatMoney(promo.amount) })}
+    />
   );
 }
