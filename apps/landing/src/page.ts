@@ -30,9 +30,10 @@ export function page({ brand, i18n, year, title, path, body, script = '', ...mor
   const documents = LEGAL_DOCUMENTS.map(
     (document) => `<a href="/${document}/">${escape(t(`legal.${document}.title`))}</a>`,
   ).join('');
-  const contact = escape(t('landing.footer.contact', { adminBot: brand.bots.admin })).replace(
-    `@${brand.bots.admin}`,
-    `<a href="${telegramLink(brand.bots.admin)}">@${brand.bots.admin}</a>`,
+  const { support } = brand.bots;
+  const contact = escape(t('landing.footer.contact', { supportBot: support })).replace(
+    `@${support}`,
+    `<a href="${telegramLink(support)}">@${support}</a>`,
   );
   return `<!doctype html>
 <html lang="uz">
