@@ -20,7 +20,7 @@
 - Стенд зелёный 3 прогона подряд, без e2e рядом (урок 86). CI зелёный.
 - PR, слияние владельцем, деплой, проверка владельцем.
 
-## Тексты для носителя (ждут согласия владельца)
+## Тексты для носителя (согласованы владельцем 02.10.2026)
 
 | Ключ | Текст |
 |---|---|
@@ -32,3 +32,9 @@
 | `bot.support.historyEmpty` | Oldingi yozishmalar yoʻq. |
 | `bot.support.replyPrompt` | Javobingizni yozing: matn, rasm yoki ovozli xabar. |
 | `bot.support.textOnly` | Hozircha faqat matn, rasm yoki ovozli xabar qabul qilinadi. |
+
+## Политика конфиденциальности (согласована владельцем 02.10.2026)
+
+- Раздел 2: «• Yordam xizmatiga yozgan xabarlaringiz.»
+- Раздел 5: «Yordam xizmatiga yuborilgan rasm va ovozli xabarlarni biz saqlamaymiz, ular faqat Telegram orqali yuboriladi.»
+- Раздел 6: «Yordam xizmati bilan yozishmalar 90 kun saqlanadi.» и «• yordam xizmati bilan yozishmalar oʻchiriladi;»
