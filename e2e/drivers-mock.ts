@@ -8,7 +8,7 @@ export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 const DAY = 24 * 60 * 60 * 1000;
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const allPhotos = { front: true, side: true, interior: true };
-const summary = {
+export const summary = {
   userId: '00000000000000000000000000000005',
   firstName: 'Jasur',
   status: 'pending',
