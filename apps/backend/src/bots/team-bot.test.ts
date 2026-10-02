@@ -14,36 +14,18 @@ const press = (fromId: number, data: string) => ({
 });
 
 describe('admin bot: the team (docs/50)', () => {
-  const picked = (fromId: number, userId: number) => ({
-    message: {
-      message_id: 3,
-      chat: { id: fromId },
-      from: { id: fromId },
-      users_shared: { users: [{ user_id: userId }] },
-    },
-  });
-  it('lets only an owner pick a moderator from Telegram and remove them', async () => {
-    const list = (await (await send('admin', textMessage(OWNER, '/team'))).json()) as {
-      reply_markup: { inline_keyboard: { text: string; callback_data: string }[][] };
-    };
-    expect(list.reply_markup.inline_keyboard.at(-1)?.[0]).toEqual({
-      text: 'Moderator qoʻshish',
-      callback_data: 'team:pick',
-    });
-    await send('admin', press(OWNER, 'team:pick'));
-    const ask = telegram.calls.at(-1);
-    expect(ask).toMatchObject({ method: 'sendMessage', token: 'a' });
-    expect(JSON.stringify(ask?.body)).toContain('request_users');
-    expect((await reply(await send('admin', picked(OWNER, PERSON)))).text).toBe('Moderator qoʻshildi.');
+  const say = async (fromId: number, text: string) =>
+    (await reply(await send('admin', textMessage(fromId, text)))).text;
+  it('lets only an owner add a moderator by /team add <Telegram ID> and remove them', async () => {
+    expect(await say(OWNER, '/team')).toContain('/team add');
+    expect(await say(OWNER, `/team add ${PERSON}`)).toBe('Moderator qoʻshildi.');
     expect(await teamRole(botEnv, PERSON)).toBe('moderator');
-    expect((await reply(await send('admin', textMessage(OWNER, '/team')))).text).toContain('Moderator: ');
-    expect((await reply(await send('admin', textMessage(PERSON, '/team')))).text).toBe(
-      'Buni faqat egasi qila oladi.',
-    );
-    expect((await reply(await send('admin', press(PERSON, 'team:pick')))).text).toBe(
-      'Buni faqat egasi qila oladi.',
-    );
-    expect((await reply(await send('admin', picked(PERSON, 99)))).text).toBe('Buni faqat egasi qila oladi.');
+    expect(await say(OWNER, '/team')).toContain('Moderator: ');
+    // Not an id: the owner sees how to write it.
+    expect(await say(OWNER, '/team add Ali')).toContain('/team add');
+    expect(await say(PERSON, '/team')).toBe('Buni faqat egasi qila oladi.');
+    expect(await say(PERSON, '/team add 99')).toBe('Buni faqat egasi qila oladi.');
+    expect(await teamRole(botEnv, 99)).toBeNull();
     expect((await reply(await send('admin', press(PERSON, 'team:remove:8')))).text).toBe(
       'Buni faqat egasi qila oladi.',
     );
