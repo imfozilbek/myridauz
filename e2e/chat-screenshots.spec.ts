@@ -55,7 +55,7 @@ test('driver: the chat of a booking', async ({ page }) => {
   await expect(page.getByText(t('chat.system.confirmed'))).toBeVisible();
   await shot('2-chat');
   await page.getByLabel(t('chat.placeholder')).fill('Telegramda yozing @jasur_driver');
-  await page.getByText(t('chat.send'), { exact: true }).click();
+  await page.getByRole('button', { name: t('chat.send') }).click();
   await expect(page.getByText('Telegramda yozing ***')).toBeVisible();
   await shot('3-masked');
 });
