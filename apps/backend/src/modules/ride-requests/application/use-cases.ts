@@ -96,17 +96,27 @@ export async function searchRequests(
   driverId: number,
   search: RequestSearch,
 ): Promise<Result<RideRequest[], 'trips.not_driver'>> {
-  if (!(await deps.approvedCar(driverId))) return { ok: false, error: 'trips.not_driver' };
+  const car = await deps.approvedCar(driverId);
+  if (!car) return { ok: false, error: 'trips.not_driver' };
   const now = deps.now();
   const [requests, places] = await Promise.all([deps.requests.openOn(search.date), deps.places()]);
+  // Only what the car can take: an offer for more seats is refused anyway (docs/90 F-D2).
   const fits = requests.filter(
     (request) =>
       isOpen(request, now) &&
       request.passengerId !== driverId &&
+      request.seats <= car.seats &&
       placeMatches(request.from, search.from, places) &&
       placeMatches(request.to, search.to, places),
   );
-  return { ok: true, value: await views(deps, fits) };
+  const hidden = await deps.hidden([...new Set(fits.map((request) => request.passengerId))]);
+  return {
+    ok: true,
+    value: await views(
+      deps,
+      fits.filter((request) => !hidden.has(request.passengerId)),
+    ),
+  };
 }
 
 export async function myRequests(deps: RequestsDeps, passengerId: number): Promise<RideRequest[]> {
