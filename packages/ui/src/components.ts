@@ -13,6 +13,7 @@ export {
   Multiselectable,
   SegmentedControl,
   Skeleton,
+  Snackbar,
   Textarea,
   Timeline,
 } from '@telegram-apps/telegram-ui';

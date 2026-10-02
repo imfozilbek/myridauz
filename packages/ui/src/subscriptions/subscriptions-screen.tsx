@@ -16,8 +16,9 @@ import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
-import { haptic } from '../telegram/feedback';
+import { confirm, haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
+import { RemovedSnackbar } from './removed-snackbar';
 import '../market/market.css';
 
 // "Obunalar" (docs/24): the routes a person waits on; renew an expired "any date", delete the rest.
@@ -36,12 +37,16 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
   const { value, failed, reload } = useLoad(() => subscriptions.mine());
+  const [removed, setRemoved] = useState<Subscription | null>(null);
   useEffect(() => track({ name: 'subscriptions_open', screen: 'subscriptions' }), [track]);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
       <BackButton onClick={onBack} />
+      {removed ? (
+        <RemovedSnackbar removed={removed} onClose={() => setRemoved(null)} onRestored={reload} />
+      ) : null}
       {value.length === 0 ? (
         <EmptyState
           icon="subscriptions"
@@ -55,7 +60,12 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
           </Title>
           <List>
             {value.map((subscription) => (
-              <SubscriptionCard key={subscription.id} subscription={subscription} onChange={reload} />
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                onChange={reload}
+                onRemoved={() => setRemoved(subscription)}
+              />
             ))}
           </List>
         </>
@@ -64,9 +74,13 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   );
 }
 
-type CardProps = { readonly subscription: Subscription; readonly onChange: () => void };
+type CardProps = {
+  readonly subscription: Subscription;
+  readonly onChange: () => void;
+  readonly onRemoved: () => void;
+};
 
-function SubscriptionCard({ subscription, onChange }: CardProps) {
+function SubscriptionCard({ subscription, onChange, onRemoved }: CardProps) {
   const { t, formatDate } = useI18n();
   const { subscriptions } = useApiClients();
   const [busy, setBusy] = useState(false);
@@ -90,6 +104,14 @@ function SubscriptionCard({ subscription, onChange }: CardProps) {
     setBusy(false);
     onChange();
   };
+  // Asked first in the native window; then a short line can bring it back (docs/88 L7, L8).
+  const remove = async () => {
+    if (!(await confirm(t('subscriptions.removeAsk'), t('subscriptions.remove')))) return;
+    await act(async () => {
+      await subscriptions.remove(subscription.id);
+      onRemoved();
+    });
+  };
   return (
     <Section>
       <div className="route-summary">
@@ -104,7 +126,7 @@ function SubscriptionCard({ subscription, onChange }: CardProps) {
           {t('subscriptions.renew')}
         </Cell>
       ) : null}
-      <DangerCell icon="blocked" onClick={() => void act(() => subscriptions.remove(subscription.id))}>
+      <DangerCell icon="blocked" onClick={() => void remove()}>
         {t('subscriptions.remove')}
       </DangerCell>
     </Section>
