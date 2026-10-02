@@ -61,7 +61,10 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
   return {
     requested: async (booking) => {
       await system(booking.chatKey, 'requested');
-      await toDriver(booking, t('bot.booking.requested', await about(booking)));
+      // Until when the driver answers (docs/89 D1).
+      const answerBy = new Date(booking.expiresAt);
+      const deadline = { answerDate: formatDate(answerBy), answerTime: formatTime(answerBy) };
+      await toDriver(booking, t('bot.booking.requested', { ...(await about(booking)), ...deadline }));
     },
     confirmed: async (booking) => {
       await system(booking.chatKey, 'confirmed');
@@ -78,7 +81,10 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       await lostSeat(booking, t('bot.booking.declined', await about(booking)));
     },
     expired: async (booking) => {
-      await lostSeat(booking, t('bot.booking.expired', await about(booking)));
+      const facts = await about(booking);
+      await lostSeat(booking, t('bot.booking.expired', facts));
+      // The driver hears it too: the seat is free again (docs/89 S11).
+      await toDriver(booking, t('bot.booking.expiredDriver', facts));
     },
     cancelled: async (booking, by) => {
       await system(booking.chatKey, 'cancelled');

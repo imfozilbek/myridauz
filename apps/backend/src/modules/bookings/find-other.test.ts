@@ -25,7 +25,7 @@ describe('«Boshqa safar topish» under a booking that ended', () => {
     const find = `?find=${trip.from}_${trip.to}_${tashkentDate(trip.departAt)}`;
     for (const tell of [notifier.declined, notifier.expired]) await tell(asked.value);
     await notifier.cancelled(asked.value, 'driver');
-    const urls = jobs.map((job) => JSON.stringify(job.markup));
+    const urls = jobs.filter((job) => job.bot === 'passenger').map((job) => JSON.stringify(job.markup));
     expect(urls).toHaveLength(3);
     expect(urls.every((url) => url.includes(find) && url.includes('Boshqa safar topish'))).toBe(true);
   });
