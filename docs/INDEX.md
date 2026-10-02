@@ -98,4 +98,5 @@
 | 93 | [93-support-history.md](93-support-history.md) | Поддержка: фото, кнопка «Tarix» с историей обращений, хранение 90 дней |
 | 94 | [94-navigation-physics.md](94-navigation-physics.md) | Физика навигации: «Назад», прокрутка, закрытие приложения и окон; 37 находок (G33) |
 | 95 | [95-first-contact.md](95-first-contact.md) | Первая встреча: что человек видит в боте и Mini App, водитель (находки FC1 … FC9) |
+| 96 | [96-g34-texts.md](96-g34-texts.md) | G34: новые тексты бота, регистрации, заявки и реквизитов на согласие |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
