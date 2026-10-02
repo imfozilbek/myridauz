@@ -2,6 +2,7 @@ import { addProtocol, Map as MapLibreMap, setWorkerUrl, type ErrorEvent as MapEr
 // The map draws its tiles in a worker: Vite bundles it and gives its address.
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './maplibre.css';
 import { Protocol } from 'pmtiles';
 import type { MapColors, MapEngine, MapView } from './map-engine';
 import { MAP_SOURCE, mapStyle } from './map-style';
@@ -35,7 +36,7 @@ const view = (map: MapLibreMap, colors: MapColors): MapView => ({
 });
 
 // MapLibre over the PMTiles archive (G22, docs/67): the archive is read by parts from the API.
-export const maplibreEngine: MapEngine = (box, source, start, colors) => {
+export const maplibreEngine: MapEngine = (box, source, start, colors, inline) => {
   if (!protocol) {
     setWorkerUrl(workerUrl);
     protocol = new Protocol();
@@ -47,7 +48,9 @@ export const maplibreEngine: MapEngine = (box, source, start, colors) => {
     center: [start.lng, start.lat],
     zoom: START_ZOOM,
     attributionControl: false,
-    // One finger moves the map, two fingers zoom: no rotation, the north stays up.
+    // One finger moves the map, two fingers zoom: no rotation, the north stays up. A small map
+    // inside a page leaves one finger to the page: two fingers move it (docs/94 F11).
+    cooperativeGestures: inline,
     dragRotate: false,
     pitchWithRotate: false,
   });

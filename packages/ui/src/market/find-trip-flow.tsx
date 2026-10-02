@@ -3,10 +3,13 @@ import { useEffect, useState } from 'react';
 import { BookFlow } from '../bookings/book-flow';
 import { useAnalytics } from '../context/analytics-context';
 import { RouteScreen, type Route } from '../places/route-screen';
+import { forgetList } from '../screen/list-memory';
 import { DateStep } from './date-step';
+import { useForgetOnLeave } from './list-leave';
 import { PlacesGate } from './places-gate';
 import { TripResults, type TripFilters } from './trip-results';
 import { TripScreen } from './trip-screen';
+import { RESULTS } from './use-trip-search';
 
 type Screen =
   | { readonly step: 'route'; readonly route?: Route }
@@ -47,6 +50,11 @@ export function FindTripFlow({ onBack, initial, day, pick }: Props) {
     if (!initial) step('opened');
     // Once, when the search opens.
   }, []);
+  // Back from the results to the day, or the search closed: the next results open fresh (docs/94 F2).
+  useEffect(() => {
+    if (screen.step !== 'results') forgetList(RESULTS);
+  }, [screen.step]);
+  useForgetOnLeave(RESULTS);
   if (screen.step === 'route')
     return (
       <RouteScreen

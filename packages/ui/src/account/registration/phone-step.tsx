@@ -2,7 +2,7 @@ import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { requestSignedContact } from '../../telegram/permissions';
@@ -33,7 +33,7 @@ export function PhoneStep({ onBack, onDone }: PhoneStepProps) {
   const onSend = useCallback(() => void share(), [share]);
   return (
     <StepLayout icon="phone" title={t('account.phone.title')} hint={t('account.phone.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       {failed ? <Text className="step-error">{t('account.phone.denied')}</Text> : null}
       <MainButton text={t('account.phone.send')} onClick={onSend} />
     </StepLayout>

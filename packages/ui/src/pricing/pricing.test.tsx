@@ -1,6 +1,6 @@
 import { ApiError } from '@platform/api-client';
 import type { Direction, PricingState, PricingVariables } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { locations, tap } from '../market/market-test-kit';
 import { renderInShell, testClients } from '../test-shell';
@@ -91,5 +91,23 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     await tap('Narxni saqlash');
     expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
     expect(screen.queryByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeNull();
+  });
+
+  it('Back from the preview keeps the typed numbers; Back with changes asks (docs/94 B9, F3)', async () => {
+    setup();
+    const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
+    await tap('Narxlar');
+    await tap('Formulani oʻzgartirish');
+    fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
+    await tap('Oʻzgarishni koʻrish');
+    await screen.findByText('Narxlar qanday oʻzgaradi');
+    await tap('Orqaga');
+    expect(await screen.findByLabelText('Stavka (1 km uchun)')).toHaveProperty('value', '400');
+    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    expect(screen.getByLabelText('Stavka (1 km uchun)')).toBeTruthy();
+    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    expect(await screen.findByText('Formulani oʻzgartirish')).toBeTruthy();
+    asked.mockRestore();
   });
 });

@@ -10,7 +10,7 @@ import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import '../market/market.css';
 
@@ -28,13 +28,13 @@ function History({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { comfort } = useApiClients();
-  const { value, failed, reload } = useLoad(() => comfort.history());
+  const { value, failed, reload, refresh } = useLoad(() => comfort.history());
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.length === 0) {
     return (
       <>
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} onRefresh={refresh} />
         <EmptyState
           icon="history"
           title={t('comfort.history.empty')}
@@ -45,7 +45,7 @@ function History({ onBack }: { readonly onBack: () => void }) {
   }
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('comfort.history.title')}
       </Title>

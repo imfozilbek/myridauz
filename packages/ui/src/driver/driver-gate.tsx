@@ -52,6 +52,7 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
   if (!editing && application && application.status !== 'draft') {
     return <StatusScreen application={application} onFix={editCar} />;
   }
-  const close = application?.status === 'approved' ? { onClose: () => setEditing(false) } : {};
+  // A sent application has a way back: an approved one to the app, one to fix to its status (B4).
+  const close = application && application.status !== 'draft' ? { onClose: () => setEditing(false) } : {};
   return <ApplicationFlow initial={application} onSubmitted={submitted} {...close} />;
 }

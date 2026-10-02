@@ -5,7 +5,7 @@ import { Cell, Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { Icon, type IconName } from '../../icons';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 
@@ -67,7 +67,7 @@ export function ChoiceStep<T>({
   };
   return (
     <StepLayout icon={icon} title={title}>
-      <BackButton onClick={typing && choices.length > 0 ? () => setTyping(false) : onBack} />
+      <Screen onBack={typing && choices.length > 0 ? () => setTyping(false) : onBack} />
       <List>
         {typing ? null : lead}
         <Section {...(header && !typing ? { header } : {})}>

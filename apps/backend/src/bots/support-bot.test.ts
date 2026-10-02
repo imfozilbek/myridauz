@@ -51,7 +51,7 @@ describe('the support bot', () => {
     };
     await send('admin', press);
     const prompt = telegram.sentTo(OWNER).at(-1);
-    expect(prompt?.body.text).toBe('Javobingizni yozing: matn yoki ovozli xabar.');
+    expect(prompt?.body.text).toBe('Javobingizni yozing: matn, rasm yoki ovozli xabar.');
     expect(prompt?.body.reply_markup).toMatchObject({ force_reply: true });
     await send('admin', textMessage(OWNER, 'Birinchi', prompt?.id));
     await send('admin', textMessage(OWNER, 'Ikkinchi', copy?.id));

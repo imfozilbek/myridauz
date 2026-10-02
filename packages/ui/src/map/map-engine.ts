@@ -27,11 +27,13 @@ export type MapView = {
 };
 
 // Draws a map into the box; fails when the map cannot load (no network, no archive).
+// inline: a small map inside a page, one finger scrolls the page, two move the map (docs/94 F11).
 export type MapEngine = (
   box: HTMLElement,
   source: MapSource,
   start: Point,
   colors: MapColors,
+  inline: boolean,
 ) => Promise<MapView>;
 
 // The map library is big: it is fetched only when a map screen opens (a separate chunk).

@@ -1,4 +1,4 @@
-import { BOOKING_LINK } from '@platform/contracts';
+import { BOOKING_LINK, type Booking } from '@platform/contracts';
 import { useChevron } from '../chevron';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
@@ -9,6 +9,7 @@ import { useLoad } from '../market/use-list';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { useHere } from '../places/use-here';
+import { Screen } from '../screen/screen';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { nextBookings } from './home-items';
@@ -17,9 +18,24 @@ import { useHomeTap } from './use-home-tap';
 // The main screen of a passenger (G25): the nearest bookings, or «Qayerga borasiz?» with the start
 // where the person stands. «Safar topish» is the main button of the start flow.
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
-  const { t } = useI18n();
   const { bookings } = useApiClients();
-  const { value, failed, reload } = useLoad(() => bookings.myBookings());
+  const load = useLoad(() => bookings.myBookings());
+  // A pull down at the top of the main screen refreshes the bookings (docs/94 W1).
+  return (
+    <>
+      <Screen onRefresh={load.refresh} />
+      <Bookings go={go} load={load} />
+    </>
+  );
+}
+
+type BookingsProps = {
+  readonly go: HomeGo;
+  readonly load: ReturnType<typeof useLoad<readonly Booking[]>>;
+};
+
+function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
+  const { t } = useI18n();
   const [places, retryPlaces] = useDirectory();
   const tap = useHomeTap();
   const retry = () => {

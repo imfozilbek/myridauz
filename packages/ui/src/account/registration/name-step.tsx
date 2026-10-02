@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { StepLayout } from '../step-layout';
@@ -29,7 +29,7 @@ export function NameStep({ initial, onBack, onDone }: NameStepProps) {
   }, [value, onDone]);
   return (
     <StepLayout icon="profile" title={t('account.name.title')} hint={t('account.name.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section>
           <Input

@@ -9,7 +9,7 @@ import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -109,7 +109,7 @@ function RouteView({ from, to, error, onPick, onBack, onSubmit }: RouteViewProps
   const value = (place: Location | null) => <CellValue>{place ? place.name : t('places.choose')}</CellValue>;
   return (
     <div className="places">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="places-title">
         {t('places.route')}
       </Title>

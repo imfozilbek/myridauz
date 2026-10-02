@@ -7,10 +7,12 @@ import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 
 const REASON_MIN = 3;
+const FIRST_BALANCE: BalanceKind = 'bonus';
 const DIRECTIONS = ['add', 'take'] as const;
 type Direction = (typeof DIRECTIONS)[number];
 type Props = {
@@ -25,10 +27,13 @@ type Props = {
 export function AdjustForm({ current, error, onBack, onSave }: Props) {
   useScreenView('wallet.adjust');
   const { t, formatMoney } = useI18n();
-  const [balance, setBalance] = useState<BalanceKind>('bonus');
+  const [balance, setBalance] = useState<BalanceKind>(FIRST_BALANCE);
   const [direction, setDirection] = useState<Direction | null>(null);
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
+  const guard = useUnsavedGuard(
+    balance !== FIRST_BALANCE || direction !== null || amount !== '' || reason !== '',
+  );
   const sum = Number(amount);
   const valid = direction !== null && Number.isInteger(sum) && sum > 0;
   const signed = direction === 'take' ? -sum : sum;
@@ -44,7 +49,7 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
   );
   return (
     <StepLayout icon="wallet" title={t('wallet.adjust.title')} hint={t('wallet.adjust.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={guard(onBack)} />
       <List>
         <Section>{BALANCES.map((kind) => choice(kind, balance, setBalance, t(`wallet.${kind}`)))}</Section>
         <Section>

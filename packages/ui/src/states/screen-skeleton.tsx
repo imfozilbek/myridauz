@@ -1,5 +1,5 @@
 import { Skeleton } from '@telegram-apps/telegram-ui';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 
 const ROWS = 4;
 const ROW_HEIGHT = 56;
@@ -9,7 +9,7 @@ const ROW_HEIGHT = 56;
 export function ScreenSkeleton({ onBack }: { readonly onBack?: () => void }) {
   return (
     <div aria-busy="true">
-      {onBack ? <BackButton onClick={onBack} /> : null}
+      {onBack ? <Screen onBack={onBack} /> : null}
       {Array.from({ length: ROWS }, (_, row) => (
         <Skeleton key={row} visible>
           <div style={{ height: ROW_HEIGHT }} />

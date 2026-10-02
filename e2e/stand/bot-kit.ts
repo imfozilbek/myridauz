@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { STAND_API_PORT, STAND_VARS } from '../../scripts/stand/paths.ts';
 import type { Person } from './stand-kit';
-import { workerBack } from './stand-tools';
+import { despiteReload } from './stand-tools';
 
 // Telegram sends an update to a bot of the stand with its secret (docs/32); the bot may answer in
 // the reply itself.
@@ -18,11 +18,8 @@ async function update(bot: string, body: object): Promise<Reply> {
       headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': secret() },
       body: JSON.stringify({ update_id: 1, ...body }),
     });
-  // The local Worker may reload after a read of its database from outside: wait and send once more.
-  const response = await send().catch(async () => {
-    await workerBack();
-    return send();
-  });
+  // The local Worker may reload after a read of its database from outside (lesson 90).
+  const response = await despiteReload(send);
   return (await response.json()) as Reply;
 }
 const chatOf = (person: Person) => ({ id: person.id, type: 'private' });
@@ -58,14 +55,28 @@ export const sayByVoice = (bot: string, person: Person, replyTo?: number) =>
     },
   });
 
+// A photo of a person with a caption (G32).
+export const sayByPhoto = (bot: string, person: Person, caption: string) =>
+  update(bot, {
+    message: {
+      message_id: 1,
+      date: 0,
+      chat: chatOf(person),
+      from: fromOf(person),
+      photo: [{ file_id: `photo-${person.id}`, file_unique_id: 'p', width: 90, height: 90 }],
+      caption,
+    },
+  });
+
 // A press on a button under a message of the bot.
-export const press = (bot: string, person: Person, data: string) =>
+// messageId: the message of the bot under which the button is (a copy for the team, G32).
+export const press = (bot: string, person: Person, data: string, messageId = 1) =>
   update(bot, {
     callback_query: {
       id: '1',
       data,
       from: fromOf(person),
-      message: { message_id: 1, date: 0, chat: chatOf(person) },
+      message: { message_id: messageId, date: 0, chat: chatOf(person) },
     },
   });
 

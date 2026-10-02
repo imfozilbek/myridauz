@@ -10,7 +10,7 @@ import { useI18n } from '../context/i18n-context';
 import { PersonReviews } from '../feedback/driver-reviews';
 import { RatingBadge } from '../feedback/rating-badge';
 import { Icon, type IconName } from '../icons';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { ClosedTrip } from './closed-trip';
 import { RouteView } from './route-view';
 import { useWayFacts } from './way-line';
@@ -70,7 +70,7 @@ export function TripScreen(props: TripScreenProps) {
   );
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('market.date.other', { date: formatDate(day), weekday: formatWeekday(day) })}
       </Title>

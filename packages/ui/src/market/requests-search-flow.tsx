@@ -12,7 +12,7 @@ import { EmptyState } from '../states/empty-state';
 import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DateStep } from './date-step';
 import { PendingLock } from './pending-lock';
@@ -31,12 +31,22 @@ type FlowProps = {
 // A driver looks for passengers on a route and a day (docs/09): route, day, the requests.
 export function RequestsSearchFlow({ onBack, initial }: FlowProps) {
   const [route, setRoute] = useState<Route | null>(initial?.route ?? null);
+  // Back from the day, the route chosen before stays on the screen (docs/94 F8).
+  const [picking, setPicking] = useState(!initial);
   const [date, setDate] = useState<string | null>(initial?.date ?? null);
   const [now] = useState(Date.now);
   const pending = usePending();
   if (pending) return <PendingLock onBack={onBack} />;
-  if (!route) return <RouteScreen allowWholeRegion onBack={onBack} onDone={setRoute} />;
-  if (!date) return <DateStep now={now} onBack={() => setRoute(null)} onDone={setDate} />;
+  if (picking || !route) {
+    const done = (value: Route) => {
+      setRoute(value);
+      setPicking(false);
+    };
+    return (
+      <RouteScreen allowWholeRegion {...(route ? { initial: route } : {})} onBack={onBack} onDone={done} />
+    );
+  }
+  if (!date) return <DateStep now={now} onBack={() => setPicking(true)} onDone={setDate} />;
   return (
     <PlacesGate onBack={() => setDate(null)}>
       <Requests route={route} date={date} now={now} onBack={() => setDate(null)} />
@@ -57,7 +67,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
   const { t } = useI18n();
   const { market } = useApiClients();
   const dayLabel = useDayLabel();
-  const { items, failed, reload } = useList(() =>
+  const { items, failed, reload, refresh } = useList(() =>
     market.searchRequests({ from: route.from.id, to: route.to.id, date }),
   );
   const [open, setOpen] = useState<RideRequest | null>(null);
@@ -76,7 +86,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
   if (!items) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {dayLabel(date, now)}
       </Title>

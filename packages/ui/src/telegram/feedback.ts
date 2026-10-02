@@ -1,4 +1,4 @@
-import { closingBehavior, hapticFeedback, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
+import { hapticFeedback, miniApp, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
 
 const CONFIRM_ID = 'confirm';
 
@@ -29,12 +29,6 @@ export async function choose(message: string, options: readonly { id: string; te
   return (await shown[1]) || null;
 }
 
-// Asks before closing when a form has unsaved data (docs/21).
-export function protectFromClosing(enabled: boolean): void {
-  if (enabled) closingBehavior.enableConfirmation.ifAvailable();
-  else closingBehavior.disableConfirmation.ifAvailable();
-}
-
 // A map or another site opens in Telegram's own browser; outside Telegram, in a new tab (docs/21).
 export function openExternal(url: string): void {
   if (openLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
@@ -43,4 +37,9 @@ export function openExternal(url: string): void {
 // A t.me link opens inside Telegram without leaving the Mini App (docs/21); outside Telegram, in a new tab.
 export function openInTelegram(url: string): void {
   if (openTelegramLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');
+}
+
+// The Mini App closes and the person is back in the bot chat (docs/94 C1); outside Telegram, nothing.
+export function closeApp(): void {
+  miniApp.close.ifAvailable();
 }

@@ -2,7 +2,9 @@
 .chat {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
+  box-sizing: border-box;
   background: var(--tgui--secondary_bg_color);
 }
 
@@ -19,7 +21,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px 12px 88px;
+  /* Room for the input under the last message, as tall as the input is now (docs/94 F10). */
+  padding: 8px 12px calc(var(--chat-input-height, 80px) + 8px);
 }
 
 .chat-bubble {
@@ -74,7 +77,12 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+  /* Above the home bar of the phone, by the areas Telegram gives (docs/21, docs/94 S5). */
+  padding: 8px 12px
+    calc(
+      8px + var(--tg-viewport-safe-area-inset-bottom, 0px) +
+        var(--tg-viewport-content-safe-area-inset-bottom, 0px)
+    );
   background: var(--tgui--bg_color);
 }
 

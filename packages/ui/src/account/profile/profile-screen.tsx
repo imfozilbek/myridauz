@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Cell, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useAccount } from '../account-context';
 import { CellValue, formatPhone } from '../cell-value';
@@ -35,7 +35,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   const rating = profile.rating === null ? t('account.profile.newRating') : String(profile.rating);
   return (
     <div className="profile">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="profile-photo">
         <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} />
         <Title weight="1">{profile.firstName}</Title>

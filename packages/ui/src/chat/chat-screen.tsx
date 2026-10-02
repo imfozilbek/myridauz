@@ -1,17 +1,17 @@
 import { MAX_CHAT_TEXT, type ChatMessage } from '@platform/contracts';
 import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
-import { useEffect, useRef, useState } from 'react';
 import { IconButton, Textarea } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
-import { BackButton } from '../telegram/back-button';
-import { haptic } from '../telegram/feedback';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { CallPanel } from '../call/call-panel';
 import { useCall } from '../call/use-call';
 import { Icon } from '../icons';
 import { useChat } from './use-chat';
+import { useChatLayout } from './use-chat-layout';
+import { useChatText } from './use-chat-text';
 import './chat.css';
 
 type Props = { readonly chatKey: string; readonly title?: string; readonly onBack: () => void };
@@ -22,24 +22,15 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { messages, state, warning, send, retry, calling } = useChat(chatKey);
+  const { messages, state, warning, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
   const name = title ?? t('chat.title');
-  const [text, setText] = useState('');
-  const end = useRef<HTMLDivElement>(null);
-  useEffect(() => end.current?.scrollIntoView?.({ block: 'end' }), [messages.length]);
+  const { text, setText, submit } = useChatText(chatKey, send, delivered);
+  const { chat, input, end } = useChatLayout(messages, state !== 'failed');
   if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} onBack={onBack} />;
-  const submit = () => {
-    const value = text.trim();
-    if (value.length === 0) return;
-    if (send(value)) {
-      haptic.tap();
-      setText('');
-    }
-  };
   return (
-    <div className="chat">
-      <BackButton onClick={onBack} />
+    <div ref={chat} className="chat">
+      <Screen onBack={controls.leave(onBack)} />
       <div className="chat-head">
         <Title weight="2">{name}</Title>
         {/* A voice call only after the confirmation; phone numbers are never shown (docs/08). */}
@@ -72,6 +63,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
         <div ref={end} />
       </div>
       <form
+        ref={input}
         className="chat-input"
         onSubmit={(event) => {
           event.preventDefault();

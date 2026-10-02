@@ -7,6 +7,8 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
+import { useCarAnswers } from './car-answers';
 import { CarStep, type CarStepName } from './car-step';
 import { useStepProgress } from '../flow/step-progress';
 import { nextStep, previousStep, progressOf, type Step } from './application-steps';
@@ -24,7 +26,7 @@ const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 type ApplicationFlowProps = {
   readonly initial: DriverApplication | null;
   readonly onSubmitted: (application: DriverApplication) => void;
-  // An approved driver may leave without changes.
+  // An application already sent may be left: to the app, or back to its status (docs/94 B4).
   readonly onClose?: () => void;
 };
 
@@ -33,7 +35,8 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { drivers } = useApiClients();
-  const [car, setCar] = useState<Partial<CarInput>>(initial?.car ?? {});
+  const { car, shown, answer, dropMake, dirty } = useCarAnswers(initial?.car ?? undefined);
+  const guard = useUnsavedGuard(dirty);
   const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
   const [step, setStep] = useState<Step>(initial?.car ? 'review' : 'intro');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
@@ -42,14 +45,17 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const reviewing = initial?.car !== null && initial?.car !== undefined;
 
   const done = (current: Step, patch: Partial<CarInput>, passed?: DriverStep) => {
-    const next = { ...car, ...patch };
-    setCar(next);
-    if (Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
+    const alone = current === 'make' && !('model' in patch);
+    const next = answer(patch, alone);
+    if (!alone && Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
     if (passed) track({ name: 'driver_application_step', screen: 'driver', step: passed });
     // A new make needs its model; any other change goes back to the review.
     setStep(nextStep(current, next, 'model' in patch, reviewing));
   };
-  const back = (current: Step) => () => setStep(reviewing ? 'review' : previousStep(current, car));
+  const back = (current: Step) => () => {
+    if (current === 'model') dropMake();
+    setStep(reviewing ? 'review' : previousStep(current, car));
+  };
 
   const send = async () => {
     const parsed = carSchema.safeParse(car);
@@ -72,7 +78,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
       <CarStep
         key={step}
         step={step}
-        car={car}
+        car={shown}
         onBack={back(step)}
         onDone={(patch, passed) => done(step, patch, passed)}
       />
@@ -122,7 +128,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           failure={failure}
           onEdit={(target: ReviewTarget) => setStep(target)}
           onSend={send}
-          {...(onClose ? { onBack: onClose } : {})}
+          {...(onClose ? { onBack: guard(onClose) } : {})}
         />
       );
     }

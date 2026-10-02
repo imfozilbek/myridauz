@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import { StepLayout } from '../../account/step-layout';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { hasProblem, ProblemNote } from '../problem-note';
@@ -34,7 +34,7 @@ export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.p
   }, [value, onDone]);
   return (
     <StepLayout icon="car" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <label className={invalid || hasProblem(reasons, 'plate') ? 'plate plate-problem' : 'plate'}>
         <span className="plate-field">
           <span className="plate-ghost" aria-hidden>

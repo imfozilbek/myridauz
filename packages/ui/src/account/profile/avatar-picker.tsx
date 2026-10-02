@@ -1,5 +1,5 @@
 import { Text } from '@telegram-apps/telegram-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { haptic } from '../../telegram/feedback';
@@ -12,7 +12,8 @@ import { errorKey } from '../../market/error-text';
 
 // The photo is a selfie with the front camera only (owner decision, docs/47): no gallery.
 // Telegram Desktop and Web have no camera, so there the person is sent to the phone.
-export function AvatarPicker() {
+// onCamera: the camera opened or closed, a step hides its main button under it (docs/94 F7).
+export function AvatarPicker({ onCamera }: { readonly onCamera?: (open: boolean) => void }) {
   const account = useAccount();
   const { t } = useI18n();
   const [busy, setBusy] = useState(false);
@@ -34,6 +35,7 @@ export function AvatarPicker() {
     }
   };
   const camera = usePhotoTaker('user', (photo) => void upload(photo));
+  useEffect(() => onCamera?.(camera.isOpen), [camera.isOpen, onCamera]);
   if (!account) return null;
   if (!hasCamera) return <Text className="step-hint">{t('account.avatar.phoneOnly')}</Text>;
   const shot = {

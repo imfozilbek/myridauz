@@ -29,4 +29,4 @@ export { ErrorScreen } from './states/error-screen';
 export { ScreenSkeleton } from './states/screen-skeleton';
 export { BackButton } from './telegram/back-button';
 export { MainButton, SecondaryButton } from './telegram/bottom-button';
-export { confirm, haptic, protectFromClosing } from './telegram/feedback';
+export { confirm, haptic } from './telegram/feedback';

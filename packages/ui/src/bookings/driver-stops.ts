@@ -61,3 +61,24 @@ export function withMoved(stops: readonly Stop[], index: number, by: -1 | 1): St
   next[target] = stop;
   return next;
 }
+
+// The order the driver set by hand, as ids, kept while the app is away in a navigator (docs/94 C7).
+export type HandOrder = { readonly pickups: readonly string[]; readonly dropoffs: readonly string[] };
+const ids = (value: unknown): readonly string[] | null =>
+  Array.isArray(value) && value.every((id) => typeof id === 'string') ? value : null;
+export function handOrderOf(value: unknown): HandOrder | null {
+  if (typeof value !== 'object' || value === null) return null;
+  const { pickups, dropoffs } = value as Record<string, unknown>;
+  const [up, down] = [ids(pickups), ids(dropoffs)];
+  return up && down ? { pickups: up, dropoffs: down } : null;
+}
+const byIds = (stops: readonly Stop[], order: readonly string[]) =>
+  [...stops].sort((a, b) => rank(order, a.id) - rank(order, b.id));
+const rank = (order: readonly string[], id: string) => {
+  const at = order.indexOf(id);
+  return at === -1 ? order.length : at;
+};
+// A stop that came later goes to the end; a stop that is gone is skipped.
+export function inHandOrder(stops: Record<StopKind, Stop[]>, order: HandOrder): Record<StopKind, Stop[]> {
+  return { pickups: byIds(stops.pickups, order.pickups), dropoffs: byIds(stops.dropoffs, order.dropoffs) };
+}

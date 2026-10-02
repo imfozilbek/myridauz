@@ -5,7 +5,7 @@ import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { LegalSection } from './legal-section';
 import './legal.css';
@@ -20,7 +20,7 @@ export function LegalScreen({ document, onBack }: Props) {
   const values = legalValues(i18n, useBrand());
   return (
     <div className="legal">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="legal-title">
         {i18n.t(legalTitle(document))}
       </Title>
