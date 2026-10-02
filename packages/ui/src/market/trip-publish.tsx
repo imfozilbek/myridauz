@@ -7,7 +7,7 @@ import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
@@ -72,7 +72,7 @@ export function TripPublish({ draft, km, onBack, onClose, onReturn, isReturn }: 
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <StepLayout icon="newTrip" title={t('market.review.title')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section footer={seatCommission(draft.price)}>
           <div className="route-summary">

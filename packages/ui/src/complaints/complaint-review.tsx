@@ -21,7 +21,7 @@ import { BlockJournal } from '../moderation/block-journal';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { DecisionSection } from './decision-section';
 
@@ -79,7 +79,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
   if (decided)
     return (
       <>
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} />
         <EmptyState icon="selected" title={t('complaints.decided')} />
       </>
     );
@@ -95,7 +95,7 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
         : complaint.against.firstName;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t(`complaints.reason.${complaint.reason}`)}
       </Title>

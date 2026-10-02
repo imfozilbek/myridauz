@@ -8,7 +8,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { errorKey } from '../market/error-text';
 import { EmptyState } from '../states/empty-state';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import '../market/market.css';
@@ -41,13 +41,13 @@ export function ComplaintScreen({ bookingId, onBack }: Props) {
   if (step === 'sent')
     return (
       <div className="market">
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} />
         <EmptyState icon="complaints" title={t('complaints.sent')} description={t('complaints.anonymous')} />
       </div>
     );
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('complaints.title')}
       </Title>

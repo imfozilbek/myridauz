@@ -5,7 +5,7 @@ import { StepLayout } from '../account/step-layout';
 import { Field, List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 
@@ -35,7 +35,7 @@ export function VariablesEditor({ current, onBack, onPreview }: VariablesEditorP
   };
   return (
     <StepLayout icon="statistics" title={t('pricing.editTitle')} hint={t('pricing.editHint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         {FIELDS.map((field) => (
           <Field

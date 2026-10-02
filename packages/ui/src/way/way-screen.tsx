@@ -11,7 +11,7 @@ import { RouteScreen } from '../places/route-screen';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
@@ -113,7 +113,7 @@ function WayForm({ onBack, onDone, directory }: WayFormProps) {
   const changeMode = (next: PickupMode) => setMode(next);
   return (
     <div className="pickup-map">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <WayMap from={from} to={to} pitak={mode === 'door' ? null : (pitak ?? null)} />
       {/* The card and the other way by the list: at the top, the bottom is for the main button. */}
       <div className="way-top">

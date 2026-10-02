@@ -15,7 +15,7 @@ import { PriceStep } from '../market/price-step';
 import { RouteView } from '../market/route-view';
 import { TimeStep } from '../market/time-step';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
@@ -85,7 +85,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
       title={t('bookings.offer.review.title')}
       hint={t('bookings.offer.review.hint')}
     >
-      <BackButton onClick={() => setPrice(null)} />
+      <Screen onBack={() => setPrice(null)} />
       <List>
         <Section>
           <div className="route-summary">

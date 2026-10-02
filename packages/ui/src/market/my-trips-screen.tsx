@@ -17,7 +17,7 @@ import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { confirm, haptic } from '../telegram/feedback';
 import { ActionFailure } from '../states/action-failure';
 import { errorKey } from './error-text';
@@ -113,7 +113,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
   if (trips.length === 0 && offers.length === 0) {
     return (
       <>
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} />
         <EmptyState
           icon="myTrips"
           title={t('market.mine.empty')}
@@ -129,7 +129,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
   }
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('common.myTrips')}
       </Title>

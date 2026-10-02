@@ -7,7 +7,7 @@ import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 const REASON_MIN = 3;
@@ -44,7 +44,7 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
   );
   return (
     <StepLayout icon="wallet" title={t('wallet.adjust.title')} hint={t('wallet.adjust.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section>{BALANCES.map((kind) => choice(kind, balance, setBalance, t(`wallet.${kind}`)))}</Section>
         <Section>

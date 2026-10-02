@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
 import { BackButton } from './back-button';
 import { MainButton, SecondaryButton } from './bottom-button';
-import { confirm, haptic, protectFromClosing } from './feedback';
+import { holdClosing } from '../screen/closing';
+import { confirm, haptic } from './feedback';
 import { initTelegram } from './init-telegram';
 import { useScreenBackground } from './screen-background';
 
@@ -136,11 +137,14 @@ describe('Telegram wrappers', () => {
     await expect(confirm('Bekor qilasizmi?', 'Ha')).resolves.toBe(false);
     vi.unstubAllGlobals();
     haptic.tap();
-    haptic.success();
-    protectFromClosing(true);
-    protectFromClosing(false);
+    // Two holders (a form and a call): Telegram stops asking only when both let go.
+    const form = holdClosing();
+    const call = holdClosing();
+    form();
+    expect(sdk.closingBehavior.disableConfirmation.ifAvailable).not.toHaveBeenCalled();
+    call();
     expect(sdk.hapticFeedback.impactOccurred.ifAvailable).toHaveBeenCalledWith('light');
-    expect(sdk.closingBehavior.enableConfirmation.ifAvailable).toHaveBeenCalled();
-    expect(sdk.closingBehavior.disableConfirmation.ifAvailable).toHaveBeenCalled();
+    expect(sdk.closingBehavior.enableConfirmation.ifAvailable).toHaveBeenCalledOnce();
+    expect(sdk.closingBehavior.disableConfirmation.ifAvailable).toHaveBeenCalledOnce();
   });
 });

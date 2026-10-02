@@ -11,7 +11,7 @@ import { usePayHint } from './pay-hint';
 import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { useShareTrip } from './use-share-trip';
@@ -43,7 +43,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {driver.firstName}
       </Title>

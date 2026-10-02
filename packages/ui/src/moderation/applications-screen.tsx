@@ -11,7 +11,7 @@ import { IconTile } from '../icon-tile';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ApplicationScreen, type Outcome } from './application-screen';
 import { forgetLinkedApplication, linkedApplication } from './linked-application';
@@ -89,7 +89,7 @@ function QueueView({ queue, title, onOpen, onBack }: QueueViewProps) {
   if (queue.length === 0) {
     return (
       <>
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} />
         <EmptyState
           icon="applications"
           title={t('moderation.queue.empty')}
@@ -100,7 +100,7 @@ function QueueView({ queue, title, onOpen, onBack }: QueueViewProps) {
   }
   return (
     <div className="moderation">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="moderation-title">
         {title}
       </Title>

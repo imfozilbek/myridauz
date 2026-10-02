@@ -9,7 +9,7 @@ import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { WalletView } from './wallet-view';
 import '../market/market.css';
@@ -29,7 +29,7 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('wallet.title')}
       </Title>

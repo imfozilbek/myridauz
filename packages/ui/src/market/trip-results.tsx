@@ -11,7 +11,7 @@ import { EmptyState } from '../states/empty-state';
 import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { FilteredEmpty } from './filtered-empty';
 import { RouteView } from './route-view';
@@ -75,7 +75,7 @@ export function TripResults({ route, filters, onFilters, date, now, onBack, onOp
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {dayLabel(date, now)}
       </Title>

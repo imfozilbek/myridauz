@@ -17,7 +17,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { PhotoGrid, PhotoScreen, type PhotoKind } from './photo-grid';
@@ -90,7 +90,7 @@ export function ApplicationScreen({ application, onBack, onDone }: ApplicationSc
   }
   return (
     <div className="moderation">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="moderation-title">
         {application.firstName}
       </Title>

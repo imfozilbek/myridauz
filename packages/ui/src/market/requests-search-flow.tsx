@@ -12,7 +12,7 @@ import { EmptyState } from '../states/empty-state';
 import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DateStep } from './date-step';
 import { PendingLock } from './pending-lock';
@@ -76,7 +76,7 @@ function Requests({ route, date, now, onBack }: RequestsProps) {
   if (!items) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {dayLabel(date, now)}
       </Title>

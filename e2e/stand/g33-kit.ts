@@ -55,7 +55,7 @@ export async function writeInChat(person: Person, key: string, texts: readonly s
   return socket;
 }
 
-export const bubbles = (page: Page) => page.locator('.chat-bubble');
+const bubbles = (page: Page) => page.locator('.chat-bubble');
 export async function waitBubbles(page: Page, count: number) {
   await expect.poll(() => bubbles(page).count()).toBeGreaterThanOrEqual(count);
 }

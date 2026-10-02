@@ -6,7 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
 import { ErrorScreen } from '../states/error-screen';
 import { MyRequestsScreen } from '../market/my-requests-screen';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import type { WayEnd } from '../way/way-end';
 import { BookPoint } from './book-point';
@@ -40,7 +40,7 @@ export function BookFlow({ trip, onBack, onClose }: Props) {
   if (sent)
     return (
       <StepLayout icon="selected" title={t('bookings.sent.title')} hint={t('bookings.sent.hint')}>
-        <BackButton onClick={onClose} />
+        <Screen onBack={onClose} />
         <MainButton text={t('bookings.sent.see')} onClick={() => setSeeing(true)} />
       </StepLayout>
     );

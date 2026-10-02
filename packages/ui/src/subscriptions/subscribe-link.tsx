@@ -5,7 +5,7 @@ import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { PlacesGate } from '../market/places-gate';
 import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { startParam } from '../telegram/launch-param';
 import { NotifyMe } from './notify-me';
@@ -45,7 +45,7 @@ function SubscribeScreen({ route, onBack }: { readonly route: Route; readonly on
   useScreenBackground('grouped');
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('subscriptions.notify')}
       </Title>

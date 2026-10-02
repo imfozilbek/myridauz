@@ -7,7 +7,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useMapView } from '../map/use-map-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { requestPosition } from '../telegram/location';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -54,7 +54,7 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
   };
   return (
     <div className="trip-map">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div ref={box} className="trip-map-box" data-state={view ? 'ready' : 'loading'} />
       <List>
         <div className="trip-map-tabs">

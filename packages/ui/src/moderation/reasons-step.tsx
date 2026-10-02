@@ -4,7 +4,7 @@ import { StepLayout } from '../account/step-layout';
 import { Cell, List, Multiselectable, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 
@@ -26,7 +26,7 @@ export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
   const send = () => onDone(MODERATION_REASONS.filter((reason) => picked.includes(reason)));
   return (
     <StepLayout icon="applications" title={t('moderation.reason.title')} hint={t('moderation.reason.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section>
           {MODERATION_REASONS.map((reason) => (

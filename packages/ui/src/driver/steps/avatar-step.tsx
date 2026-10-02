@@ -5,7 +5,7 @@ import { ProfilePhoto } from '../../account/profile/profile-photo';
 import { StepLayout } from '../../account/step-layout';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { hasProblem, ProblemNote } from '../problem-note';
 
@@ -25,7 +25,7 @@ export function AvatarStep({ reasons, onBack, onDone }: AvatarStepProps) {
   const hasAvatar = profile?.hasAvatar === true;
   return (
     <StepLayout icon="profile" title={t('drivers.avatar.title')} hint={t('drivers.avatar.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="step-head">
         <span className={hasProblem(reasons, 'avatar') ? 'avatar-ring avatar-ring-problem' : 'avatar-ring'}>
           {profile ? (

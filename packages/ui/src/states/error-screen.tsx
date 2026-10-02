@@ -1,6 +1,6 @@
 import { Button } from '../components';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { EmptyState } from './empty-state';
 
 type Props = { readonly onRetry: () => void; readonly title?: string; readonly onBack?: () => void };
@@ -17,7 +17,7 @@ export function ErrorScreen({ onRetry, title, onBack }: Props) {
   );
   return (
     <>
-      {onBack ? <BackButton onClick={onBack} /> : null}
+      {onBack ? <Screen onBack={onBack} /> : null}
       <EmptyState
         icon="error"
         title={title ?? t('errors.generic.title')}

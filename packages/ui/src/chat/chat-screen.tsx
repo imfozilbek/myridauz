@@ -5,7 +5,7 @@ import { IconButton, Textarea } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { CallPanel } from '../call/call-panel';
@@ -39,7 +39,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   };
   return (
     <div className="chat">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="chat-head">
         <Title weight="2">{name}</Title>
         {/* A voice call only after the confirmation; phone numbers are never shown (docs/08). */}

@@ -10,7 +10,7 @@ import { useI18n } from '../context/i18n-context';
 import { usePayHint } from './pay-hint';
 import { errorKey } from '../market/error-text';
 import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { PitakMap } from '../map/pitak-map';
 import { haptic } from '../telegram/feedback';
@@ -55,7 +55,7 @@ export function BookReview({ trip, seats, mode, pickup, dropoff, onBack, onSent 
   const start = pitak ? pitak.name : pickup ? nameText(pickup.name, pickup.place) : '';
   return (
     <StepLayout icon="myTrips" title={t('bookings.review.title')} hint={t('way.book.fixed')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section footer={payHint}>
           <div className="route-summary">

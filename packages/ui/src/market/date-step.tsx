@@ -4,7 +4,7 @@ import { StepLayout } from '../account/step-layout';
 import { Cell, Input, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { today, tomorrow, useDayLabel } from './when';
@@ -30,7 +30,7 @@ export function DateStep({ now, onBack, onDone }: DateStepProps) {
   const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
   return (
     <StepLayout icon="trip" title={t('market.date.title')}>
-      <BackButton onClick={calendar ? () => setCalendar(false) : onBack} />
+      <Screen onBack={calendar ? () => setCalendar(false) : onBack} />
       <List>
         <Section>
           {calendar ? (

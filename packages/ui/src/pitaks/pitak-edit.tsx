@@ -10,7 +10,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { errorKey } from '../market/error-text';
 import type { PlaceDirectory } from '../places/directory';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { PointScreen } from '../way/point-screen';
 import { useNameText } from '../way/way-end';
@@ -63,7 +63,7 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
   const region = pitak ? directory.find(pitak.regionId)?.name : undefined;
   return (
     <StepLayout icon="pickup" title={pitak ? pitak.name : t('pitaks.add')}>
-      <BackButton onClick={() => onBack(false)} />
+      <Screen onBack={() => onBack(false)} />
       <List>
         <Field label={t('pitaks.name')} value={name} onChange={(e) => setName(e.target.value)} />
         <Section>

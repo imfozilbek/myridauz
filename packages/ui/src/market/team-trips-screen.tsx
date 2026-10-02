@@ -8,7 +8,7 @@ import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
 import { TripCard } from './trip-card';
@@ -46,7 +46,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const busy = days.filter((day) => day.trips.length > 0);
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('common.admin.trips')}
       </Title>

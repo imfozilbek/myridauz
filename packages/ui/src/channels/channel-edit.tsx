@@ -8,7 +8,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import type { PlaceDirectory } from '../places/directory';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { withNear } from './near';
 
@@ -43,7 +43,7 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
       title={channel ? channel.title : t('channels.add')}
       hint={t('channels.botHint')}
     >
-      <BackButton onClick={() => onBack(false)} />
+      <Screen onBack={() => onBack(false)} />
       <List>
         {channel ? null : (
           <Field

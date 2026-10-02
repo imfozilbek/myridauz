@@ -3,6 +3,8 @@
   "close": "Yopish",
   "undo": "Qaytarish",
   "back": "Orqaga",
+  "unsaved": "Oʻzgarishlar saqlanmaydi. Chiqasizmi?",
+  "draftRestored": "Oldingi yozganingiz tiklandi.",
   "camera.shoot": "Rasmga olish",
   "camera.denied": "Kamera ochilmadi. Telefon kamerasi bilan oling.",
   "camera.native": "Telefon kamerasini ochish",

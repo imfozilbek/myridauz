@@ -12,7 +12,7 @@ import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { StarsRow } from './stars-row';
@@ -61,7 +61,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
   if (step === 'sent')
     return (
       <div className="market">
-        <BackButton onClick={onBack} />
+        <Screen onBack={onBack} />
         <EmptyState icon="star" title={t('reviews.sent')} description={t('reviews.blind')} />
         {target.rateeRole === 'driver' ? (
           <List>
@@ -72,7 +72,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
     );
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('reviews.title')}
       </Title>

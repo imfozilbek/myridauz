@@ -2,7 +2,7 @@ import type { Gender } from '@platform/contracts';
 import { Cell, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { haptic } from '../../telegram/feedback';
 import { StepLayout } from '../step-layout';
 
@@ -18,7 +18,7 @@ export function GenderStep({ onBack, onDone }: GenderStepProps) {
   };
   return (
     <StepLayout icon="passengers" title={t('account.gender.title')} hint={t('account.gender.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section>
           <Cell onClick={() => choose('male')}>{t('account.gender.male')}</Cell>

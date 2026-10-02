@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
@@ -39,7 +39,7 @@ export function PriceStep({ recommendation, initial, commission = false, onBack,
       title={t('market.price.title')}
       hint={t('market.price.hint', { price: formatMoney(recommendation.price) })}
     >
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="price-field">
         <Button
           mode="bezeled"

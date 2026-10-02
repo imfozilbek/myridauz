@@ -8,7 +8,7 @@ import { useI18n } from '../context/i18n-context';
 import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { useScreenBackground } from '../telegram/screen-background';
 import { StatsSections } from './stats-sections';
@@ -36,7 +36,7 @@ export function StatsScreen({
   useEffect(() => forgetLaunchParam(PARAM), []);
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('stats.title')}
       </Title>

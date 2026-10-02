@@ -1,4 +1,4 @@
-import { closingBehavior, hapticFeedback, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
+import { hapticFeedback, openLink, openTelegramLink, popup } from '@telegram-apps/sdk-react';
 
 const CONFIRM_ID = 'confirm';
 
@@ -27,12 +27,6 @@ export async function choose(message: string, options: readonly { id: string; te
   const shown = popup.show.ifAvailable({ message, buttons });
   if (shown?.[0] !== true) return undefined;
   return (await shown[1]) || null;
-}
-
-// Asks before closing when a form has unsaved data (docs/21).
-export function protectFromClosing(enabled: boolean): void {
-  if (enabled) closingBehavior.enableConfirmation.ifAvailable();
-  else closingBehavior.disableConfirmation.ifAvailable();
 }
 
 // A map or another site opens in Telegram's own browser; outside Telegram, in a new tab (docs/21).

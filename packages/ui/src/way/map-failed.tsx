@@ -1,7 +1,7 @@
 import { Button } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 
 // The map did not load (G22): say so and try again; the list of districts stays as the other way.
 export function MapFailed({
@@ -14,7 +14,7 @@ export function MapFailed({
   const { t } = useI18n();
   return (
     <>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <EmptyState
         icon="error"
         title={t('bookings.map.failed')}

@@ -7,7 +7,7 @@ import { StepLayout } from '../account/step-layout';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { confirm, haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
@@ -103,7 +103,7 @@ export function DriverBooking({ booking, onClose, onMap }: Props) {
         title={t('bookings.confirm.title')}
         hint={t('bookings.confirm.hint', { amount: formatMoney(booking.commission) })}
       >
-        <BackButton onClick={() => setStep('view')} />
+        <Screen onBack={() => setStep('view')} />
         {balance === null ? null : (
           <Text className="step-note">{t('bookings.confirm.balance', { amount: formatMoney(balance) })}</Text>
         )}

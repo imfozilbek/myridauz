@@ -11,7 +11,7 @@ import { StepLayout } from '../../account/step-layout';
 import { Cell, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { asksSeats } from '../car-choices';
 import { hasProblem, ProblemNote } from '../problem-note';
@@ -54,7 +54,7 @@ export function ReviewStep({ car, reasons, recheck, failure, onEdit, onBack, onS
       title={t('drivers.review.title')}
       {...(recheck ? { hint: t('drivers.edit.confirm') } : {})}
     >
-      {onBack ? <BackButton onClick={onBack} /> : null}
+      {onBack ? <Screen onBack={onBack} /> : null}
       <span className="step-note">
         <ProblemNote reasons={reasons} place="profile" />
       </span>

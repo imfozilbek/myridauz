@@ -4,7 +4,7 @@ import { StepLayout } from '../account/step-layout';
 import { Button, List, Section, Textarea } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 type Step<T> = { readonly onBack: () => void; readonly onDone: (value: T) => void };
@@ -33,7 +33,7 @@ export function CommentStep({ initial, onBack, onDone }: Step<string> & { readon
   const [text, setText] = useState(initial);
   return (
     <StepLayout icon="request" title={t('market.comment.title')} hint={t('market.comment.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <List>
         <Section>
           <Textarea

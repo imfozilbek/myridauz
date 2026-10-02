@@ -10,7 +10,7 @@ import { ChoiceStep } from '../driver/steps/choice-step';
 import type { Way } from '../way/way-end';
 import { WayScreen } from '../way/way-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DateStep } from './date-step';
@@ -118,7 +118,7 @@ export function NewRequestFlow({ onBack }: { readonly onBack: () => void }) {
         title={t('market.request.review.title')}
         hint={t('market.request.review.hint')}
       >
-        <BackButton onClick={() => setStep('price')} />
+        <Screen onBack={() => setStep('price')} />
         <List>
           <Section>
             {way ? (

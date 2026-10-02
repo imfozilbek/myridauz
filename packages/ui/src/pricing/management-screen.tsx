@@ -4,7 +4,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { TeamTripsScreen } from '../market/team-trips-screen';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
@@ -32,7 +32,7 @@ export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
   if (open === 'statistics') return <StatsScreen onBack={menu} period={linked ?? 'day'} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('common.admin.management')}
       </Title>

@@ -13,7 +13,7 @@ import { PlacesGate } from '../market/places-gate';
 import { RouteView } from '../market/route-view';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DirectionEdit } from './direction-edit';
@@ -109,7 +109,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
   }
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('pricing.title')}
       </Title>

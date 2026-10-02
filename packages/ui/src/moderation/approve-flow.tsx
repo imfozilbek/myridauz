@@ -8,7 +8,7 @@ import { useI18n } from '../context/i18n-context';
 import { PlateView } from '../driver/plate-view';
 import { PlateStep } from '../driver/steps/plate-step';
 import { useBlobUrl } from '../media/use-blob-url';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 type ApproveFlowProps = {
@@ -65,7 +65,7 @@ function PlateCheck({ userId, plate, fixed, onBack, onFix, onApprove }: PlateChe
   const photo = useBlobUrl(() => moderation.photo(userId, 'front'), `${userId}:front`);
   return (
     <StepLayout icon="car" title={t('moderation.plateCheck.title')} hint={t('moderation.plateCheck.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="plate-check">
         {photo ? <img className="plate-check-photo" src={photo} alt={t('drivers.photo.front')} /> : null}
         <PlateView plate={plate} />
