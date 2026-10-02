@@ -3,6 +3,8 @@ import { webhookRoutes } from './webhook-routes';
 // Test helper: a fake Telegram that records every call, and a way to send updates to a bot.
 type TelegramCall = {
   readonly method: string;
+  // The token of the bot that sent it: which bot spoke (docs/50).
+  readonly token: string;
   readonly body: Record<string, unknown>;
   readonly id: number;
 };
@@ -12,9 +14,10 @@ export function fakeTelegram() {
   let messageId = 100;
   const fetch = async (input: string, init?: RequestInit) => {
     const method = input.split('/').pop() ?? '';
+    const token = /\/bot([^/]+)\//u.exec(input)?.[1] ?? '';
     const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {};
     messageId += 1;
-    calls.push({ method, body, id: messageId });
+    calls.push({ method, token, body, id: messageId });
     return Response.json({ ok: true, result: { message_id: messageId } });
   };
   return { calls, fetch, sentTo: (chatId: number) => calls.filter((call) => call.body.chat_id === chatId) };
@@ -24,6 +27,7 @@ export const botEnv = {
   PASSENGER_BOT_TOKEN: 'p',
   DRIVER_BOT_TOKEN: 'd',
   ADMIN_BOT_TOKEN: 'a',
+  SUPPORT_BOT_TOKEN: 's',
   TELEGRAM_WEBHOOK_SECRET: 'hook',
   ADMIN_TELEGRAM_IDS: '7,8',
 };

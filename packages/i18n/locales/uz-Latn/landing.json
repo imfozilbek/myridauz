@@ -109,11 +109,11 @@
   "faq.fee.q": "Haydovchi uchun qancha turadi?",
   "faq.fee.a": "Joy tasdiqlanganda bir joy narxining {percent} foizi, lekin kamida {minPerSeat}. Yangi haydovchiga {bonus} bonus beriladi.",
   "faq.help.q": "Muammo boʻlsa, kimga yozaman?",
-  "faq.help.a": "@{adminBot} botiga yozing. Jamoamiz javob beradi.",
+  "faq.help.a": "@{supportBot} botiga yozing. Jamoamiz javob beradi.",
   "final.title": "Odamlar uchun yaratildi",
   "final.art": "Koʻp odamlardan tuzilgan R harfi",
   "footer.documents": "Hujjatlar",
-  "footer.contact": "Savollar boʻlsa, @{adminBot} botiga yozing.",
+  "footer.contact": "Savollar boʻlsa, @{supportBot} botiga yozing.",
   "footer.copyright": "© {year} {brand}",
   "document.home": "Bosh sahifa"
 }

@@ -10,6 +10,7 @@ import type { Fetch } from '../shared/telegram/telegram-api';
 import { onAdminCallback } from './admin-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onRatingCallback } from './rating-callbacks';
+import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
@@ -26,14 +27,17 @@ const NOT_FOUND = 404;
 export function webhookRoutes(fetch: Fetch) {
   return new Hono<AppEnv>().post('/telegram/:role', async (context) => {
     const role = context.req.param('role');
+    if (role !== SUPPORT_BOT && !isBotRole(role)) return context.body(null, NOT_FOUND);
     const secret = context.env.TELEGRAM_WEBHOOK_SECRET;
-    if (!isBotRole(role) || !secret || !botToken(context.env, role)) return context.body(null, NOT_FOUND);
+    if (!secret || !botToken(context.env, role)) return context.body(null, NOT_FOUND);
     if (!safeEqual(context.req.header(SECRET_HEADER) ?? '', secret)) return context.body(null, UNAUTHORIZED);
     const update = telegramUpdateSchema.safeParse(await context.req.json().catch(() => null));
     if (!update.success) return context.json({});
     const event = botEventOf(role, update.data);
     if (event) recordServerEvent(context.env, event);
     const bot: BotContext = { env: context.env, brand: loadBrand(context.env.BRAND), fetch };
+    if (role === SUPPORT_BOT)
+      return context.json(update.data.message ? await onSupportMessage(bot, update.data.message) : {});
     const query = update.data.callback_query;
     if (query)
       return context.json(
@@ -45,7 +49,9 @@ export function webhookRoutes(fetch: Fetch) {
     const blocked = await isBlocked(context.env, fromId);
     const team = role === 'admin' ? await teamRole(context.env, fromId) : null;
     if (isStartCommand(message.text)) {
-      const access = blocked ? 'blocked' : role === 'admin' && team === null ? 'support' : 'allowed';
+      if (!blocked && role === 'admin' && team === null)
+        return context.json(toSupportBot(bot.brand, message.chat.id));
+      const access = blocked ? 'blocked' : 'allowed';
       const payload = message.text?.split(' ')[1] ?? '';
       return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload }));
     }

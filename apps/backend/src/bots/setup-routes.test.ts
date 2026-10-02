@@ -7,6 +7,7 @@ const env = {
   PASSENGER_BOT_TOKEN: 'p',
   DRIVER_BOT_TOKEN: 'd',
   ADMIN_BOT_TOKEN: 'a',
+  SUPPORT_BOT_TOKEN: 's',
   TELEGRAM_WEBHOOK_SECRET: 'hook',
 };
 
@@ -27,10 +28,11 @@ function setup(secret: string, status = 200) {
 describe('POST /telegram/setup', () => {
   it('points every bot at the API with the secret token and sets menu buttons for public bots', async () => {
     const { request, calls } = setup('hook');
-    expect(await (await request).json()).toEqual({ configured: ['passenger', 'driver', 'admin'] });
+    const bots = ['passenger', 'driver', 'admin', 'support'];
+    expect(await (await request).json()).toEqual({ configured: bots });
     const webhooks = calls.filter((call) => call.url.endsWith('/setWebhook'));
     expect(webhooks.map((call) => call.body.url)).toEqual(
-      ['passenger', 'driver', 'admin'].map((role) => `https://api.${brand.domain}/telegram/${role}`),
+      bots.map((role) => `https://api.${brand.domain}/telegram/${role}`),
     );
     expect(webhooks.every((call) => call.body.secret_token === 'hook')).toBe(true);
     const menus = calls.filter((call) => call.url.endsWith('/setChatMenuButton'));
@@ -57,14 +59,16 @@ describe('POST /telegram/setup', () => {
       brand.name,
       `${brand.name} Haydovchi`,
       `${brand.name} Jamoa`,
+      `${brand.name} Yordam`,
     ]);
     const descriptions = sent('setMyDescription').map((call) => String(call.body.description));
     const shorts = sent('setMyShortDescription').map((call) => String(call.body.short_description));
-    expect(descriptions).toHaveLength(3);
+    expect(descriptions).toHaveLength(4);
     expect(descriptions.every((text) => text.length > 0 && text.length <= 512)).toBe(true);
     expect(shorts.every((text) => text.length > 0 && text.length <= 120)).toBe(true);
     expect(shorts[0]).toContain(brand.slogan);
     expect(descriptions[0]).toContain(brand.name);
+    expect(shorts[3]).toContain('yordam xizmati');
   });
 
   it('refuses without the secret', async () => {

@@ -33,17 +33,21 @@ test('S05. the offer comes with a button that opens this offer', async () => {
   expect(message?.buttons[0]?.url).toContain(offer.id);
 });
 
-test('T60, T61. a person writes to the admin bot, the team answers by a reply', async () => {
-  const received = await say('admin', AZIZA, 'Salom, safar topa olmayapman');
-  expect(
-    received.text ?? (await told('admin', AZIZA.id, wordsOf('bot.support.received')))?.text,
-  ).toBeTruthy();
+test('T60, T61. a person writes to the support bot, the team answers by a reply (G30)', async () => {
+  expect((await say('support', AZIZA, '/start')).text).toContain(wordsOf('bot.support.welcome'));
+  const received = await say('support', AZIZA, 'Salom, safar topa olmayapman');
+  expect(received.text).toBe(wordsOf('bot.support.received'));
   await expect.poll(() => told('admin', OWNER.id, 'safar topa olmayapman')).toBeTruthy();
-  const [link] = standRows(`SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id}`);
+  const [link] = standRows(
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support'`,
+  );
   await say('admin', OWNER, 'Ertaga yangi safarlar boʻladi', Number(link?.['team_message_id']));
-  await expect.poll(() => told('admin', AZIZA.id, 'Ertaga yangi safarlar')).toBeTruthy();
+  await expect.poll(() => told('support', AZIZA.id, 'Ertaga yangi safarlar')).toBeTruthy();
 });
 
-test('buttons of /start in the admin bot for a person outside the team', async () => {
-  expect(buttons(await say('admin', AZIZA, '/start'))).toEqual([]);
+test('the admin bot sends a person outside the team to the support bot (G30)', async () => {
+  expect(buttons(await say('admin', AZIZA, '/start'))).toEqual([wordsOf('bot.admin.toSupport')]);
+  const sent = await say('admin', AZIZA, 'Yordam kerak');
+  expect(buttons(sent)).toEqual([wordsOf('bot.admin.toSupport')]);
+  await expect.poll(() => told('admin', OWNER.id, 'Yordam kerak')).toBeUndefined();
 });

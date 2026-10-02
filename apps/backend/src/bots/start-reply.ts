@@ -31,8 +31,7 @@ type StartContext = {
   readonly chatId: number;
   // "/start follow_<token>" from the card of a shared trip (docs/43).
   readonly payload?: string;
-  // support: a person outside the team writes to the admin bot, it is the support contact (docs/02).
-  readonly access: 'allowed' | 'support' | 'blocked';
+  readonly access: 'allowed' | 'blocked';
 };
 
 // The answer to /start goes back in the webhook response: no extra request to Telegram (docs/03).
@@ -48,9 +47,6 @@ export function startReply({ brand, role, chatId, access, payload = '' }: StartC
       text: t('bot.share.open'),
       reply_markup: { inline_keyboard: [[button]] },
     };
-  }
-  if (access === 'support') {
-    return { method: 'sendMessage', chat_id: chatId, text: t('bot.support.welcome', { brand: brand.name }) };
   }
   const rows = [[openButton(brand, role)], ...(role === 'passenger' ? [[becomeDriver(brand)]] : [])];
   return {

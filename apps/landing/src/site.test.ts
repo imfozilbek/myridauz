@@ -32,7 +32,8 @@ describe('landing (G15)', () => {
   it('leads into the passenger and the driver bots of the brand', () => {
     expect(home).toContain(`href="https://t.me/${brand.bots.passenger}"`);
     expect(home).toContain(`href="https://t.me/${brand.bots.driver}"`);
-    expect(home).toContain(`href="https://t.me/${brand.bots.admin}"`);
+    expect(home).toContain(`href="https://t.me/${brand.bots.support}"`);
+    expect(home).not.toContain(brand.bots.admin);
     expect(home).toContain(escape(t('landing.cta.passenger')));
   });
 

@@ -5,7 +5,7 @@ import type { TranslationKey } from './messages';
 // What the legal texts take from a brand config (docs/30): the Mini Apps and the landing use it.
 export type LegalBrand = {
   readonly name: string;
-  readonly bots: { readonly admin: string };
+  readonly bots: { readonly support: string };
   readonly company: {
     readonly legalName: string;
     readonly form: string;
@@ -48,7 +48,7 @@ export function legalValues({ t, formatMoney }: I18n, brand: LegalBrand) {
       companyStir: company.stir,
       companyAddress: company.address,
     }),
-    adminBot: brand.bots.admin,
+    supportBot: brand.bots.support,
     percent: String(commission.percent),
     minPerSeat: formatMoney(commission.minPerSeat),
     bonus: formatMoney(promo.amount),

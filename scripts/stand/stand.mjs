@@ -1,9 +1,9 @@
 // pnpm stand: the whole Rida on this computer (docs/75). The same Worker, a local database with all
-// migrations, the map of Uzbekistan and its search index, the three Mini Apps; bots get test tokens
+// migrations, the map of Uzbekistan and its search index, the three Mini Apps; the four bots get test tokens
 // made here, so nothing reaches Cloudflare or Telegram and no key is needed.
 import { execFileSync, spawn } from 'node:child_process';
 import { randomBytes } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadBrand } from '../../brands/index.ts';
 import { serveApp } from './serve-app.mjs';
@@ -28,11 +28,14 @@ const run = (command, args, env = {}) =>
 const token = () => `${randomBytes(4).readUInt32BE()}:${randomBytes(24).toString('base64url')}`;
 
 mkdirSync(STAND_DIR, { recursive: true });
-if (!existsSync(STAND_VARS)) {
+// Made again when a bot is new (the support bot, G30): every bot needs its token.
+const LAST_BOT = 'SUPPORT_BOT_TOKEN=';
+if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_BOT)) {
   const vars = {
     PASSENGER_BOT_TOKEN: token(),
     DRIVER_BOT_TOKEN: token(),
     ADMIN_BOT_TOKEN: token(),
+    SUPPORT_BOT_TOKEN: token(),
     TELEGRAM_WEBHOOK_SECRET: randomBytes(16).toString('hex'),
     ADMIN_TELEGRAM_IDS: String(STAND_OWNER_ID),
   };

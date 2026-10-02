@@ -6,6 +6,7 @@ import { publicIdOf } from '../test-people';
 
 const brand = loadBrand();
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
+type LinkReply = { text: string; reply_markup: { inline_keyboard: { url: string }[][] } };
 const start = (fromId = 1, text = '/start') => ({
   message: { message_id: 1, text, chat: { id: 42 }, from: { id: fromId } },
 });
@@ -34,12 +35,12 @@ describe('POST /telegram/:role', () => {
     expect((await send('passenger', start(), 'hook', {})).status).toBe(404);
   });
 
-  it('opens the admin Mini App only for the team; for others the admin bot is support (docs/02)', async () => {
+  it('opens the admin Mini App only for the team; others are sent to the support bot (docs/50)', async () => {
     const team = (await (await send('admin', start(7))).json()) as Reply;
     expect(team.reply_markup.inline_keyboard[0]?.[0]?.web_app.url).toBe(`https://admin.${brand.domain}`);
-    const stranger = (await (await send('admin', start(9))).json()) as Reply;
-    expect(stranger.text).toContain('yordam xizmati');
-    expect(stranger.reply_markup).toBeUndefined();
+    const stranger = (await (await send('admin', start(9))).json()) as LinkReply;
+    expect(stranger.text).toContain('yordam xizmatiga yozing');
+    expect(stranger.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${brand.bots.support}`);
   });
 
   it('offers "Haydovchi boʻlish" in the passenger bot: a link to the driver bot', async () => {

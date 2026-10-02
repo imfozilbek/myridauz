@@ -3,16 +3,18 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { safeEqual } from '../shared/http/safe-equal';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
-import { botToken } from '../shared/telegram/bot-config';
+import { botToken, type BotName } from '../shared/telegram/bot-config';
 import { botProfile } from './bot-profile';
-import { BOT_ROLES } from './bot-roles';
+import { BOT_ROLES, isBotRole } from './bot-roles';
 import { botCommands } from './documents-reply';
 import { openButton } from './start-reply';
+import { SUPPORT_BOT } from './support-bot';
 
 const SETUP_HEADER = 'x-setup-secret';
 const UNAUTHORIZED = 401;
+const BOTS: readonly BotName[] = [...BOT_ROLES, SUPPORT_BOT];
 
-// Points the 3 bots at this Worker. Run once after the first deploy and when bot settings change (docs/45).
+// Points the bots at this Worker. Run once after the first deploy and when bot settings change (docs/45).
 // Protected by the webhook secret: bot tokens never leave Cloudflare (docs/32).
 export function setupRoutes(fetch: Fetch) {
   return new Hono<AppEnv>().post('/telegram/setup', async (context) => {
@@ -21,7 +23,7 @@ export function setupRoutes(fetch: Fetch) {
       return context.body(null, UNAUTHORIZED);
     const brand = loadBrand(context.env.BRAND);
     const configured: string[] = [];
-    for (const role of BOT_ROLES) {
+    for (const role of BOTS) {
       const token = botToken(context.env, role);
       if (!token) continue;
       await callTelegram(fetch, token, 'setWebhook', {
@@ -37,7 +39,8 @@ export function setupRoutes(fetch: Fetch) {
       await callTelegram(fetch, token, 'setMyDescription', { description });
       await callTelegram(fetch, token, 'setMyShortDescription', { short_description });
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.
-      if (role !== 'admin') {
+      // The support bot has no Mini App: people only write there (docs/50).
+      if (isBotRole(role) && role !== 'admin') {
         await callTelegram(fetch, token, 'setChatMenuButton', {
           menu_button: { type: 'web_app', ...openButton(brand, role) },
         });

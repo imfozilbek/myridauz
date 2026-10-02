@@ -11,7 +11,7 @@ const QUESTIONS = ['taxi', 'price', 'check', 'phone', 'app', 'fee', 'help'] as c
 export function questions(brand: BrandConfig, { t, formatMoney }: I18n): Question[] {
   const values = {
     brand: brand.name,
-    adminBot: brand.bots.admin,
+    supportBot: brand.bots.support,
     bonus: formatMoney(brand.promo.amount),
     percent: String(brand.commission.percent),
     minPerSeat: formatMoney(brand.commission.minPerSeat),
