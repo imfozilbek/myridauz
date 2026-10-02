@@ -1,4 +1,4 @@
-import { MAX_REQUESTED_BOOKINGS, type Booking, type BookingInput } from '@platform/contracts';
+import { arrivalAt, MAX_REQUESTED_BOOKINGS, type Booking, type BookingInput } from '@platform/contracts';
 import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -91,5 +91,8 @@ export async function cancelByPassenger(
 // "Mening safarlarim" of a passenger: the trips ahead first, then the past ones (docs/65 B6).
 export async function passengerBookings(deps: BookingsDeps, passengerId: number): Promise<Booking[]> {
   const views = await bookingViews(deps, await deps.bookings.byPassenger(passengerId), 'passenger');
-  return upcomingFirst(views, (booking) => booking.trip.departAt, deps.now());
+  // A live seat on the road stays on top until the arrival (docs/90 F-D3).
+  const arrival = ({ status, trip }: Booking) =>
+    status === 'requested' || status === 'confirmed' ? arrivalAt(trip.departAt, trip.km) : trip.departAt;
+  return upcomingFirst(views, (booking) => booking.trip.departAt, deps.now(), arrival);
 }

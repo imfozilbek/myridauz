@@ -1,6 +1,6 @@
 import { DAY_MS, tashkentDate, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
 import { placeMatches } from '../../../shared/places/place-match';
-import { cancel } from '../domain/trip';
+import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
@@ -45,9 +45,12 @@ export async function teamTrips(deps: TripsDeps): Promise<Trip[]> {
 // "Mening safarlarim" of a driver: the trips ahead first, then the past ones (docs/65 B6).
 export async function myTrips(deps: TripsDeps, driverId: number): Promise<Trip[]> {
   const trips = await deps.trips.byDriver(driverId);
+  const now = deps.now();
+  // A live trip on the road stays on top until it arrives (docs/90 F-D3).
+  const until = (trip: (typeof trips)[number]) => (isLive(trip, now) ? trip.endsAt : trip.departAt);
   return views(
     deps,
-    upcomingFirst(trips, (trip) => trip.departAt, deps.now()),
+    upcomingFirst(trips, (trip) => trip.departAt, now, until),
   );
 }
 
