@@ -1,3 +1,5 @@
+import type { Media } from '../../../shared/telegram/telegram-files';
+
 // Support (docs/50): a person writes to the support bot, every team member gets a copy in the admin
 // bot, a reply to any copy goes back to the person from the bot they wrote to.
 // 'admin': the copies made before G30, when the admin bot was the support contact.
@@ -9,10 +11,10 @@ export type SupportLinks = {
   writer(teamChatId: number, teamMessageId: number): Promise<Writer | undefined>;
 };
 
-// What goes between a person and the team: a text, or a voice message with a line about it.
+// What goes between a person and the team: a text, or a voice message or a photo with a line.
 export type Content = {
   readonly text: string;
-  readonly voice?: ArrayBuffer | undefined;
+  readonly media?: Media | undefined;
   // The buttons under the copy for the team («Javob berish», G31).
   readonly markup?: object;
 };

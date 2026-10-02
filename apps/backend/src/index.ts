@@ -8,6 +8,7 @@ import { bookingsUnderComplaint } from './modules/complaints';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
 import { decisionsBetween, grantMissedBonuses } from './modules/drivers';
 import { sendTeamDigest } from './modules/assignments';
+import { purgeSupport } from './modules/support';
 import { expireRequests } from './modules/ride-requests';
 import { sendReminders } from './modules/reminders';
 import { sendWaitingSubscriptions } from './modules/route-subscriptions';
@@ -53,6 +54,7 @@ export default {
         askForRatings(env),
         checkStatsAlerts(env, new Date(now)),
         sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to)),
+        purgeSupport(env, now),
       ]),
     );
   },

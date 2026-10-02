@@ -46,11 +46,11 @@ export async function botMessages(): Promise<BotMessage[]> {
 }
 export const clearBotMessages = async () => void (await fetch(TELEGRAM, { method: 'DELETE' }));
 
-// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes. The local Worker reloads
-// now and then after a write to its database from outside: then it waits for the Worker and asks once more.
+// The local Worker reloads now and then after a write to its database from outside: then a scenario
+// waits for the Worker and asks once more.
 const API = `http://localhost:${STAND_API_PORT}`;
 const RELOAD_WAIT_MS = 30_000;
-export async function workerBack(): Promise<void> {
+async function workerBack(): Promise<void> {
   const until = Date.now() + RELOAD_WAIT_MS;
   while (Date.now() < until) {
     if (
@@ -63,12 +63,23 @@ export async function workerBack(): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 }
+// A reload can close the answer even after the health check passed (lesson 91): every request of
+// a scenario to the Worker goes through here and tries a few times.
+const RELOAD_TRIES = 3;
+export async function despiteReload(send: () => Promise<Response>): Promise<Response> {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await send();
+    } catch (error) {
+      if (attempt === RELOAD_TRIES) throw error;
+      await workerBack();
+    }
+  }
+}
+// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes.
 export async function runCron(): Promise<void> {
   const url = `${API}/__scheduled?cron=${encodeURIComponent(CRON)}`;
-  const response = await fetch(url).catch(async () => {
-    await workerBack();
-    return fetch(url);
-  });
+  const response = await despiteReload(() => fetch(url));
   if (!response.ok) throw new Error(`stand: the Cron answered ${response.status}`);
 }
 

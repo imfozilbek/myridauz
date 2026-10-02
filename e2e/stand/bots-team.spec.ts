@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { buttons, press, say, sayByVoice } from './bot-kit';
+import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
-import { AZIZA, GAYRAT, KAMRON, OWNER, SEVARA } from './people';
+import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';
 import type { Person } from './stand-kit';
 import { botMessages, runCron, standRows } from './stand-tools';
 
@@ -86,4 +86,25 @@ test('G31. /team add makes a moderator; the new questions go to whom has less wo
   expect([assigned(SEVARA).member, assigned(GAYRAT).member]).toEqual([KAMRON, KAMRON]);
   await expect.poll(() => told('admin', KAMRON.id, 'Hamyon haqida savol')).toBeTruthy();
   expect(await told('admin', OWNER.id, 'Hamyon haqida savol')).toBeUndefined();
+});
+
+test('G32. a photo in support; the next question comes with «Tarix» of the whole talk', async () => {
+  await sayByPhoto('support', LAZIZA, 'Chek shu');
+  const { member } = assigned(LAZIZA);
+  const photoTo = async () =>
+    (await botMessages()).find(
+      (m) => m.bot === 'admin' && m.chatId === member.id && m.method === 'sendPhoto',
+    );
+  await expect.poll(photoTo).toBeTruthy();
+  expect((await photoTo())?.text).toContain(wordsOf('bot.support.photo'));
+  await say('support', LAZIZA, 'Pulim hali kelmadi');
+  await expect.poll(() => told('admin', member.id, 'Pulim hali kelmadi')).toBeTruthy();
+  const copy = await told('admin', member.id, 'Pulim hali kelmadi');
+  expect(copy?.buttons.map((b) => b.text)).toEqual([
+    wordsOf('bot.support.reply'),
+    wordsOf('bot.support.history'),
+  ]);
+  await press('admin', member, 'support:history', Number(copyOf(LAZIZA, member)));
+  await expect.poll(() => told('admin', member.id, 'Chek shu')).toBeTruthy();
+  expect((await told('admin', member.id, 'Chek shu'))?.text).toContain(`(ID ${LAZIZA.id})`);
 });

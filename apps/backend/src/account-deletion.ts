@@ -7,6 +7,7 @@ import { forgetRatings } from './modules/ratings';
 import { eraseRequestPointsOf } from './modules/ride-requests';
 import { forgetSubscriptions } from './modules/route-subscriptions';
 import { forgetFollows } from './modules/shares';
+import { forgetSupport } from './modules/support';
 import { wireAccountDeletion } from './modules/users';
 import { closeWalletOf } from './modules/wallet';
 
@@ -27,6 +28,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);
   await forgetFollows(env, userId);
+  // The support talk goes with the account (G32, docs/30).
+  await forgetSupport(env, userId);
   // A new account of the same person starts without old reviews and money (docs/65 A5).
   await forgetRatings(env, userId);
   await closeWalletOf(env, userId);
