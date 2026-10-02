@@ -16,8 +16,10 @@ const ANDROID = { width: 360, height: 800 };
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `screenshots/search-android-${name}.png` });
 const mainButton = (page: Page) => page.locator('#tg-main-button');
+// The map is drawn and the name under the pin came: «Shu yerda» waits for it (lesson 77).
 const drawn = async (page: Page) => {
   await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
   await page.waitForTimeout(TILES_MS);
 };
 
@@ -53,6 +55,7 @@ test('passenger: lists, seats, the door in Toshkent, the home, the check', async
   await drawn(page);
   await page.getByPlaceholder(t('bookings.map.search')).fill('Регистон');
   await page.getByText('Registon maydoni', { exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
   await page.waitForTimeout(TILES_MS);
   await shot(page, '4-home');
   await mainButton(page)

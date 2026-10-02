@@ -93,6 +93,8 @@ test('2. a passenger from the pitak: no point at the start, the pitak on the map
   await page.getByText(t('way.mode.pitak')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
+  // «Shu yerda» waits for the name of the place: the map is ready before it comes (lesson 77).
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
   await mainButton(page).click();
   await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
   await expect(page.getByText(PITAK, { exact: false }).first()).toBeVisible();
