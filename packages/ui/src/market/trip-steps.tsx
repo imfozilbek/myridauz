@@ -1,7 +1,7 @@
 import { COMMENT_MAX } from '@platform/contracts';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
-import { Button, Input, List, Section } from '../components';
+import { Button, List, Section, Textarea } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
 import { BackButton } from '../telegram/back-button';
@@ -36,7 +36,7 @@ export function CommentStep({ initial, onBack, onDone }: Step<string> & { readon
       <BackButton onClick={onBack} />
       <List>
         <Section>
-          <Input
+          <Textarea
             placeholder={t('market.comment.placeholder')}
             value={text}
             maxLength={COMMENT_MAX}

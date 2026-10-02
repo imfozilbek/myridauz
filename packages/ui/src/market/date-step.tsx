@@ -23,7 +23,7 @@ export function DateStep({ now, onBack, onDone }: DateStepProps) {
   const [calendar, setCalendar] = useState(false);
   const [other, setOther] = useState('');
   const choose = (date: string) => {
-    haptic.tap();
+    haptic.select();
     onDone(date);
   };
   const first = today(now);

@@ -4,7 +4,8 @@ import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { loadBrand } from '@platform/brands';
 import { StepLayout } from './account/step-layout';
-import { Cell, Field, Section } from './components';
+import { Cell, Field, Section, Switch } from './components';
+import { haptic } from './telegram/feedback';
 import { IconTile } from './icon-tile';
 import { renderInShell } from './test-shell';
 
@@ -91,5 +92,16 @@ describe('Field', () => {
     show(<Field label="Bir km narxi" value="300" onChange={() => undefined} />);
     expect(screen.getByLabelText('Bir km narxi')).toHaveProperty('value', '300');
     expect(screen.getByText('Bir km narxi').closest('label')).toBeNull();
+  });
+});
+
+describe('Switch of packages/ui (docs/88 L3)', () => {
+  it('ticks softly and passes the change on', () => {
+    const select = vi.spyOn(haptic, 'select');
+    const changed = vi.fn();
+    show(<Switch aria-label="Ayol" checked={false} onChange={changed} />);
+    fireEvent.click(screen.getByLabelText('Ayol'));
+    expect(select).toHaveBeenCalledOnce();
+    expect(changed).toHaveBeenCalledOnce();
   });
 });

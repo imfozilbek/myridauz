@@ -1,7 +1,7 @@
 import { MAX_CHAT_TEXT, type ChatMessage } from '@platform/contracts';
 import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
-import { Input } from '../components';
+import { Textarea } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
@@ -79,7 +79,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
         }}
       >
         {warning ? <Text className="chat-warning">{t('chat.warning')}</Text> : null}
-        <Input
+        <Textarea
           aria-label={t('chat.placeholder')}
           placeholder={t('chat.placeholder')}
           value={text}

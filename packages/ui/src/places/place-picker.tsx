@@ -29,7 +29,7 @@ export function PlacePicker({ title, directory, allowWholeRegion, onPick, onBack
   const [region, setRegion] = useState<Location | null>(null);
   const [query, setQuery] = useState('');
   const pick = (place: Location) => {
-    haptic.tap();
+    haptic.select();
     if (place.parentId !== null) return onPick(place);
     setQuery('');
     setRegion(place);

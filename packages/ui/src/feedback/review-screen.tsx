@@ -2,7 +2,7 @@ import { DRIVER_TAGS, PASSENGER_TAGS, REVIEW_TEXT_MAX, type ReviewTarget } from 
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { FavoriteCell } from '../comfort/favorite-cell';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, List, Section, Textarea } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -43,8 +43,10 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
   const [text, setText] = useState(target.mine?.text ?? '');
   const [step, setStep] = useState<Step>('edit');
   const offered = target.rateeRole === 'driver' ? DRIVER_TAGS : PASSENGER_TAGS;
-  const toggle = (tag: string) =>
+  const toggle = (tag: string) => {
+    haptic.select();
     setTags(tags.includes(tag) ? tags.filter((known) => known !== tag) : [...tags, tag]);
+  };
   const send = async () => {
     setStep('busy');
     try {
@@ -92,7 +94,7 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
           ))}
         </Section>
         <Section header={t('reviews.textTitle')} footer={t('reviews.blind')}>
-          <Input
+          <Textarea
             placeholder={t('reviews.textPlaceholder')}
             value={text}
             maxLength={REVIEW_TEXT_MAX}

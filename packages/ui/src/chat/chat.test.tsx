@@ -39,6 +39,7 @@ describe('the chat screen (docs/07)', () => {
     expect(screen.getByText('Salom')).toBeTruthy();
     // Not confirmed yet: no call button (docs/08).
     expect(screen.queryByText('Qoʻngʻiroq')).toBeNull();
+    expect(screen.getByLabelText('Xabar').tagName).toBe('TEXTAREA');
     fireEvent.change(screen.getByLabelText('Xabar'), { target: { value: 'Qayerda uchrashamiz?' } });
     fireEvent.click(screen.getByText('Yuborish'));
     expect(JSON.parse(socket.sent[0] ?? '{}')).toEqual({ type: 'send', text: 'Qayerda uchrashamiz?' });

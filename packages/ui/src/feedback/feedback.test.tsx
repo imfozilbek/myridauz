@@ -6,6 +6,7 @@ import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { FeedbackLink } from './feedback-link';
 import { RatingBadge } from './rating-badge';
+import { haptic } from '../telegram/feedback';
 
 afterEach(() => {
   cleanup();
@@ -41,8 +42,13 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const { tracked } = open('review', { target: async () => TARGET, review });
     expect(await screen.findByText('Jasur bilan safar')).toBeTruthy();
+    const select = vi.spyOn(haptic, 'select');
     fireEvent.click(screen.getByRole('button', { name: '4' }));
     await tap('Vaqtida');
+    // Each choice ticks softly, like Telegram's own lists (docs/88 L3).
+    expect(select).toHaveBeenCalledTimes(2);
+    // A text of several lines shows all of it and the whole hint (docs/88 L2).
+    expect(screen.getByPlaceholderText(/qisqacha/u).tagName).toBe('TEXTAREA');
     fireEvent.change(screen.getByPlaceholderText(/qisqacha/u), { target: { value: 'Yaxshi yoʻl' } });
     await tap('Yuborish');
     await waitFor(() => expect(review).toHaveBeenCalledOnce());
@@ -61,6 +67,7 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     open('review', { target: async () => TARGET, complain });
     await tap('Shikoyat qilish');
     await tap('Kelmadi');
+    expect(screen.getByPlaceholderText(/Nima boʻlganini/u).tagName).toBe('TEXTAREA');
     await tap('Yuborish');
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({ bookingId: 'b1', reason: 'no_show', comment: '' }),

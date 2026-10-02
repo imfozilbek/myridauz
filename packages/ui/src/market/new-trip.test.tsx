@@ -51,6 +51,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     expect(screen.getByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Davom etish');
     await tap('Yoʻq');
+    expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
     await tap('Izohsiz davom etish');
     expect(await screen.findByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Eʼlon qilish');

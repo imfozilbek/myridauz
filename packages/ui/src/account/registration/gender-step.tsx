@@ -13,7 +13,7 @@ export function GenderStep({ onBack, onDone }: GenderStepProps) {
   useScreenView('registration.gender');
   const { t } = useI18n();
   const choose = (gender: Gender) => {
-    haptic.tap();
+    haptic.select();
     onDone(gender);
   };
   return (

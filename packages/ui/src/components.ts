@@ -8,8 +8,9 @@ export {
   Multiselectable,
   SegmentedControl,
   Skeleton,
-  Switch,
+  Textarea,
 } from '@telegram-apps/telegram-ui';
 export { Cell } from './cell';
 export { Field } from './field';
 export { Section } from './section';
+export { Switch } from './switch';

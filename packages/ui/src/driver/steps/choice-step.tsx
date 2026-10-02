@@ -54,7 +54,7 @@ export function ChoiceStep<T>({
   const [text, setText] = useState('');
   const [invalid, setInvalid] = useState(false);
   const choose = (value: T) => {
-    haptic.tap();
+    haptic.select();
     onDone(value);
   };
   const submit = () => {

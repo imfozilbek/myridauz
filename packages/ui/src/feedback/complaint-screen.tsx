@@ -1,7 +1,7 @@
 import { COMPLAINT_COMMENT_MAX, COMPLAINT_REASONS, type ComplaintReason } from '@platform/contracts';
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, List, Section, Textarea } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -56,7 +56,10 @@ export function ComplaintScreen({ bookingId, onBack }: Props) {
           {COMPLAINT_REASONS.map((known) => (
             <Cell
               key={known}
-              onClick={() => setReason(known)}
+              onClick={() => {
+                haptic.select();
+                setReason(known);
+              }}
               after={known === reason ? <Icon name="selected" /> : null}
             >
               {t(`complaints.reason.${known}`)}
@@ -64,7 +67,7 @@ export function ComplaintScreen({ bookingId, onBack }: Props) {
           ))}
         </Section>
         <Section header={t('complaints.commentTitle')}>
-          <Input
+          <Textarea
             placeholder={t('complaints.commentPlaceholder')}
             value={comment}
             maxLength={COMPLAINT_COMMENT_MAX}
