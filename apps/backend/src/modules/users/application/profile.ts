@@ -10,6 +10,18 @@ export async function getPublicProfile(
   return user ? { ok: true, profile: toPublicProfile(user) } : { ok: false, error: 'users.not_found' };
 }
 
+// «Bot xabarlari» (docs/88 L1): the news of the bot on or off; booking messages always go.
+export async function setNews(
+  deps: UsersDeps,
+  caller: Caller,
+  on: boolean,
+): Promise<{ readonly ok: true } | Failure<'users.not_registered'>> {
+  const user = await deps.users.find(caller.id);
+  if (!user) return { ok: false, error: 'users.not_registered' };
+  if (user.newsOff === on) await deps.users.save({ ...user, newsOff: !on, updatedAt: deps.now() });
+  return { ok: true };
+}
+
 // The bot may write only if the person allowed it (docs/15): from the app or from the Telegram prompt.
 export async function setWriteAccess(
   deps: UsersDeps,

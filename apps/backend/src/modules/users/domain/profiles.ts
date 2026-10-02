@@ -12,6 +12,7 @@ export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
   roles: rolesOf(user, isAdmin),
   hasAvatar: user.avatarKey !== null,
   writeAccess: user.writeAccess,
+  news: !user.newsOff,
   rating: NO_RATING,
 });
 

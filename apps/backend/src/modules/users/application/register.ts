@@ -36,6 +36,7 @@ export async function register(
     block: null,
     avatarKey: null,
     writeAccess: false,
+    newsOff: false,
     createdAt: now,
     updatedAt: now,
   };

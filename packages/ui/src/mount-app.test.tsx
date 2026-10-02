@@ -13,6 +13,7 @@ const active = {
     roles: ['passenger', 'driver'],
     hasAvatar: false,
     writeAccess: true,
+    news: true,
     rating: null,
   },
   settings: { passengerAvatarRequired: false },

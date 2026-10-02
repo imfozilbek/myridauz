@@ -22,6 +22,7 @@ export const sendReminders = (env: Bindings, now: number) =>
       placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
       send: (jobs) => notify(env, jobs),
       telegramId: (publicId) => peopleOf(env).idOf(publicId),
+      wantsNews: (id) => peopleOf(env).wantsNews(id),
     }),
     now: () => now,
   });

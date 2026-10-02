@@ -29,6 +29,7 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
     brand: loadBrand(env.BRAND),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
     send: (jobs) => notify(env, jobs),
+    wantsNews: (id) => peopleOf(env).wantsNews(id),
   }),
   newId: () => crypto.randomUUID(),
   now: Date.now,

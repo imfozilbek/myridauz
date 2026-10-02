@@ -69,6 +69,7 @@ const account = (gender: 'male' | 'female'): Account => ({
     register: unused,
     uploadAvatar: unused,
     setWriteAccess: unused,
+    setNews: unused,
     deleteMe: unused,
     getAvatar: unused,
   } as UsersClient,
@@ -80,11 +81,13 @@ const account = (gender: 'male' | 'female'): Account => ({
     roles: ['passenger', 'driver'],
     hasAvatar: false,
     writeAccess: true,
+    news: true,
     rating: null,
   },
   settings: { passengerAvatarRequired: false },
   avatarVersion: 0,
   onAvatarChanged: () => undefined,
+  onProfileChanged: () => undefined,
 });
 
 export function renderMarket(ui: ReactNode, clients: ApiClients, gender: 'male' | 'female' = 'male') {

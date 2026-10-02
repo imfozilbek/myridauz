@@ -35,9 +35,17 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
   const account = useMemo<Account | null>(
     () =>
       me?.state === 'active'
-        ? { app, client, profile: me.profile, settings: me.settings, avatarVersion, onAvatarChanged }
+        ? {
+            app,
+            client,
+            profile: me.profile,
+            settings: me.settings,
+            avatarVersion,
+            onAvatarChanged,
+            onProfileChanged: load,
+          }
         : null,
-    [app, client, me, avatarVersion, onAvatarChanged],
+    [app, client, me, avatarVersion, onAvatarChanged, load],
   );
   useBotMessages(account);
 

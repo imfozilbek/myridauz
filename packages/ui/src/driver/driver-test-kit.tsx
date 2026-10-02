@@ -32,6 +32,7 @@ const account: Account = {
     register: unused,
     uploadAvatar: unused,
     setWriteAccess: unused,
+    setNews: unused,
     deleteMe: unused,
     getAvatar: unused,
   } as UsersClient,
@@ -43,11 +44,13 @@ const account: Account = {
     roles: ['passenger'],
     hasAvatar: true,
     writeAccess: true,
+    news: true,
     rating: null,
   },
   settings: { passengerAvatarRequired: false },
   avatarVersion: 0,
   onAvatarChanged: () => undefined,
+  onProfileChanged: () => undefined,
 };
 
 export function renderGate(initial: DriverApplication | null) {

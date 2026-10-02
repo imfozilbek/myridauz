@@ -28,6 +28,7 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
     brand: loadBrand(env.BRAND),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
     send: (jobs) => notify(env, jobs),
+    wantsNews: (id) => peopleOf(env).wantsNews(id),
   }),
   idOf: (publicId) => peopleOf(env).idOf(publicId),
   now: Date.now,

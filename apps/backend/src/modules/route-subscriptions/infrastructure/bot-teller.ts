@@ -15,10 +15,12 @@ type Wiring = {
   readonly brand: BrandConfig;
   readonly placeName: (id: string) => Promise<string>;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
+  // «Bot xabarlari» off in the profile: the news of the subscriptions stay quiet (docs/88 L1).
+  readonly wantsNews: (userId: number) => Promise<boolean>;
 };
 
 // A passenger hears from the passenger bot, a driver from the driver bot (docs/02).
-export const botTeller = ({ brand, placeName, send }: Wiring): SubscriptionTeller => {
+export const botTeller = ({ brand, placeName, send, wantsNews }: Wiring): SubscriptionTeller => {
   const role = (subscription: SubscriptionRecord) => (subscription.kind === 'trips' ? 'passenger' : 'driver');
   const button = (subscription: SubscriptionRecord, text: string, query = '') => ({
     inline_keyboard: [[{ text, web_app: { url: `https://${appHost(brand, role(subscription))}/${query}` } }]],
@@ -27,8 +29,10 @@ export const botTeller = ({ brand, placeName, send }: Wiring): SubscriptionTelle
     from: await placeName(subscription.from),
     to: await placeName(subscription.to),
   });
-  const tell = (subscription: SubscriptionRecord, text: string, markup: object) =>
-    send([{ bot: role(subscription), chatId: subscription.userId, text, markup }]);
+  const tell = async (subscription: SubscriptionRecord, text: string, markup: object) => {
+    if (await wantsNews(subscription.userId))
+      await send([{ bot: role(subscription), chatId: subscription.userId, text, markup }]);
+  };
   return {
     one: async (subscription, match) => {
       const values = {
