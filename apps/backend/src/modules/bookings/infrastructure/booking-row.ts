@@ -21,6 +21,7 @@ export type BookingRow = {
   dropoff_lng: number | null;
   dropoff_name: string | null;
   offer_id: string | null;
+  confirmed_at: number | null;
   boarded_at: number | null;
   arrived_at: number | null;
   created_at: number;
@@ -59,6 +60,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
   dropoffNamed: namedOf(row.dropoff_name),
   offerId: row.offer_id,
+  confirmedAt: row.confirmed_at,
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
   createdAt: row.created_at,
@@ -99,6 +101,7 @@ export const rowValues = (b: BookingRecord) =>
     b.pitakId,
     ...pointValues(b),
     b.offerId,
+    b.confirmedAt,
     b.boardedAt,
     b.arrivedAt,
     b.createdAt,
@@ -116,6 +119,7 @@ export const ROW_COLUMNS = [
   'pitak_id',
   ...POINT_COLUMNS,
   'offer_id',
+  'confirmed_at',
   'boarded_at',
   'arrived_at',
   'created_at',

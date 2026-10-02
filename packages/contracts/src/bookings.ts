@@ -66,7 +66,8 @@ export const bookingSchema = z.object({
   plate: z.string().nullable(),
   // The chat of the booking (docs/07): the offer's chat when it came from an offer.
   chatKey: z.string(),
-  // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
+  // When the driver confirmed it (docs/88 L6), "Mashinaga chiqdim" and "Yetib keldim" (docs/43).
+  confirmedAt: z.number().int().nullable(),
   boardedAt: z.number().int().nullable(),
   arrivedAt: z.number().int().nullable(),
 });
