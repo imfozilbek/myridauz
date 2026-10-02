@@ -1,14 +1,6 @@
 import {
   CircleFadingPlus,
   Armchair,
-  Building2,
-  Bus,
-  Hospital,
-  House,
-  Landmark,
-  School,
-  ShoppingBasket,
-  Signpost,
   Banknote,
   Bell,
   Ban,
@@ -56,8 +48,16 @@ import {
   Smartphone,
   Share2,
   Star,
+  Mars,
+  Venus,
+  Gift,
+  ScanFace,
+  Palette,
+  RectangleEllipsis,
+  Clock,
   type LucideIcon,
 } from 'lucide-react';
+import { PLACE_ICONS } from './place-icons';
 
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
@@ -86,16 +86,7 @@ const ICONS = {
   // The map of the pickup point (G22): the pin and "Mening joylashuvim".
   pickup: MapPin,
   locate: LocateFixed,
-  // The kinds of places found by name on the map (G23).
-  mahalla: House,
-  settlement: Building2,
-  street: Signpost,
-  market: ShoppingBasket,
-  school: School,
-  mosque: Landmark,
-  health: Hospital,
-  transport: Bus,
-  place: MapPin,
+  ...PLACE_ICONS,
   car: CarFront,
   carSide: Car,
   carInterior: Armchair,
@@ -130,6 +121,15 @@ const ICONS = {
   send: SendHorizontal,
   homeScreen: Smartphone,
   story: CircleFadingPlus,
+  // The first contact of a driver (G34, docs/95): every choice and every line of a summary has its icon.
+  male: Mars,
+  female: Venus,
+  bonus: Gift,
+  face: ScanFace,
+  color: Palette,
+  plate: RectangleEllipsis,
+  seats: Armchair,
+  waiting: Clock,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

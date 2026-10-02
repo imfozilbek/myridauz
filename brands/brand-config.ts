@@ -64,6 +64,14 @@ export type AlertRules = {
 // connect ends after connectSeconds; then the chat takes over.
 type CallRules = { readonly ringSeconds: number; readonly connectSeconds: number };
 
+// Driver applications (G34, docs/50): the team answers within the hour while it works (Tashkent
+// hours, from included, to excluded); a waiting application reminds its moderator, then the owner.
+type ModerationRules = {
+  readonly hours: { readonly from: number; readonly to: number };
+  readonly remindMinutes: number;
+  readonly ownerMinutes: number;
+};
+
 // The party of the legal documents (docs/30): filled when the owner has them, placeholders until then.
 type Company = {
   readonly legalName: string;
@@ -106,5 +114,6 @@ export type BrandConfig = {
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
   readonly calls: CallRules;
+  readonly moderation: ModerationRules;
   readonly company: Company;
 };
