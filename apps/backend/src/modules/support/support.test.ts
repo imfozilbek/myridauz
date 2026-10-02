@@ -10,7 +10,7 @@ function deps() {
   const support: SupportDeps = {
     links: createMemorySupportLinks(),
     toTeam: async () => (messageId += 1),
-    toWriter: async (bot, chatId, text) => answers.push({ bot, chatId, text }),
+    toWriter: async (bot, chatId, content) => answers.push({ bot, chatId, text: content.text }),
     teamIds: async () => TEAM,
     now: () => 0,
   };
@@ -20,12 +20,12 @@ function deps() {
 describe('support (docs/50)', () => {
   it('sends the answer from the bot the person wrote to', async () => {
     const { support, answers } = deps();
-    await forwardToTeam(support, { chatId: 55, bot: 'support' }, 'Savol', () => undefined);
+    await forwardToTeam(support, { chatId: 55, bot: 'support' }, { text: 'Savol' });
     // An old copy, made when the admin bot was the support contact: its answer still comes from there.
     await support.links.save(7, 50, { chatId: 66, bot: 'admin' }, 0);
-    expect(await answerPerson(support, 8, 102, 'Javob')).toBe(true);
-    expect(await answerPerson(support, 7, 50, 'Eski')).toBe(true);
-    expect(await answerPerson(support, 7, 999, 'Hech kimga')).toBe(false);
+    expect(await answerPerson(support, 8, 102, { text: 'Javob' })).toBe(true);
+    expect(await answerPerson(support, 7, 50, { text: 'Eski' })).toBe(true);
+    expect(await answerPerson(support, 7, 999, { text: 'Hech kimga' })).toBe(false);
     expect(answers).toEqual([
       { bot: 'support', chatId: 55, text: 'Javob' },
       { bot: 'admin', chatId: 66, text: 'Eski' },
@@ -38,8 +38,8 @@ describe('support (docs/50)', () => {
       throw new Error('no link without a copy');
     };
     const failing = { ...support, toTeam: async () => Promise.reject(new Error('blocked the bot')) };
-    await expect(
-      forwardToTeam(failing, { chatId: 55, bot: 'support' }, 'Savol', () => undefined),
-    ).resolves.toBe(undefined);
+    await expect(forwardToTeam(failing, { chatId: 55, bot: 'support' }, { text: 'Savol' })).resolves.toBe(
+      undefined,
+    );
   });
 });

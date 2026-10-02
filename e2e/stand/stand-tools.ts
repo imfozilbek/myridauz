@@ -33,7 +33,8 @@ const messageOf = ({ token, method, body }: Call): BotMessage => {
     method,
     chatId: typeof chat === 'number' ? chat : null,
     chat: String(chat ?? ''),
-    text: String(body['text'] ?? ''),
+    // A voice or an album carries its line as a caption.
+    text: String(body['text'] ?? body['caption'] ?? ''),
     buttons,
   };
 };

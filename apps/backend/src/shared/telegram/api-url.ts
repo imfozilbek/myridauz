@@ -8,3 +8,6 @@ export const useTelegramApi = (url: string | undefined): void => {
 };
 
 export const telegramUrl = (token: string, method: string): string => `${base}/bot${token}/${method}`;
+
+// A file a bot received (a voice message): only that bot's token opens it.
+export const telegramFileUrl = (token: string, path: string): string => `${base}/file/bot${token}/${path}`;

@@ -9,28 +9,26 @@ export type SupportLinks = {
   writer(teamChatId: number, teamMessageId: number): Promise<Writer | undefined>;
 };
 
-// Sends a text and returns the id of the sent message.
-type Messenger = (chatId: number, text: string, markup?: object) => Promise<number | undefined>;
+// What goes between a person and the team: a text, or a voice message with a line about it.
+export type Content = { readonly text: string; readonly voice?: ArrayBuffer | undefined };
+
+// Sends the content and returns the id of the sent message.
+type Messenger = (chatId: number, content: Content) => Promise<number | undefined>;
 
 export type SupportDeps = {
   readonly links: SupportLinks;
   // The copies for the team: from the admin bot.
   readonly toTeam: Messenger;
   // The answer for the person: from the bot they wrote to.
-  readonly toWriter: (bot: SupportBot, chatId: number, text: string) => Promise<unknown>;
+  readonly toWriter: (bot: SupportBot, chatId: number, content: Content) => Promise<unknown>;
   readonly teamIds: () => Promise<number[]>;
   readonly now: () => number;
 };
 
 // Each team member gets a copy; a reply to any copy reaches the person.
-export async function forwardToTeam(
-  deps: SupportDeps,
-  writer: Writer,
-  text: string,
-  markup: (teamId: number) => object | undefined,
-): Promise<void> {
+export async function forwardToTeam(deps: SupportDeps, writer: Writer, content: Content): Promise<void> {
   for (const teamId of await deps.teamIds()) {
-    const messageId = await deps.toTeam(teamId, text, markup(teamId)).catch(() => undefined);
+    const messageId = await deps.toTeam(teamId, content).catch(() => undefined);
     if (messageId !== undefined) await deps.links.save(teamId, messageId, writer, deps.now());
   }
 }
@@ -39,10 +37,10 @@ export async function answerPerson(
   deps: SupportDeps,
   teamChatId: number,
   repliedMessageId: number,
-  text: string,
+  content: Content,
 ): Promise<boolean> {
   const writer = await deps.links.writer(teamChatId, repliedMessageId);
   if (writer === undefined) return false;
-  await deps.toWriter(writer.bot, writer.chatId, text);
+  await deps.toWriter(writer.bot, writer.chatId, content);
   return true;
 }

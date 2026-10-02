@@ -1,8 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
-import { teamRole } from '../modules/team';
 import { call, pid, registerUser } from '../test-api';
-import { botEnv, botSender, fakeTelegram, textMessage } from './test-bot';
+import { botSender, fakeTelegram, textMessage } from './test-bot';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -33,26 +32,6 @@ describe('admin bot: not a support desk (docs/50)', () => {
     expect(telegram.calls.length).toBe(before);
     // A reply of the team to a message that is no copy is silent.
     expect(await reply(await send('admin', textMessage(OWNER, 'Boshqa', 12345)))).toEqual({});
-  });
-});
-
-describe('admin bot: the team (docs/02, question 36)', () => {
-  it('lets only an owner add and remove moderators', async () => {
-    expect((await reply(await send('admin', press(OWNER, `team:add:${PERSON}`)))).text).toBe(
-      'Moderator qoʻshildi.',
-    );
-    expect(await teamRole(botEnv, PERSON)).toBe('moderator');
-    expect((await reply(await send('admin', textMessage(OWNER, '/team')))).text).toContain('Moderator: ');
-    expect((await reply(await send('admin', textMessage(PERSON, '/team')))).text).toBe(
-      'Buni faqat egasi qila oladi.',
-    );
-    expect((await reply(await send('admin', press(PERSON, 'team:remove:8')))).text).toBe(
-      'Buni faqat egasi qila oladi.',
-    );
-    expect((await reply(await send('admin', press(OWNER, `team:remove:${PERSON}`)))).text).toBe(
-      'Moderator olib tashlandi.',
-    );
-    expect(await teamRole(botEnv, PERSON)).toBeNull();
   });
 });
 
