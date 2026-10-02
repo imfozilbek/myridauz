@@ -48,7 +48,8 @@ const allowLanding = cors({
     return [`https://${domain}`, `https://www.${domain}`].includes(origin) ? origin : null;
   },
 });
-const auth = telegramAuth(Date.now, teamRole);
+// The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
+const auth = telegramAuth(() => Date.now(), teamRole);
 
 export const app = new Hono<AppEnv>()
   .use('/analytics', allowMiniApps)
