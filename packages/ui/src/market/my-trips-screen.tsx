@@ -79,12 +79,15 @@ function MyTrips({ onBack, link }: ScreenProps) {
     }
   };
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
-  if (trip && booking) {
+  if (trip && booking && value) {
     const close = (changed: boolean) => {
       setOpened({ tripId: trip.id });
       if (changed) reload();
     };
-    const toMap = () => (close(true), setMapOpen(true));
+    // The map of a confirmed booking goes back to that booking, not to its trip (docs/94 B8).
+    const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
+    if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
+    const toMap = () => (reload(), setMapOpen(true));
     return <DriverBooking booking={booking} onClose={close} onMap={toMap} />;
   }
   if (trip && value) {

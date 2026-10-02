@@ -32,7 +32,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const dayLabel = useDayLabel();
-  const { now, days, failed, reload, more } = useTeamDays();
+  const { now, days, failed, reload, refresh, more } = useTeamDays();
   const [open, setOpen] = useState<Trip | null>(null);
   if (open) {
     return (
@@ -46,7 +46,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const busy = days.filter((day) => day.trips.length > 0);
   return (
     <div className="market">
-      <Screen onBack={onBack} onRefresh={reload} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('common.admin.trips')}
       </Title>

@@ -33,14 +33,15 @@ export function useTeamDays() {
     fetch(datesOf(now, 0, FIRST_DAYS)).then(setDays, () => setFailed(true));
   }, [fetch, now]);
   useEffect(reload, [reload]);
-  // A new or cancelled trip: the loaded days refresh quietly (docs/64).
-  useFeedChange(() => {
-    if (days) void fetch(days.map((day) => day.date)).then(setDays, () => undefined);
-  });
+  // A new or cancelled trip or a pull down: the loaded days refresh quietly (docs/64, docs/94 W1).
+  const refresh = async () => {
+    if (days) await fetch(days.map((day) => day.date)).then(setDays, () => undefined);
+  };
+  useFeedChange(() => void refresh());
   const loaded = days?.length ?? 0;
   const more =
     days && loaded < ALL_DAYS
       ? () => void fetch(datesOf(now, loaded, MORE_DAYS)).then((next) => setDays([...days, ...next]))
       : null;
-  return { now, days, failed, reload, more };
+  return { now, days, failed, reload, refresh, more };
 }
