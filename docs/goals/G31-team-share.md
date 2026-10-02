@@ -21,6 +21,16 @@
 - Стенд зелёный 3 прогона подряд, без e2e рядом (урок 86). CI зелёный.
 - PR, слияние владельцем, деплой, проверка владельцем.
 
-## Тексты для носителя
+## Тексты для носителя (согласованы владельцем 02.10.2026)
 
-Будут добавлены после согласия владельца.
+| Ключ | Текст |
+|---|---|
+| `bot.digest.title` | 📊 Jamoa ishi: {date} |
+| `bot.digest.line` | {name}: murojaat {answered}/{total}, ariza {applications} |
+| `bot.digest.open` | Javobsiz murojaatlar: {count} |
+
+## Проверки
+
+- Тесты: `assignments/domain/pick.test.ts`, `assignments.test.ts`, `digest-text.test.ts`, `drivers/assigned-card.test.ts`, `bots/support-bot.test.ts`.
+- Стенд: `bots-team.spec.ts`: обращение видит только назначенный; `/team add`; новые обращения идут тому, у кого меньше работы сегодня.
+- Дайджест на стенде не проверяется: Cron стенда не умеет менять время на 00:00. Его проверяют тесты модуля.

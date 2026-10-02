@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { STAND_API_PORT, STAND_VARS } from '../../scripts/stand/paths.ts';
 import type { Person } from './stand-kit';
+import { workerBack } from './stand-tools';
 
 // Telegram sends an update to a bot of the stand with its secret (docs/32); the bot may answer in
 // the reply itself.
@@ -11,10 +12,16 @@ const secret = () =>
     ?.split('=')[1] ?? '';
 export type Reply = { text?: string; reply_markup?: { inline_keyboard?: { text: string }[][] } };
 async function update(bot: string, body: object): Promise<Reply> {
-  const response = await fetch(`http://localhost:${STAND_API_PORT}/telegram/${bot}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': secret() },
-    body: JSON.stringify({ update_id: 1, ...body }),
+  const send = () =>
+    fetch(`http://localhost:${STAND_API_PORT}/telegram/${bot}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': secret() },
+      body: JSON.stringify({ update_id: 1, ...body }),
+    });
+  // The local Worker may reload after a read of its database from outside: wait and send once more.
+  const response = await send().catch(async () => {
+    await workerBack();
+    return send();
   });
   return (await response.json()) as Reply;
 }

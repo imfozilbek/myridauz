@@ -1,7 +1,8 @@
 import { expect, test } from '@playwright/test';
 import { buttons, press, say, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
-import { AZIZA, GAYRAT, OWNER, SEVARA } from './people';
+import { AZIZA, GAYRAT, KAMRON, OWNER, SEVARA } from './people';
+import type { Person } from './stand-kit';
 import { botMessages, runCron, standRows } from './stand-tools';
 
 // Buttons and help in the bots (docs/80 S05, S06, docs/79 T60, T61): the stars of a ride by one tap,
@@ -10,6 +11,18 @@ test.describe.configure({ mode: 'serial' });
 const HOUR = 60 * MINUTE;
 const told = async (bot: string, chat: number, words: string) =>
   (await botMessages()).find((m) => m.bot === bot && m.chatId === chat && m.text.includes(words));
+// The one team member the question of this person went to today, and the other one (docs/92).
+const assigned = (person: Person) => {
+  const [row] = standRows(
+    `SELECT assignee_id FROM assignments WHERE kind = 'support' AND subject_id = ${person.id}`,
+  );
+  const member = Number(row?.['assignee_id']) === KAMRON.id ? KAMRON : OWNER;
+  return { member, other: member === OWNER ? KAMRON : OWNER };
+};
+const copyOf = (person: Person, member: Person) =>
+  standRows(
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${person.id} AND team_chat_id = ${member.id} ORDER BY created_at DESC LIMIT 1`,
+  )[0]?.['team_message_id'];
 
 test('S06. 2 stars by the button: thanks, a review and a complaint are offered', async () => {
   const { trip, seat } = await confirmedSeat(GAYRAT, SEVARA);
@@ -37,11 +50,10 @@ test('T60, T61. a person writes to the support bot, the team answers by a reply 
   expect((await say('support', AZIZA, '/start')).text).toContain(wordsOf('bot.support.welcome'));
   const received = await say('support', AZIZA, 'Salom, safar topa olmayapman');
   expect(received.text).toBe(wordsOf('bot.support.received'));
-  await expect.poll(() => told('admin', OWNER.id, 'safar topa olmayapman')).toBeTruthy();
-  const [link] = standRows(
-    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support' AND team_chat_id = ${OWNER.id}`,
-  );
-  await say('admin', OWNER, 'Ertaga yangi safarlar boʻladi', Number(link?.['team_message_id']));
+  const { member, other } = assigned(AZIZA);
+  await expect.poll(() => told('admin', member.id, 'safar topa olmayapman')).toBeTruthy();
+  expect(await told('admin', other.id, 'safar topa olmayapman')).toBeUndefined();
+  await say('admin', member, 'Ertaga yangi safarlar boʻladi', Number(copyOf(AZIZA, member)));
   await expect.poll(() => told('support', AZIZA.id, 'Ertaga yangi safarlar')).toBeTruthy();
 });
 
@@ -56,13 +68,22 @@ test('a voice to the support bot and the voice answer of the team (G30)', async 
   expect((await sayByVoice('support', AZIZA)).text).toBe(wordsOf('bot.support.received'));
   const voiceTo = async (bot: string, chat: number) =>
     (await botMessages()).find((m) => m.bot === bot && m.chatId === chat && m.method === 'sendVoice');
-  await expect.poll(() => voiceTo('admin', OWNER.id)).toBeTruthy();
-  expect((await voiceTo('admin', OWNER.id))?.text).toContain(wordsOf('bot.support.voice'));
-  const [link] = standRows(
-    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND team_chat_id = ${OWNER.id} ORDER BY created_at DESC LIMIT 1`,
-  );
-  expect((await sayByVoice('admin', OWNER, Number(link?.['team_message_id']))).text).toBe(
+  // The same person on the same day stays with the same member (docs/92).
+  const { member } = assigned(AZIZA);
+  await expect.poll(() => voiceTo('admin', member.id)).toBeTruthy();
+  expect((await voiceTo('admin', member.id))?.text).toContain(wordsOf('bot.support.voice'));
+  expect((await sayByVoice('admin', member, Number(copyOf(AZIZA, member)))).text).toBe(
     wordsOf('bot.support.sent'),
   );
   await expect.poll(() => voiceTo('support', AZIZA.id)).toBeTruthy();
+});
+
+test('G31. /team add makes a moderator; the new questions go to whom has less work today', async () => {
+  expect((await say('admin', OWNER, `/team add ${KAMRON.id}`)).text).toBe(wordsOf('bot.team.added'));
+  // The owner already has the applications of the stand today; the new moderator has none (docs/92).
+  await say('support', SEVARA, 'Bronim haqida savol');
+  await say('support', GAYRAT, 'Hamyon haqida savol');
+  expect([assigned(SEVARA).member, assigned(GAYRAT).member]).toEqual([KAMRON, KAMRON]);
+  await expect.poll(() => told('admin', KAMRON.id, 'Hamyon haqida savol')).toBeTruthy();
+  expect(await told('admin', OWNER.id, 'Hamyon haqida savol')).toBeUndefined();
 });
