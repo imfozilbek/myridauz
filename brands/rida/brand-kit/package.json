@@ -7,6 +7,7 @@
     "build": "node build.mjs",
     "promo": "node promo/build.mjs",
     "landing": "node landing/build.mjs",
+    "bot": "node landing/bot.mjs",
     "cuts": "node promo/cuts.mjs"
   },
   "dependencies": {
