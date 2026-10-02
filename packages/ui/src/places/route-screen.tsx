@@ -27,6 +27,8 @@ type RouteScreenProps = {
   readonly onDone: (route: Route) => void;
   // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
+  // Back from the next step, the route chosen before (docs/90 F-P2).
+  readonly initial?: Route;
   // Each end chosen, for the funnel of the search (G26).
   readonly onEnd?: (end: 'from' | 'to') => void;
 };
@@ -45,14 +47,15 @@ function RouteForm({
   onBack,
   onDone,
   pick,
+  initial,
   onEnd,
 }: RouteScreenProps & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
   const here = useHere(directory);
-  const [chosenFrom, setFrom] = useState<Location | null>(null);
+  const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? null);
   const from = chosenFrom ?? here;
-  const [to, setTo] = useState<Location | null>(null);
+  const [to, setTo] = useState<Location | null>(initial?.to ?? null);
   const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
   // Back from a long list, the form shows «Qayerdan» again (docs/83 N22).
   useOpenAtTop(picking);
