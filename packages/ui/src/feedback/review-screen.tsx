@@ -2,11 +2,10 @@ import { DRIVER_TAGS, PASSENGER_TAGS, REVIEW_TEXT_MAX, type ReviewTarget } from 
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { FavoriteCell } from '../comfort/favorite-cell';
-import { Cell, List, Section, Textarea } from '../components';
+import { Cell, List, Multiselectable, Section, Textarea } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { IconTile } from '../icon-tile';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
@@ -86,8 +85,8 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
           {offered.map((tag) => (
             <Cell
               key={tag}
-              onClick={() => toggle(tag)}
-              after={tags.includes(tag) ? <Icon name="selected" /> : null}
+              Component="label"
+              before={<Multiselectable checked={tags.includes(tag)} onChange={() => toggle(tag)} />}
             >
               {t(`reviews.tag.${tag}`)}
             </Cell>

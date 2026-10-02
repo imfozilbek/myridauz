@@ -1,7 +1,7 @@
 import { MAX_CHAT_TEXT, type ChatMessage } from '@platform/contracts';
 import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
-import { Textarea } from '../components';
+import { IconButton, Textarea } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
@@ -86,9 +86,15 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
           maxLength={MAX_CHAT_TEXT}
           onChange={(event) => setText(event.target.value)}
         />
-        <Button type="submit" size="m" disabled={state !== 'open' || text.trim().length === 0}>
-          {t('chat.send')}
-        </Button>
+        <IconButton
+          type="submit"
+          size="l"
+          mode="bezeled"
+          aria-label={t('chat.send')}
+          disabled={state !== 'open' || text.trim().length === 0}
+        >
+          <Icon name="send" />
+        </IconButton>
       </form>
     </div>
   );

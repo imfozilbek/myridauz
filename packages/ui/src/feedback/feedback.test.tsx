@@ -44,7 +44,10 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     expect(await screen.findByText('Jasur bilan safar')).toBeTruthy();
     const select = vi.spyOn(haptic, 'select');
     fireEvent.click(screen.getByRole('button', { name: '4' }));
+    // Each tag is a checkbox: several can be chosen, seen before a tap (docs/88 L9).
+    expect(screen.getAllByRole('checkbox')).toHaveLength(4);
     await tap('Vaqtida');
+    expect((screen.getByRole('checkbox', { name: 'Vaqtida' }) as HTMLInputElement).checked).toBe(true);
     // Each choice ticks softly, like Telegram's own lists (docs/88 L3).
     expect(select).toHaveBeenCalledTimes(2);
     // A text of several lines shows all of it and the whole hint (docs/88 L2).

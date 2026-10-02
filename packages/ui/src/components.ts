@@ -2,6 +2,7 @@
 export {
   Badge,
   Button,
+  IconButton,
   Input,
   List,
   Modal,
