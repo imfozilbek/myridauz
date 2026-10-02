@@ -10,19 +10,6 @@ import { booking, confirmed, offer } from './booking-test-kit';
 
 afterEach(cleanup);
 
-const request = {
-  id: 'r1',
-  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
-  from: '1726269',
-  to: '1730401',
-  date: '2026-10-02',
-  km: 320,
-  seats: 2,
-  price: 95000,
-  status: 'open' as const,
-  pickupMode: 'both' as const,
-};
-
 describe('a passenger in "Mening safarlarim" (docs/35)', () => {
   it('sees a confirmed seat with the plate and the own points, and cancels it', async () => {
     const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => booking);
@@ -67,23 +54,6 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     await tap('Jasur');
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
   });
-
-  it('accepts a driver offer on the own request', async () => {
-    const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'accepted' }));
-    renderMarket(
-      <MyRequestsScreen onBack={() => undefined} />,
-      testClients({
-        market: { myRequests: async () => [request] },
-        bookings: { myBookings: async () => [], myOffers: async () => [offer], answerOffer },
-      }),
-    );
-    await tap('Dilnoza');
-    expect(screen.getByText('Haydovchilardan takliflar')).toBeTruthy();
-    await tap('Jasur');
-    await tap('Qabul qilish');
-    expect(await screen.findByText('Joyingiz tasdiqlandi')).toBeTruthy();
-    expect(answerOffer).toHaveBeenCalledWith('o1', 'accept');
-  });
 });
 
 describe('a driver answers a booking (docs/35, docs/12)', () => {
@@ -107,6 +77,10 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     await tap('Tasdiqlash');
     expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
     expect(answer).toHaveBeenCalledWith('b1', 'confirm');
+    // The buttons go where the text calls: the map of the trip and the chat (docs/89 D5).
+    expect(screen.getByText('Safar xaritasi')).toBeTruthy();
+    expect(screen.getByText('Xabar yozish')).toBeTruthy();
+    expect(screen.queryByText('Tayyor')).toBeNull();
   });
 
   it('without money explains how to top up', async () => {

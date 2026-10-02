@@ -88,7 +88,8 @@ function MyTrips({ onBack, link }: ScreenProps) {
       setOpened({ tripId: trip.id });
       if (changed) reload();
     };
-    return <DriverBooking booking={booking} onClose={close} />;
+    const toMap = () => (close(true), setMapOpen(true));
+    return <DriverBooking booking={booking} onClose={close} onMap={toMap} />;
   }
   if (trip && value) {
     const back = () => (setOpened(null), setFailure(null), setMapOpen(false));

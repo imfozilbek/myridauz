@@ -1,10 +1,12 @@
-import { commonModes, type BookingMode, type Trip } from '@platform/contracts';
+import { BOOKING_LINK, commonModes, type Booking, type BookingMode, type Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { useAnalytics } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
 import { ErrorScreen } from '../states/error-screen';
+import { MyRequestsScreen } from '../market/my-requests-screen';
+import { BackButton } from '../telegram/back-button';
 import { MainButton } from '../telegram/bottom-button';
 import type { WayEnd } from '../way/way-end';
 import { BookPoint } from './book-point';
@@ -28,14 +30,18 @@ export function BookFlow({ trip, onBack, onClose }: Props) {
   const [mode, setMode] = useState<BookingMode | null>(ways.length === 1 ? (ways[0] ?? null) : null);
   const [pickup, setPickup] = useState<WayEnd | null>(null);
   const [dropoff, setDropoff] = useState<WayEnd | null>(null);
-  const [sent, setSent] = useState(false);
+  const [sent, setSent] = useState<Booking | null>(null);
+  const [seeing, setSeeing] = useState(false);
   const passed = (name: 'seats' | 'mode' | 'pickup' | 'dropoff') =>
     track({ name: 'booking_step', screen: `bookings.${name}`, step: name });
   const afterWay = (way: BookingMode) => (way === 'door' ? 'pickup' : 'dropoff');
+  // «Soʻrovni koʻrish» opens the sent request in «Mening safarlarim» (docs/89 P9).
+  if (sent && seeing) return <MyRequestsScreen onBack={onClose} link={{ name: BOOKING_LINK, id: sent.id }} />;
   if (sent)
     return (
       <StepLayout icon="selected" title={t('bookings.sent.title')} hint={t('bookings.sent.hint')}>
-        <MainButton text={t('market.done')} onClick={onClose} />
+        <BackButton onClick={onClose} />
+        <MainButton text={t('bookings.sent.see')} onClick={() => setSeeing(true)} />
       </StepLayout>
     );
   // A trip whose pitak is gone and that takes nobody at the door: nothing to book.
@@ -113,7 +119,7 @@ export function BookFlow({ trip, onBack, onClose }: Props) {
       pickup={mode === 'door' ? pickup : null}
       dropoff={dropoff}
       onBack={() => setStep('dropoff')}
-      onSent={() => setSent(true)}
+      onSent={setSent}
     />
   );
 }

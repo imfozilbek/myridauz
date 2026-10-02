@@ -7,7 +7,7 @@ import { useI18n } from '../context/i18n-context';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
-import { shareCard } from '../telegram/share-card';
+import { useShareTrip } from './use-share-trip';
 
 type Props = {
   readonly booking: Booking;
@@ -37,6 +37,7 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
+  const shareTrip = useShareTrip();
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
   // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
   const [sharing, setSharing] = useState(true);
@@ -53,9 +54,7 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   };
   const share = () =>
     run(async () => {
-      const { preparedMessageId, link } = await chat.share(booking.id);
-      track({ name: 'trip_shared', screen: 'bookings.passenger' });
-      await shareCard(preparedMessageId, link);
+      await shareTrip(booking.id);
       setSharing(true);
     }, null);
   const step = (name: 'boarded' | 'arrived') =>

@@ -8,7 +8,7 @@ import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
-import { MainButton } from '../telegram/bottom-button';
+import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { confirm, haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
@@ -23,11 +23,16 @@ import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
 type Step = 'view' | 'confirm' | 'confirmed' | 'not_enough' | 'top_up' | 'chat' | 'complain';
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
-type Props = { readonly booking: Booking; readonly onClose: (changed: boolean) => void };
+type Props = {
+  readonly booking: Booking;
+  readonly onClose: (changed: boolean) => void;
+  // «Safar xaritasi» after a confirmation: the exact places of the passenger are there (docs/89 D5).
+  readonly onMap: () => void;
+};
 
 // The driver answers a booking (docs/35): "Joyni tasdiqlaysizmi?" with the commission, then the
 // charge; without money, the way to top up. A confirmed one can still be cancelled: the commission goes back.
-export function DriverBooking({ booking, onClose }: Props) {
+export function DriverBooking({ booking, onClose, onMap }: Props) {
   const { t, formatMoney } = useI18n();
   const { track } = useAnalytics();
   const { bookings, wallet } = useApiClients();
@@ -86,7 +91,8 @@ export function DriverBooking({ booking, onClose }: Props) {
   if (step === 'confirmed') {
     return (
       <StepLayout icon="selected" title={t('bookings.confirmed.title')} hint={t('bookings.confirmed.hint')}>
-        <MainButton text={t('market.done')} onClick={() => onClose(true)} />
+        <MainButton text={t('way.map.title')} onClick={onMap} />
+        <SecondaryButton text={t('chat.open')} onClick={() => setStep('chat')} />
       </StepLayout>
     );
   }

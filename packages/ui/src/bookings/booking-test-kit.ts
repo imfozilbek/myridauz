@@ -87,3 +87,17 @@ export const wallet: Wallet = {
     },
   ],
 };
+
+// A request of the passenger with the offers of drivers (docs/09).
+export const request = {
+  id: 'r1',
+  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
+  from: '1726269',
+  to: '1730401',
+  date: '2026-10-02',
+  km: 320,
+  seats: 2,
+  price: 95000,
+  status: 'open' as const,
+  pickupMode: 'both' as const,
+};

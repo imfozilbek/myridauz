@@ -1,4 +1,4 @@
-import type { BookingMode, Trip } from '@platform/contracts';
+import type { Booking, BookingMode, Trip } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
@@ -24,7 +24,7 @@ type Props = {
   readonly pickup: WayEnd | null;
   readonly dropoff: WayEnd;
   readonly onBack: () => void;
-  readonly onSent: () => void;
+  readonly onSent: (booking: Booking) => void;
 };
 
 // The check before the request (docs/35): the seats, the money, where from and where to.
@@ -41,10 +41,10 @@ export function BookReview({ trip, seats, mode, pickup, dropoff, onBack, onSent 
     if (!dropoff.point) return (haptic.error(), setError(errorKey(null)));
     try {
       const at = mode === 'door' ? (pickup?.point ?? null) : null;
-      await bookings.book(trip.id, { seats, mode, pickup: at, dropoff: dropoff.point });
+      const booking = await bookings.book(trip.id, { seats, mode, pickup: at, dropoff: dropoff.point });
       track({ name: 'booking_step', screen: 'bookings.review', step: 'requested' });
       haptic.success();
-      return onSent();
+      return onSent(booking);
     } catch (caught) {
       haptic.error();
       return setError(errorKey(caught));
