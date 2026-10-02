@@ -6,7 +6,8 @@ import type { Bindings } from './env';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
-import { grantMissedBonuses } from './modules/drivers';
+import { decisionsBetween, grantMissedBonuses } from './modules/drivers';
+import { sendTeamDigest } from './modules/assignments';
 import { expireRequests } from './modules/ride-requests';
 import { sendReminders } from './modules/reminders';
 import { sendWaitingSubscriptions } from './modules/route-subscriptions';
@@ -51,6 +52,7 @@ export default {
         closeDepartedPosts(env),
         askForRatings(env),
         checkStatsAlerts(env, new Date(now)),
+        sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to)),
       ]),
     );
   },

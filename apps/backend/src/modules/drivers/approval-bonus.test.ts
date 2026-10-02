@@ -18,7 +18,7 @@ describe('the approval message of the driver bot', () => {
       brand: loadBrand(),
       adminToken: undefined,
       driverToken: 'token',
-      teamIds: async () => [],
+      recipients: async () => [],
       photos: {} as never,
       people: {} as never,
     });

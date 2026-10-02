@@ -28,5 +28,10 @@ export function createMemoryDecisions(): DecisionLog {
   return {
     add: async (entry) => void log.push(entry),
     of: async (userId) => log.filter((entry) => entry.userId === userId),
+    countsBetween: async (from, to) => {
+      const counts = new Map<number, number>();
+      for (const { by, at } of log) if (at >= from && at < to) counts.set(by, (counts.get(by) ?? 0) + 1);
+      return counts;
+    },
   };
 }

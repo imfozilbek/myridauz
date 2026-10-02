@@ -23,9 +23,9 @@ describe('support (docs/50)', () => {
     await forwardToTeam(support, { chatId: 55, bot: 'support' }, { text: 'Savol' });
     // An old copy, made when the admin bot was the support contact: its answer still comes from there.
     await support.links.save(7, 50, { chatId: 66, bot: 'admin' }, 0);
-    expect(await answerPerson(support, 8, 102, { text: 'Javob' })).toBe(true);
-    expect(await answerPerson(support, 7, 50, { text: 'Eski' })).toBe(true);
-    expect(await answerPerson(support, 7, 999, { text: 'Hech kimga' })).toBe(false);
+    expect(await answerPerson(support, 8, 102, { text: 'Javob' })).toEqual({ chatId: 55, bot: 'support' });
+    expect(await answerPerson(support, 7, 50, { text: 'Eski' })).toEqual({ chatId: 66, bot: 'admin' });
+    expect(await answerPerson(support, 7, 999, { text: 'Hech kimga' })).toBeUndefined();
     expect(answers).toEqual([
       { bot: 'support', chatId: 55, text: 'Javob' },
       { bot: 'admin', chatId: 66, text: 'Eski' },

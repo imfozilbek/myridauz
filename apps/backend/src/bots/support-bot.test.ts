@@ -24,6 +24,10 @@ describe('the support bot', () => {
     expect(copy?.token).toBe(ADMIN_TOKEN);
     // A copy is only the question: the team is changed in /team, not under a question (G30).
     expect(copy?.body.reply_markup).toBeUndefined();
+    // Only the assigned member gets it (docs/92): the second owner has nothing of this person.
+    expect(telegram.sentTo(8).some((sent) => String(sent.body.text).includes('Pulim qaytmadi'))).toBe(false);
+    await send('support', textMessage(57, 'Boshqa savol'));
+    expect(telegram.sentTo(8).some((sent) => String(sent.body.text).includes('Boshqa savol'))).toBe(true);
     expect((await reply(await send('admin', textMessage(OWNER, 'Qaytardik', copy?.id)))).text).toBe(
       'Javob yuborildi.',
     );

@@ -1,5 +1,6 @@
 import type { TeamRole } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { markAnswered } from '../modules/assignments';
 import { answerPerson, supportDeps } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
@@ -23,6 +24,12 @@ export async function onAdminMessage(context: BotContext, message: BotMessage, r
     ? t('bot.support.voiceAnswer', { brand })
     : t('bot.support.answer', { brand, text: message.text ?? '' });
   const replied = message.reply_to_message.message_id;
-  const sent = await answerPerson(supportDeps(context.env, context.fetch), chatId, replied, { text, voice });
-  return sent ? sendMessage(chatId, t('bot.support.sent')) : {};
+  const writer = await answerPerson(supportDeps(context.env, context.fetch), chatId, replied, {
+    text,
+    voice,
+  });
+  if (!writer) return {};
+  // The question is answered: it counts in the digest of the team (docs/92).
+  await markAnswered(context.env, writer.chatId);
+  return sendMessage(chatId, t('bot.support.sent'));
 }

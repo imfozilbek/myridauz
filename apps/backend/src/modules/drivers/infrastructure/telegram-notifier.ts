@@ -14,7 +14,8 @@ type Wiring = {
   readonly brand: BrandConfig;
   readonly adminToken: string | undefined;
   readonly driverToken: string | undefined;
-  readonly teamIds: () => Promise<number[]>;
+  // Who of the team gets the card of this applicant: the one assigned member (docs/92).
+  readonly recipients: (userId: number) => Promise<number[]>;
   readonly photos: ImageStore;
   readonly people: PeoplePort;
 };
@@ -53,7 +54,7 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
         text: cardText(application, person.firstName),
         reply_markup: cardMenu(application.userId),
       };
-      for (const chatId of await wiring.teamIds()) {
+      for (const chatId of await wiring.recipients(application.userId)) {
         // An album needs at least two photos; an application always has four (face and car).
         const album = photos.length >= 2 ? sendAlbum(fetch, adminToken, chatId, photos) : Promise.resolve();
         await quietly(
