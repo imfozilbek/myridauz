@@ -37,6 +37,8 @@ const bodyOf = (raw, type) => {
 
 export function serveTelegram(port) {
   let sent = [];
+  // Message ids never repeat, also after a clear: a reply must reach its own message (docs/50).
+  let lastId = 0;
   const server = createServer((incoming, outgoing) => {
     const url = incoming.url ?? '/';
     if (url === SENT_PATH) {
@@ -56,7 +58,8 @@ export function serveTelegram(port) {
     let raw = '';
     incoming.on('data', (chunk) => (raw += chunk));
     incoming.on('end', () => {
-      const id = sent.length + 1;
+      lastId += 1;
+      const id = lastId;
       sent.push({ token, method, body: bodyOf(raw, incoming.headers['content-type']), at: Date.now() });
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result: resultOf(method, id) }));
     });
