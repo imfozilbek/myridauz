@@ -22,8 +22,10 @@ describe('the support bot', () => {
     );
     const copy = telegram.sentTo(OWNER).find((sent) => String(sent.body.text).includes('Pulim qaytmadi'));
     expect(copy?.token).toBe(ADMIN_TOKEN);
-    // A copy is only the question: the team is changed in /team, not under a question (G30).
-    expect(copy?.body.reply_markup).toBeUndefined();
+    // Under a copy only «Javob berish»: the team is changed in /team, not under a question (G30, G31).
+    expect(JSON.stringify(copy?.body.reply_markup)).toBe(
+      JSON.stringify({ inline_keyboard: [[{ text: 'Javob berish', callback_data: 'support:reply' }]] }),
+    );
     // Only the assigned member gets it (docs/92): the second owner has nothing of this person.
     expect(telegram.sentTo(8).some((sent) => String(sent.body.text).includes('Pulim qaytmadi'))).toBe(false);
     await send('support', textMessage(57, 'Boshqa savol'));
@@ -32,8 +34,35 @@ describe('the support bot', () => {
       'Javob yuborildi.',
     );
     const answer = telegram.sentTo(PERSON).at(-1);
-    expect(answer?.body.text).toContain('Qaytardik');
+    expect(answer?.body.text).toMatch(/^Operator \d{1,3}:\n\nQaytardik$/u);
     expect(answer?.token).toBe(SUPPORT_TOKEN);
+  });
+
+  it('«Javob berish» asks for the answer; one operator number for the whole question', async () => {
+    await send('support', textMessage(PERSON, 'Yana savol'));
+    const copy = telegram.sentTo(OWNER).find((sent) => String(sent.body.text).includes('Yana savol'));
+    const press = {
+      callback_query: {
+        id: 'q',
+        from: { id: OWNER },
+        data: 'support:reply',
+        message: { message_id: copy?.id, chat: { id: OWNER } },
+      },
+    };
+    await send('admin', press);
+    const prompt = telegram.sentTo(OWNER).at(-1);
+    expect(prompt?.body.text).toBe('Javobingizni yozing: matn yoki ovozli xabar.');
+    expect(prompt?.body.reply_markup).toMatchObject({ force_reply: true });
+    await send('admin', textMessage(OWNER, 'Birinchi', prompt?.id));
+    await send('admin', textMessage(OWNER, 'Ikkinchi', copy?.id));
+    const [first, second] = telegram
+      .sentTo(PERSON)
+      .slice(-2)
+      .map((sent) => String(sent.body.text));
+    const operator = (text: string | undefined) => /^Operator (\d+):/u.exec(text ?? '')?.[1];
+    expect(operator(first)).toBeDefined();
+    expect(Number(operator(first))).toBeLessThanOrEqual(200);
+    expect(operator(second)).toBe(operator(first));
   });
 
   it('takes a voice message and brings back a voice answer of the team', async () => {
@@ -45,7 +74,7 @@ describe('the support bot', () => {
     expect((await reply(await send('admin', voiceMessage(OWNER, copy?.id)))).text).toBe('Javob yuborildi.');
     const answer = telegram.sentTo(PERSON).at(-1);
     expect(answer).toMatchObject({ method: 'sendVoice', token: SUPPORT_TOKEN });
-    expect(String(answer?.body.caption)).toContain('jamoasidan');
+    expect(String(answer?.body.caption)).toMatch(/^Operator \d{1,3}: ovozli javob$/u);
   });
 
   it('asks for a text or a voice when a person sends something else', async () => {

@@ -9,6 +9,9 @@ import { voiceOf } from './voice';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 export const SUPPORT_BOT = 'support';
+// «Javob berish» under a copy for the team: the bot then asks for the answer (G31).
+export const REPLY_DATA = 'support:reply';
+const REPLY_BUTTON = { inline_keyboard: [[{ text: t('bot.support.reply'), callback_data: REPLY_DATA }]] };
 
 // The admin bot is only for the team: everyone else is sent to the support bot (docs/50).
 export const toSupportBot = (brand: BrandConfig, chatId: number) =>
@@ -31,7 +34,7 @@ async function toSupport(context: BotContext, message: BotMessage) {
     ...supportDeps(context.env, context.fetch),
     teamIds: () => assignTo(context.env, 'support', chatId),
   };
-  await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, { text, voice });
+  await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, { text, voice, markup: REPLY_BUTTON });
   return sendMessage(chatId, t('bot.support.received'));
 }
 

@@ -11,8 +11,10 @@ const localLinks = createMemorySupportLinks();
 
 const sender = (fetch: Fetch, token: string | undefined) => async (chatId: number, content: Content) => {
   if (!token) return undefined;
-  const { text, voice } = content;
-  return voice ? sendVoice(fetch, token, chatId, voice, text) : sendText(fetch, token, chatId, text);
+  const { text, voice, markup } = content;
+  return voice
+    ? sendVoice(fetch, token, chatId, voice, text, markup)
+    : sendText(fetch, token, chatId, text, markup);
 };
 
 export const supportDeps = (env: Bindings, fetch: Fetch): SupportDeps => ({
