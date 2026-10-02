@@ -69,8 +69,8 @@ export function PointScreen({ title, start, find: findAny, zone, onBack, onPick 
   const place = district ? find(district) : undefined;
   const outside = zone ? 'way.point.outsideZone' : 'way.point.outside';
   const take = () => {
-    // The name is still on its way (slow internet): wait, the point is not outside (lesson 77).
-    if (!view || asking || !where) return undefined;
+    // No name yet (slow internet): wait, the point is not outside (lesson 77).
+    if (!view || !where) return undefined;
     if (!place) return (haptic.error(), setNote(outside));
     const point = view.center();
     track({ name: 'place_point_saved', screen: 'way.point', method: method.current });
