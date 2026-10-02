@@ -38,11 +38,14 @@ export type PeoplePort = {
   avatar(key: string): Promise<StoredImage | undefined>;
 };
 
+export type Bonus = { readonly amount: number; readonly expiresAt: number };
+
 // The team gets a card in the admin bot, the driver gets the answer from the driver bot (docs/04).
 export type ModerationNotifier = {
   submitted(application: Application, person: Person): Promise<void>;
   // fixedPlate: the plate the team fixed on approval, null when it stayed as the driver wrote it.
-  decided(application: Application, fixedPlate: string | null): Promise<void>;
+  // bonus: the welcome bonus the approval gave, null when none (docs/89 D4).
+  decided(application: Application, fixedPlate: string | null, bonus: Bonus | null): Promise<void>;
 };
 
 export type DriversDeps = {
@@ -53,7 +56,7 @@ export type DriversDeps = {
   readonly notify: ModerationNotifier;
   // driver_approved: the bonus of month 1 starts from it in G08 (docs/12).
   // The approval event and bonus 1 of the welcome promo (docs/12).
-  readonly driverApproved: (userId: number) => Promise<void>;
+  readonly driverApproved: (userId: number) => Promise<Bonus | null>;
   readonly now: () => number;
   readonly newId: () => string;
 };

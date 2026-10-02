@@ -66,6 +66,6 @@
   "status.pending.publish": "Ariza tasdiqlangach safarni eʼlon qila olasiz.",
   "status.pending.after": "Tasdiqlangandan keyin",
   "status.approved.title": "Ariza tasdiqlandi",
-  "status.approved.bonus": "Boshlash uchun {amount} bonus berdik. Bonus komissiyaga ishlatiladi.",
+  "status.approved.bonus": "Boshlash uchun {amount} bonus berdik. Bonus {date}gacha komissiyaga ishlatiladi.",
   "status.pending.requests": "Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz."
 }

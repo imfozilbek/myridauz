@@ -38,7 +38,7 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
       decided: async (application, fixedPlate) =>
         void log.push(`decided:${application.status}${fixedPlate ? `:${fixedPlate}` : ''}`),
     },
-    driverApproved: async (userId) => void log.push(`approved:${userId}`),
+    driverApproved: async (userId) => (log.push(`approved:${userId}`), null),
     now: () => 1000,
     newId: () => `id${(id += 1)}`,
   };

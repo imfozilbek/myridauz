@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useBrand } from '../context/brand-context';
+import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { NoticeBanner } from '../notice-banner';
 import { useDriver } from './driver-context';
@@ -26,19 +26,31 @@ function PendingNotice() {
   );
 }
 
-// Shown on the first visit after the approval; it stays until the driver leaves the screen.
+// Shown on the first visit after the approval; it stays until the driver leaves the screen. The
+// bonus and its last day come from the wallet: a driver approved again has none (docs/89 D4).
 function ApprovedNotice() {
-  const { t, formatMoney } = useI18n();
-  const { promo } = useBrand();
+  const { t, formatMoney, formatDate } = useI18n();
+  const { wallet } = useApiClients();
   const [shown] = useState(() => !approvalSeen());
+  const [bonus, setBonus] = useState<string>('');
   useEffect(markApprovalSeen, []);
+  useEffect(() => {
+    if (!shown) return;
+    wallet.mine().then(
+      (mine) =>
+        mine.bonus > 0 && mine.bonusExpiresAt !== null
+          ? setBonus(
+              t('drivers.status.approved.bonus', {
+                amount: formatMoney(mine.bonus),
+                date: formatDate(new Date(mine.bonusExpiresAt)),
+              }),
+            )
+          : undefined,
+      () => undefined,
+    );
+  }, [shown, wallet]);
   if (!shown) return null;
   return (
-    <NoticeBanner
-      icon="approved"
-      tone="brand"
-      title={t('drivers.status.approved.title')}
-      text={t('drivers.status.approved.bonus', { amount: formatMoney(promo.amount) })}
-    />
+    <NoticeBanner icon="approved" tone="brand" title={t('drivers.status.approved.title')} text={bonus} />
   );
 }

@@ -16,8 +16,8 @@ export function signalledNotifier(
       await notifier.submitted(application, person);
       await sendSignals(env, await team());
     },
-    decided: async (application, fixedPlate) => {
-      await notifier.decided(application, fixedPlate);
+    decided: async (application, fixedPlate, bonus) => {
+      await notifier.decided(application, fixedPlate, bonus);
       await sendSignals(env, [{ userId: application.userId, app: 'driver' }, ...(await team())]);
     },
   };
