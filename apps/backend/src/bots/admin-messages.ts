@@ -1,6 +1,6 @@
 import type { TeamRole } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { markAnswered } from '../modules/assignments';
+import { markAnswered, operatorOf } from '../modules/assignments';
 import { answerPerson, supportDeps } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
@@ -19,15 +19,15 @@ export async function onAdminMessage(context: BotContext, message: BotMessage, r
   if (!message.reply_to_message) return {};
   const voice = await voiceOf(context, 'admin', message);
   if (!message.text && !voice) return {};
-  const brand = context.brand.name;
-  const text = voice
-    ? t('bot.support.voiceAnswer', { brand })
-    : t('bot.support.answer', { brand, text: message.text ?? '' });
+  const contentFor = async (to: { readonly chatId: number }) => {
+    const operator = String(await operatorOf(context.env, to.chatId));
+    const text = voice
+      ? t('bot.support.voiceAnswer', { operator })
+      : t('bot.support.answer', { operator, text: message.text ?? '' });
+    return { text, voice };
+  };
   const replied = message.reply_to_message.message_id;
-  const writer = await answerPerson(supportDeps(context.env, context.fetch), chatId, replied, {
-    text,
-    voice,
-  });
+  const writer = await answerPerson(supportDeps(context.env, context.fetch), chatId, replied, contentFor);
   if (!writer) return {};
   // The question is answered: it counts in the digest of the team (docs/92).
   await markAnswered(context.env, writer.chatId);

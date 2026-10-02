@@ -18,14 +18,24 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
       .all<{ assignee_id: number; today: number; last_at: number }>();
     return new Map(results.map((row) => [row.assignee_id, { today: row.today, lastAt: row.last_at }]));
   },
-  save: async ({ kind, subjectId, day, assigneeId, at }) => {
+  save: async ({ kind, subjectId, day, assigneeId, at, operator }) => {
     await db
       .prepare(
-        'INSERT OR REPLACE INTO assignments (kind, subject_id, day, assignee_id, assigned_at) VALUES (?, ?, ?, ?, ?)',
+        `INSERT OR REPLACE INTO assignments (kind, subject_id, day, assignee_id, assigned_at, operator_no)
+         VALUES (?, ?, ?, ?, ?, ?)`,
       )
-      .bind(kind, subjectId, day, assigneeId, at)
+      .bind(kind, subjectId, day, assigneeId, at, operator)
       .run();
   },
+  operatorOf: async (kind, subjectId) =>
+    (
+      await db
+        .prepare(
+          'SELECT operator_no FROM assignments WHERE kind = ? AND subject_id = ? ORDER BY day DESC LIMIT 1',
+        )
+        .bind(kind, subjectId)
+        .first<{ operator_no: number | null }>()
+    )?.operator_no ?? undefined,
   answered: async (kind, subjectId, at) => {
     await db
       .prepare(

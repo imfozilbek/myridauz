@@ -29,6 +29,16 @@
 | `bot.digest.line` | {name}: murojaat {answered}/{total}, ariza {applications} |
 | `bot.digest.open` | Javobsiz murojaatlar: {count} |
 
+## После приёмки: кнопка и «Operator N» (решение владельца 02.10.2026, тексты согласованы)
+
+| Ключ | Текст |
+|---|---|
+| `bot.support.incoming` | Murojaat: {name} (ID {id}) … (без строки «Javob berish uchun …») |
+| `bot.support.reply` (кнопка) | Javob berish |
+| `bot.support.replyPrompt` | Javobingizni yozing: matn yoki ovozli xabar. |
+| `bot.support.answer` | Operator {operator}: … |
+| `bot.support.voiceAnswer` | Operator {operator}: ovozli javob |
+
 ## Проверки
 
 - Тесты: `assignments/domain/pick.test.ts`, `assignments.test.ts`, `digest-text.test.ts`, `drivers/assigned-card.test.ts`, `bots/support-bot.test.ts`.

@@ -25,10 +25,12 @@ export async function sendVoice(
   chatId: number,
   voice: ArrayBuffer,
   caption: string,
+  markup?: object,
 ): Promise<number | undefined> {
   const form = new FormData();
   form.append('chat_id', String(chatId));
   form.append('caption', caption);
+  if (markup) form.append('reply_markup', JSON.stringify(markup));
   form.append('voice', new Blob([voice], { type: 'audio/ogg' }), 'voice.ogg');
   const response = await fetch(telegramUrl(token, 'sendVoice'), { method: 'POST', body: form });
   if (!response.ok) throw new Error(`telegram.sendVoice_${response.status}`);

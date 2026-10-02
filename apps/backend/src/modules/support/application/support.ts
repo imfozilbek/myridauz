@@ -10,7 +10,12 @@ export type SupportLinks = {
 };
 
 // What goes between a person and the team: a text, or a voice message with a line about it.
-export type Content = { readonly text: string; readonly voice?: ArrayBuffer | undefined };
+export type Content = {
+  readonly text: string;
+  readonly voice?: ArrayBuffer | undefined;
+  // The buttons under the copy for the team («Javob berish», G31).
+  readonly markup?: object;
+};
 
 // Sends the content and returns the id of the sent message.
 type Messenger = (chatId: number, content: Content) => Promise<number | undefined>;
@@ -38,10 +43,11 @@ export async function answerPerson(
   deps: SupportDeps,
   teamChatId: number,
   repliedMessageId: number,
-  content: Content,
+  // The answer is made for its person: «Operator N» of this question (docs/92).
+  contentFor: (writer: Writer) => Promise<Content>,
 ): Promise<Writer | undefined> {
   const writer = await deps.links.writer(teamChatId, repliedMessageId);
   if (writer === undefined) return undefined;
-  await deps.toWriter(writer.bot, writer.chatId, content);
+  await deps.toWriter(writer.bot, writer.chatId, await contentFor(writer));
   return writer;
 }

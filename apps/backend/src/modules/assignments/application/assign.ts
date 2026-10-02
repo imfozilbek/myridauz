@@ -1,4 +1,5 @@
 import { tashkentDate } from '@platform/contracts';
+import { operatorNumber } from '../domain/operator';
 import { pickAssignee } from '../domain/pick';
 import type { AssignDeps, Kind } from './ports';
 
@@ -11,6 +12,7 @@ export async function assign(deps: AssignDeps, kind: Kind, subjectId: number): P
   const current = await deps.store.assigneeOf(kind, subjectId, day);
   if (current !== undefined && team.includes(current)) return current;
   const assigneeId = pickAssignee(team, await deps.store.loads(day));
-  if (assigneeId !== undefined) await deps.store.save({ kind, subjectId, day, assigneeId, at });
+  if (assigneeId === undefined) return undefined;
+  await deps.store.save({ kind, subjectId, day, assigneeId, at, operator: operatorNumber(deps.random()) });
   return assigneeId;
 }

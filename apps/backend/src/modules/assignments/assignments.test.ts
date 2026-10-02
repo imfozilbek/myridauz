@@ -14,6 +14,7 @@ function setup(team: number[]) {
     store: createMemoryAssignments(),
     teamIds: async () => team,
     now: () => (now += 1000),
+    random: () => 0.5,
     decisions: async () => new Map([[2, 4]]),
     send: async (day, rows) => void sent.push({ day, rows }),
   };

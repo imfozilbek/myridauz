@@ -9,6 +9,8 @@ export type Assignment = {
   readonly day: string;
   readonly assigneeId: number;
   readonly at: number;
+  // «Operator N» the person sees in the answers of this question.
+  readonly operator: number;
 };
 
 // The support questions of one team member on one day.
@@ -19,6 +21,8 @@ export type AssignmentStore = {
   // The work of each member on this day, and when each got the last one.
   loads(day: string): Promise<Map<number, Load>>;
   save(assignment: Assignment): Promise<void>;
+  // The operator number of the latest question of this person.
+  operatorOf(kind: Kind, subjectId: number): Promise<number | undefined>;
   // The latest question of this person, not answered yet, is answered now.
   answered(kind: Kind, subjectId: number, at: number): Promise<void>;
   supportOf(day: string): Promise<SupportDone[]>;
@@ -30,4 +34,5 @@ export type AssignDeps = {
   readonly store: AssignmentStore;
   readonly teamIds: () => Promise<number[]>;
   readonly now: () => number;
+  readonly random: () => number;
 };

@@ -3,6 +3,7 @@ import { notifyTeam } from '../notifications';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
 import { assign } from './application/assign';
+import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
 import type { Kind } from './application/ports';
 import { d1Assignments } from './infrastructure/d1-assignments';
@@ -16,6 +17,7 @@ const deps = (env: Bindings, decisions: Decisions = async () => new Map()): Dige
   store: env.DB ? d1Assignments(env.DB) : localAssignments,
   teamIds: async () => (await teamMembers(env)).map((member) => member.id),
   now: Date.now,
+  random: Math.random,
   decisions,
   send: async (day, rows) => {
     const people = peopleOf(env);
@@ -39,5 +41,8 @@ export const assignTo = async (env: Bindings, kind: Kind, subjectId: number): Pr
 // A team member answered the question of this person.
 export const markAnswered = (env: Bindings, subjectId: number) =>
   deps(env).store.answered('support', subjectId, Date.now());
+// «Operator N» for the answers to this person (docs/92): the number of the latest question.
+export const operatorOf = async (env: Bindings, subjectId: number): Promise<number> =>
+  (await deps(env).store.operatorOf('support', subjectId)) ?? steadyOperator(subjectId);
 // The Cron job: the digest of the day before, once, after midnight in Tashkent.
 export const sendTeamDigest = (env: Bindings, decisions: Decisions) => sendDigest(deps(env, decisions));

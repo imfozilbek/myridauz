@@ -27,6 +27,8 @@ export function createMemoryAssignments(): AssignmentStore {
       const index = rows.findIndex((row) => key(row) === key(assignment));
       rows.splice(index < 0 ? rows.length : index, index < 0 ? 0 : 1, { ...assignment, answeredAt: null });
     },
+    operatorOf: async (kind, subjectId) =>
+      rows.filter((row) => row.kind === kind && row.subjectId === subjectId).at(-1)?.operator,
     answered: async (kind, subjectId, at) => {
       const open = rows.filter(
         (row) => row.kind === kind && row.subjectId === subjectId && row.answeredAt === null,
