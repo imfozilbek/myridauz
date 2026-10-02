@@ -1,17 +1,16 @@
+import type { TeamRole } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { changeModerator, teamMembers } from '../modules/team';
 import { peopleOf } from '../modules/users';
-import { sendText } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import type { BotCallback, BotMessage } from './telegram-update';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-// The one person an owner picks from Telegram (KeyboardButtonRequestUsers).
-const PICK_REQUEST = 1;
+const ADD = 'add';
 
-// The team list for an owner (docs/50): each moderator with «Olib tashlash», and «Moderator qoʻshish».
-export async function teamList(context: BotContext, chatId: number) {
+// The team list for an owner (docs/50): each moderator with «Olib tashlash», and how to add one.
+async function teamList(context: BotContext, chatId: number) {
   const people = peopleOf(context.env);
   const members = await teamMembers(context.env);
   const named = await Promise.all(
@@ -26,45 +25,28 @@ export async function teamList(context: BotContext, chatId: number) {
     .map((member) => [
       { text: `${t('bot.team.remove')}: ${member.name}`, callback_data: `team:remove:${member.id}` },
     ]);
-  const add = [{ text: t('bot.team.add'), callback_data: 'team:pick' }];
-  return sendMessage(chatId, [t('bot.team.title'), ...lines].join('\n'), {
-    inline_keyboard: [...buttons, add],
-  });
+  const text = [t('bot.team.title'), ...lines, '', t('bot.team.addHint')].join('\n');
+  return sendMessage(chatId, text, { inline_keyboard: buttons });
 }
 
-// «Moderator qoʻshish»: Telegram opens the owner's chats, the owner picks one person, nothing is typed.
-async function askToPick(context: BotContext, chatId: number) {
-  const token = context.env.ADMIN_BOT_TOKEN;
-  if (!token) return;
-  const pick = { request_id: PICK_REQUEST, user_is_bot: false, max_quantity: 1 };
-  await sendText(context.fetch, token, chatId, t('bot.team.pick'), {
-    keyboard: [[{ text: t('bot.team.add'), request_users: pick }]],
-    resize_keyboard: true,
-    one_time_keyboard: true,
-  });
+// "/team" shows the team; "/team add <Telegram ID>" makes that person a moderator. Owner only.
+export async function onTeamCommand(context: BotContext, message: BotMessage, role: TeamRole) {
+  const chatId = message.chat.id;
+  if (role !== 'owner') return sendMessage(chatId, t('bot.team.onlyOwner'));
+  const [, action, id] = (message.text ?? '').trim().split(/\s+/u);
+  if (action === undefined) return teamList(context, chatId);
+  const userId = Number(id);
+  if (action !== ADD || !Number.isSafeInteger(userId) || userId <= 0)
+    return sendMessage(chatId, t('bot.team.addHint'));
+  await changeModerator(context.env, chatId, userId, true);
+  return sendMessage(chatId, t('bot.team.added'));
 }
 
-// "team:pick" and "team:remove:<id>": only an owner changes the team (docs/50).
+// "team:remove:<id>" under the team list: only an owner changes the team (docs/50).
 export async function onTeamButton(context: BotContext, query: BotCallback, data: string) {
   const [, action, id] = data.split(':');
-  if (action === 'pick') {
-    const owner = (await teamMembers(context.env)).some((m) => m.id === query.from.id && m.role === 'owner');
-    if (!owner) return answer(query, t('bot.team.onlyOwner'));
-    if (query.message) await askToPick(context, query.message.chat.id);
-    return answer(query);
-  }
   const userId = Number(id);
   if (action !== 'remove' || !Number.isInteger(userId)) return answer(query);
   const result = await changeModerator(context.env, query.from.id, userId, false);
   return answer(query, t(result === 'ok' ? 'bot.team.removed' : 'bot.team.onlyOwner'));
-}
-
-// The person the owner picked becomes a moderator.
-export async function onUserPicked(context: BotContext, message: BotMessage) {
-  const chatId = message.chat.id;
-  const userId = message.users_shared?.users[0]?.user_id;
-  if (userId === undefined) return {};
-  const result = await changeModerator(context.env, message.from?.id ?? chatId, userId, true);
-  const text = t(result === 'ok' ? 'bot.team.added' : 'bot.team.onlyOwner');
-  return sendMessage(chatId, text, { remove_keyboard: true });
 }

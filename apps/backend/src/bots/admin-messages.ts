@@ -4,7 +4,7 @@ import { answerPerson, supportDeps } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import { toSupportBot } from './support-bot';
-import { onUserPicked, teamList } from './team-bot';
+import { onTeamCommand } from './team-bot';
 import type { BotMessage } from './telegram-update';
 import { voiceOf } from './voice';
 
@@ -14,10 +14,7 @@ const TEAM_COMMAND = '/team';
 export async function onAdminMessage(context: BotContext, message: BotMessage, role: TeamRole | null) {
   const chatId = message.chat.id;
   if (role === null) return toSupportBot(context.brand, chatId);
-  if (message.users_shared) return onUserPicked(context, message);
-  if (message.text === TEAM_COMMAND) {
-    return role === 'owner' ? teamList(context, chatId) : sendMessage(chatId, t('bot.team.onlyOwner'));
-  }
+  if (message.text?.split(' ')[0] === TEAM_COMMAND) return onTeamCommand(context, message, role);
   if (!message.reply_to_message) return {};
   const voice = await voiceOf(context, 'admin', message);
   if (!message.text && !voice) return {};

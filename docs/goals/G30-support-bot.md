@@ -34,7 +34,7 @@
 
 ## После приёмки (решение владельца 02.10.2026)
 
-- Под обращением нет кнопки «Moderator qilish». Модератора добавляют в `/team` → «Moderator qoʻshish».
+- Под обращением нет кнопки «Moderator qilish». Модератора добавляют командой `/team add <Telegram ID>`.
 - Голосовые сообщения в обе стороны: человек ↔ команда.
 
 | Ключ | Текст |
@@ -42,5 +42,4 @@
 | `bot.support.voice` | 🎤 Ovozli xabar |
 | `bot.support.voiceAnswer` | {brand} jamoasidan ovozli javob |
 | `bot.support.textOnly` | Hozircha faqat matn yoki ovozli xabar qabul qilinadi. |
-| `bot.team.add` (кнопка) | Moderator qoʻshish |
-| `bot.team.pick` | Moderator qilinadigan odamni tanlang. |
+| `bot.team.addHint` | Moderator qoʻshish: /team add Telegram ID |

@@ -15,8 +15,6 @@ const messageSchema = z.object({
   location: z.object({ latitude: z.number(), longitude: z.number() }).optional(),
   // A voice message to the support bot, or the voice answer of the team (docs/50).
   voice: z.object({ file_id: z.string() }).optional(),
-  // The person an owner picked by «Moderator qoʻshish» in /team (docs/50).
-  users_shared: z.object({ users: z.array(z.object({ user_id: z.number() })) }).optional(),
 });
 export type BotMessage = z.infer<typeof messageSchema>;
 
