@@ -114,6 +114,8 @@ export type BookingsDeps = {
     { ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' }
   >;
   readonly notify: BookingNotifier;
+  // A step of the booking funnel no Mini App sees: a refused or a burned request (docs/89 S2).
+  readonly track: (step: 'declined' | 'expired') => void;
   // The names of a point and where a point of a trip may lie (docs/69), from the map module.
   readonly places: {
     describe(point: Point): Promise<Where>;

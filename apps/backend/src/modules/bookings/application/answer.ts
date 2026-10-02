@@ -65,6 +65,7 @@ export async function answer(
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
   if (record.status === 'confirmed') await deps.wallet.refund(driverId, id);
+  if (next.status === 'declined') deps.track('declined');
   const [forPassenger] = await bookingViews(deps, [next], 'passenger');
   if (forPassenger) {
     if (next.status === 'declined') await deps.notify.declined(forPassenger);
