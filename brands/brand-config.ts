@@ -93,8 +93,13 @@ export type BrandConfig = {
   readonly theme: BrandTheme;
   // Photos of the 14 regions in brands/<brand>/public/regions/<SOATO code>.webp (docs/48).
   readonly regionPhotos: boolean;
-  // Telegram usernames of the three bots (docs/02, docs/46): deep links between them.
-  readonly bots: { readonly passenger: string; readonly driver: string; readonly admin: string };
+  // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
+  readonly bots: {
+    readonly passenger: string;
+    readonly driver: string;
+    readonly admin: string;
+    readonly support: string;
+  };
   // Telegram channel zones (docs/15, docs/63): a trip goes to the zone of each end.
   readonly channels: readonly BrandChannel[];
   readonly pricing: PricingStrategy;

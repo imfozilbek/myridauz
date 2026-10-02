@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { teamRole } from '../modules/team';
 import { call, pid, registerUser } from '../test-api';
@@ -20,21 +21,18 @@ const press = (fromId: number, data: string) => ({
   },
 });
 
-describe('admin bot: support (docs/02)', () => {
-  it('copies a message to every team member and sends the answer back', async () => {
-    expect((await reply(await send('admin', textMessage(PERSON, 'Savolim bor')))).text).toContain(
-      'qabul qilindi',
-    );
-    const copy = telegram.sentTo(OWNER).find((sent) => String(sent.body.text).includes('Savolim bor'));
-    expect(copy?.body.reply_markup).toBeDefined();
-    expect(telegram.sentTo(8).length).toBeGreaterThan(0);
-    expect((await reply(await send('admin', textMessage(OWNER, 'Mana javob', copy?.id)))).text).toBe(
-      'Javob yuborildi.',
-    );
-    expect(telegram.sentTo(PERSON).at(-1)?.body.text).toContain('Mana javob');
+describe('admin bot: not a support desk (docs/50)', () => {
+  it('sends a person outside the team to the support bot and copies nothing to the team', async () => {
+    const before = telegram.calls.length;
+    const answer = (await (await send('admin', textMessage(PERSON, 'Savolim bor'))).json()) as {
+      text: string;
+      reply_markup: { inline_keyboard: { url: string }[][] };
+    };
+    expect(answer.text).toContain('yordam xizmatiga yozing');
+    expect(answer.reply_markup.inline_keyboard[0]?.[0]?.url).toBe(`https://t.me/${loadBrand().bots.support}`);
+    expect(telegram.calls.length).toBe(before);
+    // A reply of the team to a message that is no copy is silent.
     expect(await reply(await send('admin', textMessage(OWNER, 'Boshqa', 12345)))).toEqual({});
-    const photo = { message: { message_id: 2, chat: { id: PERSON }, from: { id: PERSON } } };
-    expect((await reply(await send('admin', photo))).text).toContain('faqat matnli');
   });
 });
 

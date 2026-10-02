@@ -15,7 +15,12 @@ export const brandConfig: BrandConfig = {
   promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
   theme,
   regionPhotos: true,
-  bots: { passenger: 'myrida_bot', driver: 'myrida_haydovchi_bot', admin: 'myrida_admin_bot' },
+  bots: {
+    passenger: 'myrida_bot',
+    driver: 'myrida_haydovchi_bot',
+    admin: 'myrida_admin_bot',
+    support: 'myrida_support_bot',
+  },
   channels,
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week

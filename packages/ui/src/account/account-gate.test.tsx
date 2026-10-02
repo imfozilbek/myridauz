@@ -85,7 +85,7 @@ describe('AccountGate', () => {
     // A blocked person can still ask the team why (docs/86 V4).
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
-    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.admin}`);
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
     open.mockRestore();
   });
 

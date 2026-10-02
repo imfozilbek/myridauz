@@ -17,6 +17,7 @@ export type Bindings = {
   readonly PASSENGER_BOT_TOKEN?: string;
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;
+  readonly SUPPORT_BOT_TOKEN?: string;
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
   // The Bot API of the local stand (docs/75); unset in production: Telegram itself.
   readonly TELEGRAM_API_URL?: string;
