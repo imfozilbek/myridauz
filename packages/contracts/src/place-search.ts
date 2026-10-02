@@ -1,15 +1,11 @@
-// People type oʻ and gʻ in many ways: o' o` oʼ o‘ o’. All of them mean the same letter (docs/25).
-const APOSTROPHES = /[ʻʼ'`‘’´]/g;
-const SEARCH_APOSTROPHE = 'ʻ';
-
-export function normalizeSearch(text: string): string {
-  return text.toLocaleLowerCase('uz').replace(APOSTROPHES, SEARCH_APOSTROPHE).replace(/\s+/g, ' ').trim();
-}
+import { searchKey } from './search-key';
 
 // A place matches when one of its words starts with the query ("qarshi" finds "Qarshi shahri").
+// The same key as the search on the map (docs/90 F-P3): «Самарканд», «Samarkand» and «Tashkent»
+// find their places, and every way to type oʻ and gʻ means the same letter (docs/25).
 export function matchesPlace(name: string, query: string): boolean {
-  const needle = normalizeSearch(query);
+  const needle = searchKey(query);
   if (needle === '') return true;
-  const haystack = normalizeSearch(name);
+  const haystack = searchKey(name);
   return haystack.startsWith(needle) || haystack.includes(` ${needle}`);
 }
