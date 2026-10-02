@@ -1,6 +1,8 @@
 // Apps get TelegramUI only through this file (docs/19): replacing the library changes only packages/ui.
 export {
   Accordion,
+  Avatar,
+  AvatarStack,
   Badge,
   Banner,
   Button,

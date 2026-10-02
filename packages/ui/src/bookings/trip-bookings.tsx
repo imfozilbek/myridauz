@@ -6,6 +6,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
+import { PassengersStack } from './passengers-stack';
 
 const PHOTO_SIZE = 40;
 type Props = {
@@ -48,6 +49,7 @@ export function TripBookings({ bookings, onOpen, onMap }: Props) {
   const hasConfirmed = bookings.some((booking) => booking.status === 'confirmed');
   return (
     <>
+      <PassengersStack bookings={bookings} />
       {onMap && hasConfirmed ? (
         <Section>
           <Cell before={<IconTile name="navigate" tone="accent" />} onClick={onMap}>
