@@ -1,10 +1,12 @@
 import { loadBrand } from '@platform/brands';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { localUsers } from '../modules/users';
 import { botEnv, botSender, fakeTelegram } from './test-bot';
 import { publicIdOf } from '../test-people';
 
 const brand = loadBrand();
+const { formatMoney } = createI18n(DEFAULT_LOCALE);
 type Reply = { text: string; reply_markup: { inline_keyboard: { web_app: { url: string } }[][] } };
 type LinkReply = { text: string; reply_markup: { inline_keyboard: { url: string }[][] } };
 const start = (fromId = 1, text = '/start') => ({
@@ -91,8 +93,40 @@ describe('POST /telegram/:role', () => {
     expect(admin.text).not.toContain('Ommaviy oferta');
   });
 
+  it('greets a driver with the picture, what the brand gives and the bonus of the brand (G34)', async () => {
+    const reply = (await (await send('driver', start())).json()) as Reply & {
+      photo: string;
+      caption: string;
+    };
+    expect(reply).toMatchObject({ method: 'sendPhoto', chat_id: 42 });
+    expect(reply.photo).toBe(`https://${brand.domain}/bot/driver-welcome.png`);
+    expect(reply.caption.startsWith(`Assalomu alaykum! ${brand.name}: `)).toBe(true);
+    expect(reply.caption).toContain(`Boshlash uchun ${formatMoney(brand.promo.amount)} bonus.`);
+    expect(reply.reply_markup.inline_keyboard).toEqual([
+      [{ text: 'Ochish', web_app: { url: `https://driver.${brand.domain}` } }],
+    ]);
+    const fromPassenger = (await (await send('driver', start(1, '/start from_passenger'))).json()) as {
+      caption: string;
+    };
+    expect(fromPassenger.caption).toMatch(/^Assalomu alaykum! Endi .+ bilan haydovchi sifatida/u);
+    expect(fromPassenger.caption).not.toContain('Bu taksi emas');
+    expect(fromPassenger.caption).toContain('Haydovchi sifatida siz:');
+  });
+
+  it('answers any other text with the way to the app and to support, in both public bots (G34)', async () => {
+    for (const role of ['passenger', 'driver'] as const) {
+      const reply = (await (await send(role, start(1, 'salom'))).json()) as Reply;
+      expect(reply.text).toContain(`@${brand.bots.support} ga yozing`);
+      expect(reply.reply_markup.inline_keyboard).toEqual([
+        [
+          { text: 'Ochish', web_app: { url: `https://${role}.${brand.domain}` } },
+          { text: 'Yordam', url: `https://t.me/${brand.bots.support}` },
+        ],
+      ]);
+    }
+  });
+
   it('answers other updates with an empty 200, so Telegram does not retry', async () => {
-    expect(await (await send('passenger', start(1, 'salom'))).json()).toEqual({});
     expect(await (await send('passenger', { edited_message: {} })).json()).toEqual({});
     expect((await send('passenger', 'not an update')).status).toBe(200);
   });
@@ -108,7 +142,6 @@ describe('POST /telegram/:role', () => {
       },
     });
     expect(await (await send('driver', location(3))).json()).toEqual({});
-    expect(await (await send('driver', start(7, 'salom'))).json()).toEqual({});
     expect(await (await send('passenger', location())).json()).toEqual({});
     expect(await (await send('passenger', location(3))).json()).toEqual({});
   });

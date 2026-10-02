@@ -1,9 +1,12 @@
 import type { CarInput } from '@platform/contracts';
 import { asksSeats } from './car-choices';
 
-// The screens of the application, one question each (docs/04, docs/50).
-const ORDER = ['intro', 'make', 'model', 'color', 'plate', 'seats', 'avatar', 'photos', 'review'] as const;
+// The screens of the application, one question each (docs/04, docs/50). The face and the car
+// photos share one screen (G34).
+const ORDER = ['make', 'model', 'color', 'plate', 'seats', 'photos', 'review'] as const;
 export type Step = (typeof ORDER)[number];
+
+export const isStep = (value: unknown): value is Step => ORDER.some((step) => step === value);
 
 // Where the application is: the bar on top of each screen (docs/88 L4).
 export const progressOf = (step: Step) => [ORDER.indexOf(step), ORDER.length] as const;
@@ -24,7 +27,8 @@ export function nextStep(
   return ORDER.slice(from + 1).find((step) => shown(step, car)) ?? 'review';
 }
 
-export function previousStep(current: Step, car: Partial<CarInput>): Step {
+// null: the first step, «Назад» leaves the application for the main screen (G34).
+export function previousStep(current: Step, car: Partial<CarInput>): Step | null {
   const before = ORDER.slice(0, ORDER.indexOf(current)).filter((step) => shown(step, car));
-  return before.at(-1) ?? 'intro';
+  return before.at(-1) ?? null;
 }

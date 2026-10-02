@@ -16,13 +16,13 @@ test.describe.configure({ mode: 'serial' });
 const who = (id: number, name: string): Person => ({ id, name, phone: `99890111${id - 900000}` });
 const SEEKER = who(900701, 'Oydin');
 
-test('the first visit: gender and phone', async ({ page }) => {
+test('the first visit: «Siz haqingizda» before and after the gender', async ({ page }) => {
   await openHome(page, 'passenger', who(900702, 'Shoira'), 'android');
   await mainButton(page).click();
-  await page.getByText(TEXT.accept).click();
-  await mainButton(page).click();
-  await shot(page, 'android', 'pb01-gender');
+  await expect(page.getByText(TEXT.about)).toBeVisible();
+  await shot(page, 'android', 'pb01-about');
   await page.getByRole('button', { name: TEXT.female }).click();
+  await expect(mainButton(page)).toHaveText(TEXT.sendPhone);
   await shot(page, 'android', 'pb02-phone');
 });
 

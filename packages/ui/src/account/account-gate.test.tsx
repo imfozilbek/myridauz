@@ -13,9 +13,8 @@ const permissions = vi.hoisted(() => ({
 vi.mock('../telegram/permissions', () => permissions);
 
 const welcome = {
-  icon: 'search',
   textKey: 'common.passenger.welcome',
-  points: [{ icon: 'hidden', textKey: 'common.welcome.hidden' }],
+  points: [{ icon: 'team', textKey: 'common.welcome.verified' }],
 } as const;
 const gate = (client: UsersClient, app: 'passenger' | 'driver' = 'passenger') =>
   renderInShell(
@@ -28,23 +27,19 @@ beforeEach(() => vi.clearAllMocks());
 afterEach(cleanup);
 
 describe('AccountGate', () => {
-  it('registers a new person step by step and lets them in', async () => {
+  it('registers a new person in two screens and lets them in', async () => {
     const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza', settings });
     const { tracked } = gate(client);
     const brand = loadBrand();
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
     expect(screen.getByText('Safar toping')).toBeTruthy();
     // What the person gets, before any question (docs/86 T11).
-    expect(screen.getByText('Telefon raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
+    expect(screen.getByText('Haydovchilar tekshirilgan.')).toBeTruthy();
     fireEvent.click(screen.getByText('Davom etish'));
-    expect(screen.getByText('Raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
-    fireEvent.click(screen.getByText('Roziman'));
     const input = screen.getByDisplayValue('Dilnoza');
     fireEvent.change(input, { target: { value: 'Ali 998' } });
-    fireEvent.click(screen.getByText('Davom etish'));
     expect(screen.getByText(/Faqat harflardan/)).toBeTruthy();
     fireEvent.change(input, { target: { value: '  Dilnoza ' } });
-    fireEvent.click(screen.getByText('Davom etish'));
     fireEvent.click(screen.getByText('Ayol'));
     await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
     expect(await screen.findByText('inside')).toBeTruthy();
@@ -57,8 +52,7 @@ describe('AccountGate', () => {
     const steps = tracked.filter((event) => event.name === 'registration_step');
     expect(steps.map((event) => 'step' in event && event.step)).toEqual([
       'consent',
-      'name',
-      'gender',
+      'about',
       'phone',
       'done',
     ]);
@@ -69,13 +63,11 @@ describe('AccountGate', () => {
     permissions.requestSignedContact.mockResolvedValueOnce(null);
     gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings }));
     fireEvent.click(await screen.findByText('Davom etish'));
-    fireEvent.click(screen.getByText('Roziman'));
-    fireEvent.click(screen.getByText('Davom etish'));
     fireEvent.click(screen.getByText('Erkak'));
     await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
     expect(screen.getByText(/Raqamsiz/)).toBeTruthy();
-    fireEvent.click(screen.getByText('Orqaga'));
-    expect(screen.getByText('Ayol')).toBeTruthy();
+    // The person can try again from the same screen.
+    expect(screen.getByText('Raqamni yuborish')).toBeTruthy();
   });
 
   it('shows the block with its end date, or for good', async () => {
@@ -94,8 +86,6 @@ describe('AccountGate', () => {
     client.register.mockRejectedValueOnce(new ApiError(403, 'users.blocked'));
     gate(client);
     fireEvent.click(await screen.findByText('Davom etish'));
-    fireEvent.click(screen.getByText('Roziman'));
-    fireEvent.click(screen.getByText('Davom etish'));
     fireEvent.click(screen.getByText('Erkak'));
     await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
     expect(await screen.findByText(/butunlay|qoʻllab-quvvatlash/)).toBeTruthy();

@@ -4,6 +4,7 @@ import type { AppEnv } from '../env';
 import { safeEqual } from '../shared/http/safe-equal';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
 import { botToken, type BotName } from '../shared/telegram/bot-config';
+import { avatarUrl, setBotAvatar } from './bot-avatar';
 import { botProfile } from './bot-profile';
 import { BOT_ROLES, isBotRole } from './bot-roles';
 import { botCommands } from './documents-reply';
@@ -38,6 +39,10 @@ export function setupRoutes(fetch: Fetch) {
       await callTelegram(fetch, token, 'setMyName', { name });
       await callTelegram(fetch, token, 'setMyDescription', { description });
       await callTelegram(fetch, token, 'setMyShortDescription', { short_description });
+      // The face of the bot (G34): a missing picture must not stop the rest of the setup.
+      await setBotAvatar(fetch, token, avatarUrl(brand, role)).catch((error: unknown) =>
+        console.warn(String(error)),
+      );
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.
       // The support bot has no Mini App: people only write there (docs/50).
       if (isBotRole(role) && role !== 'admin') {

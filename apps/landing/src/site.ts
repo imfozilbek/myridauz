@@ -61,6 +61,7 @@ export function renderSite(brand: BrandConfig, { year, map, roads, script }: Bui
       title: `${t(legalTitle(document))}: ${brand.name}`,
       path: `/${document}/`,
       body: documentPage(document, brand, i18n),
+      script,
     });
   }
   const paths = ['/', ...all.map((item) => item.path), ...LEGAL_DOCUMENTS.map((document) => `/${document}/`)];

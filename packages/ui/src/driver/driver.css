@@ -199,3 +199,16 @@
   font-size: 22px;
   letter-spacing: 1px;
 }
+
+/* The paint dot in a slot of the size of an icon tile (G34). */
+.swatch-tile {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+}
+
+.swatch-tile .car-swatch {
+  width: 24px;
+  height: 24px;
+}

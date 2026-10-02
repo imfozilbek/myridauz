@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { ProfileScreen } from '../account/profile/profile-screen';
-import { AvatarStep } from '../driver/steps/avatar-step';
 import { PhotosStep } from '../driver/steps/photos-step';
 import { native, pressBack } from '../test-native';
 import { renderInShell } from '../test-shell';
@@ -57,9 +56,12 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
 
   it('F7: the face camera behaves the same: «Davom etish» hides, «Назад» closes the camera', () => {
     const onBack = vi.fn();
-    inTelegram(<AvatarStep reasons={[]} onBack={onBack} onDone={vi.fn()} />);
+    inTelegram(
+      <PhotosStep photos={photos} reasons={[]} onPhotos={vi.fn()} onBack={onBack} onDone={vi.fn()} />,
+    );
     expect(native.mainShown).toBe(true);
-    fireEvent.click(screen.getByText('Rasmni almashtirish'));
+    // The face is the first photo of the same screen (G34).
+    fireEvent.click(screen.getByText('Yuzingiz').closest('button') as HTMLElement);
     expect(screen.getByRole('dialog')).toBeTruthy();
     expect(native.mainShown).toBe(false);
     act(pressBack);

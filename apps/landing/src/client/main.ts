@@ -1,3 +1,4 @@
+import { initCompany } from './company';
 import { initCount } from './count';
 import { initHow } from './how';
 import { initMap } from './map';
@@ -13,5 +14,7 @@ const how = document.querySelector<HTMLElement>('[data-how]');
 if (how) initHow(how, !calm);
 const map = document.querySelector<HTMLElement>('[data-map]');
 if (map) void initMap(map);
+const legal = document.querySelector<HTMLElement>('[data-legal]');
+if (legal) void initCompany(legal);
 initReveal(document);
 initCount(document, !calm);

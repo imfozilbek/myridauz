@@ -26,7 +26,8 @@ export const MINI_APPS = [
 
 export const TEXT = {
   continue: t('common.continue'),
-  accept: t('account.consent.accept'),
+  about: t('account.about.title'),
+  offerLink: t('account.consent.link.offer'),
   female: t('account.gender.female'),
   sendPhone: t('account.phone.send'),
   profile: t('account.profile.open'),
@@ -35,8 +36,8 @@ export const TEXT = {
   to: t('places.to'),
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),
-  becomeDriver: t('drivers.intro.title'),
-  start: t('drivers.intro.start'),
+  // G34: the main screen of a new driver opens the application from this card.
+  becomeDriver: t('drivers.application.title'),
   plateField: t('drivers.plate.title'),
   take: t('drivers.photo.take'),
   shutter: t('common.camera.shoot'),
@@ -48,6 +49,9 @@ export const TEXT = {
   plate: t('drivers.review.plate'),
   photos: t('drivers.photos.title'),
   avatar: t('drivers.avatar.title'),
+  photosScreen: t('drivers.photos.screen'),
+  face: t('drivers.photo.face'),
+  sent: t('drivers.sent.title'),
   requestChanges: t('moderation.requestChanges'),
   reasonFront: t('drivers.reason.front_unclear'),
   reasonPlate: t('drivers.reason.plate_not_readable'),

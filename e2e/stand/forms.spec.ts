@@ -18,15 +18,18 @@ test('P02, P04. a document opens before the consent and comes back; a name of si
   page,
 }) => {
   await openHome(page, 'passenger', NEWCOMER, 'android');
-  await mainButton(page).click();
-  await page.getByText(t('legal.offer.title')).first().click();
+  // G34: the documents open from the consent line of the welcome.
+  await page.getByText(TEXT.offerLink).click();
+  await expect(page.getByText(t('legal.offer.title')).first()).toBeVisible();
   await shot(page, 'android', 'p04-document');
   await pressBack(page);
-  await expect(page.getByText(TEXT.accept)).toBeVisible();
-  await page.getByText(TEXT.accept).click();
-  await page.getByRole('textbox').fill('😀');
+  await expect(page.getByText(TEXT.offerLink)).toBeVisible();
   await mainButton(page).click();
+  await page.getByRole('textbox').fill('😀');
+  // A name that is not a name is said at once; the phone is not asked until it is fixed.
   await expect(page.getByText(t('account.name.invalid'))).toBeVisible();
+  await page.getByRole('button', { name: TEXT.female }).click();
+  await expect(mainButton(page)).toBeHidden();
   await shot(page, 'android', 'p05-name-invalid');
 });
 

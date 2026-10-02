@@ -6,7 +6,8 @@ export const ANALYTICS_PATH = '/analytics';
 export const MAX_ANALYTICS_BATCH = 50;
 export const MINI_APPS = ['passenger', 'driver', 'admin'] as const;
 export type MiniApp = (typeof MINI_APPS)[number];
-export const REGISTRATION_STEPS = ['consent', 'name', 'gender', 'phone', 'done'] as const;
+// G34: two screens. «consent» on the welcome, «about» when the answers are sent, then the phone.
+export const REGISTRATION_STEPS = ['consent', 'about', 'phone', 'done'] as const;
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
 export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'avatar', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];

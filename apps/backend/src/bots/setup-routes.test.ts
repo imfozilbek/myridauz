@@ -11,10 +11,25 @@ const env = {
   TELEGRAM_WEBHOOK_SECRET: 'hook',
 };
 
-function setup(secret: string, status = 200) {
-  const calls: { url: string; body: Record<string, unknown> }[] = [];
+const AVATAR_BYTES = new Uint8Array([255, 216, 255]);
+type Call = { url: string; body: Record<string, unknown> };
+
+// JSON calls as objects; the avatar upload as its form fields, the file as its size.
+const bodyOf = (body: RequestInit['body']): Record<string, unknown> =>
+  body instanceof FormData
+    ? Object.fromEntries(
+        [...body.entries()].map(([key, value]) => [key, typeof value === 'string' ? value : value.size]),
+      )
+    : (JSON.parse(String(body)) as Record<string, unknown>);
+
+function setup(secret: string, status = 200, avatarStatus = 200) {
+  const calls: Call[] = [];
   const routes = setupRoutes(async (url, init) => {
-    calls.push({ url, body: JSON.parse(String(init?.body)) });
+    if (url.startsWith(`https://${brand.domain}/`)) {
+      calls.push({ url, body: {} });
+      return new Response(AVATAR_BYTES, { status: avatarStatus });
+    }
+    calls.push({ url, body: bodyOf(init?.body) });
     return new Response('{}', { status });
   });
   const request = routes.request(
@@ -69,6 +84,28 @@ describe('POST /telegram/setup', () => {
     expect(shorts[0]).toContain(brand.slogan);
     expect(descriptions[0]).toContain(brand.name);
     expect(shorts[3]).toContain('yordam xizmati');
+  });
+
+  it('uploads the picture of every bot from the landing as its profile photo (G34)', async () => {
+    const { request, calls } = setup('hook');
+    await request;
+    const bots = ['passenger', 'driver', 'admin', 'support'];
+    const pictures = calls.filter((call) => call.url.endsWith('-avatar.jpg')).map((call) => call.url);
+    expect(pictures).toEqual(bots.map((bot) => `https://${brand.domain}/bot/${bot}-avatar.jpg`));
+    const photos = calls.filter((call) => call.url.endsWith('/setMyProfilePhoto'));
+    expect(photos.map((call) => call.url)).toEqual(
+      ['p', 'd', 'a', 's'].map((token) => `https://api.telegram.org/bot${token}/setMyProfilePhoto`),
+    );
+    expect(photos[0]?.body).toEqual({
+      photo: JSON.stringify({ type: 'static', photo: 'attach://avatar' }),
+      avatar: AVATAR_BYTES.length,
+    });
+  });
+
+  it('goes on with the setup when a picture is missing', async () => {
+    const { request, calls } = setup('hook', 200, 404);
+    expect(await (await request).json()).toEqual({ configured: ['passenger', 'driver', 'admin', 'support'] });
+    expect(calls.some((call) => call.url.endsWith('/setMyProfilePhoto'))).toBe(false);
   });
 
   it('refuses without the secret', async () => {

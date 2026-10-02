@@ -19,13 +19,13 @@ test.beforeAll(async () => {
   await book(FERUZA, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
 });
 
-test('the first visit: welcome, documents, name, gender, phone', async ({ page }) => {
+test('the first visit: the welcome with the documents, «Siz haqingizda»', async ({ page }) => {
   await openHome(page, 'passenger', NEWCOMER, 'android');
+  await expect(page.getByText(TEXT.offerLink)).toBeVisible();
   await shot(page, 'android', 'p01-welcome');
   await mainButton(page).click();
-  await shot(page, 'android', 'p02-consent');
-  await page.getByText(TEXT.accept).click();
-  await shot(page, 'android', 'p03-after-consent');
+  await expect(page.getByText(TEXT.about)).toBeVisible();
+  await shot(page, 'android', 'p02-about');
 });
 
 for (const platform of PLATFORMS)

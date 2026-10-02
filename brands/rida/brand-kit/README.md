@@ -26,6 +26,11 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 
 Результат: `kit/promo/rida-promo-1080x1920.mp4`. Режим `--preview` сохраняет кадры PNG.
 
+Картинки ботов (G34): `CHROMIUM=… pnpm bot`. Пишет в `brands/rida/landing/bot/`
+картинку приветствия бота водителя и 4 аватара ботов (JPG 640). Файлы
+в репозитории; сайт отдаёт их по адресу `https://<домен>/bot/…`, оттуда
+их берут бот (`sendPhoto`) и настройка ботов (`setMyProfilePhoto`).
+
 ## Что где
 
 | Файл | Что делает |

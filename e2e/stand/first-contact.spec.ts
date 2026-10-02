@@ -39,19 +39,14 @@ for (const platform of PLATFORMS)
     const person = NEWCOMERS[platform];
     await openHome(page, 'driver', person, platform);
     await expect(mainButton(page)).toHaveText(TEXT.continue);
+    await expect(page.getByText(TEXT.offerLink)).toBeVisible();
     await shot(page, `${platform}/03-welcome`);
     await mainButton(page).click();
-    await expect(mainButton(page)).toHaveText(TEXT.accept);
-    await shot(page, `${platform}/04-consent`);
-    await mainButton(page).click();
+    await expect(page.getByText(TEXT.about)).toBeVisible();
     await expect(page.getByPlaceholder('Ism')).toHaveValue(person.name);
-    await shot(page, `${platform}/05-name`);
-    await mainButton(page).click();
-    await expect(page.getByText(MALE, { exact: true })).toBeVisible();
-    await shot(page, `${platform}/06-gender`);
     await page.getByText(MALE, { exact: true }).click();
     await expect(mainButton(page)).toHaveText(TEXT.sendPhone);
-    await shot(page, `${platform}/07-phone`);
+    await shot(page, `${platform}/04-about`);
     await mainButton(page).click();
     await expect(page.getByText(TEXT.becomeDriver).first()).toBeVisible();
     // No application yet: the driver lands on its first step, not on the main screen.

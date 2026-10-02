@@ -31,5 +31,6 @@
   "users.avatar_too_large": "Rasm juda katta. Boshqa rasmni tanlang.",
   "drivers.incomplete": "Arizada hamma rasmlar boʻlishi kerak. Yetishmayotganini qoʻshing.",
   "trips.wrong_status": "Bu safar allaqachon oʻzgargan. Roʻyxatni yangilang.",
-  "calls.unavailable": "Qoʻngʻiroq hozir ishlamayapti. Chatda yozing."
+  "calls.unavailable": "Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.",
+  "company.invalid_input": "Kompaniya rekvizitlarini tekshiring."
 }

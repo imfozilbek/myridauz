@@ -7,16 +7,25 @@ const i18n = createI18n(DEFAULT_LOCALE);
 const brand = {
   name: 'Yoʻl',
   bots: { support: 'yol_yordam_bot' },
-  company: {
-    legalName: 'Yoʻl',
-    form: 'MChJ',
-    stir: '123456789',
-    address: 'Toshkent',
-    email: 'yol@example.uz',
-  },
+  company: { email: 'brand@example.uz' },
   commission: { percent: 7, minPerSeat: 2000 },
   promo: { amount: 100_000, grants: 2, days: 10, windowDays: 60 },
 };
+const requisites = {
+  legalName: 'Yoʻl Servis',
+  form: 'MChJ',
+  stir: '123456789',
+  address: 'Toshkent',
+  email: 'yol@example.uz',
+};
+const DOCUMENTS = ['offer', 'privacy', 'consent'];
+const allTexts = (values: ReturnType<typeof legalValues>) =>
+  DOCUMENTS.flatMap((document) =>
+    legalSections(document).flatMap((section) => [
+      i18n.t(section.title, values),
+      i18n.t(section.text, values),
+    ]),
+  );
 
 describe('legal texts (docs/30)', () => {
   it('follows the numbered sections of each document in order', () => {
@@ -29,16 +38,24 @@ describe('legal texts (docs/30)', () => {
     expect(i18n.t(legalTitle('privacy'))).toBe('Maxfiylik siyosati');
   });
 
-  it('takes every number and name from the brand, not from the text', () => {
-    const values = legalValues(i18n, brand);
+  it('takes every number and name from the brand and the requisites, not from the text', () => {
+    const values = legalValues(i18n, brand, requisites);
     expect(values).toMatchObject({ brand: 'Yoʻl', supportBot: 'yol_yordam_bot', percent: '7', grants: '2' });
     expect(values.minPerSeat).toMatch(/^2\s000\ssoʻm$/u);
-    expect(values.company).toContain('STIR 123456789');
+    expect(values.company).toBe('Yoʻl Servis (MChJ, STIR 123456789, manzil: Toshkent)');
     const text = i18n.t('legal.offer.7.text', values);
     expect(text).toContain('7 foizi');
     expect(text).not.toMatch(/\{\w+\}/u);
     expect(i18n.t('legal.offer.12.text', values)).toContain('yol@example.uz manziliga');
     expect(i18n.t('legal.privacy.7.text', values)).toContain('yol@example.uz manziliga');
+  });
+
+  it('names the brand and its email until the owner enters the requisites, never a placeholder', () => {
+    const values = legalValues(i18n, brand, null);
+    expect(values.company).toBe('Yoʻl');
+    expect(values.email).toBe('brand@example.uz');
+    for (const text of allTexts(values)) expect(text).not.toMatch(/\{/u);
+    for (const text of allTexts(legalValues(i18n, brand, requisites))) expect(text).not.toMatch(/\{/u);
   });
 
   it('writes the edition with its date', () => {

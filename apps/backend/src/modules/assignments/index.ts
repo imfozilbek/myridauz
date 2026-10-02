@@ -1,20 +1,26 @@
+import { appHost, loadBrand } from '@platform/brands';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
-import { notifyTeam } from '../notifications';
+import { adminIds } from '../../shared/telegram/bot-config';
+import { notify, notifyTeam } from '../notifications';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
 import type { Kind } from './application/ports';
+import { remindWaiting, type Waiting } from './application/remind';
 import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
 import { createMemoryAssignments } from './infrastructure/memory-assignments';
 
+const { t } = createI18n(DEFAULT_LOCALE);
 const localAssignments = createMemoryAssignments();
 type Decisions = DigestDeps['decisions'];
+const storeOf = (env: Bindings) => (env.DB ? d1Assignments(env.DB) : localAssignments);
 
 const deps = (env: Bindings, decisions: Decisions = async () => new Map()): DigestDeps => ({
-  store: env.DB ? d1Assignments(env.DB) : localAssignments,
+  store: storeOf(env),
   teamIds: async () => (await teamMembers(env)).map((member) => member.id),
   now: Date.now,
   random: Math.random,
@@ -46,3 +52,35 @@ export const operatorOf = async (env: Bindings, subjectId: number): Promise<numb
   (await deps(env).store.operatorOf('support', subjectId)) ?? steadyOperator(subjectId);
 // The Cron job: the digest of the day before, once, after midnight in Tashkent.
 export const sendTeamDigest = (env: Bindings, decisions: Decisions) => sendDigest(deps(env, decisions));
+
+// The Cron job (G34): a waiting application reminds its moderator, then the owners, in team hours.
+export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
+  const brand = loadBrand(env.BRAND);
+  const { hours, remindMinutes, ownerMinutes } = brand.moderation;
+  const admin = (chatId: number, text: string, markup?: object) => ({
+    bot: 'admin' as const,
+    chatId,
+    text,
+    ...(markup ? { markup } : {}),
+  });
+  return remindWaiting({
+    store: storeOf(env),
+    rules: { hours, remindMinutes, ownerMinutes },
+    now: Date.now,
+    waiting,
+    toModerator: async (moderatorId, { publicId, name }) => {
+      const url = `https://${appHost(brand, 'admin')}/?application=${publicId}`;
+      const markup = { inline_keyboard: [[{ text: t('bot.open'), web_app: { url } }]] };
+      const text = t('bot.moderation.waiting', { minutes: String(remindMinutes), name });
+      await notify(env, [admin(moderatorId, text, markup)]);
+    },
+    toOwners: async ({ name }, moderatorId) => {
+      const moderator = (await peopleOf(env).find(moderatorId))?.firstName ?? String(moderatorId);
+      const text = t('bot.moderation.ownerWaiting', { minutes: String(ownerMinutes), name, moderator });
+      await notify(
+        env,
+        [...adminIds(env)].map((ownerId) => admin(ownerId, text)),
+      );
+    },
+  });
+}

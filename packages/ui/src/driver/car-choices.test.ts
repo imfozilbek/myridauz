@@ -26,10 +26,12 @@ describe('the car catalog: seats by the model (docs/50)', () => {
     const typed = { make: 'Isuzu', model: 'Grafter' };
     expect(nextStep('make', cobalt, true, false)).toBe('color');
     expect(nextStep('make', { make: 'Kia' }, false, false)).toBe('model');
-    expect(nextStep('plate', cobalt, false, false)).toBe('avatar');
+    expect(nextStep('plate', cobalt, false, false)).toBe('photos');
     expect(nextStep('plate', typed, false, false)).toBe('seats');
-    expect(previousStep('avatar', cobalt)).toBe('plate');
-    expect(previousStep('avatar', typed)).toBe('seats');
+    expect(previousStep('photos', cobalt)).toBe('plate');
+    expect(previousStep('photos', typed)).toBe('seats');
+    // The first step has nothing before it: «Назад» leaves for the main screen (G34).
+    expect(previousStep('make', cobalt)).toBeNull();
     // On the review a typed model still gets its seats question.
     expect(nextStep('model', typed, true, true)).toBe('seats');
     expect(nextStep('model', cobalt, true, true)).toBe('review');

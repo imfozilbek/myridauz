@@ -6,13 +6,8 @@ import type { TranslationKey } from './messages';
 export type LegalBrand = {
   readonly name: string;
   readonly bots: { readonly support: string };
-  readonly company: {
-    readonly legalName: string;
-    readonly form: string;
-    readonly stir: string;
-    readonly address: string;
-    readonly email: string;
-  };
+  // The address for questions until the owner enters the requisites (docs/30).
+  readonly company: { readonly email: string };
   readonly commission: { readonly percent: number; readonly minPerSeat: number };
   readonly promo: {
     readonly amount: number;
@@ -20,6 +15,15 @@ export type LegalBrand = {
     readonly days: number;
     readonly windowDays: number;
   };
+};
+
+// The requisites the owner enters in the admin Mini App (G34): the same fields as Company of contracts.
+export type LegalRequisites = {
+  readonly legalName: string;
+  readonly form: string;
+  readonly stir: string;
+  readonly address: string;
+  readonly email: string;
 };
 
 type Section = { readonly title: TranslationKey; readonly text: TranslationKey };
@@ -38,19 +42,26 @@ export function legalSections(document: string): Section[] {
 
 export const legalTitle = (document: string) => `legal.${document}.title` as TranslationKey;
 
-// The numbers and names in the texts come from the brand config, never from the texts (docs/22).
-export function legalValues({ t, formatMoney }: I18n, brand: LegalBrand) {
-  const { company, commission, promo } = brand;
+// "Rida (MChJ, STIR 123456789, manzil: …)": the company in the texts and in the admin preview.
+export const legalCompany = ({ t }: I18n, requisites: LegalRequisites) =>
+  t('legal.company', {
+    companyName: requisites.legalName,
+    companyForm: requisites.form,
+    companyStir: requisites.stir,
+    companyAddress: requisites.address,
+  });
+
+// The numbers and names in the texts come from the brand config, never from the texts (docs/22);
+// the requisites come from the database (G34). Until the owner enters them (null) the texts name
+// the brand and give the email of the brand config: a person never sees a placeholder.
+export function legalValues(i18n: I18n, brand: LegalBrand, requisites: LegalRequisites | null) {
+  const { formatMoney } = i18n;
+  const { commission, promo } = brand;
   return {
     brand: brand.name,
-    company: t('legal.company', {
-      companyName: company.legalName,
-      companyForm: company.form,
-      companyStir: company.stir,
-      companyAddress: company.address,
-    }),
+    company: requisites ? legalCompany(i18n, requisites) : brand.name,
     supportBot: brand.bots.support,
-    email: company.email,
+    email: requisites?.email ?? brand.company.email,
     percent: String(commission.percent),
     minPerSeat: formatMoney(commission.minPerSeat),
     bonus: formatMoney(promo.amount),

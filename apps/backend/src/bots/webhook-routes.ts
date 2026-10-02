@@ -15,6 +15,7 @@ import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { isBotRole } from './bot-roles';
+import { noRepliesReply } from './no-replies';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema } from './telegram-update';
 
@@ -58,7 +59,8 @@ export function webhookRoutes(fetch: Fetch) {
     if (blocked) return context.json({});
     if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
       return context.json(documentsReply(bot.brand, role, message.chat.id));
-    if (role !== 'admin') return context.json({});
+    if (role !== 'admin')
+      return context.json(message.text ? noRepliesReply(bot.brand, role, message.chat.id) : {});
     return context.json(await onAdminMessage(bot, message, team));
   });
 }

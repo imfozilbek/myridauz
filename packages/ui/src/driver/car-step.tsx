@@ -2,8 +2,9 @@ import type { CarInput, DriverStep } from '@platform/contracts';
 import { CellValue } from '../account/cell-value';
 import { Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
-import { CarSwatch } from './car-swatch';
+import { SwatchTile } from './car-swatch';
 import {
   carName,
   colorChoices,
@@ -27,6 +28,7 @@ type CarStepProps = {
 };
 
 // The car questions that are answered by one tap: make, model, color, seats (docs/50).
+// Every row has an icon in front, the color its paint dot (G34).
 export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
   const { t } = useI18n();
   const common = { screen: `driver.${step}`, onBack } as const;
@@ -36,12 +38,14 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
         <ChoiceStep
           {...common}
           icon="car"
+          rowIcon="car"
           title={t('drivers.make.title')}
           lead={
             <Section header={t('drivers.make.popular')}>
               {popularChoices(t).map((choice) => (
                 <Cell
                   key={choice.label}
+                  before={<IconTile name="car" />}
                   after={<CellValue>{choice.after ?? ''}</CellValue>}
                   onClick={() => {
                     haptic.tap();
@@ -64,6 +68,7 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
         <ChoiceStep
           {...common}
           icon="car"
+          rowIcon="car"
           title={t('drivers.model.title')}
           choices={modelChoices(t, car.make)}
           other={{ toValue: carName }}
@@ -74,10 +79,10 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
       return (
         <ChoiceStep
           {...common}
-          icon="car"
+          icon="color"
           title={t('drivers.color.title')}
           choices={colorChoices(t, (color) => (
-            <CarSwatch color={color} />
+            <SwatchTile color={color} />
           ))}
           onDone={(color) => onDone({ color }, 'color')}
         />
@@ -86,7 +91,8 @@ export function CarStep({ step, car, onBack, onDone }: CarStepProps) {
       return (
         <ChoiceStep
           {...common}
-          icon="passengers"
+          icon="seats"
+          rowIcon="seats"
           title={t('drivers.seats.title')}
           choices={seatChoices()}
           selected={car.seats ?? USUAL_SEATS}

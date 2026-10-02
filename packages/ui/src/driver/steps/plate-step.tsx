@@ -33,7 +33,7 @@ export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.p
     setInvalid(true);
   }, [value, onDone]);
   return (
-    <StepLayout icon="car" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
+    <StepLayout icon="plate" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
       <Screen onBack={onBack} />
       <label className={invalid || hasProblem(reasons, 'plate') ? 'plate plate-problem' : 'plate'}>
         <span className="plate-field">

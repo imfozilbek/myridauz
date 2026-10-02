@@ -20,3 +20,4 @@ export { createCallsClient, type CallsClient } from './calls-client';
 export { createFeedClient, type FeedClient } from './feed-client';
 export { createMapClient, type MapClient } from './map-client';
 export { createPitaksClient, type PitaksClient } from './pitaks-client';
+export { createCompanyClient, type CompanyClient } from './company-client';

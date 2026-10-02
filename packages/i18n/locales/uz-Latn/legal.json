@@ -53,5 +53,17 @@
   "consent.4.title": "Harakatlar",
   "consent.4.text": "Yigʻish, saqlash, oʻzgartirish, foydalanish, «Maxfiylik siyosati»dagi qoidalar boʻyicha boshqa foydalanuvchilarga koʻrsatish, Cloudflare, Inc. serverlariga transchegaraviy uzatish, oʻchirish va shaxsni aniqlab boʻlmaydigan holga keltirish.",
   "consent.5.title": "Muddat",
-  "consent.5.text": "Rozilik hisobim ochiq ekan amal qiladi. Uni profildagi «Maʼlumotlarimni oʻchirish» tugmasi bilan qaytarib olaman. «Roziman» tugmasini bosish rozilik bildirganimni anglatadi."
+  "consent.5.text": "Rozilik hisobim ochiq ekan amal qiladi. Uni profildagi «Maʼlumotlarimni oʻchirish» tugmasi bilan qaytarib olaman. «Roziman» tugmasini bosish rozilik bildirganimni anglatadi.",
+  "admin.title": "Kompaniya rekvizitlari",
+  "admin.hint": "Hujjatlardagi kompaniya nomi, STIR va manzil",
+  "admin.legalName": "Kompaniya nomi",
+  "admin.form": "Shakli (masalan, MChJ)",
+  "admin.stir": "STIR",
+  "admin.address": "Manzil",
+  "admin.email": "Elektron pochta",
+  "admin.stirInvalid": "STIR 9 ta raqamdan iborat.",
+  "admin.preview": "Ofertada shunday koʻrinadi",
+  "admin.saved": "Saqlandi. Hujjatlar {version} tahririga oʻtdi.",
+  "admin.history": "Oʻzgarishlar tarixi",
+  "admin.save": "Saqlash"
 }

@@ -12,6 +12,7 @@ import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from '
 import { callsModule, callsReady } from './modules/calls';
 import { channelsModule } from './modules/channels';
 import { chatRoutes } from './modules/chat';
+import { companyModule } from './modules/company';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { favoritesModule } from './modules/favorites';
@@ -41,11 +42,13 @@ const miniAppOrigin = (origin: string, context: { env: unknown }) => {
 const allowMiniApps = cors({ origin: miniAppOrigin });
 // The map library reads the parts of the archive: it needs to see where a part lies (G22).
 const allowMap = cors({ origin: miniAppOrigin, exposeHeaders: ['content-range', 'etag'] });
-// The landing on the brand domain reads public prices (docs/59).
-const allowLanding = cors({
+// The landing on the brand domain reads public prices (docs/59); the landing and the Mini Apps read
+// the requisites of the legal documents (G34).
+const allowPublic = cors({
   origin: (origin, context) => {
     const { domain } = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
-    return [`https://${domain}`, `https://www.${domain}`].includes(origin) ? origin : null;
+    const site = [`https://${domain}`, `https://www.${domain}`].includes(origin);
+    return site ? origin : miniAppOrigin(origin, context);
   },
 });
 // The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
@@ -76,7 +79,7 @@ export const app = new Hono<AppEnv>()
   .use('/shared/*', allowMiniApps)
   .use('/shared/:token/follow', auth)
   // The directory is public: no personal data. Only a change of a distance checks the signature.
-  .use('/public/*', allowLanding)
+  .use('/public/*', allowPublic)
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
   .use('/map/*', allowMap)
@@ -90,6 +93,7 @@ export const app = new Hono<AppEnv>()
   .route('/', mapModule)
   .route('/', pitaksModule)
   .route('/', pricingModule)
+  .route('/', companyModule)
   .route('/', channelsModule)
   // The cancel watch goes before trips: it wraps the cancel route of the trips module.
   .route('/', tripCancelWatch)

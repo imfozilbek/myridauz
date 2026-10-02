@@ -35,6 +35,7 @@ export const API_ERRORS = [
   'pricing.not_found',
   'pricing.invalid_input',
   'pricing.out_of_bounds',
+  'company.invalid_input',
   'trips.not_found',
   'trips.invalid_input',
   'trips.not_driver',
