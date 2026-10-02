@@ -135,6 +135,6 @@ describe('delete my data (docs/30)', () => {
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Hujjatlar')).toBeTruthy();
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
-    expect(screen.getByText(/Tahrir 1\.0/)).toBeTruthy();
+    expect(screen.getByText(/Tahrir 1\.1/)).toBeTruthy();
   });
 });

@@ -11,6 +11,7 @@ export type LegalBrand = {
     readonly form: string;
     readonly stir: string;
     readonly address: string;
+    readonly email: string;
   };
   readonly commission: { readonly percent: number; readonly minPerSeat: number };
   readonly promo: {
@@ -49,6 +50,7 @@ export function legalValues({ t, formatMoney }: I18n, brand: LegalBrand) {
       companyAddress: company.address,
     }),
     supportBot: brand.bots.support,
+    email: company.email,
     percent: String(commission.percent),
     minPerSeat: formatMoney(commission.minPerSeat),
     bonus: formatMoney(promo.amount),

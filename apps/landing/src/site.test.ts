@@ -74,7 +74,7 @@ describe('landing (G15)', () => {
   it('shows each document with its edition and every section, no placeholder left', () => {
     const offer = site['offer/index.html'] ?? '';
     expect(offer).toContain(escape(t('legal.offer.title')));
-    expect(offer).toContain('Tahrir 1.0');
+    expect(offer).toContain('Tahrir 1.1');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     expect(offer).not.toContain('<script>');
     const text = (html: string) => html.replace(/data-[\w-]+="[^"]*"/gu, '');
