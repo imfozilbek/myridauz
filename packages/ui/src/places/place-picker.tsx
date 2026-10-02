@@ -6,7 +6,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { EmptyState } from '../states/empty-state';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import type { PlaceDirectory } from './directory';
@@ -37,7 +37,7 @@ export function PlacePicker({ title, directory, allowWholeRegion, onPick, onBack
   const results = query.trim() === '' ? null : directory.search(query);
   return (
     <div className="places">
-      <BackButton onClick={region && !results ? () => setRegion(null) : onBack} />
+      <Screen onBack={region && !results ? () => setRegion(null) : onBack} />
       <Title weight="1" className="places-title">
         {region && !results ? region.name : title}
       </Title>

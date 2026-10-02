@@ -4,7 +4,7 @@ import type { TranslationKey } from '@platform/i18n';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useBlobUrl } from '../media/use-blob-url';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 
 export type PhotoKind = CarPhotoKind | 'avatar';
 const KINDS: readonly PhotoKind[] = ['avatar', ...CAR_PHOTO_KINDS];
@@ -55,7 +55,7 @@ export function PhotoScreen({ userId, kind, onBack }: PhotoProps & { readonly on
   const url = usePhoto({ userId, kind });
   return (
     <div className="moderation-zoom">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       {url ? <img src={url} alt={t(LABELS[kind])} /> : null}
       <Caption className="moderation-caption">{t(LABELS[kind])}</Caption>
     </div>

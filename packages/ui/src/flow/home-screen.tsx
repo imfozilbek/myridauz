@@ -6,7 +6,9 @@ import { useScreenView } from '../context/analytics-context';
 import { usePending } from '../driver/driver-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
+import { useSettingsButton } from '../telegram/settings-button';
 import type { StartAction } from './start-action';
 
 type HomeScreenProps = {
@@ -19,14 +21,19 @@ type HomeScreenProps = {
 
 // At most 3 actions (docs/19). No big title: the Telegram header already names the app
 // (owner decision 01.10.2026), so the profile and the trips come first.
+// «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
+// (owner decision 02.10.2026, docs/94 F4).
 export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
   useScreenBackground('grouped');
+  useSettingsButton(onProfile);
   const { t } = useI18n();
   const chevron = useChevron();
   const pending = usePending();
   return (
     <div className="home">
+      {/* No «Назад» on the main screen: Android «Назад» closes the app, as in Telegram. */}
+      <Screen />
       <List>
         <ProfileCell onOpen={onProfile} />
         {notice}

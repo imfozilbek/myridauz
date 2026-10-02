@@ -1,24 +1,16 @@
 import { BOOKING_LINK, OFFER_LINK, type AppLink, type Booking, type RideRequest } from '@platform/contracts';
-import { Button, Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
-import { BookingCard } from '../bookings/booking-card';
-import { FavoritesEntry } from '../comfort/comfort-entries';
 import { FavoritesScreen } from '../comfort/favorites-screen';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
 import { useApiClients } from '../context/api-clients';
-import { useI18n } from '../context/i18n-context';
-import { EmptyState } from '../states/empty-state';
-import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { useForgetOnLeave } from './list-leave';
+import { MY_REQUESTS, MyRequestsList } from './my-requests-list';
 import { PlacesGate } from './places-gate';
-import { Paged } from './paged';
-import { RequestCard } from './request-card';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
@@ -27,6 +19,7 @@ import './market.css';
 type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
 
 export function MyRequestsScreen({ onBack, link }: ScreenProps) {
+  useForgetOnLeave(MY_REQUESTS);
   return (
     <PlacesGate onBack={onBack}>
       <MyRequests onBack={onBack} {...(link ? { link } : {})} />
@@ -49,10 +42,10 @@ function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly Ri
 function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
   useScreenBackground('grouped');
-  const { t } = useI18n();
   const { market, bookings } = useApiClients();
-  const { value, failed, reload } = useLoad(() =>
-    Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
+  const { value, failed, reload, refresh } = useLoad(
+    () => Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
+    MY_REQUESTS,
   );
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
@@ -76,64 +69,15 @@ function MyRequests({ onBack, link }: ScreenProps) {
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
-  const [booked, requests] = value;
-  if (booked.length === 0 && requests.length === 0) {
-    return (
-      <>
-        <BackButton onClick={onBack} />
-        <EmptyState
-          icon="myTrips"
-          title={t('market.mine.requestsEmpty')}
-          description={t('market.mine.requestsEmptyHint')}
-          action={
-            <Button size="m" mode="bezeled" onClick={() => setSubscriptionsOpen(true)}>
-              {t('subscriptions.title')}
-            </Button>
-          }
-        />
-        <List>
-          <FavoritesEntry onOpen={() => setFavoritesOpen(true)} />
-        </List>
-      </>
-    );
-  }
   return (
-    <div className="market">
-      <BackButton onClick={onBack} />
-      <Title weight="1" className="market-title">
-        {t('common.myTrips')}
-      </Title>
-      <List>
-        {booked.length > 0 ? <Caption className="market-group">{t('bookings.mine')}</Caption> : null}
-        <Paged
-          items={booked}
-          render={(booking) => (
-            <BookingCard
-              key={booking.id}
-              booking={booking}
-              side="passenger"
-              onOpen={() => setOpened({ kind: 'booking', id: booking.id })}
-            />
-          )}
-        />
-        {requests.length > 0 ? <Caption className="market-group">{t('market.mine.requests')}</Caption> : null}
-        <Paged
-          items={requests}
-          render={(request) => (
-            <RequestCard
-              key={request.id}
-              request={request}
-              showStatus
-              offers={
-                value[2].filter((item) => item.requestId === request.id && item.status === 'sent').length
-              }
-              onOpen={() => setOpened({ kind: 'request', id: request.id })}
-            />
-          )}
-        />
-        <SubscriptionsEntry onOpen={() => setSubscriptionsOpen(true)} />
-        <FavoritesEntry onOpen={() => setFavoritesOpen(true)} />
-      </List>
-    </div>
+    <MyRequestsList
+      lists={value}
+      onBack={onBack}
+      onRefresh={refresh}
+      onBooking={(booking) => setOpened({ kind: 'booking', id: booking.id })}
+      onRequest={(request) => setOpened({ kind: 'request', id: request.id })}
+      onSubscriptions={() => setSubscriptionsOpen(true)}
+      onFavorites={() => setFavoritesOpen(true)}
+    />
   );
 }

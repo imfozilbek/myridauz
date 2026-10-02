@@ -4,7 +4,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import '../market/market.css';
 import './pricing.css';
@@ -23,7 +23,7 @@ export function PricingPreviewScreen({ preview, onBack, onSave }: PricingPreview
   const changed = preview.rows.filter((row) => row.after !== row.before).length;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('pricing.previewTitle')}
       </Title>

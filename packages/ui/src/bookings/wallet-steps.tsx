@@ -2,7 +2,7 @@ import { StepLayout } from '../account/step-layout';
 import { SupportButton } from '../account/support-button';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 type NotEnoughProps = { readonly amount: number; readonly onBack: () => void; readonly onTopUp: () => void };
@@ -17,7 +17,7 @@ export function NotEnoughScreen({ amount, onBack, onTopUp }: NotEnoughProps) {
       title={t('wallet.notEnough.title')}
       hint={t('wallet.notEnough.hint', { amount: formatMoney(amount) })}
     >
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <MainButton text={t('wallet.topUp')} onClick={onTopUp} />
     </StepLayout>
   );
@@ -30,7 +30,7 @@ export function TopUpScreen({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   return (
     <StepLayout icon="wallet" title={t('wallet.topUp.title')} hint={t('wallet.topUp.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <SupportButton />
     </StepLayout>
   );

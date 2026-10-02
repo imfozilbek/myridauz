@@ -1,12 +1,13 @@
 import { ApiError } from '@platform/api-client';
 import type { RideRequestInput } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { testClients } from '../test-shell';
 import { chooseWay, recommendation, renderMarket, tap } from './market-test-kit';
 import { NewRequestFlow } from './new-request-flow';
 
 afterEach(cleanup);
+beforeEach(() => localStorage.clear());
 
 describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
   it('asks the route, day, people and price, explains an error of the API and publishes', async () => {

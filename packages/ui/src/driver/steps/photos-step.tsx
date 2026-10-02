@@ -11,7 +11,7 @@ import { StepLayout } from '../../account/step-layout';
 import { useScreenView } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
 import { useI18n } from '../../context/i18n-context';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { useHasCamera } from '../../telegram/in-telegram-context';
@@ -66,7 +66,8 @@ export function PhotosStep({ photos, reasons, onPhotos, onBack, onDone }: Photos
   const ready = CAR_PHOTO_KINDS.every((item) => photos[item] && !hasProblem(reasons, item));
   return (
     <StepLayout icon="camera" title={t('drivers.photos.title')} hint={t('drivers.photos.hint')}>
-      {camera.isOpen ? null : <BackButton onClick={onBack} />}
+      {/* The camera takes «Назад» over the step while it is open (docs/94 F6). */}
+      <Screen onBack={onBack} />
       {hasCamera ? (
         camera.element
       ) : (

@@ -6,7 +6,9 @@ import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
+import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
+import { useInTelegram } from '../telegram/in-telegram-context';
 import { usePlaceSearch } from './use-place-search';
 
 const SEARCH_ICON_SIZE = 20;
@@ -21,8 +23,10 @@ type Props = {
 
 // A place by name on the map (G23, docs/67): mahalla, street or landmark. The names are the ones
 // of the map; near the start of the trip first. A tap moves the map, the pin stays in the middle.
+// While something is typed, «Назад» of Telegram clears the search first (docs/94 B6).
 export function MapSearch({ near, zone, onFound }: Props) {
   const { t } = useI18n();
+  const inTelegram = useInTelegram();
   const { map } = useApiClients();
   const { track } = useAnalytics();
   const { query, setQuery, result } = usePlaceSearch(map.search, near, zone);
@@ -37,8 +41,14 @@ export function MapSearch({ near, zone, onFound }: Props) {
     setQuery('');
     onFound(place.point);
   };
+  const clear = () => {
+    setQuery('');
+    // The keyboard goes with the search: the map is in view again.
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  };
   return (
     <div className="pickup-map-search">
+      {inTelegram && query.length > 0 ? <BackButton overlay onClick={clear} /> : null}
       <Input
         before={<Icon name="search" size={SEARCH_ICON_SIZE} />}
         placeholder={t('bookings.map.search')}

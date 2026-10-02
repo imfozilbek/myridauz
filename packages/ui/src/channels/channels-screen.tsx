@@ -11,7 +11,7 @@ import { useDirectory } from '../places/use-directory';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ChannelEdit } from './channel-edit';
 import '../market/market.css';
@@ -23,7 +23,7 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { channels } = useApiClients();
-  const { value, failed, reload } = useLoad(() => channels.list());
+  const { value, failed, reload, refresh } = useLoad(() => channels.list());
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
   if (failed || directory.status === 'error')
@@ -53,7 +53,7 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   const team = value.filter((channel) => !channel.fixed);
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('channels.title')}
       </Title>

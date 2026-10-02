@@ -1,4 +1,9 @@
-/* The map of the pickup point (G22): the map fills the screen, the pin stands in the middle. */
+/* The map of the pickup point (G22): the map fills the screen, the pin stands in the middle.
+   The page under it does not scroll (docs/94 S6). */
+html:has(.pickup-map),
+html:has(.pickup-map) body {
+  overflow: hidden;
+}
 .pickup-map {
   position: fixed;
   inset: 0;
@@ -50,14 +55,15 @@
   pointer-events: none;
 }
 /* The search by name (G23): the field under the hint, the places found under it. The list
-   scrolls on its own and leaves the pin in view. */
+   scrolls on its own and leaves the pin in view. Its height follows the height Telegram gives
+   the app, so the keyboard never covers it (docs/94 S6). */
 .pickup-map-search {
   display: grid;
   gap: 8px;
   margin-top: 4px;
 }
 .pickup-map-found {
-  max-height: 40vh;
+  max-height: calc(var(--tg-viewport-stable-height, 100vh) * 0.4);
   overflow-y: auto;
 }
 

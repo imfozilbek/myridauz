@@ -17,7 +17,7 @@ textarea {
 
 /* Keep content out of system areas (docs/21): Telegram SDK binds these variables. */
 .app-shell {
-  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
   box-sizing: border-box;
   padding-top: calc(
     var(--tg-viewport-safe-area-inset-top, 0px) + var(--tg-viewport-content-safe-area-inset-top, 0px)

@@ -11,7 +11,7 @@ import { RouteScreen } from '../places/route-screen';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
@@ -24,6 +24,8 @@ import './way.css';
 type Props = {
   readonly onBack: () => void;
   readonly onDone: (way: Way) => void;
+  // Back from the next step, both points and the way chosen before (docs/94 F8).
+  readonly initial?: Way;
 };
 
 type WayFormProps = Props & { readonly directory: PlaceDirectory };
@@ -37,19 +39,22 @@ export function WayScreen(props: Props) {
   return <WayForm {...props} directory={state.directory} />;
 }
 
-function WayForm({ onBack, onDone, directory }: WayFormProps) {
+function WayForm({ onBack, onDone, directory, initial }: WayFormProps) {
   useScreenView('way.screen');
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { map } = useApiClients();
-  const [from, setFrom] = useState<WayEnd | null>(null);
-  const [to, setTo] = useState<WayEnd | null>(null);
+  const [from, setFrom] = useState<WayEnd | null>(initial?.from ?? null);
+  const [to, setTo] = useState<WayEnd | null>(initial?.to ?? null);
   const [here, setHere] = useState(false);
-  const [mode, setMode] = useState<PickupMode>('both');
+  const [mode, setMode] = useState<PickupMode>(initial?.mode ?? 'both');
+  const [known] = useState(initial !== undefined);
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   const [editing, setEditing] = useState<'from' | 'to' | 'list' | null>(null);
   const [note, setNote] = useState<TranslationKey | null>(null);
   useEffect(() => {
+    // Back from the next step, the start is the one chosen before.
+    if (known) return undefined;
     let active = true;
     // The start fills itself where the person stands, when Telegram lets us know (docs/71).
     void requestPosition().then(async (point: Point | null) => {
@@ -62,7 +67,7 @@ function WayForm({ onBack, onDone, directory }: WayFormProps) {
       track({ name: 'place_point_saved', screen: 'way.screen', method: 'auto' });
     });
     return () => void (active = false);
-  }, [map, directory, track]);
+  }, [map, directory, track, known]);
   const fromRegion = from ? regionOf(from) : null;
   const toRegion = to ? regionOf(to) : null;
   useEffect(() => {
@@ -97,6 +102,7 @@ function WayForm({ onBack, onDone, directory }: WayFormProps) {
     return (
       <RouteScreen
         allowWholeRegion={false}
+        {...(from && to ? { initial: { from: from.place, to: to.place } } : {})}
         onBack={() => setEditing(null)}
         onDone={(route) => {
           setFrom(centerOf(route.from));
@@ -113,7 +119,7 @@ function WayForm({ onBack, onDone, directory }: WayFormProps) {
   const changeMode = (next: PickupMode) => setMode(next);
   return (
     <div className="pickup-map">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <WayMap from={from} to={to} pitak={mode === 'door' ? null : (pitak ?? null)} />
       {/* The card and the other way by the list: at the top, the bottom is for the main button. */}
       <div className="way-top">

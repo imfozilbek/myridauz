@@ -3,15 +3,14 @@ import { Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
 import { SegmentedControl } from '../components';
 import { useScreenView } from '../context/analytics-context';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { useScreenBackground } from '../telegram/screen-background';
 import { StatsSections } from './stats-sections';
+import { usePeriodStats } from './use-period-stats';
 import '../market/market.css';
 import './stats.css';
 
@@ -34,9 +33,10 @@ export function StatsScreen({
   const [period, setPeriod] = useState<StatsPeriod>(first);
   // Once opened from the bot, going back shows the menu and not the dashboard again.
   useEffect(() => forgetLaunchParam(PARAM), []);
+  const { shown, failed, reload } = usePeriodStats(period);
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('stats.title')}
       </Title>
@@ -49,16 +49,13 @@ export function StatsScreen({
           ))}
         </SegmentedControl>
       </div>
-      {/* A new period is a new load: the key starts the loader again. */}
-      <PeriodStats key={period} period={period} />
+      {failed ? (
+        <ErrorScreen onRetry={reload} />
+      ) : shown ? (
+        <StatsSections stats={shown} />
+      ) : (
+        <ScreenSkeleton />
+      )}
     </div>
   );
-}
-
-function PeriodStats({ period }: { readonly period: StatsPeriod }) {
-  const { stats } = useApiClients();
-  const { value, failed, reload } = useLoad(() => stats.get(period));
-  if (failed) return <ErrorScreen onRetry={reload} />;
-  if (!value) return <ScreenSkeleton />;
-  return <StatsSections stats={value} />;
 }

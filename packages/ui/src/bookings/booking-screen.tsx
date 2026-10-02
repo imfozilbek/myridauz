@@ -9,7 +9,7 @@ import { useI18n } from '../context/i18n-context';
 import { usePayHint } from './pay-hint';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { BookingPlaces } from './booking-places';
 import '../market/market.css';
 import { BookingTimeline } from './booking-timeline';
@@ -50,7 +50,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
         };
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {t('market.date.other', { date: formatDate(day), weekday: formatWeekday(day) })}
       </Title>

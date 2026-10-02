@@ -9,6 +9,8 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 
 type Props = {
   readonly route: Route;
+  // Back from the next step, the way chosen before (docs/94 F8).
+  readonly selected?: PickupMode;
   readonly onBack: () => void;
   readonly onDone: (mode: PickupMode) => void;
 };
@@ -16,7 +18,7 @@ type Props = {
 // How the driver picks people up (docs/70). The driver never chooses the pitak: the system takes
 // the one of the direction; a direction without a pitak has only «around the city». The pitak is
 // on a small map above the choices: the driver sees where they will wait (G26, docs/74).
-export function TripModeStep({ route, onBack, onDone }: Props) {
+export function TripModeStep({ route, selected, onBack, onDone }: Props) {
   const { t } = useI18n();
   const { map } = useApiClients();
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
@@ -38,6 +40,7 @@ export function TripModeStep({ route, onBack, onDone }: Props) {
       title={t('way.trip.mode.title')}
       choices={choices}
       {...(pitak ? { lead: <PitakMap pitak={pitak} /> } : {})}
+      {...(selected && modes.includes(selected) ? { selected } : {})}
       onBack={onBack}
       onDone={onDone}
     />

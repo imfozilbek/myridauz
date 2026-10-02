@@ -10,7 +10,7 @@ import { useLoad } from '../market/use-list';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DirectionPitak } from './direction-pitak';
 import { PitakEdit } from './pitak-edit';
@@ -29,7 +29,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { pitaks } = useApiClients();
-  const { value, failed, reload } = useLoad(() => pitaks.all());
+  const { value, failed, reload, refresh } = useLoad(() => pitaks.all());
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Open | null>(null);
   if (failed || directory.status === 'error')
@@ -62,7 +62,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   const pitakName = (id: string | null) => value.pitaks.find((pitak) => pitak.id === id)?.name;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('pitaks.title')}
       </Title>

@@ -1,5 +1,7 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { StartFlow } from '../flow/start-flow';
+import { renderInShell } from '../test-shell';
 import { OUTSIDE_TELEGRAM, TelegramContext } from './in-telegram-context';
 import { useSettingsButton } from './settings-button';
 
@@ -17,9 +19,21 @@ const sdk = vi.hoisted(() => ({
     },
   },
 }));
-vi.mock('@telegram-apps/sdk-react', () => sdk);
+vi.mock('@telegram-apps/sdk-react', async (original) => ({ ...(await original<object>()), ...sdk }));
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
+const ACTIONS = [
+  {
+    id: 'my_trips',
+    icon: 'myTrips',
+    tone: 'deep',
+    labelKey: 'common.myTrips',
+    hintKey: 'common.passenger.myTripsHint',
+  },
+] as const;
 
 function Screen({ onOpen }: { readonly onOpen: () => void }) {
   useSettingsButton(onOpen);
@@ -39,5 +53,13 @@ describe('«Sozlamalar» in the ⋮ menu of Telegram (docs/88 L16)', () => {
     expect(onOpen).toHaveBeenCalledOnce();
     unmount();
     expect(sdk.settingsButton.hide.ifAvailable).toHaveBeenCalled();
+  });
+
+  it('F4: is only on the main screen, a section has none (owner decision 02.10.2026, docs/94)', () => {
+    renderInShell(<StartFlow actions={ACTIONS} />, true);
+    expect(sdk.settingsButton.show.ifAvailable).toHaveBeenCalledOnce();
+    fireEvent.click(screen.getByText('Mening safarlarim'));
+    expect(sdk.settingsButton.hide.ifAvailable).toHaveBeenCalledOnce();
+    expect(sdk.settingsButton.show.ifAvailable).toHaveBeenCalledOnce();
   });
 });

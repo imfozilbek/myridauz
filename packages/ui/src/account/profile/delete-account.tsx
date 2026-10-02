@@ -4,7 +4,7 @@ import { Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { DangerCell } from '../../danger-cell';
-import { BackButton } from '../../telegram/back-button';
+import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import type { UsersClient } from '@platform/api-client';
@@ -52,7 +52,7 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
   };
   return (
     <StepLayout icon="erase" title={t('account.delete.title')} hint={t('account.delete.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       {stage === 'failed' ? <Text className="step-error">{t('errors.generic.description')}</Text> : null}
       <MainButton text={t('account.delete.confirm')} onClick={erase} destructive />
     </StepLayout>

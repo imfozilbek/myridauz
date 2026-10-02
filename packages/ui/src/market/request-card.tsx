@@ -6,7 +6,7 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
 import { RouteView } from './route-view';
@@ -74,7 +74,7 @@ export function RequestScreen({ request, onBack, onCancel, onOffer, children }: 
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <Title weight="1" className="market-title">
         {formatDate(noonOf(request.date))}
       </Title>

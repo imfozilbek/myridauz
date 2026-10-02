@@ -11,7 +11,7 @@ import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { AdjustForm } from './adjust-form';
@@ -26,7 +26,7 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
-  const { value, failed, reload } = useLoad(() => wallet.all());
+  const { value, failed, reload, refresh } = useLoad(() => wallet.all());
   const [open, setOpen] = useState<Owner | null>(null);
   const close = () => {
     setOpen(null);
@@ -37,7 +37,7 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {t('wallet.team.title')}
       </Title>
@@ -66,7 +66,7 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
 function DriverWallet({ owner, onBack }: { readonly owner: Owner; readonly onBack: () => void }) {
   const { t } = useI18n();
   const { wallet } = useApiClients();
-  const { value, failed, reload } = useLoad(() => wallet.of(owner.driverId));
+  const { value, failed, reload, refresh } = useLoad(() => wallet.of(owner.driverId));
   const [adjusting, setAdjusting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const adjust = () => {
@@ -97,7 +97,7 @@ function DriverWallet({ owner, onBack }: { readonly owner: Owner; readonly onBac
     );
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       <Title weight="1" className="market-title">
         {owner.firstName}
       </Title>

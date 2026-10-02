@@ -8,19 +8,22 @@ import { useI18n } from '../context/i18n-context';
 import { PlateView } from '../driver/plate-view';
 import { PlateStep } from '../driver/steps/plate-step';
 import { useBlobUrl } from '../media/use-blob-url';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 type ApproveFlowProps = {
   readonly application: ApplicationSummary;
+  // The plate fixed by the photo, null if none. Kept by the application: Back and a failed decision
+  // do not lose it (docs/94 B9).
+  readonly fixed: string | null;
+  readonly onFixed: (plate: string | null) => void;
   readonly onBack: () => void;
   // plate: set when the moderator fixed it by the photo.
   readonly onApprove: (plate?: string) => void;
 };
 
 // Before approving, the moderator compares the plate with the front photo and may fix it (docs/50).
-export function ApproveFlow({ application, onBack, onApprove }: ApproveFlowProps) {
-  const [fixed, setFixed] = useState<string | null>(null);
+export function ApproveFlow({ application, fixed, onFixed, onBack, onApprove }: ApproveFlowProps) {
   const [fixing, setFixing] = useState(false);
   const plate = fixed ?? application.car.plate;
   if (fixing) {
@@ -31,7 +34,7 @@ export function ApproveFlow({ application, onBack, onApprove }: ApproveFlowProps
         reasons={[]}
         onBack={() => setFixing(false)}
         onDone={(next) => {
-          setFixed(next === application.car.plate ? null : next);
+          onFixed(next === application.car.plate ? null : next);
           setFixing(false);
         }}
       />
@@ -65,7 +68,7 @@ function PlateCheck({ userId, plate, fixed, onBack, onFix, onApprove }: PlateChe
   const photo = useBlobUrl(() => moderation.photo(userId, 'front'), `${userId}:front`);
   return (
     <StepLayout icon="car" title={t('moderation.plateCheck.title')} hint={t('moderation.plateCheck.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div className="plate-check">
         {photo ? <img className="plate-check-photo" src={photo} alt={t('drivers.photo.front')} /> : null}
         <PlateView plate={plate} />

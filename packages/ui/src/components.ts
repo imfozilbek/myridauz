@@ -14,6 +14,7 @@ export {
   SegmentedControl,
   Skeleton,
   Snackbar,
+  Spinner,
   Textarea,
   Timeline,
 } from '@telegram-apps/telegram-ui';

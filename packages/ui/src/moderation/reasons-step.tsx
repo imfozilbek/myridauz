@@ -4,7 +4,8 @@ import { StepLayout } from '../account/step-layout';
 import { Cell, List, Multiselectable, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
+import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 
@@ -18,6 +19,7 @@ export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
   useScreenView('moderation.reason');
   const { t } = useI18n();
   const [picked, setPicked] = useState<readonly ModerationReason[]>([]);
+  const guard = useUnsavedGuard(picked.length > 0);
   const toggle = (reason: ModerationReason) => {
     haptic.select();
     setPicked((list) => (list.includes(reason) ? list.filter((item) => item !== reason) : [...list, reason]));
@@ -26,7 +28,7 @@ export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
   const send = () => onDone(MODERATION_REASONS.filter((reason) => picked.includes(reason)));
   return (
     <StepLayout icon="applications" title={t('moderation.reason.title')} hint={t('moderation.reason.hint')}>
-      <BackButton onClick={onBack} />
+      <Screen onBack={guard(onBack)} />
       <List>
         <Section>
           {MODERATION_REASONS.map((reason) => (

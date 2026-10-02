@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { PlacesGate } from '../market/places-gate';
+import { closeApp } from '../telegram/feedback';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { ComplaintScreen } from './complaint-screen';
 import { ReviewScreen } from './review-screen';
@@ -18,6 +19,7 @@ function linked(): Open | null {
 }
 
 // The passenger and the driver app open the review or the complaint at once; back goes home.
+// Sent, «Yopish» closes the Mini App: the person came from the bot and goes back to it (docs/94 C1).
 export function FeedbackLink({
   enabled,
   children,
@@ -32,12 +34,18 @@ export function FeedbackLink({
     forgetLaunchParam(COMPLAIN);
     setOpen(null);
   };
-  if (open.screen === 'complain') return <ComplaintScreen bookingId={open.bookingId} onBack={close} />;
+  const done = () => {
+    close();
+    closeApp();
+  };
+  if (open.screen === 'complain')
+    return <ComplaintScreen bookingId={open.bookingId} onBack={close} onClose={done} />;
   return (
     <PlacesGate onBack={close}>
       <ReviewScreen
         bookingId={open.bookingId}
         onBack={close}
+        onClose={done}
         onComplain={() => setOpen({ screen: 'complain', bookingId: open.bookingId })}
       />
     </PlacesGate>

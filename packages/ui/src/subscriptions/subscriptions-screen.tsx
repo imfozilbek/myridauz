@@ -15,7 +15,7 @@ import { noonOf } from '../market/when';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { confirm, haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { RemovedSnackbar } from './removed-snackbar';
@@ -36,14 +36,14 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
-  const { value, failed, reload } = useLoad(() => subscriptions.mine());
+  const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine());
   const [removed, setRemoved] = useState<Subscription | null>(null);
   useEffect(() => track({ name: 'subscriptions_open', screen: 'subscriptions' }), [track]);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
     <div className="market">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} onRefresh={refresh} />
       {removed ? (
         <RemovedSnackbar removed={removed} onClose={() => setRemoved(null)} onRestored={reload} />
       ) : null}

@@ -10,7 +10,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { MapSearch } from '../map/map-search';
 import { useMapView } from '../map/use-map-view';
-import { BackButton } from '../telegram/back-button';
+import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
@@ -81,7 +81,7 @@ export function PointScreen({ title, start, find: findAny, zone, onBack, onPick 
   if (failed) return <MapFailed onBack={onBack} onRetry={retry} />;
   return (
     <div className="pickup-map">
-      <BackButton onClick={onBack} />
+      <Screen onBack={onBack} />
       <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />
       <div className="pickup-map-pin">
         <Icon name="pickup" size={PIN_SIZE} color={colors.accent} filled />

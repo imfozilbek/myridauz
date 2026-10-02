@@ -1,6 +1,8 @@
 /* Trips and requests: lists like Telegram, a big price with steps (docs/19, docs/21). */
 .market {
-  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
+  box-sizing: border-box;
   padding-bottom: 120px;
   background: var(--tgui--secondary_bg_color);
 }
