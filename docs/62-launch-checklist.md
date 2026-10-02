@@ -12,13 +12,13 @@
 
 ## Профиль ботов в BotFather (делает владелец)
 
-Код ставит имя и тексты. Картинки ставятся только руками: BotFather → `/mybots` → бот → Edit Bot.
+Код ставит имя, тексты и **аватар** (G34: `setMyProfilePhoto`, файлы `brands/rida/landing/bot/<бот>-avatar.jpg`). Руками в BotFather (`/mybots` → бот → Edit Bot) только то, чего нет в API Telegram:
 
-| Бот | Аватар (Edit Botpic) | Картинка описания (Edit Description Picture) | Экран загрузки Mini App |
-|---|---|---|---|
-| `@myrida_bot` | `kit/telegram/bot-passenger-avatar.png` | `bot-passenger-description.png` | `kit/telegram/miniapp-splash.svg` |
-| `@myrida_haydovchi_bot` | `bot-driver-avatar.png` | `bot-driver-description.png` | тот же файл |
-| `@myrida_admin_bot` | `bot-admin-avatar.png` | `bot-admin-description.png` | нет Mini App в меню |
+| Бот | Картинка описания (Edit Description Picture) | Экран загрузки Mini App |
+|---|---|---|
+| `@myrida_bot` | `kit/telegram/bot-passenger-description.png` | `kit/telegram/miniapp-splash.svg` |
+| `@myrida_haydovchi_bot` | `bot-driver-description.png` | тот же файл |
+| `@myrida_admin_bot` | `bot-admin-description.png` | нет Mini App в меню |
 
 - Файлы: `brands/rida/brand-kit/kit/` (собирается `pnpm build` бренд-пакета, `38`).
 - Экран загрузки: BotFather → бот → Bot Settings → Configure Mini App → Loading screen. Если BotFather не принял SVG: сказать Claude (урок №20).
