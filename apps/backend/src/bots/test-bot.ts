@@ -9,16 +9,29 @@ type TelegramCall = {
   readonly id: number;
 };
 
+const VOICE_BYTES = new Uint8Array([1, 2, 3]);
+
+// JSON calls and uploads (a form): the text fields of a form, and "voice" for an uploaded voice.
+function bodyOf(body: RequestInit['body']): Record<string, unknown> {
+  if (typeof body === 'string') return JSON.parse(body) as Record<string, unknown>;
+  if (!(body instanceof FormData)) return {};
+  const fields = [...body.entries()].map(([key, value]) => [key, typeof value === 'string' ? value : 'file']);
+  const parsed: Record<string, unknown> = Object.fromEntries(fields);
+  return { ...parsed, chat_id: Number(parsed.chat_id) };
+}
+
 export function fakeTelegram() {
   const calls: TelegramCall[] = [];
   let messageId = 100;
   const fetch = async (input: string, init?: RequestInit) => {
+    // A file of a bot (a voice message): its bytes.
+    if (input.includes('/file/bot')) return new Response(VOICE_BYTES);
     const method = input.split('/').pop() ?? '';
     const token = /\/bot([^/]+)\//u.exec(input)?.[1] ?? '';
-    const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {};
     messageId += 1;
-    calls.push({ method, token, body, id: messageId });
-    return Response.json({ ok: true, result: { message_id: messageId } });
+    calls.push({ method, token, body: bodyOf(init?.body), id: messageId });
+    const result = method === 'getFile' ? { file_path: `voice/${messageId}.oga` } : { message_id: messageId };
+    return Response.json({ ok: true, result });
   };
   return { calls, fetch, sentTo: (chatId: number) => calls.filter((call) => call.body.chat_id === chatId) };
 }
@@ -53,5 +66,13 @@ export const textMessage = (fromId: number, text: string, replyTo?: number) => (
     chat: { id: fromId },
     from: { id: fromId, first_name: 'Ali' },
     ...(replyTo === undefined ? {} : { reply_to_message: { message_id: replyTo } }),
+  },
+});
+
+export const voiceMessage = (fromId: number, replyTo?: number) => ({
+  message: {
+    ...textMessage(fromId, '', replyTo).message,
+    text: undefined,
+    voice: { file_id: `voice-of-${fromId}`, duration: 3 },
   },
 });

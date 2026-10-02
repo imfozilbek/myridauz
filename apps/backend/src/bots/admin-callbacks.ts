@@ -10,29 +10,14 @@ import {
   plateCheckMenu,
   reasonMenu,
 } from '../modules/drivers';
-import { changeModerator, teamRole } from '../modules/team';
+import { teamRole } from '../modules/team';
 import { peopleOf } from '../modules/users';
 import { callTelegram } from '../shared/telegram/telegram-api';
-import type { BotContext } from './bot-context';
+import { answerQuery as answer, type BotContext } from './bot-context';
+import { onTeamButton } from './team-bot';
 import type { BotCallback } from './telegram-update';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-
-const answer = (query: BotCallback, text?: string) => ({
-  method: 'answerCallbackQuery',
-  callback_query_id: query.id,
-  ...(text ? { text } : {}),
-});
-
-// "team:add:<id>" and "team:remove:<id>": only an owner changes the team (docs/02).
-async function onTeamButton(context: BotContext, query: BotCallback, data: string) {
-  const [, action, id] = data.split(':');
-  const userId = Number(id);
-  if ((action !== 'add' && action !== 'remove') || !Number.isInteger(userId)) return answer(query);
-  const result = await changeModerator(context.env, query.from.id, userId, action === 'add');
-  if (result !== 'ok') return answer(query, t('bot.team.onlyOwner'));
-  return answer(query, t(action === 'add' ? 'bot.team.added' : 'bot.team.removed'));
-}
 
 // The buttons of the moderation card (docs/04): approve, reject or ask for changes with ticked reasons.
 export async function onAdminCallback(context: BotContext, query: BotCallback) {

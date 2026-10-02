@@ -36,6 +36,21 @@ export const say = (bot: string, person: Person, text: string, replyTo?: number)
     },
   });
 
+// A voice message of a person; replyTo: the message of the bot it answers (docs/50).
+export const sayByVoice = (bot: string, person: Person, replyTo?: number) =>
+  update(bot, {
+    message: {
+      message_id: 1,
+      date: 0,
+      chat: chatOf(person),
+      from: fromOf(person),
+      voice: { file_id: `voice-${person.id}`, file_unique_id: 'v', duration: 2 },
+      ...(replyTo === undefined
+        ? {}
+        : { reply_to_message: { message_id: replyTo, date: 0, chat: chatOf(person) } }),
+    },
+  });
+
 // A press on a button under a message of the bot.
 export const press = (bot: string, person: Person, data: string) =>
   update(bot, {

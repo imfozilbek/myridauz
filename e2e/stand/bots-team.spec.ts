@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { buttons, press, say } from './bot-kit';
+import { buttons, press, say, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, OWNER, SEVARA } from './people';
 import { botMessages, runCron, standRows } from './stand-tools';
@@ -39,7 +39,7 @@ test('T60, T61. a person writes to the support bot, the team answers by a reply 
   expect(received.text).toBe(wordsOf('bot.support.received'));
   await expect.poll(() => told('admin', OWNER.id, 'safar topa olmayapman')).toBeTruthy();
   const [link] = standRows(
-    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support'`,
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND bot = 'support' AND team_chat_id = ${OWNER.id}`,
   );
   await say('admin', OWNER, 'Ertaga yangi safarlar boʻladi', Number(link?.['team_message_id']));
   await expect.poll(() => told('support', AZIZA.id, 'Ertaga yangi safarlar')).toBeTruthy();
@@ -50,4 +50,19 @@ test('the admin bot sends a person outside the team to the support bot (G30)', a
   const sent = await say('admin', AZIZA, 'Yordam kerak');
   expect(buttons(sent)).toEqual([wordsOf('bot.admin.toSupport')]);
   await expect.poll(() => told('admin', OWNER.id, 'Yordam kerak')).toBeUndefined();
+});
+
+test('a voice to the support bot and the voice answer of the team (G30)', async () => {
+  expect((await sayByVoice('support', AZIZA)).text).toBe(wordsOf('bot.support.received'));
+  const voiceTo = async (bot: string, chat: number) =>
+    (await botMessages()).find((m) => m.bot === bot && m.chatId === chat && m.method === 'sendVoice');
+  await expect.poll(() => voiceTo('admin', OWNER.id)).toBeTruthy();
+  expect((await voiceTo('admin', OWNER.id))?.text).toContain(wordsOf('bot.support.voice'));
+  const [link] = standRows(
+    `SELECT team_message_id FROM support_links WHERE person_chat_id = ${AZIZA.id} AND team_chat_id = ${OWNER.id} ORDER BY created_at DESC LIMIT 1`,
+  );
+  expect((await sayByVoice('admin', OWNER, Number(link?.['team_message_id']))).text).toBe(
+    wordsOf('bot.support.sent'),
+  );
+  await expect.poll(() => voiceTo('support', AZIZA.id)).toBeTruthy();
 });

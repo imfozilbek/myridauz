@@ -5,16 +5,10 @@ import { COMPLAIN_PARAM, RATE_PREFIX, rateFromBot, REVIEW_PARAM } from '../modul
 import { isBlocked } from '../modules/users';
 import { botToken } from '../shared/telegram/bot-config';
 import { callTelegram } from '../shared/telegram/telegram-api';
-import type { BotContext } from './bot-context';
+import { answerQuery as answer, type BotContext } from './bot-context';
 import type { BotCallback } from './telegram-update';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-
-const answer = (query: BotCallback, text?: string) => ({
-  method: 'answerCallbackQuery',
-  callback_query_id: query.id,
-  ...(text ? { text } : {}),
-});
 
 // "rate:<booking>:<stars>" under "Safar qanday oʻtdi?" (docs/24): the stars are saved, the message
 // thanks and offers the review; 1 or 2 stars also offer a complaint (docs/17).

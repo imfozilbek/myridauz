@@ -13,6 +13,8 @@ const messageSchema = z.object({
   reply_to_message: z.object({ message_id: z.number() }).optional(),
   // A driver answers the trip message with the meeting point (docs/14).
   location: z.object({ latitude: z.number(), longitude: z.number() }).optional(),
+  // A voice message to the support bot, or the voice answer of the team (docs/50).
+  voice: z.object({ file_id: z.string() }).optional(),
 });
 export type BotMessage = z.infer<typeof messageSchema>;
 

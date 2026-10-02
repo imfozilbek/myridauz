@@ -27,8 +27,10 @@ export const outcome = (call: Promise<unknown>): Promise<string> =>
 // queue, so a message of an earlier step may come later.
 export async function toldBy(bot: string, person: Person, words: string): Promise<string> {
   const find = async () =>
-    (await botMessages()).find((m) => m.bot === bot && m.chatId === person.id && m.text.includes(words))
-      ?.text ?? '';
+    (await botMessages()).find(
+      // An album has no text: it is never the message a scenario waits for.
+      (m) => m.bot === bot && m.chatId === person.id && m.text !== '' && m.text.includes(words),
+    )?.text ?? '';
   await expect.poll(find, { message: `${bot} bot tells ${person.name}: ${words}` }).not.toBe('');
   return find();
 }

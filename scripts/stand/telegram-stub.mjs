@@ -4,6 +4,8 @@ import { createServer } from 'node:http';
 
 const SENT_PATH = '/__sent';
 const CALL = /^\/bot([^/]+)\/(\w+)$/u;
+// A file a bot got (a voice message): a few bytes are enough for the backend (docs/50).
+const FILE = /^\/file\/bot[^/]+\//u;
 const JSON_TYPE = { 'content-type': 'application/json' };
 
 // What Telegram answers to each method, enough for the backend to go on.
@@ -12,12 +14,20 @@ const resultOf = (method, id) => {
     return { status: 'administrator', can_post_messages: true, can_edit_messages: true };
   if (method === 'savePreparedInlineMessage') return { id: `prepared-${id}`, expiration_date: 0 };
   if (method === 'sendMediaGroup') return [{ message_id: id }];
+  if (method === 'getFile') return { file_path: `voice/${id}.oga` };
   if (method.startsWith('send') || method === 'editMessageText') return { message_id: id };
   return true;
 };
 
+// A form (an album, a voice): its text fields, so scenarios see who got it and its caption.
+const FIELD = /name="(\w+)"\r\n\r\n([^\r]*)\r\n/gu;
+const formOf = (raw) => {
+  const fields = Object.fromEntries([...raw.matchAll(FIELD)].map(([, key, value]) => [key, value]));
+  return { multipart: true, ...fields, ...(fields.chat_id ? { chat_id: Number(fields.chat_id) } : {}) };
+};
+
 const bodyOf = (raw, type) => {
-  if (!type?.includes('application/json')) return { multipart: true };
+  if (!type?.includes('application/json')) return formOf(raw);
   try {
     return JSON.parse(raw);
   } catch {
@@ -27,11 +37,17 @@ const bodyOf = (raw, type) => {
 
 export function serveTelegram(port) {
   let sent = [];
+  // Message ids never repeat, also after a clear: a reply must reach its own message (docs/50).
+  let lastId = 0;
   const server = createServer((incoming, outgoing) => {
     const url = incoming.url ?? '/';
     if (url === SENT_PATH) {
       if (incoming.method === 'DELETE') sent = [];
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify(sent));
+      return;
+    }
+    if (FILE.test(url)) {
+      outgoing.writeHead(200, { 'content-type': 'audio/ogg' }).end(Buffer.from([1, 2, 3]));
       return;
     }
     const [, token, method] = CALL.exec(url) ?? [];
@@ -42,7 +58,8 @@ export function serveTelegram(port) {
     let raw = '';
     incoming.on('data', (chunk) => (raw += chunk));
     incoming.on('end', () => {
-      const id = sent.length + 1;
+      lastId += 1;
+      const id = lastId;
       sent.push({ token, method, body: bodyOf(raw, incoming.headers['content-type']), at: Date.now() });
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result: resultOf(method, id) }));
     });

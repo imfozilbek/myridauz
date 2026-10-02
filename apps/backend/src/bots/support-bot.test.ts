@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
-import { botEnv as BOT_ENV, botSender, fakeTelegram, textMessage } from './test-bot';
+import { botEnv as BOT_ENV, botSender, fakeTelegram, textMessage, voiceMessage } from './test-bot';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -22,12 +22,31 @@ describe('the support bot', () => {
     );
     const copy = telegram.sentTo(OWNER).find((sent) => String(sent.body.text).includes('Pulim qaytmadi'));
     expect(copy?.token).toBe(ADMIN_TOKEN);
+    // A copy is only the question: the team is changed in /team, not under a question (G30).
+    expect(copy?.body.reply_markup).toBeUndefined();
     expect((await reply(await send('admin', textMessage(OWNER, 'Qaytardik', copy?.id)))).text).toBe(
       'Javob yuborildi.',
     );
     const answer = telegram.sentTo(PERSON).at(-1);
     expect(answer?.body.text).toContain('Qaytardik');
     expect(answer?.token).toBe(SUPPORT_TOKEN);
+  });
+
+  it('takes a voice message and brings back a voice answer of the team', async () => {
+    expect((await reply(await send('support', voiceMessage(PERSON)))).text).toContain('qabul qilindi');
+    const copy = telegram.sentTo(OWNER).at(-1);
+    expect(copy).toMatchObject({ method: 'sendVoice', token: ADMIN_TOKEN });
+    expect(copy?.body).toMatchObject({ voice: 'file' });
+    expect(String(copy?.body.caption)).toContain('Ovozli xabar');
+    expect((await reply(await send('admin', voiceMessage(OWNER, copy?.id)))).text).toBe('Javob yuborildi.');
+    const answer = telegram.sentTo(PERSON).at(-1);
+    expect(answer).toMatchObject({ method: 'sendVoice', token: SUPPORT_TOKEN });
+    expect(String(answer?.body.caption)).toContain('jamoasidan');
+  });
+
+  it('asks for a text or a voice when a person sends something else', async () => {
+    const photo = { message: { message_id: 2, chat: { id: PERSON }, from: { id: PERSON } } };
+    expect((await reply(await send('support', photo))).text).toContain('ovozli xabar');
   });
 
   it('is closed without its token and to a wrong secret', async () => {
