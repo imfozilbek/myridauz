@@ -46,9 +46,9 @@ describe('«Safar xaritasi» of the driver (G24, docs/70)', { timeout: 20_000 },
   it('opens the stops in the chosen navigator and remembers it', async () => {
     vi.mocked(requestPosition).mockResolvedValue(HERE);
     renderInShell(<DriverTripMap bookings={[FAR, NEAR]} onBack={() => undefined} />, false, true);
-    await screen.findByText('Qatortol');
-    const names = screen.getAllByText(/Qatortol|Yunusobod/u).map((cell) => cell.textContent);
-    expect(names).toEqual(['Qatortol', 'Yunusobod']);
+    // The place of the driver comes after the first drawing: the order follows it.
+    const names = () => screen.getAllByText(/Qatortol|Yunusobod/u).map((cell) => cell.textContent);
+    await vi.waitFor(() => expect(names()).toEqual(['Qatortol', 'Yunusobod']), { timeout: 5000 });
     fireEvent.click(screen.getAllByLabelText('Pastga')[0] as HTMLElement);
     await tap('Yoʻl koʻrsatish');
     // The choice opens as a sheet over the map: the stops stay in their place (docs/88 L13).
