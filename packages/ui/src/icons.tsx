@@ -52,6 +52,7 @@ import {
   Wallet,
   MessageCircle,
   SendHorizontal,
+  Smartphone,
   Share2,
   Star,
   type LucideIcon,
@@ -127,6 +128,8 @@ const ICONS = {
   approved: ShieldCheck,
   // Send a chat message, like Telegram (docs/88 L10).
   send: SendHorizontal,
+  // The app on the phone's screen (docs/88 L17).
+  homeScreen: Smartphone,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
