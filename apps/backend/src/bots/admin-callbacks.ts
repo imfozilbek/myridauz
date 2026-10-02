@@ -14,8 +14,7 @@ import { teamRole } from '../modules/team';
 import { peopleOf } from '../modules/users';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
-import { REPLY_DATA } from './support-bot';
-import { onReplyButton } from './support-reply';
+import { HISTORY_DATA, onHistoryButton, onReplyButton, REPLY_DATA } from './support-reply';
 import { onTeamButton } from './team-bot';
 import type { BotCallback } from './telegram-update';
 
@@ -28,6 +27,7 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   if (!token || (await teamRole(context.env, query.from.id)) === null) return answer(query);
   if (data.startsWith('team:')) return onTeamButton(context, query, data);
   if (data === REPLY_DATA) return onReplyButton(context, query);
+  if (data === HISTORY_DATA) return onHistoryButton(context, query);
   const action = parseCardAction(data);
   if (!action || !query.message) return answer(query);
   const target = { chat_id: query.message.chat.id, message_id: query.message.message_id };

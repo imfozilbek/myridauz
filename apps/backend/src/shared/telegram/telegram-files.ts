@@ -18,22 +18,30 @@ export async function downloadFile(fetch: Fetch, token: string, fileId: string):
   return file.arrayBuffer();
 }
 
-// sendVoice with an uploaded voice; returns the id of the message, like sendText.
-export async function sendVoice(
+// A voice message or a photo between the bots (docs/50): the same upload, another method.
+export type Media = { readonly kind: 'voice' | 'photo'; readonly data: ArrayBuffer };
+const UPLOAD = {
+  voice: { method: 'sendVoice', type: 'audio/ogg', name: 'voice.ogg' },
+  photo: { method: 'sendPhoto', type: 'image/jpeg', name: 'photo.jpg' },
+} as const;
+
+// sendVoice or sendPhoto with an uploaded file; returns the id of the message, like sendText.
+export async function sendMedia(
   fetch: Fetch,
   token: string,
   chatId: number,
-  voice: ArrayBuffer,
+  media: Media,
   caption: string,
   markup?: object,
 ): Promise<number | undefined> {
+  const { method, type, name } = UPLOAD[media.kind];
   const form = new FormData();
   form.append('chat_id', String(chatId));
   form.append('caption', caption);
   if (markup) form.append('reply_markup', JSON.stringify(markup));
-  form.append('voice', new Blob([voice], { type: 'audio/ogg' }), 'voice.ogg');
-  const response = await fetch(telegramUrl(token, 'sendVoice'), { method: 'POST', body: form });
-  if (!response.ok) throw new Error(`telegram.sendVoice_${response.status}`);
+  form.append(media.kind, new Blob([media.data], { type }), name);
+  const response = await fetch(telegramUrl(token, method), { method: 'POST', body: form });
+  if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);
   const body = (await response.json()) as { result?: { message_id?: number } };
   return body.result?.message_id;
 }

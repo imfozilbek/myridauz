@@ -58,14 +58,28 @@ export const sayByVoice = (bot: string, person: Person, replyTo?: number) =>
     },
   });
 
+// A photo of a person with a caption (G32).
+export const sayByPhoto = (bot: string, person: Person, caption: string) =>
+  update(bot, {
+    message: {
+      message_id: 1,
+      date: 0,
+      chat: chatOf(person),
+      from: fromOf(person),
+      photo: [{ file_id: `photo-${person.id}`, file_unique_id: 'p', width: 90, height: 90 }],
+      caption,
+    },
+  });
+
 // A press on a button under a message of the bot.
-export const press = (bot: string, person: Person, data: string) =>
+// messageId: the message of the bot under which the button is (a copy for the team, G32).
+export const press = (bot: string, person: Person, data: string, messageId = 1) =>
   update(bot, {
     callback_query: {
       id: '1',
       data,
       from: fromOf(person),
-      message: { message_id: 1, date: 0, chat: chatOf(person) },
+      message: { message_id: messageId, date: 0, chat: chatOf(person) },
     },
   });
 

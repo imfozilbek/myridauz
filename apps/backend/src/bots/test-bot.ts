@@ -76,3 +76,12 @@ export const voiceMessage = (fromId: number, replyTo?: number) => ({
     voice: { file_id: `voice-of-${fromId}`, duration: 3 },
   },
 });
+
+export const photoMessage = (fromId: number, caption?: string, replyTo?: number) => ({
+  message: {
+    ...textMessage(fromId, '', replyTo).message,
+    text: undefined,
+    photo: [{ file_id: `small-of-${fromId}` }, { file_id: `photo-of-${fromId}` }],
+    ...(caption === undefined ? {} : { caption }),
+  },
+});

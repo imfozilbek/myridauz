@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read } from './bookings-test-api';
+import { recordSupport, supportTalk } from './modules/support';
 import { localUsers } from './modules/users';
 import { call, initData, pid, registerUser, testEnv, doorBooking } from './test-api';
 
@@ -54,8 +55,18 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
     await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'PUT' });
     const route = { from: '1726', to: '1718', date: null, woman: false };
     await call('/passenger/subscriptions', PASSENGER, json(route));
+    const said = {
+      personId: PASSENGER,
+      at: Date.now(),
+      author: 'person' as const,
+      name: 'Ali',
+      kind: 'text' as const,
+    };
+    await recordSupport(testEnv, { ...said, text: 'Pulim qaytmadi' });
     const { chats, forgotten } = fakeChats();
     expect((await deleteMe(PASSENGER, chats)).status).toBe(204);
+    // The support talk goes with the account (G32).
+    expect(await supportTalk(testEnv, PASSENGER)).toEqual([]);
     expect(forgotten).toEqual([booking.chatKey]);
     expect(await localUsers.find(PASSENGER)).toBeUndefined();
     expect(await read(call('/me', PASSENGER))).toMatchObject({ state: 'unregistered' });

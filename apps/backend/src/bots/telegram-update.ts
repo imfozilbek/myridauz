@@ -15,6 +15,9 @@ const messageSchema = z.object({
   location: z.object({ latitude: z.number(), longitude: z.number() }).optional(),
   // A voice message to the support bot, or the voice answer of the team (docs/50).
   voice: z.object({ file_id: z.string() }).optional(),
+  // A photo to the support bot or in the answer of the team: sizes, the largest last (G32).
+  photo: z.array(z.object({ file_id: z.string() })).optional(),
+  caption: z.string().optional(),
 });
 export type BotMessage = z.infer<typeof messageSchema>;
 
