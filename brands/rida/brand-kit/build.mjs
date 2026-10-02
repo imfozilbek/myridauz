@@ -7,6 +7,7 @@ import * as social from './lib/social.mjs';
 import * as motion from './lib/motion.mjs';
 import * as channels from './lib/channels.mjs';
 import * as extras from './lib/extras.mjs';
+import * as welcome from './lib/welcome.mjs';
 import { C, TOKENS } from './lib/palette.mjs';
 
 const OUT = 'kit';
@@ -45,6 +46,7 @@ for (const r of ['passenger', 'driver', 'admin']) {
   await asset(`telegram/bot-${r}-avatar`, brand.botAvatar(r), [640]);
   await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
 }
+await asset('telegram/bot-driver-welcome', welcome.botWelcome(), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());
 for (const r of regions) {
   const id = `${String(r.n).padStart(2, '0')}-${r.user.replace('rida_', '')}`;
