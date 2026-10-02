@@ -100,7 +100,7 @@ describe('DriverGate: the application of a driver (docs/04, G34)', () => {
     expect(await screen.findByText('Yoʻlovchilar uchun nechta joy bor?')).toBeTruthy();
     expect(rowOf('7')?.querySelector('svg')).toBeTruthy();
     await tap('7');
-    for (const step of ['Davom etish', 'Davom etish', 'Yuborish']) await tap(step);
+    for (const step of ['Davom etish', 'Yuborish']) await tap(step);
     await waitFor(() =>
       expect(submit).toHaveBeenCalledWith({ ...car, make: 'Isuzu', model: 'Grafter', seats: 7 }),
     );

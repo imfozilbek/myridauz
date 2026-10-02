@@ -1,3 +1,4 @@
+import '../plate.css';
 import { carSchema, formatPlate, maskPlate, type ModerationReason } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
