@@ -84,6 +84,7 @@ export function FindTripFlow({ onBack, initial, day, pick }: Props) {
         <TripScreen
           trip={open}
           onBack={results}
+          onOthers={results}
           onBook={() => setScreen({ step: 'results', route, date, open, booking: true })}
         />
       ) : (

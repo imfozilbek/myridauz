@@ -1,9 +1,11 @@
+import { tashkentDate } from '@platform/contracts';
 import { useState, type ReactNode } from 'react';
 import { BookFlow } from '../bookings/book-flow';
 import { useApiClients } from '../context/api-clients';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { forgetLaunchParam, launchParam, startParam } from '../telegram/launch-param';
+import { LinkedSearch } from './find-link';
 import { PlacesGate } from './places-gate';
 import { TripScreen } from './trip-screen';
 import { useLoad } from './use-list';
@@ -40,8 +42,20 @@ export function TripById({ id, onClose }: { readonly id: string; readonly onClos
   const { market } = useApiClients();
   const { value, failed, reload } = useLoad(() => market.trip(id));
   const [booking, setBooking] = useState(false);
+  const [others, setOthers] = useState(false);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
   if (!value) return <ScreenSkeleton onBack={onClose} />;
   if (booking) return <BookFlow trip={value} onBack={() => setBooking(false)} onClose={onClose} />;
-  return <TripScreen trip={value} onBack={onClose} onBook={() => setBooking(true)} />;
+  if (others) {
+    const ids = { from: value.from, to: value.to, day: tashkentDate(value.departAt) };
+    return <LinkedSearch ids={ids} onClose={() => setOthers(false)} />;
+  }
+  return (
+    <TripScreen
+      trip={value}
+      onBack={onClose}
+      onBook={() => setBooking(true)}
+      onOthers={() => setOthers(true)}
+    />
+  );
 }

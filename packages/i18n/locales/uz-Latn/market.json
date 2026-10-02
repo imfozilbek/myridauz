@@ -80,6 +80,7 @@
   "trip.closed.full": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
   "trip.closed.cancelled": "Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.",
   "trip.closed.completed": "Bu safar tugagan.",
+  "trip.others": "Shu kungi boshqa safarlar",
   "request.review.hint": "Haydovchilar vaqt va narx taklif qiladi.",
   "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx."
 }
