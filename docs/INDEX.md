@@ -90,4 +90,5 @@
 | 85 | [85-cloudflare-free-features.md](85-cloudflare-free-features.md) | Бесплатные возможности Cloudflare, которые Rida не использует: находки и порядок |
 | 86 | [86-g27-texts.md](86-g27-texts.md) | G27: новые тексты на согласие владельца (ошибки, бот, подсказки) |
 | 87 | [87-g27-ux-scores.md](87-g27-ux-scores.md) | G27: оценки UX всех экранов по 4 вопросам |
+| 88 | [88-ui-library-improvements.md](88-ui-library-improvements.md) | Улучшения UX и UI готовыми элементами TelegramUI, Telegram SDK и Lucide |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
