@@ -4,11 +4,12 @@ import { useEffect, type ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
 import { FavoriteCell } from '../comfort/favorite-cell';
 import { ProfilePhoto } from '../account/profile/profile-photo';
-import { Cell, List, Section } from '../components';
+import { Badge, Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { PersonReviews } from '../feedback/driver-reviews';
 import { RatingBadge } from '../feedback/rating-badge';
+import { Icon, type IconName } from '../icons';
 import { BackButton } from '../telegram/back-button';
 import { RouteView } from './route-view';
 import { useWayFacts } from './way-line';
@@ -52,6 +53,19 @@ export function TripScreen(props: TripScreenProps) {
         ? t('market.trip.departed')
         : null;
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
+  // A fact of the way with its icon, like on the cards (docs/88 L15).
+  const fact = (icon: IconName, text: string) => (
+    <Cell
+      key={text}
+      before={
+        <span className="fact-icon">
+          <Icon name={icon} />
+        </span>
+      }
+    >
+      {text}
+    </Cell>
+  );
   return (
     <div className="market">
       <BackButton onClick={onBack} />
@@ -69,12 +83,24 @@ export function TripScreen(props: TripScreenProps) {
           {trip.recommendedPrice === null
             ? null
             : line(t('market.trip.recommended'), formatMoney(trip.recommendedPrice))}
-          {trip.woman ? <Cell>{t('market.search.woman')}</Cell> : null}
-          {wayFacts(trip).map(([, text]) => (
-            <Cell key={text}>{text}</Cell>
-          ))}
+          {trip.woman ? fact('profile', t('market.search.woman')) : null}
+          {wayFacts(trip).map(([icon, text]) => fact(icon, text))}
           {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
-          {onCancel || readOnly ? line(t('market.review.status'), t(`market.status.${trip.status}`)) : null}
+          {onCancel || readOnly ? (
+            <Cell
+              after={
+                <Badge
+                  type="number"
+                  mode={trip.status === 'active' ? 'primary' : 'gray'}
+                  className="trip-status"
+                >
+                  {t(`market.status.${trip.status}`)}
+                </Badge>
+              }
+            >
+              {t('market.review.status')}
+            </Cell>
+          ) : null}
         </Section>
         {own ? null : (
           <>
