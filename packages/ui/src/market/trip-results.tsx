@@ -35,6 +35,8 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   const { market } = useApiClients();
   const dayLabel = useDayLabel();
   const [woman, setWoman] = useState(false);
+  // Only the trips that pick up at the door: a filter of the phone, the list is already here (docs/88 L5).
+  const [door, setDoor] = useState(false);
   const [trips, setTrips] = useState<Trip[] | null>(null);
   const [failed, setFailed] = useState(false);
   const search = useMemo(
@@ -64,6 +66,7 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
   useEffect(load, [load]);
   // Seats taken by others while the person looks: fresh results without the skeleton (docs/64).
   useFeedChange(() => void market.searchTrips(search).then(setTrips, () => undefined));
+  const shown = door ? trips?.filter((trip) => trip.pickupMode !== 'pitak') : trips;
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   return (
     <div className="market">
@@ -82,13 +85,19 @@ export function TripResults({ route, date, now, onBack, onOpen }: TripResultsPro
           >
             {t('market.search.woman')}
           </Cell>
+          <Cell
+            Component="label"
+            after={<Switch checked={door} onChange={(event) => setDoor(event.target.checked)} />}
+          >
+            {t('market.search.door')}
+          </Cell>
         </Section>
-        {trips?.map((trip) => (
+        {shown?.map((trip) => (
           <TripCard key={trip.id} trip={trip} onOpen={() => onOpen(trip)} />
         ))}
       </List>
       {trips === null ? <ScreenSkeleton /> : null}
-      {trips?.length === 0 ? (
+      {shown?.length === 0 ? (
         <EmptyState
           icon="search"
           title={t('market.search.empty')}

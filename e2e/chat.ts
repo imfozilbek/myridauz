@@ -16,7 +16,7 @@ export async function passengerChat(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('chat.system.confirmed'))).toBeVisible();
   await shot('2-chat');
   await page.getByLabel(t('chat.placeholder')).fill('Raqamim 90 123 45 67');
-  await page.getByText(t('chat.send'), { exact: true }).click();
+  await page.getByRole('button', { name: t('chat.send') }).click();
   await expect(page.getByText(t('chat.warning'))).toBeVisible();
   await expect(page.getByText('Raqamim ***')).toBeVisible();
   await shot('3-masked');

@@ -23,6 +23,7 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   extraKm: 2,
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000b${id}`,
+  confirmedAt: status === 'confirmed' ? Date.now() - HOUR / 2 : null,
   boardedAt: null,
   arrivedAt: null,
   ...extra,

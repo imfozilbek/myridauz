@@ -3,5 +3,7 @@
   "requests": "{count} ta yangi soʻrov",
   "driver.question": "Qayerga ketyapsiz?",
   "driver.last": "Oxirgi yoʻnalish",
-  "publish": "Safar eʼlon qilish"
+  "publish": "Safar eʼlon qilish",
+  "addToHome.title": "Bosh ekranga qoʻshish",
+  "addToHome.hint": "{brand} telefoningiz ekranida turadi va bir bosishda ochiladi."
 }

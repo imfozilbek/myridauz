@@ -17,6 +17,8 @@ describe('the requests of a trip for its driver (G24, docs/70)', () => {
     expect(headers).toEqual(['Bu safarga mos', 'Boshqa soʻrovlar', 'Yoʻlovchilar']);
     expect(screen.getByText(/\+2 km/u)).toBeTruthy();
     expect(screen.getByText(/\+24 km/u)).toBeTruthy();
+    // Who rides, at a glance: the faces of the confirmed passengers and their seats (docs/88 L14).
+    expect(document.querySelector('.passengers-stack-box > div')?.children).toHaveLength(1);
   });
 
   it('says there are no passengers yet', async () => {

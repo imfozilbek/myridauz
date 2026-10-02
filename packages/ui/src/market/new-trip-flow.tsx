@@ -14,9 +14,11 @@ import { returnDraft } from './return-trip';
 import { TripPublish } from './trip-publish';
 import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
+import { useStepProgress } from '../flow/step-progress';
 import { completeDraft, type TripDraft } from './trip-draft';
 
-type Step = 'route' | 'mode' | 'date' | 'time' | 'seats' | 'price' | 'woman' | 'comment' | 'review';
+const STEPS = ['route', 'mode', 'date', 'time', 'seats', 'price', 'woman', 'comment', 'review'] as const;
+type Step = (typeof STEPS)[number];
 // A new trip, one question per screen (docs/19): the answers of a step open the next one.
 export function NewTripFlow({
   onBack,
@@ -43,6 +45,7 @@ export function NewTripFlow({
     setDraft((value) => ({ ...value, ...patch }));
     setStep(to);
   };
+  useStepProgress(STEPS.indexOf(step), STEPS.length);
   const { route } = draft;
   useEffect(() => {
     if (!route) return;

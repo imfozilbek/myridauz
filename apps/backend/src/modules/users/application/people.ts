@@ -28,6 +28,11 @@ export function people(deps: UsersDeps) {
       const { publicId, firstName, avatarKey, gender } = user;
       return { id: user.id, publicId, firstName, avatarKey, gender };
     },
+    // Subscription news and reminders only to who wants them (docs/88 L1); nobody: no news.
+    wantsNews: async (id: number) => {
+      const user = await deps.users.find(id);
+      return user !== undefined && !user.newsOff;
+    },
     // The Telegram ID behind a public id from a path; undefined: no such person (docs/65 A3).
     idOf: async (publicId: string) => (await deps.users.byPublicId(publicId))?.id,
     // Only an approved driver may publish trips (docs/04).

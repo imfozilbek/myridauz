@@ -1,5 +1,7 @@
 {
   "continue": "Davom etish",
+  "close": "Yopish",
+  "undo": "Qaytarish",
   "back": "Orqaga",
   "camera.shoot": "Rasmga olish",
   "camera.denied": "Kamera ochilmadi. Telefon kamerasi bilan oling.",

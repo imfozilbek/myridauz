@@ -9,25 +9,31 @@ import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 import { shareCard } from '../telegram/share-card';
 
-type Props = { readonly booking: Booking; readonly onChat: () => void; readonly onComplain: () => void };
+type Props = {
+  readonly booking: Booking;
+  readonly onChat: () => void;
+  readonly onComplain: () => void;
+  // «Mashinaga chiqdim» and «Yetib keldim» reach the whole screen at once (docs/88 L6).
+  readonly onTold: (booking: Booking) => void;
+};
+
+// The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
+// has just told («Mashinaga chiqdim», «Yetib keldim») shows before the screen has it.
+export function withTold(booking: Booking, told: Booking | null): Booking {
+  if (told?.id !== booking.id) return booking;
+  return {
+    ...booking,
+    boardedAt: booking.boardedAt ?? told.boardedAt,
+    arrivedAt: booking.arrivedAt ?? told.arrivedAt,
+  };
+}
 
 // Under a passenger's booking: the chat, and for a confirmed one "Yaqinlarimga yuborish" with
 // "Mashinaga chiqdim" and "Yetib keldim" for the close people (docs/07, docs/43).
-export function TripTools({ booking: initial, onChat, onComplain }: Props) {
+export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
-  // The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
-  // has just told («Mashinaga chiqdim», «Yetib keldim») shows before the screen has it.
-  const [told, setTold] = useState<Booking | null>(null);
-  const booking =
-    told?.id === initial.id
-      ? {
-          ...initial,
-          boardedAt: initial.boardedAt ?? told.boardedAt,
-          arrivedAt: initial.arrivedAt ?? told.arrivedAt,
-        }
-      : initial;
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
   // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
   const [sharing, setSharing] = useState(true);
@@ -50,7 +56,7 @@ export function TripTools({ booking: initial, onChat, onComplain }: Props) {
     }, null);
   const step = (name: 'boarded' | 'arrived') =>
     run(async () => {
-      setTold(await chat[name](booking.id));
+      onTold(await chat[name](booking.id));
       track({ name, screen: 'bookings.passenger' });
     }, 'told');
   const stop = () =>

@@ -34,6 +34,7 @@ const record = (over: Partial<BookingRecord> = {}): BookingRecord => ({
   dropoff: { lat: 39.6547, lng: 66.9758 },
   dropoffNamed: { name: null, area: null },
   offerId: null,
+  confirmedAt: null,
   boardedAt: null,
   arrivedAt: null,
   createdAt: NOW,
@@ -51,6 +52,14 @@ describe('bookings in D1 (G24)', () => {
     const bookings = d1Bookings(db);
     await bookings.save(record({ mode: 'pitak', pitakId: 'p1' }));
     expect(await bookings.find('b1')).toEqual(record({ mode: 'pitak', pitakId: 'p1' }));
+  });
+
+  it('keeps the time of the confirmation (docs/88 L6)', async () => {
+    const bookings = d1Bookings(db);
+    await bookings.save(record());
+    const confirmed = record({ status: 'confirmed', confirmedAt: NOW + 7, updatedAt: NOW + 7 });
+    expect(await bookings.confirmWithin(confirmed, 3)).toBe(true);
+    expect((await bookings.find('b1'))?.confirmedAt).toBe(NOW + 7);
   });
 
   it('erases the points with the status in one step, and by id, person and age', async () => {

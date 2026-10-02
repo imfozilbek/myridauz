@@ -29,6 +29,7 @@
 - Настройки: `brands/rida/wrangler.toml`. Миграции: `apps/backend/migrations`
   (таблицы `users`, `blocked_phones` с G04, `47`).
 - Фото людей в R2: `avatars/<id>/<uuid>`, отдаёт только API (`47`).
+- Картинки историй в R2: `stories/<id поездки>`, одна на поездку. API отдаёт их без подписи по `/stories/<id>`: Telegram читает картинку сам. В картинке только маршрут, время, места и цена (`88` L19).
 - Карта в R2: `map/uzbekistan-<дата>.pmtiles` и `map/fonts/...`, кладёт workflow «Map data», отдаёт API `/map/...` (G22, `67`).
 - Очередь создана один раз: `wrangler queues create rida-notifications` (G09). Cron каждые 15 минут (G07).
 - Резервные копии D1: Time Travel 7 дней на бесплатном тарифе (`03`).

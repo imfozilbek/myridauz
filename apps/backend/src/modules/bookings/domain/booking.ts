@@ -29,7 +29,8 @@ export type BookingRecord = {
   readonly dropoffNamed: Named | null;
   // The offer this booking came from: its chat is the offer's chat (docs/07).
   readonly offerId: string | null;
-  // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
+  // When the driver confirmed it (docs/88 L6); "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
+  readonly confirmedAt: number | null;
   readonly boardedAt: number | null;
   readonly arrivedAt: number | null;
   readonly createdAt: number;
@@ -84,5 +85,5 @@ export function move(
   const next = MOVES[action][status];
   if (!next) return 'bookings.wrong_status';
   const moved = { ...booking, status: next, updatedAt: now };
-  return next === 'confirmed' ? moved : withoutPoints(moved);
+  return next === 'confirmed' ? { ...moved, confirmedAt: now } : withoutPoints(moved);
 }

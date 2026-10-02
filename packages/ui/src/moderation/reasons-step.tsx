@@ -19,7 +19,7 @@ export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
   const { t } = useI18n();
   const [picked, setPicked] = useState<readonly ModerationReason[]>([]);
   const toggle = (reason: ModerationReason) => {
-    haptic.tap();
+    haptic.select();
     setPicked((list) => (list.includes(reason) ? list.filter((item) => item !== reason) : [...list, reason]));
   };
   // Sent in the order of the list, the same as in the bot.

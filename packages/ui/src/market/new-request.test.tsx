@@ -22,6 +22,7 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (docs/09)', () => {
     renderMarket(<NewRequestFlow onBack={() => undefined} />, clients);
     await chooseWay();
     await tap(/^Ertaga/);
+    expect(await screen.findByRole('progressbar')).toBeTruthy();
     await tap('2');
     // A passenger pays no commission: the price step does not speak of it (docs/12).
     expect(await screen.findByText(/^Tavsiya/)).toBeTruthy();

@@ -29,7 +29,8 @@ export async function confirm(
   const { record, facts } = found;
   if (statusAt(record, deps.now(), false) !== 'requested')
     return { ok: false, error: 'bookings.wrong_status' };
-  const next: BookingRecord = { ...record, status: 'confirmed', updatedAt: deps.now() };
+  const now = deps.now();
+  const next: BookingRecord = { ...record, status: 'confirmed', confirmedAt: now, updatedAt: now };
   // The seat first, in one step with the count of seats; then the money (docs/65 A4).
   if (!(await deps.bookings.confirmWithin(next, facts.seats))) {
     const current = await deps.bookings.find(id);

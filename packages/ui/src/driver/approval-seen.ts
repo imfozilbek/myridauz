@@ -1,18 +1,10 @@
-// The approval is told once on this phone (docs/86 V7). No storage (a private window): told each time.
-const KEY = 'driver.approvalSeen';
+import { readStored, writeStored } from '../telegram/device-storage';
 
-export function approvalSeen(): boolean {
-  try {
-    return localStorage.getItem(KEY) === '1';
-  } catch {
-    return false;
-  }
-}
+// The approval is told once to a person, on any of their phones (docs/86 V7, docs/88 L12).
+const KEY = 'driver_approval_seen';
+
+export const approvalSeen = () => readStored(KEY) === '1';
 
 export function markApprovalSeen() {
-  try {
-    localStorage.setItem(KEY, '1');
-  } catch {
-    // No storage: the driver sees the approval again next time.
-  }
+  writeStored(KEY, '1');
 }

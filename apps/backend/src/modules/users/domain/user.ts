@@ -16,6 +16,8 @@ export type User = {
   readonly block: Block | null;
   readonly avatarKey: string | null;
   readonly writeAccess: boolean;
+  // «Bot xabarlari» off (docs/88 L1): no subscription news and reminders; bookings still come.
+  readonly newsOff: boolean;
   readonly createdAt: number;
   readonly updatedAt: number;
 };

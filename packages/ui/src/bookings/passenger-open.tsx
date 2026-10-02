@@ -15,7 +15,7 @@ import { BookingScreen } from './booking-screen';
 import { cancellable } from './booking-status';
 import { OfferAccepted, OfferScreen } from './offer-list';
 import { OffersSection } from './offers-section';
-import { TripTools } from './trip-tools';
+import { TripTools, withTold } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 
@@ -41,6 +41,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
   const [accepted, setAccepted] = useState(false);
   const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
   const [complaint, setComplaint] = useState<string | null>(null);
+  const [told, setTold] = useState<Booking | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
   const run = async (action: () => Promise<unknown>, after: () => void) => {
     try {
@@ -101,7 +102,7 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
       </RequestScreen>
     );
   }
-  const { booking } = opened;
+  const booking = withTold(opened.booking, told);
   // A cancel is asked first: one tap never loses a seat (docs/65 B4).
   const cancel = async () => {
     if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
@@ -113,15 +114,23 @@ export function PassengerOpen({ opened, offers, onClose }: Props) {
       },
     );
   };
-  const actions = cancellable(booking.status)
-    ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
-    : [];
+  // In the car or arrived: the seat is used, nothing to cancel (docs/35).
+  const inCar = booking.boardedAt !== null || booking.arrivedAt !== null;
+  const actions =
+    cancellable(booking.status) && !inCar
+      ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
+      : [];
   const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
   return (
     <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
       <AnswerDeadline booking={booking} />
-      <TripTools booking={booking} onChat={openChat} onComplain={() => setComplaint(booking.id)} />
+      <TripTools
+        booking={booking}
+        onChat={openChat}
+        onComplain={() => setComplaint(booking.id)}
+        onTold={setTold}
+      />
     </BookingScreen>
   );
 }

@@ -9,16 +9,16 @@ import {
   type BookingRow,
 } from './booking-row';
 
-// Table bookings (migrations/0008_bookings_wallet.sql, 0024).
+// Table bookings (migrations/0008_bookings_wallet.sql, 0024, 0026).
 const marks = (count: number) => Array.from({ length: count }, () => '?').join(', ');
 const NO_POINTS = POINT_COLUMNS.map((column) => `${column} = NULL`).join(', ');
 const SET_POINTS = POINT_COLUMNS.map((column) => `${column} = ?`).join(', ');
 const UPSERT = `INSERT INTO bookings (${ROW_COLUMNS.join(', ')}, id) VALUES (${marks(ROW_COLUMNS.length + 1)})
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, ${POINT_COLUMNS.map((c) => `${c} = excluded.${c}`).join(', ')},
-    boarded_at = excluded.boarded_at,
+    confirmed_at = excluded.confirmed_at, boarded_at = excluded.boarded_at,
     arrived_at = excluded.arrived_at, updated_at = excluded.updated_at`;
 // One statement: the seats of the trip are counted and the booking confirmed at once (docs/65 A4).
-const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', updated_at = ?1
+const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', confirmed_at = ?1, updated_at = ?1
   WHERE id = ?2 AND status = 'requested' AND seats + (SELECT COALESCE(SUM(seats), 0) FROM bookings
   WHERE trip_id = ?3 AND status = 'confirmed') <= ?4`;
 // A request without an answer ends, and its points with it (docs/69).

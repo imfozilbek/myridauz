@@ -1,4 +1,5 @@
 import {
+  CircleFadingPlus,
   Armchair,
   Building2,
   Bus,
@@ -51,6 +52,8 @@ import {
   Users,
   Wallet,
   MessageCircle,
+  SendHorizontal,
+  Smartphone,
   Share2,
   Star,
   type LucideIcon,
@@ -122,8 +125,11 @@ const ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
-  // The application of a driver is approved (docs/86 V7).
+  // An approved application (docs/86 V7); send like Telegram, home screen, story (docs/88 L10, L17, L19).
   approved: ShieldCheck,
+  send: SendHorizontal,
+  homeScreen: Smartphone,
+  story: CircleFadingPlus,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

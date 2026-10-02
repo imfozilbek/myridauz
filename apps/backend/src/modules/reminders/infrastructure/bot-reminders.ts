@@ -13,6 +13,8 @@ type Wiring = {
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
   // A view carries public ids; the bot writes to the Telegram ID behind one (docs/65 A3).
   readonly telegramId: (publicId: string) => Promise<number | undefined>;
+  // «Bot xabarlari» off in the profile: no reminders (docs/88 L1).
+  readonly wantsNews: (userId: number) => Promise<boolean>;
 };
 
 const KEYS = {
@@ -21,11 +23,17 @@ const KEYS = {
 } as const;
 
 // The passenger bot reminds a passenger, the driver bot a driver (docs/02); "Ochish" opens the app.
-export function botReminders({ brand, placeName, send, telegramId }: Wiring): RemindersDeps['tell'] {
+export function botReminders({
+  brand,
+  placeName,
+  send,
+  telegramId,
+  wantsNews,
+}: Wiring): RemindersDeps['tell'] {
   const to = async (bot: 'passenger' | 'driver', publicId: string, text: string, link: AppLink) => {
     const chatId = await telegramId(publicId);
     const markup = openButton(brand, bot, t('bot.open'), link);
-    if (chatId !== undefined) await send([{ bot, chatId, text, markup }]);
+    if (chatId !== undefined && (await wantsNews(chatId))) await send([{ bot, chatId, text, markup }]);
   };
   const about = async (trip: Trip) => ({
     from: await placeName(trip.from),

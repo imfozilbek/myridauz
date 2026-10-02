@@ -16,6 +16,7 @@ const profile = {
   roles: ['passenger' as const],
   hasAvatar: true,
   writeAccess: true,
+  news: true,
   rating: null,
 };
 
@@ -25,6 +26,7 @@ function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
     register: vi.fn(),
     uploadAvatar: vi.fn(async () => undefined),
     setWriteAccess: vi.fn(),
+    setNews: vi.fn(async () => undefined),
     deleteMe: vi.fn(async () => undefined),
     getAvatar: vi.fn(async () => new Blob(['x'], { type: 'image/jpeg' })),
   } satisfies UsersClient;
@@ -35,6 +37,7 @@ function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
     settings: { passengerAvatarRequired: false },
     avatarVersion: 0,
     onAvatarChanged: vi.fn(),
+    onProfileChanged: vi.fn(),
     ...overrides,
   };
   const actions = [

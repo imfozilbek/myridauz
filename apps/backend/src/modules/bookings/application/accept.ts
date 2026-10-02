@@ -98,6 +98,8 @@ async function acceptTaken(
     expiresAt: offer.departAt,
     ...(await offerPoints(deps, request, published.value.pitak?.id ?? null)),
     offerId: offer.id,
+    // Accepting an offer confirms the seat at once (docs/88 L6).
+    confirmedAt: now,
     boardedAt: null,
     arrivedAt: null,
     createdAt: now,

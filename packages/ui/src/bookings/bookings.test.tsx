@@ -1,6 +1,6 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -36,6 +36,10 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
     await tap('Jasur');
     expect(screen.getByText('Davlat raqami')).toBeTruthy();
+    // The way of the booking: asked, confirmed, then boarding and arrival (docs/88 L6).
+    const steps = within(screen.getByRole('list', { name: 'Holati' })).getAllByRole('listitem');
+    expect(steps).toHaveLength(4);
+    expect(steps[1]?.textContent).toMatch(/^Joy tasdiqlandi/u);
     expect(screen.getByText(/^Bron qilingandan keyin/)).toBeTruthy();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     // The points fixed at the booking open in a map (docs/70).

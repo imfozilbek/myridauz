@@ -11,6 +11,7 @@ import { RouteView } from '../market/route-view';
 import { BackButton } from '../telegram/back-button';
 import { BookingPlaces } from './booking-places';
 import '../market/market.css';
+import { BookingTimeline } from './booking-timeline';
 
 const PHOTO_SIZE = 56;
 export type BookingAction = { readonly label: string; readonly onClick: () => void; readonly main?: boolean };
@@ -53,6 +54,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
       </Title>
       <Text className="market-subtitle">{t(`bookings.status.${booking.status}`)}</Text>
       <List>
+        <BookingTimeline booking={booking} />
         <Section>
           <div className="route-summary">
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />

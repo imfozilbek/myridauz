@@ -20,6 +20,7 @@ export const booking: Booking = {
   extraKm: 2,
   plate: null,
   chatKey: 'b00000000-0000-4000-8000-0000000000b1',
+  confirmedAt: null,
   boardedAt: null,
   arrivedAt: null,
 };
@@ -27,6 +28,7 @@ export const booking: Booking = {
 export const confirmed: Booking = {
   ...booking,
   status: 'confirmed',
+  confirmedAt: Date.parse('2026-10-01T05:00:00Z'),
   pickup: {
     point: { lat: 41.2856, lng: 69.2045 },
     name: { step: 'landmark', name: 'Chilonzor bozori' },

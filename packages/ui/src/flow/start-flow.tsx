@@ -5,6 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import { useHomeTap } from '../home/use-home-tap';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { useSettingsButton } from '../telegram/settings-button';
 import { HomeScreen } from './home-screen';
 import { SoonScreen } from './soon-screen';
 import type { HomeGo, Launch, StartAction } from './start-action';
@@ -37,6 +38,7 @@ export function StartFlow({ actions, opened, notice, home, covered }: StartFlowP
     haptic.tap();
     setScreen('profile');
   }, []);
+  useSettingsButton(openProfile);
   const openAction = useCallback((action: StartAction) => {
     haptic.tap();
     setScreen({ action });

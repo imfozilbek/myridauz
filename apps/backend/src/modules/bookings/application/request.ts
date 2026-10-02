@@ -53,6 +53,7 @@ export async function requestBooking(
     expiresAt: answerDeadline(facts.departAt, now),
     ...points.value,
     offerId: null,
+    confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
     createdAt: now,

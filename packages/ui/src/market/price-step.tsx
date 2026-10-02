@@ -30,7 +30,7 @@ export function PriceStep({ recommendation, initial, commission = false, onBack,
   const [price, setPrice] = useState(initial ?? recommendation.price);
   const out = price < minPrice || price > maxPrice;
   const change = (by: number) => {
-    haptic.tap();
+    haptic.select();
     setPrice((value) => Math.min(maxPrice, Math.max(minPrice, value + by)));
   };
   return (

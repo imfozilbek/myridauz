@@ -2,6 +2,7 @@ import {
   DriverGate,
   DriverHome,
   DriverNotice,
+  HomeScreenOffer,
   MyTripsScreen,
   NewTripFlow,
   RequestsSearchFlow,
@@ -56,7 +57,12 @@ function DriverStart() {
   return (
     <StartFlow
       actions={ACTIONS}
-      notice={<DriverNotice />}
+      notice={
+        <>
+          <DriverNotice />
+          <HomeScreenOffer />
+        </>
+      }
       home={(go) => <DriverHome go={go} />}
       {...(pending ? {} : { covered: 'new_trip' })}
     />

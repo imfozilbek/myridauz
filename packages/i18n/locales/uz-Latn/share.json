@@ -26,5 +26,10 @@
   "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan.",
   "follow.join": "Men ham yoʻlga chiqaman",
   "follow.joinHint": "Roʻyxatdan oʻting va oʻzingizga safar toping.",
-  "driverSendHint": "Oilangiz safaringizni kuzatib boradi"
+  "driverSendHint": "Oilangiz safaringizni kuzatib boradi",
+  "story": "Hikoyaga joylash",
+  "storyHint": "Doʻstlaringiz safarni koʻradi va joy band qiladi",
+  "storyTitle": "Yangi safar",
+  "storyWhen": "{date} • {time}",
+  "storyCaption": "{from} → {to}, {date} soat {time}. {seats} ta joy bor. Joy band qilish: {link}"
 }

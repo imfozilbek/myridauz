@@ -76,6 +76,7 @@ export async function bookingViews(
         extraKm: null,
         plate: open && viewer !== 'driver' ? loaded.facts.plate : null,
         chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
+        confirmedAt: record.confirmedAt,
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,
       };

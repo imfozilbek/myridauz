@@ -7,6 +7,8 @@ export const haptic = {
   tap: () => void hapticFeedback.impactOccurred.ifAvailable('light'),
   success: () => void hapticFeedback.notificationOccurred.ifAvailable('success'),
   error: () => void hapticFeedback.notificationOccurred.ifAvailable('error'),
+  // A choice changed in a list, the stars or a switch (docs/88 L3).
+  select: () => void hapticFeedback.selectionChanged.ifAvailable(),
   // An incoming call shakes the phone with each ring (docs/08).
   ring: () => void hapticFeedback.notificationOccurred.ifAvailable('warning'),
 };

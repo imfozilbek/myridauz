@@ -71,14 +71,28 @@ export async function runCron(): Promise<void> {
   if (!response.ok) throw new Error(`stand: the Cron answered ${response.status}`);
 }
 
+const BUSY_TRIES = 5;
+const BUSY_WAIT_MS = 300;
+const busy = (error: unknown) => error instanceof Error && error.message.includes('SQLITE_BUSY');
+const pause = (ms: number) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+
+// The worker writes to the same SQLite file at the same time: a busy file waits and tries again,
+// as SQLite itself does (lesson 78).
 const d1 = (sql: string, json: boolean): string => {
   const config = `brands/${loadBrand().id}/wrangler.toml`;
   const args = ['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--persist-to', STAND_STATE];
   const output = json ? ['--json'] : [];
-  return execFileSync('pnpm', [...args, ...output, '--config', config, '--command', sql], {
-    stdio: 'pipe',
-    encoding: 'utf8',
-  });
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return execFileSync('pnpm', [...args, ...output, '--config', config, '--command', sql], {
+        stdio: 'pipe',
+        encoding: 'utf8',
+      });
+    } catch (error) {
+      if (!busy(error) || attempt === BUSY_TRIES) throw error;
+      pause(BUSY_WAIT_MS * attempt);
+    }
+  }
 };
 export const standSql = (sql: string): void => void d1(sql, false);
 // The rows of one query on the database of the stand.

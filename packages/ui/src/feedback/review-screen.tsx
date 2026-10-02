@@ -2,11 +2,10 @@ import { DRIVER_TAGS, PASSENGER_TAGS, REVIEW_TEXT_MAX, type ReviewTarget } from 
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { FavoriteCell } from '../comfort/favorite-cell';
-import { Cell, Input, List, Section } from '../components';
+import { Cell, List, Multiselectable, Section, Textarea } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { IconTile } from '../icon-tile';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
@@ -43,8 +42,10 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
   const [text, setText] = useState(target.mine?.text ?? '');
   const [step, setStep] = useState<Step>('edit');
   const offered = target.rateeRole === 'driver' ? DRIVER_TAGS : PASSENGER_TAGS;
-  const toggle = (tag: string) =>
+  const toggle = (tag: string) => {
+    haptic.select();
     setTags(tags.includes(tag) ? tags.filter((known) => known !== tag) : [...tags, tag]);
+  };
   const send = async () => {
     setStep('busy');
     try {
@@ -84,15 +85,15 @@ function ReviewForm({ bookingId, target, onBack, onComplain }: FormProps) {
           {offered.map((tag) => (
             <Cell
               key={tag}
-              onClick={() => toggle(tag)}
-              after={tags.includes(tag) ? <Icon name="selected" /> : null}
+              Component="label"
+              before={<Multiselectable checked={tags.includes(tag)} onChange={() => toggle(tag)} />}
             >
               {t(`reviews.tag.${tag}`)}
             </Cell>
           ))}
         </Section>
         <Section header={t('reviews.textTitle')} footer={t('reviews.blind')}>
-          <Input
+          <Textarea
             placeholder={t('reviews.textPlaceholder')}
             value={text}
             maxLength={REVIEW_TEXT_MAX}

@@ -13,6 +13,8 @@ export type Account = {
   // Increases after a new photo, so screens load it again.
   readonly avatarVersion: number;
   readonly onAvatarChanged: () => void;
+  // The profile loads again after a change of a setting («Bot xabarlari»).
+  readonly onProfileChanged: () => void;
 };
 
 export const AccountContext = createContext<Account | null>(null);

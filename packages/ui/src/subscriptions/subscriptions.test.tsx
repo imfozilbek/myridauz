@@ -64,11 +64,15 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     const renew = vi.fn<SubscriptionsClient['renew']>(async () => ({ ...ANY, expired: false }));
     const remove = vi.fn<SubscriptionsClient['remove']>(async () => void (list = []));
     const mine = vi.fn<SubscriptionsClient['mine']>(async () => list);
+    const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => {
+      list = [ANY];
+      return ANY;
+    });
     renderMarket(
       <SubscriptionsLink>
         <p>Asosiy</p>
       </SubscriptionsLink>,
-      testClients({ subscriptions: { mine, renew, remove } }),
+      testClients({ subscriptions: { mine, renew, remove, subscribe } }),
     );
     expect(await screen.findByText('Obunalar')).toBeTruthy();
     expect(screen.getByText('Muddati tugagan')).toBeTruthy();
@@ -79,8 +83,19 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
     // A removal is red, like in Telegram (docs/86 V12).
     expect(screen.getByText('Oʻchirish').closest('.danger-text')).not.toBeNull();
+    // Asked first in the native window; a «no» keeps it (docs/88 L8).
+    vi.stubGlobal('confirm', () => false);
+    await tap('Oʻchirish');
+    expect(remove).not.toHaveBeenCalled();
+    vi.stubGlobal('confirm', () => true);
     await tap('Oʻchirish');
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+    vi.unstubAllGlobals();
+    // A short line says it is gone and brings it back by one tap (docs/88 L7).
+    expect(screen.getByText('Obuna oʻchirildi')).toBeTruthy();
+    await tap('Qaytarish');
+    expect(subscribe).toHaveBeenCalledWith({ from: ANY.from, to: ANY.to, date: ANY.date, woman: ANY.woman });
+    expect(await screen.findByText('Obunalar')).toBeTruthy();
   });
 
   it('opens the trip of a channel post, ready to book', async () => {

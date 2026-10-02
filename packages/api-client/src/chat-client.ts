@@ -7,20 +7,23 @@ import {
   chatTicketPath,
   chatTicketSchema,
   driverTripSharePath,
+  driverTripStoryPath,
   driverTripShareStopPath,
   sharedTripFollowPath,
   sharedTripPath,
   sharedTripSchema,
   shareSchema,
+  storySchema,
   type Booking,
   type Share,
   type SharedTrip,
+  type Story,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
 // The chat of a booking and "Yaqinlarimga yuborish" (docs/07, docs/43, G09).
 export function createChatClient(options: SignedOptions) {
-  const { request, post } = signedRequest(options);
+  const { request, post, put } = signedRequest(options);
   const booking = async (response: Response) => bookingSchema.parse(await response.json());
   return {
     // The address of the chat socket with a one-minute ticket.
@@ -35,6 +38,9 @@ export function createChatClient(options: SignedOptions) {
       shareSchema.parse(await (await post(driverTripSharePath(tripId), {})).json()),
     stopTripSharing: async (tripId: string): Promise<void> =>
       void (await post(driverTripShareStopPath(tripId), {})),
+    // «Hikoyaga joylash»: the picture drawn by the Mini App goes up, Telegram reads it (docs/88 L19).
+    putTripStory: async (tripId: string, image: Blob): Promise<Story> =>
+      storySchema.parse(await (await put(driverTripStoryPath(tripId), image)).json()),
     boarded: async (bookingId: string): Promise<Booking> =>
       booking(await post(bookingBoardedPath(bookingId), {})),
     arrived: async (bookingId: string): Promise<Booking> =>

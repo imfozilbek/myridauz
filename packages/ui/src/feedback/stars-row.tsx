@@ -2,6 +2,7 @@ import { STARS } from '@platform/contracts';
 import { Caption } from '@telegram-apps/telegram-ui';
 import { useBrand } from '../context/brand-context';
 import { Icon } from '../icons';
+import { haptic } from '../telegram/feedback';
 import './feedback.css';
 
 const BIG_STAR = 36;
@@ -15,7 +16,15 @@ export function StarsRow({ value, onChange }: Props) {
   return (
     <div className="stars-row">
       {STARS.map((stars) => (
-        <button key={stars} type="button" aria-pressed={stars === value} onClick={() => onChange(stars)}>
+        <button
+          key={stars}
+          type="button"
+          aria-pressed={stars === value}
+          onClick={() => {
+            haptic.select();
+            onChange(stars);
+          }}
+        >
           <Icon
             name="star"
             size={BIG_STAR}

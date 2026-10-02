@@ -21,6 +21,8 @@ describe('a booking of seats (docs/35)', () => {
     const tripId = addTrip();
     const asked = value(await requestBooking(deps, DILNOZA, tripId, seats(2)));
     expect(asked).toMatchObject({ status: 'requested', commission: 0, mode: 'door', plate: null });
+    // Each step keeps its time: the booking shows its way to the passenger (docs/88 L6).
+    expect(asked.confirmedAt).toBeNull();
     // The passenger sees the own points and their names at once (docs/70).
     expect(asked.pickup).toEqual({ point: HOME, name: NAMED_NAME, area: AREA });
     expect(notes).toContain('driver: request Dilnoza');
@@ -34,6 +36,7 @@ describe('a booking of seats (docs/35)', () => {
     expect(waiting?.pickup).toEqual({ point: null, name: null, area: AREA });
     const confirmed = value(await confirm(deps, DRIVER, asked.id));
     expect(confirmed).toMatchObject({ status: 'confirmed', plate: null, trip: { seatsLeft: 1 } });
+    expect(confirmed.confirmedAt).toBeGreaterThanOrEqual(asked.createdAt);
     const [mine] = await passengerBookings(deps, DILNOZA);
     expect(mine).toMatchObject({ plate: '01A123BC', dropoff: { point: AWAY } });
     expect(balanceOf(await wallet(), 'bonus')).toBe(482_000);

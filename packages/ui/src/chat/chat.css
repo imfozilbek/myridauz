@@ -81,3 +81,11 @@
 .chat-input > :not(.chat-warning, button) {
   flex: 1;
 }
+
+/* One line like Telegram, growing with the text up to a few lines (docs/88 L2). */
+.chat-input textarea {
+  min-height: 0;
+  max-height: 120px;
+  resize: none;
+  field-sizing: content;
+}

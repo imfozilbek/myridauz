@@ -8,7 +8,8 @@ import { useI18n } from '../context/i18n-context';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { CarStep, type CarStepName } from './car-step';
-import { nextStep, previousStep, type Step } from './application-steps';
+import { useStepProgress } from '../flow/step-progress';
+import { nextStep, previousStep, progressOf, type Step } from './application-steps';
 import { useReasons } from './use-reasons';
 import { AvatarStep } from './steps/avatar-step';
 import { PhotosStep } from './steps/photos-step';
@@ -36,6 +37,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
   const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
   const [step, setStep] = useState<Step>(initial?.car ? 'review' : 'intro');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
+  useStepProgress(...progressOf(step));
   const { reasons, keepOnly, fixed } = useReasons(initial?.reasons ?? []);
   const reviewing = initial?.car !== null && initial?.car !== undefined;
 

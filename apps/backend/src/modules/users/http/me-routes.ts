@@ -5,6 +5,8 @@ import {
   REGISTRATION_PATH,
   registrationSchema,
   WRITE_ACCESS_PATH,
+  NEWS_PATH,
+  newsSchema,
   writeAccessSchema,
 } from '@platform/contracts';
 import { Hono } from 'hono';
@@ -15,7 +17,7 @@ import { setAvatar } from '../application/avatar';
 import { deleteAccount, type Forget } from '../application/delete-account';
 import { getMe, type UserSettings } from '../application/get-me';
 import type { UsersDeps } from '../application/ports';
-import { setWriteAccess } from '../application/profile';
+import { setNews, setWriteAccess } from '../application/profile';
 import { register } from '../application/register';
 import { callerOf, fail } from './respond';
 
@@ -65,6 +67,12 @@ export function meRoutes({ deps, settings, forget }: Wiring) {
           type: context.req.header('content-type') ?? '',
         };
         const result = await setAvatar(deps(context.env), callerOf(context), image);
+        return result.ok ? context.body(null, NO_CONTENT) : fail(context, result.error);
+      })
+      .post(NEWS_PATH, async (context) => {
+        const input = newsSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'users.invalid_input');
+        const result = await setNews(deps(context.env), callerOf(context), input.data.on);
         return result.ok ? context.body(null, NO_CONTENT) : fail(context, result.error);
       })
       .post(WRITE_ACCESS_PATH, async (context) => {
