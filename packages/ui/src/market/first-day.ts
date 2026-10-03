@@ -6,9 +6,10 @@ import { today, tomorrow } from './when';
 
 // The search opens on the nearest day with trips (G35, docs/97 K2): today, else tomorrow; with
 // none, today and its empty list. Both answers are kept, so the list shows them without a new load.
+// A day the person chose («Ertaga», the calendar) always wins over the one found.
 export function useFirstDay(route: Route, now: number, known?: string) {
   const { market } = useApiClients();
-  const [date, setDate] = useState<string | null>(known ?? null);
+  const [found, setFound] = useState<string | null>(null);
   useEffect(() => {
     if (known) return undefined;
     let active = true;
@@ -20,10 +21,10 @@ export function useFirstDay(route: Route, now: number, known?: string) {
         return trips.length;
       });
     Promise.all([look(first), look(next)]).then(
-      ([soon, later]) => active && setDate(soon === 0 && later > 0 ? next : first),
-      () => active && setDate(first),
+      ([soon, later]) => active && setFound(soon === 0 && later > 0 ? next : first),
+      () => active && setFound(first),
     );
     return () => void (active = false);
   }, [market, route, now, known]);
-  return date;
+  return known ?? found;
 }
