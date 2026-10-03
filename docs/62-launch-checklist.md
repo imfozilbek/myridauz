@@ -22,7 +22,7 @@
 | `@myrida_support_bot` | Rida \| yordam | наушники | `bot-support-description.png` | нет Mini App |
 
 - Файлы: `brands/rida/brand-kit/kit/telegram/` (собирается `pnpm build` бренд-пакета, `38`).
-- Кнопка меню у поля ввода: «ilova» (решение владельца 03.10.2026, ключ `bot.menu`); кнопки в сообщениях бота: «Ochish» (`bot.open`).
+- Кнопка меню у поля ввода: «ilova» (решение владельца 03.10.2026, ключ `bot.menu`); кнопки в сообщениях бота: «Ochish» (`bot.open`). Описания ботов до Start зовут нажать «ilova».
 - Тексты и имена меняются только в коде (`bot.json`), иначе `setup-bots` вернёт старые.
 - Если BotFather не принял SVG: сказать Claude (урок №20).
 
