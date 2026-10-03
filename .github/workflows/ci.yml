@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [format:check, lint, typecheck, knip, check:text, audit]
+        check: [typecheck, lint, format:check, knip, check:text, audit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -33,19 +33,19 @@ jobs:
 
   # The unit tests in parts at once, each file still isolated: CI in a minute (docs/45).
   test:
-    name: test (${{ matrix.shard }}/8)
+    name: test (${{ matrix.shard }}/9)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/8
+      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/9
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: blob-${{ matrix.shard }}
@@ -101,23 +101,18 @@ jobs:
 
   # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
   screenshots:
-    name: screenshots (${{ matrix.shard }}/2)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - run: pnpm screenshots --shard=${{ matrix.shard }}/2
+      - run: pnpm screenshots
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: screenshots-${{ matrix.shard }}
+          name: screenshots
           path: screenshots/
           retention-days: 14
 
