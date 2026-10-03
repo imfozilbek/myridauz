@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { fromIfAsked } from './market';
 import { register } from './registration';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -38,27 +39,20 @@ test('places: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
+  // The search opens the «Qayerga» list at once (G35, docs/97 K1).
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await expect(page.getByText(TEXT.from)).toBeVisible();
-  await shot('1-route');
-  await page.getByText(TEXT.from).click();
   await expect(page.getByAltText('Xorazm viloyati')).toBeVisible();
   await page.waitForLoadState('networkidle');
   await shot('2-regions');
-  await page.getByAltText('Samarqand viloyati').click();
-  await shot('3-districts');
-  await page.getByText('Samarqand shahri').click();
-  await page.getByText(TEXT.to).click();
-  await page.getByPlaceholder(TEXT.search).fill("g'ijduvon");
+  const search = page.getByPlaceholder(TEXT.search);
+  await search.fill("g'ijduvon");
+  await expect(page.getByText('Gʻijduvon')).toBeVisible();
   await shot('4-search');
-  await page.getByText('Gʻijduvon').click();
-  await shot('5-chosen');
-  await page.getByText(TEXT.from).click();
+  await search.fill('');
   await page.getByAltText('Toshkent shahri').click();
-  // The list of the way screen has no «whole city»: a person takes a district (G24).
+  await shot('3-districts');
   await page.getByText('Yunusobod').click();
-  await page.getByText(TEXT.to).click();
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
+  await fromIfAsked(page);
+  await expect(page.getByText(TEXT.insideCity)).toBeVisible();
   await shot('6-inside-city');
 });

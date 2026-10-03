@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { chooseRoute } from './market';
+import { searchRoute } from './market';
 import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -24,8 +24,7 @@ test('passenger: a search emptied by a filter says so (P6)', async ({ page }) =>
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await chooseRoute(page);
-  await page.getByText(TEXT.tomorrow).click();
+  await searchRoute(page);
   await expect(page.getByText('Jasur', { exact: false })).toBeVisible();
   await page.getByText(TEXT.womanFilter).first().click();
   await expect(page.getByText(t('market.search.clearFilters'))).toBeVisible();

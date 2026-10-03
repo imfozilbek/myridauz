@@ -3,10 +3,10 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
-import { chooseRoute } from './market';
+import { chooseRoute, searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
-// The search by lists and the booking with its points (G26, docs/74) on a narrow Android phone
+// The search by lists and the booking with its points (G26, G35, docs/97) on a narrow Android phone
 // first: most people in Uzbekistan use one (lesson 52). The flow itself is checked in map.spec.
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER, DRIVER] = MINI_APPS;
@@ -31,17 +31,15 @@ async function open(page: Page, port: number) {
   await page.goto(telegramUrl(appUrl(port), 'android'));
 }
 
-test('passenger: lists, seats, the door in Toshkent, the home, the check', async ({ page }) => {
+test('passenger: lists, the way, the door in Toshkent, the home, the check', async ({ page }) => {
   await open(page, PASSENGER.port);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await expect(page.getByText(TEXT.from)).toBeVisible();
+  await expect(page.getByText(TEXT.toTitle)).toBeVisible();
   await shot(page, '1-route');
-  await chooseRoute(page);
-  await page.getByText(TEXT.tomorrow).click();
+  await searchRoute(page);
   // On Android the native ripple layer lies over the text of a card: the tap goes to the card.
   await page.locator('.trip-card').first().click();
-  await page.getByText(TEXT.book).click();
-  await page.getByText(t('market.request.seats', { count: '1' })).click();
+  await mainButton(page).filter({ hasText: TEXT.book }).click();
   await expect(page.getByText(t('way.mode.door'))).toBeVisible();
   await shot(page, '2-way');
   await page.getByText(t('way.mode.door')).click();

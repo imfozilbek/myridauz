@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
-import { chooseRoute, openOwnTrip } from './market';
+import { openOwnTrip, searchRoute } from './market';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -24,19 +24,19 @@ test('passenger: «Orqaga» keeps the filters and the route, the list finds Sama
   await mockApi(page, 'active');
   await open(page, PASSENGER.port);
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await page.getByText(TEXT.from).click();
-  await page.getByPlaceholder(t('places.search')).fill('Samarkand');
+  const search = page.getByPlaceholder(t('places.search'));
+  await search.fill('Samarkand');
   await expect(page.getByText('Samarqand viloyati').first()).toBeVisible();
   await shot(page, 'fp3-samarkand');
-  await pressBack(page);
-  await chooseRoute(page);
-  // The day step first, then «Orqaga» (lesson 79).
-  await expect(page.getByText(TEXT.tomorrow)).toBeVisible();
+  await search.fill('');
+  await searchRoute(page);
+  // The results open at once (G35); «Orqaga» shows the route with both ends (lesson 79).
+  await expect(page.getByText(TEXT.otherDay)).toBeVisible();
   await pressBack(page);
   await expect(page.getByText(TEXT.from)).toBeVisible();
+  await expect(page.getByText('Samarqand shahri')).toBeVisible();
   await shot(page, 'fp2-route-kept');
   await page.locator('#tg-main-button').click();
-  await page.getByText(TEXT.tomorrow).click();
   await page.getByText(TEXT.womanFilter).first().click();
   await page.getByText('Nodira', { exact: false }).click();
   await pressBack(page);

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
@@ -6,6 +6,7 @@ import { askRide, offerOn, SAMARQAND } from './g27-kit';
 import { MUROD, OWNER } from './people';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
 import { register } from './seed';
+import { searchTo } from './search-kit';
 import { signedAs, type Person } from './stand-kit';
 import { standRows } from './stand-tools';
 
@@ -26,33 +27,17 @@ test('the first visit: «Siz haqingizda» before and after the gender', async ({
   await shot(page, 'android', 'pb02-phone');
 });
 
-async function chooseRoute(page: Page) {
-  await page.getByText(TEXT.from).click();
-  await shot(page, 'android', 'pb11-from');
-  await page.getByAltText('Toshkent shahri').click();
-  await shot(page, 'android', 'pb12-from-district');
-  await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText('Samarqand shahri', { exact: true }).click();
-  await shot(page, 'android', 'pb13-route');
-  await mainButton(page).click();
-}
-
 test('the search and the booking up to its review', async ({ page }) => {
   await publishTrip(MUROD, CHILONZOR, SAMARQAND, 'door');
   await register('passenger', SEEKER, 'female');
   await openHome(page, 'passenger', SEEKER, 'android');
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await shot(page, 'android', 'pb10-search');
-  await chooseRoute(page);
-  await shot(page, 'android', 'pb14-date');
-  await page.getByText(TEXT.tomorrow).click();
+  await searchTo(page, 'Samarqand viloyati', 'Samarqand shahri');
+  await expect(page.locator('.trip-card').filter({ hasText: MUROD.name }).first()).toBeVisible();
   await shot(page, 'android', 'pb15-results');
   await page.locator('.trip-card').filter({ hasText: MUROD.name }).first().click();
-  await page.getByText(TEXT.book).click();
-  await shot(page, 'android', 'pb16-seats');
-  await page.getByText(t('market.request.seats', { count: '1' })).click();
+  await mainButton(page).filter({ hasText: TEXT.book }).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await shot(page, 'android', 'pb17-pickup');
   await mainButton(page).click();
