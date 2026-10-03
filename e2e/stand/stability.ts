@@ -9,6 +9,8 @@ const JUMPS = 'screenshots/stand/g27/jumps.txt';
 const BLINK_MS = 250;
 // Shifts below this are rounding, not a jump a person sees.
 const SHIFT_MIN = 0.001;
+// A shift this soon after typing follows the person's own input, as the browser counts it.
+const INPUT_MS = 500;
 
 type Found = { readonly kind: 'shift' | 'blink'; readonly what: string; readonly size: number };
 
@@ -21,9 +23,13 @@ const WATCH = `(() => {
           ? '.' + node.className.trim().split(/\\s+/).filter((c) => !c.startsWith('tgui-')).join('.')
           : '') + ' «' + (node.textContent || '').trim().slice(0, 30) + '»'
       : '?';
+  // A filled field moves what shows the text, as typing does; the browser marks only keys as input.
+  let typed = -Infinity;
+  document.addEventListener('input', () => (typed = performance.now()), true);
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
-      if (entry.value < ${SHIFT_MIN} || entry.hadRecentInput) continue;
+      const byInput = entry.hadRecentInput || entry.startTime - typed < ${INPUT_MS};
+      if (entry.value < ${SHIFT_MIN} || byInput) continue;
       // What moved, by how much, and what stands above it: the cause is usually there.
       const what = (entry.sources || [])
         .map((s) => {
