@@ -26,6 +26,6 @@ async function save(name, body, width, height, type) {
 }
 
 fs.mkdirSync(OUT, { recursive: true });
-for (const role of ['driver', 'passenger']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
+for (const role of ['driver', 'passenger', 'support']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
 for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
 await browser.close();
