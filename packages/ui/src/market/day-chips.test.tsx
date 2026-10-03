@@ -2,6 +2,7 @@ import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { DayChips } from './day-chips';
+import { testClients } from '../test-shell';
 import { renderMarket } from './market-test-kit';
 
 afterEach(cleanup);
@@ -16,6 +17,7 @@ describe('the day chips (G35, docs/97 K2)', () => {
         onDay={() => undefined}
         onOther={() => undefined}
       />,
+      testClients({}),
     );
     expect(screen.queryByText('Boshqa kun')).toBeNull();
     expect(screen.getByRole('tab', { name: '6-oktabr', selected: true })).toBeTruthy();
