@@ -78,6 +78,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - uses: ./.github/actions/browser
       - run: pnpm e2e
 
   # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
@@ -89,6 +90,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - uses: ./.github/actions/browser
       - run: pnpm screenshots
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
