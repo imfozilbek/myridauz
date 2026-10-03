@@ -51,7 +51,7 @@ export function plate(code, { x = 0, y = 0, w = 568, codeColor = C.ink } = {}) {
 }
 
 const ROLES = {
-  passenger: { combo: 1, line: 'Safar toping' },
+  passenger: { combo: 1, line: 'Oʻzbekiston boʻylab safarlar' },
   driver: { combo: 6, line: 'Safaringizga yoʻlovchi toping' },
   admin: { combo: 5, line: 'Rida jamoasi uchun' }
 };
