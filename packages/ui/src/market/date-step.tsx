@@ -30,7 +30,9 @@ export function DateStep({ now, initial, onBack, onDone, calendar: only = false 
   const known = initial && initial >= first && initial <= last ? initial : null;
   const listed = known === first || known === tomorrow(now) ? known : null;
   const [calendar, setCalendar] = useState(only || (known !== null && listed === null));
-  const [other, setOther] = useState(listed === null ? (known ?? '') : '');
+  // Never an empty field (a blank bar on an iPhone): the day after tomorrow, the first day the
+  // chips do not have; «Davom etish» is there at once (G37).
+  const [other, setOther] = useState(listed === null && known ? known : tomorrow(now + DAY_MS));
   const choose = (date: string) => {
     haptic.select();
     onDone(date);
