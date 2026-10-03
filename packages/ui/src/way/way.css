@@ -4,7 +4,11 @@
   left: 50%;
   top: calc(50% + 8px);
   transform: translateX(-50%);
+  /* One width for «Joy aniqlanmoqda…» and the name that replaces it: the label does not shrink
+     or grow under the pin (G41, docs/108). */
+  min-width: 60%;
   max-width: 80%;
+  box-sizing: border-box;
   padding: 4px 10px;
   border-radius: 12px;
   background: var(--tgui--bg_color);
