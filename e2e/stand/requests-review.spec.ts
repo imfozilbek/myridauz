@@ -109,6 +109,7 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('market.requests.hint'))).toHaveCount(0);
     await shot('05-d-empty');
     await page.getByText(t('market.requests.publish')).click();
-    await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
+    // No pitak to Termiz: no choice of the way, the day is next (G40, docs/106 K2).
+    await expect(page.getByText(t('market.when.title'))).toBeVisible();
     await shot('06-d-publish');
   });
