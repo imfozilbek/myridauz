@@ -39,9 +39,9 @@
 
 | Бот | Вебхук | Кнопка меню |
 |---|---|---|
-| `@myrida_bot` | `api.myrida.uz/telegram/passenger` | «Ochish» → `passenger.myrida.uz` |
-| `@myrida_haydovchi_bot` | `api.myrida.uz/telegram/driver` | «Ochish» → `driver.myrida.uz` |
-| `@myrida_admin_bot` | `api.myrida.uz/telegram/admin` | нет: кнопка только в ответе команде |
+| `@myrida_bot` | `api.myrida.uz/telegram/passenger` | «ilova» → `passenger.myrida.uz` |
+| `@myrida_haydovchi_bot` | `api.myrida.uz/telegram/driver` | «ilova» → `driver.myrida.uz` |
+| `@myrida_admin_bot` | `api.myrida.uz/telegram/admin` | «ilova» → `admin.myrida.uz`: поставил владелец в BotFather, код её не трогает |
 | `@myrida_support_bot` | `api.myrida.uz/telegram/support` | нет: люди пишут вопрос (G30, `50`) |
 
 - Вебхук принимает только запросы с `secret_token` (заголовок Telegram).

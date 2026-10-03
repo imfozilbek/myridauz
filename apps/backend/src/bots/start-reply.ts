@@ -19,6 +19,13 @@ export const openButton = (brand: BrandConfig, role: BotRole) => ({
   web_app: { url: miniAppUrl(brand, role) },
 });
 
+// The menu button next to the input field: its own name, chosen by the owner (03.10.2026).
+export const menuButton = (brand: BrandConfig, role: BotRole) => ({
+  type: 'web_app',
+  text: t('bot.menu'),
+  web_app: { url: miniAppUrl(brand, role) },
+});
+
 // "Haydovchi boʻlish" in the passenger bot opens the driver bot (docs/02).
 const becomeDriver = (brand: BrandConfig) => ({
   text: t('bot.passenger.becomeDriver'),
