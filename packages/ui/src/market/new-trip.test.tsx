@@ -39,7 +39,6 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('asks the route, day and time on one screen, seats, price, comment and publishes', async () => {
     const { publishTrip, tracked } = setup();
     await chooseRoute();
-    await tap('Shahar boʻylab yigʻaman');
     await tap(/^Ertaga/);
     // A thin bar on top: how much of the trip is filled (docs/88 L4).
     const filled = async () => Number((await screen.findByRole('progressbar')).getAttribute('aria-valuenow'));
@@ -83,7 +82,6 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('takes the seats by the chairs and «ayol bor» on the same screen', async () => {
     const { publishTrip } = setup();
     await chooseRoute();
-    await tap('Shahar boʻylab yigʻaman');
     await tap(/^Ertaga/);
     await tap('Davom etish');
     expect(screen.queryByText('Mashinada ayol bor')).toBeNull();
@@ -99,7 +97,6 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     const { publishTrip } = setup('female');
     publishTrip.mockRejectedValueOnce(new Error('offline'));
     await chooseRoute();
-    await tap('Shahar boʻylab yigʻaman');
     for (const step of [
       /^Ertaga/,
       'Davom etish',
@@ -116,7 +113,6 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('lets a driver whose application is checked try everything but publishing', async () => {
     const { publishTrip } = setup('male', 'pending');
     await chooseRoute();
-    await tap('Shahar boʻylab yigʻaman');
     for (const step of [/^Ertaga/, 'Davom etish', 'Davom etish', 'Davom etish', 'Izohsiz davom etish'])
       await tap(step);
     expect(await screen.findByText('Ariza tasdiqlangach safarni eʼlon qila olasiz.')).toBeTruthy();

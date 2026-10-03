@@ -2,7 +2,7 @@ import type { Complaint } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { CellValue } from '../account/cell-value';
-import { Cell, List, Section } from '../components';
+import { Cell, List, Section, Snackbar } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -30,6 +30,7 @@ const QUEUE = 'complaints.queue';
 export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('complaints.queue');
   useScreenBackground('grouped');
+  const { t } = useI18n();
   const { feedback } = useApiClients();
   const [queue, setQueue] = useState<Complaint[] | null>(null);
   const [failed, setFailed] = useState(false);
@@ -49,10 +50,32 @@ export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
     setOpen(null);
     void refresh();
   };
-  if (open) return <ComplaintReview id={open} onBack={close} />;
+  // The next complaint opens at once, as the applications do; the empty queue says so (docs/89 S9).
+  const [told, setTold] = useState(false);
+  const next = () => {
+    forgetLaunchParam(PARAM);
+    setTold(true);
+    feedback.queue().then((fresh) => {
+      setQueue(fresh);
+      setOpen(fresh.find((complaint) => complaint.id !== open)?.id ?? null);
+    }, close);
+  };
+  const notice = told ? <Snackbar onClose={() => setTold(false)}>{t('complaints.decided')}</Snackbar> : null;
+  if (open)
+    return (
+      <>
+        <ComplaintReview key={open} id={open} onBack={close} onDecided={next} />
+        {notice}
+      </>
+    );
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   if (!queue) return <ScreenSkeleton onBack={onBack} />;
-  return <ComplaintsList queue={queue} onOpen={setOpen} onBack={onBack} onRefresh={refresh} />;
+  return (
+    <>
+      <ComplaintsList queue={queue} onOpen={setOpen} onBack={onBack} onRefresh={refresh} />
+      {notice}
+    </>
+  );
 }
 
 type ListProps = {

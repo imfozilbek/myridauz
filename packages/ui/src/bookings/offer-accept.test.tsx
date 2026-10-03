@@ -1,6 +1,7 @@
 import type { BookingsClient, ChatClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { OFFER_LINK } from '@platform/contracts';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
@@ -37,5 +38,18 @@ describe('a passenger takes an offer of a driver (docs/09)', () => {
     // The card for the close people is the second button (docs/89 P9).
     await tap('Yaqinlarimga yuborish');
     await vi.waitFor(() => expect(share).toHaveBeenCalledWith('b1'));
+  });
+
+  it('a bot button opens the offer itself; «Назад» shows its request (G40, docs/106 K6)', async () => {
+    renderMarket(
+      <MyRequestsScreen onBack={() => undefined} link={{ name: OFFER_LINK, id: offer.id }} />,
+      testClients({
+        market: { myRequests: async () => [request] },
+        bookings: { myBookings: async () => [], myOffers: async () => [offer] },
+      }),
+    );
+    expect(await screen.findByText('Qabul qilish')).toBeTruthy();
+    await tap('Orqaga');
+    expect(await screen.findByText('Haydovchilardan takliflar')).toBeTruthy();
   });
 });

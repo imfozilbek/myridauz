@@ -105,10 +105,8 @@ describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
       'Qayerdan',
       'Toshkent shahri',
       'Butun shahar',
-      'Qayerga',
       'Fargʻona viloyati',
       'Butun viloyat',
-      'Davom etish',
       /^Ertaga/,
     ])
       await tap(step);

@@ -14,6 +14,7 @@ import type { RequestStepName, useNewRequest } from './new-request-state';
 import { PriceStep } from './price-step';
 import { RequestModeStep } from './request-mode-step';
 import { RequestReview } from './request-review';
+import { rememberRoute } from './recent-routes';
 
 export type Search = { readonly route: Route; readonly date: string };
 export type Find = (id: string) => Location | undefined;
@@ -58,6 +59,8 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
         {...(route ? { initial: route } : { pick: 'to' as const })}
         onBack={onBack}
         onDone={(chosen) => {
+          // The route of a request is one tap away on the main screen next time (G40, docs/106 K9).
+          rememberRoute(chosen);
           const kept = rememberedWay(chosen.from.id, chosen.to.id, find);
           next({ route: chosen, ...(kept ?? {}) });
         }}

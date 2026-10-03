@@ -14,24 +14,26 @@ type Props = {
   readonly selected?: PickupMode;
   readonly onBack: () => void;
   readonly onDone: (mode: PickupMode) => void;
+  // No pitak on the direction: only «around the city», the step is not shown (G40, docs/106 K2).
+  readonly onSkip: () => void;
 };
 
 // How the driver picks people up (docs/70). The driver never chooses the pitak: the system takes
 // the one of the direction; a direction without a pitak has only «around the city». The pitak is
 // on a small map above the choices: the driver sees where they will wait (G26, docs/74).
-export function TripModeStep({ route, selected, onBack, onDone }: Props) {
+export function TripModeStep({ route, selected, onBack, onDone, onSkip }: Props) {
   const { t } = useI18n();
   const { map } = useApiClients();
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   useEffect(() => {
     map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
   }, [map, route]);
-  if (pitak === undefined) return <ScreenSkeleton onBack={onBack} />;
-  const modes = PICKUP_MODES.filter((mode) => mode === 'door' || pitak !== null);
-  const choices = modes.map((mode) => ({
+  useEffect(() => void (pitak === null && onSkip()), [pitak]);
+  if (!pitak) return <ScreenSkeleton onBack={onBack} />;
+  const choices = PICKUP_MODES.map((mode) => ({
     value: mode,
     label: t(`way.trip.mode.${mode}`),
-    ...(mode !== 'door' && pitak ? { subtitle: pitak.name } : {}),
+    ...(mode !== 'door' ? { subtitle: pitak.name } : {}),
   }));
   return (
     <ChoiceStep
@@ -39,8 +41,8 @@ export function TripModeStep({ route, selected, onBack, onDone }: Props) {
       icon="origin"
       title={t('way.trip.mode.title')}
       choices={choices}
-      {...(pitak ? { lead: <PitakMap pitak={pitak} /> } : {})}
-      {...(selected && modes.includes(selected) ? { selected } : {})}
+      lead={<PitakMap pitak={pitak} />}
+      {...(selected ? { selected } : {})}
       onBack={onBack}
       onDone={onDone}
     />

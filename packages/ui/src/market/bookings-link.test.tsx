@@ -32,7 +32,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
     expect(window.location.search).toBe('');
   });
 
-  it('opens the request of a new offer from "?offer="', async () => {
+  it('opens a new offer itself from "?offer=" (G40, docs/106 K6)', async () => {
     const OFFER_ID = '0000000c-0000-4000-8000-000000000001';
     window.history.replaceState(null, '', `/?offer=${OFFER_ID}`);
     const request = {
@@ -56,6 +56,6 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
         bookings: { myBookings: async () => [], myOffers: async () => [{ ...offer, id: OFFER_ID }] },
       }),
     );
-    expect(await screen.findByText('Haydovchilardan takliflar')).toBeTruthy();
+    expect(await screen.findByText('Qabul qilish')).toBeTruthy();
   });
 });

@@ -55,10 +55,9 @@ describe('The requests a driver looks for (G37, docs/101)', { timeout: 20_000 },
       <RequestsSearchFlow onBack={() => undefined} />,
       testClients({ market: { searchRequests, recommend: async () => recommendation } }),
     );
-    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Qayerga', 'Fargʻona viloyati'])
+    // «Qayerga» opens by itself, both ends go on at once (G40, docs/106 K1).
+    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
-    await tap('Fargʻona shahri');
-    await tap('Davom etish');
   };
 
   it('opens today at once and moves to tomorrow on the screen (R2)', async () => {
@@ -80,6 +79,7 @@ describe('The requests a driver looks for (G37, docs/101)', { timeout: 20_000 },
     expect(screen.queryByText(/taklifingizni kutmoqda/u)).toBeNull();
     expect(screen.queryByText('Xabar bering')).toBeNull();
     await tap('Safar eʼlon qilish');
-    expect(await screen.findByText('Yoʻlovchilarni qayerdan olasiz?')).toBeTruthy();
+    // No pitak on the direction: no choice of the way, the day is next (G40, docs/106 K2).
+    expect(await screen.findByText('Qachon joʻnaysiz?')).toBeTruthy();
   });
 });

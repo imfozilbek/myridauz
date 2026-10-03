@@ -2,7 +2,7 @@ import type { Booking, Trip } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { booking } from '../bookings/booking-test-kit';
 import { trip } from '../market/market-test-kit';
-import { lastRoute, nextBookings, nextTrips } from './home-items';
+import { againOf, lastTrip, nextBookings, nextTrips } from './home-items';
 
 const HOUR = 3_600_000;
 const tripAt = (id: string, hours: number, status: Trip['status'] = 'active'): Trip => ({
@@ -44,9 +44,15 @@ describe('the trips of the main screen (G25)', () => {
     ]);
   });
 
-  it('remembers the route of the last trip of a driver', () => {
-    const trips = [tripAt('old', -48, 'completed'), { ...tripAt('new', -24, 'completed'), to: '1718401' }];
-    expect(lastRoute(trips)).toEqual({ from: trip.from, to: '1718401' });
-    expect(lastRoute([])).toBeNull();
+  it('remembers the last trip of a driver with its answers, not who rides (G40, docs/106 K3)', () => {
+    const last = { ...tripAt('new', -24, 'completed'), to: '1718401', seats: 2, price: 90_000, woman: true };
+    expect(lastTrip([tripAt('old', -48, 'completed'), last])).toBe(last);
+    expect(lastTrip([])).toBeNull();
+    expect(againOf({ ...last, comment: 'Konditsioner bor' })).toEqual({
+      pickupMode: last.pickupMode,
+      seats: 2,
+      price: 90_000,
+      comment: 'Konditsioner bor',
+    });
   });
 });

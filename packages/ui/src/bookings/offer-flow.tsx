@@ -73,7 +73,8 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
     return (
       <PriceStep
         recommendation={recommendation}
-        {...(price === null ? {} : { initial: price })}
+        // The price the passenger asked for first: an offer at it is taken more often (G40, docs/106 K5).
+        initial={price ?? request.price}
         commission
         onBack={() => setStep('time')}
         onDone={(value) => {

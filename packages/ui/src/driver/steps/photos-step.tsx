@@ -55,6 +55,9 @@ export function PhotosStep({ photos, reasons, onPhotos, onBack, onDone }: Photos
       if (next) onPhotos(next);
       setVersion((value) => value + 1);
       haptic.success();
+      // The camera opens again for the next empty photo: no tap per slot (G40, docs/106 K7).
+      const missing = next && CAR_PHOTO_KINDS.find((item) => item !== current && !next.photos[item]);
+      if (missing) take(missing);
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught, 'drivers.photos.failed'));
