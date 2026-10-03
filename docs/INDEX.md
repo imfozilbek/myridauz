@@ -102,4 +102,5 @@
 | 97 | [97-passenger-search.md](97-passenger-search.md) | Попутчик ищет поездку: экраны, ошибки и неудобства (PS1 … PS17) |
 | 98 | [98-g35-texts.md](98-g35-texts.md) | G35: новые тексты пути попутчика на согласие (U1 … U7) |
 | 99 | [99-lessons-learned-7.md](99-lessons-learned-7.md) | Журнал уроков: продолжение 7 (№101 и дальше) |
+| 100 | [100-dropoff-screen.md](100-dropoff-screen.md) | Экран точки на карте: 5 проблем, варианты A, B, C, выбран A (G36) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
