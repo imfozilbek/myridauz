@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { book, CHILONZOR, publishTrip } from './market-kit';
-import { askRide, confirmedSeat, SAMARQAND, TO_SAMARQAND } from './g27-kit';
+import { askRide, confirmedSeat, dayAfterTomorrow, SAMARQAND, TO_SAMARQAND } from './g27-kit';
 import { MALIKA, OYBEK, ROZA } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
 import { outsideCalls, type Person } from './stand-kit';
@@ -16,7 +16,8 @@ test.beforeAll(async () => {
   await confirmedSeat(OYBEK, MALIKA);
   const trip = await publishTrip(OYBEK, CHILONZOR, SAMARQAND, 'door');
   await book(ROZA, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
-  await askRide(ROZA);
+  // Roza asks for tomorrow in driver-account: here another day (G37, docs/101 R5).
+  await askRide(ROZA, dayAfterTomorrow());
 });
 
 test('a newcomer: welcome and the way to become a driver', async ({ page }) => {

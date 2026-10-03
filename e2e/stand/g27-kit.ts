@@ -63,6 +63,8 @@ const HOUR = 60 * MINUTE;
 const TASHKENT = 5 * HOUR;
 const DAY = 24 * HOUR;
 export const tomorrow = () => tashkentDate(Date.now() + DAY);
+// One open request of a person on a route and day (G37, docs/101 R5): a second one takes another day.
+export const dayAfterTomorrow = () => tashkentDate(Date.now() + 2 * DAY);
 // 09:00 in Tashkent on that day.
 const nineOn = (date: string) => Date.parse(`${date}T09:00:00Z`) - TASHKENT;
 
