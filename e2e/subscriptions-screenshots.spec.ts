@@ -25,7 +25,9 @@ test('passenger: Xabar bering and Obunalar', async ({ page }) => {
   const shot = shooter(page, 'subscriptions');
   await open(page, `${telegramUrl(appUrl(PASSENGER.port))}&tgWebAppStartParam=sub_1726_1730_${day(2)}`);
   await passengerSubscribes(page, shot);
+  // Only the hash of the address changes: the page loads again by itself only after a reload.
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+  await page.reload();
   await passengerList(page, shot);
 });
 

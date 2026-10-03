@@ -68,7 +68,8 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await expect(page.getByText(B.plate)).toBeVisible();
   await shot('2-booking');
   await pressBack(page);
-  await page.getByText('Madina').click();
+  // The own request card shows no own name (G37, docs/101 R6): the price of one seat opens it.
+  await page.getByText(t('market.request.perSeat')).first().click();
   await expect(page.getByText(B.offers)).toBeVisible();
   await shot('3-request');
   await page.getByText('Jasur').click();
