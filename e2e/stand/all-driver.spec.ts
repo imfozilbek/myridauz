@@ -80,11 +80,13 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
   await page.getByText(TEXT.tomorrow).click();
   await mainButton(page).click();
   await shot(page, 'android', 'da42-seats');
+  // Three chairs of four: somebody already goes, «Mashinada ayol bor» is right here (G38).
+  await page.getByLabel(t('market.trip.seats', { count: 3 })).click();
+  await expect(page.getByText(t('market.search.woman'))).toBeVisible();
+  await shot(page, 'android', 'da43-seats-woman');
   await mainButton(page).click();
-  await shot(page, 'android', 'da43-price');
+  await shot(page, 'android', 'da44-price');
   await mainButton(page).click();
-  await shot(page, 'android', 'da44-woman');
-  await page.getByText(t('market.woman.no')).click();
   await shot(page, 'android', 'da45-comment');
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);

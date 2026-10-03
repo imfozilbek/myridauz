@@ -57,7 +57,9 @@ test('P64, S21. a request of a day that is over expires by the Cron', async () =
 
 test('N09. a driver at the limit of live trips hears it before offering', async () => {
   const request = await askRide(MALIKA, dayAfterTomorrow());
-  const publish = () => outcome(publishTrip(RUSTAM, CHILONZOR, SAMARQAND, 'door'));
-  while ((await publish()) === 'ok');
+  // One trip a day on the days around the request's: at most 3 live trips (docs/103).
+  const publish = (days: number) => outcome(publishTrip(RUSTAM, CHILONZOR, SAMARQAND, 'door', days));
+  for (const days of [1, 3, 4]) expect(await publish(days)).toBe('ok');
+  expect(await publish(5)).toBe('trips.too_many');
   expect(await outcome(offerOn(RUSTAM, request.id, dayAfterTomorrow()))).toBe('trips.too_many');
 });
