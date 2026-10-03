@@ -77,12 +77,7 @@ export function MyRequestsList({ lists, onBack, onRefresh, onBooking, onRequest,
           items={requests}
           render={(request) => (
             <div key={request.id} data-row={`request:${request.id}`}>
-              <RequestCard
-                request={request}
-                showStatus
-                offers={sent(request)}
-                onOpen={() => onRequest(request)}
-              />
+              <RequestCard request={request} own offers={sent(request)} onOpen={() => onRequest(request)} />
             </div>
           )}
         />

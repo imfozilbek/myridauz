@@ -3,7 +3,7 @@ import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
 import { StepLayout } from '../account/step-layout';
-import { Cell, List, Section } from '../components';
+import { Banner, Cell, List, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
@@ -15,6 +15,7 @@ import { PointRow } from '../way/point-row';
 import { rememberWay } from '../way/remembered-way';
 import { useNameText } from '../way/way-end';
 import { errorKey } from './error-text';
+import { ExistingRequest } from './existing-request';
 import type { RequestAnswer, RequestStepName } from './new-request-state';
 import { PlacesGate } from './places-gate';
 import { RouteView } from './route-view';
@@ -40,6 +41,8 @@ export function RequestReview({ answer, pitak, onSeats, onChange, onBack, onSent
   const { market } = useApiClients();
   const nameText = useNameText();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
+  // A request on this route and day is already open: the button opens it (G37, docs/101 R5).
+  const [mine, setMine] = useState(false);
   const { route, date, mode, pickup, dropoff, price } = answer;
   const seats = answer.seats ?? 1;
   const publish = async () => {
@@ -62,6 +65,18 @@ export function RequestReview({ answer, pitak, onSeats, onChange, onBack, onSent
       {label}
     </Cell>
   );
+  const exists = error === 'errors.trips.request_exists';
+  // Back from the open request (cancelled, or only looked at): this request can be left again.
+  const closeMine = () => {
+    setMine(false);
+    setError(null);
+  };
+  if (mine && route && date)
+    return (
+      <PlacesGate onBack={closeMine}>
+        <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={closeMine} />
+      </PlacesGate>
+    );
   const start = mode === 'pitak' ? (pitak?.name ?? '') : pickup ? nameText(pickup.name, pickup.place) : '';
   return (
     <PlacesGate>
@@ -71,6 +86,9 @@ export function RequestReview({ answer, pitak, onSeats, onChange, onBack, onSent
         hint={t('market.request.review.hint')}
       >
         <Screen onBack={onBack} />
+        {exists ? (
+          <Banner type="section" before={<IconTile name="request" tone="accent" />} header={t(error)} />
+        ) : null}
         <List>
           <Section>
             {route ? (
@@ -106,8 +124,12 @@ export function RequestReview({ answer, pitak, onSeats, onChange, onBack, onSent
             {line('price', t('market.review.price'), formatMoney(price ?? 0))}
           </Section>
         </List>
-        {error ? <Text className="step-error">{t(error)}</Text> : null}
-        <MainButton text={t('market.request.publish')} onClick={publish} />
+        {error && !exists ? <Text className="step-error">{t(error)}</Text> : null}
+        {exists ? (
+          <MainButton text={t('market.request.openMine')} onClick={() => setMine(true)} />
+        ) : (
+          <MainButton text={t('market.request.publish')} onClick={publish} />
+        )}
       </StepLayout>
     </PlacesGate>
   );

@@ -2,10 +2,10 @@ import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FindTripFlow } from '../market/find-trip-flow';
-import { quickRoute, renderMarket, tap, trip } from '../market/market-test-kit';
+import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
+import { NotifyMe } from './notify-me';
 import { SubscribeLink } from './subscribe-link';
 import { SubscriptionsLink } from './subscriptions-link';
 
@@ -25,14 +25,15 @@ const ANY: Subscription = {
   expired: true,
 };
 
+// The empty day of a search has one action, the request (G37, docs/101 R9): «Xabar bering» lives
+// on a closed trip and on a channel post.
 describe('"Xabar bering" (docs/24)', () => {
   it('subscribes to the searched route for the day or any day', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
     const { tracked } = renderMarket(
-      <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
+      <NotifyMe from="1726269" to="1730401" date="2026-10-02" />,
+      testClients({ subscriptions: { subscribe } }),
     );
-    await quickRoute();
     await tap('Xabar bering');
     await tap('Istalgan kun');
     expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
@@ -45,10 +46,9 @@ describe('"Xabar bering" (docs/24)', () => {
       throw new ApiError(409, 'subscriptions.too_many');
     });
     renderMarket(
-      <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips: async () => [] }, subscriptions: { subscribe } }),
+      <NotifyMe from="1726269" to="1730401" date="2026-10-02" />,
+      testClients({ subscriptions: { subscribe } }),
     );
-    await quickRoute();
     await tap('Xabar bering');
     await tap(/^Faqat/);
     expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();

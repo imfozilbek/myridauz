@@ -34,7 +34,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
       }),
     );
     expect(await screen.findByText('2 ta taklif')).toBeTruthy();
-    await tap('Dilnoza');
+    await tap('bir joy uchun');
     expect(screen.getAllByText(/4,8/)).toHaveLength(2);
   });
 

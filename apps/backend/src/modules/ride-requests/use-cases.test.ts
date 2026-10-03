@@ -17,8 +17,24 @@ describe('ride requests (docs/09, docs/35)', () => {
       ok: false,
       error: 'trips.price_out_of_bounds',
     });
-    for (let index = 0; index < 3; index += 1) expect((await publishRequest(deps, 1, request)).ok).toBe(true);
-    expect(await publishRequest(deps, 1, request)).toEqual({ ok: false, error: 'trips.too_many' });
+    const days = ['2026-10-01', '2026-10-02', '2026-10-03'];
+    for (const date of days) expect((await publishRequest(deps, 1, { ...request, date })).ok).toBe(true);
+    expect(await publishRequest(deps, 1, { ...request, date: '2026-10-04' })).toEqual({
+      ok: false,
+      error: 'trips.too_many',
+    });
+  });
+
+  it('keeps one open request of a person on one route and day (G37, docs/101 R5)', async () => {
+    const { deps, request } = setup();
+    expect((await publishRequest(deps, 1, request)).ok).toBe(true);
+    expect(await publishRequest(deps, 1, { ...request, seats: 2 })).toEqual({
+      ok: false,
+      error: 'trips.request_exists',
+    });
+    // Another day, or another person on the same day, is a new request.
+    expect((await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).ok).toBe(true);
+    expect((await publishRequest(deps, 2, request)).ok).toBe(true);
   });
 
   it('checks the way and the points (G24, docs/70)', async () => {

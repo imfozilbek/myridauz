@@ -45,6 +45,9 @@ describe('FindTripFlow: the day and the empty day (G35, docs/97 K2, K6)', { time
       testClients({ market: { searchTrips: async () => [], publishRequest, recommend }, map: testMap() }),
     );
     await quickRoute();
+    // One main action on an empty day: the request, no second button beside it (G37, docs/101 R9).
+    expect(await screen.findByText('Bu kunga safar topilmadi')).toBeTruthy();
+    expect(screen.queryByText('Xabar bering')).toBeNull();
     await tap('Soʻrov qoldirish');
     // The route and the day come from the search: the way of the pickup is the next question.
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();

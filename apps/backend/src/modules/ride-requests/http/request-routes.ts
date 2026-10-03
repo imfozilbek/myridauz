@@ -15,6 +15,7 @@ const STATUS = {
   'trips.invalid_input': 400,
   'trips.not_driver': 403,
   'trips.too_many': 409,
+  'trips.request_exists': 409,
   'trips.price_out_of_bounds': 422,
   'trips.in_past': 422,
   'trips.wrong_status': 409,

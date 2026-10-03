@@ -28,7 +28,7 @@ describe('a passenger takes an offer of a driver (docs/09)', () => {
         chat: { share },
       }),
     );
-    await tap('Dilnoza');
+    await tap('bir joy uchun');
     expect(screen.getByText('Haydovchilardan takliflar')).toBeTruthy();
     await tap('Jasur');
     await tap('Qabul qilish');

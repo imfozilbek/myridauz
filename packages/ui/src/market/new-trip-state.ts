@@ -29,19 +29,20 @@ function checkSaved(value: unknown): Saved | null {
 
 // The answers of a new trip and its step, kept as a draft after every step and every typed letter
 // of the comment (docs/94 F3, F8): «Назад» and a reopened app show each answer as it was.
-export function useNewTrip(known: Route | undefined) {
+// A trip from the empty day of the requests (G37, docs/101 R4) comes with its route and day.
+export function useNewTrip(known: Route | undefined, day?: string) {
   const { track } = useAnalytics();
   const { market } = useApiClients();
   const start: Saved = {
     step: known ? 'mode' : 'route',
-    answer: known ? { route: known } : {},
+    answer: { ...(known ? { route: known } : {}), ...(day ? { date: day } : {}) },
     isReturn: false,
   };
   const { value, setValue, restored, clear } = useFlowDraft(
     DRAFT_KEY,
     checkSaved,
     start,
-    known !== undefined,
+    known !== undefined || day !== undefined,
   );
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const go = (step: Step) => setValue((saved) => ({ ...saved, step }));

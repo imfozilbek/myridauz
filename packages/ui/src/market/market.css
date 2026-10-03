@@ -81,6 +81,14 @@
   font-weight: 600;
   color: var(--tgui--text_color);
 }
+/* The price of one seat and what it is for, right under it (G37, docs/101 R7). */
+.trip-price-box {
+  display: grid;
+  justify-items: end;
+}
+.trip-price-unit {
+  color: var(--tgui--hint_color);
+}
 
 /* A sum is read as one piece: "90 000 soʻm" never breaks into two lines. */
 .market .cell-value {

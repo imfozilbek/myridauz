@@ -5,6 +5,7 @@
   "locations.inside_city": "Shahar ichida safar yoʻq. Boshqa shahar yoki tumanni tanlang.",
   "trips.too_many": "Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.",
   "trips.too_many_seats": "Boʻsh joylar mashinangizdagidan koʻp boʻlmasin.",
+  "trips.request_exists": "Bu kunga shu yoʻnalishda soʻrovingiz bor.",
   "trips.price_out_of_bounds": "Narx ruxsat etilgan chegarada boʻlsin.",
   "trips.in_past": "Bu vaqt oʻtib ketgan. Keyinroq vaqtni tanlang.",
   "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak.",

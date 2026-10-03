@@ -83,7 +83,7 @@ describe('Mening safarlarim (docs/35)', () => {
         bookings: { myBookings: async () => [], myOffers: async () => [] },
       }),
     );
-    await tap('Dilnoza');
+    await tap('bir joy uchun');
     expect(screen.getByText('Faol')).toBeTruthy();
     await tap('Soʻrovni bekor qilish');
     expect(cancelRequest).toHaveBeenCalledWith('r1');
