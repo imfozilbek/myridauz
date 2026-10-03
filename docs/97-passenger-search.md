@@ -64,7 +64,7 @@
 
 ## Приветствие бота попутчиков (согласовано владельцем 03.10.2026)
 
-Start в `@myrida_bot`: картинка `passenger-welcome.png` (R и 4 знака: поиск, проверенный водитель, «Mashinada ayol bor», скрытый номер) и текст `bot.hello` + `bot.passenger.welcome`; кнопки «Ochish» и «Haydovchi boʻlish». Как у водителя (`95`).
+Start в `@myrida_bot`: картинка `passenger-welcome.png` (R и 4 знака: поиск, проверенный водитель, «Mashinada ayol bor», скрытый номер) и текст `bot.hello` + `bot.passenger.welcome`; кнопки «Ochish» и «Haydovchi boʻlish». Как у водителя (`95`). Бот поддержки так же: картинка `support-welcome.png` и текст `bot.support.welcome` с часами команды из конфига бренда (`50`).
 
 ## Дальше
 

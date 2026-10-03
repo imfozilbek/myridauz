@@ -35,7 +35,7 @@
   "driver.changesRequested": "Arizangizda tuzatish kerak:\n{reasons}\nIlovada belgilangan joylarni tuzatib, qayta yuboring.",
   "driver.received": "Arizangiz qabul qilindi. Jamoamiz uni 1 soat ichida tekshiradi va natijani shu yerga yozadi.",
   "driver.receivedNight": "Arizangiz qabul qilindi. Arizalarni har kuni soat {from} dan {to} gacha tekshiramiz, shuning uchun ertalab javob beramiz.",
-  "support.welcome": "Assalomu alaykum. Bu {brand} yordam xizmati. Savolingizni yozing, jamoamiz javob beradi.",
+  "support.welcome": "Assalomu alaykum! Bu {brand} yordam xizmati.\n\nBu yerga yozing:\n💬 Safar, bron, hamyon yoki hisob boʻyicha savolingiz.\n🎤 Ovozli xabar yoki 🖼 rasm ham yuborsa boʻladi.\n🕖 Jamoamiz har kuni soat {from} dan {to} gacha javob beradi.\n\nSavolingizni shu yerga yozing.",
   "support.received": "Xabaringiz qabul qilindi. Tez orada javob beramiz.",
   "support.incoming": "Murojaat: {name} (ID {id})\n\n{text}",
   "support.reply": "Javob berish",

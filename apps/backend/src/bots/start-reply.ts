@@ -6,7 +6,7 @@ const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 // A driver who came from the passenger bot already knows Rida: another first line (G34).
 const FROM_PASSENGER = 'from_passenger';
 // The welcome pictures of the public bots, served by the landing (brand-kit/landing/bot.mjs).
-const welcomePicture = (brand: BrandConfig, role: 'passenger' | 'driver') =>
+export const welcomePicture = (brand: BrandConfig, role: 'passenger' | 'driver' | 'support') =>
   `https://${brand.domain}/bot/${role}-welcome.png`;
 
 // A close person opens the passenger Mini App to follow a trip, no registration (docs/43).

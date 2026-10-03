@@ -1,4 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
+import { hourLabel } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { assignTo } from '../modules/assignments';
 import { forwardToTeam, recordSupport, supportDeps, supportTalk } from '../modules/support';
@@ -6,6 +7,7 @@ import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import { isStartCommand, type BotMessage } from './telegram-update';
 import { mediaOf } from './media';
+import { welcomePicture } from './start-reply';
 import { copyButtons } from './support-reply';
 import { withLabel } from './support-talk';
 
@@ -49,9 +51,19 @@ async function toSupport(context: BotContext, message: BotMessage) {
   return sendMessage(chatId, t('bot.support.received'));
 }
 
+// The welcome: a picture with the words and the team hours under it (owner approval 03.10.2026).
+function supportWelcome(brand: BrandConfig, chatId: number) {
+  const { from, to } = brand.moderation.hours;
+  return {
+    method: 'sendPhoto',
+    chat_id: chatId,
+    photo: welcomePicture(brand, 'support'),
+    caption: t('bot.support.welcome', { brand: brand.name, from: hourLabel(from), to: hourLabel(to) }),
+  };
+}
+
 // The support bot answers everyone, a blocked person too: support is where a block is asked about.
 export function onSupportMessage(context: BotContext, message: BotMessage) {
-  if (isStartCommand(message.text))
-    return sendMessage(message.chat.id, t('bot.support.welcome', { brand: context.brand.name }));
+  if (isStartCommand(message.text)) return supportWelcome(context.brand, message.chat.id);
   return toSupport(context, message);
 }

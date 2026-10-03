@@ -47,7 +47,7 @@ test('S05. the offer comes with a button that opens this offer', async () => {
 });
 
 test('T60, T61. a person writes to the support bot, the team answers by a reply (G30)', async () => {
-  expect((await say('support', AZIZA, '/start')).text).toContain(wordsOf('bot.support.welcome'));
+  expect((await say('support', AZIZA, '/start')).caption).toContain(wordsOf('bot.support.welcome'));
   const received = await say('support', AZIZA, 'Salom, safar topa olmayapman');
   expect(received.text).toBe(wordsOf('bot.support.received'));
   const { member, other } = assigned(AZIZA);
