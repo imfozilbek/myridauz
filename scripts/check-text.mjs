@@ -8,8 +8,9 @@ const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclud
   .split('\0')
   .filter((path) => path && isTextFile(path) && existsSync(path));
 
+// A brand is a folder of brands/; node_modules and hidden folders (the .tsc of typecheck) are not.
 const brandIds = readdirSync('brands', { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
+  .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules' && !entry.name.startsWith('.'))
   .map((entry) => entry.name);
 
 const violations = files.flatMap((path) => findViolations(path, readFileSync(path, 'utf8'), brandIds));
