@@ -32,13 +32,14 @@ const complaint = (id: string, reason: Complaint['reason'], high: boolean): Comp
 describe('complaints of the team (docs/17)', () => {
   it('opens a complaint, shows the chat on demand and blocks for 7 days', async () => {
     const decide = vi.fn<FeedbackClient['decide']>(async () => undefined);
+    const opened = vi.fn<FeedbackClient['complaint']>(async (id) => complaint(id, 'harassment', true));
     const chat = vi.fn<FeedbackClient['chat']>(async () => [
       { author: '00000000000000000000000000000001', text: 'Tezroq chiq', at: 1 },
     ]);
     const clients = testClients({
       feedback: {
         queue: async () => [complaint('c1', 'harassment', true), complaint('c2', 'no_show', false)],
-        complaint: async (id) => complaint(id, 'harassment', true),
+        complaint: opened,
         chat,
         decide,
       },
@@ -64,6 +65,8 @@ describe('complaints of the team (docs/17)', () => {
       expect(decide).toHaveBeenCalledWith('c1', { action: 'block', days: 7, refund: false }),
     );
     expect(await screen.findByText('Qaror saqlandi')).toBeTruthy();
+    // The next complaint opens by itself (G40, docs/106 K8).
+    await waitFor(() => expect(opened).toHaveBeenLastCalledWith('c2'));
     expect(tracked.some((event) => event.name === 'complaint_decided')).toBe(true);
   });
 

@@ -52,12 +52,27 @@ describe('an offer keeps its answers (docs/94 F8, F9)', { timeout: 20_000 }, () 
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it('starts the price at the one the passenger asked for (G40, docs/106 K5)', async () => {
+    renderMarket(
+      <PlacesGate>
+        <OfferFlow
+          request={{ ...request, price: 110_000 }}
+          onBack={() => undefined}
+          onClose={() => undefined}
+        />
+      </PlacesGate>,
+      testClients({ market: { recommend: async () => recommendation } }),
+    );
+    fireEvent.change(await screen.findByLabelText(TIME), { target: { value: '10:30' } });
+    await tap('Davom etish');
+    expect(await screen.findByText(/^110\s000/u)).toBeTruthy();
+  });
+
   it('the search of requests keeps its route when the person goes back from the day', async () => {
     renderMarket(<RequestsSearchFlow onBack={() => undefined} />, testClients({}));
-    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Qayerga', 'Fargʻona viloyati'])
+    // Both ends chosen, the day opens at once (G40, docs/106 K1).
+    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
-    await tap('Fargʻona shahri');
-    await tap('Davom etish');
     await screen.findByText(/^Ertaga/);
     await tap('Orqaga');
     expect(await screen.findByText('Chilonzor')).toBeTruthy();

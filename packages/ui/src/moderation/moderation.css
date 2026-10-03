@@ -3,12 +3,12 @@
   min-height: var(--tg-viewport-stable-height, 100vh);
   /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
   box-sizing: border-box;
-  padding-bottom: 120px;
+  padding-bottom: var(--screen-end);
   background: var(--tgui--secondary_bg_color);
 }
 
 .moderation-title {
-  padding: 16px 20px 4px;
+  padding: var(--screen-top) 20px 0;
 }
 
 .moderation-grid {

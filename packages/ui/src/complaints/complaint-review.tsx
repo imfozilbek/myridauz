@@ -18,7 +18,6 @@ import { Icon } from '../icons';
 import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
 import { BlockJournal } from '../moderation/block-journal';
-import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
@@ -31,20 +30,25 @@ const EVENT = new Set<string>(CHAT_SYSTEM_EVENTS);
 
 // One complaint for the moderator (docs/17): both sides with their faces and history, the chat
 // only on demand (the read goes to the log), then the decision.
-export function ComplaintReview({ id, onBack }: { readonly id: string; readonly onBack: () => void }) {
+type ReviewProps = {
+  readonly onBack: () => void;
+  // Decided: the queue opens the next complaint (G40, docs/106 K8).
+  readonly onDecided: () => void;
+};
+
+export function ComplaintReview({ id, ...props }: ReviewProps & { readonly id: string }) {
   const { feedback } = useApiClients();
   const { value, failed, reload } = useLoad(() => feedback.complaint(id));
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
-  if (!value) return <ScreenSkeleton onBack={onBack} />;
-  return <Review complaint={value} onBack={onBack} />;
+  if (failed) return <ErrorScreen onRetry={reload} onBack={props.onBack} />;
+  if (!value) return <ScreenSkeleton onBack={props.onBack} />;
+  return <Review complaint={value} {...props} />;
 }
 
-function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly onBack: () => void }) {
+function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly complaint: Complaint }) {
   const { t, formatDate } = useI18n();
   const { track } = useAnalytics();
   const { feedback } = useApiClients();
   const [lines, setLines] = useState<ChatLine[] | null>(null);
-  const [decided, setDecided] = useState(false);
   const party = (header: string, person: Party) => (
     <Section header={header}>
       <Cell
@@ -71,18 +75,11 @@ function Review({ complaint, onBack }: { readonly complaint: Complaint; readonly
       await feedback.decide(complaint.id, decision);
       track({ name: 'complaint_decided', screen: 'complaints.review' });
       haptic.success();
-      setDecided(true);
+      onDecided();
     } catch {
       haptic.error();
     }
   };
-  if (decided)
-    return (
-      <>
-        <Screen onBack={onBack} />
-        <EmptyState icon="selected" title={t('complaints.decided')} />
-      </>
-    );
   const lineText = (line: ChatLine) =>
     line.author === null && EVENT.has(line.text)
       ? t(`chat.system.${line.text as ChatSystemEvent}`)

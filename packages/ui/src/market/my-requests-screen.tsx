@@ -50,11 +50,15 @@ function MyRequests({ onBack, link }: ScreenProps) {
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
-  // A bot button: a booking opens itself, a new offer opens its request (docs/65 B5).
+  // A bot button: a booking opens itself, a new offer opens itself over its request (docs/65 B5);
+  // «Назад» from the offer shows the request with all its offers (G40, docs/106 K6).
+  const [linkedOffer, setLinkedOffer] = useState<string | null>(null);
   useLinkOpen(link, value ?? null, (open, [, , offers]) => {
     if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id });
     const offer = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
-    if (offer) setOpened({ kind: 'request', id: offer.requestId });
+    if (!offer) return;
+    setOpened({ kind: 'request', id: offer.requestId });
+    setLinkedOffer(offer.id);
   });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
@@ -63,9 +67,17 @@ function MyRequests({ onBack, link }: ScreenProps) {
   if (opened && value) {
     const close = (changed: boolean) => {
       setOpened(null);
+      setLinkedOffer(null);
       if (changed) reload();
     };
-    return <PassengerOpen opened={opened} offers={value[2]} onClose={close} />;
+    return (
+      <PassengerOpen
+        opened={opened}
+        offers={value[2]}
+        {...(linkedOffer ? { offerId: linkedOffer } : {})}
+        onClose={close}
+      />
+    );
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;

@@ -11,10 +11,12 @@ const STEPS: readonly (readonly [TranslationKey, (booking: Booking) => number | 
   ['share.follow.status.arrived', (booking) => booking.arrivedAt],
 ];
 const LIVE = new Set<Booking['status']>(['requested', 'confirmed', 'completed']);
+// A live booking says its status by the steps; another one says it in words (G40, docs/106 C4).
+export const hasTimeline = (booking: Booking) => LIVE.has(booking.status);
 
 export function BookingTimeline({ booking }: { readonly booking: Booking }) {
   const { t, formatDate, formatTime } = useI18n();
-  if (!LIVE.has(booking.status)) return null;
+  if (!hasTimeline(booking)) return null;
   // The last step with a time; a confirmed booking from before the times were kept is still confirmed.
   const timed = STEPS.findLastIndex(([, at]) => at(booking) !== null);
   const active = booking.status === 'requested' ? 0 : Math.max(timed, 1);

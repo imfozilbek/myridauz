@@ -26,16 +26,18 @@ export type Opened =
 type Props = {
   readonly opened: Opened;
   readonly offers: readonly Offer[];
+  // The offer of a bot button opens at once (G40, docs/106 K6).
+  readonly offerId?: string;
   readonly onClose: (changed: boolean) => void;
 };
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, onClose }: Props) {
+export function PassengerOpen({ opened, offers, offerId: linked, onClose }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
-  const [offerId, setOfferId] = useState<string | null>(null);
+  const [offerId, setOfferId] = useState<string | null>(linked ?? null);
   const offer = offers.find((item) => item.id === offerId) ?? null;
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   // The booking of an accepted offer: its card goes to the close people (docs/89 P9).

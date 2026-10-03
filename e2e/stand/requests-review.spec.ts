@@ -99,13 +99,9 @@ for (const platform of PLATFORMS)
     await page.getByText(TEXT.from).click();
     await page.getByAltText('Toshkent shahri').click();
     await page.getByText('Yunusobod').click();
-    await page.getByText(TEXT.to).click();
+    // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
     await page.getByAltText('Surxondaryo viloyati').click();
     await page.getByText('Termiz shahri', { exact: true }).click();
-    // Each opening of an app adds its own main button to the page: the visible one has the text.
-    await mainButton(page)
-      .filter({ hasText: t('common.continue') })
-      .click();
     await expect(page.locator('.trip-card').filter({ hasText: SEEKERS[platform].name })).toBeVisible();
     await shot('04-d-requests');
     await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
@@ -113,6 +109,7 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('market.requests.hint'))).toHaveCount(0);
     await shot('05-d-empty');
     await page.getByText(t('market.requests.publish')).click();
-    await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
+    // No pitak to Termiz: no choice of the way, the day is next (G40, docs/106 K2).
+    await expect(page.getByText(t('market.when.title'))).toBeVisible();
     await shot('06-d-publish');
   });

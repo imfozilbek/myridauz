@@ -33,7 +33,7 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
   const [stage, setStage] = useState<Stage>('confirm');
   if (stage === 'done') {
     return (
-      <StepLayout icon="selected" title={t('account.delete.done')} hint={t('account.delete.doneHint')}>
+      <StepLayout hero icon="selected" title={t('account.delete.done')} hint={t('account.delete.doneHint')}>
         <MainButton text={t('account.delete.close')} onClick={() => window.location.reload()} />
       </StepLayout>
     );

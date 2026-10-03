@@ -13,6 +13,10 @@ export type TripDraft = {
   readonly comment: string;
 };
 
+// The answers of the last trip a new one starts with (G40, docs/106 K3). «Mashinada ayol bor» is
+// asked again: who rides with the driver is new each time.
+export type TripAgain = Pick<TripDraft, 'pickupMode' | 'seats' | 'price' | 'comment'>;
+
 // Every answer is there: the review can show and publish it. A woman driver skips the woman step.
 export function completeDraft(draft: Partial<TripDraft>): TripDraft | null {
   const { route, pickupMode, date, time, departAt, seats, price, comment } = draft;

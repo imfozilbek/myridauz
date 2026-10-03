@@ -36,7 +36,13 @@ export function RequestsSearchFlow({ onBack, initial }: FlowProps) {
       setPicking(false);
     };
     return (
-      <RouteScreen allowWholeRegion {...(route ? { initial: route } : {})} onBack={onBack} onDone={done} />
+      <RouteScreen
+        allowWholeRegion
+        quick
+        {...(route ? { initial: route } : {})}
+        onBack={onBack}
+        onDone={done}
+      />
     );
   }
   if (publishing)

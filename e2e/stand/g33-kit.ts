@@ -38,10 +38,9 @@ export async function chooseRoute(page: Page) {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
+  // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
   await page.getByAltText('Navoiy viloyati').click();
   await page.getByText('Navoiy', { exact: true }).click();
-  await mainButton(page).click();
 }
 
 // One side of a chat through its socket, as the other phone writes.

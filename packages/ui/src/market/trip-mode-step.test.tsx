@@ -1,4 +1,4 @@
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
@@ -27,9 +27,9 @@ const ROUTE = {
   },
 } as const;
 
-const open = (calls: Parameters<typeof testMap>[0] = {}) => {
+const open = (calls: Parameters<typeof testMap>[0] = {}, onSkip = () => undefined) => {
   const { container } = renderMarket(
-    <TripModeStep route={ROUTE} onBack={() => undefined} onDone={() => undefined} />,
+    <TripModeStep route={ROUTE} onBack={() => undefined} onDone={() => undefined} onSkip={onSkip} />,
     testClients({ map: testMap(calls) }),
   );
   return container;
@@ -50,10 +50,10 @@ describe('the way a driver takes people (G26, docs/74)', () => {
     expect(screen.getAllByText('Qoʻyliq pitagi').length).toBe(2);
   });
 
-  it('offers only «around the city» where the direction has no pitak', async () => {
-    const container = open({ pitakOf: vi.fn(async () => null) });
-    expect(await screen.findByText('Shahar boʻylab yigʻaman')).toBeTruthy();
-    expect(screen.queryByText('Pitakdan olaman')).toBeNull();
-    expect(container.querySelector('.pitak-map')).toBeNull();
+  it('skips the step where the direction has no pitak: one way is no choice (G40, docs/106 K2)', async () => {
+    const onSkip = vi.fn();
+    open({ pitakOf: vi.fn(async () => null) }, onSkip);
+    await waitFor(() => expect(onSkip).toHaveBeenCalledOnce());
+    expect(screen.queryByText('Shahar boʻylab yigʻaman')).toBeNull();
   });
 });

@@ -53,10 +53,8 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText('Samarqand shahri', { exact: true }).click();
-  await mainButton(page).click();
   await page.getByText(TEXT.tomorrow).click();
   await shot(page, 'android', 'da31-requests');
   await page.locator('.trip-card').filter({ hasText: WAITING.name }).first().click();
@@ -69,10 +67,8 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText('Samarqand shahri', { exact: true }).click();
-  await mainButton(page).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await shot(page, 'android', 'da40-mode');
   await page.getByText(t('way.trip.mode.door')).click();

@@ -1,4 +1,5 @@
 import type { Booking, BookingStatus, Trip } from '@platform/contracts';
+import type { TripAgain } from '../market/trip-draft';
 
 // What the main screen shows (G25): the nearest live bookings and trips, at most two; all of them
 // are in «Mening safarlarim» one row below. Closed, completed and cancelled ones never come here.
@@ -23,8 +24,15 @@ export function nextTrips(trips: readonly Trip[], bookings: readonly Booking[]):
   return live.slice(0, SHOWN).map((trip) => ({ trip, requests: waiting(trip) }));
 }
 
-// «Oxirgi yoʻnalish»: the route of the latest trip, to publish it again in one tap.
-export function lastRoute(trips: readonly Trip[]): { from: string; to: string } | null {
+// «Oxirgi yoʻnalish»: the latest trip, to publish it again with only a new day (G40, docs/106 K3).
+export function lastTrip(trips: readonly Trip[]): Trip | null {
   const [latest] = [...trips].sort((a, b) => b.departAt - a.departAt);
-  return latest ? { from: latest.from, to: latest.to } : null;
+  return latest ?? null;
 }
+
+export const againOf = ({ pickupMode, seats, price, comment }: Trip): TripAgain => ({
+  pickupMode,
+  seats,
+  price,
+  comment,
+});

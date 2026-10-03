@@ -42,8 +42,9 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await shot('4-face-camera');
   await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
   await expect(page.getByText(TEXT.retake)).toHaveCount(1);
+  // The first car photo by its slot; the camera then opens by itself for the next one (G40, K7).
   for (const taken of [2, 3, 4]) {
-    await page.getByText(TEXT.take).first().click();
+    if (taken === 2) await page.getByText(TEXT.take).first().click();
     await cameraReady(page);
     if (taken === 2) await shot('4-photos-camera');
     await page.getByRole('dialog').getByLabel(TEXT.shutter).click();

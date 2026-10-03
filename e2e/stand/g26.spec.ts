@@ -27,10 +27,9 @@ async function chooseRoute(page: Page) {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
+  // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText('Urgut', { exact: true }).click();
-  await mainButton(page).click();
 }
 
 test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham»', async ({ page }) => {

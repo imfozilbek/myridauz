@@ -37,10 +37,8 @@ export function TripCard({ trip, showStatus = false, own = false, onOpen }: Trip
     <Section>
       <Tappable Component="div" className="trip-card" interactiveAnimation="background" onClick={onOpen}>
         <div className="trip-card-head">
-          <span>
-            <Text weight="2">{formatDate(new Date(trip.departAt))}</Text>
-            <Caption className="trip-card-hint">{` · ${t('market.trip.km', { km: String(trip.km) })}`}</Caption>
-          </span>
+          {/* The distance is on the way below, not twice (G40, docs/106 C7). */}
+          <Text weight="2">{formatDate(new Date(trip.departAt))}</Text>
           <span className="trip-card-prices">
             <Text weight="1" className="trip-price">
               {formatMoney(trip.price)}
@@ -64,8 +62,10 @@ export function TripCard({ trip, showStatus = false, own = false, onOpen }: Trip
               size={PHOTO_SIZE}
             />
             <span className="trip-card-driver">
-              <Text>{driver.firstName}</Text>
-              <RatingBadge rating={driver.rating} />
+              <span className="trip-card-name">
+                <Text>{driver.firstName}</Text>
+                <RatingBadge rating={driver.rating} />
+              </span>
               <Caption className="trip-card-hint trip-card-car">
                 <CarSwatch color={driver.car.color} />
                 {`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}

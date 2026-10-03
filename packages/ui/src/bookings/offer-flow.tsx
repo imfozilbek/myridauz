@@ -47,7 +47,12 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   }, []);
   if (sent) {
     return (
-      <StepLayout icon="selected" title={t('bookings.offer.sent.title')} hint={t('bookings.offer.sent.hint')}>
+      <StepLayout
+        hero
+        icon="selected"
+        title={t('bookings.offer.sent.title')}
+        hint={t('bookings.offer.sent.hint')}
+      >
         <Screen onBack={home} />
         <MainButton text={t('market.done')} onClick={home} />
       </StepLayout>
@@ -73,7 +78,8 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
     return (
       <PriceStep
         recommendation={recommendation}
-        {...(price === null ? {} : { initial: price })}
+        // The price the passenger asked for first: an offer at it is taken more often (G40, docs/106 K5).
+        initial={price ?? request.price}
         commission
         onBack={() => setStep('time')}
         onDone={(value) => {

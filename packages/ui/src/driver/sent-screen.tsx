@@ -13,6 +13,7 @@ export function SentScreen({ onDone }: { readonly onDone: () => void }) {
   const { from, to } = useBrand().moderation.hours;
   return (
     <StepLayout
+      hero
       icon="waiting"
       title={t('drivers.sent.title')}
       hint={t('drivers.sent.text', { from: hourLabel(from), to: hourLabel(to) })}

@@ -9,14 +9,13 @@ const none: Shot = async () => undefined;
 
 // The route of a driver from Chilonzor (Toshkent shahri) to Samarqand shahri, or the whole region,
 // by lists (G26, docs/74). «Qayerdan» may be filled already by the place of the person: chosen again.
+// «Qayerga» opens by itself, both ends go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText(wholeRegion ? TEXT.wholeRegion : 'Samarqand shahri', { exact: true }).click();
-  await page.locator('#tg-main-button').click();
 }
 
 // A driver publishes a trip, one question per screen (G07). The test person is a woman: no woman step.

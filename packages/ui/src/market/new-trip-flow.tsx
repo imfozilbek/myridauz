@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
 import { useDriver } from '../driver/driver-context';
 import { DraftRestored } from '../flow/draft-restored';
@@ -12,7 +12,7 @@ import { TripPublish } from './trip-publish';
 import { SeatsStep } from './seats-step';
 import { CommentStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
-import { completeDraft } from './trip-draft';
+import { completeDraft, type TripAgain } from './trip-draft';
 
 type NewTripFlowProps = {
   readonly onBack: () => void;
@@ -21,12 +21,14 @@ type NewTripFlowProps = {
   readonly pick?: 'from' | 'to';
   // The day of the requests the driver looked at: the day step opens on it (G37, docs/101 R4).
   readonly date?: string;
+  // «Oxirgi yoʻnalish»: the last trip again, only the day is asked (G40, docs/106 K3).
+  readonly again?: TripAgain;
 };
 
 // A new trip, one question per screen (docs/19): the answers of a step open the next one, «Назад»
 // shows each earlier step with its answer (docs/94 F8), a closed app comes back to it (F3).
 export function NewTripFlow(props: NewTripFlowProps) {
-  const flow = useNewTrip(props.route, props.date);
+  const flow = useNewTrip(props.route, props.date, props.again);
   return (
     <>
       <TripStepScreen {...props} flow={flow} />
@@ -42,13 +44,16 @@ function TripStepScreen({
 }: NewTripFlowProps & { readonly flow: ReturnType<typeof useNewTrip> }): ReactNode {
   const car = useDriver()?.application.car;
   const woman = useAccount()?.profile.gender === 'female';
-  const { step, answer: draft, recommendation, isReturn, go, next } = flow;
+  const { step, answer: draft, recommendation, kind, go, next } = flow;
   const { route } = draft;
+  // The way step was skipped (no pitak): «Назад» from the day goes to the route (G40, docs/106 K2).
+  const [modeSkipped, setModeSkipped] = useState(false);
   switch (step) {
     case 'route':
       return (
         <RouteScreen
           allowWholeRegion={false}
+          quick
           {...(pick && !route ? { pick } : {})}
           {...(route ? { initial: route } : {})}
           onBack={onBack}
@@ -62,6 +67,10 @@ function TripStepScreen({
           {...(draft.pickupMode ? { selected: draft.pickupMode } : {})}
           onBack={() => go('route')}
           onDone={(pickupMode) => next('mode', { pickupMode }, 'when')}
+          onSkip={() => {
+            setModeSkipped(true);
+            next('mode', { pickupMode: 'door' }, 'when');
+          }}
         />
       ) : null;
     case 'when':
@@ -72,8 +81,8 @@ function TripStepScreen({
           {...(draft.date
             ? { initial: { date: draft.date, ...(draft.time ? { time: draft.time } : {}) } }
             : {})}
-          onBack={() => go(isReturn ? 'route' : 'mode')}
-          onDone={(when) => next('when', when, isReturn ? 'review' : 'seats')}
+          onBack={() => go(kind !== 'new' || modeSkipped ? 'route' : 'mode')}
+          onDone={(when) => next('when', when, kind === 'new' ? 'seats' : 'review')}
         />
       ) : null;
     case 'seats':
@@ -107,7 +116,8 @@ function TripStepScreen({
         />
       );
     default: {
-      const back = () => go(isReturn ? 'when' : 'comment');
+      // The way back has no comment of its own; the last trip again can change any answer.
+      const back = () => go(kind === 'return' ? 'when' : 'comment');
       const complete = completeDraft(draft);
       // The way back waits for its recommendation: a skeleton with «Назад», never a blank screen (B3).
       if (!complete || !recommendation) return <ScreenSkeleton onBack={back} />;
@@ -119,7 +129,7 @@ function TripStepScreen({
             onBack={back}
             onClose={onBack}
             onPublished={flow.clear}
-            isReturn={isReturn}
+            isReturn={kind === 'return'}
             onReturn={() => flow.startReturn(complete)}
           />
         </PlacesGate>

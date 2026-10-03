@@ -24,6 +24,11 @@ const LOCATIONS = [
   place('1730401', '1730', 'Fargʻona shahri', FARGONA),
 ];
 export const locations = { getLocations: async () => ({ version: '1', locations: LOCATIONS }) };
+// Chilonzor → Fargʻona shahri, as a known route of a flow.
+export const ROUTE = {
+  from: place('1726269', '1726', 'Chilonzor'),
+  to: place('1730401', '1730', 'Fargʻona shahri', FARGONA),
+};
 
 export const recommendation = {
   from: '1726269',
@@ -105,12 +110,11 @@ export const tap = async (text: string | RegExp) => fireEvent.click(await screen
 // A card of the own trips has no driver on it (U6): it opens by its status.
 export const openOwnTrip = () => tap('Faol');
 
-// From Chilonzor (Toshkent shahri) to Fargʻona shahri, or to the whole Fargʻona region.
+// From Chilonzor (Toshkent shahri) to Fargʻona shahri, or to the whole Fargʻona region: «Qayerga»
+// opens by itself, both ends chosen go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(wholeRegion = false) {
-  for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Qayerga', 'Fargʻona viloyati'])
-    await tap(step);
+  for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(step);
   await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
-  await tap('Davom etish');
 }
 
 // The search and a request (G35, docs/97 K1): «Qayerga» opens at once, then «Qayerdan»; both

@@ -4,6 +4,7 @@ import { tashkentDate } from '@platform/contracts';
 import { book, CHILONZOR, cancelMine, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } from './g27-kit';
 import { GAYRAT, TIMUR } from './people';
+import { freshDriver } from './schedule-kit';
 import { signedAs } from './stand-kit';
 import { botMessages, clearBotMessages, runCron, standSql } from './stand-tools';
 
@@ -36,6 +37,8 @@ test('C06, P12. a seat cancelled before the answer: the driver hears it; an empt
 });
 
 test('docs/82 «ayol bor»: a man driver with a woman in the car is found by the filter', async () => {
+  // The trips of earlier scenarios do not take this time (G38, docs/103).
+  freshDriver(GAYRAT);
   const market = createMarketClient(await signedAs('driver', GAYRAT));
   const { price } = await market.recommend(CHILONZOR, SAMARQAND);
   const departAt = Date.now() + 26 * 60 * MINUTE;

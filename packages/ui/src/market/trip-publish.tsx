@@ -69,7 +69,7 @@ export function TripPublish(props: TripPublishProps) {
   };
   if (published) {
     return (
-      <StepLayout icon="selected" title={t('market.published.title')} hint={t('market.published.hint')}>
+      <StepLayout hero icon="selected" title={t('market.published.title')} hint={t('market.published.hint')}>
         <Screen onBack={home} />
         <MainButton text={t('market.done')} onClick={home} />
         {isReturn ? null : <SecondaryButton text={t('market.published.return')} onClick={onReturn} />}

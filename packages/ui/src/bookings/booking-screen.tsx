@@ -10,9 +10,10 @@ import { usePayHint } from './pay-hint';
 import { PlateView } from '../driver/plate-view';
 import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
+import { MainButton } from '../telegram/bottom-button';
 import { BookingPlaces } from './booking-places';
 import '../market/market.css';
-import { BookingTimeline } from './booking-timeline';
+import { BookingTimeline, hasTimeline } from './booking-timeline';
 
 const PHOTO_SIZE = 56;
 export type BookingAction = { readonly label: string; readonly onClick: () => void; readonly main?: boolean };
@@ -33,6 +34,8 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
   const { trip } = booking;
   const day = new Date(trip.departAt);
   const open = booking.status === 'confirmed' || booking.status === 'completed';
+  const main = actions.find((action) => action.main);
+  const others = actions.filter((action) => !action.main);
   const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
   const person =
     side === 'passenger'
@@ -54,9 +57,10 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
       <Title weight="1" className="market-title">
         {t('market.date.other', { date: formatDate(day), weekday: formatWeekday(day) })}
       </Title>
-      <Text className="market-subtitle">{t(`bookings.status.${booking.status}`)}</Text>
+      {hasTimeline(booking) ? null : (
+        <Text className="market-subtitle">{t(`bookings.status.${booking.status}`)}</Text>
+      )}
       <List>
-        <BookingTimeline booking={booking} />
         <Section footer={side === 'passenger' ? payHint : undefined}>
           <div className="route-summary">
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
@@ -65,7 +69,11 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
           {line(t('bookings.review.total'), formatMoney(booking.price * booking.seats))}
           {side === 'driver' ? line(t('bookings.offer.commission'), formatMoney(booking.commission)) : null}
         </Section>
-        <BookingPlaces booking={booking} side={side} />
+        {/* The chat right under the route: the first thing a person needs here (G40, docs/106 C4). */}
+        {children}
+        <BookingTimeline booking={booking} />
+        {/* «The places do not change» is said once, before the booking (G40, docs/106 C9). */}
+        <BookingPlaces booking={booking} />
         {open && booking.plate ? (
           <Section>
             <Cell description={<PlateView plate={booking.plate} small />}>{t('bookings.plate')}</Cell>
@@ -90,17 +98,12 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
             {person.name}
           </Cell>
         </Section>
-        {children}
       </List>
+      {/* The main action is the button of Telegram: always in sight, not under the page (docs/106 C5). */}
+      {main ? <MainButton text={main.label} onClick={main.onClick} /> : null}
       <div className="step-note">
-        {actions.map((action) => (
-          <Button
-            key={action.label}
-            mode={action.main ? 'filled' : 'bezeled'}
-            size="l"
-            stretched
-            onClick={action.onClick}
-          >
+        {others.map((action) => (
+          <Button key={action.label} mode="bezeled" size="l" stretched onClick={action.onClick}>
             {action.label}
           </Button>
         ))}

@@ -3,6 +3,7 @@ import type { Location } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { quickRoute, takePoint, tap } from './market-test-kit';
+import { recentRoutes } from './recent-routes';
 import { openRequest } from './request-test-kit';
 
 afterEach(cleanup);
@@ -62,6 +63,8 @@ describe('NewRequestFlow: "Soʻrov qoldirish" (G35, docs/97)', { timeout: 20_000
   it('takes the door without a choice of one where the direction has no pitak (PS8)', async () => {
     openRequest({ map: { pitakOf: vi.fn(async () => null) } });
     await quickRoute();
+    // The route is one tap away on the main screen next time (G40, docs/106 K9).
+    expect(recentRoutes()).toEqual([{ from: ROUTE.from.id, to: ROUTE.to.id }]);
     await tap(/^Ertaga/);
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
     expect(screen.queryByText('Pitakdan')).toBeNull();

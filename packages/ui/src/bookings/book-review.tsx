@@ -93,7 +93,8 @@ export function BookReview(props: Props) {
             onChange={onDropoff}
           />
           <SeatsCell seats={seats} most={most} onSeats={onSeats} />
-          {line('price', t('market.review.price'), formatMoney(trip.price))}
+          {/* One seat: the price is the total, one line says it (G40, docs/106 C8). */}
+          {seats > 1 ? line('price', t('market.review.price'), formatMoney(trip.price)) : null}
           {line('wallet', t('bookings.review.total'), formatMoney(trip.price * seats))}
         </Section>
       </List>

@@ -12,7 +12,7 @@ import { useDirectory } from '../places/use-directory';
 import { Screen } from '../screen/screen';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
-import { lastRoute, nextTrips, type DriverItem } from './home-items';
+import { againOf, lastTrip, nextTrips, type DriverItem } from './home-items';
 import { useHomeTap } from './use-home-tap';
 
 // The main screen of a driver (G25): the nearest trips with their new requests, or «Qayerga
@@ -48,7 +48,7 @@ function Trips({ go, load: { value, failed, reload } }: TripsProps) {
   if (!value) return <HomeLoading lines={[false]} />;
   const [trips, requests] = value;
   const shown = nextTrips(trips, requests);
-  const last = lastRoute(trips);
+  const last = lastTrip(trips);
   if (shown.length === 0 && pending) return null;
   // The names of the places come from the directory: rows with places wait for it.
   if (shown.length > 0 || last) {
@@ -82,19 +82,19 @@ function Trips({ go, load: { value, failed, reload } }: TripsProps) {
       last={last}
       directory={directory}
       onNew={tap('card', () => go('new_trip', { pick: 'to' }))}
-      onLast={(route) => tap('last_route', () => go('new_trip', { route }))()}
+      onLast={(launch) => tap('last_route', () => go('new_trip', launch))()}
     />
   );
 }
 
 type AskProps = {
-  readonly last: Pick<Trip, 'from' | 'to'> | null;
+  readonly last: Trip | null;
   readonly directory: PlaceDirectory | null;
   readonly onNew: () => void;
-  readonly onLast: (route: NonNullable<Launch['route']>) => void;
+  readonly onLast: (launch: Launch) => void;
 };
 
-// «Qayerga ketyapsiz?» opens the list of the end; for a driver who drove before, the last route.
+// «Qayerga ketyapsiz?» opens the list of the end; for a driver who drove before, the last trip again.
 function AskTrip({ last, directory, onNew, onLast }: AskProps) {
   const { t } = useI18n();
   const chevron = useChevron();
@@ -105,12 +105,12 @@ function AskTrip({ last, directory, onNew, onLast }: AskProps) {
       <Cell before={<IconTile name="destination" tone="accent" />} after={chevron()} onClick={onNew}>
         {t('home.driver.question')}
       </Cell>
-      {from && to ? (
+      {last && from && to ? (
         <Cell
           before={<IconTile name="history" />}
           subtitle={t('home.driver.last')}
           after={chevron()}
-          onClick={() => onLast({ from, to })}
+          onClick={() => onLast({ route: { from, to }, again: againOf(last) })}
         >
           {t('common.route', { from: from.name, to: to.name })}
         </Cell>

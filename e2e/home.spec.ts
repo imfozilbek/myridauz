@@ -91,13 +91,15 @@ function scenarios(platform: 'android' | 'ios') {
     await expect(page.getByText(t('places.from'))).toBeVisible();
   });
 
-  test('a driver whose trips are over repeats the last route in one tap', async ({ page }) => {
+  test('a driver whose trips are over repeats the last trip: only the day is asked (G40, docs/106 K3)', async ({
+    page,
+  }) => {
     const { go, published } = await open(page, DRIVER.port);
     published.push(tripOf('8', 'Dilnoza', false, -48, { status: 'completed' }));
     await go();
     await expect(page.getByText(t('home.driver.last'))).toBeVisible();
     await shot(page, '5-driver-last-route');
     await page.getByText(t('home.driver.last')).click();
-    await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
+    await expect(page.getByText(t('market.when.title'))).toBeVisible();
   });
 }
