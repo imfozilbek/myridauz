@@ -38,9 +38,12 @@ async function openBooking(page: Page) {
 }
 
 // A place found by its name inside the zone of the map; the pin names the place under it.
+// The map stopped there: it asks the name of the new place (the old name may be the same).
 async function findPlace(page: Page, query: string, name: string, under: string) {
   await page.getByPlaceholder(t('bookings.map.search')).fill(query);
+  const asked = page.waitForRequest((request) => request.url().includes('/map/where?'));
   await page.getByText(name, { exact: true }).click();
+  await asked;
   await expect(page.getByRole('status')).toHaveText(under);
 }
 
@@ -63,8 +66,9 @@ test('the passenger books from the door to the home inside the zones of the trip
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await drawn(page);
   await shot(page, '1-door');
-  // Farther out: the whole city of Toshkent, the rest shaded; the map does not go beyond it.
-  await page.mouse.move(200, 600);
+  // Farther out: the whole city of Toshkent, the rest shaded; the map does not go beyond it. The
+  // wheel turns over the map, above the sheet (G36, docs/100).
+  await page.mouse.move(200, 200);
   for (let step = 0; step < 6; step += 1) await page.mouse.wheel(0, 600);
   await page.waitForTimeout(TILES_MS);
   await shot(page, '1-door-city');

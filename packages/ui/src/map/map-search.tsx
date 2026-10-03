@@ -30,21 +30,27 @@ export function MapSearch({ near, zone, onFound }: Props) {
   const { map } = useApiClients();
   const { track } = useAnalytics();
   const { query, setQuery, result } = usePlaceSearch(map.search, near, zone);
-  const empty = result.status === 'found' && result.places.length === 0;
+  // A place chosen, the list goes at once with the text: the sheet goes down (G36, docs/100).
+  const found = query.length > 0 && result.status === 'found' ? result.places : null;
+  const empty = found?.length === 0;
   // Only the length: the text may be an address (docs/69).
   useEffect(() => {
     if (empty)
       track({ name: 'place_search_empty', screen: 'way.point', length: Math.min(query.length, MAX_LENGTH) });
   }, [empty, query.length, track]);
+  // The keyboard goes with the search: the map is in view again (the sheet goes down, docs/100).
+  const closeKeyboard = () => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  };
   const choose = (place: FoundPlace) => {
     haptic.tap();
     setQuery('');
+    closeKeyboard();
     onFound(place.point);
   };
   const clear = () => {
     setQuery('');
-    // The keyboard goes with the search: the map is in view again.
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    closeKeyboard();
   };
   return (
     <div className="pickup-map-search">
@@ -55,9 +61,9 @@ export function MapSearch({ near, zone, onFound }: Props) {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />
-      {result.status === 'found' && result.places.length > 0 ? (
+      {found && found.length > 0 ? (
         <Section className="pickup-map-found">
-          {result.places.map((place) => (
+          {found.map((place) => (
             <Cell
               key={`${place.name}|${place.point.lat}|${place.point.lng}`}
               before={<Icon name={place.kind} />}
@@ -76,9 +82,7 @@ export function MapSearch({ near, zone, onFound }: Props) {
           ))}
         </Section>
       ) : null}
-      {result.status === 'found' && result.places.length === 0 ? (
-        <Text role="status">{t('bookings.map.nothing')}</Text>
-      ) : null}
+      {empty ? <Text role="status">{t('bookings.map.nothing')}</Text> : null}
       {result.status === 'failed' ? <Text role="alert">{t('bookings.map.searchFailed')}</Text> : null}
     </div>
   );

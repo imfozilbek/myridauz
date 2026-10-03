@@ -16,24 +16,46 @@ const LOAD_TIMEOUT_MS = 15_000;
 const FLY_DEGREES = 0.2;
 let protocol: Protocol | null = null;
 
-const view = (map: MapLibreMap, colors: MapColors): MapView => ({
-  center: () => {
-    const { lat, lng } = map.getCenter();
-    return { lat, lng };
-  },
-  onMove: (listener) => void map.on('moveend', listener),
-  moveTo: ({ lat, lng }) => {
-    const now = map.getCenter();
-    const far = Math.abs(now.lat - lat) + Math.abs(now.lng - lng) > FLY_DEGREES;
-    const target = { center: [lng, lat] as [number, number], zoom: START_ZOOM };
-    if (far) map.jumpTo(target);
-    else map.flyTo(target);
-  },
-  clip: (parts) => clip(map, colors, parts),
-  show: (marks, line) => show(map, colors, marks, line),
-  fit: (points, covered) => fit(map, points, covered),
-  remove: () => map.remove(),
-});
+// The box grows and shrinks with the sheet under it (G36, docs/100): the place in the middle, under
+// the pin, stays the same. A flight cut by a new size lands on its place at once.
+function follow(map: MapLibreMap, box: HTMLElement) {
+  let flight: [number, number] | null = null;
+  map.on('moveend', () => (flight = null));
+  const sized = new ResizeObserver(() => {
+    const center = flight ?? map.getCenter();
+    map.resize();
+    map.jumpTo({ center });
+  });
+  sized.observe(box);
+  return {
+    flyTo: (center: [number, number]) => {
+      flight = center;
+      map.flyTo({ center, zoom: START_ZOOM });
+    },
+    stop: () => sized.disconnect(),
+  };
+}
+
+const view = (map: MapLibreMap, colors: MapColors, box: HTMLElement): MapView => {
+  const sized = follow(map, box);
+  return {
+    center: () => {
+      const { lat, lng } = map.getCenter();
+      return { lat, lng };
+    },
+    onMove: (listener) => void map.on('moveend', listener),
+    moveTo: ({ lat, lng }) => {
+      const now = map.getCenter();
+      const far = Math.abs(now.lat - lat) + Math.abs(now.lng - lng) > FLY_DEGREES;
+      if (far) map.jumpTo({ center: [lng, lat], zoom: START_ZOOM });
+      else sized.flyTo([lng, lat]);
+    },
+    clip: (parts) => clip(map, colors, parts),
+    show: (marks, line) => show(map, colors, marks, line),
+    fit: (points, covered) => fit(map, points, covered),
+    remove: () => (sized.stop(), map.remove()),
+  };
+};
 
 // MapLibre over the PMTiles archive (G22, docs/67): the archive is read by parts from the API.
 export const maplibreEngine: MapEngine = (box, source, start, colors, inline) => {
@@ -53,6 +75,8 @@ export const maplibreEngine: MapEngine = (box, source, start, colors, inline) =>
     cooperativeGestures: inline,
     dragRotate: false,
     pitchWithRotate: false,
+    // The size is followed below, with the place in the middle kept.
+    trackResize: false,
   });
   map.touchZoomRotate.disableRotation();
   return new Promise((resolve, reject) => {
@@ -70,7 +94,7 @@ export const maplibreEngine: MapEngine = (box, source, start, colors, inline) =>
     map.once('load', () => {
       clearTimeout(timer);
       map.off('error', onError);
-      const shown = view(map, colors);
+      const shown = view(map, colors, box);
       // Every map shows Uzbekistan only: the rest is shaded and out of reach.
       shown.clip(null);
       resolve(shown);

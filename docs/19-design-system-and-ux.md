@@ -61,6 +61,7 @@
 | Путь брони | `Timeline` | `bookings/booking-timeline.tsx` |
 | Действие сделано, можно вернуть | `Snackbar` с «Qaytarish» | `subscriptions/removed-snackbar.tsx` |
 | Выбор поверх экрана | `Modal` (лист снизу), в Telegram родное окно | `bookings/navigator-sheet.tsx` |
+| Точка на карте | Карта сверху, шторка снизу: заголовок, поиск, 2 последних места (G36, `100`) | `way/point-screen.tsx`, `way/way.css` |
 | Разделы документа | `Accordion` | `legal/legal-section.tsx` |
 | Маленькие значения человека | Telegram CloudStorage с копией на телефоне | `telegram/device-storage.ts` |
 | Иконка на экране телефона | Telegram `addToHomeScreen` | `telegram/home-screen.ts` |
