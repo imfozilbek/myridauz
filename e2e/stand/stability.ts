@@ -2,8 +2,9 @@ import { appendFileSync } from 'node:fs';
 import type { Page } from '@playwright/test';
 
 // Nothing on a screen may blink, shake or jump (G41, docs/108). The page writes down every layout
-// shift and every skeleton that shows for a moment only; the walk reads them after each shot.
-export const JUMPS = 'screenshots/stand/g27/jumps.txt';
+// shift and every skeleton a person saw for a moment only (a hidden one waits, docs/108 B); the
+// walk reads them after each shot.
+const JUMPS = 'screenshots/stand/g27/jumps.txt';
 // A skeleton shorter than this tells the person nothing: it is a blink.
 const BLINK_MS = 250;
 // Shifts below this are rounding, not a jump a person sees.
@@ -30,7 +31,7 @@ const WATCH = `(() => {
   const shown = new Map();
   new MutationObserver(() => {
     const now = performance.now();
-    const busy = new Set(document.querySelectorAll('[aria-busy="true"]'));
+    const busy = new Set(document.querySelectorAll('[aria-busy="true"]:not([data-hidden])'));
     for (const node of busy) if (!shown.has(node)) shown.set(node, now);
     for (const [node, since] of shown) {
       if (busy.has(node)) continue;
@@ -38,7 +39,7 @@ const WATCH = `(() => {
       const ms = Math.round(now - since);
       if (ms < ${BLINK_MS}) found.push({ kind: 'blink', what: name(node), size: ms });
     }
-  }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-busy'] });
+  }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-busy', 'data-hidden'] });
 })();`;
 
 // Before the app opens: the watch starts with the first frame.

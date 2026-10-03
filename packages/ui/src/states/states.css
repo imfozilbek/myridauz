@@ -1,0 +1,20 @@
+/* A skeleton keeps its place at once and shows only after a wait a person notices (G41, docs/108). */
+.skeleton-late[data-hidden] {
+  visibility: hidden;
+}
+
+.skeleton-late:not([data-hidden]) {
+  animation: skeleton-in 200ms ease-out;
+}
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-late:not([data-hidden]) {
+    animation: none;
+  }
+}

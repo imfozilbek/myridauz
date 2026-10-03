@@ -44,6 +44,8 @@
 
 .price-value {
   flex: 1;
+  /* «+» and «−» change the price in place: digits of the same width do not shake (G41). */
+  font-variant-numeric: tabular-nums;
   min-width: 0;
   white-space: nowrap;
   /* «295 000 soʻm» and both buttons fit a 320 px phone (N17, G35 PS17). */

@@ -1,5 +1,6 @@
 import { configure } from '@testing-library/react';
 import { beforeEach, vi } from 'vitest';
+import { forgetAllLists } from './screen/list-memory';
 
 // The first screen of a test file loads TelegramUI; in the full run with coverage on a busy
 // CI machine this can take longer than the default 1 s of findBy*, so waits get 5 s.
@@ -10,6 +11,7 @@ configure({ asyncUtilTimeout: ASYNC_WAIT_MS });
 // afternoon in Toshkent, so a fixture never becomes "the past" by itself (lesson №75). The clock runs.
 const TEST_NOW = Date.parse('2026-10-01T12:00:00Z');
 beforeEach(() => {
+  forgetAllLists();
   vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
   vi.setSystemTime(TEST_NOW);
 });

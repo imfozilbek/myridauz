@@ -39,6 +39,23 @@ const SECONDARY: NativeButton = {
   colored: false,
 };
 
+// A step gives the button to the next one in the same moment: the button hides only when nobody
+// claims it after the step left, so it never blinks between steps (G41, docs/108 E). A camera or a
+// sheet over the step still hides it at once: nobody claims it there.
+const hiding = new Map<NativeButton, ReturnType<typeof setTimeout>>();
+function keepShown(native: NativeButton) {
+  clearTimeout(hiding.get(native));
+  hiding.delete(native);
+}
+function hideLater(native: NativeButton) {
+  keepShown(native);
+  const timer = setTimeout(() => {
+    hiding.delete(native);
+    native.setParams({ isVisible: false });
+  });
+  hiding.set(native, timer);
+}
+
 // The main action is the native Telegram button at the bottom (docs/19, docs/21).
 // Outside Telegram a TelegramUI button stands in for it, so the app also works in a browser.
 function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
@@ -52,13 +69,14 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
       const off = native.onClick(run);
       return () => {
         off();
-        native.setParams({ isVisible: false });
+        hideLater(native);
       };
     }, [inTelegram, run]);
     useEffect(() => {
       if (!inTelegram) return;
       const background = destructive ? colors.danger : colors.brandStrong;
       const color = native.colored ? { backgroundColor: background, textColor: colors.bg } : {};
+      keepShown(native);
       native.setParams({ text, isVisible: true, ...color });
     }, [inTelegram, text, colors, destructive]);
     useEffect(() => {

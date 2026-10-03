@@ -7,5 +7,5 @@ export function useAvatarUrl(userId: PersonId, hasAvatar: boolean): string | nul
   const account = useAccount();
   const client = account?.client;
   const load = client && hasAvatar ? () => client.getAvatar(userId) : null;
-  return useBlobUrl(load, `${userId}:${hasAvatar}:${account?.avatarVersion ?? 0}`);
+  return useBlobUrl(load, `${userId}:${hasAvatar}:${account?.avatarVersion ?? 0}`, true);
 }
