@@ -1,5 +1,5 @@
 name: Setup
-description: Node, pnpm and dependencies from the lockfile.
+description: Node, pnpm and dependencies from the lockfile; node_modules from the cache when the lockfile is the same (docs/45).
 runs:
   using: composite
   steps:
@@ -7,6 +7,16 @@ runs:
     - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
       with:
         node-version: 22
-        cache: pnpm
-    - run: pnpm install --frozen-lockfile
+    - id: modules
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          node_modules
+          apps/*/node_modules
+          packages/*/node_modules
+          brands/node_modules
+          brands/*/brand-kit/node_modules
+        key: modules-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}
+    - if: steps.modules.outputs.cache-hit != 'true'
+      run: pnpm install --frozen-lockfile
       shell: bash
