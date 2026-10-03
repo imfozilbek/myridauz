@@ -16,12 +16,8 @@ const NEWCOMER: Person = { id: 900606, name: 'Hamid', phone: '998901110606' };
 
 test('D01, D03, D05, D06. the application screen by screen, then «on the check»', async ({ page }) => {
   await register('driver', NEWCOMER, 'male');
+  // After the registration the main screen with the card of the application (G34).
   await openHome(page, 'driver', NEWCOMER, 'android');
-  await page
-    .getByText(TEXT.becomeDriver)
-    .first()
-    .click()
-    .catch(() => undefined);
   await applyAsDriver(page, (name) => shot(page, 'android', `d2${name}`));
 });
 

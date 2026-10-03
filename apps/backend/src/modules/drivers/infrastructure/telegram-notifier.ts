@@ -1,5 +1,5 @@
 import { appHost, type BrandConfig } from '@platform/brands';
-import { formatPlate } from '@platform/contracts';
+import { formatPlate, hourLabel, isTeamTime } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { callTelegram, sendAlbum, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { Application } from '../domain/application';
@@ -33,10 +33,22 @@ const bonusLine = ({ amount, expiresAt }: Bonus) =>
 // A person may have never opened a bot: one failed message must not stop the others.
 const quietly = (work: Promise<unknown>) => work.catch((error: unknown) => console.warn(String(error)));
 
+// The driver hears when the answer comes: within the hour while the team works, else in the
+// morning (G34). The team hours are Tashkent time.
+function receivedText(brand: BrandConfig, sentAt: number): string {
+  const { hours } = brand.moderation;
+  if (isTeamTime(sentAt, hours)) return t('bot.driver.received');
+  return t('bot.driver.receivedNight', { from: hourLabel(hours.from), to: hourLabel(hours.to) });
+}
+
 export function telegramNotifier(wiring: Wiring): ModerationNotifier {
   const { fetch, brand, adminToken, driverToken } = wiring;
   return {
     submitted: async (application: Application, person) => {
+      if (driverToken) {
+        const text = receivedText(brand, application.submittedAt ?? application.updatedAt);
+        await quietly(callTelegram(fetch, driverToken, 'sendMessage', { chat_id: application.userId, text }));
+      }
       if (!adminToken) return;
       const keys = [
         person.avatarKey,

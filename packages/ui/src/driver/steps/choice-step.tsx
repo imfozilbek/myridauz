@@ -4,6 +4,7 @@ import { StepLayout } from '../../account/step-layout';
 import { Cell, Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
+import { IconTile } from '../../icon-tile';
 import { Icon, type IconName } from '../../icons';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
@@ -33,6 +34,8 @@ type ChoiceStepProps<T> = {
   // A section above the list, like the popular cars, and the title of the list under it.
   readonly lead?: ReactNode;
   readonly header?: string;
+  // An icon in front of every row without its own picture, «Boshqa» too (G34, docs/19).
+  readonly rowIcon?: IconName;
 };
 
 // One question, one tap (docs/19): choose, do not type. Typing only for "Boshqa".
@@ -47,12 +50,14 @@ export function ChoiceStep<T>({
   selected,
   lead,
   header,
+  rowIcon,
 }: ChoiceStepProps<T>) {
   useScreenView(screen);
   const { t } = useI18n();
   const [typing, setTyping] = useState(choices.length === 0);
   const [text, setText] = useState('');
   const [invalid, setInvalid] = useState(false);
+  const tile = rowIcon ? { before: <IconTile name={rowIcon} /> } : {};
   const choose = (value: T) => {
     haptic.select();
     onDone(value);
@@ -86,7 +91,7 @@ export function ChoiceStep<T>({
               ...choices.map((choice) => (
                 <Cell
                   key={String(choice.value)}
-                  {...(choice.before ? { before: choice.before } : {})}
+                  {...(choice.before ? { before: choice.before } : tile)}
                   {...(choice.subtitle ? { subtitle: choice.subtitle } : {})}
                   {...(choice.value === selected
                     ? { after: <Icon name="selected" /> }
@@ -99,7 +104,7 @@ export function ChoiceStep<T>({
                 </Cell>
               )),
               other ? (
-                <Cell key="other" onClick={() => setTyping(true)}>
+                <Cell key="other" {...tile} onClick={() => setTyping(true)}>
                   {t('drivers.other')}
                 </Cell>
               ) : null,

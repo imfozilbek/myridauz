@@ -1,24 +1,21 @@
 import './driver.css';
 import { carSchema, type CarInput, type DriverApplication, type DriverStep } from '@platform/contracts';
-import { useState } from 'react';
-import { StepLayout } from '../account/step-layout';
+import type { TranslationKey } from '@platform/i18n';
+import { useState, type ReactNode } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useI18n } from '../context/i18n-context';
-import { MainButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
+import { DraftRestored } from '../flow/draft-restored';
+import { useStepProgress } from '../flow/step-progress';
+import { errorKey } from '../market/error-text';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
+import { haptic } from '../telegram/feedback';
+import { nextStep, previousStep, progressOf, type Step } from './application-steps';
 import { useCarAnswers } from './car-answers';
 import { CarStep, type CarStepName } from './car-step';
-import { useStepProgress } from '../flow/step-progress';
-import { nextStep, previousStep, progressOf, type Step } from './application-steps';
-import { useReasons } from './use-reasons';
-import { AvatarStep } from './steps/avatar-step';
 import { PhotosStep } from './steps/photos-step';
 import { PlateStep } from './steps/plate-step';
 import { ReviewStep, type ReviewTarget } from './steps/review-step';
-import type { TranslationKey } from '@platform/i18n';
-import { errorKey } from '../market/error-text';
+import { useReasons } from './use-reasons';
 
 const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
 const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
@@ -26,36 +23,39 @@ const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 type ApplicationFlowProps = {
   readonly initial: DriverApplication | null;
   readonly onSubmitted: (application: DriverApplication) => void;
-  // An application already sent may be left: to the app, or back to its status (docs/94 B4).
-  readonly onClose?: () => void;
+  // To the main screen, or an application already sent back to its status (docs/94 B4).
+  readonly onClose: () => void;
 };
 
-// The application, one question per screen (docs/04, docs/19). A saved application opens on the review.
+// The application, one question per screen (docs/04, docs/19). A sent application opens on the
+// review; a new one on the make, with the answers of a draft (G34).
 export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFlowProps) {
-  const { t } = useI18n();
   const { track } = useAnalytics();
   const { drivers } = useApiClients();
-  const { car, shown, answer, dropMake, dirty } = useCarAnswers(initial?.car ?? undefined);
-  const guard = useUnsavedGuard(dirty);
+  const reviewing = initial?.car !== null && initial?.car !== undefined;
+  const { step, car, shown, answer, go, dirty, restored, clear } = useCarAnswers(initial?.car ?? undefined);
+  // A new application is a draft and is not lost; a sent one being changed asks before leaving.
+  const guard = useUnsavedGuard(reviewing && dirty);
   const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
-  const [step, setStep] = useState<Step>(initial?.car ? 'review' : 'intro');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   useStepProgress(...progressOf(step));
   const { reasons, keepOnly, fixed } = useReasons(initial?.reasons ?? []);
-  const reviewing = initial?.car !== null && initial?.car !== undefined;
 
   const done = (current: Step, patch: Partial<CarInput>, passed?: DriverStep) => {
     const alone = current === 'make' && !('model' in patch);
-    const next = answer(patch, alone);
+    answer(patch, alone, (next) => nextStep(current, next, 'model' in patch, reviewing));
     if (!alone && Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
     if (passed) track({ name: 'driver_application_step', screen: 'driver', step: passed });
-    // A new make needs its model; any other change goes back to the review.
-    setStep(nextStep(current, next, 'model' in patch, reviewing));
   };
   const back = (current: Step) => () => {
-    if (current === 'model') dropMake();
-    setStep(reviewing ? 'review' : previousStep(current, car));
+    const to = reviewing ? 'review' : previousStep(current, car);
+    if (to) go(to);
+    else onClose();
   };
+  const leave = guard(() => {
+    clear();
+    onClose();
+  });
 
   const send = async () => {
     const parsed = carSchema.safeParse(car);
@@ -65,6 +65,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
       const application = await drivers.submit(parsed.data);
       track({ name: 'driver_application_step', screen: 'driver', step: 'submitted' });
       haptic.success();
+      clear();
       if (application) onSubmitted(application);
     } catch (caught) {
       haptic.error();
@@ -72,26 +73,20 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
     }
   };
 
-  if (isCarStep(step)) {
-    return (
-      // A new screen for each step: the typing of "Boshqa" does not stay on the next question.
-      <CarStep
-        key={step}
-        step={step}
-        car={shown}
-        onBack={back(step)}
-        onDone={(patch, passed) => done(step, patch, passed)}
-      />
-    );
-  }
-  switch (step) {
-    case 'intro':
+  const screen = (): ReactNode => {
+    if (isCarStep(step)) {
       return (
-        <StepLayout icon="car" title={t('drivers.intro.title')} hint={t('drivers.intro.hint')}>
-          <MainButton text={t('drivers.intro.start')} onClick={() => setStep('make')} />
-        </StepLayout>
+        // A new screen for each step: the typing of "Boshqa" does not stay on the next question.
+        <CarStep
+          key={step}
+          step={step}
+          car={shown}
+          onBack={back(step)}
+          onDone={(patch, passed) => done(step, patch, passed)}
+        />
       );
-    case 'plate':
+    }
+    if (step === 'plate') {
       return (
         <PlateStep
           initial={car.plate ?? ''}
@@ -100,11 +95,8 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           onDone={(plate) => done('plate', { plate }, 'plate')}
         />
       );
-    case 'avatar':
-      return (
-        <AvatarStep reasons={reasons} onBack={back('avatar')} onDone={() => done('avatar', {}, 'avatar')} />
-      );
-    case 'photos':
+    }
+    if (step === 'photos') {
       return (
         <PhotosStep
           photos={photos}
@@ -117,20 +109,26 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           onDone={() => done('photos', {}, 'photos')}
         />
       );
-    default: {
-      const complete = carSchema.safeParse(car);
-      if (!complete.success) return null;
-      return (
-        <ReviewStep
-          car={complete.data}
-          reasons={reasons}
-          recheck={initial?.status === 'approved'}
-          failure={failure}
-          onEdit={(target: ReviewTarget) => setStep(target)}
-          onSend={send}
-          {...(onClose ? { onBack: guard(onClose) } : {})}
-        />
-      );
     }
-  }
+    const complete = carSchema.safeParse(car);
+    if (!complete.success) return null;
+    return (
+      <ReviewStep
+        car={complete.data}
+        photos={photos}
+        reasons={reasons}
+        recheck={initial?.status === 'approved'}
+        failure={failure}
+        onEdit={(target: ReviewTarget) => go(target)}
+        onSend={send}
+        onBack={reviewing ? leave : back('review')}
+      />
+    );
+  };
+  return (
+    <>
+      {screen()}
+      <DraftRestored shown={restored} />
+    </>
+  );
 }

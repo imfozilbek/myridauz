@@ -30,7 +30,7 @@ describe('mountApp', () => {
     const fetch = vi.spyOn(window, 'fetch').mockImplementation(async () => Response.json(active));
     await act(async () =>
       mountApp('driver', Page, {
-        welcome: { icon: 'newTrip', textKey: 'common.driver.welcome', points: [] },
+        welcome: { textKey: 'common.driver.welcome', points: [] },
       }),
     );
     await waitFor(() => expect(document.body.textContent).toContain('sahifa'));

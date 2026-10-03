@@ -50,7 +50,7 @@ export const clearBotMessages = async () => void (await fetch(TELEGRAM, { method
 // waits for the Worker and asks once more.
 const API = `http://localhost:${STAND_API_PORT}`;
 const RELOAD_WAIT_MS = 30_000;
-async function workerBack(): Promise<void> {
+export async function workerBack(): Promise<void> {
   const until = Date.now() + RELOAD_WAIT_MS;
   while (Date.now() < until) {
     if (

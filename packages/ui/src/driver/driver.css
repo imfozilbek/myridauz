@@ -1,4 +1,4 @@
-/* The driver application: photo frames, the plate field and red marks of what to fix (docs/04, docs/21). */
+/* The driver application: photo frames, paint dots and red marks of what to fix (docs/04, docs/21). */
 .photo-slots {
   display: flex;
   flex-direction: column;
@@ -108,71 +108,6 @@
   border-color: var(--tgui--destructive_text_color);
 }
 
-/* An Uzbek plate: white, a black frame, the country at the right end. */
-.plate {
-  display: flex;
-  align-items: stretch;
-  margin: 8px 24px 0;
-  overflow: hidden;
-  border: 3px solid var(--tgui--text_color);
-  border-radius: 10px;
-  background: var(--tgui--bg_color);
-  font-family: var(--tgui--font-family);
-}
-
-.plate.plate-problem {
-  border-color: var(--tgui--destructive_text_color);
-}
-
-.plate-field {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-}
-
-/* The input and the grey example under it share one font and padding, so they line up. */
-.plate-input,
-.plate-ghost {
-  width: 100%;
-  padding: 14px 16px;
-  font-family: inherit;
-  font-size: 30px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  white-space: pre;
-}
-
-.plate-input {
-  position: relative;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--tgui--text_color);
-}
-
-.plate-ghost {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  color: var(--tgui--hint_color);
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.plate-typed {
-  visibility: hidden;
-}
-
-.plate-country {
-  display: grid;
-  place-items: center;
-  padding: 0 12px;
-  border-left: 3px solid var(--tgui--text_color);
-  color: var(--tgui--link_color);
-  font-size: 16px;
-  font-weight: 700;
-}
-
 /* A car paint dot: a thin ring keeps white and silver visible on white. */
 .car-swatch {
   display: block;
@@ -184,18 +119,15 @@
     0 0 0 1px var(--tgui--outline);
 }
 
-/* A plate shown, not typed: the same look without the ghost. */
-.plate-view .plate-input {
-  display: block;
-  text-align: center;
+/* The paint dot in a slot of the size of an icon tile (G34). */
+.swatch-tile {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
 }
 
-.plate-small {
-  margin: 8px 0 0;
-}
-
-.plate-small .plate-input {
-  padding: 8px 12px;
-  font-size: 22px;
-  letter-spacing: 1px;
+.swatch-tile .car-swatch {
+  width: 24px;
+  height: 24px;
 }

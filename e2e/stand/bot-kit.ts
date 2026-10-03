@@ -10,7 +10,13 @@ const secret = () =>
     .split('\n')
     .find((line) => line.startsWith('TELEGRAM_WEBHOOK_SECRET='))
     ?.split('=')[1] ?? '';
-export type Reply = { text?: string; reply_markup?: { inline_keyboard?: { text: string }[][] } };
+export type Reply = {
+  text?: string;
+  // A first message with a picture (G34): the picture by its address, the words as its caption.
+  photo?: string;
+  caption?: string;
+  reply_markup?: { inline_keyboard?: { text: string }[][] };
+};
 async function update(bot: string, body: object): Promise<Reply> {
   const send = () =>
     fetch(`http://localhost:${STAND_API_PORT}/telegram/${bot}`, {

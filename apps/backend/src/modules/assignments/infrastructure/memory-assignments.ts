@@ -7,6 +7,7 @@ type Row = Assignment & { answeredAt: number | null };
 export function createMemoryAssignments(): AssignmentStore {
   const rows: Row[] = [];
   const digests = new Set<string>();
+  const reminders = new Set<string>();
   const key = (row: Pick<Assignment, 'kind' | 'subjectId' | 'day'>) =>
     `${row.kind}:${row.subjectId}:${row.day}`;
   return {
@@ -50,6 +51,12 @@ export function createMemoryAssignments(): AssignmentStore {
     markDigest: async (day) => {
       if (digests.has(day)) return false;
       digests.add(day);
+      return true;
+    },
+    markReminder: async (userId, submittedAt, step) => {
+      const reminder = `${userId}:${submittedAt}:${step}`;
+      if (reminders.has(reminder)) return false;
+      reminders.add(reminder);
       return true;
     },
   };

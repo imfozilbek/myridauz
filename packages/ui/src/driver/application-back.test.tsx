@@ -2,7 +2,10 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { application, car, renderGate, tap } from './driver-test-kit';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 const asked = vi.spyOn(window, 'confirm');
 beforeEach(() => asked.mockReset());
 
@@ -17,6 +20,18 @@ const toFix = () =>
   );
 
 describe('ApplicationFlow: «Назад» of the application (docs/94 B4, B5, F3)', () => {
+  it('G34: a new application starts on the make, and «Назад» returns to the main screen', async () => {
+    renderGate(null);
+    expect(await screen.findByTestId('driver-home')).toBeTruthy();
+    await tap('Arizani toʻldiring');
+    expect(await screen.findByText('Mashina markasi')).toBeTruthy();
+    expect(screen.queryByTestId('driver-home')).toBeNull();
+    await tap('Orqaga');
+    expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
+    expect(screen.getByTestId('driver-home')).toBeTruthy();
+    expect(asked).not.toHaveBeenCalled();
+  });
+
   it('B4: fixing an application has «Назад» to its status', async () => {
     toFix();
     await tap('Tuzatish');

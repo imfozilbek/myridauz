@@ -2,13 +2,17 @@ import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { NoticeBanner } from '../notice-banner';
+import { ApplicationCard } from './application-card';
 import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
 
-// On the main screen of a driver: while the application is checked, why some things wait;
-// once after the approval, that it is approved and the bonus is there (docs/86 V7).
+// On the main screen of a driver: before sending, the application to fill (G34); while it is
+// checked, why some things wait; once after the approval, that it is approved and the bonus is
+// there (docs/86 V7).
 export function DriverNotice() {
-  const status = useDriver()?.application.status;
+  const driver = useDriver();
+  const status = driver?.application.status;
+  if (driver && status === 'draft') return <ApplicationCard driver={driver} />;
   if (status === 'pending') return <PendingNotice />;
   if (status === 'approved') return <ApprovedNotice />;
   return null;

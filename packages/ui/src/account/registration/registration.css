@@ -1,0 +1,8 @@
+/* «Siz haqingizda»: the hidden number note, an icon before the words (G34). */
+.step-note.about-hidden {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--tgui--hint_color);
+}

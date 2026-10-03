@@ -1,6 +1,7 @@
 import type { UsersClient } from '@platform/api-client';
 import { REASON_PLACE, type DriverApplication } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
+import { useState, type ReactNode } from 'react';
 import { vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { renderInShell, testClients } from '../test-shell';
@@ -53,7 +54,28 @@ const account: Account = {
   onProfileChanged: () => undefined,
 };
 
-export function renderGate(initial: DriverApplication | null) {
+// The person of the tests; a new selfie changes the face at once, like the account gate does.
+function TestAccount({ face, children }: { readonly face: boolean; readonly children: ReactNode }) {
+  const [hasAvatar, setHasAvatar] = useState(face);
+  const [avatarVersion, setVersion] = useState(0);
+  const value: Account = {
+    ...account,
+    client: {
+      ...account.client,
+      uploadAvatar: async () => undefined,
+      getAvatar: () => Promise.reject(new Error('test.none')),
+    },
+    profile: { ...account.profile, hasAvatar },
+    avatarVersion,
+    onAvatarChanged: () => {
+      setHasAvatar(true);
+      setVersion((version) => version + 1);
+    },
+  };
+  return <AccountContext.Provider value={value}>{children}</AccountContext.Provider>;
+}
+
+export function renderGate(initial: DriverApplication | null, face = true) {
   let photos = initial?.photos ?? { front: false, side: false, interior: false };
   const submit = vi.fn(async () => application({ status: 'pending', car }));
   let reasons = initial?.reasons ?? [];
@@ -65,12 +87,12 @@ export function renderGate(initial: DriverApplication | null) {
   });
   const clients = testClients({ drivers: { getApplication: async () => initial, uploadPhoto, submit } });
   const result = renderInShell(
-    <AccountContext.Provider value={account}>
+    <TestAccount face={face}>
       <DriverGate>
         <DriverNotice />
         <p data-testid="driver-home" />
       </DriverGate>
-    </AccountContext.Provider>,
+    </TestAccount>,
     false,
     true,
     undefined,
@@ -80,10 +102,18 @@ export function renderGate(initial: DriverApplication | null) {
 }
 
 export const tap = async (text: string) => fireEvent.click(await screen.findByText(text));
-// Taps the first photo button with this text and "takes" a photo.
-export function shoot(container: HTMLElement, button: string) {
-  const input = container.querySelector('input[type=file]');
+// Taps the first photo button with this text and "takes" a photo with the camera of that side:
+// the front camera for the face, the main one for the car.
+export function shoot(
+  container: HTMLElement,
+  button: string,
+  facing: 'user' | 'environment' = 'environment',
+) {
+  const input = container.querySelector(`input[type=file][capture=${facing}]`);
   if (!input) throw new Error('test.no_input');
-  fireEvent.click(screen.getAllByText(button)[0] as HTMLElement);
+  const face = (element: HTMLElement) =>
+    element.closest('button')?.textContent?.includes('Yuzingiz') === true;
+  const [first] = screen.getAllByText(button).filter((element) => face(element) === (facing === 'user'));
+  fireEvent.click(first as HTMLElement);
   fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
 }

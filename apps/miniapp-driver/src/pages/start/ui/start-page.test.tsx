@@ -46,14 +46,22 @@ describe('StartPage', () => {
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 
-  it('starts the application for a person who is not a driver yet (docs/04)', async () => {
+  it('shows a new driver the main screen with the application card (G34)', async () => {
     renderInShell(
       <StartPage />,
       false,
       true,
       undefined,
-      testClients({ drivers: { getApplication: async () => null } }),
+      testClients({
+        drivers: { getApplication: async () => null },
+        market: { myTrips: async () => [] },
+        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
+      }),
     );
-    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
+    expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
+    // Publishing and requests wait for the approval, as for an application being checked.
+    expect(screen.getAllByText('Tasdiqlangandan keyin')).toHaveLength(2);
+    fireEvent.click(screen.getByText('Arizani toʻldiring'));
+    expect(await screen.findByText('Mashina markasi')).toBeTruthy();
   });
 });

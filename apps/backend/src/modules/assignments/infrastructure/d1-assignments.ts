@@ -1,6 +1,6 @@
 import type { AssignmentStore } from '../application/ports';
 
-// Tables assignments and team_digests (migrations/0030, docs/92).
+// Tables assignments and team_digests (migrations/0030, docs/92), application_reminders (0034, G34).
 export const d1Assignments = (db: D1Database): AssignmentStore => ({
   assigneeOf: async (kind, subjectId, day) =>
     (
@@ -59,6 +59,16 @@ export const d1Assignments = (db: D1Database): AssignmentStore => ({
     const result = await db
       .prepare('INSERT OR IGNORE INTO team_digests (day, sent_at) VALUES (?, ?)')
       .bind(day, at)
+      .run();
+    return result.meta.changes > 0;
+  },
+  markReminder: async (userId, submittedAt, step, at) => {
+    const result = await db
+      .prepare(
+        `INSERT OR IGNORE INTO application_reminders (user_id, submitted_at, step, sent_at)
+         VALUES (?, ?, ?, ?)`,
+      )
+      .bind(userId, submittedAt, step, at)
       .run();
     return result.meta.changes > 0;
   },

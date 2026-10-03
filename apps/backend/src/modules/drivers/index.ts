@@ -88,6 +88,19 @@ export const grantMissedBonuses = async (env: Bindings) =>
 export const decisionsBetween = (env: Bindings, from: number, to: number) =>
   driversDeps(env).decisions.countsBetween(from, to);
 
+// Applications waiting for the team, with the name the team knows: the reminders (G34).
+export const waitingApplications = async (env: Bindings) => {
+  const deps = driversDeps(env);
+  const waiting = await Promise.all(
+    (await deps.applications.queue()).map(async ({ userId, submittedAt }) => {
+      const person = await deps.people.find(userId);
+      if (!person || submittedAt === null) return [];
+      return [{ userId, publicId: person.publicId, name: person.firstName, submittedAt }];
+    }),
+  );
+  return waiting.flat();
+};
+
 // The car of an approved driver, for trips (docs/04): null for everyone else.
 export const approvedCar = async (env: Bindings, userId: number) => {
   const application = await driversDeps(env).applications.find(userId);

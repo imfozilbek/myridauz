@@ -1,4 +1,5 @@
 import type { Load } from '../domain/pick';
+import type { ReminderStep } from '../domain/reminder';
 
 // A question of a person to the support bot, or the application of a driver (docs/92).
 export type Kind = 'support' | 'application';
@@ -28,6 +29,8 @@ export type AssignmentStore = {
   supportOf(day: string): Promise<SupportDone[]>;
   // true once: the digest of this day is to be sent now.
   markDigest(day: string, at: number): Promise<boolean>;
+  // true once: this reminder of the application sent at submittedAt is to be sent now (G34).
+  markReminder(userId: number, submittedAt: number, step: ReminderStep, at: number): Promise<boolean>;
 };
 
 export type AssignDeps = {

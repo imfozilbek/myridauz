@@ -12,15 +12,15 @@ const shooter = (page: Page) => async (name: string) => {
 };
 
 // The screens of G14 for the owner review (docs/33): documents, their links and "delete my data".
-test('consent: each document opens before "Roziman"', async ({ page }) => {
+// G34: the consent is the line of the welcome, each document name in it opens the document.
+test('consent: each document opens from the welcome', async ({ page }) => {
   await mockApi(page, 'unregistered');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page);
-  await page.locator('#tg-main-button').click();
-  await expect(page.getByText(t('legal.offer.title'))).toBeVisible();
+  await expect(page.getByText(TEXT.offerLink)).toBeVisible();
   await shot('1-consent');
-  await page.getByText(t('legal.offer.title')).click();
+  await page.getByText(TEXT.offerLink).click();
   await expect(page.getByText(`1. ${t('legal.offer.1.title')}`)).toBeVisible();
   // The first screen of the document: the whole text is in the review file (OPS-03).
   await page.screenshot({ path: 'screenshots/legal-2-offer.png' });

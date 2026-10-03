@@ -6,19 +6,29 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { ApplicationFlow } from './application-flow';
 import { DriverContext, type Driver } from './driver-context';
+import { SentScreen } from './sent-screen';
 import { StatusScreen } from './status-screen';
 
 type Loaded = { readonly application: DriverApplication | null };
 
-const LOOKING_AROUND = new Set<DriverApplication['status']>(['approved', 'pending']);
+const LOOKING_AROUND = new Set<DriverApplication['status']>(['approved', 'pending', 'draft']);
+// No application on the server yet: nothing is sent, no photo is taken.
+const NEW_APPLICATION: DriverApplication = {
+  status: 'draft',
+  car: null,
+  photos: { front: false, side: false, interior: false },
+  reasons: [],
+};
 
-// An approved driver works in the driver Mini App (docs/04). A driver whose application is being checked
-// looks around the app; publishing waits for the approval. Before that: the application or what to fix.
+// An approved driver works in the driver Mini App (docs/04). A driver whose application is not sent
+// yet (G34) or is being checked looks around the app; publishing waits for the approval. A rejected
+// application, or one with changes asked, shows what to fix.
 export function DriverGate({ children }: { readonly children: ReactNode }) {
   const { drivers } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [sent, setSent] = useState(false);
   const load = useCallback(() => {
     setFailed(false);
     drivers.getApplication().then(
@@ -36,23 +46,23 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
       );
   });
   const editCar = useCallback(() => setEditing(true), []);
+  const close = useCallback(() => setEditing(false), []);
   const submitted = useCallback((application: DriverApplication) => {
     setLoaded({ application });
     setEditing(false);
+    setSent(true);
   }, []);
   const application = loaded?.application ?? null;
-  const driver = useMemo<Driver | null>(
-    () => (application && LOOKING_AROUND.has(application.status) ? { application, editCar } : null),
-    [application, editCar],
-  );
+  const driver = useMemo<Driver | null>(() => {
+    const shown = application ?? NEW_APPLICATION;
+    return LOOKING_AROUND.has(shown.status) ? { application: shown, editCar } : null;
+  }, [application, editCar]);
 
   if (failed) return <ErrorScreen onRetry={load} />;
   if (!loaded) return <ScreenSkeleton />;
+  if (sent) return <SentScreen onDone={() => setSent(false)} />;
   if (!editing && driver) return <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>;
-  if (!editing && application && application.status !== 'draft') {
-    return <StatusScreen application={application} onFix={editCar} />;
-  }
-  // A sent application has a way back: an approved one to the app, one to fix to its status (B4).
-  const close = application && application.status !== 'draft' ? { onClose: () => setEditing(false) } : {};
-  return <ApplicationFlow initial={application} onSubmitted={submitted} {...close} />;
+  if (!editing && application) return <StatusScreen application={application} onFix={editCar} />;
+  // «Назад» out of the application: a new one to the main screen, a sent one to where it was (B4).
+  return <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />;
 }

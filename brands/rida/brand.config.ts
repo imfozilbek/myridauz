@@ -28,12 +28,9 @@ export const brandConfig: BrandConfig = {
   alerts: { errorGrowth: 3, minErrors: 10, dropGrowth: 20, minPeople: 20, repeatHours: 6 },
   // docs/08: no answer in 30 seconds or no voice in 15 seconds: the call ends, the chat stays.
   calls: { ringSeconds: 30, connectSeconds: 15 },
-  // docs/30: the requisites are placeholders until the owner has them (owner decision).
-  company: {
-    legalName: '{{company_legal_name}}',
-    form: '{{company_form}}',
-    stir: '{{company_stir}}',
-    address: '{{company_address}}',
-    email: 'myrida.llc@gmail.com',
-  },
+  // G34 (owner decision 02.10.2026): an answer within the hour from 7:00 to 23:00; a reminder to the
+  // moderator after 30 minutes, to the owner after 50.
+  moderation: { hours: { from: 7, to: 23 }, remindMinutes: 30, ownerMinutes: 50 },
+  // docs/30: the requisites come from the admin Mini App (G34); this address answers until they do.
+  company: { email: 'myrida.llc@gmail.com' },
 };

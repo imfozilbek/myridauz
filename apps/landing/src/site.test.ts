@@ -76,7 +76,11 @@ describe('landing (G15)', () => {
     expect(offer).toContain(escape(t('legal.offer.title')));
     expect(offer).toContain('Tahrir 1.1');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
-    expect(offer).not.toContain('<script>');
+    // Built without the requisites: the brand name; the script fills what the owner saved (G34).
+    expect(offer).toContain(`<span data-company>${escape(brand.name)}</span>`);
+    expect(offer).toContain(`data-legal="https://api.${brand.domain}/public/company"`);
+    expect(offer).toContain('<script>run()</script>');
+    for (const html of Object.values(site)) expect(html).not.toContain('{{');
     const text = (html: string) => html.replace(/data-[\w-]+="[^"]*"/gu, '');
     for (const html of Object.values(site).filter((file) => file.includes('<html')))
       expect(text(html)).not.toMatch(/(?<!\{)\{\w+\}(?!\})/u);

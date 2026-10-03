@@ -9,20 +9,11 @@ import './driver.css';
 
 type StatusScreenProps = { readonly application: DriverApplication; readonly onFix: () => void };
 
-// Waiting, or what to fix (docs/04): every reason on its own line, the same places are red
+// What to fix (docs/04); a waiting application looks around the app instead (G34): every reason on its own line, the same places are red
 // in the application. The answer also comes from the driver bot.
 export function StatusScreen({ application, onFix }: StatusScreenProps) {
   useScreenView(`driver.status.${application.status}`);
   const { t } = useI18n();
-  if (application.status === 'pending') {
-    return (
-      <StepLayout
-        icon="applications"
-        title={t('drivers.status.pending.title')}
-        hint={t('drivers.status.pending.hint')}
-      />
-    );
-  }
   const title =
     application.status === 'rejected'
       ? 'drivers.status.rejected.title'

@@ -6,8 +6,8 @@ import type { Bindings } from './env';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
-import { decisionsBetween, grantMissedBonuses } from './modules/drivers';
-import { sendTeamDigest } from './modules/assignments';
+import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
+import { sendApplicationReminders, sendTeamDigest } from './modules/assignments';
 import { purgeSupport } from './modules/support';
 import { expireRequests } from './modules/ride-requests';
 import { sendReminders } from './modules/reminders';
@@ -25,8 +25,8 @@ export { UserFeed } from './modules/feed/infrastructure/user-feed';
 // whose time is over, burns bonuses that are over, gives bonus 1 to approved drivers without it,
 // sends waiting subscription messages and trip reminders, edits channel posts of trips that left,
 // asks both sides of ended rides for a rating, checks the signals of the dashboard once an hour,
-// erases the points of rides 30 days after the trip (docs/12, docs/15, docs/24, docs/29, docs/35,
-// docs/69, G10, G11, G12, G24).
+// erases the points of rides 30 days after the trip, reminds the team of waiting driver applications
+// (docs/12, docs/15, docs/24, docs/29, docs/35, docs/69, G10, G11, G12, G24, G34).
 export default {
   fetch: (request, env, context) => {
     useTelegramApi(env.TELEGRAM_API_URL);
@@ -54,6 +54,7 @@ export default {
         askForRatings(env),
         checkStatsAlerts(env, new Date(now)),
         sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to)),
+        sendApplicationReminders(env, () => waitingApplications(env)),
         purgeSupport(env, now),
       ]),
     );

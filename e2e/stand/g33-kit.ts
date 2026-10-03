@@ -5,6 +5,7 @@ import { OWNER } from './people';
 import { NARROW } from './screen-tour';
 import { apply } from './seed';
 import { signedAs, type Person } from './stand-kit';
+import { workerBack } from './stand-tools';
 
 // G33 (docs/94): the shots go to before/ while the findings stand, to after/ once fixed.
 const WHEN = process.env['G33_SHOTS'] === 'before' ? 'before' : 'after';
@@ -44,15 +45,28 @@ export async function chooseRoute(page: Page) {
 }
 
 // One side of a chat through its socket, as the other phone writes.
-export async function writeInChat(person: Person, key: string, texts: readonly string[]) {
+async function openSocket(person: Person, key: string): Promise<WebSocket> {
   const url = await createChatClient(await signedAs('driver', person)).socketUrl(key);
   const socket = new WebSocket(url);
   await new Promise((resolve, reject) => {
     socket.addEventListener('open', resolve);
     socket.addEventListener('error', reject);
   });
-  for (const text of texts) socket.send(JSON.stringify({ type: 'send', text }));
   return socket;
+}
+// A Worker reload closes a socket being opened (lesson 91): a few tries, like every request.
+const SOCKET_TRIES = 3;
+export async function writeInChat(person: Person, key: string, texts: readonly string[]) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      const socket = await openSocket(person, key);
+      for (const text of texts) socket.send(JSON.stringify({ type: 'send', text }));
+      return socket;
+    } catch (error) {
+      if (attempt === SOCKET_TRIES) throw error;
+      await workerBack();
+    }
+  }
 }
 
 const bubbles = (page: Page) => page.locator('.chat-bubble');
@@ -63,18 +77,18 @@ export async function waitBubbles(page: Page, count: number) {
 // A phone of its own: another person, nothing kept from the last one.
 export const phone = async (browser: Browser) => (await browser.newContext({ viewport: NARROW })).newPage();
 
-// A new driver up to the car photos: Chevrolet Damas, white, with a face photo.
+// A new driver up to the car photos: Chevrolet Damas, white, with a face photo. The face is the
+// first photo of the same screen (G34): «Rasmga olish» is left on the car photos only.
 export async function toCarPhotos(page: Page) {
   await page.getByText(TEXT.becomeDriver).first().click();
-  await mainButton(page).click();
   await page.getByText('Chevrolet', { exact: true }).click();
   await page.getByText('Damas', { exact: true }).click();
   await page.getByText('Oq', { exact: true }).click();
   await page.getByLabel(TEXT.plateField).fill('01 a 123 bc');
   await mainButton(page).click();
-  await page.getByText(TEXT.addPhoto).click();
+  await page.getByText(TEXT.face, { exact: true }).click();
   await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
-  await mainButton(page).click();
+  await expect(page.getByText(TEXT.retake)).toHaveCount(1);
 }
 
 // Ten drivers of their own, so the trips of G33 never meet the limits of other scenarios.

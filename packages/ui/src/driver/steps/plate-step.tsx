@@ -1,3 +1,4 @@
+import '../plate.css';
 import { carSchema, formatPlate, maskPlate, type ModerationReason } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
@@ -33,7 +34,7 @@ export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.p
     setInvalid(true);
   }, [value, onDone]);
   return (
-    <StepLayout icon="car" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
+    <StepLayout icon="plate" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
       <Screen onBack={onBack} />
       <label className={invalid || hasProblem(reasons, 'plate') ? 'plate plate-problem' : 'plate'}>
         <span className="plate-field">
