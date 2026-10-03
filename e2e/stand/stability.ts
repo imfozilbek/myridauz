@@ -7,6 +7,8 @@ import type { Page } from '@playwright/test';
 const JUMPS = 'screenshots/stand/g27/jumps.txt';
 // A skeleton shorter than this tells the person nothing: it is a blink.
 const BLINK_MS = 250;
+// Less opaque than this a skeleton is not seen yet.
+const SEEN_MIN = 0.1;
 // Shifts below this are rounding, not a jump a person sees.
 const SHIFT_MIN = 0.001;
 // A shift this soon after typing follows the person's own input, as the browser counts it.
@@ -46,6 +48,14 @@ const WATCH = `(() => {
     }
   }).observe({ type: 'layout-shift', buffered: true });
   const shown = new Map();
+  // How much of a skeleton a person saw: it fades in, a moment of it is not seen.
+  const seen = new Map();
+  const look = () => {
+    for (const node of shown.keys())
+      seen.set(node, Math.max(seen.get(node) || 0, Number(getComputedStyle(node).opacity)));
+    requestAnimationFrame(look);
+  };
+  requestAnimationFrame(look);
   new MutationObserver(() => {
     const now = performance.now();
     const busy = new Set(document.querySelectorAll('[aria-busy="true"]:not([data-hidden])'));
@@ -54,7 +64,8 @@ const WATCH = `(() => {
       if (busy.has(node)) continue;
       shown.delete(node);
       const ms = Math.round(now - since);
-      if (ms < ${BLINK_MS}) found.push({ kind: 'blink', what: name(node), size: ms });
+      const visible = (seen.get(node) || 0) >= ${SEEN_MIN};
+      if (ms < ${BLINK_MS} && visible) found.push({ kind: 'blink', what: name(node), size: ms });
     }
   }).observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ['aria-busy', 'data-hidden'] });
 })();`;

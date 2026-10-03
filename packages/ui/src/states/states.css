@@ -3,8 +3,9 @@
   visibility: hidden;
 }
 
+/* A slow start: data that comes a moment after the wait never shows a gray flash. */
 .skeleton-late:not([data-hidden]) {
-  animation: skeleton-in 200ms ease-out;
+  animation: skeleton-in 300ms ease-in;
 }
 
 @keyframes skeleton-in {
