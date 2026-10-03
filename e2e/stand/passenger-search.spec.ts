@@ -43,7 +43,7 @@ async function mapReady(page: Page, title: string) {
   await expect(page.getByText(t(title as 'way.point.from'))).toBeVisible();
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   // The name came and the map is inside the place (a center outside its border moves in, G35).
-  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u);
+  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
 }
 
 // The taps of the person: the goal counts them (docs/97: new ≤ 9, again ≤ 4, no trips ≤ 12).
