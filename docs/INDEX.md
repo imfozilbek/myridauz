@@ -93,7 +93,7 @@
 | 88 | [88-ui-library-improvements.md](88-ui-library-improvements.md) | Улучшения UX и UI готовыми элементами TelegramUI, Telegram SDK и Lucide |
 | 89 | [89-global-review.md](89-global-review.md) | Глобальный обход 02.10: 49 находок по попутчику, водителю, админке, лендингу и системе |
 | 90 | [90-filters-review.md](90-filters-review.md) | Фильтры, порядок и поиск на всех экранах: 42 находки, сначала ошибки |
-| 91 | [91-lessons-learned-6.md](91-lessons-learned-6.md) | Журнал уроков: продолжение 6 (№80 и дальше) |
+| 91 | [91-lessons-learned-6.md](91-lessons-learned-6.md) | Журнал уроков: продолжение 6 (№80 … №100) |
 | 92 | [92-team-share.md](92-team-share.md) | Работа команды поровну: обращения и заявки одному человеку, дайджест в 00:00 |
 | 93 | [93-support-history.md](93-support-history.md) | Поддержка: фото, кнопка «Tarix» с историей обращений, хранение 90 дней |
 | 94 | [94-navigation-physics.md](94-navigation-physics.md) | Физика навигации: «Назад», прокрутка, закрытие приложения и окон; 37 находок (G33) |
@@ -101,4 +101,5 @@
 | 96 | [96-g34-texts.md](96-g34-texts.md) | G34: новые тексты бота, регистрации, заявки и реквизитов на согласие |
 | 97 | [97-passenger-search.md](97-passenger-search.md) | Попутчик ищет поездку: экраны, ошибки и неудобства (PS1 … PS17) |
 | 98 | [98-g35-texts.md](98-g35-texts.md) | G35: новые тексты пути попутчика на согласие (U1 … U7) |
+| 99 | [99-lessons-learned-7.md](99-lessons-learned-7.md) | Журнал уроков: продолжение 7 (№101 и дальше) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
