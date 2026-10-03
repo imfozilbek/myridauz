@@ -45,7 +45,7 @@ await asset('logo/rida-lockup-vertical', brand.lockupV(), [1000]);
 // Telegram
 for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-avatar`, botAvatar(r), [640]);
 for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
-await asset('telegram/bot-driver-welcome', welcome.botWelcome(), [1280]);
+for (const r of ['driver', 'passenger']) await asset(`telegram/bot-${r}-welcome`, welcome.botWelcome(r), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());
 for (const r of regions) {
   const id = `${String(r.n).padStart(2, '0')}-${r.user.replace('rida_', '')}`;
