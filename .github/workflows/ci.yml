@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [format:check, lint, typecheck, knip, check:text, audit]
+        check: [typecheck, lint, format:check, knip, check:text, audit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -101,24 +101,52 @@ jobs:
 
   # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
   screenshots:
-    name: screenshots (${{ matrix.shard }}/2)
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - run: pnpm screenshots --shard=${{ matrix.shard }}/2
+      - run: pnpm screenshots
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: screenshots-${{ matrix.shard }}
+          name: screenshots
           path: screenshots/
+          retention-days: 14
+
+  # The brand kit (docs/38): media for people, not a gate. Built only when the brand or the
+  # dependencies changed; otherwise the job ends at once and CI stays within a minute (docs/45).
+  brand-kit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      # The last commit against its parent: the pull request merged into main, or the push to main.
+      - id: diff
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -Eq '^(brands/|pnpm-lock\.yaml$)'; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.diff.outputs.build == 'true'
+        uses: ./.github/actions/setup
+      - if: steps.diff.outputs.build == 'true'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - if: steps.diff.outputs.build == 'true'
+        run: pnpm exec playwright install --with-deps chromium
+      - if: steps.diff.outputs.build == 'true'
+        run: pnpm --filter @platform/brand-kit-rida build
+        env:
+          FFMPEG: /usr/bin/ffmpeg
+      - if: steps.diff.outputs.build == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: brand-kit
+          path: brands/rida/brand-kit/kit/
           retention-days: 14
 
   secrets:
