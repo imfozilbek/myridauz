@@ -1,7 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useMemo } from 'react';
-import { Cell, List, Section, Switch } from '../components';
+import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import type { Route } from '../places/route-screen';
@@ -16,11 +16,9 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { DayChips } from './day-chips';
 import { FilteredEmpty } from './filtered-empty';
 import { TripCard } from './trip-card';
+import { NO_FILTERS, TripFiltersSection, type TripFilters } from './trip-filters';
 import { RESULTS, useTripSearch } from './use-trip-search';
 import './market.css';
-
-// The filters live in the flow: they stay after a trip is opened and closed (docs/90 F-P1).
-export type TripFilters = { readonly woman: boolean; readonly door: boolean };
 
 type TripResultsProps = {
   readonly route: Route;
@@ -43,11 +41,11 @@ export function TripResults(props: TripResultsProps) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   // «Uyimdan olib ketsin» is a filter of the phone, the list is already here (docs/88 L5).
-  const { woman, door } = filters;
+  const { woman, door, seats } = filters;
   const { trips, stale, failed, load, refresh } = useTripSearch(route, date, woman);
   const shown = useMemo(
-    () => (door ? trips?.filter((trip) => trip.pickupMode !== 'pitak') : trips),
-    [trips, door],
+    () => trips?.filter((trip) => (!door || trip.pickupMode !== 'pitak') && trip.seatsLeft >= seats) ?? null,
+    [trips, door, seats],
   );
   // «Назад» from a trip: the same place; a quiet refresh keeps the trip under the finger (docs/94).
   useListPlace(RESULTS, trips !== null);
@@ -62,30 +60,7 @@ export function TripResults(props: TripResultsProps) {
       </Title>
       <DayChips date={date} now={now} onDay={onDay} onOther={onOtherDay} />
       <List>
-        <Section>
-          <Cell
-            Component="label"
-            after={
-              <Switch
-                checked={woman}
-                onChange={(event) => onFilters({ ...filters, woman: event.target.checked })}
-              />
-            }
-          >
-            {t('market.search.woman')}
-          </Cell>
-          <Cell
-            Component="label"
-            after={
-              <Switch
-                checked={door}
-                onChange={(event) => onFilters({ ...filters, door: event.target.checked })}
-              />
-            }
-          >
-            {t('market.search.door')}
-          </Cell>
-        </Section>
+        <TripFiltersSection filters={filters} onFilters={onFilters} />
         {/* Another day loads: the cards stay and dim only when the wait is long (G41, docs/108). */}
         <div className={stale ? 'list-stale' : undefined}>
           {shown?.map((trip) => (
@@ -102,7 +77,7 @@ export function TripResults(props: TripResultsProps) {
           date={date}
           filters={filters}
           found={trips}
-          onClear={() => onFilters({ woman: false, door: false })}
+          onClear={() => onFilters(NO_FILTERS)}
         >
           <EmptyState
             icon="search"

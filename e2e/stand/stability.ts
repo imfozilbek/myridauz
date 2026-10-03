@@ -24,7 +24,11 @@ const WATCH = `(() => {
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
       if (entry.value < ${SHIFT_MIN} || entry.hadRecentInput) continue;
-      const what = (entry.sources || []).map((s) => name(s.node)).join(' | ');
+      // What moved, by how much, and what stands above it: the cause is usually there.
+      const what = (entry.sources || [])
+        .map((s) => name(s.node) + ' by ' + Math.round(s.currentRect.y - s.previousRect.y) + 'px under ' +
+          name(s.node && s.node.previousElementSibling) + ' at ' + Math.round(entry.startTime) + 'ms')
+        .join(' | ');
       found.push({ kind: 'shift', what, size: Number(entry.value.toFixed(4)) });
     }
   }).observe({ type: 'layout-shift', buffered: true });

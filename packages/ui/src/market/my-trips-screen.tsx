@@ -23,6 +23,7 @@ import { TripScreen } from './trip-screen';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
+import { waitingRequests } from '../home/home-items';
 
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
 type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
@@ -108,10 +109,11 @@ function MyTrips({ onBack, link }: ScreenProps) {
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
-  const [trips, , offers] = value;
+  const [trips, booked, offers] = value;
   return (
     <MyTripsList
       trips={trips}
+      waiting={(item) => waitingRequests(item, booked)}
       offers={offers}
       onBack={onBack}
       onRefresh={refresh}

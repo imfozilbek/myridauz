@@ -5,7 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
-import type { TripFilters } from './trip-results';
+import type { TripFilters } from './trip-filters';
 
 type Props = {
   readonly route: Route;
@@ -23,9 +23,9 @@ type Props = {
 export function FilteredEmpty({ route, date, filters, found, onClear, children }: Props) {
   const { t } = useI18n();
   const { market } = useApiClients();
-  // «Uyimdan» is counted on the phone at once; «ayol bor» asks the server. Until it answers nothing is
+  // «Uyimdan» and the number of people are counted on the phone at once; «ayol bor» asks the server. Until it answers nothing is
   // shown, so «nothing found» never flashes before «N trips are hidden» (G41, docs/108).
-  const counted = filters.woman ? null : filters.door ? found.length : 0;
+  const counted = filters.woman ? null : filters.door || filters.seats > 1 ? found.length : 0;
   const [asked, setAsked] = useState<number | null>(null);
   useEffect(() => {
     if (!filters.woman) return undefined;
