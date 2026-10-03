@@ -50,11 +50,9 @@ describe('funnelOf (docs/29)', () => {
     expect(steps.map((step) => step.step)).toEqual([
       'route',
       'mode',
-      'date',
-      'time',
+      'when',
       'seats',
       'price',
-      'woman',
       'comment',
       'published',
     ]);

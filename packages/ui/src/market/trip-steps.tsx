@@ -3,30 +3,10 @@ import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { Button, List, Section, Textarea } from '../components';
 import { useI18n } from '../context/i18n-context';
-import { ChoiceStep } from '../driver/steps/choice-step';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 
 type Step<T> = { readonly onBack: () => void; readonly onDone: (value: T) => void };
-
-// "Mashinada ayol bor": a woman goes along, a relative without Telegram (docs/06).
-export function WomanStep({ selected, onBack, onDone }: Step<boolean> & { readonly selected?: boolean }) {
-  const { t } = useI18n();
-  return (
-    <ChoiceStep
-      screen="market.woman"
-      icon="passengers"
-      title={t('market.woman.title')}
-      choices={[
-        { value: true, label: t('market.woman.yes') },
-        { value: false, label: t('market.woman.no') },
-      ]}
-      {...(selected === undefined ? {} : { selected })}
-      onBack={onBack}
-      onDone={onDone}
-    />
-  );
-}
 
 type CommentProps = Step<string> & {
   readonly initial: string;
@@ -61,27 +41,5 @@ export function CommentStep({ initial, onType, onBack, onDone }: CommentProps) {
       </div>
       {text.trim() ? <MainButton text={t('common.continue')} onClick={() => onDone(text.trim())} /> : null}
     </StepLayout>
-  );
-}
-
-// Seats from 1 to the seats of the car (docs/35); the car's own number is chosen in advance.
-export function SeatsStep({
-  max,
-  initial,
-  onBack,
-  onDone,
-}: Step<number> & { readonly max: number; readonly initial: number }) {
-  const { t } = useI18n();
-  const choices = Array.from({ length: max }, (_, index) => ({ value: index + 1, label: String(index + 1) }));
-  return (
-    <ChoiceStep
-      screen="market.seats"
-      icon="passengers"
-      title={t('market.seats.title')}
-      choices={choices}
-      selected={Math.min(initial, max)}
-      onBack={onBack}
-      onDone={onDone}
-    />
   );
 }

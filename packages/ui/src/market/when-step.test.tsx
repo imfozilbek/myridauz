@@ -21,7 +21,8 @@ function open(schedule: Schedule = FREE) {
   );
   return onDone;
 }
-const time = async () => ((await screen.findByLabelText('Soat nechada joʻnaysiz?')) as HTMLSelectElement).value;
+const time = async () =>
+  ((await screen.findByLabelText('Soat nechada joʻnaysiz?')) as HTMLSelectElement).value;
 const times = () =>
   [...(screen.getByLabelText('Soat nechada joʻnaysiz?') as HTMLSelectElement).options].map((o) => o.value);
 

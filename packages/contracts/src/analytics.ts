@@ -18,9 +18,9 @@ export const TRIP_STEPS = [
   'mode',
   // The day and the time on one screen (G38, docs/103).
   'when',
+  // The seats and «ayol bor» on one screen (G38, docs/103 point 8).
   'seats',
   'price',
-  'woman',
   'comment',
   'published',
 ] as const;

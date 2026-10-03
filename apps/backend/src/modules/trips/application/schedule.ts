@@ -1,11 +1,4 @@
-import {
-  arrivalAt,
-  busyWindows,
-  earliestDepart,
-  isBusy,
-  roadMs,
-  type Schedule,
-} from '@platform/contracts';
+import { arrivalAt, busyWindows, earliestDepart, isBusy, roadMs, type Schedule } from '@platform/contracts';
 import { isLive } from '../domain/trip';
 import type { TripsDeps } from './ports';
 

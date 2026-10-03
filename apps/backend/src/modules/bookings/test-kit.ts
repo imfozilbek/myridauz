@@ -1,6 +1,6 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
-import { earliestDepart, type Car, type Trip } from '@platform/contracts';
-import { commissionFor, loadBrand } from '@platform/brands';
+import type { Car, Trip } from '@platform/contracts';
+import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
@@ -18,14 +18,13 @@ import {
   HOME,
   NOW,
   PITAK,
+  scheduleCheck,
 } from './test-fakes';
 import { idOfPublic } from '../../test-people';
 
-export const SCHEDULE = loadBrand().schedule;
-
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, seats } from './test-fakes';
+export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, SCHEDULE, seats } from './test-fakes';
 
 export function setup() {
   let now = NOW;
@@ -82,12 +81,7 @@ export function setup() {
       find: async (tripId) => trips.get(tripId),
       ofDriver: async (driverId) =>
         [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
-      // The lead time and the limit of the brand; the road between trips is the trips module's (docs/103).
-      scheduleError: async (driverId, trip) => {
-        if (trip.departAt < earliestDepart(now, SCHEDULE)) return 'trips.too_soon';
-        const live = [...trips.values()].filter((t) => t.driverId === driverId && t.live);
-        return live.length >= SCHEDULE.maxActiveTrips ? 'trips.too_many' : null;
-      },
+      scheduleError: async (driverId, trip) => scheduleCheck(trip.departAt, now, trips.values(), driverId),
       views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
       publish: async (driverId, input) => {
         const tripId = addTrip({ ...input, driverId });

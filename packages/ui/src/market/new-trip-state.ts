@@ -8,7 +8,7 @@ import type { Route } from '../places/route-screen';
 import { returnDraft } from './return-trip';
 import type { TripDraft } from './trip-draft';
 
-const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'woman', 'comment', 'review'] as const;
+const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'comment', 'review'] as const;
 export type Step = (typeof STEPS)[number];
 type Saved = { readonly step: Step; readonly answer: Partial<TripDraft>; readonly isReturn: boolean };
 const DRAFT_KEY = 'new_trip';

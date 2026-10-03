@@ -47,7 +47,6 @@ const sdk = vi.hoisted(() => {
 vi.mock('@telegram-apps/sdk-react', () => sdk);
 
 const { colors } = loadBrand().theme;
-
 beforeEach(() => vi.clearAllMocks());
 
 describe('Telegram wrappers', () => {
@@ -105,7 +104,8 @@ describe('Telegram wrappers', () => {
     expect(sdk.mainButton.setParams.ifAvailable).toHaveBeenLastCalledWith({ isVisible: false });
   });
 
-  it('shows native secondary and back buttons', () => {
+  it('shows native secondary and back buttons; «Назад» hides once no next step takes it (G38)', () => {
+    vi.useFakeTimers();
     const { unmount } = renderInShell(
       <>
         <SecondaryButton text="Orqaga" onClick={() => undefined} />
@@ -113,13 +113,9 @@ describe('Telegram wrappers', () => {
       </>,
       true,
     );
-    expect(sdk.secondaryButton.setParams.ifAvailable).toHaveBeenCalledWith({
-      text: 'Orqaga',
-      isVisible: true,
-    });
+    const params = { text: 'Orqaga', isVisible: true };
+    expect(sdk.secondaryButton.setParams.ifAvailable).toHaveBeenCalledWith(params);
     expect(sdk.backButton.show.ifAvailable).toHaveBeenCalled();
-    // «Назад» hides a moment after the screen leaves, when no next step took it (G38, docs/103).
-    vi.useFakeTimers();
     unmount();
     vi.runAllTimers();
     vi.useRealTimers();

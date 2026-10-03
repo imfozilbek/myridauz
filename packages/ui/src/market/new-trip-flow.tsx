@@ -9,7 +9,8 @@ import { PriceStep } from './price-step';
 import { TripWhen } from './trip-when';
 import { PlacesGate } from './places-gate';
 import { TripPublish } from './trip-publish';
-import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
+import { SeatsStep } from './seats-step';
+import { CommentStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
 import { completeDraft } from './trip-draft';
 
@@ -79,9 +80,10 @@ function TripStepScreen({
       return (
         <SeatsStep
           max={car?.seats ?? 1}
-          initial={draft.seats ?? car?.seats ?? 1}
+          initial={{ seats: draft.seats ?? car?.seats ?? 1, womanOnBoard: draft.womanOnBoard ?? false }}
+          askWoman={!woman}
           onBack={() => go('when')}
-          onDone={(seats) => next('seats', { seats }, 'price')}
+          onDone={(value) => next('seats', value, 'price')}
         />
       );
     case 'price':
@@ -92,15 +94,7 @@ function TripStepScreen({
           {...(draft.price ? { initial: draft.price } : {})}
           commission
           onBack={() => go('seats')}
-          onDone={(price) => next('price', { price }, woman ? 'comment' : 'woman')}
-        />
-      );
-    case 'woman':
-      return (
-        <WomanStep
-          {...(draft.womanOnBoard === undefined ? {} : { selected: draft.womanOnBoard })}
-          onBack={() => go('price')}
-          onDone={(value) => next('woman', { womanOnBoard: value }, 'comment')}
+          onDone={(price) => next('price', { price }, 'comment')}
         />
       );
     case 'comment':
@@ -108,7 +102,7 @@ function TripStepScreen({
         <CommentStep
           initial={draft.comment ?? ''}
           onType={flow.type}
-          onBack={() => go(woman ? 'price' : 'woman')}
+          onBack={() => go('price')}
           onDone={(comment) => next('comment', { comment }, 'review')}
         />
       );

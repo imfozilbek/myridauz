@@ -237,3 +237,18 @@
   min-width: 40px;
   padding-inline: 0;
 }
+
+/* The chairs of the car in one row, a finger-sized tap each (G38, docs/103 point 8). */
+.seat-chairs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+}
+
+.seat-count {
+  display: block;
+  padding: 4px 16px 16px;
+  text-align: center;
+}

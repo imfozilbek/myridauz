@@ -5,6 +5,8 @@ import {
   type MarketClient,
 } from '@platform/api-client';
 import type { BookingInput, DriverBookingAction, PickupMode, Trip } from '@platform/contracts';
+import { tashkentDate } from '@platform/contracts';
+import { freeDepart, freshDriver } from './schedule-kit';
 import { signedAs, type Person } from './stand-kit';
 
 // Trips and bookings of the stand made through the API, as the apps make them (docs/75).
@@ -12,15 +14,8 @@ export const CHILONZOR = '1726294';
 export const FARGONA = '1730401';
 export const BUXORO = '1706401';
 
-const HOUR = 60 * 60 * 1000;
-const DAY = 24 * HOUR;
-// Uzbekistan is UTC+5: tomorrow at 08:00 there.
-const TASHKENT_OFFSET = 5 * HOUR;
-const DEPART_HOUR = 8;
-const tomorrowMorning = () => {
-  const local = Date.now() + TASHKENT_OFFSET + DAY;
-  return local - (local % DAY) + DEPART_HOUR * HOUR - TASHKENT_OFFSET;
-};
+const DAY = 24 * 60 * 60 * 1000;
+const MORNING = '08:00';
 
 type App = 'passenger' | 'driver';
 const marketOf = async (app: App, person: Person): Promise<MarketClient> =>
@@ -28,11 +23,14 @@ const marketOf = async (app: App, person: Person): Promise<MarketClient> =>
 const bookingsOf = async (app: App, person: Person): Promise<BookingsClient> =>
   createBookingsClient(await signedAs(app, person));
 
-// A trip of tomorrow morning at the recommended share, 4 seats.
+// A trip of tomorrow morning at the recommended share, 4 seats: 08:00, or the first time the driver
+// makes after another trip of the scenario (docs/103).
 export async function publishTrip(driver: Person, from: string, to: string, pickupMode: PickupMode) {
+  freshDriver(driver);
   const market = await marketOf('driver', driver);
   const { price } = await market.recommend(from, to);
-  const input = { from, to, departAt: tomorrowMorning(), seats: 4, price, womanOnBoard: false, comment: '' };
+  const departAt = await freeDepart(market, from, to, tashkentDate(Date.now() + DAY), MORNING);
+  const input = { from, to, departAt, seats: 4, price, womanOnBoard: false, comment: '' };
   return market.publishTrip({ ...input, pickupMode });
 }
 
