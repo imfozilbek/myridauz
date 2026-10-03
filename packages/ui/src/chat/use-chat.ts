@@ -17,6 +17,8 @@ export function useChat(key: string) {
   const { chat } = useApiClients();
   const { track } = useAnalytics();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // The history came: only then «no messages yet» may show (G41, docs/108).
+  const [loaded, setLoaded] = useState(false);
   const [state, setState] = useState<ChatState>('connecting');
   const [warning, setWarning] = useState(false);
   // Own messages the chat sent back: what the person wrote is delivered (docs/94 C3).
@@ -28,6 +30,7 @@ export function useChat(key: string) {
   const handle = (data: ChatServerEvent) => {
     if (data.type === 'history') {
       setMessages(data.messages);
+      setLoaded(true);
       calls.setCanCall(data.canCall);
     } else if (data.type === 'message') {
       setMessages((list) => [...list, data.message]);
@@ -98,7 +101,7 @@ export function useChat(key: string) {
   }, []);
   const { canCall, call, ended, onTrack, dismiss } = calls;
   const calling = { canCall, call, ended, emit, onTrack, dismiss };
-  return { messages, state, warning, delivered, send, retry, calling };
+  return { messages, loaded, state, warning, delivered, send, retry, calling };
 }
 
 export type ChatCalling = ReturnType<typeof useChat>['calling'];

@@ -8,6 +8,7 @@ import { IconTile } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 import type { TranslationKey } from '@platform/i18n';
 import { errorKey } from '../market/error-text';
+import '../states/states.css';
 
 type Props = { readonly driverId: PersonId; readonly screen: string };
 
@@ -25,7 +26,6 @@ export function FavoriteCell({ driverId, screen }: Props) {
       () => setSaved(null),
     );
   }, [comfort, driverId]);
-  if (saved === null) return null;
   const toggle = async () => {
     try {
       setFailure(null);
@@ -43,8 +43,13 @@ export function FavoriteCell({ driverId, screen }: Props) {
       setFailure(errorKey(caught));
     }
   };
+  // Until the list of saved drivers comes, the row keeps its place unseen: the reviews and the
+  // buttons under it never jump (G41, docs/108).
   return (
-    <Section footer={failure ? t(failure) : added ? t('comfort.favorite.added') : undefined}>
+    <Section
+      footer={failure ? t(failure) : added ? t('comfort.favorite.added') : undefined}
+      {...(saved === null ? { className: 'keep-place', 'aria-hidden': true } : {})}
+    >
       <Cell before={<IconTile name="favorite" tone="accent" />} onClick={() => void toggle()}>
         {t(saved ? 'comfort.favorite.remove' : 'comfort.favorite.add')}
       </Cell>

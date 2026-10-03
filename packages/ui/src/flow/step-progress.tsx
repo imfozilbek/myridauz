@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 
 const FULL = 100;
 
@@ -12,10 +12,11 @@ export function StepProgressProvider({ children }: { readonly children: ReactNod
   return <StepProgressContext.Provider value={progress}>{children}</StepProgressContext.Provider>;
 }
 
-// A form at step `at` of `of` (from 0); a step outside the list shows no bar.
+// A form at step `at` of `of` (from 0); a step outside the list shows no bar. Set before the first
+// paint: the bar never appears a frame late and pushes the step down (G41, docs/108).
 export function useStepProgress(at: number, of: number) {
   const { set } = useContext(StepProgressContext);
-  useEffect(() => {
+  useLayoutEffect(() => {
     set(at < 0 ? null : Math.round(((at + 1) / of) * FULL));
     return () => set(null);
   }, [at, of, set]);

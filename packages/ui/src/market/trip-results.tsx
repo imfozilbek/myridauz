@@ -44,7 +44,7 @@ export function TripResults(props: TripResultsProps) {
   const { t } = useI18n();
   // «Uyimdan olib ketsin» is a filter of the phone, the list is already here (docs/88 L5).
   const { woman, door } = filters;
-  const { trips, failed, load, refresh } = useTripSearch(route, date, woman);
+  const { trips, stale, failed, load, refresh } = useTripSearch(route, date, woman);
   const shown = useMemo(
     () => (door ? trips?.filter((trip) => trip.pickupMode !== 'pitak') : trips),
     [trips, door],
@@ -86,14 +86,17 @@ export function TripResults(props: TripResultsProps) {
             {t('market.search.door')}
           </Cell>
         </Section>
-        {shown?.map((trip) => (
-          <div key={trip.id} data-row={trip.id}>
-            <TripCard trip={trip} onOpen={() => onOpen(trip)} />
-          </div>
-        ))}
+        {/* Another day loads: the cards stay and dim only when the wait is long (G41, docs/108). */}
+        <div className={stale ? 'list-stale' : undefined}>
+          {shown?.map((trip) => (
+            <div key={trip.id} data-row={trip.id}>
+              <TripCard trip={trip} onOpen={() => onOpen(trip)} />
+            </div>
+          ))}
+        </div>
       </List>
       {trips === null ? <ScreenSkeleton /> : null}
-      {trips && shown?.length === 0 ? (
+      {trips && !stale && shown?.length === 0 ? (
         <FilteredEmpty
           route={route}
           date={date}

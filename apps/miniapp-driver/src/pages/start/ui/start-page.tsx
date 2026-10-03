@@ -58,12 +58,8 @@ function DriverStart() {
   return (
     <StartFlow
       actions={ACTIONS}
-      notice={
-        <>
-          <DriverNotice />
-          <HomeScreenOffer />
-        </>
-      }
+      notice={<DriverNotice />}
+      after={<HomeScreenOffer />}
       home={(go) => <DriverHome go={go} />}
       {...(pending ? {} : { covered: 'new_trip' })}
     />

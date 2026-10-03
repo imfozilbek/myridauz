@@ -36,7 +36,8 @@ function ApprovedNotice() {
   const { t, formatMoney, formatDate } = useI18n();
   const { wallet } = useApiClients();
   const [shown] = useState(() => !approvalSeen());
-  const [bonus, setBonus] = useState<string>('');
+  // null until the wallet answers: the banner comes whole, it never grows and pushes the trips (G41).
+  const [bonus, setBonus] = useState<string | null>(null);
   useEffect(markApprovalSeen, []);
   useEffect(() => {
     if (!shown) return;
@@ -49,11 +50,11 @@ function ApprovedNotice() {
                 date: formatDate(new Date(mine.bonusExpiresAt)),
               }),
             )
-          : undefined,
-      () => undefined,
+          : setBonus(''),
+      () => setBonus(''),
     );
   }, [shown, wallet]);
-  if (!shown) return null;
+  if (!shown || bonus === null) return null;
   return (
     <NoticeBanner icon="approved" tone="brand" title={t('drivers.status.approved.title')} text={bonus} />
   );

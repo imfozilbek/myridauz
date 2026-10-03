@@ -28,14 +28,17 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
     [route, date, woman],
   );
   const memory = keyOf(search.from, search.to, date, woman);
-  const [trips, setTrips] = useState<Trip[] | null>(() => keptValue<Trip[]>(memory) ?? null);
+  const [found, setFound] = useState<{ readonly key: string; readonly trips: Trip[] } | null>(() => {
+    const kept = keptValue<Trip[]>(memory);
+    return kept ? { key: memory, trips: kept } : null;
+  });
   const [failed, setFailed] = useState(false);
   // A late answer of the search before a filter change never replaces the current one.
   const current = useRef(memory);
   current.current = memory;
   const take = useCallback((key: string, found: Trip[]) => {
     keepValue(key, found);
-    if (current.current === key) setTrips(found);
+    if (current.current === key) setFound({ key, trips: found });
   }, []);
   const refresh = useCallback(
     () =>
@@ -52,7 +55,6 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
   );
   const load = useCallback(() => {
     setFailed(false);
-    setTrips(null);
     market.searchTrips(search).then(
       (found) => {
         counted(found);
@@ -66,7 +68,7 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
   useEffect(() => {
     const kept = keptValue<Trip[]>(memory);
     if (!kept) return load();
-    setTrips(kept);
+    setFound({ key: memory, trips: kept });
     // Just found by the first day: counted here, once, and not asked again.
     if (fresh.delete(memory)) return counted(kept);
     void refresh();
@@ -74,5 +76,13 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
   }, [memory]);
   // Seats taken by others while the person looks: fresh results without the skeleton (docs/64).
   useFeedChange(() => void refresh());
-  return { trips, failed, load, refresh };
+  // Another day or filter: the trips on the screen stay, dimmed, until the new ones come; the list
+  // never collapses under the finger into a skeleton (G41, docs/108).
+  return {
+    trips: found?.trips ?? null,
+    stale: found !== null && found.key !== memory,
+    failed,
+    load,
+    refresh,
+  };
 }

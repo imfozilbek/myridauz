@@ -18,3 +18,8 @@
     animation: none;
   }
 }
+
+/* A row whose data is on the way keeps its place unseen, so what is under it never jumps (G41). */
+.keep-place {
+  visibility: hidden;
+}

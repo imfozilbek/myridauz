@@ -14,6 +14,7 @@ import type { StartAction } from './start-action';
 type HomeScreenProps = {
   readonly actions: readonly StartAction[];
   readonly notice?: ReactNode;
+  readonly after?: ReactNode;
   readonly top?: ReactNode;
   readonly onOpen: (action: StartAction) => void;
   readonly onProfile: () => void;
@@ -23,7 +24,7 @@ type HomeScreenProps = {
 // (owner decision 01.10.2026), so the profile and the trips come first.
 // «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
 // (owner decision 02.10.2026, docs/94 F4).
-export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScreenProps) {
+export function HomeScreen({ actions, notice, after, top, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
   useScreenBackground('grouped');
   useSettingsButton(onProfile);
@@ -57,6 +58,7 @@ export function HomeScreen({ actions, notice, top, onOpen, onProfile }: HomeScre
             );
           })}
         </Section>
+        {after}
         <LanguageSwitcher />
       </List>
     </div>

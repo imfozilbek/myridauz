@@ -23,19 +23,22 @@ type Props = {
 export function FilteredEmpty({ route, date, filters, found, onClear, children }: Props) {
   const { t } = useI18n();
   const { market } = useApiClients();
-  const [hidden, setHidden] = useState(0);
+  // «Uyimdan» is counted on the phone at once; «ayol bor» asks the server. Until it answers nothing is
+  // shown, so «nothing found» never flashes before «N trips are hidden» (G41, docs/108).
+  const counted = filters.woman ? null : filters.door ? found.length : 0;
+  const [asked, setAsked] = useState<number | null>(null);
   useEffect(() => {
-    if (!filters.woman) {
-      setHidden(filters.door ? found.length : 0);
-      return undefined;
-    }
+    if (!filters.woman) return undefined;
     let live = true;
+    setAsked(null);
     market.searchTrips({ from: route.from.id, to: route.to.id, date }).then(
-      (all) => live && setHidden(all.length),
-      () => live && setHidden(0),
+      (all) => live && setAsked(all.length),
+      () => live && setAsked(0),
     );
     return () => void (live = false);
-  }, [market, route, date, filters, found]);
+  }, [market, route, date, filters.woman]);
+  const hidden = counted ?? asked;
+  if (hidden === null) return null;
   if (hidden === 0) return <>{children}</>;
   return (
     <EmptyState

@@ -58,8 +58,9 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
 
   it('says once that the application is approved, with the bonus and its last day (docs/89 D4)', async () => {
     render(approved);
-    expect(screen.getByText('Ariza tasdiqlandi')).toBeTruthy();
+    // The banner comes whole with its bonus, it never grows under the eyes (G41, docs/108).
     const bonus = await screen.findByText(/bonus berdik/);
+    expect(screen.getByText('Ariza tasdiqlandi')).toBeTruthy();
     expect(bonus.textContent).toContain('481\u00a0000\u00a0soʻm');
     expect(bonus.textContent).toContain('31-oktabrgacha');
     expect(screen.queryByText('Tasdiqlangandan keyin')).toBeNull();

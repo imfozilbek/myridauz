@@ -1,5 +1,5 @@
 import type { ChatClient } from '@platform/api-client';
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
@@ -21,7 +21,9 @@ describe('the chat screen (docs/07)', () => {
       <ChatScreen chatKey={KEY} title="Jasur" onBack={() => undefined} />,
       testClients({ chat: { socketUrl } }),
     );
-    await screen.findByText('Hali xabar yoʻq. Birinchi boʻlib yozing.');
+    // While connecting the chat says nothing: «no messages yet» never flashes before the history (G41).
+    await waitFor(() => expect(FakeSocket.last).toBeTruthy());
+    expect(screen.queryByText('Hali xabar yoʻq. Birinchi boʻlib yozing.')).toBeNull();
     const socket = FakeSocket.last;
     if (!socket) throw new Error('no socket');
     act(() => {
