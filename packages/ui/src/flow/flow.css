@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  padding: 18vh 32px 120px;
+  padding: 18vh 32px var(--screen-end);
   text-align: center;
 }
 

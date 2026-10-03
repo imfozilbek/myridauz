@@ -25,7 +25,10 @@ const LOCATIONS = [
 ];
 export const locations = { getLocations: async () => ({ version: '1', locations: LOCATIONS }) };
 // Chilonzor → Fargʻona shahri, as a known route of a flow.
-export const ROUTE = { from: place('1726269', '1726', 'Chilonzor'), to: place('1730401', '1730', 'Fargʻona shahri', FARGONA) };
+export const ROUTE = {
+  from: place('1726269', '1726', 'Chilonzor'),
+  to: place('1730401', '1730', 'Fargʻona shahri', FARGONA),
+};
 
 export const recommendation = {
   from: '1726269',

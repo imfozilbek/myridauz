@@ -43,6 +43,7 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
   if (flow.sent)
     return (
       <StepLayout
+        hero
         icon="selected"
         title={t('market.request.published.title')}
         hint={t('market.request.published.hint')}

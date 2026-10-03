@@ -15,10 +15,8 @@ import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DayChips } from './day-chips';
 import { FilteredEmpty } from './filtered-empty';
-import { RouteView } from './route-view';
 import { TripCard } from './trip-card';
 import { RESULTS, useTripSearch } from './use-trip-search';
-import { useDayLabel } from './when';
 import './market.css';
 
 // The filters live in the flow: they stay after a trip is opened and closed (docs/90 F-P1).
@@ -44,7 +42,6 @@ export function TripResults(props: TripResultsProps) {
   useScreenView('market.results');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const dayLabel = useDayLabel();
   // «Uyimdan olib ketsin» is a filter of the phone, the list is already here (docs/88 L5).
   const { woman, door } = filters;
   const { trips, failed, load, refresh } = useTripSearch(route, date, woman);
@@ -59,15 +56,13 @@ export function TripResults(props: TripResultsProps) {
   return (
     <div className="market">
       <Screen onBack={onBack} onRefresh={refresh} />
+      {/* The route is the title; the day is on its chip (G40, docs/106 C6). */}
       <Title weight="1" className="market-title">
-        {dayLabel(date, now)}
+        {t('common.route', { from: route.from.name, to: route.to.name })}
       </Title>
       <DayChips date={date} now={now} onDay={onDay} onOther={onOtherDay} />
       <List>
         <Section>
-          <div className="route-summary">
-            <RouteView from={route.from.id} to={route.to.id} />
-          </div>
           <Cell
             Component="label"
             after={

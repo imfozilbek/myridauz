@@ -16,7 +16,7 @@ export function BookSent({ booking, onClose, onSee }: Props) {
   const home = useGoHome(onClose);
   const { trip } = booking;
   return (
-    <StepLayout icon="selected" title={t('bookings.sent.title')} hint={t('bookings.sent.hint')}>
+    <StepLayout hero icon="selected" title={t('bookings.sent.title')} hint={t('bookings.sent.hint')}>
       <Screen onBack={home} />
       <List>
         <Section header={t('bookings.sent.asked')}>

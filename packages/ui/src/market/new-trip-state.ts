@@ -13,7 +13,7 @@ export type Step = (typeof STEPS)[number];
 // A new trip, the way back of the one just published, or the last trip again (G40, docs/106 K3):
 // the last two ask only the day and go to the check.
 const KINDS = ['new', 'return', 'again'] as const;
-export type TripKind = (typeof KINDS)[number];
+type TripKind = (typeof KINDS)[number];
 type Saved = { readonly step: Step; readonly answer: Partial<TripDraft>; readonly kind: TripKind };
 const DRAFT_KEY = 'new_trip';
 
@@ -24,7 +24,8 @@ const isPlace = (value: unknown) => typeof asRecord(value)?.['id'] === 'string';
 function checkSaved(value: unknown): Saved | null {
   const saved = asRecord(value);
   const answer = asRecord(saved?.['answer']);
-  if (!saved || !answer || !isStep(saved['step']) || !KINDS.some((kind) => kind === saved['kind'])) return null;
+  if (!saved || !answer || !isStep(saved['step']) || !KINDS.some((kind) => kind === saved['kind']))
+    return null;
   const route = answer['route'];
   if (route !== undefined && !(isPlace(asRecord(route)?.['from']) && isPlace(asRecord(route)?.['to'])))
     return null;

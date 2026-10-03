@@ -1,4 +1,4 @@
-/* Registration and profile: one question per screen, a lot of air (docs/19, docs/21). */
+/* One question per screen: the question at the top, the answer right under it (docs/19, G40). */
 .step {
   display: flex;
   flex-direction: column;
@@ -6,11 +6,29 @@
   min-height: var(--tg-viewport-stable-height, 100vh);
   /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
   box-sizing: border-box;
-  padding: 12vh 0 120px;
+  padding: var(--screen-top) 0 var(--screen-end);
   background: var(--tgui--secondary_bg_color);
 }
 
+/* A small icon beside the title, the hint under both, like a Telegram section (docs/106 C2). */
 .step-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 0 20px 4px;
+}
+
+.step-head .step-hint {
+  grid-column: 1 / -1;
+}
+
+/* «Done»: one idea in the optical center with a big icon (docs/21). */
+.step-hero {
+  padding-top: 12vh;
+}
+
+.step-hero .step-head {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,7 +50,7 @@
   min-height: var(--tg-viewport-stable-height, 100vh);
   /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
   box-sizing: border-box;
-  padding-bottom: 120px;
+  padding-bottom: var(--screen-end);
   background: var(--tgui--secondary_bg_color);
 }
 

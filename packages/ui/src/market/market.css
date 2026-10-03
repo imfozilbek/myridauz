@@ -3,17 +3,17 @@
   min-height: var(--tg-viewport-stable-height, 100vh);
   /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
   box-sizing: border-box;
-  padding-bottom: 120px;
+  padding-bottom: var(--screen-end);
   background: var(--tgui--secondary_bg_color);
 }
 
 .market-title {
-  padding: 16px 20px 4px;
+  padding: var(--screen-top) 20px 0;
 }
 
 .market-subtitle {
   display: block;
-  padding: 0 20px 12px;
+  padding: 2px 20px 8px;
   color: var(--tgui--hint_color);
 }
 
@@ -166,6 +166,13 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
+}
+
+/* The name and the rating on one line: one line less on every card (G40, docs/106 C7). */
+.trip-card-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .trip-card-hint {

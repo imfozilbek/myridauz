@@ -30,9 +30,11 @@ describe('FindTripFlow: the day and the empty day (G35, docs/97 K2, K6)', { time
       testClients({ market: { searchTrips: async () => [] } }),
     );
     await quickRoute();
-    expect(await screen.findByText(/^Bugun, /u)).toBeTruthy();
+    // The route is the title, the day is on its chip (G40, docs/106 C6).
+    expect(await screen.findByText('Chilonzor → Fargʻona shahri')).toBeTruthy();
+    expect(screen.getByRole('tab', { name: 'Bugun', selected: true })).toBeTruthy();
     await tap('Ertaga');
-    expect(await screen.findByText(/^Ertaga, /u)).toBeTruthy();
+    expect(await screen.findByRole('tab', { name: 'Ertaga', selected: true })).toBeTruthy();
   });
 
   it('leaves a request from an empty day with its route and day (K6)', async () => {

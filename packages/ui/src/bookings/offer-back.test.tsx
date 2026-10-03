@@ -55,7 +55,11 @@ describe('an offer keeps its answers (docs/94 F8, F9)', { timeout: 20_000 }, () 
   it('starts the price at the one the passenger asked for (G40, docs/106 K5)', async () => {
     renderMarket(
       <PlacesGate>
-        <OfferFlow request={{ ...request, price: 110_000 }} onBack={() => undefined} onClose={() => undefined} />
+        <OfferFlow
+          request={{ ...request, price: 110_000 }}
+          onBack={() => undefined}
+          onClose={() => undefined}
+        />
       </PlacesGate>,
       testClients({ market: { recommend: async () => recommendation } }),
     );

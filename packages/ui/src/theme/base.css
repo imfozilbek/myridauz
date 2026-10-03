@@ -10,6 +10,13 @@ body {
   overscroll-behavior: none;
 }
 
+:root {
+  /* The main button of Telegram is outside the page: the end of a screen needs only a small gap,
+     the question of a step starts right under the header (G40, docs/106 C1, C2). */
+  --screen-end: 16px;
+  --screen-top: 16px;
+}
+
 input,
 textarea {
   user-select: text;

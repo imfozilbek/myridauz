@@ -113,6 +113,7 @@ export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
       : undefined;
   return (
     <StepLayout
+      hero
       icon="selected"
       title={t('bookings.offer.accepted.title')}
       hint={t('bookings.offer.accepted.hint')}

@@ -47,7 +47,12 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   }, []);
   if (sent) {
     return (
-      <StepLayout icon="selected" title={t('bookings.offer.sent.title')} hint={t('bookings.offer.sent.hint')}>
+      <StepLayout
+        hero
+        icon="selected"
+        title={t('bookings.offer.sent.title')}
+        hint={t('bookings.offer.sent.hint')}
+      >
         <Screen onBack={home} />
         <MainButton text={t('market.done')} onClick={home} />
       </StepLayout>
