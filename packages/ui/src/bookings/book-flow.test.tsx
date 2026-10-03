@@ -1,5 +1,6 @@
 import type { BookingsClient } from '@platform/api-client';
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import type { Border } from '@platform/contracts';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
@@ -36,26 +37,19 @@ const open = (
 };
 
 describe('a booking keeps its answers (docs/94 F3, F8, S1)', { timeout: 20_000 }, () => {
-  it('«Назад» shows the way, the seats and the point chosen before; a closed app comes back', async () => {
+  it('«Назад» shows the way and the point chosen before; a closed app comes back', async () => {
     open('both');
-    await tap('2 kishi');
     await tap('Pitakdan');
     await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
     await tap('Shu yerda');
     await screen.findByText('Qoʻyliq pitagi');
+    fireEvent.click(screen.getByRole('button', { name: 'Oshirish' }));
     await tap('Orqaga');
-    expect(await screen.findByText('Uyingiz qayerda?')).toBeTruthy();
+    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
     await tap('Orqaga');
-    // The way and the seats have their tick: «Davom etish» keeps them.
+    // The way has its tick: «Davom etish» keeps it, the point is kept too: the check again.
     await tap('Davom etish');
-    await screen.findByText('Uyingiz qayerda?');
-    await tap('Orqaga');
-    await tap('Orqaga');
-    // The seats chosen before; the way is known, the point is next.
-    await tap('Davom etish');
-    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Yangi Margʻilon'));
-    await tap('Shu yerda');
-    await screen.findByText('Qoʻyliq pitagi');
+    expect(await screen.findByText('2 kishi')).toBeTruthy();
     cleanup();
     const { book } = open('both');
     expect(await screen.findByText('Qoʻyliq pitagi')).toBeTruthy();
@@ -63,42 +57,81 @@ describe('a booking keeps its answers (docs/94 F3, F8, S1)', { timeout: 20_000 }
     await tap('Soʻrov yuborish');
     await screen.findByText('Soʻrov yuborildi');
     expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ mode: 'pitak', seats: 2 }));
-    cleanup();
+  });
+});
+
+describe('a booking on a route the person went before (G35, docs/97 K3, K4)', { timeout: 20_000 }, () => {
+  it('opens the check at once with the way of the last trip and 1 person', async () => {
     open('both');
-    await screen.findByText('2 kishi');
-    expect(screen.queryByText('Davom etish')).toBeNull();
+    await tap('Uyimdan');
+    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
+    await tap('Shu yerda');
+    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
+    await tap('Shu yerda');
+    await tap('Soʻrov yuborish');
+    await screen.findByText('Soʻrov yuborildi');
+    cleanup();
+    const { book } = open('both');
+    expect(await screen.findByText('Joy soʻrash')).toBeTruthy();
+    expect(screen.getByText('1 kishi')).toBeTruthy();
+    expect(screen.queryByText('Oldingi yozganingiz tiklandi.')).toBeNull();
+    // «Oʻzgartirish» of the end opens its map; the point taken, the check is back.
+    fireEvent.click(screen.getAllByText('Oʻzgartirish')[1] as HTMLElement);
+    await screen.findByText('Qayerda tushasiz?');
+    await waitFor(() => expect(screen.getByRole('status').textContent).toBe('Yangi Margʻilon'));
+    await tap('Shu yerda');
+    await tap('Soʻrov yuborish');
+    await screen.findByText('Soʻrov yuborildi');
+    expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ mode: 'door', seats: 1 }));
   });
 });
 
 describe('a booking with its points (G26, docs/74)', { timeout: 20_000 }, () => {
   it('asks no point at the door for «Pitakdan» and shows the pitak in the check', async () => {
     const { book } = open('both');
-    await tap('1 kishi');
     await tap('Pitakdan');
-    expect(await screen.findByText('Uyingiz qayerda?')).toBeTruthy();
+    // PS3: the end asks where the person gets off, not where the home is.
+    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
     await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
     await tap('Shu yerda');
     expect(await screen.findByText('Qoʻyliq pitagi')).toBeTruthy();
     await tap('Soʻrov yuborish');
     await screen.findByText('Soʻrov yuborildi');
-    expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ mode: 'pitak', pickup: null }));
+    expect(book).toHaveBeenCalledWith(
+      't1',
+      expect.objectContaining({ mode: 'pitak', pickup: null, seats: 1 }),
+    );
   });
 
   it('does not ask the way of a trip that takes people only at the door', async () => {
     open('door');
-    await tap('1 kishi');
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
     expect(screen.queryByText('Pitakdan')).toBeNull();
   });
 
   it('keeps the point inside the zone: a place outside it is not taken', async () => {
     open('door', { where: async () => FARGONA_WHERE });
-    await tap('1 kishi');
     expect(
       await screen.findByText('Bu joy Toshkent shahri hududida emas. Shu hududdan joy tanlang.'),
     ).toBeTruthy();
     await tap('Shu yerda');
     expect(screen.getByRole('alert')).toBeTruthy();
-    expect(screen.queryByText('Uyingiz qayerda?')).toBeNull();
+    expect(screen.queryByText('Qayerda tushasiz?')).toBeNull();
+  });
+
+  it('opens the map of a zone inside its border when the center of the place is outside it (G35)', async () => {
+    const square: Border['parts'] = [
+      [
+        [
+          [70, 40],
+          [71, 40],
+          [71, 41],
+          [70, 41],
+          [70, 40],
+        ],
+      ],
+    ];
+    const { map } = open('door', { border: async (id: string) => ({ id, parts: square }) });
+    await waitFor(() => expect(map.at()).toEqual({ lat: 40.5, lng: 70.5 }));
   });
 });

@@ -31,6 +31,8 @@ type RouteScreenProps = {
   readonly initial?: Route;
   // Each end chosen, for the funnel of the search (G26).
   readonly onEnd?: (end: 'from' | 'to') => void;
+  // The search (G35, docs/97 K1): the missing end opens by itself, both ends go on at once.
+  readonly quick?: boolean;
 };
 
 // "From" and "to" of a trip or a search. A trip inside one city is refused right away (docs/14).
@@ -49,6 +51,7 @@ function RouteForm({
   pick,
   initial,
   onEnd,
+  quick,
 }: RouteScreenProps & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
@@ -65,13 +68,15 @@ function RouteForm({
       const next = { from: picking === 'from' ? place : from, to: picking === 'to' ? place : to };
       setFrom(next.from);
       setTo(next.to);
-      setPicking(null);
       if (picking) onEnd?.(picking);
       const found = next.from && next.to ? checkRoute(next.from, next.to, directory.find) : null;
       setError(found);
       if (found) haptic.error();
+      const missing = !next.to ? 'to' : !next.from ? 'from' : null;
+      setPicking(quick && !found ? missing : null);
+      if (quick && !found && next.from && next.to) onDone({ from: next.from, to: next.to });
     },
-    [picking, from, to, directory, onEnd],
+    [picking, from, to, directory, onEnd, quick, onDone],
   );
   const submit = useCallback(() => {
     if (!from || !to || error) return haptic.error();
@@ -80,6 +85,7 @@ function RouteForm({
   if (picking) {
     return (
       <PlacePicker
+        key={picking}
         title={t(picking === 'from' ? 'places.fromTitle' : 'places.toTitle')}
         directory={directory}
         allowWholeRegion={allowWholeRegion}

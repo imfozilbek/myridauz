@@ -10,7 +10,6 @@ type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 const B = {
   myTrips: t('common.myTrips'),
-  seats: t('bookings.seats.title'),
   twoSeats: t('market.request.seats', { count: '2' }),
   sent: t('bookings.sent.title'),
   plate: t('bookings.plate'),
@@ -28,17 +27,16 @@ const B = {
   history: t('wallet.history'),
 };
 
-// A passenger books 2 seats on a found trip (G26, docs/74): seats, «Uyimdan», the point at the door
-// on the map of Toshkent, the home found in Samarqand, the check, sent.
+// A passenger books 2 seats on a found trip (G26, G35, docs/97): «Uyimdan», the point at the door
+// on the map of Toshkent, the home found in Samarqand, the check with the seats, sent.
 export async function bookSeats(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
   await mockMap(page, mapState());
   await findTrips(page);
-  await page.getByText(TEXT.book).click();
-  await expect(page.getByText(B.seats)).toBeVisible();
-  await shot('1-seats');
-  await page.getByText(B.twoSeats).click();
+  await mainButton.filter({ hasText: TEXT.book }).click();
   // The trip takes people both ways: the passenger chooses «Uyimdan» (docs/70).
+  await expect(page.getByText(t('way.mode.door'))).toBeVisible();
+  await shot('1-mode');
   await page.getByText(t('way.mode.door')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
@@ -52,9 +50,12 @@ export async function bookSeats(page: Page, shot: Shot = none) {
   await shot('1b-dropoff');
   await mainButton.click();
   await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await page.getByLabel(t('market.price.more')).click();
+  await expect(page.getByText(B.twoSeats)).toBeVisible();
   await shot('2-review');
   await mainButton.click();
   await expect(page.getByText(B.sent)).toBeVisible();
+  await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
   await shot('3-sent');
 }
 

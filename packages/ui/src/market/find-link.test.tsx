@@ -20,11 +20,11 @@ describe('a route from the landing (docs/59)', () => {
       </FindLink>,
       testClients({ market: { searchTrips } }),
     );
-    await tap(/^Bugun/);
+    // K2: the trips of the nearest day at once, no day screen.
     // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.
     await vi.waitFor(() => expect(searchTrips).toHaveBeenCalled(), { timeout: 5000 });
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
-    await tap('Orqaga');
+    await screen.findByText('Bu kunga safar topilmadi');
     await tap('Orqaga');
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
@@ -50,7 +50,8 @@ describe('a route from the landing (docs/59)', () => {
       </FindLink>,
       testClients({}),
     );
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    // K1: the list of the end opens at once.
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
     cleanup();
     renderMarket(
       <FindLink enabled={false}>

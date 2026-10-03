@@ -3,7 +3,7 @@ import { cloudStorage } from '@telegram-apps/sdk-react';
 // Small values of a person, kept by Telegram CloudStorage on all their phones; this phone keeps a copy,
 // so a screen reads it at once (docs/88 L12). No storage (a private window): nothing is kept.
 const LEGACY = { 'way.recent': 'way_recent', 'way.navigator': 'way_navigator' } as const;
-const KEYS = ['way_recent', 'way_navigator', 'driver_approval_seen'] as const;
+const KEYS = ['way_recent', 'way_navigator', 'driver_approval_seen', 'route_recent', 'book_points'] as const;
 export type StoredKey = (typeof KEYS)[number];
 
 export function readStored(key: StoredKey): string | null {

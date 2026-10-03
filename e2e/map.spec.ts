@@ -3,7 +3,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
-import { chooseRoute, openOwnTrip } from './market';
+import { chooseRoute, openOwnTrip, searchRoute } from './market';
 import { PITAK } from './market-mock';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
 
@@ -23,7 +23,7 @@ const [DOOR, HOME] = FOUND.map(({ point }) => ({
 }));
 const mainButton = (page: Page) => page.locator('#tg-main-button');
 
-// The search by lists (G26, docs/74): a trip of tomorrow to Samarqand shahri, its booking, 1 seat.
+// The search by lists (G26, G35, docs/97): a trip to Samarqand shahri, its booking; 1 seat at first.
 async function openBooking(page: Page) {
   const state = mapState();
   await mockApi(page, 'active');
@@ -31,11 +31,9 @@ async function openBooking(page: Page) {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await chooseRoute(page);
-  await page.getByText(TEXT.tomorrow).click();
+  await searchRoute(page);
   await page.getByText('Jasur', { exact: false }).first().click();
-  await page.getByText(TEXT.book).click();
-  await page.getByText(t('market.request.seats', { count: '1' })).click();
+  await mainButton(page).filter({ hasText: TEXT.book }).click();
   return state;
 }
 

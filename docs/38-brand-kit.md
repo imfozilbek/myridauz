@@ -58,7 +58,7 @@
 | Боты Telegram | `telegram/`: 4 аватара (R и знак роли, у поддержки свои цвета, `lib/avatar.mjs`), 4 картинки описания 640 × 360, экран загрузки (SVG, один контур) |
 | Каналы | `telegram/channels/`: 13 аватаров, 13 картинок к постам (`37`) |
 | Сайт | `web/`: favicon (svg, ico), иконка iPhone, 192, 512, превью ссылки 1200 × 630 |
-| Боты (G34) | `pnpm bot`: картинка приветствия водителя `driver-welcome.png` и JPG-аватары 4 ботов в `brands/rida/landing/bot/`; сайт отдаёт их, бот шлёт картинку по адресу, аватары ставит `/telegram/setup` (`setMyProfilePhoto`) |
+| Боты (G34) | `pnpm bot`: картинки приветствия водителя, попутчика и поддержки `driver-welcome.png`, `passenger-welcome.png`, `support-welcome.png` и JPG-аватары 4 ботов в `brands/rida/landing/bot/`; сайт отдаёт их, бот шлёт картинку по адресу, аватары ставит `/telegram/setup` (`setMyProfilePhoto`) |
 | Лендинг | `pnpm landing`: картинки из сцен ролика в `brands/rida/landing/art/` и дороги карты `data/hero-roads.json` (`59`, `60`) |
 | Шрифт сайта | `python3 tools/web-font.py` (нужен `fonttools`, `brotli`): Rubik 300…900 в `brands/rida/landing/fonts/brand.woff2`, знак ʻ из глифа ‘ (`60`) |
 | Соцсети | `social/`: посты «Tez orada», запуск, «Mashinada ayol bor»; сторис для водителей и «Yangi safar» |

@@ -11,9 +11,9 @@ import { buttons, say } from './bot-kit';
 // sends an update with the secret of the stand, the bot answers in the reply itself.
 test.describe.configure({ mode: 'serial' });
 
-test('S01, S03. /start greets with «Ochish», /hujjatlar gives the three documents', async () => {
+test('S01, S03. /start greets with the picture and «Ochish», /hujjatlar gives the three documents', async () => {
   const start = await say('passenger', AZIZA, '/start');
-  expect(start.text).toContain(wordsOf('bot.passenger.start'));
+  expect(start.caption).toContain(wordsOf('bot.passenger.welcome'));
   expect(buttons(start)).toEqual(
     expect.arrayContaining([wordsOf('bot.open'), wordsOf('bot.passenger.becomeDriver')]),
   );

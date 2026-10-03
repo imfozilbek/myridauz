@@ -1,7 +1,7 @@
 import type { Location, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -19,8 +19,10 @@ import { RecentList } from './recent-list';
 import { rememberPlace } from './recent-places';
 import { useWhere } from './use-where';
 import { useClip } from './use-clip';
+import { useFindMe } from './use-find-me';
 import { useNameText, type WayEnd } from './way-end';
 import '../map/pickup-map.css';
+import './way.css';
 
 const PIN_SIZE = 44;
 type Method = 'map' | 'search' | 'location' | 'recent';
@@ -32,13 +34,15 @@ type Props = {
   // A booking (G26, docs/74): the map, the search and the last places stay inside this district or
   // region; the point is checked against it.
   readonly zone?: Location;
+  // A new pickup (G35, docs/97 PS12): the map moves to the person when it can.
+  readonly findMe?: boolean;
   readonly onBack: () => void;
   readonly onPick: (end: WayEnd) => void;
 };
 
 // One point on the map (G24, docs/71): the pin in the middle, its name under it, the map of its
 // district only. Search, the last places and «Mening joylashuvim» move the map; «Shu yerda» takes it.
-export function PointScreen({ title, start, find: findAny, zone, onBack, onPick }: Props) {
+export function PointScreen({ title, start, find: findAny, zone, findMe = false, onBack, onPick }: Props) {
   useScreenView('way.point');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -54,6 +58,8 @@ export function PointScreen({ title, start, find: findAny, zone, onBack, onPick 
   const [note, setNote] = useState<TranslationKey | null>(null);
   const method = useRef<Method>('map');
   const district = where?.district ?? null;
+  // A new place under the pin: an old note about the last one is gone.
+  useEffect(() => setNote(null), [where]);
   const unclip = useClip(view, where, zone?.id ?? null);
   const moveTo = (point: Point, how: Method) => {
     method.current = how;
@@ -61,6 +67,12 @@ export function PointScreen({ title, start, find: findAny, zone, onBack, onPick 
     unclip();
     view?.moveTo(point);
   };
+  useFindMe(
+    view,
+    (district) => find(district) !== undefined,
+    (point) => moveTo(point, 'location'),
+    findMe,
+  );
   const locate = async () => {
     const here = await requestPosition();
     if (here) moveTo(here, 'location');

@@ -1,67 +1,59 @@
-import type { RideRequestInput } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { testClients } from '../test-shell';
-import { chooseWay, recommendation, renderMarket, tap } from './market-test-kit';
-import { NewRequestFlow } from './new-request-flow';
+import { quickRoute, takePoint, tap } from './market-test-kit';
+import { openRequest } from './request-test-kit';
 
 const RESTORED = 'Oldingi yozganingiz tiklandi.';
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
-function open(onBack = () => undefined) {
-  const publishRequest = vi.fn(async (input: RideRequestInput) => ({
-    ...input,
-    id: 'r1',
-    passenger: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: false },
-    km: 320,
-    status: 'open' as const,
-  }));
-  const clients = testClients({ market: { recommend: async () => recommendation, publishRequest } });
-  renderMarket(<NewRequestFlow onBack={onBack} />, clients);
-  return publishRequest;
+// From the main screen to the price: the route, tomorrow, «Uyimdan», both points.
+async function toPrice() {
+  await quickRoute();
+  await tap(/^Ertaga/);
+  await tap('Uyimdan');
+  await takePoint('Chorsu bozori yaqinida');
+  await takePoint('Yangi Margʻilon');
+  await screen.findByText(/^Tavsiya/);
 }
 
 describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_000 }, () => {
-  it('«Назад» from the day shows both points of the way, and the day stays ticked', async () => {
-    open();
-    await chooseWay();
-    await tap(/^Ertaga/);
-    await screen.findByText('Necha kishi ketadi?');
+  it('«Назад» shows each step with its answer, the way stays ticked', async () => {
+    openRequest();
+    await toPrice();
     await tap('Orqaga');
+    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
     await tap('Orqaga');
-    expect((await screen.findAllByText('Chilonzor')).length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Fargʻona shahri').length).toBeGreaterThan(0);
+    expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
+    await tap('Orqaga');
+    // The way has its tick: «Davom etish» keeps it, and the kept points lead to the price.
     await tap('Davom etish');
-    await tap('Davom etish');
-    expect(await screen.findByText('Necha kishi ketadi?')).toBeTruthy();
+    expect(await screen.findByText(/^Tavsiya/)).toBeTruthy();
   });
 
   it('a closed app opens the same step; sent, the draft is gone and «Назад» leads home', async () => {
-    open();
-    await chooseWay();
-    await tap(/^Ertaga/);
-    await tap('2');
-    await screen.findByText(/^Tavsiya/);
+    openRequest();
+    await toPrice();
     cleanup();
-    const publishRequest = open();
+    const publishRequest = openRequest();
     expect(await screen.findByText(/^Tavsiya/)).toBeTruthy();
     expect(screen.getByText(RESTORED)).toBeTruthy();
     await tap('Davom etish');
     await tap('Soʻrov qoldirish');
     expect(await screen.findByText('Soʻrov qoldirildi')).toBeTruthy();
-    expect(publishRequest).toHaveBeenCalledWith(expect.objectContaining({ seats: 2, price: 95000 }));
+    expect(publishRequest).toHaveBeenCalledWith(expect.objectContaining({ seats: 1, price: 95000 }));
     cleanup();
-    open();
-    await chooseWay();
+    openRequest();
+    await quickRoute();
     expect(screen.queryByText(RESTORED)).toBeNull();
   });
 
   it('F9: the sent request has «Назад» to the main screen', async () => {
     const home = vi.fn();
-    open(home);
-    await chooseWay();
-    for (const step of [/^Ertaga/, '1', 'Davom etish', 'Soʻrov qoldirish']) await tap(step);
+    openRequest({ onBack: home });
+    await toPrice();
+    await tap('Davom etish');
+    await tap('Soʻrov qoldirish');
     await screen.findByText('Soʻrov qoldirildi');
     await tap('Orqaga');
     expect(home).toHaveBeenCalledOnce();

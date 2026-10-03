@@ -2,6 +2,7 @@ import { brandForApp, loadBrand } from '@platform/brands';
 import { expect, test } from '@playwright/test';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { fromIfAsked } from './market';
 import { register } from './registration';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
 
@@ -61,15 +62,14 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await page.getByText(TEXT.from).click();
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
-  await page.getByText(TEXT.to).click();
+  // «Qayerga» opens at once (G35); «Qayerdan» opens by itself when the place of the person is unknown.
   await page.getByPlaceholder(TEXT.search).fill('yunus');
   await page.getByText('Yunusobod').click();
+  await fromIfAsked(page);
   await expect(page.getByText(TEXT.insideCity)).toBeVisible();
   await page.getByText(TEXT.to).click();
   await page.getByPlaceholder(TEXT.search).fill("farg'ona sh");
   await page.getByText('Fargʻona shahri').click();
   await expect(page.getByText(TEXT.insideCity)).toBeHidden();
+  await expect(page.getByText(TEXT.otherDay)).toBeVisible();
 });

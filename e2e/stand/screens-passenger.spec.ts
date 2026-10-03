@@ -34,5 +34,5 @@ for (const platform of PLATFORMS)
     await shot(page, platform, 'p10-home');
     await visit(page, platform, t('account.profile.open'), 'p11-profile');
     await visit(page, platform, t('common.myTrips'), 'p12-my-trips');
-    await visit(page, platform, t('common.passenger.leaveRequest'), 'p13-request', t('way.here'));
+    await visit(page, platform, t('common.passenger.leaveRequest'), 'p13-request', t('places.toTitle'));
   });

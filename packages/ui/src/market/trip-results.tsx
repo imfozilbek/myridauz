@@ -12,7 +12,9 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
+import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
+import { DayChips } from './day-chips';
 import { FilteredEmpty } from './filtered-empty';
 import { RouteView } from './route-view';
 import { TripCard } from './trip-card';
@@ -31,10 +33,15 @@ type TripResultsProps = {
   readonly now: number;
   readonly onBack: () => void;
   readonly onOpen: (trip: Trip) => void;
+  // The day changes here (G35, docs/97 K2); an empty day leads to a request (K6).
+  readonly onDay: (date: string) => void;
+  readonly onOtherDay: () => void;
+  readonly onRequest: () => void;
 };
 
 // Trips of the day on this route; "Mashinada ayol bor" is a filter of its own (docs/06).
-export function TripResults({ route, filters, onFilters, date, now, onBack, onOpen }: TripResultsProps) {
+export function TripResults(props: TripResultsProps) {
+  const { route, filters, onFilters, date, now, onBack, onOpen, onDay, onOtherDay, onRequest } = props;
   useScreenView('market.results');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -56,6 +63,7 @@ export function TripResults({ route, filters, onFilters, date, now, onBack, onOp
       <Title weight="1" className="market-title">
         {dayLabel(date, now)}
       </Title>
+      <DayChips date={date} now={now} onDay={onDay} onOther={onOtherDay} />
       <List>
         <Section>
           <div className="route-summary">
@@ -106,6 +114,9 @@ export function TripResults({ route, filters, onFilters, date, now, onBack, onOp
             action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
           />
         </FilteredEmpty>
+      ) : null}
+      {trips?.length === 0 ? (
+        <MainButton text={t('common.passenger.leaveRequest')} onClick={onRequest} />
       ) : null}
     </div>
   );

@@ -3,6 +3,7 @@ import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from '../apps';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
+import { searchTo } from './search-kit';
 import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -56,16 +57,14 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham
   await expect(page.getByText(TEXT.published)).toBeVisible();
 });
 
-// A passenger finds the trip of tomorrow by lists and opens its seats.
+// A passenger finds the trip of tomorrow by lists and asks a seat on it (G35: the seats are in the check).
 async function findAndOpen(page: Page, person: Person) {
   await openAs(page, 'passenger', person);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await chooseRoute(page);
-  await page.getByText(TEXT.tomorrow).click();
+  await searchTo(page, 'Samarqand viloyati', 'Urgut');
   await expect(page.getByText(t('way.card.both', { pitak: PITAK }))).toBeVisible();
   await page.locator('.trip-card').first().click();
-  await page.getByText(TEXT.book).click();
-  await page.getByText(t('market.request.seats', { count: '1' })).click();
+  await mainButton(page).filter({ hasText: TEXT.book }).click();
 }
 
 test('1. a passenger «from home»: the door in Toshkent, the home in Urgut', async ({ page }) => {

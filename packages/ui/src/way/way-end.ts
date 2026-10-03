@@ -1,4 +1,4 @@
-import { ROAD_FACTOR, type Location, type PickupMode, type PlaceName, type Point } from '@platform/contracts';
+import type { Location, PlaceName, Point } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 
 // The start or the end of a way (G24, docs/71): the district, the point and its name. A point is
@@ -8,10 +8,6 @@ export type WayEnd = {
   readonly point: Point | null;
   readonly name: PlaceName | null;
 };
-export type Way = { readonly from: WayEnd; readonly to: WayEnd; readonly mode: PickupMode };
-
-// The km people see between two points: straight line with the road factor (docs/70).
-export const ROAD_KM = ROAD_FACTOR;
 
 // «Chorsu bozori yaqinida», «Qatortol mahallasi», or the district (or any text) when nothing is known.
 export function useNameText() {
@@ -24,10 +20,5 @@ export function useNameText() {
   };
 }
 
-export const regionOf = (end: WayEnd) => end.place.parentId ?? end.place.id;
-// A district chosen from the list, without the map: its center stands for the point (docs/71).
-export const centerOf = (place: Location): WayEnd => ({
-  place,
-  point: { lat: place.lat, lng: place.lng },
-  name: { step: 'district', name: place.name },
-});
+// A pitak joins two regions (docs/72): the region of a district, or the region itself.
+export const regionOf = (place: Location) => place.parentId ?? place.id;

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
 import { pullDown, rows, scrolledTo as at, skeleton as busy } from './list-test-kit';
-import { chooseRoute, renderMarket, tap, trip } from './market-test-kit';
+import { quickRoute, renderMarket, tap, trip } from './market-test-kit';
 
 afterEach(cleanup);
 
@@ -19,8 +19,7 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips } }),
     );
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     await screen.findByText('Jasur');
     at(700);
     await tap('Jasur');
@@ -30,11 +29,11 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     expect(screen.getByText('Jasur')).toBeTruthy();
     expect(scrollTo).toHaveBeenLastCalledWith(0, 700);
     expect(searches(tracked)).toBe(1);
-    // A quiet refresh in the background is fine.
-    await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(2));
+    // Today and tomorrow for the first day, then a quiet refresh in the background.
+    await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(3));
     await tap('Orqaga');
     scrollTo.mockClear();
-    await tap(/^Bugun/);
+    await tap('Davom etish');
     expect(busy()).not.toBeNull();
     await screen.findByText('Jasur');
     expect(scrollTo).not.toHaveBeenCalledWith(0, 700);
@@ -47,12 +46,11 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips } }),
     );
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     await screen.findByText('Jasur');
     expect(rows()).toEqual(['t1']);
     await pullDown();
-    expect(searchTrips).toHaveBeenCalledTimes(2);
+    expect(searchTrips).toHaveBeenCalledTimes(3);
     expect(busy()).toBeNull();
     expect(searches(tracked)).toBe(1);
   });

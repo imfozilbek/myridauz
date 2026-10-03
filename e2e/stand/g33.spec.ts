@@ -8,6 +8,7 @@ import { publishTrip, CHILONZOR } from './market-kit';
 import { GULNORA, MUROD, SEVARA, SHERZOD, ZEBO } from './people';
 import { NARROW, PLATFORMS } from './screen-tour';
 import { register } from './seed';
+import { searchTo } from './search-kit';
 import { openAs, outsideCalls, type Person } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -31,8 +32,7 @@ test('F1, F2. a long list → a trip opens at the top; «Назад» → the sa
     const page = await context.newPage();
     await openAs(page, 'passenger', GULNORA, { platform });
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-    await g33.chooseRoute(page);
-    await page.getByText(TEXT.tomorrow).click();
+    await searchTo(page, 'Navoiy viloyati', 'Navoiy');
     await expect(page.locator('.trip-card')).toHaveCount(10);
     await g33.toBottom(page);
     const place = await g33.scrollY(page);

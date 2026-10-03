@@ -1,5 +1,6 @@
 import border from './uzbekistan-border.json' with { type: 'json' };
 import type { Point } from './point';
+import { insideParts } from './polygon';
 
 // The border of Uzbekistan from OpenStreetMap (relation 196240), simplified to about 1 km:
 // polygons of rings of [lng, lat]. A pickup point is taken inside it (docs/14, G22).
@@ -14,17 +15,6 @@ const coordinates = (vertex: readonly number[]) => [vertex[0] ?? 0, vertex[1] ??
 
 // The same border for a map: outside it is shaded and out of reach (G24).
 export const UZBEKISTAN_PARTS = POLYGONS.map((polygon) => polygon.map((ring) => ring.map(coordinates)));
-
-// Even-odd rule: a ray to the east crosses the ring an odd number of times from inside.
-function crossesOdd(ring: Ring, { lat, lng }: Point): boolean {
-  let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-    const [xi, yi] = coordinates(ring[i] ?? []);
-    const [xj, yj] = coordinates(ring[j] ?? []);
-    if (yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-}
 
 // The distance from a point to a border segment in km, on a flat map around the point.
 function kmToSegment(point: Point, from: readonly number[], to: readonly number[]): number {
@@ -50,8 +40,5 @@ const nearBorder = (point: Point) =>
 
 // The point is in Uzbekistan: inside the border, not in a hole of it, or right at the border.
 export function insideUzbekistan(point: Point): boolean {
-  const inside = POLYGONS.some(
-    (polygon) => polygon.filter((ring) => crossesOdd(ring, point)).length % 2 === 1,
-  );
-  return inside || nearBorder(point);
+  return insideParts(POLYGONS, point) || nearBorder(point);
 }

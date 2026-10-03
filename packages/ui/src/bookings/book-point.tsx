@@ -31,6 +31,7 @@ export function BookPoint({ placeId, end, initial, onBack, onPick }: Props) {
       start={initial?.point ?? { lat: zone.lat, lng: zone.lng }}
       find={find}
       zone={zone}
+      findMe={end === 'from' && !initial}
       onBack={onBack}
       onPick={onPick}
     />

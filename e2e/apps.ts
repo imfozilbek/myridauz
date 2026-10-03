@@ -34,6 +34,9 @@ export const TEXT = {
   blocked: t('account.blocked.title'),
   from: t('places.from'),
   to: t('places.to'),
+  // The lists of the passenger's search (G35): «Qayerga» first, «Qayerdan» only when it is unknown.
+  toTitle: t('places.toTitle'),
+  fromTitle: t('places.fromTitle'),
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),
   // G34: the main screen of a new driver opens the application from this card.
@@ -57,6 +60,7 @@ export const TEXT = {
   newTrip: t('home.publish'),
   findTrip: t('common.passenger.findTrip'),
   tomorrow: /^Ertaga/,
+  otherDay: t('market.date.otherDay'),
   tripSeatsTitle: t('market.seats.title'),
   priceTitle: t('market.price.title'),
   commentSkip: t('market.comment.skip'),

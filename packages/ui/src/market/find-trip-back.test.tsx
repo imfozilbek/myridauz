@@ -2,7 +2,7 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
-import { chooseRoute, renderMarket, tap, trip } from './market-test-kit';
+import { quickRoute, renderMarket, tap, trip } from './market-test-kit';
 
 afterEach(cleanup);
 
@@ -14,8 +14,7 @@ describe('FindTripFlow: «Orqaga» keeps what the person chose (docs/90)', { tim
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [trip] } }),
     );
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     await screen.findByText('Jasur');
     fireEvent.click(checkbox('Uyimdan olib ketsin'));
     fireEvent.click(checkbox('Mashinada ayol bor'));
@@ -28,10 +27,11 @@ describe('FindTripFlow: «Orqaga» keeps what the person chose (docs/90)', { tim
 
   it('keeps the route when the person goes back from the day (F-P2)', async () => {
     renderMarket(<FindTripFlow onBack={() => undefined} />, testClients({}));
-    await chooseRoute();
-    await screen.findByText(/^Bugun/);
+    await quickRoute();
+    await screen.findByText('Bugun');
     await tap('Orqaga');
-    expect(await screen.findByText('Chilonzor')).toBeTruthy();
+    expect(await screen.findByText('Davom etish')).toBeTruthy();
+    expect(screen.getByText('Chilonzor')).toBeTruthy();
     expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
   });
 });

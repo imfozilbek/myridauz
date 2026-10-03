@@ -1,5 +1,5 @@
 import { renderInShell, testClients } from '@platform/ui/testing';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StartPage } from './start-page';
 
@@ -27,6 +27,8 @@ describe('StartPage', () => {
     // No bookings: the main screen asks where to go (G25).
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    // The list of the end opens at once (G35, docs/97 K1): the main screen is gone.
+    await waitFor(() => expect(screen.queryByText('Mening safarlarim')).toBeNull());
+    expect(screen.getByText('Qayerga borasiz?')).toBeTruthy();
   });
 });

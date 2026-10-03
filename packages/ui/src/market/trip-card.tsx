@@ -6,6 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import { CarSwatch } from '../driver/car-swatch';
 import { RatingBadge } from '../feedback/rating-badge';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
+import { otherPrice } from './other-price';
 import { RouteView } from './route-view';
 import { useWayFacts } from './way-line';
 
@@ -31,6 +32,7 @@ export function TripCard({ trip, showStatus = false, own = false, onOpen }: Trip
     ...wayFacts(trip),
     ...(showStatus || own ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
   ];
+  const recommended = otherPrice(trip);
   return (
     <Section>
       <Tappable Component="div" className="trip-card" interactiveAnimation="background" onClick={onOpen}>
@@ -43,9 +45,9 @@ export function TripCard({ trip, showStatus = false, own = false, onOpen }: Trip
             <Text weight="1" className="trip-price">
               {formatMoney(trip.price)}
             </Text>
-            {trip.recommendedPrice === null ? null : (
+            {recommended === null ? null : (
               <Caption className="trip-card-hint">
-                {t('market.trip.recommendedShort', { price: formatMoney(trip.recommendedPrice) })}
+                {t('market.trip.recommendedShort', { price: formatMoney(recommended) })}
               </Caption>
             )}
           </span>

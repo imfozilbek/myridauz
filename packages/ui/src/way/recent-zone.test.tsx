@@ -1,7 +1,7 @@
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FindTripFlow } from '../market/find-trip-flow';
-import { chooseRoute, renderMarket, tap, trip } from '../market/market-test-kit';
+import { quickRoute, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
@@ -32,11 +32,9 @@ describe('«Oxirgi joylar» of a booking (docs/90 F-P5)', { timeout: 20_000 }, (
       </MapEngineContext.Provider>,
       testClients({ market: { searchTrips: async () => [trip] }, map: testMap() }),
     );
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     await tap('Jasur');
     await tap('Joy band qilish');
-    await tap('1 kishi');
     await tap('Uyimdan');
     expect(await screen.findByText('Oxirgi joylar')).toBeTruthy();
     expect(screen.getByText(/Yaqin joy/u)).toBeTruthy();

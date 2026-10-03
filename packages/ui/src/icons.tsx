@@ -10,12 +10,8 @@ import {
   ChartColumn,
   Check,
   EyeOff,
-  ChevronDown,
   ChevronRight,
-  ChevronUp,
-  Navigation,
   CircleAlert,
-  CircleDot,
   ClipboardCheck,
   FileText,
   Heart,
@@ -23,8 +19,6 @@ import {
   Flag,
   Inbox,
   Languages,
-  LocateFixed,
-  MapPin,
   Megaphone,
   Mic,
   MicOff,
@@ -58,6 +52,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
+import { WAY_ICONS } from './way-icons';
 
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
@@ -81,11 +76,7 @@ const ICONS = {
   phone: Phone,
   document: FileText,
   blocked: Ban,
-  origin: CircleDot,
-  destination: MapPin,
-  // The map of the pickup point (G22): the pin and "Mening joylashuvim".
-  pickup: MapPin,
-  locate: LocateFixed,
+  ...WAY_ICONS,
   ...PLACE_ICONS,
   car: CarFront,
   carSide: Car,
@@ -112,10 +103,6 @@ const ICONS = {
   hidden: EyeOff,
   // A Telegram channel of the team (docs/63).
   channel: Megaphone,
-  // The stops of the driver (G24, docs/70): move one up or down, open the way in a navigator.
-  up: ChevronUp,
-  down: ChevronDown,
-  navigate: Navigation,
   // An approved application (docs/86 V7); send like Telegram, home screen, story (docs/88 L10, L17, L19).
   approved: ShieldCheck,
   send: SendHorizontal,

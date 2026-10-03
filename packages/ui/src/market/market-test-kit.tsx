@@ -1,6 +1,7 @@
 import type { UsersClient } from '@platform/api-client';
 import type { Location, Trip } from '@platform/contracts';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { expect } from 'vitest';
 import type { ReactNode } from 'react';
 import { AccountContext, type Account } from '../account/account-context';
 import type { ApiClients } from '../context/api-clients';
@@ -112,9 +113,18 @@ export async function chooseRoute(wholeRegion = false) {
   await tap('Davom etish');
 }
 
-// A request (G24): the same route through the list of districts under «Qayerdan / Qayerga».
-export async function chooseWay() {
-  await tap('Roʻyxatdan tanlash');
-  await chooseRoute();
-  await tap('Davom etish');
+// The search and a request (G35, docs/97 K1): «Qayerga» opens at once, then «Qayerdan»; both
+// chosen, the next screen opens without «Davom etish».
+export async function quickRoute(wholeRegion = false) {
+  await tap('Fargʻona viloyati');
+  await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
+  await tap('Toshkent shahri');
+  await tap('Chilonzor');
+}
+
+// The name under the pin is known: «Shu yerda» takes the point (the list «Oxirgi joylar» may
+// show the same name, so the pin itself is checked).
+export async function takePoint(name: string) {
+  await waitFor(() => expect(screen.getByRole('status').textContent).toBe(name), { timeout: 3000 });
+  await tap('Shu yerda');
 }

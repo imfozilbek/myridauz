@@ -1,10 +1,12 @@
 import type { MapClient } from '@platform/api-client';
 import type { FoundPlace, Point, Where } from '@platform/contracts';
+import type { TranslationKey } from '@platform/i18n';
 import { vi } from 'vitest';
 import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
-import type { Way } from '../way/way-end';
-import { WayScreen } from '../way/way-screen';
+import { useDirectory } from '../places/use-directory';
+import { PointScreen } from '../way/point-screen';
+import type { WayEnd } from '../way/way-end';
 import { fakeMap } from './fake-map';
 import { MapEngineContext } from './map-engine';
 
@@ -30,15 +32,17 @@ type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border'>>
 // The map calls of the tests: the district by the point, a square border, the pitak, a search.
 export const testMap = (calls: Calls = {}): Partial<MapClient> => ({
   where: vi.fn(whereOf),
+  // A border around every test place: the map of a zone stays where it opened.
   border: async (id) => ({
     id,
     parts: [
       [
         [
-          [69, 41],
-          [70, 41],
-          [70, 42],
-          [69, 41],
+          [60, 35],
+          [80, 35],
+          [80, 45],
+          [60, 45],
+          [60, 35],
         ],
       ],
     ],
@@ -48,13 +52,33 @@ export const testMap = (calls: Calls = {}): Partial<MapClient> => ({
   ...calls,
 });
 
-// The screen «Qayerdan / Qayerga» of a request over a fake map (G24): what it gave back when done.
-export function openWay(map: ReturnType<typeof fakeMap>, calls: Calls = {}) {
-  const done: Way[] = [];
+export const HERE = { lat: 41.2856, lng: 69.2045 };
+const TITLE: TranslationKey = 'way.point.from';
+
+// One point over a fake map (G24): no zone, like the pitak of the team; with «findMe» like a pickup.
+function TestPoint({ findMe, onPick }: { readonly findMe: boolean; readonly onPick: (end: WayEnd) => void }) {
+  const [state] = useDirectory();
+  if (state.status !== 'ready') return null;
+  const { find } = state.directory;
+  return (
+    <PointScreen
+      title={TITLE}
+      start={HERE}
+      find={find}
+      findMe={findMe}
+      onBack={() => undefined}
+      onPick={onPick}
+    />
+  );
+}
+
+// What the point gave back when taken, and the map calls.
+export function openPoint(map: ReturnType<typeof fakeMap>, calls: Calls = {}, findMe = false) {
+  const done: WayEnd[] = [];
   const mapCalls = testMap(calls);
   renderMarket(
     <MapEngineContext.Provider value={async () => map.engine}>
-      <WayScreen onBack={() => undefined} onDone={(way) => void done.push(way)} />
+      <TestPoint findMe={findMe} onPick={(end) => void done.push(end)} />
     </MapEngineContext.Provider>,
     testClients({ map: mapCalls }),
   );

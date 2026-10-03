@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { botEnv as BOT_ENV, botSender, fakeTelegram, textMessage, voiceMessage } from './test-bot';
 
@@ -10,13 +11,23 @@ const OWNER = 7;
 const ADMIN_TOKEN = 'a';
 const SUPPORT_TOKEN = 's';
 const reply = async (response: Response) => (await response.json()) as { text?: string; method?: string };
+const brand = loadBrand();
 
 // A person writes to the support bot, the team answers in the admin bot (docs/50, G30).
 describe('the support bot', () => {
   it('greets, copies the question to the team in the admin bot and brings the answer back', async () => {
-    expect((await reply(await send('support', textMessage(PERSON, '/start')))).text).toContain(
-      'yordam xizmati',
-    );
+    // The welcome is a picture with the words under it, as in the public bots (owner approval 03.10.2026).
+    const welcome = (await (await send('support', textMessage(PERSON, '/start'))).json()) as {
+      method: string;
+      photo: string;
+      caption: string;
+    };
+    expect(welcome).toMatchObject({
+      method: 'sendPhoto',
+      photo: `https://${brand.domain}/bot/support-welcome.png`,
+    });
+    expect(welcome.caption).toContain(`Bu ${brand.name} yordam xizmati.`);
+    expect(welcome.caption).toContain('har kuni soat 7:00 dan 23:00 gacha');
     expect((await reply(await send('support', textMessage(PERSON, 'Pulim qaytmadi')))).text).toContain(
       'qabul qilindi',
     );

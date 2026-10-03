@@ -3,7 +3,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { mockFeedback } from './feedback-mock';
-import { chooseRoute } from './market';
+import { searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -48,8 +48,7 @@ test('passenger: the rating on the trip and the reviews', async ({ page }) => {
   const shot = shooter(page, 'rating');
   await open(page, telegramUrl(appUrl(PASSENGER.port)));
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await chooseRoute(page);
-  await page.getByText(TEXT.tomorrow).click();
+  await searchRoute(page);
   await expect(page.getByText('Jasur').first()).toBeVisible();
   await shot('1-results');
   await page.getByText('Jasur').first().click();

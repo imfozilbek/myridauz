@@ -1,3 +1,4 @@
+import { insideParts, pointInside } from '@platform/contracts';
 import { useEffect, useRef } from 'react';
 import { useApiClients } from '../context/api-clients';
 import type { MapView } from '../map/map-engine';
@@ -17,7 +18,14 @@ export function useClip(view: MapView | null, where: Under, zone: string | null)
     // A border that comes after the person moved to another place is stale: it would pull the map back.
     const fresh = () => clipped.current === target;
     map.border(target).then(
-      (border) => fresh() && view.clip(border.parts),
+      (border) => {
+        if (!fresh()) return;
+        view.clip(border.parts);
+        // The center of a district may lie outside its own border (Urganch shahri): the map of a
+        // zone opens inside it, never on a place it refuses (G35).
+        const inside = zone && !insideParts(border.parts, view.center()) ? pointInside(border.parts) : null;
+        if (inside) view.moveTo(inside);
+      },
       () => fresh() && view.clip(null),
     );
     // Each new answer under the pin: after a move the same district is cut again.

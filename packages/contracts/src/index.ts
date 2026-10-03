@@ -115,6 +115,7 @@ export * from './calls';
 export * from './favorites';
 export * from './history';
 export * from './legal';
+export { insideParts, pointInside } from './polygon';
 export * from './uzbekistan';
 export * from './map';
 export * from './map-search';
