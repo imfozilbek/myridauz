@@ -33,9 +33,9 @@ Definition of Done:
 |---|---|
 | Зона `myrida.uz` | Active в Cloudflare, NS `jill` и `razvan.ns.cloudflare.com`, DNSSEC выключен |
 | Токен API | `rida-claude`, действует до 31.01.2027, права по списку выше |
-| Бот попутчиков | `@myrida_bot` (Rida) |
-| Бот водителей | `@myrida_haydovchi_bot` (Rida Haydovchi) |
-| Админ-бот | `@myrida_admin_bot` (Rida Admin) |
+| Бот попутчиков | `@myrida_bot` (Rida \| yoʻlovchi) |
+| Бот водителей | `@myrida_haydovchi_bot` (Rida \| haydovchi) |
+| Админ-бот | `@myrida_admin_bot` (Rida \| admin) |
 | Первый админ | Telegram ID владельца |
 
 - Все 3 бота ответили на `getMe`, токен прошёл проверку API.
