@@ -12,7 +12,8 @@ export default defineConfig({
   testDir: 'e2e',
   forbidOnly: CI,
   reporter: CI ? 'github' : 'list',
-  ...(CI ? { workers: CI_WORKERS } : {}),
+  // In CI every test goes to any part and any phone: the parts end together (docs/45).
+  ...(CI ? { workers: CI_WORKERS, fullyParallel: true } : {}),
   use: { ...PHONE, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
   projects: [
     {
