@@ -55,6 +55,8 @@ describe('POST /telegram/setup', () => {
       'https://api.telegram.org/botp/setChatMenuButton',
       'https://api.telegram.org/botd/setChatMenuButton',
     ]);
+    // The owner named the menu button «ilova» (03.10.2026): the setup must not rename it.
+    expect(menus.map((call) => (call.body.menu_button as { text: string }).text)).toEqual(['ilova', 'ilova']);
     const commands = calls.filter((call) => call.url.endsWith('/setMyCommands'));
     expect(commands.map((call) => call.url)).toEqual([
       'https://api.telegram.org/botp/setMyCommands',

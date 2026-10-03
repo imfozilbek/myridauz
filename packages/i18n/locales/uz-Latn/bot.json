@@ -1,5 +1,6 @@
 {
   "open": "Ochish",
+  "menu": "ilova",
   "findOther": "Boshqa safar topish",
   "passenger.start": "Assalomu alaykum. {brand} bilan yoʻli bir odamlar birga safar qiladi. Safar topish uchun tugmani bosing.",
   "driver.hello": "Assalomu alaykum! {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas.",

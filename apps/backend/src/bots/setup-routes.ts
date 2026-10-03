@@ -8,7 +8,7 @@ import { avatarUrl, setBotAvatar } from './bot-avatar';
 import { botProfile } from './bot-profile';
 import { BOT_ROLES, isBotRole } from './bot-roles';
 import { botCommands } from './documents-reply';
-import { openButton } from './start-reply';
+import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
 
 const SETUP_HEADER = 'x-setup-secret';
@@ -46,9 +46,7 @@ export function setupRoutes(fetch: Fetch) {
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.
       // The support bot has no Mini App: people only write there (docs/50).
       if (isBotRole(role) && role !== 'admin') {
-        await callTelegram(fetch, token, 'setChatMenuButton', {
-          menu_button: { type: 'web_app', ...openButton(brand, role) },
-        });
+        await callTelegram(fetch, token, 'setChatMenuButton', { menu_button: menuButton(brand, role) });
         // "/hujjatlar" opens the legal documents (docs/30).
         await callTelegram(fetch, token, 'setMyCommands', { commands: botCommands() });
       }
