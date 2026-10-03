@@ -18,19 +18,19 @@ concurrency:
 jobs:
   # The unit tests in parts at once, each file still isolated: CI in a minute (docs/45).
   test:
-    name: test (${{ matrix.shard }}/12)
+    name: test (${{ matrix.shard }}/11)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/12
+      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/11
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: blob-${{ matrix.shard }}
@@ -38,12 +38,12 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  # The parts together: the results and the coverage rules of docs/31 over all tests. It starts with
-  # the parts and gets ready meanwhile, so only the merge itself waits for them (CI in a minute).
-  test-coverage:
-    name: test:coverage
+  # The one check of the rule of main (docs/34). It starts with the parts and gets ready meanwhile:
+  # the results and the coverage rules of docs/31 over all tests, then every other gate green.
+  ci-ok:
+    name: CI ok
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
       actions: read
@@ -52,20 +52,20 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      # The 12 parts of the job «test»: every report uploaded, or a part failed.
-      - name: Wait for the parts
+      # The 11 parts of the job «test»: every report uploaded, or a part failed.
+      - name: Wait for the test parts
         env:
           GH_TOKEN: ${{ github.token }}
-          PARTS: 12
+          PARTS: 11
         run: |
           run="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          for _ in $(seq 1 200); do
+          for _ in $(seq 1 300); do
             failed=$(gh api "${run}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100" \
               --jq '[.jobs[] | select(.name | startswith("test (")) | select(.conclusion == "failure" or .conclusion == "cancelled")] | length')
             if [ "$failed" -gt 0 ]; then echo "a part of the tests failed"; exit 1; fi
             ready=$(gh api "${run}/artifacts?per_page=100" --jq '[.artifacts[] | select(.name | startswith("blob-"))] | length')
             if [ "$ready" -ge "$PARTS" ]; then exit 0; fi
-            sleep 3
+            sleep 2
           done
           exit 1
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
@@ -74,22 +74,41 @@ jobs:
           path: .vitest/blob/
           merge-multiple: true
       - run: pnpm exec vitest run --merge-reports --coverage
+      # Every other gate of this run green: typecheck, checks, e2e, secrets, brand-kit.
+      - name: Wait for the other gates
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GATES: 7
+        run: |
+          jobs="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100"
+          gates='select(.name == "typecheck" or .name == "checks" or .name == "secrets" or .name == "brand-kit" or (.name | startswith("e2e (")))'
+          for _ in $(seq 1 300); do
+            bad=$(gh api "$jobs" --jq "[.jobs[] | ${gates} | select(.conclusion != null and .conclusion != \"success\")] | length")
+            if [ "$bad" -gt 0 ]; then echo "a gate failed"; exit 1; fi
+            done_ok=$(gh api "$jobs" --jq "[.jobs[] | ${gates} | select(.conclusion == \"success\")] | length")
+            if [ "$done_ok" -ge "$GATES" ]; then exit 0; fi
+            sleep 2
+          done
+          exit 1
 
   e2e-part:
-    name: e2e (${{ matrix.part }})
+    name: e2e (${{ matrix.part }} ${{ matrix.shard }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        part: [map, rest]
+        include:
+          - { part: map, shard: 1/2 }
+          - { part: map, shard: 2/2 }
+          - { part: rest, shard: 1/1 }
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - run: pnpm e2e
+      - run: pnpm e2e --shard=${{ matrix.shard }}
         env:
           E2E_PART: ${{ matrix.part }}
 
@@ -144,7 +163,7 @@ jobs:
   screenshots:
     name: screenshots (${{ matrix.shard }}/2)
     # After the gates: the runners go to the checks first (20 at once on GitHub, docs/45).
-    needs: [test-coverage, e2e-part]
+    needs: [ci-ok]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -216,16 +235,6 @@ jobs:
           echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum -c
           tar -xzf "${archive}" gitleaks
       - run: ./gitleaks git --no-banner --redact
-
-  # The one check of the rule of main: green only when every gate is green (docs/34).
-  ci-ok:
-    name: CI ok
-    needs: [typecheck, checks, test-coverage, e2e-part, secrets, brand-kit]
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - run: test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = false
 
   # Deploy only when something that goes to production changed: code, brands, dependencies,
   # the deploy script. A merge of docs alone needs no deploy and no approval (owner decision 29.09.2026).
