@@ -38,6 +38,8 @@ export const KOMIL: Person = { id: 900111, name: 'Komil', phone: '998901110111' 
 export const MUROD: Person = { id: 900112, name: 'Murod', phone: '998901110112' };
 // The driver of the admin walk only: the trips of Jahongir stay under the limit (lesson 63).
 export const SHERZOD: Person = { id: 900113, name: 'Sherzod', phone: '998901110113' };
+// G35: the second trip on the route, for a passenger who went before (docs/97 K4, K5).
+export const DOSTON: Person = { id: 900114, name: 'Doston', phone: '998901110114' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -68,6 +70,7 @@ export const DRIVERS: readonly Driver[] = [
   { person: KOMIL, plate: '01K123MN', gender: 'male' },
   { person: MUROD, plate: '01L234NO', gender: 'male' },
   { person: SHERZOD, plate: '01M345PQ', gender: 'male' },
+  { person: DOSTON, plate: '01N456QR', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,

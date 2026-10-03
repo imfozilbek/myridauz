@@ -22,13 +22,17 @@ export function DayChips({ date, now, onDay, onOther }: Props) {
   return (
     <div className="day-chips">
       <SegmentedControl>
-        <SegmentedControl.Item selected={date === today(now)} onClick={day(today(now))}>
+        <SegmentedControl.Item className="day-chip" selected={date === today(now)} onClick={day(today(now))}>
           {t('market.day.today')}
         </SegmentedControl.Item>
-        <SegmentedControl.Item selected={date === tomorrow(now)} onClick={day(tomorrow(now))}>
+        <SegmentedControl.Item
+          className="day-chip"
+          selected={date === tomorrow(now)}
+          onClick={day(tomorrow(now))}
+        >
           {t('market.day.tomorrow')}
         </SegmentedControl.Item>
-        <SegmentedControl.Item selected={!known} onClick={onOther}>
+        <SegmentedControl.Item className="day-chip" selected={!known} onClick={onOther}>
           {t('market.date.otherDay')}
         </SegmentedControl.Item>
       </SegmentedControl>

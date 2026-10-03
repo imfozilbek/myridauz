@@ -1,4 +1,5 @@
 import type { BookingsClient } from '@platform/api-client';
+import type { Border } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
@@ -116,5 +117,21 @@ describe('a booking with its points (G26, docs/74)', { timeout: 20_000 }, () => 
     await tap('Shu yerda');
     expect(screen.getByRole('alert')).toBeTruthy();
     expect(screen.queryByText('Qayerda tushasiz?')).toBeNull();
+  });
+
+  it('opens the map of a zone inside its border when the center of the place is outside it (G35)', async () => {
+    const square: Border['parts'] = [
+      [
+        [
+          [70, 40],
+          [71, 40],
+          [71, 41],
+          [70, 41],
+          [70, 40],
+        ],
+      ],
+    ];
+    const { map } = open('door', { border: async (id: string) => ({ id, parts: square }) });
+    await waitFor(() => expect(map.at()).toEqual({ lat: 40.5, lng: 70.5 }));
   });
 });

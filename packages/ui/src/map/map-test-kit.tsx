@@ -32,15 +32,17 @@ type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border'>>
 // The map calls of the tests: the district by the point, a square border, the pitak, a search.
 export const testMap = (calls: Calls = {}): Partial<MapClient> => ({
   where: vi.fn(whereOf),
+  // A border around every test place: the map of a zone stays where it opened.
   border: async (id) => ({
     id,
     parts: [
       [
         [
-          [69, 41],
-          [70, 41],
-          [70, 42],
-          [69, 41],
+          [60, 35],
+          [80, 35],
+          [80, 45],
+          [60, 45],
+          [60, 35],
         ],
       ],
     ],

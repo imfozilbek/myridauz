@@ -1,7 +1,7 @@
 import type { Location, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -58,6 +58,8 @@ export function PointScreen({ title, start, find: findAny, zone, findMe = false,
   const [note, setNote] = useState<TranslationKey | null>(null);
   const method = useRef<Method>('map');
   const district = where?.district ?? null;
+  // A new place under the pin: an old note about the last one is gone.
+  useEffect(() => setNote(null), [where]);
   const unclip = useClip(view, where, zone?.id ?? null);
   const moveTo = (point: Point, how: Method) => {
     method.current = how;

@@ -213,6 +213,11 @@
   padding: 4px 16px 12px;
 }
 
+/* «Boshqa kun» fits a 360 px phone whole, not cut to «Boshq…» (G35). */
+.day-chips .day-chip {
+  padding-inline: 2px;
+}
+
 /* «−» and «+» of the seats in a check (G35, docs/97 K3): a finger-sized square each. */
 .seats-stepper {
   display: inline-flex;
