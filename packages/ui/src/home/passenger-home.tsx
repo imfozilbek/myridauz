@@ -53,6 +53,9 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
       onOpen={(route) => tap('item', () => go('find_trip', { route }))()}
     />
   ) : null;
+  // «Qayerdan» and the recent routes wait for the names of the places: they come whole, the
+  // actions below do not move (G41, docs/108).
+  if (shown.length === 0 && places.status === 'loading') return <HomeLoading lines={[false, false]} />;
   if (shown.length === 0)
     return (
       <>
