@@ -4,6 +4,17 @@ import { defineConfig } from 'vitest/config';
 const BUSINESS_LOGIC_THRESHOLD = 90;
 const DEFAULT_THRESHOLD = 70;
 const businessLogic = { lines: BUSINESS_LOGIC_THRESHOLD, functions: BUSINESS_LOGIC_THRESHOLD };
+// A part of the tests in CI (--shard) covers a part of the code: the rules hold for all parts
+// together, in the job test:coverage (docs/45).
+const PART = process.argv.some((arg) => arg.startsWith('--shard'));
+const thresholds = {
+  lines: DEFAULT_THRESHOLD,
+  functions: DEFAULT_THRESHOLD,
+  branches: DEFAULT_THRESHOLD,
+  statements: DEFAULT_THRESHOLD,
+  'apps/backend/src/modules/*/domain/**': businessLogic,
+  'apps/backend/src/modules/*/application/**': businessLogic,
+};
 
 export default defineConfig({
   test: {
@@ -41,14 +52,7 @@ export default defineConfig({
         'apps/miniapp-*/src/app/main.tsx',
         'apps/landing/src/prerender.ts',
       ],
-      thresholds: {
-        lines: DEFAULT_THRESHOLD,
-        functions: DEFAULT_THRESHOLD,
-        branches: DEFAULT_THRESHOLD,
-        statements: DEFAULT_THRESHOLD,
-        'apps/backend/src/modules/*/domain/**': businessLogic,
-        'apps/backend/src/modules/*/application/**': businessLogic,
-      },
+      ...(PART ? {} : { thresholds }),
     },
   },
 });

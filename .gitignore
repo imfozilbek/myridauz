@@ -27,3 +27,4 @@ apps/landing/.client/
 .map-data/
 .impeccable/
 .stand/
+.vitest/
