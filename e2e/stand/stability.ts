@@ -29,7 +29,10 @@ const WATCH = `(() => {
   new PerformanceObserver((list) => {
     for (const entry of list.getEntries()) {
       const byInput = entry.hadRecentInput || entry.startTime - typed < ${INPUT_MS};
-      if (entry.value < ${SHIFT_MIN} || byInput) continue;
+      // New words in the same box (a name under the pin): nothing moved, it is not a jump.
+      const same = (r) => [r.previousRect, r.currentRect].map((x) => [x.x, x.y, x.width, x.height].join()).reduce((a, b) => a === b);
+      const moved = (entry.sources || []).some((source) => !same(source));
+      if (entry.value < ${SHIFT_MIN} || byInput || !moved) continue;
       // What moved, by how much, and what stands above it: the cause is usually there.
       const what = (entry.sources || [])
         .map((s) => {
