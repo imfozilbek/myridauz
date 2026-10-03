@@ -24,6 +24,17 @@ describe('FindTripFlow: the day and the empty day (G35, docs/97 K2, K6)', { time
     expect(await screen.findByText('Jasur')).toBeTruthy();
   });
 
+  it('moves to tomorrow by «Ertaga» after the first day was found (G35 K2)', async () => {
+    renderMarket(
+      <FindTripFlow onBack={() => undefined} />,
+      testClients({ market: { searchTrips: async () => [] } }),
+    );
+    await quickRoute();
+    expect(await screen.findByText(/^Bugun, /u)).toBeTruthy();
+    await tap('Ertaga');
+    expect(await screen.findByText(/^Ertaga, /u)).toBeTruthy();
+  });
+
   it('leaves a request from an empty day with its route and day (K6)', async () => {
     const publishRequest = vi.fn<MarketClient['publishRequest']>(async () => {
       throw new Error('test.stop');
