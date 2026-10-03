@@ -57,6 +57,8 @@
 | Включить и выключить | `Switch` (как iOS), с лёгкой вибрацией выбора | `switch.tsx` |
 | Длинный текст | `Textarea` | `components.ts` |
 | Сколько шагов осталось | `Progress` сверху шага | `flow/step-progress.tsx`, `StepLayout` |
+| Шаг мастера | `StepLayout`: маленькая иконка в строке с заголовком, ответ сразу под вопросом; экран «готово» (`hero`): большая иконка в центре (G40, `106`) | `account/step-layout.tsx` |
+| Конец и начало экрана | Токены `--screen-end`, `--screen-top` (16 px): кнопка Telegram и так вне страницы (G40) | `theme/base.css` |
 | Сообщение сверху экрана | `Banner` с кнопкой «Yopish» | `notice-banner.tsx` |
 | Ошибка, которая меняет действие | `Banner` сверху шага, главная кнопка ведёт к выходу (G37) | `market/request-review.tsx` |
 | День и время на одном экране | `SegmentedControl` дня + `Select` только разрешённых часов (родное колесо телефона, G38, `103`) | `market/when-step.tsx` |
