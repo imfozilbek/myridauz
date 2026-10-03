@@ -74,6 +74,16 @@ type ModerationRules = {
 
 // The party of the legal documents (docs/30): the requisites come from the admin Mini App (G34); the
 // address answers people until the owner enters one there.
+// When a driver may leave (G38, docs/103): at least leadMinutes after making the trip; another day opens
+// at defaultTime; at most maxActiveTrips; the time to gather people is the road time × factor, within
+// the bounds.
+type ScheduleRules = {
+  readonly leadMinutes: number;
+  readonly defaultTime: string;
+  readonly maxActiveTrips: number;
+  readonly gather: { readonly factor: number; readonly minMinutes: number; readonly maxMinutes: number };
+};
+
 type Company = {
   readonly email: string;
 };
@@ -113,4 +123,5 @@ export type BrandConfig = {
   readonly calls: CallRules;
   readonly moderation: ModerationRules;
   readonly company: Company;
+  readonly schedule: ScheduleRules;
 };

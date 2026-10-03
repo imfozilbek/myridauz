@@ -6,6 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
+import { useGoHome } from '../flow/home-context';
 import { MainButton } from '../telegram/bottom-button';
 import { rememberedWay } from '../way/remembered-way';
 import { DateStep } from './date-step';
@@ -28,6 +29,7 @@ type StepProps = {
 // One step of a request; each shows the answer chosen before (docs/94 F8).
 export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) {
   const { t } = useI18n();
+  const home = useGoHome(onClose);
   const { step, answer, recommendation, pitak, editing, go, next } = flow;
   const [now] = useState(Date.now);
   const { route, date, mode, pickup, dropoff, price } = answer;
@@ -44,8 +46,8 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
         title={t('market.request.published.title')}
         hint={t('market.request.published.hint')}
       >
-        <Screen onBack={onClose} />
-        <MainButton text={t('market.done')} onClick={onClose} />
+        <Screen onBack={home} />
+        <MainButton text={t('market.done')} onClick={home} />
       </StepLayout>
     );
   if (step === 'route' || !route)

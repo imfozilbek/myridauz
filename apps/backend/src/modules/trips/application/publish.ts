@@ -1,6 +1,7 @@
-import { MAX_ACTIVE_TRIPS, type Trip, type TripInput } from '@platform/contracts';
-import { departError, endsAt, isLive, type TripRecord } from '../domain/trip';
+import type { Trip, TripInput } from '@platform/contracts';
+import { departError, endsAt, type TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
+import { scheduleError, type ScheduleError } from './schedule';
 import { views } from './views-of';
 
 export type PublishError =
@@ -9,7 +10,7 @@ export type PublishError =
   | 'trips.in_past'
   | 'trips.invalid_input'
   | 'trips.price_out_of_bounds'
-  | 'trips.too_many'
+  | ScheduleError
   | 'locations.not_found'
   | 'locations.same_place'
   | 'locations.inside_city';
@@ -18,7 +19,8 @@ type Input = Required<
   Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard' | 'pickupMode'>
 > & { readonly comment: string };
 
-// Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09).
+// Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09),
+// at a time the driver makes (docs/103).
 export async function publishTrip(
   deps: TripsDeps,
   driverId: number,
@@ -35,8 +37,8 @@ export async function publishTrip(
   const { km, minPrice, maxPrice, price: recommended } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
-  const live = (await deps.trips.byDriver(driverId)).filter((trip) => isLive(trip, now));
-  if (live.length >= MAX_ACTIVE_TRIPS) return { ok: false, error: 'trips.too_many' };
+  const busy = await scheduleError(deps, driverId, { ...input, km });
+  if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
     ...input,
     comment: deps.mask(input.comment),

@@ -5,6 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import { useHomeTap } from '../home/use-home-tap';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
 import { SoonScreen } from './soon-screen';
 import type { HomeGo, Launch, StartAction } from './start-action';
@@ -65,6 +66,10 @@ export function StartFlow({ actions, opened, notice, home, covered }: StartFlowP
   }
   if (screen === 'profile') return <ProfileScreen onBack={openHome} />;
   const { action, launch } = screen;
-  if (action.Screen) return <action.Screen onBack={openHome} {...launch} />;
-  return <SoonScreen action={action} onBack={openHome} />;
+  if (!action.Screen) return <SoonScreen action={action} onBack={openHome} />;
+  return (
+    <HomeProvider value={openHome}>
+      <action.Screen onBack={openHome} {...launch} />
+    </HomeProvider>
+  );
 }

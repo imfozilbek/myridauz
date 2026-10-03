@@ -1,6 +1,7 @@
 import {
   ADMIN_TRIPS_PATH,
   DRIVER_REQUESTS_PATH,
+  DRIVER_SCHEDULE_PATH,
   DRIVER_TRIPS_PATH,
   driverTripCancelPath,
   PASSENGER_REQUESTS_PATH,
@@ -9,6 +10,7 @@ import {
   recommendationSchema,
   rideRequestSchema,
   rideRequestsSchema,
+  scheduleSchema,
   tripPath,
   tripSchema,
   tripsSchema,
@@ -17,6 +19,7 @@ import {
   type RequestSearch,
   type RideRequest,
   type RideRequestInput,
+  type Schedule,
   type Trip,
   type TripInput,
   type TripSearch,
@@ -44,6 +47,9 @@ export function createMarketClient(options: SignedOptions) {
     myTrips: async (): Promise<Trip[]> =>
       tripsSchema.parse(await (await request(DRIVER_TRIPS_PATH)).json()).trips,
     publishTrip: async (input: TripInput): Promise<Trip> => trip(await post(DRIVER_TRIPS_PATH, input)),
+    // The busy times of the driver for a new trip on this route (docs/103).
+    schedule: async (from: string, to: string): Promise<Schedule> =>
+      scheduleSchema.parse(await (await request(`${DRIVER_SCHEDULE_PATH}?${query({ from, to })}`)).json()),
     cancelTrip: async (id: string): Promise<Trip> => trip(await post(driverTripCancelPath(id), {})),
     searchRequests: async (search: RequestSearch): Promise<RideRequest[]> =>
       rideRequestsSchema.parse(await (await request(`${DRIVER_REQUESTS_PATH}?${query(search)}`)).json())

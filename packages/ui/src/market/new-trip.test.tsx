@@ -36,7 +36,7 @@ function setup(gender: 'male' | 'female' = 'male', status: Driver['application']
 }
 
 describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
-  it('asks the route, day, time, seats, price, woman, comment and publishes', async () => {
+  it('asks the route, day and time on one screen, seats, price, woman, comment and publishes', async () => {
     const { publishTrip, tracked } = setup();
     await chooseRoute();
     await tap('Shahar boʻylab yigʻaman');
@@ -80,8 +80,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     expect(steps).toEqual([
       'route',
       'mode',
-      'date',
-      'time',
+      'when',
       'seats',
       'price',
       'woman',

@@ -8,7 +8,7 @@ import type { Route } from '../places/route-screen';
 import { returnDraft } from './return-trip';
 import type { TripDraft } from './trip-draft';
 
-const STEPS = ['route', 'mode', 'date', 'time', 'seats', 'price', 'woman', 'comment', 'review'] as const;
+const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'woman', 'comment', 'review'] as const;
 export type Step = (typeof STEPS)[number];
 type Saved = { readonly step: Step; readonly answer: Partial<TripDraft>; readonly isReturn: boolean };
 const DRAFT_KEY = 'new_trip';
@@ -52,7 +52,7 @@ export function useNewTrip(known: Route | undefined, day?: string) {
   };
   const type = (comment: string) => setValue((saved) => ({ ...saved, answer: { ...saved.answer, comment } }));
   const startReturn = (published: TripDraft) =>
-    setValue({ step: 'date', answer: returnDraft(published), isReturn: true });
+    setValue({ step: 'when', answer: returnDraft(published), isReturn: true });
   useStepProgress(STEPS.indexOf(value.step), STEPS.length);
   const { route } = value.answer;
   useEffect(() => {

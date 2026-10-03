@@ -58,7 +58,8 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       trips: [],
     });
     telegram.length = 0;
-    const trip = await publish();
+    // Days apart from the trips of the other tests: a driver makes one trip at a time (docs/103).
+    const trip = await publish(Date.now() + 6 * DAY);
     expect(trip.recommendedPrice).toBeGreaterThan(0);
     const told = toPassenger();
     expect(told).toHaveLength(1);
@@ -72,7 +73,7 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       (await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'DELETE' })).status,
     ).toBe(404);
     telegram.length = 0;
-    await publish();
+    await publish(Date.now() + 9 * DAY);
     expect(toPassenger()).toEqual([]);
   });
 });

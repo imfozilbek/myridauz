@@ -118,7 +118,11 @@ describe('Telegram wrappers', () => {
       isVisible: true,
     });
     expect(sdk.backButton.show.ifAvailable).toHaveBeenCalled();
+    // «Назад» hides a moment after the screen leaves, when no next step took it (G38, docs/103).
+    vi.useFakeTimers();
     unmount();
+    vi.runAllTimers();
+    vi.useRealTimers();
     expect(sdk.backButton.hide.ifAvailable).toHaveBeenCalled();
   });
 

@@ -1,4 +1,12 @@
-import type { Car, Pitak, Point, Rating, Recommendation, RouteError } from '@platform/contracts';
+import type {
+  Car,
+  Pitak,
+  Point,
+  Rating,
+  Recommendation,
+  RouteError,
+  ScheduleRules,
+} from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
 
@@ -45,6 +53,9 @@ export type TripsDeps = {
     from: string,
     to: string,
   ) => Promise<Result<Recommendation, RouteError | 'locations.not_found'>>;
+  // Road km between two places of the driver's trips (docs/103): 0 for the same place.
+  readonly roadKm: (from: string, to: string) => Promise<number>;
+  readonly schedule: ScheduleRules;
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;

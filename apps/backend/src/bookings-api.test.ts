@@ -55,7 +55,8 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     const trip = {
       from: '1726273',
       to: '1718401',
-      departAt: Date.now() + 6 * 3_600_000,
+      // Two days after the first trip: the trips of one driver cannot overlap (docs/103).
+      departAt: Date.now() + 53 * 3_600_000,
       seats: 2,
       price: 90_000,
     };

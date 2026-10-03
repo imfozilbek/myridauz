@@ -20,9 +20,13 @@ const PASSENGER = 92;
 const OTHER = 93;
 const CLOSE = [101, 102, 103, 104, 105, 106];
 const DAY = 24 * 3_600_000;
+const DRIVER_STEP = 1000;
 
+// A driver of their own for each booking: the trips of one driver cannot overlap (docs/103).
+let drivers = 0;
 async function confirmedBooking() {
-  await approvedDriver(DRIVER);
+  const driver = DRIVER + (drivers += 1) * DRIVER_STEP;
+  await approvedDriver(driver);
   await registerUser(PASSENGER);
   await registerUser(OTHER);
   const trip = {
@@ -33,7 +37,7 @@ async function confirmedBooking() {
     price: 90_000,
   };
   const published = await read<{ id: string }>(
-    call('/driver/trips', DRIVER, {
+    call('/driver/trips', driver, {
       app: 'driver',
       ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
     }),
@@ -43,7 +47,7 @@ async function confirmedBooking() {
   );
   const share = () => call(`/passenger/bookings/${booking.id}/share`, PASSENGER, { method: 'POST' });
   expect((await share()).status).toBe(409);
-  await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
+  await call(`/driver/bookings/${booking.id}/confirm`, driver, { method: 'POST', app: 'driver' });
   return { booking, share };
 }
 const tokenOf = (link: string) => link.split('follow_')[1] ?? '';

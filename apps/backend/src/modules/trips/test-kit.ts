@@ -1,4 +1,5 @@
 // Test helper: trips with two approved drivers (a man and a woman) and a fake price engine.
+import { loadBrand } from '@platform/brands';
 import type { Car, Recommendation } from '@platform/contracts';
 import { maskContacts } from '../chat/domain/mask';
 import type { Person } from '../users';
@@ -9,6 +10,7 @@ import { publicIdOf } from '../../test-people';
 export const HOUR = 60 * 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
 export const NOW = Date.parse('2026-10-01T01:00:00Z');
+const TRIP_KM = 300;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 const person = (id: number, gender: Person['gender']): Person => ({
   id,
@@ -56,7 +58,7 @@ export function setup() {
       const value: Recommendation = {
         from,
         to,
-        km: 300,
+        km: TRIP_KM,
         price,
         source: 'formula',
         minPrice: 30000,
@@ -65,6 +67,9 @@ export function setup() {
       };
       return { ok: true, value };
     },
+    // Every other place is one trip away (300 km, 5 hours): the road from the end of a trip (docs/103).
+    roadKm: async (from, to) => (from === to ? 0 : TRIP_KM),
+    schedule: loadBrand().schedule,
     places: async () => PLACES,
     announce: async () => undefined,
     // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.

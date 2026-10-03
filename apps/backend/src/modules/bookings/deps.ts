@@ -11,8 +11,8 @@ import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } fro
 import {
   cancelFor,
   driverTripIds,
-  liveTripCount,
   publishFor,
+  scheduleErrorFor,
   tripChanged,
   tripFacts,
   tripViewsOf,
@@ -50,7 +50,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   trips: {
     find: (id) => tripFacts(env, id),
     ofDriver: (driverId) => driverTripIds(env, driverId),
-    liveCount: (driverId) => liveTripCount(env, driverId),
+    scheduleError: (driverId, trip) => scheduleErrorFor(env, driverId, trip),
     views: (ids) => tripViewsOf(env, ids),
     publish: (driverId, input) => publishFor(env, driverId, input),
     cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),

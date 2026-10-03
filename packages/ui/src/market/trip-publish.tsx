@@ -8,6 +8,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
 import { Screen } from '../screen/screen';
+import { useGoHome } from '../flow/home-context';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from './error-text';
@@ -41,6 +42,7 @@ export function TripPublish(props: TripPublishProps) {
   const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const [published, setPublished] = useState(false);
+  const home = useGoHome(onClose);
   const publish = async () => {
     setError(null);
     try {
@@ -68,8 +70,8 @@ export function TripPublish(props: TripPublishProps) {
   if (published) {
     return (
       <StepLayout icon="selected" title={t('market.published.title')} hint={t('market.published.hint')}>
-        <Screen onBack={onClose} />
-        <MainButton text={t('market.done')} onClick={onClose} />
+        <Screen onBack={home} />
+        <MainButton text={t('market.done')} onClick={home} />
         {isReturn ? null : <SecondaryButton text={t('market.published.return')} onClick={onReturn} />}
       </StepLayout>
     );

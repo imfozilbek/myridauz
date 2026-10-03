@@ -82,8 +82,10 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
   });
 
   it('erases a driver: the trips end and the car is no longer theirs', async () => {
+    // Two days after the trip of the test before: the trips of one driver cannot overlap (docs/103).
+    const later = { ...trip, departAt: trip.departAt + 2 * 86_400_000 };
     const published = await read<{ id: string }>(
-      call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }),
+      call('/driver/trips', DRIVER, { app: 'driver', ...json(later) }),
     );
     expect((await deleteMe(DRIVER, fakeChats().chats, 'driver')).status).toBe(204);
     expect(await read(call(`/trips/${published.id}`, PASSENGER))).toEqual({ error: 'trips.not_found' });

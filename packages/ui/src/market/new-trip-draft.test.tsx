@@ -47,17 +47,17 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
     await tap('Orqaga');
     // Woman: «Yoʻq» has its tick and «Davom etish» keeps it.
     expect(await screen.findByText('Davom etish')).toBeTruthy();
-    // Price, seats, time, date: each one back.
-    for (let back = 0; back < 4; back += 1) await tap('Orqaga');
-    // The day: tomorrow is ticked; the way of pickup: chosen; the route: both ends.
+    // Price, seats, the day and time: each one back.
+    for (let back = 0; back < 3; back += 1) await tap('Orqaga');
+    // The day and time: tomorrow at 08:00; the way of pickup: chosen; the route: both ends.
     expect(await screen.findByText('Davom etish')).toBeTruthy();
     await tap('Orqaga');
     expect(await screen.findByText('Davom etish')).toBeTruthy();
     await tap('Orqaga');
     expect(await screen.findByText('Chilonzor')).toBeTruthy();
     expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
-    // Route, way, day, time, seats, price, woman: each answer kept, one tap each.
-    for (let step = 0; step < 7; step += 1) await tap('Davom etish');
+    // Route, way, day and time, seats, price, woman: each answer kept, one tap each.
+    for (let step = 0; step < 6; step += 1) await tap('Davom etish');
     expect(((await screen.findByPlaceholderText('Izoh yozing')) as HTMLTextAreaElement).value).toBe(COMMENT);
   });
 
