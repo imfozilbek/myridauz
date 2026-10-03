@@ -4,11 +4,16 @@ import { appUrl, LANDING_PORT, MINI_APPS } from './e2e/apps';
 const PHONE = { ...devices['Pixel 7'], browserName: 'chromium' as const };
 // A fake camera that is always allowed: tests take photos with our camera screen (docs/47).
 const FAKE_CAMERA = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'];
+const CI = !!process.env['CI'];
+// The screens wait for the network, not for the processor: 4 phones at once on a 4-core runner.
+const CI_WORKERS = 4;
 
 export default defineConfig({
   testDir: 'e2e',
-  forbidOnly: !!process.env['CI'],
-  reporter: process.env['CI'] ? 'github' : 'list',
+  forbidOnly: CI,
+  reporter: CI ? 'github' : 'list',
+  // In CI every test goes to any part and any phone: the parts end together (docs/45).
+  ...(CI ? { workers: CI_WORKERS, fullyParallel: true } : {}),
   use: { ...PHONE, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
   projects: [
     {
