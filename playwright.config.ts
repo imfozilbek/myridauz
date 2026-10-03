@@ -4,12 +4,18 @@ import { appUrl, LANDING_PORT, MINI_APPS } from './e2e/apps';
 const PHONE = { ...devices['Pixel 7'], browserName: 'chromium' as const };
 // A fake camera that is always allowed: tests take photos with our camera screen (docs/47).
 const FAKE_CAMERA = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'];
+// CI takes the Chrome of the GitHub runner: no browser download, CI in a minute (docs/45).
+const CI = !!process.env['CI'];
+const BROWSER = CI ? { channel: 'chrome' } : {};
+// The screens wait for the network, not for the processor: 4 phones at once on a 4-core runner.
+const CI_WORKERS = 4;
 
 export default defineConfig({
   testDir: 'e2e',
-  forbidOnly: !!process.env['CI'],
-  reporter: process.env['CI'] ? 'github' : 'list',
-  use: { ...PHONE, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
+  forbidOnly: CI,
+  reporter: CI ? 'github' : 'list',
+  ...(CI ? { workers: CI_WORKERS } : {}),
+  use: { ...PHONE, ...BROWSER, locale: 'uz-UZ', launchOptions: { args: FAKE_CAMERA } },
   projects: [
     {
       name: 'smoke',

@@ -22,13 +22,53 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        check: [format:check, lint, typecheck, knip, test:coverage, check:text, audit]
+        check: [format:check, lint, typecheck, knip, check:text, audit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - run: pnpm ${{ matrix.check }}
+
+  # The unit tests in parts at once, each file still isolated: CI in a minute (docs/45).
+  test:
+    name: test (${{ matrix.shard }}/6)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/6
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: blob-${{ matrix.shard }}
+          path: .vitest-reports/
+          include-hidden-files: true
+          retention-days: 1
+
+  # The parts together: the results and the coverage rules of docs/31 over all tests.
+  test-coverage:
+    name: test:coverage
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: blob-*
+          path: .vitest-reports/
+          merge-multiple: true
+      - run: pnpm exec vitest run --merge-reports --coverage
 
   e2e:
     runs-on: ubuntu-latest
@@ -38,7 +78,6 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm e2e
 
   # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
@@ -50,32 +89,11 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm screenshots
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: screenshots
           path: screenshots/
-          retention-days: 14
-
-  # The brand kit (docs/38) is built the same way as on the owner's machine; the result is an artifact.
-  brand-kit:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
-      - run: pnpm exec playwright install --with-deps chromium
-      - run: pnpm --filter @platform/brand-kit-rida build
-        env:
-          FFMPEG: /usr/bin/ffmpeg
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: brand-kit
-          path: brands/rida/brand-kit/kit/
           retention-days: 14
 
   secrets:
@@ -132,7 +150,7 @@ jobs:
   # The brand kit and the screenshots are media for people: the deploy does not wait for them (docs/45).
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.deploy == 'true'
-    needs: [checks, e2e, secrets, changes]
+    needs: [checks, test-coverage, e2e, secrets, changes]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production

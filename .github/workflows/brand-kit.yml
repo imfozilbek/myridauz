@@ -1,0 +1,37 @@
+# The brand kit (docs/38): media for people, not a gate. Built only when the brand or the tools
+# change, so the CI of other changes stays within a minute (docs/45).
+name: Brand kit
+
+on:
+  pull_request:
+    paths: ['brands/**', 'pnpm-lock.yaml', '.github/workflows/brand-kit.yml']
+  push:
+    branches: [main]
+    paths: ['brands/**', 'pnpm-lock.yaml', '.github/workflows/brand-kit.yml']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brand-kit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  brand-kit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm --filter @platform/brand-kit-rida build
+        env:
+          FFMPEG: /usr/bin/ffmpeg
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: brand-kit
+          path: brands/rida/brand-kit/kit/
+          retention-days: 14
