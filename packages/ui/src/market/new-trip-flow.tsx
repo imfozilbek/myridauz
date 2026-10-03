@@ -1,16 +1,16 @@
-import { useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
 import { useDriver } from '../driver/driver-context';
 import { DraftRestored } from '../flow/draft-restored';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { DateStep } from './date-step';
 import { useNewTrip } from './new-trip-state';
 import { PriceStep } from './price-step';
-import { TimeStep } from './time-step';
+import { TripWhen } from './trip-when';
 import { PlacesGate } from './places-gate';
 import { TripPublish } from './trip-publish';
-import { CommentStep, SeatsStep, WomanStep } from './trip-steps';
+import { SeatsStep } from './seats-step';
+import { CommentStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
 import { completeDraft } from './trip-draft';
 
@@ -42,7 +42,6 @@ function TripStepScreen({
 }: NewTripFlowProps & { readonly flow: ReturnType<typeof useNewTrip> }): ReactNode {
   const car = useDriver()?.application.car;
   const woman = useAccount()?.profile.gender === 'female';
-  const [now] = useState(Date.now);
   const { step, answer: draft, recommendation, isReturn, go, next } = flow;
   const { route } = draft;
   switch (step) {
@@ -62,35 +61,29 @@ function TripStepScreen({
           route={route}
           {...(draft.pickupMode ? { selected: draft.pickupMode } : {})}
           onBack={() => go('route')}
-          onDone={(pickupMode) => next('mode', { pickupMode }, 'date')}
+          onDone={(pickupMode) => next('mode', { pickupMode }, 'when')}
         />
       ) : null;
-    case 'date':
-      return (
-        <DateStep
-          now={now}
-          {...(draft.date ? { initial: draft.date } : {})}
+    case 'when':
+      return route ? (
+        <TripWhen
+          from={route.from.id}
+          to={route.to.id}
+          {...(draft.date
+            ? { initial: { date: draft.date, ...(draft.time ? { time: draft.time } : {}) } }
+            : {})}
           onBack={() => go(isReturn ? 'route' : 'mode')}
-          onDone={(date) => next('date', { date }, 'time')}
+          onDone={(when) => next('when', when, isReturn ? 'review' : 'seats')}
         />
-      );
-    case 'time':
-      return (
-        <TimeStep
-          date={draft.date ?? ''}
-          now={Date.now()}
-          {...(draft.time ? { initial: draft.time } : {})}
-          onBack={() => go('date')}
-          onDone={(departAt, time) => next('time', { departAt, time }, isReturn ? 'review' : 'seats')}
-        />
-      );
+      ) : null;
     case 'seats':
       return (
         <SeatsStep
           max={car?.seats ?? 1}
-          initial={draft.seats ?? car?.seats ?? 1}
-          onBack={() => go('time')}
-          onDone={(seats) => next('seats', { seats }, 'price')}
+          initial={{ seats: draft.seats ?? car?.seats ?? 1, womanOnBoard: draft.womanOnBoard ?? false }}
+          askWoman={!woman}
+          onBack={() => go('when')}
+          onDone={(value) => next('seats', value, 'price')}
         />
       );
     case 'price':
@@ -101,15 +94,7 @@ function TripStepScreen({
           {...(draft.price ? { initial: draft.price } : {})}
           commission
           onBack={() => go('seats')}
-          onDone={(price) => next('price', { price }, woman ? 'comment' : 'woman')}
-        />
-      );
-    case 'woman':
-      return (
-        <WomanStep
-          {...(draft.womanOnBoard === undefined ? {} : { selected: draft.womanOnBoard })}
-          onBack={() => go('price')}
-          onDone={(value) => next('woman', { womanOnBoard: value }, 'comment')}
+          onDone={(price) => next('price', { price }, 'comment')}
         />
       );
     case 'comment':
@@ -117,12 +102,12 @@ function TripStepScreen({
         <CommentStep
           initial={draft.comment ?? ''}
           onType={flow.type}
-          onBack={() => go(woman ? 'price' : 'woman')}
+          onBack={() => go('price')}
           onDone={(comment) => next('comment', { comment }, 'review')}
         />
       );
     default: {
-      const back = () => go(isReturn ? 'time' : 'comment');
+      const back = () => go(isReturn ? 'when' : 'comment');
       const complete = completeDraft(draft);
       // The way back waits for its recommendation: a skeleton with «Назад», never a blank screen (B3).
       if (!complete || !recommendation) return <ScreenSkeleton onBack={back} />;

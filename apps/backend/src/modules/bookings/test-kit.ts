@@ -18,12 +18,13 @@ import {
   HOME,
   NOW,
   PITAK,
+  scheduleCheck,
 } from './test-fakes';
 import { idOfPublic } from '../../test-people';
 
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, seats } from './test-fakes';
+export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, SCHEDULE, seats } from './test-fakes';
 
 export function setup() {
   let now = NOW;
@@ -80,8 +81,7 @@ export function setup() {
       find: async (tripId) => trips.get(tripId),
       ofDriver: async (driverId) =>
         [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
-      liveCount: async (driverId) =>
-        [...trips.values()].filter((t) => t.driverId === driverId && t.live).length,
+      scheduleError: async (driverId, trip) => scheduleCheck(trip.departAt, now, trips.values(), driverId),
       views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
       publish: async (driverId, input) => {
         const tripId = addTrip({ ...input, driverId });

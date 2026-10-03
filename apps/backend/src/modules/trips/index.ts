@@ -1,9 +1,10 @@
+import { loadBrand } from '@platform/brands';
 import type { TripInput } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
 import { approvedCar } from '../drivers';
-import { placesOf } from '../locations';
+import { placesOf, roadKmBetween } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
 import { pitakOf } from '../pitaks';
@@ -13,6 +14,7 @@ import { realPrices } from './application/prices';
 import { cancelTrip } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
+import { scheduleError } from './application/schedule';
 import { tripRoutes } from './http/trip-routes';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
@@ -44,6 +46,8 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
   approvedCar: (driverId) => approvedCar(env, driverId),
   ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),
+  roadKm: (from, to) => roadKmBetween(env, from, to),
+  schedule: loadBrand(env.BRAND).schedule,
   places: () => placesOf(env),
   announce: telegramAnnouncer({
     fetch: (input, init) => fetch(input, init),
@@ -88,8 +92,12 @@ export const tripFacts = async (env: Bindings, id: string) => {
 };
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
-export const liveTripCount = async (env: Bindings, driverId: number) =>
-  (await tripsDeps(env).trips.byDriver(driverId)).filter((trip) => isLive(trip, Date.now())).length;
+// An offer becomes a trip when it is accepted: the driver hears the schedule now (docs/103).
+export const scheduleErrorFor = (
+  env: Bindings,
+  driverId: number,
+  trip: { from: string; to: string; departAt: number; km: number },
+) => scheduleError(tripsDeps(env), driverId, trip);
 export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));

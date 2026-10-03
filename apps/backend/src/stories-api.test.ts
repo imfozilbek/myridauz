@@ -12,12 +12,14 @@ const jpeg = (size: number) => ({
   headers: { 'content-type': 'image/jpeg' },
 });
 
+// Each trip two days after the one before: the trips of one driver cannot overlap (docs/103).
+let trips = 0;
 async function publishTrip() {
   await approvedDriver(DRIVER);
   const trip = {
     from: '1726273',
     to: '1718401',
-    departAt: Date.now() + 5 * 3_600_000,
+    departAt: Date.now() + 5 * 3_600_000 + (trips += 1) * 2 * 86_400_000,
     seats: 3,
     price: 90_000,
     womanOnBoard: false,

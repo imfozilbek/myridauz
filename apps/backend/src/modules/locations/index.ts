@@ -29,3 +29,10 @@ export const placesOf = async (env: Bindings) =>
   indexById((await directory(locationsDeps(env), LOCALE)).locations);
 export const routeKm = (env: Bindings, from: string, to: string) =>
   getDistance(locationsDeps(env), directory, from, to);
+// The road km between any two places of the driver's trips (docs/103): 0 for the same place, and 0
+// when the directory has no distance (two places of one city).
+export const roadKmBetween = async (env: Bindings, from: string, to: string) => {
+  if (from === to) return 0;
+  const [a, b] = from < to ? [from, to] : [to, from];
+  return (await locationsDeps(env).locations.distance(a, b)) ?? 0;
+};

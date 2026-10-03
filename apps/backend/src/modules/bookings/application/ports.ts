@@ -85,8 +85,11 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
-    // Trips not over yet: an accepted offer adds one (docs/35).
-    liveCount(driverId: number): Promise<number>;
+    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103).
+    scheduleError(
+      driverId: number,
+      trip: { from: string; to: string; departAt: number; km: number },
+    ): Promise<'trips.too_soon' | 'trips.too_many' | 'trips.busy' | null>;
     views(ids: readonly string[]): Promise<Trip[]>;
     publish(driverId: number, input: Required<TripInput>): Promise<Published>;
     cancel(driverId: number, tripId: string): Promise<void>;

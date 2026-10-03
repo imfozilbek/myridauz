@@ -49,7 +49,6 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham
   await mainButton(page).click();
   await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
   await mainButton(page).click();
-  await page.getByText(t('market.woman.no')).click();
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   await shot(page, '3-driver-review');

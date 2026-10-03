@@ -9,6 +9,9 @@ const EXPLAINED: readonly string[] = [
   'trips.request_exists',
   'trips.price_out_of_bounds',
   'trips.in_past',
+  // G38, docs/103.
+  'trips.too_soon',
+  'trips.busy',
   'trips.not_driver',
   'locations.same_place',
   'locations.inside_city',

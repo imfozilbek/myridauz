@@ -41,12 +41,6 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     expect((await tripDetail(deps, published.ok ? published.value.id : ''))?.comment).toBe(comment);
   });
 
-  it('keeps at most 5 active trips of a driver', async () => {
-    const { deps, trip } = setup();
-    for (let index = 0; index < 5; index += 1) await publishTrip(deps, 1, trip);
-    expect(await publishTrip(deps, 1, trip)).toEqual({ ok: false, error: 'trips.too_many' });
-  });
-
   it('keeps the price of a published trip when the formula changes (docs/23)', async () => {
     const { deps, trip, setFormula } = setup();
     const published = await publishTrip(deps, 1, trip);
@@ -133,7 +127,8 @@ describe('the way a driver picks people up (G24, docs/70)', () => {
     const { deps, trip } = setup();
     const both = await publishTrip(deps, 1, trip);
     expect(both.ok && both.value).toMatchObject({ pickupMode: 'both', pitak: { id: 'toshkent-avtovokzal' } });
-    const door = await publishTrip(deps, 1, { ...trip, pickupMode: 'door' });
+    // Another driver: one driver cannot have two trips at the same time (docs/103).
+    const door = await publishTrip(deps, 2, { ...trip, pickupMode: 'door' });
     expect(door.ok && door.value).toMatchObject({ pickupMode: 'door', pitak: null });
   });
 });

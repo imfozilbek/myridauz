@@ -15,7 +15,7 @@ const steps = (names: readonly string[], counts: readonly number[]) =>
   });
 const PASSENGER = ['opened', 'searched', 'trip_opened', 'requested', 'chat', 'confirmed', 'boarded'];
 const DRIVER = ['opened', 'started', 'submitted', 'approved', 'trip_created', 'confirmed'];
-const NEW_TRIP = ['route', 'date', 'time', 'seats', 'price', 'woman', 'comment', 'published'];
+const NEW_TRIP = ['route', 'mode', 'when', 'seats', 'price', 'comment', 'published'];
 
 const statsOf = (period: string) => {
   const week = period === 'week' ? 7 : 1;
@@ -48,7 +48,7 @@ const statsOf = (period: string) => {
         id: 'new_trip',
         steps: steps(
           NEW_TRIP,
-          [30, 29, 28, 27, 25, 25, 24, 21].map((n) => n * week),
+          [30, 29, 28, 27, 25, 24, 21].map((n) => n * week),
         ),
       },
     ],

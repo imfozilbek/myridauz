@@ -12,6 +12,7 @@ import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
+import { useGoHome } from '../flow/home-context';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { useShareTrip } from './use-share-trip';
@@ -101,6 +102,7 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
 type AcceptedProps = { readonly bookingId: string | null; readonly onDone: () => void };
 export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
   const { t } = useI18n();
+  const home = useGoHome(onDone);
   const shareTrip = useShareTrip();
   const share = () =>
     bookingId
@@ -115,8 +117,8 @@ export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
       title={t('bookings.offer.accepted.title')}
       hint={t('bookings.offer.accepted.hint')}
     >
-      <Screen onBack={onDone} />
-      <MainButton text={t('market.done')} onClick={onDone} />
+      <Screen onBack={home} />
+      <MainButton text={t('market.done')} onClick={home} />
       {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => void share()} /> : null}
     </StepLayout>
   );

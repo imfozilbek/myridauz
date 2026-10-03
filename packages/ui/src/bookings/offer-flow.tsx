@@ -13,9 +13,10 @@ import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { PriceStep } from '../market/price-step';
 import { RouteView } from '../market/route-view';
-import { TimeStep } from '../market/time-step';
+import { TripWhen } from '../market/trip-when';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
+import { useGoHome } from '../flow/home-context';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
@@ -33,13 +34,13 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   const { track } = useAnalytics();
   const { market, bookings } = useApiClients();
   const { commission } = useBrand();
-  const [now] = useState(Date.now);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [step, setStep] = useState<Step>('time');
   const [time, setTime] = useState<Time | null>(null);
   const [price, setPrice] = useState<number | null>(null);
   const [money, setMoney] = useState<Money>(null);
   const [sent, setSent] = useState(false);
+  const home = useGoHome(onClose);
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   useEffect(() => {
     market.recommend(request.from, request.to).then(setRecommendation, onBack);
@@ -47,21 +48,22 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   if (sent) {
     return (
       <StepLayout icon="selected" title={t('bookings.offer.sent.title')} hint={t('bookings.offer.sent.hint')}>
-        <Screen onBack={onClose} />
-        <MainButton text={t('market.done')} onClick={onClose} />
+        <Screen onBack={home} />
+        <MainButton text={t('market.done')} onClick={home} />
       </StepLayout>
     );
   }
   if (!recommendation) return <ScreenSkeleton onBack={onBack} />;
   if (step === 'time' || !time) {
     return (
-      <TimeStep
-        date={request.date}
-        now={now}
-        {...(time ? { initial: time.time } : {})}
+      <TripWhen
+        from={request.from}
+        to={request.to}
+        fixedDate={request.date}
+        {...(time ? { initial: { date: request.date, time: time.time } } : {})}
         onBack={onBack}
-        onDone={(at, value) => {
-          setTime({ at, time: value });
+        onDone={(when) => {
+          setTime({ at: when.departAt, time: when.time });
           setStep('price');
         }}
       />

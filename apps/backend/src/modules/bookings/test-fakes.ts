@@ -1,6 +1,7 @@
 // Test helper: people, the bot messages and the recommended price, without Telegram and other modules.
 import type { Person } from '../users';
-import { NO_RATING, type BookingInput, type Trip } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import { earliestDepart, NO_RATING, type BookingInput, type Trip } from '@platform/contracts';
 import type { BookingsDeps, TripFacts } from './application/ports';
 import { publicIdOf } from '../../test-people';
 
@@ -105,3 +106,11 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     status: 'active',
   };
 };
+
+export const SCHEDULE = loadBrand().schedule;
+// The lead time and the limit of the brand; the road between trips is the trips module's (docs/103).
+export function scheduleCheck(departAt: number, now: number, trips: Iterable<TripFacts>, driverId: number) {
+  if (departAt < earliestDepart(now, SCHEDULE)) return 'trips.too_soon';
+  const live = [...trips].filter((trip) => trip.driverId === driverId && trip.live).length;
+  return live >= SCHEDULE.maxActiveTrips ? 'trips.too_many' : null;
+}

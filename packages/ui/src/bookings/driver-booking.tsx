@@ -8,6 +8,7 @@ import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
+import { useGoHome } from '../flow/home-context';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { confirm, haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
@@ -37,6 +38,7 @@ export function DriverBooking({ booking, onClose, onMap }: Props) {
   const { track } = useAnalytics();
   const { bookings, wallet } = useApiClients();
   const [step, setStep] = useState<Step>('view');
+  const home = useGoHome(() => onClose(true));
   // The balance next to the commission: the driver knows before tapping (docs/65 C). Less than the
   // commission: straight to the way to top up, a «Tasdiqlash» would only fail (G27).
   const [balance, setBalance] = useState<number | null>(null);
@@ -91,7 +93,7 @@ export function DriverBooking({ booking, onClose, onMap }: Props) {
   if (step === 'confirmed') {
     return (
       <StepLayout icon="selected" title={t('bookings.confirmed.title')} hint={t('bookings.confirmed.hint')}>
-        <Screen onBack={() => onClose(true)} />
+        <Screen onBack={home} />
         <MainButton text={t('way.map.title')} onClick={onMap} />
         <SecondaryButton text={t('chat.open')} onClick={() => setStep('chat')} />
       </StepLayout>

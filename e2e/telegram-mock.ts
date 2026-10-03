@@ -128,9 +128,11 @@ export function telegramEvents(page: Page, type: string): Promise<Record<string,
   );
 }
 
-// The back arrow in the Telegram header, as a person taps it.
-export function pressBack(page: Page): Promise<void> {
-  return page.evaluate(() =>
+// The back arrow in the Telegram header, as a person taps it: only when Telegram shows it (G38, docs/103).
+export async function pressBack(page: Page): Promise<void> {
+  const setups = await telegramEvents(page, 'web_app_setup_back_button');
+  if (setups.at(-1)?.is_visible !== true) throw new Error('«Назад» is hidden: a person cannot tap it');
+  await page.evaluate(() =>
     (
       window as unknown as { Telegram: { WebView: { receiveEvent: (t: string, d: unknown) => void } } }
     ).Telegram.WebView.receiveEvent('back_button_pressed', undefined),

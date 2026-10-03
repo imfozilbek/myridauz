@@ -36,7 +36,7 @@ function setup(gender: 'male' | 'female' = 'male', status: Driver['application']
 }
 
 describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
-  it('asks the route, day, time, seats, price, woman, comment and publishes', async () => {
+  it('asks the route, day and time on one screen, seats, price, comment and publishes', async () => {
     const { publishTrip, tracked } = setup();
     await chooseRoute();
     await tap('Shahar boʻylab yigʻaman');
@@ -56,7 +56,6 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     fireEvent.click(screen.getByLabelText('Oshirish'));
     expect(screen.getByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Davom etish');
-    await tap('Yoʻq');
     expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
     expect(await filled()).toBeGreaterThan(atTime);
     await tap('Izohsiz davom etish');
@@ -77,17 +76,23 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     const steps = tracked
       .filter((event) => event.name === 'trip_step')
       .map((event) => ('step' in event ? event.step : ''));
-    expect(steps).toEqual([
-      'route',
-      'mode',
-      'date',
-      'time',
-      'seats',
-      'price',
-      'woman',
-      'comment',
-      'published',
-    ]);
+    expect(steps).toEqual(['route', 'mode', 'when', 'seats', 'price', 'comment', 'published']);
+  });
+
+  // G38 (docs/103 point 8): tap the third chair, 3 seats; somebody already goes, «ayol bor» is asked.
+  it('takes the seats by the chairs and «ayol bor» on the same screen', async () => {
+    const { publishTrip } = setup();
+    await chooseRoute();
+    await tap('Shahar boʻylab yigʻaman');
+    await tap(/^Ertaga/);
+    await tap('Davom etish');
+    expect(screen.queryByText('Mashinada ayol bor')).toBeNull();
+    fireEvent.click(await screen.findByLabelText('3 ta boʻsh joy'));
+    expect(screen.getByText('3 ta boʻsh joy', { selector: '.seat-count' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('checkbox'));
+    for (const step of ['Davom etish', 'Davom etish', 'Izohsiz davom etish', 'Eʼlon qilish']) await tap(step);
+    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ seats: 3, womanOnBoard: true }));
   });
 
   it('skips the woman question for a woman driver and shows an error of the API', async () => {
@@ -112,14 +117,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     const { publishTrip } = setup('male', 'pending');
     await chooseRoute();
     await tap('Shahar boʻylab yigʻaman');
-    for (const step of [
-      /^Ertaga/,
-      'Davom etish',
-      'Davom etish',
-      'Davom etish',
-      'Yoʻq',
-      'Izohsiz davom etish',
-    ])
+    for (const step of [/^Ertaga/, 'Davom etish', 'Davom etish', 'Davom etish', 'Izohsiz davom etish'])
       await tap(step);
     expect(await screen.findByText('Ariza tasdiqlangach safarni eʼlon qila olasiz.')).toBeTruthy();
     expect(screen.queryByText('Eʼlon qilish')).toBeNull();

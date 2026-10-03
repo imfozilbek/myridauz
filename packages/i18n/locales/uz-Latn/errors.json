@@ -8,6 +8,8 @@
   "trips.request_exists": "Bu kunga shu yoʻnalishda soʻrovingiz bor.",
   "trips.price_out_of_bounds": "Narx ruxsat etilgan chegarada boʻlsin.",
   "trips.in_past": "Bu vaqt oʻtib ketgan. Keyinroq vaqtni tanlang.",
+  "trips.too_soon": "Bu vaqt juda yaqin. Keyinroq vaqtni tanlang.",
+  "trips.busy": "Bu vaqtda boshqa safaringiz bor. Boshqa vaqtni tanlang.",
   "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak.",
   "bookings.no_seats": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
   "bookings.too_many": "Javob kutayotgan soʻrovlar soni chegaraga yetdi. Haydovchilar javobini kuting.",

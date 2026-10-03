@@ -1,4 +1,4 @@
-import { MAX_ACTIVE_TRIPS, tashkentDate, type Offer, type OfferInput } from '@platform/contracts';
+import { tashkentDate, type Offer, type OfferInput } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerViews } from './offer-views';
 import type { BookingsDeps, Result } from './ports';
@@ -12,6 +12,8 @@ type OfferError =
   | 'trips.not_driver'
   | 'trips.price_out_of_bounds'
   | 'trips.too_many'
+  | 'trips.too_soon'
+  | 'trips.busy'
   | 'wallet.not_enough';
 
 // A driver offers a time on the request's day and a price within the bounds (docs/09, docs/35).
@@ -32,14 +34,19 @@ export async function sendOffer(
     return { ok: false, error: 'bookings.invalid_input' };
   const recommendation = await deps.recommend(request.from, request.to);
   if (!recommendation.ok) return { ok: false, error: 'bookings.not_found' };
-  const { minPrice, maxPrice } = recommendation.value;
+  const { km, minPrice, maxPrice } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
   if (!(await deps.wallet.canAfford(driverId, deps.wallet.commission(input.price, request.seats))))
     return { ok: false, error: 'wallet.not_enough' };
-  // An accepted offer is a new trip: the driver hears the limit now, not the passenger later.
-  if ((await deps.trips.liveCount(driverId)) >= MAX_ACTIVE_TRIPS)
-    return { ok: false, error: 'trips.too_many' };
+  // An accepted offer is a new trip: the driver hears the schedule now, not the passenger later.
+  const busy = await deps.trips.scheduleError(driverId, {
+    from: request.from,
+    to: request.to,
+    departAt: input.departAt,
+    km,
+  });
+  if (busy) return { ok: false, error: busy };
   const sent = await deps.offers.byRequests([requestId]);
   if (sent.some((offer) => offer.driverId === driverId && offerStatusAt(offer, request.open, now) === 'sent'))
     return { ok: false, error: 'bookings.wrong_status' };

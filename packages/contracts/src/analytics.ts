@@ -16,11 +16,11 @@ const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry'] as c
 export const TRIP_STEPS = [
   'route',
   'mode',
-  'date',
-  'time',
+  // The day and the time on one screen (G38, docs/103).
+  'when',
+  // The seats and «ayol bor» on one screen (G38, docs/103 point 8).
   'seats',
   'price',
-  'woman',
   'comment',
   'published',
 ] as const;

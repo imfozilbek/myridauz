@@ -33,4 +33,12 @@ export const brandConfig: BrandConfig = {
   moderation: { hours: { from: 7, to: 23 }, remindMinutes: 30, ownerMinutes: 50 },
   // docs/30: the requisites come from the admin Mini App (G34); this address answers until they do.
   company: { email: 'myrida.llc@gmail.com' },
+  // G38 (owner decisions 03.10.2026, docs/103): a trip leaves an hour after it is made at the earliest;
+  // another day opens at 08:00; at most 3 trips; gathering people takes half the road, 1 to 3 hours.
+  schedule: {
+    leadMinutes: 60,
+    defaultTime: '08:00',
+    maxActiveTrips: 3,
+    gather: { factor: 0.5, minMinutes: 60, maxMinutes: 180 },
+  },
 };
