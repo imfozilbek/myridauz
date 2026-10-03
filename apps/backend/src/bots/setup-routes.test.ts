@@ -71,10 +71,10 @@ describe('POST /telegram/setup', () => {
     await request;
     const sent = (method: string) => calls.filter((call) => call.url.endsWith(`/${method}`));
     expect(sent('setMyName').map((call) => call.body.name)).toEqual([
-      brand.name,
-      `${brand.name} Haydovchi`,
-      `${brand.name} Jamoa`,
-      `${brand.name} Yordam`,
+      `${brand.name} | yoʻlovchi`,
+      `${brand.name} | haydovchi`,
+      `${brand.name} | admin`,
+      `${brand.name} | yordam`,
     ]);
     const descriptions = sent('setMyDescription').map((call) => String(call.body.description));
     const shorts = sent('setMyShortDescription').map((call) => String(call.body.short_description));
