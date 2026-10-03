@@ -18,19 +18,19 @@ concurrency:
 jobs:
   # The unit tests in parts at once, each file still isolated: CI in a minute (docs/45).
   test:
-    name: test (${{ matrix.shard }}/11)
+    name: test (${{ matrix.shard }}/10)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/11
+      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/10
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: blob-${{ matrix.shard }}
@@ -52,11 +52,11 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      # The 11 parts of the job «test»: every report uploaded, or a part failed.
+      # The 10 parts of the job «test»: every report uploaded, or a part failed.
       - name: Wait for the test parts
         env:
           GH_TOKEN: ${{ github.token }}
-          PARTS: 11
+          PARTS: 10
         run: |
           run="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           for _ in $(seq 1 300); do
@@ -65,7 +65,7 @@ jobs:
             if [ "$failed" -gt 0 ]; then echo "a part of the tests failed"; exit 1; fi
             ready=$(gh api "${run}/artifacts?per_page=100" --jq '[.artifacts[] | select(.name | startswith("blob-"))] | length')
             if [ "$ready" -ge "$PARTS" ]; then exit 0; fi
-            sleep 2
+            sleep 1
           done
           exit 1
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
@@ -78,7 +78,7 @@ jobs:
       - name: Wait for the other gates
         env:
           GH_TOKEN: ${{ github.token }}
-          GATES: 7
+          GATES: 8
         run: |
           jobs="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100"
           gates='select(.name == "typecheck" or .name == "checks" or .name == "secrets" or .name == "brand-kit" or (.name | startswith("e2e (")))'
@@ -87,7 +87,7 @@ jobs:
             if [ "$bad" -gt 0 ]; then echo "a gate failed"; exit 1; fi
             done_ok=$(gh api "$jobs" --jq "[.jobs[] | ${gates} | select(.conclusion == \"success\")] | length")
             if [ "$done_ok" -ge "$GATES" ]; then exit 0; fi
-            sleep 2
+            sleep 1
           done
           exit 1
 
@@ -101,7 +101,8 @@ jobs:
         include:
           - { part: map, shard: 1/2 }
           - { part: map, shard: 2/2 }
-          - { part: rest, shard: 1/1 }
+          - { part: rest, shard: 1/2 }
+          - { part: rest, shard: 2/2 }
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
