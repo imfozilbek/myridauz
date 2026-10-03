@@ -37,3 +37,47 @@
 .way-change {
   color: var(--tgui--link_color);
 }
+/* The map of a point (G36, docs/100): all the room above the sheet, so nothing covers the pin. */
+.way-map {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.way-locate.way-locate {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+}
+.way-note {
+  position: absolute;
+  top: 64px;
+  left: 12px;
+  right: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--tgui--bg_color);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+}
+/* The sheet: what to do, the search and two last places. While the person searches it takes the
+   whole screen above the keyboard and leaves the last places out. Its bottom stays free for the
+   main button where Telegram draws it over the page. */
+.way-sheet {
+  display: grid;
+  gap: 4px;
+  padding: 16px 16px 80px;
+  border-radius: 16px 16px 0 0;
+  background: var(--tgui--bg_color);
+  box-shadow: 0 -4px 18px rgb(0 0 0 / 12%);
+}
+.way-sheet:has(input:focus),
+.way-sheet:has(.pickup-map-found) {
+  position: absolute;
+  inset: 0;
+  align-content: start;
+  border-radius: 0;
+  overflow-y: auto;
+}
+.way-sheet:has(.pickup-map-found) .way-recent {
+  display: none;
+}

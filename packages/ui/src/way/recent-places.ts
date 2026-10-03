@@ -14,9 +14,15 @@ export function recentPlaces(): RecentPlace[] {
   }
 }
 
+// One name in one district is one place, wherever the pin stood on it (G36, docs/100 DS2); a point
+// with no name is the same place only at the same point.
+const samePlace = (one: RecentPlace, other: RecentPlace) =>
+  one.district === other.district &&
+  (one.name && other.name
+    ? one.name.name === other.name.name
+    : one.point.lat === other.point.lat && one.point.lng === other.point.lng);
+
 export function rememberPlace(place: RecentPlace) {
-  const same = (other: RecentPlace) =>
-    other.point.lat === place.point.lat && other.point.lng === place.point.lng;
-  const next = [place, ...recentPlaces().filter((other) => !same(other))].slice(0, MAX);
+  const next = [place, ...recentPlaces().filter((other) => !samePlace(other, place))].slice(0, MAX);
   writeStored(KEY, JSON.stringify(next));
 }

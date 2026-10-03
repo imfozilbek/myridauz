@@ -40,6 +40,9 @@ export const MUROD: Person = { id: 900112, name: 'Murod', phone: '998901110112' 
 export const SHERZOD: Person = { id: 900113, name: 'Sherzod', phone: '998901110113' };
 // G35: the second trip on the route, for a passenger who went before (docs/97 K4, K5).
 export const DOSTON: Person = { id: 900114, name: 'Doston', phone: '998901110114' };
+// G36: the screen of a point, Toshkent → Guliston (docs/100): two trips, the second by the last place.
+export const ELYOR: Person = { id: 900115, name: 'Elyor', phone: '998901110115' };
+export const FARRUX: Person = { id: 900116, name: 'Farrux', phone: '998901110116' };
 export const AZIZA: Person = { id: 900231, name: 'Aziza', phone: '998901110231' };
 export const FERUZA: Person = { id: 900232, name: 'Feruza', phone: '998901110232' };
 export const MALIKA: Person = { id: 900233, name: 'Malika', phone: '998901110233' };
@@ -71,6 +74,8 @@ export const DRIVERS: readonly Driver[] = [
   { person: MUROD, plate: '01L234NO', gender: 'male' },
   { person: SHERZOD, plate: '01M345PQ', gender: 'male' },
   { person: DOSTON, plate: '01N456QR', gender: 'male' },
+  { person: ELYOR, plate: '01O567ST', gender: 'male' },
+  { person: FARRUX, plate: '01P678TU', gender: 'male' },
 ];
 export const PASSENGERS: readonly Person[] = [
   NODIRA,

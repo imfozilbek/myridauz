@@ -14,11 +14,12 @@ type Props = {
   readonly onChange?: () => void;
 };
 
-// One point of a check: what it is, where it is and «Oʻzgartirish» when it can change.
+// One point of a check: what it is, where it is and «Oʻzgartirish» when it can change. The link
+// stands under the place, so a 320 px phone keeps the label on one line (G36, docs/100).
 export function PointRow({ icon, tone = 'brand', label, text, onChange }: Props) {
   const { t } = useI18n();
   const change = onChange
-    ? { after: <Text className="way-change">{t('way.change')}</Text>, onClick: onChange }
+    ? { description: <Text className="way-change">{t('way.change')}</Text>, onClick: onChange }
     : {};
   return (
     <Cell before={<IconTile name={icon} tone={tone} />} subtitle={text} {...change}>

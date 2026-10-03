@@ -8,6 +8,8 @@ export type WayEnd = {
   readonly point: Point | null;
   readonly name: PlaceName | null;
 };
+// An end taken on the map: always at a point.
+export type PointEnd = WayEnd & { readonly point: Point };
 
 // «Chorsu bozori yaqinida», «Qatortol mahallasi», or the district (or any text) when nothing is known.
 export function useNameText() {

@@ -20,7 +20,7 @@ import { rememberPlace } from './recent-places';
 import { useWhere } from './use-where';
 import { useClip } from './use-clip';
 import { useFindMe } from './use-find-me';
-import { useNameText, type WayEnd } from './way-end';
+import { useNameText, type PointEnd, type WayEnd } from './way-end';
 import '../map/pickup-map.css';
 import './way.css';
 
@@ -41,7 +41,9 @@ type Props = {
 };
 
 // One point on the map (G24, docs/71): the pin in the middle, its name under it, the map of its
-// district only. Search, the last places and «Mening joylashuvim» move the map; «Shu yerda» takes it.
+// district only. The map fills the screen, a sheet at the bottom holds the search and the last places
+// (G36, docs/100). Search and «Mening joylashuvim» move the map, «Shu yerda» takes it; a last place is
+// taken at once.
 export function PointScreen({ title, start, find: findAny, zone, findMe = false, onBack, onPick }: Props) {
   useScreenView('way.point');
   const { t } = useI18n();
@@ -80,52 +82,61 @@ export function PointScreen({ title, start, find: findAny, zone, findMe = false,
   };
   const place = district ? find(district) : undefined;
   const outside = zone ? 'way.point.outsideZone' : 'way.point.outside';
+  // A place is taken: by «Shu yerda» under the pin, or by a last place in one tap (docs/100 DS3).
+  const pick = (end: PointEnd, how: Method) => {
+    track({ name: 'place_point_saved', screen: 'way.point', method: how });
+    rememberPlace({ point: end.point, name: end.name, district: end.place.id });
+    haptic.success();
+    onPick(end);
+  };
   const take = () => {
     // No name yet (slow internet): wait, the point is not outside (lesson 77).
     if (!view || !where) return undefined;
     if (!place) return (haptic.error(), setNote(outside));
-    const point = view.center();
-    track({ name: 'place_point_saved', screen: 'way.point', method: method.current });
-    rememberPlace({ point, name: where.name, district: place.id });
-    haptic.success();
-    return onPick({ place, point, name: where.name });
+    return pick({ place, point: view.center(), name: where.name }, method.current);
   };
   if (failed) return <MapFailed onBack={onBack} onRetry={retry} />;
   return (
     <div className="pickup-map">
       <Screen onBack={onBack} />
-      <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />
-      <div className="pickup-map-pin">
-        <Icon name="pickup" size={PIN_SIZE} color={colors.accent} filled />
-      </div>
-      <Text className="way-pin-name" role="status">
-        {asking || !where
-          ? t('way.point.finding')
-          : place
-            ? nameText(where.name, place)
-            : t(outside, { zone: zone?.name ?? '' })}
-      </Text>
-      <div className="pickup-map-top">
-        <div className="pickup-map-panel">
-          <Text weight="2">{t(title)}</Text>
-          <Caption>{t('way.point.hint')}</Caption>
-          <MapSearch
-            near={start}
-            {...(zone ? { zone: zone.id } : {})}
-            onFound={(point) => moveTo(point, 'search')}
-          />
-          <RecentList find={find} onChoose={(point) => moveTo(point, 'recent')} />
+      <div className="way-map">
+        <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />
+        <div className="pickup-map-pin">
+          <Icon name="pickup" size={PIN_SIZE} color={colors.accent} filled />
         </div>
+        <Text className="way-pin-name" role="status">
+          {asking || !where
+            ? t('way.point.finding')
+            : place
+              ? nameText(where.name, place)
+              : t(outside, { zone: zone?.name ?? '' })}
+        </Text>
         {note ? (
-          <Text className="pickup-map-panel" role="alert">
+          <Text className="way-note" role="alert">
             {t(note, { zone: zone?.name ?? '' })}
           </Text>
         ) : null}
-        <Button mode="white" size="m" before={<Icon name="locate" />} onClick={() => void locate()}>
+        <Button
+          className="way-locate"
+          mode="white"
+          size="m"
+          before={<Icon name="locate" />}
+          onClick={() => void locate()}
+        >
           {t('way.point.mine')}
         </Button>
+        <Caption className="pickup-map-credit">{t('bookings.map.credit')}</Caption>
       </div>
-      <Caption className="pickup-map-credit">{t('bookings.map.credit')}</Caption>
+      <div className="way-sheet">
+        <Text weight="2">{t(title)}</Text>
+        <Caption>{t('way.point.hint')}</Caption>
+        <MapSearch
+          near={start}
+          {...(zone ? { zone: zone.id } : {})}
+          onFound={(point) => moveTo(point, 'search')}
+        />
+        <RecentList find={find} onChoose={(end) => pick(end, 'recent')} />
+      </div>
       {view ? <MainButton text={t('way.point.here')} onClick={take} /> : null}
     </div>
   );
