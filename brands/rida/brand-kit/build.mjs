@@ -8,6 +8,7 @@ import * as motion from './lib/motion.mjs';
 import * as channels from './lib/channels.mjs';
 import * as extras from './lib/extras.mjs';
 import * as welcome from './lib/welcome.mjs';
+import { botAvatar } from './lib/avatar.mjs';
 import { C, TOKENS } from './lib/palette.mjs';
 
 const OUT = 'kit';
@@ -42,10 +43,8 @@ await asset('logo/rida-wordmark-teal', brand.wordmark(C.teal), [1480]);
 await asset('logo/rida-lockup-horizontal', brand.lockupH(), [1640]);
 await asset('logo/rida-lockup-vertical', brand.lockupV(), [1000]);
 // Telegram
-for (const r of ['passenger', 'driver', 'admin']) {
-  await asset(`telegram/bot-${r}-avatar`, brand.botAvatar(r), [640]);
-  await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
-}
+for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-avatar`, botAvatar(r), [640]);
+for (const r of ['passenger', 'driver', 'admin']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
 await asset('telegram/bot-driver-welcome', welcome.botWelcome(), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());
 for (const r of regions) {

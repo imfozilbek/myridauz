@@ -4,14 +4,13 @@
 // Usage: CHROMIUM=… pnpm bot
 import fs from 'node:fs';
 import { chromium } from 'playwright';
-import { botAvatar } from '../lib/brand.mjs';
+import { botAvatar } from '../lib/avatar.mjs';
 import { botWelcome } from '../lib/welcome.mjs';
 
 const OUT = new URL('../../landing/bot/', import.meta.url);
 const AVATAR = 640;
 const JPEG_QUALITY = 90;
-// The support bot is answered by the team: it wears the team colors.
-const AVATARS = { passenger: 'passenger', driver: 'driver', admin: 'admin', support: 'admin' };
+const ROLES = ['passenger', 'driver', 'admin', 'support'];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const page = await browser.newPage();
@@ -28,7 +27,5 @@ async function save(name, body, width, height, type) {
 
 fs.mkdirSync(OUT, { recursive: true });
 await save('driver-welcome.png', botWelcome(), 1280, 720, 'png');
-for (const [role, look] of Object.entries(AVATARS)) {
-  await save(`${role}-avatar.jpg`, botAvatar(look), AVATAR, AVATAR, 'jpeg');
-}
+for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
 await browser.close();

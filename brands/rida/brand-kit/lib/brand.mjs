@@ -55,7 +55,6 @@ const ROLES = {
   driver: { combo: 6, line: 'Safaringizga yoʻlovchi toping' },
   admin: { combo: 5, line: 'Rida Admin' }
 };
-export const botAvatar = (role) => icon(ROLES[role].combo, 'square', 640);
 
 export function botDescription(role) {
   const { bg, fg } = COMBOS[ROLES[role].combo];
