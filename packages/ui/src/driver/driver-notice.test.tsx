@@ -6,7 +6,7 @@ import { approved } from '../home/home-test-kit';
 import { renderMarket } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { DriverContext, type Driver } from './driver-context';
-import { DriverNotice } from './driver-notice';
+import { DriverApproved, DriverNotice } from './driver-notice';
 import { wallet } from '../bookings/booking-test-kit';
 
 const ACTIONS: readonly StartAction[] = [
@@ -31,7 +31,7 @@ const pending: Driver = { ...approved, application: { ...approved.application, s
 const render = (driver: Driver) =>
   renderMarket(
     <DriverContext.Provider value={driver}>
-      <StartFlow actions={ACTIONS} notice={<DriverNotice />} />
+      <StartFlow actions={ACTIONS} notice={<DriverNotice />} after={<DriverApproved />} />
     </DriverContext.Provider>,
     testClients({ wallet: { mine: async () => wallet } }),
   );
@@ -64,6 +64,9 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
     expect(bonus.textContent).toContain('481\u00a0000\u00a0soʻm');
     expect(bonus.textContent).toContain('31-oktabrgacha');
     expect(screen.queryByText('Tasdiqlangandan keyin')).toBeNull();
+    // Under the actions: the late banner pushes nothing down (G41, docs/108).
+    const action = screen.getByText('Mening safarlarim');
+    expect(action.compareDocumentPosition(bonus) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     cleanup();
     render(approved);
     expect(screen.queryByText('Ariza tasdiqlandi')).toBeNull();

@@ -1,4 +1,5 @@
 import {
+  DriverApproved,
   DriverGate,
   DriverHome,
   DriverNotice,
@@ -59,7 +60,12 @@ function DriverStart() {
     <StartFlow
       actions={ACTIONS}
       notice={<DriverNotice />}
-      after={<HomeScreenOffer />}
+      after={
+        <>
+          <DriverApproved />
+          <HomeScreenOffer />
+        </>
+      }
       home={(go) => <DriverHome go={go} />}
       {...(pending ? {} : { covered: 'new_trip' })}
     />

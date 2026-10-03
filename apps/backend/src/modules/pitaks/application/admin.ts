@@ -1,4 +1,5 @@
 import {
+  PITAK_STATUSES,
   pitakDirectionSchema,
   pitakInputSchema,
   type AdminPitak,
@@ -27,7 +28,11 @@ const text = (value: object | undefined) => (value ? JSON.stringify(value) : nul
 
 export async function allPitaks(deps: PitaksDeps) {
   const [pitaks, directions] = await Promise.all([deps.store.all(), deps.store.directions()]);
-  return { pitaks: pitaks.map(adminView), directions: directions.map(directionView) };
+  // What waits for a check by people first, the closed ones last; by region and name inside
+  // each, as the store gives them (G41, docs/90 F-A13).
+  const rank = (pitak: PitakRecord) => PITAK_STATUSES.indexOf(pitak.status);
+  const ordered = [...pitaks].sort((a, b) => rank(a) - rank(b));
+  return { pitaks: ordered.map(adminView), directions: directions.map(directionView) };
 }
 
 // A new pitak (no id) or a change of one; the region always comes from the point.

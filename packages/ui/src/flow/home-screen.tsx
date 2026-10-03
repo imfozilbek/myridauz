@@ -9,6 +9,7 @@ import { IconTile } from '../icon-tile';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useSettingsButton } from '../telegram/settings-button';
+import { HomeTop } from './home-top';
 import type { StartAction } from './start-action';
 
 type HomeScreenProps = {
@@ -38,7 +39,7 @@ export function HomeScreen({ actions, notice, after, top, onOpen, onProfile }: H
       <List>
         <ProfileCell onOpen={onProfile} />
         {notice}
-        {top}
+        <HomeTop>{top}</HomeTop>
         <Section>
           {actions.map((action) => {
             // While the application is checked, an action that waits has a muted icon and says when

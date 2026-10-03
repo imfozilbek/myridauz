@@ -56,6 +56,22 @@
   background: var(--tgui--secondary_bg_color);
 }
 
+/* The trips above the actions: sections apart as in the list; while loading, as tall as last
+   time on this phone, so the actions never move (G41, docs/108). */
+.home-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-top:empty {
+  display: none;
+}
+
+.home-top:has([aria-busy='true']) {
+  min-height: var(--home-top-height, 0);
+}
+
 /* The icon of an action that waits for the approval of a driver: muted, the text stays readable (docs/86 V7). */
 .action-waiting {
   display: grid;

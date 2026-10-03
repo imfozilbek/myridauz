@@ -7,7 +7,7 @@ const balances = (sum: (balance: BalanceKind) => number) => ({ bonus: sum('bonus
 
 export async function adminWallets(deps: WalletDeps): Promise<AdminWallets['wallets']> {
   const drivers = await deps.wallet.drivers();
-  return Promise.all(
+  const wallets = await Promise.all(
     drivers.map(async (driverId) => {
       const [operations, person] = await Promise.all([
         deps.wallet.operations(driverId),
@@ -17,4 +17,6 @@ export async function adminWallets(deps: WalletDeps): Promise<AdminWallets['wall
       return { driverId: person?.publicId ?? '', firstName: person?.firstName ?? '', ...balances(sum) };
     }),
   );
+  // The least money first: who has to top up soon is seen at once (G41, docs/90 F-A5).
+  return wallets.sort((a, b) => a.main - b.main);
 }

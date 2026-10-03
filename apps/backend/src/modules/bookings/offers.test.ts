@@ -88,4 +88,16 @@ describe('a driver offers on a request (docs/35)', () => {
     expect(await declineOffer(deps, ALI, id)).toEqual({ ok: false, error: 'bookings.not_found' });
     expect(await declineOffer(deps, DILNOZA, id)).toMatchObject({ ok: true, value: { status: 'declined' } });
   });
+
+  it('lists the offers that still wait above the answered ones (G41, docs/90 F-D10)', async () => {
+    const { deps, addRequest, bonus, setNow } = setup();
+    await bonus();
+    const older = await sendOffer(deps, DRIVER, addRequest(), offer);
+    setNow(NOW + HOUR);
+    const newer = await sendOffer(deps, DRIVER, addRequest(), offer);
+    await declineOffer(deps, DILNOZA, newer.ok ? newer.value.id : '');
+    const order = (await driverOffers(deps, DRIVER)).map((item) => item.status);
+    expect(order).toEqual(['sent', 'declined']);
+    expect((await driverOffers(deps, DRIVER))[0]?.id).toBe(older.ok ? older.value.id : '');
+  });
 });

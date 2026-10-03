@@ -7,15 +7,19 @@ import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
 
 // On the main screen of a driver: before sending, the application to fill (G34); while it is
-// checked, why some things wait; once after the approval, that it is approved and the bonus is
-// there (docs/86 V7).
+// checked, why some things wait (docs/86 V7).
 export function DriverNotice() {
   const driver = useDriver();
   const status = driver?.application.status;
   if (driver && status === 'draft') return <ApplicationCard driver={driver} />;
   if (status === 'pending') return <PendingNotice />;
-  if (status === 'approved') return <ApprovedNotice />;
   return null;
+}
+
+// Once after the approval, that it is approved and the bonus is there (docs/86 V7). Under the
+// actions: it waits for the wallet, and when it comes nothing above it moves (G41, docs/108).
+export function DriverApproved() {
+  return useDriver()?.application.status === 'approved' ? <ApprovedNotice /> : null;
 }
 
 function PendingNotice() {

@@ -132,4 +132,16 @@ describe('telling about new trips and requests (docs/24)', () => {
       error: 'subscriptions.not_found',
     });
   });
+
+  it('puts the live subscriptions above the stopped ones (G41, docs/90 F-P15)', async () => {
+    const { deps, pass } = setup();
+    const older = await subscribe(deps, 1, 'trips', { ...ROUTE, date: null });
+    pass(DAY_MS);
+    await subscribe(deps, 1, 'trips', { ...ROUTE, to: '1718233', date: null });
+    pass(30 * DAY_MS);
+    await renew(deps, 1, 'trips', older.ok ? older.value.id : '');
+    // The renewed older one is live, the newer one stopped after its 30 days.
+    const order = (await mySubscriptions(deps, 1, 'trips')).map((item) => item.to);
+    expect(order).toEqual(['1718', '1718233']);
+  });
 });
