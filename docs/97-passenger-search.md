@@ -4,7 +4,7 @@
 
 ## Как снять
 
-`pnpm stand:check e2e/stand/passenger-search.spec.ts`: около минуты, только стенд (`75`). Поездка водителя Gʻayrat Chilonzor → Samarqand на завтра создаётся в начале; путь без поездок: Chilonzor → Urganch.
+`pnpm stand:check e2e/stand/passenger-search.spec.ts`: около минуты, только стенд (`75`). Поездки водителей Gʻayrat и Doston Chilonzor → Jizzax на завтра создаются в начале (маршрут только этого сценария); путь без поездок: → Urganch.
 
 ## Путь 1: поездка нашлась (сейчас 14 экранов)
 

@@ -1,7 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
-import { SAMARQAND } from './g27-kit';
 import { DOSTON, GAYRAT } from './people';
 import { pressBack } from '../telegram-mock';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
@@ -19,9 +18,12 @@ const SEEKERS: Record<Platform, Person> = {
   ios: { id: 900794, name: 'Gulchehra', phone: '998901110794' },
 };
 
+// A route of this scenario only: no other scenario of the stand puts a trip on it (lesson 95).
+const JIZZAX = '1708401';
+
 test.beforeAll(async () => {
-  await publishTrip(GAYRAT, CHILONZOR, SAMARQAND, 'both');
-  await publishTrip(DOSTON, CHILONZOR, SAMARQAND, 'both');
+  await publishTrip(GAYRAT, CHILONZOR, JIZZAX, 'both');
+  await publishTrip(DOSTON, CHILONZOR, JIZZAX, 'both');
   for (const person of Object.values(SEEKERS)) await register('passenger', person, 'female');
 });
 
@@ -64,9 +66,9 @@ for (const platform of PLATFORMS)
     await shot('01-home');
     await first.tap(mainButton(page).filter({ hasText: TEXT.findTrip }));
     await shot('02-to-regions');
-    await first.tap(page.getByAltText('Samarqand viloyati'));
+    await first.tap(page.getByAltText('Jizzax viloyati'));
     await shot('03-to-districts');
-    await first.tap(page.getByText('Samarqand shahri', { exact: true }));
+    await first.tap(page.getByText('Jizzax', { exact: true }));
     await expect(card(page, GAYRAT.name)).toBeVisible();
     await shot('04-results');
     await first.tap(card(page, GAYRAT.name));
@@ -96,7 +98,7 @@ for (const platform of PLATFORMS)
       await expect(recent).toBeVisible({ timeout: 1000 });
     }).toPass();
     await shot('11-home-again');
-    await again.tap(page.getByText(/→ Samarqand shahri$/u).last());
+    await again.tap(page.getByText(/→ Jizzax$/u).last());
     await again.tap(card(page, DOSTON.name));
     await again.tap(mainButton(page));
     await expect(page.getByText(t('way.change')).first()).toBeVisible();
