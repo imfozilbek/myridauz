@@ -104,4 +104,5 @@
 | 99 | [99-lessons-learned-7.md](99-lessons-learned-7.md) | Журнал уроков: продолжение 7 (№101 и дальше) |
 | 100 | [100-dropoff-screen.md](100-dropoff-screen.md) | Экран точки на карте: 5 проблем, варианты A, B, C, выбран A (G36) |
 | 101 | [101-requests-review.md](101-requests-review.md) | Заявки попутчика и поиск водителя: находки с телефона R1 … R9 |
+| 102 | [102-g37-texts.md](102-g37-texts.md) | G37: новые тексты на согласие владельца |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

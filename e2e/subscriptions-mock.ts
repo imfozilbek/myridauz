@@ -1,12 +1,12 @@
 import type { Page, Route } from '@playwright/test';
 import { tripOf } from './market-mock';
 
-// Route subscriptions as the Mini Apps see them (G10): the search finds nothing, "Xabar bering".
+// Route subscriptions as the Mini Apps see them (G10): a channel post, "Obunalar".
 const CHILONZOR = '1726269';
 const DAY = 24 * 3_600_000;
 export const LINKED = tripOf('5', 'Jasur', true, 30);
 
-export async function mockSubscriptions(page: Page, emptySearch: boolean) {
+export async function mockSubscriptions(page: Page) {
   const list: object[] = [
     {
       id: 's0',
@@ -39,7 +39,4 @@ export async function mockSubscriptions(page: Page, emptySearch: boolean) {
   await page.route('**/api/*/subscriptions/*/renew', (route) => json(route, { ...list[0], expired: false }));
   // "Band qilish" in a channel opens this trip (docs/15).
   await page.route(`**/api/trips/${LINKED.id}`, (route) => json(route, LINKED));
-  if (!emptySearch) return;
-  await page.route('**/api/trips?*', (route) => json(route, { trips: [] }));
-  await page.route('**/api/driver/requests?*', (route) => json(route, { requests: [] }));
 }

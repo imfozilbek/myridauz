@@ -20,3 +20,18 @@
 | R7 | Попутчик: «Soʻrovlarim» | «145 000 soʻm» при 4 людях: за одного или за всех | Подпись цены |
 | R8 | Попутчик: «Soʻrovlarim» | «Faol» с иконкой лупы | Иконка ожидания |
 | R9 | Попутчик: пустой день | Три призыва: текст, «Xabar bering», «Soʻrov qoldirish» | Одно главное действие |
+
+## Как стало (G37)
+
+| № | Что сделано | Где в коде |
+|---|---|---|
+| R2 | Заявки водителя открываются сразу на «Bugun»; «Bugun · Ertaga · Boshqa kun» на экране; «Boshqa kun» открывает календарь; «Назад» ведёт к маршруту | `ui/market/requests-search-flow.tsx`, `requests-day.tsx` |
+| R3 | Подсказка «Yoʻlovchilar taklifingizni kutmoqda» только над заявками | `requests-day.tsx` |
+| R4 | Пустой день водителя: главная кнопка «Safar eʼlon qilish»; новая поездка берёт маршрут (если оба конца районы) и день | `requests-day.tsx`, `new-trip-flow.tsx` (`date`) |
+| R5 | Сервер отвечает `trips.request_exists` на вторую открытую заявку того же маршрута и дня. Экран: сверху `Banner` с причиной, главная кнопка «Soʻrovni ochish» открывает первую заявку | `ride-requests/application/use-cases.ts`, `ui/market/request-review.tsx`, `existing-request.tsx` |
+| R6 | Своя карточка заявки без своего фото и имени | `ui/market/request-card.tsx` (`own`) |
+| R7 | Под ценой «bir joy uchun» | `request-card.tsx` |
+| R8 | «Faol» с иконкой часов | `ui/market/fact-chips.tsx` |
+| R9 | Пустой день попутчика: только «Soʻrov qoldirish» | `ui/market/trip-results.tsx` |
+
+**Цена решения (R4, R9):** кнопка «Xabar bering» ушла с пустых дней. Подписка на маршрут осталась у закрытой поездки и в ссылке поста канала. Заявка попутчика сама зовёт водителей, поэтому второй призыв не нужен. Тексты: `102`.
