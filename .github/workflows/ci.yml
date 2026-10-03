@@ -53,20 +53,36 @@ jobs:
           include-hidden-files: true
           retention-days: 1
 
-  # The parts together: the results and the coverage rules of docs/31 over all tests.
+  # The parts together: the results and the coverage rules of docs/31 over all tests. It starts with
+  # the parts and gets ready meanwhile, so only the merge itself waits for them (CI in a minute).
   test-coverage:
     name: test:coverage
-    needs: test
-    # A failed part fails this required check too: a skipped one would count as passed (docs/34).
-    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
     steps:
-      - run: test "${{ needs.test.result }}" = success
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
+      # The 8 parts of the job «test»: every report uploaded, or a part failed.
+      - name: Wait for the parts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PARTS: 8
+        run: |
+          run="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          for _ in $(seq 1 200); do
+            failed=$(gh api "${run}/attempts/${GITHUB_RUN_ATTEMPT}/jobs?per_page=100" \
+              --jq '[.jobs[] | select(.name | startswith("test (")) | select(.conclusion == "failure" or .conclusion == "cancelled")] | length')
+            if [ "$failed" -gt 0 ]; then echo "a part of the tests failed"; exit 1; fi
+            ready=$(gh api "${run}/artifacts?per_page=100" --jq '[.artifacts[] | select(.name | startswith("blob-"))] | length')
+            if [ "$ready" -ge "$PARTS" ]; then exit 0; fi
+            sleep 3
+          done
+          exit 1
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: blob-*
@@ -75,20 +91,20 @@ jobs:
       - run: pnpm exec vitest run --merge-reports --coverage
 
   e2e-part:
-    name: e2e (${{ matrix.shard }}/2)
+    name: e2e (${{ matrix.shard }}/3)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/browser
-      - run: pnpm e2e --shard=${{ matrix.shard }}/2
+      - run: pnpm e2e --shard=${{ matrix.shard }}/3
 
   # The required check «e2e» of main: green when every part is green (docs/34).
   e2e:
