@@ -25,7 +25,11 @@ export function HomeTop({ children }: { readonly children: ReactNode }) {
   useLayoutEffect(() => {
     const node = block.current;
     if (!node) return;
-    node.style.setProperty('--home-top-height', `${remembered()}px`);
+    const height = remembered();
+    node.style.setProperty('--home-top-height', `${height}px`);
+    // The first time on this phone the height is not known: what is under the block waits the
+    // short moment of the hidden gray rows, then comes together with the trips.
+    if (height === 0) node.dataset['fresh'] = '';
     if (typeof ResizeObserver === 'undefined') return;
     // Only the real block is remembered, never the gray rows.
     const observer = new ResizeObserver(() => {

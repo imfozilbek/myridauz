@@ -26,8 +26,12 @@ const WATCH = `(() => {
       if (entry.value < ${SHIFT_MIN} || entry.hadRecentInput) continue;
       // What moved, by how much, and what stands above it: the cause is usually there.
       const what = (entry.sources || [])
-        .map((s) => name(s.node) + ' by ' + Math.round(s.currentRect.y - s.previousRect.y) + 'px under ' +
-          name(s.node && s.node.previousElementSibling) + ' at ' + Math.round(entry.startTime) + 'ms')
+        .map((s) => {
+          const [was, now] = [s.previousRect, s.currentRect];
+          const moved = [now.x - was.x, now.y - was.y, now.width - was.width, now.height - was.height].map(Math.round);
+          return name(s.node) + ' moved x,y,w,h ' + moved.join(',') + ' under ' +
+            name(s.node && s.node.previousElementSibling) + ' at ' + Math.round(entry.startTime) + 'ms';
+        })
         .join(' | ');
       found.push({ kind: 'shift', what, size: Number(entry.value.toFixed(4)) });
     }

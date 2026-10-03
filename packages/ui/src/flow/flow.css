@@ -72,6 +72,10 @@
   min-height: var(--home-top-height, 0);
 }
 
+.home-top[data-fresh]:has([aria-busy='true'][data-hidden]) ~ * {
+  visibility: hidden;
+}
+
 /* The icon of an action that waits for the approval of a driver: muted, the text stays readable (docs/86 V7). */
 .action-waiting {
   display: grid;

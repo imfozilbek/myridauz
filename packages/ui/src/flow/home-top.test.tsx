@@ -29,6 +29,16 @@ describe('the trips block of the main screen (G41, docs/108)', () => {
     );
     const block = container.querySelector<HTMLElement>('.home-top');
     expect(block?.style.getPropertyValue('--home-top-height')).toBe('150px');
+    expect(block?.hasAttribute('data-fresh')).toBe(false);
+  });
+
+  it('marks the first time on this phone, when the height is not known yet', () => {
+    const { container } = render(
+      <HomeTop>
+        <div aria-busy="true" data-hidden="" />
+      </HomeTop>,
+    );
+    expect(container.querySelector('.home-top')?.hasAttribute('data-fresh')).toBe(true);
   });
 
   it('remembers the real block, never the gray rows', () => {
