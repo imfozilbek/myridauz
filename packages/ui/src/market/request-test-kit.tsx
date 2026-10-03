@@ -1,4 +1,4 @@
-import type { MapClient } from '@platform/api-client';
+import type { MapClient, MarketClient } from '@platform/api-client';
 import type { RideRequestInput } from '@platform/contracts';
 import { vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
@@ -9,12 +9,14 @@ import { NewRequestFlow } from './new-request-flow';
 
 type Options = {
   readonly onBack?: () => void;
+  // The own requests and offers, for a request already left on the same day (G37).
+  readonly mine?: Partial<Pick<MarketClient, 'myRequests'>>;
   readonly search?: Parameters<typeof NewRequestFlow>[0]['search'];
   readonly map?: Partial<Pick<MapClient, 'pitakOf'>>;
 };
 
 // A request over a fake map (G35, docs/97): what it published.
-export function openRequest({ onBack = () => undefined, search, map = {} }: Options = {}) {
+export function openRequest({ onBack = () => undefined, search, map = {}, mine = {} }: Options = {}) {
   const publishRequest = vi.fn(async (input: RideRequestInput) => ({
     ...input,
     id: 'r1',
@@ -27,7 +29,11 @@ export function openRequest({ onBack = () => undefined, search, map = {} }: Opti
     <MapEngineContext.Provider value={async () => engine}>
       <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} />
     </MapEngineContext.Provider>,
-    testClients({ market: { recommend: async () => recommendation, publishRequest }, map: testMap(map) }),
+    testClients({
+      market: { recommend: async () => recommendation, publishRequest, ...mine },
+      bookings: { myOffers: async () => [] },
+      map: testMap(map),
+    }),
   );
   return publishRequest;
 }

@@ -12,7 +12,7 @@ afterEach(() => {
 
 // Several screens in one test: the first one loads TelegramUI, slow under coverage in CI.
 describe('a new request on a followed route (docs/83 N08)', { timeout: 20_000 }, () => {
-  it('opens the requests of that route and day, back goes to the day', async () => {
+  it('opens the requests of that route and day, back goes to the route', async () => {
     window.history.replaceState(null, '', '/?requests=1726_1730_2026-10-02');
     const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => []);
     renderMarket(
@@ -26,9 +26,10 @@ describe('a new request on a followed route (docs/83 N08)', { timeout: 20_000 },
     expect(searchRequests.mock.calls[0]?.[0]).toEqual({ from: '1726', to: '1730', date: '2026-10-02' });
     // The list is drawn first: «Orqaga» of the loading screen goes away with it, a tap there is lost.
     await screen.findByText('Bu kunga soʻrov yoʻq');
-    // Back is the day, then the route: another day is one tap away.
+    // The day is on the screen itself (G37, docs/101 R2): back is the route.
+    expect(screen.getByText('Ertaga')).toBeTruthy();
     await tap('Orqaga');
-    expect(await screen.findByText(/^Bugun/)).toBeTruthy();
+    expect(await screen.findByText('Yoʻnalish')).toBeTruthy();
   });
 
   it('starts from the route when a place is unknown; the passenger app ignores the link', async () => {

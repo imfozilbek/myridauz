@@ -40,6 +40,7 @@ export const API_ERRORS = [
   'trips.invalid_input',
   'trips.not_driver',
   'trips.too_many',
+  'trips.request_exists',
   'trips.too_many_seats',
   'trips.price_out_of_bounds',
   'trips.in_past',

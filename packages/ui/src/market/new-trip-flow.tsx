@@ -19,12 +19,14 @@ type NewTripFlowProps = {
   readonly route?: Route;
   // «Qayerga ketyapsiz?» of the main screen opens the list of the end at once (G25).
   readonly pick?: 'from' | 'to';
+  // The day of the requests the driver looked at: the day step opens on it (G37, docs/101 R4).
+  readonly date?: string;
 };
 
 // A new trip, one question per screen (docs/19): the answers of a step open the next one, «Назад»
 // shows each earlier step with its answer (docs/94 F8), a closed app comes back to it (F3).
 export function NewTripFlow(props: NewTripFlowProps) {
-  const flow = useNewTrip(props.route);
+  const flow = useNewTrip(props.route, props.date);
   return (
     <>
       <TripStepScreen {...props} flow={flow} />

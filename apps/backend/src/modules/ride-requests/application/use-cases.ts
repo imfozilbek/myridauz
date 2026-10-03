@@ -17,6 +17,7 @@ type PublishError =
   | 'trips.in_past'
   | 'trips.price_out_of_bounds'
   | 'trips.too_many'
+  | 'trips.request_exists'
   | 'locations.not_found'
   | 'locations.same_place'
   | 'locations.inside_city'
@@ -70,6 +71,11 @@ export async function publishRequest(
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
   const open = (await deps.requests.byPassenger(passengerId)).filter((request) => isOpen(request, now));
+  // One open request on one route and day: drivers see one person once (G37, docs/101 R5).
+  const same = open.some(
+    (item) => item.from === input.from && item.to === input.to && item.date === input.date,
+  );
+  if (same) return { ok: false, error: 'trips.request_exists' };
   if (open.length >= MAX_OPEN_REQUESTS) return { ok: false, error: 'trips.too_many' };
   const pointsError = await wayError(deps, input);
   if (pointsError) return { ok: false, error: pointsError };

@@ -11,7 +11,8 @@ type Status = Trip['status'] | RideRequest['status'];
 // A status has its own icon: a check only for what is done, a cross-out for what stopped.
 const STATUS_ICON: Record<Status, IconName> = {
   active: 'trip',
-  open: 'search',
+  // A request waits for the offers of drivers (G37, docs/101 R8).
+  open: 'waiting',
   full: 'passengers',
   matched: 'passengers',
   completed: 'selected',

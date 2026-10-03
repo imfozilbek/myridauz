@@ -14,7 +14,6 @@ type Props = {
   readonly from: string;
   readonly to: string;
   readonly date: string;
-  readonly woman?: boolean;
   // Opened from a channel post: the choice of the day at once.
   readonly open?: boolean;
 };
@@ -23,7 +22,7 @@ type Step = 'ask' | 'when' | 'busy' | 'done' | { readonly failed: unknown };
 
 // "Xabar bering" when the search found nothing (docs/24): the bot tells when a trip or a request
 // on this route comes. The person chooses the day, nothing to type (docs/19).
-export function NotifyMe({ from, to, date, woman = false, open = false }: Props) {
+export function NotifyMe({ from, to, date, open = false }: Props) {
   const { t, formatDate } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
@@ -32,7 +31,7 @@ export function NotifyMe({ from, to, date, woman = false, open = false }: Props)
     if (step === 'busy') return;
     setStep('busy');
     try {
-      await subscriptions.subscribe({ from, to, date: day, woman });
+      await subscriptions.subscribe({ from, to, date: day, woman: false });
       track({ name: 'route_subscribed', screen: 'market.results' });
       haptic.success();
       setStep('done');

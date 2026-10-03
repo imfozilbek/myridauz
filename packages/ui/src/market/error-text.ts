@@ -5,6 +5,8 @@ import type { TranslationKey } from '@platform/i18n';
 const EXPLAINED: readonly string[] = [
   'trips.too_many',
   'trips.too_many_seats',
+  // G37, docs/101 R5.
+  'trips.request_exists',
   'trips.price_out_of_bounds',
   'trips.in_past',
   'trips.not_driver',

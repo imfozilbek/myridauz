@@ -1,5 +1,5 @@
 import type { RideRequest } from '@platform/contracts';
-import { Button, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
+import { Button, Caption, Tappable, Text, Title } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -16,19 +16,21 @@ const PHOTO_SIZE = 40;
 
 type RequestCardProps = {
   readonly request: RideRequest;
-  readonly showStatus?: boolean;
+  // The passenger's own request: the status shows, the own face and name do not (G37, docs/101 R6).
+  readonly own?: boolean;
   // Drivers' offers waiting for the passenger's answer (docs/65 C).
   readonly offers?: number;
   readonly onOpen: () => void;
 };
 
-// One request in a list: the day and the price, A and B, who goes and how many people (docs/09).
-export function RequestCard({ request, showStatus = false, offers = 0, onOpen }: RequestCardProps) {
+// One request in a list: the day and the price of one seat, A and B, how many people and, for a
+// driver, who asks (docs/09, G37 docs/101 R7).
+export function RequestCard({ request, own = false, offers = 0, onOpen }: RequestCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { passenger } = request;
   const facts: readonly Fact[] = [
     ['passengers', t('market.request.seats', { count: String(request.seats) })],
-    ...(showStatus ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
+    ...(own ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
     ...(offers > 0 ? [['car', t('market.request.offers', { count: String(offers) })] as const] : []),
   ];
   return (
@@ -36,21 +38,26 @@ export function RequestCard({ request, showStatus = false, offers = 0, onOpen }:
       <Tappable Component="div" className="trip-card" interactiveAnimation="background" onClick={onOpen}>
         <div className="trip-card-head">
           <Text weight="2">{formatDate(noonOf(request.date))}</Text>
-          <Text weight="1" className="trip-price">
-            {formatMoney(request.price)}
-          </Text>
+          <div className="trip-price-box">
+            <Text weight="1" className="trip-price">
+              {formatMoney(request.price)}
+            </Text>
+            <Caption className="trip-price-unit">{t('market.request.perSeat')}</Caption>
+          </div>
         </div>
         <RouteView from={request.from} to={request.to} />
         <FactChips facts={facts} />
-        <div className="trip-card-foot">
-          <ProfilePhoto
-            userId={passenger.id}
-            name={passenger.firstName}
-            hasAvatar={passenger.hasAvatar}
-            size={PHOTO_SIZE}
-          />
-          <Text className="trip-card-driver">{passenger.firstName}</Text>
-        </div>
+        {own ? null : (
+          <div className="trip-card-foot">
+            <ProfilePhoto
+              userId={passenger.id}
+              name={passenger.firstName}
+              hasAvatar={passenger.hasAvatar}
+              size={PHOTO_SIZE}
+            />
+            <Text className="trip-card-driver">{passenger.firstName}</Text>
+          </div>
+        )}
       </Tappable>
     </Section>
   );

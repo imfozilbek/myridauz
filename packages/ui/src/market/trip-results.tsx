@@ -6,7 +6,6 @@ import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import type { Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
-import { NotifyMe } from '../subscriptions/notify-me';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useKeepPlace } from '../screen/keep-place';
@@ -111,7 +110,6 @@ export function TripResults(props: TripResultsProps) {
             icon="search"
             title={t('market.search.empty')}
             description={t('market.search.emptyHint')}
-            action={<NotifyMe from={route.from.id} to={route.to.id} date={date} woman={woman} />}
           />
         </FilteredEmpty>
       ) : null}
