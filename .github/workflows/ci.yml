@@ -18,19 +18,19 @@ concurrency:
 jobs:
   # The unit tests in parts at once, each file still isolated: CI in a minute (docs/45).
   test:
-    name: test (${{ matrix.shard }}/6)
+    name: test (${{ matrix.shard }}/12)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/6
+      - run: pnpm exec vitest run --coverage --reporter=blob --shard=${{ matrix.shard }}/12
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: blob-${{ matrix.shard }}
@@ -52,11 +52,11 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      # The 6 parts of the job «test»: every report uploaded, or a part failed.
+      # The 12 parts of the job «test»: every report uploaded, or a part failed.
       - name: Wait for the parts
         env:
           GH_TOKEN: ${{ github.token }}
-          PARTS: 6
+          PARTS: 12
         run: |
           run="repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           for _ in $(seq 1 200); do
@@ -93,31 +93,16 @@ jobs:
         env:
           E2E_PART: ${{ matrix.part }}
 
-  # The required check «e2e» of main: green when every part is green (docs/34).
-  e2e:
-    needs: e2e-part
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - run: test "${{ needs.e2e-part.result }}" = success
-
-  checks:
-    name: ${{ matrix.check }}
+  typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        check: [typecheck, lint, format:check, knip, check:text, audit]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
       # The types of the last run: tsc checks again only what changed (docs/45).
-      - if: matrix.check == 'typecheck'
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             .tsc
@@ -126,13 +111,40 @@ jobs:
             brands/.tsc
           key: tsc-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
           restore-keys: tsc-${{ hashFiles('pnpm-lock.yaml') }}-
-      - run: pnpm ${{ matrix.check }}
+      - run: pnpm typecheck
+
+  # The short checks share one runner and run at once; each one keeps its own log (docs/45).
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: |
+          checks="format:check lint knip check:text audit"
+          for check in $checks; do
+            (pnpm -s "$check" > "/tmp/${check}.log" 2>&1; echo $? > "/tmp/${check}.code") &
+          done
+          wait
+          failed=0
+          for check in $checks; do
+            echo "::group::${check}"
+            cat "/tmp/${check}.log"
+            echo "::endgroup::"
+            if [ "$(cat "/tmp/${check}.code")" != 0 ]; then
+              echo "::error::${check} failed"
+              failed=1
+            fi
+          done
+          exit "$failed"
 
   # Screenshots are for people (docs/33), not a gate: the deploy does not wait for them.
   screenshots:
     name: screenshots (${{ matrix.shard }}/2)
     # After the gates: the runners go to the checks first (20 at once on GitHub, docs/45).
-    needs: [test-coverage, e2e]
+    needs: [test-coverage, e2e-part]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
@@ -151,16 +163,6 @@ jobs:
           name: screenshots-${{ matrix.shard }}
           path: screenshots/
           retention-days: 14
-
-  # The required check «screenshots» of main: both parts done (docs/34).
-  screenshots-done:
-    name: screenshots
-    needs: screenshots
-    if: always()
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - run: test "${{ needs.screenshots.result }}" = success
 
   # The brand kit (docs/38): media for people, not a gate. Built only when the brand or the
   # dependencies changed; otherwise the job ends at once and CI stays within a minute (docs/45).
@@ -215,11 +217,10 @@ jobs:
           tar -xzf "${archive}" gitleaks
       - run: ./gitleaks git --no-banner --redact
 
-  # One check for the rule of main: green only when every gate is green (docs/34). When the rule asks
-  # for it alone, the small checks can share one runner.
+  # The one check of the rule of main: green only when every gate is green (docs/34).
   ci-ok:
     name: CI ok
-    needs: [checks, test-coverage, e2e, secrets, brand-kit]
+    needs: [typecheck, checks, test-coverage, e2e-part, secrets, brand-kit]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -257,10 +258,10 @@ jobs:
 
   # Production deploy (docs/32): only from main, only after every gate is green,
   # only through the Environment "production" that the owner approves. Pull requests never reach this job.
-  # The brand kit and the screenshots are media for people: the deploy does not wait for them (docs/45).
+  # The screenshots are media for people: the deploy does not wait for them (docs/45).
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.deploy == 'true'
-    needs: [checks, test-coverage, e2e, secrets, changes]
+    needs: [ci-ok, changes]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
