@@ -56,7 +56,7 @@
   "reason.plate_mismatch": "Davlat raqami rasmdagiga mos emas",
   "photo.side.hint": "Mashina toʻliq sigʻsin",
   "photo.interior.hint": "Oldingi oʻrindiqlar koʻrinsin",
-  "status.pending.explore": "Hozircha ilovani koʻrib chiqing. Tasdiqlangach safar eʼlon qilasiz va yoʻlovchilar soʻrovlarini koʻrasiz.",
+  "status.pending.explore": "Tasdiqlangach safar eʼlon qilasiz.",
   "status.pending.publish": "Ariza tasdiqlangach safarni eʼlon qila olasiz.",
   "status.pending.after": "Tasdiqlangandan keyin",
   "status.approved.title": "Ariza tasdiqlandi",
@@ -68,5 +68,5 @@
   "photos.screenHint": "Yuzingizni old kamerada, mashinani kunduzi toʻliq koʻrinadigan qilib oling.",
   "photo.face": "Yuzingiz",
   "sent.title": "Ariza yuborildi",
-  "sent.text": "Jamoamiz 1 soat ichida tekshiradi va natijani botga yozadi. Arizalarni har kuni soat {from} dan {to} gacha tekshiramiz."
+  "sent.text": "Javob 1 soat ichida botga keladi. Har kuni soat {from} dan {to} gacha tekshiramiz."
 }

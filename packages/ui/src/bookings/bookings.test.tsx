@@ -28,7 +28,7 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     expect(steps).toHaveLength(4);
     expect(steps[1]?.textContent).toMatch(/^Joy tasdiqlandi/u);
     // «The places do not change» was said before the booking, not again (G40, docs/106 C9).
-    expect(screen.queryByText(/^Bron qilingandan keyin/)).toBeNull();
+    expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     // The points fixed at the booking open in a map (docs/70).
     await tap('Olib ketish joyi');

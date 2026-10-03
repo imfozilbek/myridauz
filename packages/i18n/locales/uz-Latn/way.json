@@ -24,7 +24,7 @@
   "book.mode": "Qayerdan olib ketsin?",
   "book.pickup": "Olib ketish joyi",
   "book.dropoff": "Tushirish joyi",
-  "book.fixed": "Bron qilingandan keyin joylarni oʻzgartirib boʻlmaydi. Kerak boʻlsa, bronni bekor qilib, qaytadan bron qiling.",
+  "book.fixed": "Bron qilingach joylar oʻzgarmaydi. Kerak boʻlsa, bekor qilib, qayta bron qiling.",
   "driver.area": "{area} atrofi · +{km}\u00a0km",
   "driver.areaOnly": "{area} atrofi",
   "driver.extra": "+{km}\u00a0km",
