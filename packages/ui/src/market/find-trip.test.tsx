@@ -1,4 +1,5 @@
 import type { BookingsClient, MarketClient } from '@platform/api-client';
+import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { booking } from '../bookings/booking-test-kit';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -126,6 +127,10 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
     // K2: «Boshqa kun» opens the calendar at once.
     await tap('Boshqa kun');
     const day = screen.getByLabelText('Qaysi kuni?') as HTMLInputElement;
+    // The field is never empty (an empty date field on an iPhone is a blank bar): the day after
+    // tomorrow, the first one the chips do not have, and «Davom etish» at once.
+    expect(day.value).toBe(tashkentDate(Date.now() + 2 * DAY_MS));
+    expect(screen.getByText('Davom etish')).toBeTruthy();
     fireEvent.change(day, { target: { value: day.max } });
     await tap('Davom etish');
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(day.max));
