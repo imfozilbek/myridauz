@@ -29,10 +29,7 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   const overflow = await page.evaluate(() => {
     const right = (element: Element) => element.getBoundingClientRect().right;
     const wide = [...document.querySelectorAll<HTMLElement>('body *')].find(
-      (element) =>
-        right(element) > window.innerWidth + 1 ||
-        (element.parentElement?.classList.contains('way-card') &&
-          right(element) > right(element.parentElement) + 1),
+      (element) => right(element) > window.innerWidth + 1,
     );
     return wide ? `${wide.tagName}.${wide.className}` : null;
   });

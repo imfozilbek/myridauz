@@ -1,33 +1,3 @@
-/* The screen of the start and the end over the map (G24, docs/71). */
-.way-top {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  right: 8px;
-  display: grid;
-  /* One column as wide as the screen: a long place name wraps, never pushes the card out (N14). */
-  grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
-  justify-items: start;
-}
-.way-card {
-  justify-self: stretch;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 8px;
-  padding: 8px;
-  border-radius: 16px;
-  background: var(--tgui--bg_color);
-  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
-}
-.way-card-label {
-  padding: 0 8px;
-}
-.way-card-note {
-  padding: 0 8px;
-  color: var(--tgui--hint_color);
-}
 /* The name of the place under the pin: always in view, never under a finger. */
 .way-pin-name {
   position: absolute;
@@ -41,10 +11,6 @@
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
   text-align: center;
   pointer-events: none;
-}
-/* The list of districts stands out of the card, like a button over the map. */
-.way-list > button {
-  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
 }
 /* «Safar xaritasi» of the driver (docs/70): the map on top, the stops under it. */
 .trip-map .trip-map-box {
@@ -66,4 +32,8 @@
 .trip-map-move {
   display: flex;
   gap: 4px;
+}
+/* «Oʻzgartirish» of a kept point (G35, docs/97 K4): a link, like in Telegram settings. */
+.way-change {
+  color: var(--tgui--link_color);
 }

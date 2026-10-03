@@ -2,6 +2,7 @@ import type { Booking, BookingMode, Trip } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { ChoiceStep } from '../driver/steps/choice-step';
+import { IconTile } from '../icon-tile';
 import { BookPoint } from './book-point';
 import { BookReview } from './book-review';
 import type { BookStepName, useBooking } from './book-state';
@@ -16,34 +17,17 @@ type Props = {
   readonly onSent: (booking: Booking) => void;
 };
 
-// One step of a booking; each step shows the answer chosen before (docs/94 F8).
+// One step of a booking; each step shows the answer chosen before (docs/94 F8). The seats are in
+// the check (G35, docs/97 K3); a step opened by «Oʻzgartirish» goes back to the check.
 export function BookStep({ trip, ways, flow, onBack, onSent }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
-  const { step, seats, mode, pickup, dropoff, patch } = flow;
-  const passed = (name: 'seats' | 'mode' | 'pickup' | 'dropoff') =>
+  const { step, seats, mode, pickup, dropoff, kept, editing, patch, answer } = flow;
+  const passed = (name: 'mode' | 'pickup' | 'dropoff') =>
     track({ name: 'booking_step', screen: `bookings.${name}`, step: name });
-  const afterWay = (way: BookingMode): BookStepName => (way === 'door' ? 'pickup' : 'dropoff');
   const go = (to: BookStepName) => () => patch({ step: to });
-  const most = Math.min(trip.seatsLeft, MAX_ASKED);
-  if (step === 'seats')
-    return (
-      <ChoiceStep
-        screen="bookings.seats"
-        icon="passengers"
-        title={t('bookings.seats.title')}
-        choices={Array.from({ length: most }, (_, index) => ({
-          value: index + 1,
-          label: t('market.request.seats', { count: String(index + 1) }),
-        }))}
-        {...(seats !== null && seats <= most ? { selected: seats } : {})}
-        onBack={onBack}
-        onDone={(value) => {
-          passed('seats');
-          patch({ seats: value, step: mode ? afterWay(mode) : 'mode' });
-        }}
-      />
-    );
+  const back = (to: BookStepName | null) => (editing ? go('review') : to ? go(to) : onBack);
+  const choose = ways.length > 1 ? 'mode' : null;
   if (step === 'mode' || !mode)
     return (
       <ChoiceStep
@@ -53,27 +37,29 @@ export function BookStep({ trip, ways, flow, onBack, onSent }: Props) {
         choices={ways.map((each) => ({
           value: each,
           label: t(`way.mode.${each}`),
-          ...(each === 'pitak' && trip.pitak ? { after: trip.pitak.name } : {}),
+          before: <IconTile name={each === 'door' ? 'door' : 'pitak'} />,
+          ...(each === 'pitak' && trip.pitak ? { subtitle: trip.pitak.name } : {}),
         }))}
         {...(mode ? { selected: mode } : {})}
-        onBack={go('seats')}
+        onBack={back(null)}
         onDone={(value) => {
           passed('mode');
-          patch({ mode: value, step: afterWay(value) });
+          // «Uyimdan» always shows its point: a new one, or the kept one to check.
+          if (value === 'door') patch({ mode: value, step: 'pickup' });
+          else answer({ mode: value, pickup: null });
         }}
       />
     );
-  const beforeDropoff: BookStepName = mode === 'door' ? 'pickup' : ways.length > 1 ? 'mode' : 'seats';
-  if (step === 'pickup')
+  if (step === 'pickup' || (mode === 'door' && !pickup))
     return (
       <BookPoint
         placeId={trip.from}
         end="from"
         initial={pickup}
-        onBack={go(ways.length > 1 ? 'mode' : 'seats')}
+        onBack={back(choose)}
         onPick={(end) => {
           passed('pickup');
-          patch({ pickup: end, step: 'dropoff' });
+          answer({ pickup: end });
         }}
       />
     );
@@ -83,21 +69,27 @@ export function BookStep({ trip, ways, flow, onBack, onSent }: Props) {
         placeId={trip.to}
         end="to"
         initial={dropoff}
-        onBack={go(beforeDropoff)}
+        onBack={back(mode === 'door' ? 'pickup' : choose)}
         onPick={(end) => {
           passed('dropoff');
-          patch({ dropoff: end, step: 'review' });
+          answer({ dropoff: end });
         }}
       />
     );
+  // The start changes by the way when the trip takes both, by the map for the door alone.
+  const start: BookStepName | null = ways.length > 1 ? 'mode' : mode === 'door' ? 'pickup' : null;
   return (
     <BookReview
       trip={trip}
-      seats={seats ?? 1}
+      seats={seats}
+      most={Math.min(trip.seatsLeft, MAX_ASKED)}
       mode={mode}
       pickup={mode === 'door' ? pickup : null}
       dropoff={dropoff}
-      onBack={go('dropoff')}
+      onSeats={(value) => patch({ seats: value })}
+      {...(start ? { onStart: () => patch({ step: start, editing: true }) } : {})}
+      onDropoff={() => patch({ step: 'dropoff', editing: true })}
+      onBack={kept ? onBack : go('dropoff')}
       onSent={onSent}
     />
   );

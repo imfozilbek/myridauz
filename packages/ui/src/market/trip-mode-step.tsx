@@ -6,6 +6,7 @@ import { ChoiceStep } from '../driver/steps/choice-step';
 import { PitakMap } from '../map/pitak-map';
 import type { Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { regionOf } from '../way/way-end';
 
 type Props = {
   readonly route: Route;
@@ -23,7 +24,6 @@ export function TripModeStep({ route, selected, onBack, onDone }: Props) {
   const { map } = useApiClients();
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   useEffect(() => {
-    const regionOf = (place: Route['from']) => place.parentId ?? place.id;
     map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
   }, [map, route]);
   if (pitak === undefined) return <ScreenSkeleton onBack={onBack} />;

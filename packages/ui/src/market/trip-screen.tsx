@@ -2,17 +2,17 @@ import type { Trip } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, type ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
-import { FavoriteCell } from '../comfort/favorite-cell';
-import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Badge, Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { PersonReviews } from '../feedback/driver-reviews';
-import { RatingBadge } from '../feedback/rating-badge';
 import { Icon, type IconName } from '../icons';
+import { IconTile } from '../icon-tile';
 import { Screen } from '../screen/screen';
+import { MainButton } from '../telegram/bottom-button';
 import { ClosedTrip } from './closed-trip';
+import { otherPrice } from './other-price';
 import { RouteView } from './route-view';
+import { TripDriver } from './trip-driver';
 import { useWayFacts } from './way-line';
 import './market.css';
 
@@ -32,8 +32,6 @@ type TripScreenProps = {
   readonly children?: ReactNode;
 };
 
-const PHOTO_SIZE = 56;
-
 // Everything about one trip; a passenger books from here, its driver sees the bookings (docs/35).
 export function TripScreen(props: TripScreenProps) {
   const { trip, onBack, onCancel, onBook, onOthers, readOnly = false, own = false, children } = props;
@@ -43,7 +41,6 @@ export function TripScreen(props: TripScreenProps) {
   const wayFacts = useWayFacts();
   const day = new Date(trip.departAt);
   useEffect(() => track({ name: 'trip_open', screen: 'market.trip' }), [track]);
-  const { driver } = trip;
   const live = trip.status === 'active' || trip.status === 'full';
   // A trip on the road takes nobody: an old link or "Sevimli" shows why (docs/65 B8).
   const departed = trip.departAt <= Date.now();
@@ -54,7 +51,12 @@ export function TripScreen(props: TripScreenProps) {
       : departed
         ? t('market.trip.departed')
         : null;
-  const line = (label: string, value: string) => <Cell after={<CellValue>{value}</CellValue>}>{label}</Cell>;
+  const line = (icon: IconName, label: string, value: string) => (
+    <Cell before={<IconTile name={icon} />} after={<CellValue>{value}</CellValue>}>
+      {label}
+    </Cell>
+  );
+  const recommended = otherPrice(trip);
   // A fact of the way with its icon, like on the cards (docs/88 L15).
   const fact = (icon: IconName, text: string) => (
     <Cell
@@ -80,11 +82,11 @@ export function TripScreen(props: TripScreenProps) {
           <div className="route-summary">
             <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
           </div>
-          {line(t('market.review.seats'), String(trip.seatsLeft))}
-          {line(t('market.review.price'), formatMoney(trip.price))}
-          {trip.recommendedPrice === null
+          {line('seats', t('market.review.seats'), String(trip.seatsLeft))}
+          {line('price', t('market.review.price'), formatMoney(trip.price))}
+          {recommended === null
             ? null
-            : line(t('market.trip.recommended'), formatMoney(trip.recommendedPrice))}
+            : line('statistics', t('market.trip.recommended'), formatMoney(recommended))}
           {trip.woman ? fact('profile', t('market.search.woman')) : null}
           {wayFacts(trip).map(([icon, text]) => fact(icon, text))}
           {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
@@ -104,28 +106,7 @@ export function TripScreen(props: TripScreenProps) {
             </Cell>
           ) : null}
         </Section>
-        {own ? null : (
-          <>
-            <Section header={t('market.trip.driver')}>
-              <Cell
-                before={
-                  <ProfilePhoto
-                    userId={driver.id}
-                    name={driver.firstName}
-                    hasAvatar={driver.hasAvatar}
-                    size={PHOTO_SIZE}
-                  />
-                }
-                subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
-                after={<RatingBadge rating={driver.rating} />}
-              >
-                {driver.firstName}
-              </Cell>
-            </Section>
-            {onBook && !readOnly ? <FavoriteCell driverId={driver.id} screen="market.trip" /> : null}
-            <PersonReviews userId={driver.id} />
-          </>
-        )}
+        {own ? null : <TripDriver trip={trip} favorite={Boolean(onBook) && !readOnly} />}
         {children}
       </List>
       <div className="step-note">
@@ -134,11 +115,8 @@ export function TripScreen(props: TripScreenProps) {
             {t('market.trip.cancel')}
           </Button>
         ) : null}
-        {onBook && !readOnly && !closed ? (
-          <Button size="l" stretched onClick={onBook}>
-            {t('market.trip.book')}
-          </Button>
-        ) : null}
+        {/* «Joy band qilish» is the main button of Telegram, as everywhere (G35, docs/97 PS9). */}
+        {onBook && !readOnly && !closed ? <MainButton text={t('market.trip.book')} onClick={onBook} /> : null}
         {onBook && !readOnly && closed ? (
           <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
         ) : null}

@@ -4,6 +4,9 @@
   "date.tomorrow": "Ertaga, {date}",
   "date.other": "{date}, {weekday}",
   "date.otherDay": "Boshqa kun",
+  "day.today": "Bugun",
+  "day.tomorrow": "Ertaga",
+  "recent": "Oldingi yoʻnalishlar",
   "time.title": "Soat nechada joʻnaysiz?",
   "time.hint": "Toshkent vaqti bilan",
   "seats.title": "Nechta boʻsh joy bor?",
@@ -83,6 +86,6 @@
   "trip.closed.cancelled": "Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.",
   "trip.closed.completed": "Bu safar tugagan.",
   "trip.others": "Shu kungi boshqa safarlar",
-  "request.review.hint": "Haydovchilar vaqt va narx taklif qiladi.",
+  "request.review.hint": "Haydovchilar narxingizni koʻradi va oʻz vaqti hamda narxini taklif qiladi.",
   "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx."
 }

@@ -9,6 +9,16 @@ import { keepValue, keptValue } from '../screen/list-memory';
 // The results of a search come back after a trip is opened and closed (docs/94 F2): the same trips
 // at once, refreshed quietly; the search is counted once, not on every return.
 export const RESULTS = 'market.results';
+const keyOf = (from: string, to: string, date: string, woman: boolean) =>
+  `${RESULTS}:${from}:${to}:${date}:${woman ? 'woman' : 'all'}`;
+// Trips just found for the first day (G35, docs/97 K2): the list shows them without a new load.
+const fresh = new Set<string>();
+
+export function keepFound(route: Route, date: string, trips: Trip[]) {
+  const key = keyOf(route.from.id, route.to.id, date, false);
+  keepValue(key, trips);
+  fresh.add(key);
+}
 
 export function useTripSearch(route: Route, date: string, woman: boolean) {
   const { market } = useApiClients();
@@ -17,7 +27,7 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
     () => ({ from: route.from.id, to: route.to.id, date, ...(woman ? { woman: '1' as const } : {}) }),
     [route, date, woman],
   );
-  const memory = `${RESULTS}:${search.from}:${search.to}:${date}:${woman ? 'woman' : 'all'}`;
+  const memory = keyOf(search.from, search.to, date, woman);
   const [trips, setTrips] = useState<Trip[] | null>(() => keptValue<Trip[]>(memory) ?? null);
   const [failed, setFailed] = useState(false);
   // A late answer of the search before a filter change never replaces the current one.
@@ -35,27 +45,30 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
       ),
     [market, search, memory, take],
   );
+  const counted = useCallback(
+    (found: Trip[]) =>
+      track({ name: 'trip_search', screen: 'market.results', result: found.length > 0 ? 'found' : 'empty' }),
+    [track],
+  );
   const load = useCallback(() => {
     setFailed(false);
     setTrips(null);
     market.searchTrips(search).then(
       (found) => {
-        track({
-          name: 'trip_search',
-          screen: 'market.results',
-          result: found.length > 0 ? 'found' : 'empty',
-        });
+        counted(found);
         take(memory, found);
       },
       () => {
         if (current.current === memory) setFailed(true);
       },
     );
-  }, [market, search, memory, take, track]);
+  }, [market, search, memory, take, counted]);
   useEffect(() => {
     const kept = keptValue<Trip[]>(memory);
     if (!kept) return load();
     setTrips(kept);
+    // Just found by the first day: counted here, once, and not asked again.
+    if (fresh.delete(memory)) return counted(kept);
     void refresh();
     // A new search only when the filter or the route changes, not on a new loader.
   }, [memory]);

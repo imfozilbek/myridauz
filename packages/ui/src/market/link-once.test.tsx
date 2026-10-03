@@ -54,6 +54,6 @@ describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
 
   it('a search of the landing', async () => {
     window.history.replaceState(null, '', '/#tgWebAppStartParam=find_9999_1730');
-    await openTwice(FindLink, 'Qayerdan');
+    await openTwice(FindLink, 'Qayerga borasiz?');
   });
 });

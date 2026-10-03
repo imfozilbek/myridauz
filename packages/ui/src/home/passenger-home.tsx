@@ -13,6 +13,7 @@ import { Screen } from '../screen/screen';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { nextBookings } from './home-items';
+import { RecentRoutesSection } from './recent-routes-section';
 import { useHomeTap } from './use-home-tap';
 
 // The main screen of a passenger (G25): the nearest bookings, or «Qayerga borasiz?» with the start
@@ -45,30 +46,43 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
   if (failed) return <HomeFailed onRetry={retry} />;
   if (!value) return <HomeLoading lines={[false, false]} />;
   const shown = nextBookings(value);
+  const directory = places.status === 'ready' ? places.directory : null;
+  const recent = directory ? (
+    <RecentRoutesSection
+      directory={directory}
+      onOpen={(route) => tap('item', () => go('find_trip', { route }))()}
+    />
+  ) : null;
   if (shown.length === 0)
     return (
-      <AskWay
-        directory={places.status === 'ready' ? places.directory : null}
-        onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
-        onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
-      />
+      <>
+        <AskWay
+          directory={directory}
+          onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
+          onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
+        />
+        {recent}
+      </>
     );
   // The names of the places come from the directory: without it the rows cannot be read.
   if (places.status === 'error') return <HomeFailed onRetry={retry} />;
   if (places.status === 'loading') return <HomeLoading lines={shown.map(() => true)} />;
   return (
-    <HomeTrips
-      rows={shown.map((booking) => ({
-        id: booking.id,
-        from: booking.trip.from,
-        to: booking.trip.to,
-        departAt: booking.trip.departAt,
-        detail: t(`bookings.status.${booking.status}`),
-        done: booking.status === 'confirmed',
-      }))}
-      directory={places.directory}
-      onOpen={(id) => tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id } }))()}
-    />
+    <>
+      <HomeTrips
+        rows={shown.map((booking) => ({
+          id: booking.id,
+          from: booking.trip.from,
+          to: booking.trip.to,
+          departAt: booking.trip.departAt,
+          detail: t(`bookings.status.${booking.status}`),
+          done: booking.status === 'confirmed',
+        }))}
+        directory={places.directory}
+        onOpen={(id) => tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id } }))()}
+      />
+      {recent}
+    </>
   );
 }
 

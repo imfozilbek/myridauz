@@ -16,10 +16,12 @@ type DateStepProps = {
   readonly initial?: string;
   readonly onBack: () => void;
   readonly onDone: (date: string) => void;
+  // «Boshqa kun» of the results (G35, docs/97 K2): the calendar at once, «Назад» to the results.
+  readonly calendar?: boolean;
 };
 
 // "Bugun", "Ertaga" by one tap; any other day from the phone calendar (docs/19).
-export function DateStep({ now, initial, onBack, onDone }: DateStepProps) {
+export function DateStep({ now, initial, onBack, onDone, calendar: only = false }: DateStepProps) {
   useScreenView('market.date');
   const { t } = useI18n();
   const dayLabel = useDayLabel();
@@ -27,7 +29,7 @@ export function DateStep({ now, initial, onBack, onDone }: DateStepProps) {
   const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
   const known = initial && initial >= first && initial <= last ? initial : null;
   const listed = known === first || known === tomorrow(now) ? known : null;
-  const [calendar, setCalendar] = useState(known !== null && listed === null);
+  const [calendar, setCalendar] = useState(only || (known !== null && listed === null));
   const [other, setOther] = useState(listed === null ? (known ?? '') : '');
   const choose = (date: string) => {
     haptic.select();
@@ -36,7 +38,7 @@ export function DateStep({ now, initial, onBack, onDone }: DateStepProps) {
   const tick = (date: string) => (date === listed ? { after: <Icon name="selected" /> } : {});
   return (
     <StepLayout icon="trip" title={t('market.date.title')}>
-      <Screen onBack={calendar ? () => setCalendar(false) : onBack} />
+      <Screen onBack={calendar && !only ? () => setCalendar(false) : onBack} />
       <List>
         <Section>
           {calendar ? (

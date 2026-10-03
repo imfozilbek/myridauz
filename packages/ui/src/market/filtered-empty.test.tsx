@@ -3,7 +3,7 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
-import { chooseRoute, renderMarket, tap, trip } from './market-test-kit';
+import { quickRoute, renderMarket, tap, trip } from './market-test-kit';
 
 afterEach(cleanup);
 
@@ -14,8 +14,7 @@ describe('a search emptied by a filter says so (docs/89 P6)', () => {
     // «Mashinada ayol bor» is asked from the server: without it there is one trip, at a pitak.
     const searchTrips = vi.fn<MarketClient['searchTrips']>(async (search) => (search.woman ? [] : [atPitak]));
     renderMarket(<FindTripFlow onBack={() => undefined} />, testClients({ market: { searchTrips } }));
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     expect(await screen.findByText('Jasur')).toBeTruthy();
     fireEvent.click(screen.getByRole('checkbox', { name: 'Uyimdan olib ketsin' }));
     expect(await screen.findByText('Filtr 1 ta safarni yashirdi')).toBeTruthy();
@@ -33,8 +32,7 @@ describe('a search emptied by a filter says so (docs/89 P6)', () => {
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { searchTrips: async () => [] } }),
     );
-    await chooseRoute();
-    await tap(/^Bugun/);
+    await quickRoute();
     expect(await screen.findByText('Bu kunga safar topilmadi')).toBeTruthy();
     expect(screen.queryByText('Filtrni oʻchirish')).toBeNull();
   });
