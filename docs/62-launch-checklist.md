@@ -8,20 +8,22 @@
 |---|---|
 | e2e главных сценариев: регистрация, заявка водителя и одобрение, поездка, поиск и бронь, чат, отмена, отзыв, жалоба | `e2e/smoke.spec.ts`, `drivers.spec.ts`, `market.spec.ts`, `bookings.spec.ts`, `launch.spec.ts` |
 | Расчёт нагрузки на 2 000 активных | `61` |
-| Имя, описание и короткое описание 3 ботов | `setup-bots` ставит их сам, тексты в `bot.json` |
+| Имя, описание, короткое описание и аватар 4 ботов | `setup-bots` ставит их сам, тексты в `bot.json` |
 
-## Профиль ботов в BotFather (делает владелец)
+## Профиль ботов (решения владельца 03.10.2026)
 
-Код ставит имя, тексты и **аватар** (G34: `setMyProfilePhoto`, файлы `brands/rida/landing/bot/<бот>-avatar.jpg`). Руками в BotFather (`/mybots` → бот → Edit Bot) только то, чего нет в API Telegram:
+Код ставит имя, тексты и **аватар** (`setup-bots`: `setMyName`, `setMyDescription`, `setMyProfilePhoto`). Аватар: R и знак роли, у поддержки свои цвета (`brands/rida/brand-kit/lib/avatar.mjs`, файлы `brands/rida/landing/bot/<бот>-avatar.jpg`). Руками в BotFather (`/mybots` → бот) только то, чего нет в API Telegram:
 
-| Бот | Картинка описания (Edit Description Picture) | Экран загрузки Mini App |
-|---|---|---|
-| `@myrida_bot` | `kit/telegram/bot-passenger-description.png` | `kit/telegram/miniapp-splash.svg` |
-| `@myrida_haydovchi_bot` | `bot-driver-description.png` | тот же файл |
-| `@myrida_admin_bot` | `bot-admin-description.png` | нет Mini App в меню |
+| Бот | Имя (код) | Знак на аватаре | Картинка описания (Edit Bot → Edit Description Picture) | Экран загрузки (Bot Settings → Configure Mini App) |
+|---|---|---|---|---|
+| `@myrida_bot` | Rida \| yoʻlovchi | человек | `bot-passenger-description.png` | `miniapp-splash.svg`, фон `#FFFFFF`, знак `#14B8A6` |
+| `@myrida_haydovchi_bot` | Rida \| haydovchi | машина | `bot-driver-description.png` | тот же файл, знак `#F59E0B` |
+| `@myrida_admin_bot` | Rida \| admin | щит | `bot-admin-description.png` | нет Mini App в меню |
+| `@myrida_support_bot` | Rida \| yordam | наушники | `bot-support-description.png` | нет Mini App |
 
-- Файлы: `brands/rida/brand-kit/kit/` (собирается `pnpm build` бренд-пакета, `38`).
-- Экран загрузки: BotFather → бот → Bot Settings → Configure Mini App → Loading screen. Если BotFather не принял SVG: сказать Claude (урок №20).
+- Файлы: `brands/rida/brand-kit/kit/telegram/` (собирается `pnpm build` бренд-пакета, `38`).
+- Тексты и имена меняются только в коде (`bot.json`), иначе `setup-bots` вернёт старые.
+- Если BotFather не принял SVG: сказать Claude (урок №20).
 
 ## Ждёт бета-теста (OPS-04, неделя 16)
 

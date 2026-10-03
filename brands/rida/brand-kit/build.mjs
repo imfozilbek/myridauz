@@ -44,7 +44,7 @@ await asset('logo/rida-lockup-horizontal', brand.lockupH(), [1640]);
 await asset('logo/rida-lockup-vertical', brand.lockupV(), [1000]);
 // Telegram
 for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-avatar`, botAvatar(r), [640]);
-for (const r of ['passenger', 'driver', 'admin']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
+for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
 await asset('telegram/bot-driver-welcome', welcome.botWelcome(), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());
 for (const r of regions) {
