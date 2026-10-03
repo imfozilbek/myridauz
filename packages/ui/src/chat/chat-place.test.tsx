@@ -30,11 +30,12 @@ const message = (id: number, author: 'me' | 'other', text = `Xabar ${id}`): Chat
   at: id,
 });
 // The page is long: 3000 px, the person sees 700 of them from y.
-const scrollAt = (y: number) => {
+// event: false is a scroll the browser has not reported yet, while the new message comes (G38).
+const scrollAt = (y: number, event = true) => {
   Object.defineProperty(document.documentElement, 'scrollHeight', { value: 3000, configurable: true });
   Object.defineProperty(window, 'innerHeight', { value: 700, configurable: true });
   Object.defineProperty(window, 'scrollY', { value: y, configurable: true });
-  fireEvent.scroll(window);
+  if (event) fireEvent.scroll(window);
 };
 
 async function openChat() {
@@ -62,6 +63,15 @@ describe('the chat stays where the person reads (docs/94 F10, S5, C3)', () => {
     scrollAt(2250);
     act(() => socket.receive({ type: 'message', message: message(28, 'other') }));
     expect(toEnd).toHaveBeenCalledTimes(3);
+  });
+
+  it('F10: the place is read when the message comes, not from the last scroll event', async () => {
+    const { socket } = await openChat();
+    const older = Array.from({ length: 25 }, (_, index) => message(index + 1, 'other'));
+    act(() => socket.receive({ type: 'history', messages: older, canCall: false }));
+    scrollAt(0, false);
+    act(() => socket.receive({ type: 'message', message: message(26, 'other') }));
+    expect(toEnd).toHaveBeenCalledOnce();
   });
 
   it('S5: the messages keep room for the input as tall as it is now', async () => {
