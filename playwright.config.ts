@@ -7,6 +7,12 @@ const FAKE_CAMERA = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-me
 const CI = !!process.env['CI'];
 // The screens wait for the network, not for the processor: 4 phones at once on a 4-core runner.
 const CI_WORKERS = 4;
+// The e2e of the map are the longest: in CI they run as a part of their own, the rest as the other
+// part, so both parts end together (docs/45). Every other file is in «rest» by itself.
+const MAP_SPEC = 'map.spec.ts';
+const PART = process.env['E2E_PART'];
+const SMOKE_PART =
+  PART === 'map' ? { testMatch: [MAP_SPEC] } : PART === 'rest' ? { testIgnore: [MAP_SPEC] } : {};
 
 export default defineConfig({
   testDir: 'e2e',
@@ -29,6 +35,7 @@ export default defineConfig({
         'map.spec.ts',
         'home.spec.ts',
       ],
+      ...SMOKE_PART,
     },
     {
       name: 'screenshots',
