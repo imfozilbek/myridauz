@@ -47,6 +47,8 @@ export const TEXT = {
   retake: t('drivers.photo.retake'),
   send: t('drivers.review.send'),
   pending: t('drivers.status.pending.title'),
+  // The note on the main screen while the application is checked (G53).
+  check: t('home.check.title'),
   photoFront: t('drivers.photo.front'),
   plate: t('drivers.review.plate'),
   photos: t('drivers.photos.title'),

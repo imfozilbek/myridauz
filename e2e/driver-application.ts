@@ -61,6 +61,6 @@ export async function applyAsDriver(page: Page, shot: Shot = async () => undefin
   await expect(page.getByText(TEXT.sent)).toBeVisible();
   await shot('6-sent');
   await mainButton.click();
-  await expect(page.getByText(TEXT.pending)).toBeVisible();
+  await expect(page.getByText(TEXT.check)).toBeVisible();
   await shot('7-pending');
 }
