@@ -56,7 +56,7 @@ test('driver: looks around while the application is checked', async ({ page }) =
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   const shot = shooter(page, 'driver-pending');
-  await expect(page.getByText(TEXT.pending)).toBeVisible();
+  await expect(page.getByText(TEXT.check)).toBeVisible();
   await shot('1-home');
   await page.getByText(TEXT.passengerRequests, { exact: true }).click();
   await expect(page.getByText(TEXT.pendingRequests)).toBeVisible();
