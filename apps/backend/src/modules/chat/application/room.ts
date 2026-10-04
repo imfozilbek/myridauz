@@ -14,7 +14,7 @@ const HISTORY = 100;
 // The bot says "Yangi xabar" at most once in this time per person and chat: no flood.
 const NOTIFY_PAUSE_MS = 5 * 60 * 1000;
 // One person sends at most this many messages a minute: a flood never reaches the other side (G42).
-export const MAX_PER_MINUTE = 20;
+export const MAX_PER_MINUTE = 30;
 const MINUTE_MS = 60 * 1000;
 // Every third hidden contact from one person reaches the moderators (docs/07, docs/17).
 const ATTEMPTS_STEP = 3;
