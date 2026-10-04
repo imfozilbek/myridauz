@@ -8,7 +8,7 @@
 
 | Ключ | Текст | Часы (Ташкент) |
 |---|---|---|
-| `market.filter.dayPart.any` | Istalgan vaqt | весь день |
+| `market.filter.dayPart.any` | Istalgan | весь день |
 | `market.filter.dayPart.morning` | Ertalab | 05:00 … 11:59 |
 | `market.filter.dayPart.day` | Kunduzi | 12:00 … 16:59 |
 | `market.filter.dayPart.evening` | Kechqurun | 17:00 … 04:59 |
@@ -34,6 +34,6 @@
 
 ## Почему так
 
-- X1: «Ertalab, Kunduzi, Kechqurun» уже в G29 (`90`, F-P6); «Istalgan vaqt» как «Istalgan kun» в подписках.
+- X1: «Ertalab, Kunduzi, Kechqurun» уже в G29 (`90`, F-P6); «Istalgan» как «Istalgan kun» в подписках; «Istalgan vaqt» не помещается на 360 px.
 - X2: «olib ketish» как в «Olib ketish joyi»; без «uyim/uyingiz», чтобы не путать, кто говорит.
 - X3: «daqiqadan beri kutmoqda» как в боте команды; одна форма для всех.

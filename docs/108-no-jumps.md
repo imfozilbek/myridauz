@@ -55,7 +55,7 @@
 
 | № | Где | Что |
 |---|---|---|
-| F-P6 | Результаты поиска | Часть дня: Istalgan vaqt, Ertalab, Kunduzi, Kechqurun (часы по Ташкенту) |
+| F-P6 | Результаты поиска | Часть дня: Istalgan, Ertalab, Kunduzi, Kechqurun (часы по Ташкенту) |
 | F-D5 | Заявки попутчиков у водителя | Как забрать: Uyidan olib ketish, Pitakdan olib ketish, Uyidan yoki pitakdan |
 | F-A2 | «Arizalar» в админке | Число в заголовке и сколько минут ждёт каждая заявка |
 

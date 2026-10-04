@@ -30,10 +30,10 @@ export function QueueView({ queue, title, onOpen, onBack, onRefresh }: QueueView
   useListPlace(QUEUE, true);
   useKeepPlace(queue);
   const [now] = useState(Date.now);
-  // How long each one waits, as the bot tells the team (G41, docs/90 F-A2).
+  // How long each one waits, as the bot tells the team; a fresh one says 1 (G41, docs/90 F-A2).
   const waiting = (application: ApplicationSummary) =>
     t('moderation.queue.waiting', {
-      minutes: String(Math.floor((now - application.submittedAt) / MINUTE_MS)),
+      minutes: String(Math.max(1, Math.floor((now - application.submittedAt) / MINUTE_MS))),
     });
   if (queue.length === 0) {
     return (
