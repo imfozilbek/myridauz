@@ -53,9 +53,30 @@ const statsOf = (period: string) => {
       },
     ],
     errors: [
-      { app: 'driver', screen: 'market.review', code: 'trips.too_many', count: 7 * week },
-      { app: 'passenger', screen: 'bookings.review', code: 'bookings.no_seats', count: 4 * week },
-      { app: 'passenger', screen: 'app', code: 'render', count: 1 },
+      {
+        kind: 'refusal',
+        app: 'driver',
+        screen: 'market.review',
+        code: 'trips.too_many',
+        what: '',
+        count: 7 * week,
+      },
+      {
+        kind: 'refusal',
+        app: 'passenger',
+        screen: 'bookings.review',
+        code: 'bookings.no_seats',
+        what: '',
+        count: 4 * week,
+      },
+      {
+        kind: 'crash',
+        app: 'passenger',
+        screen: 'home',
+        code: 'render',
+        what: 'TypeError: x is undefined',
+        count: 1,
+      },
     ],
     at: Date.now(),
   };

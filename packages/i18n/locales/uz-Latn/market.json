@@ -51,6 +51,8 @@
   "trip.driver": "Haydovchi",
   "trip.car": "Mashina",
   "trip.book": "Joy band qilish",
+  "trip.yours": "Bu sizning safaringiz.",
+  "trip.asked": "Bu safarda joyingiz bor.",
   "trip.cancel": "Safarni bekor qilish",
   "trip.cancelled": "Safar bekor qilindi",
   "status.active": "Faol",

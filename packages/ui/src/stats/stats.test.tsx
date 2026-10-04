@@ -16,7 +16,12 @@ describe('Statistika of the team (docs/29)', () => {
     expect(screen.getByText('24')).toBeTruthy();
     expect(screen.getByText('Yoʻlovchi yoʻli')).toBeTruthy();
     expect(screen.getByText('60% ketdi')).toBeTruthy();
-    expect(screen.getByText('trips.too_many')).toBeTruthy();
+    // Crashes first with what broke; a refusal of a rule below, in the words people read (G52).
+    const crashes = screen.getByText('Ilova buzilishlari');
+    const refusals = screen.getByText('Rad etilgan amallar');
+    expect(crashes.compareDocumentPosition(refusals) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText('TypeError: x is undefined')).toBeTruthy();
+    expect(screen.getByText('Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.')).toBeTruthy();
     expect(screen.getByText('Haydovchi · market.review')).toBeTruthy();
     await tap('7 kun');
     expect(await screen.findByText('158')).toBeTruthy();
@@ -29,6 +34,6 @@ describe('Statistika of the team (docs/29)', () => {
     expect(
       await screen.findByText('Voronka va xatolarni koʻrish uchun analitika kaliti kerak.'),
     ).toBeTruthy();
-    expect(screen.queryByText('Xatolar')).toBeNull();
+    expect(screen.queryByText('Ilova buzilishlari')).toBeNull();
   });
 });

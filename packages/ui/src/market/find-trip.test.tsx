@@ -57,7 +57,9 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
   });
 
   it('books with the point at the door inside Toshkent and the point at home inside the end', async () => {
-    const book = vi.fn<BookingsClient['book']>(async () => booking);
+    // The seat is asked only by this booking: before it the trip offers «Joy band qilish» (G52).
+    let asked = false;
+    const book = vi.fn<BookingsClient['book']>(async () => ((asked = true), booking));
     const map = fakeMap();
     const search = vi.fn<NonNullable<ReturnType<typeof testMap>['search']>>(async () => [CHORSU]);
     const { tracked } = renderMarket(
@@ -66,7 +68,7 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
       </MapEngineContext.Provider>,
       testClients({
         market: { searchTrips: async () => [trip], myRequests: async () => [] },
-        bookings: { book, myBookings: async () => [booking], myOffers: async () => [] },
+        bookings: { book, myBookings: async () => (asked ? [booking] : []), myOffers: async () => [] },
         map: testMap({ search }),
       }),
     );

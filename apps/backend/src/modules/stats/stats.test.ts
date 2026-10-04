@@ -64,8 +64,8 @@ describe('readStats (docs/29)', () => {
       { step: 'searched', count: 1, drop: 50 },
     ]);
     expect(day.errors).toEqual([
-      { app: 'driver', screen: 'market.review', code: 'trips.too_many', count: 2 },
-      { app: 'passenger', screen: 'market.results', code: 'render', count: 1 },
+      { kind: 'refusal', app: 'driver', screen: 'market.review', code: 'trips.too_many', what: '', count: 2 },
+      { kind: 'crash', app: 'passenger', screen: 'market.results', code: 'render', what: '', count: 1 },
     ]);
     expect((await readStats(deps, 'week')).funnels[0]?.steps[0]?.count).toBe(3);
     const before = queries();

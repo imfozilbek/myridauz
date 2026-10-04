@@ -10,6 +10,7 @@ import { TripWhen } from './trip-when';
 import { PlacesGate } from './places-gate';
 import { TripPublish } from './trip-publish';
 import { SeatsStep } from './seats-step';
+import { TripLimitScreen, useTripLimitReached } from './trip-limit';
 import { CommentStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
 import { completeDraft, type TripAgain } from './trip-draft';
@@ -29,6 +30,8 @@ type NewTripFlowProps = {
 // shows each earlier step with its answer (docs/94 F8), a closed app comes back to it (F3).
 export function NewTripFlow(props: NewTripFlowProps) {
   const flow = useNewTrip(props.route, props.date, props.again);
+  const limitReached = useTripLimitReached();
+  if (limitReached) return <TripLimitScreen onBack={props.onBack} />;
   return (
     <>
       <TripStepScreen {...props} flow={flow} />

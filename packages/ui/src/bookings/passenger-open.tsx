@@ -1,5 +1,6 @@
 import type { Booking, Offer, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
+import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -19,6 +20,9 @@ import { TripTools, withTold } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 
+const isStale = (caught: unknown) =>
+  caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));
+
 export type Opened =
   | { readonly kind: 'booking'; readonly booking: Booking }
   | { readonly kind: 'request'; readonly request: RideRequest };
@@ -29,11 +33,13 @@ type Props = {
   // The offer of a bot button opens at once (G40, docs/106 K6).
   readonly offerId?: string;
   readonly onClose: (changed: boolean) => void;
+  // A seat or a request changed meanwhile: the parent loads it again at once (G52, docs/112).
+  readonly onStale?: () => void;
 };
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, offerId: linked, onClose }: Props) {
+export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStale }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
@@ -55,6 +61,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose }: Prop
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught));
+      if (isStale(caught)) onStale?.();
     }
   };
   const open = (next: Offer | null) => {

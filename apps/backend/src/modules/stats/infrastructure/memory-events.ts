@@ -37,12 +37,15 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
     topErrors: async (days) =>
       group(
         recent(days * DAY).filter(isError),
-        ({ blobs }) => [blobs[1], blobs[2], blobs[5]].join('|'),
+        ({ blobs }) => [blobs[0], blobs[1], blobs[2], blobs[5], blobs[6], blobs[7]].join('|'),
         (same): ErrorRow =>
           toErrorRow({
+            name: same[0]?.blobs[0] ?? '',
             app: same[0]?.blobs[1] ?? '',
             screen: same[0]?.blobs[2] ?? '',
             code: same[0]?.blobs[5] ?? '',
+            error: same[0]?.blobs[6] ?? '',
+            detail: same[0]?.blobs[7] ?? '',
             count: same.length,
           }),
       )

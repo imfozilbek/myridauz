@@ -35,5 +35,8 @@
   "drivers.incomplete": "Arizada hamma rasmlar boʻlishi kerak. Yetishmayotganini qoʻshing.",
   "trips.wrong_status": "Bu safar allaqachon oʻzgargan. Roʻyxatni yangilang.",
   "calls.unavailable": "Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.",
-  "company.invalid_input": "Kompaniya rekvizitlarini tekshiring."
+  "company.invalid_input": "Kompaniya rekvizitlarini tekshiring.",
+  "telegram.title": "Telegramda oching",
+  "telegram.description": "Bu ilova faqat Telegram ichida ishlaydi.",
+  "telegram.open": "Telegramda ochish"
 }
