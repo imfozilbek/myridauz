@@ -27,7 +27,10 @@ export const brandConfig: BrandConfig = {
   // from at least 20 people; the same signal once in 6 hours.
   alerts: { errorGrowth: 3, minErrors: 10, dropGrowth: 20, minPeople: 20, repeatHours: 6 },
   // docs/08: no answer in 30 seconds or no voice in 15 seconds: the call ends, the chat stays.
-  calls: { ringSeconds: 30, connectSeconds: 15 },
+  // docs/115: the bot calls a person in 5 seconds after the ring if their Mini App did not open the chat.
+  calls: { ringSeconds: 30, connectSeconds: 15, inviteSeconds: 5 },
+  // docs/115 (owner decision 04.10.2026): three sets, the third («ri-da, ri-DAAA») by default.
+  sounds: { sets: ['1', '2', '3'], defaultSet: '3' },
   // G34 (owner decision 02.10.2026): an answer within the hour from 7:00 to 23:00; a reminder to the
   // moderator after 30 minutes, to the owner after 50.
   moderation: { hours: { from: 7, to: 23 }, remindMinutes: 30, ownerMinutes: 50 },

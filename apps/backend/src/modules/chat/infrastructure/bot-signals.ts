@@ -1,6 +1,7 @@
 import { appHost, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
+import { sendEvent } from '../../feed';
 import { notify, notifyTeam } from '../../notifications';
 import { peopleOf } from '../../users';
 import type { ChatSignals, Role } from '../application/ports';
@@ -20,6 +21,8 @@ const toChat = async (env: Bindings, to: To, key: string, text: string, button: 
 
 export const botSignals = (env: Bindings): ChatSignals => ({
   newMessage: (to, key) => toChat(env, to, key, t('bot.chat.newMessage'), t('bot.chat.open')),
+  // The open or folded Mini App opens the chat and rings by itself (docs/115).
+  openCall: (to, key) => sendEvent(env, { userId: to.userId, app: to.role }, { type: 'call', chat: key }),
   // A call cannot ring a closed Mini App: the bot calls the person in (docs/08).
   incomingCall: (to, key) => toChat(env, to, key, t('bot.call.incoming'), t('bot.call.answer')),
   missedCall: (to, key) => toChat(env, to, key, t('bot.call.missed'), t('bot.chat.open')),

@@ -22,6 +22,7 @@ export const testClients = (overrides: {
   readonly map?: Partial<ApiClients['map']>;
   readonly pitaks?: Partial<ApiClients['pitaks']>;
   readonly company?: Partial<ApiClients['company']>;
+  readonly sounds?: Partial<ApiClients['sounds']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -136,4 +137,5 @@ export const testClients = (overrides: {
     ...overrides.pitaks,
   },
   company: { current: NOT_USED, state: NOT_USED, save: NOT_USED, ...overrides.company },
+  sounds: { current: NOT_USED, state: NOT_USED, pick: NOT_USED, ...overrides.sounds },
 });

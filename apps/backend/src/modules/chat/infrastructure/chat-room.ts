@@ -34,7 +34,11 @@ export class ChatRoom extends DurableObject<Bindings> {
       signals: botSignals(this.env),
       unread: d1Unread(this.env, key),
       now: Date.now,
-      calls: { ringMs: calls.ringSeconds * SECOND, connectMs: calls.connectSeconds * SECOND },
+      calls: {
+        ringMs: calls.ringSeconds * SECOND,
+        connectMs: calls.connectSeconds * SECOND,
+        inviteMs: calls.inviteSeconds * SECOND,
+      },
       wakeAt: (at) => void (at === null ? this.ctx.storage.deleteAlarm() : this.ctx.storage.setAlarm(at)),
     };
   }

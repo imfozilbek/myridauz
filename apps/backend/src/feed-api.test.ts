@@ -4,6 +4,7 @@ import { signalledNotifier } from './modules/drivers/infrastructure/signalled-no
 import { signTicket } from './shared/auth/signed-ticket';
 import { call, pid, registerUser, testEnv, doorBooking } from './test-api';
 import { app } from './app';
+import { sendEvent } from './modules/feed';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
 afterAll(() => vi.unstubAllGlobals());
@@ -73,6 +74,26 @@ describe('the personal channel (docs/64, G19)', () => {
     seen.length = 0;
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver', env });
     expect(seen).toContainEqual({ name: `u${PASSENGER}`, path: '/signal', app: 'passenger' });
+  });
+
+  it('asks the open Mini App of the callee to open the chat of a ringing call (docs/115)', async () => {
+    const bodies: unknown[] = [];
+    const feeds = {
+      idFromName: (name: string) => name,
+      get: (name: string) => ({
+        fetch: async (request: Request) => {
+          bodies.push([name, request.headers.get('x-feed-app'), await request.json()]);
+          return new Response(null, { status: 204 });
+        },
+      }),
+    };
+    const chat = 'b00000000-0000-0000-0000-000000000001';
+    await sendEvent({ FEEDS: feeds } as never, { userId: DRIVER, app: 'driver' }, { type: 'call', chat });
+    expect(bodies).toEqual([[`u${DRIVER}`, 'driver', { type: 'call', chat }]]);
+    // Without the namespace (tests, local runs) nothing breaks.
+    await expect(
+      sendEvent({} as never, { userId: DRIVER, app: 'driver' }, { type: 'changed' }),
+    ).resolves.toBe(undefined);
   });
 
   it('tells a driver about a correction of the wallet by the owner', async () => {

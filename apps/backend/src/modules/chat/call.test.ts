@@ -32,18 +32,40 @@ describe('voice calls in the chat (docs/08, G13)', () => {
     expect(chat.signals).toEqual([]);
   });
 
-  it('calls a person in through the bot, then marks a missed call after 30 seconds', async () => {
+  it('opens the Mini App of a person away, calls them in through the bot after 5 seconds, then marks a missed call', async () => {
     const chat = room();
     const passenger = chat.connect(PASSENGER);
     await chat.emit(passenger, call('ring'));
-    expect(chat.signals).toEqual(['ringing driver 1']);
-    await chat.later(29 * SECOND);
+    expect(chat.signals).toEqual(['open driver 1']);
+    await chat.later(4 * SECOND);
+    expect(chat.signals).toEqual(['open driver 1']);
+    await chat.later(2 * SECOND);
+    expect(chat.signals).toEqual(['open driver 1', 'ringing driver 1']);
+    await chat.later(23 * SECOND);
     expect(chat.deps.store.call()).not.toBeNull();
     await chat.later(2 * SECOND);
     expect(chat.deps.store.call()).toBeNull();
     expect(last(chat.inbox.get(10), 'callEnded')).toEqual({ type: 'callEnded', reason: 'missed' });
     expect(chat.deps.store.recent(10).at(-1)?.event).toBe('missed_call');
-    expect(chat.signals).toEqual(['ringing driver 1', 'missed driver 1']);
+    expect(chat.signals).toEqual(['open driver 1', 'ringing driver 1', 'missed driver 1']);
+  });
+
+  it('rings in the Mini App that opened the chat by itself: no bot message (docs/115)', async () => {
+    const chat = room();
+    const passenger = chat.connect(PASSENGER);
+    await chat.emit(passenger, call('ring'));
+    await chat.later(2 * SECOND);
+    chat.connect(DRIVER);
+    expect(last(chat.inbox.get(1), 'call')).toEqual({
+      type: 'call',
+      call: { status: 'ringing', caller: 'other' },
+    });
+    await chat.later(4 * SECOND);
+    expect(chat.signals).toEqual(['open driver 1']);
+    expect(chat.deps.store.call()?.status).toBe('ringing');
+    await chat.later(25 * SECOND);
+    expect(last(chat.inbox.get(1), 'callEnded')).toEqual({ type: 'callEnded', reason: 'missed' });
+    expect(chat.signals).toEqual(['open driver 1']);
   });
 
   it('ends a call whose voice did not connect in 15 seconds', async () => {

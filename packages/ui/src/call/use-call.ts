@@ -5,7 +5,9 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { holdClosing } from '../screen/closing';
 import { confirm } from '../telegram/feedback';
-import { startTone, unlockTones } from './call-tones';
+import { unlockAudio } from '../sounds/audio';
+import { startTone } from './call-tones';
+import { holdLiveCall } from './live-call';
 import { voiceLink, type VoiceLink } from './voice-link';
 
 // The Mini App side of a call (docs/08): the microphone once per call, the voice starts when the
@@ -60,6 +62,7 @@ export function useCall(key: string, chat: ChatCalling) {
   };
 
   useEffect(() => (inCall ? holdClosing() : undefined), [inCall]);
+  useEffect(() => (inCall ? holdLiveCall() : undefined), [inCall]);
 
   // Leaving the chat in any way ends the call: the other side hears it while the socket is still
   // open (a layout cleanup runs before the chat closes it), the microphone goes off.
@@ -74,7 +77,7 @@ export function useCall(key: string, chat: ChatCalling) {
   // No microphone, no call: the other side hears that it failed, this side goes back to the chat.
   const withMicrophone = async (then: () => void, otherwise: () => void = () => undefined) => {
     // The tap itself opens the sound on iPhone.
-    unlockTones();
+    unlockAudio();
     try {
       setNoMicrophone(false);
       await voice().microphone();

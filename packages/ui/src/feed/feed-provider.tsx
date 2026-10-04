@@ -1,6 +1,6 @@
-import { feedEventSchema } from '@platform/contracts';
-import { useCallback, useEffect, useMemo, type ReactNode } from 'react';
-import { FeedContext, type Subscribe } from './feed-context';
+import { feedEventSchema, type FeedEvent } from '@platform/contracts';
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { FeedCallContext, FeedContext, type Subscribe, type SubscribeCall } from './feed-context';
 
 const FIRST_PAUSE_MS = 1000;
 const MAX_PAUSE_MS = 30_000;
@@ -12,21 +12,33 @@ type FeedProviderProps = {
   readonly connect: () => Promise<string>;
   // The person came back to the app: the screen refreshes even if a signal was missed.
   readonly onWake: (listener: () => void) => () => void;
+  // A bot message reached this person: the notification of the brand plays (docs/115).
+  readonly onSignal?: () => void;
   readonly children: ReactNode;
 };
 
-const isChanged = (data: string) => {
+const eventOf = (data: string): FeedEvent | null => {
   try {
-    return feedEventSchema.safeParse(JSON.parse(data)).success;
+    return feedEventSchema.safeParse(JSON.parse(data)).data ?? null;
   } catch {
-    return false;
+    return null;
   }
 };
 
 // One socket per Mini App (G19): "something changed" refreshes the open screen quietly.
 // A lost socket comes back after a pause that grows up to 30 seconds.
-export function FeedProvider({ connect, onWake, children }: FeedProviderProps) {
+export function FeedProvider({ connect, onWake, onSignal, children }: FeedProviderProps) {
   const listeners = useMemo(() => new Set<() => void>(), []);
+  const callListeners = useMemo(() => new Set<(chat: string) => void>(), []);
+  const subscribeCall = useCallback<SubscribeCall>(
+    (listener) => {
+      callListeners.add(listener);
+      return () => void callListeners.delete(listener);
+    },
+    [callListeners],
+  );
+  const signal = useRef(onSignal);
+  signal.current = onSignal;
   const subscribe = useCallback<Subscribe>(
     (listener) => {
       listeners.add(listener);
@@ -63,7 +75,13 @@ export function FeedProvider({ connect, onWake, children }: FeedProviderProps) {
           const ws = new WebSocket(url);
           socket = ws;
           ws.addEventListener('open', () => void (pause = FIRST_PAUSE_MS));
-          ws.addEventListener('message', (event: MessageEvent<string>) => isChanged(event.data) && changed());
+          ws.addEventListener('message', (message: MessageEvent<string>) => {
+            const event = eventOf(message.data);
+            if (event?.type === 'call') callListeners.forEach((listener) => listener(event.chat));
+            if (event?.type !== 'changed') return;
+            signal.current?.();
+            changed();
+          });
           ws.addEventListener('close', () => {
             socket = null;
             retry();
@@ -90,6 +108,10 @@ export function FeedProvider({ connect, onWake, children }: FeedProviderProps) {
       stopWake();
       socket?.close();
     };
-  }, [connect, onWake, listeners]);
-  return <FeedContext.Provider value={subscribe}>{children}</FeedContext.Provider>;
+  }, [connect, onWake, listeners, callListeners]);
+  return (
+    <FeedContext.Provider value={subscribe}>
+      <FeedCallContext.Provider value={subscribeCall}>{children}</FeedCallContext.Provider>
+    </FeedContext.Provider>
+  );
 }
