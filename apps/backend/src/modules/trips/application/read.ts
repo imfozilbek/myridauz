@@ -3,12 +3,13 @@ import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
-import { byHourThenRating } from '../domain/search-order';
+import { byHourThenRating, markedFirst } from '../domain/search-order';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 // A passenger's search: the day in Tashkent, places or regions, "Mashinada ayol bor" (docs/06, docs/14).
 // By the hour of departure; within the same hour a higher rating goes first (docs/24). People with
-// complaints from 3 different people wait for the moderator out of the search (docs/17).
+// complaints from 3 different people wait for the moderator out of the search (docs/17). The trips
+// leaving soon and the cheaper ones are on top (G39, docs/104, 10).
 // The own trips of the person are not in their search: they cannot book them (G41, docs/90 F-P8).
 export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: number): Promise<Trip[]> {
   const start = Math.max(tashkentDayStart(search.date), deps.now());
@@ -26,7 +27,7 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: 
   const hidden = await deps.hidden([...new Set(fits.map((trip) => trip.driverId))]);
   const shown = fits.filter((trip) => !hidden.has(trip.driverId));
   const found = (await views(deps, shown)).filter((trip) => trip.seatsLeft > 0).sort(byHourThenRating);
-  return search.woman ? found.filter((trip) => trip.woman) : found;
+  return markedFirst(search.woman ? found.filter((trip) => trip.woman) : found, deps.now());
 }
 
 export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {

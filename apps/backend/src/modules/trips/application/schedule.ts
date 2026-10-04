@@ -9,9 +9,17 @@ type Route = { readonly from: string; readonly to: string; readonly km: number }
 
 // The busy times of the driver for a new trip on this route (G38, docs/103): the driver must make it
 // from the end of each trip to its start and from its end to the next trip, with time to gather people.
-export async function driverSchedule(deps: Deps, driverId: number, route: Route): Promise<Schedule> {
+// except: the trip whose time the driver moves does not stand in its own way (G39, docs/104).
+export async function driverSchedule(
+  deps: Deps,
+  driverId: number,
+  route: Route,
+  except?: string,
+): Promise<Schedule> {
   const now = deps.now();
-  const live = (await deps.trips.byDriver(driverId)).filter((trip) => isLive(trip, now));
+  const live = (await deps.trips.byDriver(driverId)).filter(
+    (trip) => isLive(trip, now) && trip.id !== except,
+  );
   const pairs = live.flatMap((trip) => [
     [route.to, trip.from],
     [trip.to, route.from],
@@ -41,4 +49,13 @@ export async function scheduleError(
   const { windows, full } = await driverSchedule(deps, driverId, trip);
   if (full) return 'trips.too_many';
   return isBusy(trip.departAt, windows) ? 'trips.busy' : null;
+}
+
+// A trip moved later still lets the driver make the trips around it (G39, docs/104, 8).
+export async function movedBusy(
+  deps: Deps,
+  trip: Route & { readonly id: string; readonly driverId: number; readonly departAt: number },
+): Promise<boolean> {
+  const { windows } = await driverSchedule(deps, trip.driverId, trip, trip.id);
+  return isBusy(trip.departAt, windows);
 }

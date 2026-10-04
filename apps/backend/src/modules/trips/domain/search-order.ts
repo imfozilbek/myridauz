@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { tripMarks, type Trip } from '@platform/contracts';
 
 const HOUR_MS = 60 * 60 * 1000;
 // A new driver without ratings stands as a good one, above low ratings: a fair start, never
@@ -11,3 +11,9 @@ export const byHourThenRating = (a: Trip, b: Trip) =>
   Math.floor(a.departAt / HOUR_MS) - Math.floor(b.departAt / HOUR_MS) ||
   ratingOf(b) - ratingOf(a) ||
   a.departAt - b.departAt;
+
+// «Tez orada joʻnaydi» and «Narxi tushdi» go on top, each group in the usual order (G39, docs/104, 10).
+export const markedFirst = (trips: readonly Trip[], now: number) => {
+  const marked = trips.filter((trip) => tripMarks(trip, now).length > 0);
+  return [...marked, ...trips.filter((trip) => !marked.includes(trip))];
+};

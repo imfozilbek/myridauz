@@ -13,11 +13,12 @@ export type SubscriptionRepository = {
   overdue(now: number): Promise<SubscriptionRecord[]>;
 };
 
-// What the bots say (docs/24): one match, several at once, the offer to renew.
+// What the bots say (docs/24): one match, several at once, the offer to renew, a cheaper trip (G39).
 export type SubscriptionTeller = {
   one(subscription: SubscriptionRecord, match: Match): Promise<void>;
   many(subscription: SubscriptionRecord, count: number): Promise<void>;
   renew(subscription: SubscriptionRecord): Promise<void>;
+  cheaper(subscription: SubscriptionRecord, match: Match): Promise<void>;
 };
 
 export type SubscriptionsDeps = {

@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { tripMarks, type Trip } from '@platform/contracts';
 import { Caption, Tappable, Text } from '@telegram-apps/telegram-ui';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Section } from '../components';
@@ -28,6 +28,13 @@ export function TripCard({ trip, showStatus = false, own = false, requests = 0, 
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const wayFacts = useWayFacts();
+  // «Tez orada joʻnaydi» and «Narxi tushdi» lead the marks of the search (G39, docs/104, 10).
+  const marks: readonly Fact[] = own
+    ? []
+    : tripMarks(trip, Date.now()).map((mark) => [
+        mark === 'soon' ? 'waiting' : 'cheaper',
+        t(`market.mark.${mark}`),
+      ]);
   const facts: readonly Fact[] = [
     ...(requests > 0 ? [['request', t('home.requests', { count: String(requests) })] as const] : []),
     ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
@@ -55,7 +62,7 @@ export function TripCard({ trip, showStatus = false, own = false, requests = 0, 
         </div>
         <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
         {trip.comment ? <Caption className="trip-card-comment">{trip.comment}</Caption> : null}
-        <FactChips facts={facts} />
+        <FactChips facts={facts} marks={marks} />
         {own ? null : (
           <div className="trip-card-foot">
             <ProfilePhoto

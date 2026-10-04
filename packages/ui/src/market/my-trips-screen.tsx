@@ -19,6 +19,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
 import { MY_TRIPS, MyTripsList } from './my-trips-list';
 import { PlacesGate } from './places-gate';
+import { TripChangeCells, TripChangeScreen, type TripChange } from './trip-change';
 import { TripScreen } from './trip-screen';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
@@ -64,6 +65,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [mapOpen, setMapOpen] = useState(false);
+  const [change, setChange] = useState<TripChange | null>(null);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   // A cancel is asked first; a failed one keeps the trip open with the reason (docs/65 B3, B4).
   const cancel = async (open: Trip) => {
@@ -91,13 +93,18 @@ function MyTrips({ onBack, link }: ScreenProps) {
     const toMap = () => (reload(), setMapOpen(true));
     return <DriverBooking booking={booking} onClose={close} onMap={toMap} />;
   }
+  if (trip && change)
+    return <TripChangeScreen trip={trip} change={change} onDone={() => (setChange(null), reload())} />;
   if (trip && value) {
     const back = () => (setOpened(null), setFailure(null), setMapOpen(false));
+    // A trip ahead may move later or get cheaper (G39, docs/104).
+    const ahead = (trip.status === 'active' || trip.status === 'full') && trip.departAt > Date.now();
     const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
     if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
     return (
       <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)} own>
         <ActionFailure error={failure} />
+        {ahead ? <TripChangeCells trip={trip} onChange={setChange} /> : null}
         <TripBookings
           bookings={ofTrip}
           onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}

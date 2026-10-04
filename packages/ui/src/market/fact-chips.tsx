@@ -22,11 +22,18 @@ const STATUS_ICON: Record<Status, IconName> = {
 export const statusIcon = (status: Status): IconName => STATUS_ICON[status];
 
 // Seats, "ayol bor", the meeting point: quiet marks, an icon always with its words (docs/19).
-export function FactChips({ facts }: { readonly facts: readonly Fact[] }) {
+// The marks of the search go first, in the color of links (G39, docs/104, 10).
+type ChipsProps = { readonly facts: readonly Fact[]; readonly marks?: readonly Fact[] };
+
+export function FactChips({ facts, marks = [] }: ChipsProps) {
+  const chips = [
+    ...marks.map((fact) => [fact, 'trip-fact trip-mark'] as const),
+    ...facts.map((fact) => [fact, 'trip-fact'] as const),
+  ];
   return (
     <div className="trip-card-facts">
-      {facts.map(([icon, text]) => (
-        <Caption key={text} className="trip-fact">
+      {chips.map(([[icon, text], className]) => (
+        <Caption key={text} className={className}>
           <Icon name={icon} size={ICON_SIZE} />
           {text}
         </Caption>

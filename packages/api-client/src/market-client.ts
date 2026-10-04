@@ -12,6 +12,8 @@ import {
   rideRequestsSchema,
   scheduleSchema,
   tripPath,
+  tripPricePath,
+  tripTimePath,
   tripSchema,
   tripsSchema,
   TRIPS_PATH,
@@ -51,6 +53,11 @@ export function createMarketClient(options: SignedOptions) {
     schedule: async (from: string, to: string): Promise<Schedule> =>
       scheduleSchema.parse(await (await request(`${DRIVER_SCHEDULE_PATH}?${query({ from, to })}`)).json()),
     cancelTrip: async (id: string): Promise<Trip> => trip(await post(driverTripCancelPath(id), {})),
+    // The driver moves the time later or lowers the price (G39, docs/104).
+    retimeTrip: async (id: string, departAt: number): Promise<Trip> =>
+      trip(await post(tripTimePath(id), { departAt })),
+    lowerTripPrice: async (id: string, price: number): Promise<Trip> =>
+      trip(await post(tripPricePath(id), { price })),
     searchRequests: async (search: RequestSearch): Promise<RideRequest[]> =>
       rideRequestsSchema.parse(await (await request(`${DRIVER_REQUESTS_PATH}?${query(search)}`)).json())
         .requests,

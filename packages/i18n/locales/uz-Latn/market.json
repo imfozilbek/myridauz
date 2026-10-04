@@ -95,5 +95,20 @@
   "filter.dayPart.any": "Istalgan",
   "filter.dayPart.morning": "Ertalab",
   "filter.dayPart.day": "Kunduzi",
-  "filter.dayPart.evening": "Kechqurun"
+  "filter.dayPart.evening": "Kechqurun",
+  "change.section": "Oʻzgartirish",
+  "change.time": "Vaqtni surish",
+  "change.price": "Narxni tushirish",
+  "change.timeTitle": "Qachon joʻnaysiz?",
+  "change.timeHint": "Faqat keyinroqqa, jami 1 soatgacha. Band qilgan yoʻlovchilarga xabar boradi.",
+  "change.at": "soat {time}",
+  "change.later": "+{minutes} daqiqa",
+  "change.timeAsk": "Joʻnash vaqti soat {time} boʻladimi? Yoʻlovchilarga xabar boradi.",
+  "change.priceTitle": "Yangi narx",
+  "change.priceHint": "Faqat pastga. Band qilinganlar eski narxda qoladi. Yoʻlovchilar va obunachilarga xabar boradi.",
+  "change.priceAsk": "Bir joy narxi {price} boʻladimi?",
+  "change.priceMin": "Narx eng past chegarada, uni endi tushirib boʻlmaydi.",
+  "change.save": "Ha, oʻzgartirish",
+  "mark.soon": "Tez orada joʻnaydi",
+  "mark.cheaper": "Narxi tushdi"
 }

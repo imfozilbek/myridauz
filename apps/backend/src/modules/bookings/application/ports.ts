@@ -142,6 +142,8 @@ export type BookingNotifier = {
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for the passenger's close people (docs/43).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
+  // The driver moved the time or lowered the price (G39, docs/104).
+  tripChanged(booking: Booking, change: 'retimed' | 'cheaper'): Promise<void>;
 };
 
 export type Result<T, E extends string> =

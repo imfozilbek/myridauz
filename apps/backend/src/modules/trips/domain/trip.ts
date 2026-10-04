@@ -10,7 +10,8 @@ import {
 // The car the team approved when the trip was published: a new check of the driver keeps it (docs/65 A1).
 export type TripCar = Pick<Car, 'make' | 'model' | 'color' | 'plate'>;
 
-// A published trip (docs/35). The price stays as published: a new formula is only for new trips (docs/23).
+// A published trip (docs/35). A new formula is only for new trips (docs/23); the driver may lower the
+// price and move the time a little later (G39, docs/104).
 export type TripRecord = {
   readonly id: string;
   readonly driverId: number;
@@ -31,6 +32,10 @@ export type TripRecord = {
   // The driver sets no points: the system takes the pitak of the direction by itself.
   readonly pickupMode: PickupMode;
   readonly createdAt: number;
+  // The time and price at the publishing, and the last notice of a lower price (G39, docs/104).
+  readonly firstDepartAt: number;
+  readonly firstPrice: number;
+  readonly priceToldAt: number | null;
 };
 
 const AFTER_ARRIVAL_MS = 2 * 60 * 60 * 1000;

@@ -206,6 +206,11 @@
   color: var(--tgui--text_color);
 }
 
+.trip-mark {
+  background: color-mix(in srgb, var(--tgui--link_color) 12%, transparent);
+  color: var(--tgui--link_color);
+}
+
 .trip-card-car {
   display: flex;
   align-items: center;
