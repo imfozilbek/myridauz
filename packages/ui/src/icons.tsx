@@ -49,6 +49,8 @@ import {
   Palette,
   RectangleEllipsis,
   Clock,
+  ClockArrowUp,
+  TrendingDown,
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
@@ -117,6 +119,9 @@ const ICONS = {
   plate: RectangleEllipsis,
   seats: Armchair,
   waiting: Clock,
+  // A trip of the driver moves later; a cheaper trip in the search (G39, docs/104).
+  later: ClockArrowUp,
+  cheaper: TrendingDown,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
