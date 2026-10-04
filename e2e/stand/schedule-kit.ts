@@ -1,7 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import type { MarketClient } from '@platform/api-client';
 import { daySlots, MINUTE_MS, tashkentDayStart } from '@platform/contracts';
-import { test } from '@playwright/test';
+import { test } from '../crash-guard';
 import type { Person } from './stand-kit';
 import { standSql } from './stand-tools';
 

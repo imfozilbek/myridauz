@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createFeedbackClient, createMarketClient } from '@platform/api-client';
 import { botMessages, clearBotMessages, runCron } from './stand-tools';
 import { confirmedSeat, MINUTE, moveTrip, outcome, toldBy, wordsOf } from './g27-kit';

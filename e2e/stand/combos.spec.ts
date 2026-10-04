@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createMarketClient } from '@platform/api-client';
 import { tashkentDate } from '@platform/contracts';
 import { book, CHILONZOR, cancelMine, publishTrip } from './market-kit';

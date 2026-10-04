@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { OWNER } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
 import { outsideCalls } from './stand-kit';

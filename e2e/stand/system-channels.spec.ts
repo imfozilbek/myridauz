@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { channelOf, loadBrand } from '../../brands/index';
 import { createComfortClient, createMarketClient } from '@platform/api-client';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';

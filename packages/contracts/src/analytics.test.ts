@@ -27,6 +27,26 @@ describe('analyticsBatchSchema', () => {
     expect(analyticsBatchSchema.safeParse({ events: [{ ...error, code: 'render' }] }).success).toBe(true);
   });
 
+  it('keeps what broke a screen, never free text of a person (G52, docs/112)', () => {
+    const crash = {
+      ...event,
+      name: 'client_error',
+      code: 'render',
+      error: 'TypeError',
+      client: 'android 8.0',
+    };
+    const ok = (detail: string) => analyticsBatchSchema.safeParse({ events: [{ ...crash, detail }] }).success;
+    expect(ok("Cannot read properties of undefined (reading 'lat')")).toBe(true);
+    expect(ok('phone #')).toBe(true);
+    expect(ok('+998 90 123 45 67')).toBe(false);
+    expect(ok('Алишер')).toBe(false);
+    expect(ok('x'.repeat(121))).toBe(false);
+    const client = (value: string) =>
+      analyticsBatchSchema.safeParse({ events: [{ ...crash, client: value }] }).success;
+    expect(client('tdesktop 7.10')).toBe(true);
+    expect(client('Ali Valiyev')).toBe(false);
+  });
+
   it('limits the batch size', () => {
     const events = Array.from({ length: MAX_ANALYTICS_BATCH + 1 }, () => event);
     expect(analyticsBatchSchema.safeParse({ events }).success).toBe(false);

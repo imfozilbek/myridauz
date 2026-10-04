@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createModerationClient, createSubscriptionsClient } from '@platform/api-client';
 import { CHILONZOR } from './market-kit';
 import { SAMARQAND, tomorrow, wordsOf } from './g27-kit';

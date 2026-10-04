@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../crash-guard';
 import { createChatClient, createComfortClient, createSubscriptionsClient } from '@platform/api-client';
 import { CHILONZOR } from './market-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, SAMARQAND, tomorrow } from './g27-kit';

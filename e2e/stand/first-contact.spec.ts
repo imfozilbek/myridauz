@@ -1,5 +1,5 @@
 import { loadBrand } from '@platform/brands';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { applyAsDriver } from '../driver-application';
 import { say, type Reply } from './bot-kit';

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createChatClient } from '@platform/api-client';
 import { confirmedSeat, toldBy, wordsOf } from './g27-kit';
 import { FERUZA, KOMIL, OWNER } from './people';

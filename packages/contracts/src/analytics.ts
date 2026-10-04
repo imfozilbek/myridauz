@@ -58,11 +58,28 @@ const context = {
   version: z.string().max(32),
 };
 
+// G52: what broke a screen, to find it (docs/112). The class of the error and its words without
+// numbers or signs, never free text of a person; client: the Telegram platform and its version.
+const crash = {
+  error: z
+    .string()
+    .regex(/^[A-Za-z]{1,40}$/)
+    .optional(),
+  detail: z
+    .string()
+    .regex(/^[A-Za-z .,'()_:#-]{0,120}$/)
+    .optional(),
+  client: z
+    .string()
+    .regex(/^[a-z_]{1,16}( [0-9.]{1,8})?$/)
+    .optional(),
+};
+
 const analyticsEventSchema = z.discriminatedUnion('name', [
   // The first screen of a launch says where the person came from: the kind of the startapp link,
   // «direct» without one (docs/89 S3). Only the kind, never the ids of the link.
   z.object({ name: z.literal('screen_open'), source: id.optional(), ...context }),
-  z.object({ name: z.literal('client_error'), code: id, ...context }),
+  z.object({ name: z.literal('client_error'), code: id, ...crash, ...context }),
   // An answer of the API with an error (G12): its code and the last opened screen.
   z.object({ name: z.literal('api_error'), code: id, ...context }),
   // Registration funnel (G04): one event per finished step, to see where people stop.

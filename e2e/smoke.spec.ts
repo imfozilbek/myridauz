@@ -1,5 +1,5 @@
 import { brandForApp, loadBrand } from '@platform/brands';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { fromIfAsked } from './market';

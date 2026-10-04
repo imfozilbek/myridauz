@@ -1,4 +1,4 @@
-import { test, type Page } from '@playwright/test';
+import { test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mockBookings } from './bookings-mock';

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createModerationClient, createSubscriptionsClient, createUsersClient } from '@platform/api-client';
 import { MAX_SUBSCRIPTIONS } from '@platform/contracts';
 import { CHILONZOR, publishTrip } from './market-kit';

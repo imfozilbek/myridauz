@@ -21,11 +21,17 @@ function launchSource(): string | undefined {
   return param === null ? DIRECT : (KIND.exec(param)?.[0] ?? 'other');
 }
 
+// The screen opened last: an error of the screen names it (G52, docs/112).
+const FIRST_SCREEN = 'app';
+let current = FIRST_SCREEN;
+export const currentScreen = () => current;
+
 // Every screen reports that it was opened: the base of the funnels (docs/29). The first one of a
 // launch also says where the person came from.
 export function useScreenView(screen: string): void {
   const { track } = useAnalytics();
   useEffect(() => {
+    current = screen;
     const source = launchSource();
     track({ name: 'screen_open', screen, ...(source ? { source } : {}) });
   }, [track, screen]);

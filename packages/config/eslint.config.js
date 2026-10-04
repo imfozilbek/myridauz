@@ -94,6 +94,24 @@ export default tseslint.config(
   { files: ['brands/*/theme.ts'], rules: { 'no-restricted-syntax': 'off' } },
   { files: ['packages/ui/**'], rules: { 'no-restricted-imports': 'off' } },
   { files: ['apps/backend/src/modules/*/*/**/*.ts'], rules: { 'no-restricted-imports': imports([DEEP]) } },
+  // A broken screen fails every e2e test: `test` comes only from the crash guard (G52, lesson 122).
+  {
+    files: ['e2e/**/*.ts'],
+    ignores: ['e2e/crash-guard.ts'],
+    rules: {
+      'no-restricted-imports': imports(
+        [],
+        [
+          ...UI_LIBS,
+          {
+            name: '@playwright/test',
+            importNames: ['test'],
+            message: 'Import test from e2e/crash-guard (G52).',
+          },
+        ],
+      ),
+    },
+  },
   textBlock,
   ...fsdBlocks,
   ...backendBlocks,

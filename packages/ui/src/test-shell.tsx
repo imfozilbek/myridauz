@@ -36,7 +36,13 @@ export function renderInShell(
       analytics={analytics}
       locations={locations}
       clients={clients}
-      session={{ inTelegram, platform: inTelegram ? 'ios' : 'base', initData: '', hasCamera }}
+      session={{
+        inTelegram,
+        platform: inTelegram ? 'ios' : 'base',
+        initData: '',
+        hasCamera,
+        client: 'browser',
+      }}
     >
       {/* jsdom draws no map: every map of a test is a fake one unless the test gives its own. */}
       <MapEngineContext.Provider value={async () => fakeMap().engine}>{children}</MapEngineContext.Provider>

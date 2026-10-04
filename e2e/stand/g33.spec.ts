@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from '../apps';
 import { pressBack, telegramEvents } from '../telegram-mock';

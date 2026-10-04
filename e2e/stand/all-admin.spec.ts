@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from '../crash-guard';
 import { createFeedbackClient } from '@platform/api-client';
 import { confirmedSeat } from './g27-kit';
 import { MUROD, NARGIZA, OWNER, SHERZOD } from './people';
