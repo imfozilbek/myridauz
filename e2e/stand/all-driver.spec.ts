@@ -29,7 +29,7 @@ for (const platform of PLATFORMS)
   test(`${platform}: home, profile, wallet and my trips`, async ({ page }) => {
     await openHome(page, 'driver', MUROD, platform);
     await shot(page, platform, 'da10-home');
-    await page.getByText(t('account.profile.open')).first().click();
+    await page.getByLabel(t('account.profile.open')).click();
     await shot(page, platform, 'da11-profile');
     await visit(page, platform, t('wallet.title'), 'da12-wallet');
     await visit(page, platform, t('comfort.history.title'), 'da13-history');

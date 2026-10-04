@@ -39,7 +39,7 @@ const driverMarket = async () => createMarketClient(await signedAs('driver', ANV
 const toldCount = async (person: Person, words: string) =>
   (await botMessages()).filter((m) => m.chatId === person.id && m.text.includes(words)).length;
 
-test('8, 9. the booked passenger hears the new time and price; the subscriber a lower price once a day', async () => {
+test('8, 9. the booked passenger hears the new time, never a lower price; the subscriber a lower price once a day', async () => {
   const trip = await publishTrip(ANVAR, CHILONZOR, ANDIJON, 'door');
   const seat = await book(BOOKED, trip, { seats: 1, mode: 'door', ...TO_ANDIJON });
   await answer(ANVAR, seat.id, 'confirm');
@@ -57,7 +57,6 @@ test('8, 9. the booked passenger hears the new time and price; the subscriber a 
   // Lower by a step: the booking keeps its price; below the bound: no.
   const { minPrice, roundStep } = await market.recommend(CHILONZOR, ANDIJON);
   const cheaper = await market.lowerTripPrice(trip.id, trip.price - roundStep);
-  await toldBy('passenger', BOOKED, wordsOf('bot.booking.cheaper'));
   await toldBy('passenger', SUBSCRIBED, wordsOf('bot.subscription.cheaper'));
   expect((await bookingOf(BOOKED, seat.id))?.price).toBe(trip.price);
   expect(await outcome(market.lowerTripPrice(trip.id, minPrice - roundStep))).toBe(
@@ -69,7 +68,8 @@ test('8, 9. the booked passenger hears the new time and price; the subscriber a 
   await market.lowerTripPrice(trip.id, cheaper.price - roundStep);
   await market.retimeTrip(trip.id, trip.departAt + 60 * MINUTE);
   await expect.poll(() => toldCount(BOOKED, wordsOf('bot.booking.retimed'))).toBe(2);
-  expect(await toldCount(BOOKED, wordsOf('bot.booking.cheaper'))).toBe(1);
+  // The booking keeps its price: its passenger never hears of a lower one (owner decision 04.10.2026).
+  expect(await toldCount(BOOKED, 'narxni tushirdi')).toBe(0);
   expect(await toldCount(SUBSCRIBED, wordsOf('bot.subscription.cheaper'))).toBe(1);
 });
 

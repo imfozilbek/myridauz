@@ -32,13 +32,14 @@ const broadcast = (deps: RoomDeps, message: StoredMessage) => {
     send(socket, { type: 'message', message: view(message, socket.member.userId) });
 };
 
-// A person opened the chat: the latest messages, the oldest first.
-export function joined(deps: RoomDeps, socket: ChatSocket): void {
+// A person opened the chat: the latest messages, the oldest first; nothing is unread any more.
+export async function joined(deps: RoomDeps, socket: ChatSocket): Promise<void> {
   const { userId, canCall } = socket.member;
   const messages = deps.store.recent(HISTORY).map((message) => view(message, userId));
   send(socket, { type: 'history', messages, canCall });
   const call = callView(deps.store.call(), userId);
   if (call) send(socket, { type: 'call', call });
+  await deps.unread.clear(userId);
 }
 
 // A message from a person: contacts hidden, everyone in the chat sees it, the other one hears of it.
@@ -64,6 +65,8 @@ async function hidden(deps: RoomDeps, from: ChatSocket) {
 async function tellOther(deps: RoomDeps, member: Member) {
   const there = deps.sockets().some((socket) => socket.member.userId === member.otherId);
   if (there) return;
+  // Every message counts for the plate, the bot speaks only once in a while.
+  await deps.unread.add({ userId: member.otherId, role: otherRole(member.role) });
   const last = deps.store.lastNotified(member.otherId);
   if (last !== null && deps.now() - last < NOTIFY_PAUSE_MS) return;
   deps.store.notified(member.otherId, deps.now());

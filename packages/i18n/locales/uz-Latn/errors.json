@@ -38,5 +38,6 @@
   "company.invalid_input": "Kompaniya rekvizitlarini tekshiring.",
   "telegram.title": "Telegramda oching",
   "telegram.description": "Bu ilova faqat Telegram ichida ishlaydi.",
-  "telegram.open": "Telegramda ochish"
+  "telegram.open": "Telegramda ochish",
+  "sounds.unknown_set": "Bunday ovoz topilmadi."
 }

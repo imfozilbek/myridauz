@@ -16,7 +16,7 @@ for (const app of MINI_APPS) {
     await expect(page.getByText(app.action).first()).toBeVisible();
     await shot('6-home');
     if (!app.welcome) return;
-    await page.getByText(TEXT.profile).click();
+    await page.getByLabel(TEXT.profile).click();
     await expect(page.getByText('Yangi', { exact: true })).toBeVisible();
     await shot('7-profile');
   });

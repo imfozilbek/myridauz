@@ -32,7 +32,6 @@
 | № | Ключ | Кому | Текст |
 |---|---|---|---|
 | B1 | `bot.booking.retimed` | Попутчик с бронью, бот попутчика | Haydovchi joʻnash vaqtini oʻzgartirdi. {from} → {to}. {date}, endi soat {time}. |
-| B2 | `bot.booking.cheaper` | Попутчик с бронью | Haydovchi yangi yoʻlovchilar uchun narxni tushirdi: {from} → {to}, {date}. Siz band qilgan joy narxi oʻzgarmaydi. |
 | B3 | `bot.subscription.cheaper` | Подписчик направления, не чаще раза в сутки на поездку | Siz kutgan yoʻnalishda safar arzonlashdi. {from} → {to}. {date}, soat {time}. Boʻsh joylar: {seats}, endi bir joy {price}. |
 
 В B1 и B3 между строками стоит перенос строки, как в других сообщениях ботов.

@@ -32,7 +32,7 @@ for (const platform of PLATFORMS)
   test(`${platform}: the main screen and one step from it`, async ({ page }) => {
     await openHome(page, 'passenger', FERUZA, platform);
     await shot(page, platform, 'p10-home');
-    await visit(page, platform, t('account.profile.open'), 'p11-profile');
+    await visit(page, platform, FERUZA.name, 'p11-profile');
     await visit(page, platform, t('common.myTrips'), 'p12-my-trips');
     await visit(page, platform, t('common.passenger.leaveRequest'), 'p13-request', t('places.toTitle'));
   });

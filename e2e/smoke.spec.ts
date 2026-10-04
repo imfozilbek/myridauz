@@ -22,7 +22,7 @@ for (const app of MINI_APPS) {
       await expect(mainButton).toHaveText(TEXT.continue);
       await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.brandStrong));
       await register(page, app.welcome);
-      await expect(page.getByText(TEXT.profile)).toBeVisible();
+      await expect(page.getByLabel(TEXT.profile)).toBeVisible();
       expect(api.registrations).toEqual([
         expect.objectContaining({ consent: true, firstName: 'Dilnoza', gender: 'female' }),
       ]);

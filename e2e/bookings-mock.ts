@@ -51,7 +51,7 @@ export const confirmed = booking('2', 'confirmed', {
   extraKm: null,
   plate: '01A123BC',
 });
-const offer = {
+export const offer = {
   id: '00000000-0000-4000-8000-0000000000c1',
   requestId: request.id,
   driver: {

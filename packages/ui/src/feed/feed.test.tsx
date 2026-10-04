@@ -1,7 +1,9 @@
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FakeSocket } from '../chat/fake-socket';
 import { useList } from '../market/use-list';
+import { useFeedCall } from './feed-context';
 import { FeedProvider } from './feed-provider';
 
 beforeEach(() => {
@@ -88,5 +90,38 @@ describe('live updates of the screens (docs/64, G19)', () => {
     await waitFor(() => expect(connect).toHaveBeenCalledTimes(2));
     await act(async () => vi.advanceTimersByTimeAsync(1000));
     expect(connect).toHaveBeenCalledTimes(2);
+  });
+});
+
+// The chat that rings, as the launch links would open it.
+function Ringing() {
+  const [chat, setChat] = useState('none');
+  useFeedCall(setChat);
+  return <p>{chat}</p>;
+}
+
+describe('a ringing call and the notification (G54, docs/115)', () => {
+  it('opens the chat of a call and plays the notification only for a bot message', async () => {
+    const onSignal = vi.fn();
+    const connect = async () => 'wss://api.test/feed/socket?ticket=t';
+    render(
+      <FeedProvider connect={connect} onWake={() => () => undefined} onSignal={onSignal}>
+        <Ringing />
+      </FeedProvider>,
+    );
+    await waitFor(() => expect(FakeSocket.last).not.toBeNull());
+    const socket = FakeSocket.last;
+    if (!socket) throw new Error('no socket');
+    const chat = 'b00000000-0000-0000-0000-000000000001';
+    act(() => {
+      socket.open();
+      socket.receive({ type: 'call', chat });
+    });
+    expect(screen.getByText(chat)).toBeTruthy();
+    expect(onSignal).not.toHaveBeenCalled();
+    act(() => socket.receive({ type: 'call', chat: 'not a chat' }));
+    expect(screen.getByText(chat)).toBeTruthy();
+    act(() => socket.receive({ type: 'changed' }));
+    expect(onSignal).toHaveBeenCalledTimes(1);
   });
 });

@@ -44,7 +44,7 @@ export async function chooseRoute(page: Page) {
 }
 
 // One side of a chat through its socket, as the other phone writes.
-async function openSocket(person: Person, key: string): Promise<WebSocket> {
+export async function openSocket(person: Person, key: string): Promise<WebSocket> {
   const url = await createChatClient(await signedAs('driver', person)).socketUrl(key);
   const socket = new WebSocket(url);
   await new Promise((resolve, reject) => {

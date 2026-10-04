@@ -16,6 +16,18 @@ export type BrandColors = {
   readonly text: HexColor;
   readonly textMuted: HexColor;
   readonly danger: HexColor;
+  // The plates of a status on the main screen (G53): done is green, waits for the person is amber.
+  readonly success: HexColor;
+  readonly successSoft: HexColor;
+  readonly attention: HexColor;
+  readonly attentionSoft: HexColor;
+  // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
+  readonly accentSoft: HexColor;
+  // A gray tile of the main screen («Mening safarlarim», «Profil»): light background, dark icon.
+  readonly neutralSoft: HexColor;
+  readonly neutralText: HexColor;
+  // A number of work waiting for the team (admin, G53).
+  readonly dangerText: HexColor;
   // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
   readonly routeFrom: HexColor;
   readonly routeTo: HexColor;
@@ -61,8 +73,17 @@ export type AlertRules = {
 };
 
 // Voice calls (docs/08): an unanswered ring ends after ringSeconds, a call whose voice did not
-// connect ends after connectSeconds; then the chat takes over.
-type CallRules = { readonly ringSeconds: number; readonly connectSeconds: number };
+// connect ends after connectSeconds; then the chat takes over. A ring first opens the Mini App of the
+// callee (docs/115); the bot calls them in only if they are still not in the chat after inviteSeconds.
+type CallRules = {
+  readonly ringSeconds: number;
+  readonly connectSeconds: number;
+  readonly inviteSeconds: number;
+};
+
+// The sounds of the brand (docs/115): each set has brands/<brand>/public/sounds/<set>-ring.wav (one
+// loop) and <set>-notify.wav; the owner picks the set in the admin Mini App, until then the default.
+type SoundRules = { readonly sets: readonly string[]; readonly defaultSet: string };
 
 // Driver applications (G34, docs/50): the team answers within the hour while it works (Tashkent
 // hours, from included, to excluded); a waiting application reminds its moderator, then the owner.
@@ -121,6 +142,7 @@ export type BrandConfig = {
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
   readonly calls: CallRules;
+  readonly sounds: SoundRules;
   readonly moderation: ModerationRules;
   readonly company: Company;
   readonly schedule: ScheduleRules;

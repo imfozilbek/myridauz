@@ -12,7 +12,8 @@ export type RegistrationStep = (typeof REGISTRATION_STEPS)[number];
 export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'photos', 'submitted'] as const;
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 // The main screen (G25): a trip of the block, the question card, the last route, the main button.
-const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry'] as const;
+// The tiles of «Hamyon» and «Yordam» (G53).
+const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry', 'wallet', 'support'] as const;
 export const TRIP_STEPS = [
   'route',
   'mode',
@@ -72,6 +73,11 @@ const crash = {
   client: z
     .string()
     .regex(/^[a-z_]{1,16}( [0-9.]{1,8})?$/)
+    .optional(),
+  // The place in the build: «index-abc.js:95:12345», no words of a person (docs/112).
+  where: z
+    .string()
+    .regex(/^[A-Za-z0-9_.-]{1,80}\.js:\d{1,7}:\d{1,7}$/)
     .optional(),
 };
 

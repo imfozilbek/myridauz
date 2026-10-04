@@ -18,9 +18,9 @@ const PASSENGER = 82;
 const STRANGER = 83;
 const BLOCKED = 84;
 
-async function bookedChat() {
-  await approvedDriver(DRIVER);
-  for (const id of [PASSENGER, STRANGER, BLOCKED]) await registerUser(id);
+async function bookedChat(driver = DRIVER, passenger = PASSENGER) {
+  await approvedDriver(driver);
+  for (const id of [passenger, STRANGER, BLOCKED]) await registerUser(id);
   const trip = {
     from: '1726273',
     to: '1718401',
@@ -29,13 +29,13 @@ async function bookedChat() {
     price: 90_000,
   };
   const published = await read<{ id: string }>(
-    call('/driver/trips', DRIVER, {
+    call('/driver/trips', driver, {
       app: 'driver',
       ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
     }),
   );
   return read<{ id: string; chatKey: string }>(
-    call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
+    call(`/trips/${published.id}/bookings`, passenger, json(doorBooking(1))),
   );
 }
 
@@ -93,5 +93,26 @@ describe('chat access (docs/07)', () => {
     expect((await ice(PASSENGER)).status).toBe(503);
     expect((await ice(DRIVER, 'driver')).status).toBe(503);
     expect((await ice(STRANGER)).status).toBe(403);
+  });
+});
+
+describe('the booking of a chat on the call screen (G54, docs/115)', () => {
+  it('shows each side the booking as it sees it, and nothing to anyone else', async () => {
+    const [driver, passenger] = [85, 86];
+    const booking = await bookedChat(driver, passenger);
+    const about = (id: number, miniApp = 'passenger', key = booking.chatKey) =>
+      read<{
+        booking: { id: string; seats: number; trip: { driver: { firstName: string } } } | null;
+        role: string | null;
+      }>(call(`/chats/${key}/about`, id, { app: miniApp }));
+    const seen = await about(passenger);
+    expect(seen.booking).toMatchObject({ id: booking.id, seats: 1 });
+    expect(seen.booking?.trip.driver.firstName).toEqual(expect.any(String));
+    expect(seen.role).toBe('passenger');
+    expect(await about(driver, 'driver')).toMatchObject({ booking: { id: booking.id }, role: 'driver' });
+    expect((await about(STRANGER)).booking).toBeNull();
+    expect((await about(passenger, 'passenger', 'not-a-key')).booking).toBeNull();
+    // Never without the signature of Telegram.
+    expect((await app.request(`/chats/${booking.chatKey}/about`, {}, testEnv)).status).toBe(401);
   });
 });

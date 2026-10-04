@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { answer, confirm } from './application/answer';
 import { requestBooking } from './application/request';
-import { tellTripChange } from './application/trip-change';
+import { tellTripRetimed } from './application/trip-change';
 import { ALI, DILNOZA, DRIVER, OLIM, seats, setup } from './test-kit';
 
 const value = <T>(result: { ok: true; value: T } | { ok: false; error: string }) => {
@@ -9,7 +9,7 @@ const value = <T>(result: { ok: true; value: T } | { ok: false; error: string })
   return result.value;
 };
 
-describe('the driver moved the time or lowered the price (G39, docs/104, 8 and 9)', () => {
+describe('the driver moved the time (G39, docs/104, 8)', () => {
   it('tells the passengers with an open booking only, each once', async () => {
     const { deps, addTrip, bonus, notes } = setup();
     await bonus();
@@ -20,13 +20,7 @@ describe('the driver moved the time or lowered the price (G39, docs/104, 8 and 9
     const declined = value(await requestBooking(deps, ALI, tripId, seats(1)));
     await answer(deps, DRIVER, declined.id, 'decline');
     notes.length = 0;
-    await tellTripChange(deps, tripId, 'retimed');
-    await tellTripChange(deps, tripId, 'cheaper');
-    expect(notes).toEqual([
-      'passenger: retimed Dilnoza',
-      'passenger: retimed Olim',
-      'passenger: cheaper Dilnoza',
-      'passenger: cheaper Olim',
-    ]);
+    await tellTripRetimed(deps, tripId);
+    expect(notes).toEqual(['passenger: retimed Dilnoza', 'passenger: retimed Olim']);
   });
 });

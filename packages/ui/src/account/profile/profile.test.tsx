@@ -70,7 +70,7 @@ describe('profile', () => {
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
     expect(client.getAvatar).toHaveBeenCalledWith('00000000000000000000000000000007');
     fireEvent.click(screen.getByText('Orqaga'));
-    expect(screen.getByText('Profil va rasm')).toBeTruthy();
+    expect(screen.getByLabelText('Profil va rasm')).toBeTruthy();
   });
 
   it('uploads a new photo and reports a failure in simple words', async () => {

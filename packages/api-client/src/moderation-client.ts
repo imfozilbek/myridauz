@@ -1,5 +1,6 @@
 import {
   ADMIN_APPLICATIONS_PATH,
+  ADMIN_ME_PATH,
   adminApplicationPath,
   adminBlockPath,
   adminBlocksPath,
@@ -17,6 +18,8 @@ import {
   type CarPhotoKind,
   type DecisionInput,
   type PersonId,
+  teamMeSchema,
+  type TeamMe,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -24,6 +27,7 @@ import { signedRequest, type SignedOptions } from './signed-request';
 export function createModerationClient(options: SignedOptions) {
   const { request, post } = signedRequest(options);
   return {
+    me: async (): Promise<TeamMe> => teamMeSchema.parse(await (await request(ADMIN_ME_PATH)).json()),
     queue: async (): Promise<ApplicationSummary[]> =>
       applicationQueueSchema.parse(await (await request(ADMIN_APPLICATIONS_PATH)).json()).applications,
     get: async (userId: PersonId): Promise<ApplicationDetail> =>

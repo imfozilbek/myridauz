@@ -14,7 +14,14 @@ import { memoryEvents } from './infrastructure/memory-events';
 const localCache = createMemoryCache();
 const DATASET = /^[a-z][a-z0-9_]{0,63}$/;
 // Locally there is no database: the main numbers are zero, the events come from the memory sink.
-const zeroNumbers = { newUsers: 0, trips: 0, bookings: 0, driverApplications: 0, complaints: 0 };
+const zeroNumbers = {
+  newUsers: 0,
+  trips: 0,
+  activeTrips: 0,
+  bookings: 0,
+  driverApplications: 0,
+  complaints: 0,
+};
 
 function eventsOf(env: Bindings): EventSource | null {
   const { ANALYTICS, ANALYTICS_API_TOKEN: token, CF_ACCOUNT_ID: accountId, ANALYTICS_DATASET: dataset } = env;

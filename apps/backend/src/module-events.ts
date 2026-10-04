@@ -5,7 +5,7 @@ import {
   filedRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
-  tellBookedOfChange,
+  tellBookedOfRetime,
 } from './modules/bookings';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { channels } from './modules/channels';
@@ -54,7 +54,9 @@ handleTripChange(async (env, tripId, event) => {
     if (trip?.status === 'cancelled') await tellTripFamily(env, tripId, tripForFamily);
     return;
   }
-  await tellBookedOfChange(env, tripId, event);
+  // A lower price reaches the subscribers and the channel, never the booked passengers: their
+  // booking keeps its price (owner decision 04.10.2026).
+  if (event === 'retimed') await tellBookedOfRetime(env, tripId);
   if (event === 'cheaper' && trip) await tripCheaper(env, trip);
 });
 

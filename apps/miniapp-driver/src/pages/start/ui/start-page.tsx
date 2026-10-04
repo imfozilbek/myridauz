@@ -1,14 +1,19 @@
 import {
   DriverApproved,
+  DriverData,
   DriverGate,
   DriverHome,
   DriverNotice,
+  DriverTiles,
   HomeScreenOffer,
   MyTripsScreen,
   NewTripFlow,
   RequestsSearchFlow,
   StartFlow,
+  useDriverTripsLive,
   usePending,
+  WALLET_SECTION,
+  WalletScreen,
   type StartAction,
 } from '@platform/ui';
 
@@ -29,7 +34,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
-    waitsApproval: true,
+    // On the check its own screen says why it waits; the tile keeps its hint (the mockup of G53).
     Screen: RequestsSearchFlow,
   },
   {
@@ -38,7 +43,21 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.driver.myTripsHint',
+    // The tile counts the new requests of passengers on the live trips (G53).
+    useLive: useDriverTripsLive,
     Screen: MyTripsScreen,
+  },
+];
+
+// «Hamyon» opens from its tile once the application is approved (G53).
+const SECTIONS: readonly StartAction[] = [
+  {
+    id: WALLET_SECTION,
+    icon: 'wallet',
+    tone: 'deep',
+    labelKey: 'wallet.title',
+    hintKey: 'wallet.rule',
+    Screen: WalletScreen,
   },
 ];
 
@@ -52,22 +71,27 @@ export function StartPage() {
   );
 }
 
-// An approved driver publishes from the main button, so the list does not repeat «Yangi safar»;
-// until the application is approved there is no main button and the action stays (G25).
+// An approved driver publishes from the main button and its tile (G25, G53); until the
+// application is approved there is no main button. The tiles read the trips of the block above.
 function DriverStart() {
   const pending = usePending();
   return (
-    <StartFlow
-      actions={ACTIONS}
-      notice={<DriverNotice />}
-      after={
-        <>
-          <DriverApproved />
-          <HomeScreenOffer />
-        </>
-      }
-      home={(go) => <DriverHome go={go} />}
-      {...(pending ? {} : { covered: 'new_trip' })}
-    />
+    <DriverData>
+      <StartFlow
+        actions={ACTIONS}
+        sections={SECTIONS}
+        coveredTile
+        notice={<DriverNotice />}
+        after={
+          <>
+            <DriverApproved />
+            <HomeScreenOffer />
+          </>
+        }
+        home={(go) => <DriverHome go={go} />}
+        tiles={(go) => <DriverTiles go={go} />}
+        {...(pending ? {} : { covered: 'new_trip' })}
+      />
+    </DriverData>
   );
 }

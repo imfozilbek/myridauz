@@ -6,6 +6,7 @@ const SENT_PATH = '/__sent';
 const CALL = /^\/bot([^/]+)\/(\w+)$/u;
 // A file a bot got (a voice message): a few bytes are enough for the backend (docs/50).
 const FILE = /^\/file\/bot[^/]+\//u;
+const KEEP_ALIVE_MS = 60 * 1000;
 const JSON_TYPE = { 'content-type': 'application/json' };
 
 // What Telegram answers to each method, enough for the backend to go on.
@@ -64,6 +65,9 @@ export function serveTelegram(port) {
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result: resultOf(method, id) }));
     });
   });
+  // A scenario reuses its connection: the stub keeps it longer than the client, or under the load of
+  // stands side by side it closes one the scenario is just sending on («other side closed»).
+  server.keepAliveTimeout = KEEP_ALIVE_MS;
   server.listen(port);
   return server;
 }

@@ -24,6 +24,7 @@ const statsOf = (period: string) => {
     numbers: {
       newUsers: 24 * week,
       trips: 9 * week,
+      activeTrips: 17,
       bookings: 17 * week,
       driverApplications: 3 * week,
       complaints: week === 1 ? 1 : 4,

@@ -2,7 +2,10 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.mjs"]
+      "entry": ["scripts/*.mjs"],
+      "playwright": {
+        "config": ["playwright.config.ts", "playwright.stand.config.ts"]
+      }
     },
     "apps/backend": {
       "entry": ["src/index.ts"],

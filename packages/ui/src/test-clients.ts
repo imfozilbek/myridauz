@@ -22,6 +22,7 @@ export const testClients = (overrides: {
   readonly map?: Partial<ApiClients['map']>;
   readonly pitaks?: Partial<ApiClients['pitaks']>;
   readonly company?: Partial<ApiClients['company']>;
+  readonly sounds?: Partial<ApiClients['sounds']>;
 }): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -31,6 +32,8 @@ export const testClients = (overrides: {
     ...overrides.drivers,
   },
   moderation: {
+    // A team member without a name in the test: the card waits (G53).
+    me: NOT_USED,
     queue: NOT_USED,
     get: NOT_USED,
     photo: NOT_USED,
@@ -84,6 +87,7 @@ export const testClients = (overrides: {
   wallet: { mine: NOT_USED, all: NOT_USED, of: NOT_USED, adjust: NOT_USED, ...overrides.wallet },
   chat: {
     socketUrl: NOT_USED,
+    about: async () => ({ booking: null, role: null }),
     share: NOT_USED,
     stopSharing: NOT_USED,
     shareTrip: NOT_USED,
@@ -134,4 +138,5 @@ export const testClients = (overrides: {
     ...overrides.pitaks,
   },
   company: { current: NOT_USED, state: NOT_USED, save: NOT_USED, ...overrides.company },
+  sounds: { current: NOT_USED, state: NOT_USED, pick: NOT_USED, ...overrides.sounds },
 });

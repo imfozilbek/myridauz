@@ -12,6 +12,7 @@ import type {
   ModerationClient,
   PitaksClient,
   PricingClient,
+  SoundsClient,
   StatsClient,
   SubscriptionsClient,
   WalletClient,
@@ -36,6 +37,7 @@ export type ApiClients = {
   readonly map: MapClient;
   readonly pitaks: PitaksClient;
   readonly company: CompanyClient;
+  readonly sounds: SoundsClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

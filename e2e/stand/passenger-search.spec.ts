@@ -92,7 +92,7 @@ for (const platform of PLATFORMS)
     // Again: the last route on the main screen, the points of the last trip (K4, K5).
     const again = counter();
     // «Назад» up to the main screen: the app keeps its screen while it stays open.
-    const recent = page.getByText(t('market.recent'));
+    const recent = page.getByText(t('home.driver.last'));
     await expect(async () => {
       if (!(await recent.isVisible())) await pressBack(page);
       await expect(recent).toBeVisible({ timeout: 1000 });

@@ -12,6 +12,7 @@ import { answer, confirm, driverBookings, teamTripBookings } from '../applicatio
 import type { BookingsDeps } from '../application/ports';
 import { markProgress } from '../application/progress';
 import { cancelByPassenger, passengerBookings, requestBooking } from '../application/request';
+import { unreadOf } from '../../chat';
 import { failWith, ONE } from './fail';
 
 const STATUS = {
@@ -45,9 +46,17 @@ export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
       );
       return result.ok ? context.json(result.value, 201) : fail(context, result.error);
     })
-    .get(PASSENGER_BOOKINGS_PATH, async (context) =>
-      context.json({ bookings: await passengerBookings(deps(context.env), context.get('session').user.id) }),
-    )
+    .get(PASSENGER_BOOKINGS_PATH, async (context) => {
+      const passengerId = context.get('session').user.id;
+      const [bookings, unread] = await Promise.all([
+        passengerBookings(deps(context.env), passengerId),
+        unreadOf(context.env, passengerId),
+      ]);
+      // The messages of the driver the passenger has not read yet: the plate «1 xabar» (G53).
+      return context.json({
+        bookings: bookings.map((booking) => ({ ...booking, unread: unread.get(booking.chatKey) ?? 0 })),
+      });
+    })
     .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/cancel`, async (context) => {
       const passengerId = context.get('session').user.id;
       const result = await cancelByPassenger(deps(context.env), passengerId, context.req.param('id'));

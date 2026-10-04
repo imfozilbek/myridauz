@@ -17,7 +17,15 @@ export const FUNNEL_STEPS = {
 } as const satisfies Record<FunnelId, readonly string[]>;
 export type FunnelStepId = (typeof FUNNEL_STEPS)[FunnelId][number];
 const STEP_IDS = [...new Set(Object.values(FUNNEL_STEPS).flat())] as [FunnelStepId, ...FunnelStepId[]];
-export const MAIN_NUMBERS = ['newUsers', 'trips', 'bookings', 'driverApplications', 'complaints'] as const;
+// activeTrips: the trips people can book now, on the main screen of the admin (G53).
+export const MAIN_NUMBERS = [
+  'newUsers',
+  'trips',
+  'activeTrips',
+  'bookings',
+  'driverApplications',
+  'complaints',
+] as const;
 export type MainNumber = (typeof MAIN_NUMBERS)[number];
 
 const count = z.number().int().nonnegative();

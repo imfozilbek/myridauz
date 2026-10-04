@@ -59,8 +59,8 @@ describe('StartPage', () => {
       }),
     );
     expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
-    // Publishing and requests wait for the approval, as for an application being checked.
-    expect(screen.getAllByText('Tasdiqlangandan keyin')).toHaveLength(2);
+    // Publishing waits for the approval; the requests tile keeps its hint (the mockup of G53).
+    expect(screen.getAllByText('Tekshiruvdan keyin')).toHaveLength(1);
     fireEvent.click(screen.getByText('Arizani toʻldiring'));
     expect(await screen.findByText('Mashina markasi')).toBeTruthy();
   });

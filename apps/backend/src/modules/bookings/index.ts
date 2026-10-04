@@ -6,12 +6,12 @@ import { bookingsDeps } from './deps';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests } from './application/expire';
-import { chatMember } from './application/chat-member';
+import { chatBooking, chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, rideOf, ridesOf } from './application/rides';
-import { tellTripChange } from './application/trip-change';
+import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -34,9 +34,9 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
       await answer(deps, driverId, booking.id, 'driver_cancel');
 });
 
-// The driver moved the time or lowered the price: the booked passengers hear it (G39, docs/104).
-export const tellBookedOfChange = (env: Bindings, tripId: string, change: 'retimed' | 'cheaper') =>
-  tellTripChange(bookingsDeps(env), tripId, change);
+// The driver moved the time: the booked passengers hear it (G39, docs/104).
+export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
+  tellTripRetimed(bookingsDeps(env), tripId);
 
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
@@ -50,6 +50,8 @@ export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env
 // For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
+export const chatBookingOf = (env: Bindings, key: string, userId: number) =>
+  chatBooking(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
 // Confirmed bookings of these trips as their passengers see them: the reminders (G10).

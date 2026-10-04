@@ -21,7 +21,7 @@ const point = (
   blobs: [name, app, screen, '1', session, code],
   doubles: [NOW - ago, NOW - ago],
 });
-const numbers = { newUsers: 3, trips: 2, bookings: 1, driverApplications: 1, complaints: 0 };
+const numbers = { newUsers: 3, trips: 2, activeTrips: 4, bookings: 1, driverApplications: 1, complaints: 0 };
 
 function setup(events: EventSource | null) {
   const told: Alert[] = [];

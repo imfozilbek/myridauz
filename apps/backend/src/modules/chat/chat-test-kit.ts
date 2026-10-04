@@ -17,6 +17,8 @@ export function room() {
   const inbox = new Map<number, ChatServerEvent[]>();
   const signals: string[] = [];
   const wake: { at: number | null } = { at: null };
+  // The unread messages of each person in this chat (G53).
+  const unread = new Map<number, number>();
   const deps: RoomDeps = {
     key: 'b00000000-0000-0000-0000-000000000001',
     store: createMemoryMessages(),
@@ -24,11 +26,16 @@ export function room() {
     signals: {
       newMessage: async (to) => void signals.push(`new to ${to.role} ${to.userId}`),
       contactAttempts: async (userId, _key, count) => void signals.push(`attempts ${userId} ${count}`),
+      openCall: async (to) => void signals.push(`open ${to.role} ${to.userId}`),
       incomingCall: async (to) => void signals.push(`ringing ${to.role} ${to.userId}`),
       missedCall: async (to) => void signals.push(`missed ${to.role} ${to.userId}`),
     },
+    unread: {
+      add: async (to) => void unread.set(to.userId, (unread.get(to.userId) ?? 0) + 1),
+      clear: async (userId) => void unread.delete(userId),
+    },
     now: () => now,
-    calls: { ringMs: 30 * SECOND, connectMs: 15 * SECOND },
+    calls: { ringMs: 30 * SECOND, connectMs: 15 * SECOND, inviteMs: 5 * SECOND },
     wakeAt: (at) => void (wake.at = at),
   };
   const connect = (member: Member) => {
@@ -37,7 +44,7 @@ export function room() {
       send: (data) => inbox.set(member.userId, [...(inbox.get(member.userId) ?? []), JSON.parse(data)]),
     };
     open.push(socket);
-    joined(deps, socket);
+    void joined(deps, socket);
     return socket;
   };
   const emit = (socket: ChatSocket, event: object) => received(deps, socket, JSON.stringify(event));
@@ -51,5 +58,5 @@ export function room() {
     now += ms;
     if (wake.at !== null && wake.at <= now) await callTimeout(deps);
   };
-  return { deps, connect, emit, say, leave, inbox, signals, later, open, wake };
+  return { deps, connect, emit, say, leave, inbox, signals, later, open, wake, unread };
 }

@@ -7,6 +7,7 @@ import { callLeft, callTimeout } from '../application/call-room';
 import { received } from '../application/dispatch';
 import { joined, systemEvent } from '../application/room';
 import { botSignals } from './bot-signals';
+import { d1Unread } from './d1-unread';
 import { sqlMessages } from './sql-messages';
 import { closeCodeFor } from '../../../shared/sockets/close-code';
 
@@ -31,8 +32,13 @@ export class ChatRoom extends DurableObject<Bindings> {
           .filter((ws) => ws.readyState === WebSocket.OPEN)
           .map((ws) => this.socket(ws)),
       signals: botSignals(this.env),
+      unread: d1Unread(this.env, key),
       now: Date.now,
-      calls: { ringMs: calls.ringSeconds * SECOND, connectMs: calls.connectSeconds * SECOND },
+      calls: {
+        ringMs: calls.ringSeconds * SECOND,
+        connectMs: calls.connectSeconds * SECOND,
+        inviteMs: calls.inviteSeconds * SECOND,
+      },
       wakeAt: (at) => void (at === null ? this.ctx.storage.deleteAlarm() : this.ctx.storage.setAlarm(at)),
     };
   }
@@ -64,7 +70,7 @@ export class ChatRoom extends DurableObject<Bindings> {
     const [client, server] = [pair[0], pair[1]];
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment({ member, key });
-    joined(this.deps(key), this.socket(server));
+    await joined(this.deps(key), this.socket(server));
     return new Response(null, { status: 101, webSocket: client });
   }
 

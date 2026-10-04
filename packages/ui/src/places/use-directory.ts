@@ -20,7 +20,12 @@ export function useDirectory(): readonly [DirectoryState, () => void] {
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     let active = true;
-    if (built.has(client)) return;
+    // Another block of the screen may have built it meanwhile: a retry takes it (G53).
+    const ready = built.get(client);
+    if (ready) {
+      setState({ status: 'ready', directory: ready });
+      return;
+    }
     client.getLocations().then(
       (response) => {
         const directory = buildDirectory(response.locations);

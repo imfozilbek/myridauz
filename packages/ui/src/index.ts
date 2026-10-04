@@ -15,12 +15,27 @@ export { MyTripsScreen } from './market/my-trips-screen';
 export { NewRequestFlow } from './market/new-request-flow';
 export { NewTripFlow } from './market/new-trip-flow';
 export { ManagementScreen } from './pricing/management-screen';
+export { StatsScreen } from './stats/stats-screen';
+export { TeamTripsScreen } from './market/team-trips-screen';
+export {
+  AdminTiles,
+  MANAGEMENT_SECTION,
+  STATS_SECTION,
+  TRIPS_SECTION,
+  useApplicationsLive,
+  useComplaintsLive,
+} from './home/admin-tiles';
 export { linkedStats } from './stats/stats-screen';
 export { RequestsSearchFlow } from './market/requests-search-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';
 export { DriverHome } from './home/driver-home';
 export { PassengerHome } from './home/passenger-home';
+export { PassengerData, useBookingsLive, useOffersLive } from './home/passenger-data';
+export { PassengerTiles } from './home/passenger-tiles';
+export { DriverData, useDriverTripsLive } from './home/driver-data';
+export { DriverTiles, WALLET_SECTION } from './home/driver-tiles';
+export { WalletScreen } from './wallet/wallet-screen';
 export { StartFlow } from './flow/start-flow';
 export { Icon, type IconName } from './icons';
 export { mountApp } from './mount-app';
