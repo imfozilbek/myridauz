@@ -2,7 +2,6 @@ import { expect, test, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { searchRoute } from './market';
 import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -28,16 +27,13 @@ test('passenger: a screen that did not load has "Back"', async ({ page }) => {
   await expect(page.getByText(t('common.myTrips'))).toBeVisible();
 });
 
+// A full trip is never in the search (docs/90 F-P4); a link from a channel or a bot opens it.
 test('passenger: a trip without seats says why', async ({ page }) => {
   await mockApi(page, 'active');
-  await page.route('**/api/trips?*', (route) =>
-    route.fulfill({ json: { trips: [tripOf('7', 'Bekzod', false, 20, { status: 'full', seatsLeft: 0 })] } }),
-  );
+  const full = tripOf('7', 'Bekzod', false, 20, { status: 'full', seatsLeft: 0 });
+  await page.route(`**/api/trips/${full.id}`, (route) => route.fulfill({ json: full }));
   await mockTelegram(page);
-  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await searchRoute(page);
-  await page.getByText('Bekzod', { exact: false }).click();
+  await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?trip=${full.id}`));
   await expect(page.getByText(t('market.trip.closed.full'))).toBeVisible();
   await expect(page.locator('#tg-main-button', { hasText: TEXT.book })).toBeHidden();
   await shot(page, '2-full-trip');
