@@ -1,4 +1,5 @@
 import {
+  DriverApproved,
   DriverGate,
   DriverHome,
   DriverNotice,
@@ -58,9 +59,10 @@ function DriverStart() {
   return (
     <StartFlow
       actions={ACTIONS}
-      notice={
+      notice={<DriverNotice />}
+      after={
         <>
-          <DriverNotice />
+          <DriverApproved />
           <HomeScreenOffer />
         </>
       }

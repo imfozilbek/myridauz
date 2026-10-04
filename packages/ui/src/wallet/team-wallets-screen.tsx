@@ -26,7 +26,7 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => wallet.all());
+  const { value, failed, reload, refresh } = useLoad(() => wallet.all(), 'team.wallets');
   const [open, setOpen] = useState<Owner | null>(null);
   const close = () => {
     setOpen(null);

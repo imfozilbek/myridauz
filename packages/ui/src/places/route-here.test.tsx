@@ -9,7 +9,10 @@ const location = vi.hoisted(() => ({
   knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
 describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
   it('fills the district where the person stands when they allowed the place before', async () => {
@@ -28,5 +31,24 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
     );
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
     expect(screen.queryByText('Chilonzor')).toBeNull();
+  });
+
+  it('shows the district of last time at once, while the fresh one is asked (G41, docs/108)', async () => {
+    localStorage.setItem('here_district', '1726269');
+    location.knownPosition.mockReturnValueOnce(new Promise(() => undefined));
+    renderMarket(
+      <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
+      testClients({ map: testMap() }),
+    );
+    expect(await screen.findByText('Chilonzor')).toBeTruthy();
+  });
+
+  it('remembers the district found now for the next time', async () => {
+    renderMarket(
+      <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
+      testClients({ map: testMap() }),
+    );
+    await screen.findByText('Chilonzor');
+    expect(localStorage.getItem('here_district')).toBe('1726269');
   });
 });

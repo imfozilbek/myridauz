@@ -16,6 +16,8 @@ export const MY_TRIPS = 'market.mine.trips';
 
 type Props = {
   readonly trips: readonly Trip[];
+  // How many new requests wait for the driver's answer on each trip (G41, docs/90 F-D4).
+  readonly waiting: (trip: Trip) => number;
   readonly offers: readonly Offer[];
   readonly onBack: () => void;
   readonly onRefresh: () => unknown;
@@ -26,7 +28,16 @@ type Props = {
 
 // The list itself: back from a trip it stands at the same page and place; a quiet refresh keeps
 // the trip under the finger (docs/94 F2, S3).
-export function MyTripsList({ trips, offers, onBack, onRefresh, onTrip, onOffer, onSubscriptions }: Props) {
+export function MyTripsList({
+  trips,
+  waiting,
+  offers,
+  onBack,
+  onRefresh,
+  onTrip,
+  onOffer,
+  onSubscriptions,
+}: Props) {
   const { t } = useI18n();
   useListPlace(MY_TRIPS, true);
   useKeepPlace(trips);
@@ -60,7 +71,7 @@ export function MyTripsList({ trips, offers, onBack, onRefresh, onTrip, onOffer,
           items={trips}
           render={(trip) => (
             <div key={trip.id} data-row={trip.id}>
-              <TripCard trip={trip} own onOpen={() => onTrip(trip)} />
+              <TripCard trip={trip} own requests={waiting(trip)} onOpen={() => onTrip(trip)} />
             </div>
           )}
         />

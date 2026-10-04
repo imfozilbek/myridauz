@@ -46,5 +46,8 @@
   "navigator.yandex": "Yandex",
   "navigator.google": "Google",
   "navigator.apple": "Apple",
-  "mark.pitak": "P"
+  "mark.pitak": "P",
+  "request.door": "Uyidan olib ketish",
+  "request.pitak": "Pitakdan olib ketish",
+  "request.both": "Uyidan yoki pitakdan"
 }

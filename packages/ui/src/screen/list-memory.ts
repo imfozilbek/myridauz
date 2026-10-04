@@ -25,6 +25,12 @@ export function useListPlace(key: string, ready: boolean) {
   );
 }
 
+// Tests start each one with an empty memory: the data of one test never opens the next one.
+export function forgetAllLists() {
+  kept.clear();
+  places.clear();
+}
+
 // The person leaves the list itself: the next visit opens it fresh, at the top.
 export function forgetList(key: string) {
   places.delete(key);

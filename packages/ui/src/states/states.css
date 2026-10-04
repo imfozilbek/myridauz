@@ -1,0 +1,26 @@
+/* A skeleton keeps its place at once and shows only after a wait a person notices (G41, docs/108). */
+.skeleton-late[data-hidden] {
+  visibility: hidden;
+}
+
+/* A slow start: data that comes a moment after the wait never shows a gray flash. */
+.skeleton-late:not([data-hidden]) {
+  animation: skeleton-in 300ms ease-in;
+}
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-late:not([data-hidden]) {
+    animation: none;
+  }
+}
+
+/* A row whose data is on the way keeps its place unseen, so what is under it never jumps (G41). */
+.keep-place {
+  visibility: hidden;
+}

@@ -89,4 +89,12 @@ describe('pitaks and live directions (G24, docs/72)', () => {
     expect(await removeDirection(deps, MODERATOR, TOSHKENT, SAMARQAND)).toBe(false);
     expect((await allPitaks(deps)).directions).toEqual([]);
   });
+
+  it('shows the team what waits for a check first, the closed ones last (G41, docs/90 F-A13)', async () => {
+    const deps = setup();
+    for (const status of ['closed', 'checked', 'claude', 'candidate'])
+      await savePitak(deps, MODERATOR, null, input(status));
+    const order = (await allPitaks(deps)).pitaks.map((pitak) => pitak.status);
+    expect(order).toEqual(['candidate', 'claude', 'checked', 'closed']);
+  });
 });

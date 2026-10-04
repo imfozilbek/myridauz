@@ -4,6 +4,8 @@ import { FeedContext, type Subscribe } from './feed-context';
 
 const FIRST_PAUSE_MS = 1000;
 const MAX_PAUSE_MS = 30_000;
+// Signals closer than this are one change for the screens.
+const SETTLE_MS = 300;
 
 type FeedProviderProps = {
   // The address of the personal socket with a fresh ticket (docs/64).
@@ -33,7 +35,13 @@ export function FeedProvider({ connect, onWake, children }: FeedProviderProps) {
     [listeners],
   );
   useEffect(() => {
-    const changed = () => [...listeners].forEach((listener) => listener());
+    // One return to the app comes as two signals (the browser and Telegram), and changes come in
+    // bursts: the screens refresh once for them all, not twice in a row (G41, docs/108 F).
+    let settle: ReturnType<typeof setTimeout> | undefined;
+    const changed = () => {
+      clearTimeout(settle);
+      settle = setTimeout(() => [...listeners].forEach((listener) => listener()), SETTLE_MS);
+    };
     let socket: WebSocket | null = null;
     let connecting = false;
     let stopped = false;
@@ -78,6 +86,7 @@ export function FeedProvider({ connect, onWake, children }: FeedProviderProps) {
     return () => {
       stopped = true;
       clearTimeout(timer);
+      clearTimeout(settle);
       stopWake();
       socket?.close();
     };

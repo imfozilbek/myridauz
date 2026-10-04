@@ -57,7 +57,9 @@ describe('a driver on a new check (docs/65 A1)', () => {
     const id = published.ok ? published.value.id : '';
     recheck(1);
     const search = { from: '1726273', to: '1718401', date: '2026-10-01' };
-    expect((await searchTrips(deps, search)).map((item) => item.id)).toEqual([id]);
+    expect((await searchTrips(deps, search, 2)).map((item) => item.id)).toEqual([id]);
+    // The driver does not find the own trip: nothing to book there (G41, docs/90 F-P8).
+    expect(await searchTrips(deps, search, 1)).toEqual([]);
     expect((await tripDetail(deps, id))?.driver.car.model).toBe('Cobalt');
     expect((await myTrips(deps, 1)).map((item) => item.id)).toEqual([id]);
     expect((await familyView(deps, id))?.plate).toBe('01A123BC');

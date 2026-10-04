@@ -113,4 +113,16 @@ describe('recommendation and the team prices (docs/09, docs/23)', () => {
       { from: '1701', to: '1801', km: 300, formula: 90000, manual: null, median: null, medianTrips: 0 },
     ]);
   });
+
+  it('lists the team prices first, then by distance (G41, docs/90 F-A8)', async () => {
+    const deps = setup();
+    await setDirection(deps, { from: '1701', to: '1802', price: 50000 }, 900);
+    await setDirection(deps, { from: '1801', to: '1802', price: 30000 }, 900);
+    const order = (await directions(deps)).map((row) => [row.km, row.manual]);
+    expect(order).toEqual([
+      [35, 30000],
+      [120, 50000],
+      [300, null],
+    ]);
+  });
 });

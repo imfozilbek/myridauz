@@ -20,7 +20,7 @@ import { useHomeTap } from './use-home-tap';
 // where the person stands. «Safar topish» is the main button of the start flow.
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
   const { bookings } = useApiClients();
-  const load = useLoad(() => bookings.myBookings());
+  const load = useLoad(() => bookings.myBookings(), 'home.bookings');
   // A pull down at the top of the main screen refreshes the bookings (docs/94 W1).
   return (
     <>
@@ -53,6 +53,9 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
       onOpen={(route) => tap('item', () => go('find_trip', { route }))()}
     />
   ) : null;
+  // «Qayerdan» and the recent routes wait for the names of the places: they come whole, the
+  // actions below do not move (G41, docs/108).
+  if (shown.length === 0 && places.status === 'loading') return <HomeLoading lines={[false, false]} />;
   if (shown.length === 0)
     return (
       <>

@@ -3,6 +3,7 @@ import { expect, type Page } from '@playwright/test';
 import type { MiniApp } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
+import { readStability, watchStability } from './stability';
 import { openAs, type Person } from './stand-kit';
 
 // A walk through the screens of one Mini App for the UX review of G27 (docs/83): every step is a
@@ -43,6 +44,8 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   );
   if (cut.length > 0) appendFileSync(CUT, cut.map((text) => `${platform}/${name}: ${text}\n`).join(''));
   await page.screenshot({ path: `screenshots/stand/g27/${platform}/${name}.png`, animations: 'disabled' });
+  // Every blink and jump since the last shot is written down under this name (G41, docs/108).
+  await readStability(page, `${platform}/${name}`);
   await sendScreens(page);
 };
 
@@ -79,6 +82,7 @@ function recordScreens(page: Page) {
 
 export async function openHome(page: Page, app: MiniApp, person: Person, platform: Platform, search = '') {
   recordScreens(page);
+  await watchStability(page);
   await openAs(page, app, person, { platform, search });
   await page.waitForLoadState('networkidle');
 }

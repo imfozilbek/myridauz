@@ -65,6 +65,8 @@
 
 .cell-value {
   color: var(--tgui--hint_color);
+  /* Digits of the same width: a changing sum or count never shakes the row (G41, docs/108 F). */
+  font-variant-numeric: tabular-nums;
 }
 
 .profile-round {

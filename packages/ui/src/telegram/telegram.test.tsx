@@ -92,16 +92,15 @@ describe('Telegram wrappers', () => {
     expect(sdk.init).not.toHaveBeenCalled();
   });
 
-  it('shows a turquoise native main button and hides it on leave', () => {
-    const { unmount } = renderInShell(<MainButton text="Davom etish" onClick={() => undefined} />, true);
+  // Hiding it on leave: bottom-button.test.tsx (G41).
+  it('shows a turquoise native main button', () => {
+    renderInShell(<MainButton text="Davom etish" onClick={() => undefined} />, true);
     expect(sdk.mainButton.setParams.ifAvailable).toHaveBeenCalledWith({
       text: 'Davom etish',
       isVisible: true,
       backgroundColor: colors.brandStrong,
       textColor: colors.bg,
     });
-    unmount();
-    expect(sdk.mainButton.setParams.ifAvailable).toHaveBeenLastCalledWith({ isVisible: false });
   });
 
   it('shows native secondary and back buttons; «Назад» hides once no next step takes it (G38)', () => {

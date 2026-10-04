@@ -1,10 +1,8 @@
-import type { RideRequest } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { OfferFlow } from '../bookings/offer-flow';
 import { List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { Route } from '../places/route-screen';
 import { EmptyState } from '../states/empty-state';
@@ -14,9 +12,9 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DayChips } from './day-chips';
+import { useDayRequests, type DayRequest } from './day-requests';
 import { RequestCard, RequestScreen } from './request-card';
 import { RouteView } from './route-view';
-import { useList } from './use-list';
 import { useDayLabel } from './when';
 
 type Props = {
@@ -36,12 +34,9 @@ export function RequestsDay({ route, date, now, onDay, onOtherDay, onPublish, on
   useScreenView('market.requests');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { market } = useApiClients();
   const dayLabel = useDayLabel();
-  const { items, failed, reload, refresh } = useList(() =>
-    market.searchRequests({ from: route.from.id, to: route.to.id, date }),
-  );
-  const [open, setOpen] = useState<RideRequest | null>(null);
+  const { items, failed, reload, refresh } = useDayRequests(route, date);
+  const [open, setOpen] = useState<DayRequest | null>(null);
   const [offering, setOffering] = useState(false);
   if (open && offering) {
     const close = () => {
@@ -49,10 +44,16 @@ export function RequestsDay({ route, date, now, onDay, onOtherDay, onPublish, on
       setOpen(null);
       reload();
     };
-    return <OfferFlow request={open} onBack={() => setOffering(false)} onClose={close} />;
+    return <OfferFlow request={open.request} onBack={() => setOffering(false)} onClose={close} />;
   }
   if (open)
-    return <RequestScreen request={open} onBack={() => setOpen(null)} onOffer={() => setOffering(true)} />;
+    return (
+      <RequestScreen
+        request={open.request}
+        onBack={() => setOpen(null)}
+        {...(open.offered ? {} : { onOffer: () => setOffering(true) })}
+      />
+    );
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   const found = items !== null && items.length > 0;
   return (
@@ -68,8 +69,13 @@ export function RequestsDay({ route, date, now, onDay, onOtherDay, onPublish, on
             <RouteView from={route.from.id} to={route.to.id} />
           </div>
         </Section>
-        {items?.map((request) => (
-          <RequestCard key={request.id} request={request} onOpen={() => setOpen(request)} />
+        {items?.map((item) => (
+          <RequestCard
+            key={item.request.id}
+            request={item.request}
+            offered={item.offered}
+            onOpen={() => setOpen(item)}
+          />
         ))}
       </List>
       {items === null ? <ScreenSkeleton /> : null}

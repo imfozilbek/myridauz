@@ -17,16 +17,19 @@ type TripCardProps = {
   readonly showStatus?: boolean;
   // The own trips of a driver: with the status; the driver and the car are the same on every card (U6).
   readonly own?: boolean;
+  // New requests waiting for the driver: seen on the card, not only inside the trip (G41).
+  readonly requests?: number;
   readonly onOpen: () => void;
 };
 
 // One trip in a list, everything a person decides by: the day, the distance and the price,
 // A and B with the times, the driver's comment, the driver and the car, the seats and the marks.
-export function TripCard({ trip, showStatus = false, own = false, onOpen }: TripCardProps) {
+export function TripCard({ trip, showStatus = false, own = false, requests = 0, onOpen }: TripCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const wayFacts = useWayFacts();
   const facts: readonly Fact[] = [
+    ...(requests > 0 ? [['request', t('home.requests', { count: String(requests) })] as const] : []),
     ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
     ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
     ...wayFacts(trip),

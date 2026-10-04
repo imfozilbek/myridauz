@@ -19,7 +19,9 @@ export async function mySubscriptions(deps: SubscriptionsDeps, userId: number, k
   const mine = await deps.subscriptions.byUser(userId, kind);
   // A dated subscription whose day is over is gone (docs/24).
   const kept = mine.filter((subscription) => subscription.date === null || subscription.expiresAt > now);
-  return kept.sort((a, b) => b.createdAt - a.createdAt).map(view);
+  // The live ones first, the stopped ones under them; the newest first inside each (G41, docs/90 F-P15).
+  const stopped = (subscription: SubscriptionRecord) => Number(!isActive(subscription, now));
+  return kept.sort((a, b) => stopped(a) - stopped(b) || b.createdAt - a.createdAt).map(view);
 }
 
 // "Xabar bering" (docs/24): at most MAX_SUBSCRIPTIONS live ones; the same route twice is one.

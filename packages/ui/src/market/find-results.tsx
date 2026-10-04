@@ -3,7 +3,8 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import type { FindScreen } from './find-trip-flow';
 import { useFirstDay } from './first-day';
 import { PlacesGate } from './places-gate';
-import { TripResults, type TripFilters } from './trip-results';
+import type { TripFilters } from './trip-filters';
+import { TripResults } from './trip-results';
 import { TripScreen } from './trip-screen';
 
 type ResultsProps = {

@@ -21,7 +21,7 @@ export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { wallet } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => wallet.mine());
+  const { value, failed, reload, refresh } = useLoad(() => wallet.mine(), 'wallet');
   const [topUp, setTopUp] = useState(false);
   useEffect(() => track({ name: 'wallet_open', screen: 'wallet' }), [track]);
   if (topUp) return <TopUpScreen onBack={() => setTopUp(false)} />;

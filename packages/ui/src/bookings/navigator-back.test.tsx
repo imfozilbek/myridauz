@@ -1,4 +1,4 @@
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeMap } from '../map/fake-map';
 import { MapEngineContext } from '../map/map-engine';
@@ -32,7 +32,8 @@ describe('the sheet of navigators over «Safar xaritasi» (docs/94 C6, F11)', ()
     expect(native.mainShown).toBe(true);
     act(() => native.main?.());
     expect(await screen.findByRole('dialog')).toBeTruthy();
-    expect(native.mainShown).toBe(false);
+    // The button hides once nobody takes it after the step gave it away (G41, docs/108 E).
+    await waitFor(() => expect(native.mainShown).toBe(false));
     act(pressBack);
     await vi.waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     expect(onBack).not.toHaveBeenCalled();

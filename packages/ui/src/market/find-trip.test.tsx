@@ -104,7 +104,9 @@ describe('FindTripFlow: a passenger looks for a trip (docs/06, docs/14)', { time
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
     // The main button opens the sent request, as the text calls (docs/89 P9).
     await tap('Soʻrovni koʻrish');
-    expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
+    // The booking opens at once, the list under it is never seen for a frame (G41, docs/108 F).
+    expect(await screen.findByText('Joy soʻraldi')).toBeTruthy();
+    expect(screen.queryByText('Mening safarlarim')).toBeNull();
     expect(book).toHaveBeenCalledWith('t1', {
       seats: 2,
       mode: 'door',

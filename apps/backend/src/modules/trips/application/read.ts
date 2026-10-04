@@ -3,19 +3,24 @@ import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
+import { byHourThenRating } from '../domain/search-order';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 // A passenger's search: the day in Tashkent, places or regions, "Mashinada ayol bor" (docs/06, docs/14).
 // By the hour of departure; within the same hour a higher rating goes first (docs/24). People with
 // complaints from 3 different people wait for the moderator out of the search (docs/17).
-export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<Trip[]> {
+// The own trips of the person are not in their search: they cannot book them (G41, docs/90 F-P8).
+export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: number): Promise<Trip[]> {
   const start = Math.max(tashkentDayStart(search.date), deps.now());
   const [trips, places] = await Promise.all([
     deps.trips.leaving(start, tashkentDayStart(search.date) + DAY_MS),
     deps.places(),
   ]);
   const fits = trips.filter(
-    (trip) => placeMatches(trip.from, search.from, places) && placeMatches(trip.to, search.to, places),
+    (trip) =>
+      trip.driverId !== viewer &&
+      placeMatches(trip.from, search.from, places) &&
+      placeMatches(trip.to, search.to, places),
   );
   // A full trip is not in the search: nothing to book there.
   const hidden = await deps.hidden([...new Set(fits.map((trip) => trip.driverId))]);
@@ -23,12 +28,6 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
   const found = (await views(deps, shown)).filter((trip) => trip.seatsLeft > 0).sort(byHourThenRating);
   return search.woman ? found.filter((trip) => trip.woman) : found;
 }
-
-const HOUR_MS = 60 * 60 * 1000;
-const byHourThenRating = (a: Trip, b: Trip) =>
-  Math.floor(a.departAt / HOUR_MS) - Math.floor(b.departAt / HOUR_MS) ||
-  (b.driver.rating.average ?? 0) - (a.driver.rating.average ?? 0) ||
-  a.departAt - b.departAt;
 
 export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {
   const trip = await deps.trips.find(id);

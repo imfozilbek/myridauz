@@ -68,7 +68,8 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
       .get(TRIPS_PATH, async (context) => {
         const search = tripSearchSchema.safeParse(context.req.query());
         if (!search.success) return fail(context, 'trips.invalid_input');
-        return context.json({ trips: await searchTrips(deps(context.env), search.data) });
+        const viewer = context.get('session').user.id;
+        return context.json({ trips: await searchTrips(deps(context.env), search.data, viewer) });
       })
       .get(`${TRIPS_PATH}/${ONE}`, async (context) => {
         const trip = await tripDetail(deps(context.env), context.req.param('id'));

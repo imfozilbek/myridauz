@@ -58,6 +58,10 @@ export async function rollback(
 
 // The admin table: the main directions and every direction with the team's price,
 // with the median of real prices of the last MEDIAN_DAYS days as a hint (docs/09).
+// One order (G41, docs/90 F-A8): the team's own prices first, then the nearest directions.
+const byManualThenKm = (a: Direction, b: Direction) =>
+  Number(a.manual === null) - Number(b.manual === null) || (a.km ?? Infinity) - (b.km ?? Infinity);
+
 export async function directions(deps: PricingDeps): Promise<Direction[]> {
   const variables = await deps.variables.get(deps.pricing, deps.now());
   const [manual, real, places] = await Promise.all([
@@ -68,7 +72,7 @@ export async function directions(deps: PricingDeps): Promise<Direction[]> {
   const pairs = new Map<string, readonly [string, string]>();
   for (const pair of [...deps.mainDirections, ...manual.map((item) => [item.from, item.to] as const)])
     pairs.set(orderedPair(...pair).join(':'), pair);
-  return Promise.all(
+  const rows = await Promise.all(
     [...pairs.values()].map(async ([from, to]) => {
       const km = await deps.places.km(from, to);
       const [a, b] = orderedPair(from, to);
@@ -87,6 +91,7 @@ export async function directions(deps: PricingDeps): Promise<Direction[]> {
       };
     }),
   );
+  return rows.sort(byManualThenKm);
 }
 
 type DirectionError = 'locations.not_found' | 'pricing.out_of_bounds' | 'pricing.invalid_input';

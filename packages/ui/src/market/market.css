@@ -44,6 +44,8 @@
 
 .price-value {
   flex: 1;
+  /* «+» and «−» change the price in place: digits of the same width do not shake (G41). */
+  font-variant-numeric: tabular-nums;
   min-width: 0;
   white-space: nowrap;
   /* «295 000 soʻm» and both buttons fit a 320 px phone (N17, G35 PS17). */
@@ -258,4 +260,23 @@
   display: block;
   padding: 4px 16px 16px;
   text-align: center;
+}
+
+/* The list of the last day while the next one loads: dimmed only after a wait a person notices,
+   so a fast answer changes nothing on the screen (G41, docs/108). */
+.list-stale {
+  animation: list-dim 200ms ease-out 250ms forwards;
+}
+
+@keyframes list-dim {
+  to {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-stale {
+    animation: none;
+    opacity: 0.5;
+  }
 }

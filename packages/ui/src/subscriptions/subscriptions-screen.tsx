@@ -36,7 +36,7 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine());
+  const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine(), 'subscriptions');
   const [removed, setRemoved] = useState<Subscription | null>(null);
   useEffect(() => track({ name: 'subscriptions_open', screen: 'subscriptions' }), [track]);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;

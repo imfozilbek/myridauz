@@ -29,7 +29,7 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { pitaks } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => pitaks.all());
+  const { value, failed, reload, refresh } = useLoad(() => pitaks.all(), 'pitaks');
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Open | null>(null);
   if (failed || directory.status === 'error')

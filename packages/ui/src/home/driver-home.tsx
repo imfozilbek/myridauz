@@ -20,7 +20,7 @@ import { useHomeTap } from './use-home-tap';
 // a driver on the check is not invited to publish yet (the note above says why).
 export function DriverHome({ go }: { readonly go: HomeGo }) {
   const { market, bookings } = useApiClients();
-  const load = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]));
+  const load = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]), 'home.trips');
   // A pull down at the top of the main screen refreshes the trips (docs/94 W1).
   return (
     <>
