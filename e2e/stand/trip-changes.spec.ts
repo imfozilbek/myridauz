@@ -57,9 +57,12 @@ test('8, 9. the booked passenger hears the new time and price; the subscriber a 
     'trips.price_out_of_bounds',
   );
   expect(await outcome(market.lowerTripPrice(trip.id, cheaper.price))).toBe('trips.invalid_input');
-  // A second lower price the same day: the booked one hears it, the subscriber does not again.
+  // A second lower price the same day: nobody hears it again, the channel post only. The message of a
+  // new time after it shows the queue went on past it.
   await market.lowerTripPrice(trip.id, cheaper.price - roundStep);
-  await expect.poll(() => toldCount(BOOKED, wordsOf('bot.booking.cheaper'))).toBe(2);
+  await market.retimeTrip(trip.id, trip.departAt + 60 * MINUTE);
+  await expect.poll(() => toldCount(BOOKED, wordsOf('bot.booking.retimed'))).toBe(2);
+  expect(await toldCount(BOOKED, wordsOf('bot.booking.cheaper'))).toBe(1);
   expect(await toldCount(SUBSCRIBED, wordsOf('bot.subscription.cheaper'))).toBe(1);
 });
 
