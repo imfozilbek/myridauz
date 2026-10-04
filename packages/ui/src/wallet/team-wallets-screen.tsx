@@ -1,5 +1,5 @@
 import type { AdminWallets, Adjustment } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
+import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
@@ -26,11 +26,23 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => wallet.all(), 'team.wallets');
+  const { value, failed, reload, refresh } = useLoad(() => wallet.all(0), 'team.wallets');
   const [open, setOpen] = useState<Owner | null>(null);
+  // The next pages, 30 drivers each (G42): the first one stays with the quiet refresh.
+  const [added, setAdded] = useState<{ wallets: Owner[]; more: boolean; page: number } | null>(null);
   const close = () => {
     setOpen(null);
+    setAdded(null);
     reload();
+  };
+  const loadMore = async () => {
+    const page = (added?.page ?? 0) + 1;
+    try {
+      const next = await wallet.all(page);
+      setAdded({ wallets: [...(added?.wallets ?? []), ...next.wallets], more: next.more, page });
+    } catch {
+      haptic.error();
+    }
   };
   if (open) return <DriverWallet owner={open} onBack={close} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -41,12 +53,12 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
       <Title weight="1" className="market-title">
         {t('wallet.team.title')}
       </Title>
-      {value.length === 0 ? (
+      {value.wallets.length === 0 ? (
         <EmptyState icon="wallet" title={t('wallet.team.empty')} />
       ) : (
         <List>
           <Section>
-            {value.map((owner) => (
+            {[...value.wallets, ...(added?.wallets ?? [])].map((owner) => (
               <Cell
                 key={owner.driverId}
                 onClick={() => setOpen(owner)}
@@ -57,6 +69,13 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
               </Cell>
             ))}
           </Section>
+          {(added ? added.more : value.more) ? (
+            <div className="step-note">
+              <Button mode="plain" size="m" stretched onClick={() => void loadMore()}>
+                {t('market.mine.more')}
+              </Button>
+            </div>
+          ) : null}
         </List>
       )}
     </div>

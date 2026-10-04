@@ -135,7 +135,7 @@ describe('the wallet of a driver (docs/12)', () => {
     await adjust(deps, 900, 1, { balance: 'main', amount: 20_000, reason: 'test' });
     await adjust(deps, 900, 2, { balance: 'main', amount: 5_000, reason: 'test' });
     await grantWelcome(deps, 3);
-    const order = (await adminWallets(deps)).map((wallet) => wallet.driverId);
+    const order = (await adminWallets(deps, 0)).wallets.map((wallet) => wallet.driverId);
     expect(order).toEqual([3, 2, 1].map(publicIdOf));
   });
 });

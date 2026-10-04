@@ -116,9 +116,10 @@ export async function mockBookings(page: Page, money = true) {
   await page.route('**/api/driver/offers', (route) => json(route, { offers: [] }));
   await page.route('**/api/driver/requests/*/offers', (route) => json(route, offer, 201));
   await page.route('**/api/driver/wallet', (route) => json(route, wallet(money ? 482000 : 0)));
-  await page.route('**/api/admin/wallets', (route) =>
+  await page.route('**/api/admin/wallets?*', (route) =>
     json(route, {
       wallets: [{ driverId: '0000000000000000000000000000000b', firstName: 'Jasur', bonus: 482000, main: 0 }],
+      more: false,
     }),
   );
   await page.route('**/api/admin/wallets/*', (route) => json(route, wallet(482000)));

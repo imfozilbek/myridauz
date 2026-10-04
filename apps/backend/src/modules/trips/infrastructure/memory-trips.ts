@@ -7,6 +7,11 @@ export function createMemoryTrips(): TripRepository {
     save: async (trip) => void trips.set(trip.id, trip),
     find: async (id) => trips.get(id),
     byDriver: async (driverId) => [...trips.values()].filter((trip) => trip.driverId === driverId),
+    latestOf: async (driverId, limit) =>
+      [...trips.values()]
+        .filter((trip) => trip.driverId === driverId)
+        .sort((a, b) => b.departAt - a.departAt)
+        .slice(0, limit),
     leaving: async (from, to) =>
       [...trips.values()]
         .filter((trip) => trip.status === 'active' && trip.departAt >= from && trip.departAt < to)

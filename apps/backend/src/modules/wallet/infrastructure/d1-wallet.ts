@@ -32,6 +32,19 @@ const INSERT = `INSERT INTO wallet_operations
   (id, driver_id, kind, balance, amount, booking_id, reason, created_by, expires_at, created_at)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
+// The bonus of every driver whose latest bonus time is over burns (docs/12, the same rule as
+// domain/promo burnable): one statement for all drivers (G42). The id is new for each row.
+const BURN = `INSERT INTO wallet_operations (id, driver_id, kind, balance, amount, created_at)
+  SELECT ?2 || '-' || driver_id, driver_id, 'bonus_expired', 'bonus', -SUM(amount), ?1
+  FROM wallet_operations WHERE balance = 'bonus' GROUP BY driver_id
+  HAVING SUM(amount) > 0 AND (MAX(expires_at) IS NULL OR MAX(expires_at) <= ?1)`;
+
+// The balances of one page of drivers, the least main money first (G42, docs/90 F-A5).
+const BALANCES = `SELECT driver_id,
+  SUM(CASE WHEN balance = 'bonus' THEN amount ELSE 0 END) AS bonus,
+  SUM(CASE WHEN balance = 'main' THEN amount ELSE 0 END) AS main
+  FROM wallet_operations GROUP BY driver_id ORDER BY main, driver_id LIMIT ? OFFSET ?`;
+
 // Table wallet_operations (migrations/0008_bookings_wallet.sql): rows are only added.
 export const d1Wallet = (db: D1Database): WalletRepository => ({
   operations: async (driverId) =>
@@ -66,6 +79,13 @@ export const d1Wallet = (db: D1Database): WalletRepository => ({
       if (String(error).includes('UNIQUE')) return false;
       throw error;
     }
+  },
+  balances: async (offset, limit) =>
+    (
+      await db.prepare(BALANCES).bind(limit, offset).all<{ driver_id: number; bonus: number; main: number }>()
+    ).results.map((row) => ({ driverId: row.driver_id, bonus: row.bonus, main: row.main })),
+  burnExpired: async (now, newId) => {
+    await db.prepare(BURN).bind(now, newId()).run();
   },
   drivers: async () =>
     (

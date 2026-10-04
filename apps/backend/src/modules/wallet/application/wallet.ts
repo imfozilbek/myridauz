@@ -103,17 +103,8 @@ export async function grantWelcome(deps: WalletDeps, driverId: number): Promise<
   return grant;
 }
 
-// The Cron job: a bonus not spent in its days burns (docs/12).
-export async function burnExpired(deps: WalletDeps): Promise<void> {
-  for (const driverId of await deps.wallet.drivers()) {
-    const amount = burnable(await deps.wallet.operations(driverId), deps.now());
-    if (amount > 0) {
-      await deps.wallet.append([
-        row(deps, driverId, { kind: 'bonus_expired', balance: 'bonus', amount: -amount }),
-      ]);
-    }
-  }
-}
+// The Cron job: a bonus not spent in its days burns (docs/12), all drivers in one step (G42).
+export const burnExpired = (deps: WalletDeps) => deps.wallet.burnExpired(deps.now(), deps.newId);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

@@ -67,6 +67,13 @@
 - `deploy` ждёт `CI ok`. Запускается, только если поменялся прод (`changes`, `46`).
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.
 
+## Надёжность сервера (G42)
+
+- Ошибка любого маршрута отвечает `{error}` с кодом (`shared/http/errors.ts`), ошибка пишется в лог и на дашборд.
+- Лимиты запросов: `shared/http/rate-limit.ts`, привязки `ACTIONS_LIMIT`, `SEARCH_LIMIT`, `ANALYTICS_LIMIT` в `wrangler.toml` бренда; без привязки (тесты) лимита нет.
+- Cron: `cron-jobs.ts`, каждая задача пишет `cron_job` или `cron_failed` в лог Worker (Observability).
+- Загрузки читаются не больше лимита: `shared/upload/read-capped.ts`.
+
 ## Каркас (что создано в G01)
 
 | Где | Что |

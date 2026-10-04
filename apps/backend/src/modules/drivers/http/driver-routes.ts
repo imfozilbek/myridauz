@@ -10,6 +10,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { myApplication, myCarPhoto, submitApplication, uploadCarPhoto } from '../application/apply';
 import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
+import { readCapped } from '../../../shared/upload/read-capped';
 
 const PHOTO_PATH = `${DRIVER_APPLICATION_PATH}/photos/:kind`;
 const isKind = (value: string): value is CarPhotoKind =>
@@ -30,10 +31,9 @@ export function driverRoutes(deps: (env: Bindings) => DriversDeps) {
     .put(PHOTO_PATH, async (context) => {
       const kind = context.req.param('kind');
       if (!isKind(kind)) return fail(context, 'drivers.invalid_input');
-      if (Number(context.req.header('content-length') ?? 0) > MAX_AVATAR_BYTES) {
-        return fail(context, 'drivers.photo_too_large');
-      }
-      const body = { body: await context.req.arrayBuffer(), type: context.req.header('content-type') ?? '' };
+      const bytes = await readCapped(context.req.raw, MAX_AVATAR_BYTES);
+      if (!bytes) return fail(context, 'drivers.photo_too_large');
+      const body = { body: bytes, type: context.req.header('content-type') ?? '' };
       const result = await uploadCarPhoto(deps(context.env), context.get('session').user.id, kind, body);
       return result.ok ? context.json({ application: result.value }) : fail(context, result.error);
     })

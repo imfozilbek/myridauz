@@ -44,9 +44,18 @@ export const bookingOf = async (passenger: Person, id: string): Promise<Booking 
 export const walletOf = async (driver: Person) => createWalletClient(await signedAs('driver', driver)).mine();
 
 // The owner sets the bonus of a driver to an amount by a hand correction (docs/12).
+// The row of a driver in «Hamyonlar», page by page (G42).
+export async function walletRowOf(owner: ReturnType<typeof createWalletClient>, name: string) {
+  for (let page = 0; ; page += 1) {
+    const { wallets, more } = await owner.all(page);
+    const row = wallets.find((wallet) => wallet.firstName === name);
+    if (row || !more) return row;
+  }
+}
+
 export async function setBonus(driver: Person, amount: number): Promise<void> {
   const owner = createWalletClient(await signedAs('admin', OWNER));
-  const row = (await owner.all()).find((wallet) => wallet.firstName === driver.name);
+  const row = await walletRowOf(owner, driver.name);
   if (!row) throw new Error(`stand: no wallet of ${driver.name}`);
   if (row.bonus === amount) return;
   await owner.adjust(row.driverId, { balance: 'bonus', amount: amount - row.bonus, reason: 'stand G27' });

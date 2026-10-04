@@ -55,6 +55,7 @@ const CASES: readonly Case[] = [
 const DATA: Record<string, unknown> = {
   favorites: { drivers: [], trips: [] },
   wallet,
+  'team wallets': { wallets: [], more: false },
   pitaks: { directions: [], pitaks: [] },
 };
 

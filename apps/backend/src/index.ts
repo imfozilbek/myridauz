@@ -1,4 +1,6 @@
 import { app } from './app';
+import { runJobs } from './cron-jobs';
+import { recordServerEvent } from './modules/analytics';
 import { closeDepartedPosts } from './module-events';
 import { askForRatings } from './modules/ratings';
 import { checkStatsAlerts } from './modules/stats';
@@ -40,23 +42,26 @@ export default {
   scheduled: async (_controller, env, context) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     const now = Date.now();
-    context.waitUntil(
-      Promise.all([
-        completeTrips(env, now),
-        expireRequests(env, now),
-        expireBookings(env, now),
-        bookingsUnderComplaint(env).then((complained) => erasePastPoints(env, now, complained)),
-        burnBonuses(env),
-        grantMissedBonuses(env),
-        sendWaitingSubscriptions(env),
-        sendReminders(env, now),
-        closeDepartedPosts(env),
-        askForRatings(env),
-        checkStatsAlerts(env, new Date(now)),
-        sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to)),
-        sendApplicationReminders(env, () => waitingApplications(env)),
-        purgeSupport(env, now),
-      ]),
-    );
+    const run = async () => {
+      const failed = await runJobs([
+        ['completeTrips', () => completeTrips(env, now)],
+        ['expireRequests', () => expireRequests(env, now)],
+        ['expireBookings', () => expireBookings(env, now)],
+        ['erasePastPoints', async () => erasePastPoints(env, now, await bookingsUnderComplaint(env))],
+        ['burnBonuses', () => burnBonuses(env)],
+        ['grantMissedBonuses', () => grantMissedBonuses(env)],
+        ['sendWaitingSubscriptions', () => sendWaitingSubscriptions(env)],
+        ['sendReminders', () => sendReminders(env, now)],
+        ['closeDepartedPosts', () => closeDepartedPosts(env)],
+        ['askForRatings', () => askForRatings(env)],
+        ['checkStatsAlerts', () => checkStatsAlerts(env, new Date(now))],
+        ['sendTeamDigest', () => sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to))],
+        ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
+        ['purgeSupport', () => purgeSupport(env, now)],
+      ]);
+      // A broken job is counted on the dashboard like any server error (G42).
+      for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });
+    };
+    context.waitUntil(run());
   },
 } satisfies ExportedHandler<Bindings, NotificationJob>;

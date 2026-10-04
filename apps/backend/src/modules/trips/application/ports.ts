@@ -15,6 +15,8 @@ export type TripRepository = {
   save(trip: TripRecord): Promise<void>;
   find(id: string): Promise<TripRecord | undefined>;
   byDriver(driverId: number): Promise<TripRecord[]>;
+  // «Mening safarlarim»: the newest trips of a driver, the trips ahead always among them (G42).
+  latestOf(driverId: number, limit: number): Promise<TripRecord[]>;
   // Active trips leaving between the two times, the earliest first.
   leaving(from: number, to: number): Promise<TripRecord[]>;
   // Active or full trips leaving between the two times: their reminders (G10).

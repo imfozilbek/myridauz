@@ -13,6 +13,8 @@ const JSON_TYPE = 'application/json';
 const NEAR_DIGITS = 2;
 
 const BAD_REQUEST = 400;
+// Longer names do not exist: the rest of a long search is cut, it never makes a new cache entry (G42).
+export const MAX_QUERY_LENGTH = 60;
 
 export type SearchDeps = {
   readonly index: PlaceIndex;
@@ -23,7 +25,7 @@ export type SearchDeps = {
 
 export function searchRoutes(deps: (env: Bindings) => SearchDeps) {
   return new Hono<AppEnv>().get(MAP_SEARCH_PATH, async (context) => {
-    const query = context.req.query('q') ?? '';
+    const query = (context.req.query('q') ?? '').slice(0, MAX_QUERY_LENGTH);
     const near = parsePoint(context.req.query('near'), NEAR_DIGITS);
     const { index, cache, districtsOf } = deps(context.env);
     const zone = context.req.query('zone') ?? null;

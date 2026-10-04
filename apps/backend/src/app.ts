@@ -33,6 +33,8 @@ import { tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
+import { notFound, onServerError } from './shared/http/errors';
+import { rateLimit } from './shared/http/rate-limit';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
 const miniAppOrigin = (origin: string, context: { env: unknown }) => {
@@ -55,7 +57,7 @@ const allowPublic = cors({
 const auth = telegramAuth(() => Date.now(), teamRole);
 
 export const app = new Hono<AppEnv>()
-  .use('/analytics', allowMiniApps)
+  .use('/analytics', allowMiniApps, rateLimit('ANALYTICS_LIMIT', 'analytics'))
   // CORS goes first: a browser preflight carries no Telegram signature.
   // "/me/*" also matches "/me".
   .use('/me/*', allowMiniApps, auth)
@@ -83,6 +85,12 @@ export const app = new Hono<AppEnv>()
   .use('/locations', allowMiniApps)
   .use('/locations/*', allowMiniApps)
   .use('/map/*', allowMap)
+  // Too many actions or searches of one person (G42): the booking, the offer, the tickets, the map.
+  .use('/trips/:id/bookings', rateLimit('ACTIONS_LIMIT', 'action', true))
+  .use('/driver/requests/:id/offers', rateLimit('ACTIONS_LIMIT', 'action', true))
+  .use('/chats/:key/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
+  .use('/feed/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
+  .use('/passenger/map/search', rateLimit('SEARCH_LIMIT', 'search'))
   .route('/', healthModule)
   .route('/', analyticsModule)
   // The avatar watch goes before users: it wraps the avatar route of the users module.
@@ -128,4 +136,6 @@ export const app = new Hono<AppEnv>()
   .route(
     '/',
     webhookRoutes((input, init) => fetch(input, init)),
-  );
+  )
+  .onError(onServerError)
+  .notFound(notFound);

@@ -14,10 +14,10 @@ import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
-import { isBotRole } from './bot-roles';
+import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
 import { startReply } from './start-reply';
-import { isStartCommand, telegramUpdateSchema } from './telegram-update';
+import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
 
 const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const UNAUTHORIZED = 401;
@@ -37,30 +37,36 @@ export function webhookRoutes(fetch: Fetch) {
     const event = botEventOf(role, update.data);
     if (event) recordServerEvent(context.env, event);
     const bot: BotContext = { env: context.env, brand: loadBrand(context.env.BRAND), fetch };
-    if (role === SUPPORT_BOT)
-      return context.json(update.data.message ? await onSupportMessage(bot, update.data.message) : {});
-    const query = update.data.callback_query;
-    if (query)
-      return context.json(
-        role === 'admin' ? await onAdminCallback(bot, query) : await onRatingCallback(bot, role, query),
-      );
-    const message = update.data.message;
-    if (!message) return context.json({});
-    const fromId = message.from?.id ?? 0;
-    const blocked = await isBlocked(context.env, fromId);
-    const team = role === 'admin' ? await teamRole(context.env, fromId) : null;
-    if (isStartCommand(message.text)) {
-      if (!blocked && role === 'admin' && team === null)
-        return context.json(toSupportBot(bot.brand, message.chat.id));
-      const access = blocked ? 'blocked' : 'allowed';
-      const payload = message.text?.split(' ')[1] ?? '';
-      return context.json(startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload }));
+    try {
+      return context.json(await answer(bot, role, update.data));
+    } catch (error) {
+      // A broken step still answers 200: a retry would repeat a forward to the team (G42).
+      console.error(JSON.stringify({ event: 'webhook_error', role, message: String(error) }));
+      recordServerEvent(context.env, { name: 'server_error', source: role, code: 'webhook' });
+      return context.json({});
     }
-    if (blocked) return context.json({});
-    if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
-      return context.json(documentsReply(bot.brand, role, message.chat.id));
-    if (role !== 'admin')
-      return context.json(message.text ? noRepliesReply(bot.brand, role, message.chat.id) : {});
-    return context.json(await onAdminMessage(bot, message, team));
   });
+}
+
+// The answer to one update of a bot: a reply method for Telegram, or nothing to do.
+async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data: TelegramUpdate) {
+  if (role === SUPPORT_BOT) return data.message ? onSupportMessage(bot, data.message) : {};
+  const query = data.callback_query;
+  if (query) return role === 'admin' ? onAdminCallback(bot, query) : onRatingCallback(bot, role, query);
+  const message = data.message;
+  if (!message) return {};
+  const fromId = message.from?.id ?? 0;
+  const blocked = await isBlocked(bot.env, fromId);
+  const team = role === 'admin' ? await teamRole(bot.env, fromId) : null;
+  if (isStartCommand(message.text)) {
+    if (!blocked && role === 'admin' && team === null) return toSupportBot(bot.brand, message.chat.id);
+    const access = blocked ? 'blocked' : 'allowed';
+    const payload = message.text?.split(' ')[1] ?? '';
+    return startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload });
+  }
+  if (blocked) return {};
+  if (message.text === DOCUMENTS_COMMAND && role !== 'admin')
+    return documentsReply(bot.brand, role, message.chat.id);
+  if (role !== 'admin') return message.text ? noRepliesReply(bot.brand, role, message.chat.id) : {};
+  return onAdminMessage(bot, message, team);
 }

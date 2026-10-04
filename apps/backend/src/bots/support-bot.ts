@@ -13,6 +13,9 @@ import { withLabel } from './support-talk';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 export const SUPPORT_BOT = 'support';
+// At most this many messages of one person a minute reach the team; the rest stay in the talk (G42).
+export const SUPPORT_PER_MINUTE = 10;
+const MINUTE_MS = 60 * 1000;
 
 // The admin bot is only for the team: everyone else is sent to the support bot (docs/50).
 export const toSupportBot = (brand: BrandConfig, chatId: number) =>
@@ -34,15 +37,19 @@ async function toSupport(context: BotContext, message: BotMessage) {
     id: String(message.from?.id ?? chatId),
     text: withLabel(kind, said),
   });
-  const wroteBefore = (await supportTalk(context.env, chatId)).length > 0;
+  const talk = await supportTalk(context.env, chatId);
+  const wroteBefore = talk.length > 0;
+  const now = Date.now();
+  const lastMinute = talk.filter((line) => line.author === 'person' && now - line.at < MINUTE_MS).length;
   await recordSupport(context.env, {
     personId: chatId,
-    at: Date.now(),
+    at: now,
     author: 'person',
     name,
     kind,
     text: said ?? '',
   });
+  if (lastMinute >= SUPPORT_PER_MINUTE) return {};
   const deps = {
     ...supportDeps(context.env, context.fetch),
     teamIds: () => assignTo(context.env, 'support', chatId),

@@ -17,6 +17,9 @@ const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.j
 const ONE = `${ADMIN_WALLETS_PATH}/:driverId{[0-9a-f]+}`;
 
 // The driver sees the own wallet; the team sees every wallet; only an owner corrects one (docs/12).
+// The page of "Hamyonlar" from the address: 0 when it is missing or wrong (G42).
+const pageOf = (value: string | undefined) => Math.max(0, Math.floor(Number(value) || 0));
+
 export function walletRoutes(deps: (env: Bindings) => WalletDeps) {
   // The path carries the public id (docs/65 A3); 0 is nobody.
   const driverOf = async (context: Context<AppEnv>) =>
@@ -32,7 +35,7 @@ export function walletRoutes(deps: (env: Bindings) => WalletDeps) {
       context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
     )
     .get(ADMIN_WALLETS_PATH, async (context) =>
-      context.json({ wallets: await adminWallets(deps(context.env)) }),
+      context.json(await adminWallets(deps(context.env), pageOf(context.req.query('page')))),
     )
     .get(ONE, async (context) => context.json(await walletView(deps(context.env), await driverOf(context))))
     .post(`${ONE}/adjust`, async (context) => {

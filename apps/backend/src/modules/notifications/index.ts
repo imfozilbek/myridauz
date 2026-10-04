@@ -2,7 +2,9 @@ import type { Bindings } from '../../env';
 import { sendSignals, signalsOf } from '../feed';
 import { teamMembers } from '../team';
 import { deliver, type Tokens } from './application/deliver';
+import { keepDead } from './application/dead-letter';
 import type { AfterSentHandler, NotificationJob } from './application/job';
+import { recordServerEvent } from '../analytics';
 
 export type { NotificationJob } from './application/job';
 
@@ -46,14 +48,26 @@ export async function notifyTeam(env: Bindings, text: string, markup?: object): 
   );
 }
 
-// The queue consumer (brands/<brand>/wrangler.toml): Telegram asks to wait, the message waits.
+// The tries of one message: max_retries of the queue (brands/<brand>/wrangler.toml).
+export const MAX_ATTEMPTS = 5;
+
+// The queue consumer (brands/<brand>/wrangler.toml): Telegram asks to wait, the message waits. After
+// the last try the message goes to the dead letters, never lost silently (G42, docs/65 D).
 export async function consumeNotifications(
   batch: MessageBatch<NotificationJob>,
   env: Bindings,
 ): Promise<void> {
   for (const message of batch.messages) {
-    const delivery = await deliverNow(env, message.body);
-    if (delivery.outcome === 'retry') message.retry({ delaySeconds: delivery.afterSeconds });
-    else message.ack();
+    const delivery = await deliverNow(env, message.body).catch(() => ({
+      outcome: 'retry' as const,
+      afterSeconds: 5,
+    }));
+    if (delivery.outcome !== 'retry') message.ack();
+    else if (message.attempts < MAX_ATTEMPTS) message.retry({ delaySeconds: delivery.afterSeconds });
+    else {
+      await keepDead(env.DB, message.body, 'telegram', Date.now());
+      recordServerEvent(env, { name: 'server_error', code: 'notification_dead' });
+      message.ack();
+    }
   }
 }

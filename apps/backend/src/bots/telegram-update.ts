@@ -33,6 +33,7 @@ export const telegramUpdateSchema = z.object({
   message: messageSchema.optional(),
   callback_query: callbackSchema.optional(),
 });
+export type TelegramUpdate = z.infer<typeof telegramUpdateSchema>;
 
 export const isStartCommand = (text: string | undefined) =>
   text === '/start' || text?.startsWith('/start ') === true;

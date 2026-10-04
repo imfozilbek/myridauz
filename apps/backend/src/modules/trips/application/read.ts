@@ -43,9 +43,12 @@ export async function teamTrips(deps: TripsDeps, date: string): Promise<Trip[]> 
   return views(deps, await deps.trips.between(start, start + DAY_MS, TEAM_DAY_LIMIT));
 }
 
+// "Mening safarlarim" reads the newest trips only; the older ones are in "Safarlar tarixi" (G42).
+export const MY_TRIPS_LIMIT = 100;
+
 // "Mening safarlarim" of a driver: the trips ahead first, then the past ones (docs/65 B6).
 export async function myTrips(deps: TripsDeps, driverId: number): Promise<Trip[]> {
-  const trips = await deps.trips.byDriver(driverId);
+  const trips = await deps.trips.latestOf(driverId, MY_TRIPS_LIMIT);
   const now = deps.now();
   // A live trip on the road stays on top until it arrives (docs/90 F-D3).
   const until = (trip: (typeof trips)[number]) => (isLive(trip, now) ? trip.endsAt : trip.departAt);
