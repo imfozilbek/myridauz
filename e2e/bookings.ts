@@ -109,7 +109,7 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
 
 // "Hamyon" from the driver's profile: the bonus, its end, the history.
 export async function openWallet(page: Page, shot: Shot = none) {
-  await page.getByText(TEXT.profile).click();
+  await page.getByLabel(TEXT.profile).click();
   await shot('1-profile');
   await page.getByText(B.wallet, { exact: true }).click();
   await expect(page.getByText(B.history)).toBeVisible();

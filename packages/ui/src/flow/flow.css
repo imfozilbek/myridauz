@@ -76,18 +76,11 @@
   visibility: hidden;
 }
 
-/* The icon of an action that waits for the approval of a driver: muted, the text stays readable (docs/86 V7). */
-.action-waiting {
-  display: grid;
-  opacity: 0.4;
-}
-
 /* The tiles of the main screen, two in a row (owner decision 04.10.2026, G53). */
 .home-tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  padding: 0 var(--home-gutter, 16px);
+  gap: 12px;
 }
 
 .home-tile {
@@ -103,15 +96,17 @@
   background: var(--tgui--bg_color);
   color: inherit;
   font: inherit;
+  /* A button does not take the font of the page: the font of Telegram, as everywhere. */
+  font-family: var(--tgui--font-family);
   text-align: start;
   cursor: pointer;
 }
 
-.home-tile[data-wide] {
-  grid-column: span 2;
-  min-height: 0;
-  flex-direction: row;
-  align-items: center;
+/* The title, the number and the hint one under another. */
+.home-tile-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .home-tile-title {

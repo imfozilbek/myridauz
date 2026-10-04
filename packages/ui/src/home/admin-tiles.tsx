@@ -1,8 +1,10 @@
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { HomeTile } from '../flow/home-tile';
 import type { HomeGo, TileLive } from '../flow/start-action';
 import { useLoad } from '../market/use-list';
+import { HomeRowCard } from './home-card';
 
 // The sections the number tiles open (G53).
 export const STATS_SECTION = 'statistics';
@@ -32,6 +34,7 @@ export function useComplaintsLive(): TileLive {
 export function AdminTiles({ go }: { readonly go: HomeGo }) {
   const { t } = useI18n();
   const { stats } = useApiClients();
+  const { colors } = useBrand().theme;
   const { value } = useLoad(() => stats.get('day'), 'home.stats');
   const numbers = value?.numbers;
   return (
@@ -45,21 +48,22 @@ export function AdminTiles({ go }: { readonly go: HomeGo }) {
         onClick={() => go(STATS_SECTION)}
       />
       <HomeTile
-        icon="trip"
-        tone="accent"
+        icon="car"
+        tone="deep"
         title={t('common.admin.trips')}
         hint={t('home.admin.tripsToday')}
         {...(numbers ? { value: numbers.trips } : {})}
         onClick={() => go(TRIPS_SECTION)}
       />
-      <HomeTile
-        icon="team"
-        tone="deep"
-        title={t('common.admin.management')}
-        hint={t('common.admin.managementHint')}
-        wide
-        onClick={() => go(MANAGEMENT_SECTION)}
-      />
+      <span className="home-tiles-row">
+        <HomeRowCard
+          icon="team"
+          color={colors.text}
+          title={t('common.admin.management')}
+          arrow
+          onClick={() => go(MANAGEMENT_SECTION)}
+        />
+      </span>
     </>
   );
 }

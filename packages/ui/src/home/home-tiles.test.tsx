@@ -48,7 +48,7 @@ describe('the tiles of a passenger (G53)', { timeout: 20_000 }, () => {
       (go) => <PassengerHome go={go} />,
       live(PASSENGER_ACTIONS, useBookingsLive),
       {
-        bookings: async () => [booking, { ...booking, id: 'b2', status: 'cancelled' }],
+        bookings: async () => [booking, { ...booking, id: 'b2', status: 'declined' }],
         covered: 'find_trip',
       },
     );

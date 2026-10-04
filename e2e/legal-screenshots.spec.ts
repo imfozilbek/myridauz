@@ -47,7 +47,7 @@ test('profile: documents and "Maʼlumotlarimni oʻchirish"', async ({ page }) =>
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page);
-  await page.getByText(TEXT.profile).click();
+  await page.getByLabel(TEXT.profile).click();
   await expect(page.getByText(t('account.delete.open'))).toBeVisible();
   await shot('5-profile');
   await page.getByText(t('account.delete.open')).click();

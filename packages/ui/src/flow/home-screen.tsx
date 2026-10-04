@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import { ProfileCell } from '../account/profile/profile-cell';
-import { List } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { usePending } from '../driver/driver-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useSettingsButton } from '../telegram/settings-button';
+import { HomeProfile } from '../home/home-profile';
 import { HomeTile } from './home-tile';
 import { HomeTop } from './home-top';
 import type { StartAction, TileLive } from './start-action';
@@ -35,8 +34,8 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
     <div className="home">
       {/* No «Назад» on the main screen: Android «Назад» closes the app, as in Telegram. */}
       <Screen />
-      <List>
-        <ProfileCell onOpen={onProfile} />
+      <div className="home-stack">
+        <HomeProfile onOpen={onProfile} />
         {notice}
         <HomeTop>{top}</HomeTop>
         <div className="home-tiles">
@@ -52,7 +51,7 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
         </div>
         {after}
         <LanguageSwitcher />
-      </List>
+      </div>
     </div>
   );
 }
@@ -67,6 +66,7 @@ const NOTHING_LIVE = (): TileLive => ({});
 
 // An action as a tile; what it says live comes from the action itself (G53). While the application
 // is checked, an action that waits says when it works; it still opens and explains (docs/86 V7).
+// Its icon stays in color, as on the mockup the owner chose (G53).
 function ActionTile({ action, waiting, onOpen }: ActionTileProps) {
   const { t } = useI18n();
   const live = (action.useLive ?? NOTHING_LIVE)();
@@ -80,7 +80,6 @@ function ActionTile({ action, waiting, onOpen }: ActionTileProps) {
       {...(live.badge === undefined ? {} : { badge: live.badge })}
       {...(live.value === undefined ? {} : { value: live.value })}
       {...(live.urgent ? { urgent: true } : {})}
-      waiting={waiting}
       onClick={onOpen}
     />
   );

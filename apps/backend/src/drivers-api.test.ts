@@ -89,6 +89,12 @@ describe('drivers API (docs/04)', () => {
     expect((await call('/admin/applications', MODERATOR, { app: 'admin' })).status).toBe(403);
   });
 
+  it('tells a team member their name and role, nobody else (G53)', async () => {
+    const owner = await call('/admin/me', OWNER, { app: 'admin' });
+    expect(await owner.json()).toMatchObject({ role: 'owner' });
+    expect((await call('/admin/me', STRANGER, { app: 'passenger' })).status).toBe(403);
+  });
+
   it('lets the team block a person', async () => {
     const block = `/admin/users/${await pid(APPLICANT)}/block`;
     expect((await call(block, OWNER, { method: 'POST', app: 'admin', ...json({ days: 3 }) })).status).toBe(

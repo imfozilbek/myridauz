@@ -17,6 +17,8 @@ export const theme: BrandTheme = {
     text: '#1F2937',
     textMuted: '#6B7280',
     danger: '#DC2626',
+    success: '#15803D',
+    attention: '#B45309',
     routeFrom: '#16A34A',
     routeTo: '#DC2626',
   },

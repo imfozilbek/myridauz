@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { NoticeBanner } from '../notice-banner';
+import { useBrand } from '../context/brand-context';
+import { HomeNote } from '../home/home-note';
 import { ApplicationCard } from './application-card';
 import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
@@ -22,12 +23,14 @@ export function DriverApproved() {
   return useDriver()?.application.status === 'approved' ? <ApprovedNotice /> : null;
 }
 
+// Amber, with a clock, as long as the check lasts: no «Yopish» (the mockup of G53).
 function PendingNotice() {
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   return (
-    <NoticeBanner
-      icon="applications"
-      tone="accent"
+    <HomeNote
+      icon="waiting"
+      color={colors.attention}
       title={t('drivers.status.pending.title')}
       text={t('drivers.status.pending.explore')}
     />
@@ -39,6 +42,7 @@ function PendingNotice() {
 function ApprovedNotice() {
   const { t, formatMoney, formatDate } = useI18n();
   const { wallet } = useApiClients();
+  const { colors } = useBrand().theme;
   const [shown] = useState(() => !approvalSeen());
   // null until the wallet answers: the banner comes whole, it never grows and pushes the trips (G41).
   const [bonus, setBonus] = useState<string | null>(null);
@@ -60,6 +64,12 @@ function ApprovedNotice() {
   }, [shown, wallet]);
   if (!shown || bonus === null) return null;
   return (
-    <NoticeBanner icon="approved" tone="brand" title={t('drivers.status.approved.title')} text={bonus} />
+    <HomeNote
+      icon="approved"
+      color={colors.success}
+      title={t('drivers.status.approved.title')}
+      text={bonus}
+      closable
+    />
   );
 }

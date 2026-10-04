@@ -16,6 +16,9 @@ export type BrandColors = {
   readonly text: HexColor;
   readonly textMuted: HexColor;
   readonly danger: HexColor;
+  // The plates of a status on the main screen (G53): done is green, waits for the person is amber.
+  readonly success: HexColor;
+  readonly attention: HexColor;
   // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
   readonly routeFrom: HexColor;
   readonly routeTo: HexColor;

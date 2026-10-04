@@ -39,7 +39,7 @@ test('passenger: "Sevimli haydovchilar"', async ({ page }) => {
 
 test('passenger: "Safarlar tarixi" in the profile', async ({ page }) => {
   const shot = await open(page, PASSENGER.port);
-  await page.getByText(TEXT.profile).click();
+  await page.getByLabel(TEXT.profile).click();
   await page.getByText(t('comfort.history.title')).click();
   await expect(page.getByText('Nodira')).toBeVisible();
   await shot('4-history');

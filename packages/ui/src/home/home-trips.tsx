@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { Badge, Cell, Section } from '../components';
-import { useChevron } from '../chevron';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
 import { useDayLabel, useNearWhenLabel } from '../market/when';
 import type { PlaceDirectory } from '../places/directory';
+import { HomeCard, Pill, RouteLine, type PillTone } from './home-card';
 
 type HomeRow = {
   readonly id: string;
@@ -14,12 +11,10 @@ type HomeRow = {
   readonly departAt: number;
   // A request of a passenger has a day, not a time (G53).
   readonly day?: string;
-  // The status of a booking, or the new requests or free seats of a trip.
-  readonly detail: string;
-  // A confirmed booking or a full car: it shows at a glance, not only in the gray line.
-  readonly done?: boolean;
-  // The new requests of a trip: a counter like the unread one of Telegram.
-  readonly count?: number;
+  // After the time: the driver and the car, the free seats, the people of a request.
+  readonly meta?: string;
+  // The status as a plate: what waits for the person is amber, what is done is green.
+  readonly pill?: { readonly text: string; readonly tone: PillTone };
 };
 
 type Props = {
@@ -28,38 +23,33 @@ type Props = {
   readonly onOpen: (id: string) => void;
 };
 
-// «Yaqin safarlar» (G25): the nearest bookings or trips of the person, and the requests of a
-// passenger with offers to answer (G53). A tap opens one in
-// «Mening safarlarim»; the data refreshes itself by the signal of the person (docs/64).
-// Each fact has its own line, so a long name never hides the status (impeccable, 01.10.2026).
+// The nearest bookings or trips of the person, and the requests of a passenger with offers to
+// answer, each as a card (G25, the mockup of G53). A tap opens one in «Mening safarlarim»; the data
+// refreshes itself by the signal of the person (docs/64). A long name wraps, never hides the status.
 export function HomeTrips({ rows, directory, onOpen }: Props) {
   const { t } = useI18n();
   const when = useNearWhenLabel();
   const dayLabel = useDayLabel();
-  const chevron = useChevron();
-  const { colors } = useBrand().theme;
   const [now] = useState(Date.now);
   const name = (id: string) => directory.find(id)?.name ?? '';
-  // The counter in the dark tone of the app: white digits stay readable (docs/20).
-  const counter = (count: number) => (
-    <Badge type="number" style={{ background: colors.brandText }}>
-      {String(count)}
-    </Badge>
-  );
   return (
-    <Section header={t('home.title')}>
-      {rows.map((row) => (
-        <Cell
-          key={row.id}
-          before={<IconTile name={row.done ? 'selected' : 'trip'} tone={row.done ? 'brand' : 'accent'} />}
-          subtitle={row.day ? dayLabel(row.day, now) : when(row.departAt, now)}
-          description={row.detail}
-          after={chevron(row.count ? counter(row.count) : null)}
-          onClick={() => onOpen(row.id)}
-        >
-          {t('common.route', { from: name(row.from), to: name(row.to) })}
-        </Cell>
-      ))}
-    </Section>
+    <>
+      {rows.map((row) => {
+        const time = row.day ? dayLabel(row.day, now) : when(row.departAt, now);
+        return (
+          <HomeCard key={row.id} onClick={() => onOpen(row.id)}>
+            <RouteLine from={name(row.from)} to={name(row.to)} />
+            <span className="home-card-hint">
+              {row.meta ? t('home.meta', { when: time, more: row.meta }) : time}
+            </span>
+            {row.pill ? (
+              <span className="home-pills">
+                <Pill tone={row.pill.tone}>{row.pill.text}</Pill>
+              </span>
+            ) : null}
+          </HomeCard>
+        );
+      })}
+    </>
   );
 }

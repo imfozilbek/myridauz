@@ -1,13 +1,12 @@
 import { BOOKING_LINK, OFFER_LINK } from '@platform/contracts';
-import { useChevron } from '../chevron';
-import { Cell, Section } from '../components';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import type { HomeGo } from '../flow/start-action';
-import { IconTile } from '../icon-tile';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { useHere } from '../places/use-here';
 import { Screen } from '../screen/screen';
+import { HomeRowCard } from './home-card';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
 import { nextBookings, waitingOffers } from './home-items';
@@ -65,22 +64,24 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
     from: booking.trip.from,
     to: booking.trip.to,
     departAt: booking.trip.departAt,
-    detail: t(`bookings.status.${booking.status}`),
-    done: booking.status === 'confirmed',
+    meta: t('home.driverCar', { name: booking.trip.driver.firstName, model: booking.trip.driver.car.model }),
+    pill: {
+      text: t(`bookings.status.${booking.status}`),
+      tone: booking.status === 'confirmed' ? ('success' as const) : ('attention' as const),
+    },
   }));
   // A request with offers opens its first offer; «Назад» shows the request with all of them.
   const firstOffer = (requestId: string) => waiting.find((offer) => offer.requestId === requestId)?.id;
   const requestRows = asked.map((request) => {
     const count = waiting.filter((offer) => offer.requestId === request.id).length;
-    const detail = t('market.request.offers', { count: String(count) });
     return {
       id: request.id,
       from: request.from,
       to: request.to,
       departAt: 0,
       day: request.date,
-      detail,
-      count,
+      meta: t('market.request.seats', { count: String(request.seats) }),
+      pill: { text: t('market.request.offers', { count: String(count) }), tone: 'attention' as const },
     };
   });
   const open = (id: string) => {
@@ -107,21 +108,19 @@ type AskProps = {
 
 function AskWay({ directory, onFrom, onTo }: AskProps) {
   const { t } = useI18n();
-  const chevron = useChevron();
+  const { colors } = useBrand().theme;
   const here = useHere(directory);
   return (
-    <Section header={t('places.route')}>
-      <Cell
-        before={<IconTile name="origin" />}
-        {...(here ? { subtitle: t('way.here') } : {})}
-        after={chevron()}
+    <>
+      <span className="home-label">{t('places.route')}</span>
+      <HomeRowCard
+        icon="origin"
+        color={colors.brandStrong}
+        title={here?.name ?? t('way.fromEmpty')}
+        {...(here ? { hint: t('way.here') } : {})}
         onClick={onFrom}
-      >
-        {here?.name ?? t('way.fromEmpty')}
-      </Cell>
-      <Cell before={<IconTile name="destination" tone="accent" />} after={chevron()} onClick={onTo}>
-        {t('way.toEmpty')}
-      </Cell>
-    </Section>
+      />
+      <HomeRowCard icon="destination" color={colors.accentStrong} title={t('way.toEmpty')} onClick={onTo} />
+    </>
   );
 }

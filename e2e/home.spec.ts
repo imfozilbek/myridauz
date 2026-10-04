@@ -36,6 +36,8 @@ function scenarios(platform: 'android' | 'ios') {
   test('a passenger without bookings starts the search from the main screen', async ({ page }) => {
     const { go } = await open(page, PASSENGER.port);
     await json(page, '**/api/passenger/bookings', () => ({ bookings: [] }));
+    // No offers either: requests with offers stand on top since G53.
+    await json(page, '**/api/passenger/offers', () => ({ offers: [] }));
     await go();
     await expect(page.getByText(t('way.toEmpty'))).toBeVisible();
     await expect(page.getByText(t('way.here'))).toBeVisible();
@@ -53,7 +55,6 @@ function scenarios(platform: 'android' | 'ios') {
     let status = 'requested';
     await json(page, '**/api/passenger/bookings', () => ({ bookings: [{ ...confirmed, status }] }));
     await go();
-    await expect(page.getByText(t('home.title'))).toBeVisible();
     await expect(page.getByText(new RegExp(t('bookings.status.requested'), 'u'))).toBeVisible();
     await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
     status = 'confirmed';

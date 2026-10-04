@@ -1,5 +1,4 @@
 {
-  "title": "Yaqin safarlar",
   "requests": "{count} ta yangi soʻrov",
   "driver.question": "Qayerga ketyapsiz?",
   "driver.last": "Oxirgi yoʻnalish",
@@ -14,5 +13,12 @@
   "admin.new": "yangi",
   "admin.today": "Bugun",
   "admin.newUsers": "yangi foydalanuvchi",
-  "admin.tripsToday": "bugun eʼlon qilingan"
+  "admin.tripsToday": "bugun eʼlon qilingan",
+  "meta": "{when} · {more}",
+  "driverCar": "{name}, {model}",
+  "role.passenger": "Yoʻlovchi",
+  "role.driver": "Haydovchi · {model}, {color}",
+  "role.owner": "Egasi",
+  "role.moderator": "Moderator",
+  "role.driverNew": "Haydovchi"
 }

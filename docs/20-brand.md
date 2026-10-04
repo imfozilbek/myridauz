@@ -22,6 +22,8 @@
 | `color.text` | `#1F2937` | Основной текст |
 | `color.text.muted` | `#6B7280` | Второстепенный текст |
 | `color.danger` | `#DC2626` | Ошибки, отмена, блокировка; опасное действие (удалить) красное: главная кнопка Telegram и строка (`DangerCell`) |
+| `color.success` | `#15803D` | Плашка статуса «готово» на главном экране: «Tasdiqlandi» (G53) |
+| `color.attention` | `#B45309` | Плашка «ждёт человека»: «2 ta taklif», «2 ta yangi soʻrov», «Javob kutilmoqda»; заметка «Ariza tekshirilmoqda» (G53) |
 | `color.routeFrom` | `#16A34A` | Точка A маршрута (откуда), решение владельца 29.09.2026 |
 | `color.routeTo` | `#DC2626` | Точка B маршрута (куда) |
 | `color.brand.deep` | `#115E59` | Глубокий бирюзовый: логотип (`36`) |

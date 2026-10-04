@@ -31,6 +31,11 @@ export type BlockJournal = z.infer<typeof blockJournalSchema>;
 export const TEAM_ROLES = ['owner', 'moderator'] as const;
 export type TeamRole = (typeof TEAM_ROLES)[number];
 
+// Who opened the admin Mini App: the name and the role on its main screen (G53).
+export const ADMIN_ME_PATH = '/admin/me';
+export const teamMeSchema = z.object({ firstName: z.string(), role: z.enum(TEAM_ROLES) });
+export type TeamMe = z.infer<typeof teamMeSchema>;
+
 export const applicationSummarySchema = z.object({
   userId: personIdSchema,
   firstName: z.string(),

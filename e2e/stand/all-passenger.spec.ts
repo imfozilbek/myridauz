@@ -42,7 +42,7 @@ for (const platform of PLATFORMS)
   test(`${platform}: home, profile and what is one tap away`, async ({ page }) => {
     await openHome(page, 'passenger', ZEBO, platform);
     await shot(page, platform, 'pa10-home');
-    await page.getByText(t('account.profile.open')).first().click();
+    await page.getByLabel(t('account.profile.open')).click();
     await shot(page, platform, 'pa11-profile');
     await visit(page, platform, t('comfort.history.title'), 'pa12-history');
     await visit(page, platform, t('account.delete.open'), 'pa13-delete');

@@ -1,0 +1,152 @@
+/* The main screen as the mockups the owner chose (G53, docs/114): white rounded cards on the gray
+   background, 16px from the edges, the same gap between all of them. */
+.home-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px var(--home-gutter, 16px) 0;
+  font-family: var(--tgui--font-family);
+}
+
+.home-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--tgui--bg_color);
+  color: var(--tgui--text_color);
+  font: inherit;
+  font-family: var(--tgui--font-family);
+  text-align: start;
+}
+
+button.home-card {
+  cursor: pointer;
+}
+
+button.home-card:active {
+  opacity: 0.7;
+}
+
+/* A card of one line: an icon, the words, maybe an arrow at the end. */
+.home-card-row {
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+
+.home-card-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.home-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.home-card-hint {
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--tgui--hint_color);
+}
+
+/* The small gray name over a group of cards, like «Yoʻnalish». */
+.home-label {
+  margin: 4px 4px -4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tgui--hint_color);
+}
+
+/* «Toshkent › Samarqand»: green start, red end on one line; a long name wraps, never hides. */
+.home-route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.home-route > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.home-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* A plate of a status: its color as the words, the same color light behind them. */
+.home-pill {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pill);
+  background: color-mix(in srgb, var(--pill) 14%, white);
+}
+
+/* The note of a driver on the check: amber light card, the words in amber. */
+.home-note {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--note);
+  background: color-mix(in srgb, var(--note) 9%, white);
+}
+
+.home-note .home-card-hint {
+  color: var(--note);
+}
+
+/* A part of the stack in its own wrapper (loading, error) keeps the same gap. */
+.home-stack-part {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-profile .profile-empty {
+  display: grid;
+  place-items: center;
+  background: var(--mint);
+}
+
+.home-note-close {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* A row across the grid of tiles: «Boshqaruv» under the numbers of the admin. */
+.home-tiles-row {
+  grid-column: 1 / -1;
+}
+
+/* A TelegramUI section among the cards (the offer of the home screen, the application) is a card too. */
+.home-stack section {
+  margin: 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
