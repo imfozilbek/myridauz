@@ -80,4 +80,4 @@
 
 ## Модуль в коде
 
-- `modules/complaints` (жалобы) и `modules/moderation` (решения, блокировки).
+- `apps/backend/src/modules/complaints`: жалобы, решения модератора и блокировки (`application/moderate.ts`, `application/block.ts`).
