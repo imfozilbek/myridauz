@@ -33,7 +33,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { comfort } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => comfort.favorites());
+  const { value, failed, reload, refresh } = useLoad(() => comfort.favorites(), 'favorites');
   const [opened, setOpened] = useState<string | null>(null);
   if (opened) return <TripById id={opened} onClose={() => setOpened(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;

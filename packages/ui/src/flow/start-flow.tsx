@@ -16,6 +16,8 @@ type StartFlowProps = {
   readonly opened?: string;
   // A note above the actions, like the application being checked.
   readonly notice?: ReactNode;
+  // A late offer under the actions: when it comes, nothing above it moves (G41, docs/108).
+  readonly after?: ReactNode;
   // The trips of the person or the main action, above the actions (G25).
   readonly home?: (go: HomeGo) => ReactNode;
   // The action of the main button: the list does not repeat it (G25). It stays while the home
@@ -26,7 +28,7 @@ type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly laun
 
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
-export function StartFlow({ actions, opened, notice, home, covered }: StartFlowProps) {
+export function StartFlow({ actions, opened, notice, after, home, covered }: StartFlowProps) {
   const { t } = useI18n();
   const tap = useHomeTap();
   const [screen, setScreen] = useState<Screen>(() => {
@@ -56,6 +58,7 @@ export function StartFlow({ actions, opened, notice, home, covered }: StartFlowP
         <HomeScreen
           actions={actions.filter((action) => action !== main)}
           notice={notice}
+          after={after}
           top={home?.(go)}
           onOpen={openAction}
           onProfile={openProfile}

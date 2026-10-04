@@ -18,7 +18,7 @@ function AfterTrips() {
   const { t } = useI18n();
   const brand = useBrand();
   const { market } = useApiClients();
-  const { value } = useLoad(() => market.myTrips());
+  const { value } = useLoad(() => market.myTrips(), 'home.offer');
   const [added, setAdded] = useState(false);
   const done = value?.filter((trip) => trip.status === 'completed').length ?? 0;
   if (added || done < AFTER_TRIPS) return null;

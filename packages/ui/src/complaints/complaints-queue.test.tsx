@@ -31,6 +31,8 @@ describe('The queue of complaints (docs/94 F2, S3, W1)', () => {
       testClients({ feedback: { queue, complaint: async () => complaint('c2', 'harassment') } }),
     );
     await screen.findByText('Haqorat, tahdid yoki bezovta qilish');
+    // How many wait, in the header (G41, docs/90 F-A4).
+    expect(screen.getByText('Navbatda: 2')).toBeTruthy();
     scrolledTo(400);
     await tap('Haqorat, tahdid yoki bezovta qilish');
     await screen.findByText('Shikoyat qilingan');

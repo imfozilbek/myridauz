@@ -22,7 +22,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { messages, state, warning, delivered, send, retry, calling } = useChat(chatKey);
+  const { messages, loaded, state, warning, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
   const name = title ?? t('chat.title');
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
@@ -56,7 +56,8 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
       ) : null}
       {controls.noMicrophone ? <Text className="chat-warning">{t('calls.noMicrophone')}</Text> : null}
       <div className="chat-messages">
-        {messages.length === 0 ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
+        {/* «No messages yet» only once the history came: never a flash of it while connecting (G41). */}
+        {messages.length === 0 && loaded ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
         {messages.map((message) => (
           <Bubble key={message.id} message={message} />
         ))}

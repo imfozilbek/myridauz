@@ -16,6 +16,8 @@ type OfferError =
   | 'trips.busy'
   | 'wallet.not_enough';
 
+const LIVE_FIRST: Record<Offer['status'], number> = { sent: 0, accepted: 1, declined: 2, expired: 2 };
+
 // A driver offers a time on the request's day and a price within the bounds (docs/09, docs/35).
 // Only with money for the commission: an accepted offer is charged at once (docs/35).
 export async function sendOffer(
@@ -82,9 +84,12 @@ export async function driverOffers(deps: BookingsDeps, driverId: number): Promis
     [...new Set(offers.map((offer) => offer.requestId))].map(deps.requests.find),
   );
   const known = requests.filter((request) => request !== undefined);
-  return offerViews(
+  const views = await offerViews(
     deps,
     [...offers].sort((a, b) => b.createdAt - a.createdAt),
     known,
   );
+  // What still waits for an answer comes first, then what was taken, the closed ones last; the
+  // newest first inside each (G41, docs/90 F-D10).
+  return views.sort((a, b) => LIVE_FIRST[a.status] - LIVE_FIRST[b.status]);
 }

@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Cell, Section, Skeleton } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { lateProps, useLateShow } from '../states/late-show';
+import '../states/states.css';
 import { IconTile, SIZES } from '../icon-tile';
 import { haptic } from '../telegram/feedback';
 import { useHomeTap } from './use-home-tap';
@@ -19,22 +21,25 @@ const bar = (width: string) => (
 
 // While the main screen loads: gray rows of the same shape as the real ones (G25).
 export function HomeLoading({ lines }: { readonly lines: readonly boolean[] }) {
+  const shown = useLateShow();
   return (
-    <Section header={NO_HEADER} aria-busy="true">
-      {lines.map((twoLines, row) => (
-        <Cell
-          key={row}
-          before={
-            <Skeleton visible>
-              <span style={{ display: 'block', width: tile, height: tile, borderRadius: radius }} />
-            </Skeleton>
-          }
-          {...(twoLines ? { subtitle: bar(SUBTITLE_WIDTH) } : {})}
-        >
-          {bar(TITLE_WIDTH)}
-        </Cell>
-      ))}
-    </Section>
+    <div {...lateProps(shown)}>
+      <Section header={NO_HEADER}>
+        {lines.map((twoLines, row) => (
+          <Cell
+            key={row}
+            before={
+              <Skeleton visible>
+                <span style={{ display: 'block', width: tile, height: tile, borderRadius: radius }} />
+              </Skeleton>
+            }
+            {...(twoLines ? { subtitle: bar(SUBTITLE_WIDTH) } : {})}
+          >
+            {bar(TITLE_WIDTH)}
+          </Cell>
+        ))}
+      </Section>
+    </div>
   );
 }
 

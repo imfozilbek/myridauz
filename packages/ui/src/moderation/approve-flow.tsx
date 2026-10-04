@@ -70,7 +70,12 @@ function PlateCheck({ userId, plate, fixed, onBack, onFix, onApprove }: PlateChe
     <StepLayout icon="car" title={t('moderation.plateCheck.title')} hint={t('moderation.plateCheck.hint')}>
       <Screen onBack={onBack} />
       <div className="plate-check">
-        {photo ? <img className="plate-check-photo" src={photo} alt={t('drivers.photo.front')} /> : null}
+        {/* The place of the photo is kept while it loads: the plate and buttons never jump (G41). */}
+        {photo ? (
+          <img className="plate-check-photo" src={photo} alt={t('drivers.photo.front')} />
+        ) : (
+          <span className="plate-check-photo moderation-photo-empty" />
+        )}
         <PlateView plate={plate} />
         {fixed ? <Caption className="plate-check-fixed">{t('moderation.plateCheck.fixed')}</Caption> : null}
         <Button mode="bezeled" size="m" onClick={onFix}>

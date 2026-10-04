@@ -12,7 +12,8 @@ type LoadState<T> = {
 // Data from the API: null while loading, failed on an error, reload after a change.
 // Another person's change, coming back to the app or a pull down refreshes it quietly: the old data
 // stays on the screen until the fresh data comes, a failed refresh keeps it (docs/64, G19, docs/94).
-// memory: the list comes back with its data after «Назад», without a skeleton (docs/94 F2).
+// memory: the list comes back with its data after «Назад», without a skeleton (docs/94 F2); the main
+// screen, the wallet and the lists of one person come back the same way (G41, docs/108 A).
 export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T> {
   const [value, setValue] = useState<T | null>(() => (memory ? (keptValue<T>(memory) ?? null) : null));
   const [failed, setFailed] = useState(false);

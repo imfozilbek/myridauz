@@ -23,7 +23,7 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { channels } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => channels.list());
+  const { value, failed, reload, refresh } = useLoad(() => channels.list(), 'channels');
   const [directory, retry] = useDirectory();
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
   if (failed || directory.status === 'error')

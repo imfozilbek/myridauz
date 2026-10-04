@@ -8,7 +8,7 @@ import { FindResults } from './find-results';
 import { useForgetOnLeave } from './list-leave';
 import { NewRequestFlow } from './new-request-flow';
 import { rememberRoute } from './recent-routes';
-import { type TripFilters } from './trip-results';
+import { NO_FILTERS, type TripFilters } from './trip-filters';
 import { RESULTS } from './use-trip-search';
 
 export type FindScreen =
@@ -43,7 +43,7 @@ export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Prop
     known ? { step: 'results', route: known, ...(day ? { date: day } : {}) } : { step: 'route' },
   );
   const [now] = useState(Date.now);
-  const [filters, setFilters] = useState<TripFilters>({ woman: false, door: false });
+  const [filters, setFilters] = useState<TripFilters>(NO_FILTERS);
   const step = (name: 'opened' | 'from' | 'to' | 'done') =>
     track({ name: 'way_step', screen: 'market.route', step: name });
   useEffect(() => {

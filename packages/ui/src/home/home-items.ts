@@ -17,9 +17,13 @@ export function nextBookings(bookings: readonly Booking[]): readonly Booking[] {
 
 export type DriverItem = { readonly trip: Trip; readonly requests: number };
 
+// The new requests of a trip the driver has not answered yet: on the main screen and on the card in
+// «Mening safarlarim» (G41, docs/90 F-D4).
+export const waitingRequests = (trip: Trip, bookings: readonly Booking[]) =>
+  bookings.filter((booking) => booking.trip.id === trip.id && booking.status === 'requested').length;
+
 export function nextTrips(trips: readonly Trip[], bookings: readonly Booking[]): readonly DriverItem[] {
-  const waiting = (trip: Trip) =>
-    bookings.filter((booking) => booking.trip.id === trip.id && booking.status === 'requested').length;
+  const waiting = (trip: Trip) => waitingRequests(trip, bookings);
   const live = trips.filter((trip) => LIVE_TRIPS.includes(trip.status)).sort(byDeparture);
   return live.slice(0, SHOWN).map((trip) => ({ trip, requests: waiting(trip) }));
 }

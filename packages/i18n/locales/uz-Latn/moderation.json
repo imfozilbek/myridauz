@@ -38,5 +38,7 @@
   "blocks.forever": "Butunlay",
   "blocks.until": "{date}gacha",
   "unblock": "Blokdan chiqarish",
-  "unblockAsk": "Blokdan chiqarasizmi? U yana safar qila oladi."
+  "unblockAsk": "Blokdan chiqarasizmi? U yana safar qila oladi.",
+  "queue.count": "Navbatda: {count}",
+  "queue.waiting": "{minutes} daqiqadan beri kutmoqda"
 }

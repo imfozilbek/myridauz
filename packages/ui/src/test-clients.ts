@@ -73,7 +73,8 @@ export const testClients = (overrides: {
     answer: NOT_USED,
     tripBookings: NOT_USED,
     sendOffer: NOT_USED,
-    driverOffers: NOT_USED,
+    // No offer sent yet: the requests of a day ask for them (G41, docs/90 F-D1).
+    driverOffers: async () => [],
     myOffers: NOT_USED,
     answerOffer: NOT_USED,
     ...overrides.bookings,

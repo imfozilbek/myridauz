@@ -28,7 +28,7 @@ function History({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { comfort } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => comfort.history());
+  const { value, failed, reload, refresh } = useLoad(() => comfort.history(), 'history');
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.length === 0) {
