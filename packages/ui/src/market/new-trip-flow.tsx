@@ -17,8 +17,6 @@ import { completeDraft, type TripAgain } from './trip-draft';
 type NewTripFlowProps = {
   readonly onBack: () => void;
   readonly route?: Route;
-  // «Qayerga ketyapsiz?» of the main screen opens the list of the end at once (G25).
-  readonly pick?: 'from' | 'to';
   // The day of the requests the driver looked at: the day step opens on it (G37, docs/101 R4).
   readonly date?: string;
   // «Oxirgi yoʻnalish»: the last trip again, only the day is asked (G40, docs/106 K3).
@@ -39,7 +37,6 @@ export function NewTripFlow(props: NewTripFlowProps) {
 
 function TripStepScreen({
   onBack,
-  pick,
   flow,
 }: NewTripFlowProps & { readonly flow: ReturnType<typeof useNewTrip> }): ReactNode {
   const car = useDriver()?.application.car;
@@ -54,7 +51,6 @@ function TripStepScreen({
         <RouteScreen
           allowWholeRegion={false}
           quick
-          {...(pick && !route ? { pick } : {})}
           {...(route ? { initial: route } : {})}
           onBack={onBack}
           onDone={(value) => next('route', { route: value }, 'mode')}

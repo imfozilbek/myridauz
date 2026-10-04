@@ -22,7 +22,7 @@ const ACTIONS: readonly StartAction[] = [
   {
     id: 'applications',
     icon: 'applications',
-    tone: 'deep',
+    tone: 'brand',
     labelKey: 'common.admin.applications',
     hintKey: 'common.admin.applicationsHint',
     useLive: useApplicationsLive,
@@ -31,7 +31,7 @@ const ACTIONS: readonly StartAction[] = [
   {
     id: 'complaints',
     icon: 'complaints',
-    tone: 'deep',
+    tone: 'brand',
     labelKey: 'common.admin.complaints',
     hintKey: 'common.admin.complaintsHint',
     useLive: useComplaintsLive,

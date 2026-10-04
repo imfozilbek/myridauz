@@ -1,38 +1,41 @@
 import { useState, type CSSProperties } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
-import { HomeCard } from './home-card';
+import './home-note.css';
 
-const ICON = 22;
+const ICON = 20;
 
 type Props = {
   readonly icon: IconName;
-  // The color of the note: its words and its light background.
-  readonly color: string;
+  // The words, the light background and the icon of the note.
+  readonly ink: string;
+  readonly soft: string;
+  readonly mark: string;
   readonly title: string;
   readonly text: string;
   // A note for one visit has «Yopish»; a state that lasts (the check) has none.
   readonly closable?: boolean;
 };
 
-// A note of the main screen in the color of its meaning (the mockup of G53): the application
-// being checked is amber, the approval is green.
-export function HomeNote({ icon, color, title, text, closable = false }: Props) {
+// A note of the main screen as the mockup of G53: the bold title and the words in one block, the
+// application being checked in the colors of the driver app, the approval green.
+export function HomeNote({ icon, ink, soft, mark, title, text, closable = false }: Props) {
   const { t } = useI18n();
   const [open, setOpen] = useState(true);
   if (!open) return null;
   return (
-    <HomeCard className="home-note" style={{ '--note': color } as CSSProperties}>
-      <Icon name={icon} size={ICON} color={color} />
-      <span className="home-card-words">
-        <span className="home-card-title">{title}</span>
-        <span className="home-card-hint">{text}</span>
+    <div className="home-note" style={{ '--note': ink, '--note-soft': soft } as CSSProperties}>
+      <Icon name={icon} size={ICON} color={mark} />
+      <div>
+        <span className="home-note-title">{title}</span>
+        <br />
+        {text}
         {closable ? (
           <button type="button" className="home-note-close" onClick={() => setOpen(false)}>
             {t('common.close')}
           </button>
         ) : null}
-      </span>
-    </HomeCard>
+      </div>
+    </div>
   );
 }

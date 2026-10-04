@@ -4,9 +4,10 @@ import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import './home-cards.css';
 
-const ICON = 24;
-const ROUTE_ICON = 18;
-const ARROW = 16;
+const ICON = 22;
+const ROUTE_ICON = 16;
+const ARROW = 14;
+const ROW_ARROW = 18;
 
 type CardProps = {
   readonly onClick?: () => void;
@@ -51,7 +52,7 @@ export function HomeRowCard({ icon, color, title, hint, arrow = false, onClick }
         <span className="home-card-title">{title}</span>
         {hint ? <span className="home-card-hint">{hint}</span> : null}
       </span>
-      {arrow ? <Icon name="next" size={ARROW} color={colors.textMuted} /> : null}
+      {arrow ? <Icon name="next" size={ROW_ARROW} color={colors.textMuted} /> : null}
     </HomeCard>
   );
 }
@@ -80,9 +81,13 @@ export type PillTone = 'success' | 'attention' | 'muted';
 // A plate of a status: green when done, amber when it waits for the person, gray when closed.
 export function Pill({ tone, children }: { readonly tone: PillTone; readonly children: ReactNode }) {
   const { colors } = useBrand().theme;
-  const color = { success: colors.success, attention: colors.attention, muted: colors.textMuted }[tone];
+  const [color, soft] = {
+    success: [colors.success, colors.successSoft],
+    attention: [colors.attention, colors.attentionSoft],
+    muted: [colors.textMuted, colors.neutralSoft],
+  }[tone];
   return (
-    <span className="home-pill" style={{ '--pill': color } as CSSProperties}>
+    <span className="home-pill" style={{ '--pill': color, '--pill-soft': soft } as CSSProperties}>
       {children}
     </span>
   );

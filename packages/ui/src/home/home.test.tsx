@@ -103,22 +103,22 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
 
   it('offers the last route of a driver whose trips are over', async () => {
     driver([{ ...trip, status: 'completed' }]);
-    expect(await screen.findByText('Qayerga ketyapsiz?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
     await tap('Oxirgi yoʻnalish');
     expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
   });
 
-  it('opens the list of the end from the question', async () => {
+  it('shows nothing above the tiles for a driver who never drove, as on the mockup (G53)', async () => {
     driver([]);
-    await tap('Qayerga ketyapsiz?');
-    expect(screen.getByText('opened to')).toBeTruthy();
+    expect(await screen.findByText('Mening safarlarim')).toBeTruthy();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
   });
 
   it('does not invite a driver on the check to publish', async () => {
     driver([], [], true);
     expect(await screen.findByText('Mening safarlarim')).toBeTruthy();
-    expect(screen.queryByText('Qayerga ketyapsiz?')).toBeNull();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
     expect(screen.queryByText('Yoʻnalish')).toBeNull();
   });
 });

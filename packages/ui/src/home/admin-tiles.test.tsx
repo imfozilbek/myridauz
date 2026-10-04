@@ -25,7 +25,14 @@ const action = (id: string, useLive?: StartAction['useLive']): StartAction => ({
   ...(useLive ? { useLive } : {}),
   Screen: () => <Shown name={id} />,
 });
-const numbers = { newUsers: 24, trips: 17, bookings: 0, driverApplications: 0, complaints: 0 };
+const numbers = {
+  newUsers: 24,
+  trips: 9,
+  activeTrips: 17,
+  bookings: 0,
+  driverApplications: 0,
+  complaints: 0,
+};
 
 const admin = (applications: number, complaints: number, statsFail = false) =>
   renderMarket(
@@ -63,7 +70,7 @@ describe('the number tiles of the admin Mini App (G53, variant C)', { timeout: 2
     expect(screen.getByText(`opened ${STATS_SECTION}`)).toBeTruthy();
     cleanup();
     admin(0, 0);
-    await tap('bugun eʼlon qilingan');
+    await tap('faol eʼlon');
     expect(screen.getByText(`opened ${TRIPS_SECTION}`)).toBeTruthy();
     cleanup();
     admin(0, 0);

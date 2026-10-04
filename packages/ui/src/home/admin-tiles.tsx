@@ -41,7 +41,7 @@ export function AdminTiles({ go }: { readonly go: HomeGo }) {
     <>
       <HomeTile
         icon="passengers"
-        tone="deep"
+        tone="brand"
         title={t('home.admin.today')}
         hint={t('home.admin.newUsers')}
         {...(numbers ? { value: numbers.newUsers } : {})}
@@ -49,16 +49,16 @@ export function AdminTiles({ go }: { readonly go: HomeGo }) {
       />
       <HomeTile
         icon="car"
-        tone="deep"
+        tone="brand"
         title={t('common.admin.trips')}
-        hint={t('home.admin.tripsToday')}
-        {...(numbers ? { value: numbers.trips } : {})}
+        hint={t('home.admin.activeTrips')}
+        {...(numbers ? { value: numbers.activeTrips } : {})}
         onClick={() => go(TRIPS_SECTION)}
       />
       <span className="home-tiles-row">
         <HomeRowCard
           icon="team"
-          color={colors.text}
+          color={colors.neutralText}
           title={t('common.admin.management')}
           arrow
           onClick={() => go(MANAGEMENT_SECTION)}

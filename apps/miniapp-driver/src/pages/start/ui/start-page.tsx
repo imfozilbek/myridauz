@@ -34,7 +34,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
-    waitsApproval: true,
+    // On the check its own screen says why it waits; the tile keeps its hint (the mockup of G53).
     Screen: RequestsSearchFlow,
   },
   {

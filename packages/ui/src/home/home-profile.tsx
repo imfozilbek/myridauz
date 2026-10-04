@@ -9,8 +9,8 @@ import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
 import { HomeCard } from './home-card';
 
-const PHOTO = 48;
-const ICON = 24;
+const PHOTO = 42;
+const ICON = 22;
 
 // The first card of the main screen: who the person is here, like the mockup of G53. The
 // passenger and the driver open their profile from it; the team sees its name and role.
@@ -29,7 +29,7 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
   return (
     <HomeCard
       className="home-card-row home-profile"
-      style={mint(colors.brandMint)}
+      style={mint(colors.brandMint, colors.brandText)}
       label={t('account.profile.open')}
       onClick={onOpen}
     >
@@ -60,7 +60,7 @@ function TeamCard() {
   const { value } = useLoad(() => moderation.me(), 'home.me');
   if (!value) return null;
   return (
-    <HomeCard className="home-card-row home-profile" style={mint(colors.brandMint)}>
+    <HomeCard className="home-card-row home-profile" style={mint(colors.brandMint, colors.brandText)}>
       <span className="profile-round profile-empty" style={{ width: PHOTO, height: PHOTO }}>
         <Icon name="profile" size={ICON} color={colors.brandText} />
       </span>
@@ -73,4 +73,4 @@ function TeamCard() {
 }
 
 // The empty photo is the light color of the app, like the mockup.
-const mint = (color: string) => ({ '--mint': color }) as CSSProperties;
+const mint = (color: string, ink: string) => ({ '--mint': color, '--mint-ink': ink }) as CSSProperties;

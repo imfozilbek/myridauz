@@ -85,7 +85,6 @@ function scenarios(platform: 'android' | 'ios') {
   test('a driver without trips publishes from the main screen', async ({ page }) => {
     const { go } = await open(page, DRIVER.port);
     await go();
-    await expect(page.getByText(t('home.driver.question'))).toBeVisible();
     await expect(mainButton(page)).toHaveText(t('home.publish'));
     await shot(page, '4-driver-empty');
     await mainButton(page).click();

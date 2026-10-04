@@ -80,7 +80,7 @@
 .home-tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .home-tile {
@@ -88,7 +88,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   min-height: 118px;
   padding: 14px;
   border: 0;
@@ -102,11 +102,9 @@
   cursor: pointer;
 }
 
-/* The title, the number and the hint one under another. */
+/* The title, the number and the hint one under another, 8px apart like the icon (the mockup). */
 .home-tile-text {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: contents;
 }
 
 .home-tile-title {
@@ -116,18 +114,26 @@
 }
 
 .home-tile-hint {
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.3;
-  opacity: 0.65;
+  color: var(--tgui--hint_color);
+}
+
+/* Under a number of the day the words are small, one line (the admin mockup). */
+.home-tile-value + .home-tile-hint {
+  font-size: 11.5px;
 }
 
 .home-tile-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 1.1;
+  color: var(--tgui--text_color);
 }
 
 .home-tile-badge {
+  /* The padding is inside the 22px: a single digit is a circle, as on the mockup. */
+  box-sizing: border-box;
   position: absolute;
   top: 12px;
   inset-inline-end: 12px;

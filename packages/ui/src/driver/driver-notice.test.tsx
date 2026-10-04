@@ -45,9 +45,9 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
   it('marks the actions that wait for the approval, and keeps the others as they are', () => {
     render(pending);
     // The amber note stays while the check lasts: no «Yopish» (the mockup of G53).
-    expect(screen.getByText('Ariza tekshirilmoqda')).toBeTruthy();
+    expect(screen.getByText('Arizangiz tekshirilmoqda')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Yopish' })).toBeNull();
-    expect(screen.getByText('Tasdiqlangandan keyin').closest('button')?.textContent).toContain(
+    expect(screen.getByText('Tekshiruvdan keyin').closest('button')?.textContent).toContain(
       'Safar eʼlon qilish',
     );
   });
@@ -59,7 +59,7 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
     expect(screen.getByText('Ariza tasdiqlandi')).toBeTruthy();
     expect(bonus.textContent).toContain('481\u00a0000\u00a0soʻm');
     expect(bonus.textContent).toContain('31-oktabrgacha');
-    expect(screen.queryByText('Tasdiqlangandan keyin')).toBeNull();
+    expect(screen.queryByText('Tekshiruvdan keyin')).toBeNull();
     // Under the actions: the late banner pushes nothing down (G41, docs/108).
     const action = screen.getByText('Mening safarlarim');
     expect(action.compareDocumentPosition(bonus) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

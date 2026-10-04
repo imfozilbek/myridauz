@@ -53,7 +53,7 @@ describe('DriverGate: the application of a driver (docs/04, G34)', () => {
     expect(screen.getByText(/soat 7:00 dan 23:00 gacha/)).toBeTruthy();
     await tap('Davom etish');
     // While the application is checked the driver looks around the app (owner decision 29.09.2026).
-    expect(await screen.findByText('Ariza tekshirilmoqda')).toBeTruthy();
+    expect(await screen.findByText('Arizangiz tekshirilmoqda')).toBeTruthy();
     expect(screen.getByTestId('driver-home')).toBeTruthy();
     expect(submit).toHaveBeenCalledWith(car);
     const steps = tracked.filter((event) => event.name === 'driver_application_step');
@@ -109,7 +109,7 @@ describe('DriverGate: the application of a driver (docs/04, G34)', () => {
   it('lets an approved driver in', async () => {
     renderGate(application({ status: 'approved', car, photos: { front: true, side: true, interior: true } }));
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
-    expect(screen.queryByText('Ariza tekshirilmoqda')).toBeNull();
+    expect(screen.queryByText('Arizangiz tekshirilmoqda')).toBeNull();
   });
 
   it('has a paint dot for every car color', () => {

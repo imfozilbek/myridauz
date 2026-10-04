@@ -78,7 +78,6 @@ function Trips({ go, load: { value, failed, reload } }: TripsProps) {
     <AskTrip
       last={last}
       directory={directory}
-      onNew={tap('card', () => go('new_trip', { pick: 'to' }))}
       onLast={(launch) => tap('last_route', () => go('new_trip', launch))()}
     />
   );
@@ -87,34 +86,24 @@ function Trips({ go, load: { value, failed, reload } }: TripsProps) {
 type AskProps = {
   readonly last: Trip | null;
   readonly directory: PlaceDirectory | null;
-  readonly onNew: () => void;
   readonly onLast: (launch: Launch) => void;
 };
 
-// «Qayerga ketyapsiz?» opens the list of the end; for a driver who drove before, the last trip again.
-function AskTrip({ last, directory, onNew, onLast }: AskProps) {
+// For a driver who drove before, the last trip again in one tap (G40 K3). Nothing else: the tile
+// and the main button publish, as on the mockup of G53.
+function AskTrip({ last, directory, onLast }: AskProps) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const from = last && directory?.find(last.from);
   const to = last && directory?.find(last.to);
+  if (!last || !from || !to) return null;
   return (
-    <>
-      <span className="home-label">{t('places.route')}</span>
-      <HomeRowCard
-        icon="destination"
-        color={colors.accentStrong}
-        title={t('home.driver.question')}
-        onClick={onNew}
-      />
-      {last && from && to ? (
-        <HomeRowCard
-          icon="history"
-          color={colors.brandStrong}
-          title={t('common.route', { from: from.name, to: to.name })}
-          hint={t('home.driver.last')}
-          onClick={() => onLast({ route: { from, to }, again: againOf(last) })}
-        />
-      ) : null}
-    </>
+    <HomeRowCard
+      icon="history"
+      color={colors.brandStrong}
+      title={t('common.route', { from: from.name, to: to.name })}
+      hint={t('home.driver.last')}
+      onClick={() => onLast({ route: { from, to }, again: againOf(last) })}
+    />
   );
 }

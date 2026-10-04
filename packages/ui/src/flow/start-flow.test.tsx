@@ -40,7 +40,7 @@ describe('StartFlow', () => {
   it('goes from the main screen to a section and back', () => {
     const { tracked } = renderInShell(<StartFlow actions={ACTIONS} />);
     expect(screen.getByText('Safar topish')).toBeTruthy();
-    expect(screen.getByText('Band qilingan joylar va suhbatlar')).toBeTruthy();
+    expect(screen.getByText('Joylar va suhbatlar')).toBeTruthy();
 
     fireEvent.click(screen.getByText('Mening safarlarim'));
     expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();

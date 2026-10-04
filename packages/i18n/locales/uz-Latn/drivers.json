@@ -58,7 +58,7 @@
   "photo.interior.hint": "Oldingi oʻrindiqlar koʻrinsin",
   "status.pending.explore": "Tasdiqlangach safar eʼlon qilasiz.",
   "status.pending.publish": "Ariza tasdiqlangach safarni eʼlon qila olasiz.",
-  "status.pending.after": "Tasdiqlangandan keyin",
+  "status.pending.after": "Tekshiruvdan keyin",
   "status.approved.title": "Ariza tasdiqlandi",
   "status.approved.bonus": "Boshlash uchun {amount} bonus berdik. Bonus {date}gacha komissiyaga ishlatiladi.",
   "status.pending.requests": "Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz.",

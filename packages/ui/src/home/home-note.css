@@ -1,0 +1,29 @@
+/* A note of the main screen (the mockup «note»): the title bold in the same words, light color. */
+.home-note {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--note);
+  background: var(--note-soft);
+  font-family: var(--tgui--font-family);
+}
+
+.home-note-title {
+  font-weight: 700;
+}
+
+.home-note-close {
+  display: block;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

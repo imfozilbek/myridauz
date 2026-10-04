@@ -22,14 +22,14 @@ export function HomeTile(props: Props) {
     <button type="button" className="home-tile" onClick={onClick}>
       <IconTile name={icon} tone={tone} size="tile" soft />
       {shown > 0 ? (
-        <span className="home-tile-badge" style={{ background: colors.accentStrong, color: colors.bg }}>
+        <span className="home-tile-badge" style={{ background: colors.accent, color: colors.bg }}>
           {shown === MAX_BADGE ? `${MAX_BADGE}+` : formatNumber(shown)}
         </span>
       ) : null}
       <span className="home-tile-text">
         <span className="home-tile-title">{title}</span>
         {value === undefined ? null : (
-          <span className="home-tile-value" style={urgent ? { color: colors.danger } : undefined}>
+          <span className="home-tile-value" style={urgent ? { color: colors.dangerText } : undefined}>
             {formatNumber(value)}
           </span>
         )}

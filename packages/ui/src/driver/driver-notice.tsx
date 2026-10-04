@@ -23,16 +23,18 @@ export function DriverApproved() {
   return useDriver()?.application.status === 'approved' ? <ApprovedNotice /> : null;
 }
 
-// Amber, with a clock, as long as the check lasts: no «Yopish» (the mockup of G53).
+// In the colors of the driver app, with a clock, as long as the check lasts: no «Yopish» (G53).
 function PendingNotice() {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   return (
     <HomeNote
       icon="waiting"
-      color={colors.attention}
-      title={t('drivers.status.pending.title')}
-      text={t('drivers.status.pending.explore')}
+      ink={colors.brandDeep}
+      soft={colors.brandSoft}
+      mark={colors.brandStrong}
+      title={t('home.check.title')}
+      text={t('home.check.text')}
     />
   );
 }
@@ -66,7 +68,9 @@ function ApprovedNotice() {
   return (
     <HomeNote
       icon="approved"
-      color={colors.success}
+      ink={colors.success}
+      soft={colors.successSoft}
+      mark={colors.success}
       title={t('drivers.status.approved.title')}
       text={bonus}
       closable

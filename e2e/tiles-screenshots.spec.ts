@@ -61,7 +61,7 @@ for (const platform of ['android', 'ios'] as const) {
       const go = await open(page, DRIVER.port);
       await json(page, '**/api/driver/bookings', { bookings: [] });
       await go();
-      await expect(page.getByText(t('home.driver.question'))).toBeVisible();
+      await expect(page.getByText(t('common.myTrips'))).toBeVisible();
       await expect(page.getByText(/^Bonus /u)).toBeVisible();
       await shot(page, 'd2-free');
       const trip = tripOf('7', 'Jasur', false, 20);
