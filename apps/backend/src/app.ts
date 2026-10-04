@@ -33,6 +33,7 @@ import { tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
+import { notFound, onServerError } from './shared/http/errors';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
 const miniAppOrigin = (origin: string, context: { env: unknown }) => {
@@ -128,4 +129,6 @@ export const app = new Hono<AppEnv>()
   .route(
     '/',
     webhookRoutes((input, init) => fetch(input, init)),
-  );
+  )
+  .onError(onServerError)
+  .notFound(notFound);
