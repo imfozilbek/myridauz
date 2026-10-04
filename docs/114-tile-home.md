@@ -59,4 +59,4 @@
 - Действие говорит живое через `useLive` (`start-action.ts`).
 - Данные главного экрана грузятся один раз: `PassengerData`, `DriverData`. Блок сверху и счётчики читают одно и то же.
 - Разделы, которые открывает только плитка: `sections` в `StartFlow`.
-- Тексты на согласие владельца: `home.json` (`profileHint`, `support`, `supportHint`, `walletBonus`, `admin.*`, `role.*`).
+- Тексты одобрены владельцем 04.10.2026: `home.json` (`profileHint`, `support`, `supportHint`, `walletBonus`, `admin.*`, `role.*`, `check.*`), подсказки плиток в `common.json`, «Tekshiruvdan keyin», «Faol eʼlonlar».
