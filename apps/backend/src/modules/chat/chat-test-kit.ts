@@ -26,6 +26,7 @@ export function room() {
     signals: {
       newMessage: async (to) => void signals.push(`new to ${to.role} ${to.userId}`),
       contactAttempts: async (userId, _key, count) => void signals.push(`attempts ${userId} ${count}`),
+      openCall: async (to) => void signals.push(`open ${to.role} ${to.userId}`),
       incomingCall: async (to) => void signals.push(`ringing ${to.role} ${to.userId}`),
       missedCall: async (to) => void signals.push(`missed ${to.role} ${to.userId}`),
     },
@@ -34,7 +35,7 @@ export function room() {
       clear: async (userId) => void unread.delete(userId),
     },
     now: () => now,
-    calls: { ringMs: 30 * SECOND, connectMs: 15 * SECOND },
+    calls: { ringMs: 30 * SECOND, connectMs: 15 * SECOND, inviteMs: 5 * SECOND },
     wakeAt: (at) => void (wake.at = at),
   };
   const connect = (member: Member) => {

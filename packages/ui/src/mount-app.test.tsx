@@ -35,9 +35,10 @@ describe('mountApp', () => {
     );
     await waitFor(() => expect(document.body.textContent).toContain('sahifa'));
     expect(document.title).toBeTruthy();
-    const [url, init] = fetch.mock.calls[0] ?? [];
-    expect(String(url)).toMatch(/\/api\/me$/);
-    expect(init?.headers).toMatchObject({ 'x-mini-app': 'driver' });
+    const me = fetch.mock.calls.find(([url]) => String(url).endsWith('/api/me'));
+    expect(me?.[1]?.headers).toMatchObject({ 'x-mini-app': 'driver' });
+    // The sound set in use is read without a signature (docs/115).
+    expect(fetch.mock.calls.some(([url]) => String(url).endsWith('/api/public/sounds'))).toBe(true);
   });
 
   it('opens the admin Mini App after the team check', async () => {

@@ -32,10 +32,20 @@ async function ring(deps: RoomDeps, from: ChatSocket, call: StoredCall | null) {
   const { member } = from;
   if (!member.canCall || call) return send(from, { type: 'call', call: callView(call, member.userId) });
   const calleeRole = otherRole(member.role);
-  deps.wakeAt(deps.now() + deps.calls.ringMs);
-  show(deps, { callerId: member.userId, calleeId: member.otherId, calleeRole, status: 'ringing' });
-  if (!present(deps, member.otherId))
-    await deps.signals.incomingCall({ userId: member.otherId, role: calleeRole }, deps.key);
+  const since = deps.now();
+  const here = present(deps, member.otherId);
+  const next = { callerId: member.userId, calleeId: member.otherId, calleeRole, since, invited: here };
+  deps.wakeAt(since + (here ? deps.calls.ringMs : deps.calls.inviteMs));
+  show(deps, { ...next, status: 'ringing' });
+  if (!here) await deps.signals.openCall({ userId: member.otherId, role: calleeRole }, deps.key);
+}
+
+// The callee had time to open the chat; the bot calls in only a person still away (docs/115).
+async function invite(deps: RoomDeps, call: StoredCall) {
+  deps.store.saveCall({ ...call, invited: true });
+  deps.wakeAt(call.since + deps.calls.ringMs);
+  if (!present(deps, call.calleeId))
+    await deps.signals.incomingCall({ userId: call.calleeId, role: call.calleeRole }, deps.key);
 }
 
 export async function callAction(deps: RoomDeps, from: ChatSocket, action: CallAction): Promise<void> {
@@ -65,9 +75,10 @@ export function callTrack(deps: RoomDeps, from: ChatSocket, track: CallTrack): v
     if (socket.member.userId === from.member.otherId) send(socket, { type: 'callTrack', track });
 }
 
-// The wake-up: nobody answered in time, or the voice did not connect in time.
+// The wake-up: time to call the callee in, nobody answered in time, or the voice did not connect.
 export async function callTimeout(deps: RoomDeps): Promise<void> {
   const call = deps.store.call();
+  if (call?.status === 'ringing' && call.invited === false) return invite(deps, call);
   if (call && call.status !== 'active')
     await end(deps, call, call.status === 'ringing' ? 'missed' : 'failed');
 }

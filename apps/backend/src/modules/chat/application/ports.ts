@@ -41,8 +41,12 @@ export type StoredCall = {
   // The bot of the callee tells about a call while the Mini App is closed.
   readonly calleeRole: Role;
   readonly status: CallStatus;
+  // When it started to ring, and whether the callee was called in yet (docs/115): an open Mini App
+  // opens the chat itself; the bot calls in only a person still away after inviteMs.
+  readonly since: number;
+  readonly invited: boolean;
 };
-type CallRules = { readonly ringMs: number; readonly connectMs: number };
+type CallRules = { readonly ringMs: number; readonly connectMs: number; readonly inviteMs: number };
 
 export type ChatSocket = { readonly member: Member; send(data: string): void };
 
@@ -50,6 +54,8 @@ export type ChatSocket = { readonly member: Member; send(data: string): void };
 export type ChatSignals = {
   newMessage(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
   contactAttempts(userId: number, key: string, count: number): Promise<void>;
+  // The open or folded Mini App of the callee opens this chat and rings (docs/115).
+  openCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
   // "Sizga qoʻngʻiroq qilishyapti" while the Mini App is closed; "Sizga qoʻngʻiroq qilishdi" after.
   incomingCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
   missedCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;

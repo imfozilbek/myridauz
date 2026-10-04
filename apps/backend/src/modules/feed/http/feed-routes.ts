@@ -1,4 +1,10 @@
-import { FEED_SOCKET_PATH, MINI_APPS, type ApiErrorCode, type MiniApp } from '@platform/contracts';
+import {
+  FEED_SOCKET_PATH,
+  MINI_APPS,
+  type ApiErrorCode,
+  type FeedEvent,
+  type MiniApp,
+} from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { readTicket, signTicket } from '../../../shared/auth/signed-ticket';
@@ -49,4 +55,19 @@ export async function sendSignals(env: Bindings, signals: readonly FeedSignal[])
     ),
   );
   for (const result of results) if (result.status === 'rejected') console.warn(String(result.reason));
+}
+
+// One event to the open Mini App of one person: the chat of a ringing call opens itself (docs/115).
+export async function sendEvent(env: Bindings, { userId, app }: FeedSignal, event: FeedEvent): Promise<void> {
+  const feeds = env.FEEDS;
+  if (!feeds) return;
+  const request = new Request('https://feed/signal', {
+    method: 'POST',
+    headers: { 'x-feed-app': app, 'content-type': 'application/json' },
+    body: JSON.stringify(event),
+  });
+  await feeds
+    .get(feeds.idFromName(feedName(userId)))
+    .fetch(request)
+    .catch((error: unknown) => console.warn(String(error)));
 }

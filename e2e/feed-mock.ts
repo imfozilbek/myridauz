@@ -8,6 +8,9 @@ export async function mockFeed(page: Page) {
   );
   await page.routeWebSocket('**/feed/socket**', (socket) => void sockets.push(socket));
   // "Something changed" to every open Mini App of this page.
-  const changed = () => sockets.forEach((socket) => socket.send(JSON.stringify({ type: 'changed' })));
-  return { sockets, changed };
+  const send = (event: object) => sockets.forEach((socket) => socket.send(JSON.stringify(event)));
+  const changed = () => send({ type: 'changed' });
+  // A call rings in a chat that is not open (G54, docs/115).
+  const call = (chat: string) => send({ type: 'call', chat });
+  return { sockets, changed, call };
 }

@@ -1,4 +1,4 @@
-import { MINI_APPS, type FeedEvent, type MiniApp } from '@platform/contracts';
+import { feedEventSchema, MINI_APPS, type FeedEvent, type MiniApp } from '@platform/contracts';
 import { DurableObject } from 'cloudflare:workers';
 import type { Bindings } from '../../../env';
 import { closeCodeFor } from '../../../shared/sockets/close-code';
@@ -12,7 +12,11 @@ export class UserFeed extends DurableObject<Bindings> {
     const app = MINI_APPS.find((item) => item === request.headers.get('x-feed-app'));
     if (!app) return new Response(null, { status: 400 });
     if (new URL(request.url).pathname === '/signal') {
-      this.signal(app);
+      // A body names another event (a ringing call, docs/115); none is "something changed".
+      const body: unknown = request.headers.get('content-type') ? await request.json() : CHANGED;
+      const event = feedEventSchema.safeParse(body);
+      if (!event.success) return new Response(null, { status: 400 });
+      this.signal(app, event.data);
       return new Response(null, { status: 204 });
     }
     const pair = new WebSocketPair();
@@ -23,10 +27,10 @@ export class UserFeed extends DurableObject<Bindings> {
   }
 
   // Only the Mini App of the bot that spoke hears it: a driver's news is not the passenger's screen.
-  private signal(app: MiniApp) {
+  private signal(app: MiniApp, event: FeedEvent) {
     for (const ws of this.ctx.getWebSockets()) {
       const attachment = ws.deserializeAttachment() as { app: MiniApp };
-      if (ws.readyState === WebSocket.OPEN && attachment.app === app) ws.send(JSON.stringify(CHANGED));
+      if (ws.readyState === WebSocket.OPEN && attachment.app === app) ws.send(JSON.stringify(event));
     }
   }
 
