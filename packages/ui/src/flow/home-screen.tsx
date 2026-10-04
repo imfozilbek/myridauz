@@ -57,7 +57,11 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
   );
 }
 
-type ActionTileProps = { readonly action: StartAction; readonly waiting: boolean; readonly onOpen: () => void };
+type ActionTileProps = {
+  readonly action: StartAction;
+  readonly waiting: boolean;
+  readonly onOpen: () => void;
+};
 
 const NOTHING_LIVE = (): TileLive => ({});
 

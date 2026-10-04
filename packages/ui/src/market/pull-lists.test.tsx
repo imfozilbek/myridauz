@@ -5,6 +5,7 @@ import { wallet } from '../bookings/booking-test-kit';
 import { ChannelsScreen } from '../channels/channels-screen';
 import { FavoritesScreen } from '../comfort/favorites-screen';
 import { HistoryScreen } from '../comfort/history-screen';
+import { DriverData } from '../home/driver-data';
 import { DriverHome } from '../home/driver-home';
 import { PassengerData } from '../home/passenger-data';
 import { PassengerHome } from '../home/passenger-home';
@@ -42,7 +43,9 @@ const CASES: readonly Case[] = [
   ],
   [
     'driver home',
-    <DriverHome go={go} />,
+    <DriverData>
+      <DriverHome go={go} />
+    </DriverData>,
     (load) => ({ market: { myTrips: load }, bookings: { driverBookings: empty } }),
   ],
   ['favorites', <FavoritesScreen onBack={back} />, (load) => ({ comfort: { favorites: load } })],

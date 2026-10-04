@@ -1,4 +1,4 @@
-import type { AppLink, Booking, Offer, RideRequest, Trip } from '@platform/contracts';
+import type { AppLink, Booking, Offer, RideRequest, Trip, Wallet } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { FeedContext } from '../feed/feed-context';
@@ -8,6 +8,8 @@ import { FindTripFlow } from '../market/find-trip-flow';
 import { locations, renderMarket } from '../market/market-test-kit';
 import { LocationsClientContext } from '../places/directory';
 import { testClients } from '../test-shell';
+import { DriverData } from './driver-data';
+import { DriverTiles, WALLET_SECTION } from './driver-tiles';
 import { PassengerData } from './passenger-data';
 import { PassengerTiles } from './passenger-tiles';
 
@@ -39,6 +41,7 @@ export const PASSENGER_ACTIONS = [
   action('my_trips', Shown),
 ];
 export const DRIVER_ACTIONS = [action('new_trip', Shown, 'home.publish'), action('my_trips', Shown)];
+const DRIVER_SECTIONS = [action(WALLET_SECTION, Shown, 'wallet.title')];
 
 export const approved: Driver = {
   application: {
@@ -57,6 +60,7 @@ type Data = {
   // The requests and the offers of a passenger, none by default (G53).
   readonly asked?: () => Promise<RideRequest[]>;
   readonly offers?: () => Promise<Offer[]>;
+  readonly wallet?: () => Promise<Wallet>;
   // The directory of places fails this many times first.
   readonly placesFail?: number;
   // The action of the main button (G25).
@@ -82,6 +86,7 @@ export function renderHome(
       ...(data.requests ? { driverBookings: data.requests } : {}),
       myOffers: data.offers ?? none,
     },
+    ...(data.wallet ? { wallet: { mine: data.wallet } } : {}),
     market: { myRequests: data.asked ?? none, ...(data.trips ? { myTrips: data.trips } : {}) },
     map: { where: async () => Promise.reject(new Error('none')) },
   });
@@ -93,7 +98,15 @@ export function renderHome(
     },
   };
   const flow = (
-    <StartFlow actions={actions} home={home} {...(data.covered ? { covered: data.covered } : {})} />
+    <DriverData>
+      <StartFlow
+        actions={actions}
+        home={home}
+        sections={DRIVER_SECTIONS}
+        tiles={(go) => <DriverTiles go={go} />}
+        {...(data.covered ? { covered: data.covered } : {})}
+      />
+    </DriverData>
   );
   // A passenger main screen has its lists and tiles, as in the app (G53).
   const passenger = (

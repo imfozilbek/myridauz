@@ -1,17 +1,16 @@
-import { MY_TRIP_LINK, type Booking, type Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
 import { useChevron } from '../chevron';
 import { Cell, Section } from '../components';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
 import type { HomeGo, Launch } from '../flow/start-action';
 import { IconTile } from '../icon-tile';
-import { useLoad } from '../market/use-list';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { Screen } from '../screen/screen';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
+import { useDriverData, type DriverLoad } from './driver-data';
 import { againOf, lastTrip, nextTrips, type DriverItem } from './home-items';
 import { useHomeTap } from './use-home-tap';
 
@@ -19,8 +18,7 @@ import { useHomeTap } from './use-home-tap';
 // ketyapsiz?» with the last route. «Safar eʼlon qilish» is the main button of the start flow;
 // a driver on the check is not invited to publish yet (the note above says why).
 export function DriverHome({ go }: { readonly go: HomeGo }) {
-  const { market, bookings } = useApiClients();
-  const load = useLoad(() => Promise.all([market.myTrips(), bookings.driverBookings()]), 'home.trips');
+  const load = useDriverData();
   // A pull down at the top of the main screen refreshes the trips (docs/94 W1).
   return (
     <>
@@ -30,10 +28,7 @@ export function DriverHome({ go }: { readonly go: HomeGo }) {
   );
 }
 
-type TripsProps = {
-  readonly go: HomeGo;
-  readonly load: ReturnType<typeof useLoad<[Trip[], Booking[]]>>;
-};
+type TripsProps = { readonly go: HomeGo; readonly load: DriverLoad };
 
 function Trips({ go, load: { value, failed, reload } }: TripsProps) {
   const { t } = useI18n();

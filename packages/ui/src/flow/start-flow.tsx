@@ -24,6 +24,8 @@ type StartFlowProps = {
   // The action of the main button: the list does not repeat it (G25). It stays while the home
   // block loads or fails, so the main action is always one tap away.
   readonly covered?: string;
+  // The action of the main button stays a tile too (the driver, owner decision 04.10.2026, G53).
+  readonly coveredTile?: boolean;
   // Tiles of the app after its actions (G53): they open a section or the profile.
   readonly tiles?: (go: HomeGo, openProfile: () => void) => ReactNode;
   // Sections opened only by those tiles, not drawn as action tiles (G53).
@@ -35,7 +37,7 @@ type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly laun
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
 export function StartFlow(props: StartFlowProps) {
-  const { actions, opened, notice, after, home, covered, tiles, sections = NO_SECTIONS } = props;
+  const { actions, opened, notice, after, home, covered, coveredTile, tiles, sections = NO_SECTIONS } = props;
   const { t } = useI18n();
   const tap = useHomeTap();
   const [screen, setScreen] = useState<Screen>(() => {
@@ -63,7 +65,7 @@ export function StartFlow(props: StartFlowProps) {
     return (
       <>
         <HomeScreen
-          actions={actions.filter((action) => action !== main)}
+          actions={coveredTile ? actions : actions.filter((action) => action !== main)}
           notice={notice}
           after={after}
           top={home ? <ErrorBoundary>{home(go)}</ErrorBoundary> : undefined}
