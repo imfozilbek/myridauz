@@ -39,5 +39,5 @@
 
 ## Как проверить
 
-- Снимки экранов: `docs/screens/g39/` (Android и iOS, «до» и «после»).
+- Снимки экранов: стенд кладёт их в `screenshots/stand/g27/<android|ios>/g39-*.png` («до» и «после»), владелец получает их в чате.
 - Сценарии стенда: `e2e/stand/trip-changes.spec.ts`.
