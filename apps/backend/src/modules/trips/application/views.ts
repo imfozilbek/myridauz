@@ -35,6 +35,8 @@ export function tripView(
     seats: trip.seats,
     seatsLeft,
     price: trip.price,
+    firstDepartAt: trip.firstDepartAt,
+    firstPrice: trip.firstPrice,
     recommendedPrice,
     // The 3 rules of docs/06: a woman driver, a woman the driver takes along, a woman with a
     // confirmed booking. Only the fact, no name.

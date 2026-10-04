@@ -3,7 +3,7 @@ import { REQUESTS_LINK, requestsLinkValue } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import type { SubscriptionTeller } from '../application/ports';
-import type { SubscriptionRecord } from '../domain/subscription';
+import type { Match, SubscriptionRecord } from '../domain/subscription';
 
 const { t, formatMoney, formatDate } = createI18n(DEFAULT_LOCALE);
 
@@ -33,22 +33,30 @@ export const botTeller = ({ brand, placeName, send, wantsNews }: Wiring): Subscr
     if (await wantsNews(subscription.userId))
       await send([{ bot: role(subscription), chatId: subscription.userId, text, markup }]);
   };
+  const values = async (match: Match) => ({
+    from: await placeName(match.from),
+    to: await placeName(match.to),
+    date: formatDate(new Date(`${match.date}T12:00:00+05:00`)),
+    time: match.time ?? '',
+    seats: String(match.seats),
+    price: formatMoney(match.price),
+  });
   return {
     one: async (subscription, match) => {
-      const values = {
-        from: await placeName(match.from),
-        to: await placeName(match.to),
-        date: formatDate(new Date(`${match.date}T12:00:00+05:00`)),
-        time: match.time ?? '',
-        seats: String(match.seats),
-        price: formatMoney(match.price),
-      };
       const isTrip = subscription.kind === 'trips';
-      const text = t(isTrip ? 'bot.subscription.trip' : 'bot.subscription.request', values);
+      const text = t(isTrip ? 'bot.subscription.trip' : 'bot.subscription.request', await values(match));
       const query = isTrip
         ? `?${TRIP_PARAM}=${match.id}`
         : `?${REQUESTS_LINK}=${requestsLinkValue(match.from, match.to, match.date)}`;
       await tell(subscription, text, button(subscription, t('bot.subscription.open'), query));
+    },
+    cheaper: async (subscription, match) => {
+      const text = t('bot.subscription.cheaper', await values(match));
+      await tell(
+        subscription,
+        text,
+        button(subscription, t('bot.subscription.open'), `?${TRIP_PARAM}=${match.id}`),
+      );
     },
     many: async (subscription, count) => {
       const key =

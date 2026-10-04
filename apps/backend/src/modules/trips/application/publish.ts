@@ -49,6 +49,9 @@ export async function publishTrip(
     km,
     status: 'active',
     createdAt: now,
+    firstDepartAt: input.departAt,
+    firstPrice: input.price,
+    priceToldAt: null,
   };
   await deps.trips.save(trip);
   await deps.announce(trip);

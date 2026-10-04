@@ -30,6 +30,8 @@ export const TRIP: Trip = {
   seats: 4,
   seatsLeft: 3,
   price: 85000,
+  firstDepartAt: Date.parse('2026-10-02T03:30:00Z'),
+  firstPrice: 85000,
   recommendedPrice: null,
   woman: true,
   pickupMode: 'both',

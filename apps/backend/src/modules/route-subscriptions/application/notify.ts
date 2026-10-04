@@ -16,6 +16,19 @@ export async function matchNew(deps: SubscriptionsDeps, kind: SubscriptionKind, 
   }
 }
 
+// A trip became cheaper (G39, docs/104, 9): the fitting passengers hear it at once. The trip itself
+// keeps it to one message a day, so the pause of new matches does not hold it.
+export async function matchCheaper(deps: SubscriptionsDeps, match: Match): Promise<void> {
+  const now = deps.now();
+  const [live, placeMatches] = await Promise.all([
+    deps.subscriptions.live('trips', now),
+    deps.placeMatches(),
+  ]);
+  for (const subscription of live)
+    if (isActive(subscription, now) && fits(subscription, match, placeMatches))
+      await deps.tell.cheaper(subscription, match);
+}
+
 // The Cron job (every 15 minutes): the waiting matches go in one message once the pause is over;
 // "any date" that is over is offered to renew once (docs/24).
 export async function sendWaiting(deps: SubscriptionsDeps): Promise<void> {

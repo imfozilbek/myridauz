@@ -111,5 +111,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       await notify([{ bot: 'driver', chatId: driverId, text, markup }]);
     },
     progress: (booking, step) => closeOnes(booking, step),
+    tripChanged: async (booking, change) =>
+      toPassenger(booking, t(`bot.booking.${change}`, await about(booking))),
   };
 }

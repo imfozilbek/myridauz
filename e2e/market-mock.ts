@@ -15,30 +15,34 @@ const MAIN_KM = [35, 120, 200, 290, 300, 320, 350, 465, 490, 570, 700, 1000, 115
 export const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white' };
 const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 1_800_000) * 1_800_000;
-export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => ({
-  id: `00000000-0000-4000-8000-00000000000${id}`,
-  driver: {
-    id: (Number(id) + 10).toString(16).padStart(32, '0'),
-    firstName: name,
-    hasAvatar: false,
-    car,
-    rating: { average: 4.9, count: 23 },
-  },
-  from: CHILONZOR,
-  to: SAMARQAND,
-  departAt: inHours(hours),
-  km: KM,
-  seats: 3,
-  seatsLeft: 3,
-  price: 90000,
-  recommendedPrice: 90000,
-  woman,
-  pickupMode: 'both',
-  pitak: PITAK,
-  comment: '',
-  status: 'active',
-  ...extra,
-});
+// The first time and price are the published ones unless a trip says otherwise (G39, docs/104).
+export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => {
+  const made = {
+    id: `00000000-0000-4000-8000-00000000000${id}`,
+    driver: {
+      id: (Number(id) + 10).toString(16).padStart(32, '0'),
+      firstName: name,
+      hasAvatar: false,
+      car,
+      rating: { average: 4.9, count: 23 },
+    },
+    from: CHILONZOR,
+    to: SAMARQAND,
+    departAt: inHours(hours),
+    km: KM,
+    seats: 3,
+    seatsLeft: 3,
+    price: 90000,
+    recommendedPrice: 90000,
+    woman,
+    pickupMode: 'both',
+    pitak: PITAK,
+    comment: '',
+    status: 'active',
+    ...extra,
+  };
+  return { firstDepartAt: made.departAt, firstPrice: made.price, ...made };
+};
 export const request = {
   id: '00000000-0000-4000-8000-0000000000a1',
   passenger: { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false },

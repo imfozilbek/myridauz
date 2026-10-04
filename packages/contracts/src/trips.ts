@@ -63,6 +63,10 @@ export const tripSchema = z.object({
   // Seats not taken by confirmed bookings (G08).
   seatsLeft: z.number().int(),
   price,
+  // The time and the price at the publishing: the driver moves the time up to +1 hour from it and
+  // only lowers the price; a lower price shows as «Narxi tushdi» (G39, docs/104).
+  firstDepartAt: z.number().int(),
+  firstPrice: price,
   // The recommended price of the route next to the driver's price (docs/40, question 44). G18.
   recommendedPrice: z.number().int().nullable(),
   // "Mashinada ayol bor": set by itself (docs/06).

@@ -6,12 +6,15 @@ import {
   dateSchema,
   scheduleQuerySchema,
   tripInputSchema,
+  tripPriceSchema,
   tripSearchSchema,
+  tripTimeSchema,
   type ApiErrorCode,
 } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { TripsDeps } from '../application/ports';
+import { lowerTripPrice, retimeTrip } from '../application/change';
 import { publishTrip } from '../application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from '../application/read';
 import { driverSchedule } from '../application/schedule';
@@ -59,6 +62,31 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
         const { km } = recommendation.value;
         const driverId = context.get('session').user.id;
         return context.json(await driverSchedule(tripsDeps, driverId, { ...route.data, km }));
+      })
+      // The driver moves the time later or lowers the price (G39, docs/104).
+      .post(`${DRIVER_TRIPS_PATH}/${ONE}/time`, async (context) => {
+        const input = tripTimeSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'trips.invalid_input');
+        const driverId = context.get('session').user.id;
+        const result = await retimeTrip(
+          deps(context.env),
+          driverId,
+          context.req.param('id'),
+          input.data.departAt,
+        );
+        return result.ok ? context.json(result.value) : fail(context, result.error);
+      })
+      .post(`${DRIVER_TRIPS_PATH}/${ONE}/price`, async (context) => {
+        const input = tripPriceSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail(context, 'trips.invalid_input');
+        const driverId = context.get('session').user.id;
+        const result = await lowerTripPrice(
+          deps(context.env),
+          driverId,
+          context.req.param('id'),
+          input.data.price,
+        );
+        return result.ok ? context.json(result.value) : fail(context, result.error);
       })
       .post(`${DRIVER_TRIPS_PATH}/${ONE}/cancel`, async (context) => {
         const driverId = context.get('session').user.id;

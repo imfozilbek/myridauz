@@ -29,7 +29,8 @@ export type TripRepository = {
   completeOver(now: number): Promise<void>;
 };
 
-export type TripEvent = 'published' | 'updated';
+// retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104).
+export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper';
 
 // A confirmed booking holds seats and gives "ayol bor" when a woman rides (docs/06). G08.
 // Its points (docs/70) measure the extra way of a new passenger.

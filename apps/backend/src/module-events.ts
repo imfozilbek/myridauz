@@ -5,6 +5,7 @@ import {
   filedRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
+  tellBookedOfChange,
 } from './modules/bookings';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { channels } from './modules/channels';
@@ -13,7 +14,7 @@ import { tellFavoriteFans, wireFavorites } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
 import { handleRequestPublished, requestViewOf, wireHiddenRequesters } from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
-import { requestPublished, tripPublished } from './modules/route-subscriptions';
+import { requestPublished, tripCheaper, tripPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
 import { tellTripFamily } from './modules/shares';
 import {
@@ -36,18 +37,25 @@ const tripOf = async (env: Bindings, id: string) => (await tripViewsOf(env, [id]
 const tripChannels = channels(tripOf);
 
 // A published trip goes to the channels and to subscribed passengers; a changed one edits its
-// channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18).
+// channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18). A new time
+// or a lower price reaches the booked passengers, a lower price the subscribed ones too (G39, docs/104).
 handleTripChange(async (env, tripId, event) => {
-  if (event === 'updated') {
-    await tripChannels.changed(env, tripId);
-    if ((await tripOf(env, tripId))?.status === 'cancelled') await tellTripFamily(env, tripId, tripForFamily);
+  if (event === 'published') {
+    await tripChannels.posted(env, tripId);
+    const trip = await tripOf(env, tripId);
+    if (!trip) return;
+    await tripPublished(env, trip);
+    await tellFavoriteFans(env, trip);
     return;
   }
-  await tripChannels.posted(env, tripId);
+  await tripChannels.changed(env, tripId);
   const trip = await tripOf(env, tripId);
-  if (!trip) return;
-  await tripPublished(env, trip);
-  await tellFavoriteFans(env, trip);
+  if (event === 'updated') {
+    if (trip?.status === 'cancelled') await tellTripFamily(env, tripId, tripForFamily);
+    return;
+  }
+  await tellBookedOfChange(env, tripId, event);
+  if (event === 'cheaper' && trip) await tripCheaper(env, trip);
 });
 
 // The admin price table shows the median of real prices (G18, docs/09).

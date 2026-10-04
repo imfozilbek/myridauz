@@ -11,6 +11,7 @@ import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, rideOf, ridesOf } from './application/rides';
+import { tellTripChange } from './application/trip-change';
 import { bookingViews } from './application/views';
 import { bookingRoutes } from './http/booking-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -32,6 +33,10 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
     if (booking.status === 'requested' || booking.status === 'confirmed')
       await answer(deps, driverId, booking.id, 'driver_cancel');
 });
+
+// The driver moved the time or lowered the price: the booked passengers hear it (G39, docs/104).
+export const tellBookedOfChange = (env: Bindings, tripId: string, change: 'retimed' | 'cheaper') =>
+  tellTripChange(bookingsDeps(env), tripId, change);
 
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
