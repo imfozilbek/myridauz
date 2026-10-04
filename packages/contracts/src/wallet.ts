@@ -48,6 +48,8 @@ export const adminWalletsSchema = z.object({
       main: z.number().int(),
     }),
   ),
+  // More drivers after this page (G42): "Yana koʻrsatish" asks for the next one.
+  more: z.boolean(),
 });
 export type AdminWallets = z.infer<typeof adminWalletsSchema>;
 

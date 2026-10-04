@@ -47,6 +47,13 @@ export const d1Trips = (db: D1Database): TripRepository => ({
     (await db.prepare('SELECT * FROM trips WHERE driver_id = ?').bind(driverId).all<Row>()).results.map(
       toTrip,
     ),
+  latestOf: async (driverId, limit) =>
+    (
+      await db
+        .prepare('SELECT * FROM trips WHERE driver_id = ? ORDER BY depart_at DESC LIMIT ?')
+        .bind(driverId, limit)
+        .all<Row>()
+    ).results.map(toTrip),
   departing: async (from, to) =>
     (
       await db

@@ -9,6 +9,10 @@ export type WalletRepository = {
   append(operations: readonly Operation[]): Promise<boolean>;
   // Drivers with anything in the journal, for the team and the Cron job.
   drivers(): Promise<number[]>;
+  // "Hamyonlar" for the team: the balances of one page, the least main money first (G42).
+  balances(offset: number, limit: number): Promise<{ driverId: number; bonus: number; main: number }[]>;
+  // The Cron job: every bonus whose time is over burns in one step for all drivers (G42).
+  burnExpired(now: number, newId: () => string): Promise<void>;
 };
 
 export type WalletDeps = {

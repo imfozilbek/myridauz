@@ -60,6 +60,7 @@ describe('bot messages through the queue (docs/03)', () => {
     const done: string[] = [];
     const message = {
       body: JOB,
+      attempts: 1,
       ack: () => done.push('ack'),
       retry: (options: { delaySeconds: number }) => done.push(`retry ${options.delaySeconds}`),
     };

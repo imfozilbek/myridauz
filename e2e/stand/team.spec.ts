@@ -6,7 +6,7 @@ import {
   createWalletClient,
 } from '@platform/api-client';
 import { DAY_MS, TRIP_DAYS_AHEAD, tashkentDate } from '@platform/contracts';
-import { confirmedSeat, outcome, SAMARQAND } from './g27-kit';
+import { confirmedSeat, outcome, SAMARQAND, walletRowOf } from './g27-kit';
 import { CHILONZOR } from './market-kit';
 import { AZIZA, BOBUR, KAMRON, OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
@@ -58,7 +58,7 @@ test('T24, T28. a moderator blocks; only the owner lifts the block', async () =>
 
 test('T44, T49. a wallet correction never goes below zero; the team sees every trip', async () => {
   const owner = createWalletClient(await admin(OWNER));
-  const row = (await owner.all()).find((wallet) => wallet.firstName === BOBUR.name);
+  const row = await walletRowOf(owner, BOBUR.name);
   const below = { balance: 'bonus' as const, amount: -((row?.bonus ?? 0) + 1), reason: 'stand G27' };
   expect(await outcome(owner.adjust(row?.driverId ?? '', below))).not.toBe('ok');
   // The team reads the trips day by day, from yesterday to the last day of publishing (docs/90 F-A6).

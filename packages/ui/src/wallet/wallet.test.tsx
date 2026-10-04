@@ -57,7 +57,9 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     const adjust = vi.fn<WalletClient['adjust']>(async () => wallet);
     renderMarket(
       <ManagementScreen onBack={() => undefined} />,
-      testClients({ wallet: { all: async () => [owner], of: async () => wallet, adjust } }),
+      testClients({
+        wallet: { all: async () => ({ wallets: [owner], more: false }), of: async () => wallet, adjust },
+      }),
     );
     await tap('Hamyonlar');
     await tap('Jasur');
@@ -87,7 +89,9 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     });
     renderMarket(
       <ManagementScreen onBack={() => undefined} />,
-      testClients({ wallet: { all: async () => [owner], of: async () => wallet, adjust } }),
+      testClients({
+        wallet: { all: async () => ({ wallets: [owner], more: false }), of: async () => wallet, adjust },
+      }),
     );
     await tap('Hamyonlar');
     await tap('Jasur');
