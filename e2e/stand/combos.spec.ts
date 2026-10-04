@@ -6,7 +6,7 @@ import { bookingOf, MINUTE, outcome, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } 
 import { GAYRAT, TIMUR } from './people';
 import { freshDriver } from './schedule-kit';
 import { signedAs } from './stand-kit';
-import { botMessages, clearBotMessages, runCron, standSql } from './stand-tools';
+import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
 
 // The combinations of docs/82: the way of a trip × the way of a seat, «ayol bor» with a man driver,
 // a seat cancelled before an answer, an empty search, the post of a trip that left.
@@ -69,6 +69,9 @@ test('S28. a trip that left: its channel post says it left, by the Cron', async 
     .poll(async () => (await botMessages()).some((m) => m.method === 'sendMessage' && m.chat.startsWith('@')))
     .toBe(true);
   await clearBotMessages();
+  // The worker keeps the post only after Telegram answered: change its time when it is there (lesson 121).
+  const kept = `SELECT trip_id FROM channel_posts WHERE trip_id = '${trip.id}'`;
+  await expect.poll(() => standRows(kept).length).toBe(1);
   // The post keeps the departure of its trip: both move back in time.
   const left = Date.now() - MINUTE;
   standSql(`UPDATE trips SET depart_at = ${left} WHERE id = '${trip.id}'`);
