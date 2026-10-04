@@ -27,9 +27,12 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
                   : 'target' in event
                     ? event.target
                     : '';
+  // What broke a screen follows its code (G52, docs/112).
+  const crash =
+    event.name === 'client_error' ? [event.error ?? '', event.detail ?? '', event.client ?? ''] : [];
   return {
     indexes: [event.app],
-    blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code],
+    blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code, ...crash],
     doubles: [event.at, receivedAt],
   };
 }

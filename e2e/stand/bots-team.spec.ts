@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';

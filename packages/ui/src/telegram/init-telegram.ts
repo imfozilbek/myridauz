@@ -40,8 +40,24 @@ export function initTelegram(colors: BrandColors): TelegramSession {
   miniApp.ready.ifAvailable();
   // The small values of the person from their other phones (docs/88 L12); a failed sync keeps this phone's copy.
   void syncFromCloud().catch(() => undefined);
-  const telegramPlatform = retrieveLaunchParams().tgWebAppPlatform;
+  const { tgWebAppPlatform: telegramPlatform, tgWebAppVersion } = retrieveLaunchParams();
   const platform = APPLE_PLATFORMS.has(telegramPlatform) ? 'ios' : 'base';
   const hasCamera = PHONE_PLATFORMS.has(telegramPlatform);
-  return { inTelegram: true, platform, initData: retrieveRawInitData() ?? '', hasCamera };
+  const initData = retrieveRawInitData() ?? '';
+  return {
+    inTelegram: true,
+    platform,
+    initData,
+    hasCamera,
+    client: clientOf(telegramPlatform, tgWebAppVersion),
+  };
 }
+
+// «android 8.0»: only letters for the app and digits for its version (G52, docs/112).
+const clientOf = (app: string, version: string) =>
+  `${
+    app
+      .toLowerCase()
+      .replace(/[^a-z_]/g, '')
+      .slice(0, 16) || 'unknown'
+  } ${version.replace(/[^0-9.]/g, '').slice(0, 8) || '0'}`;

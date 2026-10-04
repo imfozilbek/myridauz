@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { answer, book, cancelMine, CHILONZOR, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, wordsOf, outcome, SAMARQAND, toldBy, TO_SAMARQAND, walletOf } from './g27-kit';
 import { AZIZA, BOBUR, FERUZA, MALIKA, NIGORA, OYBEK, RUSTAM, SEVARA, ULUGBEK } from './people';

@@ -7,6 +7,7 @@ import { MainButton, SecondaryButton } from './bottom-button';
 import { holdClosing } from '../screen/closing';
 import { confirm, haptic } from './feedback';
 import { initTelegram } from './init-telegram';
+import { OUTSIDE_TELEGRAM } from './in-telegram-context';
 import { useScreenBackground } from './screen-background';
 
 const sdk = vi.hoisted(() => {
@@ -20,7 +21,7 @@ const sdk = vi.hoisted(() => {
   });
   return {
     isTMA: vi.fn(() => true),
-    retrieveLaunchParams: vi.fn(() => ({ tgWebAppPlatform: 'ios' })),
+    retrieveLaunchParams: vi.fn(() => ({ tgWebAppPlatform: 'ios', tgWebAppVersion: '8.0' })),
     retrieveRawInitData: vi.fn(() => 'user=1&hash=x'),
     init: vi.fn(),
     miniApp: {
@@ -56,6 +57,7 @@ describe('Telegram wrappers', () => {
       platform: 'ios',
       initData: 'user=1&hash=x',
       hasCamera: true,
+      client: 'ios 8.0',
     });
     await Promise.resolve();
     await Promise.resolve();
@@ -66,9 +68,9 @@ describe('Telegram wrappers', () => {
     expect(sdk.miniApp.ready.ifAvailable).toHaveBeenCalled();
   });
 
-  it('uses the Android look on other platforms', () => {
-    sdk.retrieveLaunchParams.mockReturnValueOnce({ tgWebAppPlatform: 'android' });
-    expect(initTelegram(colors).platform).toBe('base');
+  it('uses the Android look on other platforms and names the Telegram app (G52)', () => {
+    sdk.retrieveLaunchParams.mockReturnValueOnce({ tgWebAppPlatform: 'android', tgWebAppVersion: '7.10' });
+    expect(initTelegram(colors)).toMatchObject({ platform: 'base', client: 'android 7.10' });
   });
 
   it('paints the Telegram header in the color of the screen', () => {
@@ -83,12 +85,7 @@ describe('Telegram wrappers', () => {
 
   it('does nothing outside Telegram', () => {
     sdk.isTMA.mockReturnValueOnce(false);
-    expect(initTelegram(colors)).toEqual({
-      inTelegram: false,
-      platform: 'base',
-      initData: '',
-      hasCamera: true,
-    });
+    expect(initTelegram(colors)).toBe(OUTSIDE_TELEGRAM);
     expect(sdk.init).not.toHaveBeenCalled();
   });
 

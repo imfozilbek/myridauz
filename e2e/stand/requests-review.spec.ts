@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { HUMOYUN } from './people';
 import { pressBack } from '../telegram-mock';

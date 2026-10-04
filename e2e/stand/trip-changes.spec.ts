@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../crash-guard';
 import { createMarketClient, createSubscriptionsClient } from '@platform/api-client';
 import {
   FIND_LINK,

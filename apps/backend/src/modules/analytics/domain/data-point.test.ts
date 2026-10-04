@@ -23,7 +23,29 @@ describe('toDataPoint', () => {
   });
 
   it('keeps the error code', () => {
-    expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.at(-1)).toBe('render');
+    expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs[5]).toBe('render');
+  });
+
+  it('keeps what broke a screen after its code (G52, docs/112)', () => {
+    const crash = {
+      name: 'client_error',
+      code: 'render',
+      error: 'TypeError',
+      detail: 'x is undefined',
+      client: 'ios 8.0',
+    } as const;
+    expect(toDataPoint({ ...crash, ...base }, 0).blobs.slice(5)).toEqual([
+      'render',
+      'TypeError',
+      'x is undefined',
+      'ios 8.0',
+    ]);
+    expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.slice(5)).toEqual([
+      'render',
+      '',
+      '',
+      '',
+    ]);
   });
 
   it('keeps the way of a point, the length of an empty search and the navigator (G24)', () => {

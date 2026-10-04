@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { book, CHILONZOR, publishTrip } from './market-kit';
 import { askRide, confirmedSeat, dayAfterTomorrow, SAMARQAND, TO_SAMARQAND } from './g27-kit';
 import { MALIKA, OYBEK, ROZA } from './people';

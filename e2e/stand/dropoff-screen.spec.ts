@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';

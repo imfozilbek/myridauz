@@ -1,6 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../test-shell';
 import { StartFlow } from './start-flow';
 
@@ -48,5 +48,29 @@ describe('StartFlow', () => {
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByText('Safar topish')).toBeTruthy();
     expect(tracked.map((event) => event.screen)).toEqual(['home', 'my_trips', 'home']);
+  });
+
+  it('keeps the app when a section breaks: «Orqaga» goes to the main screen (G52, docs/112)', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const Broken = (): never => {
+      throw new Error('boom');
+    };
+    const broken = [{ ...ACTIONS[1], Screen: Broken }];
+    const { tracked } = renderInShell(<StartFlow actions={broken} />);
+    fireEvent.click(screen.getByText('Mening safarlarim'));
+    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
+    expect(tracked.at(-1)).toMatchObject({ name: 'client_error', screen: 'home', detail: 'boom' });
+    fireEvent.click(screen.getByText('Orqaga'));
+    expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+  });
+
+  it('keeps the main screen when its block of trips breaks (G52)', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const Broken = (): never => {
+      throw new Error('boom');
+    };
+    renderInShell(<StartFlow actions={ACTIONS} home={() => <Broken />} />);
+    expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+    expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
   });
 });

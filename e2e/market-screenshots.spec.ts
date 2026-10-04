@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { findTrips, publishTrip } from './market';

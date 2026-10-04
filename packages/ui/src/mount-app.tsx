@@ -32,6 +32,7 @@ import { FeedProvider } from './feed/feed-provider';
 import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
 import { LegalGate } from './legal/legal-gate';
+import { reportCrashes } from './states/report-crashes';
 import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
 
@@ -60,6 +61,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
       version: import.meta.env.VITE_APP_VERSION ?? DEV_VERSION,
     },
   });
+  reportCrashes(analytics, session.client);
   const onError = (code: string) => {
     if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code);
   };

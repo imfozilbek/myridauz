@@ -3,6 +3,7 @@ import { useCallback, useState, type ReactNode } from 'react';
 import { ProfileScreen } from '../account/profile/profile-screen';
 import { useI18n } from '../context/i18n-context';
 import { useHomeTap } from '../home/use-home-tap';
+import { ErrorBoundary } from '../states/error-boundary';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { HomeProvider } from './home-context';
@@ -59,7 +60,7 @@ export function StartFlow({ actions, opened, notice, after, home, covered }: Sta
           actions={actions.filter((action) => action !== main)}
           notice={notice}
           after={after}
-          top={home?.(go)}
+          top={home ? <ErrorBoundary>{home(go)}</ErrorBoundary> : undefined}
           onOpen={openAction}
           onProfile={openProfile}
         />
@@ -67,12 +68,20 @@ export function StartFlow({ actions, opened, notice, after, home, covered }: Sta
       </>
     );
   }
-  if (screen === 'profile') return <ProfileScreen onBack={openHome} />;
+  // A broken section shows the error with «Orqaga» to the main screen: the app goes on (G52).
+  if (screen === 'profile')
+    return (
+      <ErrorBoundary onBack={openHome}>
+        <ProfileScreen onBack={openHome} />
+      </ErrorBoundary>
+    );
   const { action, launch } = screen;
   if (!action.Screen) return <SoonScreen action={action} onBack={openHome} />;
   return (
-    <HomeProvider value={openHome}>
-      <action.Screen onBack={openHome} {...launch} />
-    </HomeProvider>
+    <ErrorBoundary onBack={openHome}>
+      <HomeProvider value={openHome}>
+        <action.Screen onBack={openHome} {...launch} />
+      </HomeProvider>
+    </ErrorBoundary>
   );
 }

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { telegramEvents } from '../telegram-mock';
 import { answer, book, BUXORO, cancelMine, CHILONZOR, publishTrip } from './market-kit';

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './crash-guard';
 import { appUrl, LANDING_PORT } from './apps';
 import { mockPrices } from './landing-mock';
 

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
 import { pressBack } from '../telegram-mock';

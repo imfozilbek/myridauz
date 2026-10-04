@@ -9,6 +9,8 @@ export type TelegramSession = {
   readonly initData: string;
   // Phones have a front camera; Telegram Desktop and Web do not (profile photo, docs/47).
   readonly hasCamera: boolean;
+  // The Telegram app and its version, such as «android 8.0»: an error names it (G52, docs/112).
+  readonly client: string;
 };
 
 export const OUTSIDE_TELEGRAM: TelegramSession = {
@@ -16,6 +18,7 @@ export const OUTSIDE_TELEGRAM: TelegramSession = {
   platform: 'base',
   initData: '',
   hasCamera: true,
+  client: 'browser',
 };
 export const TelegramContext = createContext<TelegramSession>(OUTSIDE_TELEGRAM);
 

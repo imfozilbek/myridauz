@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from '../crash-guard';
 import { TEXT } from '../apps';
 import { applyAsDriver } from '../driver-application';
 import { OWNER } from './people';
