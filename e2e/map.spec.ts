@@ -2,6 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
 import { PITAK } from './market-mock';
@@ -28,6 +29,7 @@ async function openBooking(page: Page) {
   const state = mapState();
   await mockApi(page, 'active');
   await mockMap(page, state);
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();

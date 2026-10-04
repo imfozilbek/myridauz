@@ -2,6 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
 import { chooseRoute, searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -27,6 +28,7 @@ async function open(page: Page, port: number) {
   await page.setViewportSize(ANDROID);
   await mockApi(page, 'active');
   await mockMap(page, mapState());
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(port), 'android'));
 }

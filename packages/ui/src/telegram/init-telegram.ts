@@ -1,4 +1,5 @@
 import type { BrandColors } from '@platform/brands';
+import { clientOf } from './client-name';
 import { syncFromCloud } from './device-storage';
 import { OUTSIDE_TELEGRAM, type TelegramSession } from './in-telegram-context';
 import {
@@ -52,12 +53,3 @@ export function initTelegram(colors: BrandColors): TelegramSession {
     client: clientOf(telegramPlatform, tgWebAppVersion),
   };
 }
-
-// «android 8.0»: only letters for the app and digits for its version (G52, docs/112).
-const clientOf = (app: string, version: string) =>
-  `${
-    app
-      .toLowerCase()
-      .replace(/[^a-z_]/g, '')
-      .slice(0, 16) || 'unknown'
-  } ${version.replace(/[^0-9.]/g, '').slice(0, 8) || '0'}`;

@@ -60,7 +60,8 @@ const context = {
 };
 
 // G52: what broke a screen, to find it (docs/112). The class of the error and its words without
-// numbers or signs, never free text of a person; client: the Telegram platform and its version.
+// numbers or signs, never free text of a person; client: the Telegram platform, its version
+// and the engine with its major version («android 9.6 chrome 83»).
 const crash = {
   error: z
     .string()
@@ -72,7 +73,7 @@ const crash = {
     .optional(),
   client: z
     .string()
-    .regex(/^[a-z_]{1,16}( [0-9.]{1,8})?$/)
+    .regex(/^[a-z_]{1,16}( [0-9.]{1,8})?( [a-z]{1,8} \d{1,4})?$/)
     .optional(),
   // The place in the build: «index-abc.js:95:12345», no words of a person (docs/112).
   where: z
