@@ -6,7 +6,7 @@ import { bookingsDeps } from './deps';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests } from './application/expire';
-import { chatMember } from './application/chat-member';
+import { chatBooking, chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
@@ -50,6 +50,8 @@ export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env
 // For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
+export const chatBookingOf = (env: Bindings, key: string, userId: number) =>
+  chatBooking(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
 // Confirmed bookings of these trips as their passengers see them: the reminders (G10).

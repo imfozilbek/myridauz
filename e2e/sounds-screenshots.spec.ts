@@ -4,6 +4,7 @@ import { soundFile } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
+import { confirmed } from './bookings-mock';
 import { FAKE_MEDIA } from './call-mock';
 import { chatSocket } from './chat-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -19,6 +20,10 @@ const shot = (page: Page) => async (name: string) => {
 
 test('passenger: a call opens its chat over the main screen and rings', async ({ page }) => {
   const { feed } = await mockApi(page, 'active');
+  // Who calls and about which trip (G54): the booking of the chat as the passenger sees it.
+  await page.route('**/api/chats/*/about', (route) =>
+    route.fulfill({ json: { booking: confirmed, role: 'passenger' } }),
+  );
   await page.addInitScript(FAKE_MEDIA);
   const take = shot(page);
   await mockTelegram(page);
@@ -29,7 +34,13 @@ test('passenger: a call opens its chat over the main screen and rings', async ({
   await expect.poll(() => chatSocket.current !== null).toBe(true);
   chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
   await expect(page.getByText(t('calls.incoming'))).toBeVisible();
+  await expect(
+    page.getByText(t('market.request.seats', { count: String(confirmed.seats) }), { exact: false }),
+  ).toBeVisible();
   await take('1-incoming-from-home');
+  chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'active', caller: 'other' } }));
+  await expect(page.getByText(t('calls.headphones'))).toBeVisible();
+  await take('1b-talking');
 });
 
 test('admin: the three sets, the owner picks the first', async ({ page }) => {

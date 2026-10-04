@@ -8,7 +8,13 @@ import type { AppEnv } from './env';
 import './account-deletion';
 import './module-events';
 import { analyticsModule } from './modules/analytics';
-import { bookingForShare, bookingsModule, chatMemberOf, tripCancelWatch } from './modules/bookings';
+import {
+  bookingForShare,
+  bookingsModule,
+  chatBookingOf,
+  chatMemberOf,
+  tripCancelWatch,
+} from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
 import { channelsModule } from './modules/channels';
 import { chatRoutes } from './modules/chat';
@@ -75,6 +81,7 @@ export const app = new Hono<AppEnv>()
   .use('/complaints', allowMiniApps, auth, blockedGuard)
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
+  .use('/chats/:key/about', allowMiniApps, auth, blockedGuard)
   .use('/calls/*', allowMiniApps, auth, blockedGuard)
   // The personal channel: the same ticket way as the chat (docs/64).
   .use('/feed/ticket', allowMiniApps, auth, blockedGuard)
@@ -122,7 +129,7 @@ export const app = new Hono<AppEnv>()
     chatRoutes(async (env, key, userId) => {
       const member = await chatMemberOf(env, key, userId);
       return member && { ...member, canCall: member.canCall && callsReady(env) };
-    }),
+    }, chatBookingOf),
   )
   .route(
     '/',
