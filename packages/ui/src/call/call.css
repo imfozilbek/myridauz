@@ -69,3 +69,18 @@
 .call-danger .call-round-icon {
   background: var(--tgui--destructive_text_color);
 }
+
+/* The trip of the call (G54): who and which trip, a card like the main screen. */
+.call-trip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--tgui--section_bg_color);
+  /* The route line keeps the font of Telegram outside the cards of the main screen (G53). */
+  font-family: var(--tgui--font-family);
+}

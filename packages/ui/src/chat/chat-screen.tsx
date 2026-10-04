@@ -7,6 +7,9 @@ import { ErrorScreen } from '../states/error-screen';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { CallPanel } from '../call/call-panel';
+import { otherName } from '../call/call-trip';
+import { useApiClients } from '../context/api-clients';
+import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
 import { Icon } from '../icons';
 import { useChat } from './use-chat';
@@ -24,7 +27,10 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
   const { t } = useI18n();
   const { messages, loaded, state, warning, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
-  const name = title ?? t('chat.title');
+  // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
+  const { chat: chats } = useApiClients();
+  const about = useLoad(() => chats.about(chatKey)).value ?? null;
+  const name = title ?? (about && otherName(about)) ?? t('chat.title');
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
   if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} onBack={onBack} />;
@@ -48,6 +54,7 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
       {calling.call || calling.ended ? (
         <CallPanel
           name={name}
+          about={about}
           call={calling.call}
           ended={calling.ended}
           controls={controls}

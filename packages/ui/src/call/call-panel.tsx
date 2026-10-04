@@ -1,13 +1,16 @@
-import type { CallEnding, CallView } from '@platform/contracts';
+import type { CallEnding, CallView, ChatAbout } from '@platform/contracts';
 import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
+import { CallTrip } from './call-trip';
 import type { CallControls } from './use-call';
 import './call.css';
 
 type Props = {
   readonly name: string;
+  // Which trip the call is about, when the chat has a booking (G54).
+  readonly about: ChatAbout | null;
   readonly call: CallView | null;
   readonly ended: CallEnding | null;
   readonly controls: CallControls;
@@ -20,7 +23,7 @@ const clock = (ms: number) => `${pad(Math.floor(ms / 60_000))}:${pad(Math.floor(
 
 // The call over the chat, like a Telegram call (docs/08, docs/21): who, where it is, big buttons
 // with words. When it ends, one tap goes back to the chat.
-export function CallPanel({ name, call, ended, controls, onChat }: Props) {
+export function CallPanel({ name, about, call, ended, controls, onChat }: Props) {
   const { t } = useI18n();
   const talking = useTalkTime(call?.status === 'active');
   const status = !call
@@ -44,6 +47,11 @@ export function CallPanel({ name, call, ended, controls, onChat }: Props) {
         <Title weight="2">{name}</Title>
         <Text className="call-status">{status}</Text>
         {call ? <Caption className="call-hint">{t('calls.keepOpen')}</Caption> : null}
+        {/* The phone decides the speaker; headphones keep the voice private (docs/08). */}
+        {call && call.status !== 'ringing' ? (
+          <Caption className="call-hint">{t('calls.headphones')}</Caption>
+        ) : null}
+        {about ? <CallTrip about={about} /> : null}
       </div>
       <div className="call-actions">
         {!call ? (

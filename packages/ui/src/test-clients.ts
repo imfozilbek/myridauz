@@ -87,6 +87,7 @@ export const testClients = (overrides: {
   wallet: { mine: NOT_USED, all: NOT_USED, of: NOT_USED, adjust: NOT_USED, ...overrides.wallet },
   chat: {
     socketUrl: NOT_USED,
+    about: async () => ({ booking: null, role: null }),
     share: NOT_USED,
     stopSharing: NOT_USED,
     shareTrip: NOT_USED,

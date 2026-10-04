@@ -3,6 +3,8 @@ import {
   bookingBoardedPath,
   bookingSchema,
   bookingSharePath,
+  chatAboutPath,
+  chatAboutSchema,
   bookingShareStopPath,
   chatTicketPath,
   chatTicketSchema,
@@ -15,6 +17,7 @@ import {
   shareSchema,
   storySchema,
   type Booking,
+  type ChatAbout,
   type Share,
   type SharedTrip,
   type Story,
@@ -29,6 +32,9 @@ export function createChatClient(options: SignedOptions) {
     // The address of the chat socket with a one-minute ticket.
     socketUrl: async (key: string): Promise<string> =>
       chatTicketSchema.parse(await (await post(chatTicketPath(key), {})).json()).url,
+    // The booking of the chat for the call screen: who and which trip (G54).
+    about: async (key: string): Promise<ChatAbout> =>
+      chatAboutSchema.parse(await (await request(chatAboutPath(key))).json()),
     share: async (bookingId: string): Promise<Share> =>
       shareSchema.parse(await (await post(bookingSharePath(bookingId), {})).json()),
     stopSharing: async (bookingId: string): Promise<void> =>
