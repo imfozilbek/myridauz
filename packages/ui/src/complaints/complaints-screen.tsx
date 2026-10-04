@@ -105,7 +105,8 @@ function ComplaintsList({ queue, onOpen, onBack, onRefresh }: ListProps) {
         {t('complaints.queue')}
       </Title>
       <List>
-        <Section>
+        {/* How many wait, as in the queue of applications (G41, docs/90 F-A4). */}
+        <Section header={t('moderation.queue.count', { count: String(queue.length) })}>
           {queue.map((complaint) => (
             <Cell
               key={complaint.id}

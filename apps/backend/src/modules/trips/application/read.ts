@@ -3,6 +3,7 @@ import { placeMatches } from '../../../shared/places/place-match';
 import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
+import { byHourThenRating } from '../domain/search-order';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 // A passenger's search: the day in Tashkent, places or regions, "Mashinada ayol bor" (docs/06, docs/14).
@@ -24,11 +25,6 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch): Promise<
   return search.woman ? found.filter((trip) => trip.woman) : found;
 }
 
-const HOUR_MS = 60 * 60 * 1000;
-const byHourThenRating = (a: Trip, b: Trip) =>
-  Math.floor(a.departAt / HOUR_MS) - Math.floor(b.departAt / HOUR_MS) ||
-  (b.driver.rating.average ?? 0) - (a.driver.rating.average ?? 0) ||
-  a.departAt - b.departAt;
 
 export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {
   const trip = await deps.trips.find(id);
