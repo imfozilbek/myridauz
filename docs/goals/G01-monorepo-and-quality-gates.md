@@ -30,7 +30,7 @@ docs/31-testing-and-quality-gates.md, docs/32-ci-security.md.
    permissions: contents: read, actions закреплены по SHA.
    Шаги: format, lint, typecheck, knip, test, coverage, gitleaks.
 9. CodeQL, Dependabot. .gitignore и .env.example уже есть.
-10. Проверка отсутствия длинных тире «—», «–» в коде и docs (скрипт в CI;
+10. Проверка отсутствия длинных и средних тире в коде и docs (скрипт в CI;
     исключение: строки, где сам запрет описан).
 11. Playwright + Chromium с подменой окружения Telegram (mock):
     один smoke-тест стартового экрана и скрипт скриншотов (docs/33).
