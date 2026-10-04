@@ -1,6 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 import { createMarketClient, createSubscriptionsClient } from '@platform/api-client';
-import { FIND_LINK, requestsLinkValue, tashkentDate, tashkentTime, type Trip } from '@platform/contracts';
+import {
+  FIND_LINK,
+  MY_TRIP_LINK,
+  requestsLinkValue,
+  tashkentDate,
+  tashkentTime,
+  type Trip,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, toldBy, wordsOf } from './g27-kit';
@@ -70,11 +77,9 @@ const findLink = (trip: Trip) =>
   `?${FIND_LINK}=${requestsLinkValue(CHILONZOR, ANDIJON, tashkentDate(trip.departAt))}`;
 const card = (page: Page) => page.locator('.trip-card').filter({ hasText: ANVAR.name }).first();
 
-async function openOwnTrip(page: Page, platform: Platform) {
-  await openHome(page, 'driver', ANVAR, platform);
-  await page.getByText(t('common.myTrips')).first().click();
-  await page.locator('.trip-card').first().click();
-}
+// The trip of this run by its link: the one of the other platform is in the list too (docs/65 B5).
+const openOwnTrip = (page: Page, platform: Platform, trip: Trip) =>
+  openHome(page, 'driver', ANVAR, platform, `?${MY_TRIP_LINK}=${trip.id}`);
 
 for (const platform of PLATFORMS)
   test(`${platform}: the driver moves the time and lowers the price; the search shows the marks`, async ({
@@ -85,7 +90,7 @@ for (const platform of PLATFORMS)
     await openHome(page, 'passenger', SUBSCRIBED, platform, findLink(trip));
     await expect(card(page)).toBeVisible();
     await shot(page, platform, name('1-search-before'));
-    await openOwnTrip(page, platform);
+    await openOwnTrip(page, platform, trip);
     await shot(page, platform, name('2-trip-before'));
     await page.getByText(t('market.change.time')).click();
     await shot(page, platform, name('3-time'));
