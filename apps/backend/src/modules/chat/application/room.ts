@@ -13,6 +13,9 @@ import {
 const HISTORY = 100;
 // The bot says "Yangi xabar" at most once in this time per person and chat: no flood.
 const NOTIFY_PAUSE_MS = 5 * 60 * 1000;
+// One person sends at most this many messages a minute: a flood never reaches the other side (G42).
+export const MAX_PER_MINUTE = 20;
+const MINUTE_MS = 60 * 1000;
 // Every third hidden contact from one person reaches the moderators (docs/07, docs/17).
 const ATTEMPTS_STEP = 3;
 
@@ -41,6 +44,10 @@ export function joined(deps: RoomDeps, socket: ChatSocket): void {
 // A message from a person: contacts hidden, everyone in the chat sees it, the other one hears of it.
 export async function sendText(deps: RoomDeps, from: ChatSocket, raw: string): Promise<void> {
   const { member } = from;
+  const lastMinute = deps.store
+    .recent(HISTORY)
+    .filter((message) => message.author === member.userId && deps.now() - message.at < MINUTE_MS);
+  if (lastMinute.length >= MAX_PER_MINUTE) return;
   const { text, masked } = maskContacts(raw);
   const message = deps.store.add({ author: member.userId, text, event: null, masked, at: deps.now() });
   broadcast(deps, message);

@@ -14,6 +14,10 @@ export type Bindings = {
   // One Durable Object per person: "something changed" to the open Mini Apps (docs/64, G19).
   readonly FEEDS?: DurableObjectNamespace;
   readonly NOTIFICATIONS?: Queue<NotificationJob>;
+  // Workers Rate Limiting (G42): actions, the map search, the analytics of one person or address.
+  readonly ACTIONS_LIMIT?: RateLimit;
+  readonly SEARCH_LIMIT?: RateLimit;
+  readonly ANALYTICS_LIMIT?: RateLimit;
   readonly PASSENGER_BOT_TOKEN?: string;
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;

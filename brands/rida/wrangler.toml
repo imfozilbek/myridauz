@@ -60,6 +60,23 @@ max_batch_size = 10
 max_batch_timeout = 2
 max_retries = 5
 
+# Workers Rate Limiting (G42, docs/111): requests of one person (or one address) per minute.
+# Actions: a booking, an offer, a chat or feed ticket; the map search; the analytics of an address.
+[[ratelimits]]
+name = "ACTIONS_LIMIT"
+namespace_id = "1001"
+simple = { limit = 60, period = 60 }
+
+[[ratelimits]]
+name = "SEARCH_LIMIT"
+namespace_id = "1002"
+simple = { limit = 120, period = 60 }
+
+[[ratelimits]]
+name = "ANALYTICS_LIMIT"
+namespace_id = "1003"
+simple = { limit = 600, period = 60 }
+
 # Every 15 minutes: trips and requests whose time is over are closed (docs/35).
 [triggers]
 crons = ["*/15 * * * *"]

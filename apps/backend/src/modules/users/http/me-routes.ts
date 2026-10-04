@@ -20,6 +20,7 @@ import type { UsersDeps } from '../application/ports';
 import { setNews, setWriteAccess } from '../application/profile';
 import { register } from '../application/register';
 import { callerOf, fail } from './respond';
+import { readCapped } from '../../../shared/upload/read-capped';
 
 // The contact is shared a moment before the form is sent: an hour is plenty.
 const CONTACT_MAX_AGE_SECONDS = 60 * 60;
@@ -59,13 +60,9 @@ export function meRoutes({ deps, settings, forget }: Wiring) {
         return context.json(await getMe(usersDeps, callerOf(context), settings(context.env)), CREATED);
       })
       .put(MY_AVATAR_PATH, async (context) => {
-        if (Number(context.req.header('content-length') ?? 0) > MAX_AVATAR_BYTES) {
-          return fail(context, 'users.avatar_too_large');
-        }
-        const image = {
-          body: await context.req.arrayBuffer(),
-          type: context.req.header('content-type') ?? '',
-        };
+        const body = await readCapped(context.req.raw, MAX_AVATAR_BYTES);
+        if (!body) return fail(context, 'users.avatar_too_large');
+        const image = { body, type: context.req.header('content-type') ?? '' };
         const result = await setAvatar(deps(context.env), callerOf(context), image);
         return result.ok ? context.body(null, NO_CONTENT) : fail(context, result.error);
       })
