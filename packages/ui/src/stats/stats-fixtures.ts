@@ -6,6 +6,7 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
   numbers: {
     newUsers: period === 'day' ? 24 : 158,
     trips: period === 'day' ? 9 : 61,
+    activeTrips: 12,
     bookings: period === 'day' ? 17 : 103,
     driverApplications: period === 'day' ? 3 : 12,
     complaints: period === 'day' ? 1 : 4,

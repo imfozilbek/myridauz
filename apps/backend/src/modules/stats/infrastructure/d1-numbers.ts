@@ -4,6 +4,7 @@ import type { NumbersSource } from '../application/ports';
 const SQL = `SELECT
   (SELECT COUNT(*) FROM users WHERE created_at >= ?1) AS newUsers,
   (SELECT COUNT(*) FROM trips WHERE created_at >= ?1) AS trips,
+  (SELECT COUNT(*) FROM trips WHERE status IN ('active', 'full') AND depart_at > ?2) AS activeTrips,
   (SELECT COUNT(*) FROM bookings WHERE created_at >= ?1) AS bookings,
   (SELECT COUNT(*) FROM driver_applications WHERE submitted_at >= ?1) AS driverApplications,
   (SELECT COUNT(*) FROM complaints WHERE created_at >= ?1) AS complaints`;
@@ -11,6 +12,7 @@ const SQL = `SELECT
 type Row = {
   newUsers: number;
   trips: number;
+  activeTrips: number;
   bookings: number;
   driverApplications: number;
   complaints: number;
@@ -18,10 +20,12 @@ type Row = {
 
 export const d1Numbers = (db: D1Database): NumbersSource => ({
   numbers: async (since) => {
-    const row = await db.prepare(SQL).bind(since).first<Row>();
+    // Live now: the trips that have not left yet, whatever the period.
+    const row = await db.prepare(SQL).bind(since, Date.now()).first<Row>();
     return {
       newUsers: row?.newUsers ?? 0,
       trips: row?.trips ?? 0,
+      activeTrips: row?.activeTrips ?? 0,
       bookings: row?.bookings ?? 0,
       driverApplications: row?.driverApplications ?? 0,
       complaints: row?.complaints ?? 0,

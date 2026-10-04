@@ -14,8 +14,20 @@ export type StartAction = {
   readonly hintKey: TranslationKey;
   // A driver waits for the approval of the application before this action works (docs/86 V7).
   readonly waitsApproval?: true;
+  // What its tile says live (G53): read where the tile is drawn, so a section loads only its own data.
+  readonly useLive?: () => TileLive;
   // The section; without it the action says the section comes soon.
   readonly Screen?: ComponentType<{ readonly onBack: () => void } & Launch>;
+};
+
+// What a tile of the main screen says now (G53): how many things wait for the person (a badge),
+// another hint, or a number of the day (the admin Mini App).
+export type TileLive = {
+  readonly badge?: number;
+  readonly hint?: string;
+  readonly value?: number;
+  // The number is work waiting for the team: it is red (G53).
+  readonly urgent?: boolean;
 };
 
 // How the main screen opens a section (G25): a booking or a trip by its link, the search right at

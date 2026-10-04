@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { StartFlow } from '../flow/start-flow';
 import type { StartAction } from '../flow/start-action';
@@ -44,14 +44,10 @@ afterEach(() => {
 describe('the main screen of a driver around the check (docs/86 V7)', () => {
   it('marks the actions that wait for the approval, and keeps the others as they are', () => {
     render(pending);
-    expect(screen.getByText('Ariza tekshirilmoqda')).toBeTruthy();
-    // A note with its own «Yopish», not a row of the list (docs/88 L11).
-    fireEvent.click(screen.getByRole('button', { name: 'Yopish' }));
-    expect(screen.queryByText('Ariza tekshirilmoqda')).toBeNull();
-    expect(screen.getByText('Tasdiqlangandan keyin')).toBeTruthy();
-    // Only the action that waits has a muted icon.
-    expect(document.querySelectorAll('.action-waiting')).toHaveLength(1);
-    expect(screen.getByText('Tasdiqlangandan keyin').closest('[role="button"]')?.textContent).toContain(
+    // The amber note stays while the check lasts: no «Yopish» (the mockup of G53).
+    expect(screen.getByText('Arizangiz tekshirilmoqda')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Yopish' })).toBeNull();
+    expect(screen.getByText('Tekshiruvdan keyin').closest('button')?.textContent).toContain(
       'Safar eʼlon qilish',
     );
   });
@@ -63,7 +59,7 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
     expect(screen.getByText('Ariza tasdiqlandi')).toBeTruthy();
     expect(bonus.textContent).toContain('481\u00a0000\u00a0soʻm');
     expect(bonus.textContent).toContain('31-oktabrgacha');
-    expect(screen.queryByText('Tasdiqlangandan keyin')).toBeNull();
+    expect(screen.queryByText('Tekshiruvdan keyin')).toBeNull();
     // Under the actions: the late banner pushes nothing down (G41, docs/108).
     const action = screen.getByText('Mening safarlarim');
     expect(action.compareDocumentPosition(bonus) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

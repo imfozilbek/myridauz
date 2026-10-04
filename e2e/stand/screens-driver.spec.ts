@@ -31,7 +31,7 @@ for (const platform of PLATFORMS)
   test(`${platform}: the main screen and one step from it`, async ({ page }) => {
     await openHome(page, 'driver', OYBEK, platform);
     await shot(page, platform, 'd10-home');
-    await visit(page, platform, t('account.profile.open'), 'd11-profile');
+    await visit(page, platform, OYBEK.name, 'd11-profile');
     await visit(page, platform, t('common.myTrips'), 'd12-my-trips');
     await visit(page, platform, t('common.driver.passengerRequests'), 'd13-requests');
   });

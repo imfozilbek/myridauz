@@ -31,6 +31,8 @@ export const testClients = (overrides: {
     ...overrides.drivers,
   },
   moderation: {
+    // A team member without a name in the test: the card waits (G53).
+    me: NOT_USED,
     queue: NOT_USED,
     get: NOT_USED,
     photo: NOT_USED,

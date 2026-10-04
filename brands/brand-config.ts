@@ -16,6 +16,18 @@ export type BrandColors = {
   readonly text: HexColor;
   readonly textMuted: HexColor;
   readonly danger: HexColor;
+  // The plates of a status on the main screen (G53): done is green, waits for the person is amber.
+  readonly success: HexColor;
+  readonly successSoft: HexColor;
+  readonly attention: HexColor;
+  readonly attentionSoft: HexColor;
+  // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
+  readonly accentSoft: HexColor;
+  // A gray tile of the main screen («Mening safarlarim», «Profil»): light background, dark icon.
+  readonly neutralSoft: HexColor;
+  readonly neutralText: HexColor;
+  // A number of work waiting for the team (admin, G53).
+  readonly dangerText: HexColor;
   // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
   readonly routeFrom: HexColor;
   readonly routeTo: HexColor;

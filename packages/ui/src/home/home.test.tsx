@@ -51,7 +51,7 @@ describe('the main screen of a passenger (G25)', { timeout: 20_000 }, () => {
     passenger(async () => [booking], 1);
     expect(await screen.findByRole('alert')).toBeTruthy();
     await tap('Qayta urinish');
-    expect(await screen.findByText(ROUTE)).toBeTruthy();
+    expect(await screen.findByLabelText(ROUTE)).toBeTruthy();
   });
 
   it('shows the nearest bookings, each fact on its own line, and opens one', async () => {
@@ -66,7 +66,7 @@ describe('the main screen of a passenger (G25)', { timeout: 20_000 }, () => {
     status = 'confirmed';
     act(signal);
     expect(await screen.findByText('Tasdiqlangan')).toBeTruthy();
-    const [first] = screen.getAllByText(ROUTE);
+    const [first] = screen.getAllByLabelText(ROUTE);
     if (first) fireEvent.click(first);
     expect(screen.getByText(linkOf({ name: BOOKING_LINK, id: booking.id }))).toBeTruthy();
   });
@@ -74,7 +74,7 @@ describe('the main screen of a passenger (G25)', { timeout: 20_000 }, () => {
   it('names the day of a trip tomorrow', async () => {
     const departAt = Date.now() + 24 * HOUR_MS;
     passenger(async () => [{ ...booking, trip: { ...trip, departAt } }]);
-    expect(await screen.findByText(/^Ertaga, soat \d\d:\d\d$/u)).toBeTruthy();
+    expect(await screen.findByText(/^Ertaga, soat \d\d:\d\d/u)).toBeTruthy();
   });
 });
 
@@ -90,37 +90,35 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
   it('shows the nearest trip with its new requests and opens it', async () => {
     driver([trip], [booking, { ...booking, id: 'b2' }]);
     expect(await screen.findByText('2 ta yangi soʻrov')).toBeTruthy();
-    // The counter beside the trip, like the unread one of Telegram.
-    expect(screen.getByText('2')).toBeTruthy();
-    await tap(ROUTE);
+    fireEvent.click(await screen.findByLabelText(ROUTE));
     expect(screen.getByText(linkOf({ name: MY_TRIP_LINK, id: trip.id }))).toBeTruthy();
   });
 
   it('says the free seats of a trip without requests, and a full car at a glance', async () => {
     driver([trip, { ...trip, id: 't2', status: 'full', seatsLeft: 0 }]);
-    expect(await screen.findByText('3 ta boʻsh joy')).toBeTruthy();
+    expect(await screen.findByText(/· 3 ta boʻsh joy$/u)).toBeTruthy();
     expect(screen.getByText('Joy qolmagan')).toBeTruthy();
     expect(screen.queryByText('Faol')).toBeNull();
   });
 
   it('offers the last route of a driver whose trips are over', async () => {
     driver([{ ...trip, status: 'completed' }]);
-    expect(await screen.findByText('Qayerga ketyapsiz?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
     await tap('Oxirgi yoʻnalish');
     expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
   });
 
-  it('opens the list of the end from the question', async () => {
+  it('shows nothing above the tiles for a driver who never drove, as on the mockup (G53)', async () => {
     driver([]);
-    await tap('Qayerga ketyapsiz?');
-    expect(screen.getByText('opened to')).toBeTruthy();
+    expect(await screen.findByText('Mening safarlarim')).toBeTruthy();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
   });
 
   it('does not invite a driver on the check to publish', async () => {
     driver([], [], true);
     expect(await screen.findByText('Mening safarlarim')).toBeTruthy();
-    expect(screen.queryByText('Qayerga ketyapsiz?')).toBeNull();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
     expect(screen.queryByText('Yoʻnalish')).toBeNull();
   });
 });
