@@ -28,4 +28,21 @@ describe('«Necha kishi ketadi?» over the trips (G41, docs/90 F-P4)', { timeout
     // Nothing fits: how many trips the filter hid, and one tap to see them (docs/89 P6).
     expect(await screen.findByText(/2 ta safar/u)).toBeTruthy();
   });
+
+  it('shows only the evening trips after «Kechqurun», and the morning ones after «Ertalab» (F-P6)', async () => {
+    // 08:00 and 19:00 in Tashkent.
+    const evening = { ...many, departAt: Date.parse('2026-10-02T14:00:00Z') };
+    renderMarket(
+      <FindTripFlow onBack={() => undefined} />,
+      testClients({ market: { searchTrips: async () => [few, evening] } }),
+    );
+    await quickRoute();
+    expect(await screen.findByText('Bobur')).toBeTruthy();
+    await tap('Kechqurun');
+    expect(screen.queryByText('Bobur')).toBeNull();
+    expect(screen.getByText('Sardor')).toBeTruthy();
+    await tap('Ertalab');
+    expect(await screen.findByText('Bobur')).toBeTruthy();
+    expect(screen.queryByText('Sardor')).toBeNull();
+  });
 });

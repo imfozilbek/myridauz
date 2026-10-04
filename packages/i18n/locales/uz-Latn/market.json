@@ -91,5 +91,9 @@
   "trip.closed.completed": "Bu safar tugagan.",
   "trip.others": "Shu kungi boshqa safarlar",
   "request.review.hint": "Haydovchilar narxingizni koʻradi va oʻz vaqti hamda narxini taklif qiladi.",
-  "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx."
+  "requests.hint": "Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx.",
+  "filter.dayPart.any": "Istalgan vaqt",
+  "filter.dayPart.morning": "Ertalab",
+  "filter.dayPart.day": "Kunduzi",
+  "filter.dayPart.evening": "Kechqurun"
 }

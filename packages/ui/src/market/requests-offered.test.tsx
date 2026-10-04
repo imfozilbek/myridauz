@@ -26,6 +26,8 @@ describe('the requests a driver already answered (G41, docs/90 F-D1)', { timeout
     const answered = await screen.findByText('Dilnoza');
     expect(screen.getByText('Malika').compareDocumentPosition(answered) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getAllByText('Taklif yuborildi')).toHaveLength(1);
+    // How each passenger wants to be taken, from the third person (F-D5).
+    expect(screen.getAllByText('Uyidan yoki pitakdan')).toHaveLength(2);
     await tap('Dilnoza');
     // The request opens without the main button «Taklif yuborish».
     expect(await screen.findByText('Bir joy narxi')).toBeTruthy();

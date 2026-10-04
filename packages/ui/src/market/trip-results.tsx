@@ -16,6 +16,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { DayChips } from './day-chips';
 import { FilteredEmpty } from './filtered-empty';
 import { TripCard } from './trip-card';
+import { inDayPart } from './day-part';
 import { NO_FILTERS, TripFiltersSection, type TripFilters } from './trip-filters';
 import { RESULTS, useTripSearch } from './use-trip-search';
 import './market.css';
@@ -41,11 +42,17 @@ export function TripResults(props: TripResultsProps) {
   useScreenBackground('grouped');
   const { t } = useI18n();
   // «Uyimdan olib ketsin» is a filter of the phone, the list is already here (docs/88 L5).
-  const { woman, door, seats } = filters;
+  const { woman, door, seats, dayPart } = filters;
   const { trips, stale, failed, load, refresh } = useTripSearch(route, date, woman);
   const shown = useMemo(
-    () => trips?.filter((trip) => (!door || trip.pickupMode !== 'pitak') && trip.seatsLeft >= seats) ?? null,
-    [trips, door, seats],
+    () =>
+      trips?.filter(
+        (trip) =>
+          (!door || trip.pickupMode !== 'pitak') &&
+          trip.seatsLeft >= seats &&
+          inDayPart(dayPart, trip.departAt),
+      ) ?? null,
+    [trips, door, seats, dayPart],
   );
   // «Назад» from a trip: the same place; a quiet refresh keeps the trip under the finger (docs/94).
   useListPlace(RESULTS, trips !== null);

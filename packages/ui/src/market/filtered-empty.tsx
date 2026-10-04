@@ -25,7 +25,7 @@ export function FilteredEmpty({ route, date, filters, found, onClear, children }
   const { market } = useApiClients();
   // «Uyimdan» and the number of people are counted on the phone at once; «ayol bor» asks the server. Until it answers nothing is
   // shown, so «nothing found» never flashes before «N trips are hidden» (G41, docs/108).
-  const counted = filters.woman ? null : filters.door || filters.seats > 1 ? found.length : 0;
+  const counted = filters.woman ? null : filters.door || filters.seats > 1 || filters.dayPart !== 'any' ? found.length : 0;
   const [asked, setAsked] = useState<number | null>(null);
   useEffect(() => {
     if (!filters.woman) return undefined;

@@ -32,6 +32,8 @@ export function RequestCard({ request, own = false, offers = 0, offered = false,
   const { passenger } = request;
   const facts: readonly Fact[] = [
     ['passengers', t('market.request.seats', { count: String(request.seats) })],
+    // How the passenger wants to be taken: the driver sees it before opening (G41, docs/90 F-D5).
+    ...(own ? [] : [['origin', t(`way.request.${request.pickupMode}`)] as const]),
     ...(own ? [[statusIcon(request.status), t(`market.status.${request.status}`)] as const] : []),
     ...(offers > 0 ? [['car', t('market.request.offers', { count: String(offers) })] as const] : []),
     ...(offered ? [['selected', t('bookings.offer.sent.title')] as const] : []),

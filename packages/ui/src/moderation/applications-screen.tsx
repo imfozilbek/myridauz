@@ -1,25 +1,18 @@
 import './moderation.css';
-import { formatPlate, type ApplicationSummary } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
+import type { ApplicationSummary } from '@platform/contracts';
 import { useCallback, useEffect, useState } from 'react';
-import { Cell, List, Section, Snackbar } from '../components';
-import { useScreenView } from '../context/analytics-context';
+import { Snackbar } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useFeedChange } from '../feed/feed-context';
-import { IconTile } from '../icon-tile';
-import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useForgetOnLeave } from '../market/list-leave';
-import { useKeepPlace } from '../screen/keep-place';
-import { useListPlace } from '../screen/list-memory';
-import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ApplicationScreen, type Outcome } from './application-screen';
+import { QUEUE, QueueView } from './queue-view';
 import { forgetLinkedApplication, linkedApplication } from './linked-application';
 
-const QUEUE = 'moderation.queue';
 
 // Applications waiting for the team, the oldest first (docs/04).
 export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) {
@@ -87,57 +80,5 @@ export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) 
       />
       {notice}
     </>
-  );
-}
-
-type QueueViewProps = {
-  readonly queue: readonly ApplicationSummary[];
-  readonly title: string;
-  readonly onOpen: (application: ApplicationSummary) => void;
-  readonly onBack: () => void;
-  readonly onRefresh: () => unknown;
-};
-
-// Back from an application the queue stands at the same place; an application decided by another
-// moderator goes away without moving the row under the finger (docs/94 F2, S3).
-function QueueView({ queue, title, onOpen, onBack, onRefresh }: QueueViewProps) {
-  useScreenView('moderation.queue');
-  const { t } = useI18n();
-  useListPlace(QUEUE, true);
-  useKeepPlace(queue);
-  if (queue.length === 0) {
-    return (
-      <>
-        <Screen onBack={onBack} onRefresh={onRefresh} />
-        <EmptyState
-          icon="applications"
-          title={t('moderation.queue.empty')}
-          description={t('moderation.queue.emptyHint')}
-        />
-      </>
-    );
-  }
-  return (
-    <div className="moderation">
-      <Screen onBack={onBack} onRefresh={onRefresh} />
-      <Title weight="1" className="moderation-title">
-        {title}
-      </Title>
-      <List>
-        <Section>
-          {queue.map((application) => (
-            <Cell
-              key={application.userId}
-              data-row={application.userId}
-              before={<IconTile name="car" />}
-              subtitle={`${application.car.make} ${application.car.model} · ${formatPlate(application.car.plate)}`}
-              onClick={() => onOpen(application)}
-            >
-              {application.firstName}
-            </Cell>
-          ))}
-        </Section>
-      </List>
-    </div>
   );
 }
