@@ -14,7 +14,8 @@
 | `pnpm e2e` | Smoke тест трёх Mini App в Chromium с подменой Telegram |
 | `pnpm screenshots` | Скриншоты экранов в `screenshots/` (для владельца, `33`) |
 | `pnpm stand` | Вся Rida локально: backend, база, карта, три Mini App (`75`) |
-| `pnpm stand:check` | Сценарии целей на чистом стенде, скриншоты в `screenshots/stand/` (`75`) |
+| `pnpm stand:check` | Все сценарии на 4 чистых стендах рядом, около 5 минут; скриншоты в `screenshots/stand/` (`75`) |
+| `pnpm stand:check <файл>` | Быстрая проверка: сценарии одного файла на одном стенде, около 40 секунд (`75`) |
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |

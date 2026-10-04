@@ -13,6 +13,7 @@ import {
   STAND_APPS,
   STAND_BASE,
   STAND_DIR,
+  STAND_INSPECTOR_PORT,
   STAND_MAP_READY,
   STAND_OWNER_ID,
   STAND_STATE,
@@ -63,8 +64,12 @@ if (!existsSync(STAND_MAP_READY)) {
 }
 if (!existsSync(STAND_BASE)) cpSync(STAND_STATE, STAND_BASE, { recursive: true });
 // The Mini Apps ask their own origin: the server of each app passes the API on to the backend.
-for (const app of Object.keys(STAND_APPS))
-  run('pnpm', ['--filter', `@platform/miniapp-${app}`, 'build'], { VITE_API_URL: '/' });
+// Stands side by side share one build made before them (STAND_BUILT=1, scripts/stand/check.mjs).
+if (process.env.STAND_BUILT !== '1')
+  for (const app of Object.keys(STAND_APPS))
+    run('pnpm', ['--filter', `@platform/miniapp-${app}`, 'build'], { VITE_API_URL: '/' });
+// --prepare: the data and the build only, for the stands that start next.
+if (process.argv.includes('--prepare')) process.exit(0);
 
 const host = `localhost:${STAND_API_PORT}`;
 const api = `http://${host}`;
@@ -75,6 +80,7 @@ const api = `http://${host}`;
 serveTelegram(STAND_TELEGRAM_PORT);
 const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
+dev.push('--inspector-port', String(STAND_INSPECTOR_PORT));
 dev.push('--var', telegram, '--var', 'CHANNEL_POSTS:on', '--test-scheduled');
 const worker = spawn('pnpm', ['exec', 'wrangler', ...dev, '--env-file', resolve(STAND_VARS)], {
   stdio: 'inherit',
