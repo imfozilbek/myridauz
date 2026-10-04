@@ -19,4 +19,15 @@ describe('crashFacts (G52, docs/112)', () => {
     expect(crashFacts('ui.analytics_missing')).toEqual({ error: 'Thrown', detail: 'ui.analytics_missing' });
     expect(crashFacts(undefined)).toEqual({ error: 'Thrown', detail: 'undefined' });
   });
+
+  it('keeps the place in the build where it broke, and nothing else of the stack', () => {
+    const error = new TypeError('n is not a function');
+    error.stack = `TypeError: n is not a function
+    at Kl (https://app.example/assets/index-i0x830JH.js:95:12345)
+    at Object.Ce (https://app.example/assets/index-i0x830JH.js:8:4210)`;
+    expect(crashFacts(error).where).toBe('index-i0x830JH.js:95:12345');
+    const plain = new Error('x');
+    plain.stack = 'Error: x';
+    expect(crashFacts(plain).where).toBeUndefined();
+  });
 });

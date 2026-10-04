@@ -3,14 +3,14 @@ import { ERROR_EVENTS, type EventSource } from '../application/ports';
 import { counterRow, errorRow, sqlAnswerSchema, toCounter, toErrorRow, totalRow } from './sql-rows';
 
 // Columns of a row (modules/analytics/domain/data-point.ts): blob1 name, blob2 app, blob3 screen,
-// blob5 session, blob6 code. _sample_interval makes counts right when Cloudflare samples.
+// blob5 session, blob6 code, blob7 and blob8 the class and the words of a crash (G52). _sample_interval makes counts right when Cloudflare samples.
 type Options = {
   readonly accountId: string;
   readonly token: string;
   readonly dataset: string;
   readonly fetch: Fetch;
 };
-const TOP_ERRORS = 10;
+const TOP_ERRORS = 15;
 const list = (names: readonly string[]) => names.map((name) => `'${name}'`).join(', ');
 const within = (unit: 'DAY' | 'HOUR', amount: number) =>
   `timestamp > NOW() - INTERVAL '${Math.trunc(amount)}' ${unit}`;
@@ -39,9 +39,10 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
     },
     topErrors: async (days) => {
       const sql =
-        `SELECT blob2 AS app, blob3 AS screen, blob6 AS code, SUM(_sample_interval) AS count ` +
-        `FROM ${dataset} WHERE ${within('DAY', days)} AND blob1 IN (${list(ERROR_EVENTS)}) ` +
-        `GROUP BY app, screen, code ORDER BY count DESC LIMIT ${TOP_ERRORS}`;
+        `SELECT blob1 AS name, blob2 AS app, blob3 AS screen, blob6 AS code, blob7 AS error, ` +
+        `blob8 AS detail, SUM(_sample_interval) AS count FROM ${dataset} WHERE ${within('DAY', days)} ` +
+        `AND blob1 IN (${list(ERROR_EVENTS)}) GROUP BY name, app, screen, code, error, detail ` +
+        `ORDER BY count DESC LIMIT ${TOP_ERRORS}`;
       return sqlAnswerSchema(errorRow)
         .parse(await query(sql))
         .data.map(toErrorRow);

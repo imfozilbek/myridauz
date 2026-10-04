@@ -36,6 +36,7 @@ import { LegalGate } from './legal/legal-gate';
 import { unlockAudio } from './sounds/audio';
 import { loadSounds, playNotify } from './sounds/brand-sound';
 import { reportCrashes } from './states/report-crashes';
+import { TelegramOnly } from './states/telegram-only';
 import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
 
@@ -105,24 +106,26 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   createRoot(container).render(
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} locations={locations} clients={clients} session={session}>
-        <FeedProvider connect={feed.socketUrl} onWake={onAppVisible} onSignal={() => playNotify()}>
-          {welcome ? (
-            // Only the passenger app is opened from a shared trip card (docs/43).
-            <FollowGate enabled={app === 'passenger'}>
-              <LegalGate>
-                <AccountGate app={app} client={users} welcome={welcome}>
-                  <LaunchLinks app={app}>
-                    <Page />
-                  </LaunchLinks>
-                </AccountGate>
-              </LegalGate>
-            </FollowGate>
-          ) : (
-            <TeamGate client={users}>
-              <Page />
-            </TeamGate>
-          )}
-        </FeedProvider>
+        <TelegramOnly app={app} required={import.meta.env.PROD}>
+          <FeedProvider connect={feed.socketUrl} onWake={onAppVisible} onSignal={() => playNotify()}>
+            {welcome ? (
+              // Only the passenger app is opened from a shared trip card (docs/43).
+              <FollowGate enabled={app === 'passenger'}>
+                <LegalGate>
+                  <AccountGate app={app} client={users} welcome={welcome}>
+                    <LaunchLinks app={app}>
+                      <Page />
+                    </LaunchLinks>
+                  </AccountGate>
+                </LegalGate>
+              </FollowGate>
+            ) : (
+              <TeamGate client={users}>
+                <Page />
+              </TeamGate>
+            )}
+          </FeedProvider>
+        </TelegramOnly>
       </AppShell>
     </StrictMode>,
   );

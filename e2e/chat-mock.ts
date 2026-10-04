@@ -23,6 +23,8 @@ export const SHARE_TOKEN = 'e2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2eE2e1';
 export const chatSocket: { current: WebSocketRoute | null } = { current: null };
 
 export async function mockChat(page: Page) {
+  // A test of the same worker left its socket here: a new page waits for its own one.
+  chatSocket.current = null;
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   await page.route('**/api/chats/*/ticket', (route) =>
     json(route, { url: `ws://localhost:4199/chats/${KEY}/socket?ticket=e2e` }),

@@ -32,11 +32,58 @@ describe('analyticsSql (docs/29)', () => {
   });
 
   it('keeps only ids in errors and counts the errors of the last hours', async () => {
-    const errors = setup({ data: [{ app: 'server', screen: '', code: 'render', count: '3' }] });
+    const errors = setup({
+      data: [
+        {
+          name: 'client_error',
+          app: 'passenger',
+          screen: 'home',
+          code: 'render',
+          error: 'TypeError',
+          detail: "x is undefined (reading 'lat')",
+          count: '3',
+        },
+        {
+          name: 'server_error',
+          app: 'server',
+          screen: '',
+          code: 'cron:burnBonuses',
+          error: '',
+          detail: '',
+          count: '1',
+        },
+        {
+          name: 'api_error',
+          app: 'driver',
+          screen: 'market.review',
+          code: 'trips.too_many',
+          error: '',
+          detail: '',
+          count: '2',
+        },
+      ],
+    });
+    // G52 (docs/112): what broke goes with a crash; a refusal of a rule is told apart from a crash.
     expect(await errors.source.topErrors(1)).toEqual([
-      { app: 'server', screen: 'unknown', code: 'render', count: 3 },
+      {
+        kind: 'crash',
+        app: 'passenger',
+        screen: 'home',
+        code: 'render',
+        what: "TypeError: x is undefined (reading 'lat')",
+        count: 3,
+      },
+      {
+        kind: 'server',
+        app: 'server',
+        screen: 'unknown',
+        code: 'unknown',
+        what: 'cron:burnBonuses',
+        count: 1,
+      },
+      { kind: 'refusal', app: 'driver', screen: 'market.review', code: 'trips.too_many', what: '', count: 2 },
     ]);
-    expect(errors.asked[0]?.body).toContain("blob1 IN ('client_error', 'api_error')");
+    expect(errors.asked[0]?.body).toContain("blob1 IN ('client_error', 'server_error', 'api_error')");
     const total = setup({ data: [{ count: '5' }] });
     expect(await total.source.errorsSince(1)).toBe(5);
     expect(total.asked[0]?.body).toContain("INTERVAL '1' HOUR");

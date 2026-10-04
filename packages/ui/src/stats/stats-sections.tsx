@@ -1,8 +1,9 @@
-import { MAIN_NUMBERS, type ErrorRow, type Funnel, type Stats } from '@platform/contracts';
+import { MAIN_NUMBERS, type Funnel, type Stats } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { ErrorsSections } from './stats-errors';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
 const HIGH_DROP = 50;
@@ -26,7 +27,7 @@ export function StatsSections({ stats }: { readonly stats: Stats }) {
       {stats.funnels.map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={index === 0} />
       ))}
-      {stats.events === 'on' ? <ErrorsSection errors={stats.errors} /> : null}
+      {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       <Text className="stats-note">{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</Text>
     </List>
   );
@@ -51,31 +52,6 @@ function FunnelSection({ funnel, hint }: { readonly funnel: Funnel; readonly hin
           {t(`stats.step.${step.step}`)}
         </Cell>
       ))}
-    </Section>
-  );
-}
-
-const APPS = ['passenger', 'driver', 'admin'] as const;
-const appName = (app: string) =>
-  (APPS as readonly string[]).includes(app) ? (app as (typeof APPS)[number]) : null;
-
-function ErrorsSection({ errors }: { readonly errors: readonly ErrorRow[] }) {
-  const { t, formatNumber } = useI18n();
-  return (
-    <Section header={t('stats.errors')}>
-      {errors.length === 0 ? <Cell>{t('stats.errorsEmpty')}</Cell> : null}
-      {errors.map((row) => {
-        const app = appName(row.app);
-        return (
-          <Cell
-            key={`${row.app}:${row.screen}:${row.code}`}
-            subtitle={`${app ? t(`stats.app.${app}`) : row.app} · ${row.screen}`}
-            after={<CellValue>{formatNumber(row.count)}</CellValue>}
-          >
-            {row.code}
-          </Cell>
-        );
-      })}
     </Section>
   );
 }

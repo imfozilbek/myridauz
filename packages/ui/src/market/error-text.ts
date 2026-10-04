@@ -47,12 +47,17 @@ const SAME_AS: Readonly<Record<string, string>> = {
   'drivers.photo_too_large': 'users.avatar_too_large',
 };
 
+// The text of an answer code of the API, null for a code without one (the dashboard, G52).
+export function codeKey(answered: string): TranslationKey | null {
+  const code = SAME_AS[answered] ?? answered;
+  return EXPLAINED.includes(code) ? (`errors.${code}` as TranslationKey) : null;
+}
+
 // A screen with its own text for a failure keeps it for a code without a text.
 export function errorKey(
   error: unknown,
   fallback: TranslationKey = 'errors.generic.description',
 ): TranslationKey {
   const answered = error instanceof ApiError ? error.code : undefined;
-  const code = answered ? (SAME_AS[answered] ?? answered) : undefined;
-  return code && EXPLAINED.includes(code) ? (`errors.${code}` as TranslationKey) : fallback;
+  return (answered && codeKey(answered)) || fallback;
 }

@@ -30,6 +30,25 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
         ]
       : [],
   errors:
-    events === 'on' ? [{ app: 'driver', screen: 'market.review', code: 'trips.too_many', count: 7 }] : [],
+    events === 'on'
+      ? [
+          {
+            kind: 'crash',
+            app: 'passenger',
+            screen: 'home',
+            code: 'render',
+            what: 'TypeError: x is undefined',
+            count: 2,
+          },
+          {
+            kind: 'refusal',
+            app: 'driver',
+            screen: 'market.review',
+            code: 'trips.too_many',
+            what: '',
+            count: 7,
+          },
+        ]
+      : [],
   at: Date.parse('2026-10-05T09:30:00Z'),
 });

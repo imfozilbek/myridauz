@@ -2,8 +2,8 @@ import type { ErrorRow, MainNumber } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
 import type { Counter } from '../domain/counters';
 
-// Errors of the Mini Apps (docs/29): a crash of a screen and an error answer of the API.
-export const ERROR_EVENTS = ['client_error', 'api_error'] as const;
+// Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
+export const ERROR_EVENTS = ['client_error', 'server_error', 'api_error'] as const;
 
 // The events of Analytics Engine (docs/29); null while the analytics key is not set (docs/46).
 export type EventSource = {

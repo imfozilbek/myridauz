@@ -1,6 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, type ReactNode } from 'react';
+import { useAccount } from '../account/account-context';
 import { CellValue } from '../account/cell-value';
 import { Badge, Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
@@ -9,6 +10,7 @@ import { Icon, type IconName } from '../icons';
 import { IconTile } from '../icon-tile';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
+import { useAskedSeat } from './asked-seat';
 import { ClosedTrip } from './closed-trip';
 import { otherPrice } from './other-price';
 import { RouteView } from './route-view';
@@ -41,6 +43,9 @@ export function TripScreen(props: TripScreenProps) {
   const wayFacts = useWayFacts();
   const day = new Date(trip.departAt);
   useEffect(() => track({ name: 'trip_open', screen: 'market.trip' }), [track]);
+  // A driver who opens the own trip as a passenger cannot book it (G52, docs/112 bookings.own_trip).
+  const mine = useAccount()?.profile.id === trip.driver.id;
+  const asked = useAskedSeat(trip.id, Boolean(onBook) && !readOnly && !mine);
   const live = trip.status === 'active' || trip.status === 'full';
   // A trip on the road takes nobody: an old link or "Sevimli" shows why (docs/65 B8).
   const departed = trip.departAt <= Date.now();
@@ -116,7 +121,11 @@ export function TripScreen(props: TripScreenProps) {
           </Button>
         ) : null}
         {/* «Joy band qilish» is the main button of Telegram, as everywhere (G35, docs/97 PS9). */}
-        {onBook && !readOnly && !closed ? <MainButton text={t('market.trip.book')} onClick={onBook} /> : null}
+        {onBook && !readOnly && !closed && mine ? <Text>{t('market.trip.yours')}</Text> : null}
+        {onBook && !readOnly && !closed && asked ? <Text>{t('market.trip.asked')}</Text> : null}
+        {onBook && !readOnly && !closed && !mine && !asked ? (
+          <MainButton text={t('market.trip.book')} onClick={onBook} />
+        ) : null}
         {onBook && !readOnly && closed ? (
           <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
         ) : null}

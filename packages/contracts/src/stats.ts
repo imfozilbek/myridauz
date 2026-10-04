@@ -42,7 +42,17 @@ export type FunnelStep = z.infer<typeof funnelStepSchema>;
 export const funnelSchema = z.object({ id: z.enum(FUNNELS), steps: z.array(funnelStepSchema) });
 export type Funnel = z.infer<typeof funnelSchema>;
 
-export const errorRowSchema = z.object({ app: id, screen: id, code: id, count });
+// G52 (docs/112): a crash of a screen and a failure of the server come first; a refusal of a rule
+// (a limit, a changed status) is not a breakage. what: the words of a crash, the place of a failure.
+export const ERROR_KINDS = ['crash', 'server', 'refusal'] as const;
+export const errorRowSchema = z.object({
+  kind: z.enum(ERROR_KINDS),
+  app: id,
+  screen: id,
+  code: id,
+  what: z.string().max(170),
+  count,
+});
 export type ErrorRow = z.infer<typeof errorRowSchema>;
 
 export const statsSchema = z.object({

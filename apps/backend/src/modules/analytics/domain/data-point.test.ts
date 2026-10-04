@@ -33,15 +33,18 @@ describe('toDataPoint', () => {
       error: 'TypeError',
       detail: 'x is undefined',
       client: 'ios 8.0',
+      where: 'index-abc.js:95:12345',
     } as const;
     expect(toDataPoint({ ...crash, ...base }, 0).blobs.slice(5)).toEqual([
       'render',
       'TypeError',
       'x is undefined',
       'ios 8.0',
+      'index-abc.js:95:12345',
     ]);
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs.slice(5)).toEqual([
       'render',
+      '',
       '',
       '',
       '',

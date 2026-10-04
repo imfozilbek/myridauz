@@ -44,6 +44,7 @@ describe('analyticsBatchSchema', () => {
     const client = (value: string) =>
       analyticsBatchSchema.safeParse({ events: [{ ...crash, client: value }] }).success;
     expect(client('tdesktop 7.10')).toBe(true);
+    expect(client('android 9.6 chrome 83')).toBe(true);
     expect(client('Ali Valiyev')).toBe(false);
   });
 
