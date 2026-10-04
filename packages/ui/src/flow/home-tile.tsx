@@ -17,7 +17,8 @@ type Props = TileLive & {
 
 // One tile of the main screen (owner decision 04.10.2026, G53): an icon, a title and a short hint,
 // a red-free badge for what waits for the person, or a big number of the day.
-export function HomeTile({ icon, tone, title, hint, badge, value, wide, waiting, onClick }: Props) {
+export function HomeTile(props: Props) {
+  const { icon, tone, title, hint, badge, value, urgent, wide, waiting, onClick } = props;
   const { formatNumber } = useI18n();
   const { colors } = useBrand().theme;
   const shown = badge && badge > 0 ? Math.min(badge, MAX_BADGE) : 0;
@@ -32,7 +33,11 @@ export function HomeTile({ icon, tone, title, hint, badge, value, wide, waiting,
         </span>
       ) : null}
       <span className="home-tile-title">{title}</span>
-      {value === undefined ? null : <span className="home-tile-value">{formatNumber(value)}</span>}
+      {value === undefined ? null : (
+        <span className="home-tile-value" style={urgent ? { color: colors.danger } : undefined}>
+          {formatNumber(value)}
+        </span>
+      )}
       {hint ? <span className="home-tile-hint">{hint}</span> : null}
     </button>
   );

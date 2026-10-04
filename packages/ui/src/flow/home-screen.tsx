@@ -79,6 +79,7 @@ function ActionTile({ action, waiting, onOpen }: ActionTileProps) {
       hint={hint}
       {...(live.badge === undefined ? {} : { badge: live.badge })}
       {...(live.value === undefined ? {} : { value: live.value })}
+      {...(live.urgent ? { urgent: true } : {})}
       waiting={waiting}
       onClick={onOpen}
     />

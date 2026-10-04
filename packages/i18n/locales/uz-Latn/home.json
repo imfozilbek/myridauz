@@ -9,5 +9,10 @@
   "profileHint": "Rasm va sozlamalar",
   "support": "Yordam",
   "supportHint": "Savolingiz boʻlsa yozing",
-  "walletBonus": "Bonus {amount}"
+  "walletBonus": "Bonus {amount}",
+  "admin.waiting": "kutmoqda",
+  "admin.new": "yangi",
+  "admin.today": "Bugun",
+  "admin.newUsers": "yangi foydalanuvchi",
+  "admin.tripsToday": "bugun eʼlon qilingan"
 }

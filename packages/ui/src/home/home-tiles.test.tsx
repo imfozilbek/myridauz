@@ -23,11 +23,13 @@ describe('the tiles of a passenger (G53)', { timeout: 20_000 }, () => {
     const actions = [
       ...PASSENGER_ACTIONS,
       {
-        ...PASSENGER_ACTIONS[1]!,
         id: 'leave_request',
-        labelKey: 'common.passenger.leaveRequest' as const,
+        icon: 'request',
+        tone: 'accent',
+        labelKey: 'common.passenger.leaveRequest',
+        hintKey: 'common.passenger.leaveRequestHint',
         useLive: useOffersLive,
-      },
+      } satisfies StartAction,
     ];
     renderHome((go) => <PassengerHome go={go} />, actions, {
       bookings: async () => [],

@@ -22,7 +22,13 @@ export type StartAction = {
 
 // What a tile of the main screen says now (G53): how many things wait for the person (a badge),
 // another hint, or a number of the day (the admin Mini App).
-export type TileLive = { readonly badge?: number; readonly hint?: string; readonly value?: number };
+export type TileLive = {
+  readonly badge?: number;
+  readonly hint?: string;
+  readonly value?: number;
+  // The number is work waiting for the team: it is red (G53).
+  readonly urgent?: boolean;
+};
 
 // How the main screen opens a section (G25): a booking or a trip by its link, the search right at
 // a point of the way, a new trip with a known route or the whole last trip.

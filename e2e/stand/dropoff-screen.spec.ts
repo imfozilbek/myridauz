@@ -72,7 +72,7 @@ for (const platform of PLATFORMS)
     await mainButton(page).click();
     await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
     // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map.
-    const recent = page.getByText(t('market.recent'));
+    const recent = page.getByText(t('home.driver.last'));
     await expect(async () => {
       if (!(await recent.isVisible())) await pressBack(page);
       await expect(recent).toBeVisible({ timeout: 1000 });
