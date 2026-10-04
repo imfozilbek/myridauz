@@ -24,7 +24,9 @@ describe('the requests a driver already answered (G41, docs/90 F-D1)', { timeout
     for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
     const answered = await screen.findByText('Dilnoza');
-    expect(screen.getByText('Malika').compareDocumentPosition(answered) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(
+      screen.getByText('Malika').compareDocumentPosition(answered) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
     expect(screen.getAllByText('Taklif yuborildi')).toHaveLength(1);
     // How each passenger wants to be taken, from the third person (F-D5).
     expect(screen.getAllByText('Uyidan yoki pitakdan')).toHaveLength(2);

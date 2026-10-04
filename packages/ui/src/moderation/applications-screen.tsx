@@ -13,7 +13,6 @@ import { ApplicationScreen, type Outcome } from './application-screen';
 import { QUEUE, QueueView } from './queue-view';
 import { forgetLinkedApplication, linkedApplication } from './linked-application';
 
-
 // Applications waiting for the team, the oldest first (docs/04).
 export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenBackground('grouped');

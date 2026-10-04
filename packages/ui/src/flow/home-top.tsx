@@ -33,7 +33,8 @@ export function HomeTop({ children }: { readonly children: ReactNode }) {
     if (typeof ResizeObserver === 'undefined') return;
     // Only the real block is remembered, never the gray rows.
     const observer = new ResizeObserver(() => {
-      if (!node.querySelector('[aria-busy="true"]')) remember(Math.round(node.getBoundingClientRect().height));
+      if (!node.querySelector('[aria-busy="true"]'))
+        remember(Math.round(node.getBoundingClientRect().height));
     });
     observer.observe(node);
     return () => observer.disconnect();
