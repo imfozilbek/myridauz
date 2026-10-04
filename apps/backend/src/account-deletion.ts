@@ -1,5 +1,5 @@
 import { cancelAllOf, chatsOf, erasePointsOf, filedRideOfBooking } from './modules/bookings';
-import { forgetChat } from './modules/chat';
+import { forgetChat, forgetUnread } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
 import { forgetFavorites } from './modules/favorites';
@@ -24,6 +24,8 @@ wireAccountDeletion(async (env, userId) => {
   await erasePointsOf(env, userId);
   await eraseRequestPointsOf(env, userId);
   for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
+  // The plates «1 xabar» of the person go with the account (G53).
+  await forgetUnread(env, userId);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);

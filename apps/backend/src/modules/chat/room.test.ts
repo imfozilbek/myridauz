@@ -45,6 +45,21 @@ describe('the chat of a booking (docs/07)', () => {
     expect(signals).toEqual(['new to driver 1', 'new to driver 1']);
   });
 
+  it('counts the messages a person has not seen yet and forgets them when the chat opens (G53)', async () => {
+    const { connect, say, unread } = room();
+    const passenger = connect(PASSENGER);
+    await say(passenger, 'Salom');
+    await say(passenger, 'Javob bering');
+    expect(unread.get(DRIVER.userId)).toBe(2);
+    // The sender never has unread messages of their own; one who is in the chat sees them at once.
+    expect(unread.get(PASSENGER.userId)).toBeUndefined();
+    const driver = connect(DRIVER);
+    await Promise.resolve();
+    expect(unread.get(DRIVER.userId)).toBeUndefined();
+    await say(driver, 'Hozir');
+    expect(unread.get(PASSENGER.userId)).toBeUndefined();
+  });
+
   it('keeps the history, system lines included, and ignores anything but text', async () => {
     const { deps, connect, say, emit, inbox } = room();
     const passenger = connect(PASSENGER);

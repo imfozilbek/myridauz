@@ -117,6 +117,7 @@ button.home-card:active {
 .home-pill {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: 4px 9px;
   border-radius: 9px;
   font-size: 12.5px;

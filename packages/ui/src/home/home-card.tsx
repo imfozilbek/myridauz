@@ -8,6 +8,7 @@ const ICON = 22;
 const ROUTE_ICON = 16;
 const ARROW = 14;
 const ROW_ARROW = 18;
+const PILL_ICON = 14;
 
 type CardProps = {
   readonly onClick?: () => void;
@@ -76,18 +77,24 @@ export function RouteLine({ from, to }: { readonly from: string; readonly to: st
   );
 }
 
-export type PillTone = 'success' | 'attention' | 'muted';
+export type PillTone = 'success' | 'attention' | 'muted' | 'brand';
 
-// A plate of a status: green when done, amber when it waits for the person, gray when closed.
-export function Pill({ tone, children }: { readonly tone: PillTone; readonly children: ReactNode }) {
+type PillProps = { readonly tone: PillTone; readonly icon?: IconName; readonly children: ReactNode };
+
+// A plate of a status: green when done, amber when it waits for the person, gray when closed, the
+// color of the app for new messages («1 xabar», G53).
+export function Pill({ tone, icon, children }: PillProps) {
   const { colors } = useBrand().theme;
-  const [color, soft] = {
+  const looks: Record<PillTone, readonly [string, string]> = {
     success: [colors.success, colors.successSoft],
     attention: [colors.attention, colors.attentionSoft],
     muted: [colors.textMuted, colors.neutralSoft],
-  }[tone];
+    brand: [colors.brandText, colors.brandSoft],
+  };
+  const [color, soft] = looks[tone];
   return (
     <span className="home-pill" style={{ '--pill': color, '--pill-soft': soft } as CSSProperties}>
+      {icon ? <Icon name={icon} size={PILL_ICON} color={color} /> : null}
       {children}
     </span>
   );

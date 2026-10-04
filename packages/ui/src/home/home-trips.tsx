@@ -15,6 +15,8 @@ type HomeRow = {
   readonly meta?: string;
   // The status as a plate: what waits for the person is amber, what is done is green.
   readonly pill?: { readonly text: string; readonly tone: PillTone };
+  // «1 xabar»: the messages of the other side not read yet (G53).
+  readonly unread?: number;
 };
 
 type Props = {
@@ -42,9 +44,14 @@ export function HomeTrips({ rows, directory, onOpen }: Props) {
             <span className="home-card-hint">
               {row.meta ? t('home.meta', { when: time, more: row.meta }) : time}
             </span>
-            {row.pill ? (
+            {row.pill || row.unread ? (
               <span className="home-pills">
-                <Pill tone={row.pill.tone}>{row.pill.text}</Pill>
+                {row.pill ? <Pill tone={row.pill.tone}>{row.pill.text}</Pill> : null}
+                {row.unread ? (
+                  <Pill tone="brand" icon="chat">
+                    {t('home.unread', { count: String(row.unread) })}
+                  </Pill>
+                ) : null}
               </span>
             ) : null}
           </HomeCard>

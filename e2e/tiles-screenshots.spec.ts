@@ -38,9 +38,10 @@ for (const platform of ['android', 'ios'] as const) {
       await page.evaluate(() =>
         localStorage.setItem('route_recent', JSON.stringify([{ from: '1726294', to: '1718401' }])),
       );
-      await json(page, '**/api/passenger/bookings', { bookings: [confirmed] });
+      await json(page, '**/api/passenger/bookings', { bookings: [{ ...confirmed, unread: 1 }] });
       await page.reload();
       await expect(page.getByText(t('home.driver.last'))).toBeVisible();
+      await expect(page.getByText(t('home.unread', { count: '1' }))).toBeVisible();
       await expect(page.getByText(t('bookings.status.confirmed'))).toBeVisible();
       await shot(page, 'p2-confirmed');
       await json(page, '**/api/passenger/bookings', { bookings: [] });

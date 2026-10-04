@@ -69,6 +69,7 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
       text: t(`bookings.status.${booking.status}`),
       tone: booking.status === 'confirmed' ? ('success' as const) : ('attention' as const),
     },
+    ...(booking.unread ? { unread: booking.unread } : {}),
   }));
   // A request with offers opens its first offer; «Назад» shows the request with all of them.
   const firstOffer = (requestId: string) => waiting.find((offer) => offer.requestId === requestId)?.id;

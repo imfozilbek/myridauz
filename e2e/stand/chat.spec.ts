@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { createChatClient } from '@platform/api-client';
+import { createBookingsClient, createChatClient } from '@platform/api-client';
 import { confirmedSeat, toldBy, wordsOf } from './g27-kit';
 import { FERUZA, KOMIL, OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
@@ -44,4 +44,22 @@ test('T64. every third hidden phone is a signal to the team', async () => {
   for (const number of ['90 111 22 33', '91 222 33 44', '93 333 44 55']) phone.send(`Raqam: ${number}`);
   await toldBy('admin', OWNER, wordsOf('bot.chat.contactAttempts'));
   phone.socket.close();
+});
+
+// G53: the messages of the driver the passenger has not read are on the main screen, until the chat opens.
+test('G53. a message to a passenger away is «1 xabar» on the booking, gone once the chat opens', async () => {
+  const { seat } = await confirmedSeat(KOMIL, FERUZA);
+  const unread = async () => {
+    const bookings = await createBookingsClient(await signedAs('passenger', FERUZA)).myBookings();
+    return bookings.find((booking) => booking.id === seat.id)?.unread;
+  };
+  expect(await unread()).toBe(0);
+  const driver = await connect('driver', KOMIL, seat.chatKey);
+  driver.send('Salom, soat 8 da kelaman');
+  driver.send('Pitakda kutaman');
+  await expect.poll(unread, { timeout: SETTLE_MS }).toBe(2);
+  const passenger = await connect('passenger', FERUZA, seat.chatKey);
+  await expect.poll(unread, { timeout: SETTLE_MS }).toBe(0);
+  driver.socket.close();
+  passenger.socket.close();
 });

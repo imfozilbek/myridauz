@@ -55,11 +55,19 @@ export type ChatSignals = {
   missedCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
 };
 
+// The messages a person of this chat has not seen yet (G53): the plate «1 xabar» on the main screen.
+// Adding one also refreshes the open Mini App of that person (docs/64).
+export type UnreadCounter = {
+  add(to: { readonly userId: number; readonly role: Role }): Promise<void>;
+  clear(userId: number): Promise<void>;
+};
+
 export type RoomDeps = {
   readonly key: string;
   readonly store: MessageStore;
   readonly sockets: () => readonly ChatSocket[];
   readonly signals: ChatSignals;
+  readonly unread: UnreadCounter;
   readonly now: () => number;
   readonly calls: CallRules;
   // The chat wakes up at this time to end a call nobody answered or connected (null: no wake-up).

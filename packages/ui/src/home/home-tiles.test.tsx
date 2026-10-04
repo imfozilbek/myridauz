@@ -48,11 +48,16 @@ describe('the tiles of a passenger (G53)', { timeout: 20_000 }, () => {
       (go) => <PassengerHome go={go} />,
       live(PASSENGER_ACTIONS, useBookingsLive),
       {
-        bookings: async () => [booking, { ...booking, id: 'b2', status: 'declined' }],
+        bookings: async () => [
+          { ...booking, unread: 2 },
+          { ...booking, id: 'b2', status: 'declined' },
+        ],
         covered: 'find_trip',
       },
     );
     await screen.findByText('Javob kutilmoqda');
+    // The messages of the driver not read yet, as on the mockup (G53).
+    expect(screen.getByText('2 xabar')).toBeTruthy();
     expect(tileOf('Mening safarlarim')?.querySelector('.home-tile-badge')?.textContent).toBe('1');
     await tap('Rasm va sozlamalar');
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
