@@ -6,6 +6,7 @@ import { ChannelsScreen } from '../channels/channels-screen';
 import { FavoritesScreen } from '../comfort/favorites-screen';
 import { HistoryScreen } from '../comfort/history-screen';
 import { DriverHome } from '../home/driver-home';
+import { PassengerData } from '../home/passenger-data';
 import { PassengerHome } from '../home/passenger-home';
 import { PitaksScreen } from '../pitaks/pitaks-screen';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -32,7 +33,13 @@ type Case = readonly [string, ReactNode, (load: () => Promise<never>) => Paramet
 const empty = async () => [];
 // Each list gets data of its own shape, an empty list by default.
 const CASES: readonly Case[] = [
-  ['passenger home', <PassengerHome go={go} />, (load) => ({ bookings: { myBookings: load } })],
+  [
+    'passenger home',
+    <PassengerData>
+      <PassengerHome go={go} />
+    </PassengerData>,
+    (load) => ({ bookings: { myBookings: load, myOffers: empty }, market: { myRequests: empty } }),
+  ],
   [
     'driver home',
     <DriverHome go={go} />,

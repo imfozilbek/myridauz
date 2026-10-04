@@ -1,26 +1,23 @@
-import { BOOKING_LINK, type Booking } from '@platform/contracts';
+import { BOOKING_LINK, OFFER_LINK } from '@platform/contracts';
 import { useChevron } from '../chevron';
 import { Cell, Section } from '../components';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { HomeGo } from '../flow/start-action';
 import { IconTile } from '../icon-tile';
-import { useLoad } from '../market/use-list';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { useHere } from '../places/use-here';
 import { Screen } from '../screen/screen';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
-import { nextBookings } from './home-items';
-import { RecentRoutesSection } from './recent-routes-section';
+import { nextBookings, waitingOffers } from './home-items';
+import { usePassengerData, type PassengerLoad } from './passenger-data';
 import { useHomeTap } from './use-home-tap';
 
-// The main screen of a passenger (G25): the nearest bookings, or «Qayerga borasiz?» with the start
-// where the person stands. «Safar topish» is the main button of the start flow.
+// The main screen of a passenger (G25): the nearest bookings and the requests with offers (G53), or
+// «Qayerga borasiz?» with the start where the person stands. «Safar topish» is the main button.
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
-  const { bookings } = useApiClients();
-  const load = useLoad(() => bookings.myBookings(), 'home.bookings');
+  const load = usePassengerData();
   // A pull down at the top of the main screen refreshes the bookings (docs/94 W1).
   return (
     <>
@@ -30,10 +27,8 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
   );
 }
 
-type BookingsProps = {
-  readonly go: HomeGo;
-  readonly load: ReturnType<typeof useLoad<readonly Booking[]>>;
-};
+type BookingsProps = { readonly go: HomeGo; readonly load: PassengerLoad };
+const SHOWN = 2;
 
 function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
   const { t } = useI18n();
@@ -45,47 +40,60 @@ function Bookings({ go, load: { value, failed, reload } }: BookingsProps) {
   };
   if (failed) return <HomeFailed onRetry={retry} />;
   if (!value) return <HomeLoading lines={[false, false]} />;
-  const shown = nextBookings(value);
+  const [all, requests, offers] = value;
+  const shown = nextBookings(all);
+  const waiting = waitingOffers(requests, offers);
+  const asked = requests.filter((request) => waiting.some((offer) => offer.requestId === request.id));
   const directory = places.status === 'ready' ? places.directory : null;
-  const recent = directory ? (
-    <RecentRoutesSection
-      directory={directory}
-      onOpen={(route) => tap('item', () => go('find_trip', { route }))()}
-    />
-  ) : null;
   // «Qayerdan» and the recent routes wait for the names of the places: they come whole, the
   // actions below do not move (G41, docs/108).
-  if (shown.length === 0 && places.status === 'loading') return <HomeLoading lines={[false, false]} />;
-  if (shown.length === 0)
+  const nothing = shown.length === 0 && asked.length === 0;
+  if (nothing && places.status === 'loading') return <HomeLoading lines={[false, false]} />;
+  if (nothing)
     return (
-      <>
-        <AskWay
-          directory={directory}
-          onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
-          onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
-        />
-        {recent}
-      </>
+      <AskWay
+        directory={directory}
+        onFrom={tap('card', () => go('find_trip', { pick: 'from' }))}
+        onTo={tap('card', () => go('find_trip', { pick: 'to' }))}
+      />
     );
   // The names of the places come from the directory: without it the rows cannot be read.
   if (places.status === 'error') return <HomeFailed onRetry={retry} />;
   if (places.status === 'loading') return <HomeLoading lines={shown.map(() => true)} />;
+  const bookingRows = shown.map((booking) => ({
+    id: booking.id,
+    from: booking.trip.from,
+    to: booking.trip.to,
+    departAt: booking.trip.departAt,
+    detail: t(`bookings.status.${booking.status}`),
+    done: booking.status === 'confirmed',
+  }));
+  // A request with offers opens its first offer; «Назад» shows the request with all of them.
+  const firstOffer = (requestId: string) => waiting.find((offer) => offer.requestId === requestId)?.id;
+  const requestRows = asked.map((request) => {
+    const count = waiting.filter((offer) => offer.requestId === request.id).length;
+    const detail = t('market.request.offers', { count: String(count) });
+    return {
+      id: request.id,
+      from: request.from,
+      to: request.to,
+      departAt: 0,
+      day: request.date,
+      detail,
+      count,
+    };
+  });
+  const open = (id: string) => {
+    const offer = firstOffer(id);
+    const link = offer ? { name: OFFER_LINK, id: offer } : { name: BOOKING_LINK, id };
+    tap('item', () => go('my_trips', { link }))();
+  };
   return (
-    <>
-      <HomeTrips
-        rows={shown.map((booking) => ({
-          id: booking.id,
-          from: booking.trip.from,
-          to: booking.trip.to,
-          departAt: booking.trip.departAt,
-          detail: t(`bookings.status.${booking.status}`),
-          done: booking.status === 'confirmed',
-        }))}
-        directory={places.directory}
-        onOpen={(id) => tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id } }))()}
-      />
-      {recent}
-    </>
+    <HomeTrips
+      rows={[...bookingRows, ...requestRows].slice(0, SHOWN)}
+      directory={places.directory}
+      onOpen={open}
+    />
   );
 }
 

@@ -1,4 +1,4 @@
-import type { Booking, BookingStatus, Trip } from '@platform/contracts';
+import type { Booking, BookingStatus, Offer, RideRequest, Trip } from '@platform/contracts';
 import type { TripAgain } from '../market/trip-draft';
 
 // What the main screen shows (G25): the nearest live bookings and trips, at most two; all of them
@@ -8,11 +8,17 @@ const LIVE_BOOKINGS: readonly BookingStatus[] = ['requested', 'confirmed'];
 const LIVE_TRIPS: readonly Trip['status'][] = ['active', 'full'];
 const byDeparture = (a: Trip, b: Trip) => a.departAt - b.departAt;
 
-export function nextBookings(bookings: readonly Booking[]): readonly Booking[] {
+export function nextBookings(bookings: readonly Booking[], most = SHOWN): readonly Booking[] {
   return bookings
     .filter((booking) => LIVE_BOOKINGS.includes(booking.status))
     .sort((a, b) => byDeparture(a.trip, b.trip))
-    .slice(0, SHOWN);
+    .slice(0, most);
+}
+
+// The offers of drivers waiting for the answer of the passenger, on the requests still open (G53).
+export function waitingOffers(requests: readonly RideRequest[], offers: readonly Offer[]): readonly Offer[] {
+  const open = new Set(requests.filter((request) => request.status === 'open').map((request) => request.id));
+  return offers.filter((offer) => offer.status === 'sent' && open.has(offer.requestId));
 }
 
 export type DriverItem = { readonly trip: Trip; readonly requests: number };

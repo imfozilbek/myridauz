@@ -26,14 +26,14 @@ const open = () =>
     covered: 'find_trip',
   });
 
-describe('«Oldingi yoʻnalishlar» on the main screen (G35, docs/97 K5)', { timeout: 20_000 }, () => {
+describe('«Oxirgi yoʻnalish» tile on the main screen (G35 K5, G53)', { timeout: 20_000 }, () => {
   it('opens the trips of a searched route in one tap', async () => {
     rememberRoute({
       from: place('1726269', '1726', 'Chilonzor'),
       to: place('1730401', '1730', 'Fargʻona shahri'),
     });
     open();
-    expect(await screen.findByText('Oldingi yoʻnalishlar')).toBeTruthy();
+    expect(await screen.findByText('Oxirgi yoʻnalish')).toBeTruthy();
     await tap('Chilonzor → Fargʻona shahri');
     // The results of the route with their days, no route screen on the way.
     expect(await screen.findByText('Boshqa kun')).toBeTruthy();
@@ -43,11 +43,11 @@ describe('«Oldingi yoʻnalishlar» on the main screen (G35, docs/97 K5)', { tim
   it('shows nothing before the first search, or for a place the directory no longer has', async () => {
     open();
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.queryByText('Oldingi yoʻnalishlar')).toBeNull();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
     cleanup();
     rememberRoute({ from: place('9999', '1726', 'Yoʻq'), to: place('1730401', '1730', 'Fargʻona shahri') });
     open();
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.queryByText('Oldingi yoʻnalishlar')).toBeNull();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
   });
 });

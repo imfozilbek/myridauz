@@ -1,4 +1,4 @@
-import type { AppLink, Booking, Trip } from '@platform/contracts';
+import type { AppLink, Booking, Offer, RideRequest, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { FeedContext } from '../feed/feed-context';
@@ -8,6 +8,8 @@ import { FindTripFlow } from '../market/find-trip-flow';
 import { locations, renderMarket } from '../market/market-test-kit';
 import { LocationsClientContext } from '../places/directory';
 import { testClients } from '../test-shell';
+import { PassengerData } from './passenger-data';
+import { PassengerTiles } from './passenger-tiles';
 
 // Test helper for the main screen (G25): the actions of an app, the feed signal by hand.
 type Opened = { readonly onBack: () => void } & Launch;
@@ -52,11 +54,16 @@ type Data = {
   readonly bookings?: () => Promise<Booking[]>;
   readonly trips?: () => Promise<Trip[]>;
   readonly requests?: () => Promise<Booking[]>;
+  // The requests and the offers of a passenger, none by default (G53).
+  readonly asked?: () => Promise<RideRequest[]>;
+  readonly offers?: () => Promise<Offer[]>;
   // The directory of places fails this many times first.
   readonly placesFail?: number;
   // The action of the main button (G25).
   readonly covered?: string;
 };
+
+const none = async () => [];
 
 export function renderHome(
   home: (go: HomeGo) => ReactNode,
@@ -73,8 +80,9 @@ export function renderHome(
     bookings: {
       ...(data.bookings ? { myBookings: data.bookings } : {}),
       ...(data.requests ? { driverBookings: data.requests } : {}),
+      myOffers: data.offers ?? none,
     },
-    ...(data.trips ? { market: { myTrips: data.trips } } : {}),
+    market: { myRequests: data.asked ?? none, ...(data.trips ? { myTrips: data.trips } : {}) },
     map: { where: async () => Promise.reject(new Error('none')) },
   });
   let fails = data.placesFail ?? 0;
@@ -84,12 +92,24 @@ export function renderHome(
       return locations.getLocations();
     },
   };
+  const flow = (
+    <StartFlow actions={actions} home={home} {...(data.covered ? { covered: data.covered } : {})} />
+  );
+  // A passenger main screen has its lists and tiles, as in the app (G53).
+  const passenger = (
+    <PassengerData>
+      <StartFlow
+        actions={actions}
+        home={home}
+        tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+        {...(data.covered ? { covered: data.covered } : {})}
+      />
+    </PassengerData>
+  );
   const result = renderMarket(
     <LocationsClientContext.Provider value={places}>
       <FeedContext.Provider value={subscribe}>
-        <DriverContext.Provider value={driver}>
-          <StartFlow actions={actions} home={home} {...(data.covered ? { covered: data.covered } : {})} />
-        </DriverContext.Provider>
+        <DriverContext.Provider value={driver}>{data.bookings ? passenger : flow}</DriverContext.Provider>
       </FeedContext.Provider>
     </LocationsClientContext.Provider>,
     clients,

@@ -81,3 +81,72 @@
   display: grid;
   opacity: 0.4;
 }
+
+/* The tiles of the main screen, two in a row (owner decision 04.10.2026, G53). */
+.home-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 var(--home-gutter, 16px);
+}
+
+.home-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 118px;
+  padding: 14px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--tgui--bg_color);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.home-tile[data-wide] {
+  grid-column: span 2;
+  min-height: 0;
+  flex-direction: row;
+  align-items: center;
+}
+
+.home-tile-title {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.home-tile-hint {
+  font-size: 13px;
+  line-height: 1.3;
+  opacity: 0.65;
+}
+
+.home-tile-value {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.home-tile-badge {
+  position: absolute;
+  top: 12px;
+  inset-inline-end: 12px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+/* A lone last tile takes the whole row: the grid never ends with a hole. */
+.home-tiles > :last-child:nth-child(odd) {
+  grid-column: span 2;
+}

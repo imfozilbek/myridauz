@@ -51,7 +51,7 @@ describe('the main screen of a driver around the check (docs/86 V7)', () => {
     expect(screen.getByText('Tasdiqlangandan keyin')).toBeTruthy();
     // Only the action that waits has a muted icon.
     expect(document.querySelectorAll('.action-waiting')).toHaveLength(1);
-    expect(screen.getByText('Tasdiqlangandan keyin').closest('[role="button"]')?.textContent).toContain(
+    expect(screen.getByText('Tasdiqlangandan keyin').closest('button')?.textContent).toContain(
       'Safar eʼlon qilish',
     );
   });
