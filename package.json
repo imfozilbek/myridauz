@@ -23,7 +23,7 @@
     "map-data": "node scripts/map-data.mjs",
     "setup-bots": "node scripts/setup-bots.mjs",
     "stand": "node scripts/stand/stand.mjs",
-    "stand:check": "playwright test -c playwright.stand.config.ts",
+    "stand:check": "node scripts/stand/check.mjs",
     "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm knip && pnpm test:coverage && pnpm check:text && pnpm check:secrets && pnpm audit"
   },
   "devDependencies": {

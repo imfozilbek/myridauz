@@ -9,6 +9,8 @@ export default defineConfig({
   testDir: 'e2e/stand',
   workers: 1,
   reporter: 'list',
+  // Stands side by side keep their traces apart (scripts/stand/check.mjs).
+  outputDir: `test-results/stand-${process.env['STAND_SHARD'] ?? '0'}`,
   globalSetup: './e2e/stand/seed.ts',
   // A fake camera that is always allowed: the driver takes photos with our camera screen (docs/47).
   use: {
