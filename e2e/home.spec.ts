@@ -61,7 +61,7 @@ function scenarios(platform: 'android' | 'ios') {
     feed.changed();
     await expect(page.getByText(new RegExp(t('bookings.status.confirmed'), 'u'))).toBeVisible();
     await shot(page, '2-passenger-booking');
-    await page.getByText(/→/u).first().click();
+    await page.getByText(t('bookings.status.confirmed')).first().click();
     await expect(page.getByText(t('bookings.plate'))).toBeVisible();
   });
 
