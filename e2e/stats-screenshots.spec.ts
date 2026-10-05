@@ -21,7 +21,7 @@ test('admin: the dashboard of a day and of a week', async ({ page }) => {
   await page.goto(telegramUrl(appUrl(ADMIN.port)));
   await page.getByText(t('common.admin.management'), { exact: true }).click();
   await page.getByText(t('common.admin.statistics'), { exact: true }).click();
-  await expect(page.getByText(t('stats.number.newUsers'))).toBeVisible();
+  await expect(page.getByText(t('stats.number.newUsers'), { exact: true })).toBeVisible();
   await expect(page.getByText(t('stats.left', { drop: 60 }))).toBeVisible();
   await take('1-day');
   await page.getByText(t('stats.period.week')).click();

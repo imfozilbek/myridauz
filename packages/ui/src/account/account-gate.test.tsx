@@ -48,6 +48,8 @@ describe('AccountGate', () => {
       firstName: 'Dilnoza',
       gender: 'female',
       contact: 'contact=signed',
+      // The first touch goes with the registration (G55, docs/116).
+      came: { source: 'direct', client: 'browser' },
     });
     const steps = tracked.filter((event) => event.name === 'registration_step');
     expect(steps.map((event) => 'step' in event && event.step)).toEqual([

@@ -27,11 +27,14 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
                   : 'target' in event
                     ? event.target
                     : '';
-  // What broke a screen follows its code (G52, docs/112).
+  // What broke a screen follows its code (G52, docs/112). The first screen of a session keeps the
+  // platform in the same place and the mark of the source after it (G55, docs/116).
   const crash =
     event.name === 'client_error'
       ? [event.error ?? '', event.detail ?? '', event.client ?? '', event.where ?? '']
-      : [];
+      : event.name === 'screen_open' && (event.client || event.via)
+        ? ['', '', event.client ?? '', '', event.via ?? '']
+        : [];
   return {
     indexes: [event.app],
     blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code, ...crash],

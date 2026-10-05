@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CLIENT_PATTERN, VIA_PATTERN } from './arrival';
 import { NAVIGATORS } from './navigator';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
@@ -71,10 +72,7 @@ const crash = {
     .string()
     .regex(/^[A-Za-z .,'()_:#-]{0,120}$/)
     .optional(),
-  client: z
-    .string()
-    .regex(/^[a-z_]{1,16}( [0-9.]{1,8})?( [a-z]{1,8} \d{1,4})?$/)
-    .optional(),
+  client: z.string().regex(CLIENT_PATTERN).optional(),
   // The place in the build: «index-abc.js:95:12345», no words of a person (docs/112).
   where: z
     .string()
@@ -84,8 +82,15 @@ const crash = {
 
 const analyticsEventSchema = z.discriminatedUnion('name', [
   // The first screen of a launch says where the person came from: the kind of the startapp link,
-  // «direct» without one (docs/89 S3). Only the kind, never the ids of the link.
-  z.object({ name: z.literal('screen_open'), source: id.optional(), ...context }),
+  // «direct» without one (docs/89 S3). Only the kind, never the ids of the link. G55: also the mark
+  // of the source (a channel, an ad) and the platform (docs/116).
+  z.object({
+    name: z.literal('screen_open'),
+    source: id.optional(),
+    via: z.string().regex(VIA_PATTERN).optional(),
+    client: z.string().regex(CLIENT_PATTERN).optional(),
+    ...context,
+  }),
   z.object({ name: z.literal('client_error'), code: id, ...crash, ...context }),
   // An answer of the API with an error (G12): its code and the last opened screen.
   z.object({ name: z.literal('api_error'), code: id, ...context }),

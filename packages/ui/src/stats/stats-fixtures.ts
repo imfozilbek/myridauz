@@ -11,6 +11,19 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
     driverApplications: period === 'day' ? 3 : 12,
     complaints: period === 'day' ? 1 : 4,
   },
+  arrivals: {
+    sources: [
+      { kind: 'channel', mark: 'yol-samarqand', count: period === 'day' ? 11 : 64 },
+      { kind: 'direct', mark: '', count: period === 'day' ? 7 : 49 },
+      { kind: 'ad', mark: 'insta1', count: period === 'day' ? 4 : 31 },
+      { kind: 'story', mark: '', count: period === 'day' ? 2 : 14 },
+    ],
+    platforms: [
+      { platform: 'android', count: period === 'day' ? 19 : 121 },
+      { platform: 'ios', count: period === 'day' ? 4 : 30 },
+      { platform: 'desktop', count: period === 'day' ? 1 : 7 },
+    ],
+  },
   events,
   funnels:
     events === 'on'

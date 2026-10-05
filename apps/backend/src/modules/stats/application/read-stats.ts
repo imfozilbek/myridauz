@@ -1,4 +1,5 @@
 import { FUNNELS, type Funnel, type Stats, type StatsPeriod } from '@platform/contracts';
+import { arrivalsOf } from '../domain/arrivals';
 import { FUNNEL_EVENTS, funnelOf } from '../domain/funnels';
 import type { StatsCache, StatsDeps } from './ports';
 
@@ -42,6 +43,10 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
 export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<Stats> {
   const at = deps.now();
   const since = at - PERIOD_DAYS[period] * DAY;
-  const [numbers, part] = await Promise.all([deps.numbers.numbers(since), eventsPart(deps, period, at)]);
-  return { period, numbers, ...part, at };
+  const [numbers, arrivals, part] = await Promise.all([
+    deps.numbers.numbers(since),
+    deps.numbers.arrivals(since),
+    eventsPart(deps, period, at),
+  ]);
+  return { period, numbers, arrivals: arrivalsOf(arrivals), ...part, at };
 }

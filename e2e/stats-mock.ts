@@ -29,6 +29,20 @@ const statsOf = (period: string) => {
       driverApplications: 3 * week,
       complaints: week === 1 ? 1 : 4,
     },
+    // Where the new people came from and on what (G55, docs/116).
+    arrivals: {
+      sources: [
+        { kind: 'channel', mark: 'yol-samarqand', count: 11 * week },
+        { kind: 'direct', mark: '', count: 7 * week },
+        { kind: 'ad', mark: 'insta1', count: 4 * week },
+        { kind: 'story', mark: '', count: 2 * week },
+      ],
+      platforms: [
+        { platform: 'android', count: 19 * week },
+        { platform: 'ios', count: 4 * week },
+        { platform: 'desktop', count: week },
+      ],
+    },
     events: 'on',
     funnels: [
       {

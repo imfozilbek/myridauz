@@ -1,6 +1,6 @@
 import { channelOf, type BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
-import { escape, telegramLink } from '../html';
+import { escape, passengerLink, telegramLink } from '../html';
 import { icon } from '../icons';
 import type { MapData, Route } from '../map-data';
 
@@ -13,7 +13,7 @@ export function routeCard(brand: BrandConfig, i18n: I18n, route: Route, map: Map
     return city && channelOf(brand, city.place, city.soato);
   };
   const channel = zone(route.to) ?? zone(route.from);
-  const start = `${telegramLink(brand.bots.passenger)}?startapp=find_${route.from}_${route.to}`;
+  const start = passengerLink(brand.bots.passenger, `find_${route.from}_${route.to}`);
   return `<div class="map-card" aria-live="polite">
 <p class="route-name">${icon('place')}<span data-name="from"></span><span class="arrow">→</span><b data-name="to"></b></p>
 <p class="km" data-km-value></p>

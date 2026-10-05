@@ -1,6 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import { Hono } from 'hono';
-import type { Booking } from '@platform/contracts';
+import { VIA_STORY, withVia, type Booking } from '@platform/contracts';
 import type { AppEnv, Bindings } from '../../env';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
@@ -54,7 +54,8 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
   stories: env.MEDIA ? r2Images(env.MEDIA) : localStories,
-  bookLink: (tripId: string) => `https://t.me/${loadBrand(env.BRAND).bots.passenger}?startapp=trip_${tripId}`,
+  bookLink: (tripId: string) =>
+    `https://t.me/${loadBrand(env.BRAND).bots.passenger}?startapp=${withVia(`trip_${tripId}`, VIA_STORY)}`,
 });
 
 export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =>

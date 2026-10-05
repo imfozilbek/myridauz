@@ -3,6 +3,7 @@ import { Text } from '@telegram-apps/telegram-ui';
 import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { ArrivalsSections } from './stats-arrivals';
 import { ErrorsSections } from './stats-errors';
 
 // A drop from this share is where people get stuck: it is marked (docs/29).
@@ -19,6 +20,7 @@ export function StatsSections({ stats }: { readonly stats: Stats }) {
           </Cell>
         ))}
       </Section>
+      <ArrivalsSections arrivals={stats.arrivals} />
       {stats.events === 'on' ? null : (
         <Text className="stats-note">
           {t(stats.events === 'off' ? 'stats.eventsOff' : 'stats.eventsFailed')}

@@ -48,7 +48,7 @@ describe('landing (G15)', () => {
     expect(home).toContain('src="/art/phone-search.webp"');
     expect(home).toContain('src="/art/phone-requests.webp"');
     expect(home).toContain('data-region="1718"');
-    expect(home).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1726_1718"`);
+    expect(home).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1726_1718__site"`);
     expect(home).toContain('src="/art/hero-map.webp"');
     expect(home).toContain('<b class="code">30</b>Samarqand</a></li>');
     expect(home.match(/<details/gu)).toHaveLength(7);
@@ -74,7 +74,7 @@ describe('landing (G15)', () => {
   it('shows each document with its edition and every section, no placeholder left', () => {
     const offer = site['offer/index.html'] ?? '';
     expect(offer).toContain(escape(t('legal.offer.title')));
-    expect(offer).toContain('Tahrir 1.1');
+    expect(offer).toContain('Tahrir 1.2');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     // Built without the requisites: the brand name; the script fills what the owner saved (G34).
     expect(offer).toContain(`<span data-company>${escape(brand.name)}</span>`);

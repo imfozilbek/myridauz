@@ -76,7 +76,7 @@ describe('landing script (docs/59)', () => {
     expect(text('[data-seats-label]')).toContain('2');
     expect(document.querySelector('[data-route]')?.getAttribute('d')).toContain('M71 31');
     expect(document.querySelector('[data-go]')?.getAttribute('href')).toBe(
-      `https://t.me/${brand.bots.passenger}?startapp=find_1726_1718`,
+      `https://t.me/${brand.bots.passenger}?startapp=find_1726_1718__site`,
     );
     expect(document.querySelector<HTMLAnchorElement>('[data-channel-link]')?.href).toContain(
       channelOf(brand, '1718401')?.username ?? '',

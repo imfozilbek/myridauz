@@ -58,9 +58,9 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
     type('STIR', '123456789');
     await tap('Saqlash');
     expect(save).toHaveBeenCalledWith(company);
-    expect(await screen.findByText('Saqlandi. Hujjatlar 1.2 tahririga oʻtdi.')).toBeTruthy();
+    expect(await screen.findByText('Saqlandi. Hujjatlar 1.3 tahririga oʻtdi.')).toBeTruthy();
     expect(screen.getByText('Oʻzgarishlar tarixi')).toBeTruthy();
-    expect(screen.getByText('Tahrir 1.2, 5-oktabr 2026')).toBeTruthy();
+    expect(screen.getByText('Tahrir 1.3, 5-oktabr 2026')).toBeTruthy();
   });
 
   it('shows the reason when the API refuses', async () => {

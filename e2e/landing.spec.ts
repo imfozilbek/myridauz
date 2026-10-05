@@ -40,7 +40,10 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
   await expect(page.locator('.numbers [data-count-up]').first()).toHaveText('14');
   await expect(page.locator('output[data-count]')).toHaveText('3');
   const go = page.getByRole('link', { name: t('landing.map.go') });
-  await expect(go).toHaveAttribute('href', `https://t.me/${brand.bots.passenger}?startapp=find_1726_1706`);
+  await expect(go).toHaveAttribute(
+    'href',
+    `https://t.me/${brand.bots.passenger}?startapp=find_1726_1706__site`,
+  );
   await expect(page.locator('[data-channel-link]')).toHaveAttribute(
     'href',
     `https://t.me/${channelOf(brand, '1706401')?.username ?? ''}`,
@@ -55,5 +58,5 @@ test('landing: a direction page opens from the list with its route chosen', asyn
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     t('landing.direction.title', { from: 'Toshkent', to: 'Buxoro' }),
   );
-  await expect(page.locator('[data-go]')).toHaveAttribute('href', /startapp=find_1726_1706$/u);
+  await expect(page.locator('[data-go]')).toHaveAttribute('href', /startapp=find_1726_1706__site$/u);
 });

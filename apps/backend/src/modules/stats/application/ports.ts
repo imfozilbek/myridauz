@@ -1,5 +1,6 @@
 import type { ErrorRow, MainNumber } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
+import type { ArrivalCount } from '../domain/arrivals';
 import type { Counter } from '../domain/counters';
 
 // Errors (docs/29): a crash of a screen, a failure of the server (G42) and an error answer of the API.
@@ -13,7 +14,11 @@ export type EventSource = {
 };
 
 // The main numbers come from the database: exact, no sampling.
-export type NumbersSource = { numbers(since: number): Promise<Record<MainNumber, number>> };
+// The new people by the mark of their source and their platform (G55, docs/116).
+export type NumbersSource = {
+  numbers(since: number): Promise<Record<MainNumber, number>>;
+  arrivals(since: number): Promise<ArrivalCount[]>;
+};
 
 // Saved answers: Analytics Engine allows 10 000 queries a day (docs/03). Also remembers sent signals.
 export type StatsCache = {

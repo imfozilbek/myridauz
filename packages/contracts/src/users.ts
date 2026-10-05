@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { arrivalSchema } from './arrival';
 import { personIdSchema, type PersonId } from './person-id';
 
 // Users, registration and profile (docs/02, docs/05, docs/07, docs/17). G04.
@@ -37,6 +38,8 @@ export const registrationSchema = z.object({
   gender: z.enum(GENDERS),
   // Raw signed string from Telegram requestContact: the server checks the signature.
   contact: z.string().min(1).max(4096),
+  // Where the person came from and on what, kept as the first touch (G55, docs/116).
+  came: arrivalSchema.optional(),
 });
 export type RegistrationInput = z.input<typeof registrationSchema>;
 

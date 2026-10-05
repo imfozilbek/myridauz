@@ -35,7 +35,7 @@ describe('«Hikoyaga joylash» (docs/88 L19)', () => {
     const story = await read<{ imageUrl: string; bookLink: string }>(
       call(`/driver/trips/${id}/story`, DRIVER, jpeg(3)),
     );
-    expect(story.bookLink).toMatch(new RegExp(`\\?startapp=trip_${id}$`, 'u'));
+    expect(story.bookLink).toMatch(new RegExp(`\\?startapp=trip_${id}__story$`, 'u'));
     // Telegram reads the picture without a signature.
     const image = await app.request(new URL(story.imageUrl).pathname, {}, testEnv);
     expect(image.status).toBe(200);

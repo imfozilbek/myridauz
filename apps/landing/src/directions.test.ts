@@ -29,7 +29,7 @@ describe('directions for search engines (docs/60)', () => {
     expect(page).toContain(`<title>${escape(t('landing.direction.meta', values))}</title>`);
     expect(page).toContain(`<h1>${escape(t('landing.direction.title', values))}</h1>`);
     expect(page).toContain(`content="${escape(t('landing.direction.description', values))}"`);
-    expect(page).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1718_1726"`);
+    expect(page).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1718_1726__site"`);
     expect(page).toContain('<option value="1718" data-place="1718401"');
     expect(page).toContain('class="region from" d="M60 40L66 40L66 46Z" data-region="1718"');
     expect(page).toContain(
@@ -44,7 +44,7 @@ describe('directions for search engines (docs/60)', () => {
     const links = [...page.matchAll(/href="([^"]+)"/gu)].map(([, href]) => href);
     const bot = links.filter((href) => href?.startsWith(passenger));
     expect(bot.length).toBeGreaterThan(3);
-    expect(bot.every((href) => href === `${passenger}?startapp=find_1718_1726`)).toBe(true);
+    expect(bot.every((href) => href === `${passenger}?startapp=find_1718_1726__site`)).toBe(true);
   });
 
   it('describes the pages in structured data: the brand, the questions, the path', () => {

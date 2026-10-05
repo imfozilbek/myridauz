@@ -1,3 +1,4 @@
+import type { Arrival } from '@platform/contracts';
 import type { ImageStore } from '../../../shared/storage/image-store';
 import type { TripRelation } from '../domain/avatar-visibility';
 import type { Block, BlockEntry, User } from '../domain/user';
@@ -10,6 +11,8 @@ export type UserRepository = {
   save(user: User): Promise<void>;
   // "Maʼlumotlarimni oʻchirish": the name, the phone and the photo go, the row stays (docs/30).
   erase(id: number, at: number): Promise<void>;
+  // Where the person came from and on what, once at the registration (G55, docs/116).
+  arrived(id: number, arrival: Arrival, at: number): Promise<void>;
   // A block by phone stops a new account with the same number (docs/17).
   phoneBlock(phone: string): Promise<Block | null>;
   blockPhone(phone: string, block: Block, at: number): Promise<void>;

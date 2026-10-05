@@ -1,6 +1,7 @@
 import type { AnalyticsClient } from '@platform/api-client';
 import { createContext, useContext, useEffect } from 'react';
-import { startParam } from '../telegram/launch-param';
+import { launchArrival } from '../telegram/arrival';
+import { TelegramContext } from '../telegram/in-telegram-context';
 
 export const AnalyticsContext = createContext<AnalyticsClient | null>(null);
 
@@ -10,16 +11,8 @@ export function useAnalytics(): AnalyticsClient {
   return analytics;
 }
 
-// The kind of the startapp link (find, trip, sub ...) or «direct» (docs/89 S3).
-const KIND = /^[a-z]{1,16}(?=_|$)/u;
-const DIRECT = 'direct';
-let sourceSent = false;
-function launchSource(): string | undefined {
-  if (sourceSent) return undefined;
-  sourceSent = true;
-  const param = startParam();
-  return param === null ? DIRECT : (KIND.exec(param)?.[0] ?? 'other');
-}
+// The first screen of a launch says where the person came from and on what (docs/89 S3, G55).
+let arrivalSent = false;
 
 // The screen opened last: an error of the screen names it (G52, docs/112).
 const FIRST_SCREEN = 'app';
@@ -30,9 +23,11 @@ export const currentScreen = () => current;
 // launch also says where the person came from.
 export function useScreenView(screen: string): void {
   const { track } = useAnalytics();
+  const { client } = useContext(TelegramContext);
   useEffect(() => {
     current = screen;
-    const source = launchSource();
-    track({ name: 'screen_open', screen, ...(source ? { source } : {}) });
-  }, [track, screen]);
+    const first = arrivalSent ? {} : launchArrival(client);
+    arrivalSent = true;
+    track({ name: 'screen_open', screen, ...first });
+  }, [track, screen, client]);
 }

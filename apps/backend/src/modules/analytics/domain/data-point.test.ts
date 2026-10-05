@@ -22,6 +22,23 @@ describe('toDataPoint', () => {
     expect(toDataPoint({ name: 'screen_open', source: 'find', ...base }, 0).blobs.at(-1)).toBe('find');
   });
 
+  it('keeps the platform and the mark of the source of the first screen (G55, docs/116)', () => {
+    const first = {
+      name: 'screen_open',
+      source: 'trip',
+      via: 'ch-yol-andijon',
+      client: 'ios 9.6 safari 17',
+    } as const;
+    expect(toDataPoint({ ...first, ...base }, 0).blobs.slice(5)).toEqual([
+      'trip',
+      '',
+      '',
+      'ios 9.6 safari 17',
+      '',
+      'ch-yol-andijon',
+    ]);
+  });
+
   it('keeps the error code', () => {
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs[5]).toBe('render');
   });

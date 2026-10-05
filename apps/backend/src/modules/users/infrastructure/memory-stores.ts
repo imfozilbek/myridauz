@@ -18,6 +18,8 @@ export function createMemoryUsers(): UserRepository {
       else idBlocks.delete(user.id);
     },
     erase: async (id) => void users.delete(id),
+    // Local runs show no sources: «Statistika» reads them from D1 only (G55).
+    arrived: async () => undefined,
     phoneBlock: async (phone) => phoneBlocks.get(phone) ?? null,
     blockPhone: async (phone, block) => void phoneBlocks.set(phone, block),
     idBlock: async (id) => idBlocks.get(id) ?? null,

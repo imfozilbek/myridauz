@@ -45,5 +45,19 @@
   "step.from": "Qayerdan tanladi",
   "step.to": "Qayerga tanladi",
   "step.mode": "Olib ketish usuli",
-  "step.done": "Safarlarni koʻrdi"
+  "step.done": "Safarlarni koʻrdi",
+  "arrivals": "Qayerdan kelishdi",
+  "arrivalsHint": "Yangi foydalanuvchilar birinchi marta qayerdan kelgani.",
+  "arrivalsEmpty": "Bu davrda yangi foydalanuvchi yoʻq",
+  "arrival.channel": "Kanal",
+  "arrival.ad": "Reklama",
+  "arrival.story": "Haydovchi hikoyasi",
+  "arrival.site": "Sayt",
+  "arrival.direct": "Toʻgʻridan toʻgʻri",
+  "arrival.other": "Boshqa havola",
+  "platforms": "Qurilmalar",
+  "platform.android": "Android",
+  "platform.ios": "iPhone",
+  "platform.desktop": "Kompyuter",
+  "platform.other": "Boshqa"
 }

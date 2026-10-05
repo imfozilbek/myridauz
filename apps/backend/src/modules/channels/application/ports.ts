@@ -22,10 +22,12 @@ export type ChannelsDeps = {
   readonly places: () => Promise<ReadonlyMap<string, Place>>;
   readonly trip: (id: string) => Promise<Trip | undefined>;
   readonly posts: ChannelPostStore;
+  // The post for one channel: its links carry the channel's mark (G55, docs/116).
   readonly render: (
     trip: Trip,
     places: ReadonlyMap<string, Place>,
     now: number,
+    channel: string,
   ) => { text: string; markup: object };
   readonly now: () => number;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
