@@ -76,12 +76,13 @@ const api = `http://${host}`;
 // --local-upstream: the Worker sees its own address as the stand, not the domain of the brand, so
 // the addresses it builds (sockets of the chat and of the live screens) never point to production.
 // The bots talk to the stub of Telegram; --test-scheduled lets a scenario run the Cron at once.
-// Channel posts are on: they reach only the stub, so the scenarios see them (docs/80 S60).
+// Channel posts are on: they reach only the stub, so the scenarios see them (docs/80 S60). Each
+// Cron run of a scenario runs every job, the hourly and the daily ones too (G56).
 serveTelegram(STAND_TELEGRAM_PORT);
 const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
 dev.push('--inspector-port', String(STAND_INSPECTOR_PORT));
-dev.push('--var', telegram, '--var', 'CHANNEL_POSTS:on', '--test-scheduled');
+dev.push('--var', telegram, '--var', 'CHANNEL_POSTS:on', '--var', 'CRON_TIERS:off', '--test-scheduled');
 const worker = spawn('pnpm', ['exec', 'wrangler', ...dev, '--env-file', resolve(STAND_VARS)], {
   stdio: 'inherit',
 });

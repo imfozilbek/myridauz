@@ -104,9 +104,14 @@ export async function grantWelcome(deps: WalletDeps, driverId: number): Promise<
 }
 
 // The Cron job: a bonus not spent in its days burns (docs/12), all drivers in one step (G42).
-export const burnExpired = (deps: WalletDeps) => deps.wallet.burnExpired(deps.now(), deps.newId);
-
 const DAY_MS = 24 * 60 * 60 * 1000;
+// The job runs every hour: a week back covers any days the Cron did not run (G56).
+const BURN_LOOKBACK_MS = 7 * DAY_MS;
+
+export const burnExpired = (deps: WalletDeps) => {
+  const now = deps.now();
+  return deps.wallet.burnExpired(now, now - BURN_LOOKBACK_MS, deps.newId);
+};
 
 // A hand correction by an owner with a reason: a bonus by hand (it lives like a grant) or a refund
 // for a no-show (docs/12, docs/35). A balance never goes below zero.

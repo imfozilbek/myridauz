@@ -34,7 +34,7 @@ export function createMemoryWallet(): WalletRepository {
       rows.push(...operations);
       return true;
     },
-    drivers: async () => [...new Set(rows.map((op) => op.driverId))],
+    withJournal: async (driverIds) => driverIds.filter((id) => rows.some((op) => op.driverId === id)),
     balances: async (offset, limit) =>
       [...new Set(rows.map((op) => op.driverId))]
         .map((driverId) => {
@@ -43,8 +43,10 @@ export function createMemoryWallet(): WalletRepository {
         })
         .sort((a, b) => a.main - b.main || a.driverId - b.driverId)
         .slice(offset, offset + limit),
-    burnExpired: async (now, newId) => {
-      for (const driverId of new Set(rows.map((op) => op.driverId))) {
+    burnExpired: async (now, since, newId) => {
+      const ended = (op: Operation) =>
+        op.balance === 'bonus' && op.expiresAt !== null && op.expiresAt > since && op.expiresAt <= now;
+      for (const driverId of new Set(rows.filter(ended).map((op) => op.driverId))) {
         const amount = burnable(
           rows.filter((op) => op.driverId === driverId),
           now,

@@ -70,9 +70,9 @@ export const d1Complaints = (db: D1Database): ComplaintStore => ({
     return row ? toComplaint(row) : undefined;
   },
   open: async () =>
-    (await db.prepare("SELECT * FROM complaints WHERE status != 'resolved'").all<Row>()).results.map(
-      toComplaint,
-    ),
+    (
+      await db.prepare("SELECT * FROM complaints WHERE status IN ('new', 'in_review')").all<Row>()
+    ).results.map(toComplaint),
   against: async (ids, since) => {
     const sql = (marks: string) =>
       `SELECT * FROM complaints WHERE created_at >= ? AND against_id IN (${marks})`;
