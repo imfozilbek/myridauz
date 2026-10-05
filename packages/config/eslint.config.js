@@ -10,6 +10,15 @@ const syntax = (pattern, message) => [
   { selector: `TemplateElement[value.raw=/${pattern}/]`, message },
   { selector: `JSXText[value=/${pattern}/]`, message },
 ];
+// An effect returns only its cleanup: an arrow without a block returns any value, and React calls
+// that value when the screen leaves (scrollTo gives a Promise in Chrome 153+, lesson 132).
+const EFFECT_RULES = [
+  {
+    selector:
+      'CallExpression[callee.name=/^use(Layout|Insertion)?Effect$/] > ArrowFunctionExpression[body.type!="BlockStatement"]',
+    message: 'The body of an effect is a block that returns only a cleanup function (lesson 132).',
+  },
+];
 const HEX_RULES = syntax(HEX, 'HEX colors live only in brands/<brand>/theme.ts (docs/22).');
 const BRAND_RULES = syntax(BRAND, 'Brand name lives only in brands/ and docs/ (docs/22).');
 
@@ -45,7 +54,7 @@ const TEXT_RULES = [
 const textBlock = {
   files: ['apps/miniapp-*/src/**/*.tsx', 'packages/ui/src/**/*.tsx'],
   ignores: ['**/*.test.tsx', 'packages/ui/src/test-shell.tsx'],
-  rules: { 'no-restricted-syntax': ['error', ...HEX_RULES, ...BRAND_RULES, ...TEXT_RULES] },
+  rules: { 'no-restricted-syntax': ['error', ...HEX_RULES, ...BRAND_RULES, ...EFFECT_RULES, ...TEXT_RULES] },
 };
 
 // Backend module layers: dependencies point inward; no deep imports into another module.
@@ -86,7 +95,7 @@ export default tseslint.config(
     rules: {
       'max-lines': ['error', { max: 150 }],
       '@typescript-eslint/no-explicit-any': 'error',
-      'no-restricted-syntax': ['error', ...HEX_RULES, ...BRAND_RULES],
+      'no-restricted-syntax': ['error', ...HEX_RULES, ...BRAND_RULES, ...EFFECT_RULES],
       'no-restricted-imports': imports(),
     },
   },

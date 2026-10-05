@@ -10,7 +10,10 @@ export function useChatText(chatKey: string, send: (text: string) => boolean, de
   const { restored, save, clear } = useDraft(`chat:${chatKey}`, asText);
   const [text, setText] = useState(restored ?? '');
   const sent = useRef<string | null>(null);
-  useEffect(() => (text ? save(text) : clear()), [text, save, clear]);
+  useEffect(() => {
+    if (text) save(text);
+    else clear();
+  }, [text, save, clear]);
   useEffect(() => {
     const value = sent.current;
     sent.current = null;

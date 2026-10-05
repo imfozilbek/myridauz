@@ -47,7 +47,9 @@ function Follow({ token, onJoin }: Props) {
   const { chat } = useApiClients();
   const { value, failed } = useLoad(() => chat.sharedTrip(token));
   const [note, setNote] = useState<'follow.subscribed' | 'follow.full' | null>(null);
-  useEffect(() => track({ name: 'share_opened', screen: 'share.follow' }), [track]);
+  useEffect(() => {
+    track({ name: 'share_opened', screen: 'share.follow' });
+  }, [track]);
   const join = () => {
     track({ name: 'share_join', screen: 'share.follow' });
     onJoin();

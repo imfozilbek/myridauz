@@ -17,12 +17,11 @@ export function useListPlace(key: string, ready: boolean) {
     const place = places.get(key);
     if (place) window.scrollTo(0, place);
   }, [key, ready]);
-  useLayoutEffect(
-    () => () => {
+  useLayoutEffect(() => {
+    return () => {
       places.set(key, window.scrollY);
-    },
-    [key],
-  );
+    };
+  }, [key]);
 }
 
 // Tests start each one with an empty memory: the data of one test never opens the next one.

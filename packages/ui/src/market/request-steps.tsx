@@ -39,7 +39,9 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
   const beforeWay = search ? null : 'date';
   const beforePoints = pitak ? 'mode' : beforeWay;
   // No pitak on the direction: the door, without a choice of one (PS8).
-  useEffect(() => void (step === 'mode' && pitak === null && next({ mode: 'door' })), [step, pitak]);
+  useEffect(() => {
+    if (step === 'mode' && pitak === null) next({ mode: 'door' });
+  }, [step, pitak]);
   if (flow.sent)
     return (
       <StepLayout

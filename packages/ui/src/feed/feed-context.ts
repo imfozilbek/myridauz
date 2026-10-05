@@ -14,7 +14,9 @@ export function useFeedChange(onChange: () => void): void {
   useEffect(() => {
     latest.current = onChange;
   });
-  useEffect(() => subscribe(() => latest.current()), [subscribe]);
+  useEffect(() => {
+    return subscribe(() => latest.current());
+  }, [subscribe]);
 }
 
 // onCall runs when a call rings for this person in a chat that is not open (docs/115).
@@ -24,5 +26,7 @@ export function useFeedCall(onCall: (chat: string) => void): void {
   useEffect(() => {
     latest.current = onCall;
   });
-  useEffect(() => subscribe((chat) => latest.current(chat)), [subscribe]);
+  useEffect(() => {
+    return subscribe((chat) => latest.current(chat));
+  }, [subscribe]);
 }

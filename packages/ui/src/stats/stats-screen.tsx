@@ -32,7 +32,9 @@ export function StatsScreen({
   const { t } = useI18n();
   const [period, setPeriod] = useState<StatsPeriod>(first);
   // Once opened from the bot, going back shows the menu and not the dashboard again.
-  useEffect(() => forgetLaunchParam(PARAM), []);
+  useEffect(() => {
+    forgetLaunchParam(PARAM);
+  }, []);
   const { shown, failed, reload } = usePeriodStats(period);
   return (
     <div className="market">

@@ -28,7 +28,9 @@ export function TripModeStep({ route, selected, onBack, onDone, onSkip }: Props)
   useEffect(() => {
     map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
   }, [map, route]);
-  useEffect(() => void (pitak === null && onSkip()), [pitak]);
+  useEffect(() => {
+    if (pitak === null) onSkip();
+  }, [pitak]);
   if (!pitak) return <ScreenSkeleton onBack={onBack} />;
   const choices = PICKUP_MODES.map((mode) => ({
     value: mode,

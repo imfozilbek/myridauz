@@ -42,7 +42,9 @@ export function TripScreen(props: TripScreenProps) {
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
   const wayFacts = useWayFacts();
   const day = new Date(trip.departAt);
-  useEffect(() => track({ name: 'trip_open', screen: 'market.trip' }), [track]);
+  useEffect(() => {
+    track({ name: 'trip_open', screen: 'market.trip' });
+  }, [track]);
   // A driver who opens the own trip as a passenger cannot book it (G52, docs/112 bookings.own_trip).
   const mine = useAccount()?.profile.id === trip.driver.id;
   const asked = useAskedSeat(trip.id, Boolean(onBook) && !readOnly && !mine);
