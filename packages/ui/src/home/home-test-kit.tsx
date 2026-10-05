@@ -34,7 +34,7 @@ const action = (
   tone: 'brand',
   labelKey,
   hintKey: 'common.passenger.myTripsHint',
-  ...(Screen ? { Screen } : {}),
+  Screen,
 });
 export const PASSENGER_ACTIONS = [
   action('find_trip', FindTripFlow, 'common.passenger.findTrip'),

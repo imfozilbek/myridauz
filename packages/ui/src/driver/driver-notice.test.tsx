@@ -17,6 +17,7 @@ const ACTIONS: readonly StartAction[] = [
     labelKey: 'home.publish',
     hintKey: 'common.driver.newTripHint',
     waitsApproval: true,
+    Screen: () => null,
   },
   {
     id: 'my_trips',
@@ -24,6 +25,7 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.driver.myTripsHint',
+    Screen: () => null,
   },
 ];
 const pending: Driver = { ...approved, application: { ...approved.application, status: 'pending' } };

@@ -29,6 +29,8 @@ export async function passengerChat(page: Page, shot: Shot = none) {
 // A close person opens the card link: the trip without registration, "Xabar olish" (docs/43).
 export async function followTrip(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('share.follow.title', { name: 'Madina' }))).toBeVisible();
+  // Close people see where the passenger boards and gets off (owner, docs/111 Q1, G44).
+  await expect(page.getByText(t('way.book.dropoff'))).toBeVisible();
   await shot('1-trip');
   await page.getByText(t('share.follow.subscribe')).click();
   await expect(page.getByText(t('share.follow.subscribed'))).toBeVisible();

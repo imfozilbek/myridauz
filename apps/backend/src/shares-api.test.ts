@@ -67,8 +67,10 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     );
     const token = tokenOf(created.link);
     expect((await shared('x'.repeat(43))).status).toBe(404);
-    const trip = await read<{ passengerName: string; plate: string; status: string }>(shared(token));
+    const trip = await read<Record<string, unknown>>(shared(token));
     expect(trip).toMatchObject({ passengerName: 'Ali', plate: '01A123BC', status: 'waiting' });
+    // Close people see where the passenger boards and gets off (the owner, docs/111 Q1).
+    expect(trip).toMatchObject({ meetingPoint: { lat: 41.292 }, dropoffPoint: { lat: 39.6547 } });
     for (const id of CLOSE.slice(0, 5))
       expect((await call(`/shared/${token}/follow`, id, { method: 'POST' })).status).toBe(204);
     expect((await call(`/shared/${token}/follow`, CLOSE[0] ?? 0, { method: 'POST' })).status).toBe(204);

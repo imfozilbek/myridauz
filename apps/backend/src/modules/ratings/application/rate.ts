@@ -53,8 +53,9 @@ async function watch(deps: RatingsDeps, userId: number, now: number) {
   const stars = (await deps.store.about([userId]))
     .filter((review) => !review.hidden)
     .map((review) => review.stars);
-  if (needsModerator(stars) && (await deps.store.flag(userId, now)))
-    await deps.alertTeam(userId, ratingOf(stars));
+  if (!needsModerator(stars) || !(await deps.store.flag(userId, now))) return;
+  const name = (await deps.names([userId])).get(userId) ?? '';
+  await deps.alertTeam({ name, publicId: (await deps.people.publicId(userId)) ?? '' }, ratingOf(stars));
 }
 
 // The review screen: whom the person rates and their own review of this ride.

@@ -16,12 +16,12 @@ export const botTeller = ({ brand, send, team }: Wiring): ComplaintTeller => {
   const tell = (userId: number, side: 'driver' | 'passenger', text: string) =>
     send([{ bot: side, chatId: userId, text }]);
   return {
-    team: async (complaint, againstName) => {
+    team: async (complaint, against) => {
       const url = `https://${appHost(brand, 'admin')}/?complaint=${complaint.id}`;
       const reason = t(`complaints.reason.${complaint.reason}`);
       const markup = { inline_keyboard: [[{ text: t('bot.complaint.open'), web_app: { url } }]] };
       await team(
-        t('bot.complaint.urgent', { reason, name: againstName, id: String(complaint.againstId) }),
+        t('bot.complaint.urgent', { reason, name: against.firstName, id: against.publicId }),
         markup,
       );
     },

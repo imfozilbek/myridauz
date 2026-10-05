@@ -1,6 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
-import { chatHistory } from '../chat';
+import { chatHistory, forgetChat } from '../chat';
 import { notify, notifyTeam } from '../notifications';
 import { teamRole } from '../team';
 import { peopleOf } from '../users';
@@ -42,6 +42,7 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
     isTeam: async (userId) => (await teamRole(env, userId)) !== null,
     trips: (userId, side) => trips(env, userId, side),
     chat: (key) => chatHistory(env, key),
+    forgetChat: (key) => forgetChat(env, key),
     cancelAll: (userId) => cancelAll(env, userId),
     refund: (moderatorId, driverId, amount, reason) => refund(env, moderatorId, driverId, amount, reason),
     tell: botTeller({

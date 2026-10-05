@@ -68,6 +68,7 @@ export async function mockChat(page: Page) {
       driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
       plate: '01A123BC',
       meetingPoint: { lat: 41.2856, lng: 69.2034 },
+      dropoffPoint: { lat: 39.6547, lng: 66.9758 },
       status: 'boarded',
       followers: 1,
     }),
