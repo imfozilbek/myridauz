@@ -32,7 +32,7 @@ const step = async (name, work, fallback) => {
   }
 };
 await step('stories rule', () => ensureStoriesRule(media));
-const mapBucket = await step('map bucket', () => ensureMapBucket(brand), null);
+const mapBucket = await step('map bucket', () => ensureMapBucket(brand, apps), null);
 if (mapBucket) await step('map copy', () => copyMap(media, mapBucket));
 const served = mapBucket !== null && (await mapServed(mapHost(brand), MAP_ARCHIVE));
 // The copy in MEDIA goes only once the public address answers: the API keeps it until then.

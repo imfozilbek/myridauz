@@ -5,7 +5,7 @@
 // CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; runs from the workflow "Map data" (docs/32).
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadBrand } from '../brands/index.ts';
 import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
@@ -42,7 +42,10 @@ const target = local ? ['--local', '--persist-to', STAND_STATE] : ['--remote'];
 const config = readFileSync(`brands/${brand.id}/wrangler.toml`, 'utf8');
 const media = /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u.exec(config)?.[1];
 if (!media) throw new Error('map-data: no MEDIA bucket in wrangler.toml');
-const bucket = local || dryRun ? media : await ensureMapBucket(brand);
+const miniApps = readdirSync('apps')
+  .filter((dir) => dir.startsWith('miniapp-'))
+  .map((dir) => dir.replace('miniapp-', ''));
+const bucket = local || dryRun ? media : await ensureMapBucket(brand, miniApps);
 const build = /^uzbekistan-(\d{8})\.pmtiles$/u.exec(MAP_ARCHIVE)?.[1];
 if (!build) throw new Error(`map-data: ${MAP_ARCHIVE} is not uzbekistan-YYYYMMDD.pmtiles`);
 
