@@ -22,6 +22,8 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 import { DecisionSection } from './decision-section';
 
 const PHOTO_SIZE = 48;
@@ -49,6 +51,7 @@ function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly compl
   const { track } = useAnalytics();
   const { feedback } = useApiClients();
   const [lines, setLines] = useState<ChatLine[] | null>(null);
+  const { failure, fail, clear } = useFailure();
   const party = (header: string, person: Party) => (
     <Section header={header}>
       <Cell
@@ -71,13 +74,14 @@ function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly compl
     </Section>
   );
   const decide = async (decision: ComplaintDecision) => {
+    clear();
     try {
       await feedback.decide(complaint.id, decision);
       track({ name: 'complaint_decided', screen: 'complaints.review' });
       haptic.success();
       onDecided();
-    } catch {
-      haptic.error();
+    } catch (caught) {
+      fail(caught);
     }
   };
   const lineText = (line: ChatLine) =>
@@ -112,7 +116,7 @@ function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly compl
           {lines === null ? (
             <Cell
               before={<IconTile name="chat" />}
-              onClick={() => void feedback.chat(complaint.id).then(setLines)}
+              onClick={() => void feedback.chat(complaint.id).then(setLines, fail)}
             >
               {t('complaints.chat')}
             </Cell>
@@ -130,6 +134,7 @@ function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly compl
           noShow={complaint.reason === 'no_show'}
           onDecide={(decision) => void decide(decision)}
         />
+        <ActionFailure error={failure} />
       </List>
     </div>
   );

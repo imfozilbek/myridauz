@@ -46,7 +46,7 @@ describe('«Bot xabarlari» in the profile (docs/88 L1)', () => {
     expect(permissions.requestBotMessages).toHaveBeenCalled();
   });
 
-  it('goes back when the server failed', async () => {
+  it('goes back and says why when the server failed (G43, docs/65 B3)', async () => {
     render(
       true,
       true,
@@ -55,5 +55,6 @@ describe('«Bot xabarlari» in the profile (docs/88 L1)', () => {
     const toggle = screen.getByRole<HTMLInputElement>('checkbox', { name: 'Bot xabarlari' });
     fireEvent.click(toggle);
     await waitFor(() => expect(toggle.checked).toBe(true));
+    expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 });

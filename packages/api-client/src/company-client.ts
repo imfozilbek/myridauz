@@ -8,6 +8,7 @@ import {
   type PublicCompany,
 } from '@platform/contracts';
 import { ApiError } from './api-error';
+import { fetchOnce, REQUEST_TIMEOUT_MS } from './network';
 import { signedRequest, type SignedOptions } from './signed-request';
 
 // The requisites of the legal documents (G34): everyone reads them without a signature,
@@ -21,7 +22,7 @@ export function createCompanyClient(options: SignedOptions) {
   const state = async (response: Response) => companyStateSchema.parse(await response.json());
   return {
     current: async (): Promise<PublicCompany> => {
-      const response = await options.fetch(publicUrl);
+      const response = await fetchOnce(options.fetch, publicUrl, {}, REQUEST_TIMEOUT_MS);
       if (!response.ok) throw new ApiError(response.status);
       return publicCompanySchema.parse(await response.json());
     },

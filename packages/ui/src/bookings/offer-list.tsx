@@ -15,6 +15,8 @@ import { Screen } from '../screen/screen';
 import { useGoHome } from '../flow/home-context';
 import { MainButton, SecondaryButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 import { useShareTrip } from './use-share-trip';
 import '../market/market.css';
 import { useOneAtATime } from '../telegram/one-at-a-time';
@@ -104,13 +106,11 @@ export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
   const { t } = useI18n();
   const home = useGoHome(onDone);
   const shareTrip = useShareTrip();
-  const share = () =>
-    bookingId
-      ? shareTrip(bookingId).then(
-          () => haptic.success(),
-          () => haptic.error(),
-        )
-      : undefined;
+  const { failure, fail, clear } = useFailure();
+  const share = (id: string) => {
+    clear();
+    void shareTrip(id).then(() => haptic.success(), fail);
+  };
   return (
     <StepLayout
       hero
@@ -119,8 +119,9 @@ export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
       hint={t('bookings.offer.accepted.hint')}
     >
       <Screen onBack={home} />
+      <ActionFailure error={failure} />
       <MainButton text={t('market.done')} onClick={home} />
-      {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => void share()} /> : null}
+      {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => share(bookingId)} /> : null}
     </StepLayout>
   );
 }

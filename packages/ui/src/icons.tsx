@@ -53,6 +53,7 @@ import {
   TrendingDown,
   Volume2,
   Play,
+  WifiOff,
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
@@ -127,6 +128,7 @@ const ICONS = {
   // The sounds of the brand and a sound to listen to in the admin Mini App (G54, docs/115).
   sounds: Volume2,
   play: Play,
+  offline: WifiOff,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

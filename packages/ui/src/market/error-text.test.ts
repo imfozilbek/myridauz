@@ -12,6 +12,13 @@ const G27_CODES = [
   'drivers.incomplete',
   'trips.wrong_status',
   'calls.unavailable',
+  // G43.
+  'complaints.wrong_status',
+  'drivers.wrong_status',
+  'shares.too_many',
+  'pitaks.not_found',
+  'auth.not_admin',
+  'channels.not_found',
 ] as const;
 
 describe('errorKey (docs/83 N04)', () => {
@@ -25,6 +32,12 @@ describe('errorKey (docs/83 N04)', () => {
 
   it('keeps the own text of a screen for an unknown code, else the general one', () => {
     expect(errorKey(new Error('offline'), 'account.avatar.failed')).toBe('account.avatar.failed');
-    expect(errorKey(new ApiError(401, 'auth.expired'))).toBe('errors.generic.description');
+    expect(errorKey(new ApiError(401, 'auth.invalid'))).toBe('errors.generic.description');
+  });
+
+  it('says the network dropped and that the app must be opened again (G43)', () => {
+    expect(errorKey(new ApiError(0, 'network.failed'))).toBe('errors.network');
+    expect(errorKey(new ApiError(0, 'network.timeout'))).toBe('errors.network');
+    expect(errorKey(new ApiError(401, 'auth.expired'))).toBe('errors.expired.description');
   });
 });

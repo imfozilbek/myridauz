@@ -33,6 +33,13 @@ describe('POST /analytics', () => {
     expect(written[0]?.doubles).toEqual([1, 5]);
   });
 
+  it('keeps the good events of a batch when one is bad (G43)', async () => {
+    const bad = { ...event, screen: 'Free text' };
+    const { request, written } = post(JSON.stringify({ events: [bad, event] }));
+    expect((await request).status).toBe(204);
+    expect(written).toHaveLength(1);
+  });
+
   it('rejects an invalid batch with an error code', async () => {
     const response = await post(JSON.stringify({ events: [{ ...event, screen: 'Free text' }] })).request;
     expect(response.status).toBe(400);

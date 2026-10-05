@@ -9,6 +9,9 @@ export function useBotMessages(account: Account | null): void {
   const needed = account !== null && !account.profile.writeAccess;
   useEffect(() => {
     if (!client || !needed) return;
-    void requestBotMessages().then((allowed) => (allowed ? client.setWriteAccess(true) : undefined));
+    // A failed save asks again on the next launch; api_error already counts it (G43).
+    void requestBotMessages()
+      .then((allowed) => (allowed ? client.setWriteAccess(true) : undefined))
+      .catch(() => undefined);
   }, [client, needed]);
 }

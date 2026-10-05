@@ -6,6 +6,8 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { IconTile } from '../icon-tile';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
 import { useShareTrip } from './use-share-trip';
 
@@ -38,18 +40,20 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
   const { track } = useAnalytics();
   const { chat } = useApiClients();
   const shareTrip = useShareTrip();
+  const { failure, fail, clear } = useFailure();
   const [note, setNote] = useState<'told' | 'stopped' | null>(null);
   // After "Ulashishni toʻxtatish" the button hides until the card is sent again.
   const [sharing, setSharing] = useState(true);
   const confirmed = booking.status === 'confirmed';
   const onTheDay = tripDayCame(booking.trip.departAt);
   const run = async (action: () => Promise<void>, after: 'told' | 'stopped' | null) => {
+    clear();
     try {
       await action();
       haptic.success();
       setNote(after);
-    } catch {
-      haptic.error();
+    } catch (caught) {
+      fail(caught);
     }
   };
   const share = () =>
@@ -68,37 +72,40 @@ export function TripTools({ booking, onChat, onComplain, onTold }: Props) {
       setSharing(false);
     }, 'stopped');
   return (
-    <Section footer={note ? t(`share.${note}`) : undefined}>
-      <Cell before={<IconTile name="chat" />} onClick={onChat}>
-        {t('chat.open')}
-      </Cell>
-      {confirmed ? (
-        <>
-          <Cell
-            before={<IconTile name="share" tone="accent" />}
-            subtitle={t('share.sendHint')}
-            onClick={() => void share()}
-          >
-            {t('share.send')}
-          </Cell>
-          {onTheDay && booking.boardedAt === null ? (
-            <Cell before={<IconTile name="carSide" />} onClick={() => void step('boarded')}>
-              {t('share.boarded')}
+    <>
+      <ActionFailure error={failure} />
+      <Section footer={note ? t(`share.${note}`) : undefined}>
+        <Cell before={<IconTile name="chat" />} onClick={onChat}>
+          {t('chat.open')}
+        </Cell>
+        {confirmed ? (
+          <>
+            <Cell
+              before={<IconTile name="share" tone="accent" />}
+              subtitle={t('share.sendHint')}
+              onClick={() => void share()}
+            >
+              {t('share.send')}
             </Cell>
-          ) : null}
-          {onTheDay && booking.arrivedAt === null ? (
-            <Cell before={<IconTile name="destination" />} onClick={() => void step('arrived')}>
-              {t('share.arrived')}
-            </Cell>
-          ) : null}
-          {sharing ? (
-            <Cell before={<IconTile name="blocked" />} onClick={() => void stop()}>
-              {t('share.stop')}
-            </Cell>
-          ) : null}
-        </>
-      ) : null}
-      {canComplain(booking.status) ? <ComplainCell onClick={onComplain} /> : null}
-    </Section>
+            {onTheDay && booking.boardedAt === null ? (
+              <Cell before={<IconTile name="carSide" />} onClick={() => void step('boarded')}>
+                {t('share.boarded')}
+              </Cell>
+            ) : null}
+            {onTheDay && booking.arrivedAt === null ? (
+              <Cell before={<IconTile name="destination" />} onClick={() => void step('arrived')}>
+                {t('share.arrived')}
+              </Cell>
+            ) : null}
+            {sharing ? (
+              <Cell before={<IconTile name="blocked" />} onClick={() => void stop()}>
+                {t('share.stop')}
+              </Cell>
+            ) : null}
+          </>
+        ) : null}
+        {canComplain(booking.status) ? <ComplainCell onClick={onComplain} /> : null}
+      </Section>
+    </>
   );
 }

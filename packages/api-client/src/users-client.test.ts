@@ -34,6 +34,7 @@ describe('createUsersClient', () => {
     expect(await client.getMe()).toEqual(me);
     expect(fetch).toHaveBeenCalledWith('https://api.test/api/me', {
       headers: { authorization: 'tma a=1', 'x-mini-app': 'driver' },
+      signal: expect.any(AbortSignal),
     });
   });
 

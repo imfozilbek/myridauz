@@ -1,4 +1,4 @@
-import type { BookingsClient, ChatClient } from '@platform/api-client';
+import { ApiError, type BookingsClient, type ChatClient } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { OFFER_LINK } from '@platform/contracts';
@@ -38,6 +38,31 @@ describe('a passenger takes an offer of a driver (docs/09)', () => {
     // The card for the close people is the second button (docs/89 P9).
     await tap('Yaqinlarimga yuborish');
     await vi.waitFor(() => expect(share).toHaveBeenCalledWith('b1'));
+  });
+
+  it('says why the card for the close people was not sent (G43, docs/65 B3)', async () => {
+    const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({
+      ...offer,
+      status: 'accepted',
+      bookingId: 'b1',
+    }));
+    const share = vi.fn<ChatClient['share']>(async () => {
+      throw new ApiError(429, 'shares.too_many');
+    });
+    renderMarket(
+      <MyRequestsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myRequests: async () => [request] },
+        bookings: { myBookings: async () => [], myOffers: async () => [offer], answerOffer },
+        chat: { share },
+      }),
+    );
+    await tap('bir joy uchun');
+    await tap('Jasur');
+    await tap('Qabul qilish');
+    await screen.findByText('Joyingiz tasdiqlandi');
+    await tap('Yaqinlarimga yuborish');
+    expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 
   it('a bot button opens the offer itself; «Назад» shows its request (G40, docs/106 K6)', async () => {

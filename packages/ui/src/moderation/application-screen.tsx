@@ -19,6 +19,8 @@ import { ChoiceStep } from '../driver/steps/choice-step';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 import { PhotoGrid, PhotoScreen, type PhotoKind } from './photo-grid';
 import { ApproveFlow } from './approve-flow';
 import { ReasonsStep } from './reasons-step';
@@ -52,13 +54,15 @@ export function ApplicationScreen({ application, onBack, onDone }: ApplicationSc
   }, [zoom]);
   const [fixedPlate, setFixedPlate] = useState<string | null>(null);
   const { car, userId } = application;
+  const { failure, fail, clear } = useFailure();
   const act = async (work: Promise<unknown>, outcome: Outcome) => {
+    clear();
     try {
       await work;
       haptic.success();
       onDone(outcome);
-    } catch {
-      haptic.error();
+    } catch (caught) {
+      fail(caught);
       setMode('view');
     }
   };
@@ -129,6 +133,7 @@ export function ApplicationScreen({ application, onBack, onDone }: ApplicationSc
             </>
           ) : null}
           <BlockJournal userId={userId} />
+          {shown ? <ActionFailure error={failure} /> : null}
         </List>
         {shown ? <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} /> : null}
       </div>
