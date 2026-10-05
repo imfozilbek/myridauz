@@ -26,6 +26,6 @@ export const telegramAnnouncer =
     try {
       await sendText(fetch, driverToken, trip.driverId, text);
     } catch (error) {
-      console.warn(String(error));
+      console.warn(JSON.stringify({ event: 'trip_announce_failed', message: String(error) }));
     }
   };

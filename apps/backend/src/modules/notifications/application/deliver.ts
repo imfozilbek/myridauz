@@ -43,6 +43,6 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   if (response.status === TOO_MANY_REQUESTS)
     return { outcome: 'retry', afterSeconds: body.parameters?.retry_after ?? DEFAULT_RETRY_SECONDS };
   if (response.status >= SERVER_ERROR) return { outcome: 'retry', afterSeconds: DEFAULT_RETRY_SECONDS };
-  console.warn(`notifications.dropped_${response.status}`);
+  console.warn(JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status }));
   return { outcome: 'drop' };
 }
