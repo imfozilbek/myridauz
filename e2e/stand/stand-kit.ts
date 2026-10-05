@@ -81,15 +81,17 @@ async function guardOutside(page: Page) {
 export const outsideCalls = (): readonly string[] => leaks.map((url) => new URL(url).host);
 
 // Opens a Mini App of the stand as this person, as Telegram opens it on a phone. search: what a bot
-// button adds to the address, such as ?booking=<id> (docs/65 B5).
+// button adds to the address, such as ?booking=<id> (docs/65 B5). stale: a launch older than a day.
+type OpenOptions = { platform?: 'android' | 'ios'; search?: string; stale?: boolean };
 export async function openAs(
   page: Page,
   app: MiniApp,
   person: Person,
-  { platform = 'android', search = '' }: { platform?: 'android' | 'ios'; search?: string } = {},
+  { platform = 'android', search = '', stale = false }: OpenOptions = {},
 ) {
   await guardOutside(page);
   await mockTelegram(page, await contactOf(app, person));
   const url = `http://localhost:${STAND_APPS[app]}/${search}`;
-  await page.goto(telegramUrl(url, platform, await initDataOf(app, person)));
+  const signedAt = stale ? now() - DAY_SECONDS - 60 : now();
+  await page.goto(telegramUrl(url, platform, await initDataOf(app, person, signedAt)));
 }

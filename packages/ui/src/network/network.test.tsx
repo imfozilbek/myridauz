@@ -1,5 +1,6 @@
 import { act, cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { ErrorScreen } from '../states/error-screen';
 import { renderInShell } from '../test-shell';
 import { markExpired } from './session-expired';
 
@@ -22,6 +23,13 @@ describe('the connection of the whole app (G43)', () => {
     expect(screen.getByText('my trips')).toBeTruthy();
     goOffline(true);
     expect(screen.queryByText('Internet yoʻq')).toBeNull();
+  });
+
+  it('an error screen without a network names the network, not a general failure', () => {
+    renderInShell(<ErrorScreen onRetry={() => undefined} />);
+    expect(screen.getByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
+    goOffline(false);
+    expect(screen.getByText(/Internet bilan aloqa yoʻq/u)).toBeTruthy();
   });
 
   // The last test: an old launch stays old for the rest of the app.
