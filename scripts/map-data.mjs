@@ -1,6 +1,7 @@
 // The map of the Mini App (G22, docs/67): pnpm map-data --brand=<brand> [--dry-run] [--local]
 // Cuts Uzbekistan out of the Protomaps build of OpenStreetMap (the data date is in MAP_ARCHIVE),
-// fills the search index of place names in D1 from it (G23), takes the fonts of the labels and puts both into the private R2 bucket of the brand. Needs
+// fills the search index of place names in D1 from it (G23), takes the fonts of the labels and puts both
+// into the public map bucket of the brand at map.<domain> (G57; locally: the MEDIA bucket of the stand). Needs
 // CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID; runs from the workflow "Map data" (docs/32).
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -11,6 +12,7 @@ import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
 import border from '../packages/contracts/src/uzbekistan-border.json' with { type: 'json' };
 import { writePlaceIndex } from './map-places.mjs';
 import { STAND_STATE } from './stand/paths.ts';
+import { dropOldMaps, ensureMapBucket, putMapObject } from './deploy/map-bucket.mjs';
 
 // The command line tool of PMTiles, pinned by version and checksum.
 const PMTILES = {
@@ -35,10 +37,12 @@ if (!brandArg) throw new Error('map-data: --brand=<brand> is required');
 const brand = loadBrand(brandArg.split('=')[1]);
 const dryRun = process.argv.includes('--dry-run');
 // --local fills the local stand instead of Cloudflare (docs/75): the same data, no keys needed.
-const target = process.argv.includes('--local') ? ['--local', '--persist-to', STAND_STATE] : ['--remote'];
+const local = process.argv.includes('--local');
+const target = local ? ['--local', '--persist-to', STAND_STATE] : ['--remote'];
 const config = readFileSync(`brands/${brand.id}/wrangler.toml`, 'utf8');
-const bucket = /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u.exec(config)?.[1];
-if (!bucket) throw new Error('map-data: no MEDIA bucket in wrangler.toml');
+const media = /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u.exec(config)?.[1];
+if (!media) throw new Error('map-data: no MEDIA bucket in wrangler.toml');
+const bucket = local || dryRun ? media : await ensureMapBucket(brand);
 const build = /^uzbekistan-(\d{8})\.pmtiles$/u.exec(MAP_ARCHIVE)?.[1];
 if (!build) throw new Error(`map-data: ${MAP_ARCHIVE} is not uzbekistan-YYYYMMDD.pmtiles`);
 
@@ -49,7 +53,8 @@ const download = async (url) => {
   if (!response.ok) throw new Error(`map-data: ${url} answered ${response.status}`);
   return Buffer.from(await response.arrayBuffer());
 };
-const put = (key, file, type) =>
+const put = (key, file, type) => (local ? putLocal(key, file, type) : putMapObject(bucket, key, file));
+const putLocal = (key, file, type) =>
   run('pnpm', [
     'exec',
     'wrangler',
@@ -107,6 +112,7 @@ for (const font of MAP_FONTS)
     writeFileSync(file, await download(`${FONTS}/${encodeURIComponent(font)}/${range}.pbf`));
     put(`map/fonts/${font}/${range}.pbf`, file, 'application/x-protobuf');
   }
+if (!local) await dropOldMaps(media, bucket, MAP_ARCHIVE);
 console.log(`map-data: ${MAP_ARCHIVE} (${Math.round(size / 1e6)} MB) and the fonts are in ${bucket}`);
 
 // The search by name (G23): the places of the same archive, the whole index made again in D1.

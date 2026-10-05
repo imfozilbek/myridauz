@@ -55,6 +55,8 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
+  // Deploys set VITE_MAP_URL once the public map bucket answers (G57, docs/67).
+  const mapUrl = import.meta.env.VITE_MAP_URL;
   const fetch = (input: string, init?: RequestInit) => window.fetch(input, init);
   const analytics = createAnalyticsClient({
     baseUrl,
@@ -85,7 +87,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     stats: createStatsClient(signed),
     calls: createCallsClient(signed),
     comfort: createComfortClient(signed),
-    map: createMapClient(signed),
+    map: createMapClient({ ...signed, ...(mapUrl ? { mapUrl } : {}) }),
     pitaks: createPitaksClient(signed),
     company: createCompanyClient(signed),
     sounds: createSoundsClient(signed),
