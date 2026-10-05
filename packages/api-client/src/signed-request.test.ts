@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ApiError } from './api-error';
+import { RETRY_DELAY_MS } from './network';
 import { signedRequest } from './signed-request';
 
 const BASE_URL = 'https://api.test';
@@ -33,6 +34,23 @@ describe('signedRequest on a bad network (G43)', () => {
     );
     await expect((await api.request('/me')).json()).resolves.toEqual({ ok: true });
     expect(fetchSpy).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads again only after a pause: a page that is leaving never asks again', async () => {
+    vi.useFakeTimers();
+    const { api, fetchSpy } = client(
+      vi
+        .fn()
+        .mockImplementationOnce(offline)
+        .mockResolvedValueOnce(Response.json({ ok: true })),
+    );
+    const answer = api.request('/me');
+    await vi.advanceTimersByTimeAsync(RETRY_DELAY_MS - 1);
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    await expect((await answer).json()).resolves.toEqual({ ok: true });
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
   });
 
   it('never repeats a change: a lost answer may have been saved', async () => {
