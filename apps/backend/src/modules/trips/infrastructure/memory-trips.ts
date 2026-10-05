@@ -12,9 +12,15 @@ export function createMemoryTrips(): TripRepository {
         .filter((trip) => trip.driverId === driverId)
         .sort((a, b) => b.departAt - a.departAt)
         .slice(0, limit),
-    leaving: async (from, to) =>
+    leaving: async (from, to, places) =>
       [...trips.values()]
-        .filter((trip) => trip.status === 'active' && trip.departAt >= from && trip.departAt < to)
+        .filter(
+          (trip) =>
+            trip.status === 'active' &&
+            trip.departAt >= from &&
+            trip.departAt < to &&
+            places.includes(trip.from),
+        )
         .sort((a, b) => a.departAt - b.departAt),
     departing: async (from, to) =>
       [...trips.values()].filter(

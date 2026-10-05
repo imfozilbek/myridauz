@@ -41,6 +41,8 @@ describe('backend contract', () => {
     const passenger = `https://${appHost(loadBrand(), 'passenger')}`;
     const allowed = await preflight(passenger);
     expect(allowed.headers.get('access-control-allow-origin')).toBe(passenger);
+    // The browser asks once in 2 hours, not before every call (G56).
+    expect(allowed.headers.get('access-control-max-age')).toBe('7200');
     const other = await preflight('https://evil.example');
     expect(other.headers.get('access-control-allow-origin')).toBeNull();
   });

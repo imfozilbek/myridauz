@@ -13,3 +13,10 @@ export function placeMatches(placeId: string, searchId: string, places: Places):
   const region = places.get(search.parentId);
   return region?.oneCity === true && place.parentId === region.id;
 }
+
+// Every place that fits a search, the same rule as placeMatches: the database reads only the trips
+// from these places, through an index, not every trip of the day (G56, docs/117).
+export function placesMatching(searchId: string, places: Places): string[] {
+  const fits = [...places.keys()].filter((id) => id !== searchId && placeMatches(id, searchId, places));
+  return [searchId, ...fits];
+}

@@ -8,6 +8,8 @@ export const d1Team = (db: D1Database): TeamRepository => ({
       .all<{ user_id: number }>();
     return rows.results.map((row) => row.user_id);
   },
+  isModerator: async (userId) =>
+    (await db.prepare('SELECT 1 FROM team_members WHERE user_id = ?').bind(userId).first()) !== null,
   add: async (userId, addedBy, at) => {
     await db
       .prepare(

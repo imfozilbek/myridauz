@@ -1,7 +1,4 @@
-import { appHost, loadBrand } from '@platform/brands';
-import { MINI_APPS } from '@platform/contracts';
 import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
@@ -40,26 +37,10 @@ import { tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
+import { allowMap, allowMiniApps, allowPublic } from './shared/http/cors';
 import { notFound, onServerError } from './shared/http/errors';
 import { rateLimit } from './shared/http/rate-limit';
 
-// Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
-const miniAppOrigin = (origin: string, context: { env: unknown }) => {
-  const brand = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
-  return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
-};
-const allowMiniApps = cors({ origin: miniAppOrigin });
-// The map library reads the parts of the archive: it needs to see where a part lies (G22).
-const allowMap = cors({ origin: miniAppOrigin, exposeHeaders: ['content-range', 'etag'] });
-// The landing on the brand domain reads public prices (docs/59); the landing and the Mini Apps read
-// the requisites of the legal documents (G34).
-const allowPublic = cors({
-  origin: (origin, context) => {
-    const { domain } = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
-    const site = [`https://${domain}`, `https://www.${domain}`].includes(origin);
-    return site ? origin : miniAppOrigin(origin, context);
-  },
-});
 // The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
 const auth = telegramAuth(() => Date.now(), teamRole);
 

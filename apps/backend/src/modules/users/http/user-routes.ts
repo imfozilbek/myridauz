@@ -5,8 +5,9 @@ import type { UsersDeps } from '../application/ports';
 import { getPublicProfile } from '../application/profile';
 import { callerOf, fail } from './respond';
 
-// Short private cache: the photo is personal data, shared caches must not keep it (docs/30).
-const AVATAR_CACHE = 'private, max-age=300';
+// Private cache: the photo is personal data, shared caches must not keep it (docs/30). An hour: the
+// same faces in the lists ask the Worker once an hour, not every 5 minutes (G56, docs/117).
+const AVATAR_CACHE = 'private, max-age=3600';
 
 export function userRoutes(deps: (env: Bindings) => UsersDeps) {
   // The path carries the public id (docs/65 A3); 0 is nobody.

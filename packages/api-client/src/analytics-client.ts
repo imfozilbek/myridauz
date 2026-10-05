@@ -26,6 +26,8 @@ type AnalyticsClientOptions = {
   readonly schedule?: Schedule;
 };
 
+const SIMPLE_TYPE = 'text/plain;charset=UTF-8';
+
 export function createAnalyticsClient(options: AnalyticsClientOptions) {
   const { baseUrl, fetch, context, now = Date.now, schedule = scheduleWithTimer } = options;
   const url = new URL(ANALYTICS_PATH.slice(1), `${baseUrl.replace(/\/$/, '')}/`).toString();
@@ -36,8 +38,10 @@ export function createAnalyticsClient(options: AnalyticsClientOptions) {
 
   async function send(events: AnalyticsEvent[]): Promise<void> {
     const init = { method: 'POST', body: JSON.stringify({ events }), keepalive: true };
+    // Plain text is a simple request: the browser sends no preflight, one request to the Worker, not
+    // two (G56, docs/117). The server reads the JSON all the same.
     // Analytics must never break the app: a lost batch is acceptable, a crash is not.
-    await fetch(url, { ...init, headers: { 'content-type': 'application/json' } }).catch(() => undefined);
+    await fetch(url, { ...init, headers: { 'content-type': SIMPLE_TYPE } }).catch(() => undefined);
   }
 
   async function flush(): Promise<void> {

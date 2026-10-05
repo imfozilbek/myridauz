@@ -43,9 +43,10 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
 export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<Stats> {
   const at = deps.now();
   const since = at - PERIOD_DAYS[period] * DAY;
+  // The main numbers count whole tables: they live in the cache too (G56, docs/117).
   const [numbers, arrivals, part] = await Promise.all([
-    deps.numbers.numbers(since),
-    deps.numbers.arrivals(since),
+    cached(deps.cache, `numbers:${period}`, at, () => deps.numbers.numbers(since)),
+    cached(deps.cache, `arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
     eventsPart(deps, period, at),
   ]);
   return { period, numbers, arrivals: arrivalsOf(arrivals), ...part, at };

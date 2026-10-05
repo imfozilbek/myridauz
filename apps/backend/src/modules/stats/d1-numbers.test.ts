@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { testD1 } from '../../test-d1';
+import { fullScans, testD1 } from '../../test-d1';
 import { d1Numbers } from './infrastructure/d1-numbers';
 
 // The main numbers on SQLite with the real migrations (docs/29, G53).
@@ -29,6 +29,9 @@ describe('the main numbers (docs/29)', () => {
     const numbers = await d1Numbers(db).numbers(NOW - 24 * HOUR);
     expect(numbers.activeTrips).toBe(2);
     expect(numbers.trips).toBe(4);
+    // Each count reads only its period, through an index (G56).
+    await d1Numbers(db).arrivals(NOW - 24 * HOUR);
+    expect(fullScans(db)).toEqual([]);
     vi.useRealTimers();
   });
 });
