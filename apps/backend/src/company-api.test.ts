@@ -55,6 +55,6 @@ describe('company requisites (G34, docs/30)', () => {
     const read = (await (await call(ADMIN_COMPANY_PATH, MODERATOR, { app: 'admin' })).json()) as CompanyState;
     expect([read.canEdit, read.history.length]).toEqual([false, 2]);
     const answer = await (await ask(`https://${loadBrand().domain}`)).json();
-    expect(answer).toMatchObject({ company: { ...company, form: 'AJ' }, edition: { version: '1.3' } });
+    expect(answer).toMatchObject({ company: { ...company, form: 'AJ' }, edition: { version: '1.4' } });
   });
 });

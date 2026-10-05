@@ -10,11 +10,14 @@ const REGIONS = (places as readonly { id: string; parentId: string | null }[])
 // Telegram's share window: the link of the trip and a short line about it.
 const SHARE =
   'https://t.me/share/url?url=' +
-  encodeURIComponent('https://t.me/test_bot?startapp=trip_trip-1') +
+  encodeURIComponent('https://t.me/test_bot?startapp=trip_trip-1__ch-yol-samarqand') +
   '&text=' +
   encodeURIComponent('Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.');
 const BEFORE = Date.parse('2026-10-01T00:00:00Z');
-const post = channelPost('test_bot');
+const render = channelPost('test_bot');
+// A post of the Samarqand channel: its links carry the channel's mark (G55, docs/116).
+type Args = Parameters<typeof render>;
+const post = (trip: Args[0], places: Args[1], now: number) => render(trip, places, now, 'yol_samarqand');
 
 describe('the channel post (docs/15)', () => {
   it('writes the post without contacts, with "Joy band qilish" and the route subscription', () => {
@@ -38,11 +41,11 @@ describe('the channel post (docs/15)', () => {
     expect(text).not.toMatch(/Jasur|01A|\+998/u);
     const subscribe = {
       text: '🔔 Shu yoʻnalishga obuna',
-      url: 'https://t.me/test_bot?startapp=sub_1726_1718_2026-10-02',
+      url: 'https://t.me/test_bot?startapp=sub_1726_1718_2026-10-02__ch-yol-samarqand',
     };
     expect(markup).toEqual({
       inline_keyboard: [
-        [{ text: 'Joy band qilish', url: 'https://t.me/test_bot?startapp=trip_trip-1' }],
+        [{ text: 'Joy band qilish', url: 'https://t.me/test_bot?startapp=trip_trip-1__ch-yol-samarqand' }],
         [{ text: '📤 Doʻstga yuborish', url: SHARE }],
         [subscribe],
       ],

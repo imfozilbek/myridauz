@@ -118,4 +118,5 @@
 | 113 | [113-lessons-learned-8.md](113-lessons-learned-8.md) | Журнал уроков: продолжение 8 (№122 и дальше) |
 | 114 | [114-tile-home.md](114-tile-home.md) | Главный экран плитками: попутчик A, водитель A, админка C (G53) |
 | 115 | [115-sounds-and-ring.md](115-sounds-and-ring.md) | Звуки Rida (три набора, выбор в админке) и звонок внутри открытой или свёрнутой Mini App (G54) |
+| 116 | [116-where-people-come-from.md](116-where-people-come-from.md) | Откуда пришли люди (метка в ссылке) и с какой платформы; первое касание в профиле (G55) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

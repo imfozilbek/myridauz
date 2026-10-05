@@ -33,7 +33,7 @@ function setup(events: EventSource | null) {
   };
   const deps: StatsDeps = {
     events: counting,
-    numbers: { numbers: async () => numbers },
+    numbers: { numbers: async () => numbers, arrivals: async () => [] },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
     tellTeam: async (alert) => void told.push(alert),

@@ -1,4 +1,4 @@
-import type { PublicPrice } from '@platform/contracts';
+import { VIA_SITE, withVia, type PublicPrice } from '@platform/contracts';
 import { fill, groupThousands } from './format';
 
 const SEATS = { min: 1, max: 4, first: 3 } as const;
@@ -83,7 +83,7 @@ export function initMap(root: HTMLElement, load: Fetch = (url) => fetch(url)) {
     if (route.every((code) => SOATO.test(code)))
       find<HTMLAnchorElement>('[data-go]')?.setAttribute(
         'href',
-        `${data['bot'] ?? ''}?startapp=find_${route.map(encodeURIComponent).join('_')}`,
+        `${data['bot'] ?? ''}?startapp=${withVia(`find_${route.map(encodeURIComponent).join('_')}`, VIA_SITE)}`,
       );
     const found = to?.dataset['channel'] ?? from?.dataset['channel'];
     const channel = found && USERNAME.test(found) ? found : undefined;

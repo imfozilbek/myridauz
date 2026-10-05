@@ -85,13 +85,24 @@ export const d1Users = (db: D1Database): UserRepository => ({
       )
       .run();
   },
+  // The first touch goes with the account: it is tied to the person (G55, docs/116).
   erase: async (id, at) => {
+    await db.batch([
+      db
+        .prepare(
+          `UPDATE users SET first_name = '', phone = '', avatar_key = NULL, is_driver = 0, write_access = 0,
+             public_id = lower(hex(randomblob(16))), updated_at = ?, deleted_at = ? WHERE id = ?`,
+        )
+        .bind(at, at, id),
+      db.prepare('DELETE FROM user_arrivals WHERE user_id = ?').bind(id),
+    ]);
+  },
+  arrived: async (id, { source, via, client }, at) => {
     await db
       .prepare(
-        `UPDATE users SET first_name = '', phone = '', avatar_key = NULL, is_driver = 0, write_access = 0,
-           public_id = lower(hex(randomblob(16))), updated_at = ?, deleted_at = ? WHERE id = ?`,
+        `INSERT OR REPLACE INTO user_arrivals (user_id, source, via, client, arrived_at) VALUES (?, ?, ?, ?, ?)`,
       )
-      .bind(at, at, id)
+      .bind(id, source ?? null, via ?? null, client ?? null, at)
       .run();
   },
   ...d1Blocks(db),

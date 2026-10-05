@@ -55,9 +55,22 @@ export const errorRowSchema = z.object({
 });
 export type ErrorRow = z.infer<typeof errorRowSchema>;
 
+// G55 (docs/116): the new people of the period by their source and by their platform. mark: the name
+// after the kind («rida-samarqand» of a channel, «insta1» of an ad), empty for the others.
+export const ARRIVAL_KINDS = ['channel', 'ad', 'story', 'site', 'direct', 'other'] as const;
+export type ArrivalKind = (typeof ARRIVAL_KINDS)[number];
+export const PLATFORMS = ['android', 'ios', 'desktop', 'other'] as const;
+export type Platform = (typeof PLATFORMS)[number];
+export const arrivalsSchema = z.object({
+  sources: z.array(z.object({ kind: z.enum(ARRIVAL_KINDS), mark: z.string().max(21), count })),
+  platforms: z.array(z.object({ platform: z.enum(PLATFORMS), count })),
+});
+export type Arrivals = z.infer<typeof arrivalsSchema>;
+
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
+  arrivals: arrivalsSchema,
   // Funnels and errors come from the events: "off" while the analytics key is not set (docs/46),
   // "failed" when Analytics Engine did not answer.
   events: z.enum(['on', 'off', 'failed']),

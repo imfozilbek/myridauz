@@ -1,4 +1,5 @@
 import type { NumbersSource } from '../application/ports';
+import type { ArrivalCount } from '../domain/arrivals';
 
 // The main numbers of a period, straight from the tables (docs/29).
 const SQL = `SELECT
@@ -30,5 +31,15 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
       driverApplications: row?.driverApplications ?? 0,
       complaints: row?.complaints ?? 0,
     };
+  },
+  // The first touch of the new people (G55, docs/116): a deleted account takes its row with it.
+  arrivals: async (since) => {
+    const { results } = await db
+      .prepare(
+        `SELECT via, client, COUNT(*) AS count FROM user_arrivals WHERE arrived_at >= ? GROUP BY via, client`,
+      )
+      .bind(since)
+      .all<ArrivalCount>();
+    return results;
   },
 });

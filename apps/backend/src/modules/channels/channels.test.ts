@@ -91,6 +91,16 @@ describe('posting and editing through the queue (docs/15)', () => {
     expect(sent[1]?.html).toBe(true);
   });
 
+  it('marks the links of each channel with that channel (G55, docs/116)', async () => {
+    const { deps, sent } = setup({ ...TRIP, from: '1718401', to: '1706401' });
+    await postTrip(deps, 'trip-1');
+    const links = sent.map((job) => JSON.stringify(job.markup).match(/trip_trip-1__[a-z0-9-]+/u)?.[0]);
+    expect(links).toEqual(['trip_trip-1__ch-ch-samarqand', 'trip_trip-1__ch-ch-buxoro']);
+    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_buxoro', messageId: 41 }, 'active 3 true');
+    await refreshPosts(deps, 'trip-1');
+    expect(JSON.stringify(sent.at(-1)?.markup)).toContain('__ch-ch-buxoro');
+  });
+
   it('edits at once a post whose trip changed while it waited in the queue', async () => {
     const { deps, sent, change } = setup();
     change({ seatsLeft: 2 });

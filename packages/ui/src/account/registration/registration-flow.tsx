@@ -1,12 +1,14 @@
 import { ApiError } from '@platform/api-client';
 import type { LegalDocument, MeResponse, RegistrationStep } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { useCallback, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import { useAnalytics } from '../../context/analytics-context';
 import { WelcomeScreen } from '../../flow/welcome-screen';
 import type { IconName } from '../../icons';
 import { LegalScreen } from '../../legal/legal-screen';
+import { launchArrival } from '../../telegram/arrival';
 import { haptic } from '../../telegram/feedback';
+import { TelegramContext } from '../../telegram/in-telegram-context';
 import { useUsersClient } from '../account-context';
 import { AboutStep, type Answers, type Registration } from './about-step';
 import { ConsentLine } from './consent-line';
@@ -25,6 +27,7 @@ type RegistrationFlowProps = {
 export function RegistrationFlow({ welcome, suggestedName, onFinished }: RegistrationFlowProps) {
   const client = useUsersClient();
   const { track } = useAnalytics();
+  const { client: app } = useContext(TelegramContext);
   const [screen, setScreen] = useState<'welcome' | 'about'>('welcome');
   // A document opened from the consent line: «Orqaga» comes back to the welcome.
   const [reading, setReading] = useState<LegalDocument | null>(null);
@@ -43,7 +46,8 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
   const register = useCallback(
     async (registration: Registration) => {
       try {
-        const me = await client.register({ consent: true, ...registration });
+        // Where the person came from, kept once as the first touch (G55, docs/116).
+        const me = await client.register({ consent: true, ...registration, came: launchArrival(app) });
         passed('phone');
         passed('done');
         haptic.success();
@@ -56,7 +60,7 @@ export function RegistrationFlow({ welcome, suggestedName, onFinished }: Registr
         return false;
       }
     },
-    [client, passed, onFinished],
+    [client, app, passed, onFinished],
   );
 
   if (reading) return <LegalScreen document={reading} onBack={() => setReading(null)} />;

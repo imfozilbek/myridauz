@@ -1,4 +1,4 @@
-import type { Gender } from '@platform/contracts';
+import type { Arrival, Gender } from '@platform/contracts';
 import { activeBlock, normalizePhone, type User } from '../domain/user';
 import type { Caller, Failure, UsersDeps } from './ports';
 
@@ -7,6 +7,8 @@ type Registration = {
   readonly gender: Gender;
   // From a Telegram contact whose signature was checked by the http layer.
   readonly contact: { readonly userId: number; readonly phone: string };
+  // The first touch: the link, its mark and the platform (G55, docs/116).
+  readonly came?: Arrival | undefined;
 };
 type RegisterError = 'users.already_registered' | 'users.invalid_contact' | 'users.blocked';
 type RegisterResult = { readonly ok: true; readonly user: User } | Failure<RegisterError>;
@@ -41,5 +43,6 @@ export async function register(
     updatedAt: now,
   };
   await deps.users.save(user);
+  if (input.came) await deps.users.arrived(user.id, input.came, now);
   return { ok: true, user };
 }

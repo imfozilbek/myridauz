@@ -34,7 +34,7 @@ const statsDeps = (env: Bindings): StatsDeps => {
   const brand = loadBrand(env.BRAND);
   return {
     events: eventsOf(env),
-    numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers },
+    numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers, arrivals: async () => [] },
     cache: env.DB ? d1Cache(env.DB) : localCache,
     rules: brand.alerts,
     tellTeam: async (alert) => {

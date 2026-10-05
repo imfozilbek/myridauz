@@ -1,3 +1,4 @@
+import { splitStart } from '@platform/contracts';
 import { useEffect } from 'react';
 
 // A bot button opens the Mini App with a parameter: a chat (docs/07) or a shared trip (docs/43).
@@ -16,9 +17,21 @@ export function forgetLaunchParam(name: string): void {
 // The start parameter of a t.me/<bot>?startapp=<value> link (a channel post, docs/15). Telegram
 // gives it to the Mini App in the address, as a query or a hash parameter.
 const START_PARAM = 'tgWebAppStartParam';
-export function startParam(): string | null {
+function rawStart(): string | null {
   const query = new URLSearchParams(window.location.search).get(START_PARAM);
   return query ?? new URLSearchParams(window.location.hash.slice(1)).get(START_PARAM);
+}
+
+// The link without the mark of its source: the screens of links read it as before (G55, docs/116).
+export function startParam(): string | null {
+  const raw = rawStart();
+  return raw === null ? null : splitStart(raw).start;
+}
+
+// The mark of the source of the link: a channel, an ad, a driver's story (G55, docs/116).
+export function startVia(): string | null {
+  const raw = rawStart();
+  return raw === null ? null : splitStart(raw).via;
 }
 
 // The start parameter stays in the address (Telegram's own, and the source of the launch,

@@ -11,7 +11,7 @@
 | Shaxsga doir maʼlumotlarni qayta ishlashga rozilik | `legal.consent.*` | 5 |
 
 - Тексты: `packages/i18n/locales/uz-Latn/legal.json`. Экран: `packages/ui/src/legal/`.
-- Версия и дата: `LEGAL_EDITION` в `packages/contracts/src/legal.ts` (сейчас 1.0, 30.09.2026).
+- Версия и дата: `LEGAL_EDITION` в `packages/contracts/src/legal.ts` (сейчас 1.2, 05.10.2026: строка о том, откуда пришёл человек и с какой платформы, G55 `116`).
   Изменили смысл документа: поднять версию и дату.
 - Числа (комиссия, бонус, сроки), имя бренда и админ-бот
   подставляются из конфига бренда (`22`). В тексте только `{percent}`, `{bonus}` и т. п.

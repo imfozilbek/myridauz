@@ -1,3 +1,5 @@
+import { VIA_SITE, withVia } from '@platform/contracts';
+
 // Every text goes through escape: translations and brand values never become markup.
 const ENTITIES: Readonly<Record<string, string>> = {
   '&': '&amp;',
@@ -11,5 +13,6 @@ export const escape = (text: string) => text.replace(/[&<>"']/gu, (char) => ENTI
 
 export const telegramLink = (bot: string) => `https://t.me/${bot}`;
 // The passenger bot; on a page of a direction it opens the search with the route (docs/89 S4).
+// The link of the search says it came from the site (G55, docs/116).
 export const passengerLink = (bot: string, start?: string) =>
-  start ? `${telegramLink(bot)}?startapp=${start}` : telegramLink(bot);
+  start ? `${telegramLink(bot)}?startapp=${withVia(start, VIA_SITE)}` : telegramLink(bot);

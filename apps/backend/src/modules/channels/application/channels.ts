@@ -8,16 +8,14 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
   if (!deps.enabled) return;
   const [trip, places, list] = await Promise.all([deps.trip(tripId), deps.places(), deps.channels()]);
   if (!trip || trip.status !== 'active') return;
-  const { text, markup } = deps.render(trip, places, deps.now());
   const shown = shownOf(trip);
   const channels = channelsOf(trip.from, trip.to, places, list);
   await deps.send(
     channels.map((channel) => ({
       bot: 'passenger' as const,
       chatId: `@${channel}`,
-      text,
       html: true,
-      markup,
+      ...deps.render(trip, places, deps.now(), channel),
       after: { type: 'channelPost' as const, tripId, channel, shown },
     })),
   );
@@ -25,15 +23,14 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
 
 async function edit(deps: ChannelsDeps, trip: Trip, posts: readonly ChannelPost[]) {
   if (posts.length === 0) return;
-  const { text, markup } = deps.render(trip, await deps.places(), deps.now());
+  const places = await deps.places();
   await deps.send(
     posts.map((post) => ({
       bot: 'passenger' as const,
       chatId: `@${post.channel}`,
-      text,
       html: true,
       edit: post.messageId,
-      markup,
+      ...deps.render(trip, places, deps.now(), post.channel),
     })),
   );
 }

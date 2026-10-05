@@ -133,3 +133,4 @@ export * from './navigator';
 export * from './stories';
 export * from './company';
 export * from './sounds';
+export * from './arrival';
