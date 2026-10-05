@@ -12,7 +12,7 @@ export type {
 } from './brand-config';
 export { channelOf } from './channels.ts';
 export { commissionFor } from './commission.ts';
-export { apiHost, appHost } from './hosts.ts';
+export { apiHost, appHost, mapHost } from './hosts.ts';
 
 const BRANDS: Readonly<Record<string, BrandConfig>> = { [rida.id]: rida };
 const DEFAULT_BRAND_ID = rida.id;

@@ -18,10 +18,11 @@ import {
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
-// Where the map library reads the map of the Mini App (G22, docs/67): public, no signature.
+// Where the map library reads the map of the Mini App (G22, docs/67): public, no signature. In
+// production the public R2 bucket of the brand answers (mapUrl, G57); locally and on the stand the API.
 // The search of places by name (G23) carries the signature like every other call.
-export function createMapClient(options: SignedOptions) {
-  const base = options.baseUrl.replace(/\/$/u, '');
+export function createMapClient(options: SignedOptions & { readonly mapUrl?: string }) {
+  const base = (options.mapUrl ?? options.baseUrl).replace(/\/$/u, '');
   const { request } = signedRequest(options);
   return {
     archiveUrl: `${base}${MAP_PATH}/${MAP_ARCHIVE}`,
