@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
 import { openExternal } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
+import { fakeMap } from '../map/fake-map';
+import { MapEngineContext } from '../map/map-engine';
 import { renderInShell } from '../test-shell';
 import { confirmed } from './booking-test-kit';
 import { DriverTripMap } from './driver-trip-map';
@@ -86,5 +88,19 @@ describe('«Safar xaritasi» of the driver (G24, docs/70)', { timeout: 20_000 },
     // The place of the driver no longer reorders: the hand order wins.
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(names()).toEqual(['Yunusobod', 'Qatortol']);
+  });
+
+  it('says the map did not load and draws it again; the stops stay (G43, docs/65 B3)', async () => {
+    const map = fakeMap(1);
+    renderInShell(
+      <MapEngineContext.Provider value={async () => map.engine}>
+        <DriverTripMap bookings={[NEAR]} onBack={() => undefined} />
+      </MapEngineContext.Provider>,
+    );
+    expect(await screen.findByText('Xarita yuklanmadi')).toBeTruthy();
+    expect(screen.getByText('Qatortol')).toBeTruthy();
+    await tap('Xarita yuklanmadi');
+    await vi.waitFor(() => expect(screen.queryByText('Xarita yuklanmadi')).toBeNull());
+    expect(map.engine).toHaveBeenCalledTimes(2);
   });
 });

@@ -1,8 +1,7 @@
 import type { ApiErrorCode } from '@platform/contracts';
 
 // The answer never came: no network, or it took too long (G43). The phone knows it, not the API.
-export const NETWORK_ERRORS = ['network.failed', 'network.timeout'] as const;
-export type NetworkErrorCode = (typeof NETWORK_ERRORS)[number];
+export type NetworkErrorCode = 'network.failed' | 'network.timeout';
 
 // Errors carry a code, never a text for people (docs/13). Status 0: no answer from the API.
 export class ApiError extends Error {

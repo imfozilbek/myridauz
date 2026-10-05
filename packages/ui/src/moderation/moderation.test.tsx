@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import type { ApplicationDetail, ApplicationSummary, DecisionInput } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -113,5 +114,15 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(screen.getByText('7 kun'));
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
     expect(block).toHaveBeenCalledWith('00000000000000000000000000000005', 7);
+  });
+
+  it('stays on the application with the reason when the decision did not go through (G43)', async () => {
+    const { decide } = setup();
+    decide.mockRejectedValueOnce(new ApiError(409, 'drivers.wrong_status'));
+    fireEvent.click(await screen.findByText('Ali'));
+    fireEvent.click(screen.getByText('Tasdiqlash'));
+    fireEvent.click(await screen.findByText('Raqam mos, tasdiqlash'));
+    expect(await screen.findByText(/Bu ariza allaqachon koʻrib chiqilgan/u)).toBeTruthy();
+    expect(screen.getByText('Chevrolet Nexia')).toBeTruthy();
   });
 });

@@ -6,6 +6,7 @@ import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile } from '../icon-tile';
+import { MapRetry } from '../map/map-retry';
 import { useMapView } from '../map/use-map-view';
 import { useDraft } from '../screen/draft';
 import { Screen } from '../screen/screen';
@@ -43,7 +44,7 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
   }, [stops, save]);
   const shown = stops[kind];
   const start = shown[0]?.point ?? stops.dropoffs[0]?.point ?? { lat: 0, lng: 0 };
-  const { box, view } = useMapView(map, start, true);
+  const { box, view, failed, retry } = useMapView(map, start, true);
   const navigator = useNavigator();
   // Where the driver stands orders the pickups, until the driver changes the order by hand.
   useEffect(() => {
@@ -68,8 +69,9 @@ export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking
     <div className="trip-map">
       {/* The open sheet of navigators takes «Назад» and the main button first (docs/94 C6). */}
       <Screen onBack={navigator.asking ? navigator.cancel : onBack} />
-      <div ref={box} className="trip-map-box" data-state={view ? 'ready' : 'loading'} />
+      <div ref={box} className="trip-map-box" hidden={failed} data-state={view ? 'ready' : 'loading'} />
       <List>
+        {failed ? <MapRetry onRetry={retry} /> : null}
         <div className="trip-map-tabs">
           <SegmentedControl>
             {KINDS.map((each) => (

@@ -40,6 +40,7 @@ import { reportCrashes } from './states/report-crashes';
 import { TelegramOnly } from './states/telegram-only';
 import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
+import { markLowMotion } from './telegram/low-motion';
 
 const ROOT_ID = 'root';
 // Local runs talk to the backend through the same origin; deploys set VITE_API_URL (G03).
@@ -57,6 +58,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app);
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
+  markLowMotion();
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
   // Deploys set VITE_MAP_URL once the public map bucket answers (G57, docs/67).
   const mapUrl = import.meta.env.VITE_MAP_URL;

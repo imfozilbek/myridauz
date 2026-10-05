@@ -1,4 +1,4 @@
-import type { FeedbackClient } from '@platform/api-client';
+import { ApiError, type FeedbackClient } from '@platform/api-client';
 import type { Complaint } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -93,5 +93,23 @@ describe('complaints of the team (docs/17)', () => {
       testClients({ feedback: { queue: async () => [] } }),
     );
     expect(await screen.findByText('Yangi shikoyat yoʻq')).toBeTruthy();
+  });
+
+  it('keeps the complaint with the reason when the decision did not go through (G43)', async () => {
+    const decide = vi.fn<FeedbackClient['decide']>(async () => {
+      throw new ApiError(409, 'complaints.wrong_status');
+    });
+    const clients = testClients({
+      feedback: {
+        queue: async () => [complaint('c2', 'no_show', false)],
+        complaint: async (id) => complaint(id, 'no_show', false),
+        decide,
+      },
+    });
+    renderMarket(<ComplaintsScreen onBack={() => undefined} />, clients);
+    await tap('Kelmadi');
+    await tap('Ogohlantirish');
+    expect(await screen.findByText(/Bu shikoyat allaqachon koʻrib chiqilgan/u)).toBeTruthy();
+    expect(screen.getByText('Ogohlantirish')).toBeTruthy();
   });
 });

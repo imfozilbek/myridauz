@@ -12,9 +12,11 @@ import { PlacesGate } from '../market/places-gate';
 import { RouteView } from '../market/route-view';
 import { useLoad } from '../market/use-list';
 import { noonOf } from '../market/when';
+import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { useFailure } from '../states/use-failure';
 import { Screen } from '../screen/screen';
 import { confirm, haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
@@ -38,6 +40,8 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { subscriptions } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine(), 'subscriptions');
   const [removed, setRemoved] = useState<Subscription | null>(null);
+  // A renew, a removal or «Qaytarish» that did not work says why (G43, docs/65 B3).
+  const failure = useFailure();
   useEffect(() => {
     track({ name: 'subscriptions_open', screen: 'subscriptions' });
   }, [track]);
@@ -47,8 +51,14 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
     <div className="market">
       <Screen onBack={onBack} onRefresh={refresh} />
       {removed ? (
-        <RemovedSnackbar removed={removed} onClose={() => setRemoved(null)} onRestored={reload} />
+        <RemovedSnackbar
+          removed={removed}
+          onClose={() => setRemoved(null)}
+          onRestored={reload}
+          onFailed={failure.fail}
+        />
       ) : null}
+      <ActionFailure error={failure.failure} />
       {value.length === 0 ? (
         <EmptyState
           icon="subscriptions"
@@ -66,6 +76,7 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
                 key={subscription.id}
                 subscription={subscription}
                 onChange={reload}
+                onAct={failure}
                 onRemoved={() => setRemoved(subscription)}
               />
             ))}
@@ -79,10 +90,11 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
 type CardProps = {
   readonly subscription: Subscription;
   readonly onChange: () => void;
+  readonly onAct: Pick<ReturnType<typeof useFailure>, 'fail' | 'clear'>;
   readonly onRemoved: () => void;
 };
 
-function SubscriptionCard({ subscription, onChange, onRemoved }: CardProps) {
+function SubscriptionCard({ subscription, onChange, onAct, onRemoved }: CardProps) {
   const { t, formatDate } = useI18n();
   const { subscriptions } = useApiClients();
   const [busy, setBusy] = useState(false);
@@ -97,11 +109,12 @@ function SubscriptionCard({ subscription, onChange, onRemoved }: CardProps) {
   const act = async (action: () => Promise<unknown>) => {
     if (busy) return;
     setBusy(true);
+    onAct.clear();
     try {
       await action();
       haptic.success();
-    } catch {
-      haptic.error();
+    } catch (caught) {
+      onAct.fail(caught);
     }
     setBusy(false);
     onChange();

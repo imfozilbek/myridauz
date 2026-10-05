@@ -285,3 +285,8 @@
     opacity: 0.5;
   }
 }
+/* A weak Android draws it in jerks: the same as «less motion» (G43). */
+:root[data-motion='low'] .list-stale {
+  animation: none;
+  opacity: 0.5;
+}

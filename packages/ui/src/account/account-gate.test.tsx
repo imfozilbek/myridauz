@@ -2,6 +2,7 @@ import { ApiError, type UsersClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { FeedContext } from '../feed/feed-context';
 import { renderInShell } from '../test-shell';
 import { AccountGate } from './account-gate';
 import { active, fakeClient, settings } from './account-test-kit';
@@ -101,5 +102,25 @@ describe('AccountGate', () => {
     gate(failing);
     fireEvent.click(await screen.findByText('Qayta urinish'));
     await waitFor(() => expect(failing.getMe).toHaveBeenCalledTimes(2));
+  });
+
+  it('takes the fresh profile on a live signal, quietly (G43, docs/64)', async () => {
+    let signal: () => void = () => undefined;
+    const subscribe = (listener: () => void) => {
+      signal = listener;
+      return () => undefined;
+    };
+    const client = fakeClient(active);
+    renderInShell(
+      <FeedContext.Provider value={subscribe}>
+        <AccountGate app="passenger" client={client} welcome={welcome}>
+          <p>inside</p>
+        </AccountGate>
+      </FeedContext.Provider>,
+    );
+    expect(await screen.findByText('inside')).toBeTruthy();
+    client.getMe.mockResolvedValueOnce({ state: 'blocked', until: Date.UTC(2026, 9, 27, 12) });
+    act(() => signal());
+    expect(await screen.findByText('Hisobingiz bloklangan')).toBeTruthy();
   });
 });

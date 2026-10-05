@@ -12,8 +12,10 @@ import { PlateView } from '../driver/plate-view';
 import { PlacesGate } from '../market/places-gate';
 import { RouteView } from '../market/route-view';
 import { useLoad } from '../market/use-list';
+import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { useFailure } from '../states/use-failure';
 import { haptic, openExternal } from '../telegram/feedback';
 import { launchParam } from '../telegram/launch-param';
 import { requestBotMessages } from '../telegram/permissions';
@@ -47,6 +49,7 @@ function Follow({ token, onJoin }: Props) {
   const { chat } = useApiClients();
   const { value, failed } = useLoad(() => chat.sharedTrip(token));
   const [note, setNote] = useState<'follow.subscribed' | 'follow.full' | null>(null);
+  const { failure, fail, clear } = useFailure();
   useEffect(() => {
     track({ name: 'share_opened', screen: 'share.follow' });
   }, [track]);
@@ -65,14 +68,18 @@ function Follow({ token, onJoin }: Props) {
   if (!value) return <ScreenSkeleton />;
   const subscribe = async () => {
     await requestBotMessages();
+    clear();
     try {
       await chat.follow(token);
       track({ name: 'share_follow', screen: 'share.follow' });
       haptic.success();
       setNote('follow.subscribed');
     } catch (caught) {
-      haptic.error();
-      setNote(caught instanceof ApiError && caught.code === 'shares.too_many' ? 'follow.full' : null);
+      // Five people already follow: the note says so and the button goes, a new try cannot help.
+      if (caught instanceof ApiError && caught.code === 'shares.too_many') {
+        haptic.error();
+        setNote('follow.full');
+      } else fail(caught);
     }
   };
   const { driver, meetingPoint } = value;
@@ -106,6 +113,7 @@ function Follow({ token, onJoin }: Props) {
             </Cell>
           ) : null}
         </Section>
+        <ActionFailure error={failure} />
       </List>
       <div className="step-note">
         {note ? (

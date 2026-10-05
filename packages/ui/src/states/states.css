@@ -19,6 +19,10 @@
     animation: none;
   }
 }
+/* A weak Android draws it in jerks: the same as «less motion» (G43). */
+:root[data-motion='low'] .skeleton-late:not([data-hidden]) {
+  animation: none;
+}
 
 /* A row whose data is on the way keeps its place unseen, so what is under it never jumps (G41). */
 .keep-place {
