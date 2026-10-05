@@ -54,7 +54,9 @@ export async function sendSignals(env: Bindings, signals: readonly FeedSignal[])
         .fetch(new Request('https://feed/signal', { method: 'POST', headers: { 'x-feed-app': app } })),
     ),
   );
-  for (const result of results) if (result.status === 'rejected') console.warn(String(result.reason));
+  for (const result of results)
+    if (result.status === 'rejected')
+      console.warn(JSON.stringify({ event: 'feed_signal_failed', message: String(result.reason) }));
 }
 
 // One event to the open Mini App of one person: the chat of a ringing call opens itself (docs/115).
@@ -69,5 +71,7 @@ export async function sendEvent(env: Bindings, { userId, app }: FeedSignal, even
   await feeds
     .get(feeds.idFromName(feedName(userId)))
     .fetch(request)
-    .catch((error: unknown) => console.warn(String(error)));
+    .catch((error: unknown) =>
+      console.warn(JSON.stringify({ event: 'feed_event_failed', message: String(error) })),
+    );
 }

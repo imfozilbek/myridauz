@@ -41,7 +41,7 @@ export function setupRoutes(fetch: Fetch) {
       await callTelegram(fetch, token, 'setMyShortDescription', { short_description });
       // The face of the bot (G34): a missing picture must not stop the rest of the setup.
       await setBotAvatar(fetch, token, avatarUrl(brand, role)).catch((error: unknown) =>
-        console.warn(String(error)),
+        console.warn(JSON.stringify({ event: 'bot_avatar_failed', role, message: String(error) })),
       );
       // The team menu is not shown to everyone: admins open their Mini App from the /start button.
       // The support bot has no Mini App: people only write there (docs/50).

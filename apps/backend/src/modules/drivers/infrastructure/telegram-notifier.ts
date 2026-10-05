@@ -31,7 +31,10 @@ const bonusLine = ({ amount, expiresAt }: Bonus) =>
   t('bot.driver.bonus', { amount: formatMoney(amount), date: formatDate(new Date(expiresAt)) });
 
 // A person may have never opened a bot: one failed message must not stop the others.
-const quietly = (work: Promise<unknown>) => work.catch((error: unknown) => console.warn(String(error)));
+const quietly = (work: Promise<unknown>) =>
+  work.catch((error: unknown) =>
+    console.warn(JSON.stringify({ event: 'driver_notify_failed', message: String(error) })),
+  );
 
 // The driver hears when the answer comes: within the hour while the team works, else in the
 // morning (G34). The team hours are Tashkent time.
