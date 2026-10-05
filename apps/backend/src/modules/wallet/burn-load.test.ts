@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { testD1 } from '../../test-d1';
+import { IN_LIST_LIMIT } from '../../shared/storage/in-list';
+import { fullScans, testD1 } from '../../test-d1';
 import { grantMissedWelcome } from './application/missed';
 import { burnExpired, walletView } from './application/wallet';
 import type { WalletDeps } from './application/ports';
@@ -49,12 +50,13 @@ describe('burning bonuses at scale', () => {
     expect((await walletView(deps, 2)).bonus).toBe(500_000);
     await burnExpired(deps);
     expect((await walletView(deps, 1)).bonus).toBe(0);
-    // Approved drivers who all have a wallet: one read, no loop over them.
+    // Approved drivers who all have a wallet: one batch read through the index, parts of 90 ids (G56).
     const before = queries();
     await grantMissedWelcome(
       deps,
       Array.from({ length: DRIVERS }, (_, index) => index + 1),
     );
-    expect(queries() - before).toBe(1);
+    expect(queries() - before).toBe(Math.ceil(DRIVERS / IN_LIST_LIMIT));
+    expect(fullScans(raw)).toEqual([]);
   });
 });

@@ -1,21 +1,9 @@
 import { app } from './app';
 import { runJobs } from './cron-jobs';
 import { recordServerEvent } from './modules/analytics';
-import { closeDepartedPosts } from './module-events';
-import { askForRatings } from './modules/ratings';
-import { checkStatsAlerts } from './modules/stats';
+import { cronJobs } from './cron';
 import type { Bindings } from './env';
-import { erasePastPoints, expireBookings } from './modules/bookings';
-import { bookingsUnderComplaint } from './modules/complaints';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
-import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
-import { sendApplicationReminders, sendTeamDigest } from './modules/assignments';
-import { purgeSupport } from './modules/support';
-import { expireRequests } from './modules/ride-requests';
-import { sendReminders } from './modules/reminders';
-import { sendWaitingSubscriptions } from './modules/route-subscriptions';
-import { completeTrips } from './modules/trips';
-import { burnBonuses } from './modules/wallet';
 import { useTelegramApi } from './shared/telegram/api-url';
 
 // The chat of a booking is a Durable Object class of this Worker (docs/07).
@@ -23,18 +11,13 @@ export { ChatRoom } from './modules/chat/infrastructure/chat-room';
 // The personal channel of a person: live updates of the screens (docs/64, G19).
 export { UserFeed } from './modules/feed/infrastructure/user-feed';
 
-// Cloudflare Worker entry point: the API, and the Cron job that closes trips, requests and bookings
-// whose time is over, burns bonuses that are over, gives bonus 1 to approved drivers without it,
-// sends waiting subscription messages and trip reminders, edits channel posts of trips that left,
-// asks both sides of ended rides for a rating, checks the signals of the dashboard once an hour,
-// erases the points of rides 30 days after the trip, reminds the team of waiting driver applications
-// (docs/12, docs/15, docs/24, docs/29, docs/35, docs/69, G10, G11, G12, G24, G34).
+// Cloudflare Worker entry point: the API, the queue of bot messages and the Cron (src/cron.ts).
 export default {
   fetch: (request, env, context) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     return app.fetch(request, env, context);
   },
-  // Bot messages wait in the queue and go out at Telegram's pace (docs/03).
+  // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56).
   queue: (batch, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     return consumeNotifications(batch, env);
@@ -43,22 +26,7 @@ export default {
     useTelegramApi(env.TELEGRAM_API_URL);
     const now = Date.now();
     const run = async () => {
-      const failed = await runJobs([
-        ['completeTrips', () => completeTrips(env, now)],
-        ['expireRequests', () => expireRequests(env, now)],
-        ['expireBookings', () => expireBookings(env, now)],
-        ['erasePastPoints', async () => erasePastPoints(env, now, await bookingsUnderComplaint(env))],
-        ['burnBonuses', () => burnBonuses(env)],
-        ['grantMissedBonuses', () => grantMissedBonuses(env)],
-        ['sendWaitingSubscriptions', () => sendWaitingSubscriptions(env)],
-        ['sendReminders', () => sendReminders(env, now)],
-        ['closeDepartedPosts', () => closeDepartedPosts(env)],
-        ['askForRatings', () => askForRatings(env)],
-        ['checkStatsAlerts', () => checkStatsAlerts(env, new Date(now))],
-        ['sendTeamDigest', () => sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to))],
-        ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
-        ['purgeSupport', () => purgeSupport(env, now)],
-      ]);
+      const failed = await runJobs(cronJobs(env, now));
       // A broken job is counted on the dashboard like any server error (G42).
       for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });
     };

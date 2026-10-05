@@ -47,7 +47,5 @@ const statsDeps = (env: Bindings): StatsDeps => {
 
 export const statsModule = statsRoutes(statsDeps);
 
-// The Cron job runs every 15 minutes; the signals are checked in the first quarter of an hour.
-const QUARTER = 15;
-export const checkStatsAlerts = (env: Bindings, now = new Date()) =>
-  now.getUTCMinutes() < QUARTER ? checkAlerts(statsDeps(env)) : Promise.resolve(0);
+// The Cron job: the signals of the dashboard, once an hour (src/cron.ts).
+export const checkStatsAlerts = (env: Bindings) => checkAlerts(statsDeps(env));

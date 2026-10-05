@@ -31,6 +31,8 @@ export type Bindings = {
   readonly PASSENGER_AVATAR_REQUIRED?: string;
   // "on" posts new trips to the channels (docs/15). Off until the owner approves the post (docs/33).
   readonly CHANNEL_POSTS?: string;
+  // 'off' on the stand: a Cron run by hand runs every job, the hourly and the daily ones too (G56).
+  readonly CRON_TIERS?: string;
   // The dashboard reads Analytics Engine through its SQL API (docs/29): a read-only key and the
   // account are secrets, the dataset is a brand setting in wrangler.toml (docs/46).
   readonly ANALYTICS_API_TOKEN?: string;

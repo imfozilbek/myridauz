@@ -1,3 +1,4 @@
+import { allIn } from '../../../shared/storage/in-list';
 import type { TripRepository } from '../application/ports';
 import { toTrip, type TripRow as Row } from './trip-row';
 
@@ -70,15 +71,19 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
-  leaving: async (from, to) =>
+  // Through trips_from (migration 0040): only the trips from the places of the search (G56).
+  leaving: async (from, to, places) =>
     (
-      await db
-        .prepare(
-          "SELECT * FROM trips WHERE status = 'active' AND depart_at >= ? AND depart_at < ? ORDER BY depart_at",
-        )
-        .bind(from, to)
-        .all<Row>()
-    ).results.map(toTrip),
+      await allIn<Row>(
+        db,
+        (marks) =>
+          `SELECT * FROM trips WHERE status = 'active' AND depart_at >= ? AND depart_at < ? AND from_id IN (${marks})`,
+        places,
+        [from, to],
+      )
+    )
+      .map(toTrip)
+      .sort((a, b) => a.departAt - b.departAt),
   // Both read by the index trips_depart (migration 0028), not the whole table (docs/90 F-A6).
   between: async (from, to, limit) =>
     (

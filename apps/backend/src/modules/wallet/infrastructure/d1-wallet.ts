@@ -1,4 +1,5 @@
 import type { BalanceKind, OperationKind } from '@platform/contracts';
+import { allIn } from '../../../shared/storage/in-list';
 import type { WalletRepository } from '../application/ports';
 import type { Operation } from '../domain/ledger';
 
@@ -33,10 +34,13 @@ const INSERT = `INSERT INTO wallet_operations
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 // The bonus of every driver whose latest bonus time is over burns (docs/12, the same rule as
-// domain/promo burnable): one statement for all drivers (G42). The id is new for each row.
+// domain/promo burnable): one statement for all drivers (G42). The id is new for each row. Only
+// the drivers whose bonus time ended after ?3 are read, through wallet_bonus_ends (G56).
 const BURN = `INSERT INTO wallet_operations (id, driver_id, kind, balance, amount, created_at)
   SELECT ?2 || '-' || driver_id, driver_id, 'bonus_expired', 'bonus', -SUM(amount), ?1
-  FROM wallet_operations WHERE balance = 'bonus' GROUP BY driver_id
+  FROM wallet_operations WHERE balance = 'bonus' AND driver_id IN (SELECT driver_id FROM wallet_operations
+    WHERE balance = 'bonus' AND expires_at > ?3 AND expires_at <= ?1)
+  GROUP BY driver_id
   HAVING SUM(amount) > 0 AND (MAX(expires_at) IS NULL OR MAX(expires_at) <= ?1)`;
 
 // The balances of one page of drivers, the least main money first (G42, docs/90 F-A5).
@@ -84,11 +88,15 @@ export const d1Wallet = (db: D1Database): WalletRepository => ({
     (
       await db.prepare(BALANCES).bind(limit, offset).all<{ driver_id: number; bonus: number; main: number }>()
     ).results.map((row) => ({ driverId: row.driver_id, bonus: row.bonus, main: row.main })),
-  burnExpired: async (now, newId) => {
-    await db.prepare(BURN).bind(now, newId()).run();
+  burnExpired: async (now, since, newId) => {
+    await db.prepare(BURN).bind(now, newId(), since).run();
   },
-  drivers: async () =>
+  withJournal: async (driverIds) =>
     (
-      await db.prepare('SELECT DISTINCT driver_id FROM wallet_operations').all<{ driver_id: number }>()
-    ).results.map((row) => row.driver_id),
+      await allIn<{ driver_id: number }>(
+        db,
+        (marks) => `SELECT DISTINCT driver_id FROM wallet_operations WHERE driver_id IN (${marks})`,
+        driverIds,
+      )
+    ).map((row) => row.driver_id),
 });

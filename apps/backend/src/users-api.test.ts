@@ -73,7 +73,7 @@ describe('registration and profile over HTTP', () => {
     expect((await call('/me/avatar', 40, put)).status).toBe(204);
     const mine = await call(`/users/${await pid(40)}/avatar`, 40);
     expect(mine.status).toBe(200);
-    expect(mine.headers.get('cache-control')).toContain('private');
+    expect(mine.headers.get('cache-control')).toBe('private, max-age=3600');
     expect((await call(`/users/${await pid(40)}/avatar`, 41)).status).toBe(404);
     const big = { ...put, headers: { 'content-type': 'image/jpeg', 'content-length': String(400 * 1024) } };
     expect((await call('/me/avatar', 40, big)).status).toBe(413);

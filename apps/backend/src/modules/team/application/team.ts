@@ -3,6 +3,8 @@ import type { TeamRole } from '@platform/contracts';
 // The team (docs/02): owners come from the brand secret, moderators are added by an owner.
 export type TeamRepository = {
   moderators(): Promise<number[]>;
+  // One row by the key: every signed request asks it (G56).
+  isModerator(userId: number): Promise<boolean>;
   add(userId: number, addedBy: number, at: number): Promise<void>;
   remove(userId: number): Promise<void>;
 };
@@ -16,7 +18,7 @@ export type TeamMember = { readonly id: number; readonly role: TeamRole };
 
 export async function roleOf(team: Team, userId: number): Promise<TeamRole | null> {
   if (team.owners.has(userId)) return 'owner';
-  return (await team.repository.moderators()).includes(userId) ? 'moderator' : null;
+  return (await team.repository.isModerator(userId)) ? 'moderator' : null;
 }
 
 export async function members(team: Team): Promise<TeamMember[]> {

@@ -7,12 +7,13 @@ export type WalletRepository = {
   operations(driverId: number): Promise<Operation[]>;
   // All rows or none. false: a commission or a refund of this booking is already there.
   append(operations: readonly Operation[]): Promise<boolean>;
-  // Drivers with anything in the journal, for the team and the Cron job.
-  drivers(): Promise<number[]>;
+  // The drivers among these who have a journal: one read through the index (G56).
+  withJournal(driverIds: readonly number[]): Promise<number[]>;
   // "Hamyonlar" for the team: the balances of one page, the least main money first (G42).
   balances(offset: number, limit: number): Promise<{ driverId: number; bonus: number; main: number }[]>;
-  // The Cron job: every bonus whose time is over burns in one step for all drivers (G42).
-  burnExpired(now: number, newId: () => string): Promise<void>;
+  // The Cron job: every bonus whose time is over burns in one step for all drivers (G42). Only the
+  // drivers whose bonus time ended after `since` are read, through the index (G56).
+  burnExpired(now: number, since: number, newId: () => string): Promise<void>;
 };
 
 export type WalletDeps = {

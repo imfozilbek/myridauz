@@ -1,5 +1,5 @@
 import { DAY_MS, tashkentDayStart, type Trip, type TripSearch } from '@platform/contracts';
-import { placeMatches } from '../../../shared/places/place-match';
+import { placeMatches, placesMatching } from '../../../shared/places/place-match';
 import { cancel, isLive } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
 import { views } from './views-of';
@@ -13,10 +13,9 @@ import { upcomingFirst } from '../../../shared/order/upcoming-first';
 // The own trips of the person are not in their search: they cannot book them (G41, docs/90 F-P8).
 export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: number): Promise<Trip[]> {
   const start = Math.max(tashkentDayStart(search.date), deps.now());
-  const [trips, places] = await Promise.all([
-    deps.trips.leaving(start, tashkentDayStart(search.date) + DAY_MS),
-    deps.places(),
-  ]);
+  const places = await deps.places();
+  const end = tashkentDayStart(search.date) + DAY_MS;
+  const trips = await deps.trips.leaving(start, end, placesMatching(search.from, places));
   const fits = trips.filter(
     (trip) =>
       trip.driverId !== viewer &&

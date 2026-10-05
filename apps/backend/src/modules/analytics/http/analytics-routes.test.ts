@@ -20,7 +20,8 @@ function post(body: string) {
   const request = routes.request('/analytics', {
     method: 'POST',
     body,
-    headers: { 'content-type': 'application/json' },
+    // As the client sends it: plain text, no preflight (G56).
+    headers: { 'content-type': 'text/plain;charset=UTF-8' },
   });
   return { request, written };
 }
