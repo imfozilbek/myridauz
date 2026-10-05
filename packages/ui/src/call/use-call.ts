@@ -61,18 +61,21 @@ export function useCall(key: string, chat: ChatCalling) {
     link.current = null;
   };
 
-  useEffect(() => (inCall ? holdClosing() : undefined), [inCall]);
-  useEffect(() => (inCall ? holdLiveCall() : undefined), [inCall]);
+  useEffect(() => {
+    return inCall ? holdClosing() : undefined;
+  }, [inCall]);
+  useEffect(() => {
+    return inCall ? holdLiveCall() : undefined;
+  }, [inCall]);
 
   // Leaving the chat in any way ends the call: the other side hears it while the socket is still
   // open (a layout cleanup runs before the chat closes it), the microphone goes off.
-  useLayoutEffect(
-    () => () => {
+  useLayoutEffect(() => {
+    return () => {
       if (live.current) emit({ type: 'call', action: 'end' });
       drop();
-    },
-    [],
-  );
+    };
+  }, []);
 
   // No microphone, no call: the other side hears that it failed, this side goes back to the chat.
   const withMicrophone = async (then: () => void, otherwise: () => void = () => undefined) => {

@@ -29,6 +29,12 @@ describe('Screen (docs/94)', () => {
     expect(scrollTo).toHaveBeenLastCalledWith(0, 0);
   });
 
+  it('leaves without an error where scrollTo gives a Promise (Chrome 153+, lesson 132)', () => {
+    scrollTo.mockImplementationOnce((() => Promise.resolve()) as unknown as typeof window.scrollTo);
+    const shown = renderInShell(<Screen />);
+    expect(() => shown.unmount()).not.toThrow();
+  });
+
   it('F2: a list comes back to its place once its rows are there, then a visit from above starts fresh', () => {
     at(0);
     const first = renderInShell(<List ready />);

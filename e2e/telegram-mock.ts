@@ -43,6 +43,10 @@ const MOCK = String((signedContact: string | null) => {
     speed_accuracy: null,
   };
   Object.assign(window, { __tg: tg });
+  // Chrome 153+ in Telegram on Android and desktop gives a Promise from scrollTo (lesson 132).
+  const scroll = window.scrollTo.bind(window);
+  window.scrollTo = ((...args: Parameters<typeof scroll>) =>
+    Promise.resolve(scroll(...args))) as unknown as typeof window.scrollTo;
   const reply = (type: string, data: unknown) =>
     setTimeout(() =>
       (

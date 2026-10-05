@@ -9,7 +9,9 @@ export function useUnsavedGuard(dirty: boolean) {
   const { t } = useI18n();
   const touched = useRef(dirty);
   touched.current = dirty;
-  useEffect(() => (dirty ? holdClosing() : undefined), [dirty]);
+  useEffect(() => {
+    return dirty ? holdClosing() : undefined;
+  }, [dirty]);
   return useCallback(
     (leave: () => void) => () => {
       if (!touched.current) return leave();

@@ -78,7 +78,9 @@ export function useChat(key: string) {
     };
   }, [chat, key, attempt]);
 
-  useEffect(() => track({ name: 'chat_open', screen: 'chat' }), [track]);
+  useEffect(() => {
+    track({ name: 'chat_open', screen: 'chat' });
+  }, [track]);
 
   const send = useCallback(
     (text: string) => {

@@ -26,7 +26,9 @@ export function BackButton({ onClick, overlay = false }: Props) {
   useLayoutEffect(() => {
     press.current = onClick;
   });
-  useEffect(() => (inTelegram ? claimBack({ overlay, press }, NATIVE) : undefined), [inTelegram, overlay]);
+  useEffect(() => {
+    return inTelegram ? claimBack({ overlay, press }, NATIVE) : undefined;
+  }, [inTelegram, overlay]);
   if (inTelegram) return null;
   return (
     <Button mode="plain" size="s" onClick={onClick}>

@@ -13,7 +13,9 @@ type ScreenProps = {
 // not at the place of the last screen (F1), and holds «Назад» of Telegram while it is shown.
 // A list going back to its place does it after this (useListPlace).
 export function Screen({ onBack, onRefresh }: ScreenProps) {
-  useLayoutEffect(() => window.scrollTo(0, 0), []);
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <>
       {onBack ? <BackButton onClick={onBack} /> : null}

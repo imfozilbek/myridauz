@@ -61,7 +61,9 @@ export function PointScreen({ title, start, find: findAny, zone, findMe = false,
   const method = useRef<Method>('map');
   const district = where?.district ?? null;
   // A new place under the pin: an old note about the last one is gone.
-  useEffect(() => setNote(null), [where]);
+  useEffect(() => {
+    setNote(null);
+  }, [where]);
   const unclip = useClip(view, where, zone?.id ?? null);
   const moveTo = (point: Point, how: Method) => {
     method.current = how;

@@ -41,7 +41,9 @@ export function HomeFailed({ onRetry }: { readonly onRetry: () => void }) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const tap = useHomeTap();
-  useEffect(() => haptic.error(), []);
+  useEffect(() => {
+    haptic.error();
+  }, []);
   return (
     <div role="alert" className="home-stack-part">
       <HomeRowCard
