@@ -2,7 +2,6 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { appHost, mapHost } from '../../brands/index.ts';
-import { MINI_APPS } from '../../packages/contracts/src/analytics.ts';
 import { cloudflare } from './cloudflare.mjs';
 import { mapBucket, mapCors, oldArchives, withStoriesRule } from './r2-rules.mjs';
 
@@ -45,10 +44,11 @@ export async function ensureStoriesRule(bucket) {
 }
 
 // The public bucket of the map at map.<domain>, read only by the Mini Apps of the brand.
-export async function ensureMapBucket(brand) {
+// apps: the Mini Apps of the repository (apps/miniapp-*), the same list the deploy builds.
+export async function ensureMapBucket(brand, apps) {
   const name = mapBucket(brand);
   const host = mapHost(brand);
-  const origins = MINI_APPS.map((app) => `https://${appHost(brand, app)}`);
+  const origins = apps.map((app) => `https://${appHost(brand, app)}`);
   if (!(await cloudflare('GET', `${BUCKETS}/${name}`))) await cloudflare('POST', BUCKETS, { name });
   await cloudflare('PUT', `${BUCKETS}/${name}/cors`, mapCors(origins));
   const custom = await cloudflare('GET', `${BUCKETS}/${name}/domains/custom`);
