@@ -50,12 +50,25 @@ describe('bot messages through the queue (docs/03)', () => {
     expect(await deliver(offline, TOKENS, JOB)).toEqual({ outcome: 'retry', afterSeconds: 5 });
   });
 
-  it('puts jobs in the queue when there is one, and acks or retries each message', async () => {
+  it('sends a few at once, queues what Telegram asks to wait for and big batches (G56)', async () => {
     const queued: unknown[] = [];
-    const env = { NOTIFICATIONS: { sendBatch: async (batch: unknown[]) => void queued.push(...batch) } };
+    const queue = { sendBatch: async (batch: unknown[]) => void queued.push(...batch) };
+    const env = { DRIVER_BOT_TOKEN: 'd', NOTIFICATIONS: queue };
+    vi.stubGlobal('fetch', answer(200, { result: { message_id: 4 } }));
     await notify(env as never, [JOB]);
     await notify(env as never, []);
-    expect(queued).toEqual([{ body: JOB }]);
+    expect(queued).toEqual([]);
+    vi.stubGlobal('fetch', answer(429, { parameters: { retry_after: 3 } }));
+    await notify(env as never, [JOB]);
+    expect(queued).toEqual([{ body: JOB, delaySeconds: 3 }]);
+    await notify(
+      env as never,
+      Array.from({ length: 6 }, () => JOB),
+    );
+    expect(queued).toHaveLength(7);
+  });
+
+  it('acks or retries each message of the queue', async () => {
     vi.stubGlobal('fetch', answer(429, { parameters: { retry_after: 3 } }));
     const done: string[] = [];
     const message = {

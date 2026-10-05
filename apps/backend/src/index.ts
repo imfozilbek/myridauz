@@ -17,7 +17,7 @@ export default {
     useTelegramApi(env.TELEGRAM_API_URL);
     return app.fetch(request, env, context);
   },
-  // Bot messages wait in the queue and go out at Telegram's pace (docs/03).
+  // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56).
   queue: (batch, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     return consumeNotifications(batch, env);

@@ -26,17 +26,28 @@ async function deliverNow(env: Bindings, job: NotificationJob) {
   return delivery;
 }
 
-// Bot messages go through the queue (docs/03): a slow or busy Telegram never slows the API.
-// Without the queue (tests, local runs) they are sent at once.
+// A few messages go straight to Telegram: each one through the queue costs 3 of the free
+// operations of Queues a day (G56, docs/117). A message Telegram asks to wait for, and a big batch
+// (the subscribers of a route), go through the queue at Telegram's pace (docs/03). Without the
+// queue (tests, local runs) every message is sent at once.
 // The same moment the open Mini Apps of these people refresh their screens (docs/64, G19).
+const DIRECT_LIMIT = 5;
+const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
+
 export async function notify(env: Bindings, jobs: readonly NotificationJob[]): Promise<void> {
   if (jobs.length === 0) return;
   await sendSignals(env, signalsOf(jobs));
-  if (env.NOTIFICATIONS) {
-    await env.NOTIFICATIONS.sendBatch(jobs.map((body) => ({ body })));
+  const queue = env.NOTIFICATIONS;
+  if (queue && jobs.length > DIRECT_LIMIT) {
+    await queue.sendBatch(jobs.map((body) => ({ body })));
     return;
   }
-  for (const job of jobs) await deliverNow(env, job);
+  const later: MessageSendRequest<NotificationJob>[] = [];
+  for (const body of jobs) {
+    const delivery = queue ? await deliverNow(env, body).catch(() => RETRY) : await deliverNow(env, body);
+    if (delivery.outcome === 'retry') later.push({ body, delaySeconds: delivery.afterSeconds });
+  }
+  if (queue && later.length > 0) await queue.sendBatch(later);
 }
 
 // A message for every team member through the admin bot (docs/02).
@@ -58,10 +69,7 @@ export async function consumeNotifications(
   env: Bindings,
 ): Promise<void> {
   for (const message of batch.messages) {
-    const delivery = await deliverNow(env, message.body).catch(() => ({
-      outcome: 'retry' as const,
-      afterSeconds: 5,
-    }));
+    const delivery = await deliverNow(env, message.body).catch(() => RETRY);
     if (delivery.outcome !== 'retry') message.ack();
     else if (message.attempts < MAX_ATTEMPTS) message.retry({ delaySeconds: delivery.afterSeconds });
     else {
