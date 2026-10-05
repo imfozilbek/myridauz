@@ -50,5 +50,7 @@
   "welcome.shareCosts": "Yoʻl xarajatini birga boʻlamiz.",
   "welcome.costsBack": "Yoʻl xarajatingiz qaytadi.",
   "welcome.bonus": "Boshlash uchun {bonus} bonus.",
-  "welcome.passengersFind": "Yoʻlovchilar sizni oʻzi topadi."
+  "welcome.passengersFind": "Yoʻlovchilar sizni oʻzi topadi.",
+  "offline": "Internet yoʻq",
+  "offlineHint": "Internet qaytganda maʼlumotlar oʻzi yangilanadi."
 }

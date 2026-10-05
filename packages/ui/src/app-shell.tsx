@@ -8,6 +8,7 @@ import { AnalyticsContext } from './context/analytics-context';
 import { ApiClientsContext, type ApiClients } from './context/api-clients';
 import { BrandContext } from './context/brand-context';
 import { I18nProvider } from './context/i18n-context';
+import { ConnectionGate } from './network/connection-gate';
 import { LocationsClientContext } from './places/directory';
 import { StepProgressProvider } from './flow/step-progress';
 import { ErrorBoundary } from './states/error-boundary';
@@ -48,7 +49,9 @@ export function AppShell({
                 <ApiClientsContext.Provider value={clients}>
                   <StepProgressProvider>
                     <ErrorBoundary>
-                      <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                      <ConnectionGate>
+                        <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                      </ConnectionGate>
                     </ErrorBoundary>
                   </StepProgressProvider>
                 </ApiClientsContext.Provider>

@@ -77,6 +77,19 @@ describe('live updates of the screens (docs/64, G19)', () => {
     await waitFor(() => expect(feed.connect).toHaveBeenCalledTimes(3));
   });
 
+  it('catches up when a lost socket opens again by itself: signals may have been missed (G43)', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const feed = setup();
+    await screen.findByText('booked');
+    act(() => FakeSocket.last?.open());
+    act(() => FakeSocket.last?.close());
+    feed.answer(['cancelled']);
+    await act(async () => vi.advanceTimersByTimeAsync(1000));
+    await waitFor(() => expect(feed.connect).toHaveBeenCalledTimes(2));
+    act(() => FakeSocket.last?.open());
+    await screen.findByText('cancelled');
+  });
+
   it('tries again later when there is no ticket', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const connect = vi.fn(async () => Promise.reject(new Error('offline')));

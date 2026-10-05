@@ -1,19 +1,18 @@
 export {
   ANALYTICS_PATH,
-  analyticsBatchSchema,
   MAX_ANALYTICS_BATCH,
   MINI_APPS,
   QUIET_API_ERRORS,
   DRIVER_STEPS,
   TRIP_STEPS,
   REGISTRATION_STEPS,
-  type AnalyticsBatch,
   type AnalyticsEvent,
   type DriverStep,
   type TripStep,
   type MiniApp,
   type RegistrationStep,
 } from './analytics';
+export { goodEvents, type AnalyticsBatch } from './analytics-batch';
 export {
   API_ERRORS,
   apiErrorSchema,

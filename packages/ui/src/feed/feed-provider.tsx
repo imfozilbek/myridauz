@@ -55,6 +55,8 @@ export function FeedProvider({ connect, onWake, onSignal, children }: FeedProvid
       settle = setTimeout(() => [...listeners].forEach((listener) => listener()), SETTLE_MS);
     };
     let socket: WebSocket | null = null;
+    // A socket that opens again may have missed signals while it was lost: the screens catch up.
+    let wasOpen = false;
     let connecting = false;
     let stopped = false;
     let pause = FIRST_PAUSE_MS;
@@ -74,7 +76,11 @@ export function FeedProvider({ connect, onWake, onSignal, children }: FeedProvid
           if (stopped) return;
           const ws = new WebSocket(url);
           socket = ws;
-          ws.addEventListener('open', () => void (pause = FIRST_PAUSE_MS));
+          ws.addEventListener('open', () => {
+            pause = FIRST_PAUSE_MS;
+            if (wasOpen) changed();
+            wasOpen = true;
+          });
           ws.addEventListener('message', (message: MessageEvent<string>) => {
             const event = eventOf(message.data);
             if (event?.type === 'call') callListeners.forEach((listener) => listener(event.chat));

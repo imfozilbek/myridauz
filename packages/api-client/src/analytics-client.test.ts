@@ -65,6 +65,22 @@ describe('createAnalyticsClient', () => {
     await expect(client.flush()).resolves.toBeUndefined();
   });
 
+  it('keeps a batch without network and sends it later (G43)', async () => {
+    let online = false;
+    const { client, sent, tasks } = setup(() =>
+      online
+        ? Promise.resolve(new Response(null, { status: 204 }))
+        : Promise.reject(new TypeError('offline')),
+    );
+    client.track({ name: 'screen_open', screen: 'home' });
+    await client.flush();
+    expect(tasks).toHaveLength(1);
+    online = true;
+    tasks[0]?.();
+    await client.flush();
+    expect(sent.at(-1)?.batch.events.map((event) => event.screen)).toEqual(['home']);
+  });
+
   it('sends an API error with the screen opened last (G12)', async () => {
     const { client, sent } = setup();
     client.apiError('trips.not_found');

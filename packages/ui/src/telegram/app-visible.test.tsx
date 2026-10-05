@@ -18,4 +18,14 @@ describe('coming back to the Mini App (docs/64)', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     expect(listener).toHaveBeenCalledTimes(1);
   });
+
+  it('calls the listener when the network comes back (G43)', () => {
+    const listener = vi.fn();
+    const stop = onAppVisible(listener);
+    window.dispatchEvent(new Event('online'));
+    expect(listener).toHaveBeenCalledTimes(1);
+    stop();
+    window.dispatchEvent(new Event('online'));
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
 });
