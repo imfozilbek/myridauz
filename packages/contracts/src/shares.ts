@@ -33,7 +33,8 @@ export const SHARE_STATUSES = [
 ] as const;
 export type ShareStatus = (typeof SHARE_STATUSES)[number];
 
-// What close people see (docs/43): never a phone, the chat or the passenger's own pickup point.
+// What close people see (docs/43): never a phone or the chat. Where the passenger boards and gets
+// off they see: the passenger chose whom to trust (the owner, docs/111 Q1).
 // passengerName: the one who shared, the passenger of a booking or the driver of the trip (G18).
 export const sharedTripSchema = z.object({
   passengerName: z.string(),
@@ -47,6 +48,7 @@ export const sharedTripSchema = z.object({
   }),
   plate: z.string().nullable(),
   meetingPoint: z.object({ lat: z.number(), lng: z.number() }).nullable(),
+  dropoffPoint: z.object({ lat: z.number(), lng: z.number() }).nullable(),
   status: z.enum(SHARE_STATUSES),
   followers: z.number().int(),
 });

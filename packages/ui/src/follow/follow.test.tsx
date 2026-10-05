@@ -21,6 +21,7 @@ const TRIP: SharedTrip = {
   driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
   plate: '01A123BC',
   meetingPoint: { lat: 41.3, lng: 69.2 },
+  dropoffPoint: { lat: 39.65, lng: 66.97 },
   status: 'boarded',
   followers: 1,
 };
@@ -35,6 +36,9 @@ describe('close people follow a shared trip (docs/43)', () => {
     expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
     expect(screen.getByText('Mashinaga chiqdi')).toBeTruthy();
     expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    // Where the passenger boards and gets off (the owner, docs/111 Q1).
+    expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
+    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
     await tap('Xabar olish');
     expect(await screen.findByText('Xabarlar yoqildi')).toBeTruthy();
     expect(follow).toHaveBeenCalledWith(TOKEN);

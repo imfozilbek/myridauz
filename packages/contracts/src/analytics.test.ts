@@ -48,6 +48,12 @@ describe('goodEvents', () => {
     expect(client('Ali Valiyev')).toBe(false);
   });
 
+  it('takes only the ways of choosing a point the Mini App has (G44, docs/69)', () => {
+    const saved = (method: string) => accepted([{ ...event, name: 'place_point_saved', method }]);
+    expect(saved('search')).toBe(true);
+    expect(saved('auto')).toBe(false);
+  });
+
   it('keeps the good events when one is bad (G43)', () => {
     expect(goodEvents({ events: [{ ...event, screen: 'Free text' }, event] })?.events).toEqual([event]);
   });

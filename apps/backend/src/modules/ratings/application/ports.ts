@@ -56,7 +56,8 @@ export type RatingsDeps = {
     rater: 'driver' | 'passenger',
     reminder: boolean,
   ) => Promise<void>;
-  readonly alertTeam: (userId: number, rating: Rating) => Promise<void>;
+  // The team sees the public id, never the Telegram ID (docs/65 A3).
+  readonly alertTeam: (person: { name: string; publicId: string }, rating: Rating) => Promise<void>;
   // Contacts in the text become "***", as in the chat (docs/07).
   readonly mask: (text: string) => string;
   readonly now: () => number;

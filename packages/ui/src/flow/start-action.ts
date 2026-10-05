@@ -16,8 +16,8 @@ export type StartAction = {
   readonly waitsApproval?: true;
   // What its tile says live (G53): read where the tile is drawn, so a section loads only its own data.
   readonly useLive?: () => TileLive;
-  // The section; without it the action says the section comes soon.
-  readonly Screen?: ComponentType<{ readonly onBack: () => void } & Launch>;
+  // The section the action opens.
+  readonly Screen: ComponentType<{ readonly onBack: () => void } & Launch>;
 };
 
 // What a tile of the main screen says now (G53): how many things wait for the person (a badge),

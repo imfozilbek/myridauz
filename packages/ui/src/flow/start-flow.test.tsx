@@ -1,9 +1,15 @@
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { useScreenView } from '../context/analytics-context';
 import { renderInShell } from '../test-shell';
 import { StartFlow } from './start-flow';
 
+// A section of the test: what an action opens, with its own way back.
+function Section({ onBack }: { readonly onBack: () => void }) {
+  useScreenView('section');
+  return <button onClick={onBack}>section</button>;
+}
 const ACTIONS = [
   {
     id: 'find_trip',
@@ -11,6 +17,7 @@ const ACTIONS = [
     tone: 'brand',
     labelKey: 'common.passenger.findTrip',
     hintKey: 'common.passenger.findTripHint',
+    Screen: Section,
   },
   {
     id: 'my_trips',
@@ -18,6 +25,7 @@ const ACTIONS = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.passenger.myTripsHint',
+    Screen: Section,
   },
 ] as const;
 
@@ -43,11 +51,9 @@ describe('StartFlow', () => {
     expect(screen.getByText('Joylar va suhbatlar')).toBeTruthy();
 
     fireEvent.click(screen.getByText('Mening safarlarim'));
-    expect(screen.getByText('Bu boʻlim tez orada ishga tushadi.')).toBeTruthy();
-
-    fireEvent.click(screen.getByText('Orqaga'));
+    fireEvent.click(screen.getByText('section'));
     expect(screen.getByText('Safar topish')).toBeTruthy();
-    expect(tracked.map((event) => event.screen)).toEqual(['home', 'my_trips', 'home']);
+    expect(tracked.map((event) => event.screen)).toEqual(['home', 'section', 'home']);
   });
 
   it('keeps the app when a section breaks: «Orqaga» goes to the main screen (G52, docs/112)', () => {

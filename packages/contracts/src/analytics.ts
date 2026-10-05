@@ -44,7 +44,7 @@ const BOOKING_STEPS = [
 ] as const;
 
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
-const POINT_METHODS = ['map', 'search', 'location', 'recent', 'auto'] as const;
+const POINT_METHODS = ['map', 'search', 'location', 'recent'] as const;
 const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
 
 // Answers that are a normal state, not an error: they are not sent as api_error (G12).

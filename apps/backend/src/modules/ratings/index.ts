@@ -37,11 +37,10 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
       idOf: (publicId) => peopleOf(env).idOf(publicId),
     },
     ask: botAsker(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
-    alertTeam: async (userId, rating) => {
-      const name = (await names(env, [userId])).get(userId) ?? '';
+    alertTeam: async ({ name, publicId }, rating) => {
       const values = {
         name,
-        id: String(userId),
+        id: publicId,
         average: formatNumber(rating.average ?? 0),
         count: rating.count,
       };

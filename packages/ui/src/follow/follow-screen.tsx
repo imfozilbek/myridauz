@@ -82,7 +82,7 @@ function Follow({ token, onJoin }: Props) {
       } else fail(caught);
     }
   };
-  const { driver, meetingPoint } = value;
+  const { driver, meetingPoint, dropoffPoint } = value;
   return (
     <div className="market">
       <Title weight="1" className="market-title">
@@ -110,6 +110,11 @@ function Follow({ token, onJoin }: Props) {
           {meetingPoint ? (
             <Cell onClick={() => openExternal(mapUrl(meetingPoint))} subtitle={t('bookings.openMap')}>
               {t('share.follow.meeting')}
+            </Cell>
+          ) : null}
+          {dropoffPoint ? (
+            <Cell onClick={() => openExternal(mapUrl(dropoffPoint))} subtitle={t('bookings.openMap')}>
+              {t('way.book.dropoff')}
             </Cell>
           ) : null}
         </Section>

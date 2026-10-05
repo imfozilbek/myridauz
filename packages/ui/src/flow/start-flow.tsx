@@ -8,7 +8,6 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
-import { SoonScreen } from './soon-screen';
 import type { HomeGo, Launch, StartAction } from './start-action';
 
 type StartFlowProps = {
@@ -85,7 +84,6 @@ export function StartFlow(props: StartFlowProps) {
       </ErrorBoundary>
     );
   const { action, launch } = screen;
-  if (!action.Screen) return <SoonScreen action={action} onBack={openHome} />;
   return (
     <ErrorBoundary onBack={openHome}>
       <HomeProvider value={openHome}>

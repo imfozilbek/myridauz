@@ -29,6 +29,7 @@ describe('the tiles of a passenger (G53)', { timeout: 20_000 }, () => {
         labelKey: 'common.passenger.leaveRequest',
         hintKey: 'common.passenger.leaveRequestHint',
         useLive: useOffersLive,
+        Screen: () => null,
       } satisfies StartAction,
     ];
     renderHome((go) => <PassengerHome go={go} />, actions, {

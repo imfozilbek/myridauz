@@ -99,7 +99,10 @@ describe('ratings and complaints through the API (docs/17, docs/24)', () => {
     );
     expect(filed.status).toBe(201);
     expect((await call('/complaints', PASSENGER, json({ bookingId, reason: 'other' }))).status).toBe(409);
-    expect(telegram.some((item) => item.body.chat_id === OWNER)).toBe(true);
+    // The team sees the public id, never the Telegram ID (docs/65 A3).
+    const urgent = String(telegram.find((item) => item.body.chat_id === OWNER)?.body.text);
+    expect(urgent).toContain(`ID ${await pid(DRIVER)})`);
+    expect(urgent).not.toContain(`ID ${DRIVER})`);
     expect((await call('/admin/complaints', PASSENGER, { app: 'admin' })).status).toBe(403);
     const queue = await read<{ complaints: { id: string; high: boolean }[] }>(
       call('/admin/complaints', OWNER, { app: 'admin' }),

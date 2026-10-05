@@ -27,8 +27,9 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     decidedAt: null,
   };
   await deps.store.save(complaint);
-  if (isHigh(complaint.reason))
-    await deps.tell.team(complaint, (await deps.people.find(againstId))?.firstName ?? '');
+  if (!isHigh(complaint.reason)) return { id: complaint.id };
+  const against = await deps.people.find(againstId);
+  await deps.tell.team(complaint, { firstName: against?.firstName ?? '', publicId: against?.publicId ?? '' });
   return { id: complaint.id };
 }
 

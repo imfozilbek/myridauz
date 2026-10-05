@@ -44,6 +44,7 @@ export function setup() {
     isTeam: async (id) => id === TEAM_MEMBER,
     trips: async (_id, side) => (side === 'driver' ? 12 : 3),
     chat: async () => [{ author: DRIVER, text: 'Salom', at: NOW }],
+    forgetChat: async (key) => void log.push(`forget ${key}`),
     cancelAll: async (id) => void log.push(`cancel ${id}`),
     refund: async (_moderator, driverId, amount) => void log.push(`refund ${driverId} ${amount}`),
     tell: {

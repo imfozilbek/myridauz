@@ -41,7 +41,14 @@ function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
     ...overrides,
   };
   const actions = [
-    { id: 'my_trips', icon: 'myTrips', tone: 'deep', labelKey: 'common.myTrips', hintKey: 'common.soon' },
+    {
+      id: 'my_trips',
+      icon: 'myTrips',
+      tone: 'deep',
+      labelKey: 'common.myTrips',
+      hintKey: 'common.passenger.myTripsHint',
+      Screen: () => null,
+    },
   ] as const;
   renderInShell(
     <AccountContext.Provider value={account}>

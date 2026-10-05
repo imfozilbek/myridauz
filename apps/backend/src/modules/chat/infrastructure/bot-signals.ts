@@ -28,10 +28,8 @@ export const botSignals = (env: Bindings): ChatSignals => ({
   missedCall: (to, key) => toChat(env, to, key, t('bot.call.missed'), t('bot.chat.open')),
   contactAttempts: async (userId, key, count) => {
     const person = await peopleOf(env).find(userId);
-    const name = person?.firstName ?? String(userId);
-    await notifyTeam(
-      env,
-      t('bot.chat.contactAttempts', { name, id: String(userId), count: String(count), key }),
-    );
+    // The team sees the public id, never the Telegram ID (docs/65 A3).
+    const values = { name: person?.firstName ?? '', id: person?.publicId ?? '', count: String(count), key };
+    await notifyTeam(env, t('bot.chat.contactAttempts', values));
   },
 });

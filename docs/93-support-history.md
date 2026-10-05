@@ -39,3 +39,10 @@
 - `apps/backend/src/bots/support-talk.ts`: текст истории; `support-reply.ts`: кнопки.
 - Тесты: `support/history.test.ts`, `bots/support-talk.test.ts`, `account-deletion-api.test.ts`.
 - Стенд: `e2e/stand/bots-team.spec.ts`, сценарий G32.
+
+## Голосовые (решение владельца 04.10.2026, `111` Q2)
+
+- Голосовые остаются в обе стороны: человек пишет голосом, команда отвечает голосом.
+- `apps/backend/src/bots/media.ts` берёт файл у Telegram, `support-bot.ts` и `admin-messages.ts` пересылают его дальше.
+- Файл не попадает ни в D1, ни в R2. В `support_messages` только вид «voice».
+- Риск «голос как биометрия»: в самом конце `30`.
