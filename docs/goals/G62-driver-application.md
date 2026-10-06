@@ -22,6 +22,8 @@ Definition of Done
     tekshirilmoqda»; экран «Ariza yuborildi» удалён.
 [ ] Исправление: плохое фото обведено, причина, «Qayta yuborish».
 [ ] Одобрено: «Siz haydovchisiz!», бонус, плитка «Safar eʼlon qilish».
+[ ] Бот при одобрении: канал и ссылка, «Kanalga oʻtish»,
+    «Safar eʼlon qilish» (docs/119).
 [ ] Новые тексты по ключам перевода, согласие владельца; knip и
     проверка ключей чисты.
 [ ] Тест на каждый пункт, сначала падает; e2e заявки, исправления,
