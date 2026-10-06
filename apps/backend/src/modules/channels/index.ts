@@ -1,16 +1,20 @@
-import { loadBrand } from '@platform/brands';
-import type { Trip } from '@platform/contracts';
-import type { Bindings } from '../../env';
+import { channelOf, loadBrand, type BrandConfig } from '@platform/brands';
+import { channelVia, TRIPS_PATH, type Trip } from '@platform/contracts';
+import { Hono } from 'hono';
+import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
+import { claimZoneInvite } from '../users';
 import { closeDeparted, postTrip, refreshPosts, rememberPost } from './application/channels';
+import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import { allChannels, type TeamChannelsDeps } from './application/team';
 import { channelRoutes } from './http/channel-routes';
-import { botIsAdmin } from './infrastructure/bot-admin';
+import { botIsAdmin, inChannel } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
 import { channelPost } from './infrastructure/post-text';
 import { createMemoryTeamChannels, d1TeamChannels } from './infrastructure/team-channels';
+import { zoneMessage } from './infrastructure/zone-message';
 
 const localPosts = createMemoryChannelPosts();
 const localTeam = createMemoryTeamChannels();
@@ -57,3 +61,30 @@ export const channels = (tripOf: TripOf) => ({
 
 // The team's channels in the admin Mini App (docs/63).
 export const channelsModule = channelRoutes(teamDeps);
+
+const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
+  enabled: env.CHANNEL_POSTS === 'on',
+  claim: (userId) => claimZoneInvite(env, userId),
+  inChannel: inChannel((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
+  message: zoneMessage(brand),
+  send: (jobs) => notify(env, jobs),
+});
+
+// The registration knows the zone only from the mark of a channel post the person came by (docs/116).
+export const inviteFromMark = async (env: Bindings, userId: number, via: string | undefined) => {
+  const brand = loadBrand(env.BRAND);
+  const zone = brand.channels.find((channel) => channelVia(channel.username) === via);
+  if (zone) await inviteToZone(zoneDeps(env, brand), userId, zone);
+};
+
+// Otherwise the first search of the person tells where they live: its «Qayerdan» (docs/119). The map
+// is no sign: it names a moving pin, and often answers from the cache of the phone.
+export const zoneWatch = new Hono<AppEnv>().use(TRIPS_PATH, async (context, next) => {
+  await next();
+  const from = context.req.query('from');
+  const { app, user } = context.get('session');
+  if (context.req.method !== 'GET' || context.res.status !== 200 || !from || app !== 'passenger') return;
+  if (!tellsHome((await placesOf(context.env)).get(from))) return;
+  const brand = loadBrand(context.env.BRAND);
+  await inviteToZone(zoneDeps(context.env, brand), user.id, channelOf(brand, from));
+});

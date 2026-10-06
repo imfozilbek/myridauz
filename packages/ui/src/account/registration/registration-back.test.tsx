@@ -3,7 +3,7 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../../test-shell';
 import { AccountGate } from '../account-gate';
-import { fakeClient, settings } from '../account-test-kit';
+import { fakeClient } from '../account-test-kit';
 import { addFace, passWelcome } from './registration-test-kit';
 
 // The welcome of the passenger Mini App, as apps/miniapp-passenger gives it (G34).
@@ -21,7 +21,7 @@ const open = () =>
   renderInShell(
     <AccountGate
       app="passenger"
-      client={fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza', settings })}
+      client={fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza' })}
       welcome={welcome}
     >
       <p>inside</p>

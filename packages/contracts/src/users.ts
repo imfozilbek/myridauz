@@ -43,7 +43,12 @@ export type RegistrationInput = z.input<typeof registrationSchema>;
 
 export const writeAccessSchema = z.object({ allowed: z.boolean() });
 
-const settingsSchema = z.object({ passengerAvatarRequired: z.boolean() });
+// The check of a face photo by the team (docs/118, G51): until it is approved only its owner sees it.
+export const AVATAR_STATUSES = ['pending', 'approved', 'rejected'] as const;
+export type AvatarStatus = (typeof AVATAR_STATUSES)[number];
+// Why a face photo does not fit: the 3 points the team checks (docs/120).
+export const FACE_REASONS = ['face_not_visible', 'not_one_person', 'not_real_photo'] as const;
+export type FaceReason = (typeof FACE_REASONS)[number];
 
 // Only the owner sees their phone. Other people get publicProfileSchema.
 export const myProfileSchema = z.object({
@@ -53,6 +58,9 @@ export const myProfileSchema = z.object({
   phone: z.string(),
   roles: z.array(z.enum(USER_ROLES)),
   hasAvatar: z.boolean(),
+  // null: no photo; «rejected» comes with the reason, and the person is asked for a new photo.
+  avatarStatus: z.enum(AVATAR_STATUSES).nullable(),
+  avatarReason: z.enum(FACE_REASONS).nullable(),
   writeAccess: z.boolean(),
   // null: no ratings yet, shown as "Yangi" (new).
   rating: z.number().nullable(),
@@ -60,10 +68,10 @@ export const myProfileSchema = z.object({
 export type MyProfile = z.infer<typeof myProfileSchema>;
 
 export const meResponseSchema = z.discriminatedUnion('state', [
-  z.object({ state: z.literal('unregistered'), suggestedName: z.string(), settings: settingsSchema }),
+  z.object({ state: z.literal('unregistered'), suggestedName: z.string() }),
   // until: epoch ms, null: blocked for good.
   z.object({ state: z.literal('blocked'), until: z.number().nullable() }),
-  z.object({ state: z.literal('active'), profile: myProfileSchema, settings: settingsSchema }),
+  z.object({ state: z.literal('active'), profile: myProfileSchema }),
 ]);
 export type MeResponse = z.infer<typeof meResponseSchema>;
 

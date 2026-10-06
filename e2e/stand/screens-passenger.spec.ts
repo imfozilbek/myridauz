@@ -1,9 +1,10 @@
 import { expect, test } from '../crash-guard';
 import { TEXT } from '../apps';
+import { passConsent } from '../registration';
 import { book, CHILONZOR, publishTrip } from './market-kit';
 import { confirmedSeat, SAMARQAND, TO_SAMARQAND } from './g27-kit';
 import { FERUZA, OYBEK } from './people';
-import { mainButton, NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
+import { NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
 import { outsideCalls, type Person } from './stand-kit';
 
 // The screens of a passenger (docs/77) for the UX review: the first visit, the main screen with a
@@ -23,8 +24,7 @@ test('the first visit: the welcome with the documents, «Siz haqingizda»', asyn
   await openHome(page, 'passenger', NEWCOMER, 'android');
   await expect(page.getByText(TEXT.offerLink)).toBeVisible();
   await shot(page, 'android', 'p01-welcome');
-  await mainButton(page).click();
-  await expect(page.getByText(TEXT.about)).toBeVisible();
+  await passConsent(page);
   await shot(page, 'android', 'p02-about');
 });
 

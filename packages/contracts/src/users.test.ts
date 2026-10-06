@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { authHeaders } from './auth';
-import { nameSchema, publicProfileSchema, registrationSchema, userAvatarPath } from './users';
+import { faceDecisionSchema } from './moderation';
+import {
+  meResponseSchema,
+  nameSchema,
+  publicProfileSchema,
+  registrationSchema,
+  userAvatarPath,
+} from './users';
 
 describe('nameSchema', () => {
   it('accepts Uzbek names and tidies spaces', () => {
@@ -45,5 +52,37 @@ describe('paths and headers', () => {
   it('builds the avatar path and the auth headers', () => {
     expect(userAvatarPath(PERSON)).toBe(`/users/${PERSON}/avatar`);
     expect(authHeaders('driver', 'a=1')).toEqual({ authorization: 'tma a=1', 'x-mini-app': 'driver' });
+  });
+});
+
+describe('the face photo check (docs/118, G51)', () => {
+  const profile = {
+    id: PERSON,
+    firstName: 'Ali',
+    gender: 'male',
+    phone: '+998',
+    roles: ['passenger'],
+    hasAvatar: true,
+    avatarStatus: 'rejected',
+    avatarReason: 'not_one_person',
+    writeAccess: false,
+    rating: null,
+  };
+
+  it('tells the owner the state of the photo, and no settings any more', () => {
+    expect(meResponseSchema.parse({ state: 'active', profile })).toEqual({ state: 'active', profile });
+    expect(meResponseSchema.parse({ state: 'unregistered', suggestedName: 'Ali' })).toEqual({
+      state: 'unregistered',
+      suggestedName: 'Ali',
+    });
+    const unknown = { state: 'active', profile: { ...profile, avatarReason: 'blurry' } };
+    expect(meResponseSchema.safeParse(unknown).success).toBe(false);
+  });
+
+  it('rejects a photo only with a reason from the list', () => {
+    expect(faceDecisionSchema.safeParse({ action: 'approve' }).success).toBe(true);
+    expect(faceDecisionSchema.safeParse({ action: 'reject', reason: 'not_real_photo' }).success).toBe(true);
+    expect(faceDecisionSchema.safeParse({ action: 'reject' }).success).toBe(false);
+    expect(faceDecisionSchema.safeParse({ action: 'reject', reason: 'ugly' }).success).toBe(false);
   });
 });

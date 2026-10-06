@@ -1,6 +1,7 @@
 import { expect, test } from '../crash-guard';
 import { createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
+import { passConsent } from '../registration';
 import { pressBack } from '../telegram-mock';
 import { OWNER } from './people';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
@@ -24,11 +25,11 @@ test('P02, P04. a document opens before the consent and comes back; a name of si
   await shot(page, 'android', 'p04-document');
   await pressBack(page);
   await expect(page.getByText(TEXT.offerLink)).toBeVisible();
-  await mainButton(page).click();
+  await passConsent(page);
   await page.getByRole('textbox').fill('😀');
   // A name that is not a name is said at once; the phone is not asked until it is fixed.
   await expect(page.getByText(t('account.name.invalid'))).toBeVisible();
-  await page.getByRole('button', { name: TEXT.female }).click();
+  await page.getByRole('radio', { name: TEXT.female }).click();
   await expect(mainButton(page)).toBeHidden();
   await shot(page, 'android', 'p05-name-invalid');
 });

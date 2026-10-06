@@ -33,5 +33,8 @@
   "channel.tag.1735": "Qoraqalpogiston",
   "channel.door": "🏠 Uyingizdan olib ketadi",
   "channel.pitak": "🚏 {pitak}dan olib ketadi",
-  "channel.doorOrPitak": "🏠 Uyingizdan yoki 🚏 {pitak}dan olib ketadi"
+  "channel.doorOrPitak": "🏠 Uyingizdan yoki 🚏 {pitak}dan olib ketadi",
+  "zone.invite": "{zone} hududi kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz.",
+  "zone.join": "Kanalga oʻtish",
+  "zone.find": "Safar topish"
 }

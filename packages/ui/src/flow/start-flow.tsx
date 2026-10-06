@@ -1,4 +1,5 @@
 import './flow.css';
+import { PROFILE_PHOTO_LINK } from '@platform/contracts';
 import { useCallback, useState, type ReactNode } from 'react';
 import { ProfileScreen } from '../account/profile/profile-screen';
 import { useI18n } from '../context/i18n-context';
@@ -6,6 +7,7 @@ import { useHomeTap } from '../home/use-home-tap';
 import { ErrorBoundary } from '../states/error-boundary';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
+import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
 import type { HomeGo, Launch, StartAction } from './start-action';
@@ -32,6 +34,10 @@ type StartFlowProps = {
 };
 const NO_SECTIONS: readonly StartAction[] = [];
 type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly launch?: Launch };
+const PROFILE_LINK = [PROFILE_PHOTO_LINK.name];
+// «Rasmni almashtirish» under a refused face photo opens the profile (G58, docs/118).
+const photoLinked = () =>
+  launchParam(PROFILE_PHOTO_LINK.name, new RegExp(`^${PROFILE_PHOTO_LINK.id}$`, 'u')) !== null;
 
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
@@ -41,8 +47,10 @@ export function StartFlow(props: StartFlowProps) {
   const tap = useHomeTap();
   const [screen, setScreen] = useState<Screen>(() => {
     const action = [...actions, ...sections].find((item) => item.id === opened);
-    return action ? { action } : 'home';
+    if (action) return { action };
+    return photoLinked() ? 'profile' : 'home';
   });
+  useLinkOpened(screen === 'profile', PROFILE_LINK);
   const openHome = useCallback(() => setScreen('home'), []);
   const openProfile = useCallback(() => {
     haptic.tap();

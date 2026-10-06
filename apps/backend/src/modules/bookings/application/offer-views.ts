@@ -22,7 +22,7 @@ export async function offerViews(
         driver: {
           id: driver.publicId,
           firstName: driver.firstName,
-          hasAvatar: driver.avatarKey !== null,
+          hasAvatar: driver.avatarShown,
           car: { make: car.make, model: car.model, color: car.color },
           rating: ratings.get(offer.driverId) ?? NO_RATING,
         },

@@ -16,6 +16,7 @@ import { CarCell, WalletCell } from '../../driver/car-cell';
 import { WalletScreen } from '../../wallet/wallet-screen';
 import { AvatarPicker } from './avatar-picker';
 import { DeleteAccountCell, DeleteAccountScreen } from './delete-account';
+import { FaceStatus } from './face-status';
 import { ProfilePhoto } from './profile-photo';
 
 // Own profile: photo, name, rating; a driver's car and "Hamyon". The phone is shown only here, to its owner (docs/07).
@@ -39,10 +40,8 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
         <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} />
         <Title weight="1">{profile.firstName}</Title>
         <AvatarPicker />
+        <FaceStatus profile={profile} />
         <Text className="step-hint">{t('account.avatar.rules')}</Text>
-        {account.app === 'passenger' ? (
-          <Text className="step-hint">{t('account.avatar.passengerWhy')}</Text>
-        ) : null}
       </div>
       <List>
         <Section footer={t('account.profile.phoneHint')}>

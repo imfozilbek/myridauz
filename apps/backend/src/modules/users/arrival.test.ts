@@ -4,6 +4,7 @@ import { createMemoryImages } from '../../shared/storage/memory-images';
 import type { UsersDeps } from './application/ports';
 import { register } from './application/register';
 import { createMemoryUsers } from './infrastructure/memory-stores';
+import { noFaces } from './test-kit';
 
 const NOW = 1_000_000;
 const ali = { id: 1, firstName: 'Ali', isAdmin: false };
@@ -22,6 +23,7 @@ function setup() {
     users,
     avatars: createMemoryImages(),
     trips: { relation: async () => 'none' },
+    ...noFaces,
     now: () => NOW,
     newId: () => 'id1',
   };

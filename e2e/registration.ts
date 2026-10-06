@@ -12,13 +12,9 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
   // «Davom etish» waits for both ticks (G58, docs/118).
   await expect(mainButton).toBeDisabled();
   await shot('1-welcome');
-  await tickConsents(page);
-  await expect(mainButton).toBeEnabled();
-  await shot('1-welcome-ticked');
-  await mainButton.click();
-  await expect(page.getByText(TEXT.about)).toBeVisible();
+  await passConsent(page, () => shot('1-welcome-ticked'));
   await expect(page.getByRole('textbox')).toHaveValue('Dilnoza');
-  await page.getByText(TEXT.female, { exact: true }).click();
+  await page.getByRole('radio', { name: TEXT.female }).click();
   // «Raqamni yuborish» waits for the face (G58): camera or gallery, here a file.
   await expect(mainButton).toBeHidden();
   await shot('2-about');
@@ -29,8 +25,14 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
   await mainButton.click();
 }
 
-async function tickConsents(page: Page) {
+// Both ticks of screen 1, then «Davom etish» (G58): «Siz haqingizda» opens.
+export async function passConsent(page: Page, ticked: () => Promise<unknown> = async () => undefined) {
+  const mainButton = page.locator('#tg-main-button');
   for (const box of await page.getByRole('checkbox').all()) await box.check();
+  await expect(mainButton).toBeEnabled();
+  await ticked();
+  await mainButton.click();
+  await expect(page.getByText(TEXT.about)).toBeVisible();
 }
 
 export async function addFace(page: Page) {

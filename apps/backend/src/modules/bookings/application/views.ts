@@ -57,7 +57,8 @@ export async function bookingViews(
       return {
         id: record.id,
         trip: loaded.trip,
-        // The driver never sees a passenger's photo (docs/05).
+        // The driver never sees a passenger's photo (docs/05); the passenger sees their own, the team
+        // every one, approved or not (G51).
         passenger: {
           id: passenger.publicId,
           firstName: passenger.firstName,

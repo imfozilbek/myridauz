@@ -1,19 +1,16 @@
 import type { UsersClient } from '@platform/api-client';
-import type { MeResponse, MiniApp, MyProfile } from '@platform/contracts';
+import type { MiniApp, MyProfile } from '@platform/contracts';
 import { createContext, useContext } from 'react';
-
-type AccountSettings = Extract<MeResponse, { state: 'active' }>['settings'];
 
 // The person using the Mini App, after the account gate let them in.
 export type Account = {
   readonly app: MiniApp;
   readonly client: UsersClient;
   readonly profile: MyProfile;
-  readonly settings: AccountSettings;
   // Increases after a new photo, so screens load it again.
   readonly avatarVersion: number;
   readonly onAvatarChanged: () => void;
-  // The profile loads again after a change of a setting («Bot xabarlari»).
+  // The profile loads again after a change (G43, docs/64).
   readonly onProfileChanged: () => void;
 };
 

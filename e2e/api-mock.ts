@@ -8,7 +8,6 @@ import { mockFeed } from './feed-mock';
 import { mockMarket } from './market-mock';
 
 type Me = { state: 'unregistered' | 'active' | 'blocked' };
-const settings = { passengerAvatarRequired: false };
 const profile = {
   id: '00000000000000000000000000000001',
   firstName: 'Dilnoza',
@@ -18,6 +17,8 @@ const profile = {
   hasAvatar: false,
   writeAccess: false,
   rating: null,
+  avatarStatus: null,
+  avatarReason: null,
 };
 
 // The backend as the Mini App sees it: registration makes the person active.
@@ -27,14 +28,14 @@ export async function mockApi(
   driver: DriverStart = 'approved',
 ) {
   let state = start;
-  // A driver asked to fix the application already has a face photo.
-  let hasAvatar = driver === 'changes';
+  // A registered person always has the face: it is required from the registration (G58).
+  let hasAvatar = start !== 'unregistered';
   const analytics: unknown[] = [];
   const registrations: unknown[] = [];
   const answer = () => {
     if (state === 'blocked') return { state, until: null };
-    if (state === 'unregistered') return { state, suggestedName: 'Dilnoza', settings };
-    return { state, profile: { ...profile, hasAvatar }, settings };
+    if (state === 'unregistered') return { state, suggestedName: 'Dilnoza' };
+    return { state, profile: { ...profile, hasAvatar } };
   };
   await page.route('**/api/analytics', async (route) => {
     analytics.push(route.request().postDataJSON());

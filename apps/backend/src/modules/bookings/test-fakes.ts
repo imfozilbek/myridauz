@@ -15,6 +15,7 @@ const person = (id: number, firstName: string, gender: Person['gender']): Person
   publicId: publicIdOf(id),
   firstName,
   avatarKey: `avatars/${id}`,
+  avatarShown: true,
   gender,
 });
 

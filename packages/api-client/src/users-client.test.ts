@@ -10,10 +10,11 @@ const profile = {
   phone: '+998',
   roles: ['passenger'],
   hasAvatar: false,
+  avatarStatus: null,
+  avatarReason: null,
   writeAccess: false,
   rating: null,
 };
-const settings = { passengerAvatarRequired: false };
 
 function setup(response: Response) {
   const fetch = vi.fn<Fetch>(async () => response);
@@ -28,7 +29,7 @@ function setup(response: Response) {
 
 describe('createUsersClient', () => {
   it('signs every call with the Telegram launch data of its Mini App', async () => {
-    const me = { state: 'active', profile, settings };
+    const me = { state: 'active', profile };
     const { client, fetch } = setup(Response.json(me));
     expect(await client.getMe()).toEqual(me);
     expect(fetch).toHaveBeenCalledWith('https://api.test/api/me', {
@@ -38,7 +39,7 @@ describe('createUsersClient', () => {
   });
 
   it('sends the registration, the photo and the write access answer', async () => {
-    const { client, fetch } = setup(Response.json({ state: 'active', profile, settings }));
+    const { client, fetch } = setup(Response.json({ state: 'active', profile }));
     await client.register({ consent: true, firstName: 'Ali', gender: 'male', contact: 'c' });
     expect(fetch.mock.calls[0]?.[0]).toBe('https://api.test/api/me/registration');
     await client.uploadAvatar(new Blob(['x'], { type: 'image/jpeg' }));

@@ -1,6 +1,7 @@
 import { expect, test } from '../crash-guard';
 import { createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
+import { addFace, passConsent } from '../registration';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { askRide, offerOn, SAMARQAND } from './g27-kit';
 import { MUROD, OWNER } from './people';
@@ -19,10 +20,10 @@ const SEEKER = who(900701, 'Oydin');
 
 test('the first visit: «Siz haqingizda» before and after the gender', async ({ page }) => {
   await openHome(page, 'passenger', who(900702, 'Shoira'), 'android');
-  await mainButton(page).click();
-  await expect(page.getByText(TEXT.about)).toBeVisible();
+  await passConsent(page);
   await shot(page, 'android', 'pb01-about');
-  await page.getByRole('button', { name: TEXT.female }).click();
+  await page.getByRole('radio', { name: TEXT.female }).click();
+  await addFace(page);
   await expect(mainButton(page)).toHaveText(TEXT.sendPhone);
   await shot(page, 'android', 'pb02-phone');
 });

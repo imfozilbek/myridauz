@@ -37,6 +37,7 @@ export async function register(
     consentAt: now,
     block: null,
     avatarKey: null,
+    face: null,
     writeAccess: false,
     createdAt: now,
     updatedAt: now,

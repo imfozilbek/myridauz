@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { personIdSchema, type PersonId } from './person-id';
 import { APPLICATION_STATUSES, carSchema, reasonsSchema, type CarPhotoKind } from './drivers';
 import { plateSchema } from './plate';
+import { FACE_REASONS } from './users';
 
 // The team checks driver applications and blocks people (docs/04, docs/17). G06.
 export const ADMIN_APPLICATIONS_PATH = '/admin/applications';
@@ -77,3 +78,18 @@ export const blockSchema = z.object({
   days: z.union([z.literal(BLOCK_DAYS[0]), z.literal(BLOCK_DAYS[1]), z.literal(BLOCK_DAYS[2]), z.null()]),
 });
 export type BlockInput = z.infer<typeof blockSchema>;
+
+// New face photos of people for the team, the oldest first: «Rasm mos» or «Mos emas» with a reason
+// (docs/120, G51).
+export const ADMIN_FACES_PATH = '/admin/faces';
+export const adminFacePhotoPath = (userId: PersonId) => `${ADMIN_FACES_PATH}/${userId}/photo`;
+export const adminFaceDecisionPath = (userId: PersonId) => `${ADMIN_FACES_PATH}/${userId}/decision`;
+export const faceQueueSchema = z.object({
+  faces: z.array(z.object({ userId: personIdSchema, firstName: z.string(), uploadedAt: z.number().int() })),
+});
+export type FaceSummary = z.infer<typeof faceQueueSchema>['faces'][number];
+export const faceDecisionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('approve') }),
+  z.object({ action: z.literal('reject'), reason: z.enum(FACE_REASONS) }),
+]);
+export type FaceDecision = z.infer<typeof faceDecisionSchema>;

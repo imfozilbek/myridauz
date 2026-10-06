@@ -11,9 +11,10 @@ import {
   reasonMenu,
 } from '../modules/drivers';
 import { teamRole } from '../modules/team';
-import { peopleOf } from '../modules/users';
+import { isFaceButton, peopleOf } from '../modules/users';
 import { callTelegram } from '../shared/telegram/telegram-api';
 import { answerQuery as answer, type BotContext } from './bot-context';
+import { onFaceButton } from './face-callbacks';
 import { HISTORY_DATA, onHistoryButton, onReplyButton, REPLY_DATA } from './support-reply';
 import { onTeamButton } from './team-bot';
 import type { BotCallback } from './telegram-update';
@@ -21,6 +22,7 @@ import type { BotCallback } from './telegram-update';
 const { t } = createI18n(DEFAULT_LOCALE);
 
 // The buttons of the moderation card (docs/04): approve, reject or ask for changes with ticked reasons.
+// The card of a new face photo has its own buttons (G51).
 export async function onAdminCallback(context: BotContext, query: BotCallback) {
   const token = context.env.ADMIN_BOT_TOKEN;
   const data = query.data ?? '';
@@ -28,6 +30,7 @@ export async function onAdminCallback(context: BotContext, query: BotCallback) {
   if (data.startsWith('team:')) return onTeamButton(context, query, data);
   if (data === REPLY_DATA) return onReplyButton(context, query);
   if (data === HISTORY_DATA) return onHistoryButton(context, query);
+  if (isFaceButton(data)) return onFaceButton(context, query, token);
   const action = parseCardAction(data);
   if (!action || !query.message) return answer(query);
   const target = { chat_id: query.message.chat.id, message_id: query.message.message_id };

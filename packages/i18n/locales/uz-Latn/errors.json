@@ -47,5 +47,6 @@
   "drivers.wrong_status": "Bu ariza allaqachon koʻrib chiqilgan. Roʻyxatni yangilang.",
   "shares.too_many": "Bu safarni kuzatuvchilar soni chegaraga yetdi.",
   "pitaks.not_found": "Bu pitak topilmadi. Roʻyxatni yangilang.",
-  "auth.not_admin": "Bu boʻlim faqat jamoa uchun."
+  "auth.not_admin": "Bu boʻlim faqat jamoa uchun.",
+  "users.face_decided": "Bu rasm allaqachon koʻrib chiqilgan. Roʻyxatni yangilang."
 }

@@ -30,15 +30,16 @@ export async function register(app: MiniApp, person: Person, gender: Gender) {
   } catch (error) {
     if (!(error instanceof ApiError && error.message === ALREADY)) throw error;
   }
+  // The face goes with the registration, as in the Mini App (G58).
+  await users.uploadAvatar(PHOTO);
   return users;
 }
 
 // A driver sends the application: registration, photo, car photos, the car.
 export async function apply(person: Person, plate: string, gender: Gender) {
-  const users = await register('driver', person, gender);
+  await register('driver', person, gender);
   const drivers = createDriversClient(await signedAs('driver', person));
   if ((await drivers.getApplication())?.status === 'approved') return;
-  await users.uploadAvatar(PHOTO);
   for (const kind of CAR_PHOTO_KINDS) await drivers.uploadPhoto(kind, PHOTO);
   await drivers.submit({ ...CAR, plate });
 }
@@ -51,4 +52,7 @@ export default async function seed() {
     await moderation.decide(application.userId, { action: 'approve' });
   for (const passenger of PASSENGERS) await register('passenger', passenger, 'female');
   for (const man of MEN) await register('passenger', man, 'male');
+  // The team approves the faces of the passengers (G58): others see them.
+  for (const face of await moderation.faces())
+    await moderation.decideFace(face.userId, { action: 'approve' });
 }

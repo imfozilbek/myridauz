@@ -4,7 +4,7 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell } from '../../test-shell';
 import { AccountGate } from '../account-gate';
-import { fakeClient, settings } from '../account-test-kit';
+import { fakeClient } from '../account-test-kit';
 
 const permissions = vi.hoisted(() => ({
   requestSignedContact: vi.fn(async () => null),
@@ -29,7 +29,7 @@ const open = () =>
   renderInShell(
     <AccountGate
       app="driver"
-      client={fakeClient({ state: 'unregistered', suggestedName: 'Rustam', settings })}
+      client={fakeClient({ state: 'unregistered', suggestedName: 'Rustam' })}
       welcome={welcome}
     >
       <p>inside</p>

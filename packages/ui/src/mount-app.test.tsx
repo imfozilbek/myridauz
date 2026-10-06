@@ -14,8 +14,9 @@ const active = {
     hasAvatar: true,
     writeAccess: true,
     rating: null,
+    avatarStatus: null,
+    avatarReason: null,
   },
-  settings: { passengerAvatarRequired: false },
 };
 
 afterEach(() => {

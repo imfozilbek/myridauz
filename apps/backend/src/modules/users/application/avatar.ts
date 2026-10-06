@@ -1,5 +1,6 @@
 import { AVATAR_TYPES, MAX_AVATAR_BYTES } from '@platform/contracts';
 import { canSeeAvatar } from '../domain/avatar-visibility';
+import { newFace } from '../domain/face';
 import type { StoredImage } from '../../../shared/storage/image-store';
 import type { Caller, Failure, UsersDeps } from './ports';
 
@@ -20,8 +21,12 @@ export async function setAvatar(
   // A new key for each photo: an old copy in a cache never shows the new face.
   const key = `avatars/${user.id}/${deps.newId()}`;
   await deps.avatars.put(key, image.body, image.type);
-  await deps.users.save({ ...user, avatarKey: key, updatedAt: deps.now() });
+  const now = deps.now();
+  // Every new photo waits for the team; Rida does not wait for it (docs/118, G51).
+  const next = { ...user, avatarKey: key, face: newFace(now), updatedAt: now };
+  await deps.users.save(next);
   if (user.avatarKey) await deps.avatars.delete(user.avatarKey);
+  await deps.faces.uploaded(next);
   return { ok: true };
 }
 

@@ -41,7 +41,8 @@
   "delete.done": "Maʼlumotlaringiz oʻchirildi",
   "delete.doneHint": "Xohlasangiz, istalgan vaqtda qaytadan roʻyxatdan oʻtishingiz mumkin.",
   "delete.close": "Yopish",
-  "avatar.passengerWhy": "Rasm bilan haydovchi tezroq tasdiqlaydi.",
   "team.deniedHint": "Safar uchun yoʻlovchi yoki haydovchi botini oching.",
-  "welcome.why": "Nima uchun {brand}"
+  "welcome.why": "Nima uchun {brand}",
+  "avatar.pending": "Rasm tekshirilmoqda. Hozircha uni faqat siz koʻrasiz.",
+  "avatar.rejected": "Rasm tekshiruvdan oʻtmadi: {reason}. Yangi rasm qoʻying."
 }

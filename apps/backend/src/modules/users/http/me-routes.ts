@@ -1,4 +1,5 @@
 import {
+  type Arrival,
   ME_PATH,
   MY_AVATAR_PATH,
   MAX_AVATAR_BYTES,
@@ -13,7 +14,7 @@ import { readTelegramContact } from '../../../shared/auth/telegram-fields';
 import { verifySignedParams } from '../../../shared/auth/verify-signed-params';
 import { setAvatar } from '../application/avatar';
 import { deleteAccount, type Forget } from '../application/delete-account';
-import { getMe, type UserSettings } from '../application/get-me';
+import { getMe } from '../application/get-me';
 import type { UsersDeps } from '../application/ports';
 import { setWriteAccess } from '../application/profile';
 import { register } from '../application/register';
@@ -25,18 +26,19 @@ const CONTACT_MAX_AGE_SECONDS = 60 * 60;
 const CREATED = 201;
 const NO_CONTENT = 204;
 
+// After the registration: the channel of the zone the person came from (docs/119).
+export type Registered = (userId: number, came: Arrival | undefined) => Promise<void>;
+
 type Wiring = {
   readonly deps: (env: Bindings) => UsersDeps;
-  readonly settings: (env: Bindings) => UserSettings;
   readonly forget: (env: Bindings) => Forget;
+  readonly registered: (env: Bindings) => Registered;
 };
 
-export function meRoutes({ deps, settings, forget }: Wiring) {
+export function meRoutes({ deps, forget, registered }: Wiring) {
   return (
     new Hono<AppEnv>()
-      .get(ME_PATH, async (context) =>
-        context.json(await getMe(deps(context.env), callerOf(context), settings(context.env))),
-      )
+      .get(ME_PATH, async (context) => context.json(await getMe(deps(context.env), callerOf(context))))
       // "Maʼlumotlarimni oʻchirish" (docs/30).
       .delete(ME_PATH, async (context) => {
         const deleted = await deleteAccount(deps(context.env), forget(context.env), callerOf(context));
@@ -55,7 +57,8 @@ export function meRoutes({ deps, settings, forget }: Wiring) {
         if (!contact) return fail(context, 'users.invalid_contact');
         const result = await register(usersDeps, callerOf(context), { ...input.data, contact });
         if (!result.ok) return fail(context, result.error);
-        return context.json(await getMe(usersDeps, callerOf(context), settings(context.env)), CREATED);
+        await registered(context.env)(result.user.id, input.data.came);
+        return context.json(await getMe(usersDeps, callerOf(context)), CREATED);
       })
       .put(MY_AVATAR_PATH, async (context) => {
         const body = await readCapped(context.req.raw, MAX_AVATAR_BYTES);

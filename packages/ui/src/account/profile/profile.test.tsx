@@ -17,6 +17,8 @@ const profile = {
   hasAvatar: true,
   writeAccess: true,
   rating: null,
+  avatarStatus: null,
+  avatarReason: null,
 };
 
 function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
@@ -32,7 +34,6 @@ function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
     app: 'passenger',
     client,
     profile,
-    settings: { passengerAvatarRequired: false },
     avatarVersion: 0,
     onAvatarChanged: vi.fn(),
     onProfileChanged: vi.fn(),
@@ -82,8 +83,6 @@ describe('profile', () => {
     const { client, account } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasmni almashtirish')).toBeTruthy();
-    // Why a passenger adds a photo (docs/86 T14).
-    expect(screen.getByText('Rasm bilan haydovchi tezroq tasdiqlaydi.')).toBeTruthy();
     const input = document.querySelector('input[type=file]') as HTMLInputElement;
     expect(input.getAttribute('capture')).toBe('user');
     const photo = new File(['x'], 'me.jpg', { type: 'image/jpeg' });

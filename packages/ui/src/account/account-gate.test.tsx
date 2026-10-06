@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FeedContext } from '../feed/feed-context';
 import { renderInShell } from '../test-shell';
 import { AccountGate } from './account-gate';
-import { active, fakeClient, settings } from './account-test-kit';
+import { active, fakeClient, profile } from './account-test-kit';
 import { addFace, FACE, passWelcome } from './registration/registration-test-kit';
 
 const permissions = vi.hoisted(() => ({
@@ -31,7 +31,7 @@ afterEach(cleanup);
 
 describe('AccountGate', () => {
   it('registers a new person in two screens and lets them in', async () => {
-    const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza', settings });
+    const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza' });
     const { tracked, container } = gate(client);
     const brand = loadBrand();
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
@@ -68,7 +68,7 @@ describe('AccountGate', () => {
 
   it('says a phone is required when the person refuses to share it', async () => {
     permissions.requestSignedContact.mockResolvedValueOnce(null);
-    const { container } = gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings }));
+    const { container } = gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali' }));
     await passWelcome();
     await addFace(container);
     fireEvent.click(screen.getByText('Erkak'));
@@ -90,7 +90,7 @@ describe('AccountGate', () => {
   });
 
   it('turns a blocked phone during registration into the block screen', async () => {
-    const client = fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings });
+    const client = fakeClient({ state: 'unregistered', suggestedName: 'Ali' });
     client.register.mockRejectedValueOnce(new ApiError(403, 'users.blocked'));
     const { container } = gate(client);
     await passWelcome();
@@ -100,9 +100,9 @@ describe('AccountGate', () => {
     expect(await screen.findByText(/butunlay|qoʻllab-quvvatlash/)).toBeTruthy();
   });
 
-  it('asks for a photo when the brand requires it and retries after an error', async () => {
-    const required = { ...active, settings: { passengerAvatarRequired: true } };
-    gate(fakeClient(required));
+  it('asks for the face of both roles when it is missing and retries after an error', async () => {
+    const noFace = { state: 'active' as const, profile: { ...profile, hasAvatar: false } };
+    gate(fakeClient(noFace), 'driver');
     expect(await screen.findByText('Rasmingizni qoʻshing')).toBeTruthy();
     const failing = fakeClient(new Error('offline'));
     gate(failing);
