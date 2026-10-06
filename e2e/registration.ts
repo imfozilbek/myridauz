@@ -16,7 +16,7 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
   await expect(page.getByRole('textbox')).toHaveValue('Dilnoza');
   await page.getByRole('radio', { name: TEXT.female }).click();
   // «Raqamni yuborish» waits for the face (G58): camera or gallery, here a file.
-  await expect(mainButton).toBeHidden();
+  await expect(mainButton).toBeDisabled();
   await shot('2-about');
   await addFace(page);
   await expect(page.getByText(TEXT.changePhoto)).toBeVisible();
@@ -28,11 +28,9 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
 // Both ticks of screen 1, then «Davom etish» (G58): «Siz haqingizda» opens.
 export async function passConsent(page: Page, ticked: () => Promise<unknown> = async () => undefined) {
   const mainButton = page.locator('#tg-main-button');
-  // A person taps the box itself: its picture lies over the hidden input.
-  for (const box of await page.getByRole('checkbox').all()) {
-    await box.locator('xpath=..').click();
-    await expect(box).toBeChecked();
-  }
+  // A person taps the box itself, not the document names in the words.
+  for (const box of await page.locator('.welcome-box').all()) await box.click();
+  for (const box of await page.getByRole('checkbox').all()) await expect(box).toBeChecked();
   await expect(mainButton).toBeEnabled();
   await ticked();
   await mainButton.click();

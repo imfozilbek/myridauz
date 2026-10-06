@@ -78,7 +78,7 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
       if (!inTelegram) return;
       const background = destructive ? colors.danger : colors.brandStrong;
       const look = disabled
-        ? { backgroundColor: colors.neutralSoft, textColor: colors.textMuted }
+        ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
         : { backgroundColor: background, textColor: colors.bg };
       const color = native.colored ? look : {};
       keepShown(native);

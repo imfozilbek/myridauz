@@ -1,12 +1,11 @@
 import './welcome.css';
-import { LargeTitle, Text } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import type { Welcome } from '../account/registration/registration-flow';
-import { Cell, List, Section } from '../components';
+import { brandVars } from '../account/registration/brand-vars';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { Icon } from '../icons';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 
@@ -21,20 +20,21 @@ type WelcomeScreenProps = {
 
 // The logo of the app from its brand kit (docs/36), served from brands/<brand>/public (docs/22).
 const logoUrl = (file: string) => `${import.meta.env.BASE_URL}${file}`;
-// The size of the logo on the approved mockups (docs/118): the same for both roles.
-const LOGO_SIZE = 72;
+const LOGO_SIZE = 64;
+const POINT_ICON = 20;
 
-// Screen 1 of the registration (G58, docs/118): the brand, «Nima uchun» in rows with an icon
-// tile, the consent at the bottom.
+// Screen 1 of the registration (G58, docs/118), drawn by the values of the approved mockup
+// (docs/goals/g58/src/1-welcome.html): the brand, «Nima uchun» rows, the consent at the bottom.
 export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeScreenProps) {
   useScreenView('welcome');
   useScreenBackground('tinted');
   const i18n = useI18n();
   const brand = useBrand();
+  const { colors } = brand.theme;
   // The values a point may name: the brand and the start bonus of the driver (docs/12).
   const values = { brand: brand.name, bonus: i18n.formatMoney(brand.promo.amount) };
   return (
-    <div className="welcome">
+    <div className="welcome" style={brandVars(colors)}>
       <div className="welcome-brand">
         <img
           className="welcome-logo"
@@ -43,25 +43,21 @@ export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeS
           width={LOGO_SIZE}
           height={LOGO_SIZE}
         />
-        <LargeTitle weight="1">{brand.name}</LargeTitle>
-        <Text weight="2" className="welcome-slogan">
-          {brand.slogan}
-        </Text>
+        <h1 className="welcome-name">{brand.name}</h1>
+        <p className="welcome-slogan">{brand.slogan}</p>
       </div>
-      <List className="welcome-list">
-        <Section header={i18n.t('account.welcome.why', { brand: brand.name })}>
-          {welcome.points.map((point) => (
-            <Cell
-              key={point.textKey}
-              className="welcome-point"
-              before={<IconTile name={point.icon} size="tile" />}
-            >
-              {i18n.t(point.textKey, values)}
-            </Cell>
-          ))}
-        </Section>
-        {children}
-      </List>
+      <h2 className="welcome-head">{i18n.t('account.welcome.why', { brand: brand.name })}</h2>
+      <ul className="welcome-points">
+        {welcome.points.map((point) => (
+          <li key={point.textKey} className="welcome-point">
+            <span className="welcome-tile">
+              <Icon name={point.icon} size={POINT_ICON} color={colors.bg} />
+            </span>
+            {i18n.t(point.textKey, values)}
+          </li>
+        ))}
+      </ul>
+      {children}
       <MainButton text={i18n.t('common.continue')} disabled={!ready} onClick={onContinue} />
     </div>
   );

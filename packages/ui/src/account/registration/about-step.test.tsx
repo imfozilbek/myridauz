@@ -15,6 +15,7 @@ vi.mock('../profile/compress-image', () => ({ compressImage: async (file: Blob) 
 
 const welcome = { logo: 'logo.svg', points: [] } as const;
 const SEND = 'Raqamni yuborish';
+const sendReady = () => !screen.getByRole('button', { name: SEND }).hasAttribute('disabled');
 async function openAbout() {
   const view = renderInShell(
     <AccountGate
@@ -35,15 +36,13 @@ afterEach(cleanup);
 describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
   it('shows step 2 of 2, the face circle, the name under «Ism» and two gender tiles', async () => {
     const container = await openAbout();
-    expect(
-      container.querySelectorAll('.step-segments progress, .step-segments [role="progressbar"]'),
-    ).toHaveLength(2);
+    expect(container.querySelectorAll('.about-steps i')).toHaveLength(2);
     expect(screen.getByRole('button', { name: 'Rasm qoʻshish' })).toBeTruthy();
     expect(screen.getByText('Ism')).toBeTruthy();
     expect(screen.getByDisplayValue('Dilnoza')).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(2);
     expect(screen.getByText('Raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
-    expect(screen.queryByText(SEND)).toBeNull();
+    expect(sendReady()).toBe(false);
   });
 
   it('a picked photo shows in the circle and the words become «Rasmni almashtirish»', async () => {
@@ -55,13 +54,13 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     expect(container.querySelector('.face-circle input')?.hasAttribute('capture')).toBe(false);
   });
 
-  it('«Raqamni yuborish» shows only with the photo, the name and the gender', async () => {
+  it('«Raqamni yuborish» works only with the photo, the name and the gender', async () => {
     const container = await openAbout();
     fireEvent.click(screen.getByText('Ayol'));
     expect(chosen('Ayol')).toBe('true');
-    expect(screen.queryByText(SEND)).toBeNull();
+    expect(sendReady()).toBe(false);
     await addFace(container);
-    expect(screen.getByText(SEND)).toBeTruthy();
+    expect(sendReady()).toBe(true);
     fireEvent.click(screen.getByText('Erkak'));
     expect(chosen('Erkak')).toBe('true');
     expect(chosen('Ayol')).toBe('false');
@@ -74,10 +73,10 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     fireEvent.click(screen.getByText('Ayol'));
     fireEvent.change(screen.getByDisplayValue('Dilnoza'), { target: { value: 'Ali 998' } });
     expect(screen.getByText(/Faqat harflardan/)).toBeTruthy();
-    expect(screen.queryByText(SEND)).toBeNull();
+    expect(sendReady()).toBe(false);
     fireEvent.change(screen.getByDisplayValue('Ali 998'), { target: { value: 'Ali' } });
     expect(screen.queryByText(/Faqat harflardan/)).toBeNull();
-    expect(screen.getByText(SEND)).toBeTruthy();
+    expect(sendReady()).toBe(true);
   });
 
   it('«Orqaga» returns to the welcome', async () => {

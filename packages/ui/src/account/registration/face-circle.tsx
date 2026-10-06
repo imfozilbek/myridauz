@@ -1,10 +1,11 @@
-import { Text } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Icon } from '../../icons';
 import { haptic } from '../../telegram/feedback';
 import { compressImage } from '../profile/compress-image';
+
+const CAMERA_ICON = 34;
 
 type FaceCircleProps = {
   readonly photo: Blob | null;
@@ -38,25 +39,23 @@ export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
       <input ref={input} className="file-input" type="file" accept="image/*" onChange={picked} />
       <button
         type="button"
-        className="face-circle-button"
+        className={url ? 'face-circle-button' : 'face-circle-button face-circle-empty'}
         aria-label={label}
         onClick={() => input.current?.click()}
       >
         {url ? (
           <img className="face-circle-photo" src={url} alt={t('account.avatar.cameraTitle')} />
         ) : (
-          <span className="face-circle-empty" style={{ borderColor: colors.brandStrong }}>
-            <Icon name="camera" size={34} color={colors.brandText} />
-            <span className="face-circle-plus" style={{ background: colors.brandStrong }}>
-              <Icon name="more" size={18} color={colors.bg} />
-            </span>
-          </span>
+          <>
+            <Icon name="camera" size={CAMERA_ICON} color={colors.brandText} />
+            <span className="face-circle-plus">+</span>
+          </>
         )}
       </button>
-      <Text className="face-circle-label" onClick={() => input.current?.click()}>
+      <p className="face-circle-label" onClick={() => input.current?.click()}>
         {label}
-      </Text>
-      {failed ? <Text className="step-error">{t('account.avatar.failed')}</Text> : null}
+      </p>
+      {failed ? <p className="about-error">{t('account.avatar.failed')}</p> : null}
     </div>
   );
 }

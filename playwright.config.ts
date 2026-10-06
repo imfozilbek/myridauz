@@ -61,6 +61,7 @@ export default defineConfig({
         'tiles-screenshots.spec.ts',
         'sounds-screenshots.spec.ts',
         'registration-sizes-screenshots.spec.ts',
+        'pixel-screenshots.spec.ts',
       ],
     },
   ],

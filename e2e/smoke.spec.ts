@@ -21,7 +21,7 @@ for (const app of MINI_APPS) {
       await expect(page.getByText(app.welcome)).toBeVisible();
       await expect(mainButton).toHaveText(TEXT.continue);
       // Gray until both ticks of the consent (G58).
-      await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.neutralSoft));
+      await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.disabled));
       await register(page, app.welcome);
       await expect(page.getByLabel(TEXT.profile)).toBeVisible();
       expect(api.registrations).toEqual([

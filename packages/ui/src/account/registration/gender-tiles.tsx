@@ -1,8 +1,8 @@
+import './gender.css';
 import type { Gender } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
-import { IconTile } from '../../icon-tile';
+import { Icon } from '../../icons';
 
 type GenderTilesProps = {
   readonly value: Gender | null;
@@ -10,13 +10,13 @@ type GenderTilesProps = {
 };
 
 const GENDERS = ['male', 'female'] as const satisfies readonly Gender[];
+const ICON = 24;
 
 // The gender in one tap: two big tiles side by side, the chosen one outlined in the color of the
 // Mini App (G58, docs/118 variant A). Both tiles are the same size (docs/121).
 export function GenderTiles({ value, onChange }: GenderTilesProps) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
-  const outline = { borderColor: colors.brandStrong, background: colors.brandSoft };
   return (
     <div className="gender-tiles" role="radiogroup">
       {GENDERS.map((gender) => {
@@ -27,12 +27,13 @@ export function GenderTiles({ value, onChange }: GenderTilesProps) {
             type="button"
             role="radio"
             aria-checked={chosen}
-            className="gender-tile"
-            style={chosen ? outline : undefined}
+            className={chosen ? 'gender-tile gender-tile-on' : 'gender-tile'}
             onClick={() => onChange(gender)}
           >
-            <IconTile name={gender} tone="mint" size="large" soft={!chosen} />
-            <Text>{t(`account.gender.${gender}`)}</Text>
+            <span className="gender-icon">
+              <Icon name={gender} size={ICON} color={chosen ? colors.bg : colors.brandText} />
+            </span>
+            {t(`account.gender.${gender}`)}
           </button>
         );
       })}

@@ -1,0 +1,101 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+:root{--bg:#fff;--grp:#F2F3F5;--brand:#14B8A6;--strong:#0D9488;--btext:#0F766E;--soft:#F0FDFA;--mint:#CCFBF1;--text:#1F2937;--muted:#6B7280;--from:#16A34A;--to:#DC2626;--amber:#B45309;--amberSoft:#FEF3C7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"DejaVu Sans",sans-serif;background:#E5E7EB;color:var(--text);padding:28px}
+h1{font-size:30px;margin-bottom:6px}
+.sub{font-size:18px;color:#374151;margin-bottom:22px}
+.row{display:flex;gap:26px;align-items:flex-start}
+.col{width:360px}
+.lab{font-size:22px;font-weight:700;margin-bottom:4px}
+.lab small{display:block;font-size:15px;font-weight:400;color:#374151;margin-top:3px;min-height:40px}
+.ph{width:360px;height:760px;background:var(--bg);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.ph.g{background:var(--grp)}
+.ph img{width:100%;height:100%;object-fit:cover}
+.btn{position:absolute;left:14px;right:14px;bottom:14px;height:50px;border-radius:12px;background:var(--strong);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+.consent{font-size:13px;color:var(--muted);text-align:center;line-height:1.4;padding:0 22px}
+.consent b{color:var(--btext);font-weight:400}
+.logo{width:56px;height:56px;border-radius:15px;background:var(--strong);color:#fff;font-weight:900;font-size:34px;display:flex;align-items:center;justify-content:center}
+.sec{background:#fff;border-radius:14px;margin:0 14px;overflow:hidden}
+.cell{display:flex;align-items:center;gap:12px;padding:11px 14px;font-size:16px;border-bottom:1px solid #EEF0F2}
+.cell:last-child{border-bottom:none}
+.tile{width:34px;height:34px;border-radius:9px;background:var(--strong);display:flex;align-items:center;justify-content:center;flex:none}
+.tile.soft{background:var(--mint)}
+.cell .t2{font-size:13px;color:var(--muted)}
+.head{font-size:13px;color:var(--muted);text-transform:uppercase;padding:18px 28px 7px}
+.field{background:#fff;border-radius:14px;margin:0 14px;padding:14px 16px;font-size:17px}
+.flabel{font-size:13px;color:var(--muted);padding:0 30px 6px}
+.note{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:14px;padding:12px 28px}
+.star{color:#C2410C;font-weight:700}
+svg{display:block}
+.tiles2{display:flex;gap:10px;margin:0 14px}
+.big{flex:1;background:#fff;border-radius:14px;padding:16px 10px;text-align:center;font-size:16px;border:2px solid transparent}
+.big.on{border-color:var(--strong);background:var(--soft)}
+.big .tile{margin:0 auto 8px;width:44px;height:44px;border-radius:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);color:var(--btext);border-radius:20px;padding:6px 10px;font-size:13px}
+.card{background:#fff;border-radius:16px;margin:0 14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.route{display:flex;gap:10px}
+.dots{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.dot{width:10px;height:10px;border-radius:50%;border:2.5px solid var(--from)}
+.dot.to{border-color:var(--to)}
+.line{width:2px;height:22px;background:#D1D5DB;margin:3px 0}
+.seg{display:flex;background:#E5E7EB;border-radius:10px;padding:3px;margin:0 14px}
+.seg div{flex:1;text-align:center;padding:9px;font-size:15px;border-radius:8px}
+.seg .on{background:#fff;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.tg{margin:0 22px;background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.18);font-size:14px}
+.tg .tb{display:flex;justify-content:flex-end;gap:18px;margin-top:14px;font-weight:600;color:#2AABEE}
+.tg .tb .on{background:#E8F5FD;border-radius:8px;padding:4px 10px;outline:2px solid #2AABEE}
+.steps{display:flex;gap:6px;padding:14px 28px 0}
+.steps i{flex:1;height:4px;border-radius:2px;background:var(--strong)}
+.steps i.off{background:#D1D5DB}
+</style><style>
+.cks{position:absolute;left:0;right:0;bottom:80px;margin:0 14px;background:#F7F8FA}
+.ck{display:flex;gap:12px;align-items:flex-start;padding:11px 14px;font-size:14px;line-height:1.35;border-bottom:1px solid #EEF0F2}
+.ck:last-child{border-bottom:none}
+.ck b{color:var(--btext);font-weight:400;text-decoration:underline;text-underline-offset:2px}
+.cb{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid #9CA3AF;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.cb.on{background:var(--strong);border-color:var(--strong)}
+.btn.off{background:#E5E7EB;color:#9CA3AF}
+</style></head><body>
+<!--ICONS-->
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+<symbol id="money" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="eyeoff" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></symbol>
+<symbol id="user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></symbol>
+<symbol id="male" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="m21 3-6.75 6.75"/><circle cx="10" cy="14" r="6"/></symbol>
+<symbol id="female" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15v7"/><path d="M9 19h6"/><circle cx="12" cy="9" r="6"/></symbol>
+<symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+<symbol id="seat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+</defs></svg>
+
+<h1>1-ekran: 2 ta belgi</h1>
+<div class="sub">Maxfiylik siyosati imzolanmaydi: u bilan tanishiladi. Shuning uchun 2 ta belgi.</div>
+<div class="row">
+<div class="col"><div class="lab">C · 2 ta belgi: oldin<small>Oferta va maʼlumotlarga rozilik. Siyosat: havola. Tugma kulrang.</small></div><div class="ph g">
+  <div style="display:flex;flex-direction:column;align-items:center;padding-top:46px">
+   <div class="logo" style="width:64px;height:64px;font-size:40px;border-radius:18px">R</div>
+   <div style="font-size:28px;font-weight:800;margin-top:10px">Rida</div>
+   <div style="color:var(--btext);font-weight:700;margin-top:4px">Manzil sari</div>
+   
+  </div>
+  <div class="head" style="padding-top:12px">Nima uchun Rida</div>
+  <div class="sec"><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#shield"/></svg></div>Haydovchilar tekshirilgan.</div><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#money"/></svg></div>Yoʻl xarajatini birga boʻlamiz.</div><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#eyeoff"/></svg></div>Raqamingiz hech kimga koʻrinmaydi.</div></div>
+  <div class="sec cks" style="background:#fff"><div class="ck"><span class="cb"></span><span><b>Ommaviy oferta</b>ni qabul qilaman.</span></div><div class="ck"><span class="cb"></span><span><b>Shaxsga doir maʼlumotlarimni qayta ishlash</b>ga roziman. <b>Maxfiylik siyosati</b> bilan tanishdim.</span></div></div>
+  <div class="btn off">Davom etish</div>
+ </div></div>
+<div class="col"><div class="lab">C · 2 ta belgi: keyin<small>Ikkala belgi qoʻyildi: tugma yashil.</small></div><div class="ph g">
+  <div style="display:flex;flex-direction:column;align-items:center;padding-top:46px">
+   <div class="logo" style="width:64px;height:64px;font-size:40px;border-radius:18px">R</div>
+   <div style="font-size:28px;font-weight:800;margin-top:10px">Rida</div>
+   <div style="color:var(--btext);font-weight:700;margin-top:4px">Manzil sari</div>
+   
+  </div>
+  <div class="head" style="padding-top:12px">Nima uchun Rida</div>
+  <div class="sec"><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#shield"/></svg></div>Haydovchilar tekshirilgan.</div><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#money"/></svg></div>Yoʻl xarajatini birga boʻlamiz.</div><div class="cell"><div class="tile"><svg width="20" height="20" color="#fff"><use href="#eyeoff"/></svg></div>Raqamingiz hech kimga koʻrinmaydi.</div></div>
+  <div class="sec cks" style="background:#fff"><div class="ck"><span class="cb on"><svg width="14" height="14" color="#fff"><use href="#check"/></svg></span><span><b>Ommaviy oferta</b>ni qabul qilaman.</span></div><div class="ck"><span class="cb on"><svg width="14" height="14" color="#fff"><use href="#check"/></svg></span><span><b>Shaxsga doir maʼlumotlarimni qayta ishlash</b>ga roziman. <b>Maxfiylik siyosati</b> bilan tanishdim.</span></div></div>
+  <div class="btn">Davom etish</div>
+ </div></div>
+</div></body></html>

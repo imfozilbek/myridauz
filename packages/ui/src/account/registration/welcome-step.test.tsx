@@ -55,8 +55,7 @@ describe('Registration, screen 1: the welcome with two ticks (G58)', () => {
     expect(screen.getByText(bonus, { normalizer: (text) => text })).toBeTruthy();
     expect(screen.getByText('Yoʻlovchilar sizni oʻzi topadi.')).toBeTruthy();
     // Each row has its icon in a tile, as the tiles of the main screen.
-    const section = screen.getByText(`Nima uchun ${brand.name}`).closest('section');
-    expect(section?.querySelectorAll('span[style] > svg')).toHaveLength(3);
+    expect(container.querySelectorAll('.welcome-points .welcome-tile svg')).toHaveLength(3);
     expect(screen.queryByText('Safaringizga yoʻlovchi toping')).toBeNull();
     expect(screen.queryByText(/tugmasini bosib, siz/)).toBeNull();
   });

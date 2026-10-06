@@ -1,18 +1,21 @@
 import './registration.css';
 import { nameSchema, type Gender } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Input, List, Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
+import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Icon } from '../../icons';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { requestSignedContact } from '../../telegram/permissions';
-import { StepLayout } from '../step-layout';
+import { useScreenBackground } from '../../telegram/screen-background';
+import { useOpenAtTop } from '../../telegram/screen-top';
+import { brandVars } from './brand-vars';
 import { FaceCircle } from './face-circle';
 import { GenderTiles } from './gender-tiles';
+
+const NOTE_ICON = 18;
 
 export type Answers = {
   readonly photo: Blob | null;
@@ -41,7 +44,10 @@ type AboutStepProps = {
 // Telegram, the gender in one tap, then the phone from Telegram itself (docs/19, docs/10 q. 33).
 export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: AboutStepProps) {
   useScreenView('registration.about');
+  useScreenBackground('tinted');
+  useOpenAtTop();
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const [edited, setEdited] = useState(false);
   const [failed, setFailed] = useState(false);
   const name = nameSchema.safeParse(answers.name);
@@ -63,39 +69,41 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: Abo
   };
 
   return (
-    <StepLayout
-      steps={[2, 2]}
-      background="tinted"
-      title={t('account.about.title')}
-      hint={t('account.about.hint')}
-    >
+    <div className="about" style={brandVars(colors)}>
       <Screen onBack={onBack} />
-      <FaceCircle photo={photo} onPhoto={(next) => onChange({ ...answers, photo: next })} />
-      <List>
-        {/* «Ism» small and as written over the field, as on the approved mockup (G58). */}
-        <Text className="field-label">{t('account.name.label')}</Text>
-        <Section>
-          <Input
-            value={answers.name}
-            status={nameWrong ? 'error' : 'default'}
-            onChange={(event) => {
-              setEdited(true);
-              onChange({ ...answers, name: event.target.value });
-            }}
-          />
-        </Section>
-        {nameWrong ? <Text className="step-error">{t('account.name.invalid')}</Text> : null}
-      </List>
-      <GenderTiles value={gender} onChange={choose} />
-      <div className="step-note about-hidden">
-        <Icon name="hidden" size={18} />
-        <Text>{t('account.about.hidden')}</Text>
+      <div className="about-steps" role="progressbar" aria-valuenow={2} aria-valuemax={2}>
+        <i />
+        <i />
       </div>
-      {failed ? <Text className="step-error">{t('account.phone.denied')}</Text> : null}
-      {/* «Raqamni yuborish» only with the face, the name and the gender (docs/118). */}
-      {photo && name.success && gender ? (
-        <MainButton text={t('account.phone.send')} onClick={() => send(photo, name.data, gender)} />
-      ) : null}
-    </StepLayout>
+      <h1 className="about-title">{t('account.about.title')}</h1>
+      <p className="about-hint">{t('account.about.hint')}</p>
+      <FaceCircle photo={photo} onPhoto={(next) => onChange({ ...answers, photo: next })} />
+      <label className="about-label" htmlFor="about-name">
+        {t('account.name.label')}
+      </label>
+      <input
+        id="about-name"
+        className={nameWrong ? 'about-field about-field-wrong' : 'about-field'}
+        value={answers.name}
+        onChange={(event) => {
+          setEdited(true);
+          onChange({ ...answers, name: event.target.value });
+        }}
+      />
+      {nameWrong ? <p className="about-error">{t('account.name.invalid')}</p> : null}
+      <GenderTiles value={gender} onChange={choose} />
+      <p className="about-note">
+        <Icon name="hidden" size={NOTE_ICON} />
+        {t('account.about.hidden')}
+      </p>
+      {failed ? <p className="about-error">{t('account.phone.denied')}</p> : null}
+      {/* «Raqamni yuborish» works only with the face, the name and the gender (docs/118); before
+          it stands gray, as «Davom etish» of screen 1. */}
+      <MainButton
+        text={t('account.phone.send')}
+        disabled={!(photo && name.success && gender)}
+        onClick={() => (photo && name.success && gender ? send(photo, name.data, gender) : undefined)}
+      />
+    </div>
   );
 }
