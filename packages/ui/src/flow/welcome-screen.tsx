@@ -22,7 +22,7 @@ type WelcomeScreenProps = {
 // The logo of the app from its brand kit (docs/36), served from brands/<brand>/public (docs/22).
 const logoUrl = (file: string) => `${import.meta.env.BASE_URL}${file}`;
 // The size of the logo on the approved mockups (docs/118): the same for both roles.
-const LOGO_SIZE = 64;
+const LOGO_SIZE = 72;
 
 // Screen 1 of the registration (G58, docs/118): the brand, «Nima uchun» in rows with an icon
 // tile, the consent at the bottom.
@@ -51,7 +51,7 @@ export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeS
       <List className="welcome-list">
         <Section header={i18n.t('account.welcome.why', { brand: brand.name })}>
           {welcome.points.map((point) => (
-            <Cell key={point.textKey} before={<IconTile name={point.icon} size="tile" />}>
+            <Cell key={point.textKey} className="welcome-point" before={<IconTile name={point.icon} size="tile" />}>
               {i18n.t(point.textKey, values)}
             </Cell>
           ))}

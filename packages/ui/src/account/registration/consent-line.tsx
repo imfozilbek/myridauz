@@ -57,9 +57,10 @@ export function ConsentChecks({ value, onChange, onOpen }: ConsentChecksProps) {
         <Cell
           key={consent}
           Component="label"
+          className="welcome-tick"
           before={<Checkbox checked={value[consent]} onChange={() => toggle(consent)} />}
         >
-          {line(consent)}
+          <span className="welcome-tick-text">{line(consent)}</span>
         </Cell>
       ))}
     </Section>

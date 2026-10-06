@@ -31,7 +31,7 @@ export function GenderTiles({ value, onChange }: GenderTilesProps) {
             style={chosen ? outline : undefined}
             onClick={() => onChange(gender)}
           >
-            <IconTile name={gender} size="tile" soft={!chosen} />
+            <IconTile name={gender} tone="mint" size="large" soft={!chosen} />
             <Text>{t(`account.gender.${gender}`)}</Text>
           </button>
         );

@@ -43,3 +43,24 @@
   z-index: 1;
   text-decoration: underline;
 }
+
+/* The rows of «Nima uchun» are as tall as on the mockup (docs/118). */
+.welcome-point {
+  min-height: 56px;
+}
+
+/* A tick stands at the first line of its words; the words are smaller, as on the mockup. */
+.welcome-tick {
+  align-items: flex-start;
+}
+
+/* The box comes down to the first line: the words have their own padding above. */
+.welcome-tick > :first-child {
+  margin-top: 15px;
+}
+
+.welcome-tick-text,
+.welcome-tick-text a {
+  font-size: 15px;
+  line-height: 24px;
+}
