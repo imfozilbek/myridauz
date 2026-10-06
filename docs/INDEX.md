@@ -122,4 +122,5 @@
 | 117 | [117-free-tier.md](117-free-tier.md) | Rida в бесплатном тарифе Cloudflare: бюджет на 1 000 людей, Cron по индексам и уровням, проверка плана запросов (G56) |
 | 118 | [118-registration-redesign.md](118-registration-redesign.md) | Регистрация заново: галочки согласия, «Nima uchun Rida», выбор пола плитками; порядок пересмотра экранов (G58) |
 | 119 | [119-channel-invites.md](119-channel-invites.md) | Приглашение в каналы направлений: 6 мест у попутчика, 4 у водителя, сайт; одно направление один раз |
+| 120 | [120-admin-redesign.md](120-admin-redesign.md) | Админка заново: единая очередь, «Diqqat» для владельца, карточки дел, «Boshqaruv» (G67) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
