@@ -47,7 +47,7 @@
 |---|---|---|---|
 | Мужчина | нет | видна: driver-market | скрыта: driver-market |
 | Мужчина | да | видна: combos | видна: combos |
-| Женщина | (шаг не спрашивают) | видна: driver-market | видна: driver-market |
+| Женщина | (отметка ставится сама, `118`) | видна: driver-market | видна: driver-market |
 
 ## Время × что происходит (pairwise)
 
