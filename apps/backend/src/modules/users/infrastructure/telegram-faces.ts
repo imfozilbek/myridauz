@@ -21,7 +21,7 @@ type Wiring = {
 };
 
 // A new face goes to the team as a photo with «Rasm mos» and «Mos emas» (docs/120); a photo that
-// does not fit is told to the person in the passenger bot, with a button to put a new one (docs/118).
+// does not fit is told to the person in the bot of their role, with a button to put a new one (docs/118).
 export function telegramFaces(wiring: Wiring): FaceNotifier {
   return {
     uploaded: async (user) => {
@@ -40,8 +40,10 @@ export function telegramFaces(wiring: Wiring): FaceNotifier {
     },
     rejected: async (user, reason) => {
       const text = t('bot.face.rejected', { reason: t(`moderation.faceReason.${reason}`) });
-      const markup = openButton(wiring.brand, 'passenger', t('bot.face.change'), PROFILE_PHOTO_LINK);
-      await wiring.send([{ bot: 'passenger', chatId: user.id, text, markup }]);
+      // A driver hears it in the driver bot: a driver may never have opened the passenger bot.
+      const bot = user.isDriver ? 'driver' : 'passenger';
+      const markup = openButton(wiring.brand, bot, t('bot.face.change'), PROFILE_PHOTO_LINK);
+      await wiring.send([{ bot, chatId: user.id, text, markup }]);
     },
   };
 }
