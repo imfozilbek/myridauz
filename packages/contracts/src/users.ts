@@ -7,8 +7,6 @@ export const ME_PATH = '/me';
 export const REGISTRATION_PATH = '/me/registration';
 export const MY_AVATAR_PATH = '/me/avatar';
 export const WRITE_ACCESS_PATH = '/me/write-access';
-// «Bot xabarlari» in the profile (docs/88 L1).
-export const NEWS_PATH = '/me/news';
 export const userPath = (id: PersonId) => `/users/${id}`;
 export const userAvatarPath = (id: PersonId) => `${userPath(id)}/avatar`;
 
@@ -44,7 +42,6 @@ export const registrationSchema = z.object({
 export type RegistrationInput = z.input<typeof registrationSchema>;
 
 export const writeAccessSchema = z.object({ allowed: z.boolean() });
-export const newsSchema = z.object({ on: z.boolean() });
 
 const settingsSchema = z.object({ passengerAvatarRequired: z.boolean() });
 
@@ -57,8 +54,6 @@ export const myProfileSchema = z.object({
   roles: z.array(z.enum(USER_ROLES)),
   hasAvatar: z.boolean(),
   writeAccess: z.boolean(),
-  // The news of the bot are on (docs/88 L1).
-  news: z.boolean(),
   // null: no ratings yet, shown as "Yangi" (new).
   rating: z.number().nullable(),
 });

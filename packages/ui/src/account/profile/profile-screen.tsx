@@ -15,7 +15,6 @@ import type { LegalDocument } from '@platform/contracts';
 import { CarCell, WalletCell } from '../../driver/car-cell';
 import { WalletScreen } from '../../wallet/wallet-screen';
 import { AvatarPicker } from './avatar-picker';
-import { BotNews } from './bot-news';
 import { DeleteAccountCell, DeleteAccountScreen } from './delete-account';
 import { ProfilePhoto } from './profile-photo';
 
@@ -52,7 +51,6 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
             {t('account.profile.phone')}
           </Cell>
         </Section>
-        <BotNews />
         <HistoryEntry onOpen={() => setOpen('history')} />
         <CarCell />
         <WalletCell onOpen={() => setOpen('wallet')} />

@@ -14,7 +14,6 @@ type UserRow = {
   blocked_until: number | null;
   avatar_key: string | null;
   write_access: number;
-  news_off: number;
   created_at: number;
   updated_at: number;
 };
@@ -33,7 +32,6 @@ const toUser = (row: UserRow): User => ({
   block: toBlock(row.blocked, row.blocked_until),
   avatarKey: row.avatar_key,
   writeAccess: row.write_access === 1,
-  newsOff: row.news_off === 1,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -58,12 +56,12 @@ export const d1Users = (db: D1Database): UserRepository => ({
     await db
       .prepare(
         `INSERT INTO users (id, public_id, first_name, gender, phone, locale, is_driver, consent_at, blocked,
-           blocked_until, avatar_key, write_access, news_off, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+           blocked_until, avatar_key, write_access, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET public_id = excluded.public_id, first_name = excluded.first_name, gender = excluded.gender,
            phone = excluded.phone, is_driver = excluded.is_driver, blocked = excluded.blocked,
            blocked_until = excluded.blocked_until, avatar_key = excluded.avatar_key,
-           write_access = excluded.write_access, news_off = excluded.news_off, consent_at = excluded.consent_at,
+           write_access = excluded.write_access, consent_at = excluded.consent_at,
            updated_at = excluded.updated_at, deleted_at = NULL`,
       )
       .bind(
@@ -79,7 +77,6 @@ export const d1Users = (db: D1Database): UserRepository => ({
         user.block?.until ?? null,
         user.avatarKey,
         Number(user.writeAccess),
-        Number(user.newsOff),
         user.createdAt,
         user.updatedAt,
       )

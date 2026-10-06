@@ -1,12 +1,13 @@
 {
-  "consent.line": "«{button}» tugmasini bosib, siz {offer}, {privacy} va {consent} rozilik bildirasiz.",
-  "consent.link.offer": "ommaviy oferta",
-  "consent.link.privacy": "maxfiylik siyosati",
-  "consent.link.consent": "shaxsga doir maʼlumotlarni qayta ishlash shartlariga",
+  "consent.offer": "{offer}ni qabul qilaman.",
+  "consent.data": "{consent}ga roziman. {privacy} bilan tanishdim.",
+  "consent.link.offer": "Ommaviy oferta",
+  "consent.link.privacy": "Maxfiylik siyosati",
+  "consent.link.consent": "Shaxsga doir maʼlumotlarimni qayta ishlash",
   "about.title": "Siz haqingizda",
   "about.hint": "Ismingizni safar sheriklaringiz koʻradi. Jins «Mashinada ayol bor» belgisi uchun kerak.",
   "about.hidden": "Raqamingiz hech kimga koʻrinmaydi.",
-  "name.placeholder": "Ism",
+  "name.label": "Ism",
   "name.invalid": "Faqat harflardan iborat ism yozing, 2 tadan 32 tagacha.",
   "gender.male": "Erkak",
   "gender.female": "Ayol",
@@ -23,9 +24,6 @@
   "profile.newRating": "Yangi",
   "profile.phone": "Telefon",
   "profile.phoneHint": "Raqamingizni faqat siz koʻrasiz.",
-  "profile.news": "Bot xabarlari",
-  "profile.newsHint": "Yangiliklar va safar eslatmalari. Bron va chat xabarlari har doim keladi.",
-  "profile.newsOffHint": "Yangiliklar va safar eslatmalari kelmaydi. Bron va chat xabarlari har doim keladi.",
   "avatar.add": "Rasm qoʻshish",
   "avatar.change": "Rasmni almashtirish",
   "avatar.cameraTitle": "Yuzingiz rasmi",
@@ -44,5 +42,6 @@
   "delete.doneHint": "Xohlasangiz, istalgan vaqtda qaytadan roʻyxatdan oʻtishingiz mumkin.",
   "delete.close": "Yopish",
   "avatar.passengerWhy": "Rasm bilan haydovchi tezroq tasdiqlaydi.",
-  "team.deniedHint": "Safar uchun yoʻlovchi yoki haydovchi botini oching."
+  "team.deniedHint": "Safar uchun yoʻlovchi yoki haydovchi botini oching.",
+  "welcome.why": "Nima uchun {brand}"
 }

@@ -17,7 +17,6 @@ const profile = {
   roles: ['passenger'],
   hasAvatar: false,
   writeAccess: false,
-  news: true,
   rating: null,
 };
 

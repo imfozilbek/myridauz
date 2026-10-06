@@ -11,7 +11,6 @@ const profile = {
   roles: ['passenger' as const],
   hasAvatar: false,
   writeAccess: false,
-  news: true,
   rating: null,
 };
 export const active: MeResponse = { state: 'active', profile, settings };
@@ -25,7 +24,6 @@ export function fakeClient(me: MeResponse | Error) {
     register: vi.fn<(input: RegistrationInput) => Promise<MeResponse>>(async () => active),
     uploadAvatar: vi.fn(async () => undefined),
     setWriteAccess: vi.fn(async () => undefined),
-    setNews: vi.fn(async () => undefined),
     deleteMe: vi.fn(async () => undefined),
     getAvatar: vi.fn(async () => new Blob(['x'])),
   };

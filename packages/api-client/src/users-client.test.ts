@@ -11,7 +11,6 @@ const profile = {
   roles: ['passenger'],
   hasAvatar: false,
   writeAccess: false,
-  news: true,
   rating: null,
 };
 const settings = { passengerAvatarRequired: false };
@@ -49,8 +48,6 @@ describe('createUsersClient', () => {
     });
     await client.setWriteAccess(true);
     expect(fetch.mock.calls[2]?.[1]).toMatchObject({ method: 'POST', body: '{"allowed":true}' });
-    await client.setNews(false);
-    expect(fetch.mock.calls[3]?.[1]).toMatchObject({ method: 'POST', body: '{"on":false}' });
   });
 
   it('loads a photo as a blob', async () => {

@@ -6,15 +6,17 @@ import { FeedContext } from '../feed/feed-context';
 import { renderInShell } from '../test-shell';
 import { AccountGate } from './account-gate';
 import { active, fakeClient, settings } from './account-test-kit';
+import { addFace, FACE, passWelcome } from './registration/registration-test-kit';
 
 const permissions = vi.hoisted(() => ({
   requestSignedContact: vi.fn(async (): Promise<string | null> => 'contact=signed'),
   requestBotMessages: vi.fn(async () => true),
 }));
 vi.mock('../telegram/permissions', () => permissions);
+vi.mock('./profile/compress-image', () => ({ compressImage: async (file: Blob) => file }));
 
 const welcome = {
-  textKey: 'common.passenger.welcome',
+  logo: 'logo.svg',
   points: [{ icon: 'team', textKey: 'common.welcome.verified' }],
 } as const;
 const gate = (client: UsersClient, app: 'passenger' | 'driver' = 'passenger') =>
@@ -30,13 +32,13 @@ afterEach(cleanup);
 describe('AccountGate', () => {
   it('registers a new person in two screens and lets them in', async () => {
     const client = fakeClient({ state: 'unregistered', suggestedName: 'Dilnoza', settings });
-    const { tracked } = gate(client);
+    const { tracked, container } = gate(client);
     const brand = loadBrand();
     expect(await screen.findByText(brand.slogan)).toBeTruthy();
-    expect(screen.getByText('Safar toping')).toBeTruthy();
     // What the person gets, before any question (docs/86 T11).
     expect(screen.getByText('Haydovchilar tekshirilgan.')).toBeTruthy();
-    fireEvent.click(screen.getByText('Davom etish'));
+    await passWelcome();
+    await addFace(container);
     const input = screen.getByDisplayValue('Dilnoza');
     fireEvent.change(input, { target: { value: 'Ali 998' } });
     expect(screen.getByText(/Faqat harflardan/)).toBeTruthy();
@@ -52,6 +54,8 @@ describe('AccountGate', () => {
       // The first touch goes with the registration (G55, docs/116).
       came: { source: 'direct', client: 'browser' },
     });
+    // The face goes up right after the registration (G58).
+    expect(client.uploadAvatar).toHaveBeenCalledWith(FACE);
     const steps = tracked.filter((event) => event.name === 'registration_step');
     expect(steps.map((event) => 'step' in event && event.step)).toEqual([
       'consent',
@@ -64,8 +68,9 @@ describe('AccountGate', () => {
 
   it('says a phone is required when the person refuses to share it', async () => {
     permissions.requestSignedContact.mockResolvedValueOnce(null);
-    gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings }));
-    fireEvent.click(await screen.findByText('Davom etish'));
+    const { container } = gate(fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings }));
+    await passWelcome();
+    await addFace(container);
     fireEvent.click(screen.getByText('Erkak'));
     await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
     expect(screen.getByText(/Raqamsiz/)).toBeTruthy();
@@ -87,8 +92,9 @@ describe('AccountGate', () => {
   it('turns a blocked phone during registration into the block screen', async () => {
     const client = fakeClient({ state: 'unregistered', suggestedName: 'Ali', settings });
     client.register.mockRejectedValueOnce(new ApiError(403, 'users.blocked'));
-    gate(client);
-    fireEvent.click(await screen.findByText('Davom etish'));
+    const { container } = gate(client);
+    await passWelcome();
+    await addFace(container);
     fireEvent.click(screen.getByText('Erkak'));
     await act(async () => fireEvent.click(screen.getByText('Raqamni yuborish')));
     expect(await screen.findByText(/butunlay|qoʻllab-quvvatlash/)).toBeTruthy();

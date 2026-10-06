@@ -103,6 +103,8 @@ const MOCK = String((signedContact: string | null) => {
           button.style.background = data.color;
           button.style.color = data.text_color;
           button.style.display = data.is_visible ? 'block' : 'none';
+          // An inactive button sends nothing, as in Telegram (G58: the consent).
+          button.disabled = data.is_active === false;
         }
         if (type === 'web_app_setup_secondary_button') {
           second.textContent = data.text;

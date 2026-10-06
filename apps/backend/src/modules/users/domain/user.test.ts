@@ -16,7 +16,6 @@ const sampleUser: User = {
   block: null,
   avatarKey: 'avatars/1/a',
   writeAccess: true,
-  newsOff: false,
   createdAt: NOW,
   updatedAt: NOW,
 };

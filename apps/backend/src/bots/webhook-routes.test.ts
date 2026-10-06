@@ -71,7 +71,6 @@ describe('POST /telegram/:role', () => {
       block: { until: null },
       avatarKey: null,
       writeAccess: false,
-      newsOff: false,
       createdAt: 1,
       updatedAt: 1,
     });

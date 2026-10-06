@@ -2,7 +2,6 @@ import {
   ME_PATH,
   meResponseSchema,
   MY_AVATAR_PATH,
-  NEWS_PATH,
   REGISTRATION_PATH,
   userAvatarPath,
   WRITE_ACCESS_PATH,
@@ -26,10 +25,6 @@ export function createUsersClient(options: SignedOptions) {
     },
     async setWriteAccess(allowed: boolean): Promise<void> {
       await post(WRITE_ACCESS_PATH, { allowed });
-    },
-    // «Bot xabarlari» in the profile (docs/88 L1).
-    async setNews(on: boolean): Promise<void> {
-      await post(NEWS_PATH, { on });
     },
     // "Maʼlumotlarimni oʻchirish" (docs/30).
     async deleteMe(): Promise<void> {
