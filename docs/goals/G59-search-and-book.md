@@ -19,6 +19,9 @@ Definition of Done
 [ ] «Safar»: водитель сверху (фото, оценка, машина, номер), маршрут,
     пометки иконками, один отзыв и «Barcha izohlar (N) ›»,
     «Necha kishi ketadi?» с − и +, «Jami», «N ta joy band qilish».
+[ ] «Men bilan ayol bor» на «Safar»: виден при 2 местах и больше,
+    если в поездке нет «Mashinada ayol bor»; включён: отметка
+    у поездки (docs/06, п. 4).
 [ ] «Qayerdan, qayerga?»: строки посадки и высадки открывают карту,
     «Hammasi» (места × доля), «Soʻrov yuborish» только с обеими
     точками; старые экраны способа и проверки убраны.
