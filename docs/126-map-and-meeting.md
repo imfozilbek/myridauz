@@ -35,7 +35,7 @@
 
 ## Линия пути
 
-- Поездка в другой город: не карта, а линия «Chilonzor tumani, Toshkent shahri 08:00 ● ≈ 300 km · ≈ 5 soat yoʻl ● Samarqand shahri ≈ 13:00».
+- Поездка в другой город: не карта, а линия «Chilonzor, Toshkent shahri 08:00 ● ≈ 300 km · ≈ 5 soat yoʻl ● Samarqand shahri ≈ 13:00».
 - Везде, где карточка поездки: «Safar», бронь, «Yoʻlda», публикация водителя.
 
 ## Цели
