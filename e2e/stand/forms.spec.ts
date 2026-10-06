@@ -30,7 +30,7 @@ test('P02, P04. a document opens before the consent and comes back; a name of si
   // A name that is not a name is said at once; the phone is not asked until it is fixed.
   await expect(page.getByText(t('account.name.invalid'))).toBeVisible();
   await page.getByRole('radio', { name: TEXT.female }).click();
-  await expect(mainButton(page)).toBeHidden();
+  await expect(mainButton(page)).toBeDisabled();
   await shot(page, 'android', 'p05-name-invalid');
 });
 
