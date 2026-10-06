@@ -19,6 +19,9 @@ Definition of Done
 [ ] «Safar»: водитель сверху (фото, оценка, машина, номер), маршрут,
     пометки иконками, один отзыв и «Barcha izohlar (N) ›»,
     «Necha kishi ketadi?» с − и +, «Jami», «N ta joy band qilish».
+[ ] «Butun salon»: фильтр «Boʻsh salon» в «Safarlar», метка у
+    поездки; на «Safar» «Joylar / Butun salon» или «Faqat butun
+    salon»; цена = места × цена места (docs/09, 118).
 [ ] «Men bilan ayol bor» на «Safar»: виден мужчине при 2 местах и больше,
     если в поездке нет «Mashinada ayol bor»; включён: отметка
     у поездки (docs/06, п. 4).
