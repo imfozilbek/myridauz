@@ -48,6 +48,13 @@ Definition of Done
 4. goals/INDEX: G58 ✅; лишние ветки удалены.
 ```
 
+## Решения владельца 06.10.2026 (после сверки Pixel Perfect)
+
+- «Raqamni yuborish» без фото стоит серой и неактивной, как «Davom etish» на экране 1 (на макете зелёная).
+- Фон с градиентом цвета Mini App остаётся (`../121` §5), на макете фон плоский.
+- Водитель сделан по макету попутчика в янтарном цвете; отдельный лист `g58/3-driver.png` нарисован слабее.
+- Сверка: `e2e/pixel-screenshots.spec.ts`, лист `g58/5-pixel-perfect.png`, отличие 0,3%.
+
 ## Как сделано
 
 - Экран 1: `packages/ui/src/flow/welcome-screen.tsx`, галочки `account/registration/consent-line.tsx`; логотипы `brands/rida/public/logo.svg`, `logo-driver.svg`.
