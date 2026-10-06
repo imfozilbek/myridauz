@@ -3,7 +3,7 @@ import { Icon, type IconName } from './icons';
 
 export type Tone = 'brand' | 'accent' | 'deep' | 'danger';
 
-export const SIZES = {
+const SIZES = {
   cell: { tile: 30, icon: 18, radius: 8 },
   // A tile of the main screen (G53).
   tile: { tile: 40, icon: 22, radius: 11 },
