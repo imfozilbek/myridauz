@@ -129,4 +129,6 @@
 | 124 | [124-redesign-gaps.md](124-redesign-gaps.md) | Дыры пересмотра экранов: около 100 по 14 темам, совет по каждой |
 | 125 | [125-redesign-contradictions.md](125-redesign-contradictions.md) | Противоречия между документами после пересмотра: 17 правок и 14 решений владельца |
 | 126 | [126-map-and-meeting.md](126-map-and-meeting.md) | Карта и встреча: экран карты, маленькая карта, карточка встречи, своя карта, линия пути |
+| 127 | [127-user-limits.md](127-user-limits.md) | Все лимиты для людей одним списком: значение и есть ли в коде |
+| 128 | [128-user-limits-decisions.md](128-user-limits-decisions.md) | Лимиты: споры кода и решений, вопросы владельцу |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
