@@ -38,7 +38,7 @@
 
 ### Почему хочется нажать (G69)
 
-Макет: `goals/g69/2-share-motivation.png`. Шесть правил для каждой кнопки «ulashish»:
+Макеты: `goals/g69/2-share-motivation.png`, `3-share-voice.png`. Семь правил для каждой кнопки «ulashish»:
 
 | Правило | Как |
 |---|---|
@@ -47,6 +47,7 @@
 | Кнопка называет адресата | «Urgutga boradigan doʻstimga», «Guruhimga yuborish», а не «Ulashish» |
 | Лучший момент | сразу после «Yetib keldingiz», одобрения, круглого числа |
 | Видно, что вышло | в профиле «Sizning taʼsiringiz»: кто пришёл по ссылке; знаки «Yoʻl hamrohi» (1), «Rida elchisi» (5), «Yoʻnalish qahramoni» (25) |
+| Своим голосом (решение владельца) | карточка от первого лица: «Men tekshirilgan Rida haydovchisiman», «Urgutga 4 kishi boʻlib bordik!»; человек выбирает одну из 3 готовых фраз; похвала «eng faol 10 tadan biri» только если так в данных (урок №9) |
 | Без давления | «Keyinroq» всегда есть; один момент: одно предложение; без наград деньгами до решения владельца |
 
 - Меряем: `share_shown` и `share_done` по каждой кнопке и моменту (`29`); тексты кнопок проверяем A/B.
