@@ -20,7 +20,7 @@ Definition of Done
     направлению, карточка с «Xaritada ›».
 [ ] «Qanday band qilinadi?»: 3 правила, цена салона = места × цена.
 [ ] «Mening safarim»: открывается после публикации; «Joy
-    soʻraganlar» с «Tasdiqlash»/«Rad etish» (окно комиссии);
+    soʻraganlar» с «Tasdiqlash»/«Rad etish» (комиссия видна в карточке, без отдельного окна);
     попутчики с чатом и звонком; карточка поездки; 4 кнопки.
 [ ] Главная кнопка: «Yoʻlga chiqdim» (с 1 часа до выезда), «Yetib
     keldik» в пути; отмена только до выезда.
