@@ -125,4 +125,5 @@
 | 120 | [120-admin-redesign.md](120-admin-redesign.md) | Админка заново: единая очередь, «Diqqat» для владельца, карточки дел, «Boshqaruv» (G67) |
 | 121 | [121-size-and-route-rules.md](121-size-and-route-rules.md) | Глобально: ничего не обрезается, одинаковые размеры, квадратные плитки; маршрут «район, область, место, ориентир» |
 | 122 | [122-bot-messages.md](122-bot-messages.md) | Сообщения ботов: живые карточки и звонки со звуком; все боты решены |
+| 123 | [123-growth-and-education.md](123-growth-and-education.md) | Рост и обучение: петли роста, видео-инструкции, подсказки по шагу, Instagram (G69, G70) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
