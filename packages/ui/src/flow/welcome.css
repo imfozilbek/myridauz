@@ -35,3 +35,8 @@
 .welcome-consent {
   margin-top: auto;
 }
+
+/* The document names are underlined, as on the approved mockup (docs/118). */
+.welcome-consent a {
+  text-decoration: underline;
+}

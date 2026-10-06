@@ -6,6 +6,7 @@ export {
   Badge,
   Banner,
   Button,
+  Checkbox,
   IconButton,
   Input,
   List,

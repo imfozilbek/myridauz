@@ -1,4 +1,5 @@
 import type { Gender } from '@platform/contracts';
+import { Text } from '@telegram-apps/telegram-ui';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { IconTile } from '../../icon-tile';
@@ -31,7 +32,7 @@ export function GenderTiles({ value, onChange }: GenderTilesProps) {
             onClick={() => onChange(gender)}
           >
             <IconTile name={gender} size="tile" soft={!chosen} />
-            <span>{t(`account.gender.${gender}`)}</span>
+            <Text>{t(`account.gender.${gender}`)}</Text>
           </button>
         );
       })}

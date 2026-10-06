@@ -28,7 +28,11 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
 // Both ticks of screen 1, then «Davom etish» (G58): «Siz haqingizda» opens.
 export async function passConsent(page: Page, ticked: () => Promise<unknown> = async () => undefined) {
   const mainButton = page.locator('#tg-main-button');
-  for (const box of await page.getByRole('checkbox').all()) await box.check();
+  // A person taps the box itself: its picture lies over the hidden input.
+  for (const box of await page.getByRole('checkbox').all()) {
+    await box.locator('xpath=..').click();
+    await expect(box).toBeChecked();
+  }
   await expect(mainButton).toBeEnabled();
   await ticked();
   await mainButton.click();

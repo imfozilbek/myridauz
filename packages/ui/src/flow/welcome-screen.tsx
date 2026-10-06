@@ -6,7 +6,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile, SIZES } from '../icon-tile';
+import { IconTile } from '../icon-tile';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 
@@ -21,6 +21,8 @@ type WelcomeScreenProps = {
 
 // The logo of the app from its brand kit (docs/36), served from brands/<brand>/public (docs/22).
 const logoUrl = (file: string) => `${import.meta.env.BASE_URL}${file}`;
+// The size of the logo on the approved mockups (docs/118): the same for both roles.
+const LOGO_SIZE = 64;
 
 // Screen 1 of the registration (G58, docs/118): the brand, «Nima uchun» in rows with an icon
 // tile, the consent at the bottom.
@@ -38,8 +40,8 @@ export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeS
           className="welcome-logo"
           src={logoUrl(welcome.logo)}
           alt={brand.name}
-          width={SIZES.hero.tile}
-          height={SIZES.hero.tile}
+          width={LOGO_SIZE}
+          height={LOGO_SIZE}
         />
         <LargeTitle weight="1">{brand.name}</LargeTitle>
         <Text weight="2" className="welcome-slogan">

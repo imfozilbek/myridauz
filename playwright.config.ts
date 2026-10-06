@@ -60,6 +60,7 @@ export default defineConfig({
         'g29-more-screenshots.spec.ts',
         'tiles-screenshots.spec.ts',
         'sounds-screenshots.spec.ts',
+        'registration-sizes-screenshots.spec.ts',
       ],
     },
   ],

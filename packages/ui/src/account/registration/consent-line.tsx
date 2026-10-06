@@ -1,7 +1,7 @@
 import { LEGAL_DOCUMENTS, type LegalDocument } from '@platform/contracts';
 import { Link } from '@telegram-apps/telegram-ui';
 import type { MouseEvent } from 'react';
-import { Cell, Multiselectable, Section } from '../../components';
+import { Cell, Checkbox, Section } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { haptic } from '../../telegram/feedback';
 
@@ -57,7 +57,7 @@ export function ConsentChecks({ value, onChange, onOpen }: ConsentChecksProps) {
         <Cell
           key={consent}
           Component="label"
-          before={<Multiselectable checked={value[consent]} onChange={() => toggle(consent)} />}
+          before={<Checkbox checked={value[consent]} onChange={() => toggle(consent)} />}
         >
           {line(consent)}
         </Cell>

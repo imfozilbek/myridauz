@@ -72,7 +72,9 @@ export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: Abo
       <Screen onBack={onBack} />
       <FaceCircle photo={photo} onPhoto={(next) => onChange({ ...answers, photo: next })} />
       <List>
-        <Section header={t('account.name.label')}>
+        {/* «Ism» small and as written over the field, as on the approved mockup (G58). */}
+        <Text className="field-label">{t('account.name.label')}</Text>
+        <Section>
           <Input
             value={answers.name}
             status={nameWrong ? 'error' : 'default'}
