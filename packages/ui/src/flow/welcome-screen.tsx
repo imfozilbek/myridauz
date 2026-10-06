@@ -51,7 +51,11 @@ export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeS
       <List className="welcome-list">
         <Section header={i18n.t('account.welcome.why', { brand: brand.name })}>
           {welcome.points.map((point) => (
-            <Cell key={point.textKey} className="welcome-point" before={<IconTile name={point.icon} size="tile" />}>
+            <Cell
+              key={point.textKey}
+              className="welcome-point"
+              before={<IconTile name={point.icon} size="tile" />}
+            >
               {i18n.t(point.textKey, values)}
             </Cell>
           ))}
