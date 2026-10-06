@@ -128,4 +128,5 @@
 | 123 | [123-growth-and-education.md](123-growth-and-education.md) | Рост и обучение: петли роста, видео-инструкции, подсказки по шагу, Instagram (G69, G70) |
 | 124 | [124-redesign-gaps.md](124-redesign-gaps.md) | Дыры пересмотра экранов: около 100 по 14 темам, совет по каждой |
 | 125 | [125-redesign-contradictions.md](125-redesign-contradictions.md) | Противоречия между документами после пересмотра: 17 правок и 14 решений владельца |
+| 126 | [126-map-and-meeting.md](126-map-and-meeting.md) | Карта и встреча: экран карты, маленькая карта, карточка встречи, своя карта, линия пути |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
