@@ -2,7 +2,8 @@ import { expect, test } from '../crash-guard';
 import { book, CHILONZOR, publishTrip } from './market-kit';
 import { askRide, confirmedSeat, dayAfterTomorrow, SAMARQAND, TO_SAMARQAND } from './g27-kit';
 import { MALIKA, OYBEK, ROZA } from './people';
-import { mainButton, NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
+import { passConsent } from '../registration';
+import { NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
 import { outsideCalls, type Person } from './stand-kit';
 
 // The screens of a driver (docs/78) for the UX review: a newcomer, and an approved driver with a
@@ -23,7 +24,7 @@ test.beforeAll(async () => {
 test('a newcomer: welcome and the way to become a driver', async ({ page }) => {
   await openHome(page, 'driver', NEWCOMER, 'android');
   await shot(page, 'android', 'd01-welcome');
-  await mainButton(page).click();
+  await passConsent(page);
   await shot(page, 'android', 'd02-about');
 });
 

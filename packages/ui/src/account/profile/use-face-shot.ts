@@ -7,11 +7,9 @@ import { haptic } from '../../telegram/feedback';
 import { useAccount } from '../account-context';
 import { compressImage } from './compress-image';
 
-// The face of a person is a selfie with the front camera only, never the gallery (docs/47): the
-// same photo in the profile and in the driver application (docs/05, G34).
-export function useFaceShot() {
+// A new face goes up small (docs/05) and the team checks it (G58); a failure says why.
+export function useFaceUpload() {
   const account = useAccount();
-  const { t } = useI18n();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const upload = async (file: Blob) => {
@@ -29,6 +27,13 @@ export function useFaceShot() {
       setBusy(false);
     }
   };
+  return { upload, busy, failure };
+}
+
+// The face in the driver application: our camera with the oval, the same photo as the profile (G34).
+export function useFaceShot() {
+  const { t } = useI18n();
+  const { upload, busy, failure } = useFaceUpload();
   const camera = usePhotoTaker('user', (photo) => void upload(photo));
   const take = () =>
     camera.open({

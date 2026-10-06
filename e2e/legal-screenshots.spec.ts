@@ -2,7 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { mockTelegram, telegramUrl } from './telegram-mock';
+import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER, DRIVER] = MINI_APPS;
@@ -24,6 +24,9 @@ test('consent: each document opens from the welcome', async ({ page }) => {
   await expect(page.getByText(`1. ${t('legal.offer.1.title')}`)).toBeVisible();
   // The first screen of the document: the whole text is in the review file (OPS-03).
   await page.screenshot({ path: 'screenshots/legal-2-offer.png' });
+  // A tap on the name opened the document and did not tick the box (G58).
+  await pressBack(page);
+  for (const box of await page.getByRole('checkbox').all()) await expect(box).not.toBeChecked();
 });
 
 test('a bot link opens the privacy policy', async ({ page }) => {

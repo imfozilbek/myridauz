@@ -16,7 +16,6 @@ const account = {
   app: 'driver',
   client: { getAvatar: () => Promise.reject(new Error('test.none')) },
   profile: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: true, rating: null },
-  settings: { passengerAvatarRequired: false },
   avatarVersion: 0,
   onAvatarChanged: () => undefined,
   onProfileChanged: () => undefined,
@@ -72,11 +71,10 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
     expect(native.mainShown).toBe(true);
   });
 
-  it('F7: in the profile «Назад» closes the camera, not the profile', () => {
+  it('G58: in the profile the photo opens the camera or the gallery of the phone, no own camera', () => {
     const onBack = vi.fn();
     inTelegram(<ProfileScreen onBack={onBack} />);
     fireEvent.click(screen.getByText('Rasmni almashtirish'));
-    act(pressBack);
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(onBack).not.toHaveBeenCalled();
   });

@@ -36,7 +36,10 @@
   margin-top: auto;
 }
 
-/* The document names are underlined, as on the approved mockup (docs/118). */
+/* The document names are underlined, as on the approved mockup (docs/118). They lie over the
+   pressed layer of the row: a tap on a name opens the document, it does not tick the box. */
 .welcome-consent a {
+  position: relative;
+  z-index: 1;
   text-decoration: underline;
 }
