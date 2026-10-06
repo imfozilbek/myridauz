@@ -31,7 +31,7 @@
 
 ## Сайт
 
-- Страница направления (`myrida.uz/samarqand`): под «Telegramda safar topish» вторая кнопка «Telegram kanal: Rida | Samarqand» (G59).
+- Страница направления (`myrida.uz/yonalish/toshkent-samarqand/`, адрес `/yonalish/…`: решение владельца 06.10.2026, `60`): под «Telegramda safar topish» вторая кнопка «Telegram kanal: Rida | Samarqand» (G59).
 
 ## Где не предлагаем
 
