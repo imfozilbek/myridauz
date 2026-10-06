@@ -120,4 +120,5 @@
 | 115 | [115-sounds-and-ring.md](115-sounds-and-ring.md) | Звуки Rida (три набора, выбор в админке) и звонок внутри открытой или свёрнутой Mini App (G54) |
 | 116 | [116-where-people-come-from.md](116-where-people-come-from.md) | Откуда пришли люди (метка в ссылке) и с какой платформы; первое касание в профиле (G55) |
 | 117 | [117-free-tier.md](117-free-tier.md) | Rida в бесплатном тарифе Cloudflare: бюджет на 1 000 людей, Cron по индексам и уровням, проверка плана запросов (G56) |
+| 118 | [118-registration-redesign.md](118-registration-redesign.md) | Регистрация заново: галочки согласия, «Nima uchun Rida», выбор пола плитками; порядок пересмотра экранов (G58) |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
