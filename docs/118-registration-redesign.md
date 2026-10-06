@@ -142,4 +142,4 @@
 
 - То же устройство, янтарный цвет (макет `goals/g66/2-driver-home.png`): профиль с машиной и номером; карточка «что сейчас»; 4 плитки; внизу «Qayerdan / Qayerga» и «Safar eʼlon qilish» (открывает публикацию пути 6 с маршрутом).
 - Плитки: «Yoʻlovchilar soʻrovlari» (число по его направлениям), «Mening safarlarim» (поездки за неделю), «Hamyon» («≈ N joyga yetadi», красная меньше 5 мест), «Profil» (там же «Yordam»). Плитка «Safar eʼlon qilish» убрана.
-- Состояния: заявка на проверке (плашка, бонус в «Hamyon», кнопка «Tekshiruvdan keyin ochiladi»); поездка завтра (места, «N yangi soʻrov»); день поездки (большая карточка, «Yoʻlga chiqdim»). Строки «стать попутчиком» нет.
+- Состояния: заявка на проверке (плашка, «bonus kutmoqda» в «Hamyon» (бонус после одобрения, `12`), кнопка «Tekshiruvdan keyin ochiladi»); поездка завтра (места, «N yangi soʻrov»); день поездки (большая карточка, «Yoʻlga chiqdim»). Строки «стать попутчиком» нет.

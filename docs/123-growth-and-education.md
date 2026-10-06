@@ -33,7 +33,7 @@
 - Только имя и фото по желанию; нет номера, адреса, Telegram ID; районы прошлой поездки можно.
 - Суммы экономии не пишем: нет честной базы для сравнения (урок №9); пишем «xarajat N ga boʻlindi».
 - Не «daromad» (заработок) у водителя: «yoʻl xarajati qoplandi» (урок №2).
-- Ссылка с меткой `via=share-<момент>` и публичным id автора: видно, кто кого привёл (`116`).
+- Ссылка с меткой `via=share-<момент>` и коротким кодом автора (метка до 21 знака): видно, кто кого привёл (`116`).
 - Картинка карточки: генератор (рисунок направления, цвет роли), хранение 1 день как истории (`117`).
 
 ### Почему хочется нажать (G69)
@@ -85,7 +85,7 @@
 |---|---|
 | D1 | Haydovchi boʻlish: 2 ekran, 3 rasm |
 | D2 | Safar eʼlon qilish: bir ekran |
-| D3 | Soʻrovga javob: botdan «Qabul» |
+| D3 | Soʻrovga javob: «Tasdiqlash» |
 | D4 | Yoʻlovchilar soʻrovlariga taklif |
 | D5 | Safar kuni: yoʻl tartibi, navigator |
 | D6 | Hamyon va komissiya |
