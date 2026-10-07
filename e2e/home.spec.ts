@@ -62,7 +62,7 @@ function scenarios(platform: 'android' | 'ios') {
     await expect(page.getByText(new RegExp(t('bookings.status.confirmed'), 'u'))).toBeVisible();
     await shot(page, '2-passenger-booking');
     await page.getByText(t('bookings.status.confirmed')).first().click();
-    await expect(page.getByText(t('bookings.plate'))).toBeVisible();
+    await expect(page.locator('.plate-badge')).toBeVisible();
   });
 
   // Owner check 3: the trip and its new requests; a new request comes by itself.

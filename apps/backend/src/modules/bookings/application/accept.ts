@@ -106,6 +106,7 @@ async function acceptTaken(
     confirmedAt: now,
     boardedAt: null,
     arrivedAt: null,
+    cameAt: null,
     createdAt: now,
     updatedAt: now,
   };

@@ -13,7 +13,6 @@ const B = {
   twoSeats: t('find.book', { count: '2' }),
   points: t('bookings.points.title'),
   waiting: t('bookings.status.requested'),
-  plate: t('bookings.plate'),
   offers: t('bookings.offer.list'),
   accept: t('bookings.offer.accept'),
   accepted: t('bookings.offer.accepted.title'),
@@ -70,7 +69,7 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('bookings.mine'))).toBeVisible();
   await shot('1-list');
   await page.getByText('Jasur').first().click();
-  await expect(page.getByText(B.plate)).toBeVisible();
+  await expect(page.locator('.plate-badge')).toBeVisible();
   await shot('2-booking');
   await pressBack(page);
   // The own request card shows no own name (G37, docs/101 R6): the price of one seat opens it.

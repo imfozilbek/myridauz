@@ -8,32 +8,33 @@
   background: var(--tgui--secondary_bg_color);
 }
 
-.chat-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 16px 16px 8px 20px;
-  /* The height of the small «Qoʻngʻiroq» button from the start: when it comes with the history,
-     the messages do not move down (G41, docs/108). */
-  min-height: 36px;
-}
-
 .chat-messages {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   /* Room for the input under the last message, as tall as the input is now (docs/94 F10). */
-  padding: 8px 12px calc(var(--chat-input-height, 80px) + 8px);
+  padding: 14px 10px calc(var(--chat-input-height, 80px) + 8px);
 }
 
 .chat-bubble {
-  max-width: 80%;
-  padding: 8px 12px;
+  /* 265 px of 360 on the mockup g60/2. */
+  box-sizing: border-box;
+  max-width: min(265px, 78%);
+  padding: 7px 12px 8px;
   border-radius: 16px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+/* The text of a message at the size of the mockup g60/2. */
+.chat-bubble > :first-child {
+  font-size: 14.5px;
+  line-height: 18px;
+}
+
+.chat-bubble + .chat-bubble {
+  margin-top: 1px;
 }
 
 .chat-me {
@@ -52,6 +53,8 @@
 
 .chat-time {
   display: block;
+  margin-top: 3px;
+  font-size: 11px;
   text-align: right;
   opacity: 0.7;
 }
@@ -59,7 +62,7 @@
 .chat-system,
 .chat-empty {
   align-self: center;
-  padding: 4px 12px;
+  padding: 3px 13px;
   border-radius: 12px;
   background: var(--tgui--bg_color);
   color: var(--tgui--hint_color);
@@ -71,32 +74,8 @@
   color: var(--tgui--destructive_text_color);
 }
 
-.chat-input {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  /* Above the home bar of the phone, by the areas Telegram gives (docs/21, docs/94 S5). */
-  padding: 8px 12px
-    calc(
-      8px + var(--tg-viewport-safe-area-inset-bottom, 0px) +
-        var(--tg-viewport-content-safe-area-inset-bottom, 0px)
-    );
-  background: var(--tgui--bg_color);
-}
-
-.chat-input > :not(.chat-warning, button) {
-  flex: 1;
-}
-
-/* One line like Telegram, growing with the text up to a few lines (docs/88 L2). */
-.chat-input textarea {
-  min-height: 0;
-  max-height: 120px;
-  resize: none;
-  field-sizing: content;
+/* «Joy tasdiqlandi» at the size of the mockup g60/2. */
+.chat-system {
+  font-size: 12.5px;
+  line-height: 16px;
 }

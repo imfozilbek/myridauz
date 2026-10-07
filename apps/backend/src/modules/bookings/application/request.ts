@@ -63,6 +63,7 @@ export async function requestBooking(
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
+    cameAt: null,
     createdAt: now,
     updatedAt: now,
   };
@@ -97,7 +98,12 @@ export async function cancelByPassenger(
 
 // "Mening safarlarim" of a passenger: the trips ahead first, then the past ones (docs/65 B6).
 export async function passengerBookings(deps: BookingsDeps, passengerId: number): Promise<Booking[]> {
-  const views = await bookingViews(deps, await deps.bookings.byPassenger(passengerId), 'passenger');
+  const [records, rated] = await Promise.all([
+    deps.bookings.byPassenger(passengerId),
+    deps.rated(passengerId),
+  ]);
+  const seen = await bookingViews(deps, records, 'passenger');
+  const views = seen.map((view) => ({ ...view, rated: rated.has(view.id) }));
   // A live seat on the road stays on top until the arrival (docs/90 F-D3).
   const arrival = ({ status, trip }: Booking) =>
     status === 'requested' || status === 'confirmed' ? arrivalAt(trip.departAt, trip.km) : trip.departAt;

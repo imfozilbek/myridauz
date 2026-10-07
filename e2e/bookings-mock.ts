@@ -33,6 +33,7 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   confirmedAt: status === 'confirmed' ? Date.now() - HOUR / 2 : null,
   boardedAt: null,
   arrivedAt: null,
+  cameAt: null,
   ...extra,
 });
 export const confirmed = booking('2', 'confirmed', {

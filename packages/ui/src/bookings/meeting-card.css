@@ -1,0 +1,44 @@
+/* The meeting card (docs/126): above the driver on the trip day. */
+.meeting-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--reg-card, var(--tgui--bg_color));
+  font-size: 15px;
+}
+
+.meeting-place {
+  font-size: 14px;
+  color: var(--reg-ink, var(--tgui--text_color));
+}
+
+.meeting-card .plate-badge {
+  font-size: 18px;
+}
+
+.meeting-came {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-strong, var(--tgui--button_color));
+  color: var(--reg-card, var(--tgui--button_text_color));
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.meeting-told {
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--reg-strong, var(--tgui--link_color));
+}

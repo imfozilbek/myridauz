@@ -1,6 +1,6 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
-import { cleanup, screen, within } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -22,16 +22,14 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     );
     expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
     await tap('Jasur');
-    expect(screen.getByText('Davlat raqami')).toBeTruthy();
-    // The way of the booking: asked, confirmed, then boarding and arrival (docs/88 L6).
-    const steps = within(screen.getByRole('list', { name: 'Holati' })).getAllByRole('listitem');
-    expect(steps).toHaveLength(4);
-    expect(steps[1]?.textContent).toMatch(/^Joy tasdiqlandi/u);
+    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    // The plate of the page says the seat is confirmed (G60, mockup g60/1).
+    expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
     // «The places do not change» was said before the booking, not again (G40, docs/106 C9).
     expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     // The points fixed at the booking open in a map (docs/70).
-    await tap('Olib ketish joyi');
+    await tap('Chilonzor bozori yaqinida');
     expect(open.mock.calls[0]?.[0]).toContain('41.2856');
     // The passenger never sees the driver's commission.
     expect(screen.queryByText('Komissiya')).toBeNull();

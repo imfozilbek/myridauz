@@ -11,6 +11,7 @@ import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
 import type { HomeGo, Launch, StartAction } from './start-action';
+import { useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
   readonly actions: readonly StartAction[];
@@ -45,6 +46,7 @@ export function StartFlow(props: StartFlowProps) {
   const { actions, opened, notice, after, home, covered, coveredTile, tiles, sections = NO_SECTIONS } = props;
   const { t } = useI18n();
   const tap = useHomeTap();
+  const sheet = useAnySheet();
   const [screen, setScreen] = useState<Screen>(() => {
     const action = [...actions, ...sections].find((item) => item.id === opened);
     if (action) return { action };
@@ -80,7 +82,10 @@ export function StartFlow(props: StartFlowProps) {
           onOpen={openAction}
           onProfile={openProfile}
         />
-        {main ? <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} /> : null}
+        {/* Under a sheet the native button would cover its buttons (mockups g60/6, g60/7). */}
+        {main && !sheet ? (
+          <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} />
+        ) : null}
       </>
     );
   }

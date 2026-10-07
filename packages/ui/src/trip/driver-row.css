@@ -1,0 +1,74 @@
+/* The driver of a trip (G60, mockups g60/1, g60/3). */
+.driver-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--reg-divider);
+}
+
+/* Without the plate (after the trip) the name stands at the top of the face (mockup g60/7). */
+.driver-row-bare {
+  align-items: flex-start;
+  padding: 11px 14px 10px;
+}
+
+.driver-row-bare .driver-row-text {
+  margin-top: 2px;
+}
+
+.driver-row-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.driver-row-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.driver-row-note {
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--reg-muted);
+}
+
+.driver-row-car {
+  margin-top: -2px;
+  font-size: 13px;
+  color: var(--reg-muted);
+}
+
+/* The plate of the driver as on the mockups of G60: a size bigger than in the search. */
+.booking-card .driver-row .plate-badge {
+  margin-top: 11px;
+  padding-top: 2px;
+  font-size: 15px;
+  line-height: 20px;
+}
+
+.booking-card .driver-row .plate-badge-number {
+  padding: 0 6px 0 8px;
+}
+
+.booking-card .driver-row .plate-badge-country {
+  padding: 0 4px 0 6px;
+  font-size: 12.5px;
+}
+
+/* For the close people the plate is lower and a little wider (mockup g60/3). */
+.follow-card .driver-row {
+  padding-bottom: 11px;
+}
+
+.follow-card .driver-row .plate-badge {
+  margin-top: 10px;
+  line-height: 18px;
+}
+
+.follow-card .driver-row .plate-badge-number {
+  padding: 0 7px;
+}

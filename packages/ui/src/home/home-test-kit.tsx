@@ -1,4 +1,4 @@
-import type { AppLink, Booking, Offer, RideRequest, Trip, Wallet } from '@platform/contracts';
+import type { AppLink, Booking, Favorites, Offer, RideRequest, Trip, Wallet } from '@platform/contracts';
 import { searchMarket } from '../find/search-test-kit';
 import type { ReactNode } from 'react';
 import { DriverContext, type Driver } from '../driver/driver-context';
@@ -62,6 +62,8 @@ type Data = {
   readonly asked?: () => Promise<RideRequest[]>;
   readonly offers?: () => Promise<Offer[]>;
   readonly wallet?: () => Promise<Wallet>;
+  // The saved drivers of a passenger and their trips, none by default (G60).
+  readonly favorites?: () => Promise<Favorites>;
   // The directory of places fails this many times first.
   readonly placesFail?: number;
   // The action of the main button (G25).
@@ -88,6 +90,7 @@ export function renderHome(
       myOffers: data.offers ?? none,
     },
     ...(data.wallet ? { wallet: { mine: data.wallet } } : {}),
+    comfort: { favorites: data.favorites ?? (async () => ({ drivers: [], trips: [] })) },
     market: {
       ...searchMarket(),
       searchTrips: none,

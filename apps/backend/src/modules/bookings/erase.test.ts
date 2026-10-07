@@ -31,6 +31,7 @@ async function booked(kit: ReturnType<typeof setup>, status: BookingRecord['stat
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
+    cameAt: null,
     createdAt: NOW,
     updatedAt: NOW,
   };

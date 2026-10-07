@@ -6,8 +6,8 @@ import { joined } from './application/room';
 import { createMemoryMessages } from './infrastructure/memory-messages';
 
 // A chat of one confirmed booking in memory: sockets, inboxes, bot signals, the clock, wake-ups.
-export const PASSENGER: Member = { userId: 10, role: 'passenger', otherId: 1, canCall: true };
-export const DRIVER: Member = { userId: 1, role: 'driver', otherId: 10, canCall: true };
+export const PASSENGER: Member = { userId: 10, role: 'passenger', otherId: 1, canCall: true, canWrite: true };
+export const DRIVER: Member = { userId: 1, role: 'driver', otherId: 10, canCall: true, canWrite: true };
 export const MINUTE = 60 * 1000;
 const SECOND = 1000;
 

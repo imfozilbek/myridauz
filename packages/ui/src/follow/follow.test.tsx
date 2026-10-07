@@ -12,11 +12,10 @@ import { FollowScreen } from './follow-screen';
 afterEach(cleanup);
 
 const TOKEN = 'a'.repeat(43);
+const DEPART = Date.parse('2026-10-02T03:00:00Z');
 const TRIP: SharedTrip = {
-  passengerName: 'Dilnoza',
-  from: '1726269',
-  to: '1730401',
-  departAt: Date.parse('2026-10-02T03:00:00Z'),
+  ...{ passengerName: 'Dilnoza', from: '1726269', to: '1730401' },
+  ...{ departAt: DEPART, firstDepartAt: DEPART },
   km: 320,
   driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
   plate: '01A123BC',
@@ -33,7 +32,7 @@ describe('close people follow a shared trip (docs/43)', () => {
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
-    expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
+    expect(await screen.findByText(/^Dilnozaning safari · /u)).toBeTruthy();
     expect(screen.getByText('Mashinaga chiqdi')).toBeTruthy();
     expect(screen.getByText('01 A 123 BC')).toBeTruthy();
     // Where the passenger boards and gets off (the owner, docs/111 Q1).
@@ -82,10 +81,10 @@ describe('a close person becomes a passenger (docs/18)', () => {
       </FollowGate>,
       testClients({ chat: { sharedTrip: async () => TRIP } }),
     );
-    expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
+    expect(await screen.findByText(/^Dilnozaning safari · /u)).toBeTruthy();
     await tap('Men ham yoʻlga chiqaman');
     expect(screen.getByText('Roʻyxatdan oʻtish')).toBeTruthy();
-    expect(screen.queryByText('Dilnozaning safari')).toBeNull();
+    expect(screen.queryByText(/^Dilnozaning safari/u)).toBeNull();
     expect(tracked.map((event) => event.name)).toContain('share_join');
     window.history.replaceState(null, '', '/');
   });
@@ -134,7 +133,7 @@ describe('the passenger shares the trip (docs/43)', () => {
       }),
     );
     await tap('Jasur');
-    await tap('Yaqinlarimga yuborish');
+    await tap('Yaqinlarimga');
     expect(share).toHaveBeenCalledWith(confirmed.id);
     await vi.waitFor(() => expect(open.mock.calls[0]?.[0]).toContain('t.me/share/url'));
     await tap('Mashinaga chiqdim');
@@ -144,7 +143,7 @@ describe('the passenger shares the trip (docs/43)', () => {
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);
     expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
-    await tap('Yaqinlarimga yuborish');
+    await tap('Yaqinlarimga');
     expect(await screen.findByText('Ulashishni toʻxtatish')).toBeTruthy();
   });
 });

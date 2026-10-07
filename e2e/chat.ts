@@ -10,14 +10,14 @@ const none: Shot = async () => undefined;
 export async function passengerChat(page: Page, shot: Shot = none) {
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
-  await expect(page.getByText(t('share.send'))).toBeVisible();
+  await expect(page.getByText(t('bookings.toClose'))).toBeVisible();
   await shot('1-booking');
   await page.getByText(t('chat.open')).click();
   await expect(page.getByText(t('chat.system.confirmed'))).toBeVisible();
   await shot('2-chat');
   await page.getByLabel(t('chat.placeholder')).fill('Raqamim 90 123 45 67');
   await page.getByRole('button', { name: t('chat.send') }).click();
-  await expect(page.getByText(t('chat.warning'))).toBeVisible();
+  await expect(page.locator('.chat-lock-warned')).toBeVisible();
   await expect(page.getByText('Raqamim ***')).toBeVisible();
   await shot('3-masked');
   await pressBack(page);
@@ -28,7 +28,9 @@ export async function passengerChat(page: Page, shot: Shot = none) {
 
 // A close person opens the card link: the trip without registration, "Xabar olish" (docs/43).
 export async function followTrip(page: Page, shot: Shot = none) {
-  await expect(page.getByText(t('share.follow.title', { name: 'Madina' }))).toBeVisible();
+  await expect(
+    page.getByText(new RegExp(`^${t('share.follow.title', { name: 'Madina' })} · `, 'u')),
+  ).toBeVisible();
   // Close people see where the passenger boards and gets off (owner, docs/111 Q1, G44).
   await expect(page.getByText(t('way.book.dropoff'))).toBeVisible();
   await shot('1-trip');

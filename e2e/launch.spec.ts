@@ -49,7 +49,7 @@ test('passenger: rates the driver, then complains about the trip', async ({ page
   await page.getByRole('button', { name: '5' }).click();
   await page.getByText(t('reviews.tag.on_time')).click();
   await page.locator('#tg-main-button').click();
-  await expect(page.getByText(t('reviews.sent'))).toBeVisible();
+  await expect.poll(() => reviews.length).toBe(1);
   expect(reviews[0]).toMatchObject({ stars: 5, tags: ['on_time'] });
   await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?complain=b1`));
   await page.getByText(t('complaints.reason.no_show')).click();

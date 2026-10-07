@@ -21,4 +21,11 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-accent': colors.accentStrong,
     '--reg-accent-soft': colors.accentSoft,
     '--reg-star': colors.accent,
+    '--reg-face': colors.neutralFace,
+    '--reg-face-text': colors.neutralText,
+    '--reg-off': colors.disabled,
+    '--reg-success': colors.success,
+    '--reg-success-soft': colors.successSoft,
+    '--reg-attention': colors.attention,
+    '--reg-attention-soft': colors.attentionSoft,
   }) as CSSProperties;

@@ -1,0 +1,134 @@
+/* The page of a confirmed seat (G60, mockup g60/1): the values of the mockup at 360 px. */
+.booking-page {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* The height Telegram gives: the main button is outside it, the links stay above it. */
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 14px 14px 7px;
+  box-sizing: border-box;
+}
+
+.booking-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid var(--reg-mint);
+  border-radius: 14px;
+  background: var(--reg-soft);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.booking-banner-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.booking-banner-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.booking-card {
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.booking-hint {
+  margin: -3px 13px 0;
+  font-size: 12.5px;
+  color: var(--reg-muted);
+}
+
+.booking-buttons {
+  display: grid;
+  /* Three tiles or two (a month after the trip, mockup g60/6), always across the whole width. */
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.booking-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 60px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-text);
+  font: inherit;
+  font-size: clamp(11px, 3.6vw, 13px);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.booking-links {
+  display: flex;
+  justify-content: center;
+  gap: 22px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.booking-link {
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--reg-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.booking-link-danger {
+  color: var(--reg-to);
+}
+
+.booking-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  text-align: center;
+}
+
+.booking-banner-off {
+  border-color: var(--reg-divider);
+  background: var(--reg-bg);
+}
+
+.booking-banner-off .booking-banner-tile {
+  background: var(--reg-control);
+}
+
+/* A tile with its deadline under the word is taller (mockup g60/7). */
+.booking-button:has(.booking-button-sub) {
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 110px;
+  padding-top: 9px;
+}
+
+.booking-button-sub {
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 14.5px;
+  font-weight: 400;
+  color: var(--reg-strong);
+  text-align: center;
+}

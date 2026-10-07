@@ -1,5 +1,6 @@
 import {
   bookingArrivedPath,
+  bookingCamePath,
   bookingBoardedPath,
   bookingSchema,
   bookingSharePath,
@@ -47,6 +48,7 @@ export function createChatClient(options: SignedOptions) {
     // «Hikoyaga joylash»: the picture drawn by the Mini App goes up, Telegram reads it (docs/88 L19).
     putTripStory: async (tripId: string, image: Blob): Promise<Story> =>
       storySchema.parse(await (await put(driverTripStoryPath(tripId), image)).json()),
+    came: async (bookingId: string): Promise<Booking> => booking(await post(bookingCamePath(bookingId), {})),
     boarded: async (bookingId: string): Promise<Booking> =>
       booking(await post(bookingBoardedPath(bookingId), {})),
     arrived: async (bookingId: string): Promise<Booking> =>

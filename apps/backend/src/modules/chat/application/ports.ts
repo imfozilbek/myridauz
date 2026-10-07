@@ -8,6 +8,8 @@ export type Member = {
   readonly role: Role;
   readonly otherId: number;
   readonly canCall: boolean;
+  // Read only 24 hours after the trip (docs/129).
+  readonly canWrite: boolean;
 };
 export const otherRole = (role: Role): Role => (role === 'passenger' ? 'driver' : 'passenger');
 

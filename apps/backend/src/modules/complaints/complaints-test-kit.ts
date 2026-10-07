@@ -13,6 +13,7 @@ const ride = (n: number): Ride => ({
   driverId: DRIVER,
   passengerId: 100 + n,
   departAt: NOW - DAY_MS,
+  endsAt: NOW,
   commission: 9000,
   chatKey: `b${n}`,
 });

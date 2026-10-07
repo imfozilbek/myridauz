@@ -45,17 +45,6 @@
   font-size: 13px;
 }
 
-.person-badge {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--reg-mint);
-  font-weight: 700;
-  color: var(--reg-text);
-}
-
 .results-hidden {
   margin: 10px 14px 0;
   font-size: 12.5px;

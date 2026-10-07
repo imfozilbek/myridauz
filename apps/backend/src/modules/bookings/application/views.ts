@@ -53,7 +53,10 @@ export async function bookingViews(
       if (!loaded || !passenger) return null;
       const status = statusAt(record, now, loaded.facts.over);
       const open = holdsSeats(status);
-      const whole = viewer === 'passenger' || (viewer === 'driver' && open);
+      // After the trip the plate and the exact points go, the area stays: a way back to the person
+      // goes through Rida only (docs/129 «Контакты после поездки», G60).
+      const live = open && status !== 'completed';
+      const whole = (viewer === 'passenger' && status !== 'completed') || (viewer === 'driver' && live);
       return {
         id: record.id,
         trip: loaded.trip,
@@ -77,11 +80,12 @@ export async function bookingViews(
         pickup: place(record.pickup, record.pickupNamed, whole),
         dropoff: place(record.dropoff, record.dropoffNamed, whole),
         extraKm: null,
-        plate: open && viewer !== 'driver' ? loaded.facts.plate : null,
+        plate: live && viewer !== 'driver' ? loaded.facts.plate : null,
         chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
         confirmedAt: record.confirmedAt,
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,
+        cameAt: record.cameAt,
       };
     }),
   );

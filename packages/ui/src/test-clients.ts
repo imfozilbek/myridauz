@@ -98,6 +98,7 @@ export const testClients = (overrides: {
     shareTrip: NOT_USED,
     putTripStory: NOT_USED,
     stopTripSharing: NOT_USED,
+    came: NOT_USED,
     boarded: NOT_USED,
     arrived: NOT_USED,
     sharedTrip: NOT_USED,

@@ -1,0 +1,16 @@
+/* The small map of a meeting point (docs/126): a strip the width of the card. */
+.meeting-map {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--reg-bg, var(--tgui--secondary_bg_color));
+  cursor: pointer;
+}
+
+.meeting-map-box {
+  height: 120px;
+  pointer-events: none;
+}

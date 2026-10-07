@@ -16,6 +16,7 @@ import type { ComplaintsDeps } from '../application/ports';
 const STATUS = {
   'complaints.not_found': 404,
   'complaints.already': 409,
+  'complaints.too_late': 409,
   'complaints.wrong_status': 409,
   'complaints.invalid_input': 400,
   'auth.not_admin': 403,

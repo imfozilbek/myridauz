@@ -26,6 +26,7 @@ export type BookingRow = {
   confirmed_at: number | null;
   boarded_at: number | null;
   arrived_at: number | null;
+  came_at: number | null;
   created_at: number;
   updated_at: number;
 };
@@ -67,6 +68,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   confirmedAt: row.confirmed_at,
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
+  cameAt: row.came_at,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -110,6 +112,7 @@ export const rowValues = (b: BookingRecord) =>
     b.confirmedAt,
     b.boardedAt,
     b.arrivedAt,
+    b.cameAt,
     b.createdAt,
     b.updatedAt,
   ] as const;
@@ -130,6 +133,7 @@ export const ROW_COLUMNS = [
   'confirmed_at',
   'boarded_at',
   'arrived_at',
+  'came_at',
   'created_at',
   'updated_at',
 ] as const;

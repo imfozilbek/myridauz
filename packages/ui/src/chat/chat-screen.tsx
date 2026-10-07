@@ -1,56 +1,76 @@
-import { MAX_CHAT_TEXT, type ChatMessage } from '@platform/contracts';
-import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
-import { IconButton, Textarea } from '../components';
+import type { ChatMessage } from '@platform/contracts';
+import { Caption, Text } from '@telegram-apps/telegram-ui';
+import { Fragment } from 'react';
 import { useScreenView } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
 import { CallPanel } from '../call/call-panel';
-import { otherName } from '../call/call-trip';
+import { otherName } from '../call/call-person';
 import { useApiClients } from '../context/api-clients';
+import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
-import { Icon } from '../icons';
+import { ChatHead } from './chat-head';
+import { ChatClosed, ChatInput } from './chat-input';
 import { useChat } from './use-chat';
+import { useRingOnce } from './use-ring-once';
 import { useChatLayout } from './use-chat-layout';
 import { useChatText } from './use-chat-text';
+import { useAfterTripChat } from './after-trip-chat';
 import './chat.css';
 
-type Props = { readonly chatKey: string; readonly title?: string; readonly onBack: () => void };
+type Props = {
+  readonly chatKey: string;
+  readonly title?: string;
+  // «Qoʻngʻiroq» of the booking page: the call starts as soon as the chat allows it (G60).
+  readonly ring?: boolean | undefined;
+  // The line of the trip opens its booking (mockup g60/2); a chat opened by a ring has none.
+  readonly onTrip?: (() => void) | undefined;
+  // «Jasurning yangi safarlari» under a closed chat (mockup g60/6).
+  readonly onAgain?: (() => void) | undefined;
+  readonly onBack: () => void;
+};
 
 // The chat of a booking, like a Telegram chat (docs/07, docs/21): mine on the right, the other
 // person on the left, lines about the booking in the middle. Text only.
-export function ChatScreen({ chatKey, title, onBack }: Props) {
+export function ChatScreen(props: Props) {
+  // The head names the places of the trip: the directory comes first (docs/48).
+  return (
+    <PlacesGate onBack={props.onBack}>
+      <ChatRoom {...props} />
+    </PlacesGate>
+  );
+}
+
+function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { messages, loaded, state, warning, delivered, send, retry, calling } = useChat(chatKey);
+  const { colors } = useBrand().theme;
+  const { messages, loaded, state, warning, canWrite, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
+  useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
   // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
   const { chat: chats } = useApiClients();
   const about = useLoad(() => chats.about(chatKey)).value ?? null;
   const name = title ?? (about && otherName(about)) ?? t('chat.title');
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
+  const { endAt, placeholder } = useAfterTripChat(about, messages);
   if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} onBack={onBack} />;
   return (
-    <div ref={chat} className="chat">
+    <div ref={chat} className="chat" style={brandVars(colors)}>
       <Screen onBack={controls.leave(onBack)} />
-      <div className="chat-head">
-        <Title weight="2">{name}</Title>
-        {/* A voice call only after the confirmation; phone numbers are never shown (docs/08). */}
-        {calling.canCall && !calling.call ? (
-          <Button
-            size="s"
-            mode="bezeled"
-            before={<Icon name="call" size={20} />}
-            onClick={() => void controls.ring()}
-          >
-            {t('calls.call')}
-          </Button>
-        ) : null}
-      </div>
+      <ChatHead
+        about={about}
+        name={name}
+        onCall={calling.canCall && !calling.call ? () => void controls.ring() : null}
+        onTrip={onTrip}
+      />
       {calling.call || calling.ended ? (
         <CallPanel
           name={name}
@@ -65,40 +85,35 @@ export function ChatScreen({ chatKey, title, onBack }: Props) {
       <div className="chat-messages">
         {/* «No messages yet» only once the history came: never a flash of it while connecting (G41). */}
         {messages.length === 0 && loaded ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
-        {messages.map((message) => (
-          <Bubble key={message.id} message={message} />
+        {messages.map((message, index) => (
+          <Fragment key={message.id}>
+            {index === endAt ? <TripEnded /> : null}
+            <Bubble message={message} />
+          </Fragment>
         ))}
+        {endAt === messages.length ? <TripEnded /> : null}
         <div ref={end} />
       </div>
-      <form
-        ref={input}
-        className="chat-input"
-        onSubmit={(event) => {
-          event.preventDefault();
-          submit();
-        }}
-      >
-        {warning ? <Text className="chat-warning">{t('chat.warning')}</Text> : null}
-        <Textarea
-          aria-label={t('chat.placeholder')}
-          rows={1}
-          placeholder={t('chat.placeholder')}
-          value={text}
-          maxLength={MAX_CHAT_TEXT}
-          onChange={(event) => setText(event.target.value)}
-        />
-        <IconButton
-          type="submit"
-          size="l"
-          mode="bezeled"
-          aria-label={t('chat.send')}
-          disabled={state !== 'open' || text.trim().length === 0}
-        >
-          <Icon name="send" />
-        </IconButton>
-      </form>
+      {canWrite ? null : <ChatClosed name={name} onAgain={onAgain} />}
+      <ChatInput
+        hidden={!canWrite}
+        form={input}
+        text={text}
+        onText={setText}
+        onSubmit={submit}
+        onReply={(reply) => void send(reply)}
+        open={state === 'open'}
+        placeholder={placeholder}
+        warned={warning}
+      />
     </div>
   );
+}
+
+// «Safar tugadi» at the arrival, before the messages written after it (mockup g60/7).
+function TripEnded() {
+  const { t } = useI18n();
+  return <Caption className="chat-system">{t('bookings.done.title')}</Caption>;
 }
 
 function Bubble({ message }: { readonly message: ChatMessage }) {

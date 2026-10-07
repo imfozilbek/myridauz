@@ -124,7 +124,7 @@ test('F10, F5. the chat stays where the person reads; «Назад» in a call t
     await g33.waitBubbles(page, older.length + 1);
     await shot(page, `f10-chat-reading-${platform}`);
     expect.soft(await g33.scrollY(page), 'F10: the chat does not jump down').toBe(0);
-    await page.getByText(t('calls.call')).click();
+    await page.getByRole('button', { name: t('calls.call') }).click();
     await expect.poll(() => g33.liveMicrophone(page)).toBe(1);
     await pressBack(page);
     await expect

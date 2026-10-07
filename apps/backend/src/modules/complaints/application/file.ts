@@ -1,4 +1,4 @@
-import { complaintInputSchema, COMPLAINT_WINDOW_DAYS, DAY_MS } from '@platform/contracts';
+import { COMPLAIN_DAYS, complaintInputSchema, COMPLAINT_WINDOW_DAYS, DAY_MS } from '@platform/contracts';
 import type { z } from 'zod';
 import { hiddenPeople, isHigh } from '../domain/complaint';
 import type { ComplaintsDeps } from './ports';
@@ -12,6 +12,8 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
   if (!ride || (authorId !== ride.driverId && authorId !== ride.passengerId))
     return 'complaints.not_found' as const;
   if (await deps.store.ofAuthor(authorId, input.bookingId)) return 'complaints.already' as const;
+  // A week after the trip a complaint goes through «Yordam» (docs/129).
+  if (ride.endsAt + COMPLAIN_DAYS * DAY_MS <= deps.now()) return 'complaints.too_late' as const;
   const againstId = authorId === ride.driverId ? ride.passengerId : ride.driverId;
   const complaint = {
     id: deps.newId(),

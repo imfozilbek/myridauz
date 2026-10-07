@@ -26,6 +26,8 @@ export const COMPLAINT_COMMENT_MAX = 500;
 // Complaints from this many different people in COMPLAINT_WINDOW_DAYS hide a person from search.
 export const HIDE_AFTER_COMPLAINTS = 3;
 export const COMPLAINT_WINDOW_DAYS = 30;
+// A complaint about a trip is taken this many days after its end; later only «Yordam» (docs/129, G60).
+export const COMPLAIN_DAYS = 7;
 
 export const complaintInputSchema = z.object({
   bookingId: z.string().min(1).max(64),

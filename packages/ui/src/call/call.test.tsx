@@ -46,7 +46,7 @@ async function openChat() {
 describe('a voice call in the chat (docs/08, G13)', () => {
   it('calls after the confirmation, shows the ring, and goes back to the chat when nobody answers', async () => {
     const { socket, sent } = await openChat();
-    fireEvent.click(screen.getByText('Qoʻngʻiroq'));
+    fireEvent.click(screen.getByLabelText('Qoʻngʻiroq'));
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'ring' }));
     expect(getUserMedia).toHaveBeenCalledTimes(1);
     act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'me' } }));

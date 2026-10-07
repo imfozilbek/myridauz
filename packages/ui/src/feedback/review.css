@@ -1,0 +1,150 @@
+/* The review (G60, mockup g60/5): the values of the mockup at 360 px. */
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* The height Telegram gives: the main button is outside it, the links stay above it. */
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 14px 14px 7px;
+  box-sizing: border-box;
+}
+
+.review-card {
+  border-radius: 14px;
+  background: var(--reg-card, var(--tgui--bg_color));
+}
+
+.review-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  border-bottom: 1px solid var(--reg-divider, var(--tgui--secondary_bg_color));
+}
+
+.review-head-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  color: var(--tgui--hint_color);
+}
+
+.review-head-text b {
+  font-size: 16px;
+  color: var(--tgui--text_color);
+}
+
+.review-label {
+  margin: 1px 0 0 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--tgui--hint_color);
+}
+
+.review-stars {
+  display: flex;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--tgui--bg_color);
+}
+
+/* Stars of 29 px, 42 px apart, in the middle of the card (mockup g60/6). */
+.review-stars .stars-row {
+  justify-content: center;
+  padding: 13px 0;
+}
+
+.review-stars .stars-row button {
+  padding: 4px 6.5px;
+}
+
+.review-stars .stars-row svg {
+  width: 29px;
+  height: 29px;
+}
+
+/* The numbers under the stars stay for the screen reader, the mockup shows the stars only. */
+.review-stars .stars-row :is(span, h6, p) {
+  display: none;
+}
+
+.review-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: -1px;
+}
+
+.review-tag {
+  padding: 7px 12px;
+  border: 1px solid var(--tgui--secondary_bg_color);
+  border-radius: 999px;
+  background: var(--tgui--bg_color);
+  color: var(--tgui--text_color);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.review-tag[aria-pressed='true'] {
+  border-color: var(--tgui--button_color);
+  background: var(--reg-soft, var(--tgui--secondary_bg_color));
+  color: var(--tgui--link_color);
+  font-weight: 700;
+}
+
+.review-add,
+.review-complain {
+  align-self: flex-start;
+  padding: 4px 8px;
+  border: 0;
+  background: none;
+  color: var(--tgui--link_color);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-complain {
+  align-self: center;
+  margin-top: auto;
+  color: var(--tgui--hint_color);
+  font-weight: 400;
+}
+
+.review-favorite {
+  display: flex;
+  margin-top: 1px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--tgui--bg_color);
+  font-size: 15px;
+}
+
+.review-favorite-heart {
+  display: flex;
+  color: var(--reg-accent, #d97706);
+}
+
+/* A smaller switch in the colour of the brand (mockup g60/6). */
+.review-favorite > :last-child {
+  --tgui--link_color: var(--reg-brand);
+  zoom: 0.8;
+}
+
+.review-favorite-text {
+  flex: 1;
+}
+
+.review-note {
+  margin: 0 14px;
+  font-size: 12px;
+  color: var(--tgui--hint_color);
+}
+
+.review-failed {
+  color: var(--tgui--destructive_text_color);
+}

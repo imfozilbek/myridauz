@@ -29,3 +29,4 @@ apps/landing/.client/
 .stand/
 .vitest/
 .tsc/
+.eslintcache

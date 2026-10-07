@@ -37,8 +37,8 @@ import {
   UserRound,
   Users,
   Wallet,
-  MessageCircle,
-  SendHorizontal,
+  MessageSquare,
+  Send,
   Smartphone,
   Share2,
   Star,
@@ -52,6 +52,7 @@ import {
   ClockArrowUp,
   TrendingDown,
   Volume2,
+  Lock,
   Play,
   WifiOff,
   X,
@@ -60,7 +61,6 @@ import {
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
 import { WAY_ICONS } from './way-icons';
-
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
   trip: Route,
@@ -71,6 +71,7 @@ const ICONS = {
   passengers: Users,
   applications: ClipboardCheck,
   complaints: Flag,
+  arrived: Flag, // the badge of «Yetib keldingizmi?» (mockup g60/6)
   statistics: ChartColumn,
   team: ShieldCheck,
   empty: Inbox,
@@ -92,12 +93,11 @@ const ICONS = {
   more: Plus,
   price: Banknote,
   wallet: Wallet,
-  chat: MessageCircle,
+  chat: MessageSquare,
   share: Share2,
   subscriptions: Bell,
   star: Star,
-  // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18).
-  favorite: Heart,
+  favorite: Heart, // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18)
   history: History,
   // A voice call (docs/08): start, hang up, microphone on and off.
   call: PhoneCall,
@@ -110,7 +110,7 @@ const ICONS = {
   channel: Megaphone,
   // An approved application (docs/86 V7); send like Telegram, home screen, story (docs/88 L10, L17, L19).
   approved: ShieldCheck,
-  send: SendHorizontal,
+  send: Send,
   homeScreen: Smartphone,
   story: CircleFadingPlus,
   // The first contact of a driver (G34, docs/95): every choice and every line of a summary has its icon.
@@ -128,9 +128,9 @@ const ICONS = {
   sounds: Volume2,
   play: Play,
   offline: WifiOff,
-  // A channel offered once closes for good (docs/119); «Ishxonam», a place kept once (docs/126).
-  close: X,
-  work: BriefcaseBusiness,
+  close: X, // a channel offered once closes for good (docs/119)
+  work: BriefcaseBusiness, // «Ishxonam», a place kept once (docs/126)
+  locked: Lock, // numbers and links are hidden in a chat (docs/07, mockup g60/2)
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

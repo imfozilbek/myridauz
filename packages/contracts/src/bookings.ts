@@ -48,6 +48,9 @@ export type BookingInput = z.input<typeof bookingInputSchema>;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.
 // The places open only after the confirmation (docs/07, docs/14).
+// The meeting card and «Men keldim» open this long before the departure (docs/126).
+export const MEET_BEFORE_MINUTES = 30;
+
 export const bookingSchema = z.object({
   id: z.string(),
   trip: tripSchema,
@@ -75,10 +78,14 @@ export const bookingSchema = z.object({
   chatKey: z.string(),
   // The messages of the other side not read yet in this chat; only the list of the passenger (G53).
   unread: z.number().int().nonnegative().optional(),
+  // For the passenger, after the trip: the rating is given already (docs/129, «Oʻtgan»).
+  rated: z.boolean().optional(),
   // When the driver confirmed it (docs/88 L6), "Mashinaga chiqdim" and "Yetib keldim" (docs/43).
   confirmedAt: z.number().int().nullable(),
   boardedAt: z.number().int().nullable(),
   arrivedAt: z.number().int().nullable(),
+  // «Men keldim» of the passenger at the meeting point (docs/126).
+  cameAt: z.number().int().nullable().default(null),
 });
 export type Booking = z.infer<typeof bookingSchema>;
 export const bookingsSchema = z.object({ bookings: z.array(bookingSchema) });

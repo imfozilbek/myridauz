@@ -9,7 +9,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
-import { MY_REQUESTS, MyRequestsList } from './my-requests-list';
+import { MY_REQUESTS, MyRequestsList, type MineTab } from './my-requests-list';
 import { PlacesGate } from './places-gate';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
@@ -41,7 +41,8 @@ function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly Ri
 
 function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
-  useScreenBackground('grouped');
+  // The gradient of docs/121 §5, as on the mockup g60/6.
+  useScreenBackground('tinted');
   const { market, bookings } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(
     () => Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
@@ -62,6 +63,8 @@ function MyRequests({ onBack, link }: ScreenProps) {
   });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
+  // The tab stays while a booking is open: «Назад» comes to the same list.
+  const [tab, setTab] = useState<MineTab>('live');
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (favoritesOpen) return <FavoritesScreen onBack={() => setFavoritesOpen(false)} />;
   if (opened && value) {
@@ -92,6 +95,8 @@ function MyRequests({ onBack, link }: ScreenProps) {
       onRequest={(request) => setOpened({ kind: 'request', id: request.id })}
       onSubscriptions={() => setSubscriptionsOpen(true)}
       onFavorites={() => setFavoritesOpen(true)}
+      tab={tab}
+      onTab={setTab}
     />
   );
 }

@@ -23,15 +23,15 @@ test('passenger: rates the driver from the bot and complains', async ({ page }) 
   await mockFeedback(page);
   const shot = shooter(page, 'review');
   await open(page, telegramUrl(`${appUrl(PASSENGER.port)}?review=b1`));
-  await expect(page.getByText(t('reviews.about', { name: 'Jasur' }))).toBeVisible();
+  await expect(page.getByText(t('reviews.howWas'))).toBeVisible();
   await page.getByRole('button', { name: '5' }).click();
   await page.getByText(t('reviews.tag.on_time')).click();
   await page.getByText(t('reviews.tag.clean_car')).click();
+  await page.getByText(t('reviews.addText')).click();
   await page.getByPlaceholder(t('reviews.textPlaceholder')).fill('Juda yaxshi haydovchi');
   await shot('1-form');
+  // Sent: no screen after it, the app closes back to the bot (G60).
   await page.locator('#tg-main-button').click();
-  await expect(page.getByText(t('reviews.sent'))).toBeVisible();
-  await shot('2-sent');
   // The same Telegram client: only the address changes.
   await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?complain=b1`));
   await page.getByText(t('complaints.reason.harassment')).click();

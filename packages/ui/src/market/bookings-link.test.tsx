@@ -25,7 +25,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
         bookings: { myBookings: async () => [booked], myOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Davlat raqami')).toBeTruthy();
+    expect(await screen.findByText('01 A 123 BC')).toBeTruthy();
     await tap('Orqaga');
     await tap('Orqaga');
     expect(await screen.findByText('main screen')).toBeTruthy();

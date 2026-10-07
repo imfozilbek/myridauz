@@ -8,6 +8,8 @@ export const bookingSharePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id
 export const bookingShareStopPath = (id: string) => `${bookingSharePath(id)}/stop`;
 export const bookingBoardedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/boarded`;
 export const bookingArrivedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/arrived`;
+// «Men keldim» at the meeting point (docs/126).
+export const bookingCamePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/came`;
 // The driver shares a trip with the family the same way (docs/43). G18.
 export const driverTripSharePath = (tripId: string) => `/driver/trips/${tripId}/share`;
 export const driverTripShareStopPath = (tripId: string) => `${driverTripSharePath(tripId)}/stop`;
@@ -41,6 +43,8 @@ export const sharedTripSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The time at the booking: a moved trip shows «Vaqt oʻzgardi» (docs/124 И).
+  firstDepartAt: z.number().int(),
   km: z.number().int(),
   driver: z.object({
     firstName: z.string(),

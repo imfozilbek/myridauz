@@ -1,5 +1,6 @@
-import type { Booking } from '@platform/contracts';
+import { AFTER_TRIP_TALK_HOURS, arrivalAt, type Booking } from '@platform/contracts';
 import type { Member } from '../../chat';
+import { statusAt } from '../domain/booking';
 import type { BookingsDeps } from './ports';
 import { bookingViews } from './views';
 
@@ -9,34 +10,47 @@ export async function chatMember(deps: BookingsDeps, key: string, userId: number
   const id = key.slice(1);
   const pair = key.startsWith('o') ? await offerPair(deps, id) : await bookingPair(deps, id);
   if (!pair) return null;
-  const { canCall } = pair;
-  if (userId === pair.passengerId) return { userId, role: 'passenger', otherId: pair.driverId, canCall };
-  if (userId === pair.driverId) return { userId, role: 'driver', otherId: pair.passengerId, canCall };
+  const { canCall, canWrite } = pair;
+  if (userId === pair.passengerId)
+    return { userId, role: 'passenger', otherId: pair.driverId, canCall, canWrite };
+  if (userId === pair.driverId)
+    return { userId, role: 'driver', otherId: pair.passengerId, canCall, canWrite };
   return null;
 }
 
-// canCall: a voice call opens only once the booking is confirmed (docs/08).
-type Pair = { readonly passengerId: number; readonly driverId: number; readonly canCall: boolean };
-const confirmed = async (deps: BookingsDeps, bookingId: string | null) =>
-  bookingId !== null && (await deps.bookings.find(bookingId))?.status === 'confirmed';
+// canCall: a voice call opens once the booking is confirmed (docs/08) and stays 24 hours after the
+// arrival, like writing; then the chat is read only (docs/129).
+type Talk = { readonly canCall: boolean; readonly canWrite: boolean };
+type Pair = Talk & { readonly passengerId: number; readonly driverId: number };
+const HOUR_MS = 60 * 60 * 1000;
+
+async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Talk> {
+  const booking = bookingId === null ? undefined : await deps.bookings.find(bookingId);
+  const trip = booking ? await deps.trips.find(booking.tripId) : undefined;
+  if (!booking || !trip) return { canCall: false, canWrite: true };
+  const now = deps.now();
+  const status = statusAt(booking, now, trip.over);
+  const after = now < arrivalAt(trip.departAt, trip.km) + AFTER_TRIP_TALK_HOURS * HOUR_MS;
+  if (status === 'completed') return { canCall: after, canWrite: after };
+  return { canCall: status === 'confirmed', canWrite: true };
+}
 
 async function bookingPair(deps: BookingsDeps, id: string): Promise<Pair | null> {
   const booking = await deps.bookings.find(id);
   const trip = booking ? await deps.trips.find(booking.tripId) : undefined;
   if (!booking || !trip) return null;
-  return {
-    passengerId: booking.passengerId,
-    driverId: trip.driverId,
-    canCall: booking.status === 'confirmed',
-  };
+  return { passengerId: booking.passengerId, driverId: trip.driverId, ...(await talkOf(deps, id)) };
 }
 
 async function offerPair(deps: BookingsDeps, id: string): Promise<Pair | null> {
   const offer = await deps.offers.find(id);
   const request = offer ? await deps.requests.find(offer.requestId) : undefined;
   if (!offer || !request) return null;
-  const canCall = await confirmed(deps, offer.bookingId);
-  return { passengerId: request.passengerId, driverId: offer.driverId, canCall };
+  return {
+    passengerId: request.passengerId,
+    driverId: offer.driverId,
+    ...(await talkOf(deps, offer.bookingId)),
+  };
 }
 
 // The booking of a chat as its member sees it (G54, docs/115): the call screen shows who and which

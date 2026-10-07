@@ -1,0 +1,97 @@
+/* The one card of a booked trip (G60, mockup g60/1): the values of the mockup at 360 px. */
+.trip-card-way {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 11px 14px;
+}
+
+.trip-card-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.trip-card-dot {
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border: 2px solid var(--reg-from);
+  border-radius: 50%;
+}
+
+/* The thin line from the start down to the end. */
+.trip-card-from .trip-card-dot::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  width: 1.5px;
+  height: 28px;
+  transform: translateX(-50%);
+  background: var(--reg-divider);
+}
+
+.trip-card-to .trip-card-dot {
+  /* The end dot sits higher than its name, as on the mockup g60/1. */
+  margin-top: -2px;
+  border-color: var(--reg-to);
+}
+
+.trip-card-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trip-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+  overflow-wrap: anywhere;
+}
+
+.trip-card-note {
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--reg-muted);
+}
+
+.trip-card-sum {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  border-top: 1px solid var(--reg-divider);
+  font-size: 16px;
+}
+
+/* «≈ 300 km · ≈ 5 soat yoʻl» between the ends after the trip (mockup g60/7). */
+.trip-card-road {
+  margin: -7px 0 -9px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+button.trip-card-point {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* After the trip the end dot stands by the road line, as on the mockup g60/7. */
+.trip-card-past .trip-card-to .trip-card-dot {
+  margin-top: -10px;
+}
+
+.trip-card-past .trip-card-from .trip-card-dot::after {
+  height: 25px;
+}

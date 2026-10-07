@@ -39,6 +39,7 @@ const record = (over: Partial<BookingRecord> = {}): BookingRecord => ({
   confirmedAt: null,
   boardedAt: null,
   arrivedAt: null,
+  cameAt: null,
   createdAt: NOW,
   updatedAt: NOW,
   ...over,

@@ -40,9 +40,10 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
   it('a review closed before sending comes back with its stars and text; sent, it is gone', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const first = open('review', { review });
-    await screen.findByText('Jasur bilan safar');
+    await screen.findByText('Jasur');
     expect(screen.queryByText(RESTORED)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: '4' }));
+    await tap('+ Izoh yozish');
     typeInto(/qisqacha/u, 'Yaxshi yoʻl');
     first.unmount();
     open('review', { review });
@@ -51,10 +52,11 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     expect(screen.getByRole('button', { name: '4' }).getAttribute('aria-pressed')).toBe('true');
     await tap('Yuborish');
     await waitFor(() => expect(review).toHaveBeenCalledWith(expect.objectContaining({ stars: 4 })));
-    await screen.findByText(/Bahongiz saqlandi/u);
+    // Sent from the bot: the app closes at once, no screen after it (G60).
+    await waitFor(() => expect(sdk.miniApp.close.ifAvailable).toHaveBeenCalled());
     cleanup();
     open('review', { review });
-    await screen.findByText('Jasur bilan safar');
+    await screen.findByText('Jasur');
     expect(screen.queryByText(RESTORED)).toBeNull();
     expect(screen.queryByDisplayValue('Yaxshi yoʻl')).toBeNull();
   });
@@ -79,7 +81,7 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     expect(localStorage.length).toBe(0);
   });
 
-  it('keeps the button with a loader while sending, then «Yopish» goes back to the bot', async () => {
+  it('keeps the button with a loader while sending, then goes back to the bot at once', async () => {
     let done: () => void = () => undefined;
     const review = vi.fn(
       () =>
@@ -88,15 +90,14 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
         }),
     );
     open('review', { review });
-    await screen.findByText('Jasur bilan safar');
+    await screen.findByText('Jasur');
     fireEvent.click(screen.getByRole('button', { name: '5' }));
     await tap('Yuborish');
     const sending = screen.getByText('Yuborish').closest('button');
     expect(sending?.disabled).toBe(true);
     done();
-    await tap('Yopish');
-    expect(sdk.miniApp.close.ifAvailable).toHaveBeenCalledOnce();
-    expect(screen.getByText('Asosiy')).toBeTruthy();
+    await waitFor(() => expect(sdk.miniApp.close.ifAvailable).toHaveBeenCalledOnce());
+    expect(await screen.findByText('Asosiy')).toBeTruthy();
   });
 
   it('a complaint from a booking has no «Yopish»: the person stays in the app', async () => {

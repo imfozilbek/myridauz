@@ -23,14 +23,14 @@ export type BrandColors = {
   readonly attentionSoft: HexColor;
   // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
   readonly accentSoft: HexColor;
-  // A gray tile of the main screen («Mening safarlarim», «Profil»): light background, dark icon.
+  // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;
-  // A number of work waiting for the team (admin, G53).
-  readonly dangerText: HexColor;
-  // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
-  readonly routeFrom: HexColor;
-  readonly routeTo: HexColor;
+  readonly neutralFace: HexColor;
+  readonly dangerText: HexColor; // a number of work waiting for the team (admin, G53)
+  readonly routeFrom: HexColor; // point A of a route: green where the trip starts (docs/20)
+  readonly routeTo: HexColor; // point B: red where it ends
+  readonly scrim: HexColor; // the shade over the screen under a sheet, at 35% (mockups g60/6, g60/7)
   // Row line, empty tick frame, inactive main button and its words (the mockups of G58, Pixel Perfect).
   readonly divider: HexColor;
   readonly control: HexColor;

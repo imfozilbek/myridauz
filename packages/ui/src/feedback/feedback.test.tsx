@@ -41,16 +41,16 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
   it('opens the review from the bot, keeps the stars, sends tags and text', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const { tracked } = open('review', { target: async () => TARGET, review });
-    expect(await screen.findByText('Jasur bilan safar')).toBeTruthy();
+    expect(await screen.findByText('Jasur')).toBeTruthy();
     const select = vi.spyOn(haptic, 'select');
     fireEvent.click(screen.getByRole('button', { name: '4' }));
-    // Each tag is a checkbox: several can be chosen, seen before a tap (docs/88 L9).
-    expect(screen.getAllByRole('checkbox')).toHaveLength(4);
+    // Each tag is a chip: several can be chosen, seen before a tap (docs/88 L9, mockup g60/5).
     await tap('Vaqtida');
-    expect((screen.getByRole('checkbox', { name: 'Vaqtida' }) as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByRole('button', { name: 'Vaqtida' }).getAttribute('aria-pressed')).toBe('true');
     // Each choice ticks softly, like Telegram's own lists (docs/88 L3).
     expect(select).toHaveBeenCalledTimes(2);
-    // A text of several lines shows all of it and the whole hint (docs/88 L2).
+    // The comment opens by «+ Izoh yozish»; a text of several lines shows all of it (docs/88 L2).
+    await tap('+ Izoh yozish');
     expect(screen.getByPlaceholderText(/qisqacha/u).tagName).toBe('TEXTAREA');
     fireEvent.change(screen.getByPlaceholderText(/qisqacha/u), { target: { value: 'Yaxshi yoʻl' } });
     await tap('Yuborish');
@@ -61,14 +61,15 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
       tags: ['on_time'],
       text: 'Yaxshi yoʻl',
     });
-    expect(await screen.findByText(/Bahongiz saqlandi/u)).toBeTruthy();
-    expect(tracked.some((event) => event.name === 'review_sent')).toBe(true);
+    // No screen after sending (G60): the bot opened it, so the app closes.
+    await waitFor(() => expect(tracked.some((event) => event.name === 'review_sent')).toBe(true));
+    expect(screen.queryByText(/Bahongiz saqlandi/u)).toBeNull();
   });
 
   it('goes from the review to a complaint and explains a second one', async () => {
     const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
     open('review', { target: async () => TARGET, complain });
-    await tap('Shikoyat qilish');
+    await tap('Shikoyat');
     await tap('Kelmadi');
     expect(screen.getByPlaceholderText(/Nima boʻlganini/u).tagName).toBe('TEXTAREA');
     await tap('Yuborish');
