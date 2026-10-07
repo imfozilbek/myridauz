@@ -65,6 +65,7 @@ export default defineConfig({
         'g59-screenshots.spec.ts',
         'g59-pixel.spec.ts',
         'g60-pixel.spec.ts',
+        'g60-pixel-after.spec.ts',
       ],
     },
   ],

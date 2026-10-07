@@ -1,10 +1,12 @@
 import type { ChatMessage } from '@platform/contracts';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
 import { useScreenView } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
 import { CallPanel } from '../call/call-panel';
 import { otherName } from '../call/call-person';
 import { useApiClients } from '../context/api-clients';
@@ -44,6 +46,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const { messages, loaded, state, warning, canWrite, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
   useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
@@ -55,7 +58,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
   if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} onBack={onBack} />;
   return (
-    <div ref={chat} className="chat">
+    <div ref={chat} className="chat" style={brandVars(colors)}>
       <Screen onBack={controls.leave(onBack)} />
       <ChatHead
         about={about}

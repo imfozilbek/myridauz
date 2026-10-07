@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 100vh;
+  /* The height Telegram gives: the main button is outside it, the links stay above it. */
+  min-height: var(--tg-viewport-stable-height, 100vh);
   padding: 14px 14px 18px;
   box-sizing: border-box;
 }

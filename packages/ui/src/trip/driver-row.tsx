@@ -4,8 +4,8 @@ import { PersonBadge } from '../find/person-badge';
 import { PlateBadge } from '../find/plate-badge';
 import './driver-row.css';
 
-// The face: 50 px on a booking, 46 px for the close people (mockups g60/1, g60/3).
-const PHOTO = 50;
+// The face: 46 px on a booking, 44 px for the close people (mockups g60/1, g60/3).
+const PHOTO = 46;
 
 type Props = {
   readonly driver: { readonly id: string; readonly firstName: string; readonly hasAvatar: boolean };
@@ -22,7 +22,7 @@ export function DriverRow({ driver, car, note, plate, photo = PHOTO }: Props) {
   const { t } = useI18n();
   return (
     <div className="driver-row">
-      <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={photo} />
+      <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={photo} plain />
       <span className="driver-row-text">
         <span className="driver-row-name">
           {driver.firstName}

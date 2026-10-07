@@ -60,7 +60,7 @@ export function CallPanel({ name, about, call, ended, controls, onChat }: Props)
         ) : call.status === 'ringing' && call.caller === 'other' ? (
           <>
             <Round icon="hangUp" label={t('calls.decline')} danger onClick={controls.decline} />
-            <Round icon="call" label={t('calls.answer')} onClick={() => void controls.accept()} />
+            <Round icon="phone" label={t('calls.answer')} onClick={() => void controls.accept()} />
           </>
         ) : (
           <>
@@ -68,6 +68,7 @@ export function CallPanel({ name, about, call, ended, controls, onChat }: Props)
               <Round
                 icon={controls.muted ? 'muted' : 'microphone'}
                 label={t(controls.muted ? 'calls.unmute' : 'calls.mute')}
+                soft
                 onClick={controls.toggleMute}
               />
             ) : null}
@@ -83,13 +84,16 @@ type RoundProps = {
   readonly icon: IconName;
   readonly label: string;
   readonly danger?: boolean;
+  // A white round with a coloured icon: the microphone (mockup g60/4).
+  readonly soft?: boolean;
   readonly onClick: () => void;
 };
 
 // A round call button with its word under it: an icon is never alone (docs/19).
-function Round({ icon, label, danger = false, onClick }: RoundProps) {
+function Round({ icon, label, danger = false, soft = false, onClick }: RoundProps) {
+  const look = danger ? ' call-danger' : soft ? ' call-soft' : '';
   return (
-    <button type="button" className={`call-round${danger ? ' call-danger' : ''}`} onClick={onClick}>
+    <button type="button" className={`call-round${look}`} onClick={onClick}>
       <span className="call-round-icon">
         <Icon name={icon} size={28} />
       </span>

@@ -9,3 +9,9 @@
   font-weight: 700;
   color: var(--reg-text, var(--tgui--link_color));
 }
+
+.person-badge-plain {
+  background: var(--reg-face, var(--tgui--secondary_bg_color));
+  font-weight: 600;
+  color: var(--reg-face-text, var(--tgui--text_color));
+}

@@ -14,11 +14,13 @@
   flex-direction: column;
   gap: 6px;
   /* Room for the input under the last message, as tall as the input is now (docs/94 F10). */
-  padding: 8px 12px calc(var(--chat-input-height, 80px) + 8px);
+  padding: 12px 10px calc(var(--chat-input-height, 80px) + 8px);
 }
 
 .chat-bubble {
-  max-width: 80%;
+  /* 265 px of 360 on the mockup g60/2. */
+  box-sizing: border-box;
+  max-width: min(265px, 78%);
   padding: 9px 12px 6px;
   border-radius: 16px;
   white-space: pre-wrap;
@@ -27,7 +29,7 @@
 
 /* The text of a message at the size of the mockup g60/2. */
 .chat-bubble > :first-child {
-  font-size: 15px;
+  font-size: 14.5px;
   line-height: 1.35;
 }
 

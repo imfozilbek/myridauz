@@ -29,6 +29,7 @@ export function ReviewHead({
         name={target.rateeName}
         hasAvatar={driver?.hasAvatar ?? false}
         size={PHOTO}
+        plain
       />
       <span className="review-head-text">
         <b>{target.rateeName}</b>

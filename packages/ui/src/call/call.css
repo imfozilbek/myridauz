@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 34px 14px 36px;
-  background: linear-gradient(180deg, var(--reg-mint, #ccfbf1) 0%, var(--tgui--bg_color) 70%);
+  padding: 34px 14px 32px;
+  background: linear-gradient(180deg, var(--reg-mint, #ccfbf1) 0%, var(--tgui--bg_color) 90%);
   color: var(--tgui--text_color);
 }
 
@@ -23,31 +23,41 @@
 .call-ring {
   display: grid;
   place-items: center;
-  width: 112px;
-  height: 112px;
+  width: 150px;
+  height: 150px;
   margin-bottom: 8px;
   border-radius: 50%;
   background: color-mix(in srgb, var(--tgui--button_color) 22%, transparent);
 }
 
 .call-name {
-  font-size: 22px;
+  font-size: 26px;
+  line-height: 1.2;
 }
 
 .call-car {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 14.5px;
   color: var(--tgui--hint_color);
 }
 
+/* A small plate without the country on the call (mockup g60/4). */
 .call-car .plate-badge {
   margin-top: 0;
+  color: var(--reg-ink, var(--tgui--text_color));
+  font-size: 13px;
+  line-height: 14px;
+}
+
+.call-car .plate-badge-country {
+  display: none;
 }
 
 .call-status {
-  font-size: 15px;
+  margin-top: 2px;
+  font-size: 18px;
   color: var(--tgui--hint_color);
   font-variant-numeric: tabular-nums;
 }
@@ -60,7 +70,7 @@
 
 .call-card {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 17px;
   border-radius: 14px;
   background: var(--tgui--bg_color);
   text-align: left;
@@ -68,21 +78,23 @@
 
 .call-hint {
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--tgui--hint_color);
 }
 
 .call-actions {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 36px;
 }
 
 .call-round {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  /* «Javob berish» in two lines, as on the mockup g60/4. */
+  width: 74px;
   border: 0;
   background: none;
   color: var(--tgui--text_color);
@@ -92,8 +104,8 @@
 .call-round-icon {
   display: grid;
   place-items: center;
-  width: 64px;
-  height: 64px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   background: var(--tgui--button_color);
   color: var(--tgui--button_text_color);
@@ -101,4 +113,9 @@
 
 .call-danger .call-round-icon {
   background: var(--tgui--destructive_text_color);
+}
+
+.call-soft .call-round-icon {
+  background: var(--tgui--bg_color);
+  color: var(--tgui--button_color);
 }

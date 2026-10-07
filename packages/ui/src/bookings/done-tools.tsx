@@ -31,7 +31,7 @@ export function DoneTools({ booking, onOpen }: Props) {
   const rate = now < rateUntil;
   const tile = (icon: IconName, label: string, sub: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
-      <Icon name={icon} size={24} />
+      <Icon name={icon} size={22} />
       {label}
       <span className="booking-button-sub">{sub}</span>
     </button>

@@ -8,7 +8,7 @@ import { DriverRow } from '../trip/driver-row';
 
 // The driver and the two places of a shared trip (mockup g60/3): a place opens in a map. No phone
 // numbers here, ever (docs/07, docs/43).
-const FACE = 46;
+const FACE = 44;
 
 export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
   const { t, formatTime } = useI18n();
@@ -29,7 +29,7 @@ export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
         <span>{title}</span>
         <span className="follow-place-note">{note}</span>
       </span>
-      {point ? <Icon name="next" size={18} /> : null}
+      {point ? <Icon name="next" size={14} /> : null}
     </button>
   );
   return (

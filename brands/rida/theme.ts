@@ -24,6 +24,7 @@ export const theme: BrandTheme = {
     accentSoft: '#FFFBEB',
     neutralSoft: '#EEF2F6',
     neutralText: '#334155',
+    neutralFace: '#CBD5E1',
     dangerText: '#B91C1C',
     routeFrom: '#16A34A',
     routeTo: '#DC2626',

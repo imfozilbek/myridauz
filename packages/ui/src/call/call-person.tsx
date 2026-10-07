@@ -3,7 +3,8 @@ import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { PlateBadge } from '../find/plate-badge';
 
-const PHOTO = 88;
+const PHOTO = 118;
+const LETTER = 40;
 
 // The other side of a chat: the driver with the car for a passenger, the passenger for a driver.
 export function otherName({ booking, role }: ChatAbout): string | null {
@@ -22,7 +23,14 @@ export function CallPerson({ about, name }: { readonly about: ChatAbout | null; 
     <>
       <span className="call-ring">
         {other ? (
-          <PersonBadge id={other.id} name={other.firstName} hasAvatar={other.hasAvatar} size={PHOTO} />
+          <PersonBadge
+            id={other.id}
+            name={other.firstName}
+            hasAvatar={other.hasAvatar}
+            size={PHOTO}
+            letter={LETTER}
+            plain
+          />
         ) : null}
       </span>
       <b className="call-name">{name}</b>

@@ -6,11 +6,11 @@
   left: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0;
   /* Above the home bar of the phone, by the areas Telegram gives (docs/21, docs/94 S5). */
   padding: 0 0
     calc(
-      8px + var(--tg-viewport-safe-area-inset-bottom, 0px) +
+      1px + var(--tg-viewport-safe-area-inset-bottom, 0px) +
         var(--tg-viewport-content-safe-area-inset-bottom, 0px)
     );
   background: var(--tgui--secondary_bg_color);
@@ -41,8 +41,8 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin: 0;
-  padding: 0 16px;
+  margin: 14px 0 2px;
+  padding: 0 14px;
   font-size: 12px;
   color: var(--tgui--hint_color);
 }
@@ -56,9 +56,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 0 10px;
-  padding: 6px 8px;
-  border: 1.5px solid var(--tgui--button_color);
+  margin: 0 14px;
+  padding: 9px 12px 9px 14px;
+  border: 2px solid var(--tgui--button_color);
   border-radius: 16px;
   background: var(--tgui--bg_color);
 }
@@ -100,7 +100,7 @@
 }
 
 .chat-send:disabled {
-  opacity: 0.5;
+  cursor: default;
 }
 
 .chat-closed {

@@ -40,14 +40,14 @@ export function ConfirmedBooking(props: Props) {
   const { booking, onBack, onOpen, onCancel, onTold, onAgain, onOthers, children } = props;
   const moved = booking.trip.firstDepartAt !== booking.trip.departAt;
   useScreenView('bookings.passenger');
-  useScreenBackground('tinted');
+  useScreenBackground('grouped');
   const { t, formatNumber } = useI18n();
   const { driver } = booking.trip;
   const { colors } = useBrand().theme;
   const steps = useTripSteps(booking, onTold);
   const button = (icon: IconName, label: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
-      <Icon name={icon} size={24} />
+      <Icon name={icon} size={22} />
       {label}
     </button>
   );

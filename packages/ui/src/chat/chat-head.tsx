@@ -34,7 +34,7 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
     <div className="chat-top">
       <div className="chat-head">
         {other ? (
-          <PersonBadge id={other.id} name={other.firstName} hasAvatar={other.hasAvatar} size={PHOTO} />
+          <PersonBadge id={other.id} name={other.firstName} hasAvatar={other.hasAvatar} size={PHOTO} plain />
         ) : null}
         <span className="chat-head-text">
           <b>{name}</b>
@@ -79,7 +79,7 @@ function TripLine({ booking, onTrip }: LineProps) {
           {t('chat.trip.way', { from: region(trip.from), to: region(trip.to), seats: String(booking.seats) })}
         </span>
       </span>
-      {onTrip ? <Icon name="next" size={18} /> : null}
+      {onTrip ? <Icon name="next" size={14} /> : null}
     </button>
   );
 }

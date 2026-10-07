@@ -6,8 +6,8 @@
 .chat-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 11px 14px 9px;
   /* The height of the round call from the start: when it comes with the history, the messages do
      not move down (G41, docs/108). */
   min-height: 44px;
@@ -25,6 +25,7 @@
 
 .chat-head-text b {
   font-size: 16px;
+  line-height: 1.15;
   color: var(--tgui--text_color);
 }
 
@@ -38,7 +39,7 @@
   border: 0;
   border-radius: 50%;
   background: var(--reg-soft, var(--tgui--secondary_bg_color));
-  color: var(--tgui--link_color);
+  color: var(--reg-strong, var(--tgui--link_color));
   cursor: pointer;
 }
 
