@@ -8,9 +8,10 @@ import { haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
-import { OfferAccepted, OfferScreen } from './offer-list';
+import { AcceptedBooking } from './accepted-booking';
+import { MyRequest } from './my-request';
+import { OfferScreen } from './offer-list';
 import { PassengerBooking } from './passenger-booking';
-import { RequestOpen } from './request-open';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 const isStale = (caught: unknown) =>
@@ -23,8 +24,6 @@ export type Opened =
 type Props = {
   readonly opened: Opened;
   readonly offers: readonly Offer[];
-  // The offer of a bot button opens at once (G40, docs/106 K6).
-  readonly offerId?: string;
   readonly onClose: (changed: boolean) => void;
   // A seat or a request changed meanwhile: the parent loads it again at once (G52, docs/112).
   readonly onStale?: () => void;
@@ -33,14 +32,14 @@ type Props = {
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStale, onHome }: Props) {
+export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Props) {
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
-  const [offerId, setOfferId] = useState<string | null>(linked ?? null);
+  const [offerId, setOfferId] = useState<string | null>(null);
   const offer = offers.find((item) => item.id === offerId) ?? null;
   const [failure, setFailure] = useState<TranslationKey | null>(null);
-  // The booking of an accepted offer: its card goes to the close people (docs/89 P9).
-  const [accepted, setAccepted] = useState<{ readonly bookingId: string | null } | null>(null);
+  // The booking of an accepted offer: its page opens at once (G61, journey screen 8).
+  const [accepted, setAccepted] = useState<string | null>(null);
   const [talk, setTalk] = useState<{ chatKey: string; title: string; ring?: boolean } | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
   const run = async <T,>(action: () => Promise<T>, after: (result: T) => void) => {
@@ -56,33 +55,33 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
     }
   };
   const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
-  if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
+  // An answer from the card of the request or from the screen of the offer (G61, mockup 3-offers A).
+  const answer = (answered: Offer, action: 'accept' | 'decline') =>
+    run(
+      () => bookings.answerOffer(answered.id, action),
+      (result) => {
+        track({ name: 'booking_step', screen: 'bookings.offer', step: OFFER_STEP[action] });
+        if (action === 'accept' && result.bookingId) setAccepted(result.bookingId);
+        else open(null);
+      },
+    );
+  if (accepted) return <AcceptedBooking bookingId={accepted} onClose={onClose} onHome={onHome} />;
   if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
-  if (offer) {
-    const answer = (action: 'accept' | 'decline') =>
-      run(
-        () => bookings.answerOffer(offer.id, action),
-        (answered) => {
-          track({ name: 'booking_step', screen: 'bookings.offer', step: OFFER_STEP[action] });
-          if (action === 'accept') setAccepted({ bookingId: answered.bookingId });
-          else onClose(true);
-        },
-      );
+  if (offer)
     return (
       <OfferScreen
         offer={offer}
         onBack={() => open(null)}
-        onAccept={() => answer('accept')}
-        onDecline={() => answer('decline')}
+        onAccept={() => answer(offer, 'accept')}
+        onDecline={() => answer(offer, 'decline')}
         onChat={() => setTalk({ chatKey: offer.chatKey, title: offer.driver.firstName })}
       >
         <ActionFailure error={failure} />
       </OfferScreen>
     );
-  }
   if (opened.kind === 'request')
     return (
-      <RequestOpen
+      <MyRequest
         request={opened.request}
         offers={offers}
         failure={failure}
@@ -93,7 +92,8 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
             () => onClose(true),
           )
         }
-        onOffer={open}
+        onAnswer={answer}
+        onOpen={open}
       />
     );
   return <PassengerBooking booking={opened.booking} onClose={onClose} onStale={onStale} onHome={onHome} />;

@@ -2,7 +2,6 @@ import type { Offer } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { CellValue } from '../account/cell-value';
-import { StepLayout } from '../account/step-layout';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
@@ -12,12 +11,6 @@ import { IconTile } from '../icon-tile';
 import { RatingBadge } from '../feedback/rating-badge';
 import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
-import { useGoHome } from '../flow/home-context';
-import { MainButton, SecondaryButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
-import { ActionFailure } from '../states/action-failure';
-import { useFailure } from '../states/use-failure';
-import { useShareTrip } from './use-share-trip';
 import '../market/market.css';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 
@@ -96,32 +89,5 @@ export function OfferScreen({ offer, onBack, onAccept, onDecline, onChat, childr
         </Button>
       </div>
     </div>
-  );
-}
-
-// The passenger took an offer: the seat is confirmed, the trip is in "Mening safarlarim". The card
-// for the close people is one tap away (docs/89 P9).
-type AcceptedProps = { readonly bookingId: string | null; readonly onDone: () => void };
-export function OfferAccepted({ bookingId, onDone }: AcceptedProps) {
-  const { t } = useI18n();
-  const home = useGoHome(onDone);
-  const shareTrip = useShareTrip();
-  const { failure, fail, clear } = useFailure();
-  const share = (id: string) => {
-    clear();
-    void shareTrip(id).then(() => haptic.success(), fail);
-  };
-  return (
-    <StepLayout
-      hero
-      icon="selected"
-      title={t('bookings.offer.accepted.title')}
-      hint={t('bookings.offer.accepted.hint')}
-    >
-      <Screen onBack={home} />
-      <ActionFailure error={failure} />
-      <MainButton text={t('market.done')} onClick={home} />
-      {bookingId ? <SecondaryButton text={t('share.send')} onClick={() => share(bookingId)} /> : null}
-    </StepLayout>
   );
 }

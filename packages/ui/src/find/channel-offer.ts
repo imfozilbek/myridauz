@@ -25,10 +25,11 @@ function remember(username: string) {
 
 // The channel of the other end of the trip (docs/119): the zone of the place, or of a place of the
 // region when the search is a whole region. Tashkent has no channel (docs/15).
-export function useChannelOffer(route: Route, directory: PlaceDirectory) {
+// No route (a place gone from the directory): no channel.
+export function useChannelOffer(route: Route | null, directory: PlaceDirectory) {
   const brand = useBrand();
-  const { to } = route;
-  const places = to.parentId === null ? directory.inside(to.id).map((place) => place.id) : [to.id];
+  const to = route?.to;
+  const places = !to ? [] : to.parentId === null ? directory.inside(to.id).map((place) => place.id) : [to.id];
   const found = channelOf(brand, ...places);
   const [hidden, setHidden] = useState(() => (found ? offered().includes(found.username) : true));
   const close = () => {

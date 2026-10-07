@@ -15,6 +15,7 @@ import { errorKey } from './error-text';
 import type { TripDraft } from './trip-draft';
 import { RouteView } from './route-view';
 import { useSeatCommission } from './seat-commission';
+import { RULE_LABELS } from './trip-rule-step';
 import { useWhenLabel } from './when';
 
 type TripPublishProps = {
@@ -46,7 +47,7 @@ export function TripPublish(props: TripPublishProps) {
   const publish = async () => {
     setError(null);
     try {
-      const { route, departAt, seats, price, womanOnBoard, comment, pickupMode } = draft;
+      const { route, departAt, seats, price, womanOnBoard, comment, pickupMode, bookingRule } = draft;
       await market.publishTrip({
         from: route.from.id,
         to: route.to.id,
@@ -56,6 +57,7 @@ export function TripPublish(props: TripPublishProps) {
         womanOnBoard,
         comment,
         pickupMode,
+        bookingRule,
       });
       track({ name: 'trip_step', screen: 'market.review', step: 'published' });
       if (isReturn) track({ name: 'return_trip_created', screen: 'market.review' });
@@ -88,6 +90,7 @@ export function TripPublish(props: TripPublishProps) {
           {line(t('market.review.when'), when(draft.departAt))}
           {line(t('market.review.seats'), String(draft.seats))}
           {line(t('market.review.price'), formatMoney(draft.price))}
+          {line(t('market.review.rule'), t(`market.rule.${RULE_LABELS[draft.bookingRule]}`))}
           {draft.womanOnBoard ? <Cell>{t('market.search.woman')}</Cell> : null}
           {draft.comment ? <Cell description={draft.comment}>{t('market.review.comment')}</Cell> : null}
         </Section>

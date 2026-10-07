@@ -23,6 +23,8 @@ const request: RideRequest = {
   price: 95000,
   status: 'open',
   pickupMode: 'both',
+  wholeCar: false,
+  withWoman: false,
 };
 
 describe('an offer keeps its answers (docs/94 F8, F9)', { timeout: 20_000 }, () => {

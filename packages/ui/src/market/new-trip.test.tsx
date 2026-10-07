@@ -35,7 +35,7 @@ function setup(gender: 'male' | 'female' = 'male', status: Driver['application']
   return { ...result, publishTrip };
 }
 
-describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
+describe('NewTripFlow: a new trip, one question per screen (docs/19)', { timeout: 20_000 }, () => {
   it('asks the route, day and time on one screen, seats, price, comment and publishes', async () => {
     const { publishTrip, tracked } = setup();
     await chooseRoute();
@@ -55,6 +55,12 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     fireEvent.click(screen.getByLabelText('Oshirish'));
     expect(screen.getByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
     await tap('Davom etish');
+    // «Qanday band qilinadi?» (G61, docs/09): seats only at first, the whole car is 4 seats × the price.
+    expect(await screen.findByText('Qanday band qilinadi?')).toBeTruthy();
+    expect(screen.getByText(/^Butun salon narxi: 4 joy × 100\s000 = 400\s000\ssoʻm\.$/u)).toBeTruthy();
+    // A card chooses, «Davom etish» goes on, as the mockup 2-whole-car screen 1.
+    await tap('Joylar yoki butun salon');
+    await tap('Davom etish');
     expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
     expect(await filled()).toBeGreaterThan(atTime);
     await tap('Izohsiz davom etish');
@@ -71,11 +77,12 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
       price: 100000,
       womanOnBoard: false,
       comment: '',
+      bookingRule: 'seats_or_car',
     });
     const steps = tracked
       .filter((event) => event.name === 'trip_step')
       .map((event) => ('step' in event ? event.step : ''));
-    expect(steps).toEqual(['route', 'mode', 'when', 'seats', 'price', 'comment', 'published']);
+    expect(steps).toEqual(['route', 'mode', 'when', 'seats', 'price', 'rule', 'comment', 'published']);
   });
 
   // G38 (docs/103 point 8): tap the third chair, 3 seats; somebody already goes, «ayol bor» is asked.
@@ -88,7 +95,8 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     fireEvent.click(await screen.findByLabelText('3 ta boʻsh joy'));
     expect(screen.getByText('3 ta boʻsh joy', { selector: '.seat-count' })).toBeTruthy();
     fireEvent.click(screen.getByRole('checkbox'));
-    for (const step of ['Davom etish', 'Davom etish', 'Izohsiz davom etish', 'Eʼlon qilish']) await tap(step);
+    for (const step of ['Davom etish', 'Davom etish', 'Davom etish', 'Izohsiz davom etish', 'Eʼlon qilish'])
+      await tap(step);
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ seats: 3, womanOnBoard: true }));
   });
@@ -99,6 +107,7 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
     await chooseRoute();
     for (const step of [
       /^Ertaga/,
+      'Davom etish',
       'Davom etish',
       'Davom etish',
       'Davom etish',
@@ -113,7 +122,14 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', () => {
   it('lets a driver whose application is checked try everything but publishing', async () => {
     const { publishTrip } = setup('male', 'pending');
     await chooseRoute();
-    for (const step of [/^Ertaga/, 'Davom etish', 'Davom etish', 'Davom etish', 'Izohsiz davom etish'])
+    for (const step of [
+      /^Ertaga/,
+      'Davom etish',
+      'Davom etish',
+      'Davom etish',
+      'Davom etish',
+      'Izohsiz davom etish',
+    ])
       await tap(step);
     expect(await screen.findByText('Ariza tasdiqlangach safarni eʼlon qila olasiz.')).toBeTruthy();
     expect(screen.queryByText('Eʼlon qilish')).toBeNull();

@@ -71,6 +71,9 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
     await mainButton(page).click();
     await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
     await mainButton(page).click();
+    // «Qanday band qilinadi?» (G61): seats only.
+    await page.getByText(t('market.rule.seats')).click();
+    await mainButton(page).click();
     await page.getByPlaceholder(t('market.comment.placeholder')).fill(COMMENT);
     // Telegram closes the Mini App; the person opens it again later.
     await page.reload();

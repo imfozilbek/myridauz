@@ -14,9 +14,8 @@ const B = {
   twoSeats: t('find.book', { count: '2' }),
   points: t('bookings.points.title'),
   waiting: t('bookings.status.requested'),
-  offers: t('bookings.offer.list'),
+  offers: t('bookings.request.offers', { count: '1' }),
   accept: t('bookings.offer.accept'),
-  accepted: t('bookings.offer.accepted.title'),
   confirm: t('bookings.confirm'),
   sure: t('bookings.confirm.title'),
   confirmed: t('bookings.confirmed.title'),
@@ -29,7 +28,7 @@ const B = {
 };
 
 // One end of a booking on «Qayerdan, qayerga?»: its row opens the map, the main button takes it (G59).
-async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
+export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
   await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
   await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
@@ -64,7 +63,8 @@ export async function bookSeats(page: Page, shot: Shot = none) {
   await shot('3-sent');
 }
 
-// "Mening safarlarim" of a passenger: a confirmed seat opens the plate; a driver's offer is accepted.
+// "Mening safarlarim" of a passenger: a confirmed seat opens the plate; a driver's offer is accepted
+// right in its card and the page of the seat opens (G61, mockup 3-offers A).
 export async function passengerTrips(page: Page, shot: Shot = none) {
   await page.getByText(B.myTrips).click();
   await expect(page.getByText(t('bookings.mine'))).toBeVisible();
@@ -77,11 +77,8 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await page.getByText(t('market.request.perSeat')).first().click();
   await expect(page.getByText(B.offers)).toBeVisible();
   await shot('3-request');
-  await page.getByText('Jasur').click();
-  await expect(page.getByText(B.accept)).toBeVisible();
-  await shot('4-offer');
-  await page.getByText(B.accept).click();
-  await expect(page.getByText(B.accepted)).toBeVisible();
+  await page.getByRole('button', { name: B.accept }).click();
+  await expect(page.getByText(B.confirmed)).toBeVisible();
   await shot('5-accepted');
 }
 

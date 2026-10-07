@@ -4,18 +4,17 @@ import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
-import type { BookingsDeps, RequestFacts, TripFacts } from './application/ports';
+import type { BookingsDeps, TripFacts } from './application/ports';
+import type { RequestFacts } from './application/request-facts';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
 import {
-  AWAY,
-  DILNOZA,
   DRIVER,
   fakeNotifier,
   fakePeople,
   fakePlaces,
   fakeRecommend,
+  fakeRequest,
   fakeTripView,
-  HOME,
   NOW,
   PITAK,
   scheduleCheck,
@@ -114,20 +113,7 @@ export function setup() {
     newId,
   };
   const addRequest = (extra: Partial<RequestFacts> = {}) => {
-    const request: RequestFacts = {
-      id: newId(),
-      passengerId: DILNOZA,
-      from: '1726273',
-      to: '1718401',
-      date: '2026-10-02',
-      km: 300,
-      seats: 2,
-      pickupMode: 'both',
-      pickup: HOME,
-      dropoff: AWAY,
-      open: true,
-      ...extra,
-    };
+    const request: RequestFacts = { ...fakeRequest(newId()), ...extra };
     requests.set(request.id, request);
     return request.id;
   };

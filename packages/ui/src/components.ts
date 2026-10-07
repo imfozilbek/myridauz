@@ -11,6 +11,7 @@ export {
   List,
   Modal,
   Multiselectable,
+  Radio,
   Select,
   SegmentedControl,
   Skeleton,

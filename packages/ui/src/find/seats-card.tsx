@@ -1,10 +1,10 @@
 import type { Trip } from '@platform/contracts';
 import { useAccount } from '../account/account-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
-import { Switch } from '../switch';
 import { haptic } from '../telegram/feedback';
 import { offersWoman, type SeatChoice } from './seat-choice';
+import { Stepper } from './stepper';
+import { ToggleRow } from './toggle-row';
 
 type Props = {
   readonly trip: Trip;
@@ -52,38 +52,21 @@ export function SeatsCard({ trip, choice, onChoice }: Props) {
         ) : (
           <div className="seats-row">
             <span>{t('find.seats')}</span>
-            <span className="seats-stepper">
-              <button
-                type="button"
-                aria-label={t('market.price.less')}
-                disabled={choice.seats <= 1}
-                onClick={() => step(-1)}
-              >
-                <Icon name="less" size={20} />
-              </button>
-              <span className="seats-count">{choice.seats}</span>
-              <button
-                type="button"
-                aria-label={t('market.price.more')}
-                disabled={choice.seats >= trip.seatsLeft}
-                onClick={() => step(1)}
-              >
-                <Icon name="more" size={20} />
-              </button>
-            </span>
+            <Stepper
+              value={choice.seats}
+              atLeast={choice.seats <= 1}
+              atMost={choice.seats >= trip.seatsLeft}
+              onStep={step}
+            />
           </div>
         )}
         {offersWoman(trip, choice, isMan) ? (
-          <label className="seats-row seats-woman">
-            <span className="seats-woman-text">
-              <span>{t('find.withWoman')}</span>
-              <span className="seats-woman-hint">{t('find.withWomanHint')}</span>
-            </span>
-            <Switch
-              checked={choice.withWoman}
-              onChange={(event) => set({ withWoman: event.target.checked })}
-            />
-          </label>
+          <ToggleRow
+            label={t('find.withWoman')}
+            hint={t('find.withWomanHint')}
+            checked={choice.withWoman}
+            onChange={(withWoman) => set({ withWoman })}
+          />
         ) : null}
         <div className="seats-row seats-total">
           <span>{t('find.total', { price: formatNumber(trip.price), seats: String(choice.seats) })}</span>

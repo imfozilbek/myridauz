@@ -53,6 +53,7 @@ describe('funnelOf (docs/29)', () => {
       'when',
       'seats',
       'price',
+      'rule',
       'comment',
       'published',
     ]);

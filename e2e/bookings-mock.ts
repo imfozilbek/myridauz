@@ -67,6 +67,7 @@ export const offer = {
   departAt: Date.parse(`${request.date}T03:30:00Z`),
   km: request.km,
   seats: request.seats,
+  wholeCar: false,
   price: 85000,
   commission: 0,
   status: 'sent',

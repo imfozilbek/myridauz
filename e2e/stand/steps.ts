@@ -26,7 +26,7 @@ async function settledAfter(page: Page, target: Locator, before: string) {
     .toBe(true);
 }
 
-export async function stepUntil(page: Page, target: Locator, step: () => Promise<void>) {
+async function stepUntil(page: Page, target: Locator, step: () => Promise<void>) {
   for (let taps = 0; taps < MAX_STEPS; taps += 1) {
     if (await target.isVisible()) return;
     const before = await screenText(page);

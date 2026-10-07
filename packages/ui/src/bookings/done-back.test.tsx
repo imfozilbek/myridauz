@@ -7,7 +7,6 @@ import { PlacesGate } from '../market/places-gate';
 import { testClients } from '../test-shell';
 import { booking, confirmed, wallet } from './booking-test-kit';
 import { DriverBooking } from './driver-booking';
-import { OfferAccepted } from './offer-list';
 
 afterEach(cleanup);
 
@@ -26,13 +25,6 @@ describe('a «done» screen has «Назад» (docs/94 F9)', () => {
     await screen.findByText('Joy tasdiqlandi');
     await tap('Orqaga');
     expect(onClose).toHaveBeenCalledWith(true);
-  });
-
-  it('the offer taken by the passenger goes back to the list', async () => {
-    const onDone = vi.fn();
-    renderMarket(<OfferAccepted bookingId={null} onDone={onDone} />, testClients({}));
-    await tap('Orqaga');
-    expect(onDone).toHaveBeenCalledOnce();
   });
 });
 

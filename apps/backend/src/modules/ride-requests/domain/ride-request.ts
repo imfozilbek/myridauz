@@ -19,6 +19,8 @@ export type RequestRecord = {
   readonly km: number;
   readonly seats: number;
   readonly price: number;
+  readonly wholeCar: boolean;
+  readonly withWoman: boolean;
   readonly status: RideRequest['status'];
   // The way and the points of the passenger (docs/70): kept only while the request is open.
   readonly pickupMode: PickupMode;
@@ -57,3 +59,7 @@ export function cancel(
   if (request.passengerId !== passengerId) return 'trips.not_found';
   return isOpen(request, now) ? withoutPoints({ ...request, status: 'cancelled' }) : 'trips.wrong_status';
 }
+
+// «Men bilan ayol bor» (docs/06 rule 4): a man with 2 people and more; a woman gives the mark herself.
+export const keepsWithWoman = (wanted: boolean, seats: number, passengerIsWoman: boolean) =>
+  wanted && seats >= 2 && !passengerIsWoman;

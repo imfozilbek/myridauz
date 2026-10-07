@@ -58,6 +58,7 @@ export const offer: Offer = {
   departAt: trip.departAt,
   km: trip.km,
   seats: 2,
+  wholeCar: false,
   price: 95000,
   commission: 0,
   status: 'sent',
@@ -103,4 +104,6 @@ export const request = {
   price: 95000,
   status: 'open' as const,
   pickupMode: 'both' as const,
+  wholeCar: false,
+  withWoman: false,
 };

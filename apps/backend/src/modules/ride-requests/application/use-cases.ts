@@ -5,11 +5,19 @@ import {
   type RequestSearch,
   type RideRequest,
   type Point,
-  type RideRequestInput,
+  type RideRequestData,
 } from '@platform/contracts';
 import { placeMatches } from '../../../shared/places/place-match';
-import { cancel, dateError, expiresAt, isOpen, statusAt, type RequestRecord } from '../domain/ride-request';
+import {
+  cancel,
+  dateError,
+  expiresAt,
+  isOpen,
+  keepsWithWoman,
+  type RequestRecord,
+} from '../domain/ride-request';
 import type { RequestsDeps, Result } from './ports';
+import { views } from './views';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 type PublishError =
@@ -24,30 +32,11 @@ type PublishError =
   | 'bookings.wrong_mode'
   | 'bookings.outside_area';
 
-// Other people see only the name and the face of the passenger (docs/07).
-export async function views(deps: RequestsDeps, requests: readonly RequestRecord[]): Promise<RideRequest[]> {
-  const now = deps.now();
-  const found = await Promise.all(
-    requests.map(async (request) => {
-      const person = await deps.people.find(request.passengerId);
-      if (!person) return null;
-      const passenger = {
-        id: person.publicId,
-        firstName: person.firstName,
-        hasAvatar: person.avatarShown,
-      };
-      const { id, from, to, date, km, seats, price, pickupMode } = request;
-      return { id, passenger, from, to, date, km, seats, price, pickupMode, status: statusAt(request, now) };
-    }),
-  );
-  return found.filter((request) => request !== null);
-}
-
 const plain = ({ lat, lng }: Point) => ({ lat, lng });
 
 // The way of a request (docs/70): «Pitakdan» only where the direction has a pitak; a point at the
 // door unless only the pitak suits; the points in the districts of the route (docs/69).
-async function wayError(deps: RequestsDeps, input: Required<RideRequestInput>) {
+async function wayError(deps: RequestsDeps, input: RideRequestData) {
   const places = await deps.places();
   const regionOf = (id: string) => places.get(id)?.parentId ?? id;
   const pitak = await deps.pitakOf(regionOf(input.from), regionOf(input.to));
@@ -60,7 +49,7 @@ async function wayError(deps: RequestsDeps, input: Required<RideRequestInput>) {
 export async function publishRequest(
   deps: RequestsDeps,
   passengerId: number,
-  input: Required<RideRequestInput>,
+  input: RideRequestData,
 ): Promise<Result<RideRequest, PublishError>> {
   const now = deps.now();
   const timeError = dateError(input.date, now);
@@ -79,8 +68,10 @@ export async function publishRequest(
   if (open.length >= MAX_OPEN_REQUESTS) return { ok: false, error: 'trips.too_many' };
   const pointsError = await wayError(deps, input);
   if (pointsError) return { ok: false, error: pointsError };
+  const passenger = await deps.people.find(passengerId);
   const request: RequestRecord = {
     ...input,
+    withWoman: keepsWithWoman(input.withWoman, input.seats, passenger?.gender === 'female'),
     pickup: input.pickupMode === 'pitak' || !input.pickup ? null : plain(input.pickup),
     dropoff: plain(input.dropoff),
     id: deps.newId(),

@@ -48,6 +48,9 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham
   await mainButton(page).click();
   await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
   await mainButton(page).click();
+  // «Qanday band qilinadi?» (G61): seats only.
+  await page.getByText(t('market.rule.seats')).click();
+  await mainButton(page).click();
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   await shot(page, '3-driver-review');
@@ -111,8 +114,9 @@ async function expectOnlyIn(page: Page, query: string, districts: RegExp) {
   for (const line of await found.allInnerTexts()) expect(line).toMatch(districts);
 }
 
+// DILNOZA: she has no seat on the trip yet, the others asked one in 1 and 2 («Bu safarda joyingiz bor»).
 test('4. the search of a place finds only inside the zone of the trip', async ({ page }) => {
-  await findAndOpen(page, NODIRA);
+  await findAndOpen(page, DILNOZA);
   await openEnd(page, 'pickup');
   // «Registon» of Toshkent (a cafe, streets) is found; the Registon square of Samarqand is not.
   await expectOnlyIn(

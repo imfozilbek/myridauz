@@ -13,6 +13,7 @@ import { SeatsStep } from './seats-step';
 import { TripLimitScreen, useTripLimitReached } from './trip-limit';
 import { CommentStep } from './trip-steps';
 import { TripModeStep } from './trip-mode-step';
+import { TripRuleStep } from './trip-rule-step';
 import { completeDraft, type TripAgain } from './trip-draft';
 
 type NewTripFlowProps = {
@@ -102,7 +103,18 @@ function TripStepScreen({
           {...(draft.price ? { initial: draft.price } : {})}
           commission
           onBack={() => go('seats')}
-          onDone={(price) => next('price', { price }, 'comment')}
+          onDone={(price) => next('price', { price }, 'rule')}
+        />
+      );
+    case 'rule':
+      return (
+        <TripRuleStep
+          model={car?.model ?? ''}
+          seats={draft.seats ?? 1}
+          price={draft.price ?? 0}
+          {...(draft.bookingRule ? { selected: draft.bookingRule } : {})}
+          onBack={() => go('price')}
+          onDone={(bookingRule) => next('rule', { bookingRule }, 'comment')}
         />
       );
     case 'comment':
@@ -110,7 +122,7 @@ function TripStepScreen({
         <CommentStep
           initial={draft.comment ?? ''}
           onType={flow.type}
-          onBack={() => go('price')}
+          onBack={() => go('rule')}
           onDone={(comment) => next('comment', { comment }, 'review')}
         />
       );

@@ -25,8 +25,13 @@ export const rideRequestInputSchema = z.object({
   pickupMode: pickupModeSchema,
   pickup: pointInputSchema.nullable(),
   dropoff: pointInputSchema,
+  // «Boʻsh salon kerak»: the group takes the whole car; «Men bilan ayol bor» of a man with 2 people
+  // and more (G61, docs/06 rule 4, docs/118 path 4).
+  wholeCar: z.boolean().default(false),
+  withWoman: z.boolean().default(false),
 });
 export type RideRequestInput = z.input<typeof rideRequestInputSchema>;
+export type RideRequestData = z.output<typeof rideRequestInputSchema>;
 
 export const rideRequestSchema = z.object({
   id: z.string(),
@@ -38,6 +43,8 @@ export const rideRequestSchema = z.object({
   seats: z.number().int(),
   price: z.number().int(),
   pickupMode: pickupModeSchema,
+  wholeCar: z.boolean(),
+  withWoman: z.boolean(),
   status: z.enum(REQUEST_STATUSES),
 });
 export type RideRequest = z.infer<typeof rideRequestSchema>;

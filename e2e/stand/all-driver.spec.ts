@@ -83,6 +83,11 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
   await mainButton(page).click();
   await shot(page, 'android', 'da44-price');
   await mainButton(page).click();
+  // «Qanday band qilinadi?» (G61): seats or the whole car.
+  await expect(page.getByText(t('market.rule.title'))).toBeVisible();
+  await shot(page, 'android', 'da44a-rule');
+  await page.getByText(t('market.rule.seatsOrCar')).click();
+  await mainButton(page).click();
   await shot(page, 'android', 'da45-comment');
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);

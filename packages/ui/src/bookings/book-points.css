@@ -28,7 +28,8 @@
   gap: 12px;
   width: 100%;
   min-height: 60px;
-  padding: 8px 14px;
+  /* A name of two lines keeps the air of the mockup above and below it (G61, mockup 1-request). */
+  padding: 12px 14px;
   border: 0;
   border-bottom: 1px solid var(--reg-divider);
   background: none;

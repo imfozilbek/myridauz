@@ -1,20 +1,16 @@
 import type { Location } from '@platform/contracts';
-import { useEffect, useState } from 'react';
-import { StepLayout } from '../account/step-layout';
+import { useState } from 'react';
 import { BookPoint } from '../bookings/book-point';
-import { useI18n } from '../context/i18n-context';
+import { useGoHome } from '../flow/home-context';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
-import { useGoHome } from '../flow/home-context';
-import { MainButton } from '../telegram/bottom-button';
 import { rememberedWay } from '../way/remembered-way';
 import { DateStep } from './date-step';
-import type { RequestStepName, useNewRequest } from './new-request-state';
-import { PriceStep } from './price-step';
-import { RequestModeStep } from './request-mode-step';
-import { RequestReview } from './request-review';
+import { ExistingRequest } from './existing-request';
+import { keptWay, type useNewRequest } from './new-request-state';
+import { PlacesGate } from './places-gate';
 import { rememberRoute } from './recent-routes';
+import { RequestPoints } from './request-points';
 
 export type Search = { readonly route: Route; readonly date: string };
 export type Find = (id: string) => Location | undefined;
@@ -27,32 +23,19 @@ type StepProps = {
   readonly onClose: () => void;
 };
 
-// One step of a request; each shows the answer chosen before (docs/94 F8).
+// One step of a request (G61, docs/118 path 4): the route, the day, then one screen with the maps
+// of its ends. Each shows the answer chosen before (docs/94 F8).
 export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) {
-  const { t } = useI18n();
   const home = useGoHome(onClose);
-  const { step, answer, recommendation, pitak, editing, go, next } = flow;
+  const { step, answer, recommendation, pitak, go, next } = flow;
   const [now] = useState(Date.now);
-  const { route, date, mode, pickup, dropoff, price } = answer;
-  // «Назад»: to the check from a step it opened, else to the step before; the first goes out.
-  const back = (to: RequestStepName | null) => () => (editing ? go('review') : to ? go(to) : onBack());
-  const beforeWay = search ? null : 'date';
-  const beforePoints = pitak ? 'mode' : beforeWay;
-  // No pitak on the direction: the door, without a choice of one (PS8).
-  useEffect(() => {
-    if (step === 'mode' && pitak === null) next({ mode: 'door' });
-  }, [step, pitak]);
-  if (flow.sent)
+  const { route, date, mode, pickup, dropoff } = answer;
+  // Sent: «Mening soʻrovim» at once, the offers come into it (G61, journey screens 2 and 5).
+  if (flow.sent && route && date)
     return (
-      <StepLayout
-        hero
-        icon="selected"
-        title={t('market.request.published.title')}
-        hint={t('market.request.published.hint')}
-      >
-        <Screen onBack={home} />
-        <MainButton text={t('market.done')} onClick={home} />
-      </StepLayout>
+      <PlacesGate onBack={home}>
+        <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={home} />
+      </PlacesGate>
     );
   if (step === 'route' || !route)
     return (
@@ -64,39 +47,32 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
         onDone={(chosen) => {
           // The route of a request is one tap away on the main screen next time (G40, docs/106 K9).
           rememberRoute(chosen);
-          const kept = rememberedWay(chosen.from.id, chosen.to.id, find);
-          next({ route: chosen, ...(kept ?? {}) });
+          next({ route: chosen, ...keptWay(rememberedWay(chosen.from.id, chosen.to.id, find)) });
         }}
       />
     );
-  if (step === 'date')
+  if (step === 'date' || !date)
     return (
       <DateStep
         now={now}
         {...(date ? { initial: date } : {})}
-        onBack={back('route')}
+        onBack={() => go('route')}
         onDone={(value) => next({ date: value })}
       />
     );
-  if (step === 'mode') {
-    if (!pitak) return <ScreenSkeleton onBack={back(beforeWay)} />;
-    return (
-      <RequestModeStep
-        pitak={pitak}
-        selected={mode}
-        onBack={back(beforeWay)}
-        onDone={(value) => next({ mode: value, ...(value === 'pitak' ? { pickup: null } : {}) })}
-      />
-    );
-  }
+  const toPoints = () => go('points');
   if (step === 'pickup')
     return (
       <BookPoint
         placeId={route.from.id}
         end="from"
         initial={pickup ?? null}
-        onBack={back(beforePoints)}
-        onPick={(end) => next({ pickup: end })}
+        // The pitak of the direction is one more start, taken in one tap (docs/70, docs/72).
+        {...(pitak && mode !== 'pitak'
+          ? { pitak, onPitak: () => next({ mode: 'pitak', pickup: null }) }
+          : {})}
+        onBack={toPoints}
+        onPick={(end) => next({ mode: 'door', pickup: end })}
       />
     );
   if (step === 'dropoff')
@@ -105,28 +81,19 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
         placeId={route.to.id}
         end="to"
         initial={dropoff ?? null}
-        onBack={back(mode === 'pitak' ? beforePoints : 'pickup')}
+        onBack={toPoints}
         onPick={(end) => next({ dropoff: end })}
       />
     );
-  if (step === 'price') {
-    if (!recommendation) return <ScreenSkeleton onBack={back('dropoff')} />;
-    return (
-      <PriceStep
-        recommendation={recommendation}
-        {...(price ? { initial: price } : {})}
-        onBack={back('dropoff')}
-        onDone={(value) => next({ price: value })}
-      />
-    );
-  }
+  if (!recommendation) return <ScreenSkeleton onBack={search ? onBack : () => go('date')} />;
   return (
-    <RequestReview
+    <RequestPoints
       answer={answer}
+      recommendation={recommendation}
       pitak={pitak}
-      onSeats={(seats) => next({ seats })}
-      onChange={(to) => go(to, true)}
-      onBack={back('price')}
+      onAnswer={next}
+      onEnd={go}
+      onBack={search ? onBack : () => go('date')}
       onSent={flow.done}
     />
   );

@@ -1,0 +1,74 @@
+/* «Qanday band qilinadi?» (G61, mockup 2-whole-car screen 1): the values of the mockup at 360 px. */
+.rule-screen {
+  font-family: var(--tgui--font-family);
+}
+
+.rule-screen .step-head {
+  row-gap: 0;
+  padding: 6px 22px 0;
+}
+
+.rule-screen .step-head h2 {
+  font-size: 22px;
+  line-height: 26px;
+}
+
+.rule-screen .step-hint {
+  font-size: 13px;
+}
+
+.rule-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 14px 0;
+}
+
+.rule-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--reg-card);
+  cursor: pointer;
+}
+
+.rule-card-on {
+  border-color: var(--reg-strong);
+  background: var(--reg-soft);
+}
+
+.rule-card svg {
+  color: var(--reg-face);
+}
+
+.rule-card-on svg {
+  color: var(--reg-strong);
+}
+
+.rule-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.rule-label {
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: 700;
+  color: var(--reg-ink);
+}
+
+.rule-hint,
+.rule-price {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.rule-price {
+  margin: 10px 14px 0;
+}

@@ -1,0 +1,10 @@
+/* «Hammasi» of a request (G61, mockup 1-request): the sum of the seats in the brand colour. */
+.request-total {
+  min-height: 40px;
+  font-size: clamp(14px, 4.6vw, 16.5px);
+  white-space: nowrap;
+}
+
+.request-total b {
+  color: var(--reg-text);
+}

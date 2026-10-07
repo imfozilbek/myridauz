@@ -1,6 +1,7 @@
 import type {
   Booking,
   Car,
+  Offer,
   Pitak,
   Point,
   Recommendation,
@@ -14,6 +15,7 @@ import type {
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
+import type { RequestFacts } from './request-facts';
 
 // Ports of the bookings module: D1 in production, memory in tests.
 export type BookingRepository = {
@@ -59,20 +61,6 @@ export type TripFacts = {
   readonly pickupMode: PickupMode;
   // The plate of the car kept in the trip (docs/65 A1).
   readonly plate: string | null;
-};
-export type RequestFacts = {
-  readonly id: string;
-  readonly passengerId: number;
-  readonly from: string;
-  readonly to: string;
-  readonly date: string;
-  readonly km: number;
-  readonly seats: number;
-  // The way and the points of the passenger (docs/70): the booking of an accepted offer takes them.
-  readonly pickupMode: PickupMode;
-  readonly pickup: Point | null;
-  readonly dropoff: Point | null;
-  readonly open: boolean;
 };
 
 type Published = { ok: true; value: Trip } | { ok: false; error: string };
@@ -133,7 +121,8 @@ export type BookingNotifier = {
   declined(booking: Booking): Promise<void>;
   expired(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
-  offered(passengerId: number, offerId: string): Promise<void>;
+  // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
+  offered(passengerId: number, offer: Offer): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;

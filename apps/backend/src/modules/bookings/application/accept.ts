@@ -1,8 +1,9 @@
 import type { Offer, Point } from '@platform/contracts';
 import type { BookingRecord, Named } from '../domain/booking';
-import { offerStatusAt, type OfferRecord } from '../domain/offer';
+import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerViews } from './offer-views';
-import type { BookingsDeps, RequestFacts, Result } from './ports';
+import type { BookingsDeps, Result } from './ports';
+import type { RequestFacts } from './request-facts';
 import { bookingViews } from './views';
 
 type AcceptError = 'bookings.not_found' | 'bookings.wrong_status' | 'wallet.not_enough';
@@ -70,7 +71,8 @@ async function acceptTaken(
   offer: OfferRecord,
   request: RequestFacts,
 ): Promise<Result<Offer, AcceptError>> {
-  const commission = deps.wallet.commission(offer.price, request.seats);
+  const seats = offerSeats(offer, request);
+  const commission = deps.wallet.commission(offer.price, seats);
   const car = await deps.approvedCar(offer.driverId);
   if (!car || !(await deps.wallet.canAfford(offer.driverId, commission)))
     return { ok: false, error: 'wallet.not_enough' };
@@ -84,8 +86,8 @@ async function acceptTaken(
     comment: '',
     // The passenger chose the way already: the trip of the offer takes any (docs/70).
     pickupMode: 'both',
-    // The trip of an offer is the passenger's request: seats as asked (docs/09).
-    bookingRule: 'seats',
+    // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
+    bookingRule: request.wholeCar ? 'car_only' : 'seats',
   });
   if (!published.ok) return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
@@ -93,9 +95,9 @@ async function acceptTaken(
     id: deps.newId(),
     tripId: published.value.id,
     passengerId,
-    seats: request.seats,
-    wholeCar: false,
-    withWoman: false,
+    seats,
+    wholeCar: request.wholeCar,
+    withWoman: request.withWoman,
     price: offer.price,
     commission,
     status: 'confirmed',

@@ -49,6 +49,11 @@
   border-bottom: 0;
 }
 
+/* The control on the right keeps its size on a 320 px phone: the words wrap, not the switch (docs/121). */
+.seats-row > :last-child {
+  flex: none;
+}
+
 .seats-stepper {
   display: flex;
   align-items: center;
@@ -86,13 +91,13 @@
   cursor: pointer;
 }
 
-.seats-woman-text {
+.seats-text {
   display: flex;
   flex-direction: column;
   padding: 10px 0;
 }
 
-.seats-woman-hint {
+.seats-hint {
   font-size: 12.5px;
   color: var(--reg-muted);
 }
@@ -122,4 +127,15 @@
   flex-direction: column;
   gap: 10px;
   padding: 0 14px;
+}
+
+/* A 320 px phone: the price and its buttons get narrower, the label keeps its line (docs/121). */
+@media (max-width: 340px) {
+  .seats-stepper {
+    gap: 6px;
+  }
+
+  .seats-count {
+    font-size: 16px;
+  }
 }

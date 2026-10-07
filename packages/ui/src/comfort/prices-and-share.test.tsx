@@ -70,6 +70,7 @@ describe('the driver side (docs/40, docs/43)', () => {
       womanOnBoard: true,
       comment: 'Yuk yoʻq',
       pickupMode: 'door' as const,
+      bookingRule: 'seats_or_car' as const,
     };
     expect(returnDraft(draft)).toEqual({
       route: { from: to, to: from },
@@ -77,6 +78,7 @@ describe('the driver side (docs/40, docs/43)', () => {
       seats: 3,
       price: 95000,
       womanOnBoard: true,
+      bookingRule: 'seats_or_car',
       comment: '',
     });
   });

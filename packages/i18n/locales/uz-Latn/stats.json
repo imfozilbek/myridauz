@@ -59,5 +59,6 @@
   "platform.android": "Android",
   "platform.ios": "iPhone",
   "platform.desktop": "Kompyuter",
-  "platform.other": "Boshqa"
+  "platform.other": "Boshqa",
+  "step.rule": "Band qilish usuli"
 }
