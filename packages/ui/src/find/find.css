@@ -65,8 +65,9 @@
 }
 
 .direction-list {
-  display: flex;
-  flex-direction: column;
+  /* Every card is as tall as the tallest: one size for one kind (docs/121). */
+  display: grid;
+  grid-auto-rows: 1fr;
   gap: 11px;
   padding: 13px 14px 0;
 }
