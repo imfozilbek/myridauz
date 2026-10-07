@@ -92,5 +92,7 @@
   "fix.send": "Qayta yuborish",
   "become.title": "Haydovchi boʻlish",
   "become.hint": "2 qadam: mashina va uning rasmlari",
-  "photo.good": "Yaxshi"
+  "photo.good": "Yaxshi",
+  "approved.title": "Siz haydovchisiz!",
+  "approved.bonus": "Hamyoningizda {amount} bonus."
 }

@@ -7,6 +7,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { useSettingsButton } from '../telegram/settings-button';
 import { HomeProfile } from '../home/home-profile';
 import { HomeTile } from './home-tile';
+import { MainTile } from './main-tile';
 import { HomeTop } from './home-top';
 import type { StartAction, TileLive } from './start-action';
 
@@ -17,6 +18,8 @@ type HomeScreenProps = {
   readonly top?: ReactNode;
   // Tiles of the app after the tiles of its actions: the profile, the last route, the wallet (G53).
   readonly tiles?: ReactNode;
+  // The main action as the big tile above the others (G62, mockup g62/1 screen 6).
+  readonly main?: StartAction;
   readonly onOpen: (action: StartAction) => void;
   readonly onProfile: () => void;
 };
@@ -25,7 +28,8 @@ type HomeScreenProps = {
 // header already names the app (owner decision 01.10.2026), so the profile and the trips come first.
 // «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
 // (owner decision 02.10.2026, docs/94 F4).
-export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfile }: HomeScreenProps) {
+export function HomeScreen(props: HomeScreenProps) {
+  const { actions, notice, after, top, tiles, main, onOpen, onProfile } = props;
   useScreenView('home');
   useScreenBackground();
   useSettingsButton(onProfile);
@@ -37,6 +41,7 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
       <div className="home-stack">
         <HomeProfile onOpen={onProfile} />
         {notice}
+        {main ? <MainAction action={main} onOpen={() => onOpen(main)} /> : null}
         <HomeTop>{top}</HomeTop>
         <div className="home-tiles">
           {actions.map((action) => (
@@ -44,6 +49,7 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
               key={action.id}
               action={action}
               waiting={pending && Boolean(action.waitsApproval)}
+              pale={pending && Boolean(action.waitsApproval || action.paleUntilApproval)}
               onOpen={() => onOpen(action)}
             />
           ))}
@@ -59,6 +65,7 @@ export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfi
 type ActionTileProps = {
   readonly action: StartAction;
   readonly waiting: boolean;
+  readonly pale: boolean;
   readonly onOpen: () => void;
 };
 
@@ -67,7 +74,7 @@ const NOTHING_LIVE = (): TileLive => ({});
 // An action as a tile; what it says live comes from the action itself (G53). While the application
 // is checked, an action that waits says when it works; it still opens and explains (docs/86 V7).
 // Its icon stays in color, as on the mockup the owner chose (G53).
-function ActionTile({ action, waiting, onOpen }: ActionTileProps) {
+function ActionTile({ action, waiting, pale, onOpen }: ActionTileProps) {
   const { t } = useI18n();
   const live = (action.useLive ?? NOTHING_LIVE)();
   const hint = waiting ? t('drivers.status.pending.after') : (live.hint ?? t(action.hintKey));
@@ -77,10 +84,17 @@ function ActionTile({ action, waiting, onOpen }: ActionTileProps) {
       tone={action.tone}
       title={t(action.labelKey)}
       hint={hint}
+      pale={pale}
       {...(live.badge === undefined ? {} : { badge: live.badge })}
       {...(live.value === undefined ? {} : { value: live.value })}
       {...(live.urgent ? { urgent: true } : {})}
       onClick={onOpen}
     />
   );
+}
+
+// The big tile of the main action, with the hint of its section (G62).
+function MainAction({ action, onOpen }: { readonly action: StartAction; readonly onOpen: () => void }) {
+  const { t } = useI18n();
+  return <MainTile icon={action.icon} title={t(action.labelKey)} hint={t(action.hintKey)} onClick={onOpen} />;
 }

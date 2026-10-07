@@ -24,7 +24,7 @@ export function DriverNotice() {
     );
   if (status === 'pending') return <PendingNotice />;
   if (driver && status === 'changes_requested') return <FixNotice onOpen={driver.editCar} />;
-  return null;
+  return status === 'approved' ? <ApprovedNotice /> : null;
 }
 
 const FIX_TINT = '8%';
@@ -47,12 +47,6 @@ function FixNotice({ onOpen }: { readonly onOpen: () => void }) {
   );
 }
 
-// Once after the approval, that it is approved and the bonus is there (docs/86 V7). Under the
-// actions: it waits for the wallet, and when it comes nothing above it moves (G41, docs/108).
-export function DriverApproved() {
-  return useDriver()?.application.status === 'approved' ? <ApprovedNotice /> : null;
-}
-
 // In the colors of the driver app, with a clock, as long as the check lasts: no «Yopish» (G53).
 function PendingNotice() {
   const { t } = useI18n();
@@ -69,10 +63,11 @@ function PendingNotice() {
   );
 }
 
-// Shown on the first visit after the approval; it stays until the driver leaves the screen. The
-// bonus and its last day come from the wallet: a driver approved again has none (docs/89 D4).
+// «Siz haydovchisiz!» on the first visit after the approval, above the big tile (G62, mockup g62/1
+// screen 6); it stays until the driver leaves the screen. The bonus comes from the wallet: a driver
+// approved again has none (docs/89 D4). It comes whole with the bonus, never grows (G41).
 function ApprovedNotice() {
-  const { t, formatMoney, formatDate } = useI18n();
+  const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
   const { colors } = useBrand().theme;
   const [shown] = useState(() => !approvalSeen());
@@ -83,14 +78,7 @@ function ApprovedNotice() {
     if (!shown) return;
     wallet.mine().then(
       (mine) =>
-        mine.bonus > 0 && mine.bonusExpiresAt !== null
-          ? setBonus(
-              t('drivers.status.approved.bonus', {
-                amount: formatMoney(mine.bonus),
-                date: formatDate(new Date(mine.bonusExpiresAt)),
-              }),
-            )
-          : setBonus(''),
+        setBonus(mine.bonus > 0 ? t('drivers.approved.bonus', { amount: formatMoney(mine.bonus) }) : ''),
       () => setBonus(''),
     );
   }, [shown, wallet]);
@@ -101,9 +89,8 @@ function ApprovedNotice() {
       ink={colors.success}
       soft={colors.successSoft}
       mark={colors.success}
-      title={t('drivers.status.approved.title')}
+      title={t('drivers.approved.title')}
       text={bonus}
-      closable
     />
   );
 }

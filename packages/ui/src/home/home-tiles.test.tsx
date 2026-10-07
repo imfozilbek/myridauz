@@ -78,13 +78,13 @@ const driver = (status: 'approved' | 'pending' = 'approved') =>
     { ...approved, application: { ...approved.application, status } },
   );
 
-describe('the tiles of a driver (G53)', { timeout: 20_000 }, () => {
-  it('counts the new requests and opens «Hamyon» with its bonus', async () => {
+describe('the tiles of a driver (G53, G62)', { timeout: 20_000 }, () => {
+  it('counts the new requests and publishes from the big tile, «Hamyon» lives in the profile', async () => {
     driver();
-    expect(await screen.findByText('Bonus 481 000 soʻm')).toBeTruthy();
+    expect(await screen.findByText('Yordam')).toBeTruthy();
     expect(tileOf('Mening safarlarim')?.querySelector('.home-tile-badge')?.textContent).toBe('2');
-    await tap('Hamyon');
-    expect(screen.getByText('opened empty')).toBeTruthy();
+    expect(tileOf('Safar eʼlon qilish')?.className).toBe('main-tile');
+    expect(screen.queryByText('Hamyon')).toBeNull();
   });
 
   it('opens the support bot while the application is checked', async () => {
@@ -92,7 +92,6 @@ describe('the tiles of a driver (G53)', { timeout: 20_000 }, () => {
     driver('pending');
     await tap('Savolingiz boʻlsa yozing');
     expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
-    expect(screen.queryByText('Hamyon')).toBeNull();
     open.mockRestore();
   });
 });

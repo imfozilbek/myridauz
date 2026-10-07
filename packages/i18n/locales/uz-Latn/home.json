@@ -22,5 +22,6 @@
   "check.title": "Arizangiz tekshirilmoqda",
   "check.text": "Odatda 30 daqiqagacha. Javob botga keladi.",
   "admin.activeTrips": "faol eʼlon",
-  "unread": "{count} xabar"
+  "unread": "{count} xabar",
+  "publishHint": "Yoʻlovchilar sizni oʻzi topadi"
 }
