@@ -38,8 +38,9 @@ export async function publishTrip(page: Page, shot: Shot = none) {
   await mainButton.click();
   // «Qanday band qilinadi?» (G61): the whole car may be booked too.
   await expect(page.getByText(t('market.rule.title'))).toBeVisible();
-  await shot('5a-rule');
   await page.getByText(t('market.rule.seatsOrCar')).click();
+  await shot('5a-rule');
+  await mainButton.click();
   await expect(page.getByText(TEXT.commentSkip)).toBeVisible();
   await shot('6-comment');
   await page.getByText(TEXT.commentSkip).click();

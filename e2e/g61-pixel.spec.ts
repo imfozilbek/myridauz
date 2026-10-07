@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { test } from './crash-guard';
 import { openMyRequest, openRequestScreen } from './g61-mock';
+import { openRuleStep } from './g61-rule-mock';
 
 // Pixel Perfect of G61 (lessons 141, 147, docs/137): the request and «Mening soʻrovim» shot at the
 // size of the mockups (360 × 759) with their data; the diff is read by scripts/pixel-diff.py.
@@ -18,4 +19,9 @@ test('«Soʻrov» against the mockup', async ({ page }) => {
 test('«Mening soʻrovim» against the mockup', async ({ page }) => {
   await openMyRequest(page);
   await shot(page, '03');
+});
+
+test('«Qanday band qilinadi?» against the mockup', async ({ page }) => {
+  await openRuleStep(page);
+  await shot(page, '02');
 });

@@ -107,6 +107,7 @@
   "request.wholeCar": "Boʻsh salon kerak",
   "request.wholeCarHint": "Haydovchi boshqa yoʻlovchi olmaydi",
   "rule.title": "Qanday band qilinadi?",
+  "rule.sub": "{model} · {count} ta joy · bir joy {price}",
   "rule.seats": "Faqat joylar",
   "rule.seatsHint": "Har kim oʻz joyini band qiladi",
   "rule.seatsOrCar": "Joylar yoki butun salon",

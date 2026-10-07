@@ -58,8 +58,9 @@ describe('NewTripFlow: a new trip, one question per screen (docs/19)', { timeout
     // «Qanday band qilinadi?» (G61, docs/09): seats only at first, the whole car is 4 seats × the price.
     expect(await screen.findByText('Qanday band qilinadi?')).toBeTruthy();
     expect(screen.getByText(/^Butun salon narxi: 4 joy × 100\s000 = 400\s000\ssoʻm\.$/u)).toBeTruthy();
-    // One tap chooses and goes on (docs/19).
+    // A card chooses, «Davom etish» goes on, as the mockup 2-whole-car screen 1.
     await tap('Joylar yoki butun salon');
+    await tap('Davom etish');
     expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
     expect(await filled()).toBeGreaterThan(atTime);
     await tap('Izohsiz davom etish');

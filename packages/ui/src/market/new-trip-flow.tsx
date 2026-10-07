@@ -109,6 +109,7 @@ function TripStepScreen({
     case 'rule':
       return (
         <TripRuleStep
+          model={car?.model ?? ''}
           seats={draft.seats ?? 1}
           price={draft.price ?? 0}
           {...(draft.bookingRule ? { selected: draft.bookingRule } : {})}
