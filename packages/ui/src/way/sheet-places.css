@@ -5,9 +5,12 @@
   gap: 8px;
 }
 .way-tile {
+  /* The icon over the words: a word is never broken inside on a narrow phone (docs/121). */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  text-align: center;
+  gap: 4px;
   min-width: 0;
   padding: 9px 10px;
   border: 1.5px solid var(--tgui--secondary_bg_color);
@@ -24,10 +27,10 @@
   min-width: 0;
   font-size: 12px;
   color: var(--tgui--hint_color);
-  overflow-wrap: anywhere;
 }
 .way-tile-text b {
-  font-size: 15px;
+  font-size: clamp(12px, 3.6vw, 15px);
+  white-space: nowrap;
   color: var(--tgui--text_color);
 }
 .way-chips {
