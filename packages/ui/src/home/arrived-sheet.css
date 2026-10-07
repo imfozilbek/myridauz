@@ -31,3 +31,28 @@
 .arrived-sub {
   margin-bottom: 8px;
 }
+
+/* The trip of a saved driver (mockup g60/7). */
+.favorite-trip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-self: stretch;
+  margin: 4px 0 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--tgui--secondary_bg_color);
+  text-align: left;
+  font-size: 15px;
+}
+
+.favorite-trip-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--tgui--hint_color);
+}
+
+.favorite-trip-line b {
+  color: var(--tgui--text_color);
+}

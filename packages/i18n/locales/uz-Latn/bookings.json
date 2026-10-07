@@ -103,5 +103,12 @@
   "arrivedAsk.when": "{place} · ≈ {time} edi",
   "arrivedAsk.yes": "Ha, yetib keldim",
   "arrivedAsk.later": "Hali yoʻldaman",
-  "arrivedAsk.close": "Yaqinlaringiz ham bilib oladi"
+  "arrivedAsk.close": "Yaqinlaringiz ham bilib oladi",
+  "favorite.kicker": "Sevimli haydovchi",
+  "favorite.title": "{name} yangi safar eʼlon qildi",
+  "favorite.times": "Siz bilan {count} marta borgan",
+  "favorite.when": "{when} · {from} → {to}",
+  "favorite.seats": "{count} ta boʻsh joy",
+  "favorite.book": "Band qilish",
+  "favorite.later": "Keyinroq"
 }

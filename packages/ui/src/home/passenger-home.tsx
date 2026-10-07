@@ -6,7 +6,8 @@ import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
 import { useHere } from '../places/use-here';
 import { Screen } from '../screen/screen';
-import { ArrivedSheet } from './arrived-sheet';
+import { ArrivedSheet, asksArrival } from './arrived-sheet';
+import { FavoriteSheet } from './favorite-sheet';
 import { HomeRowCard } from './home-card';
 import { HomeFailed, HomeLoading } from './home-state';
 import { HomeTrips } from './home-trips';
@@ -24,6 +25,9 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
       <Screen onRefresh={load.refresh} />
       <Bookings go={go} load={load} />
       <ArrivedSheet bookings={load.value?.[0] ?? []} onTold={load.refresh} />
+      {load.value && !load.value[0].some((booking) => asksArrival(booking, Date.now())) ? (
+        <FavoriteSheet go={go} bookings={load.value[0]} />
+      ) : null}
     </>
   );
 }

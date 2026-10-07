@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { TRIP_LINK, type AppLink, type Trip } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { FindStart } from '../find/find-start';
@@ -9,6 +9,8 @@ import { FindResults } from './find-results';
 import { useForgetOnLeave } from './list-leave';
 import { NewRequestFlow } from './new-request-flow';
 import { rememberRoute } from './recent-routes';
+import { PlacesGate } from './places-gate';
+import { TripById } from './trip-link';
 import { NO_FILTERS, type TripFilters } from './trip-filters';
 import { RESULTS } from './use-trip-search';
 
@@ -33,11 +35,22 @@ type Props = {
   readonly day?: string | undefined;
   // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
+  // A new trip of a saved driver from the main screen (G60): that trip, ready to book.
+  readonly link?: AppLink;
 };
 
 // A passenger looks for a trip (G59, docs/118 path 2): «Qayerga borasiz?» with the main directions,
 // then at once the trips of the nearest day with trips. The points come only at the booking.
-export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Props) {
+export function FindTripFlow({ link, ...props }: Props) {
+  if (link?.name !== TRIP_LINK) return <FindTrip {...props} />;
+  return (
+    <PlacesGate onBack={props.onBack}>
+      <TripById id={link.id} onClose={props.onBack} />
+    </PlacesGate>
+  );
+}
+
+function FindTrip({ onBack, initial, route: recent, day, pick }: Omit<Props, 'link'>) {
   const { track } = useAnalytics();
   const known = initial ?? recent;
   const [screen, setScreen] = useState<FindScreen>(

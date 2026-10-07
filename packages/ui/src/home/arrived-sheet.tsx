@@ -14,6 +14,12 @@ import './arrived-sheet.css';
 const HOUR_MS = 60 * 60 * 1000;
 const PHOTO = 72;
 
+// A confirmed seat an hour after its arrival, not told yet: one sheet at a time (docs/122).
+export const asksArrival = (booking: Booking, now: number) =>
+  booking.status === 'confirmed' &&
+  booking.arrivedAt === null &&
+  now >= arrivalAt(booking.trip.departAt, booking.trip.km) + HOUR_MS;
+
 // An hour after the arrival the passenger who has not told it is asked (docs/129, docs/43,
 // mockup g60/6): one tap tells the close people too; «Hali yoʻldaman» leaves it for now.
 export function ArrivedSheet({
@@ -24,14 +30,7 @@ export function ArrivedSheet({
   readonly onTold: () => void;
 }) {
   const [later, setLater] = useState<readonly string[]>([]);
-  const now = Date.now();
-  const due = bookings.find(
-    (booking) =>
-      booking.status === 'confirmed' &&
-      booking.arrivedAt === null &&
-      now >= arrivalAt(booking.trip.departAt, booking.trip.km) + HOUR_MS &&
-      !later.includes(booking.id),
-  );
+  const due = bookings.find((booking) => asksArrival(booking, Date.now()) && !later.includes(booking.id));
   return (
     <Modal
       open={due !== undefined}

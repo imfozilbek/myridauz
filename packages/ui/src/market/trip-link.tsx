@@ -1,4 +1,4 @@
-import { tashkentDate } from '@platform/contracts';
+import { tashkentDate, TRIP_LINK } from '@platform/contracts';
 import { useState, type ReactNode } from 'react';
 import { BookFlow } from '../bookings/book-flow';
 import { SafarScreen } from '../find/safar-screen';
@@ -11,7 +11,7 @@ import { LinkedSearch } from './find-link';
 import { PlacesGate } from './places-gate';
 import { useLoad } from './use-list';
 
-const PARAM = 'trip';
+const PARAM = TRIP_LINK;
 const PARAMS = [PARAM];
 const TRIP_ID = /^[A-Za-z0-9-]{1,64}$/u;
 const START = /^trip_([A-Za-z0-9-]{1,64})$/u;
