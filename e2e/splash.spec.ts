@@ -4,6 +4,7 @@ import { afterSplash, expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { mockFeedback } from './feedback-mock';
+import { leftAt, slowApi, watch } from './splash-watch';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -11,35 +12,6 @@ const [PASSENGER] = MINI_APPS;
 const brand = loadBrand();
 const splash = (page: Page) => page.locator('#splash');
 const rgb = (hex: string) => `rgb(${[1, 3, 5].map((at) => parseInt(hex.slice(at, at + 2), 16)).join(', ')})`;
-
-// Every answer of the API waits this long: the splash stands while the first screen loads.
-async function slowApi(page: Page, ms: number) {
-  await page.route('**/api/**', async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, ms));
-    await route.fallback();
-  });
-}
-// The moment the splash left the page, from the tap (performance.now), and every app_ready sent.
-async function watch(page: Page) {
-  await page.addInitScript(() => {
-    const seen = { stood: false, left: 0 };
-    Object.assign(window, { splashSeen: seen });
-    new MutationObserver(() => {
-      const there = document.getElementById('splash') !== null;
-      if (there) seen.stood = true;
-      else if (seen.stood && !seen.left) seen.left = performance.now();
-    }).observe(document, { childList: true, subtree: true });
-  });
-  const ready: Record<string, unknown>[] = [];
-  page.on('request', (request) => {
-    if (request.method() !== 'POST' || !request.url().includes('/analytics')) return;
-    const { events = [] } = request.postDataJSON() as { events?: Record<string, unknown>[] };
-    ready.push(...events.filter((event) => event['name'] === 'app_ready'));
-  });
-  return ready;
-}
-const leftAt = (page: Page) =>
-  page.evaluate(() => (window as unknown as { splashSeen: { left: number } }).splashSeen.left);
 
 // The splash of docs/121 §4 (G72, mockup g66/5) in all three Mini App.
 for (const { name, port } of MINI_APPS) {
@@ -68,6 +40,27 @@ for (const { name, port } of MINI_APPS) {
     expect(ready[0]).toMatchObject({ screen: 'app', ms: expect.any(Number) });
   });
 }
+
+// The splash has no button: the Telegram button of the first screen waits for it (owner's phone, 07.10).
+test('no Telegram button over the splash, the first screen gets it after', async ({ page }) => {
+  await mockApi(page, 'active');
+  await page.addInitScript(() => {
+    const seen = { over: false };
+    Object.assign(window, { buttonSeen: seen });
+    new MutationObserver(() => {
+      const button = document.getElementById('tg-main-button');
+      if (button?.style.display === 'block' && document.querySelector('#splash:not(.splash-out)'))
+        seen.over = true;
+    }).observe(document, { childList: true, subtree: true, attributes: true });
+  });
+  await mockTelegram(page);
+  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+  await afterSplash(page);
+  await expect(page.locator('#tg-main-button')).toHaveText(PASSENGER.mainButton);
+  expect(
+    await page.evaluate(() => (window as unknown as { buttonSeen: { over: boolean } }).buttonSeen.over),
+  ).toBe(false);
+});
 
 test('a fast first screen: the splash still stands 0,6 s, then fades out in 0,3 s', async ({ page }) => {
   await mockApi(page, 'active');

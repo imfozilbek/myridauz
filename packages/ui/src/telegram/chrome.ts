@@ -6,6 +6,8 @@ import { miniApp } from '@telegram-apps/sdk-react';
 type Chrome = { readonly header: string; readonly bottom: string };
 let screen: Chrome | undefined;
 let splash: string | undefined;
+// What waits for the splash to leave: the Telegram buttons of the first screen (docs/121 §4).
+const afterSplash = new Set<() => void>();
 
 function apply(): void {
   const chrome = splash === undefined ? screen : { header: splash, bottom: splash };
@@ -29,4 +31,12 @@ export function paintMounted(fallback: Chrome): void {
 export function paintSplash(color: string | undefined): void {
   splash = color;
   apply();
+  if (color === undefined) afterSplash.forEach((listener) => listener());
+}
+
+export const splashStands = (): boolean => splash !== undefined;
+
+export function onSplashLeft(listener: () => void): () => void {
+  afterSplash.add(listener);
+  return () => afterSplash.delete(listener);
 }
