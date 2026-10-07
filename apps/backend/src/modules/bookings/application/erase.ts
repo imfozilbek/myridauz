@@ -1,8 +1,9 @@
+import { DAY_MS, POINTS_KEEP_DAYS } from '@platform/contracts';
 import type { BookingsDeps } from './ports';
 
-// Points live 30 days after the trip (docs/69): enough for a complaint (docs/17). A booking with an
-// open complaint keeps them until the decision of the moderator; only the district stays after.
-const KEEP_MS = 30 * 24 * 60 * 60 * 1000;
+// Points live POINTS_KEEP_DAYS after the trip (docs/69). A booking with an open complaint keeps
+// them until the decision of the moderator; only the district stays after.
+const KEEP_MS = POINTS_KEEP_DAYS * DAY_MS;
 
 export async function eraseOldPoints(deps: BookingsDeps, now: number, complained: ReadonlySet<string>) {
   const cutoff = now - KEEP_MS;

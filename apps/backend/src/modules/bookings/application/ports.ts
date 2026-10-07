@@ -20,8 +20,7 @@ export type BookingRepository = {
   save(booking: BookingRecord): Promise<void>;
   // Saves only if the booking still has the expected status: two answers at once cannot both win.
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;
-  // Confirms a requested booking only if its seats still fit into the trip: one step, two confirms
-  // at once cannot both take the last seat (docs/65 A4).
+  // Confirms only if the seats still fit: two confirms cannot both take the last seat (docs/65 A4).
   confirmWithin(booking: BookingRecord, tripSeats: number): Promise<boolean>;
   find(id: string): Promise<BookingRecord | undefined>;
   byTrips(tripIds: readonly string[]): Promise<BookingRecord[]>;
@@ -108,8 +107,9 @@ export type BookingsDeps = {
   };
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
-  // The ratings of drivers for their offers (docs/24, docs/65 C).
+  // The ratings of drivers for their offers (docs/24, docs/65 C); the bookings this person rated (docs/129).
   readonly ratings: (driverIds: readonly number[]) => Promise<Map<number, Rating>>;
+  readonly rated: (userId: number) => Promise<ReadonlySet<string>>;
   readonly recommend: (
     from: string,
     to: string,

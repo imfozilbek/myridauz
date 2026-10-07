@@ -24,7 +24,8 @@ describe('a past trip (G60, mockups g60/6 and g60/7)', () => {
   it('says the trip ended and shows what may still be done, each with its deadline', async () => {
     vi.setSystemTime(arrival + HOUR);
     open();
-    await tap('Jasur');
+    await tap('Oʻtgan');
+    await tap(/^Jasur/u);
     expect(screen.getByText('Safar tugadi')).toBeTruthy();
     expect(screen.getByText(/^Rida orqali:/u)).toBeTruthy();
     expect(screen.getAllByText(/gacha$/u)).toHaveLength(2);
@@ -37,7 +38,8 @@ describe('a past trip (G60, mockups g60/6 and g60/7)', () => {
   it('a month later: no chat, no call, no rating, the complaint through «Yordam»', async () => {
     vi.setSystemTime(arrival + 31 * 24 * HOUR);
     open();
-    await tap('Jasur');
+    await tap('Oʻtgan');
+    await tap(/^Jasur/u);
     expect(screen.queryAllByText(/gacha$/u)).toHaveLength(0);
     expect(screen.getAllByText('muddat tugadi').length).toBeGreaterThan(0);
     expect(screen.getByText('Shikoyat: Yordam orqali')).toBeTruthy();

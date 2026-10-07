@@ -18,7 +18,7 @@ import {
   tripViewsOf,
 } from '../trips';
 import { tellCloseOnes } from '../shares';
-import { ratingsOfPeople } from '../ratings';
+import { ratingsOfPeople, starsOf } from '../ratings';
 import { peopleOf } from '../users';
 import { describePoint, pointFitsPlace } from '../map';
 import { pitakById } from '../pitaks';
@@ -69,6 +69,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   },
   people: peopleOf(env),
   ratings: (ids) => ratingsOfPeople(env, ids),
+  rated: async (userId) => new Set((await starsOf(env, userId)).given.keys()),
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
   track: (step) => recordServerEvent(env, { name: 'booking_step', code: step }),

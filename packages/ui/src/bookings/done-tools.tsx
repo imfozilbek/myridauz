@@ -11,7 +11,7 @@ type Props = {
 };
 
 // Whole days left, at least one while the deadline has not come (docs/129).
-const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((until - now) / DAY_MS));
+export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((until - now) / DAY_MS));
 
 // After the trip (owner decision 06.10.2026, docs/129, mockups g60/6 and g60/7): what Rida still
 // gives, and each thing with its deadline. The chat stays to read; the complaint goes to support.

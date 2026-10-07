@@ -88,5 +88,14 @@
   "done.over": "muddat tugadi",
   "done.complain": "Shikoyat · {days} kun qoldi",
   "done.complainSupport": "Shikoyat: Yordam orqali",
-  "done.again": "Yana {name} bilan"
+  "done.again": "Yana {name} bilan",
+  "past.yesterday": "Kecha",
+  "past.route": "{from} → {to}",
+  "past.rated": "Baho berildi",
+  "past.rate": "Baho bering · {days} kun",
+  "past.talkToday": "Xabar · bugun",
+  "past.talkTomorrow": "Xabar · ertaga",
+  "past.erased": "Aniq joylar oʻchirildi",
+  "tab.live": "Faol ({count})",
+  "tab.past": "Oʻtgan"
 }
