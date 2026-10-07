@@ -90,3 +90,27 @@ test('the follow screen after the arrival (mockup g60/6 6)', async ({ page }) =>
   await expect(page.getByText('Madina', { exact: false }).first()).toBeVisible();
   await shot(page, '6-6');
 });
+
+test('the review right after the trip (mockup g60/5)', async ({ page }) => {
+  await mockApi(page, 'active');
+  const driver = ended.trip.driver;
+  await page.route('**/api/reviews/*', (route) =>
+    route.fulfill({ json: { rateeId: driver.id, rateeName: 'Jasur', rateeRole: 'driver', mine: null } }),
+  );
+  await page.route('**/api/chats/*/about', (route) =>
+    route.fulfill({ json: { booking: ended, role: 'passenger' } }),
+  );
+  await page.route('**/api/passenger/favorites', (route) =>
+    route.fulfill({ json: { drivers: [{ ...driver, rating: { average: 4.9, count: 23 } }], trips: [] } }),
+  );
+  await openAt(page, '2026-10-07T21:30', [ended]);
+  await page.getByText(t('common.myTrips')).click();
+  await page.getByText(t('bookings.tab.past')).click();
+  await page.getByText('Jasur').first().click();
+  await page.getByText(t('bookings.done.rate')).click();
+  await page.getByLabel('5', { exact: true }).click();
+  await page.getByText(t('reviews.tag.on_time')).click();
+  await page.getByText(t('reviews.tag.clean_car')).click();
+  await page.mouse.move(0, 0);
+  await shot(page, '5-1');
+});

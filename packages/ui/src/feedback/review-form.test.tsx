@@ -33,7 +33,8 @@ function open(feedback: Partial<FeedbackClient>, comfort: Partial<ComfortClient>
 describe('the review (G60, mockup g60/5): one short screen', () => {
   it('shows the driver and the one trip card, stars, tags as chips, the comment behind a link', async () => {
     open({});
-    expect(await screen.findByText(/olib ketish joyi$/u)).toBeTruthy();
+    // After the trip the card shows the road between the ends (mockup g60/6).
+    expect(await screen.findByText(/soat yoʻl$/u)).toBeTruthy();
     expect(screen.queryByText('2 joy')).toBeNull();
     expect(screen.getByText('Safar qanday oʻtdi?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Vaqtida' })).toBeTruthy();

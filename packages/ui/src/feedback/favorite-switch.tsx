@@ -14,7 +14,7 @@ export function FavoriteSwitch({ driverId }: { readonly driverId: PersonId }) {
     <>
       <label className="review-favorite" htmlFor={id}>
         <span className="review-favorite-heart">
-          <Icon name="favorite" size={20} filled />
+          <Icon name="favorite" size={16} filled />
         </span>
         <span className="review-favorite-text">{t('reviews.favorite')}</span>
         <Switch id={id} checked={saved === true} disabled={saved === null} onChange={() => void toggle()} />

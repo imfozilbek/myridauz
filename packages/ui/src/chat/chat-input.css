@@ -109,7 +109,7 @@
 }
 
 .chat-closed {
-  padding: 0 12px 12px;
+  padding: 0 12px 13px;
 }
 
 /* «Suhbat yopildi» as a white card with the way to the driver's new trips (mockup g60/6). */
@@ -140,7 +140,6 @@
 }
 
 .chat-closed b {
-  margin-bottom: -1px;
   font-size: 15px;
   color: var(--tgui--text_color);
 }
