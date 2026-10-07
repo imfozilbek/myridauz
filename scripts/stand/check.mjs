@@ -1,10 +1,17 @@
 // pnpm stand:check: the scenarios on stands side by side (docs/75). One build and one prepared database
 // first; then each stand gets its own ports and its own copy of the data, and runs its part of the files.
 // With files or a filter (pnpm stand:check e2e/stand/chat.spec.ts) one stand runs only them: the quick check.
+// A piece by theme: --area registration; the pieces of what this branch changed: --changed (G71).
 import { execFileSync, spawn } from 'node:child_process';
+import { pickFiles } from './areas.mjs';
 
 const FULL_SHARDS = 4;
-const args = process.argv.slice(2);
+const { files: args, areas, asked } = pickFiles(process.argv.slice(2));
+if (asked && args.length === 0) {
+  console.log('stand:check: nothing the stand walks has changed');
+  process.exit(0);
+}
+if (asked) console.log(`stand:check: ${areas.join(', ')}`);
 const shards = Number(process.env.STAND_SHARDS ?? (args.length > 0 ? 1 : FULL_SHARDS));
 const started = Date.now();
 
