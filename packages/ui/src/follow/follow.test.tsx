@@ -12,11 +12,10 @@ import { FollowScreen } from './follow-screen';
 afterEach(cleanup);
 
 const TOKEN = 'a'.repeat(43);
+const DEPART = Date.parse('2026-10-02T03:00:00Z');
 const TRIP: SharedTrip = {
-  passengerName: 'Dilnoza',
-  from: '1726269',
-  to: '1730401',
-  departAt: Date.parse('2026-10-02T03:00:00Z'),
+  ...{ passengerName: 'Dilnoza', from: '1726269', to: '1730401' },
+  ...{ departAt: DEPART, firstDepartAt: DEPART },
   km: 320,
   driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
   plate: '01A123BC',

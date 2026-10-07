@@ -114,5 +114,12 @@
   "meeting.title": "Uchrashuv",
   "meeting.when": "Uchrashuv · soat {time}",
   "meeting.came": "Men keldim",
-  "meeting.told": "Haydovchiga aytildi"
+  "meeting.told": "Haydovchiga aytildi",
+  "why.declined": "Haydovchi joy bera olmadi.",
+  "why.expired": "Haydovchi vaqtida javob bermadi.",
+  "why.cancelled_by_driver": "Haydovchi safarni bekor qildi.",
+  "why.cancelled_by_passenger": "Siz joyni bekor qildingiz.",
+  "moved": "Vaqt oʻzgardi: {from} → {to}",
+  "disagree": "Rozi emasman",
+  "others": "Oʻxshash safarlar"
 }

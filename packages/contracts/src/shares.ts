@@ -43,6 +43,8 @@ export const sharedTripSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   departAt: z.number().int(),
+  // The time at the booking: a moved trip shows «Vaqt oʻzgardi» (docs/124 И).
+  firstDepartAt: z.number().int(),
   km: z.number().int(),
   driver: z.object({
     firstName: z.string(),

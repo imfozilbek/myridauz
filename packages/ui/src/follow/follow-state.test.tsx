@@ -12,6 +12,7 @@ const TRIP: SharedTrip = {
   from: '1726269',
   to: '1730401',
   departAt: Date.parse('2026-10-02T03:00:00Z'),
+  firstDepartAt: Date.parse('2026-10-02T03:00:00Z'),
   km: 320,
   driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
   plate: '01A123BC',
@@ -49,5 +50,16 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
     open({ ...TRIP, status: 'cancelled' });
     expect(await screen.findByText('Safar bekor qilindi')).toBeTruthy();
     expect(screen.queryByText(/da yetadi$/u)).toBeNull();
+  });
+
+  it('says when the driver moved the time and shows no arrival before the trip (docs/124 И)', async () => {
+    open({ ...TRIP, status: 'waiting', firstDepartAt: TRIP.departAt - 60 * 60 * 1000 });
+    expect(await screen.findByText(/^Vaqt oʻzgardi: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
+  });
+
+  it('once arrived, says it and not when they will arrive', async () => {
+    open({ ...TRIP, status: 'arrived' });
+    expect(await screen.findByText('Madina yetib keldi')).toBeTruthy();
+    expect(screen.queryByText(/yetadi$/u)).toBeNull();
   });
 });

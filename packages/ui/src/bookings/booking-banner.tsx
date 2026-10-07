@@ -12,6 +12,7 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { status } = booking;
   const { departAt } = booking.trip;
   const done = useDoneLine(booking);
+  const why = useWhy(booking);
   const good = status === 'confirmed' || status === 'completed';
   const title =
     status === 'confirmed'
@@ -34,9 +35,25 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
                 time: formatTime(new Date(departAt)),
               })}
         </span>
+        {why ? <span>{why}</span> : null}
       </span>
     </div>
   );
+}
+
+const ENDED = ['declined', 'expired', 'cancelled_by_driver', 'cancelled_by_passenger'] as const;
+type Ended = (typeof ENDED)[number];
+// A seat that ended without a trip (docs/124 А): the next step is the trips of the same route.
+export const endedBadly = (status: Booking['status']): status is Ended =>
+  ENDED.some((each) => each === status);
+
+// Why it ended, or how the driver moved the time of a seat that stays (docs/124 А, Б).
+function useWhy({ status, trip }: Booking): string | null {
+  const { t, formatTime } = useI18n();
+  if (endedBadly(status)) return t(`bookings.why.${status}`);
+  if (status !== 'confirmed' || trip.firstDepartAt === trip.departAt) return null;
+  const time = (ms: number) => formatTime(new Date(ms));
+  return t('bookings.moved', { from: time(trip.firstDepartAt), to: time(trip.departAt) });
 }
 
 // After the trip: when and where it ended; a month later, how long ago (mockups g60/6, g60/7).

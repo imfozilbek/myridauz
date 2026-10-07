@@ -13,7 +13,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
-import { BookingBanner } from './booking-banner';
+import { BookingBanner, endedBadly } from './booking-banner';
 import { DoneTools } from './done-tools';
 import { MeetingCard, meetingTime } from './meeting-card';
 import { mapUrl } from './map-link';
@@ -28,15 +28,17 @@ type Props = {
   // Null when the seat is used or the trip went: nothing to cancel (docs/35).
   readonly onCancel: (() => void) | null;
   readonly onTold: (booking: Booking) => void;
-  // «Yana Jasur bilan» after the trip (mockup g60/7).
+  // «Yana Jasur bilan» after the trip (mockup g60/7); «Oʻxshash safarlar» after a bad end (docs/124 А).
   readonly onAgain: () => void;
+  readonly onOthers: () => void;
   readonly children?: ReactNode;
 };
 
 // The page of a confirmed seat (owner decision 06.10.2026, docs/118 path 3, mockup g60/1): who,
 // which car, where; three big buttons; one main button that follows the trip.
 export function ConfirmedBooking(props: Props) {
-  const { booking, onBack, onOpen, onCancel, onTold, onAgain, children } = props;
+  const { booking, onBack, onOpen, onCancel, onTold, onAgain, onOthers, children } = props;
+  const moved = booking.trip.firstDepartAt !== booking.trip.departAt;
   useScreenView('bookings.passenger');
   useScreenBackground('tinted');
   const { t, formatNumber } = useI18n();
@@ -100,11 +102,12 @@ export function ConfirmedBooking(props: Props) {
             ) : null}
             {onCancel ? (
               <button type="button" className="booking-link booking-link-danger" onClick={onCancel}>
-                {t('bookings.cancel')}
+                {t(moved ? 'bookings.disagree' : 'bookings.cancel')}
               </button>
             ) : null}
           </div>
           {steps.next ? <MainButton text={t(`share.${steps.next}`)} onClick={steps.step} /> : null}
+          {endedBadly(booking.status) ? <MainButton text={t('bookings.others')} onClick={onOthers} /> : null}
         </>
       )}
     </div>

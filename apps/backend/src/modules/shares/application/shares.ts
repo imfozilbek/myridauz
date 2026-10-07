@@ -33,6 +33,7 @@ function bookingShared(deps: SharesDeps, booking: Booking, followers: number): S
     from: trip.from,
     to: trip.to,
     departAt: trip.departAt,
+    firstDepartAt: trip.firstDepartAt,
     km: trip.km,
     driver: { firstName: trip.driver.firstName, car: trip.driver.car },
     plate: booking.plate,

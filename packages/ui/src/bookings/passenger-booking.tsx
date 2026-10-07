@@ -1,4 +1,4 @@
-import type { Booking } from '@platform/contracts';
+import { tashkentDate, type Booking } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
@@ -9,6 +9,7 @@ import { useI18n } from '../context/i18n-context';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ReviewScreen } from '../feedback/review-screen';
 import { errorKey } from '../market/error-text';
+import { LinkedSearch } from '../market/find-link';
 import { ActionFailure } from '../states/action-failure';
 import { confirm, haptic } from '../telegram/feedback';
 import { cancellable } from './booking-status';
@@ -27,7 +28,7 @@ type Props = {
   readonly onHome?: (() => void) | undefined;
 };
 
-type Opened = { readonly screen: 'chat' | 'call' | 'complaint' | 'review' } | null;
+type Opened = { readonly screen: 'chat' | 'call' | 'complaint' | 'review' | 'others' | 'again' } | null;
 
 // One booking of a passenger (docs/35, docs/118 path 3): waiting, confirmed or after the trip, with
 // its chat, call, complaint and review. The parent gives fresh data on each signal (docs/64).
@@ -40,6 +41,12 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
   const [told, setTold] = useState<Booking | null>(null);
   const booking = withTold(fresh, told);
   const back = () => setOpened(null);
+  // The same route: of that day after a bad end, any day for «Yana … bilan» (docs/124 А, docs/129).
+  if (opened?.screen === 'others' || opened?.screen === 'again') {
+    const { from, to, departAt } = booking.trip;
+    const day = opened.screen === 'others' ? { day: tashkentDate(departAt) } : {};
+    return <LinkedSearch ids={{ from, to, ...day }} onClose={back} />;
+  }
   if (opened?.screen === 'complaint') return <ComplaintScreen bookingId={booking.id} onBack={back} />;
   if (opened?.screen === 'review')
     return (
@@ -94,7 +101,8 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
       onOpen={(screen) => setOpened({ screen })}
       onCancel={cancellable(booking.status) && !inCar ? () => void cancel() : null}
       onTold={setTold}
-      onAgain={onHome ?? (() => onClose(false))}
+      onAgain={() => setOpened({ screen: 'again' })}
+      onOthers={() => setOpened({ screen: 'others' })}
     >
       <ActionFailure error={failure} />
     </ConfirmedBooking>

@@ -64,6 +64,7 @@ export async function mockChat(page: Page) {
       from: '1726294',
       to: '1718401',
       departAt: at(-90),
+      firstDepartAt: at(-90),
       km: 300,
       driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
       plate: '01A123BC',

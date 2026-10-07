@@ -32,6 +32,7 @@ export function driverShared(trip: DriverTrip, followers: number, now: number): 
     from: trip.from,
     to: trip.to,
     departAt: trip.departAt,
+    firstDepartAt: trip.departAt,
     km: trip.km,
     driver: { firstName: trip.driverName, car: trip.car },
     plate: trip.plate,

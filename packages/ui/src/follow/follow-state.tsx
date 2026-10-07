@@ -14,6 +14,9 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
   const name = trip.passengerName;
   const done = DONE[trip.status];
   const going = trip.status !== 'cancelled';
+  // Before the arrival: when they will be there; a moved trip says so (docs/124 И).
+  const coming = done < DONE.arrived;
+  const moved = trip.status === 'waiting' && trip.firstDepartAt !== trip.departAt;
   return (
     <div className={going ? 'follow-state' : 'follow-state follow-state-off'}>
       <span className="follow-state-title">
@@ -22,12 +25,22 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
       <b className="follow-state-big">{t(`share.follow.big.${trip.status}`, { name })}</b>
       {going ? (
         <>
-          <span className="follow-state-eta">
-            {t('share.follow.eta', {
-              place: directory.find(trip.to)?.name ?? '',
-              time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
-            })}
-          </span>
+          {moved ? (
+            <span className="follow-state-eta">
+              {t('share.follow.moved', {
+                from: formatTime(new Date(trip.firstDepartAt)),
+                to: formatTime(new Date(trip.departAt)),
+              })}
+            </span>
+          ) : null}
+          {coming ? (
+            <span className="follow-state-eta">
+              {t('share.follow.eta', {
+                place: directory.find(trip.to)?.name ?? '',
+                time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+              })}
+            </span>
+          ) : null}
           <ol className="follow-steps" aria-label={t('share.follow.status')}>
             {STEPS.map((step, index) => (
               <li key={step} data-done={String(index < done)}>
