@@ -41,18 +41,23 @@ export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom,
     <div className="find" style={brandVars(colors)}>
       {searching ? null : <Screen onBack={onBack} />}
       <h1 className="find-title">{t('find.title')}</h1>
-      <p className="find-from">
-        <span className="find-from-dot" aria-hidden />
-        <span>{t('find.from', { place: names.full(from) })}</span>
-        <span aria-hidden>·</span>
-        <button type="button" className="find-link" onClick={onChangeFrom}>
-          {t('find.change')}
-        </button>
-      </p>
-      <button type="button" className="find-search" onClick={() => setSearching(true)}>
-        <Icon name="search" size={18} />
-        <span>{t('find.other')}</span>
-      </button>
+      {/* The open sheet leaves only the title over its shade (journey screen 4). */}
+      {searching ? null : (
+        <>
+          <p className="find-from">
+            <span className="find-from-dot" aria-hidden />
+            <span>{t('find.from', { place: names.from(from) })}</span>
+            <span aria-hidden>·</span>
+            <button type="button" className="find-link" onClick={onChangeFrom}>
+              {t('find.change')}
+            </button>
+          </p>
+          <button type="button" className="find-search" onClick={() => setSearching(true)}>
+            <Icon name="search" size={18} />
+            <span>{t('find.other')}</span>
+          </button>
+        </>
+      )}
       {error ? <p className="find-error">{t(`errors.${error}`)}</p> : null}
       {cards === null ? <ScreenSkeleton /> : null}
       <div className="direction-list">

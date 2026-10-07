@@ -8,7 +8,7 @@
 
 .find-sheet {
   position: absolute;
-  inset: 120px 0 0;
+  inset: 126px 0 0;
   overflow-y: auto;
   border-radius: 20px 20px 0 0;
   background: var(--reg-bg);
@@ -18,16 +18,16 @@
   display: block;
   width: 36px;
   height: 4px;
-  margin: 9px auto 10px;
+  margin: 9px auto 13px;
   border-radius: 2px;
-  background: var(--reg-control);
+  background: color-mix(in srgb, var(--reg-control) 55%, var(--reg-card));
 }
 
 .find-sheet-field {
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 43px;
+  height: 44px;
   margin: 0 14px;
   padding: 0 13px;
   box-sizing: border-box;
