@@ -110,5 +110,9 @@
   "favorite.when": "{when} · {from} → {to}",
   "favorite.seats": "{count} ta boʻsh joy",
   "favorite.book": "Band qilish",
-  "favorite.later": "Keyinroq"
+  "favorite.later": "Keyinroq",
+  "meeting.title": "Uchrashuv",
+  "meeting.when": "Uchrashuv · soat {time}",
+  "meeting.came": "Men keldim",
+  "meeting.told": "Haydovchiga aytildi"
 }

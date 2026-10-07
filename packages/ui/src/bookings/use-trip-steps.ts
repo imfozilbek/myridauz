@@ -17,6 +17,7 @@ export function withTold(booking: Booking, told: Booking | null): Booking {
     ...booking,
     boardedAt: booking.boardedAt ?? told.boardedAt,
     arrivedAt: booking.arrivedAt ?? told.arrivedAt,
+    cameAt: booking.cameAt ?? told.cameAt,
   };
 }
 

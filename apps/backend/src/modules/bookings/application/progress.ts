@@ -1,10 +1,13 @@
-import type { Booking } from '@platform/contracts';
+import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
 import type { BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 
-export type Progress = 'boarded' | 'arrived';
+export type Progress = 'came' | 'boarded' | 'arrived';
+const MINUTE_MS = 60 * 1000;
 
+// "Men keldim" at the meeting point tells the driver (docs/126), from MEET_BEFORE_MINUTES before the
+// departure until the passenger is in the car.
 // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43): only on a confirmed booking,
 // once each; close people hear of it. "Yetib keldim" also means the passenger got in the car.
 export async function markProgress(
@@ -17,17 +20,29 @@ export async function markProgress(
   if (record?.passengerId !== passengerId) return { ok: false, error: 'bookings.not_found' };
   if (record.status !== 'confirmed') return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
-  const done = step === 'boarded' ? record.boardedAt !== null : record.arrivedAt !== null;
-  const next: BookingRecord = done
-    ? record
-    : step === 'boarded'
-      ? { ...record, boardedAt: now, updatedAt: now }
-      : { ...record, boardedAt: record.boardedAt ?? now, arrivedAt: now, updatedAt: now };
+  if (step === 'came' && !(await canMeet(deps, record, now)))
+    return { ok: false, error: 'bookings.wrong_status' };
+  const done = { came: record.cameAt, boarded: record.boardedAt, arrived: record.arrivedAt }[step] !== null;
+  const next: BookingRecord = done ? record : moved(record, step, now);
   if (!done) await deps.bookings.save(next);
   const [view] = await bookingViews(deps, [next], 'passenger');
   if (!view) return { ok: false, error: 'bookings.not_found' };
-  if (!done) await deps.notify.progress(view, step);
+  if (!done) await (step === 'came' ? deps.notify.came(view) : deps.notify.progress(view, step));
   return { ok: true, value: view };
+}
+
+const moved = (record: BookingRecord, step: Progress, now: number): BookingRecord =>
+  step === 'came'
+    ? { ...record, cameAt: now, updatedAt: now }
+    : step === 'boarded'
+      ? { ...record, boardedAt: now, updatedAt: now }
+      : { ...record, boardedAt: record.boardedAt ?? now, arrivedAt: now, updatedAt: now };
+
+async function canMeet(deps: BookingsDeps, record: BookingRecord, now: number) {
+  const trip = await deps.trips.find(record.tripId);
+  return (
+    trip !== undefined && record.boardedAt === null && now >= trip.departAt - MEET_BEFORE_MINUTES * MINUTE_MS
+  );
 }
 
 // The booking as its passenger sees it, for sharing the trip with close people (docs/43).

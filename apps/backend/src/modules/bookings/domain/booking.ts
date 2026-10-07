@@ -36,6 +36,7 @@ export type BookingRecord = {
   readonly confirmedAt: number | null;
   readonly boardedAt: number | null;
   readonly arrivedAt: number | null;
+  readonly cameAt: number | null;
   readonly createdAt: number;
   readonly updatedAt: number;
 };

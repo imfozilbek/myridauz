@@ -41,6 +41,8 @@ const BOOKING_STEPS = [
   'offer_sent',
   'offer_accepted',
   'offer_declined',
+  // «Men keldim» at the meeting point (docs/126).
+  'came',
 ] as const;
 
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.

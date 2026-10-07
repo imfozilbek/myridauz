@@ -138,5 +138,6 @@
   "face.notFit": "Mos emas",
   "face.alreadyDecided": "Bu rasmga javob berilgan.",
   "face.rejected": "Yuz rasmingiz tekshiruvdan oʻtmadi.\nSababi: {reason}.\nYuzingiz aniq koʻrinadigan yangi rasm qoʻying.",
-  "face.change": "Rasmni almashtirish"
+  "face.change": "Rasmni almashtirish",
+  "booking.came": "{name} uchrashuv joyiga keldi.\n{from} → {to}, soat {time}."
 }

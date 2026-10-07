@@ -31,6 +31,7 @@ function record(kit: ReturnType<typeof setup>, status: BookingRecord['status']):
     confirmedAt: NOW,
     boardedAt: null,
     arrivedAt: null,
+    cameAt: null,
     createdAt: NOW,
     updatedAt: NOW,
   };

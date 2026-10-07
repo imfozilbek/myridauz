@@ -63,6 +63,7 @@ export async function requestBooking(
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
+    cameAt: null,
     createdAt: now,
     updatedAt: now,
   };

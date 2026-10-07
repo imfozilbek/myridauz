@@ -85,6 +85,7 @@ export async function bookingViews(
         confirmedAt: record.confirmedAt,
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,
+        cameAt: record.cameAt,
       };
     }),
   );

@@ -15,6 +15,7 @@ import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
 import { BookingBanner } from './booking-banner';
 import { DoneTools } from './done-tools';
+import { MeetingCard, meetingTime } from './meeting-card';
 import { mapUrl } from './map-link';
 import { useTripSteps } from './use-trip-steps';
 import './confirmed-booking.css';
@@ -52,6 +53,7 @@ export function ConfirmedBooking(props: Props) {
     <div className="booking-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
       <BookingBanner booking={booking} />
+      {meetingTime(booking, Date.now()) ? <MeetingCard booking={booking} onTold={onTold} /> : null}
       <div className="booking-card">
         <DriverRow
           driver={driver}

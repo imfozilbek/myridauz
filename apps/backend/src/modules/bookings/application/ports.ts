@@ -107,15 +107,10 @@ export type BookingsDeps = {
   };
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
-  // The ratings of drivers for their offers (docs/24, docs/65 C); the bookings this person rated (docs/129).
+  // The ratings of drivers (docs/24, docs/65 C); the bookings this person rated (docs/129).
   readonly ratings: (driverIds: readonly number[]) => Promise<Map<number, Rating>>;
   readonly rated: (userId: number) => Promise<ReadonlySet<string>>;
-  readonly recommend: (
-    from: string,
-    to: string,
-  ) => Promise<
-    { ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' }
-  >;
+  readonly recommend: (from: string, to: string) => Promise<Recommended>;
   readonly notify: BookingNotifier;
   // A step of the booking funnel no Mini App sees: a refused or a burned request (docs/89 S2).
   readonly track: (step: 'declined' | 'expired') => void;
@@ -140,11 +135,15 @@ export type BookingNotifier = {
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
   offered(passengerId: number, offerId: string): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
-  // "Mashinaga chiqdi" and "Yetib keldi" for the passenger's close people (docs/43).
+  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
+  came(booking: Booking): Promise<void>;
   // The driver moved the time or lowered the price (G39, docs/104).
   tripRetimed(booking: Booking): Promise<void>;
 };
+
+type Recommended =
+  { ok: true; value: Recommendation } | { ok: false; error: RouteError | 'locations.not_found' };
 
 export type Result<T, E extends string> =
   { readonly ok: true; readonly value: T } | { readonly ok: false; readonly error: E };

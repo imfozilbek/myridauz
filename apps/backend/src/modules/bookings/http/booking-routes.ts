@@ -32,6 +32,9 @@ const STATUS = {
 const fail = failWith(STATUS);
 
 // A passenger asks and cancels; the driver confirms, declines or cancels (docs/35).
+// The steps of a passenger on the trip day (docs/43, docs/126).
+const STEPS = ['came', 'boarded', 'arrived'] as const;
+
 export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
   return new Hono<AppEnv>()
     .post(`${TRIPS_PATH}/${ONE}/bookings`, async (context) => {
@@ -62,8 +65,8 @@ export function bookingRoutes(deps: (env: Bindings) => BookingsDeps) {
       const result = await cancelByPassenger(deps(context.env), passengerId, context.req.param('id'));
       return result.ok ? context.json(result.value) : fail(context, result.error);
     })
-    .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/:step{boarded|arrived}`, async (context) => {
-      const step = context.req.param('step') === 'boarded' ? 'boarded' : 'arrived';
+    .post(`${PASSENGER_BOOKINGS_PATH}/${ONE}/:step{came|boarded|arrived}`, async (context) => {
+      const step = STEPS.find((each) => each === context.req.param('step')) ?? 'arrived';
       const passengerId = context.get('session').user.id;
       const result = await markProgress(deps(context.env), passengerId, context.req.param('id'), step);
       return result.ok ? context.json(result.value) : fail(context, result.error);
