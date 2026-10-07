@@ -34,6 +34,6 @@
   "follow.big.arrived": "{name} yetib keldi",
   "follow.big.completed": "{name} yetib keldi",
   "follow.big.cancelled": "Safar bekor qilindi",
-  "follow.eta": "{place}ga ≈ {time} da yetadi",
+  "follow.eta": "{place}ga ≈ {time} da yetadi",
   "follow.role": "haydovchi"
 }

@@ -20,6 +20,7 @@ export function StarsRow({ value, onChange }: Props) {
           key={stars}
           type="button"
           aria-pressed={stars === value}
+          aria-label={String(stars)}
           onClick={() => {
             haptic.select();
             onChange(stars);
