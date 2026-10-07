@@ -1,6 +1,5 @@
 import { arrivalAt, roadMs } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -31,7 +30,6 @@ export function RouteLine({ from, to, departAt, km }: Props) {
     <div className="safar-card route-line">
       {end(from, formatTime(new Date(departAt)), false, 'from')}
       <div className="route-line-way">
-        <Icon name="carSide" size={15} />
         {t('find.road', { km: String(km), hours: String(Math.round(roadMs(km) / HOUR_MS)) })}
       </div>
       {end(to, t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(departAt, km))) }), true, 'to')}

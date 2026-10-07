@@ -17,7 +17,7 @@ export function TripFacts({ trip }: { readonly trip: Trip }) {
     <div className="safar-facts">
       {facts.map(([icon, text]) => (
         <span key={text} className="safar-fact">
-          <Icon name={icon} size={17} />
+          <Icon name={icon} size={14} />
           {text}
         </span>
       ))}

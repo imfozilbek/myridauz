@@ -16,6 +16,19 @@ const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER] = MINI_APPS;
 const CHILONZOR = '1726294';
 const OUT = 'screenshots/pixel-g59';
+const TILES_MS = 1500;
+const MAN = {
+  id: '00000000000000000000000000000001',
+  firstName: 'Aziz',
+  gender: 'male',
+  phone: '+998901234567',
+  roles: ['passenger'],
+  hasAvatar: true,
+  writeAccess: false,
+  rating: null,
+  avatarStatus: null,
+  avatarReason: null,
+};
 test.use({ viewport: { width: 360, height: 776 }, deviceScaleFactor: 1 });
 
 // The numbers of the journey: 4 cards, the days 3, 8 and 5 trips.
@@ -52,6 +65,15 @@ async function mockupCounts(page: Page) {
     tripOf('4', 'Akmal', false, 0, { ...at('17:00'), seatsLeft: 1 }),
   ];
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips } }));
+  const review = { id: 'r1', authorName: 'Dilshod', stars: 5, tags: [], at: Date.now() };
+  await page.route('**/api/users/*/reviews', (route) =>
+    route.fulfill({
+      json: {
+        rating: { average: 4.8, count: 23 },
+        reviews: [{ ...review, text: 'Vaqtida keldi, yoʻlda xavfsiz haydadi.' }],
+      },
+    }),
+  );
 }
 
 const shot = (page: Page, name: string) =>
@@ -67,6 +89,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
     route.fulfill({ json: { district: CHILONZOR, name: { step: 'landmark', name: 'Grand' }, area: null } }),
   );
   await mockupCounts(page);
+  await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
@@ -84,9 +107,12 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await page.getByRole('button', { name: '2', exact: true }).click();
   await page.waitForLoadState('networkidle');
   await shot(page, '05');
+  // «Safar» of the mockup with «Men bilan ayol bor»: the man (MAN) looks at a trip without the mark.
   await page.locator('.search-trip').first().click();
   await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
   await page.getByLabel(t('market.price.more')).click();
-  await page.waitForLoadState('networkidle');
+  await page.getByText(t('find.withWoman')).click();
+  await expect(page.locator('.area-map-box[data-state="ready"]')).toBeVisible();
+  await page.waitForTimeout(TILES_MS);
   await shot(page, '06');
 });

@@ -31,7 +31,7 @@ export type MapView = {
   show(marks: readonly MapMark[], line: readonly Point[] | null): void;
   // covered: the share of the height at the top hidden by a card.
   fit(points: readonly Point[], covered?: number): void;
-  // The area of a place before a booking: a circle of so many km, all in view (docs/126).
+  // The area of a place before a booking: a circle of so many km in the middle (docs/126).
   area(center: Point, km: number): void;
   remove(): void;
 };

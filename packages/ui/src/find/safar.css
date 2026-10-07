@@ -7,7 +7,7 @@
 
 .safar-day {
   margin: 0;
-  padding: 18px 22px 0;
+  padding: 24px 22px 0;
   font-size: 15px;
   color: var(--reg-muted);
 }
@@ -19,8 +19,9 @@
   background: var(--reg-card);
 }
 
-.driver-card {
+.safar-card.driver-card {
   display: flex;
+  padding-block: 11px;
   align-items: center;
   gap: 12px;
 }
@@ -51,7 +52,7 @@
 }
 
 .driver-card-car {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--reg-muted);
 }
 

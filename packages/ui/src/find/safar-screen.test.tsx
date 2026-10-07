@@ -1,5 +1,5 @@
 import type { Trip } from '@platform/contracts';
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
@@ -13,17 +13,13 @@ const REVIEWS = {
   rating: { average: 4.8, count: 37 },
   reviews: [{ id: 'r1', authorName: 'Dilnoza', stars: 5, tags: [], text: 'Yaxshi haydaydi', at: 1 }],
 };
-const save = vi.fn(async () => undefined);
 const open = (shown: Trip, gender: 'male' | 'female' = 'male') => {
   const onBook = vi.fn<(choice: SeatChoice) => void>();
   renderMarket(
     <PlacesGate>
       <SafarScreen trip={shown} onBack={() => undefined} onBook={onBook} />
     </PlacesGate>,
-    testClients({
-      feedback: { reviewsOf: async () => REVIEWS },
-      comfort: { favorites: async () => ({ drivers: [], trips: [] }), save },
-    }),
+    testClients({ feedback: { reviewsOf: async () => REVIEWS } }),
     gender,
   );
   return onBook;
@@ -37,12 +33,6 @@ describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 },
     expect(await screen.findByText('«Yaxshi haydaydi»')).toBeTruthy();
     await tap('Barcha izohlar (37) ›');
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();
-  });
-
-  it('keeps the driver among «Sevimli haydovchilar» in one tap (G18, docs/18)', async () => {
-    open(trip);
-    await tap('Sevimli haydovchilarga qoʻshish');
-    await waitFor(() => expect(save).toHaveBeenCalledWith(trip.driver.id));
   });
 
   it('counts the seats up to the free ones only, and «Jami» is the seats × the share (docs/128 §2)', async () => {

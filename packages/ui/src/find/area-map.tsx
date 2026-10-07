@@ -2,7 +2,6 @@ import type { Location } from '@platform/contracts';
 import { useEffect } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { MapRetry } from '../map/map-retry';
 import { useMapView } from '../map/use-map-view';
 import '../map/pickup-map.css';
@@ -21,13 +20,10 @@ export function AreaMap({ place }: { readonly place: Location }) {
     // The view draws the circle once it is ready.
   }, [view]);
   return (
-    <div className="safar-card area-map">
+    <div className="area-map">
       {failed ? <MapRetry onRetry={retry} /> : null}
       <div ref={box} className="area-map-box" hidden={failed} data-state={view ? 'ready' : 'loading'} />
-      <p className="area-map-note">
-        <Icon name="hidden" size={15} />
-        {t('find.areaNote')}
-      </p>
+      <p className="area-map-note">{t('find.areaNote')}</p>
     </div>
   );
 }

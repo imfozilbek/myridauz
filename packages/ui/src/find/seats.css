@@ -1,7 +1,7 @@
 /* «Necha kishi ketadi?» of «Safar» (G59, mockup 2-trip and journey screen 6). */
-.safar-head {
-  margin: 6px 0 -4px;
-  padding: 0 22px;
+.safar .safar-head {
+  margin: 3px 0 -1px;
+  padding: 0 27px;
 }
 
 .seats-mode {
@@ -40,9 +40,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  min-height: 58px;
+  min-height: 52px;
   border-bottom: 1px solid var(--reg-divider);
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .seats-row:last-child {
@@ -52,15 +52,15 @@
 .seats-stepper {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
 }
 
 .seats-stepper button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border: 0;
   border-radius: 50%;
   background: var(--reg-soft);
@@ -73,7 +73,7 @@
 }
 
 .seats-count {
-  min-width: 16px;
+  min-width: 12px;
   font-size: 20px;
   font-weight: 700;
   text-align: center;
@@ -81,13 +81,15 @@
 }
 
 .seats-woman {
+  /* The switch of the mockup is the light brand colour (journey screen 6). */
+  --tgui--link_color: var(--reg-brand);
   cursor: pointer;
 }
 
 .seats-woman-text {
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 .seats-woman-hint {
@@ -98,7 +100,8 @@
 .seats-total {
   font-weight: 700;
   /* «Jami · 90 000 × 2» and the sum stay on one line: a narrow phone makes them smaller (docs/121). */
-  font-size: clamp(13px, 4.2vw, 16px);
+  min-height: 40px;
+  font-size: clamp(13px, 4.45vw, 16px);
   white-space: nowrap;
 }
 
