@@ -22,6 +22,12 @@ const past = (id: string, days: number, people: string[], given: number | null, 
 export async function mockComfort(page: Page) {
   const json = (route: Route, body: unknown, status = 200) => route.fulfill({ status, json: body });
   const saved = new Set<number>([11]);
+  // The trip of the saved driver was offered on the main screen before: no sheet over each test (G60).
+  const offered = tripOf('1', 'Jasur', false, 26).id;
+  await page.addInitScript(
+    (id) => localStorage.setItem('favorite-trips-seen', JSON.stringify([id])),
+    offered,
+  );
   const jasur = {
     id: '0000000000000000000000000000000b',
     firstName: 'Jasur',

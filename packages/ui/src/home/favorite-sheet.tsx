@@ -39,7 +39,8 @@ export function FavoriteSheet({ go, bookings }: Props) {
   const { comfort } = useApiClients();
   const [trip, setTrip] = useState<Trip | null>(null);
   useEffect(() => {
-    const shown = seen();
+    // Shown already, or a trip the passenger has a seat on: nothing to offer.
+    const shown = [...seen(), ...bookings.map((booking) => booking.trip.id)];
     comfort
       .favorites()
       .then(({ trips }) =>
