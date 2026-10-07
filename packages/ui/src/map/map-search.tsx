@@ -57,7 +57,7 @@ export function MapSearch({ near, zone, onFound }: Props) {
       {inTelegram && query.length > 0 ? <BackButton overlay onClick={clear} /> : null}
       <Input
         before={<Icon name="search" size={SEARCH_ICON_SIZE} />}
-        placeholder={t('bookings.map.search')}
+        placeholder={t('way.point.search')}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
       />

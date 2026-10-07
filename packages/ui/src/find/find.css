@@ -1,0 +1,136 @@
+/* The search of path 2 (G59, docs/118): the values of the approved mockups, one to one
+   (docs/goals/g59, Pixel Perfect, lesson 141); only the colors come from the brand. */
+.find {
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  box-sizing: border-box;
+  padding-bottom: 16px;
+  font-family: var(--tgui--font-family);
+  color: var(--reg-ink);
+}
+
+.find-title {
+  margin: 0;
+  padding: 16px 22px 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.find-from {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin: 2px 0 0;
+  padding: 0 22px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--reg-muted);
+}
+
+.find-from-dot {
+  box-sizing: border-box;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--reg-from);
+  border-radius: 50%;
+}
+
+.find-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.find-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: calc(100% - 28px);
+  height: 40px;
+  margin: 12px 14px 0;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 14px;
+  color: var(--reg-control);
+  text-align: left;
+  cursor: pointer;
+}
+
+.direction-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px 0;
+}
+
+.direction-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: var(--reg-card);
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.direction-art {
+  display: block;
+  width: 100%;
+  height: 62px;
+  object-fit: cover;
+}
+
+.direction-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px 10px 12px;
+}
+
+.direction-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.direction-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.direction-trips {
+  font-size: 12.5px;
+  line-height: 1.2;
+  color: var(--reg-muted);
+}
+
+.direction-price {
+  flex: none;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: var(--reg-soft);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--reg-text);
+  white-space: nowrap;
+}
+
+.find-error {
+  margin: 0;
+  padding: 8px 22px 0;
+  font-size: 14px;
+  color: var(--reg-to);
+}

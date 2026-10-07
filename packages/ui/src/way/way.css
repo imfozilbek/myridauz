@@ -49,9 +49,29 @@
 }
 .way-locate.way-locate {
   position: absolute;
-  top: 12px;
   right: 12px;
+  bottom: 14px;
+  border-radius: 20px;
   box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+  color: var(--tgui--link_color);
+}
+/* The search on top of the map (docs/126): a white field, the places found under it. */
+.way-top {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  z-index: 1;
+}
+.way-top .pickup-map-search {
+  margin: 0;
+  padding: 2px;
+  border-radius: 22px;
+  background: var(--tgui--bg_color);
+  box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
+}
+.way-top .pickup-map-found {
+  max-height: calc(var(--tg-viewport-height, 100vh) * 0.45);
 }
 .way-note {
   position: absolute;
@@ -63,25 +83,31 @@
   background: var(--tgui--bg_color);
   box-shadow: 0 2px 12px rgb(0 0 0 / 12%);
 }
-/* The sheet: what to do, the search and two last places. While the person searches it takes the
-   whole screen above the keyboard and leaves the last places out. Its bottom stays free for the
-   main button where Telegram draws it over the page. */
+/* The sheet (docs/126, mockup 9-map-and-preview 1): what the pin points at, then the places taken
+   without typing. Its bottom stays free for the main button Telegram draws over the page. */
 .way-sheet {
   display: grid;
-  gap: 4px;
+  gap: 8px;
   padding: 16px 16px 80px;
   border-radius: 16px 16px 0 0;
   background: var(--tgui--bg_color);
   box-shadow: 0 -4px 18px rgb(0 0 0 / 12%);
 }
-.way-sheet:has(input:focus),
-.way-sheet:has(.pickup-map-found) {
-  position: absolute;
-  inset: 0;
-  align-content: start;
-  border-radius: 0;
-  overflow-y: auto;
+.way-sheet-title {
+  font-size: 20px;
 }
-.way-sheet:has(.pickup-map-found) .way-recent {
-  display: none;
+.way-sheet-place {
+  margin: -4px 0 0;
+  font-size: 14px;
+  color: var(--tgui--hint_color);
+}
+.way-sheet-place b {
+  color: var(--tgui--text_color);
+}
+.way-sheet-head {
+  margin: 4px 0 -2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tgui--hint_color);
+  text-transform: uppercase;
 }

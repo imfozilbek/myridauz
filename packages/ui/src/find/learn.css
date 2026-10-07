@@ -1,0 +1,49 @@
+/* The ways to know about new trips (docs/119, mockup 7-channels-1): the values of the mockup. */
+.learn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 14px 0;
+}
+
+.find-head {
+  margin: 8px 0 -4px;
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--reg-muted);
+  text-transform: uppercase;
+}
+
+.learn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 20px 14px 18px;
+  border-radius: 14px;
+  background: var(--reg-card);
+  text-align: center;
+}
+
+.learn-empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: var(--reg-bg);
+  color: var(--reg-muted);
+}
+
+.learn-empty-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.learn-empty-hint {
+  font-size: 13px;
+  color: var(--reg-muted);
+}

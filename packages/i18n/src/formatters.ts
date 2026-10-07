@@ -42,6 +42,11 @@ export function createFormatters(locale: Locale, t: Translate) {
       const parts = dayParts(value);
       return t('common.format.date', { day: parts.day, month: parts.month });
     },
+    // «8-okt»: a day on a small chip (G59).
+    formatShortDate: (value: Date) => {
+      const parts = dayParts(value);
+      return t('common.format.dateShort', { day: parts.day, month: parts.month });
+    },
     formatTime: (value: Date) => time.format(value),
     formatWeekday: (value: Date) => t('common.format.weekday', { weekday: dayParts(value).weekday }),
   };

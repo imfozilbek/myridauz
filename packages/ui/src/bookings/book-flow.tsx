@@ -1,58 +1,78 @@
-import { BOOKING_LINK, commonModes, type Booking, type Trip } from '@platform/contracts';
+import type { Booking, Trip } from '@platform/contracts';
 import { useState } from 'react';
+import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import type { SeatChoice } from '../find/seat-choice';
 import { DraftRestored } from '../flow/draft-restored';
-import { useDirectory } from '../places/use-directory';
-import { ErrorScreen } from '../states/error-screen';
-import { ScreenSkeleton } from '../states/screen-skeleton';
-import { MyRequestsScreen } from '../market/my-requests-screen';
-import { rememberedWay, type RememberedWay } from '../way/remembered-way';
-import { BookSent } from './book-sent';
+import { usePlaces } from '../market/places-gate';
+import { confirm, haptic } from '../telegram/feedback';
+import { rememberedWay } from '../way/remembered-way';
+import { BookPoint } from './book-point';
+import { BookPoints } from './book-points';
 import { useBooking } from './book-state';
-import { BookStep } from './book-steps';
-import '../market/market.css';
+import { PendingBooking } from './pending-booking';
 
-type Props = { readonly trip: Trip; readonly onBack: () => void; readonly onClose: () => void };
-
-// A passenger books seats (G26, G35, docs/74, docs/97): the way only when the driver takes both,
-// the point at the door only for «Uyimdan», the point at the end always, a check with the seats,
-// sent. The way of the last trip on this route opens the check at once. After this nothing
-// changes but a cancel (docs/70). Each step has its key: it opens with its own state (S1).
-export function BookFlow({ trip, onBack, onClose }: Props) {
-  const { t } = useI18n();
-  const [places] = useDirectory();
-  const [sent, setSent] = useState<Booking | null>(null);
-  const [seeing, setSeeing] = useState(false);
-  const ways = commonModes(trip.pickupMode, 'both').filter((way) => way === 'door' || trip.pitak !== null);
-  // «Soʻrovni koʻrish» opens the sent request in «Mening safarlarim» (docs/89 P9).
-  if (sent && seeing) return <MyRequestsScreen onBack={onClose} link={{ name: BOOKING_LINK, id: sent.id }} />;
-  if (sent) return <BookSent booking={sent} onClose={onClose} onSee={() => setSeeing(true)} />;
-  // A trip whose pitak is gone and that takes nobody at the door: nothing to book.
-  if (ways.length === 0)
-    return <ErrorScreen title={t('errors.generic.title')} onRetry={onBack} onBack={onBack} />;
-  if (places.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
-  // Without the directory nothing kept can be read: the maps, as for a new person.
-  const last = places.status === 'ready' ? rememberedWay(trip.from, trip.to, places.directory.find) : null;
-  return <Steps trip={trip} ways={ways} last={last} onBack={onBack} onSent={setSent} />;
-}
-
-type StepsProps = {
+type Props = {
   readonly trip: Trip;
-  readonly ways: ReturnType<typeof commonModes>;
-  readonly last: RememberedWay | null;
+  readonly choice: SeatChoice;
   readonly onBack: () => void;
-  readonly onSent: (booking: Booking) => void;
+  // Back to the trips after a cancel; «Bosh sahifa» of the sent request.
+  readonly onClose: () => void;
+  readonly onHome: () => void;
 };
 
-function Steps({ trip, ways, last, onBack, onSent }: StepsProps) {
-  const flow = useBooking(trip, ways, last);
-  const booked = (booking: Booking) => {
-    flow.clear();
-    onSent(booking);
+// A passenger books (G59, docs/118 path 2): the seats came from «Safar», here only where from and
+// where to on one screen, then at once the page of the request. After this nothing changes but a
+// cancel (docs/70). Inside the places gate: the names of the places come from the directory.
+export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
+  const { t } = useI18n();
+  const { bookings } = useApiClients();
+  const directory = usePlaces();
+  const [sent, setSent] = useState<Booking | null>(null);
+  const last = rememberedWay(trip.from, trip.to, directory.find);
+  const flow = useBooking(trip, last);
+  if (sent) {
+    // A cancel is asked first: one tap never loses a seat (docs/65 B4).
+    const cancel = async () => {
+      if (!(await confirm(t('bookings.cancelAsk'), t('market.request.cancel')))) return;
+      await bookings.cancelMine(sent.id).then(onClose, () => haptic.error());
+    };
+    return <PendingBooking booking={sent} onBack={onClose} onCancel={() => void cancel()} onHome={onHome} />;
+  }
+  const region = (id: string) => {
+    const place = directory.find(id);
+    return (place?.parentId ? directory.find(place.parentId) : place)?.name ?? id;
   };
+  if (flow.screen === 'pickup' || flow.screen === 'dropoff') {
+    const pickup = flow.screen === 'pickup';
+    return (
+      <BookPoint
+        placeId={pickup ? trip.from : trip.to}
+        end={pickup ? 'from' : 'to'}
+        initial={pickup ? flow.pickup : flow.dropoff}
+        {...(pickup && flow.pitakFirst && trip.pitak
+          ? { pitak: trip.pitak, onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: 'points' }) }
+          : {})}
+        onBack={() => flow.patch({ screen: 'points' })}
+        onPick={(end) =>
+          flow.patch(pickup ? { mode: 'door', pickup: end, screen: 'points' } : { dropoff: end, screen: 'points' })
+        }
+      />
+    );
+  }
   return (
     <>
-      <BookStep key={flow.step} trip={trip} ways={ways} flow={flow} onBack={onBack} onSent={booked} />
+      <BookPoints
+        trip={trip}
+        choice={choice}
+        flow={flow}
+        route={t('common.route', { from: region(trip.from), to: region(trip.to) })}
+        onBack={onBack}
+        onSent={(booking) => {
+          flow.clear();
+          setSent(booking);
+        }}
+      />
       <DraftRestored shown={flow.restored} />
     </>
   );

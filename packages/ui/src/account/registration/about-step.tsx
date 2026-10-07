@@ -11,7 +11,7 @@ import { haptic } from '../../telegram/feedback';
 import { requestSignedContact } from '../../telegram/permissions';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { useOpenAtTop } from '../../telegram/screen-top';
-import { brandVars } from './brand-vars';
+import { brandVars } from '../../theme/brand-vars';
 import { FaceCircle } from './face-circle';
 import { GenderTiles } from './gender-tiles';
 

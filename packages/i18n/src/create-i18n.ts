@@ -12,6 +12,7 @@ export function createI18n(locale: Locale) {
     locale,
     t,
     formatDate: formatters.formatDate,
+    formatShortDate: formatters.formatShortDate,
     formatTime: formatters.formatTime,
     formatWeekday: formatters.formatWeekday,
     formatNumber: formatters.formatNumber,

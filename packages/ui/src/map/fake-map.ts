@@ -31,6 +31,7 @@ export function fakeMap(failures = 0) {
       },
       show: (shown) => void (marks = shown),
       fit: () => undefined,
+      area: () => void log.push('area'),
       remove: () => undefined,
     };
   });

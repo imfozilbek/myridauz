@@ -1,5 +1,6 @@
 import type { Page, Route } from '@playwright/test';
 import { tashkentDate } from '@platform/contracts';
+import { mockCounts } from './counts-mock';
 import MAIN_DIRECTIONS from '../apps/backend/seed/main-directions.json' with { type: 'json' };
 
 // Trips, requests and prices as the Mini Apps see them (G07). Toshkent → Samarqand: ≈ 300 km (docs/16).
@@ -13,7 +14,7 @@ const perKm = (km: number, v = V) =>
 const MAIN_KM = [35, 120, 200, 290, 300, 320, 350, 465, 490, 570, 700, 1000, 1150, 420];
 // The main pitak of Toshkent → Samarqand (docs/73).
 export const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
-const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white' };
+const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC' };
 const inHours = (hours: number) => Math.ceil((Date.now() + hours * 3_600_000) / 1_800_000) * 1_800_000;
 // The first time and price are the published ones unless a trip says otherwise (G39, docs/104).
 export const tripOf = (id: string, name: string, woman: boolean, hours: number, extra: object = {}) => {
@@ -36,6 +37,7 @@ export const tripOf = (id: string, name: string, woman: boolean, hours: number, 
     recommendedPrice: 90000,
     woman,
     pickupMode: 'both',
+    bookingRule: 'seats',
     pitak: PITAK,
     comment: '',
     status: 'active',
@@ -76,6 +78,7 @@ export async function mockMarket(page: Page) {
     const woman = new URL(route.request().url()).searchParams.get('woman') === '1';
     return json(route, { trips: woman ? found.filter((trip) => trip.woman) : found });
   });
+  await mockCounts(page, found);
   await page.route('**/api/driver/trips', (route) => {
     if (route.request().method() === 'GET') return json(route, { trips: published });
     const input = route.request().postDataJSON() as Record<string, unknown>;
@@ -128,3 +131,4 @@ export async function mockMarket(page: Page) {
   );
   return { published };
 }
+

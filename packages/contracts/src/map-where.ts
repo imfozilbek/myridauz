@@ -27,11 +27,13 @@ export const borderSchema = z.object({ id: locationIdSchema, parts: z.array(z.ar
 export type Border = z.infer<typeof borderSchema>;
 
 // The last places a person chose (G24, docs/71): kept only on the phone, read back with care.
-export const recentPlacesSchema = z.array(
-  z.object({
-    point: z.object({ lat: z.number(), lng: z.number() }),
-    name: placeNameSchema.nullable(),
-    district: z.string(),
-  }),
-);
-export type RecentPlace = z.infer<typeof recentPlacesSchema>[number];
+const recentPlaceSchema = z.object({
+  point: z.object({ lat: z.number(), lng: z.number() }),
+  name: placeNameSchema.nullable(),
+  district: z.string(),
+});
+export const recentPlacesSchema = z.array(recentPlaceSchema);
+export type RecentPlace = z.infer<typeof recentPlaceSchema>;
+// «Uyim» and «Ishxonam» (docs/126): kept once on the phones of the person, then one tap.
+export const savedPlacesSchema = z.object({ home: recentPlaceSchema.optional(), work: recentPlaceSchema.optional() });
+export type SavedPlaces = z.infer<typeof savedPlacesSchema>;

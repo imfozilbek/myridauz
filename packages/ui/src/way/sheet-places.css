@@ -1,0 +1,54 @@
+/* «Uyim», «Ishxonam», the pitak and «Yaqin joylar» of the map sheet (docs/126, mockup 10 screen 3). */
+.way-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 8px;
+}
+.way-tile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1.5px solid var(--tgui--secondary_bg_color);
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  color: var(--tgui--link_color);
+  text-align: left;
+  cursor: pointer;
+}
+.way-tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--tgui--hint_color);
+  overflow-wrap: anywhere;
+}
+.way-tile-text b {
+  font-size: 15px;
+  color: var(--tgui--text_color);
+}
+.way-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.way-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--tgui--secondary_bg_color);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tgui--text_color);
+  cursor: pointer;
+}
+.way-chip svg {
+  color: var(--tgui--link_color);
+}

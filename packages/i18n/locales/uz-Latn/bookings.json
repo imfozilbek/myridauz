@@ -1,13 +1,8 @@
 {
-  "review.title": "Joy soʻrash",
   "review.seats": "Joylar",
   "review.total": "Jami",
   "review.payHint": "Pulni haydovchiga safarda oʻzingiz berasiz. {brand} yoʻlovchidan pul olmaydi.",
   "send": "Soʻrov yuborish",
-  "sent.title": "Soʻrov yuborildi",
-  "sent.hint": "Haydovchining javobini bot orqali bilasiz.",
-  "sent.asked": "Siz soʻragan joy",
-  "sent.see": "Soʻrovni koʻrish",
   "mine": "Band qilingan joylar",
   "status.requested": "Javob kutilmoqda",
   "status.confirmed": "Tasdiqlangan",
@@ -53,7 +48,6 @@
   "map.failed": "Xarita yuklanmadi",
   "map.failedHint": "Qayta urinib koʻring yoki joyni roʻyxatdan tanlang.",
   "map.credit": "© OpenStreetMap",
-  "map.search": "Mahalla, koʻcha yoki moʻljal",
   "map.nothing": "Hech narsa topilmadi. Nomni boshqacha yozib koʻring yoki xaritani surib, joyni oʻzingiz toping.",
   "map.searchFailed": "Qidirib boʻlmadi. Internetni tekshirib, qayta urinib koʻring.",
   "map.foundIn": "{kind} · {area}",
@@ -65,5 +59,13 @@
   "map.kind.mosque": "Masjid",
   "map.kind.health": "Shifoxona, dorixona",
   "map.kind.transport": "Bekat",
-  "map.kind.place": "Moʻljal"
+  "map.kind.place": "Moʻljal",
+  "points.title": "Qayerdan, qayerga?",
+  "points.sub": "{route} · {date}, {time} · {seats} joy",
+  "points.all": "Hammasi",
+  "points.line": "{seats} joy × {price}",
+  "points.hint": "Har bir joy bosilsa xarita ochiladi. Ikkalasi tanlansa, soʻrov yuboriladi.",
+  "pending.until": "{name} {date}, {time} gacha javob beradi",
+  "pending.home": "Bosh sahifa",
+  "pending.at": "{region} · {time}"
 }

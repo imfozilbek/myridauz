@@ -77,6 +77,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
         {...(linkedOffer ? { offerId: linkedOffer } : {})}
         onClose={close}
         onStale={() => void refresh()}
+        onHome={onBack}
       />
     );
   }

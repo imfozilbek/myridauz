@@ -1,4 +1,4 @@
-import { zoneOf } from '@platform/contracts';
+import { zoneOf, type Pitak } from '@platform/contracts';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -13,11 +13,14 @@ type Props = {
   readonly initial: WayEnd | null;
   readonly onBack: () => void;
   readonly onPick: (end: WayEnd) => void;
+  // The pitak of the trip as one more start, taken in one tap (G59).
+  readonly pitak?: Pitak;
+  readonly onPitak?: () => void;
 };
 
 // A point of a booking: the map, the search and the last places stay inside the zone of the
 // trip (its district, or the whole city of Toshkent); the server checks the same.
-export function BookPoint({ placeId, end, initial, onBack, onPick }: Props) {
+export function BookPoint({ placeId, end, initial, onBack, onPick, pitak, onPitak }: Props) {
   const [state, retry] = useDirectory();
   if (state.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
   if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={onBack} />;
@@ -32,6 +35,8 @@ export function BookPoint({ placeId, end, initial, onBack, onPick }: Props) {
       find={find}
       zone={zone}
       findMe={end === 'from' && !initial}
+      end={end}
+      {...(pitak && onPitak ? { pitak, onPitak } : {})}
       onBack={onBack}
       onPick={onPick}
     />

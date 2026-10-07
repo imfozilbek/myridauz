@@ -1,0 +1,119 @@
+/* «Necha kishi ketadi?» of «Safar» (G59, mockup 2-trip and journey screen 6). */
+.safar-head {
+  margin: 6px 0 -4px;
+  padding: 0 22px;
+}
+
+.seats-mode {
+  display: flex;
+  gap: 4px;
+  margin: 0 14px;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--reg-divider);
+}
+
+.seats-mode button {
+  flex: 1;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  color: var(--reg-ink);
+  cursor: pointer;
+}
+
+.seats-mode button[aria-selected='true'] {
+  background: var(--reg-card);
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+.seats-card {
+  padding: 0 14px;
+}
+
+.seats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 58px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 17px;
+}
+
+.seats-row:last-child {
+  border-bottom: 0;
+}
+
+.seats-stepper {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.seats-stepper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.seats-stepper button:disabled {
+  opacity: 0.4;
+}
+
+.seats-count {
+  min-width: 16px;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.seats-woman {
+  cursor: pointer;
+}
+
+.seats-woman-text {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+}
+
+.seats-woman-hint {
+  font-size: 12.5px;
+  color: var(--reg-muted);
+}
+
+.seats-total {
+  font-weight: 700;
+}
+
+.seats-sum {
+  color: var(--reg-text);
+}
+
+.safar-note {
+  margin: 0;
+  padding: 0 24px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}
+
+.safar-closed {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 14px;
+}

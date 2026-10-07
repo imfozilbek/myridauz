@@ -130,6 +130,7 @@ export const testClients = (overrides: {
     fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
     search: NOT_USED,
     where: NOT_USED,
+    near: async () => [],
     border: NOT_USED,
     pitakOf: NOT_USED,
     ...overrides.map,

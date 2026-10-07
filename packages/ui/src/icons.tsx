@@ -54,6 +54,8 @@ import {
   Volume2,
   Play,
   WifiOff,
+  X,
+  BriefcaseBusiness,
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
@@ -129,6 +131,10 @@ const ICONS = {
   sounds: Volume2,
   play: Play,
   offline: WifiOff,
+  // A card closes for good: a channel offered once (docs/119).
+  close: X,
+  // «Ishxonam»: a place kept once (docs/126).
+  work: BriefcaseBusiness,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

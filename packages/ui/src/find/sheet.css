@@ -1,0 +1,113 @@
+/* «Boshqa joy»: a sheet over the screen, the screen dimmed behind it (mockup 3 of V2). */
+.find-sheet-shade {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--reg-ink) 42%, transparent);
+}
+
+.find-sheet {
+  position: absolute;
+  inset: 120px 0 0;
+  overflow-y: auto;
+  border-radius: 20px 20px 0 0;
+  background: var(--reg-bg);
+}
+
+.find-sheet-handle {
+  display: block;
+  width: 36px;
+  height: 4px;
+  margin: 9px auto 10px;
+  border-radius: 2px;
+  background: var(--reg-control);
+}
+
+.find-sheet-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 43px;
+  margin: 0 14px;
+  padding: 0 13px;
+  box-sizing: border-box;
+  border: 2px solid var(--reg-strong);
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-control);
+}
+
+.find-sheet-field input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--reg-ink);
+}
+
+.find-sheet-head {
+  margin: 0;
+  padding: 18px 28px 6px;
+  font-size: 13px;
+  color: var(--reg-muted);
+  text-transform: uppercase;
+}
+
+.find-sheet-list {
+  margin: 0 14px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--reg-card);
+}
+
+.find-sheet-list:empty {
+  display: none;
+}
+
+.find-sheet-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 7px 14px 7px 9px;
+  border: 0;
+  border-bottom: 1px solid var(--reg-divider);
+  background: none;
+  font: inherit;
+  color: var(--reg-to);
+  text-align: left;
+}
+
+.find-sheet-row:last-child {
+  border-bottom: 0;
+}
+
+.find-sheet-names {
+  display: flex;
+  flex-direction: column;
+}
+
+.find-sheet-name {
+  font-size: 16px;
+  line-height: 1.25;
+  color: var(--reg-ink);
+}
+
+.find-sheet-region {
+  font-size: 13px;
+  line-height: 1.25;
+  color: var(--reg-muted);
+}
+
+.find-sheet-hint {
+  margin: 0;
+  padding: 14px 28px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}

@@ -1,0 +1,95 @@
+import type { Trip, TripDays } from '@platform/contracts';
+import { useScreenView } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
+import { useI18n } from '../context/i18n-context';
+import { FilteredEmpty } from '../market/filtered-empty';
+import { fitsFilters, NO_FILTERS, TripFiltersRow, type TripFilters } from '../market/trip-filters';
+import { RESULTS, useTripSearch } from '../market/use-trip-search';
+import { usePlaces } from '../market/places-gate';
+import { usePlaceNames } from '../places/place-names';
+import type { Route } from '../places/route-screen';
+import { useListPlace } from '../screen/list-memory';
+import { Screen } from '../screen/screen';
+import { ErrorScreen } from '../states/error-screen';
+import { ScreenSkeleton } from '../states/screen-skeleton';
+import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
+import { DayCounts } from './day-counts';
+import { LearnBlock } from './learn-block';
+import { ResultsHead } from './results-head';
+import { SearchTripCard } from './search-trip-card';
+import './find.css';
+import './results.css';
+import './trip-card.css';
+
+type Props = {
+  readonly route: Route;
+  readonly days: TripDays;
+  readonly date: string;
+  readonly filters: TripFilters;
+  readonly onFilters: (filters: TripFilters) => void;
+  readonly onBack: () => void;
+  readonly onOpen: (trip: Trip) => void;
+  readonly onDay: (date: string) => void;
+  readonly onRequest: () => void;
+  // A whole region: «Samarqandning qaysi joyi? Tuman tanlash» narrows it (docs/118 path 2).
+  readonly onDistrict: () => void;
+};
+
+// «Safarlar» (docs/118 path 2, journey screen 5): the days of a week with their trips, the people and
+// the marks, the trips, then the ways to know about new trips (docs/119).
+export function TripResults(props: Props) {
+  const { route, days, date, filters, onFilters, onBack, onOpen, onDay, onRequest, onDistrict } = props;
+  useScreenView('market.results');
+  useScreenBackground('tinted');
+  const { t } = useI18n();
+  const { colors } = useBrand().theme;
+  const directory = usePlaces();
+  const names = usePlaceNames(directory);
+  const { trips, stale, failed, load, refresh } = useTripSearch(route, date, filters.woman);
+  const shown = trips?.filter((trip) => fitsFilters(trip, filters)) ?? null;
+  useListPlace(RESULTS, trips !== null);
+  if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
+  const region = route.to.parentId === null ? route.to : directory.find(route.to.parentId);
+  const place = (trip: Trip) => {
+    const wide = route.from.parentId === null || route.to.parentId === null;
+    const [from, to] = [directory.find(trip.from)?.name, directory.find(trip.to)?.name];
+    return wide && from && to ? t('common.route', { from, to }) : null;
+  };
+  return (
+    <div className="find" style={brandVars(colors)}>
+      <Screen onBack={onBack} onRefresh={refresh} />
+      <ResultsHead route={route} region={region} km={days.km} />
+      <DayCounts days={days.days} date={date} onDay={onDay} />
+      <TripFiltersRow filters={filters} onFilters={onFilters} />
+      <div className={stale ? 'search-trips list-stale' : 'search-trips'}>
+        {shown?.map((trip) => (
+          <div key={trip.id} data-row={trip.id}>
+            <SearchTripCard trip={trip} places={place(trip)} onOpen={() => onOpen(trip)} />
+          </div>
+        ))}
+      </div>
+      {trips === null ? <ScreenSkeleton /> : null}
+      {trips && trips.length > 0 && !stale && shown?.length === 0 ? (
+        <FilteredEmpty route={route} date={date} filters={filters} found={trips} onClear={() => onFilters(NO_FILTERS)}>
+          {null}
+        </FilteredEmpty>
+      ) : null}
+      {route.to.parentId === null && !route.to.oneCity && region ? (
+        <button type="button" className="results-district" onClick={onDistrict}>
+          {t('find.district', { region: names.short(region) })}
+        </button>
+      ) : null}
+      {trips === null ? null : (
+        <LearnBlock
+          route={route}
+          region={region}
+          date={date}
+          directory={directory}
+          empty={trips.length === 0}
+          onRequest={onRequest}
+        />
+      )}
+    </div>
+  );
+}
