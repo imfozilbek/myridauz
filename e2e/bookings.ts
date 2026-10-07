@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
+import { placeFound } from './map-wait';
 import { findTrips, openOwnTrip } from './market';
 import { pressBack } from './telegram-mock';
 
@@ -36,7 +37,7 @@ async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, 
     await page.getByPlaceholder(t('way.point.search')).fill(search[0]);
     await page.getByText(search[1], { exact: true }).click();
     await expect(page.getByRole('status')).toHaveText(`${search[1]} yaqinida`);
-  } else await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  } else await placeFound(page);
   await page
     .locator('#tg-main-button')
     .filter({ hasText: t(end === 'pickup' ? 'way.point.takeFrom' : 'way.point.takeTo') })

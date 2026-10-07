@@ -4,6 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { mapDrawn, TILES_MS } from './map-wait';
 import { chooseRoute, fromIfAsked, searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -11,18 +12,11 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 // first: most people in Uzbekistan use one (lesson 52). The flow itself is checked in map.spec.
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER, DRIVER] = MINI_APPS;
-const TILES_MS = 1500;
 const ANDROID = { width: 360, height: 800 };
 
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `screenshots/search-android-${name}.png` });
 const mainButton = (page: Page) => page.locator('#tg-main-button');
-// The map is drawn and the name under the pin came: «Shu yerda» waits for it (lesson 77).
-const drawn = async (page: Page) => {
-  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
-  await page.waitForTimeout(TILES_MS);
-};
 
 async function open(page: Page, port: number) {
   await page.setViewportSize(ANDROID);
@@ -48,14 +42,14 @@ test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshken
   await shot(page, '2-way');
   await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
-  await drawn(page);
+  await mapDrawn(page);
   await shot(page, '3-door');
   await mainButton(page)
     .filter({ hasText: t('way.point.takeFrom') })
     .click();
   await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
-  await drawn(page);
+  await mapDrawn(page);
   await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
   await page.getByText('Registon maydoni', { exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
