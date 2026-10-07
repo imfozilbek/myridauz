@@ -4,18 +4,13 @@ import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useI18n } from '../context/i18n-context';
-import { confirm, haptic } from '../telegram/feedback';
+import { haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
-import { ComplaintScreen } from '../feedback/complaint-screen';
-import { ConfirmedBooking } from './confirmed-booking';
-import { PendingBooking } from './pending-booking';
-import { cancellable } from './booking-status';
 import { OfferAccepted, OfferScreen } from './offer-list';
+import { PassengerBooking } from './passenger-booking';
 import { RequestOpen } from './request-open';
-import { withTold } from './use-trip-steps';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 const isStale = (caught: unknown) =>
@@ -39,7 +34,6 @@ type Props = {
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
 export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStale, onHome }: Props) {
-  const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
   const [offerId, setOfferId] = useState<string | null>(linked ?? null);
@@ -48,8 +42,6 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   // The booking of an accepted offer: its card goes to the close people (docs/89 P9).
   const [accepted, setAccepted] = useState<{ readonly bookingId: string | null } | null>(null);
   const [talk, setTalk] = useState<{ chatKey: string; title: string; ring?: boolean } | null>(null);
-  const [complaint, setComplaint] = useState<string | null>(null);
-  const [told, setTold] = useState<Booking | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
   const run = async <T,>(action: () => Promise<T>, after: (result: T) => void) => {
     try {
@@ -65,7 +57,6 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   };
   const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
   if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
-  if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
@@ -105,46 +96,5 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
         onOffer={open}
       />
     );
-  const booking = withTold(opened.booking, told);
-  // A cancel is asked first: one tap never loses a seat (docs/65 B4).
-  const cancel = async () => {
-    if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
-    await run(
-      () => bookings.cancelMine(booking.id),
-      () => {
-        track({ name: 'booking_step', screen: 'bookings.passenger', step: 'cancelled' });
-        onClose(true);
-      },
-    );
-  };
-  // In the car or arrived: the seat is used, nothing to cancel (docs/35). A waiting request shows
-  // «Javob kutilmoqda» and until when, as right after it was sent (G59).
-  const inCar = booking.boardedAt !== null || booking.arrivedAt !== null;
-  const canCancel = cancellable(booking.status) && !inCar;
-  const openChat = (ring = false) =>
-    setTalk({ chatKey: booking.chatKey, title: booking.trip.driver.firstName, ring });
-  if (booking.status === 'requested')
-    return (
-      <PendingBooking
-        booking={booking}
-        onBack={() => onClose(false)}
-        onCancel={() => void cancel()}
-        onHome={onHome ?? (() => onClose(false))}
-      >
-        <ActionFailure error={failure} />
-      </PendingBooking>
-    );
-  return (
-    <ConfirmedBooking
-      booking={booking}
-      onBack={() => onClose(false)}
-      onChat={() => openChat()}
-      onCall={() => openChat(true)}
-      onComplain={() => setComplaint(booking.id)}
-      onCancel={canCancel ? () => void cancel() : null}
-      onTold={setTold}
-    >
-      <ActionFailure error={failure} />
-    </ConfirmedBooking>
-  );
+  return <PassengerBooking booking={opened.booking} onClose={onClose} onStale={onStale} onHome={onHome} />;
 }

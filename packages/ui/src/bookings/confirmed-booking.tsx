@@ -21,9 +21,8 @@ import './confirmed-booking.css';
 type Props = {
   readonly booking: Booking;
   readonly onBack: () => void;
-  readonly onChat: () => void;
-  readonly onCall: () => void;
-  readonly onComplain: () => void;
+  // The chat, the call (the chat that rings at once), the complaint or the review.
+  readonly onOpen: (screen: 'chat' | 'call' | 'complaint' | 'review') => void;
   // Null when the seat is used or the trip went: nothing to cancel (docs/35).
   readonly onCancel: (() => void) | null;
   readonly onTold: (booking: Booking) => void;
@@ -33,7 +32,7 @@ type Props = {
 // The page of a confirmed seat (owner decision 06.10.2026, docs/118 path 3, mockup g60/1): who,
 // which car, where; three big buttons; one main button that follows the trip.
 export function ConfirmedBooking(props: Props) {
-  const { booking, onBack, onChat, onCall, onComplain, onCancel, onTold, children } = props;
+  const { booking, onBack, onOpen, onCancel, onTold, children } = props;
   useScreenView('bookings.passenger');
   useScreenBackground('tinted');
   const { t, formatNumber } = useI18n();
@@ -67,8 +66,8 @@ export function ConfirmedBooking(props: Props) {
       {children}
       <ActionFailure error={steps.failure} />
       <div className="booking-buttons">
-        {button('chat', t('chat.open'), onChat)}
-        {booking.status === 'confirmed' ? button('phone', t('calls.call'), onCall) : null}
+        {button('chat', t('chat.open'), () => onOpen('chat'))}
+        {booking.status === 'confirmed' ? button('phone', t('calls.call'), () => onOpen('call')) : null}
         {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}
       </div>
       {steps.note ? (
@@ -83,7 +82,7 @@ export function ConfirmedBooking(props: Props) {
       ) : null}
       <div className="booking-links">
         {canComplain(booking.status) ? (
-          <button type="button" className="booking-link" onClick={onComplain}>
+          <button type="button" className="booking-link" onClick={() => onOpen('complaint')}>
             {t('complaints.title')}
           </button>
         ) : null}
