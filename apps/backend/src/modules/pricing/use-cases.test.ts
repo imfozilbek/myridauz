@@ -2,7 +2,7 @@ import type { Location } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { changeVariables, directions, preview, rollback, setDirection } from './application/admin';
 import type { PricingDeps } from './application/ports';
-import { recommendPrice } from './application/recommend';
+import { recommendDirection, recommendPrice } from './application/recommend';
 import { variablesCache } from './application/variables';
 import { STRATEGIES } from './domain/formula';
 import { createMemoryPricing } from './infrastructure/memory-pricing';
@@ -85,10 +85,13 @@ describe('recommendation and the team prices (docs/09, docs/23)', () => {
   });
 
   it('measures a whole region from its place nearest to its center (G59)', async () => {
-    expect(await recommendPrice(setup(), '17', '18')).toMatchObject({
+    const deps = setup();
+    expect(await recommendDirection(deps, '17', '18')).toMatchObject({
       ok: true,
       value: { from: '17', to: '18', km: 120 },
     });
+    // Every other caller keeps places only: the landing price of a region is refused (docs/59).
+    expect(await recommendPrice(deps, '17', '18')).toEqual({ ok: false, error: 'locations.not_found' });
   });
 
   it('refuses a team price out of the bounds or for an unknown place', async () => {

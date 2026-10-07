@@ -40,7 +40,7 @@ export async function tripDays(
   to: string,
   viewer?: number,
 ): Promise<Result<TripDays, 'locations.not_found' | 'locations.same_place' | 'locations.inside_city'>> {
-  const way = await deps.recommend(from, to);
+  const way = await deps.recommendDirection(from, to);
   if (!way.ok) return way;
   const { open, places, today } = await openTrips(deps, from, COUNTED_DAYS, viewer);
   const fits = open.filter(({ trip }) => placeMatches(trip.to, to, places));
@@ -76,7 +76,7 @@ export async function directionCards(
     order.slice(0, DIRECTION_CARDS).map(async (to) => {
       const trips = byRegion.get(to) ?? [];
       const cheapest = Math.min(...trips.map(({ trip }) => trip.price));
-      const recommended = trips.length > 0 ? null : await deps.recommend(from, to);
+      const recommended = trips.length > 0 ? null : await deps.recommendDirection(from, to);
       const price = recommended ? (recommended.ok ? recommended.value.price : null) : cheapest;
       const count = (date: string) => trips.filter((item) => item.date === date).length;
       return price === null ? null : { to, today: count(today), tomorrow: count(tomorrow), price };

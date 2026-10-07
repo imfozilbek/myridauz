@@ -22,8 +22,7 @@ export async function recommendPrice(
   from: string,
   to: string,
 ): Promise<Result<Recommendation, RouteKmError>> {
-  const places = await deps.places.places();
-  const km = await deps.places.km(measuredPlace(from, places), measuredPlace(to, places));
+  const km = await deps.places.km(from, to);
   if (!km.ok) return km;
   const variables = await deps.variables.get(deps.pricing, deps.now());
   const manual = await manualFor(deps, from, to);
@@ -36,4 +35,16 @@ export async function recommendPrice(
   return manual === undefined
     ? { ok: true, value: { ...base, price: deps.strategy(km.value, variables), source: 'formula' } }
     : { ok: true, value: { ...base, price: manual, source: 'manual' } };
+}
+
+// A direction of «Qayerga borasiz?» may end in a whole region (G59): the same recommendation, measured
+// from the place of the region nearest to its center. Other callers keep places only (docs/59).
+export async function recommendDirection(
+  deps: PricingDeps,
+  from: string,
+  to: string,
+): Promise<Result<Recommendation, RouteKmError>> {
+  const places = await deps.places.places();
+  const result = await recommendPrice(deps, measuredPlace(from, places), measuredPlace(to, places));
+  return result.ok ? { ok: true, value: { ...result.value, from, to } } : result;
 }
