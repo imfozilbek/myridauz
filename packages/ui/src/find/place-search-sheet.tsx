@@ -40,7 +40,11 @@ export function PlaceSearchSheet({ directory, onBack, onPick }: Props) {
         </label>
         {found.length > 0 ? <p className="find-sheet-head">{t('find.found')}</p> : null}
         {typed !== '' && found.length === 0 ? (
-          <EmptyState icon="search" title={t('places.nothingFound')} description={t('places.nothingFoundHint')} />
+          <EmptyState
+            icon="search"
+            title={t('places.nothingFound')}
+            description={t('places.nothingFoundHint')}
+          />
         ) : null}
         <div className="find-sheet-list">
           {found.map((place) => (

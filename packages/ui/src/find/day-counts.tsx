@@ -14,7 +14,11 @@ type Props = {
 export function DayCounts({ days, date, onDay }: Props) {
   const { t, formatShortDate } = useI18n();
   const name = (day: string, index: number) =>
-    index === 0 ? t('market.day.today') : index === 1 ? t('market.day.tomorrow') : formatShortDate(noonOf(day));
+    index === 0
+      ? t('market.day.today')
+      : index === 1
+        ? t('market.day.tomorrow')
+        : formatShortDate(noonOf(day));
   return (
     <div className="day-counts" role="tablist">
       {days.map((day, index) => (

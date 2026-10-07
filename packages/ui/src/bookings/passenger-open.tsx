@@ -10,7 +10,6 @@ import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
-import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen } from './booking-screen';
 import { PendingBooking } from './pending-booking';
 import { cancellable } from './booking-status';
@@ -64,10 +63,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
       if (isStale(caught)) onStale?.();
     }
   };
-  const open = (next: Offer | null) => {
-    setFailure(null);
-    setOfferId(next?.id ?? null);
-  };
+  const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
   if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
@@ -100,7 +96,12 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
         offers={offers}
         failure={failure}
         onBack={() => onClose(false)}
-        onCancel={() => void run(() => market.cancelRequest(opened.request.id), () => onClose(true))}
+        onCancel={() =>
+          void run(
+            () => market.cancelRequest(opened.request.id),
+            () => onClose(true),
+          )
+        }
         onOffer={open}
       />
     );
@@ -138,7 +139,6 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   return (
     <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
-      <AnswerDeadline booking={booking} />
       <TripTools
         booking={booking}
         onChat={openChat}

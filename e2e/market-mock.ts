@@ -131,4 +131,3 @@ export async function mockMarket(page: Page) {
   );
   return { published };
 }
-

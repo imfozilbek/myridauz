@@ -7,7 +7,13 @@ import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 
 // «Barcha izohlar»: every published review of the driver (docs/24), the newest first.
-export function ReviewsScreen({ reviews, onBack }: { readonly reviews: UserReviews; readonly onBack: () => void }) {
+export function ReviewsScreen({
+  reviews,
+  onBack,
+}: {
+  readonly reviews: UserReviews;
+  readonly onBack: () => void;
+}) {
   useScreenView('market.reviews');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -16,7 +22,11 @@ export function ReviewsScreen({ reviews, onBack }: { readonly reviews: UserRevie
       <Screen onBack={onBack} />
       <Section header={t('reviews.list')}>
         {reviews.reviews.map((review) => (
-          <Cell key={review.id} subtitle={review.text || undefined} after={<ReviewStars stars={review.stars} />}>
+          <Cell
+            key={review.id}
+            subtitle={review.text || undefined}
+            after={<ReviewStars stars={review.stars} />}
+          >
             {review.authorName}
           </Cell>
         ))}

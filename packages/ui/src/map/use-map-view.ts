@@ -41,7 +41,20 @@ export function useMapView({ archiveUrl, fontsUrl }: MapSource, { lat, lng }: Po
       shown?.remove();
       setView(null);
     };
-  }, [loadEngine, archiveUrl, fontsUrl, lat, lng, attempt, bg, brandStrong, brandMint, successSoft, attentionSoft, inline]);
+  }, [
+    loadEngine,
+    archiveUrl,
+    fontsUrl,
+    lat,
+    lng,
+    attempt,
+    bg,
+    brandStrong,
+    brandMint,
+    successSoft,
+    attentionSoft,
+    inline,
+  ]);
   const retry = () => {
     setFailed(false);
     setAttempt((count) => count + 1);

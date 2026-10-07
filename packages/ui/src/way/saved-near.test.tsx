@@ -43,6 +43,8 @@ describe('the start of a booking on the map (G59, docs/126)', { timeout: 20_000 
     expect(await screen.findByText('Uyim')).toBeTruthy();
     expect(screen.queryByText('Saqlash')?.closest('button')?.textContent).not.toContain('Uyim');
     await tap('Uyim');
-    expect(onPick).toHaveBeenCalledWith(expect.objectContaining({ place: expect.objectContaining({ id: '1726269' }) }));
+    expect(onPick).toHaveBeenCalledWith(
+      expect.objectContaining({ place: expect.objectContaining({ id: '1726269' }) }),
+    );
   });
 });

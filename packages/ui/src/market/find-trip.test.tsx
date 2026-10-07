@@ -82,6 +82,9 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     await tap('Shu yerda tushaman');
     await tap('Soʻrov yuborish');
     expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
-    expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ seats: 2, mode: 'pitak', wholeCar: false }));
+    expect(book).toHaveBeenCalledWith(
+      't1',
+      expect.objectContaining({ seats: 2, mode: 'pitak', wholeCar: false }),
+    );
   });
 });

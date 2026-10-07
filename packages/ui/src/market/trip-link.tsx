@@ -47,13 +47,17 @@ export function TripById({ id, onClose }: { readonly id: string; readonly onClos
   if (!value) return <ScreenSkeleton onBack={onClose} />;
   if (booking)
     return (
-      <BookFlow trip={value} choice={booking} onBack={() => setBooking(null)} onClose={onClose} onHome={onClose} />
+      <BookFlow
+        trip={value}
+        choice={booking}
+        onBack={() => setBooking(null)}
+        onClose={onClose}
+        onHome={onClose}
+      />
     );
   if (others) {
     const ids = { from: value.from, to: value.to, day: tashkentDate(value.departAt) };
     return <LinkedSearch ids={ids} onClose={() => setOthers(false)} />;
   }
-  return (
-    <SafarScreen trip={value} onBack={onClose} onBook={setBooking} onOthers={() => setOthers(true)} />
-  );
+  return <SafarScreen trip={value} onBack={onClose} onBook={setBooking} onOthers={() => setOthers(true)} />;
 }

@@ -19,7 +19,9 @@ export function DriverCard({ trip }: { readonly trip: Trip }) {
           {driver.rating.average === null ? null : (
             <span className="driver-card-rating">
               {t('find.stars', { rating: formatNumber(driver.rating.average) })}
-              <span className="driver-card-count">{t('find.count', { count: String(driver.rating.count) })}</span>
+              <span className="driver-card-count">
+                {t('find.count', { count: String(driver.rating.count) })}
+              </span>
             </span>
           )}
         </span>

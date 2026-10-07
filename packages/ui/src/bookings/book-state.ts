@@ -13,7 +13,8 @@ type Saved = {
   readonly dropoff: WayEnd | null;
 };
 
-const isPoint = (end: unknown) => end === null || typeof asRecord(asRecord(end)?.['place'])?.['id'] === 'string';
+const isPoint = (end: unknown) =>
+  end === null || typeof asRecord(asRecord(end)?.['place'])?.['id'] === 'string';
 // The pitak of the trip is the first start when the driver takes people there (mockup 3-pickup).
 const pitakFirst = (trip: Trip) => trip.pitak !== null && trip.pickupMode !== 'door';
 
@@ -35,6 +36,7 @@ export function useBooking(trip: Trip, last: RememberedWay | null) {
   const { value, setValue, restored, clear } = useFlowDraft(`booking:${trip.id}`, check, start);
   const patch = (change: Partial<Saved>) => setValue((saved) => ({ ...saved, ...change }));
   // Both ends chosen: the request can go (mockup 3-pickup: «Soʻrov yuborish» only with both).
-  const ready = value.mode !== null && (value.mode === 'pitak' || value.pickup !== null) && value.dropoff !== null;
+  const ready =
+    value.mode !== null && (value.mode === 'pitak' || value.pickup !== null) && value.dropoff !== null;
   return { ...value, ready, restored, clear, patch, pitakFirst: pitakFirst(trip) };
 }

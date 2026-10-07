@@ -3,7 +3,12 @@ import { Tappable } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
 import { useRegionArt } from '../places/region-art';
 
-type Props = { readonly card: Card; readonly region: Location; readonly name: string; readonly onOpen: () => void };
+type Props = {
+  readonly card: Card;
+  readonly region: Location;
+  readonly name: string;
+  readonly onOpen: () => void;
+};
 
 // A main direction (docs/118, path 2): the drawing of the region, its name under it on white, the
 // trips of today and tomorrow and «… soʻmdan». Text never lies on the picture.
@@ -26,9 +31,7 @@ export function DirectionCard({ card, region, name, onOpen }: Props) {
           <span className="direction-name">{name}</span>
           <span className="direction-trips">{trips}</span>
         </span>
-        <span className="direction-price">
-          {t('find.priceFrom', { price: formatMoney(card.price) })}
-        </span>
+        <span className="direction-price">{t('find.priceFrom', { price: formatMoney(card.price) })}</span>
       </span>
     </Tappable>
   );

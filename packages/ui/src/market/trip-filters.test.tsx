@@ -12,7 +12,12 @@ afterEach(() => {
 
 const few = { ...trip, id: 't2', seatsLeft: 1, driver: { ...trip.driver, firstName: 'Bobur' } };
 const many = { ...trip, id: 't3', seatsLeft: 3, driver: { ...trip.driver, firstName: 'Sardor' } };
-const car = { ...many, id: 't4', bookingRule: 'seats_or_car' as const, driver: { ...trip.driver, firstName: 'Olim' } };
+const car = {
+  ...many,
+  id: 't4',
+  bookingRule: 'seats_or_car' as const,
+  driver: { ...trip.driver, firstName: 'Olim' },
+};
 const pill = (name: RegExp) => fireEvent.click(screen.getByRole('button', { name }));
 
 describe('the filters over the trips (G41, G59, docs/90 F-P4, docs/118)', { timeout: 20_000 }, () => {

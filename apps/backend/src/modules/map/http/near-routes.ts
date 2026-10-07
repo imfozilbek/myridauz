@@ -12,7 +12,9 @@ const KEEP_ON_PHONE = 'private, max-age=3600';
 const JSON_TYPE = 'application/json';
 const BAD_REQUEST = 400;
 
-export function nearRoutes(deps: (env: Bindings) => { readonly index: PlaceIndex; readonly cache: MapCache }) {
+export function nearRoutes(
+  deps: (env: Bindings) => { readonly index: PlaceIndex; readonly cache: MapCache },
+) {
   return new Hono<AppEnv>().get(MAP_NEAR_PATH, async (context) => {
     const point = parsePoint(context.req.query('at'), POINT_DIGITS);
     if (!point) return context.json({ error: 'map.invalid_input' }, BAD_REQUEST);
@@ -21,7 +23,9 @@ export function nearRoutes(deps: (env: Bindings) => { readonly index: PlaceIndex
     const headers = { 'content-type': JSON_TYPE, 'cache-control': KEEP_ON_PHONE };
     const cached = await cache.match(key);
     if (cached) return context.body(cached.bytes, 200, headers);
-    const bytes = await new Response(JSON.stringify({ places: await nearPlaces(index, point) })).arrayBuffer();
+    const bytes = await new Response(
+      JSON.stringify({ places: await nearPlaces(index, point) }),
+    ).arrayBuffer();
     await cache.put(key, { bytes, offset: 0, size: bytes.byteLength, etag: '', type: JSON_TYPE });
     return context.body(bytes, 200, headers);
   });

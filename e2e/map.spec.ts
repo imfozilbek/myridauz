@@ -23,6 +23,10 @@ const [DOOR, HOME] = FOUND.map(({ point }) => ({
   lng: expect.closeTo(point.lng, 5),
 }));
 const mainButton = (page: Page) => page.locator('#tg-main-button');
+const press = (page: Page, key: 'way.point.takeFrom' | 'way.point.takeTo' | 'bookings.send') =>
+  mainButton(page)
+    .filter({ hasText: t(key) })
+    .click();
 
 // The search by lists (G26, G35, docs/97): a trip to Samarqand shahri, its booking; 1 seat at first.
 async function openBooking(page: Page) {
@@ -58,9 +62,7 @@ async function chooseHome(page: Page, state: MapState) {
   await findPlace(page, 'Регистон', 'Registon maydoni', 'Registon maydoni yaqinida');
   expect(state.zones[state.searched.indexOf('Регистон')]).toBe('1718401');
   await shot(page, '3-home');
-  await mainButton(page)
-    .filter({ hasText: t('way.point.takeTo') })
-    .click();
+  await press(page, 'way.point.takeTo');
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
 }
 
@@ -81,13 +83,11 @@ test('the passenger books from the door to the home inside the zones of the trip
   expect(state.zones[state.searched.indexOf('Mustaqillik')]).toBe('1726');
   await page.waitForTimeout(TILES_MS);
   await shot(page, '2-door-found');
-  await mainButton(page)
-    .filter({ hasText: t('way.point.takeFrom') })
-    .click();
+  await press(page, 'way.point.takeFrom');
   await chooseHome(page, state);
   await expect(page.getByText(PITAK.name)).toHaveCount(0);
   await shot(page, '4-review');
-  await mainButton(page).filter({ hasText: t('bookings.send') }).click();
+  await press(page, 'bookings.send');
   await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
   expect(state.booked).toMatchObject({ seats: 1, mode: 'door', pickup: DOOR, dropoff: HOME });
 });
@@ -99,7 +99,7 @@ test('the passenger who goes from a pitak sees the pitak on «Qayerdan, qayerga?
   await chooseHome(page, state);
   await expect(page.getByText(PITAK.name)).toBeVisible();
   await shot(page, '5-pitak');
-  await mainButton(page).filter({ hasText: t('bookings.send') }).click();
+  await press(page, 'bookings.send');
   await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
   expect(state.booked).toMatchObject({ seats: 1, mode: 'pitak', pickup: null, dropoff: HOME });
 });

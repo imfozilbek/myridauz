@@ -52,7 +52,12 @@ export function TripFiltersRow({ filters, onFilters }: Props) {
           <Icon name="female" size={15} />
           {t('market.search.woman')}
         </button>
-        <button type="button" className="find-pill" aria-pressed={filters.car} onClick={() => set({ car: !filters.car })}>
+        <button
+          type="button"
+          className="find-pill"
+          aria-pressed={filters.car}
+          onClick={() => set({ car: !filters.car })}
+        >
           {t('find.freeCar')}
         </button>
       </div>

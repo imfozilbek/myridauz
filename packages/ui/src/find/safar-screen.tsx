@@ -81,11 +81,7 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
           <SeatsCard trip={trip} choice={choice} onChoice={setChoice} />
           <p className="safar-note">{t('find.payHint')}</p>
           <MainButton
-            text={
-              choice.wholeCar
-                ? t('find.bookCar')
-                : t('find.book', { count: String(choice.seats) })
-            }
+            text={choice.wholeCar ? t('find.bookCar') : t('find.book', { count: String(choice.seats) })}
             onClick={() => onBook(choice)}
           />
         </>

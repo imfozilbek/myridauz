@@ -24,7 +24,14 @@ type PlacePickerProps = {
 };
 
 // Region → district or city, or a search by name (docs/14). Choosing, not typing (docs/19).
-export function PlacePicker({ title, directory, allowWholeRegion, onPick, onBack, region: open }: PlacePickerProps) {
+export function PlacePicker({
+  title,
+  directory,
+  allowWholeRegion,
+  onPick,
+  onBack,
+  region: open,
+}: PlacePickerProps) {
   useScreenView('places.picker');
   useScreenBackground('grouped');
   const { t } = useI18n();

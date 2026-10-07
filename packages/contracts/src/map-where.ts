@@ -35,5 +35,8 @@ const recentPlaceSchema = z.object({
 export const recentPlacesSchema = z.array(recentPlaceSchema);
 export type RecentPlace = z.infer<typeof recentPlaceSchema>;
 // «Uyim» and «Ishxonam» (docs/126): kept once on the phones of the person, then one tap.
-export const savedPlacesSchema = z.object({ home: recentPlaceSchema.optional(), work: recentPlaceSchema.optional() });
+export const savedPlacesSchema = z.object({
+  home: recentPlaceSchema.optional(),
+  work: recentPlaceSchema.optional(),
+});
 export type SavedPlaces = z.infer<typeof savedPlacesSchema>;

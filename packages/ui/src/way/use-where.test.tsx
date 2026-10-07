@@ -10,12 +10,13 @@ describe('the name under the pin (G24, G59)', () => {
     const map = fakeMap();
     const { calls } = openPoint(map);
     await waitFor(() => expect(screen.getByRole('status').textContent).not.toBe('Joy aniqlanmoqda…'));
-    const asked = vi.mocked(calls.where).mock.calls.length;
+    const where = vi.mocked(calls.where ?? vi.fn());
+    const asked = where.mock.calls.length;
     const view = (await map.engine.mock.results[0]?.value) as MapView;
     view.moveTo(HERE);
     await new Promise((resolve) => setTimeout(resolve, 600));
-    expect(vi.mocked(calls.where).mock.calls.length).toBe(asked);
+    expect(where.mock.calls.length).toBe(asked);
     view.moveTo({ lat: 41.3, lng: 69.25 });
-    await waitFor(() => expect(vi.mocked(calls.where).mock.calls.length).toBe(asked + 1));
+    await waitFor(() => expect(where.mock.calls.length).toBe(asked + 1));
   });
 });

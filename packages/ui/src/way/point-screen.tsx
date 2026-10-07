@@ -1,20 +1,16 @@
 import type { Location, Pitak, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { Caption, Text } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
-import { MapSearch } from '../map/map-search';
 import { useMapView } from '../map/use-map-view';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
 import { MapFailed } from './map-failed';
+import { PointMap } from './point-map';
 import { PointSheet } from './point-sheet';
 import { rememberPlace } from './recent-places';
 import { useWhere } from './use-where';
@@ -24,7 +20,6 @@ import { useNameText, type PointEnd, type WayEnd } from './way-end';
 import '../map/pickup-map.css';
 import './way.css';
 
-const PIN_SIZE = 44;
 type Method = 'map' | 'search' | 'location' | 'recent' | 'saved';
 
 type Props = {
@@ -52,7 +47,6 @@ export function PointScreen(props: Props) {
   useScreenView('way.point');
   const { t } = useI18n();
   const { track } = useAnalytics();
-  const { colors } = useBrand().theme;
   const { map } = useApiClients();
   const { box, view, failed, retry } = useMapView(map, start);
   const find = (id: string) => {
@@ -107,27 +101,24 @@ export function PointScreen(props: Props) {
   return (
     <div className="pickup-map">
       <Screen onBack={onBack} />
-      <div className="way-map">
-        <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />
-        <div className="pickup-map-pin">
-          <Icon name="pickup" size={PIN_SIZE} color={colors.brandStrong} filled />
-        </div>
-        <div className="way-top">
-          <MapSearch near={start} {...(zone ? { zone: zone.id } : {})} onFound={(point) => moveTo(point, 'search')} />
-        </div>
-        {note ? (
-          <Text className="way-note" role="alert">
-            {t(note, { zone: zone?.name ?? '' })}
-          </Text>
-        ) : null}
-        <Button className="way-locate" mode="white" size="s" before={<Icon name="locate" />} onClick={() => void locate()}>
-          {t('way.point.locate')}
-        </Button>
-        <Caption className="pickup-map-credit">{t('bookings.map.credit')}</Caption>
-      </div>
+      <PointMap
+        box={box}
+        ready={view !== null}
+        start={start}
+        zone={zone?.id}
+        note={note ? t(note, { zone: zone?.name ?? '' }) : null}
+        onFound={(point) => moveTo(point, 'search')}
+        onLocate={() => void locate()}
+      />
       <PointSheet
         title={title}
-        name={asking || !where ? null : place ? nameText(where.name, place) : t(outside, { zone: zone?.name ?? '' })}
+        name={
+          asking || !where
+            ? null
+            : place
+              ? nameText(where.name, place)
+              : t(outside, { zone: zone?.name ?? '' })
+        }
         area={place && where?.name ? (region ? `${place.name}, ${region.name}` : place.name) : null}
         end={end ?? null}
         current={current}
@@ -139,7 +130,9 @@ export function PointScreen(props: Props) {
       />
       {view ? (
         <MainButton
-          text={t(end === 'from' ? 'way.point.takeFrom' : end === 'to' ? 'way.point.takeTo' : 'way.point.here')}
+          text={t(
+            end === 'from' ? 'way.point.takeFrom' : end === 'to' ? 'way.point.takeTo' : 'way.point.here',
+          )}
           onClick={take}
         />
       ) : null}

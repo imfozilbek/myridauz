@@ -45,7 +45,10 @@ export const mapModule = new Hono<AppEnv>()
       districtName,
     })),
   )
-  .route('/', nearRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf() })))
+  .route(
+    '/',
+    nearRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf() })),
+  )
   .route('/', borderRoutes(districtBorders, districtsOf));
 export { localMapFiles };
 

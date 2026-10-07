@@ -38,7 +38,8 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
   const nameText = useNameText();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const { mode, pickup, dropoff, ready, patch } = flow;
-  const start = mode === 'pitak' ? (trip.pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
+  const start =
+    mode === 'pitak' ? (trip.pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
   const end = dropoff ? nameText(dropoff.name, dropoff.place) : null;
   const send = async () => {
     setError(null);
@@ -63,7 +64,9 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       </span>
       <span className="points-text">
         <span className="points-label">{t(kind === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')}</span>
-        <span className={value ? 'points-value' : 'points-value points-empty'}>{value ?? t('places.choose')}</span>
+        <span className={value ? 'points-value' : 'points-value points-empty'}>
+          {value ?? t('places.choose')}
+        </span>
       </span>
       {value ? <span className="points-change">{t('way.change')}</span> : <Icon name="next" size={18} />}
     </button>
@@ -86,7 +89,9 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       </div>
       <p className="find-head points-head">{t('bookings.points.all')}</p>
       <div className="points-card points-sum">
-        <span>{t('bookings.points.line', { seats: String(choice.seats), price: formatNumber(trip.price) })}</span>
+        <span>
+          {t('bookings.points.line', { seats: String(choice.seats), price: formatNumber(trip.price) })}
+        </span>
         <b>{formatMoney(trip.price * choice.seats)}</b>
       </div>
       <p className="points-hint">{t('bookings.points.hint')}</p>

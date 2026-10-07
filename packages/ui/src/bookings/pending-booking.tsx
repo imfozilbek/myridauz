@@ -33,7 +33,9 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
   const details = [
     `${driver.car.make} ${driver.car.model}`,
     formatPlate(driver.car.plate),
-    ...(driver.rating.average === null ? [] : [t('find.stars', { rating: formatNumber(driver.rating.average) })]),
+    ...(driver.rating.average === null
+      ? []
+      : [t('find.stars', { rating: formatNumber(driver.rating.average) })]),
   ];
   return (
     <div className="find pending" style={brandVars(colors)}>
@@ -45,7 +47,11 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
         <span className="pending-banner-text">
           <b>{t('bookings.status.requested')}</b>
           <span>
-            {t('bookings.pending.until', { name: driver.firstName, date: formatDate(until), time: formatTime(until) })}
+            {t('bookings.pending.until', {
+              name: driver.firstName,
+              date: formatDate(until),
+              time: formatTime(until),
+            })}
           </span>
         </span>
       </div>
@@ -59,7 +65,9 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
         </div>
         <BookingPoints booking={booking} />
         <div className="pending-sum">
-          <span>{t('bookings.points.line', { seats: String(booking.seats), price: formatNumber(booking.price) })}</span>
+          <span>
+            {t('bookings.points.line', { seats: String(booking.seats), price: formatNumber(booking.price) })}
+          </span>
           <b>{formatMoney(booking.price * booking.seats)}</b>
         </div>
       </div>

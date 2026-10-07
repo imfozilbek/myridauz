@@ -14,7 +14,9 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-const clients = testClients({ market: { ...searchMarket(), trip: async () => trip, searchTrips: async () => [] } });
+const clients = testClients({
+  market: { ...searchMarket(), trip: async () => trip, searchTrips: async () => [] },
+});
 type Link = (props: { readonly enabled: boolean; readonly children: ReactNode }) => ReactNode;
 // The gates above the links mount them again (registration, a new session): the link stays used.
 async function openTwice(Link: Link, shown: string | RegExp) {

@@ -31,6 +31,8 @@ export async function findRoute(wholeRegion = false) {
 // Fargʻona shahri by «Boshqa joy» once «Qayerdan» is known.
 export async function findTo() {
   await tap('Boshqa joy: tuman yoki shahar');
-  fireEvent.change(screen.getByPlaceholderText('Boshqa joy: tuman yoki shahar'), { target: { value: 'Farg' } });
+  fireEvent.change(screen.getByPlaceholderText('Boshqa joy: tuman yoki shahar'), {
+    target: { value: 'Farg' },
+  });
   return fireEvent.click(await screen.findByText('ona shahri', { exact: false }));
 }

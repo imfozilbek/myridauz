@@ -54,7 +54,14 @@ export function TripResults(props: Props) {
   // Nothing shown, and a filter may be why: how many it hid, or the empty day (docs/89 P6).
   const filtered = !stale && shown?.length === 0 && (trips?.length !== 0 || filters.woman);
   const learn = (empty: boolean) => (
-    <LearnBlock route={route} region={region} date={date} directory={directory} empty={empty} onRequest={onRequest} />
+    <LearnBlock
+      route={route}
+      region={region}
+      date={date}
+      directory={directory}
+      empty={empty}
+      onRequest={onRequest}
+    />
   );
   const place = (trip: Trip) => {
     const wide = route.from.parentId === null || route.to.parentId === null;
@@ -81,7 +88,13 @@ export function TripResults(props: Props) {
         </button>
       ) : null}
       {trips === null ? null : filtered ? (
-        <FilteredEmpty route={route} date={date} filters={filters} found={trips} onClear={() => onFilters(NO_FILTERS)}>
+        <FilteredEmpty
+          route={route}
+          date={date}
+          filters={filters}
+          found={trips}
+          onClear={() => onFilters(NO_FILTERS)}
+        >
           {learn(true)}
         </FilteredEmpty>
       ) : (

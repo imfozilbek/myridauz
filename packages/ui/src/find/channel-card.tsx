@@ -23,9 +23,7 @@ export function ChannelCard({ channel, region, onClose }: Props) {
       <div className="channel-card-top">
         {art ? <img className="channel-card-art" src={art} alt={channel.title} /> : null}
         <span className="channel-card-text">
-          <span className="channel-card-name">
-            {t('find.channel', { brand: name, zone: channel.title })}
-          </span>
+          <span className="channel-card-name">{t('find.channel', { brand: name, zone: channel.title })}</span>
           <span className="channel-card-hint">{t('find.channelHint', { zone: channel.title })}</span>
         </span>
         <button type="button" className="channel-card-close" aria-label={t('common.close')} onClick={onClose}>

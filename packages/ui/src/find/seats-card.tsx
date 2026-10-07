@@ -6,7 +6,11 @@ import { Switch } from '../switch';
 import { haptic } from '../telegram/feedback';
 import { offersWoman, type SeatChoice } from './seat-choice';
 
-type Props = { readonly trip: Trip; readonly choice: SeatChoice; readonly onChoice: (choice: SeatChoice) => void };
+type Props = {
+  readonly trip: Trip;
+  readonly choice: SeatChoice;
+  readonly onChoice: (choice: SeatChoice) => void;
+};
 
 // «Necha kishi ketadi?» (docs/118 path 2, journey screen 6): the seats up to the free ones of the trip
 // (docs/128 §2), the whole car where the driver sells it (docs/09), «Men bilan ayol bor» (docs/06) and
@@ -30,7 +34,9 @@ export function SeatsCard({ trip, choice, onChoice }: Props) {
               type="button"
               role="tab"
               aria-selected={choice.wholeCar === whole}
-              onClick={() => set(whole ? { wholeCar: true, seats: trip.seats } : { wholeCar: false, seats: 1 })}
+              onClick={() =>
+                set(whole ? { wholeCar: true, seats: trip.seats } : { wholeCar: false, seats: 1 })
+              }
             >
               {t(whole ? 'find.wholeCar' : 'find.seatsMode')}
             </button>
@@ -47,7 +53,12 @@ export function SeatsCard({ trip, choice, onChoice }: Props) {
           <div className="seats-row">
             <span>{t('find.seats')}</span>
             <span className="seats-stepper">
-              <button type="button" aria-label={t('market.price.less')} disabled={choice.seats <= 1} onClick={() => step(-1)}>
+              <button
+                type="button"
+                aria-label={t('market.price.less')}
+                disabled={choice.seats <= 1}
+                onClick={() => step(-1)}
+              >
                 <Icon name="less" size={20} />
               </button>
               <span className="seats-count">{choice.seats}</span>
@@ -68,13 +79,14 @@ export function SeatsCard({ trip, choice, onChoice }: Props) {
               <span>{t('find.withWoman')}</span>
               <span className="seats-woman-hint">{t('find.withWomanHint')}</span>
             </span>
-            <Switch checked={choice.withWoman} onChange={(event) => set({ withWoman: event.target.checked })} />
+            <Switch
+              checked={choice.withWoman}
+              onChange={(event) => set({ withWoman: event.target.checked })}
+            />
           </label>
         ) : null}
         <div className="seats-row seats-total">
-          <span>
-            {t('find.total', { price: formatNumber(trip.price), seats: String(choice.seats) })}
-          </span>
+          <span>{t('find.total', { price: formatNumber(trip.price), seats: String(choice.seats) })}</span>
           <span className="seats-sum">{formatMoney(trip.price * choice.seats)}</span>
         </div>
       </div>

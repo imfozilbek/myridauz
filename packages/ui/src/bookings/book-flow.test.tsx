@@ -61,7 +61,10 @@ describe('«Qayerdan, qayerga?» (G59, docs/118 path 2, B)', { timeout: 20_000 }
     // No screen «Soʻrov yuborildi»: the booking with «Javob kutilmoqda» and the time of the answer.
     expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
     expect(screen.queryByText('Soʻrov yuborildi')).toBeNull();
-    expect(book).toHaveBeenCalledWith('t1', expect.objectContaining({ mode: 'pitak', pickup: null, seats: 2 }));
+    expect(book).toHaveBeenCalledWith(
+      't1',
+      expect.objectContaining({ mode: 'pitak', pickup: null, seats: 2 }),
+    );
     await tap('Bosh sahifa');
     expect(onHome).toHaveBeenCalled();
   });

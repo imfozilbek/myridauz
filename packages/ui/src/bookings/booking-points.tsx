@@ -19,7 +19,9 @@ export function BookingPoints({ booking }: { readonly booking: Booking }) {
     return (place?.parentId ? directory.find(place.parentId) : place)?.name ?? '';
   };
   const placeName = (booked: BookedPlace | null, id: string) =>
-    booked ? nameText(booked.name ?? booked.area, directory.find(id) ?? id) : (directory.find(id)?.name ?? id);
+    booked
+      ? nameText(booked.name ?? booked.area, directory.find(id) ?? id)
+      : (directory.find(id)?.name ?? id);
   const start = booking.pitak ? booking.pitak.name : placeName(booking.pickup, trip.from);
   const end = (kind: 'from' | 'to', name: string, region: string, time: string) => (
     <div className={`route-line-end route-line-${kind}`}>

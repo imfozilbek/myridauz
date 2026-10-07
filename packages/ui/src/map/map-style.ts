@@ -16,7 +16,10 @@ function withoutIcons(layer: LayerSpecification): LayerSpecification {
 
 // The light map of Protomaps (docs/20: only a light theme) over our own archive and fonts, in the
 // colors of the brand (docs/126): a second brand gets its own map without a line of code (docs/22).
-export function mapStyle({ archiveUrl, fontsUrl }: MapSource, { water, park, road }: MapColors): StyleSpecification {
+export function mapStyle(
+  { archiveUrl, fontsUrl }: MapSource,
+  { water, park, road }: MapColors,
+): StyleSpecification {
   const flavor = { ...namedFlavor('light'), water, park_a: park, park_b: park, highway: road };
   return {
     version: 8,

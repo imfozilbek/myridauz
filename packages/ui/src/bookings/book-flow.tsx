@@ -51,11 +51,16 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
         end={pickup ? 'from' : 'to'}
         initial={pickup ? flow.pickup : flow.dropoff}
         {...(pickup && flow.pitakFirst && trip.pitak
-          ? { pitak: trip.pitak, onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: 'points' }) }
+          ? {
+              pitak: trip.pitak,
+              onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: 'points' }),
+            }
           : {})}
         onBack={() => flow.patch({ screen: 'points' })}
         onPick={(end) =>
-          flow.patch(pickup ? { mode: 'door', pickup: end, screen: 'points' } : { dropoff: end, screen: 'points' })
+          flow.patch(
+            pickup ? { mode: 'door', pickup: end, screen: 'points' } : { dropoff: end, screen: 'points' },
+          )
         }
       />
     );
