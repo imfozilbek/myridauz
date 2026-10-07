@@ -72,7 +72,7 @@ test('the chat closed two days after the trip (mockup g60/6 5)', async ({ page }
 
 test('the past trip after 31 days (mockup g60/6 7)', async ({ page }) => {
   await mockApi(page, 'active');
-  await openAt(page, '2026-11-07T12:00', [ended]);
+  await openAt(page, '2026-11-08T12:00', [ended]);
   await page.getByText(t('common.myTrips')).click();
   await page.getByText(t('bookings.tab.past')).click();
   await page.getByText('Jasur').first().click();

@@ -32,4 +32,24 @@ describe('the chat 24 hours after the trip (G60, docs/129)', () => {
     expect(screen.getByText('Suhbat yopildi')).toBeTruthy();
     expect(screen.queryByLabelText('Xabar')).toBeNull();
   });
+
+  it('offers the new trips of the driver under the closed chat (mockup g60/6)', async () => {
+    const onAgain = vi.fn();
+    renderMarket(
+      <ChatScreen chatKey="b1" title="Jasur" onBack={() => undefined} onAgain={onAgain} />,
+      testClients({ chat: { socketUrl: async () => 'wss://api.test/socket' } }),
+    );
+    await waitFor(() => expect(FakeSocket.last).toBeTruthy());
+    act(() => {
+      (FakeSocket.last as FakeSocket).open();
+      (FakeSocket.last as FakeSocket).receive({
+        type: 'history',
+        messages: [],
+        canCall: false,
+        canWrite: false,
+      });
+    });
+    screen.getByText('Jasurning yangi safarlari').click();
+    expect(onAgain).toHaveBeenCalled();
+  });
 });

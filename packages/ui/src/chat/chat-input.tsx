@@ -78,12 +78,26 @@ export function ChatInput(props: Props) {
 
 // 24 hours after the trip (docs/129, mockup g60/6): the messages stay, writing ends; a forgotten
 // thing goes through «Yordam».
-export function ChatClosed() {
+export function ChatClosed({
+  name,
+  onAgain,
+}: {
+  readonly name: string;
+  readonly onAgain?: (() => void) | undefined;
+}) {
   const { t } = useI18n();
   return (
     <div className="chat-input chat-closed">
-      <b>{t('chat.closed')}</b>
-      <span>{t('chat.closedHint')}</span>
+      <div className="chat-closed-card">
+        <b>{t('chat.closed')}</b>
+        <span>{t('chat.closedHint')}</span>
+        {/* The new trips of the same driver: the way back to the person goes through Rida (g60/6). */}
+        {onAgain ? (
+          <button type="button" className="chat-closed-again" onClick={onAgain}>
+            {t('chat.newTripsOf', { name })}
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

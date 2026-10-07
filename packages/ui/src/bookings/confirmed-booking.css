@@ -51,7 +51,9 @@
 
 .booking-buttons {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* Three tiles or two (a month after the trip, mockup g60/6), always across the whole width. */
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
   gap: 8px;
   margin-top: 6px;
 }
@@ -107,11 +109,11 @@
 
 .booking-banner-off {
   border-color: var(--reg-divider);
-  background: var(--reg-card);
+  background: var(--reg-bg);
 }
 
 .booking-banner-off .booking-banner-tile {
-  background: var(--reg-muted);
+  background: var(--reg-control);
 }
 
 /* A tile with its deadline under the word is taller (mockup g60/7). */

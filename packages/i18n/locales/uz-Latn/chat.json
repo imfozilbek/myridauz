@@ -20,5 +20,6 @@
   "reply.fiveMinutes": "5 daqiqada chiqaman",
   "reply.where": "Qayerdasiz?",
   "closed": "Suhbat yopildi",
-  "closedHint": "Safardan 24 soat oʻtdi. Xabarlar saqlanadi."
+  "closedHint": "Safardan 24 soat oʻtdi. Xabarlar saqlanadi.",
+  "newTripsOf": "{name}ning yangi safarlari"
 }

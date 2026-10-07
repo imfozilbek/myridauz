@@ -40,7 +40,8 @@ export function ConfirmedBooking(props: Props) {
   const { booking, onBack, onOpen, onCancel, onTold, onAgain, onOthers, children } = props;
   const moved = booking.trip.firstDepartAt !== booking.trip.departAt;
   useScreenView('bookings.passenger');
-  useScreenBackground('grouped');
+  // The page of a past trip has the gradient of docs/121 §5, the booking is flat (mockups g60/1, g60/7).
+  useScreenBackground(booking.status === 'completed' ? 'tinted' : 'grouped');
   const { t, formatNumber } = useI18n();
   const { driver } = booking.trip;
   const { colors } = useBrand().theme;

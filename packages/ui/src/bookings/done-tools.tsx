@@ -19,7 +19,10 @@ export function DoneTools({ booking, onOpen }: Props) {
   const { t } = useI18n();
   const { bots } = useBrand();
   const now = Date.now();
-  const { talkUntil, rateUntil, complainUntil } = afterTrip(booking.trip.departAt, booking.trip.km);
+  const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(
+    booking.trip.departAt,
+    booking.trip.km,
+  );
   const untilText = useUntilText();
   const until = (ms: number) => untilText(ms, now);
   const talk = now < talkUntil;
@@ -33,7 +36,9 @@ export function DoneTools({ booking, onOpen }: Props) {
   );
   return (
     <>
-      <p className="booking-hint">{t('bookings.done.why')}</p>
+      <p className="booking-hint">
+        {t(now < pointsUntil ? 'bookings.done.why' : 'bookings.done.pointsGone')}
+      </p>
       <div className="booking-buttons">
         {talk
           ? tile('chat', t('chat.open'), until(talkUntil), () => onOpen('chat'))

@@ -64,6 +64,7 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
         ring={opened.screen === 'call'}
         onTrip={back}
         onBack={back}
+        onAgain={() => setOpened({ screen: 'again' })}
       />
     );
   // A cancel is asked first: one tap never loses a seat (docs/65 B4). A failed one keeps the screen.

@@ -82,6 +82,7 @@
   "done.untilTomorrow": "ertaga {time} gacha",
   "done.until": "{date} {time} gacha",
   "done.messages": "Xabarlar",
+  "done.pointsGone": "Aniq joylar oʻchirildi: faqat tuman qoldi.",
   "done.readOnly": "faqat oʻqish",
   "done.rate": "Baho berish",
   "done.rating": "Baho",

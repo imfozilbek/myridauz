@@ -30,6 +30,8 @@ type Props = {
   readonly ring?: boolean | undefined;
   // The line of the trip opens its booking (mockup g60/2); a chat opened by a ring has none.
   readonly onTrip?: (() => void) | undefined;
+  // «Jasurning yangi safarlari» under a closed chat (mockup g60/6).
+  readonly onAgain?: (() => void) | undefined;
   readonly onBack: () => void;
 };
 
@@ -44,7 +46,7 @@ export function ChatScreen(props: Props) {
   );
 }
 
-function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
+function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
@@ -92,7 +94,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
         {endAt === messages.length ? <TripEnded /> : null}
         <div ref={end} />
       </div>
-      {canWrite ? null : <ChatClosed />}
+      {canWrite ? null : <ChatClosed name={name} onAgain={onAgain} />}
       <ChatInput
         hidden={!canWrite}
         form={input}

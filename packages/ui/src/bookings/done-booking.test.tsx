@@ -43,5 +43,8 @@ describe('a past trip (G60, mockups g60/6 and g60/7)', () => {
     expect(screen.queryAllByText(/gacha$/u)).toHaveLength(0);
     expect(screen.getAllByText('muddat tugadi').length).toBeGreaterThan(0);
     expect(screen.getByText('Shikoyat: Yordam orqali')).toBeTruthy();
+    // The exact places are gone, the plate is grey (mockup g60/6).
+    expect(screen.getByText('Aniq joylar oʻchirildi: faqat tuman qoldi.')).toBeTruthy();
+    expect(screen.queryByText(/^Rida orqali:/u)).toBeNull();
   });
 });

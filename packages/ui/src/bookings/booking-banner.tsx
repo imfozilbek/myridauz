@@ -13,7 +13,10 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { departAt } = booking.trip;
   const done = useDoneLine(booking);
   const why = useWhy(booking);
-  const good = status === 'confirmed' || status === 'completed';
+  // A month after the trip the plate is grey: only the district and the reading are left (g60/6).
+  const { departAt: at, km } = booking.trip;
+  const old = status === 'completed' && Date.now() >= afterTrip(at, km).pointsUntil;
+  const good = (status === 'confirmed' || status === 'completed') && !old;
   const title =
     status === 'confirmed'
       ? t('bookings.confirmed.title')
@@ -23,7 +26,7 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
   return (
     <div className={good ? 'booking-banner' : 'booking-banner booking-banner-off'}>
       <span className="booking-banner-tile">
-        <Icon name={good ? 'selected' : 'close'} size={22} />
+        <Icon name={good || old ? 'selected' : 'close'} size={22} />
       </span>
       <span className="booking-banner-text">
         <b>{title}</b>
