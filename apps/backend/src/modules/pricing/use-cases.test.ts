@@ -7,19 +7,23 @@ import { variablesCache } from './application/variables';
 import { STRATEGIES } from './domain/formula';
 import { createMemoryPricing } from './infrastructure/memory-pricing';
 
-const place = (id: string, parentId: string | null): Location => ({
+const place = (id: string, parentId: string | null, lat = 41): Location => ({
   id,
   parentId,
   type: parentId ? 'city' : 'region',
   name: id,
-  lat: 41,
+  lat,
   lng: 69,
   oneCity: false,
 });
 const PLACES = new Map(
-  [place('17', null), place('1701', '17'), place('18', null), place('1801', '18'), place('1802', '18')].map(
-    (item) => [item.id, item],
-  ),
+  [
+    place('17', null),
+    place('1701', '17'),
+    place('18', null, 40),
+    place('1801', '18'),
+    place('1802', '18', 40.1),
+  ].map((item) => [item.id, item]),
 );
 const KM: Record<string, number> = { '1701:1801': 300, '1701:1802': 120, '1801:1802': 35 };
 
@@ -78,6 +82,13 @@ describe('recommendation and the team prices (docs/09, docs/23)', () => {
     await setDirection(deps, { from: '1801', to: '1701', price: null }, 900);
     expect(await recommendPrice(deps, '1701', '1801')).toMatchObject({ value: { price: 100000 } });
     expect(await recommendPrice(deps, '1701', '9')).toEqual({ ok: false, error: 'locations.not_found' });
+  });
+
+  it('measures a whole region from its place nearest to its center (G59)', async () => {
+    expect(await recommendPrice(setup(), '17', '18')).toMatchObject({
+      ok: true,
+      value: { from: '17', to: '18', km: 120 },
+    });
   });
 
   it('refuses a team price out of the bounds or for an unknown place', async () => {

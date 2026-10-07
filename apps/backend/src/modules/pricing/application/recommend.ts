@@ -1,5 +1,6 @@
 import type { Recommendation } from '@platform/contracts';
 import { directionKeys } from '../domain/direction';
+import { measuredPlace } from '../domain/measured-place';
 import type { PricingDeps, Result, RouteKmError } from './ports';
 
 // The team's price for the places or their regions, if any (docs/09: it goes first).
@@ -21,7 +22,8 @@ export async function recommendPrice(
   from: string,
   to: string,
 ): Promise<Result<Recommendation, RouteKmError>> {
-  const km = await deps.places.km(from, to);
+  const places = await deps.places.places();
+  const km = await deps.places.km(measuredPlace(from, places), measuredPlace(to, places));
   if (!km.ok) return km;
   const variables = await deps.variables.get(deps.pricing, deps.now());
   const manual = await manualFor(deps, from, to);
