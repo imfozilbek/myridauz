@@ -55,7 +55,7 @@ async function inCall(onBack = vi.fn()) {
     socket.open();
     socket.receive({ type: 'history', messages: [], canCall: true });
   });
-  fireEvent.click(screen.getByText('Qoʻngʻiroq'));
+  fireEvent.click(screen.getByLabelText('Qoʻngʻiroq'));
   await waitFor(() => expect(socket.sent).toContain(JSON.stringify({ type: 'call', action: 'ring' })));
   act(() => socket.receive({ type: 'call', call: { status: 'ringing', caller: 'me' } }));
   return { ...view, socket, onBack };

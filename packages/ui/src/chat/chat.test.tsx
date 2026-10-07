@@ -57,7 +57,8 @@ describe('the chat screen (docs/07)', () => {
       socket.receive({ type: 'warning' });
     });
     expect(screen.getByText('Raqam ***')).toBeTruthy();
-    expect(screen.getByText(/Telefon raqami va havolalarni/)).toBeTruthy();
+    // The grey line with a lock says it louder, never a red text (G60, mockup g60/2).
+    expect(screen.getByText('Raqam va havolalar yashiriladi.').className).toContain('chat-lock-warned');
     expect(tracked.map((event) => event.name)).toEqual(
       expect.arrayContaining(['chat_open', 'chat_first_message']),
     );

@@ -52,6 +52,7 @@ import {
   ClockArrowUp,
   TrendingDown,
   Volume2,
+  LockKeyhole,
   Play,
   WifiOff,
   X,
@@ -96,8 +97,7 @@ const ICONS = {
   share: Share2,
   subscriptions: Bell,
   star: Star,
-  // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18).
-  favorite: Heart,
+  favorite: Heart, // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18)
   history: History,
   // A voice call (docs/08): start, hang up, microphone on and off.
   call: PhoneCall,
@@ -128,9 +128,9 @@ const ICONS = {
   sounds: Volume2,
   play: Play,
   offline: WifiOff,
-  // A channel offered once closes for good (docs/119); «Ishxonam», a place kept once (docs/126).
-  close: X,
-  work: BriefcaseBusiness,
+  close: X, // a channel offered once closes for good (docs/119)
+  work: BriefcaseBusiness, // «Ishxonam», a place kept once (docs/126)
+  locked: LockKeyhole, // numbers and links are hidden in a chat (docs/07, mockup g60/2)
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

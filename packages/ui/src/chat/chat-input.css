@@ -1,0 +1,94 @@
+/* The bottom of a chat (G60, mockup g60/2): ready answers, the lock line, the field. */
+.chat-input {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* Above the home bar of the phone, by the areas Telegram gives (docs/21, docs/94 S5). */
+  padding: 0 0
+    calc(
+      8px + var(--tg-viewport-safe-area-inset-bottom, 0px) +
+        var(--tg-viewport-content-safe-area-inset-bottom, 0px)
+    );
+  background: var(--tgui--secondary_bg_color);
+}
+
+/* Ready answers in one tap (mockup g60/2): a row that scrolls sideways. */
+.chat-replies {
+  display: flex;
+  gap: 7px;
+  padding: 0 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chat-reply {
+  flex: none;
+  padding: 6px 12px;
+  border: 1px solid var(--reg-mint, var(--tgui--secondary_bg_color));
+  border-radius: 999px;
+  background: var(--tgui--bg_color);
+  color: var(--tgui--link_color);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chat-lock {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  padding: 0 16px;
+  font-size: 12px;
+  color: var(--tgui--hint_color);
+}
+
+.chat-lock-warned {
+  color: var(--tgui--text_color);
+  font-weight: 700;
+}
+
+.chat-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 10px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--tgui--button_color);
+  border-radius: 16px;
+  background: var(--tgui--bg_color);
+}
+
+.chat-field > :first-child {
+  flex: 1;
+}
+
+/* One line like Telegram, growing with the text up to a few lines (docs/88 L2). */
+.chat-field textarea {
+  min-height: 0;
+  max-height: 120px;
+  resize: none;
+  field-sizing: content;
+}
+
+.chat-send {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--tgui--button_color);
+  color: var(--tgui--button_text_color);
+  cursor: pointer;
+}
+
+.chat-send:disabled {
+  opacity: 0.5;
+}

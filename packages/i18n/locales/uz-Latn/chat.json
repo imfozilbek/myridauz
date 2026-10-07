@@ -4,12 +4,17 @@
   "placeholder": "Xabar",
   "send": "Yuborish",
   "empty": "Hali xabar yoʻq. Birinchi boʻlib yozing.",
-  "warning": "Telefon raqami va havolalarni yuborib boʻlmaydi. Ular yashirildi.",
   "failed": "Chatga ulanib boʻlmadi",
   "system.requested": "Joy soʻraldi",
   "system.offered": "Haydovchi taklif yubordi",
   "system.confirmed": "Joy tasdiqlandi",
   "system.declined": "Rad etildi",
   "system.cancelled": "Bekor qilindi",
-  "system.missed_call": "Oʻtkazib yuborilgan qoʻngʻiroq"
+  "system.missed_call": "Oʻtkazib yuborilgan qoʻngʻiroq",
+  "trip.when": "{day}, {time} · {place}",
+  "trip.way": "{from} → {to} · {seats} joy",
+  "hidden": "Raqam va havolalar yashiriladi.",
+  "reply.onWay": "Yoʻldaman",
+  "reply.fiveMinutes": "5 daqiqada chiqaman",
+  "reply.where": "Qayerdasiz?"
 }

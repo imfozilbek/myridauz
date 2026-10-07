@@ -52,7 +52,7 @@ test('passenger: «Mashinaga chiqdim» only on the day of the trip (P7)', async 
   await open(page, PASSENGER.port);
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
-  await expect(page.getByText(t('share.send'))).toBeVisible();
+  await expect(page.getByText(t('bookings.toClose'))).toBeVisible();
   await shot(page, 'p7-tomorrow');
 });
 
