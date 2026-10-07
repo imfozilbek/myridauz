@@ -1,8 +1,8 @@
-import { afterTrip, DAY_MS, tashkentDate, type Booking } from '@platform/contracts';
+import { afterTrip, DAY_MS, type Booking } from '@platform/contracts';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
-import { today, tomorrow } from '../market/when';
+import { useUntilText } from '../trip/until-text';
 import { openInTelegram } from '../telegram/feedback';
 
 type Props = {
@@ -16,17 +16,12 @@ export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((
 // After the trip (owner decision 06.10.2026, docs/129, mockups g60/6 and g60/7): what Rida still
 // gives, and each thing with its deadline. The chat stays to read; the complaint goes to support.
 export function DoneTools({ booking, onOpen }: Props) {
-  const { t, formatDate, formatTime } = useI18n();
+  const { t } = useI18n();
   const { bots } = useBrand();
   const now = Date.now();
   const { talkUntil, rateUntil, complainUntil } = afterTrip(booking.trip.departAt, booking.trip.km);
-  const until = (ms: number) => {
-    const time = formatTime(new Date(ms));
-    const day = tashkentDate(ms);
-    if (day === today(now)) return t('bookings.done.untilToday', { time });
-    if (day === tomorrow(now)) return t('bookings.done.untilTomorrow', { time });
-    return t('bookings.done.until', { date: formatDate(new Date(ms)), time });
-  };
+  const untilText = useUntilText();
+  const until = (ms: number) => untilText(ms, now);
   const talk = now < talkUntil;
   const rate = now < rateUntil;
   const tile = (icon: IconName, label: string, sub: string, onClick: () => void) => (

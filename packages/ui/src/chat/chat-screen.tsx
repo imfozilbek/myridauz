@@ -1,5 +1,6 @@
 import type { ChatMessage } from '@platform/contracts';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
+import { Fragment } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -19,6 +20,7 @@ import { useChat } from './use-chat';
 import { useRingOnce } from './use-ring-once';
 import { useChatLayout } from './use-chat-layout';
 import { useChatText } from './use-chat-text';
+import { useAfterTripChat } from './after-trip-chat';
 import './chat.css';
 
 type Props = {
@@ -56,6 +58,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
   const name = title ?? (about && otherName(about)) ?? t('chat.title');
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
+  const { endAt, placeholder } = useAfterTripChat(about, messages);
   if (state === 'failed') return <ErrorScreen onRetry={retry} title={t('chat.failed')} onBack={onBack} />;
   return (
     <div ref={chat} className="chat" style={brandVars(colors)}>
@@ -80,9 +83,13 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
       <div className="chat-messages">
         {/* «No messages yet» only once the history came: never a flash of it while connecting (G41). */}
         {messages.length === 0 && loaded ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
-        {messages.map((message) => (
-          <Bubble key={message.id} message={message} />
+        {messages.map((message, index) => (
+          <Fragment key={message.id}>
+            {index === endAt ? <TripEnded /> : null}
+            <Bubble message={message} />
+          </Fragment>
         ))}
+        {endAt === messages.length ? <TripEnded /> : null}
         <div ref={end} />
       </div>
       {canWrite ? null : <ChatClosed />}
@@ -94,10 +101,17 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
         onSubmit={submit}
         onReply={(reply) => void send(reply)}
         open={state === 'open'}
+        placeholder={placeholder}
         warned={warning}
       />
     </div>
   );
+}
+
+// «Safar tugadi» at the arrival, before the messages written after it (mockup g60/7).
+function TripEnded() {
+  const { t } = useI18n();
+  return <Caption className="chat-system">{t('bookings.done.title')}</Caption>;
 }
 
 function Bubble({ message }: { readonly message: ChatMessage }) {

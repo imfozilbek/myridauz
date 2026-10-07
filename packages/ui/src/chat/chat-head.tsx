@@ -1,4 +1,4 @@
-import { formatPlate, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
+import { arrivalAt, formatPlate, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
@@ -71,6 +71,7 @@ function TripLine({ booking, onTrip }: LineProps) {
     const place = directory.find(id);
     return (place?.parentId ? directory.find(place.parentId) : place)?.name ?? '';
   };
+  const ended = booking.status === 'completed';
   const date = tashkentDate(trip.departAt);
   const now = Date.now();
   const day =
@@ -82,7 +83,11 @@ function TripLine({ booking, onTrip }: LineProps) {
   return (
     <button type="button" className="chat-trip" onClick={onTrip} disabled={!onTrip}>
       <span className="chat-trip-text">
-        <b>{t('chat.trip.when', { day, time: formatTime(new Date(trip.departAt)), place: start })}</b>
+        <b>
+          {ended
+            ? t('chat.trip.done', { date: formatDate(new Date(arrivalAt(trip.departAt, trip.km))) })
+            : t('chat.trip.when', { day, time: formatTime(new Date(trip.departAt)), place: start })}
+        </b>
         <span>
           {t('chat.trip.way', { from: region(trip.from), to: region(trip.to), seats: String(booking.seats) })}
         </span>

@@ -5,7 +5,7 @@
   gap: 10px;
   /* The height Telegram gives: the main button is outside it, the links stay above it. */
   min-height: var(--tg-viewport-stable-height, 100vh);
-  padding: 14px 14px 18px;
+  padding: 14px 14px 7px;
   box-sizing: border-box;
 }
 
@@ -117,13 +117,15 @@
 /* A tile with its deadline under the word is taller (mockup g60/7). */
 .booking-button:has(.booking-button-sub) {
   justify-content: flex-start;
+  gap: 4px;
   min-height: 110px;
-  padding-top: 14px;
+  padding-top: 9px;
 }
 
 .booking-button-sub {
-  margin-top: 6px;
-  font-size: 11px;
+  margin-top: 8px;
+  font-size: 11.5px;
+  line-height: 14.5px;
   font-weight: 400;
   color: var(--reg-strong);
   text-align: center;

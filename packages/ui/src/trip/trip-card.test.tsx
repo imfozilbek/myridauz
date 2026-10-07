@@ -34,4 +34,17 @@ describe('one card of a trip on the booking, the call and the review (G60, docs/
     await screen.findByText('Registon mahallasi');
     expect(screen.queryByText('2 joy')).toBeNull();
   });
+
+  it('after the trip shows the regions and the road, without the exact places (mockup g60/7)', async () => {
+    const done = { ...confirmed, status: 'completed' as const, pickup: null, dropoff: null };
+    renderMarket(
+      <PlacesGate>
+        <TripCard booking={done} />
+      </PlacesGate>,
+      testClients({}),
+    );
+    expect(await screen.findByText(/^≈ \d+ km · ≈ \d+ soat yoʻl$/u)).toBeTruthy();
+    expect(screen.queryByText(/olib ketish joyi$/u)).toBeNull();
+    expect(screen.queryByText(/tushirish joyi$/u)).toBeNull();
+  });
 });

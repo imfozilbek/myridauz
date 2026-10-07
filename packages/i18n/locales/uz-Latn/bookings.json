@@ -71,6 +71,7 @@
   "card.pickup": "{time} · olib ketish joyi",
   "card.dropoff": "≈ {time} · tushirish joyi",
   "card.seats": "{seats} joy",
+  "card.region": "{region} · {time}",
   "confirmed.when": "{day} · {time}",
   "toClose": "Yaqinlarimga",
   "done.title": "Safar tugadi",

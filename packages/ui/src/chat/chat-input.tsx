@@ -18,11 +18,14 @@ type Props = {
   readonly open: boolean;
   // The server hid a number just now: the grey line says it a little louder (docs/07).
   readonly warned: boolean;
+  // «Xabar · ertaga 20:55 gacha» in the 24 hours after the trip (mockup g60/7).
+  readonly placeholder: string;
 };
 
 // The bottom of a chat (mockup g60/2): ready answers in one tap, the grey line with a lock about
 // hidden numbers, the field and the round «send».
-export function ChatInput({ hidden, form, text, onText, onSubmit, onReply, open, warned }: Props) {
+export function ChatInput(props: Props) {
+  const { hidden, form, text, onText, onSubmit, onReply, open, warned, placeholder } = props;
   const { t } = useI18n();
   if (hidden) return null;
   return (
@@ -55,7 +58,7 @@ export function ChatInput({ hidden, form, text, onText, onSubmit, onReply, open,
         <Textarea
           aria-label={t('chat.placeholder')}
           rows={1}
-          placeholder={t('chat.placeholder')}
+          placeholder={placeholder}
           value={text}
           maxLength={MAX_CHAT_TEXT}
           onChange={(event) => onText(event.target.value)}

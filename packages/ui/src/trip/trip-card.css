@@ -69,6 +69,14 @@
   font-size: 16px;
 }
 
+/* «≈ 300 km · ≈ 5 soat yoʻl» between the ends after the trip (mockup g60/7). */
+.trip-card-road {
+  margin: -7px 0 -9px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
 button.trip-card-point {
   padding: 0;
   border: 0;
@@ -77,4 +85,13 @@ button.trip-card-point {
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+/* After the trip the end dot stands by the road line, as on the mockup g60/7. */
+.trip-card-past .trip-card-to .trip-card-dot {
+  margin-top: -10px;
+}
+
+.trip-card-past .trip-card-from .trip-card-dot::after {
+  height: 25px;
 }

@@ -7,6 +7,16 @@
   border-bottom: 1px solid var(--reg-divider);
 }
 
+/* Without the plate (after the trip) the name stands at the top of the face (mockup g60/7). */
+.driver-row-bare {
+  align-items: flex-start;
+  padding: 11px 14px 10px;
+}
+
+.driver-row-bare .driver-row-text {
+  margin-top: 2px;
+}
+
 .driver-row-text {
   display: flex;
   flex-direction: column;
