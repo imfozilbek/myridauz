@@ -80,6 +80,7 @@ export function pickFiles(args) {
   for (let i = 0; i < args.length; i += 1) {
     if (args[i] === '--area') for (const area of (args[++i] ?? '').split(',')) areas.add(area);
     else if (args[i] === '--changed') for (const area of areasOf(changedPaths())) areas.add(area);
+    else if (args[i] === '--shots') continue;
     else rest.push(args[i]);
   }
   const unknown = [...areas].filter((area) => !NAMES.includes(area));

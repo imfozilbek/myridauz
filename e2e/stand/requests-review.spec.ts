@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { HUMOYUN } from './people';
-import { pressBack } from '../telegram-mock';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { register } from './seed';
 import { outsideCalls, type Person } from './stand-kit';
+import { backUntil, stepUntil } from './steps';
 
 // The requests of a passenger and the search of a driver (G37, docs/101): an empty day, a request,
 // a second one on the same day refused, the own list; the driver finds it, moves to tomorrow and
@@ -31,13 +31,7 @@ const shooter = (page: Page, platform: Platform) => async (name: string) => {
 };
 
 // «Назад» up to the main screen: the app keeps its screen while it stays open.
-async function toHome(page: Page) {
-  const find = mainButton(page).filter({ hasText: TEXT.findTrip });
-  await expect(async () => {
-    if (!(await find.isVisible())) await pressBack(page);
-    await expect(find).toBeVisible({ timeout: 1000 });
-  }).toPass();
-}
+const toHome = (page: Page) => backUntil(page, mainButton(page).filter({ hasText: TEXT.findTrip }));
 
 // From the empty day of Yunusobod (the place of the person) → Termiz shahri up to the review of a request: the way of the last
 // request may be kept, so each step is answered only when it shows (G35 K4).
@@ -53,8 +47,7 @@ async function requestToReview(page: Page) {
   // The empty day and the review both say «Soʻrov qoldirish»: the title tells the review.
   const publish = page.getByText(t('market.request.review.title'));
   const door = page.getByText(t('way.mode.door'), { exact: true });
-  await expect(async () => {
-    if (await publish.isVisible()) return;
+  await stepUntil(page, publish, async () => {
     if (await door.isVisible()) await door.click();
     else if (await page.getByRole('status').isVisible()) {
       await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, {
@@ -62,8 +55,7 @@ async function requestToReview(page: Page) {
       });
       await mainButton(page).click();
     } else await mainButton(page).click();
-    await expect(publish).toBeVisible({ timeout: 1000 });
-  }).toPass({ timeout: 60_000 });
+  });
 }
 
 for (const platform of PLATFORMS)

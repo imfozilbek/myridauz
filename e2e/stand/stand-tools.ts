@@ -1,5 +1,5 @@
-import { execFileSync } from 'node:child_process';
-import { loadBrand } from '../../brands/index';
+import { readdirSync } from 'node:fs';
+import { DatabaseSync } from 'node:sqlite';
 import { STAND_API_PORT, STAND_STATE, STAND_TELEGRAM_PORT } from '../../scripts/stand/paths.ts';
 import { botOfToken } from './stand-kit';
 
@@ -83,32 +83,25 @@ export async function runCron(): Promise<void> {
   if (!response.ok) throw new Error(`stand: the Cron answered ${response.status}`);
 }
 
-const BUSY_TRIES = 5;
-const BUSY_WAIT_MS = 300;
-const busy = (error: unknown) => error instanceof Error && error.message.includes('SQLITE_BUSY');
-const pause = (ms: number) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-
-// The worker writes to the same SQLite file at the same time: a busy file waits and tries again,
-// as SQLite itself does (lesson 78).
-const d1 = (sql: string, json: boolean): string => {
-  const config = `brands/${loadBrand().id}/wrangler.toml`;
-  const args = ['exec', 'wrangler', 'd1', 'execute', 'DB', '--local', '--persist-to', STAND_STATE];
-  const output = json ? ['--json'] : [];
-  for (let attempt = 1; ; attempt += 1) {
-    try {
-      return execFileSync('pnpm', [...args, ...output, '--config', config, '--command', sql], {
-        stdio: 'pipe',
-        encoding: 'utf8',
-      });
-    } catch (error) {
-      if (!busy(error) || attempt === BUSY_TRIES) throw error;
-      pause(BUSY_WAIT_MS * attempt);
-    }
-  }
+// The database of the stand is opened directly, as the Worker opens it: a query takes milliseconds,
+// not the two seconds of a wrangler process (G71). A busy file waits, as SQLite itself does (lesson 78).
+const BUSY_TIMEOUT_MS = 5_000;
+const D1_DIR = `${STAND_STATE}/v3/d1/miniflare-D1DatabaseObject`;
+const databaseFile = () => {
+  const file = readdirSync(D1_DIR).find((name) => name.endsWith('.sqlite') && name !== 'metadata.sqlite');
+  if (!file) throw new Error(`stand: no database in ${D1_DIR}`);
+  return `${D1_DIR}/${file}`;
 };
-export const standSql = (sql: string): void => void d1(sql, false);
-// The rows of one query on the database of the stand.
-export function standRows(sql: string): Record<string, unknown>[] {
-  const [result] = JSON.parse(d1(sql, true)) as { results: Record<string, unknown>[] }[];
-  return result?.results ?? [];
+function withDatabase<T>(use: (db: DatabaseSync) => T): T {
+  const db = new DatabaseSync(databaseFile());
+  try {
+    db.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS}`);
+    return use(db);
+  } finally {
+    db.close();
+  }
 }
+export const standSql = (sql: string): void => withDatabase((db) => db.exec(sql));
+// The rows of one query on the database of the stand.
+export const standRows = (sql: string): Record<string, unknown>[] =>
+  withDatabase((db) => db.prepare(sql).all() as Record<string, unknown>[]);
