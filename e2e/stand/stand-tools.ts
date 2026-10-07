@@ -84,24 +84,21 @@ export async function runCron(): Promise<void> {
 }
 
 // The database of the stand is opened directly, as the Worker opens it: a query takes milliseconds,
-// not the two seconds of a wrangler process (G71). A busy file waits, as SQLite itself does (lesson 78).
+// not the two seconds of a wrangler process (G71). One connection stays open for the whole run and
+// never checkpoints: closing or checkpointing locks the file for a moment, and the Worker, which does
+// not wait for a busy file, would fail its own write. A busy file on our side waits (lesson 78).
 const BUSY_TIMEOUT_MS = 5_000;
 const D1_DIR = `${STAND_STATE}/v3/d1/miniflare-D1DatabaseObject`;
-const databaseFile = () => {
+let opened: DatabaseSync | undefined;
+function database(): DatabaseSync {
+  if (opened) return opened;
   const file = readdirSync(D1_DIR).find((name) => name.endsWith('.sqlite') && name !== 'metadata.sqlite');
   if (!file) throw new Error(`stand: no database in ${D1_DIR}`);
-  return `${D1_DIR}/${file}`;
-};
-function withDatabase<T>(use: (db: DatabaseSync) => T): T {
-  const db = new DatabaseSync(databaseFile());
-  try {
-    db.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS}`);
-    return use(db);
-  } finally {
-    db.close();
-  }
+  opened = new DatabaseSync(`${D1_DIR}/${file}`);
+  opened.exec(`PRAGMA busy_timeout = ${BUSY_TIMEOUT_MS}; PRAGMA wal_autocheckpoint = 0;`);
+  return opened;
 }
-export const standSql = (sql: string): void => withDatabase((db) => db.exec(sql));
+export const standSql = (sql: string): void => database().exec(sql);
 // The rows of one query on the database of the stand.
 export const standRows = (sql: string): Record<string, unknown>[] =>
-  withDatabase((db) => db.prepare(sql).all() as Record<string, unknown>[]);
+  database().prepare(sql).all() as Record<string, unknown>[];
