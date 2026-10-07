@@ -8,10 +8,11 @@ const SPECS = readdirSync('e2e/stand')
 const ALL = Object.keys(AREAS);
 
 describe('the pieces of the stand (G71)', () => {
-  it('has the eight themes of the goal', () => {
+  it('has the eight themes of the goal and the map', () => {
     expect(ALL).toEqual([
       'registration',
       'search',
+      'map',
       'booking',
       'requests',
       'driver',
@@ -55,11 +56,13 @@ describe('what a change wakes (--changed)', () => {
     expect(areasOf(['packages/ui/src/account/registration/about-step.tsx'])).toEqual(['registration']);
     expect(areasOf(['apps/backend/src/modules/ride-requests/http/routes.ts'])).toEqual(['requests']);
     expect(areasOf(['apps/miniapp-admin/src/pages/home.tsx'])).toEqual(['team']);
+    expect(areasOf(['packages/ui/src/pitaks/pitak-sheet.tsx'])).toEqual(['map']);
     expect(areasOf(['apps/backend/src/modules/channels/application/zone-invite.ts'])).toEqual(['channels']);
   });
 
   it('a scenario file wakes its own area', () => {
-    expect(areasOf(['e2e/stand/g26.spec.ts'])).toEqual(['search']);
+    expect(areasOf(['e2e/stand/g26.spec.ts'])).toEqual(['map']);
+    expect(areasOf(['e2e/stand/passenger-search.spec.ts'])).toEqual(['search']);
   });
 
   it('code that no rule knows wakes every area', () => {

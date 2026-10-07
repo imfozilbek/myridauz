@@ -5,7 +5,8 @@ import { execFileSync } from 'node:child_process';
 const DIR = 'e2e/stand';
 export const AREAS = {
   registration: ['first-contact', 'forms', 'screens-passenger', 'all-passenger-flows'],
-  search: ['passenger-search', 'g24', 'g26', 'dropoff-screen', 'combos', 'g33'],
+  search: ['passenger-search', 'g24', 'combos', 'g33'],
+  map: ['g26', 'dropoff-screen'],
   booking: [
     'passenger-booking',
     'g21',
@@ -37,7 +38,8 @@ const NAMES = Object.keys(AREAS);
 // better a longer check than a missed one.
 const RULES = [
   [/users|account|legal|registration|flow\/|company/, ['registration']],
-  [/locations|map|pitaks|places|way|search|market|favorites|history/, ['search']],
+  [/locations|search|market|favorites|history/, ['search']],
+  [/map|pitaks|places|way/, ['map']],
   [/bookings|chat|shares|follow|call|ratings|feedback|comfort|network|sounds|feed/, ['booking']],
   [/ride-requests|assignments|requests/, ['requests']],
   [/drivers?\b|drivers\/|trips|wallet|billing|pricing|media/, ['driver']],
