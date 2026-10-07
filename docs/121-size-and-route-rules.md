@@ -76,7 +76,7 @@
 - Рисуется в `index.html` (HTML и CSS, логотип SVG в строке, без JS): виден с первого кадра, без белой вспышки.
 - Сплэш Telegram до нашей страницы (BotFather: Bot Settings, Configure Mini App, Configure Splash Screen; SVG 512 × 512, один `<path>`, цвета для светлой и тёмной темы Telegram) того же цвета с белой «R»: оба сплэша выглядят как один. Настраивает владелец для трёх ботов (OPS-05), решение 06.10.
 - Меряем время до первого экрана (`app_ready`, мс) по Mini App и платформе (`29`).
-- Сделано в G72: сборка вставляет сплэш в `index.html` из конфига бренда (`packages/ui/src/splash`, `packages/config/vite.config.js`); «готов» значит 150 мс без загрузок после первого экрана; пока сплэш виден, шапка и низ Telegram его цвета. Сверка с макетом g66/5: отличие 0,6…0,8 % (сглаживание букв). e2e: `e2e/splash.spec.ts`. SVG для BotFather: `brands/rida/landing/bot/miniapp-splash.svg`, шаги в OPS-05.
+- Сделано в G72: сборка вставляет сплэш в `index.html` из конфига бренда (`packages/ui/src/splash`, `packages/config/vite.config.js`); «готов» значит 150 мс без загрузок после первого экрана; пока сплэш виден, шапка и низ Telegram его цвета, а кнопки Telegram скрыты (урок №156). Сверка с макетом g66/5: отличие 0,6…0,8 % (сглаживание букв). e2e: `e2e/splash.spec.ts`. SVG для BotFather: `brands/rida/landing/bot/miniapp-splash.svg`, шаги в OPS-05.
 
 ## 5. Фон экранов: лёгкий градиент (решение владельца, вариант A)
 

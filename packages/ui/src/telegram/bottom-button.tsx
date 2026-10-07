@@ -3,6 +3,7 @@ import { mainButton, secondaryButton } from '@telegram-apps/sdk-react';
 import { useEffect } from 'react';
 import { Button } from '../components';
 import { useBrand } from '../context/brand-context';
+import { onSplashLeft, splashStands } from './chrome';
 import { useInTelegram } from './in-telegram-context';
 import { useOneAtATime } from './one-at-a-time';
 
@@ -30,13 +31,22 @@ type BottomButtonProps = {
 };
 
 const noop = () => undefined;
+// The splash has no button (docs/121 §4): a button asked for under it shows when it leaves.
+function underSplash(set: (params: Partial<NativeParams>) => void) {
+  let wanted = false;
+  onSplashLeft(() => wanted && set({ isVisible: true }));
+  return (params: Partial<NativeParams>) => {
+    if (params.isVisible !== undefined) wanted = params.isVisible;
+    set(wanted && splashStands() ? { ...params, isVisible: false } : params);
+  };
+}
 const MAIN: NativeButton = {
-  setParams: (params) => void mainButton.setParams.ifAvailable(params),
+  setParams: underSplash((params) => void mainButton.setParams.ifAvailable(params)),
   onClick: (listener) => mainButton.onClick.ifAvailable(listener)?.[1] ?? noop,
   colored: true,
 };
 const SECONDARY: NativeButton = {
-  setParams: (params) => void secondaryButton.setParams.ifAvailable(params),
+  setParams: underSplash((params) => void secondaryButton.setParams.ifAvailable(params)),
   onClick: (listener) => secondaryButton.onClick.ifAvailable(listener)?.[1] ?? noop,
   colored: false,
 };
