@@ -17,6 +17,11 @@ describe('createI18n', () => {
     expect(i18n.formatMoney(150000)).toBe(`150${NBSP}000${NBSP}soʻm`);
   });
 
+  it('formats a rating always with one decimal, like «★ 5,0» (mockup g60/6)', () => {
+    expect(i18n.formatRating(5)).toBe('5,0');
+    expect(i18n.formatRating(4.86)).toBe('4,9');
+  });
+
   it('formats date and time in Uzbekistan time', () => {
     expect(i18n.formatDate(TASHKENT_AFTERNOON)).toBe('27-sentabr');
     expect(i18n.formatTime(TASHKENT_AFTERNOON)).toBe('14:30');

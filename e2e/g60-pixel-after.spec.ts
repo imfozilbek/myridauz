@@ -114,3 +114,31 @@ test('the review right after the trip (mockup g60/5)', async ({ page }) => {
   await page.mouse.move(0, 0);
   await shot(page, '5-1');
 });
+
+// A past seat of the list «Oʻtgan» (mockup g60/6 3): another driver, route and price.
+const pastSeat = (at: string, from: string, to: string, name: string, average: number, rated: boolean) => {
+  const seat = mockupBooking(tashkent(at), { status: 'completed', plate: null, rated, seats: 1 });
+  const driver = { ...seat.trip.driver, firstName: name, rating: { average, count: 12 } };
+  return { ...seat, id: `${seat.id.slice(0, -2)}${name.length}0`, trip: { ...seat.trip, from, to, driver } };
+};
+
+test('the list of past trips (mockup g60/6 3)', async ({ page }) => {
+  await mockApi(page, 'active');
+  const yesterday = mockupBooking(tashkent('2026-10-07T16:00'), {
+    status: 'completed',
+    plate: null,
+    rated: false,
+  });
+  const seats = [
+    mockupBooking(tashkent('2026-10-09T08:00')),
+    yesterday,
+    pastSeat('2026-10-01T15:00', '1718401', '1726294', 'Bobur', 5, true),
+    pastSeat('2026-09-02T07:00', '1726294', '1708401', 'Nodira', 4.8, false),
+  ];
+  await page.route('**/api/passenger/requests', (route) => route.fulfill({ json: { requests: [] } }));
+  await openAt(page, '2026-10-08T10:00', seats);
+  await page.getByText(t('common.myTrips')).click();
+  await page.getByText(t('bookings.tab.past')).click();
+  await expect(page.getByText('Nodira', { exact: false })).toBeVisible();
+  await shot(page, '6-3');
+});

@@ -42,7 +42,7 @@ export function ConfirmedBooking(props: Props) {
   useScreenView('bookings.passenger');
   // The page of a past trip has the gradient of docs/121 §5, the booking is flat (mockups g60/1, g60/7).
   useScreenBackground(booking.status === 'completed' ? 'tinted' : 'grouped');
-  const { t, formatNumber } = useI18n();
+  const { t, formatRating } = useI18n();
   const { driver } = booking.trip;
   const { colors } = useBrand().theme;
   const steps = useTripSteps(booking, onTold);
@@ -64,7 +64,7 @@ export function ConfirmedBooking(props: Props) {
           note={
             driver.rating.average === null
               ? null
-              : t('find.stars', { rating: formatNumber(driver.rating.average) })
+              : t('find.stars', { rating: formatRating(driver.rating.average) })
           }
           plate={booking.plate}
         />

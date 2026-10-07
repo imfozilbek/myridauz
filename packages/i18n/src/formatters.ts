@@ -8,6 +8,19 @@ type Translate = (key: TranslationKey, values?: MessageValues) => string;
 // and weekdays and the thousands and decimal separators come from the catalog (docs/13, docs/25).
 export function createFormatters(locale: Locale, t: Translate) {
   const number = new Intl.NumberFormat(locale);
+  // A rating has one decimal always: «5,0», not «5» (mockup g60/6).
+  const rating = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const local = (format: Intl.NumberFormat, value: number) =>
+    format
+      .formatToParts(value)
+      .map((part) =>
+        part.type === 'group'
+          ? t('common.format.thousands')
+          : part.type === 'decimal'
+            ? t('common.format.decimal')
+            : part.value,
+      )
+      .join('');
   // Only digits are read from these parts, so they do not depend on locale data.
   const day = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
@@ -27,17 +40,8 @@ export function createFormatters(locale: Locale, t: Translate) {
     return { month, day: date, weekday: new Date(Date.UTC(year, month - 1, date)).getUTCDay() };
   };
   return {
-    formatNumber: (value: number) =>
-      number
-        .formatToParts(value)
-        .map((part) =>
-          part.type === 'group'
-            ? t('common.format.thousands')
-            : part.type === 'decimal'
-              ? t('common.format.decimal')
-              : part.value,
-        )
-        .join(''),
+    formatNumber: (value: number) => local(number, value),
+    formatRating: (value: number) => local(rating, value),
     formatDate: (value: Date) => {
       const parts = dayParts(value);
       return t('common.format.date', { day: parts.day, month: parts.month });

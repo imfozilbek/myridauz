@@ -12,7 +12,7 @@ type Props = { readonly trip: Trip; readonly onOpen: () => void };
 // A trip in «Safarlar» (journey of path 2, screen 5): the times and the price, the free seats and how
 // the driver picks up, then the driver.
 export function SearchTripCard({ trip, onOpen }: Props) {
-  const { t, formatTime, formatMoney, formatNumber } = useI18n();
+  const { t, formatTime, formatMoney, formatRating } = useI18n();
   const { driver } = trip;
   const mode =
     trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
@@ -52,7 +52,7 @@ export function SearchTripCard({ trip, onOpen }: Props) {
             ? t('find.driverNew', { name: driver.firstName, car: driver.car.model })
             : t('find.driver', {
                 name: driver.firstName,
-                rating: formatNumber(driver.rating.average),
+                rating: formatRating(driver.rating.average),
                 car: driver.car.model,
               })}
         </span>

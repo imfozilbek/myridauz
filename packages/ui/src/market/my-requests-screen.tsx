@@ -41,7 +41,8 @@ function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly Ri
 
 function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
-  useScreenBackground('grouped');
+  // The gradient of docs/121 §5, as on the mockup g60/6.
+  useScreenBackground('tinted');
   const { market, bookings } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(
     () => Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),

@@ -13,7 +13,7 @@ type Chip = readonly [tone: 'due' | 'done' | 'plain' | 'gone', text: string];
 // One past trip in «Oʻtgan» (owner decision 06.10.2026, docs/129, mockup g60/6): when, where, who,
 // and what may still be done, each with its deadline.
 export function PastBookingRow({ booking, onOpen }: Props) {
-  const { t, formatDate, formatTime, formatMoney, formatNumber } = useI18n();
+  const { t, formatShortDate, formatTime, formatRating, formatNumber } = useI18n();
   const { regionName } = useBookingEnds(booking);
   const chips = useChips(booking);
   const { trip } = booking;
@@ -24,7 +24,7 @@ export function PastBookingRow({ booking, onOpen }: Props) {
       ? t('market.day.today')
       : day === tashkentDate(now - DAY_MS)
         ? t('bookings.past.yesterday')
-        : formatDate(new Date(trip.departAt));
+        : formatShortDate(new Date(trip.departAt));
   const { average } = trip.driver.rating;
   return (
     <Tappable Component="div" className="past-row" interactiveAnimation="background" onClick={onOpen}>
@@ -35,9 +35,10 @@ export function PastBookingRow({ booking, onOpen }: Props) {
           {[
             average === null
               ? trip.driver.firstName
-              : `${trip.driver.firstName} ${t('find.stars', { rating: formatNumber(average) })}`,
+              : `${trip.driver.firstName} ${t('find.stars', { rating: formatRating(average) })}`,
             t('bookings.card.seats', { seats: booking.seats }),
-            formatMoney(booking.price * booking.seats),
+            // The sum without «soʻm» on a short row (mockup g60/6).
+            formatNumber(booking.price * booking.seats),
           ].join(' · ')}
         </span>
         {chips.length > 0 ? (
@@ -50,7 +51,7 @@ export function PastBookingRow({ booking, onOpen }: Props) {
           </span>
         ) : null}
       </span>
-      <Icon name="next" size={18} />
+      <Icon name="next" size={12} />
     </Tappable>
   );
 }
@@ -61,6 +62,8 @@ function useChips(booking: Booking): readonly Chip[] {
   if (booking.status !== 'completed') return [['plain', t(`bookings.status.${booking.status}`)]];
   const now = Date.now();
   const { talkUntil, rateUntil, pointsUntil } = afterTrip(booking.trip.departAt, booking.trip.km);
+  // A month later only the end of the exact points is left to say (mockup g60/6).
+  if (now >= pointsUntil) return [['gone', t('bookings.past.erased')]];
   const chips: Chip[] = [];
   if (booking.rated) chips.push(['done', t('bookings.past.rated')]);
   else if (now < rateUntil) chips.push(['due', t('bookings.past.rate', { days: daysLeft(rateUntil, now) })]);
@@ -69,6 +72,5 @@ function useChips(booking: Booking): readonly Chip[] {
       'plain',
       t(tashkentDate(talkUntil) === tomorrow(now) ? 'bookings.past.talkTomorrow' : 'bookings.past.talkToday'),
     ]);
-  if (now >= pointsUntil) chips.push(['gone', t('bookings.past.erased')]);
   return chips;
 }

@@ -8,7 +8,7 @@ const PHOTO = 60;
 // The driver on top of «Safar» (docs/118 path 2, A): the face, the rating, the car and its plate.
 // The plate shows before a booking (owner decision 07.10.2026).
 export function DriverCard({ trip }: { readonly trip: Trip }) {
-  const { t, formatNumber } = useI18n();
+  const { t, formatRating } = useI18n();
   const { driver } = trip;
   return (
     <div className="safar-card driver-card">
@@ -18,7 +18,7 @@ export function DriverCard({ trip }: { readonly trip: Trip }) {
           {driver.firstName}
           {driver.rating.average === null ? null : (
             <span className="driver-card-rating">
-              {t('find.stars', { rating: formatNumber(driver.rating.average) })}
+              {t('find.stars', { rating: formatRating(driver.rating.average) })}
               <span className="driver-card-count">
                 {t('find.count', { count: String(driver.rating.count) })}
               </span>

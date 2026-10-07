@@ -25,7 +25,7 @@ type Props = {
 export function PendingBooking({ booking, onBack, onCancel, onHome, children }: Props) {
   useScreenView('bookings.pending');
   useScreenBackground('tinted');
-  const { t, formatDate, formatTime, formatNumber, formatMoney } = useI18n();
+  const { t, formatDate, formatTime, formatNumber, formatMoney, formatRating } = useI18n();
   const { colors } = useBrand().theme;
   const { trip } = booking;
   const { driver } = trip;
@@ -35,7 +35,7 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
     formatPlate(driver.car.plate),
     ...(driver.rating.average === null
       ? []
-      : [t('find.stars', { rating: formatNumber(driver.rating.average) })]),
+      : [t('find.stars', { rating: formatRating(driver.rating.average) })]),
   ];
   return (
     <div className="find pending" style={brandVars(colors)}>

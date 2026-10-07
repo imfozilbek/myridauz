@@ -30,12 +30,21 @@ describe('«Oʻtgan» in «Mening safarlarim» (G60, mockup g60/6)', () => {
     expect(screen.getByText(/^Xabar · /u)).toBeTruthy();
   });
 
-  it('a rated trip says so; a month later the exact points are gone', async () => {
-    vi.setSystemTime(arrival + 31 * DAY_MS);
+  it('a rated trip says so, with a short day and the sum without «soʻm» (mockup g60/6)', async () => {
+    vi.setSystemTime(arrival + 3 * DAY_MS);
     open(true);
     await tap('Oʻtgan');
     expect(screen.getByText('Baho berildi')).toBeTruthy();
+    expect(screen.getByText(/^\d+-[a-z]{3} · \d\d:\d\d$/u)).toBeTruthy();
+    expect(screen.queryByText(/soʻm$/u)).toBeNull();
+  });
+
+  it('a month later only says the exact points are gone', async () => {
+    vi.setSystemTime(arrival + 31 * DAY_MS);
+    open(true);
+    await tap('Oʻtgan');
     expect(screen.getByText('Aniq joylar oʻchirildi')).toBeTruthy();
+    expect(screen.queryByText('Baho berildi')).toBeNull();
     expect(screen.queryByText(/^Xabar · /u)).toBeNull();
   });
 });

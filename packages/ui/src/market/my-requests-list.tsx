@@ -4,9 +4,11 @@ import { BookingCard } from '../bookings/booking-card';
 import { PastBookingRow } from '../bookings/past-booking-row';
 import { FavoritesEntry } from '../comfort/comfort-entries';
 import { List, SegmentedControl } from '../components';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
+import { brandVars } from '../theme/brand-vars';
 import { Screen } from '../screen/screen';
 import { EmptyState } from '../states/empty-state';
 import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
@@ -36,6 +38,7 @@ type Props = {
 export function MyRequestsList(props: Props) {
   const { lists, onBack, onRefresh, onBooking, onRequest, tab, onTab, ...entries } = props;
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   useListPlace(MY_REQUESTS, true);
   useKeepPlace(lists);
   const [all, requests, offers] = lists;
@@ -64,17 +67,25 @@ export function MyRequestsList(props: Props) {
   const sent = (request: RideRequest) =>
     offers.filter((item) => item.requestId === request.id && item.status === 'sent').length;
   return (
-    <div className="market">
+    <div className="market market-mine" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={onRefresh} />
       <Title weight="1" className="market-title">
         {t('common.myTrips')}
       </Title>
       <div className="market-tabs">
         <SegmentedControl>
-          <SegmentedControl.Item selected={tab === 'live'} onClick={() => onTab('live')}>
+          <SegmentedControl.Item
+            selected={tab === 'live'}
+            className={tab === 'live' ? 'market-tab-on' : undefined}
+            onClick={() => onTab('live')}
+          >
             {t('bookings.tab.live', { count: booked.length + requests.length })}
           </SegmentedControl.Item>
-          <SegmentedControl.Item selected={tab === 'past'} onClick={() => onTab('past')}>
+          <SegmentedControl.Item
+            selected={tab === 'past'}
+            className={tab === 'past' ? 'market-tab-on' : undefined}
+            onClick={() => onTab('past')}
+          >
             {t('bookings.tab.past')}
           </SegmentedControl.Item>
         </SegmentedControl>
@@ -121,8 +132,13 @@ export function MyRequestsList(props: Props) {
             />
           </>
         )}
-        <SubscriptionsEntry onOpen={entries.onSubscriptions} />
-        <FavoritesEntry onOpen={entries.onFavorites} />
+        {/* «Oʻtgan» shows the past trips only (mockup g60/6). */}
+        {tab === 'past' ? null : (
+          <>
+            <SubscriptionsEntry onOpen={entries.onSubscriptions} />
+            <FavoritesEntry onOpen={entries.onFavorites} />
+          </>
+        )}
       </List>
     </div>
   );

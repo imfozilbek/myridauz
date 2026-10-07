@@ -9,14 +9,14 @@ const STAR_SIZE = 14;
 
 // "⭐ 4,8 (37)", or "Yangi" below 3 ratings (docs/24).
 export function RatingBadge({ rating }: { readonly rating: Rating }) {
-  const { t, formatNumber } = useI18n();
+  const { t, formatRating } = useI18n();
   const { colors } = useBrand().theme;
   return (
     <Caption className="rating-badge">
       <Icon name="star" size={STAR_SIZE} color={colors.accent} filled />
       {rating.average === null
         ? t('reviews.new')
-        : t('reviews.rating', { average: formatNumber(rating.average), count: rating.count })}
+        : t('reviews.rating', { average: formatRating(rating.average), count: rating.count })}
     </Caption>
   );
 }
