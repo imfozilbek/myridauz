@@ -18,9 +18,17 @@ OPS-05 (владелец): операции запуска
 5. Финальная проверка в проде, реальный Telegram (docs/62):
    путь попутчика и водителя, админка, лендинг, пост в канале.
 6. Нарезки ролика 6, 15, 30 с выложить при запуске (docs/41).
-7. Сплэш Telegram для 3 ботов: BotFather, Bot Settings, Configure Mini
-   App, Configure Splash Screen. Фон цвета Mini App, «R» белая; SVG
-   готовит Claude (docs/121 §4, docs/36).
+7. Сплэш Telegram для 3 ботов (docs/121 §4). Для каждого бота:
+   BotFather, /mybots, бот, Bot Settings, Configure Mini App,
+   Configure Splash Screen.
+   Иконка: файл brands/rida/landing/bot/miniapp-splash.svg
+   (после деплоя: https://myrida.uz/bot/miniapp-splash.svg),
+   SVG 512 × 512, один <path>, белая «R».
+   Фон, светлая и тёмная тема одинаково:
+     @myrida_bot (попутчик)            #0D9488
+     @myrida_haydovchi_bot (водитель)  #D97706
+     @myrida_admin_bot (админ)         #334155
+   Цвет иконки и текста: #FFFFFF.
 8. Утвердить запуск.
 
 Definition of Done:

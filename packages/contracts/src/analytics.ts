@@ -48,6 +48,8 @@ const BOOKING_STEPS = [
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
 const POINT_METHODS = ['map', 'search', 'location', 'recent', 'saved'] as const;
 const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
+// The splash never waits this long (docs/121 §4): a longer time is a mistake of the phone clock.
+const MAX_READY_MS = 120_000;
 
 // Answers that are a normal state, not an error: they are not sent as api_error (G12).
 export const QUIET_API_ERRORS: readonly string[] = ['users.not_registered', 'drivers.not_found'];
@@ -82,6 +84,8 @@ const crash = {
     .optional(),
 };
 
+const ready = { ms: z.number().int().min(0).max(MAX_READY_MS), client: crash.client };
+
 export const analyticsEventSchema = z.discriminatedUnion('name', [
   // The first screen of a launch says where the person came from: the kind of the startapp link,
   // «direct» without one (docs/89 S3). Only the kind, never the ids of the link. G55: also the mark
@@ -94,6 +98,8 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
     ...context,
   }),
   z.object({ name: z.literal('client_error'), code: id, ...crash, ...context }),
+  // G72: the time from the tap to the ready first screen, by Mini App and platform (docs/121 §4).
+  z.object({ name: z.literal('app_ready'), ...ready, ...context }),
   // An answer of the API with an error (G12): its code and the last opened screen.
   z.object({ name: z.literal('api_error'), code: id, ...context }),
   // Registration funnel (G04): one event per finished step, to see where people stop.

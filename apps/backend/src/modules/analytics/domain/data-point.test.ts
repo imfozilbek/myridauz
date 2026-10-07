@@ -39,6 +39,12 @@ describe('toDataPoint', () => {
     ]);
   });
 
+  it('keeps the time of the ready first screen and the platform (G72, docs/121 §4)', () => {
+    const ready = toDataPoint({ name: 'app_ready', ms: 1840, client: 'android 9.6 chrome 83', ...base }, 7);
+    expect(ready.blobs.slice(5)).toEqual(['', '', '', 'android 9.6 chrome 83']);
+    expect(ready.doubles).toEqual([base.at, 7, 1840]);
+  });
+
   it('keeps the error code', () => {
     expect(toDataPoint({ name: 'client_error', code: 'render', ...base }, 0).blobs[5]).toBe('render');
   });

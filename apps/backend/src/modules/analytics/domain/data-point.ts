@@ -28,17 +28,21 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
                     ? event.target
                     : '';
   // What broke a screen follows its code (G52, docs/112). The first screen of a session keeps the
-  // platform in the same place and the mark of the source after it (G55, docs/116).
+  // platform in the same place and the mark of the source after it (G55, docs/116); so does the ready app.
   const crash =
     event.name === 'client_error'
       ? [event.error ?? '', event.detail ?? '', event.client ?? '', event.where ?? '']
       : event.name === 'screen_open' && (event.client || event.via)
         ? ['', '', event.client ?? '', '', event.via ?? '']
-        : [];
+        : event.name === 'app_ready'
+          ? ['', '', event.client ?? '']
+          : [];
+  // The time of the first screen is a number of its own (G72, docs/121 §4).
+  const ready = event.name === 'app_ready' ? [event.ms] : [];
   return {
     indexes: [event.app],
     blobs: [event.name, event.app, event.screen, event.version, event.sessionId, code, ...crash],
-    doubles: [event.at, receivedAt],
+    doubles: [event.at, receivedAt, ...ready],
   };
 }
 

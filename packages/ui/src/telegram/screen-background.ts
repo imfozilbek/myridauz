@@ -1,7 +1,7 @@
 import type { HexColor } from '@platform/brands';
-import { miniApp } from '@telegram-apps/sdk-react';
 import { useLayoutEffect } from 'react';
 import { useBrand } from '../context/brand-context';
+import { paintScreen } from './chrome';
 import { useInTelegram } from './in-telegram-context';
 
 // The top of the gradient: the color of the app mixed only with white, never with gray (docs/121 §5).
@@ -30,9 +30,6 @@ export function useScreenBackground(head?: 'white'): void {
   const header = head === 'white' ? colors.bg : top;
   useLayoutEffect(() => {
     document.body.style.background = `linear-gradient(${top}, ${bottom} ${FADE_END}) ${bottom}`;
-    if (!inTelegram) return;
-    miniApp.setHeaderColor.ifAvailable(header);
-    miniApp.setBackgroundColor.ifAvailable(bottom);
-    miniApp.setBottomBarColor.ifAvailable(bottom);
+    if (inTelegram) paintScreen({ header, bottom });
   }, [inTelegram, header, top, bottom]);
 }

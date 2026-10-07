@@ -1,0 +1,98 @@
+/* The splash of docs/121 §4 (mockup g66/5), inlined into index.html by the build: no script needed. */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  overflow: hidden;
+  background: var(--splash);
+  color: var(--splash-ink);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Roboto,
+    'Helvetica Neue',
+    sans-serif;
+  transition: opacity 0.3s ease-out;
+}
+.splash-out {
+  opacity: 0;
+}
+.splash-mark {
+  position: absolute;
+  top: 39.7%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translateY(-50%);
+}
+.splash-logo {
+  width: 106px;
+  height: 106px;
+}
+.splash-name {
+  margin-top: 19px;
+  font-size: 39px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.splash-slogan {
+  margin-top: 2px;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+/* Longer than 2 seconds: the white line of §3 runs at the top, the same as the top loader. */
+.splash-loader {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--splash-ink) 20%, transparent);
+  opacity: 0;
+  animation: splash-late 0s 2s forwards;
+}
+.splash-loader::after {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  background: var(--splash-ink);
+  animation: splash-run 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+@keyframes splash-late {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes splash-run {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+/* Fewer animations (G43): the splash goes at once, the line breathes in place. */
+html[data-motion='low'] .splash {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash {
+    transition: none;
+  }
+  .splash-loader::after {
+    width: 100%;
+    animation: splash-breathe 1.2s ease-in-out infinite alternate;
+  }
+}
+@keyframes splash-breathe {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
