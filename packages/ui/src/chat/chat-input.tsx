@@ -8,6 +8,8 @@ import './chat-input.css';
 const REPLIES = ['chat.reply.onWay', 'chat.reply.fiveMinutes', 'chat.reply.where'] as const;
 
 type Props = {
+  // Read only 24 hours after the trip: the plate «Suhbat yopildi» stands in its place (docs/129).
+  readonly hidden: boolean;
   readonly form: Ref<HTMLFormElement>;
   readonly text: string;
   readonly onText: (text: string) => void;
@@ -20,8 +22,9 @@ type Props = {
 
 // The bottom of a chat (mockup g60/2): ready answers in one tap, the grey line with a lock about
 // hidden numbers, the field and the round «send».
-export function ChatInput({ form, text, onText, onSubmit, onReply, open, warned }: Props) {
+export function ChatInput({ hidden, form, text, onText, onSubmit, onReply, open, warned }: Props) {
   const { t } = useI18n();
+  if (hidden) return null;
   return (
     <form
       ref={form}
@@ -67,5 +70,17 @@ export function ChatInput({ form, text, onText, onSubmit, onReply, open, warned 
         </button>
       </div>
     </form>
+  );
+}
+
+// 24 hours after the trip (docs/129, mockup g60/6): the messages stay, writing ends; a forgotten
+// thing goes through «Yordam».
+export function ChatClosed() {
+  const { t } = useI18n();
+  return (
+    <div className="chat-input chat-closed">
+      <b>{t('chat.closed')}</b>
+      <span>{t('chat.closedHint')}</span>
+    </div>
   );
 }

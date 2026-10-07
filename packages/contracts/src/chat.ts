@@ -22,6 +22,9 @@ export type ChatAbout = z.infer<typeof chatAboutSchema>;
 export const chatTicketSchema = z.object({ url: z.string() });
 
 export const MAX_CHAT_TEXT = 1000;
+// After the trip the chat and the call stay this many hours from the arrival, then the chat is read
+// only (docs/129): a forgotten thing and «rahmat», not a deal past Rida.
+export const AFTER_TRIP_TALK_HOURS = 24;
 // System lines about the booking, shown in the middle of the chat.
 // missed_call: a call that did not happen (docs/08, G13).
 export const CHAT_SYSTEM_EVENTS = [
@@ -46,7 +49,13 @@ export type ChatMessage = z.infer<typeof chatMessageSchema>;
 // What the server sends on the socket. "warning": a contact was hidden in the sender's message.
 export const chatServerEventSchema = z.discriminatedUnion('type', [
   // canCall: a voice call is open only after the booking is confirmed (docs/08).
-  z.object({ type: z.literal('history'), messages: z.array(chatMessageSchema), canCall: z.boolean() }),
+  z.object({
+    type: z.literal('history'),
+    messages: z.array(chatMessageSchema),
+    canCall: z.boolean(),
+    // Missing from an older server: the chat is open.
+    canWrite: z.boolean().default(true),
+  }),
   z.object({ type: z.literal('message'), message: chatMessageSchema }),
   z.object({ type: z.literal('warning') }),
   ...callServerEvents,

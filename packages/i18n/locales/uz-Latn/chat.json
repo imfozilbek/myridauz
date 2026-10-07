@@ -16,5 +16,7 @@
   "hidden": "Raqam va havolalar yashiriladi.",
   "reply.onWay": "Yoʻldaman",
   "reply.fiveMinutes": "5 daqiqada chiqaman",
-  "reply.where": "Qayerdasiz?"
+  "reply.where": "Qayerdasiz?",
+  "closed": "Suhbat yopildi",
+  "closedHint": "Safardan 24 soat oʻtdi. Xabarlar saqlanadi."
 }

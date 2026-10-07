@@ -34,9 +34,9 @@ const broadcast = (deps: RoomDeps, message: StoredMessage) => {
 
 // A person opened the chat: the latest messages, the oldest first; nothing is unread any more.
 export async function joined(deps: RoomDeps, socket: ChatSocket): Promise<void> {
-  const { userId, canCall } = socket.member;
+  const { userId, canCall, canWrite } = socket.member;
   const messages = deps.store.recent(HISTORY).map((message) => view(message, userId));
-  send(socket, { type: 'history', messages, canCall });
+  send(socket, { type: 'history', messages, canCall, canWrite });
   const call = callView(deps.store.call(), userId);
   if (call) send(socket, { type: 'call', call });
   await deps.unread.clear(userId);
@@ -45,6 +45,7 @@ export async function joined(deps: RoomDeps, socket: ChatSocket): Promise<void> 
 // A message from a person: contacts hidden, everyone in the chat sees it, the other one hears of it.
 export async function sendText(deps: RoomDeps, from: ChatSocket, raw: string): Promise<void> {
   const { member } = from;
+  if (!member.canWrite) return;
   const lastMinute = deps.store
     .recent(HISTORY)
     .filter((message) => message.author === member.userId && deps.now() - message.at < MINUTE_MS);

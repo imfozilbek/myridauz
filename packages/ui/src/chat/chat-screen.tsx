@@ -12,7 +12,7 @@ import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
 import { ChatHead } from './chat-head';
-import { ChatInput } from './chat-input';
+import { ChatClosed, ChatInput } from './chat-input';
 import { useChat } from './use-chat';
 import { useRingOnce } from './use-ring-once';
 import { useChatLayout } from './use-chat-layout';
@@ -44,7 +44,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const { messages, loaded, state, warning, delivered, send, retry, calling } = useChat(chatKey);
+  const { messages, loaded, state, warning, canWrite, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
   useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
   // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
@@ -82,7 +82,9 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack }: Props) {
         ))}
         <div ref={end} />
       </div>
+      {canWrite ? null : <ChatClosed />}
       <ChatInput
+        hidden={!canWrite}
         form={input}
         text={text}
         onText={setText}

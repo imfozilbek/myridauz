@@ -92,3 +92,16 @@
 .chat-send:disabled {
   opacity: 0.5;
 }
+
+.chat-closed {
+  align-items: center;
+  padding-top: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--tgui--hint_color);
+}
+
+.chat-closed b {
+  font-size: 15px;
+  color: var(--tgui--text_color);
+}

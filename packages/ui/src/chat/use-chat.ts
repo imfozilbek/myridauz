@@ -21,6 +21,8 @@ export function useChat(key: string) {
   const [loaded, setLoaded] = useState(false);
   const [state, setState] = useState<ChatState>('connecting');
   const [warning, setWarning] = useState(false);
+  // 24 hours after the trip the chat is read only (docs/129).
+  const [canWrite, setCanWrite] = useState(true);
   // Own messages the chat sent back: what the person wrote is delivered (docs/94 C3).
   const [delivered, setDelivered] = useState(0);
   const calls = useCallState();
@@ -32,6 +34,7 @@ export function useChat(key: string) {
       setMessages(data.messages);
       setLoaded(true);
       calls.setCanCall(data.canCall);
+      setCanWrite(data.canWrite);
     } else if (data.type === 'message') {
       setMessages((list) => [...list, data.message]);
       if (data.message.author === 'me') setDelivered((count) => count + 1);
@@ -103,7 +106,7 @@ export function useChat(key: string) {
   }, []);
   const { canCall, call, ended, onTrack, dismiss } = calls;
   const calling = { canCall, call, ended, emit, onTrack, dismiss };
-  return { messages, loaded, state, warning, delivered, send, retry, calling };
+  return { messages, loaded, state, warning, canWrite, delivered, send, retry, calling };
 }
 
 export type ChatCalling = ReturnType<typeof useChat>['calling'];
