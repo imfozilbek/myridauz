@@ -5,5 +5,6 @@ import { useBrand } from '../context/brand-context';
 export function useRegionArt(): (regionId: string) => string | null {
   const { regionPhotos, app } = useBrand();
   const folder = app === 'driver' ? 'driver' : 'passenger';
-  return (regionId) => (regionPhotos ? `${import.meta.env.BASE_URL}regions/lines/${folder}/${regionId}.webp` : null);
+  return (regionId) =>
+    regionPhotos ? `${import.meta.env.BASE_URL}regions/lines/${folder}/${regionId}.webp` : null;
 }

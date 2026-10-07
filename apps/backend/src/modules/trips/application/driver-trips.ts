@@ -15,7 +15,7 @@ export async function familyView(deps: TripsDeps, id: string) {
     id,
     driverId,
     driverName: driver.firstName,
-    car: { make: car.make, model: car.model, color: car.color },
+    car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     plate: car.plate,
     from,
     to,

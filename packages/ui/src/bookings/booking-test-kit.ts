@@ -7,6 +7,8 @@ export const booking: Booking = {
   trip,
   passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
   seats: 2,
+  wholeCar: false,
+  withWoman: false,
   price: 95000,
   commission: 19000,
   status: 'requested',

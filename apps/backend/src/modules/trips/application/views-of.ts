@@ -15,7 +15,7 @@ async function ridersOf(deps: TripsDeps, trips: readonly TripRecord[]): Promise<
     const known = byTrip.get(rider.tripId) ?? { seats: 0, woman: false };
     byTrip.set(rider.tripId, {
       seats: known.seats + rider.seats,
-      woman: known.woman || women[index] === true,
+      woman: known.woman || women[index] === true || rider.withWoman,
     });
   });
   return byTrip;

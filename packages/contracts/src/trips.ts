@@ -29,6 +29,11 @@ export const arrivalAt = (departAt: number, km: number) =>
 export const TRIP_DAYS_AHEAD = 30;
 export const COMMENT_MAX = 200;
 const price = z.number().int().min(1);
+// How a trip is booked (owner decision 06.10.2026, docs/09, docs/118): seats only, seats or the
+// whole car, or only the whole car. The whole car costs seats × the price of a seat; after it
+// nobody else rides. The driver chooses at the publishing (G63).
+export const BOOKING_RULES = ['seats', 'seats_or_car', 'car_only'] as const;
+export type BookingRule = (typeof BOOKING_RULES)[number];
 
 export const tripInputSchema = z.object({
   from: locationIdSchema,
@@ -41,17 +46,19 @@ export const tripInputSchema = z.object({
   comment: z.string().trim().max(COMMENT_MAX),
   // How the driver picks people up (docs/70): the pitak of the direction, around the city, or both.
   pickupMode: pickupModeSchema,
+  bookingRule: z.enum(BOOKING_RULES).default('seats'),
 });
 export type TripInput = z.input<typeof tripInputSchema>;
 
-// What other people see: never the plate or the phone before a booking (docs/07, docs/14).
+// What other people see: never the phone (docs/07). The plate shows already before a booking: people
+// choose the car with more trust (owner decision 07.10.2026, G59).
 export const tripSchema = z.object({
   id: z.string(),
   driver: z.object({
     id: personIdSchema,
     firstName: z.string(),
     hasAvatar: z.boolean(),
-    car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),
+    car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS), plate: z.string() }),
     // "⭐ 4,8 (37)" or "Yangi" (docs/24, G11).
     rating: ratingSchema,
   }),
@@ -72,6 +79,7 @@ export const tripSchema = z.object({
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),
   pickupMode: pickupModeSchema,
+  bookingRule: z.enum(BOOKING_RULES),
   // The main pitak of the direction, when the driver takes people there (docs/70, docs/72).
   pitak: pitakSchema.nullable(),
   comment: z.string(),

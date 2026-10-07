@@ -17,7 +17,8 @@ export type PublishError =
 
 type Input = Required<
   Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard' | 'pickupMode'>
-> & { readonly comment: string };
+> &
+  Pick<TripInput, 'bookingRule'> & { readonly comment: string };
 
 // Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09),
 // at a time the driver makes (docs/103).
@@ -42,6 +43,7 @@ export async function publishTrip(
   const trip: TripRecord = {
     ...input,
     comment: deps.mask(input.comment),
+    bookingRule: input.bookingRule ?? 'seats',
     car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     id: deps.newId(),
     driverId,

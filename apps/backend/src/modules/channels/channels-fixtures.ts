@@ -20,7 +20,7 @@ export const TRIP: Trip = {
     id: publicIdOf(1),
     firstName: 'Jasur',
     hasAvatar: true,
-    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },
+    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC' },
     rating: { average: null, count: 0 },
   },
   from: '1726269',
@@ -37,5 +37,6 @@ export const TRIP: Trip = {
   pickupMode: 'both',
   pitak: { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } },
   comment: '',
+  bookingRule: 'seats',
   status: 'active',
 };

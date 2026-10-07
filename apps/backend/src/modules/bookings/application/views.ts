@@ -65,6 +65,8 @@ export async function bookingViews(
           hasAvatar: viewer !== 'driver' && passenger.avatarKey !== null,
         },
         seats: record.seats,
+        wholeCar: record.wholeCar,
+        withWoman: record.withWoman,
         price: record.price,
         commission: viewer === 'passenger' ? 0 : record.commission,
         status,

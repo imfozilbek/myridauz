@@ -50,6 +50,8 @@ export const testClients = (overrides: {
     recommend: NOT_USED,
     searchTrips: NOT_USED,
     trip: NOT_USED,
+    directions: NOT_USED,
+    tripDays: NOT_USED,
     myTrips: NOT_USED,
     publishTrip: NOT_USED,
     schedule: async () => ({ windows: [], full: false }),

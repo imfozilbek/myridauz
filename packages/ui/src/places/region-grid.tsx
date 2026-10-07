@@ -17,7 +17,7 @@ export function RegionGrid({ regions, onOpen }: RegionGridProps) {
         const art = artOf(region.id);
         return (
           <button key={region.id} type="button" className="region-card" onClick={() => onOpen(region)}>
-            {art ? <img className="region-photo" src={art} alt="" loading="lazy" /> : null}
+            {art ? <img className="region-photo" src={art} alt={region.name} loading="lazy" /> : null}
             <Text weight="2" className="region-name">
               {region.name}
             </Text>

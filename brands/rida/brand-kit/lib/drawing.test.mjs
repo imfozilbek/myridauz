@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { theme } from '../../theme.ts';
 import { SIZE, colorize, frameOf, stroke } from './drawing.mjs';
 
 describe('region drawings (G59, docs/118)', () => {
@@ -22,7 +23,9 @@ describe('region drawings (G59, docs/118)', () => {
   });
 
   it('paper keeps the paper color, a full line the line color', () => {
-    const out = colorize(Buffer.from([200, 0]), Buffer.from([55, 200]), '#F0FDFA', '#0D9488');
-    expect([...out]).toEqual([0xf0, 0xfd, 0xfa, 0x0d, 0x94, 0x88]);
+    const { brandSoft, brandStrong } = theme.colors;
+    const out = colorize(Buffer.from([200, 0]), Buffer.from([55, 200]), brandSoft, brandStrong);
+    const bytes = (hex) => [1, 3, 5].map((at) => Number.parseInt(hex.slice(at, at + 2), 16));
+    expect([...out]).toEqual([...bytes(brandSoft), ...bytes(brandStrong)]);
   });
 });

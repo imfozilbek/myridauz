@@ -2,12 +2,14 @@ import { placeNameSchema, type BookingMode, type BookingStatus, type Point } fro
 import { z } from 'zod';
 import type { BookingRecord, Named } from '../domain/booking';
 
-// A row of the table bookings (migrations 0008, 0009, 0024) and back.
+// A row of the table bookings (migrations 0008, 0009, 0024, 0043) and back.
 export type BookingRow = {
   id: string;
   trip_id: string;
   passenger_id: number;
   seats: number;
+  whole_car: number;
+  with_woman: number;
   price: number;
   commission: number;
   status: BookingStatus;
@@ -49,6 +51,8 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   tripId: row.trip_id,
   passengerId: row.passenger_id,
   seats: row.seats,
+  wholeCar: row.whole_car === 1,
+  withWoman: row.with_woman === 1,
   price: row.price,
   commission: row.commission,
   status: row.status,
@@ -93,6 +97,8 @@ export const rowValues = (b: BookingRecord) =>
     b.tripId,
     b.passengerId,
     b.seats,
+    b.wholeCar ? 1 : 0,
+    b.withWoman ? 1 : 0,
     b.price,
     b.commission,
     b.status,
@@ -111,6 +117,8 @@ export const ROW_COLUMNS = [
   'trip_id',
   'passenger_id',
   'seats',
+  'whole_car',
+  'with_woman',
   'price',
   'commission',
   'status',

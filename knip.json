@@ -12,7 +12,7 @@
       "ignoreDependencies": ["cloudflare"]
     },
     "brands/*/brand-kit": {
-      "entry": ["tools/map-data.mjs", "region-drawings.mjs"]
+      "entry": ["tools/map-data.mjs"]
     },
     "apps/landing": {
       "entry": ["src/prerender.ts"]

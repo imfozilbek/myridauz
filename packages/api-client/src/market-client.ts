@@ -3,6 +3,7 @@ import {
   DRIVER_REQUESTS_PATH,
   DRIVER_SCHEDULE_PATH,
   DRIVER_TRIPS_PATH,
+  directionCardsSchema,
   driverTripCancelPath,
   PASSENGER_REQUESTS_PATH,
   passengerRequestCancelPath,
@@ -17,6 +18,10 @@ import {
   tripSchema,
   tripsSchema,
   TRIPS_PATH,
+  TRIP_DAYS_PATH,
+  TRIP_DIRECTIONS_PATH,
+  tripDaysSchema,
+  type DirectionCard,
   type Recommendation,
   type RequestSearch,
   type RideRequest,
@@ -24,6 +29,7 @@ import {
   type Schedule,
   type Trip,
   type TripInput,
+  type TripDays,
   type TripSearch,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
@@ -46,6 +52,12 @@ export function createMarketClient(options: SignedOptions) {
     searchTrips: async (search: TripSearch): Promise<Trip[]> =>
       tripsSchema.parse(await (await request(`${TRIPS_PATH}?${query(search)}`)).json()).trips,
     trip: async (id: string): Promise<Trip> => trip(await request(tripPath(id))),
+    // How many trips go where (G59): the cards of «Qayerga borasiz?» and the days of «Safarlar».
+    directions: async (from: string): Promise<DirectionCard[]> =>
+      directionCardsSchema.parse(await (await request(`${TRIP_DIRECTIONS_PATH}?${query({ from })}`)).json())
+        .directions,
+    tripDays: async (from: string, to: string): Promise<TripDays> =>
+      tripDaysSchema.parse(await (await request(`${TRIP_DAYS_PATH}?${query({ from, to })}`)).json()),
     myTrips: async (): Promise<Trip[]> =>
       tripsSchema.parse(await (await request(DRIVER_TRIPS_PATH)).json()).trips,
     publishTrip: async (input: TripInput): Promise<Trip> => trip(await post(DRIVER_TRIPS_PATH, input)),

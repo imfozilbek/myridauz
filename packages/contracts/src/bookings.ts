@@ -33,21 +33,28 @@ export const BOOKING_ANSWER_HOURS = 24;
 
 // A booking fixes how the passenger is picked up and where they go (docs/70): from the pitak of
 // the direction, or from the door with a point; the drop-off is always a point at the door.
+// The seats go up to the free seats of the trip (owner decision 06.10.2026, docs/128 §2). The whole
+// car takes every seat of the trip (docs/09). «Men bilan ayol bor»: a man with 2 seats and more says
+// a woman rides with him, and the trip shows «Mashinada ayol bor» once confirmed (docs/06, rule 4).
 export const bookingInputSchema = z.object({
   seats: z.number().int().min(1).max(MAX_SEATS),
   mode: bookingModeSchema,
   pickup: pointInputSchema.nullable(),
   dropoff: pointInputSchema,
+  wholeCar: z.boolean().default(false),
+  withWoman: z.boolean().default(false),
 });
 export type BookingInput = z.input<typeof bookingInputSchema>;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.
-// Places and the plate open only after the confirmation (docs/07, docs/14).
+// The places open only after the confirmation (docs/07, docs/14).
 export const bookingSchema = z.object({
   id: z.string(),
   trip: tripSchema,
   passenger: z.object({ id: personIdSchema, firstName: z.string(), hasAvatar: z.boolean() }),
   seats: z.number().int(),
+  wholeCar: z.boolean(),
+  withWoman: z.boolean(),
   // The driver's share per seat and the driver's commission for the whole booking (docs/12).
   price: z.number().int(),
   commission: z.number().int(),
