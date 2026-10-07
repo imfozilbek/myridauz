@@ -34,6 +34,7 @@ export default defineConfig({
         'realtime.spec.ts',
         'map.spec.ts',
         'home.spec.ts',
+        'look.spec.ts',
       ],
       ...SMOKE_PART,
     },

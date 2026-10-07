@@ -1,3 +1,4 @@
+import { quietly } from '@platform/api-client';
 import { useCallback, useEffect, useState } from 'react';
 import { useFeedChange } from '../feed/feed-context';
 import { keepValue, keptValue } from '../screen/list-memory';
@@ -20,9 +21,10 @@ export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T
   useEffect(() => {
     if (memory && value !== null) keepValue(memory, value);
   }, [memory, value]);
+  // Quiet: the old data is on the screen, the top loader does not show (docs/121 §3).
   const refresh = useCallback(
     () =>
-      load().then(
+      quietly(load).then(
         (fresh) => {
           setValue(fresh);
           setFailed(false);

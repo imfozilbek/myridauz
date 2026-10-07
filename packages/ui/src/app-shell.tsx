@@ -13,6 +13,7 @@ import { LocationsClientContext } from './places/directory';
 import { StepProgressProvider } from './flow/step-progress';
 import { ErrorBoundary } from './states/error-boundary';
 import { ScreenSkeleton } from './states/screen-skeleton';
+import { TopLoader } from './states/top-loader';
 import { OUTSIDE_TELEGRAM, TelegramContext, type TelegramSession } from './telegram/in-telegram-context';
 import { themeVars } from './theme/theme-vars';
 
@@ -47,6 +48,7 @@ export function AppShell({
             >
               <LocationsClientContext.Provider value={locations}>
                 <ApiClientsContext.Provider value={clients}>
+                  <TopLoader />
                   <StepProgressProvider>
                     <ErrorBoundary>
                       <ConnectionGate>
