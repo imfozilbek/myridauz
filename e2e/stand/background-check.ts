@@ -3,8 +3,9 @@ import { afterSplash } from '../crash-guard';
 
 // Every screen of the three Mini App shows the gradient of docs/121 §5 (G72): the body paints it and
 // nothing above it paints its own background at the top left corner of the screen. The chat keeps its
-// white head of mockup g60/2 under a white Telegram header (docs/135).
-const OWN_HEADS = ['chat-top'];
+// white head of mockup g60/2 under a white Telegram header (docs/135); the map and the camera fill the
+// whole screen, they are the screen itself.
+const OWN_HEADS = ['chat-top', 'pickup-map', 'camera'];
 export async function expectGradient(page: Page, name: string) {
   await afterSplash(page);
   const found = await page.evaluate((heads) => {

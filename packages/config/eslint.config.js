@@ -84,6 +84,8 @@ export default tseslint.config(
       'apps/landing/.client/**',
       '**/coverage/**',
       'brands/*/brand-kit/kit/**',
+      // The local Worker bundles of wrangler on the stand (docs/75): built code, never ours to lint.
+      '**/.wrangler/**',
       'playwright-report/**',
       'test-results/**',
     ],

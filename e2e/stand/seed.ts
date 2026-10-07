@@ -39,7 +39,9 @@ export async function register(app: MiniApp, person: Person, gender: Gender) {
 export async function apply(person: Person, plate: string, gender: Gender) {
   await register('driver', person, gender);
   const drivers = createDriversClient(await signedAs('driver', person));
-  if ((await drivers.getApplication())?.status === 'approved') return;
+  // An application already sent waits for the team or is approved: a second run does not send it again.
+  const status = (await drivers.getApplication())?.status;
+  if (status === 'approved' || status === 'pending') return;
   for (const kind of CAR_PHOTO_KINDS) await drivers.uploadPhoto(kind, PHOTO);
   await drivers.submit({ ...CAR, plate });
 }

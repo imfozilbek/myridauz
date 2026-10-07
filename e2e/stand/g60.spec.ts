@@ -15,6 +15,8 @@ import { runCron, standSql } from './stand-tools';
 // the past trip and the review. The shots go to screenshots/stand/g60/ for the owner (docs/33).
 const { t } = createI18n(DEFAULT_LOCALE);
 const HOUR = 60 * MINUTE;
+// The car of the driver: other drivers of the stand are called Jasur too.
+const PLATE = '01S678TU';
 const DRIVER: Person = { id: 900606, name: 'Jasur', phone: '998901110606' };
 const PASSENGERS = {
   android: { id: 900607, name: 'Madina', phone: '998901110607' },
@@ -27,10 +29,10 @@ test.setTimeout(180_000);
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 test.beforeAll(async () => {
-  await apply(DRIVER, '01S678TU', 'male');
+  await apply(DRIVER, PLATE, 'male');
   for (const passenger of Object.values(PASSENGERS)) await register('passenger', passenger, 'female');
   const moderation = createModerationClient(await signedAs('admin', OWNER));
-  const summary = (await moderation.queue()).find((a) => a.firstName === DRIVER.name);
+  const summary = (await moderation.queue()).find((a) => a.car.plate === PLATE);
   if (summary) await moderation.decide(summary.userId, { action: 'approve' });
   await runCron();
 });
