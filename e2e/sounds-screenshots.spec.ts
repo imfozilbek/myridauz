@@ -39,7 +39,7 @@ test('passenger: a call opens its chat over the main screen and rings', async ({
   ).toBeVisible();
   await take('1-incoming-from-home');
   chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'active', caller: 'other' } }));
-  await expect(page.getByText(t('calls.headphones'))).toBeVisible();
+  await expect(page.locator('.call-clock')).toBeVisible();
   await take('1b-talking');
 });
 

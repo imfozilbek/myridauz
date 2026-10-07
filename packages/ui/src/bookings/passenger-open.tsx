@@ -66,7 +66,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
   if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
-  if (talk) return <ChatScreen {...talk} onBack={() => setTalk(null)} />;
+  if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
       run(

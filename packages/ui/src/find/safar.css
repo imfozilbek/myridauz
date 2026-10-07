@@ -55,24 +55,3 @@
   font-size: 13px;
   color: var(--reg-muted);
 }
-
-.plate-badge {
-  display: inline-flex;
-  align-items: stretch;
-  margin-top: 4px;
-  border: 2px solid var(--reg-ink);
-  border-radius: 5px;
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 20px;
-}
-
-.plate-badge-number {
-  padding: 0 6px;
-}
-
-.plate-badge-country {
-  padding: 0 4px;
-  border-left: 2px solid var(--reg-ink);
-  color: var(--reg-text);
-}

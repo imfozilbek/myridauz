@@ -6,7 +6,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { CallPanel } from '../call/call-panel';
-import { otherName } from '../call/call-trip';
+import { otherName } from '../call/call-person';
 import { useApiClients } from '../context/api-clients';
 import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';

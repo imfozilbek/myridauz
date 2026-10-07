@@ -1,4 +1,4 @@
-/* A call over the chat (docs/08, docs/21): only Telegram theme colors. */
+/* The call (G60, mockup g60/4): a soft mint screen, the values of the mockup at 360 px. */
 .call {
   position: fixed;
   inset: 0;
@@ -6,8 +6,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 48px 24px 40px;
-  background: var(--tgui--secondary_bg_color);
+  padding: 34px 14px 36px;
+  background: linear-gradient(180deg, var(--reg-mint, #ccfbf1) 0%, var(--tgui--bg_color) 70%);
   color: var(--tgui--text_color);
 }
 
@@ -15,27 +15,60 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   text-align: center;
 }
 
-.call-avatar {
+/* The face in a soft ring (mockup g60/4). */
+.call-ring {
   display: grid;
   place-items: center;
-  width: 96px;
-  height: 96px;
+  width: 112px;
+  height: 112px;
   margin-bottom: 8px;
   border-radius: 50%;
-  background: var(--tgui--section_bg_color);
-  color: var(--tgui--link_color);
+  background: color-mix(in srgb, var(--tgui--button_color) 22%, transparent);
+}
+
+.call-name {
+  font-size: 22px;
+}
+
+.call-car {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--tgui--hint_color);
+}
+
+.call-car .plate-badge {
+  margin-top: 0;
 }
 
 .call-status {
+  font-size: 15px;
   color: var(--tgui--hint_color);
   font-variant-numeric: tabular-nums;
 }
 
+.call-clock {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--tgui--link_color);
+}
+
+.call-card {
+  width: 100%;
+  margin-top: 12px;
+  border-radius: 14px;
+  background: var(--tgui--bg_color);
+  text-align: left;
+}
+
 .call-hint {
+  margin-top: 8px;
+  font-size: 12px;
   color: var(--tgui--hint_color);
 }
 
@@ -68,19 +101,4 @@
 
 .call-danger .call-round-icon {
   background: var(--tgui--destructive_text_color);
-}
-
-/* The trip of the call (G54): who and which trip, a card like the main screen. */
-.call-trip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: 100%;
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--tgui--section_bg_color);
-  /* The route line keeps the font of Telegram outside the cards of the main screen (G53). */
-  font-family: var(--tgui--font-family);
 }

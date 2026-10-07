@@ -1,9 +1,10 @@
 import type { CallEnding, CallView, ChatAbout } from '@platform/contracts';
-import { Button, Caption, Text, Title } from '@telegram-apps/telegram-ui';
+import { Button, Caption } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
-import { CallTrip } from './call-trip';
+import { TripCard } from '../trip/trip-card';
+import { CallPerson } from './call-person';
 import type { CallControls } from './use-call';
 import './call.css';
 
@@ -21,8 +22,9 @@ const SECOND = 1000;
 const pad = (value: number) => String(value).padStart(2, '0');
 const clock = (ms: number) => `${pad(Math.floor(ms / 60_000))}:${pad(Math.floor(ms / SECOND) % 60)}`;
 
-// The call over the chat, like a Telegram call (docs/08, docs/21): who, where it is, big buttons
-// with words. When it ends, one tap goes back to the chat.
+// The call (owner decision 06.10.2026, docs/118 path 3, mockup g60/4): a soft mint screen, the face
+// in a ring, the car and its plate, the one card of the trip, big buttons with words. When it ends,
+// one tap goes back to the chat.
 export function CallPanel({ name, about, call, ended, controls, onChat }: Props) {
   const { t } = useI18n();
   const talking = useTalkTime(call?.status === 'active');
@@ -41,17 +43,14 @@ export function CallPanel({ name, about, call, ended, controls, onChat }: Props)
     <div className="call" role="dialog" aria-label={t('calls.call')}>
       <audio ref={controls.audio} autoPlay />
       <div className="call-who">
-        <div className="call-avatar">
-          <Icon name="profile" size={48} />
-        </div>
-        <Title weight="2">{name}</Title>
-        <Text className="call-status">{status}</Text>
-        {call ? <Caption className="call-hint">{t('calls.keepOpen')}</Caption> : null}
-        {/* The phone decides the speaker; headphones keep the voice private (docs/08). */}
-        {call && call.status !== 'ringing' ? (
-          <Caption className="call-hint">{t('calls.headphones')}</Caption>
+        <CallPerson about={about} name={name} />
+        <span className={call?.status === 'active' ? 'call-status call-clock' : 'call-status'}>{status}</span>
+        {about?.booking ? (
+          <div className="call-card">
+            <TripCard booking={about.booking} />
+          </div>
         ) : null}
-        {about ? <CallTrip about={about} /> : null}
+        {call ? <span className="call-hint">{t('calls.keepOpen')}</span> : null}
       </div>
       <div className="call-actions">
         {!call ? (

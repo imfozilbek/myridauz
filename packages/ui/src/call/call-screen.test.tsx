@@ -1,4 +1,4 @@
-import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { ChatScreen } from '../chat/chat-screen';
@@ -33,24 +33,25 @@ async function ringing(role: 'passenger' | 'driver') {
   return socket;
 }
 
-const shown = () => document.body.textContent ?? '';
-
-describe('the trip on the call screen (G54, docs/115)', () => {
-  it('shows a passenger the driver, the car, the plate, the time and the seats', async () => {
+describe('the call (G60, mockup g60/4): the face, the car, the one trip card', () => {
+  it('shows a passenger the driver with the car and plate, and the card of the booking', async () => {
     await ringing('passenger');
-    const { driver } = confirmed.trip;
-    await waitFor(() => expect(shown()).toContain(`Haydovchi · ${driver.car.model}`));
-    expect(screen.getAllByText(driver.firstName).length).toBeGreaterThan(0);
-    expect(shown()).toContain(`${confirmed.seats} kishi`);
-    expect(screen.getByLabelText(/→/u)).toBeTruthy();
+    expect(await screen.findByText('Sizga qoʻngʻiroq qilishyapti')).toBeTruthy();
+    const call = within(screen.getByRole('dialog', { name: 'Qoʻngʻiroq' }));
+    expect(call.getByText(/^Cobalt, /u)).toBeTruthy();
+    expect(call.getByText('01 A 123 BC')).toBeTruthy();
+    expect(call.getByText(/olib ketish joyi$/u)).toBeTruthy();
+    expect(call.getByText('2 joy')).toBeTruthy();
+    expect(call.getByText('Ilovani yopmang: qoʻngʻiroq uziladi.')).toBeTruthy();
   });
 
-  it('shows a driver the passenger; the headphones hint comes once the voice connects', async () => {
+  it('shows a driver the passenger, one hint only, also while talking', async () => {
     const socket = await ringing('driver');
-    await waitFor(() => expect(screen.getAllByText(confirmed.passenger.firstName).length).toBeGreaterThan(0));
-    expect(screen.getByText('Yoʻlovchi')).toBeTruthy();
-    expect(shown()).not.toContain('Quloqchin');
+    const call = within(await screen.findByRole('dialog', { name: 'Qoʻngʻiroq' }));
+    expect(call.getAllByText(confirmed.passenger.firstName).length).toBeGreaterThan(0);
+    expect(call.queryByText('01 A 123 BC')).toBeNull();
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'other' } }));
-    expect(screen.getByText('Quloqchin taqsangiz, ovoz faqat sizga eshitiladi.')).toBeTruthy();
+    expect(screen.queryByText(/Quloqchin/u)).toBeNull();
+    expect(call.getByText(/^\d{2}:\d{2}$/u)).toBeTruthy();
   });
 });
