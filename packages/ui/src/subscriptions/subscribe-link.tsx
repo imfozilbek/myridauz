@@ -44,7 +44,7 @@ export function SubscribeLink({
 
 function SubscribeScreen({ route, onBack }: { readonly route: Route; readonly onBack: () => void }) {
   const { t } = useI18n();
-  useScreenBackground('grouped');
+  useScreenBackground();
   return (
     <div className="market">
       <Screen onBack={onBack} />

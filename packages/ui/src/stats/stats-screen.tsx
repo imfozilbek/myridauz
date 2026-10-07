@@ -28,7 +28,7 @@ export function StatsScreen({
   readonly period?: StatsPeriod;
 }) {
   useScreenView('stats');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const [period, setPeriod] = useState<StatsPeriod>(first);
   // Once opened from the bot, going back shows the menu and not the dashboard again.

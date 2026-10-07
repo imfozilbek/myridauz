@@ -26,7 +26,7 @@ type Open =
 // themselves and the history of changes.
 export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('pitaks');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { pitaks } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => pitaks.all(), 'pitaks');

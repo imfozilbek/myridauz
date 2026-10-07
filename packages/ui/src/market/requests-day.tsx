@@ -32,7 +32,7 @@ type Props = {
 // only over requests, an empty day with one action (G37, docs/101 R2, R3, R4).
 export function RequestsDay({ route, date, now, onDay, onOtherDay, onPublish, onBack }: Props) {
   useScreenView('market.requests');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const dayLabel = useDayLabel();
   const { items, failed, reload, refresh } = useDayRequests(route, date);

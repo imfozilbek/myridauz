@@ -29,7 +29,7 @@ const QUEUE = 'complaints.queue';
 // The open complaints, high priority first (docs/17).
 export function ComplaintsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('complaints.queue');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { feedback } = useApiClients();
   const [queue, setQueue] = useState<Complaint[] | null>(null);

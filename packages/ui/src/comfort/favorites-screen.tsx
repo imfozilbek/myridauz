@@ -30,7 +30,7 @@ export function FavoritesScreen({ onBack }: { readonly onBack: () => void }) {
 
 function Favorites({ onBack }: { readonly onBack: () => void }) {
   useScreenView('comfort.favorites');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { comfort } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => comfort.favorites(), 'favorites');

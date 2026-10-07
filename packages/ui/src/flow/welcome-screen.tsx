@@ -27,7 +27,7 @@ const POINT_ICON = 20;
 // (docs/goals/g58/src/1-welcome.html): the brand, «Nima uchun» rows, the consent at the bottom.
 export function WelcomeScreen({ welcome, children, ready, onContinue }: WelcomeScreenProps) {
   useScreenView('welcome');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const i18n = useI18n();
   const brand = useBrand();
   const { colors } = brand.theme;

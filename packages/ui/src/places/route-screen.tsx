@@ -110,7 +110,7 @@ type RouteViewProps = {
 
 function RouteView({ from, to, error, onPick, onBack, onSubmit }: RouteViewProps) {
   useScreenView('places.route');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const value = (place: Location | null) => <CellValue>{place ? place.name : t('places.choose')}</CellValue>;
   return (

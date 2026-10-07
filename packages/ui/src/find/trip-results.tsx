@@ -42,7 +42,7 @@ type Props = {
 export function TripResults(props: Props) {
   const { route, days, date, filters, onFilters, onBack, onOpen, onDay, onRequest, onDistrict } = props;
   useScreenView('market.results');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const directory = usePlaces();

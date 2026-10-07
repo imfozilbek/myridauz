@@ -3,6 +3,7 @@ import { expect, type Page } from '@playwright/test';
 import type { MiniApp } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
+import { expectGradient } from './background-check';
 import { readStability, watchStability } from './stability';
 import { openAs, type Person } from './stand-kit';
 
@@ -50,6 +51,7 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
       .filter(Boolean),
   );
   if (cut.length > 0) appendFileSync(CUT, cut.map((text) => `${platform}/${name}: ${text}\n`).join(''));
+  await expectGradient(page, `${platform}/${name}`);
   await page.screenshot({ path: `screenshots/stand/g27/${platform}/${name}.png`, animations: 'disabled' });
   // Every blink and jump since the last shot is written down under this name (G41, docs/108).
   await readStability(page, `${platform}/${name}`);

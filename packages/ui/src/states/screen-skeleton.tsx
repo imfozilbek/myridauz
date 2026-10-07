@@ -11,7 +11,7 @@ const ROW_HEIGHT = 56;
 // "Back" works while it loads: a slow network never locks the person in (docs/65 B1).
 // A fast answer never shows them, and the screen color is the one of the screens it stands for (G41).
 export function ScreenSkeleton({ onBack }: { readonly onBack?: () => void }) {
-  useScreenBackground('grouped');
+  useScreenBackground();
   const shown = useLateShow();
   return (
     <div {...lateProps(shown)}>

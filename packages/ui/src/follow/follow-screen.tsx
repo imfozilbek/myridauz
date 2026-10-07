@@ -42,7 +42,7 @@ export function FollowScreen(props: Props) {
 
 function Follow({ token, onJoin }: Props) {
   useScreenView('share.follow');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const { track } = useAnalytics();

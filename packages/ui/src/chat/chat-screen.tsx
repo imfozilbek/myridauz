@@ -48,7 +48,7 @@ export function ChatScreen(props: Props) {
 
 function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Props) {
   useScreenView('chat');
-  useScreenBackground('grouped');
+  useScreenBackground('white');
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const { messages, loaded, state, warning, canWrite, delivered, send, retry, calling } = useChat(chatKey);

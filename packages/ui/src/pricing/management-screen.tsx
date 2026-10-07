@@ -22,7 +22,7 @@ type Open =
 // The third action of the admin Mini App: at most 3 actions on the main screen (docs/19).
 export function ManagementScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('management');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const linked = linkedStats();
   const [open, setOpen] = useState<Open>(linked ? 'statistics' : 'menu');

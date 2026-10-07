@@ -44,7 +44,7 @@ type AboutStepProps = {
 // Telegram, the gender in one tap, then the phone from Telegram itself (docs/19, docs/10 q. 33).
 export function AboutStep({ answers, onChange, onBack, onAnswered, onSend }: AboutStepProps) {
   useScreenView('registration.about');
-  useScreenBackground('tinted');
+  useScreenBackground();
   useOpenAtTop();
   const { t } = useI18n();
   const { colors } = useBrand().theme;

@@ -17,7 +17,7 @@ type Props = { readonly document: LegalDocument; readonly onBack: () => void };
 // the requisites and the edition from the database (G34).
 export function LegalScreen({ document, onBack }: Props) {
   useScreenView(`legal.${document}`);
-  useScreenBackground('grouped');
+  useScreenBackground();
   const i18n = useI18n();
   const requisites = useRequisites();
   const values = legalValues(i18n, useBrand(), requisites?.company ?? null);

@@ -8,7 +8,7 @@ import { SupportButton } from './support-button';
 // No reason here: a block keeps only who blocked (the team or a complaint), no text for the person.
 export function BlockedScreen({ until }: { readonly until: number | null }) {
   useScreenView('blocked');
-  useScreenBackground('plain');
+  useScreenBackground();
   const { t, formatDate } = useI18n();
   const description =
     until === null

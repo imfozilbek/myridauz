@@ -30,7 +30,7 @@ type Props = {
 // two maps and the check. A row opens its map; «Soʻrov yuborish» works when both are chosen.
 export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props) {
   useScreenView('bookings.points');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { t, formatMoney, formatNumber, formatDate, formatTime } = useI18n();
   const { colors } = useBrand().theme;
   const { track } = useAnalytics();

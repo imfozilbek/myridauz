@@ -4,9 +4,6 @@ import { useLayoutEffect } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useInTelegram } from './in-telegram-context';
 
-// tinted: the light color of the Mini App on top, fading into the grouped background (docs/121 §5).
-export type ScreenBackground = 'plain' | 'grouped' | 'tinted';
-
 // The top of the gradient: the color of the app mixed only with white, never with gray (docs/121 §5).
 const TINT = 0.09;
 const FADE_END = '55vh';
@@ -20,19 +17,22 @@ function tint(color: HexColor, share: number = TINT): HexColor {
   return `#${channel(1)}${channel(3)}${channel(5)}`.toUpperCase() as HexColor;
 }
 
-// Telegram paints its header and bottom bar in the color of the screen, so they look like one surface (docs/21).
-// Set before the first paint: the screen never shows the color of the last one for a frame (G41).
-export function useScreenBackground(background: ScreenBackground): void {
+// Every screen of the three Mini App: the light color of the app on top, fading into the grouped gray
+// (docs/121 §5, G72). Telegram paints its header in the top and its bottom bar in the bottom, so they look
+// like one surface (docs/21). Set before the first paint: no frame of the last screen's color (G41).
+// A screen with its own white head (the chat, mockup g60/2) has a white Telegram header over it: one
+// surface, no seam between the tint and the head.
+export function useScreenBackground(head?: 'white'): void {
   const inTelegram = useInTelegram();
   const { colors } = useBrand().theme;
-  const bottom = background === 'plain' ? colors.bg : colors.bgGrouped;
-  const top = background === 'tinted' ? tint(colors.brandStrong) : bottom;
+  const bottom = colors.bgGrouped;
+  const top = tint(colors.brandStrong);
+  const header = head === 'white' ? colors.bg : top;
   useLayoutEffect(() => {
-    document.body.style.background =
-      top === bottom ? bottom : `linear-gradient(${top}, ${bottom} ${FADE_END}) ${bottom}`;
+    document.body.style.background = `linear-gradient(${top}, ${bottom} ${FADE_END}) ${bottom}`;
     if (!inTelegram) return;
-    miniApp.setHeaderColor.ifAvailable(top);
+    miniApp.setHeaderColor.ifAvailable(header);
     miniApp.setBackgroundColor.ifAvailable(bottom);
     miniApp.setBottomBarColor.ifAvailable(bottom);
-  }, [inTelegram, top, bottom]);
+  }, [inTelegram, header, top, bottom]);
 }

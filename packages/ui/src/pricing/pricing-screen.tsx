@@ -32,7 +32,7 @@ export function PricingScreen({ onBack }: { readonly onBack: () => void }) {
 
 function Pricing({ onBack }: { readonly onBack: () => void }) {
   useScreenView('pricing');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { pricing } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);

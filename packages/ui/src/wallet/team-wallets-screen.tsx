@@ -23,7 +23,7 @@ type Owner = AdminWallets['wallets'][number];
 // "Hamyonlar" for the team (docs/12): every driver's balances; an owner corrects one by hand.
 export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('team.wallets');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => wallet.all(0), 'team.wallets');

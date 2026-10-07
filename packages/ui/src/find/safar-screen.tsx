@@ -36,7 +36,7 @@ type Props = {
 // driver on top, the way, the marks, one review, the seats and «Jami», «N ta joy band qilish».
 export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   useScreenView('market.trip');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { track } = useAnalytics();
   const { t, formatDate, formatWeekday } = useI18n();
   const { colors } = useBrand().theme;

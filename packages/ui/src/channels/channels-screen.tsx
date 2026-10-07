@@ -20,7 +20,7 @@ import '../market/market.css';
 // "No channels yet" only when there is none at all, never above a filled list (docs/86 V14).
 export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('channels');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { channels } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => channels.list(), 'channels');

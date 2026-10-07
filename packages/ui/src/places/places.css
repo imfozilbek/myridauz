@@ -4,7 +4,8 @@
   /* The padding is inside the height: a short screen does not scroll (docs/94 S2). */
   box-sizing: border-box;
   padding-bottom: var(--screen-end);
-  background: var(--tgui--secondary_bg_color);
+  /* The gradient of the body shows through on every screen (docs/121 §5, G72). */
+  background: transparent;
 }
 
 .places-title {
