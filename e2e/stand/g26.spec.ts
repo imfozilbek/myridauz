@@ -59,7 +59,7 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham
 async function findAndOpen(page: Page, person: Person) {
   await openAs(page, 'passenger', person);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await searchTo(page, 'Samarqand viloyati', 'Urgut');
+  await searchTo(page, 'Urgut');
   await expect(page.getByText(t('way.card.both', { pitak: PITAK }))).toBeVisible();
   await page.locator('.trip-card').first().click();
   await mainButton(page).filter({ hasText: TEXT.book }).click();

@@ -34,7 +34,7 @@ test('the search and the booking up to its review', async ({ page }) => {
   await openHome(page, 'passenger', SEEKER, 'android');
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await shot(page, 'android', 'pb10-search');
-  await searchTo(page, 'Samarqand viloyati', 'Samarqand shahri');
+  await searchTo(page, 'Samarqand shahri');
   await expect(page.locator('.trip-card').filter({ hasText: MUROD.name }).first()).toBeVisible();
   await shot(page, 'android', 'pb15-results');
   await page.locator('.trip-card').filter({ hasText: MUROD.name }).first().click();

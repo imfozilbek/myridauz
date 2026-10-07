@@ -69,7 +69,7 @@ const open = async () => {
     {} as HTMLElement,
     SOURCE,
     { lat: 41.3, lng: 69.2 },
-    { shade: 's', line: 'l' },
+    { shade: 's', line: 'l', water: 'w', park: 'p', road: 'r' },
     false,
   );
   const map = made.maps.at(-1) as FakeMap;

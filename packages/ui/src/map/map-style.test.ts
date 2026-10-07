@@ -2,10 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { MAP_SOURCE, mapStyle } from './map-style';
 
 describe('the style of the map (G22)', () => {
-  const style = mapStyle({
-    archiveUrl: 'https://api.test/map/uzbekistan.pmtiles',
-    fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
-  });
+  const colors = { shade: '#fff', line: '#000', water: '#ccfbf1', park: '#dcfce7', road: '#fef3c7' };
+  const style = mapStyle(
+    {
+      archiveUrl: 'https://api.test/map/uzbekistan.pmtiles',
+      fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
+    },
+    colors,
+  );
+  const paint = (id: string) => JSON.stringify(style.layers.find((layer) => layer.id === id)?.paint);
 
   it('reads our own archive and fonts, nothing from other hosts', () => {
     expect(style.sources[MAP_SOURCE]).toEqual({
@@ -21,5 +26,10 @@ describe('the style of the map (G22)', () => {
     expect(symbols.length).toBeGreaterThan(0);
     expect(symbols.every((layer) => !('icon-image' in (layer.layout ?? {})))).toBe(true);
     expect(symbols.some((layer) => 'text-field' in (layer.layout ?? {}))).toBe(true);
+  });
+
+  it('paints the water, the parks and the highways in the colors of the brand (docs/126)', () => {
+    expect(paint('water')).toContain(colors.water);
+    expect(paint('roads_highway')).toContain(colors.road);
   });
 });

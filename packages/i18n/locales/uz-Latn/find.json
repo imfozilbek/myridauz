@@ -10,14 +10,14 @@
   "priceFrom": "{price}dan",
   "found": "Topildi",
   "otherHint": "Viloyat kerak emas: tuman yoki shahar nomini yozing.",
-  "way": "≈ {km} km · ≈ {hours} soat",
+  "way": "≈ {km} km · ≈ {hours} soat",
   "dayTrips": "{count} ta",
   "people": "Necha kishi?",
   "freeCar": "Boʻsh salon",
   "mode.both": "Uyingizdan yoki pitakdan",
   "mode.door": "Uyingizdan",
   "mode.pitak": "Pitakdan",
-  "times": "{from} → ≈ {to}",
+  "times": "{from} → ≈ {to}",
   "carPrice": "Butun salon: {price}",
   "driver": "{name} ★ {rating} · {car}",
   "driverNew": "{name} · {car}",
@@ -31,7 +31,7 @@
   "stars": "★ {rating}",
   "count": "({count})",
   "car": "{make} {model}, {color}",
-  "road": "≈ {km} km · ≈ {hours} soat yoʻl",
+  "road": "≈ {km} km · ≈ {hours} soat yoʻl",
   "quote": "«{text}»",
   "star": "★",
   "reviewBy": "{stars} · {name} ·",
@@ -49,5 +49,5 @@
   "book": "{count} ta joy band qilish",
   "bookCar": "Butun salonni band qilish",
   "areaNote": "Aniq joy band qilingandan keyin koʻrinadi",
-  "dayLine": "{date}, {weekday} · ≈ {km} km"
+  "dayLine": "{date}, {weekday} · ≈ {km} km"
 }

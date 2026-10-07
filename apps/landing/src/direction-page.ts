@@ -1,7 +1,8 @@
-import type { BrandConfig } from '@platform/brands';
+import { channelOf, type BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
 import type { Direction } from './directions';
-import { escape } from './html';
+import { escape, telegramLink } from './html';
+import { icon } from './icons';
 import type { MapData } from './map-data';
 import { final, safety } from './sections/cards';
 import { directionsSection } from './sections/directions';
@@ -25,6 +26,14 @@ export function directionQuestions(brand: BrandConfig, i18n: I18n, { from, to }:
 // The search of the Mini App with this route (docs/89 S4): every passenger button of the page.
 export const startOf = ({ from, to }: Direction) => `find_${from.soato}_${to.soato}`;
 
+// The channel of the direction under the buttons (docs/119): the new trips of its zone in Telegram.
+function channelButton(brand: BrandConfig, { t }: I18n, { from, to }: Direction) {
+  const channel = channelOf(brand, to.place, to.soato) ?? channelOf(brand, from.place, from.soato);
+  if (!channel) return '';
+  const text = t('landing.direction.channel', { brand: brand.name, zone: channel.title });
+  return `<a class="button channel-button" href="${telegramLink(channel.username)}">${icon('telegram')}<span>${escape(text)}</span></a>`;
+}
+
 // A page of one direction (docs/60): the route is already chosen on the map, the button opens
 // the bot with it, and the other directions are one tap away.
 export function directionPage(
@@ -47,6 +56,7 @@ export function directionPage(
 <h1>${escape(t('landing.direction.title', values))}</h1>
 <p class="lead">${escape(t('landing.direction.text', values))}</p>
 ${actions(brand, i18n, 'actions', start)}
+${channelButton(brand, i18n, current)}
 <p class="hint">${escape(t('landing.cta.hint'))}</p>
 </div></section>`,
     mapSection(map, brand, i18n, { from: current.from.soato, to: current.to.soato }),

@@ -35,8 +35,10 @@ export const TEXT = {
   blocked: t('account.blocked.title'),
   from: t('places.from'),
   to: t('places.to'),
-  // The lists of the passenger's search (G35): «Qayerga» first, «Qayerdan» only when it is unknown.
+  // The passenger's search (G59): «Qayerdan» only when it is unknown, then «Qayerga borasiz?».
   toTitle: t('places.toTitle'),
+  directions: t('find.title'),
+  otherPlace: t('find.other'),
   fromTitle: t('places.fromTitle'),
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),
@@ -70,7 +72,7 @@ export const TEXT = {
   publish: t('market.review.publish'),
   published: t('market.published.title'),
   womanFilter: t('market.search.woman'),
-  book: t('market.trip.book'),
+  book: t('find.book', { count: '1' }),
   management: t('common.admin.management'),
   teamTrips: t('common.admin.trips'),
   passengerRequests: t('common.driver.passengerRequests'),

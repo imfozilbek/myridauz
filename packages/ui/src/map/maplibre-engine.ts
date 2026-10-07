@@ -71,7 +71,7 @@ export const maplibreEngine: MapEngine = (box, source, start, colors, inline) =>
   }
   const map = new MapLibreMap({
     container: box,
-    style: mapStyle(source),
+    style: mapStyle(source, colors),
     center: [start.lng, start.lat],
     zoom: START_ZOOM,
     attributionControl: false,

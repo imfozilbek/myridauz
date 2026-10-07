@@ -32,7 +32,7 @@ test('F1, F2. a long list → a trip opens at the top; «Назад» → the sa
     const page = await context.newPage();
     await openAs(page, 'passenger', GULNORA, { platform });
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-    await searchTo(page, 'Navoiy viloyati', 'Navoiy');
+    await searchTo(page, 'Navoiy');
     await expect(page.locator('.trip-card')).toHaveCount(10);
     await g33.toBottom(page);
     const place = await g33.scrollY(page);

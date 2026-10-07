@@ -2,6 +2,7 @@ import type { MarketClient } from '@platform/api-client';
 import { tashkentDate } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { searchMarket } from '../find/search-test-kit';
 import { testClients } from '../test-shell';
 import { renderMarket, tap, trip } from './market-test-kit';
 import { PlacesGate } from './places-gate';
@@ -17,7 +18,7 @@ describe('a trip that takes nobody is no dead end (docs/89 P8)', () => {
       <PlacesGate>
         <TripById id={full.id} onClose={() => undefined} />
       </PlacesGate>,
-      testClients({ market: { trip: async () => full, searchTrips } }),
+      testClients({ market: { ...searchMarket(), trip: async () => full, searchTrips } }),
     );
     expect(await screen.findByText('Boʻsh joy qolmagan. Boshqa safarni tanlang.')).toBeTruthy();
     expect(screen.getByText('Xabar bering')).toBeTruthy();

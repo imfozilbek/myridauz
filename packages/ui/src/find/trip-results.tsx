@@ -51,6 +51,11 @@ export function TripResults(props: Props) {
   useListPlace(RESULTS, trips !== null);
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
   const region = route.to.parentId === null ? route.to : directory.find(route.to.parentId);
+  // Nothing shown, and a filter may be why: how many it hid, or the empty day (docs/89 P6).
+  const filtered = !stale && shown?.length === 0 && (trips?.length !== 0 || filters.woman);
+  const learn = (empty: boolean) => (
+    <LearnBlock route={route} region={region} date={date} directory={directory} empty={empty} onRequest={onRequest} />
+  );
   const place = (trip: Trip) => {
     const wide = route.from.parentId === null || route.to.parentId === null;
     const [from, to] = [directory.find(trip.from)?.name, directory.find(trip.to)?.name];
@@ -70,25 +75,17 @@ export function TripResults(props: Props) {
         ))}
       </div>
       {trips === null ? <ScreenSkeleton /> : null}
-      {trips && trips.length > 0 && !stale && shown?.length === 0 ? (
-        <FilteredEmpty route={route} date={date} filters={filters} found={trips} onClear={() => onFilters(NO_FILTERS)}>
-          {null}
-        </FilteredEmpty>
-      ) : null}
       {route.to.parentId === null && !route.to.oneCity && region ? (
         <button type="button" className="results-district" onClick={onDistrict}>
           {t('find.district', { region: names.short(region) })}
         </button>
       ) : null}
-      {trips === null ? null : (
-        <LearnBlock
-          route={route}
-          region={region}
-          date={date}
-          directory={directory}
-          empty={trips.length === 0}
-          onRequest={onRequest}
-        />
+      {trips === null ? null : filtered ? (
+        <FilteredEmpty route={route} date={date} filters={filters} found={trips} onClear={() => onFilters(NO_FILTERS)}>
+          {learn(true)}
+        </FilteredEmpty>
+      ) : (
+        learn(trips.length === 0)
       )}
     </div>
   );

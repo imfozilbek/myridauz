@@ -132,5 +132,5 @@ export async function quickRoute(wholeRegion = false) {
 // show the same name, so the pin itself is checked).
 export async function takePoint(name: string) {
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe(name), { timeout: 3000 });
-  await tap('Shu yerda');
+  await tap(/^Shu yerda/u);
 }

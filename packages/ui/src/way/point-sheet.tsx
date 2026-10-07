@@ -31,8 +31,8 @@ export function PointSheet(props: Props) {
   return (
     <div className="way-sheet">
       <b className="way-sheet-title">{t(title)}</b>
-      <p className="way-sheet-place" role="status">
-        <b>{name ?? t('way.point.finding')}</b>
+      <p className="way-sheet-place">
+        <b role="status">{name ?? t('way.point.finding')}</b>
         {area ? t('way.point.areaPart', { area }) : null}
       </p>
       {end === 'from' ? (

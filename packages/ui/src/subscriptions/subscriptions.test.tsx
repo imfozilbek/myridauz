@@ -105,7 +105,7 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       </TripLink>,
       testClients({ market: { trip: tripOf } }),
     );
-    expect(await screen.findByText('Joy band qilish')).toBeTruthy();
+    expect(await screen.findByText('1 ta joy band qilish')).toBeTruthy();
     expect(tripOf).toHaveBeenCalledWith(trip.id);
     cleanup();
     renderMarket(

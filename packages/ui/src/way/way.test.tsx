@@ -20,7 +20,7 @@ const here = async (name: string) => {
   await tap('Shu yerda');
 };
 const type = (text: string) =>
-  fireEvent.change(screen.getByPlaceholderText('Mahalla, koʻcha yoki moʻljal'), { target: { value: text } });
+  fireEvent.change(screen.getByPlaceholderText('Joy nomini yozing'), { target: { value: text } });
 
 describe('One point over the map (G24, docs/71)', { timeout: 20_000 }, () => {
   it('chooses a point by a search in Cyrillic and cuts the map by its district', async () => {

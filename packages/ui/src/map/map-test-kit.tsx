@@ -27,7 +27,7 @@ const whereOf = async (point: Point): Promise<Where> =>
 export const FARGONA = { lat: 40.38, lng: 71.78 };
 const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
 
-type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border'>>;
+type Calls = Partial<Pick<MapClient, 'search' | 'where' | 'pitakOf' | 'border' | 'near'>>;
 
 // The map calls of the tests: the district by the point, a square border, the pitak, a search.
 export const testMap = (calls: Calls = {}): Partial<MapClient> => ({

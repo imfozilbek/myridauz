@@ -10,8 +10,9 @@ type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 const B = {
   myTrips: t('common.myTrips'),
-  twoSeats: t('market.request.seats', { count: '2' }),
-  sent: t('bookings.sent.title'),
+  twoSeats: t('find.book', { count: '2' }),
+  points: t('bookings.points.title'),
+  waiting: t('bookings.status.requested'),
   plate: t('bookings.plate'),
   offers: t('bookings.offer.list'),
   accept: t('bookings.offer.accept'),
@@ -27,35 +28,39 @@ const B = {
   history: t('wallet.history'),
 };
 
-// A passenger books 2 seats on a found trip (G26, G35, docs/97): «Uyimdan», the point at the door
-// on the map of Toshkent, the home found in Samarqand, the check with the seats, sent.
+// One end of a booking on «Qayerdan, qayerga?»: its row opens the map, the main button takes it (G59).
+export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
+  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
+  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await expect(page.locator('[data-state="ready"]')).toBeVisible();
+  if (search) {
+    await page.getByPlaceholder(t('way.point.search')).fill(search[0]);
+    await page.getByText(search[1], { exact: true }).click();
+    await expect(page.getByRole('status')).toHaveText(`${search[1]} yaqinida`);
+  } else await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await page
+    .locator('#tg-main-button')
+    .filter({ hasText: t(end === 'pickup' ? 'way.point.takeFrom' : 'way.point.takeTo') })
+    .click();
+  await expect(page.getByText(B.points)).toBeVisible();
+}
+
+// A passenger books 2 seats on a found trip (G59, docs/118 path 2): «+» on «Safar», then the door on
+// the map of Toshkent and the home found in Samarqand, sent: the booking waits for the answer at once.
 export async function bookSeats(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
   await mockMap(page, mapState());
   await findTrips(page);
-  await mainButton.filter({ hasText: TEXT.book }).click();
-  // The trip takes people both ways: the passenger chooses «Uyimdan» (docs/70).
-  await expect(page.getByText(t('way.mode.door'))).toBeVisible();
-  await shot('1-mode');
-  await page.getByText(t('way.mode.door')).click();
-  await expect(page.getByText(t('way.point.from'))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
-  await shot('1a-pickup');
-  await mainButton.click();
-  await expect(page.getByText(t('way.point.to'))).toBeVisible();
-  await page.getByPlaceholder(t('bookings.map.search')).fill('Регистон');
-  await page.getByText('Registon maydoni', { exact: true }).click();
-  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
-  await shot('1b-dropoff');
-  await mainButton.click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
   await page.getByLabel(t('market.price.more')).click();
-  await expect(page.getByText(B.twoSeats)).toBeVisible();
+  await mainButton.filter({ hasText: B.twoSeats }).click();
+  await expect(page.getByText(B.points)).toBeVisible();
+  await shot('1-points');
+  await takeEnd(page, 'pickup');
+  await shot('1a-pickup');
+  await takeEnd(page, 'dropoff', ['Регистон', 'Registon maydoni']);
   await shot('2-review');
-  await mainButton.click();
-  await expect(page.getByText(B.sent)).toBeVisible();
-  await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
+  await mainButton.filter({ hasText: t('bookings.send') }).click();
+  await expect(page.getByText(B.waiting).first()).toBeVisible();
   await shot('3-sent');
 }
 

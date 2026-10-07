@@ -36,13 +36,14 @@ async function openBooking(page: Page) {
   await searchRoute(page);
   await page.getByText('Jasur', { exact: false }).first().click();
   await mainButton(page).filter({ hasText: TEXT.book }).click();
+  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
   return state;
 }
 
 // A place found by its name inside the zone of the map; the pin names the place under it.
 // The map stopped there: it asks the name of the new place (the old name may be the same).
 async function findPlace(page: Page, query: string, name: string, under: string) {
-  await page.getByPlaceholder(t('bookings.map.search')).fill(query);
+  await page.getByPlaceholder(t('way.point.search')).fill(query);
   const asked = page.waitForRequest((request) => request.url().includes('/map/where?'));
   await page.getByText(name, { exact: true }).click();
   await asked;
@@ -51,20 +52,22 @@ async function findPlace(page: Page, query: string, name: string, under: string)
 
 // The home in Samarqand: the map of the district of the trip, found by a search in Cyrillic.
 async function chooseHome(page: Page, state: MapState) {
+  await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   await drawn(page);
   await findPlace(page, 'Регистон', 'Registon maydoni', 'Registon maydoni yaqinida');
   expect(state.zones[state.searched.indexOf('Регистон')]).toBe('1718401');
   await shot(page, '3-home');
   await mainButton(page)
-    .filter({ hasText: t('way.point.here') })
+    .filter({ hasText: t('way.point.takeTo') })
     .click();
+  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
 }
 
-// Owner check 1: «Uyimdan», the door on the map of the whole city, the home, the check; fixed after.
+// Owner check 1: the door on the map of the whole city, the home, «Qayerdan, qayerga?», then sent.
 test('the passenger books from the door to the home inside the zones of the trip', async ({ page }) => {
   const state = await openBooking(page);
-  await page.getByText(t('way.mode.door')).click();
+  await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await drawn(page);
   await shot(page, '1-door');
@@ -79,29 +82,25 @@ test('the passenger books from the door to the home inside the zones of the trip
   await page.waitForTimeout(TILES_MS);
   await shot(page, '2-door-found');
   await mainButton(page)
-    .filter({ hasText: t('way.point.here') })
+    .filter({ hasText: t('way.point.takeFrom') })
     .click();
   await chooseHome(page, state);
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
-  await expect(page.locator('.pitak-map')).toHaveCount(0);
+  await expect(page.getByText(PITAK.name)).toHaveCount(0);
   await shot(page, '4-review');
-  await mainButton(page).click();
-  await expect(page.getByText(t('bookings.sent.title'))).toBeVisible();
+  await mainButton(page).filter({ hasText: t('bookings.send') }).click();
+  await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
   expect(state.booked).toMatchObject({ seats: 1, mode: 'door', pickup: DOOR, dropoff: HOME });
 });
 
-// Owner check 2: «Pitakdan» asks no door; the check shows the pitak of the direction on a map.
-test('the passenger who goes from a pitak sees the pitak on the check', async ({ page }) => {
+// Owner check 2: the pitak of the direction is the first start (G59): no door is asked.
+test('the passenger who goes from a pitak sees the pitak on «Qayerdan, qayerga?»', async ({ page }) => {
   const state = await openBooking(page);
-  await page.getByText(t('way.mode.pitak')).click();
-  await chooseHome(page, state);
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
   await expect(page.getByText(PITAK.name)).toBeVisible();
-  await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
-  await page.waitForTimeout(TILES_MS);
+  await chooseHome(page, state);
+  await expect(page.getByText(PITAK.name)).toBeVisible();
   await shot(page, '5-pitak');
-  await mainButton(page).click();
-  await expect(page.getByText(t('bookings.sent.title'))).toBeVisible();
+  await mainButton(page).filter({ hasText: t('bookings.send') }).click();
+  await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
   expect(state.booked).toMatchObject({ seats: 1, mode: 'pitak', pickup: null, dropoff: HOME });
 });
 
