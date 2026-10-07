@@ -38,7 +38,7 @@ import {
   Users,
   Wallet,
   MessageSquare,
-  SendHorizontal,
+  Send,
   Smartphone,
   Share2,
   Star,
@@ -52,7 +52,7 @@ import {
   ClockArrowUp,
   TrendingDown,
   Volume2,
-  LockKeyhole,
+  Lock,
   Play,
   WifiOff,
   X,
@@ -110,7 +110,7 @@ const ICONS = {
   channel: Megaphone,
   // An approved application (docs/86 V7); send like Telegram, home screen, story (docs/88 L10, L17, L19).
   approved: ShieldCheck,
-  send: SendHorizontal,
+  send: Send,
   homeScreen: Smartphone,
   story: CircleFadingPlus,
   // The first contact of a driver (G34, docs/95): every choice and every line of a summary has its icon.
@@ -130,7 +130,7 @@ const ICONS = {
   offline: WifiOff,
   close: X, // a channel offered once closes for good (docs/119)
   work: BriefcaseBusiness, // «Ishxonam», a place kept once (docs/126)
-  locked: LockKeyhole, // numbers and links are hidden in a chat (docs/07, mockup g60/2)
+  locked: Lock, // numbers and links are hidden in a chat (docs/07, mockup g60/2)
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

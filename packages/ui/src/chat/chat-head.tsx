@@ -15,7 +15,8 @@ type Props = {
   readonly onTrip: (() => void) | undefined;
 };
 
-const PHOTO = 40;
+const PHOTO = 38;
+const LETTER = 16;
 
 // The head of a chat (owner decision 06.10.2026, docs/118 path 3, mockup g60/2): the face, the
 // name, the car and its plate, the call; under them the line of the trip that opens the booking.
@@ -34,7 +35,14 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
     <div className="chat-top">
       <div className="chat-head">
         {other ? (
-          <PersonBadge id={other.id} name={other.firstName} hasAvatar={other.hasAvatar} size={PHOTO} plain />
+          <PersonBadge
+            id={other.id}
+            name={other.firstName}
+            hasAvatar={other.hasAvatar}
+            size={PHOTO}
+            letter={LETTER}
+            plain
+          />
         ) : null}
         <span className="chat-head-text">
           <b>{name}</b>
@@ -79,7 +87,7 @@ function TripLine({ booking, onTrip }: LineProps) {
           {t('chat.trip.way', { from: region(trip.from), to: region(trip.to), seats: String(booking.seats) })}
         </span>
       </span>
-      {onTrip ? <Icon name="next" size={14} /> : null}
+      {onTrip ? <Icon name="next" size={10} /> : null}
     </button>
   );
 }

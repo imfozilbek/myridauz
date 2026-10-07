@@ -41,9 +41,14 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin: 14px 0 2px;
-  padding: 0 14px;
+  /* A white strip under the ready answers (mockup g60/2). */
+  box-sizing: border-box;
+  height: 21px;
+  margin: 8px 0 1px;
+  padding: 8px 14px 0;
+  background: var(--tgui--bg_color);
   font-size: 12px;
+  line-height: 13px;
   color: var(--tgui--hint_color);
 }
 
@@ -57,7 +62,7 @@
   align-items: center;
   gap: 10px;
   margin: 0 14px;
-  padding: 9px 12px 9px 14px;
+  padding: 9px 12px;
   border: 2px solid var(--tgui--button_color);
   border-radius: 16px;
   background: var(--tgui--bg_color);

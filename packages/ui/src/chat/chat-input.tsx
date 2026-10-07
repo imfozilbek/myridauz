@@ -48,7 +48,7 @@ export function ChatInput({ hidden, form, text, onText, onSubmit, onReply, open,
         ))}
       </div>
       <p className={warned ? 'chat-lock chat-lock-warned' : 'chat-lock'}>
-        <Icon name="locked" size={15} />
+        <Icon name="locked" size={14} />
         {t('chat.hidden')}
       </p>
       <div className="chat-field">

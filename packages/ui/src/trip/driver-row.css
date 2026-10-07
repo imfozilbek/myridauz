@@ -35,15 +35,16 @@
 /* The plate of the driver as on the mockups of G60: a size bigger than in the search. */
 .booking-card .driver-row .plate-badge {
   margin-top: 11px;
+  padding-top: 2px;
   font-size: 15px;
-  line-height: 21px;
+  line-height: 20px;
 }
 
 .booking-card .driver-row .plate-badge-number {
-  padding: 0 7px;
+  padding: 0 6px 0 8px;
 }
 
 .booking-card .driver-row .plate-badge-country {
-  padding: 0 5px;
+  padding: 0 4px 0 6px;
   font-size: 12.5px;
 }
