@@ -1,5 +1,5 @@
 import './flow.css';
-import { PROFILE_PHOTO_LINK } from '@platform/contracts';
+import { OPEN_LINK, OPEN_LINK_VALUE, PROFILE_PHOTO_LINK } from '@platform/contracts';
 import { useCallback, useState, type ReactNode } from 'react';
 import { ProfileScreen } from '../account/profile/profile-screen';
 import { useI18n } from '../context/i18n-context';
@@ -15,8 +15,6 @@ import { useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
   readonly actions: readonly StartAction[];
-  // The section to open at once, for a link from a bot (docs/50).
-  readonly opened?: string;
   // A note above the actions, like the application being checked.
   readonly notice?: ReactNode;
   // A late offer under the actions: when it comes, nothing above it moves (G41, docs/108).
@@ -43,12 +41,14 @@ const photoLinked = () =>
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
 export function StartFlow(props: StartFlowProps) {
-  const { actions, opened, notice, after, home, covered, mainTile, tiles, sections = NO_SECTIONS } = props;
+  const { actions, notice, after, home, covered, mainTile, tiles, sections = NO_SECTIONS } = props;
   const { t } = useI18n();
   const tap = useHomeTap();
   const sheet = useAnySheet();
   const [screen, setScreen] = useState<Screen>(() => {
-    const action = [...actions, ...sections].find((item) => item.id === opened);
+    // A bot button opens its section at once: ?open=<section> (G62, docs/119).
+    const linked = launchParam(OPEN_LINK, OPEN_LINK_VALUE);
+    const action = [...actions, ...sections].find((item) => item.id === linked);
     if (action) return { action };
     return photoLinked() ? 'profile' : 'home';
   });

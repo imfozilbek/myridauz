@@ -21,3 +21,9 @@ export const FIND_LINK = 'find';
 // «Rasmni almashtirish» under a face photo the team did not approve: the profile, to put a new one
 // (docs/118).
 export const PROFILE_PHOTO_LINK: AppLink = { name: 'profile', id: 'photo' };
+
+// A bot button opens a section of the main screen at once: ?open=<section> (G62, docs/119).
+export const OPEN_LINK = 'open';
+export const OPEN_LINK_VALUE = /^[a-z_]{1,32}$/u;
+// «Safar eʼlon qilish»: the section of a new trip in the driver app.
+export const NEW_TRIP_SECTION = 'new_trip';

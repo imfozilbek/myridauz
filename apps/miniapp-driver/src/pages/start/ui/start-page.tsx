@@ -6,6 +6,7 @@ import {
   DriverTiles,
   HomeScreenOffer,
   MyTripsScreen,
+  NEW_TRIP_SECTION,
   NewTripFlow,
   RequestsSearchFlow,
   StartFlow,
@@ -17,7 +18,7 @@ import {
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
   {
-    id: 'new_trip',
+    id: NEW_TRIP_SECTION,
     icon: 'newTrip',
     tone: 'brand',
     labelKey: 'home.publish',
@@ -69,7 +70,7 @@ function DriverStart() {
         after={<HomeScreenOffer />}
         home={(go) => <DriverHome go={go} />}
         tiles={() => <DriverTiles />}
-        {...(pending ? {} : { mainTile: 'new_trip' })}
+        {...(pending ? {} : { mainTile: NEW_TRIP_SECTION })}
       />
     </DriverData>
   );
