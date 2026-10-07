@@ -98,6 +98,9 @@
 }
 .way-sheet-place {
   margin: -4px 0 0;
+  /* Two lines kept: the sheet never jumps while the name comes (docs/121, G41). */
+  min-height: calc(2 * 1.35em);
+  line-height: 1.35;
   font-size: 14px;
   color: var(--tgui--hint_color);
 }

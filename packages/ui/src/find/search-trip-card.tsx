@@ -1,6 +1,7 @@
-import { arrivalAt, type Trip } from '@platform/contracts';
+import { arrivalAt, tripMarks, type Trip } from '@platform/contracts';
 import { Tappable } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
+import { Icon } from '../icons';
 import { freeCar } from '../market/trip-filters';
 import { PersonBadge } from './person-badge';
 
@@ -13,14 +14,27 @@ type Props = { readonly trip: Trip; readonly places: string | null; readonly onO
 export function SearchTripCard({ trip, places, onOpen }: Props) {
   const { t, formatTime, formatMoney, formatNumber } = useI18n();
   const { driver } = trip;
-  const mode = trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
+  const mode =
+    trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
   const facts = [
     t('market.trip.seats', { count: String(trip.seatsLeft) }),
     trip.woman ? t('market.search.woman') : t(`find.mode.${mode}`),
     ...(freeCar(trip) ? [t('find.carPrice', { price: formatMoney(trip.price * trip.seats) })] : []),
   ];
+  // «Tez orada joʻnaydi» and «Narxi tushdi» lead the card (G39, docs/104).
+  const marks = tripMarks(trip, Date.now());
   return (
     <Tappable Component="div" className="search-trip" onClick={onOpen}>
+      {marks.length > 0 ? (
+        <p className="search-trip-marks">
+          {marks.map((mark) => (
+            <span key={mark} className="search-trip-mark">
+              <Icon name={mark === 'soon' ? 'waiting' : 'cheaper'} size={14} />
+              {t(`market.mark.${mark}`)}
+            </span>
+          ))}
+        </p>
+      ) : null}
       <div className="search-trip-head">
         <span className="search-trip-times">
           {t('find.times', {

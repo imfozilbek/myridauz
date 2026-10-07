@@ -35,17 +35,21 @@ test('the search and the booking up to its review', async ({ page }) => {
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await shot(page, 'android', 'pb10-search');
   await searchTo(page, 'Samarqand shahri');
-  await expect(page.locator('.trip-card').filter({ hasText: MUROD.name }).first()).toBeVisible();
+  await expect(page.locator('.search-trip').filter({ hasText: MUROD.name }).first()).toBeVisible();
   await shot(page, 'android', 'pb15-results');
-  await page.locator('.trip-card').filter({ hasText: MUROD.name }).first().click();
+  await page.locator('.search-trip').filter({ hasText: MUROD.name }).first().click();
+  await expect(mainButton(page).filter({ hasText: TEXT.book })).toBeVisible();
+  await shot(page, 'android', 'pb16-trip');
   await mainButton(page).filter({ hasText: TEXT.book }).click();
+  await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await shot(page, 'android', 'pb17-pickup');
   await mainButton(page).click();
+  await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   await shot(page, 'android', 'pb18-dropoff');
   await mainButton(page).click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
   await shot(page, 'android', 'pb19-review');
 });
 

@@ -11,14 +11,6 @@ import { keepValue, keptValue } from '../screen/list-memory';
 export const RESULTS = 'market.results';
 const keyOf = (from: string, to: string, date: string, woman: boolean) =>
   `${RESULTS}:${from}:${to}:${date}:${woman ? 'woman' : 'all'}`;
-// Trips just found for the first day (G35, docs/97 K2): the list shows them without a new load.
-const fresh = new Set<string>();
-
-export function keepFound(route: Route, date: string, trips: Trip[]) {
-  const key = keyOf(route.from.id, route.to.id, date, false);
-  keepValue(key, trips);
-  fresh.add(key);
-}
 
 export function useTripSearch(route: Route, date: string, woman: boolean) {
   const { market } = useApiClients();
@@ -69,8 +61,6 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
     const kept = keptValue<Trip[]>(memory);
     if (!kept) return load();
     setFound({ key: memory, trips: kept });
-    // Just found by the first day: counted here, once, and not asked again.
-    if (fresh.delete(memory)) return counted(kept);
     void refresh();
     // A new search only when the filter or the route changes, not on a new loader.
   }, [memory]);

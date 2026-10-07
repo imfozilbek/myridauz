@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { HUMOYUN } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
+import { searchTo } from './search-kit';
 import { register } from './seed';
 import { outsideCalls, type Person } from './stand-kit';
 import { backUntil, stepUntil } from './steps';
@@ -38,12 +39,9 @@ const toHome = (page: Page) => backUntil(page, mainButton(page).filter({ hasText
 async function requestToReview(page: Page) {
   await toHome(page);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await page.getByAltText('Surxondaryo viloyati').click();
-  await page.getByText('Termiz shahri', { exact: true }).click();
-  await expect(page.getByText(t('market.search.empty'))).toBeVisible();
-  await mainButton(page)
-    .filter({ hasText: t('common.passenger.leaveRequest') })
-    .click();
+  await searchTo(page, 'Termiz shahri');
+  await expect(page.getByText(t('find.noTrips'))).toBeVisible();
+  await page.getByText(t('common.passenger.leaveRequest')).first().click();
   // The empty day and the review both say «Soʻrov qoldirish»: the title tells the review.
   const publish = page.getByText(t('market.request.review.title'));
   const door = page.getByText(t('way.mode.door'), { exact: true });
@@ -64,9 +62,8 @@ for (const platform of PLATFORMS)
     const shot = shooter(page, platform);
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-    await page.getByAltText('Surxondaryo viloyati').click();
-    await page.getByText('Termiz shahri', { exact: true }).click();
-    await expect(page.getByText(t('market.search.empty'))).toBeVisible();
+    await searchTo(page, 'Termiz shahri');
+    await expect(page.getByText(t('find.noTrips'))).toBeVisible();
     await shot('01-p-empty');
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await requestToReview(page);

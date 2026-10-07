@@ -7,9 +7,9 @@ import { register } from './seed';
 import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
 
-// A passenger looks for a trip on the short path (G35, docs/97): the route on the main screen, the
-// trips at once, the seat asked; again by the last route; a day with no trip and its request. Every
-// screen is shot on both platforms, every tap of the person is counted.
+// A passenger looks for a trip (G59, docs/118 path 2): «Qayerga borasiz?», the place by «Boshqa joy»,
+// the trips at once, «Safar», «Qayerdan, qayerga?», the booking waits; again by the last route; a day
+// with no trip and its request. Every screen is shot on both platforms, every tap is counted.
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
@@ -46,7 +46,7 @@ async function mapReady(page: Page, title: string) {
   await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
 }
 
-// The taps of the person: the goal counts them (docs/97: new ≤ 9, again ≤ 4, no trips ≤ 12).
+// The taps of the person: the goal counts them (docs/118: new ≤ 10, again ≤ 4, no trips ≤ 12).
 function counter() {
   let count = 0;
   const tap = async (target: Locator) => {
@@ -56,7 +56,7 @@ function counter() {
   return { tap, taps: () => count };
 }
 
-const card = (page: Page, driver: string) => page.locator('.trip-card').filter({ hasText: driver }).first();
+const card = (page: Page, driver: string) => page.locator('.search-trip').filter({ hasText: driver }).first();
 
 for (const platform of PLATFORMS)
   test(`${platform}: the route → the trip → the seat asked; again by the last route`, async ({ page }) => {
@@ -65,9 +65,11 @@ for (const platform of PLATFORMS)
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await shot('01-home');
     await first.tap(mainButton(page).filter({ hasText: TEXT.findTrip }));
-    await shot('02-to-regions');
-    await first.tap(page.getByAltText('Jizzax viloyati'));
-    await shot('03-to-districts');
+    await expect(page.getByText(t('find.title'))).toBeVisible();
+    await shot('02-directions');
+    await first.tap(page.getByText(t('find.other')));
+    await page.getByPlaceholder(t('find.other')).fill('Jizz');
+    await shot('03-other-place');
     await first.tap(page.getByText('Jizzax', { exact: true }));
     await expect(card(page, GAYRAT.name)).toBeVisible();
     await shot('04-results');
@@ -75,20 +77,22 @@ for (const platform of PLATFORMS)
     await expect(mainButton(page)).toHaveText(TEXT.book);
     await shot('05-trip');
     await first.tap(mainButton(page));
-    await shot('06-mode');
-    await first.tap(page.getByText(t('way.mode.door')));
+    await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+    await shot('06-points');
+    await first.tap(page.getByText(t('way.book.pickup')));
     await mapReady(page, 'way.point.from');
     await shot('07-pickup');
     await first.tap(mainButton(page));
+    await first.tap(page.getByText(t('way.book.dropoff')));
     await mapReady(page, 'way.point.to');
     await shot('08-dropoff');
     await first.tap(mainButton(page));
-    await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+    await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await shot('09-review');
     await first.tap(mainButton(page));
-    await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
+    await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
     await shot('10-sent');
-    expect(first.taps()).toBeLessThanOrEqual(9);
+    expect(first.taps()).toBeLessThanOrEqual(10);
     // Again: the last route on the main screen, the points of the last trip (K4, K5).
     const again = counter();
     // «Назад» up to the main screen: the app keeps its screen while it stays open.
@@ -101,7 +105,7 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('way.change')).first()).toBeVisible();
     await shot('12-review-kept');
     await again.tap(mainButton(page));
-    await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
+    await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
     expect(again.taps()).toBeLessThanOrEqual(4);
   });
 
@@ -111,12 +115,13 @@ for (const platform of PLATFORMS)
     const person = counter();
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await person.tap(mainButton(page).filter({ hasText: TEXT.findTrip }));
-    await person.tap(page.getByAltText('Xorazm viloyati'));
+    await person.tap(page.getByText(t('find.other')));
+    await page.getByPlaceholder(t('find.other')).fill('Urga');
     await person.tap(page.getByText('Urganch shahri', { exact: true }));
-    await expect(page.getByText(t('market.search.empty'))).toBeVisible();
+    await expect(page.getByText(t('find.noTrips'))).toBeVisible();
     await shot('20-empty');
     // The route and the day of the search go into the request (K6).
-    await person.tap(mainButton(page).filter({ hasText: t('common.passenger.leaveRequest') }));
+    await person.tap(page.getByText(t('common.passenger.leaveRequest')));
     const door = page.getByText(t('way.mode.door'), { exact: true });
     await expect(door.or(page.getByText(t('way.point.from')))).toBeVisible();
     if (await door.isVisible()) {

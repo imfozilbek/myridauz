@@ -68,3 +68,23 @@
   text-align: center;
   cursor: pointer;
 }
+
+/* «Tez orada joʻnaydi», «Narxi tushdi» (G39): amber marks on top of the card. */
+.search-trip-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 6px;
+}
+
+.search-trip-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--reg-accent-soft);
+  color: var(--reg-accent);
+  font-size: 12px;
+  font-weight: 600;
+}

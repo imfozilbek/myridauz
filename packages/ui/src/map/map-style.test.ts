@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { MAP_SOURCE, mapStyle } from './map-style';
 
 describe('the style of the map (G22)', () => {
-  const colors = { shade: '#fff', line: '#000', water: '#ccfbf1', park: '#dcfce7', road: '#fef3c7' };
+  const colors = { shade: 'shade', line: 'line', water: 'water-tint', park: 'park-tint', road: 'road-tint' };
   const style = mapStyle(
     {
       archiveUrl: 'https://api.test/map/uzbekistan.pmtiles',

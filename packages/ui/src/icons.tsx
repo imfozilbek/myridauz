@@ -104,11 +104,9 @@ const ICONS = {
   hangUp: PhoneOff,
   microphone: Mic,
   muted: MicOff,
-  // "Maʼlumotlarimni oʻchirish" in the profile (docs/30).
+  // "Maʼlumotlarimni oʻchirish" (docs/30); the phone is never shown (docs/07); a channel (docs/63).
   erase: Trash2,
-  // The phone number is never shown to anyone (docs/07).
   hidden: EyeOff,
-  // A Telegram channel of the team (docs/63).
   channel: Megaphone,
   // An approved application (docs/86 V7); send like Telegram, home screen, story (docs/88 L10, L17, L19).
   approved: ShieldCheck,
@@ -124,16 +122,14 @@ const ICONS = {
   plate: RectangleEllipsis,
   seats: Armchair,
   waiting: Clock,
-  // A trip of the driver moves later; a cheaper trip in the search (G39, docs/104).
-  later: ClockArrowUp,
+  later: ClockArrowUp, // a trip moves later; a cheaper trip in the search (G39, docs/104)
   cheaper: TrendingDown,
-  // The sounds of the brand and a sound to listen to in the admin Mini App (G54, docs/115).
+  // The sounds of the brand, a sound to listen to in the admin Mini App (G54, docs/115); no network.
   sounds: Volume2,
   play: Play,
   offline: WifiOff,
-  // A card closes for good: a channel offered once (docs/119).
+  // A channel offered once closes for good (docs/119); «Ishxonam», a place kept once (docs/126).
   close: X,
-  // «Ishxonam»: a place kept once (docs/126).
   work: BriefcaseBusiness,
 } satisfies Record<string, LucideIcon>;
 
@@ -145,8 +141,7 @@ type IconProps = {
   readonly name: IconName;
   readonly size?: number;
   readonly color?: string;
-  // Filled with its color: a chosen star (docs/24).
-  readonly filled?: boolean;
+  readonly filled?: boolean; // filled with its color: a chosen star (docs/24)
 };
 
 export function Icon({ name, size = DEFAULT_SIZE, color = 'currentColor', filled = false }: IconProps) {

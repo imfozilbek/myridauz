@@ -1,15 +1,17 @@
 import { checkRoute, type Location, type RouteError } from '@platform/contracts';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import type { PlaceDirectory } from '../places/directory';
 import { PlacePicker } from '../places/place-picker';
 import type { Route } from '../places/route-screen';
 import { useDirectory } from '../places/use-directory';
-import { useHere } from '../places/use-here';
+import { useHereChecked } from '../places/use-here';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { haptic } from '../telegram/feedback';
 import { DirectionsScreen } from './directions-screen';
+
+const HERE_WAIT_MS = 1500;
 
 type Props = {
   readonly onBack: () => void;
@@ -28,13 +30,28 @@ export function FindStart(props: Props) {
   return <FindStartForm {...props} directory={state.directory} />;
 }
 
-function FindStartForm({ directory, onBack, onDone, from: known, pick }: Props & { directory: PlaceDirectory }) {
+function FindStartForm({
+  directory,
+  onBack,
+  onDone,
+  from: known,
+  pick,
+}: Props & { directory: PlaceDirectory }) {
   const { t } = useI18n();
-  const here = useHere(directory);
+  const here = useHereChecked(directory);
   const [chosen, setChosen] = useState<Location | null>(known ?? null);
   const from = chosen ?? here;
   const [picking, setPicking] = useState(pick === 'from');
   const [error, setError] = useState<RouteError | null>(null);
+  // The phone still tells where the person stands: a short wait, then the list of «Qayerdan» stays
+  // open, it never changes by itself under the finger (G59).
+  const waiting = from === undefined && !picking;
+  useEffect(() => {
+    if (!waiting) return undefined;
+    const timer = setTimeout(() => setPicking(true), HERE_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [waiting]);
+  if (waiting) return <ScreenSkeleton onBack={onBack} />;
   if (picking || !from)
     return (
       <PlacePicker

@@ -75,7 +75,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
 
 const findLink = (trip: Trip) =>
   `?${FIND_LINK}=${requestsLinkValue(CHILONZOR, ANDIJON, tashkentDate(trip.departAt))}`;
-const card = (page: Page) => page.locator('.trip-card').filter({ hasText: ANVAR.name }).first();
+const card = (page: Page) => page.locator('.search-trip').filter({ hasText: ANVAR.name }).first();
 
 // The trip of this run by its link: the one of the other platform is in the list too (docs/65 B5).
 const openOwnTrip = (page: Page, platform: Platform, trip: Trip) =>

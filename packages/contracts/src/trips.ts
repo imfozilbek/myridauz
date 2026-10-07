@@ -58,7 +58,12 @@ export const tripSchema = z.object({
     id: personIdSchema,
     firstName: z.string(),
     hasAvatar: z.boolean(),
-    car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS), plate: z.string() }),
+    car: z.object({
+      make: z.string(),
+      model: z.string(),
+      color: z.enum(CAR_COLORS),
+      plate: z.string().default(''),
+    }),
     // "⭐ 4,8 (37)" or "Yangi" (docs/24, G11).
     rating: ratingSchema,
   }),
@@ -79,7 +84,8 @@ export const tripSchema = z.object({
   // "Mashinada ayol bor": set by itself (docs/06).
   woman: z.boolean(),
   pickupMode: pickupModeSchema,
-  bookingRule: z.enum(BOOKING_RULES),
+  // The fields of G59 have defaults: an answer of the server before the deploy still opens the screen.
+  bookingRule: z.enum(BOOKING_RULES).default('seats'),
   // The main pitak of the direction, when the driver takes people there (docs/70, docs/72).
   pitak: pitakSchema.nullable(),
   comment: z.string(),

@@ -11,7 +11,7 @@ const LINE_WIDTH = 2;
 const FIT_PADDING = 24;
 
 // A circle of so many km around a point as a ring of [lng, lat].
-export function circleRing({ lat, lng }: Point, km: number): [number, number][] {
+function circleRing({ lat, lng }: Point, km: number): [number, number][] {
   const latDegrees = km / KM_PER_DEGREE;
   const lngDegrees = km / (KM_PER_DEGREE * Math.cos((lat * Math.PI) / 180));
   return Array.from({ length: STEPS + 1 }, (_, step) => {
@@ -22,12 +22,21 @@ export function circleRing({ lat, lng }: Point, km: number): [number, number][] 
 
 export function area(map: MapLibreMap, colors: MapColors, center: Point, km: number) {
   const ring = circleRing(center, km);
-  const data = { type: 'Feature' as const, properties: {}, geometry: { type: 'Polygon' as const, coordinates: [ring] } };
+  const data = {
+    type: 'Feature' as const,
+    properties: {},
+    geometry: { type: 'Polygon' as const, coordinates: [ring] },
+  };
   const known = map.getSource(AREA) as GeoJSONSource | undefined;
   if (known) known.setData(data);
   else {
     map.addSource(AREA, { type: 'geojson', data });
-    map.addLayer({ id: AREA, type: 'fill', source: AREA, paint: { 'fill-color': colors.line, 'fill-opacity': FILL_OPACITY } });
+    map.addLayer({
+      id: AREA,
+      type: 'fill',
+      source: AREA,
+      paint: { 'fill-color': colors.line, 'fill-opacity': FILL_OPACITY },
+    });
     map.addLayer({
       id: `${AREA}-line`,
       type: 'line',

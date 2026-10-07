@@ -60,50 +60,52 @@ async function findAndOpen(page: Page, person: Person) {
   await openAs(page, 'passenger', person);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await searchTo(page, 'Urgut');
-  await expect(page.getByText(t('way.card.both', { pitak: PITAK }))).toBeVisible();
-  await page.locator('.trip-card').first().click();
+  await expect(page.getByText(t('find.mode.both')).first()).toBeVisible();
+  await page.locator('.search-trip').first().click();
   await mainButton(page).filter({ hasText: TEXT.book }).click();
+  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+}
+
+// One end of «Qayerdan, qayerga?»: its row opens the map, the name of the place came (lesson 77).
+async function openEnd(page: Page, end: 'pickup' | 'dropoff') {
+  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
+  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await expect(page.locator('[data-state="ready"]')).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
 }
 
 test('1. a passenger «from home»: the door in Toshkent, the home in Urgut', async ({ page }) => {
   await findAndOpen(page, NODIRA);
-  await page.getByText(t('way.mode.door')).click();
-  await expect(page.getByText(t('way.point.from'))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await openEnd(page, 'pickup');
   await shot(page, '1-pickup-toshkent');
   await mainButton(page).click();
-  await expect(page.getByText(t('way.point.to'))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await openEnd(page, 'dropoff');
   await shot(page, '1-dropoff-urgut');
   await mainButton(page).click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
   await shot(page, '1-review');
   await mainButton(page).click();
-  await expect(page.getByText(t('bookings.sent.title'))).toBeVisible();
+  await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
   await shot(page, '1-sent');
 });
 
-test('2. a passenger from the pitak: no point at the start, the pitak on the map', async ({ page }) => {
+test('2. a passenger from the pitak: the pitak is the first start, no point is asked there', async ({
+  page,
+}) => {
   await findAndOpen(page, MADINA);
-  await page.getByText(t('way.mode.pitak')).click();
-  await expect(page.getByText(t('way.point.to'))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  // «Shu yerda» waits for the name of the place: the map is ready before it comes (lesson 77).
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
-  await mainButton(page).click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
   await expect(page.getByText(PITAK, { exact: false }).first()).toBeVisible();
-  await pitakMapDrawn(page);
+  await openEnd(page, 'dropoff');
+  await mainButton(page).click();
+  await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
+  await expect(page.getByText(PITAK, { exact: false }).first()).toBeVisible();
   await shot(page, '2-review-pitak');
   await mainButton(page).click();
-  await expect(page.getByText(t('bookings.sent.title'))).toBeVisible();
+  await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
 });
 
 // Every found place lies in the zone: its line ends with a district of the zone.
 async function expectOnlyIn(page: Page, query: string, districts: RegExp) {
-  await page.getByPlaceholder(t('bookings.map.search')).fill(query);
+  await page.getByPlaceholder(t('way.point.search')).fill(query);
   const found = page.getByRole('button').filter({ hasText: query });
   await expect(found.first()).toBeVisible();
   for (const line of await found.allInnerTexts()) expect(line).toMatch(districts);
@@ -111,8 +113,7 @@ async function expectOnlyIn(page: Page, query: string, districts: RegExp) {
 
 test('4. the search of a place finds only inside the zone of the trip', async ({ page }) => {
   await findAndOpen(page, NODIRA);
-  await page.getByText(t('way.mode.door')).click();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
+  await openEnd(page, 'pickup');
   // «Registon» of Toshkent (a cafe, streets) is found; the Registon square of Samarqand is not.
   await expectOnlyIn(
     page,
@@ -121,9 +122,9 @@ test('4. the search of a place finds only inside the zone of the trip', async ({
   );
   await expect(page.getByText('Registon maydoni')).toHaveCount(0);
   await shot(page, '4-search-toshkent');
-  await page.getByPlaceholder(t('bookings.map.search')).fill('');
+  await page.getByPlaceholder(t('way.point.search')).fill('');
   await mainButton(page).click();
-  await expect(page.getByText(t('way.point.to'))).toBeVisible();
+  await openEnd(page, 'dropoff');
   // At the end of the trip «bozor» finds the markets of Urgut only, none of the many in Toshkent.
   await expectOnlyIn(page, 'bozor', /Urgut$/u);
   await shot(page, '4-search-urgut');

@@ -53,8 +53,8 @@ export const bookingSchema = z.object({
   trip: tripSchema,
   passenger: z.object({ id: personIdSchema, firstName: z.string(), hasAvatar: z.boolean() }),
   seats: z.number().int(),
-  wholeCar: z.boolean(),
-  withWoman: z.boolean(),
+  wholeCar: z.boolean().default(false),
+  withWoman: z.boolean().default(false),
   // The driver's share per seat and the driver's commission for the whole booking (docs/12).
   price: z.number().int(),
   commission: z.number().int(),

@@ -29,7 +29,7 @@ const B = {
 };
 
 // One end of a booking on «Qayerdan, qayerga?»: its row opens the map, the main button takes it (G59).
-export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
+async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
   await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
   await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
