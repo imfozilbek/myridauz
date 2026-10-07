@@ -3,18 +3,48 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { useBrand } from '../context/brand-context';
 import { HomeNote } from '../home/home-note';
-import { ApplicationCard } from './application-card';
+import { MainTile } from '../flow/main-tile';
 import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
 
-// On the main screen of a driver: before sending, the application to fill (G34); while it is
-// checked, why some things wait (docs/86 V7).
+// On the main screen of a driver: before sending, the big tile of the application (G62); while it is
+// checked, why some things wait (docs/86 V7); a fix asked, the note that opens it.
 export function DriverNotice() {
+  const { t } = useI18n();
   const driver = useDriver();
   const status = driver?.application.status;
-  if (driver && status === 'draft') return <ApplicationCard driver={driver} />;
+  if (driver && status === 'draft')
+    return (
+      <MainTile
+        icon="car"
+        title={t('drivers.become.title')}
+        hint={t('drivers.become.hint')}
+        onClick={driver.editCar}
+      />
+    );
   if (status === 'pending') return <PendingNotice />;
+  if (driver && status === 'changes_requested') return <FixNotice onOpen={driver.editCar} />;
   return null;
+}
+
+const FIX_TINT = '8%';
+
+// «Назад» out of a fix leaves this note: a tap opens the fix again (docs/94 B4).
+function FixNotice({ onOpen }: { readonly onOpen: () => void }) {
+  const { t } = useI18n();
+  const { colors } = useBrand().theme;
+  return (
+    <button type="button" className="home-note-button" onClick={onOpen}>
+      <HomeNote
+        icon="error"
+        ink={colors.dangerText}
+        soft={`color-mix(in srgb, ${colors.danger} ${FIX_TINT}, ${colors.bg})`}
+        mark={colors.dangerText}
+        title={t('drivers.status.changes_requested.title')}
+        text={t('drivers.status.fixHint')}
+      />
+    </button>
+  );
 }
 
 // Once after the approval, that it is approved and the bonus is there (docs/86 V7). Under the

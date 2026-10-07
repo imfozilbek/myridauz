@@ -1,9 +1,8 @@
 import { CAR_CATALOG, catalogSeats, MAX_SEATS, POPULAR_CARS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
-import { nextStep, previousStep } from './application-steps';
-import { asksSeats, modelSeats } from './car-choices';
+import { carLabel, findCars, seatLimit, seatsOf, typedCar } from './car-choices';
 
-describe('the car catalog: seats by the model (docs/50)', () => {
+describe('the car catalog: seats by the model (docs/50, G62)', () => {
   it('has seats for every model within the limit, and only listed popular cars', () => {
     for (const models of Object.values(CAR_CATALOG)) {
       for (const seats of Object.values(models)) {
@@ -12,29 +11,32 @@ describe('the car catalog: seats by the model (docs/50)', () => {
       }
     }
     for (const car of POPULAR_CARS) expect(catalogSeats(car.make, car.model)).toBeDefined();
+    expect(POPULAR_CARS.map((car) => car.model)).toContain('Malibu');
   });
 
-  it('gives a listed model its seats and asks seats only for a typed model', () => {
-    expect(modelSeats('Chevrolet', 'Damas')).toEqual({ seats: 6 });
-    expect(modelSeats('Isuzu', 'Grafter')).toEqual({});
-    expect(asksSeats({ make: 'Chevrolet', model: 'Cobalt' })).toBe(false);
-    expect(asksSeats({ make: 'Chevrolet', model: 'Matiz Best' })).toBe(true);
+  it('gives a listed model its seats as the limit, a typed one 4 seats up to the app limit', () => {
+    expect(seatsOf({ make: 'Chevrolet', model: 'Damas' })).toBe(6);
+    expect(seatLimit({ make: 'Chevrolet', model: 'Damas' })).toBe(6);
+    expect(seatsOf({ make: 'Isuzu', model: 'Grafter' })).toBe(4);
+    expect(seatLimit({ make: 'Isuzu', model: 'Grafter' })).toBe(MAX_SEATS);
   });
 
-  it('skips the seats screen for a listed model and the model screen for a popular car', () => {
-    const cobalt = { make: 'Chevrolet', model: 'Cobalt', seats: 4 };
-    const typed = { make: 'Isuzu', model: 'Grafter' };
-    expect(nextStep('make', cobalt, true, false)).toBe('color');
-    expect(nextStep('make', { make: 'Kia' }, false, false)).toBe('model');
-    expect(nextStep('plate', cobalt, false, false)).toBe('photos');
-    expect(nextStep('plate', typed, false, false)).toBe('seats');
-    expect(previousStep('photos', cobalt)).toBe('plate');
-    expect(previousStep('photos', typed)).toBe('seats');
-    // The first step has nothing before it: «Назад» leaves for the main screen (G34).
-    expect(previousStep('make', cobalt)).toBeNull();
-    // On the review a typed model still gets its seats question.
-    expect(nextStep('model', typed, true, true)).toBe('seats');
-    expect(nextStep('model', cobalt, true, true)).toBe('review');
-    expect(nextStep('make', cobalt, true, true)).toBe('review');
+  it('finds cars by any part of the make or the model, whatever the letter case', () => {
+    expect(findCars('sor')).toEqual([{ make: 'Kia', model: 'Sorento' }]);
+    expect(findCars('KIA').every((car) => car.make === 'Kia')).toBe(true);
+    expect(findCars('chevrolet nex')).toEqual([{ make: 'Chevrolet', model: 'Nexia' }]);
+    expect(findCars('').length).toBeGreaterThan(POPULAR_CARS.length);
+  });
+
+  it('takes a typed car only with its make and model', () => {
+    expect(typedCar('Isuzu  Grafter')).toEqual({ make: 'Isuzu', model: 'Grafter' });
+    expect(typedCar(' GAZ Gazel Next ')).toEqual({ make: 'GAZ', model: 'Gazel Next' });
+    expect(typedCar('Grafter')).toBeNull();
+    expect(typedCar('Isuzu !!')).toBeNull();
+  });
+
+  it('names a chip by the model, a typed car by the make and the model', () => {
+    expect(carLabel({ make: 'Kia', model: 'Sorento' })).toBe('Sorento');
+    expect(carLabel({ make: 'Isuzu', model: 'Grafter' })).toBe('Isuzu Grafter');
   });
 });

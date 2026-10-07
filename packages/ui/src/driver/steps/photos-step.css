@@ -1,0 +1,90 @@
+/* «Mashina rasmlari» (G62, mockup g62/1 screens 3 and 5). */
+.car-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 15px;
+  padding: 10px 14px;
+  border-radius: 13px;
+  background: var(--reg-card);
+}
+
+.car-head-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  line-height: 16px;
+  color: var(--reg-ink);
+}
+
+.car-head-change {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.photo-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+  padding: 0 15px;
+}
+
+.photo-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 13px;
+  background: var(--reg-card);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.photo-tile-problem {
+  border-color: var(--tgui--destructive_text_color);
+}
+
+.photo-tile-frame {
+  display: grid;
+  place-items: center;
+  height: 92px;
+  overflow: hidden;
+  background: var(--reg-face);
+  color: var(--reg-text);
+}
+
+.photo-tile-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-tile-empty .photo-tile-frame {
+  margin: -2px -2px 0;
+  border: 2px dashed var(--reg-strong);
+  border-radius: 13px 13px 0 0;
+  background: var(--reg-soft);
+}
+
+.photo-tile-text {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--reg-muted);
+}
+
+.photo-tile-text b {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--reg-ink);
+}

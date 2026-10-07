@@ -27,3 +27,15 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* A note that opens something: the whole note is the button (G62). */
+.home-note-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

@@ -1,0 +1,121 @@
+/* «Mashinangiz» (G62, mockup g62/1 screen 2): the values of the mockup at 360 px. */
+.car-screen,
+.photos-screen {
+  font-family: var(--tgui--font-family);
+}
+
+.car-screen .step-head,
+.photos-screen .step-head {
+  row-gap: 0;
+  padding: 2px 22px 0;
+}
+
+.car-screen .step-head h2,
+.photos-screen .step-head h2 {
+  font-size: 22px;
+  line-height: 26px;
+}
+
+.car-screen .step-hint,
+.photos-screen .step-hint {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.car-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 15px;
+}
+
+.car-label {
+  margin: 8px 14px 0;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--reg-muted);
+}
+
+.car-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.car-chip {
+  height: 31px;
+  padding: 0 13px;
+  border: 1px solid var(--reg-divider);
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.car-chip[aria-pressed='true'] {
+  border-color: var(--reg-strong);
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  font-weight: 700;
+}
+
+.car-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 4px;
+}
+
+/* A paint dot; the chosen one has a ring of the app color around it, apart from the paint. */
+.car-color {
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 1px solid var(--reg-divider);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.car-color[aria-pressed='true'] {
+  box-shadow:
+    0 0 0 2px var(--reg-card),
+    0 0 0 4px var(--reg-strong);
+}
+
+.car-seats {
+  margin-top: 4px;
+  padding: 0 14px;
+  border-radius: 13px;
+  background: var(--reg-card);
+}
+
+.car-seats .seats-row {
+  border-bottom: 0;
+  font-size: 15px;
+}
+
+.other-car {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 70vh;
+  padding: 16px 0 24px;
+  overflow-y: auto;
+}
+
+.other-car-title {
+  padding: 0 20px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.other-car-hint {
+  padding: 0 20px;
+  font-size: 13px;
+  color: var(--tgui--hint_color);
+}

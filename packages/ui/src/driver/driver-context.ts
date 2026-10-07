@@ -14,7 +14,7 @@ export const useDriver = () => useContext(DriverContext);
 // Until the application is approved, publishing trips and seeing passengers' requests wait (docs/04).
 export const usePending = () => {
   const status = useDriver()?.application.status;
-  return status === 'pending' || status === 'draft';
+  return status === 'pending' || status === 'draft' || status === 'changes_requested';
 };
 
 // A driver who has not sent the application yet (G34): asked to fill it, not told it is checked.

@@ -101,18 +101,11 @@ export function renderGate(initial: DriverApplication | null, face = true) {
 }
 
 export const tap = async (text: string) => fireEvent.click(await screen.findByText(text));
-// Taps the first photo button with this text and "takes" a photo with the camera of that side:
+// Taps the photo tile with this label and "takes" a photo with the camera of that side:
 // the front camera for the face, the main one for the car.
-export function shoot(
-  container: HTMLElement,
-  button: string,
-  facing: 'user' | 'environment' = 'environment',
-) {
+export function shoot(container: HTMLElement, tile: string, facing: 'user' | 'environment' = 'environment') {
   const input = container.querySelector(`input[type=file][capture=${facing}]`);
   if (!input) throw new Error('test.no_input');
-  const face = (element: HTMLElement) =>
-    element.closest('button')?.textContent?.includes('Yuzingiz') === true;
-  const [first] = screen.getAllByText(button).filter((element) => face(element) === (facing === 'user'));
-  fireEvent.click(first as HTMLElement);
+  fireEvent.click(screen.getByText(tile, { exact: true }).closest('button') as HTMLElement);
   fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
 }

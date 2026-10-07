@@ -1,87 +1,4 @@
-/* The driver application: photo frames, paint dots and red marks of what to fix (docs/04, docs/21). */
-.photo-slots {
-  display: flex;
-  flex-direction: column;
-  margin: 0 16px;
-  overflow: hidden;
-  border-radius: 12px;
-  background: var(--tgui--section_bg_color);
-}
-
-/* One row per photo, like a Telegram list cell. */
-.photo-slot {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 12px 16px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font-family: var(--tgui--font-family);
-  text-align: left;
-  cursor: pointer;
-}
-
-.photo-slot + .photo-slot {
-  border-top: 1px solid var(--tgui--outline);
-}
-
-.photo-slot:disabled {
-  cursor: default;
-}
-
-.photo-frame {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 96px;
-  height: 72px;
-  overflow: hidden;
-  border: 2px dashed var(--tgui--hint_color);
-  border-radius: 10px;
-}
-
-.photo-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.photo-frame:has(img) {
-  border-style: solid;
-  border-color: transparent;
-}
-
-.photo-frame.photo-frame-problem {
-  border: 2px solid var(--tgui--destructive_text_color);
-}
-
-.photo-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-width: 0;
-}
-
-.photo-hint {
-  color: var(--tgui--hint_color);
-}
-
-.photo-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--tgui--button_color);
-  color: var(--tgui--button_text_color);
-  font-size: 13px;
-  font-weight: 600;
-}
-
+/* The driver application: paint dots and red marks of what to fix (docs/04, docs/21). */
 .problem-note {
   display: flex;
   flex-direction: column;
@@ -97,17 +14,6 @@
   color: var(--tgui--destructive_text_color);
 }
 
-.avatar-ring {
-  display: inline-flex;
-  padding: 4px;
-  border: 3px solid transparent;
-  border-radius: 50%;
-}
-
-.avatar-ring-problem {
-  border-color: var(--tgui--destructive_text_color);
-}
-
 /* A car paint dot: a thin ring keeps white and silver visible on white. */
 .car-swatch {
   display: block;
@@ -117,17 +23,4 @@
   box-shadow:
     inset 0 0 0 1px var(--tgui--outline),
     0 0 0 1px var(--tgui--outline);
-}
-
-/* The paint dot in a slot of the size of an icon tile (G34). */
-.swatch-tile {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-}
-
-.swatch-tile .car-swatch {
-  width: 24px;
-  height: 24px;
 }
