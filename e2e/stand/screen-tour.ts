@@ -29,8 +29,15 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   // Nothing wider than the phone (lesson 52): the widest element must fit the screen.
   const overflow = await page.evaluate(() => {
     const right = (element: Element) => element.getBoundingClientRect().right;
+    // A ribbon that scrolls sideways (the days of «Safarlar») keeps its items inside itself.
+    const inRibbon = (element: Element) => {
+      for (let box = element.parentElement; box; box = box.parentElement)
+        if (['auto', 'scroll', 'hidden'].includes(getComputedStyle(box).overflowX))
+          return right(box) <= window.innerWidth + 1;
+      return false;
+    };
     const wide = [...document.querySelectorAll<HTMLElement>('body *')].find(
-      (element) => right(element) > window.innerWidth + 1,
+      (element) => right(element) > window.innerWidth + 1 && !inRibbon(element),
     );
     return wide ? `${wide.tagName}.${wide.className}` : null;
   });

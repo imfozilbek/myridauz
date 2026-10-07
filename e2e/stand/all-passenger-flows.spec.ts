@@ -43,10 +43,14 @@ test('the search and the booking up to its review', async ({ page }) => {
   await mainButton(page).filter({ hasText: TEXT.book }).click();
   await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
+  // The name under the pin is known: the button takes this place, not one still being asked.
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
   await shot(page, 'android', 'pb17-pickup');
   await mainButton(page).click();
   await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
+  // The name under the pin is known: the button takes this place, not one still being asked.
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
   await shot(page, 'android', 'pb18-dropoff');
   await mainButton(page).click();
   await expect(page.getByText(t('bookings.points.all'))).toBeVisible();

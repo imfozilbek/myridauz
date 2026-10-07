@@ -20,12 +20,15 @@ export function DayCounts({ days, date, onDay }: Props) {
       : index === 1
         ? t('market.day.tomorrow')
         : formatShortDate(noonOf(day));
-  // The chosen day is always in sight, also a day past the first three.
+  // The chosen day is always in sight: only the ribbon moves sideways, never the page (G33 F2).
   const ribbon = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    ribbon.current
-      ?.querySelector('[aria-selected="true"]')
-      ?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    const box = ribbon.current;
+    const chosen = box?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!box || !chosen) return;
+    const left = chosen.offsetLeft - box.offsetLeft;
+    if (left < box.scrollLeft || left + chosen.offsetWidth > box.scrollLeft + box.clientWidth)
+      box.scrollLeft = left;
   }, [date]);
   return (
     <div className="day-counts" role="tablist" ref={ribbon}>

@@ -86,7 +86,7 @@ for (const platform of PLATFORMS)
     await mapReady(page, 'way.point.to');
     await shot('05-dropoff-recent');
     // One tap on the last place: «Qayerdan, qayerga?» at once, no «Shu yerda» (DS3).
-    await page.locator('.way-recent').getByText('Guliston shahri').first().click();
+    await page.locator('.way-chip').first().click();
     await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await shot('06-review');
   });
