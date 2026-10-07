@@ -38,12 +38,13 @@ describe('The point over the map with a sheet (G36, docs/100)', { timeout: 20_00
     expect(done[0]).toMatchObject({ place: { id: '1726269' }, point: { lat: 41.2 } });
   });
 
-  it('shows two last places at most, each with its district (DS4, DS5)', async () => {
+  it('shows two last places at most as chips with their names (DS4, mockup screen 9)', async () => {
     remember('Birinchi', 'Ikkinchi', 'Uchinchi');
     openPoint(fakeMap());
     const bottom = await sheet();
     expect(within(bottom).queryByText('Uchinchi')).toBeNull();
-    expect(within(bottom).getAllByText('Chilonzor')).toHaveLength(2);
+    expect(within(bottom).getByRole('button', { name: 'Birinchi' })).toBeTruthy();
+    expect(within(bottom).getByRole('button', { name: 'Ikkinchi' })).toBeTruthy();
   });
 
   it('closes the keyboard when a place is found, so the sheet goes down (DS4)', async () => {

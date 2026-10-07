@@ -1,12 +1,11 @@
 import type { Page } from '@playwright/test';
-import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
-import { tripOf } from './market-mock';
+import { MAN, mockupData } from './g59-pixel-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of G59 (lessons 141, 147): the code is shot at the size of the approved journey
@@ -15,65 +14,16 @@ import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER] = MINI_APPS;
 const CHILONZOR = '1726294';
+const SAMARQAND = '1718401';
 const OUT = 'screenshots/pixel-g59';
 const TILES_MS = 1500;
-const MAN = {
-  id: '00000000000000000000000000000001',
-  firstName: 'Aziz',
-  gender: 'male',
-  phone: '+998901234567',
-  roles: ['passenger'],
-  hasAvatar: true,
-  writeAccess: false,
-  rating: null,
-  avatarStatus: null,
-  avatarReason: null,
-};
+const MAP_HEIGHT = 718;
 test.use({ viewport: { width: 360, height: 776 }, deviceScaleFactor: 1 });
 
-// The numbers of the journey: 4 cards, the days 3, 8 and 5 trips.
-async function mockupCounts(page: Page) {
-  const card = (to: string, today: number, tomorrow: number, price: number) => ({
-    to,
-    today,
-    tomorrow,
-    price,
-  });
-  await page.route('**/api/trips/directions?*', (route) =>
-    route.fulfill({
-      json: {
-        directions: [
-          card('1718', 3, 8, 90000),
-          card('1730', 2, 5, 100000),
-          card('1706', 1, 4, 160000),
-          card('1703', 0, 3, 110000),
-        ],
-      },
-    }),
-  );
-  const counts = [3, 8, 5, 0, 0, 0, 0];
-  const days = counts.map((trips, index) => ({ date: tashkentDate(Date.now() + index * DAY_MS), trips }));
-  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days } }));
-  // «Ertaga» of the mockup: 08:00 and 13:00, two trips of one seat hidden by «2» people.
-  const tomorrow = tashkentDate(Date.now() + DAY_MS);
-  const at = (time: string) => ({ departAt: Date.parse(`${tomorrow}T${time}:00+05:00`) });
-  const nodira = tripOf('2', 'Nodira', true, 0, { ...at('13:00'), seatsLeft: 2 });
-  const trips = [
-    tripOf('1', 'Jasur', false, 0, at('08:00')),
-    { ...nodira, driver: { ...nodira.driver, rating: { average: 4.8, count: 23 } } },
-    tripOf('3', 'Bekzod', false, 0, { ...at('15:00'), seatsLeft: 1 }),
-    tripOf('4', 'Akmal', false, 0, { ...at('17:00'), seatsLeft: 1 }),
-  ];
-  await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips } }));
-  const review = { id: 'r1', authorName: 'Dilshod', stars: 5, tags: [], at: Date.now() };
-  await page.route('**/api/users/*/reviews', (route) =>
-    route.fulfill({
-      json: {
-        rating: { average: 4.8, count: 23 },
-        reviews: [{ ...review, text: 'Vaqtida keldi, yoʻlda xavfsiz haydadi.' }],
-      },
-    }),
-  );
+async function mapDrawn(page: Page) {
+  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await page.waitForTimeout(TILES_MS);
 }
 
 const shot = (page: Page, name: string) =>
@@ -85,10 +35,24 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await noSeatYet(page);
   // «Qayerdan» of the mockup: Chilonzor, Toshkent.
   await page.addInitScript((id) => localStorage.setItem('here_district', id), CHILONZOR);
-  await page.route('**/api/passenger/map/where?*', (route) =>
-    route.fulfill({ json: { district: CHILONZOR, name: { step: 'landmark', name: 'Grand' }, area: null } }),
-  );
-  await mockupCounts(page);
+  // «Oxirgi joylar» of the mockup in Samarqand.
+  const recent = (name: string, lat: number, lng: number) => ({
+    point: { lat, lng },
+    name: { step: 'landmark', name },
+    district: SAMARQAND,
+  });
+  const places = [
+    recent('Samarqand avtovokzali', 39.6681, 66.9367),
+    recent('Siyob bozori', 39.6619, 66.9862),
+  ];
+  await page.addInitScript((kept) => localStorage.setItem('way_recent', kept), JSON.stringify(places));
+  // The pin in Toshkent is «Grand», in Samarqand (south of 40°) «Registon maydoni».
+  await page.route('**/api/passenger/map/where?*', (route) => {
+    const lat = Number(new URL(route.request().url()).searchParams.get('at')?.split(',')[0]);
+    const [district, name] = lat < 40 ? [SAMARQAND, 'Registon maydoni'] : [CHILONZOR, 'Grand'];
+    return route.fulfill({ json: { district, name: { step: 'landmark', name }, area: null } });
+  });
+  await mockupData(page);
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
@@ -115,4 +79,26 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await expect(page.locator('.area-map-box[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '06');
+  // «Qayerdan, qayerga?», its two maps and the page of the sent request (journey screens 7-10).
+  await page.locator('#tg-main-button', { hasText: t('find.book', { count: '2' }) }).click();
+  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+  await shot(page, '07');
+  // The maps of the mockup stand under the header Telegram draws: their page is 58 px shorter.
+  await page.setViewportSize({ width: 360, height: MAP_HEIGHT });
+  await page.getByText(t('way.book.pickup')).click();
+  await mapDrawn(page);
+  await shot(page, '08');
+  await pressBack(page);
+  await page.getByText(t('way.book.dropoff')).click();
+  await mapDrawn(page);
+  await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
+  await page.getByText('Registon maydoni', { exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
+  await page.waitForTimeout(TILES_MS);
+  await shot(page, '09');
+  await page.setViewportSize({ width: 360, height: 776 });
+  await page.locator('#tg-main-button', { hasText: t('way.point.takeTo') }).click();
+  await page.locator('#tg-main-button', { hasText: t('bookings.send') }).click();
+  await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
+  await shot(page, '10');
 });

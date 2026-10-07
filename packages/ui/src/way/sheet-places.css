@@ -2,19 +2,18 @@
 .way-tiles {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: 8px;
+  gap: 9px;
 }
 .way-tile {
-  /* The icon over the words: a word is never broken inside on a narrow phone (docs/121). */
+  /* The icon before the words (mockup screen 8); a narrow phone makes the words smaller (docs/121). */
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-  gap: 4px;
+  gap: 10px;
   min-width: 0;
-  padding: 9px 10px;
+  min-height: 70px;
+  padding: 8px 12px;
   border: 1.5px solid var(--tgui--secondary_bg_color);
-  border-radius: 12px;
+  border-radius: 14px;
   background: none;
   font: inherit;
   color: var(--tgui--link_color);
@@ -25,7 +24,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  font-size: 12px;
+  font-size: 12.5px;
+  line-height: 1.25;
   color: var(--tgui--hint_color);
 }
 .way-tile-text b {
@@ -36,7 +36,7 @@
 .way-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px 8px;
 }
 .way-chip {
   display: inline-flex;
@@ -54,4 +54,37 @@
 }
 .way-chip svg {
   color: var(--tgui--link_color);
+}
+.way-sheet-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 5px;
+  min-height: 105px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--tgui--secondary_bg_color);
+}
+.way-sheet-card-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.way-sheet-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14.5px;
+  line-height: 1.2;
+  color: var(--tgui--hint_color);
+}
+.way-sheet-card-text b {
+  font-size: 17.5px;
+  color: var(--tgui--text_color);
 }

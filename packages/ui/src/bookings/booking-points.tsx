@@ -1,6 +1,5 @@
 import { arrivalAt, roadMs, type Booking, type BookedPlace } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { useNameText } from '../way/way-end';
 import '../find/route-line.css';
@@ -36,7 +35,6 @@ export function BookingPoints({ booking }: { readonly booking: Booking }) {
     <div className="pending-points route-line">
       {end('from', start, regionName(trip.from), formatTime(new Date(trip.departAt)))}
       <div className="route-line-way">
-        <Icon name="carSide" size={15} />
         {t('find.road', { km: String(trip.km), hours: String(Math.round(roadMs(trip.km) / HOUR_MS)) })}
       </div>
       {end(

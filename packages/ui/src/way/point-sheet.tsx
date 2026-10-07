@@ -1,6 +1,8 @@
 import type { Location, Pitak, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { Icon } from '../icons';
 import { NearChips } from './near-chips';
 import { RecentList } from './recent-list';
 import { SavedTiles } from './saved-tiles';
@@ -28,13 +30,28 @@ type Props = {
 export function PointSheet(props: Props) {
   const { title, name, area, end, current, at, find, onPick, onMove, pitak, onPitak } = props;
   const { t } = useI18n();
+  const { routeTo } = useBrand().theme.colors;
+  const named = <b role="status">{name ?? t('way.point.finding')}</b>;
   return (
     <div className="way-sheet">
       <b className="way-sheet-title">{t(title)}</b>
-      <p className="way-sheet-place">
-        <b role="status">{name ?? t('way.point.finding')}</b>
-        {area ? t('way.point.areaPart', { area }) : null}
-      </p>
+      {end === 'to' ? (
+        // The end of a booking: the chosen place in a card with the red pin (mockup screen 9).
+        <div className="way-sheet-card">
+          <span className="way-sheet-card-icon" style={{ color: routeTo }}>
+            <Icon name="pickup" size={20} />
+          </span>
+          <span className="way-sheet-card-text">
+            {named}
+            <span>{area}</span>
+          </span>
+        </div>
+      ) : (
+        <p className="way-sheet-place">
+          {named}
+          {area ? t('way.point.areaPart', { area }) : null}
+        </p>
+      )}
       {end === 'from' ? (
         <>
           <SavedTiles

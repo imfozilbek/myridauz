@@ -50,7 +50,8 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
         placeId={pickup ? trip.from : trip.to}
         end={pickup ? 'from' : 'to'}
         initial={pickup ? flow.pickup : flow.dropoff}
-        {...(pickup && flow.pitakFirst && trip.pitak
+        // The pitak tile brings the pitak back; while it is the start it is not offered (mockup screen 8).
+        {...(pickup && flow.pitakFirst && trip.pitak && flow.mode !== 'pitak'
           ? {
               pitak: trip.pitak,
               onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: 'points' }),

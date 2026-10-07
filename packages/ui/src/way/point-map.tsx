@@ -7,7 +7,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { MapSearch } from '../map/map-search';
 
-const PIN_SIZE = 44;
+const PIN_SIZE = 48;
 
 type Props = {
   readonly box: RefObject<HTMLDivElement>;
