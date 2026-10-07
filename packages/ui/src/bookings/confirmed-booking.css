@@ -112,3 +112,10 @@
 .booking-banner-off .booking-banner-tile {
   background: var(--reg-muted);
 }
+
+.booking-button-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--reg-strong);
+  text-align: center;
+}

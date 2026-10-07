@@ -141,3 +141,4 @@ export * from './stories';
 export * from './company';
 export * from './sounds';
 export * from './arrival';
+export * from './after-trip';

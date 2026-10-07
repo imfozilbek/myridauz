@@ -73,5 +73,20 @@
   "card.seats": "{seats} joy",
   "confirmed.when": "{day} · {time}",
   "toClose": "Yaqinlarimga",
-  "done.title": "Safar tugadi"
+  "done.title": "Safar tugadi",
+  "done.when": "{date}, {time} · {place}",
+  "done.ago": "{date} · {days} kun oldin",
+  "done.why": "Rida orqali: yaqinlaringiz kuzatadi, shikoyat qilish mumkin, kelmasa pul qaytadi.",
+  "done.untilToday": "bugun {time} gacha",
+  "done.untilTomorrow": "ertaga {time} gacha",
+  "done.until": "{date} {time} gacha",
+  "done.messages": "Xabarlar",
+  "done.readOnly": "faqat oʻqish",
+  "done.rate": "Baho berish",
+  "done.rating": "Baho",
+  "done.daysLeft": "{days} kun qoldi",
+  "done.over": "muddat tugadi",
+  "done.complain": "Shikoyat · {days} kun qoldi",
+  "done.complainSupport": "Shikoyat: Yordam orqali",
+  "done.again": "Yana {name} bilan"
 }

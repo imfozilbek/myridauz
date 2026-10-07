@@ -1,7 +1,7 @@
 import {
-  arrivalAt,
   DAY_MS,
   TRIP_DAYS_AHEAD,
+  tripEndsAt,
   type BookingRule,
   type Car,
   type PickupMode,
@@ -41,9 +41,7 @@ export type TripRecord = {
   readonly bookingRule: BookingRule;
 };
 
-const AFTER_ARRIVAL_MS = 2 * 60 * 60 * 1000;
-
-export const endsAt = (departAt: number, km: number) => arrivalAt(departAt, km) + AFTER_ARRIVAL_MS;
+export const endsAt = tripEndsAt;
 
 // The time of a new trip: in the future and not too far (docs/35).
 export function departError(departAt: number, now: number): 'trips.in_past' | 'trips.invalid_input' | null {

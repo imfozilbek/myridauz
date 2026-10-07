@@ -14,6 +14,7 @@ import { brandVars } from '../theme/brand-vars';
 import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
 import { BookingBanner } from './booking-banner';
+import { DoneTools } from './done-tools';
 import { mapUrl } from './map-link';
 import { useTripSteps } from './use-trip-steps';
 import './confirmed-booking.css';
@@ -26,13 +27,15 @@ type Props = {
   // Null when the seat is used or the trip went: nothing to cancel (docs/35).
   readonly onCancel: (() => void) | null;
   readonly onTold: (booking: Booking) => void;
+  // «Yana Jasur bilan» after the trip (mockup g60/7).
+  readonly onAgain: () => void;
   readonly children?: ReactNode;
 };
 
 // The page of a confirmed seat (owner decision 06.10.2026, docs/118 path 3, mockup g60/1): who,
 // which car, where; three big buttons; one main button that follows the trip.
 export function ConfirmedBooking(props: Props) {
-  const { booking, onBack, onOpen, onCancel, onTold, children } = props;
+  const { booking, onBack, onOpen, onCancel, onTold, onAgain, children } = props;
   useScreenView('bookings.passenger');
   useScreenBackground('tinted');
   const { t, formatNumber } = useI18n();
@@ -62,37 +65,46 @@ export function ConfirmedBooking(props: Props) {
         />
         <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
       </div>
-      <p className="booking-hint">{t('find.payHint')}</p>
-      {children}
-      <ActionFailure error={steps.failure} />
-      <div className="booking-buttons">
-        {button('chat', t('chat.open'), () => onOpen('chat'))}
-        {booking.status === 'confirmed' ? button('phone', t('calls.call'), () => onOpen('call')) : null}
-        {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}
-      </div>
-      {steps.note ? (
-        <p className="booking-hint booking-note">
-          {t(`share.${steps.note}`)}
-          {steps.note === 'told' ? (
-            <button type="button" className="booking-link" onClick={steps.stop}>
-              {t('share.stop')}
-            </button>
+      {booking.status === 'completed' ? (
+        <>
+          <DoneTools booking={booking} onOpen={onOpen} />
+          <MainButton text={t('bookings.done.again', { name: driver.firstName })} onClick={onAgain} />
+        </>
+      ) : (
+        <>
+          <p className="booking-hint">{t('find.payHint')}</p>
+          {children}
+          <ActionFailure error={steps.failure} />
+          <div className="booking-buttons">
+            {button('chat', t('chat.open'), () => onOpen('chat'))}
+            {booking.status === 'confirmed' ? button('phone', t('calls.call'), () => onOpen('call')) : null}
+            {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}
+          </div>
+          {steps.note ? (
+            <p className="booking-hint booking-note">
+              {t(`share.${steps.note}`)}
+              {steps.note === 'told' ? (
+                <button type="button" className="booking-link" onClick={steps.stop}>
+                  {t('share.stop')}
+                </button>
+              ) : null}
+            </p>
           ) : null}
-        </p>
-      ) : null}
-      <div className="booking-links">
-        {canComplain(booking.status) ? (
-          <button type="button" className="booking-link" onClick={() => onOpen('complaint')}>
-            {t('complaints.title')}
-          </button>
-        ) : null}
-        {onCancel ? (
-          <button type="button" className="booking-link booking-link-danger" onClick={onCancel}>
-            {t('bookings.cancel')}
-          </button>
-        ) : null}
-      </div>
-      {steps.next ? <MainButton text={t(`share.${steps.next}`)} onClick={steps.step} /> : null}
+          <div className="booking-links">
+            {canComplain(booking.status) ? (
+              <button type="button" className="booking-link" onClick={() => onOpen('complaint')}>
+                {t('complaints.title')}
+              </button>
+            ) : null}
+            {onCancel ? (
+              <button type="button" className="booking-link booking-link-danger" onClick={onCancel}>
+                {t('bookings.cancel')}
+              </button>
+            ) : null}
+          </div>
+          {steps.next ? <MainButton text={t(`share.${steps.next}`)} onClick={steps.step} /> : null}
+        </>
+      )}
     </div>
   );
 }

@@ -94,6 +94,7 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
       onOpen={(screen) => setOpened({ screen })}
       onCancel={cancellable(booking.status) && !inCar ? () => void cancel() : null}
       onTold={setTold}
+      onAgain={onHome ?? (() => onClose(false))}
     >
       <ActionFailure error={failure} />
     </ConfirmedBooking>
