@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
-import { openOwnTrip, searchRoute } from './market';
+import { fromIfAsked, openOwnTrip, searchRoute } from './market';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -20,23 +20,24 @@ const open = async (page: Page, port: number) => {
 };
 
 // More screens of G29 for the owner review (docs/33, docs/89, docs/90).
-test('passenger: «Orqaga» keeps the filters and the route, the list finds Samarkand', async ({ page }) => {
+test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» finds Samarkand', async ({
+  page,
+}) => {
   await mockApi(page, 'active');
   await open(page, PASSENGER.port);
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  const search = page.getByPlaceholder(t('places.search'));
-  await search.fill('Samarkand');
-  await expect(page.getByText('Samarqand viloyati').first()).toBeVisible();
+  await fromIfAsked(page);
+  await page.getByText(TEXT.otherPlace).click();
+  await page.getByPlaceholder(TEXT.otherPlace).fill('Samarkand');
+  await expect(page.getByText('Samarqand shahri', { exact: true })).toBeVisible();
   await shot(page, 'fp3-samarkand');
-  await search.fill('');
-  await searchRoute(page);
-  // The results open at once (G35); «Orqaga» shows the route with both ends (lesson 79).
-  await expect(page.getByText(TEXT.otherDay)).toBeVisible();
+  await page.getByText('Samarqand shahri', { exact: true }).click();
+  // The trips of the nearest day at once; «Orqaga» keeps «Qayerdan» (lesson 79).
+  await expect(page.getByRole('tab').first()).toBeVisible();
   await pressBack(page);
-  await expect(page.getByText(TEXT.from)).toBeVisible();
-  await expect(page.getByText('Samarqand shahri')).toBeVisible();
+  await expect(page.getByText(TEXT.directions)).toBeVisible();
   await shot(page, 'fp2-route-kept');
-  await page.locator('#tg-main-button').click();
+  await searchRoute(page);
   await page.getByText(TEXT.womanFilter).first().click();
   await page.getByText('Nodira', { exact: false }).click();
   await pressBack(page);

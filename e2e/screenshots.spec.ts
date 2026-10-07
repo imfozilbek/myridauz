@@ -39,8 +39,10 @@ test('places: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
-  // The search opens the «Qayerga» list at once (G35, docs/97 K1).
+  // «Qayerdan» is changed by its list (G59): the regions, the search, the districts.
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await fromIfAsked(page);
+  await page.getByText(TEXT.change).click();
   await expect(page.getByAltText('Xorazm viloyati')).toBeVisible();
   await page.waitForLoadState('networkidle');
   await shot('2-regions');
@@ -52,7 +54,10 @@ test('places: screenshots', async ({ page }) => {
   await page.getByAltText('Toshkent shahri').click();
   await shot('3-districts');
   await page.getByText('Yunusobod').click();
-  await fromIfAsked(page);
+  // A place of the same city is refused under the search (docs/14).
+  await page.getByText(TEXT.otherPlace).click();
+  await page.getByPlaceholder(TEXT.otherPlace).fill('Chilon');
+  await page.getByText('Chilonzor', { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeVisible();
   await shot('6-inside-city');
 });

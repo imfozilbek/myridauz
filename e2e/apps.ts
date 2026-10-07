@@ -39,6 +39,7 @@ export const TEXT = {
   toTitle: t('places.toTitle'),
   directions: t('find.title'),
   otherPlace: t('find.other'),
+  change: t('find.change'),
   fromTitle: t('places.fromTitle'),
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),

@@ -65,14 +65,18 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  // «Qayerga» opens at once (G35); «Qayerdan» opens by itself when the place of the person is unknown.
+  // «Qayerdan» by its list and search, «Qayerga» by «Boshqa joy» (G59, docs/118 path 2).
+  await fromIfAsked(page);
+  await page.getByText(TEXT.change).click();
   await page.getByPlaceholder(TEXT.search).fill('yunus');
   await page.getByText('Yunusobod').click();
-  await fromIfAsked(page);
+  await page.getByText(TEXT.otherPlace).click();
+  await page.getByPlaceholder(TEXT.otherPlace).fill('Chilon');
+  await page.getByText('Chilonzor', { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeVisible();
-  await page.getByText(TEXT.to).click();
-  await page.getByPlaceholder(TEXT.search).fill("farg'ona sh");
-  await page.getByText('Fargʻona shahri').click();
+  await page.getByText(TEXT.otherPlace).click();
+  await page.getByPlaceholder(TEXT.otherPlace).fill("farg'ona sh");
+  await page.getByText('Fargʻona shahri', { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeHidden();
-  await expect(page.getByText(TEXT.otherDay)).toBeVisible();
+  await expect(page.getByRole('tab').first()).toBeVisible();
 });

@@ -1,6 +1,7 @@
 import type { Trip, UserReviews } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAccount } from '../account/account-context';
+import { FavoriteCell } from '../comfort/favorite-cell';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -69,6 +70,8 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
       {start ? <AreaMap place={start} /> : null}
       {trip.comment ? <p className="safar-card safar-comment">{trip.comment}</p> : null}
       <ReviewCard driverId={trip.driver.id} onAll={setReviews} />
+      {/* A driver to come back to (G18, docs/18): only where the passenger can book. */}
+      {mine || closed ? null : <FavoriteCell driverId={trip.driver.id} screen="market.trip" />}
       {closed ? (
         <div className="safar-closed">
           <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
