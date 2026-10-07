@@ -85,7 +85,7 @@ export const fakePlaces: BookingsDeps['places'] = {
   fits: (point) => point.lat < OUTSIDE,
 };
 
-const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white' } as const;
+const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC' } as const;
 
 // A trip as the search shows it, with the seats taken by confirmed bookings.
 export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
@@ -106,6 +106,7 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     firstPrice: price,
     recommendedPrice: null,
     pickupMode: facts.pickupMode,
+    bookingRule: 'seats',
     pitak: facts.pickupMode === 'door' ? null : PITAK,
     status: 'active',
   };

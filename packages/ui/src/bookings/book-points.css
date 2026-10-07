@@ -1,0 +1,124 @@
+/* «Qayerdan, qayerga?» (G59, mockup 3-pickup and journey screen 7): the values of the mockup. */
+.points-title {
+  margin: 0;
+  padding: 32px 22px 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.points-sub {
+  margin: 2px 0 0;
+  padding: 0 22px 15px;
+  font-size: 13.75px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.points-card {
+  margin: 0 14px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.points-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--reg-divider);
+  background: none;
+  font: inherit;
+  color: var(--reg-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.points-row:last-child {
+  border-bottom: 0;
+}
+
+.points-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  color: var(--reg-card);
+}
+
+.points-pickup {
+  background: var(--reg-strong);
+}
+
+.points-dropoff {
+  background: var(--reg-star);
+}
+
+.points-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.points-label {
+  font-size: 13px;
+  color: var(--reg-muted);
+}
+
+.points-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--reg-ink);
+}
+
+.points-empty {
+  font-weight: 400;
+  color: var(--reg-control);
+}
+
+.points-change {
+  flex: none;
+  font-size: 15px;
+}
+
+.points .points-head {
+  margin: 16px 0 9px;
+  padding: 0 28px;
+}
+
+.points-sum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+  min-height: 40px;
+  font-size: 16.5px;
+}
+
+.points-sum b {
+  color: var(--reg-text);
+}
+
+.points-hint {
+  margin: 0;
+  padding: 13px 32px 10px 24px;
+  font-size: 12px;
+  line-height: 1.25;
+  color: var(--reg-muted);
+}
+
+.points-error {
+  margin: 0;
+  padding: 0 24px;
+  font-size: 14px;
+  color: var(--reg-to);
+}

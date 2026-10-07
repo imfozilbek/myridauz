@@ -1,40 +1,32 @@
 import type { MarketClient } from '@platform/api-client';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { findRoute, searchMarket, weekOf } from '../find/search-test-kit';
 import { testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
-import { quickRoute, recommendation, renderMarket, tap, trip } from './market-test-kit';
+import { recommendation, renderMarket, tap } from './market-test-kit';
 
 afterEach(() => {
   cleanup();
   localStorage.clear();
 });
 
-describe('FindTripFlow: the day and the empty day (G35, docs/97 K2, K6)', { timeout: 20_000 }, () => {
-  it('opens the nearest day with trips: tomorrow when today has none (K2)', async () => {
-    const days: string[] = [];
-    const searchTrips = vi.fn<MarketClient['searchTrips']>(async ({ date }) => {
-      days.push(date);
-      return date === days[1] ? [trip] : [];
-    });
-    renderMarket(<FindTripFlow onBack={() => undefined} />, testClients({ market: { searchTrips } }));
-    await quickRoute();
-    // Only tomorrow has the trip: the list shows it without a tap on a day.
-    expect(await screen.findByText('Jasur')).toBeTruthy();
-  });
-
-  it('moves to tomorrow by «Ertaga» after the first day was found (G35 K2)', async () => {
+describe('FindTripFlow: the days and the empty day (G59, docs/97 K2, K6)', { timeout: 20_000 }, () => {
+  it('opens on today without any trip in the week, and a day of the chips opens its trips', async () => {
+    const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => []);
     renderMarket(
       <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips: async () => [] } }),
+      testClients({ market: { ...searchMarket([]), searchTrips } }),
     );
-    await quickRoute();
-    // The route is the title, the day is on its chip (G40, docs/106 C6).
-    expect(await screen.findByText('Chilonzor → Fargʻona shahri')).toBeTruthy();
-    expect(screen.getByRole('tab', { name: 'Bugun', selected: true })).toBeTruthy();
+    await findRoute();
+    expect(await screen.findByRole('tab', { name: /Bugun\s*0 ta/u, selected: true })).toBeTruthy();
+    // Seven days, the third one by its date.
+    expect(screen.getAllByRole('tab')).toHaveLength(7);
     await tap('Ertaga');
-    expect(await screen.findByRole('tab', { name: 'Ertaga', selected: true })).toBeTruthy();
+    const tomorrow = weekOf([]).days[1]?.date;
+    await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(tomorrow));
+    expect(screen.getByRole('tab', { name: /Ertaga/u, selected: true })).toBeTruthy();
   });
 
   it('leaves a request from an empty day with its route and day (K6)', async () => {
@@ -44,12 +36,13 @@ describe('FindTripFlow: the day and the empty day (G35, docs/97 K2, K6)', { time
     const recommend = async () => recommendation;
     renderMarket(
       <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips: async () => [], publishRequest, recommend }, map: testMap() }),
+      testClients({
+        market: { ...searchMarket([]), searchTrips: async () => [], publishRequest, recommend },
+        map: testMap(),
+      }),
     );
-    await quickRoute();
-    // One main action on an empty day: the request, no second button beside it (G37, docs/101 R9).
-    expect(await screen.findByText('Bu kunga safar topilmadi')).toBeTruthy();
-    expect(screen.queryByText('Xabar bering')).toBeNull();
+    await findRoute();
+    expect(await screen.findByText('Hozircha safar yoʻq')).toBeTruthy();
     await tap('Soʻrov qoldirish');
     // The route and the day come from the search: the way of the pickup is the next question.
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();

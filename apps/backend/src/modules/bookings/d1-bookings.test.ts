@@ -23,6 +23,8 @@ const record = (over: Partial<BookingRecord> = {}): BookingRecord => ({
   tripId: 't1',
   passengerId: 10,
   seats: 1,
+  wholeCar: false,
+  withWoman: false,
   price: 90_000,
   commission: 9000,
   status: 'requested',

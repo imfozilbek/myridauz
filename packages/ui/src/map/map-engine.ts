@@ -10,7 +10,15 @@ export type MapMark = { readonly point: Point; readonly color: string; readonly 
 export type BorderParts = readonly (readonly (readonly (readonly [number, number])[])[])[];
 
 // The colors of the drawings over the map, from the theme of the brand (docs/20).
-export type MapColors = { readonly shade: string; readonly line: string };
+// The colors of a map from the brand tokens (docs/20, docs/126): the shade and the line drawn over it,
+// and the own style of the map: water, parks and highways.
+export type MapColors = {
+  readonly shade: string;
+  readonly line: string;
+  readonly water: string;
+  readonly park: string;
+  readonly road: string;
+};
 
 // A shown map: the point under the pin in the middle, and a way to move it. G24: the map of one
 // district (the rest is shaded and out of reach), marks with a line, all marks in view.
@@ -23,6 +31,8 @@ export type MapView = {
   show(marks: readonly MapMark[], line: readonly Point[] | null): void;
   // covered: the share of the height at the top hidden by a card.
   fit(points: readonly Point[], covered?: number): void;
+  // The area of a place before a booking: a circle of so many km in the middle (docs/126).
+  area(center: Point, km: number): void;
   remove(): void;
 };
 

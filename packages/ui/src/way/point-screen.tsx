@@ -1,21 +1,17 @@
-import type { Location, Point } from '@platform/contracts';
+import type { Location, Pitak, Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { Caption, Text } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
-import { MapSearch } from '../map/map-search';
 import { useMapView } from '../map/use-map-view';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { requestPosition } from '../telegram/location';
 import { MapFailed } from './map-failed';
-import { RecentList } from './recent-list';
+import { PointMap } from './point-map';
+import { PointSheet } from './point-sheet';
 import { rememberPlace } from './recent-places';
 import { useWhere } from './use-where';
 import { useClip } from './use-clip';
@@ -24,8 +20,7 @@ import { useNameText, type PointEnd, type WayEnd } from './way-end';
 import '../map/pickup-map.css';
 import './way.css';
 
-const PIN_SIZE = 44;
-type Method = 'map' | 'search' | 'location' | 'recent';
+type Method = 'map' | 'search' | 'location' | 'recent' | 'saved';
 
 type Props = {
   readonly title: TranslationKey;
@@ -36,19 +31,22 @@ type Props = {
   readonly zone?: Location;
   // A new pickup (G35, docs/97 PS12): the map moves to the person when it can.
   readonly findMe?: boolean;
+  // A booking (G59, docs/126): the end it chooses, and the pitak of the trip for its start.
+  readonly end?: 'from' | 'to';
+  readonly pitak?: Pitak;
+  readonly onPitak?: () => void;
   readonly onBack: () => void;
   readonly onPick: (end: WayEnd) => void;
 };
 
-// One point on the map (G24, docs/71): the pin in the middle, its name under it, the map of its
-// district only. The map fills the screen, a sheet at the bottom holds the search and the last places
-// (G36, docs/100). Search and «Mening joylashuvim» move the map, «Shu yerda» takes it; a last place is
-// taken at once.
-export function PointScreen({ title, start, find: findAny, zone, findMe = false, onBack, onPick }: Props) {
+// One point on the map (G24, docs/71; the new screen of docs/126): the search on top, the pin of the
+// color of the app in the middle, «Joylashuvim» at the edge, the map of its district only. The sheet
+// says what the pin points at and offers the places taken without typing.
+export function PointScreen(props: Props) {
+  const { title, start, find: findAny, zone, findMe = false, end, pitak, onPitak, onBack, onPick } = props;
   useScreenView('way.point');
   const { t } = useI18n();
   const { track } = useAnalytics();
-  const { colors } = useBrand().theme;
   const { map } = useApiClients();
   const { box, view, failed, retry } = useMapView(map, start);
   const find = (id: string) => {
@@ -98,48 +96,46 @@ export function PointScreen({ title, start, find: findAny, zone, findMe = false,
     return pick({ place, point: view.center(), name: where.name }, method.current);
   };
   if (failed) return <MapFailed onBack={onBack} onRetry={retry} />;
+  const region = place?.parentId ? findAny(place.parentId) : undefined;
+  const current = view && where && place ? { place, point: view.center(), name: where.name } : null;
   return (
     <div className="pickup-map">
       <Screen onBack={onBack} />
-      <div className="way-map">
-        <div ref={box} className="pickup-map-box" data-state={view ? 'ready' : 'loading'} />
-        <div className="pickup-map-pin">
-          <Icon name="pickup" size={PIN_SIZE} color={colors.accent} filled />
-        </div>
-        <Text className="way-pin-name" role="status">
-          {asking || !where
-            ? t('way.point.finding')
+      <PointMap
+        box={box}
+        ready={view !== null}
+        start={start}
+        zone={zone?.id}
+        note={note ? t(note, { zone: zone?.name ?? '' }) : null}
+        onFound={(point) => moveTo(point, 'search')}
+        onLocate={() => void locate()}
+      />
+      <PointSheet
+        title={title}
+        name={
+          asking || !where
+            ? null
             : place
               ? nameText(where.name, place)
-              : t(outside, { zone: zone?.name ?? '' })}
-        </Text>
-        {note ? (
-          <Text className="way-note" role="alert">
-            {t(note, { zone: zone?.name ?? '' })}
-          </Text>
-        ) : null}
-        <Button
-          className="way-locate"
-          mode="white"
-          size="m"
-          before={<Icon name="locate" />}
-          onClick={() => void locate()}
-        >
-          {t('way.point.mine')}
-        </Button>
-        <Caption className="pickup-map-credit">{t('bookings.map.credit')}</Caption>
-      </div>
-      <div className="way-sheet">
-        <Text weight="2">{t(title)}</Text>
-        <Caption>{t('way.point.hint')}</Caption>
-        <MapSearch
-          near={start}
-          {...(zone ? { zone: zone.id } : {})}
-          onFound={(point) => moveTo(point, 'search')}
+              : t(outside, { zone: zone?.name ?? '' })
+        }
+        area={place && where?.name ? (region ? `${place.name}, ${region.name}` : place.name) : null}
+        end={end ?? null}
+        current={current}
+        at={current?.point ?? null}
+        find={find}
+        onPick={(picked, how) => pick(picked, how)}
+        onMove={(point) => moveTo(point, 'search')}
+        {...(pitak && onPitak ? { pitak, onPitak } : {})}
+      />
+      {view ? (
+        <MainButton
+          text={t(
+            end === 'from' ? 'way.point.takeFrom' : end === 'to' ? 'way.point.takeTo' : 'way.point.here',
+          )}
+          onClick={take}
         />
-        <RecentList find={find} onChoose={(end) => pick(end, 'recent')} />
-      </div>
-      {view ? <MainButton text={t('way.point.here')} onClick={take} /> : null}
+      ) : null}
     </div>
   );
 }

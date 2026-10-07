@@ -5,21 +5,19 @@ import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { RequestScreen } from '../market/request-card';
 import { confirm, haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
-import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen } from './booking-screen';
+import { PendingBooking } from './pending-booking';
 import { cancellable } from './booking-status';
 import { OfferAccepted, OfferScreen } from './offer-list';
-import { OffersSection } from './offers-section';
+import { RequestOpen } from './request-open';
 import { TripTools, withTold } from './trip-tools';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
-
 const isStale = (caught: unknown) =>
   caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));
 
@@ -35,11 +33,12 @@ type Props = {
   readonly onClose: (changed: boolean) => void;
   // A seat or a request changed meanwhile: the parent loads it again at once (G52, docs/112).
   readonly onStale?: () => void;
+  readonly onHome?: () => void; // «Bosh sahifa» of a waiting request (docs/118 path 2, C)
 };
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStale }: Props) {
+export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStale, onHome }: Props) {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
@@ -64,10 +63,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
       if (isStale(caught)) onStale?.();
     }
   };
-  const open = (next: Offer | null) => {
-    setFailure(null);
-    setOfferId(next?.id ?? null);
-  };
+  const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
   if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
   if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
@@ -93,25 +89,22 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
       </OfferScreen>
     );
   }
-  if (opened.kind === 'request') {
-    const { request } = opened;
-    const mine = offers.filter((item) => item.requestId === request.id && item.status === 'sent');
+  if (opened.kind === 'request')
     return (
-      <RequestScreen
-        request={request}
+      <RequestOpen
+        request={opened.request}
+        offers={offers}
+        failure={failure}
         onBack={() => onClose(false)}
         onCancel={() =>
           void run(
-            () => market.cancelRequest(request.id),
+            () => market.cancelRequest(opened.request.id),
             () => onClose(true),
           )
         }
-      >
-        <ActionFailure error={failure} />
-        {request.status === 'open' ? <OffersSection offers={mine} onOpen={open} /> : null}
-      </RequestScreen>
+        onOffer={open}
+      />
     );
-  }
   const booking = withTold(opened.booking, told);
   // A cancel is asked first: one tap never loses a seat (docs/65 B4).
   const cancel = async () => {
@@ -124,17 +117,28 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
       },
     );
   };
-  // In the car or arrived: the seat is used, nothing to cancel (docs/35).
+  // In the car or arrived: the seat is used, nothing to cancel (docs/35). A waiting request shows
+  // «Javob kutilmoqda» and until when, as right after it was sent (G59).
   const inCar = booking.boardedAt !== null || booking.arrivedAt !== null;
   const actions =
     cancellable(booking.status) && !inCar
       ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
       : [];
   const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
+  if (booking.status === 'requested')
+    return (
+      <PendingBooking
+        booking={booking}
+        onBack={() => onClose(false)}
+        onCancel={() => void cancel()}
+        onHome={onHome ?? (() => onClose(false))}
+      >
+        <ActionFailure error={failure} />
+      </PendingBooking>
+    );
   return (
     <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
-      <AnswerDeadline booking={booking} />
       <TripTools
         booking={booking}
         onChat={openChat}

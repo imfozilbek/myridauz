@@ -19,14 +19,23 @@ type PlacePickerProps = {
   readonly allowWholeRegion: boolean;
   readonly onPick: (place: Location) => void;
   readonly onBack: () => void;
+  // «Samarqandning qaysi joyi?»: the places of one region at once (G59).
+  readonly region?: Location;
 };
 
 // Region → district or city, or a search by name (docs/14). Choosing, not typing (docs/19).
-export function PlacePicker({ title, directory, allowWholeRegion, onPick, onBack }: PlacePickerProps) {
+export function PlacePicker({
+  title,
+  directory,
+  allowWholeRegion,
+  onPick,
+  onBack,
+  region: open,
+}: PlacePickerProps) {
   useScreenView('places.picker');
   useScreenBackground('grouped');
   const { t } = useI18n();
-  const [region, setRegion] = useState<Location | null>(null);
+  const [region, setRegion] = useState<Location | null>(open ?? null);
   const [query, setQuery] = useState('');
   const pick = (place: Location) => {
     haptic.select();

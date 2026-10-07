@@ -4,12 +4,12 @@ import { toTrip, type TripRow as Row } from './trip-row';
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
   woman_on_board, comment, status, pickup_mode, created_at, car_make, car_model, car_color, car_plate,
-  first_depart_at, first_price, price_told_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  first_depart_at, first_price, price_told_at, booking_rule)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, depart_at = excluded.depart_at,
   ends_at = excluded.ends_at, price = excluded.price, price_told_at = excluded.price_told_at`;
 
-// Table trips (migrations 0007, 0035). The route never changes; the driver moves the time later and
+// Table trips (migrations 0007, 0035, 0043). The route never changes; the driver moves the time later and
 // lowers the price (G39, docs/104).
 export const d1Trips = (db: D1Database): TripRepository => ({
   save: async (trip) => {
@@ -37,6 +37,7 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         trip.firstDepartAt,
         trip.firstPrice,
         trip.priceToldAt,
+        trip.bookingRule,
       )
       .run();
   },

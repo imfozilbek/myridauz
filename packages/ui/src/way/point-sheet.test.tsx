@@ -20,14 +20,14 @@ const sheet = async () =>
   (await screen.findByText('Qayerdan olib ketsin?')).closest('.way-sheet') as HTMLElement;
 
 describe('The point over the map with a sheet (G36, docs/100)', { timeout: 20_000 }, () => {
-  it('keeps the pin, its name and «Mening joylashuvim» on the map, the rest in the sheet (DS1, DS4)', async () => {
+  it('keeps the search on top and «Joylashuvim» on the map, the name and the places in the sheet (docs/126)', async () => {
     remember('Qatortol mahallasi');
     openPoint(fakeMap());
     const bottom = await sheet();
-    expect(within(bottom).getByPlaceholderText('Mahalla, koʻcha yoki moʻljal')).toBeTruthy();
+    expect(bottom.contains(screen.getByPlaceholderText('Joy nomini yozing'))).toBe(false);
     expect(within(bottom).getByText('Qatortol mahallasi')).toBeTruthy();
-    expect(bottom.contains(await screen.findByRole('status'))).toBe(false);
-    expect(bottom.contains(screen.getByText('Mening joylashuvim'))).toBe(false);
+    expect(bottom.contains(await screen.findByRole('status'))).toBe(true);
+    expect(bottom.contains(screen.getByText('Joylashuvim'))).toBe(false);
   });
 
   it('takes a last place in one tap, without «Shu yerda» (DS3)', async () => {
@@ -38,17 +38,18 @@ describe('The point over the map with a sheet (G36, docs/100)', { timeout: 20_00
     expect(done[0]).toMatchObject({ place: { id: '1726269' }, point: { lat: 41.2 } });
   });
 
-  it('shows two last places at most, each with its district (DS4, DS5)', async () => {
+  it('shows two last places at most as chips with their names (DS4, mockup screen 9)', async () => {
     remember('Birinchi', 'Ikkinchi', 'Uchinchi');
     openPoint(fakeMap());
     const bottom = await sheet();
     expect(within(bottom).queryByText('Uchinchi')).toBeNull();
-    expect(within(bottom).getAllByText('Chilonzor')).toHaveLength(2);
+    expect(within(bottom).getByRole('button', { name: 'Birinchi' })).toBeTruthy();
+    expect(within(bottom).getByRole('button', { name: 'Ikkinchi' })).toBeTruthy();
   });
 
   it('closes the keyboard when a place is found, so the sheet goes down (DS4)', async () => {
     openPoint(fakeMap());
-    const field = await screen.findByPlaceholderText('Mahalla, koʻcha yoki moʻljal');
+    const field = await screen.findByPlaceholderText('Joy nomini yozing');
     field.focus();
     fireEvent.change(field, { target: { value: 'Chorsu' } });
     await tap('Chorsu bozori');

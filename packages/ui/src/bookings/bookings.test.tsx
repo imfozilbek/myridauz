@@ -53,7 +53,7 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
       }),
     );
     await tap('Jasur');
-    expect(screen.getByText('Javob berish muddati')).toBeTruthy();
+    expect(await screen.findByText(/gacha javob beradi/u)).toBeTruthy();
   });
 });
 

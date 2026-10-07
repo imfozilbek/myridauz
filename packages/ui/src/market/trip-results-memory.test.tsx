@@ -1,12 +1,17 @@
 import type { MarketClient } from '@platform/api-client';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { findRoute, findTo, searchMarket } from '../find/search-test-kit';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
 import { pullDown, rows, scrolledTo as at, skeleton as busy } from './list-test-kit';
-import { quickRoute, renderMarket, tap, trip } from './market-test-kit';
+import { renderMarket, tap, trip } from './market-test-kit';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
+const DRIVER = /^Jasur ★/u;
 
 const searches = (tracked: readonly { readonly name: string }[]) =>
   tracked.filter((event) => event.name === 'trip_search').length;
@@ -17,25 +22,25 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     const scrollTo = vi.spyOn(window, 'scrollTo');
     const { tracked } = renderMarket(
       <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips } }),
+      testClients({ market: { ...searchMarket(), searchTrips } }),
     );
-    await quickRoute();
-    await screen.findByText('Jasur');
+    await findRoute();
+    await screen.findByText(DRIVER);
     at(700);
-    await tap('Jasur');
+    await tap(DRIVER);
     await tap('Orqaga');
     // The same trips without a skeleton, the same place, no second search event.
     expect(busy()).toBeNull();
-    expect(screen.getByText('Jasur')).toBeTruthy();
+    expect(screen.getByText(DRIVER)).toBeTruthy();
     expect(scrollTo).toHaveBeenLastCalledWith(0, 700);
     expect(searches(tracked)).toBe(1);
-    // Today and tomorrow for the first day, then a quiet refresh in the background.
-    await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(3));
+    // A quiet refresh in the background.
+    await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(2));
     await tap('Orqaga');
     scrollTo.mockClear();
-    await tap('Davom etish');
+    await findTo();
     expect(busy()).not.toBeNull();
-    await screen.findByText('Jasur');
+    await screen.findByText(DRIVER);
     expect(scrollTo).not.toHaveBeenCalledWith(0, 700);
     expect(searches(tracked)).toBe(2);
   });
@@ -44,13 +49,13 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     const searchTrips = vi.fn<MarketClient['searchTrips']>(async () => [trip]);
     const { tracked } = renderMarket(
       <FindTripFlow onBack={() => undefined} />,
-      testClients({ market: { searchTrips } }),
+      testClients({ market: { ...searchMarket(), searchTrips } }),
     );
-    await quickRoute();
-    await screen.findByText('Jasur');
+    await findRoute();
+    await screen.findByText(DRIVER);
     expect(rows()).toEqual(['t1']);
     await pullDown();
-    expect(searchTrips).toHaveBeenCalledTimes(3);
+    expect(searchTrips).toHaveBeenCalledTimes(2);
     expect(busy()).toBeNull();
     expect(searches(tracked)).toBe(1);
   });

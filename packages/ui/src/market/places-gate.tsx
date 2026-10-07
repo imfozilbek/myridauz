@@ -23,14 +23,20 @@ export function PlacesGate({
   return <PlacesContext.Provider value={state.directory}>{children}</PlacesContext.Provider>;
 }
 
+// The directory inside the gate: the names of the places of a trip (G59).
+export function usePlaces(): PlaceDirectory {
+  const directory = useContext(PlacesContext);
+  if (!directory) throw new Error('ui.places_missing');
+  return directory;
+}
+
 export type PlaceLabel = { readonly name: string; readonly area: string };
 
 // Two levels, so a person always knows where it is (owner decision 29.09.2026):
 // "Chilonzor" in "Toshkent shahri"; a whole region says so under its name.
 export function usePlaceLabel() {
-  const directory = useContext(PlacesContext);
+  const directory = usePlaces();
   const { t } = useI18n();
-  if (!directory) throw new Error('ui.places_missing');
   return (id: string): PlaceLabel => {
     const place = directory.find(id);
     if (!place) return { name: id, area: '' };

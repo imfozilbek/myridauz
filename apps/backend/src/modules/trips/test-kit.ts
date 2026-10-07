@@ -28,6 +28,7 @@ const PLACES = new Map(
     { id: '1718', parentId: null, oneCity: false },
     { id: '1718401', parentId: '1718', oneCity: false },
     { id: '1718233', parentId: '1718', oneCity: false },
+    { id: '1706', parentId: null, oneCity: false },
   ].map((place) => [place.id, place]),
 );
 

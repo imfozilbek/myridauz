@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
-import { chooseRoute, searchRoute } from './market';
+import { chooseRoute, fromIfAsked, searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // The search by lists and the booking with its points (G26, G35, docs/97) on a narrow Android phone
@@ -33,35 +33,38 @@ async function open(page: Page, port: number) {
   await page.goto(telegramUrl(appUrl(port), 'android'));
 }
 
-test('passenger: lists, the way, the door in Toshkent, the home, the check', async ({ page }) => {
+test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshkent, the home', async ({
+  page,
+}) => {
   await open(page, PASSENGER.port);
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-  await expect(page.getByText(TEXT.toTitle)).toBeVisible();
+  await fromIfAsked(page);
   await shot(page, '1-route');
   await searchRoute(page);
   // On Android the native ripple layer lies over the text of a card: the tap goes to the card.
-  await page.locator('.trip-card').first().click();
+  await page.locator('.search-trip').first().click();
   await mainButton(page).filter({ hasText: TEXT.book }).click();
-  await expect(page.getByText(t('way.mode.door'))).toBeVisible();
+  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
   await shot(page, '2-way');
-  await page.getByText(t('way.mode.door')).click();
+  await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await drawn(page);
   await shot(page, '3-door');
   await mainButton(page)
-    .filter({ hasText: t('way.point.here') })
+    .filter({ hasText: t('way.point.takeFrom') })
     .click();
+  await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   await drawn(page);
-  await page.getByPlaceholder(t('bookings.map.search')).fill('Регистон');
+  await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
   await page.getByText('Registon maydoni', { exact: true }).click();
   await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
   await page.waitForTimeout(TILES_MS);
   await shot(page, '4-home');
   await mainButton(page)
-    .filter({ hasText: t('way.point.here') })
+    .filter({ hasText: t('way.point.takeTo') })
     .click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
   await shot(page, '5-review');
 });
 

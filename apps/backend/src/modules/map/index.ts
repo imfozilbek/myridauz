@@ -3,6 +3,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { mapRoutes } from './http/map-routes';
 import { searchRoutes } from './http/search-routes';
 import { whereRoutes } from './http/where-routes';
+import { nearRoutes } from './http/near-routes';
 import { borderRoutes } from './http/border-routes';
 import { whereIs } from './application/point-name';
 import { d1PlaceIndex } from './infrastructure/d1-place-index';
@@ -43,6 +44,10 @@ export const mapModule = new Hono<AppEnv>()
       borders: districtBorders(),
       districtName,
     })),
+  )
+  .route(
+    '/',
+    nearRoutes((env: Bindings) => ({ index: indexOf(env), cache: cacheOf() })),
   )
   .route('/', borderRoutes(districtBorders, districtsOf));
 export { localMapFiles };

@@ -1,0 +1,106 @@
+/* The channel of the direction and the ways rows (docs/119, mockup 7-channels-1). */
+.channel-card {
+  padding: 14px 14px 12px;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.channel-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.channel-card-art {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.channel-card-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.channel-card-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.channel-card-hint {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}
+
+.channel-card-close {
+  flex: none;
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--reg-control);
+  cursor: pointer;
+}
+
+.channel-card-join {
+  width: 100%;
+  height: 40px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--reg-soft);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.way-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--reg-card);
+  font: inherit;
+  color: var(--reg-control);
+  text-align: left;
+  cursor: pointer;
+}
+
+.way-row-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--reg-soft);
+  color: var(--reg-strong);
+}
+
+.way-row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.way-row-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--reg-ink);
+}
+
+.way-row-hint {
+  font-size: 13px;
+  color: var(--reg-muted);
+}

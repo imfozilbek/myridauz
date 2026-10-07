@@ -84,6 +84,8 @@ async function acceptTaken(
     comment: '',
     // The passenger chose the way already: the trip of the offer takes any (docs/70).
     pickupMode: 'both',
+    // The trip of an offer is the passenger's request: seats as asked (docs/09).
+    bookingRule: 'seats',
   });
   if (!published.ok) return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
@@ -92,6 +94,8 @@ async function acceptTaken(
     tripId: published.value.id,
     passengerId,
     seats: request.seats,
+    wholeCar: false,
+    withWoman: false,
     price: offer.price,
     commission,
     status: 'confirmed',

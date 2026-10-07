@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { SubscribeLink } from '../subscriptions/subscribe-link';
 import { startParam } from '../telegram/launch-param';
+import { searchMarket } from '../find/search-test-kit';
 import { testClients } from '../test-shell';
 import { FindLink } from './find-link';
 import { renderMarket, trip } from './market-test-kit';
@@ -13,7 +14,9 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-const clients = testClients({ market: { trip: async () => trip, searchTrips: async () => [] } });
+const clients = testClients({
+  market: { ...searchMarket(), trip: async () => trip, searchTrips: async () => [] },
+});
 type Link = (props: { readonly enabled: boolean; readonly children: ReactNode }) => ReactNode;
 // The gates above the links mount them again (registration, a new session): the link stays used.
 async function openTwice(Link: Link, shown: string | RegExp) {
@@ -37,13 +40,13 @@ async function openTwice(Link: Link, shown: string | RegExp) {
 describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
   it('a trip of a channel post; the start parameter stays for the source of the launch', async () => {
     window.history.replaceState(null, '', `/?tgWebAppStartParam=trip_${trip.id}`);
-    await openTwice(TripLink, 'Joy band qilish');
+    await openTwice(TripLink, '1 ta joy band qilish');
     expect(startParam()).toBe(`trip_${trip.id}`);
   });
 
   it('a trip of a bot message', async () => {
     window.history.replaceState(null, '', `/?trip=${trip.id}`);
-    await openTwice(TripLink, 'Joy band qilish');
+    await openTwice(TripLink, '1 ta joy band qilish');
     expect(window.location.search).toBe('');
   });
 
@@ -54,6 +57,6 @@ describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
 
   it('a search of the landing', async () => {
     window.history.replaceState(null, '', '/#tgWebAppStartParam=find_9999_1730');
-    await openTwice(FindLink, 'Qayerga borasiz?');
+    await openTwice(FindLink, 'Qayerdan yoʻlga chiqasiz?');
   });
 });

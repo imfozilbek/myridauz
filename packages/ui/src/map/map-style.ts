@@ -1,6 +1,6 @@
 import { layers, namedFlavor } from '@protomaps/basemaps';
 import type { LayerSpecification, StyleSpecification } from 'maplibre-gl';
-import type { MapSource } from './map-engine';
+import type { MapColors, MapSource } from './map-engine';
 
 export const MAP_SOURCE = 'protomaps';
 // Names as people in Uzbekistan write them: the local name, not the English one.
@@ -14,12 +14,17 @@ function withoutIcons(layer: LayerSpecification): LayerSpecification {
   return { ...layer, layout };
 }
 
-// The light map of Protomaps (docs/20: only a light theme) over our own archive and fonts.
-export function mapStyle({ archiveUrl, fontsUrl }: MapSource): StyleSpecification {
+// The light map of Protomaps (docs/20: only a light theme) over our own archive and fonts, in the
+// colors of the brand (docs/126): a second brand gets its own map without a line of code (docs/22).
+export function mapStyle(
+  { archiveUrl, fontsUrl }: MapSource,
+  { water, park, road }: MapColors,
+): StyleSpecification {
+  const flavor = { ...namedFlavor('light'), water, park_a: park, park_b: park, highway: road };
   return {
     version: 8,
     glyphs: fontsUrl,
     sources: { [MAP_SOURCE]: { type: 'vector', url: `pmtiles://${archiveUrl}` } },
-    layers: layers(MAP_SOURCE, namedFlavor('light'), { lang: LANGUAGE }).map(withoutIcons),
+    layers: layers(MAP_SOURCE, flavor, { lang: LANGUAGE }).map(withoutIcons),
   };
 }

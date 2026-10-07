@@ -11,7 +11,7 @@ type Props = {
   readonly route: Route;
   readonly date: string;
   readonly filters: TripFilters;
-  // The trips the server found with «Mashinada ayol bor»; «Uyimdan» hid all of them.
+  // The trips the server found with «Mashinada ayol bor»; the filters of the phone hid all of them.
   readonly found: readonly Trip[];
   readonly onClear: () => void;
   // The empty screen when no filter hid anything.
@@ -23,13 +23,9 @@ type Props = {
 export function FilteredEmpty({ route, date, filters, found, onClear, children }: Props) {
   const { t } = useI18n();
   const { market } = useApiClients();
-  // «Uyimdan» and the number of people are counted on the phone at once; «ayol bor» asks the server. Until it answers nothing is
-  // shown, so «nothing found» never flashes before «N trips are hidden» (G41, docs/108).
-  const counted = filters.woman
-    ? null
-    : filters.door || filters.seats > 1 || filters.dayPart !== 'any'
-      ? found.length
-      : 0;
+  // The people and «Boʻsh salon» are counted on the phone at once; «ayol bor» asks the server. Until it
+  // answers nothing is shown, so «nothing found» never flashes before «N trips are hidden» (G41, docs/108).
+  const counted = filters.woman ? null : filters.car || filters.seats > 1 ? found.length : 0;
   const [asked, setAsked] = useState<number | null>(null);
   useEffect(() => {
     if (!filters.woman) return undefined;

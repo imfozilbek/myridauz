@@ -28,6 +28,12 @@ function keepHere(id: string | null) {
 // The district where the person stands (G26, docs/74): «Qayerdan» fills itself, only when the
 // person allowed the place before. Nothing is asked here; outside Uzbekistan nothing is filled.
 export function useHere(directory: PlaceDirectory | null): Location | null {
+  return useHereChecked(directory) ?? null;
+}
+
+// The same, and undefined while the phone is still asked and no district of last time stands in:
+// a screen waits instead of showing a list that changes by itself a moment later (G59).
+export function useHereChecked(directory: PlaceDirectory | null): Location | null | undefined {
   const { map } = useApiClients();
   // undefined: not checked yet, the district of last time stands in.
   const [here, setHere] = useState<Location | null | undefined>(undefined);
@@ -47,5 +53,5 @@ export function useHere(directory: PlaceDirectory | null): Location | null {
   }, [map, directory]);
   if (here !== undefined) return here;
   const last = lastHere();
-  return (last && directory?.find(last)) || null;
+  return (last && directory?.find(last)) || undefined;
 }

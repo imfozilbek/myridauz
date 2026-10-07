@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
+import { searchTo } from './search-kit';
 import { mainButton, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { register } from './seed';
 import { backUntil } from './steps';
@@ -42,23 +43,24 @@ async function mapReady(page: Page, title: 'way.point.from' | 'way.point.to') {
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
 }
-const card = (page: Page, driver: string) => page.locator('.trip-card').filter({ hasText: driver }).first();
+const card = (page: Page, driver: string) => page.locator('.search-trip').filter({ hasText: driver }).first();
 
 for (const platform of PLATFORMS)
   test(`${platform}: the pickup, the dropoff by its name, again by the last place`, async ({ page }) => {
     const shot = shooter(page, platform);
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-    await page.getByAltText('Sirdaryo viloyati').click();
-    await page.getByText('Guliston shahri', { exact: true }).click();
+    await searchTo(page, 'Guliston shahri');
     await card(page, ELYOR.name).click();
     await mainButton(page).click();
+    await page.getByText(t('way.book.pickup')).click();
     await mapReady(page, 'way.point.from');
     await shot('01-pickup');
     await mainButton(page).click();
+    await page.getByText(t('way.book.dropoff')).click();
     await mapReady(page, 'way.point.to');
     await shot('02-dropoff');
-    await page.getByPlaceholder(t('bookings.map.search')).fill('Bahor');
+    await page.getByPlaceholder(t('way.point.search')).fill('Bahor');
     await expect(page.getByText(PLACE, { exact: true })).toBeVisible();
     await shot('03-dropoff-search');
     const before = await page.getByRole('status').textContent();
@@ -68,9 +70,9 @@ for (const platform of PLATFORMS)
     await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
     await shot('04-dropoff-found');
     await mainButton(page).click();
-    await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+    await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await mainButton(page).click();
-    await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
+    await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
     // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map.
     const recent = page.getByText(t('home.driver.last'));
     await backUntil(page, recent);
@@ -83,8 +85,8 @@ for (const platform of PLATFORMS)
     await page.getByText(t('way.change')).last().click();
     await mapReady(page, 'way.point.to');
     await shot('05-dropoff-recent');
-    // One tap on the last place: the review at once, no «Shu yerda» (DS3).
-    await page.locator('.way-recent').getByText('Guliston shahri').first().click();
-    await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+    // One tap on the last place: «Qayerdan, qayerga?» at once, no «Shu yerda» (DS3).
+    await page.locator('.way-chip').first().click();
+    await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await shot('06-review');
   });

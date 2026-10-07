@@ -1,9 +1,10 @@
 import type { Trip } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
-import { RouteScreen, type Route } from '../places/route-screen';
+import { FindStart } from '../find/find-start';
+import type { SeatChoice } from '../find/seat-choice';
+import type { Route } from '../places/route-screen';
 import { forgetList } from '../screen/list-memory';
-import { DateStep } from './date-step';
 import { FindResults } from './find-results';
 import { useForgetOnLeave } from './list-leave';
 import { NewRequestFlow } from './new-request-flow';
@@ -13,14 +14,14 @@ import { RESULTS } from './use-trip-search';
 
 export type FindScreen =
   | { readonly step: 'route'; readonly route?: Route }
-  | { readonly step: 'calendar'; readonly route: Route; readonly date: string }
   | { readonly step: 'request'; readonly route: Route; readonly date: string }
   | {
       readonly step: 'results';
       readonly route: Route;
       readonly date?: string;
       readonly open?: Trip;
-      readonly booking?: boolean;
+      readonly booking?: SeatChoice;
+      readonly district?: boolean;
     };
 
 type Props = {
@@ -34,8 +35,8 @@ type Props = {
   readonly pick?: 'from' | 'to';
 };
 
-// A passenger looks for a trip (G26, G35, docs/97): the route by lists, then at once the trips of
-// the nearest day with trips; the day changes on the results. The points come only at the booking.
+// A passenger looks for a trip (G59, docs/118 path 2): «Qayerga borasiz?» with the main directions,
+// then at once the trips of the nearest day with trips. The points come only at the booking.
 export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Props) {
   const { track } = useAnalytics();
   const known = initial ?? recent;
@@ -57,12 +58,9 @@ export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Prop
   useForgetOnLeave(RESULTS);
   if (screen.step === 'route')
     return (
-      <RouteScreen
-        allowWholeRegion
-        quick
-        {...(screen.route ? { initial: screen.route } : { pick: pick ?? 'to' })}
+      <FindStart
+        {...(screen.route ? { from: screen.route.from } : pick ? { pick } : {})}
         onBack={onBack}
-        onEnd={step}
         onDone={(route) => {
           step('done');
           rememberRoute(route);
@@ -70,18 +68,6 @@ export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Prop
         }}
       />
     );
-  if (screen.step === 'calendar') {
-    const { route, date } = screen;
-    return (
-      <DateStep
-        now={now}
-        initial={date}
-        calendar
-        onBack={() => setScreen({ step: 'results', route, date })}
-        onDone={(chosen) => setScreen({ step: 'results', route, date: chosen })}
-      />
-    );
-  }
   if (screen.step === 'request') {
     const { route, date } = screen;
     return (
@@ -99,6 +85,7 @@ export function FindTripFlow({ onBack, initial, route: recent, day, pick }: Prop
       filters={filters}
       onFilters={setFilters}
       onBack={() => setScreen({ step: 'route', route: screen.route })}
+      onHome={onBack}
       onScreen={setScreen}
     />
   );

@@ -2,6 +2,7 @@ import {
   arrivalAt,
   DAY_MS,
   TRIP_DAYS_AHEAD,
+  type BookingRule,
   type Car,
   type PickupMode,
   type Trip,
@@ -36,6 +37,8 @@ export type TripRecord = {
   readonly firstDepartAt: number;
   readonly firstPrice: number;
   readonly priceToldAt: number | null;
+  // Seats, seats or the whole car, only the whole car (docs/09, docs/118).
+  readonly bookingRule: BookingRule;
 };
 
 const AFTER_ARRIVAL_MS = 2 * 60 * 60 * 1000;

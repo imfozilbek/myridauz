@@ -47,6 +47,16 @@ describe('directions for search engines (docs/60)', () => {
     expect(bot.every((href) => href === `${passenger}?startapp=find_1718_1726__site`)).toBe(true);
   });
 
+  it('offers the channel of the direction under the buttons (docs/119)', () => {
+    // Toshkent has no channel: the channel of the zone of Samarqand.
+    const channel = brand.channels.find(
+      (zone) => zone.places.includes('1718401') || zone.places.includes('1718'),
+    );
+    const text = t('landing.direction.channel', { brand: brand.name, zone: channel?.title ?? '' });
+    expect(page).toContain(`class="button channel-button" href="https://t.me/${channel?.username}"`);
+    expect(page).toContain(escape(text));
+  });
+
   it('describes the pages in structured data: the brand, the questions, the path', () => {
     const home = jsonLd(site['index.html'] ?? '');
     expect(home.map((item) => item['@type'])).toEqual(['Organization', 'WebSite', 'FAQPage']);

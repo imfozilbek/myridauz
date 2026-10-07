@@ -38,6 +38,8 @@ Rida на Workers Free. Порог: больше 70 000 запросов Workers
 | 14 | Открытые жалобы через `!=` | `status IN ('new', 'in_review')` по индексу | `cron-reads.test.ts` |
 | 8 | Аватар спрашивали каждые 5 минут | Кэш в телефоне 1 час (личный, общие кэши не хранят) | `users-api.test.ts` |
 
+**G59, новые запросы поиска** (проверено 07.10.2026): «Qayerga borasiz?» один запрос `/trips/directions`, «Safarlar» один `/trips/days` на маршрут (7 дней сразу, одно чтение по индексу `trips_from`), «Yaqin joylar» `/passenger/map/near` из кэша Worker и телефона. Около +3 000 запросов Workers в день на 1 000 человек: бюджет остаётся в 35 000. Чтения те же, что у поиска: план проверяет `d1-search.test.ts`, счёт `trip-counts.test.ts`.
+
 Ещё: дневной отчёт команды читал весь журнал решений; индекс `application_log_decided`.
 
 ## Cron по уровням

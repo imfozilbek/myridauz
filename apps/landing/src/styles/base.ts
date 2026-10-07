@@ -25,6 +25,7 @@ font-weight:700;font-size:18px;color:var(--bg);background:var(--strong);text-dec
 transition:transform .15s,box-shadow .15s;box-shadow:0 8px 20px -10px var(--strong)}
 .button:hover{transform:translateY(-2px)}
 .button.driver{background:var(--driver);box-shadow:0 8px 20px -10px var(--driver)}
+.button.channel-button{background:var(--bg);color:var(--strong);border:2px solid var(--strong);box-shadow:none}
 .button.small{padding:10px 16px;font-size:16px;border-radius:12px;box-shadow:none}
 .button.wide{display:flex;max-width:420px;margin-top:24px}
 .actions{display:grid;gap:12px}

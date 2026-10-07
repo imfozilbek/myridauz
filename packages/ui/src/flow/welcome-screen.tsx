@@ -1,7 +1,7 @@
 import './welcome.css';
 import type { ReactNode } from 'react';
 import type { Welcome } from '../account/registration/registration-flow';
-import { brandVars } from '../account/registration/brand-vars';
+import { brandVars } from '../theme/brand-vars';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';

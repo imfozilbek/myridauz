@@ -1,0 +1,90 @@
+/* «Uyim», «Ishxonam», the pitak and «Yaqin joylar» of the map sheet (docs/126, mockup 10 screen 3). */
+.way-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 9px;
+}
+.way-tile {
+  /* The icon before the words (mockup screen 8); a narrow phone makes the words smaller (docs/121). */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 70px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--tgui--secondary_bg_color);
+  border-radius: 14px;
+  background: none;
+  font: inherit;
+  color: var(--tgui--link_color);
+  text-align: left;
+  cursor: pointer;
+}
+.way-tile-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12.5px;
+  line-height: 1.25;
+  color: var(--tgui--hint_color);
+}
+.way-tile-text b {
+  font-size: clamp(12px, 3.6vw, 15px);
+  white-space: nowrap;
+  color: var(--tgui--text_color);
+}
+.way-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+.way-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--tgui--secondary_bg_color);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tgui--text_color);
+  cursor: pointer;
+}
+.way-chip svg {
+  color: var(--tgui--link_color);
+}
+.way-sheet-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 5px;
+  min-height: 105px;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--tgui--secondary_bg_color);
+}
+.way-sheet-card-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-top: 2px;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.way-sheet-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14.5px;
+  line-height: 1.2;
+  color: var(--tgui--hint_color);
+}
+.way-sheet-card-text b {
+  font-size: 17.5px;
+  color: var(--tgui--text_color);
+}

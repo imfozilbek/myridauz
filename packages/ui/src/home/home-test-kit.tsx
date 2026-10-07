@@ -1,4 +1,5 @@
 import type { AppLink, Booking, Offer, RideRequest, Trip, Wallet } from '@platform/contracts';
+import { searchMarket } from '../find/search-test-kit';
 import type { ReactNode } from 'react';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { FeedContext } from '../feed/feed-context';
@@ -87,7 +88,12 @@ export function renderHome(
       myOffers: data.offers ?? none,
     },
     ...(data.wallet ? { wallet: { mine: data.wallet } } : {}),
-    market: { myRequests: data.asked ?? none, ...(data.trips ? { myTrips: data.trips } : {}) },
+    market: {
+      ...searchMarket(),
+      searchTrips: none,
+      myRequests: data.asked ?? none,
+      ...(data.trips ? { myTrips: data.trips } : {}),
+    },
     map: { where: async () => Promise.reject(new Error('none')) },
   });
   let fails = data.placesFail ?? 0;

@@ -17,6 +17,7 @@ test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 const who = (id: number, name: string): Person => ({ id, name, phone: `99890111${id - 900000}` });
 const SEEKER = who(900701, 'Oydin');
+const NAME_MS = 15_000;
 
 test('the first visit: «Siz haqingizda» before and after the gender', async ({ page }) => {
   await openHome(page, 'passenger', who(900702, 'Shoira'), 'android');
@@ -34,18 +35,27 @@ test('the search and the booking up to its review', async ({ page }) => {
   await openHome(page, 'passenger', SEEKER, 'android');
   await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
   await shot(page, 'android', 'pb10-search');
-  await searchTo(page, 'Samarqand viloyati', 'Samarqand shahri');
-  await expect(page.locator('.trip-card').filter({ hasText: MUROD.name }).first()).toBeVisible();
+  await searchTo(page, 'Samarqand shahri');
+  await expect(page.locator('.search-trip').filter({ hasText: MUROD.name }).first()).toBeVisible();
   await shot(page, 'android', 'pb15-results');
-  await page.locator('.trip-card').filter({ hasText: MUROD.name }).first().click();
+  await page.locator('.search-trip').filter({ hasText: MUROD.name }).first().click();
+  await expect(mainButton(page).filter({ hasText: TEXT.book })).toBeVisible();
+  await shot(page, 'android', 'pb16-trip');
   await mainButton(page).filter({ hasText: TEXT.book }).click();
+  await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
+  // The name under the pin is known: the button takes this place, not one still being asked.
+  // Four stands side by side answer slowly: the same wait as the other map checks.
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });
   await shot(page, 'android', 'pb17-pickup');
   await mainButton(page).click();
+  await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
+  // The name under the pin is known: the button takes this place, not one still being asked.
+  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });
   await shot(page, 'android', 'pb18-dropoff');
   await mainButton(page).click();
-  await expect(page.getByText(t('way.book.fixed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
   await shot(page, 'android', 'pb19-review');
 });
 

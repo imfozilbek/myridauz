@@ -2,7 +2,7 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 import { describe, expect, it, vi } from 'vitest';
 import { clip } from './map-overlays';
 
-const COLORS = { shade: 'white', line: 'black' };
+const COLORS = { shade: 'white', line: 'black', water: 'w', park: 'p', road: 'r' };
 
 // A map with only what the drawings use: sources, layers and the bounds.
 function fakeLibre() {

@@ -27,8 +27,8 @@ describe('StartPage', () => {
     // No bookings: the main screen asks where to go (G25).
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
-    // The list of the end opens at once (G35, docs/97 K1): the main screen is gone.
+    // A new phone does not know «Qayerdan»: its list opens at once (G59): the main screen is gone.
     await waitFor(() => expect(screen.queryByText('Mening safarlarim')).toBeNull());
-    expect(screen.getByText('Qayerga borasiz?')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
 });

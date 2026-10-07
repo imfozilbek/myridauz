@@ -24,7 +24,7 @@ vi.mock('maplibre-gl', () => ({
 
 const SOURCE = { archiveUrl: 'https://api.test/map.pmtiles', fontsUrl: 'https://api.test/fonts' };
 const START = { lat: 41.3111, lng: 69.2797 };
-const COLORS = { shade: 'shade', line: 'line' };
+const COLORS = { shade: 'shade', line: 'line', water: 'water', park: 'park', road: 'road' };
 
 describe('the gestures of a map (docs/94 F11)', () => {
   it('a small map inside a page moves with two fingers, a full screen map with one', () => {

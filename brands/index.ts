@@ -33,5 +33,5 @@ export function loadBrand(id: string = DEFAULT_BRAND_ID): BrandConfig {
 // The brand as one Mini App sees it: its own main color over the common colors (docs/20).
 export function brandForApp(brand: BrandConfig, app: AppName): BrandConfig {
   const colors = { ...brand.theme.colors, ...brand.theme.apps[app] };
-  return { ...brand, theme: { ...brand.theme, colors } };
+  return { ...brand, app, theme: { ...brand.theme, colors } };
 }

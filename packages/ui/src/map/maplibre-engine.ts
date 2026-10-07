@@ -8,6 +8,7 @@ import type { MapColors, MapEngine, MapView } from './map-engine';
 import { MAP_SOURCE, mapStyle } from './map-style';
 import { motionIsLow } from '../telegram/low-motion';
 import { clip, fit, show } from './map-overlays';
+import { area } from './map-area';
 
 // Close enough to see the streets and the houses around the pin.
 const START_ZOOM = 16;
@@ -56,6 +57,7 @@ const view = (map: MapLibreMap, colors: MapColors, box: HTMLElement): MapView =>
     clip: (parts) => clip(map, colors, parts),
     show: (marks, line) => show(map, colors, marks, line),
     fit: (points, covered) => fit(map, points, covered),
+    area: (center, km) => area(map, colors, center, km),
     remove: () => (sized.stop(), map.remove()),
   };
 };
@@ -69,7 +71,7 @@ export const maplibreEngine: MapEngine = (box, source, start, colors, inline) =>
   }
   const map = new MapLibreMap({
     container: box,
-    style: mapStyle(source),
+    style: mapStyle(source, colors),
     center: [start.lng, start.lat],
     zoom: START_ZOOM,
     attributionControl: false,

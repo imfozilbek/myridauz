@@ -18,6 +18,7 @@ const trip: TripRecord = {
   km: 300,
   seats: 3,
   price: 90000,
+  bookingRule: 'seats',
   womanOnBoard: false,
   comment: '',
   car: null,

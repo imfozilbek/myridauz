@@ -2,11 +2,13 @@ import { NO_RATING, type Pitak, type Rating, type Trip } from '@platform/contrac
 import type { Person } from '../../users';
 import { statusAt, type TripCar, type TripRecord } from '../domain/trip';
 
-// Seats taken by confirmed bookings and whether a woman is among the passengers (G08).
-export type Riders = { readonly seats: number; readonly woman: boolean };
+// Seats taken by confirmed bookings and whether a woman is among the passengers (G08): a woman, or a
+// man who said «Men bilan ayol bor» (docs/06 rule 4).
 export const NO_RIDERS: Riders = { seats: 0, woman: false };
 
-// What other people see of a trip: the driver's name, face and car, never the plate (docs/07).
+export type Riders = { readonly seats: number; readonly woman: boolean };
+
+// What other people see of a trip: the driver's name, face, car and plate (G59), never a phone (docs/07).
 export function tripView(
   trip: TripRecord,
   driver: Person,
@@ -25,7 +27,7 @@ export function tripView(
       id: driver.publicId,
       firstName: driver.firstName,
       hasAvatar: driver.avatarShown,
-      car: { make: car.make, model: car.model, color: car.color },
+      car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
       rating,
     },
     from: trip.from,
@@ -38,10 +40,11 @@ export function tripView(
     firstDepartAt: trip.firstDepartAt,
     firstPrice: trip.firstPrice,
     recommendedPrice,
-    // The 3 rules of docs/06: a woman driver, a woman the driver takes along, a woman with a
-    // confirmed booking. Only the fact, no name.
+    // The rules of docs/06: a woman driver, a woman the driver takes along, a woman with a confirmed
+    // booking or a confirmed «Men bilan ayol bor». Only the fact, no name.
     woman: driver.gender === 'female' || trip.womanOnBoard || riders.woman,
     pickupMode: trip.pickupMode,
+    bookingRule: trip.bookingRule,
     // A driver who takes people only around the city has no pitak to show.
     pitak: trip.pickupMode === 'door' ? null : pitak,
     comment: trip.comment,

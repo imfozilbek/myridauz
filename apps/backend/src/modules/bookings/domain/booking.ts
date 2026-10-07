@@ -15,6 +15,9 @@ export type BookingRecord = {
   readonly tripId: string;
   readonly passengerId: number;
   readonly seats: number;
+  // The whole car (docs/09) and «Men bilan ayol bor» (docs/06 rule 4), fixed at the booking (G59).
+  readonly wholeCar: boolean;
+  readonly withWoman: boolean;
   readonly price: number;
   readonly commission: number;
   readonly status: BookingStatus;

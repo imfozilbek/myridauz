@@ -27,7 +27,7 @@ describe('the search on the map and «Назад» (docs/94 B6)', () => {
       undefined,
       testClients({ map: { search } }),
     );
-    const field = screen.getByPlaceholderText('Mahalla, koʻcha yoki moʻljal') as HTMLInputElement;
+    const field = screen.getByPlaceholderText('Joy nomini yozing') as HTMLInputElement;
     fireEvent.change(field, { target: { value: 'Chorsu' } });
     act(pressBack);
     expect(field.value).toBe('');

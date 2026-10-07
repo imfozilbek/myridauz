@@ -67,6 +67,7 @@
   "direction.meta": "{from} → {to}: birga safar, narx va haydovchilar | {brand}",
   "direction.description": "{from} → {to} yoʻnalishida birga safar: masofa, bir joy narxi, tekshirilgan haydovchilar. {brand} Telegramda ochiladi, ilova yuklab olish shart emas.",
   "direction.title": "{from} → {to}: birga safar",
+  "direction.channel": "Telegram kanal: {brand} | {zone}",
   "direction.text": "{from} → {to} yoʻnalishida yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Haydovchilar tekshirilgan, raqamingiz yashirin.",
   "direction.faq.price.q": "{from} → {to}: bir joy qancha turadi?",
   "direction.faq.price.a": "Narx xaritada koʻrsatilgan: bu yoʻl xarajatiga qarab hisoblangan tavsiya etilgan narx. Aniq narxni haydovchi belgilaydi, yoʻlovchi haydovchiga oʻzi toʻlaydi.",

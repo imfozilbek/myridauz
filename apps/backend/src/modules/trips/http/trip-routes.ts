@@ -2,8 +2,12 @@ import {
   ADMIN_TRIPS_PATH,
   DRIVER_SCHEDULE_PATH,
   DRIVER_TRIPS_PATH,
+  TRIP_DAYS_PATH,
+  TRIP_DIRECTIONS_PATH,
   TRIPS_PATH,
   dateSchema,
+  daysQuerySchema,
+  directionsQuerySchema,
   scheduleQuerySchema,
   tripInputSchema,
   tripPriceSchema,
@@ -18,6 +22,7 @@ import { lowerTripPrice, retimeTrip } from '../application/change';
 import { publishTrip } from '../application/publish';
 import { cancelTrip, myTrips, searchTrips, teamTrips, tripDetail } from '../application/read';
 import { driverSchedule } from '../application/schedule';
+import { directionCards, tripDays } from '../application/trip-counts';
 
 const STATUS = {
   'auth.not_admin': 403,
@@ -98,6 +103,20 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
         if (!search.success) return fail(context, 'trips.invalid_input');
         const viewer = context.get('session').user.id;
         return context.json({ trips: await searchTrips(deps(context.env), search.data, viewer) });
+      })
+      // How many trips go where (G59): the cards of «Qayerga borasiz?» and the days of «Safarlar».
+      .get(TRIP_DIRECTIONS_PATH, async (context) => {
+        const query = directionsQuerySchema.safeParse(context.req.query());
+        if (!query.success) return fail(context, 'trips.invalid_input');
+        const viewer = context.get('session').user.id;
+        return context.json({ directions: await directionCards(deps(context.env), query.data.from, viewer) });
+      })
+      .get(TRIP_DAYS_PATH, async (context) => {
+        const query = daysQuerySchema.safeParse(context.req.query());
+        if (!query.success) return fail(context, 'trips.invalid_input');
+        const viewer = context.get('session').user.id;
+        const result = await tripDays(deps(context.env), query.data.from, query.data.to, viewer);
+        return result.ok ? context.json(result.value) : fail(context, result.error);
       })
       .get(`${TRIPS_PATH}/${ONE}`, async (context) => {
         const trip = await tripDetail(deps(context.env), context.req.param('id'));

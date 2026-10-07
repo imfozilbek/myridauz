@@ -32,12 +32,12 @@ test('F1, F2. a long list → a trip opens at the top; «Назад» → the sa
     const page = await context.newPage();
     await openAs(page, 'passenger', GULNORA, { platform });
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
-    await searchTo(page, 'Navoiy viloyati', 'Navoiy');
-    await expect(page.locator('.trip-card')).toHaveCount(10);
+    await searchTo(page, 'Navoiy');
+    await expect(page.locator('.search-trip')).toHaveCount(10);
     await g33.toBottom(page);
     const place = await g33.scrollY(page);
     expect(place).toBeGreaterThan(0);
-    await page.locator('.trip-card').last().click();
+    await page.locator('.search-trip').last().click();
     // A slow phone network from here: a list loaded again would show its skeleton.
     await page.route(/\/trips\?/, async (route) => {
       await new Promise((resolve) => setTimeout(resolve, SLOW_MS));
@@ -49,7 +49,7 @@ test('F1, F2. a long list → a trip opens at the top; «Назад» → the sa
     await pressBack(page);
     await shot(page, `f2-back-${platform}`);
     await expect.soft(page.locator('[aria-busy="true"]'), 'F2: no skeleton').toHaveCount(0, { timeout: 300 });
-    await expect(page.locator('.trip-card').first()).toBeVisible();
+    await expect(page.locator('.search-trip').first()).toBeVisible();
     await page.waitForLoadState('networkidle');
     await shot(page, `f2-results-${platform}`);
     expect.soft(await g33.scrollY(page), 'F2: the same place').toBe(place);

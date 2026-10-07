@@ -2,6 +2,7 @@ import {
   MAP_ARCHIVE,
   MAP_FONTS_PATH,
   MAP_PATH,
+  MAP_NEAR_PATH,
   MAP_SEARCH_PATH,
   MAP_WHERE_PATH,
   placeSearchSchema,
@@ -42,6 +43,11 @@ export function createMapClient(options: SignedOptions & { readonly mapUrl?: str
     pitakOf: async (from: string, to: string): Promise<Pitak | null> => {
       const response = await request(`${PITAK_OF_DIRECTION_PATH}?from=${from}&to=${to}`);
       return pitakOfDirectionSchema.parse(await response.json()).pitak;
+    },
+    // «Yaqin joylar»: the known places around the pin (docs/126).
+    near: async (point: Point): Promise<FoundPlace[]> => {
+      const response = await request(`${MAP_NEAR_PATH}?at=${point.lat},${point.lng}`);
+      return placeSearchSchema.parse(await response.json()).places;
     },
     // The district and the name of a point under the pin (G24, docs/69).
     where: async (point: Point): Promise<Where> => {

@@ -47,7 +47,7 @@ export const trip: Trip = {
     id: '00000000000000000000000000000007',
     firstName: 'Jasur',
     hasAvatar: false,
-    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' },
+    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC' },
     rating: { average: 4.8, count: 37 },
   },
   from: '1726269',
@@ -62,6 +62,7 @@ export const trip: Trip = {
   recommendedPrice: 95000,
   woman: true,
   pickupMode: 'both',
+  bookingRule: 'seats',
   pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } },
   comment: 'Katta yuk olmayman',
   status: 'active',
@@ -131,5 +132,5 @@ export async function quickRoute(wholeRegion = false) {
 // show the same name, so the pin itself is checked).
 export async function takePoint(name: string) {
   await waitFor(() => expect(screen.getByRole('status').textContent).toBe(name), { timeout: 3000 });
-  await tap('Shu yerda');
+  await tap(/^Shu yerda/u);
 }

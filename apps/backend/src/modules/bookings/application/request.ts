@@ -3,6 +3,7 @@ import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/bo
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
+import { keepsWithWoman, seatChoiceError, type ChoiceError } from '../domain/seat-choice';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
 type RequestError =
@@ -12,6 +13,7 @@ type RequestError =
   | 'bookings.no_seats'
   | 'bookings.too_many'
   | 'bookings.wrong_status'
+  | ChoiceError
   | PointsError;
 
 const isWaiting = (booking: BookingRecord, now: number) => statusAt(booking, now, false) === 'requested';
@@ -35,6 +37,8 @@ export async function requestBooking(
   if (facts.driverId === passengerId) return { ok: false, error: 'bookings.own_trip' };
   const [trip] = await deps.trips.views([tripId]);
   if (!trip || trip.seatsLeft < seats) return { ok: false, error: 'bookings.no_seats' };
+  const choiceError = seatChoiceError(trip, input);
+  if (choiceError) return { ok: false, error: choiceError };
   const mine = await deps.bookings.byPassenger(passengerId);
   if (mine.some((booking) => booking.tripId === tripId && isHolding(booking, now)))
     return { ok: false, error: 'bookings.wrong_status' };
@@ -42,11 +46,14 @@ export async function requestBooking(
     return { ok: false, error: 'bookings.too_many' };
   const points = await chosenPoints(deps, trip, input);
   if (!points.ok) return points;
+  const passenger = await deps.people.find(passengerId);
   const record: BookingRecord = {
     id: deps.newId(),
     tripId,
     passengerId,
     seats,
+    wholeCar: input.wholeCar ?? false,
+    withWoman: keepsWithWoman(trip, input, passenger?.gender === 'female'),
     price: facts.price,
     commission: deps.wallet.commission(facts.price, seats),
     status: 'requested',

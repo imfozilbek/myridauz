@@ -15,6 +15,8 @@ async function booked(kit: ReturnType<typeof setup>, status: BookingRecord['stat
     tripId,
     passengerId: DILNOZA,
     seats: 1,
+    wholeCar: false,
+    withWoman: false,
     price: 90_000,
     commission: 9000,
     status,

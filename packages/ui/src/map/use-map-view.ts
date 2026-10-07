@@ -8,7 +8,7 @@ import { useMapEngine, type MapSource, type MapView } from './map-engine';
 // inline: a small map inside a page that scrolls (docs/94 F11); a full screen map is not.
 export function useMapView({ archiveUrl, fontsUrl }: MapSource, { lat, lng }: Point, inline = false) {
   const loadEngine = useMapEngine();
-  const { bg, brandStrong } = useBrand().theme.colors;
+  const { bg, brandStrong, brandMint, successSoft, attentionSoft } = useBrand().theme.colors;
   const box = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<MapView | null>(null);
   const [failed, setFailed] = useState(false);
@@ -20,7 +20,13 @@ export function useMapView({ archiveUrl, fontsUrl }: MapSource, { lat, lng }: Po
     let gone = false;
     loadEngine()
       .then((engine) =>
-        engine(element, { archiveUrl, fontsUrl }, { lat, lng }, { shade: bg, line: brandStrong }, inline),
+        engine(
+          element,
+          { archiveUrl, fontsUrl },
+          { lat, lng },
+          { shade: bg, line: brandStrong, water: brandMint, park: successSoft, road: attentionSoft },
+          inline,
+        ),
       )
       .then(
         (made) => {
@@ -35,7 +41,20 @@ export function useMapView({ archiveUrl, fontsUrl }: MapSource, { lat, lng }: Po
       shown?.remove();
       setView(null);
     };
-  }, [loadEngine, archiveUrl, fontsUrl, lat, lng, attempt, bg, brandStrong, inline]);
+  }, [
+    loadEngine,
+    archiveUrl,
+    fontsUrl,
+    lat,
+    lng,
+    attempt,
+    bg,
+    brandStrong,
+    brandMint,
+    successSoft,
+    attentionSoft,
+    inline,
+  ]);
   const retry = () => {
     setFailed(false);
     setAttempt((count) => count + 1);

@@ -19,14 +19,12 @@ const open = async (page: Page, port: number) => {
 };
 
 // The screens of G18 for the owner review (docs/33).
-test('passenger: the recommended price and a saved driver', async ({ page }) => {
+// A driver is saved on «Baho» after the trip (mockup screen 17), not on «Safar».
+test('passenger: the trip of a driver', async ({ page }) => {
   const shot = await open(page, PASSENGER.port);
   await findTrips(page);
-  await expect(page.getByText(t('comfort.favorite.add'))).toBeVisible();
+  await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
   await shot('1-trip');
-  await page.getByText(t('comfort.favorite.add')).click();
-  await expect(page.getByText(t('comfort.favorite.added'))).toBeVisible();
-  await shot('2-saved');
 });
 
 test('passenger: "Sevimli haydovchilar"', async ({ page }) => {

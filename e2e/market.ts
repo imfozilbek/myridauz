@@ -46,27 +46,29 @@ export async function publishTrip(page: Page, shot: Shot = none) {
   await shot('8-published');
 }
 
-// The passenger's search (G35, docs/97 K1): «Qayerdan» opens by itself after «Qayerga» only when
-// the place of the person is not known yet; then it is Chilonzor (Toshkent shahri).
+// The passenger's search (G59, docs/118 path 2): «Qayerdan» is asked only when the place of the person
+// is unknown, then Chilonzor (Toshkent shahri); «Qayerga borasiz?» comes after it.
 export async function fromIfAsked(page: Page) {
-  await expect(page.getByText(TEXT.toTitle)).toBeHidden();
-  if (!(await page.getByText(TEXT.fromTitle).isVisible())) return;
+  const asked = page.getByText(TEXT.fromTitle);
+  await expect(asked.or(page.getByText(TEXT.directions))).toBeVisible();
+  if (!(await asked.isVisible())) return;
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
 }
 
-// The «Qayerga» list is open at once: Samarqand shahri, then the results of the nearest day.
+// Samarqand shahri by «Boshqa joy: tuman yoki shahar», then the trips of the nearest day with trips.
 export async function searchRoute(page: Page) {
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText('Samarqand shahri', { exact: true }).click();
   await fromIfAsked(page);
+  await page.getByText(TEXT.otherPlace).click();
+  await page.getByPlaceholder(TEXT.otherPlace).fill('Samar');
+  await page.getByText('Samarqand shahri', { exact: true }).click();
 }
 
-// A passenger finds trips to Samarqand shahri: the results of the nearest day open at once; the
-// filter "ayol bor"; a trip and its «Joy band qilish» on the main button.
+// A passenger finds trips to Samarqand shahri: «Qayerga borasiz?», the trips of the nearest day; the
+// filter "ayol bor"; «Safar» of a trip and its «1 ta joy band qilish» on the main button.
 export async function findTrips(page: Page, shot: Shot = none) {
   await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
-  await expect(page.getByText(TEXT.toTitle)).toBeVisible();
+  await fromIfAsked(page);
   await shot('1-route');
   await searchRoute(page);
   await expect(page.getByText('Jasur', { exact: false })).toBeVisible();

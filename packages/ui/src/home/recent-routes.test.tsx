@@ -35,8 +35,8 @@ describe('«Oxirgi yoʻnalish» tile on the main screen (G35 K5, G53)', { timeou
     open();
     expect(await screen.findByText('Oxirgi yoʻnalish')).toBeTruthy();
     await tap('Chilonzor → Fargʻona shahri');
-    // The results of the route with their days, no route screen on the way.
-    expect(await screen.findByText('Boshqa kun')).toBeTruthy();
+    // The trips of the route with their days, no route screen on the way.
+    expect(await screen.findByRole('tab', { name: /Bugun/u, selected: true })).toBeTruthy();
     expect(screen.queryByText('Davom etish')).toBeNull();
   });
 

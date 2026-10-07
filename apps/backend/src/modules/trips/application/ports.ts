@@ -40,6 +40,8 @@ export type Rider = {
   readonly tripId: string;
   readonly passengerId: number;
   readonly seats: number;
+  // «Men bilan ayol bor» of a man: the trip shows «Mashinada ayol bor» (docs/06 rule 4).
+  readonly withWoman: boolean;
   readonly pickup: Point | null;
   readonly dropoff: Point | null;
 };

@@ -60,6 +60,8 @@ describe('«Safar xaritasi» of the driver (G24, docs/70)', { timeout: 20_000 },
     expect(openExternal).toHaveBeenCalledWith(
       'https://yandex.uz/maps/?rtext=~41.36,69.3~41.29,69.21&rtt=auto',
     );
+    // The sheet closes to its end: its closing timer never outlives the test.
+    await vi.waitFor(() => expect(screen.queryByRole('dialog')).toBeNull(), { timeout: 2000 });
     // Not on an iPhone: no Apple Maps. Next time the navigator is not asked again.
     await tap('Yoʻl koʻrsatish');
     expect(openExternal).toHaveBeenCalledTimes(2);

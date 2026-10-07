@@ -7,6 +7,9 @@ export const MAP_SEARCH_PATH = '/passenger/map/search';
 // Fewer letters find thousands of places and help nobody.
 export const SEARCH_MIN_LETTERS = 2;
 export const SEARCH_RESULTS = 10;
+// «Yaqin joylar» of the map sheet (docs/126): known places around the pin, no typing.
+export const MAP_NEAR_PATH = '/passenger/map/near';
+export const NEAR_SHOWN = 4;
 
 // What a place is: the list shows an icon for each kind.
 export const PLACE_KINDS = [
