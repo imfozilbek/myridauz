@@ -25,11 +25,8 @@
 }
 
 .region-card {
-  position: relative;
   display: flex;
-  align-items: flex-end;
-  min-height: 72px;
-  aspect-ratio: 3 / 2;
+  flex-direction: column;
   padding: 0;
   overflow: hidden;
   border: none;
@@ -39,24 +36,21 @@
   text-align: left;
 }
 
+/* The line drawing (docs/118): one shape for all 14, so the cards of a row are one size (docs/121). */
 .region-photo {
-  position: absolute;
-  inset: 0;
+  display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: 480 / 314;
   object-fit: cover;
 }
 
-/* The name stays readable on any photo: a soft dark fade at the bottom. */
+/* The name under the drawing on white. «Qoraqalpogʻiston» is one long word: it fits a tile of a
+   320 px phone and never runs out (G27, docs/121). */
 .region-name {
-  position: relative;
-  /* The padding is inside the width: a long name never runs out of its tile (N15). */
   box-sizing: border-box;
   width: 100%;
-  padding: 24px 10px 8px;
-  /* «Qoraqalpogʻiston» is one long word: it fits a tile of a 360 px phone and never runs out (G27). */
-  font-size: clamp(13px, 4vw, 17px);
+  padding: 8px 12px 12px;
+  font-size: clamp(13.5px, 4.2vw, 17px);
+  line-height: 1.2;
   overflow-wrap: break-word;
-  color: var(--tgui--button_text_color);
-  background: linear-gradient(transparent, color-mix(in srgb, var(--tgui--text_color) 65%, transparent));
 }

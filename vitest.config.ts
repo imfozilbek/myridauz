@@ -29,6 +29,7 @@ export default defineConfig({
             'brands/*.test.ts',
             'scripts/*.test.mjs',
             'scripts/stand/*.test.mjs',
+            'brands/*/brand-kit/lib/*.test.mjs',
           ],
         },
       },

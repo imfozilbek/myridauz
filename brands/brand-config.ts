@@ -129,8 +129,11 @@ export type BrandConfig = {
   readonly commission: CommissionRule;
   readonly promo: PromoRule;
   readonly theme: BrandTheme;
-  // Photos of the 14 regions in brands/<brand>/public/regions/<SOATO code>.webp (docs/48).
+  // Photos of the 14 regions in brands/<brand>/public/regions/<SOATO code>.webp (docs/48); the apps
+  // show their line drawings from regions/lines/<app>/ (docs/118, pnpm regions in the brand kit).
   readonly regionPhotos: boolean;
+  // The Mini App this config is for, set by brandForApp: its colors and its drawings.
+  readonly app?: AppName;
   // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
   readonly bots: {
     readonly passenger: string;
