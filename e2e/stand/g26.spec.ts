@@ -113,8 +113,9 @@ async function expectOnlyIn(page: Page, query: string, districts: RegExp) {
   for (const line of await found.allInnerTexts()) expect(line).toMatch(districts);
 }
 
+// DILNOZA: she has no seat on the trip yet, the others asked one in 1 and 2 («Bu safarda joyingiz bor»).
 test('4. the search of a place finds only inside the zone of the trip', async ({ page }) => {
-  await findAndOpen(page, NODIRA);
+  await findAndOpen(page, DILNOZA);
   await openEnd(page, 'pickup');
   // «Registon» of Toshkent (a cafe, streets) is found; the Registon square of Samarqand is not.
   await expectOnlyIn(
