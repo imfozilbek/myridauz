@@ -11,8 +11,8 @@
     "cuts": "node promo/cuts.mjs"
   },
   "dependencies": {
-    "lucide-static": "1.48.0",
-    "opentype.js": "1.3.4",
-    "playwright": "1.56.1"
+    "lucide-static": "1.51.0",
+    "opentype.js": "2.0.0",
+    "playwright": "1.63.0"
   }
 }
