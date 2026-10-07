@@ -62,6 +62,7 @@ export default defineConfig({
         'sounds-screenshots.spec.ts',
         'registration-sizes-screenshots.spec.ts',
         'pixel-screenshots.spec.ts',
+        'g59-screenshots.spec.ts',
       ],
     },
   ],

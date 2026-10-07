@@ -97,6 +97,9 @@
 
 .seats-total {
   font-weight: 700;
+  /* «Jami · 90 000 × 2» and the sum stay on one line: a narrow phone makes them smaller (docs/121). */
+  font-size: clamp(13px, 4.2vw, 16px);
+  white-space: nowrap;
 }
 
 .seats-sum {

@@ -93,16 +93,16 @@
 
 .direction-body {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
   padding: 7px 12px 10px 12px;
 }
 
-.direction-text {
+.direction-head {
   display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .direction-name {
@@ -112,7 +112,9 @@
 }
 
 .direction-trips {
-  font-size: 12.5px;
+  /* One line on every phone: a narrow one makes it smaller, never taller (docs/121). */
+  font-size: clamp(10.5px, 3.3vw, 12.5px);
+  white-space: nowrap;
   line-height: 1.2;
   color: var(--reg-muted);
 }

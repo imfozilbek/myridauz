@@ -27,11 +27,11 @@ export function DirectionCard({ card, region, name, onOpen }: Props) {
     <Tappable Component="button" className="direction-card" onClick={onOpen}>
       {art ? <img className="direction-art" src={art} alt={name} /> : null}
       <span className="direction-body">
-        <span className="direction-text">
+        <span className="direction-head">
           <span className="direction-name">{name}</span>
-          <span className="direction-trips">{trips}</span>
+          <span className="direction-price">{t('find.priceFrom', { price: formatMoney(card.price) })}</span>
         </span>
-        <span className="direction-price">{t('find.priceFrom', { price: formatMoney(card.price) })}</span>
+        <span className="direction-trips">{trips}</span>
       </span>
     </Tappable>
   );
