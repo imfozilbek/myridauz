@@ -67,5 +67,8 @@
   "points.hint": "Har bir joy bosilsa xarita ochiladi. Ikkalasi tanlansa, soʻrov yuboriladi.",
   "pending.until": "{name} {date}, {time} gacha javob beradi",
   "pending.home": "Bosh sahifa",
-  "pending.at": "{region} · {time}"
+  "pending.at": "{region} · {time}",
+  "card.pickup": "{time} · olib ketish joyi",
+  "card.dropoff": "≈ {time} · tushirish joyi",
+  "card.seats": "{seats} joy"
 }
