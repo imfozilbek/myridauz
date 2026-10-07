@@ -80,12 +80,18 @@ test('a fast first screen: the splash still stands 0,6 s, then fades out in 0,3 
 
 test('longer than 2 s: the white line runs at the top of the splash', async ({ page }) => {
   await mockApi(page, 'active');
-  await slowApi(page, 3_000);
+  // The first screen keeps loading long after 2 s: a busy runner draws its frames late (lesson 155).
+  await slowApi(page, 8_000);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const line = page.locator('.splash-loader');
   await expect(line).toHaveCSS('opacity', '0');
-  await expect(line).toHaveCSS('opacity', '1', { timeout: 2_500 });
+  // The line waits exactly 2 s by its animation, then stays.
+  const delays = await line.evaluate((element) =>
+    element.getAnimations().map((animation) => animation.effect?.getTiming().delay),
+  );
+  expect(delays).toContain(2_000);
+  await expect(line).toHaveCSS('opacity', '1', { timeout: 7_000 });
   const run = await line.evaluate((element) => getComputedStyle(element, '::after').backgroundColor);
   expect(run).toBe('rgb(255, 255, 255)');
 });
