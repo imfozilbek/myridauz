@@ -83,7 +83,8 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
           keepOnly(next.reasons);
         }}
         onChange={() => go('car')}
-        onBack={() => go('car')}
+        // A fix opened on the photos goes back to the main screen, not to the car (docs/94 B4).
+        onBack={first === 'photos' ? leave : () => go('car')}
         onSend={send}
       />
     );

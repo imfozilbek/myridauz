@@ -58,6 +58,21 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
   });
 
+  it('B4: a photo fix opens on the photos, «Назад» goes straight to the main screen', async () => {
+    renderGate(
+      application({
+        status: 'changes_requested',
+        car,
+        reasons: ['side_unclear'],
+        photos: { front: true, side: true, interior: true },
+      }),
+    );
+    expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
+    await tap('Orqaga');
+    expect(await screen.findByText('Arizada tuzatish kerak')).toBeTruthy();
+    expect(screen.queryByText('Mashinangiz')).toBeNull();
+  });
+
   it('F3: leaving with a changed car asks first and stays on «no»', async () => {
     toFix();
     asked.mockReturnValue(false);
