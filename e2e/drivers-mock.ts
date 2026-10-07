@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
 
-// changes: the team asked to retake the face and the front photo and to check the plate.
+// changes: the team asked to retake the side photo (mockup g62/1 screen 5).
 export type DriverStart = 'none' | 'pending' | 'approved' | 'changes';
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -21,7 +21,7 @@ const CHANGES = {
   status: 'changes_requested',
   car,
   photos: allPhotos,
-  reasons: ['face_not_visible', 'plate_not_readable', 'plate_mismatch'],
+  reasons: ['side_unclear'],
 };
 const START = {
   none: null,
@@ -37,7 +37,8 @@ const PHOTO = `brands/${loadBrand().id}/public/regions/1726.webp`;
 export async function mockDrivers(page: Page, start: DriverStart) {
   let application: object | null = START[start];
   const submitted: unknown[] = [];
-  const photos = { front: false, side: false, interior: false };
+  // A fix keeps its photos: only the retaken one is new (G62).
+  const photos = { front: false, side: false, interior: false, ...START[start]?.photos };
   await page.route('**/api/driver/application', async (route) => {
     if (route.request().method() === 'POST') {
       submitted.push(route.request().postDataJSON());
@@ -51,7 +52,10 @@ export async function mockDrivers(page: Page, start: DriverStart) {
     }
     const kind = route.request().url().split('/').pop() as keyof typeof photos;
     photos[kind] = true;
-    application = { status: 'draft', car: null, photos: { ...photos }, reasons: [] };
+    application =
+      start === 'changes'
+        ? { ...CHANGES, photos: { ...photos }, reasons: [] }
+        : { status: 'draft', car: null, photos: { ...photos }, reasons: [] };
     await route.fulfill({ json: { application } });
   });
   // The team member on the main screen of the admin Mini App (G53).

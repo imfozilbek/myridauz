@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT } from '../apps';
+import { TEXT, newTripTile } from '../apps';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
 import { searchTo } from './search-kit';
 import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
@@ -34,7 +34,7 @@ async function chooseRoute(page: Page) {
 
 test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham»', async ({ page }) => {
   await openAs(page, 'driver', DRIVER);
-  await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
   // The pitak of the direction stands on the small map above the choice.

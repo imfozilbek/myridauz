@@ -1,4 +1,5 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import type { Page } from '@playwright/test';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -17,9 +18,9 @@ export const MINI_APPS = [
     name: 'driver',
     port: 4102,
     welcome: t('common.welcome.costsBack'),
-    // G25: an approved driver publishes from the main button, the list does not repeat it.
+    // G62: an approved driver publishes from the big tile on top, no main button.
     action: t('home.publish'),
-    mainButton: t('home.publish'),
+    mainButton: null,
   },
   { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications'), mainButton: null },
 ] as const;
@@ -43,24 +44,27 @@ export const TEXT = {
   fromTitle: t('places.fromTitle'),
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),
-  // G34: the main screen of a new driver opens the application from this card.
-  becomeDriver: t('drivers.application.title'),
+  // G62: the main screen of a new driver opens the application from this big tile.
+  becomeDriver: t('drivers.become.title'),
+  carTitle: t('drivers.car.title'),
   plateField: t('drivers.plate.title'),
-  take: t('drivers.photo.take'),
   shutter: t('common.camera.shoot'),
-  retake: t('drivers.photo.retake'),
-  send: t('drivers.review.send'),
+  send: t('drivers.send'),
+  resend: t('drivers.fix.send'),
+  carChange: t('drivers.car.change'),
   pending: t('drivers.status.pending.title'),
   // The note on the main screen while the application is checked (G53).
   check: t('home.check.title'),
-  photoFront: t('drivers.photo.front'),
-  plate: t('drivers.review.plate'),
+  photoFront: t('drivers.tile.front'),
+  photoSide: t('drivers.photo.side'),
+  photoInside: t('drivers.photo.interior'),
   photos: t('drivers.photos.title'),
-  face: t('drivers.photo.face'),
-  sent: t('drivers.sent.title'),
+  approved: t('drivers.approved.title'),
+  changes: t('drivers.status.changes_requested.title'),
   requestChanges: t('moderation.requestChanges'),
   reasonFront: t('drivers.reason.front_unclear'),
   reasonPlate: t('drivers.reason.plate_not_readable'),
+  reasonSide: t('drivers.reason.side_unclear'),
   approve: t('moderation.approve'),
   wholeRegion: t('places.wholeRegion'),
   newTrip: t('home.publish'),
@@ -88,3 +92,6 @@ export const appUrl = (port: number) => `http://localhost:${port}/`;
 
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;
+
+// «Safar eʼlon qilish» of an approved driver: the big tile on top of the main screen (G62).
+export const newTripTile = (page: Page) => page.locator('.main-tile', { hasText: TEXT.newTrip });

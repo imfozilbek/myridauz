@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT } from '../apps';
+import { TEXT, newTripTile } from '../apps';
 import { pressBack, telegramEvents } from '../telegram-mock';
 import { confirmedSeat } from './g27-kit';
 import * as g33 from './g33-kit';
@@ -62,7 +62,7 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
   for (const platform of PLATFORMS) {
     const page = await g33.phone(browser);
     await openAs(page, 'driver', DRAFT_DRIVERS[platform], { platform });
-    await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+    await newTripTile(page).click();
     await g33.chooseRoute(page);
     await page.getByText(t('way.trip.mode.door')).click();
     await page.getByText(TEXT.tomorrow).click();
@@ -77,7 +77,7 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
     await page.getByPlaceholder(t('market.comment.placeholder')).fill(COMMENT);
     // Telegram closes the Mini App; the person opens it again later.
     await page.reload();
-    await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+    await newTripTile(page).click();
     await page.waitForLoadState('networkidle');
     await shot(page, `f3-reopened-${platform}`);
     await expect.soft(page.getByText(DRAFT_BACK), 'F3: the draft is back').toBeVisible();
@@ -96,7 +96,7 @@ test('F6. the car camera: «Назад» closes the camera, the application stay
     await register('driver', CAMERA_PEOPLE[platform], 'male');
     await openAs(page, 'driver', CAMERA_PEOPLE[platform], { platform });
     await g33.toCarPhotos(page);
-    await page.getByText(TEXT.take).first().click();
+    await page.locator('.photo-tile').first().click();
     await expect(page.getByRole('dialog').getByLabel(TEXT.shutter)).toBeEnabled();
     await shot(page, `f6-camera-${platform}`);
     const back = await telegramEvents(page, 'web_app_setup_back_button');

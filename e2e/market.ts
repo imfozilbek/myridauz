@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT } from './apps';
+import { TEXT, newTripTile } from './apps';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -21,7 +21,7 @@ export async function chooseRoute(page: Page, wholeRegion = false) {
 // A driver publishes a trip, one question per screen (G07). The test person is a woman: no woman step.
 export async function publishTrip(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
-  await page.locator('#tg-main-button', { hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await chooseRoute(page);
   await shot('2-mode');
   await page.getByText(t('way.trip.mode.both')).click();
