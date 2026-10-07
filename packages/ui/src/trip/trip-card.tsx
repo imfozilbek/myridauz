@@ -38,7 +38,7 @@ export function TripCard({ booking, sum = true, onPoint }: Props) {
     );
   };
   return (
-    <div className="trip-card">
+    <div className="trip-sheet">
       <div className="trip-card-way">
         {point('from', start, t('bookings.card.pickup', { time: formatTime(new Date(trip.departAt)) }))}
         {point(

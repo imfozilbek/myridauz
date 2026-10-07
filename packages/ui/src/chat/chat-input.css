@@ -57,7 +57,7 @@
   align-items: center;
   gap: 10px;
   margin: 0 10px;
-  padding: 8px 10px;
+  padding: 6px 8px;
   border: 1.5px solid var(--tgui--button_color);
   border-radius: 16px;
   background: var(--tgui--bg_color);
@@ -65,12 +65,22 @@
 
 .chat-field > :first-child {
   flex: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
 }
 
-/* One line like Telegram, growing with the text up to a few lines (docs/88 L2). */
-.chat-field textarea {
+/* One line like Telegram in a grey pill (mockup g60/2), growing up to a few lines (docs/88 L2).
+   Two classes: the library sets a tall field on iOS with two classes too. */
+.chat-field > :first-child textarea {
   min-height: 0;
   max-height: 120px;
+  padding: 8px 14px;
+  border-radius: 18px;
+  background: var(--tgui--secondary_bg_color);
+  font-size: 15px;
+  line-height: 20px;
   resize: none;
   field-sizing: content;
 }

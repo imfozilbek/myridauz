@@ -19,10 +19,16 @@
 
 .chat-bubble {
   max-width: 80%;
-  padding: 8px 12px;
+  padding: 9px 12px 6px;
   border-radius: 16px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+/* The text of a message at the size of the mockup g60/2. */
+.chat-bubble > :first-child {
+  font-size: 15px;
+  line-height: 1.35;
 }
 
 .chat-me {
@@ -41,6 +47,7 @@
 
 .chat-time {
   display: block;
+  font-size: 11px;
   text-align: right;
   opacity: 0.7;
 }

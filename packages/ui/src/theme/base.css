@@ -22,8 +22,10 @@ textarea {
   user-select: text;
 }
 
-/* Keep content out of system areas (docs/21): Telegram SDK binds these variables. */
+/* Keep content out of system areas (docs/21): Telegram SDK binds these variables. The font of
+   Telegram on every screen: without it a page takes the browser default, a serif on iOS (G60). */
 .app-shell {
+  font-family: var(--tgui--font-family);
   min-height: var(--tg-viewport-stable-height, 100vh);
   box-sizing: border-box;
   padding-top: calc(

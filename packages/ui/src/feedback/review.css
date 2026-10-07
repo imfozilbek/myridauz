@@ -41,9 +41,19 @@
 }
 
 .review-stars {
-  padding: 10px 0;
+  padding: 0;
   border-radius: 14px;
   background: var(--tgui--bg_color);
+}
+
+/* Stars of 30 px in a row of 60 px (mockup g60/5). */
+.review-stars .stars-row {
+  padding: 13px 40px;
+}
+
+.review-stars .stars-row svg {
+  width: 30px;
+  height: 30px;
 }
 
 /* The numbers under the stars stay for the screen reader, the mockup shows the stars only. */

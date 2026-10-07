@@ -8,6 +8,8 @@ import { DriverRow } from '../trip/driver-row';
 
 // The driver and the two places of a shared trip (mockup g60/3): a place opens in a map. No phone
 // numbers here, ever (docs/07, docs/43).
+const FACE = 46;
+
 export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
   const { t, formatTime } = useI18n();
   const directory = usePlaces();
@@ -37,6 +39,7 @@ export function FollowDriver({ trip }: { readonly trip: SharedTrip }) {
         car={driver.car}
         note={`· ${t('share.follow.role')}`}
         plate={trip.plate}
+        photo={FACE}
       />
       {place(
         'from',

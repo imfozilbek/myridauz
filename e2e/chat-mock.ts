@@ -29,6 +29,8 @@ export async function mockChat(page: Page) {
   await page.route('**/api/chats/*/ticket', (route) =>
     json(route, { url: `ws://localhost:4199/chats/${KEY}/socket?ticket=e2e` }),
   );
+  // The booking of the chat: its head and the trip line (G60, mockup g60/2).
+  await page.route('**/api/chats/*/about', (route) => json(route, { booking: confirmed, role: 'passenger' }));
   await page.routeWebSocket(/\/chats\/.+\/socket/u, (ws) => {
     chatSocket.current = ws;
     ws.send(JSON.stringify({ type: 'history', messages: HISTORY, canCall: true }));

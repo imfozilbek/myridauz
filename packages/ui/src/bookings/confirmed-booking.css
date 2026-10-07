@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 14px;
+  padding: 11px 14px;
   border: 1px solid var(--reg-mint);
   border-radius: 14px;
   background: var(--reg-soft);
@@ -113,7 +113,15 @@
   background: var(--reg-muted);
 }
 
+/* A tile with its deadline under the word is taller (mockup g60/7). */
+.booking-button:has(.booking-button-sub) {
+  justify-content: flex-start;
+  min-height: 110px;
+  padding-top: 14px;
+}
+
 .booking-button-sub {
+  margin-top: 6px;
   font-size: 11px;
   font-weight: 400;
   color: var(--reg-strong);

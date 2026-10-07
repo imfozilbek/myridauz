@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Textarea } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { useDraft } from '../screen/draft';
@@ -16,6 +17,7 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
 import { TripCard } from '../trip/trip-card';
 import { DraftNote } from './draft-note';
 import { FavoriteSwitch } from './favorite-switch';
@@ -40,6 +42,7 @@ export function ReviewForm({ bookingId, target, booking, onBack, onComplain, onS
   useScreenView('reviews.form');
   useScreenBackground('tinted');
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const { track } = useAnalytics();
   const { feedback } = useApiClients();
   const draft = useDraft(reviewDraftKey(bookingId), checkReviewDraft);
@@ -73,7 +76,7 @@ export function ReviewForm({ bookingId, target, booking, onBack, onComplain, onS
     }
   };
   return (
-    <div className="review">
+    <div className="review" style={brandVars(colors)}>
       <Screen onBack={onBack} />
       <DraftNote shown={draft.restored !== null} />
       <div className="review-card">

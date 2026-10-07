@@ -2,7 +2,7 @@
 .trip-card-way {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 10px;
   padding: 12px 14px;
 }
 
@@ -30,7 +30,7 @@
   left: 50%;
   top: 10px;
   width: 1.5px;
-  height: 22px;
+  height: 25px;
   transform: translateX(-50%);
   background: var(--reg-divider);
 }
