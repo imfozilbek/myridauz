@@ -1,0 +1,33 @@
+/* «Yetib keldingizmi?» (G60, mockup g60/6): the values of the mockup at 360 px. */
+.arrived-sheet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 18px;
+  text-align: center;
+}
+
+.arrived-kicker {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--tgui--link_color);
+}
+
+.arrived-title {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.arrived-sub,
+.arrived-foot {
+  font-size: 13px;
+  color: var(--tgui--hint_color);
+}
+
+.arrived-sub {
+  margin-bottom: 8px;
+}

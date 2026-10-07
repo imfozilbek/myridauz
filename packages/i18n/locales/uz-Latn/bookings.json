@@ -97,5 +97,11 @@
   "past.talkTomorrow": "Xabar · ertaga",
   "past.erased": "Aniq joylar oʻchirildi",
   "tab.live": "Faol ({count})",
-  "tab.past": "Oʻtgan"
+  "tab.past": "Oʻtgan",
+  "arrivedAsk.kicker": "Safar · {name}",
+  "arrivedAsk.title": "Yetib keldingizmi?",
+  "arrivedAsk.when": "{place} · ≈ {time} edi",
+  "arrivedAsk.yes": "Ha, yetib keldim",
+  "arrivedAsk.later": "Hali yoʻldaman",
+  "arrivedAsk.close": "Yaqinlaringiz ham bilib oladi"
 }
