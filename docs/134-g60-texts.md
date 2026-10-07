@@ -12,6 +12,7 @@
 | Отзыв (g60/5) | «Safar qanday oʻtdi?», «+ Izoh yozish», «Sevimli haydovchi» |
 | После поездки (g60/6, g60/7) | «Safar tugadi», «Rida orqali: yaqinlaringiz kuzatadi, shikoyat qilish mumkin, kelmasa pul qaytadi.», «ertaga {время} gacha», «{n} kun qoldi», «Shikoyat · {n} kun qoldi», «Shikoyat: Yordam orqali», «Yana {имя} bilan», «Xabarlar», «faqat oʻqish», «Baho», «muddat tugadi», «{дата} · {n} kun oldin» |
 | «Mening safarlarim» (g60/6) | «Faol ({n})», «Oʻtgan», «Kecha», «Baho bering · {n} kun», «Xabar · bugun», «Baho berildi», «Aniq joylar oʻchirildi» |
+| Сверка Pixel Perfect (g60/6, g60/7, 07.10) | «{дата} · safar tugadi», «Xabar · {срок}», «{имя}ning yangi safarlari», «Aniq joylar oʻchirildi: faqat tuman qoldi.», «{место} · {время}», «Kuzatish tugadi: havola yetib borgandan 24 soat keyin yopiladi.», «{день} {время} · {откуда} → {куда}», «{область} · {время}» |
 | Шторки (g60/6, g60/7) | «Safar · {имя}», «Yetib keldingizmi?», «{место} · ≈ {время} edi», «Ha, yetib keldim», «Hali yoʻldaman», «Yaqinlaringiz ham bilib oladi», «Sevimli haydovchi», «{имя} yangi safar eʼlon qildi», «Siz bilan {n} marta borgan», «{n} ta boʻsh joy», «Band qilish», «Keyinroq» |
 
 ## Новые: ждут согласия
