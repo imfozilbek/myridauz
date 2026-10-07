@@ -8,6 +8,8 @@ export type Ride = {
   readonly driverId: number;
   readonly passengerId: number;
   readonly departAt: number;
+  // The end of the trip: a complaint is taken COMPLAIN_DAYS after it (docs/129).
+  readonly endsAt: number;
   readonly commission: number;
   readonly chatKey: string;
 };

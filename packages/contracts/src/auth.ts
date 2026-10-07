@@ -80,6 +80,7 @@ export const API_ERRORS = [
   'reviews.invalid_input',
   'complaints.not_found',
   'complaints.already',
+  'complaints.too_late',
   'complaints.invalid_input',
   'complaints.wrong_status',
   'stats.invalid_input',

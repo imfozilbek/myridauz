@@ -35,13 +35,13 @@ test('S46. no call before the seat is confirmed', async () => {
   );
 });
 
-test('A16, S73, P49. the family card shows no phone; it closes a day after; stars after 14 days are late', async () => {
+test('A16, S73, P49. the family card shows no phone; it closes a day after; stars after 7 days are late', async () => {
   const { trip, seat } = await confirmedSeat(DRIVER, ROZA);
   const chat = createChatClient(await signedAs('passenger', ROZA));
   const token = (await chat.share(seat.id)).link.slice(-43);
   const card = await createChatClient(await signedAs('passenger', TIMUR)).sharedTrip(token);
   expect(JSON.stringify(card)).not.toMatch(/998\d{9}|phone/u);
-  moveTrip(trip.id, Date.now() - 16 * DAY, Date.now() - 15 * DAY);
+  moveTrip(trip.id, Date.now() - 9 * DAY, Date.now() - 8 * DAY);
   standSql(`UPDATE bookings SET status = 'completed' WHERE id = '${seat.id}'`);
   expect(await outcome(chat.sharedTrip(token))).not.toBe('ok');
   const late = { bookingId: seat.id, stars: 5 };

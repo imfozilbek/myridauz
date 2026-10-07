@@ -62,7 +62,7 @@ describe('the rating of a person (docs/24)', () => {
     expect(asked.slice(2).map((item) => [item.ask.raterId, item.reminder])).toEqual([[DRIVER, true]]);
   });
 
-  it('keeps a review hidden until the other side answers or 14 days pass', async () => {
+  it('keeps a review hidden until the other side answers or 7 days pass (G60, docs/129)', async () => {
     const { deps } = setup();
     expect(await rate(deps, 101, review('b1', 2, 'qoʻpol, +998901234567'))).toBe('ok');
     expect((await reviewsOf(deps, DRIVER)).reviews).toEqual([]);
@@ -71,18 +71,20 @@ describe('the rating of a person (docs/24)', () => {
     expect(shown).toMatchObject({ authorName: 'P101', stars: 2, text: 'qoʻpol, ***' });
     const other = setup();
     await rate(other.deps, 101, review('b1', 4));
-    other.later(14 * DAY_MS);
+    other.later(6 * DAY_MS);
+    expect((await reviewsOf(other.deps, DRIVER)).reviews).toHaveLength(0);
+    other.later(DAY_MS);
     expect((await reviewsOf(other.deps, DRIVER)).reviews).toHaveLength(1);
   });
 
-  it('rates only a ride of the person that is over, within 14 days; the bot keeps the text', async () => {
+  it('rates only a ride of the person that is over, within 7 days; the bot keeps the text', async () => {
     const { deps, later } = setup([ride(1), ride(2, false)]);
     expect(await rate(deps, 999, review('b1', 5))).toBe('reviews.not_found');
     expect(await rate(deps, 102, review('b2', 5))).toBe('reviews.not_over');
     await rate(deps, 101, { ...review('b1', 4, 'Yaxshi'), tags: ['on_time', 'tidy'] });
     await rate(deps, 101, review('b1', 5), true);
     expect(await deps.store.review('b1', 101)).toMatchObject({ stars: 5, text: 'Yaxshi', tags: ['on_time'] });
-    later(15 * DAY_MS);
+    later(8 * DAY_MS);
     expect(await rate(deps, 101, review('b1', 3))).toBe('reviews.too_late');
   });
 

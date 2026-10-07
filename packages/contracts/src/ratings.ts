@@ -9,11 +9,11 @@ export const adminReviewHidePath = (reviewId: string) => `/admin/reviews/${revie
 export const STARS = [1, 2, 3, 4, 5] as const;
 // Fewer published ratings than this: "Yangi" instead of the number.
 export const MIN_SHOWN_RATINGS = 3;
-// A review stays hidden until the other side reviews too, or this many days pass.
-export const BLIND_DAYS = 14;
+// A review stays hidden until the other side reviews too, or this many days pass (docs/129, G60).
+export const BLIND_DAYS = 7;
 // The bot asks once, reminds once after this many hours, and takes answers this many days.
 export const RATING_REMIND_HOURS = 24;
-export const RATING_DAYS = 14;
+export const RATING_DAYS = 7;
 // 1 or 2 stars: the person is offered to complain (docs/17).
 export const COMPLAIN_BELOW_STARS = 3;
 // An average below this with at least this many ratings goes to a moderator (docs/24).
