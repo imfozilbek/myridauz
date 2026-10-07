@@ -1,7 +1,8 @@
 import type { Car, Offer } from '@platform/contracts';
 
 // The car the team approved when the offer was sent: a new check of the driver keeps it (docs/65 A1).
-export type OfferCar = Pick<Car, 'make' | 'model' | 'color'>;
+// The plate is null only for an offer sent before G61.
+export type OfferCar = Pick<Car, 'make' | 'model' | 'color'> & { readonly plate: string | null };
 
 // A driver's offer on a passenger's request (docs/35): a time and a price per seat.
 export type OfferRecord = {

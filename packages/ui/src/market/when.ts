@@ -19,6 +19,17 @@ export function useDayLabel() {
   };
 }
 
+// "Bugun", "Ertaga", else "3-oktabr": the day of a request on one line (G61, mockups 1-request, 3-offers).
+export function useShortDay() {
+  const { t, formatDate } = useI18n();
+  return (date: string, now: number) =>
+    date === today(now)
+      ? t('market.day.today')
+      : date === tomorrow(now)
+        ? t('market.day.tomorrow')
+        : formatDate(noonOf(date));
+}
+
 // "1-oktabr, soat 07:30".
 export function useWhenLabel() {
   const { t, formatDate, formatTime } = useI18n();

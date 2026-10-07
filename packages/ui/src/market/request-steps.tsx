@@ -1,16 +1,14 @@
 import type { Location } from '@platform/contracts';
 import { useState } from 'react';
-import { StepLayout } from '../account/step-layout';
 import { BookPoint } from '../bookings/book-point';
-import { useI18n } from '../context/i18n-context';
 import { useGoHome } from '../flow/home-context';
 import { RouteScreen, type Route } from '../places/route-screen';
-import { Screen } from '../screen/screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { MainButton } from '../telegram/bottom-button';
 import { rememberedWay } from '../way/remembered-way';
 import { DateStep } from './date-step';
+import { ExistingRequest } from './existing-request';
 import { keptWay, type useNewRequest } from './new-request-state';
+import { PlacesGate } from './places-gate';
 import { rememberRoute } from './recent-routes';
 import { RequestPoints } from './request-points';
 
@@ -28,22 +26,16 @@ type StepProps = {
 // One step of a request (G61, docs/118 path 4): the route, the day, then one screen with the maps
 // of its ends. Each shows the answer chosen before (docs/94 F8).
 export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) {
-  const { t } = useI18n();
   const home = useGoHome(onClose);
   const { step, answer, recommendation, pitak, go, next } = flow;
   const [now] = useState(Date.now);
   const { route, date, mode, pickup, dropoff } = answer;
-  if (flow.sent)
+  // Sent: «Mening soʻrovim» at once, the offers come into it (G61, journey screens 2 and 5).
+  if (flow.sent && route && date)
     return (
-      <StepLayout
-        hero
-        icon="selected"
-        title={t('market.request.published.title')}
-        hint={t('market.request.published.hint')}
-      >
-        <Screen onBack={home} />
-        <MainButton text={t('market.done')} onClick={home} />
-      </StepLayout>
+      <PlacesGate onBack={home}>
+        <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={home} />
+      </PlacesGate>
     );
   if (step === 'route' || !route)
     return (

@@ -60,7 +60,7 @@ export async function sendOffer(
     driverId,
     ...input,
     seats,
-    car: { make: car.make, model: car.model, color: car.color },
+    car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     status: 'sent',
     bookingId: null,
     createdAt: now,

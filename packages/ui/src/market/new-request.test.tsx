@@ -44,7 +44,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
       await screen.findByText('Faol eʼlonlar soni chegaraga yetdi. Eskisini bekor qiling.'),
     ).toBeTruthy();
     await tap('Soʻrov qoldirish');
-    expect(await screen.findByText('Soʻrov qoldirildi')).toBeTruthy();
+    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
     expect(publishRequest).toHaveBeenLastCalledWith(
       expect.objectContaining({
         from: '1726269',
@@ -76,7 +76,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     fireEvent.click(screen.getByRole('checkbox', { name: 'Men bilan ayol bor' }));
     fireEvent.click(screen.getByRole('checkbox', { name: 'Boʻsh salon kerak' }));
     await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrov qoldirildi');
+    await screen.findByText('Soʻrovni bekor qilish');
     expect(publishRequest).toHaveBeenCalledWith(
       expect.objectContaining({ seats: 2, withWoman: true, wholeCar: true }),
     );
@@ -99,7 +99,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     fireEvent.click(await screen.findByText('Tushirish joyi'));
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrov qoldirildi');
+    await screen.findByText('Soʻrovni bekor qilish');
     expect(publishRequest).toHaveBeenCalledWith(
       expect.objectContaining({ pickupMode: 'pitak', pickup: null }),
     );
@@ -118,13 +118,13 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     openRequest();
     await toPoints();
     await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrov qoldirildi');
+    await screen.findByText('Soʻrovni bekor qilish');
     cleanup();
     const publishRequest = openRequest({ search: { route: ROUTE, date: '2030-01-02' } });
     expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
     expect(screen.getAllByText('Oʻzgartirish')).toHaveLength(2);
     await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrov qoldirildi');
+    await screen.findByText('Soʻrovni bekor qilish');
     expect(publishRequest).toHaveBeenCalledWith(
       expect.objectContaining({ date: '2030-01-02', pickupMode: 'door', seats: 1, price: 95_000 }),
     );

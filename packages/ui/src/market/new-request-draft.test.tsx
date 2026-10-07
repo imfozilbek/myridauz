@@ -39,7 +39,7 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
     fireEvent.click(screen.getByText('Tushirish joyi'));
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
-    expect(await screen.findByText('Soʻrov qoldirildi')).toBeTruthy();
+    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
     expect(publishRequest).toHaveBeenCalledWith(expect.objectContaining({ seats: 2, price: 95000 }));
     cleanup();
     openRequest();
@@ -54,7 +54,7 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
     fireEvent.click(screen.getByText('Tushirish joyi'));
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
-    await screen.findByText('Soʻrov qoldirildi');
+    await screen.findByText('Soʻrovni bekor qilish');
     await tap('Orqaga');
     expect(home).toHaveBeenCalledOnce();
   });

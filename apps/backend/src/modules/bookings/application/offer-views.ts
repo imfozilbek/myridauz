@@ -3,7 +3,7 @@ import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
 import type { BookingsDeps } from './ports';
 import type { RequestFacts } from './request-facts';
 
-// An offer as both sides see it: the driver's name, face and car, never the plate (docs/07).
+// An offer as both sides see it: the driver's name, face, car and plate (G61, as a trip of G59).
 export async function offerViews(
   deps: BookingsDeps,
   offers: readonly OfferRecord[],
@@ -25,7 +25,7 @@ export async function offerViews(
           id: driver.publicId,
           firstName: driver.firstName,
           hasAvatar: driver.avatarShown,
-          car: { make: car.make, model: car.model, color: car.color },
+          car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
           rating: ratings.get(offer.driverId) ?? NO_RATING,
         },
         from: request.from,

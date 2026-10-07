@@ -3,3 +3,5 @@
 ALTER TABLE ride_requests ADD COLUMN whole_car INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE ride_requests ADD COLUMN with_woman INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE offers ADD COLUMN seats INTEGER;
+-- The plate of the car of an offer, on the offer card before the answer (owner decision 07.10.2026).
+ALTER TABLE offers ADD COLUMN car_plate TEXT;

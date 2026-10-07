@@ -1,5 +1,5 @@
 import type { MapClient, MarketClient } from '@platform/api-client';
-import type { RideRequestInput } from '@platform/contracts';
+import type { RideRequest, RideRequestInput } from '@platform/contracts';
 import { vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
@@ -25,22 +25,34 @@ export function openRequest({
   mine = {},
   gender = 'male',
 }: Options = {}) {
-  const publishRequest = vi.fn(async (input: RideRequestInput) => ({
-    ...input,
-    wholeCar: input.wholeCar ?? false,
-    withWoman: input.withWoman ?? false,
-    id: 'r1',
-    passenger: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: false },
-    km: 320,
-    status: 'open' as const,
-  }));
+  // A sent request is in «Mening soʻrovim» right after (G61).
+  const sent: RideRequest[] = [];
+  const publishRequest = vi.fn(async (input: RideRequestInput) => {
+    const made: RideRequest = {
+      ...input,
+      pickupMode: input.pickupMode,
+      wholeCar: input.wholeCar ?? false,
+      withWoman: input.withWoman ?? false,
+      id: 'r1',
+      passenger: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: false },
+      km: 320,
+      status: 'open',
+    };
+    sent.push(made);
+    return made;
+  });
   const engine = fakeMap().engine;
   renderMarket(
     <MapEngineContext.Provider value={async () => engine}>
       <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} />
     </MapEngineContext.Provider>,
     testClients({
-      market: { recommend: async () => recommendation, publishRequest, ...mine },
+      market: {
+        recommend: async () => recommendation,
+        publishRequest,
+        myRequests: async () => sent,
+        ...mine,
+      },
       bookings: { myOffers: async () => [] },
       map: testMap(map),
     }),

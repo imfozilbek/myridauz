@@ -69,8 +69,6 @@
   "request.seats": "{count} kishi",
   "request.offer": "Taklif yuborish",
   "request.publish": "Soʻrov qoldirish",
-  "request.published.title": "Soʻrov qoldirildi",
-  "request.published.hint": "Haydovchilar uni koʻradi va sizga taklif yuboradi.",
   "request.cancel": "Soʻrovni bekor qilish",
   "request.openMine": "Soʻrovni ochish",
   "request.perSeat": "bir joy uchun",

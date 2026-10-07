@@ -11,7 +11,7 @@ import { ExistingRequest } from './existing-request';
 import type { RequestAnswer } from './new-request-state';
 import { PlacesGate } from './places-gate';
 import { RequestChoice, type RequestChoiceValue } from './request-choice';
-import { noonOf, today, tomorrow } from './when';
+import { useShortDay } from './when';
 
 type Props = {
   readonly answer: RequestAnswer;
@@ -26,7 +26,8 @@ type Props = {
 // «Soʻrov» (G61, docs/118 path 4, mockup 1-request): the screen of a booking, but the passenger
 // chooses the people and the price; drivers answer with their time and price (docs/09).
 export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, onBack, onSent }: Props) {
-  const { t, formatDate } = useI18n();
+  const { t } = useI18n();
+  const shortDay = useShortDay();
   const { market } = useApiClients();
   const nameText = useNameText();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
@@ -77,19 +78,13 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
       return setError(errorKey(caught));
     }
   };
-  const day =
-    date === today(now)
-      ? t('market.day.today')
-      : date === tomorrow(now)
-        ? t('market.day.tomorrow')
-        : formatDate(noonOf(date));
   const start =
     mode === 'pitak' ? (pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
   return (
     <PointsScreen
       sub={t('market.request.sub', {
         route: t('common.route', { from: route.from.name, to: route.to.name }),
-        day,
+        day: shortDay(date, now),
       })}
       start={start}
       end={dropoff ? nameText(dropoff.name, dropoff.place) : null}

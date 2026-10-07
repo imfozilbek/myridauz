@@ -13,6 +13,7 @@ type Row = {
   car_make: string | null;
   car_model: string | null;
   car_color: string | null;
+  car_plate: string | null;
   status: Offer['status'];
   booking_id: string | null;
   created_at: number;
@@ -22,7 +23,7 @@ const carOf = (row: Row): OfferCar | null => {
   const color = CAR_COLORS.find((item) => item === row.car_color);
   return row.car_make === null || row.car_model === null || !color
     ? null
-    : { make: row.car_make, model: row.car_model, color };
+    : { make: row.car_make, model: row.car_model, color, plate: row.car_plate };
 };
 
 const toOffer = (row: Row): OfferRecord => ({
@@ -46,8 +47,8 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
     await db
       .prepare(
         `INSERT INTO offers (id, request_id, driver_id, depart_at, price, status, booking_id, created_at,
-         car_make, car_model, car_color, seats)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         car_make, car_model, car_color, seats, car_plate)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET status = excluded.status, booking_id = excluded.booking_id`,
       )
       .bind(
@@ -63,6 +64,7 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
         offer.car?.model ?? null,
         offer.car?.color ?? null,
         offer.seats,
+        offer.car?.plate ?? null,
       )
       .run();
   },

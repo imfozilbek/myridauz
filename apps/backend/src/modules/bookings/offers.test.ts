@@ -19,7 +19,11 @@ describe('a driver on a new check (docs/65 A1)', () => {
     await sendOffer(deps, DRIVER, addRequest({ passengerId: ALI }), offer);
     recheck();
     expect((await passengerBookings(deps, DILNOZA))[0]?.plate).toBe('01A123BC');
-    expect((await passengerOffers(deps, ALI))[0]?.driver.car.model).toBe('Cobalt');
+    // The plate is on the offer card before the answer (G61, owner decision 07.10.2026).
+    expect((await passengerOffers(deps, ALI))[0]?.driver.car).toMatchObject({
+      model: 'Cobalt',
+      plate: '01A123BC',
+    });
     expect(await sendOffer(deps, DRIVER, addRequest(), offer)).toEqual({
       ok: false,
       error: 'trips.not_driver',

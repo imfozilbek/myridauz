@@ -30,13 +30,9 @@
   "offer.commission": "Komissiya",
   "offer.sent.title": "Taklif yuborildi",
   "offer.sent.hint": "Yoʻlovchining javobini bot orqali bilasiz.",
-  "offer.list": "Haydovchilardan takliflar",
-  "offer.listHint": "Taklifni oching va qabul qiling",
   "offer.mine": "Yuborilgan takliflar",
   "offer.accept": "Qabul qilish",
   "offer.decline": "Rad etish",
-  "offer.accepted.title": "Joyingiz tasdiqlandi",
-  "offer.accepted.hint": "Davlat raqami «Band qilingan joylar» boʻlimida.",
   "offer.status.sent": "Javob kutilmoqda",
   "offer.status.accepted": "Qabul qilindi",
   "offer.status.declined": "Rad etildi",
@@ -123,5 +119,9 @@
   "why.cancelled_by_passenger": "Siz joyni bekor qildingiz.",
   "moved": "Vaqt oʻzgardi: {from} → {to}",
   "disagree": "Rozi emasman",
-  "others": "Oʻxshash safarlar"
+  "others": "Oʻxshash safarlar",
+  "offer.car": "{car} · {plate}",
+  "request.perSeat": "bir joy {price}",
+  "request.offers": "Takliflar ({count})",
+  "request.waiting": "Kutayotganda"
 }

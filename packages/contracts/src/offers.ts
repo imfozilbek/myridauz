@@ -30,7 +30,13 @@ export const offerSchema = z.object({
     id: personIdSchema,
     firstName: z.string(),
     hasAvatar: z.boolean(),
-    car: z.object({ make: z.string(), model: z.string(), color: z.enum(CAR_COLORS) }),
+    // The plate shows before the answer, as on a trip (G61); null for an offer sent before G61.
+    car: z.object({
+      make: z.string(),
+      model: z.string(),
+      color: z.enum(CAR_COLORS),
+      plate: z.string().nullable(),
+    }),
     // "⭐ 4,8 (37)" or "Yangi": the passenger chooses a driver by it (docs/24, docs/65 C).
     rating: ratingSchema,
   }),
