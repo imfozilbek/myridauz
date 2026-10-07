@@ -93,7 +93,12 @@ test('G32. a photo in support; the next question comes with «Tarix» of the who
   const { member } = assigned(LAZIZA);
   const photoTo = async () =>
     (await botMessages()).find(
-      (m) => m.bot === 'admin' && m.chatId === member.id && m.method === 'sendPhoto',
+      (m) =>
+        m.bot === 'admin' &&
+        m.chatId === member.id &&
+        m.method === 'sendPhoto' &&
+        // A new face of a registered person goes to the team as a photo too (G58).
+        m.text.includes(wordsOf('bot.support.photo')),
     );
   await expect.poll(photoTo).toBeTruthy();
   expect((await photoTo())?.text).toContain(wordsOf('bot.support.photo'));

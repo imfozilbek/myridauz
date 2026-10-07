@@ -39,5 +39,14 @@
   "telegram.title": "Telegramda oching",
   "telegram.description": "Bu ilova faqat Telegram ichida ishlaydi.",
   "telegram.open": "Telegramda ochish",
-  "sounds.unknown_set": "Bunday ovoz topilmadi."
+  "sounds.unknown_set": "Bunday ovoz topilmadi.",
+  "network": "Internet bilan aloqa yoʻq. Tarmoqni tekshirib, qayta urinib koʻring.",
+  "expired.title": "Ilovani qayta oching",
+  "expired.description": "Xavfsizlik uchun kirish vaqti tugadi. Ilovani yopib, qaytadan oching.",
+  "complaints.wrong_status": "Bu shikoyat allaqachon koʻrib chiqilgan. Roʻyxatni yangilang.",
+  "drivers.wrong_status": "Bu ariza allaqachon koʻrib chiqilgan. Roʻyxatni yangilang.",
+  "shares.too_many": "Bu safarni kuzatuvchilar soni chegaraga yetdi.",
+  "pitaks.not_found": "Bu pitak topilmadi. Roʻyxatni yangilang.",
+  "auth.not_admin": "Bu boʻlim faqat jamoa uchun.",
+  "users.face_decided": "Bu rasm allaqachon koʻrib chiqilgan. Roʻyxatni yangilang."
 }

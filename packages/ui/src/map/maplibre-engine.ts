@@ -6,6 +6,7 @@ import './maplibre.css';
 import { Protocol } from 'pmtiles';
 import type { MapColors, MapEngine, MapView } from './map-engine';
 import { MAP_SOURCE, mapStyle } from './map-style';
+import { motionIsLow } from '../telegram/low-motion';
 import { clip, fit, show } from './map-overlays';
 
 // Close enough to see the streets and the houses around the pin.
@@ -28,9 +29,11 @@ function follow(map: MapLibreMap, box: HTMLElement) {
   });
   sized.observe(box);
   return {
+    // A weak phone or «less motion» lands at once: a flight there is a few jerks (G43).
     flyTo: (center: [number, number]) => {
+      if (motionIsLow()) return map.jumpTo({ center, zoom: START_ZOOM });
       flight = center;
-      map.flyTo({ center, zoom: START_ZOOM });
+      return map.flyTo({ center, zoom: START_ZOOM });
     },
     stop: () => sized.disconnect(),
   };

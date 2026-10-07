@@ -27,6 +27,7 @@ export const API_ERRORS = [
   'users.not_found',
   'users.avatar_hidden',
   'users.avatar_too_large',
+  'users.face_decided',
   'drivers.not_found',
   'drivers.incomplete',
   'drivers.invalid_input',

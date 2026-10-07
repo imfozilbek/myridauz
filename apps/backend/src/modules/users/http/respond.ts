@@ -5,11 +5,13 @@ import type { Caller } from '../application/ports';
 
 // HTTP status of each error code of this module.
 const STATUS = {
+  'auth.not_admin': 403,
   'users.blocked': 403,
   'users.avatar_hidden': 404,
   'users.not_found': 404,
   'users.not_registered': 409,
   'users.already_registered': 409,
+  'users.face_decided': 409,
   'users.invalid_contact': 400,
   'users.invalid_input': 400,
   'users.avatar_too_large': 413,

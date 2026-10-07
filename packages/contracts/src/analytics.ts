@@ -44,7 +44,7 @@ const BOOKING_STEPS = [
 ] as const;
 
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
-const POINT_METHODS = ['map', 'search', 'location', 'recent', 'auto'] as const;
+const POINT_METHODS = ['map', 'search', 'location', 'recent'] as const;
 const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
 
 // Answers that are a normal state, not an error: they are not sent as api_error (G12).
@@ -80,7 +80,7 @@ const crash = {
     .optional(),
 };
 
-const analyticsEventSchema = z.discriminatedUnion('name', [
+export const analyticsEventSchema = z.discriminatedUnion('name', [
   // The first screen of a launch says where the person came from: the kind of the startapp link,
   // «direct» without one (docs/89 S3). Only the kind, never the ids of the link. G55: also the mark
   // of the source (a channel, an ad) and the platform (docs/116).
@@ -140,8 +140,3 @@ const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('home_tap'), target: z.enum(HOME_TARGETS), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;
-
-export const analyticsBatchSchema = z.object({
-  events: z.array(analyticsEventSchema).min(1).max(MAX_ANALYTICS_BATCH),
-});
-export type AnalyticsBatch = z.infer<typeof analyticsBatchSchema>;

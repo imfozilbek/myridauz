@@ -8,7 +8,7 @@ export const MINI_APPS = [
   {
     name: 'passenger',
     port: 4101,
-    welcome: t('common.passenger.welcome'),
+    welcome: t('common.welcome.verified'),
     action: t('common.passenger.findTrip'),
     // G25: the main screen keeps the main action on the Telegram button.
     mainButton: t('common.passenger.findTrip'),
@@ -16,7 +16,7 @@ export const MINI_APPS = [
   {
     name: 'driver',
     port: 4102,
-    welcome: t('common.driver.welcome'),
+    welcome: t('common.welcome.costsBack'),
     // G25: an approved driver publishes from the main button, the list does not repeat it.
     action: t('home.publish'),
     mainButton: t('home.publish'),
@@ -30,6 +30,7 @@ export const TEXT = {
   offerLink: t('account.consent.link.offer'),
   female: t('account.gender.female'),
   sendPhone: t('account.phone.send'),
+  changePhoto: t('account.avatar.change'),
   profile: t('account.profile.open'),
   blocked: t('account.blocked.title'),
   from: t('places.from'),

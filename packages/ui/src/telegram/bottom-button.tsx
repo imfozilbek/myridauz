@@ -25,6 +25,8 @@ type BottomButtonProps = {
   readonly text: string;
   readonly onClick: () => unknown;
   readonly destructive?: boolean;
+  // Gray and inert until the step is ready, like the consent of the registration (G58).
+  readonly disabled?: boolean;
 };
 
 const noop = () => undefined;
@@ -59,7 +61,7 @@ function hideLater(native: NativeButton) {
 // The main action is the native Telegram button at the bottom (docs/19, docs/21).
 // Outside Telegram a TelegramUI button stands in for it, so the app also works in a browser.
 function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
-  return function BottomButton({ text, onClick, destructive = false }: BottomButtonProps) {
+  return function BottomButton({ text, onClick, destructive = false, disabled = false }: BottomButtonProps) {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
     const { busy, run } = useOneAtATime(onClick);
@@ -75,13 +77,16 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
     useEffect(() => {
       if (!inTelegram) return;
       const background = destructive ? colors.danger : colors.brandStrong;
-      const color = native.colored ? { backgroundColor: background, textColor: colors.bg } : {};
+      const look = disabled
+        ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
+        : { backgroundColor: background, textColor: colors.bg };
+      const color = native.colored ? look : {};
       keepShown(native);
       native.setParams({ text, isVisible: true, ...color });
-    }, [inTelegram, text, colors, destructive]);
+    }, [inTelegram, text, colors, destructive, disabled]);
     useEffect(() => {
-      if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy });
-    }, [inTelegram, busy]);
+      if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy && !disabled });
+    }, [inTelegram, busy, disabled]);
     if (inTelegram) return null;
     return (
       <Button
@@ -89,7 +94,7 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
         size="l"
         stretched
         loading={busy}
-        disabled={busy}
+        disabled={busy || disabled}
         onClick={run}
         className={destructive ? 'danger-button' : undefined}
       >

@@ -22,7 +22,7 @@ const ride = (n: number, over = true): Ride => ({
 function setup(rides: Ride[] = [ride(1)]) {
   let clock = NOW;
   const asked: { ask: Ask; name: string; rater: string; reminder: boolean }[] = [];
-  const alerts: number[] = [];
+  const alerts: { name: string; publicId: string }[] = [];
   const deps: RatingsDeps = {
     store: createMemoryRatings(),
     rides: {
@@ -32,7 +32,7 @@ function setup(rides: Ride[] = [ride(1)]) {
     names: async (ids) => new Map(ids.map((id) => [id, id === DRIVER ? 'Jasur' : `P${id}`])),
     people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
     ask: async (ask, name, rater, reminder) => void asked.push({ ask, name, rater, reminder }),
-    alertTeam: async (userId) => void alerts.push(userId),
+    alertTeam: async (person) => void alerts.push(person),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
     now: () => clock,
     newId: () => `r${Math.random()}`,
@@ -90,9 +90,9 @@ describe('the rating of a person (docs/24)', () => {
     const rides = Array.from({ length: 11 }, (_, index) => ride(index + 1));
     const { deps, alerts } = setup(rides);
     for (const known of rides.slice(0, 10)) await rate(deps, known.passengerId, review(known.bookingId, 3));
-    expect(alerts).toEqual([DRIVER]);
+    expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     await rate(deps, 111, review('b11', 1));
-    expect(alerts).toEqual([DRIVER]);
+    expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     for (const known of rides) await rate(deps, DRIVER, review(known.bookingId, 5));
     const before = await reviewsOf(deps, DRIVER);
     expect(before.rating.count).toBe(11);

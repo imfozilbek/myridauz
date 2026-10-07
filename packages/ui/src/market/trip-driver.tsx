@@ -32,7 +32,7 @@ export function TripDriver({ trip, favorite }: { readonly trip: Trip; readonly f
         </Cell>
       </Section>
       {favorite ? <FavoriteCell driverId={driver.id} screen="market.trip" /> : null}
-      <PersonReviews userId={driver.id} />
+      <PersonReviews key={driver.id} userId={driver.id} />
     </>
   );
 }

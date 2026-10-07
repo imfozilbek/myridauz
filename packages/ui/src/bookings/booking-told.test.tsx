@@ -1,4 +1,4 @@
-import type { ChatClient } from '@platform/api-client';
+import { ApiError, type ChatClient } from '@platform/api-client';
 import { DAY_MS } from '@platform/contracts';
 import { cleanup, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -46,5 +46,25 @@ describe('«Mashinaga chiqdim» and «Yetib keldim» only on the day of the trip
     expect(screen.getByText('Yaqinlarimga yuborish')).toBeTruthy();
     expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
     expect(screen.queryByText('Yetib keldim')).toBeNull();
+  });
+});
+
+describe('«Yaqinlarim» says why a step did not work (G43, docs/65 B3)', () => {
+  it('shows the reason under the tools', async () => {
+    vi.setSystemTime(TRIP_DAY);
+    const boarded = vi.fn<ChatClient['boarded']>(async () => {
+      throw new ApiError(409, 'shares.wrong_status');
+    });
+    renderMarket(
+      <MyRequestsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myRequests: async () => [] },
+        bookings: { myBookings: async () => [confirmed], myOffers: async () => [] },
+        chat: { boarded },
+      }),
+    );
+    await tap('Jasur');
+    await tap('Mashinaga chiqdim');
+    expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 });

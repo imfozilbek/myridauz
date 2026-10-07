@@ -37,8 +37,8 @@ export async function register(
     consentAt: now,
     block: null,
     avatarKey: null,
+    face: null,
     writeAccess: false,
-    newsOff: false,
     createdAt: now,
     updatedAt: now,
   };

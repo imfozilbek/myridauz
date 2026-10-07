@@ -1,8 +1,13 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
+import { fakeTelegram } from './bots/test-bot';
 import { call, initData, nowSeconds as now, pid, registerUser, testEnv as env } from './test-api';
 import { localUsers } from './modules/users';
 import { signTelegramData } from './shared/auth/test-signing';
+
+// A new photo sends a card to the team (G51): no real Telegram in tests.
+vi.stubGlobal('fetch', fakeTelegram().fetch);
+afterAll(() => vi.unstubAllGlobals());
 
 describe('Telegram auth on API routes', () => {
   it('accepts initData of the bot of the Mini App', async () => {

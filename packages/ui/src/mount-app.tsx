@@ -33,17 +33,21 @@ import { FeedProvider } from './feed/feed-provider';
 import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
 import { LegalGate } from './legal/legal-gate';
+import { markExpired } from './network/session-expired';
 import { unlockAudio } from './sounds/audio';
 import { loadSounds, playNotify } from './sounds/brand-sound';
 import { reportCrashes } from './states/report-crashes';
 import { TelegramOnly } from './states/telegram-only';
 import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
+import { markLowMotion } from './telegram/low-motion';
 
 const ROOT_ID = 'root';
 // Local runs talk to the backend through the same origin; deploys set VITE_API_URL (G03).
 const DEFAULT_API_URL = '/api';
 const DEV_VERSION = 'dev';
+// The launch of the Mini App is older than 24 hours (G43): the whole app asks to open it again.
+const EXPIRED = 'auth.expired';
 
 // Passenger and driver apps start with the registration (G04); the admin app checks the team list.
 type MountOptions = { readonly welcome?: Welcome };
@@ -54,6 +58,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app);
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
+  markLowMotion();
   const baseUrl = new URL(import.meta.env.VITE_API_URL ?? DEFAULT_API_URL, window.location.origin).toString();
   // Deploys set VITE_MAP_URL once the public map bucket answers (G57, docs/67).
   const mapUrl = import.meta.env.VITE_MAP_URL;
@@ -69,6 +74,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   });
   reportCrashes(analytics, session.client);
   const onError = (code: string) => {
+    if (code === EXPIRED) markExpired();
     if (!QUIET_API_ERRORS.includes(code)) analytics.apiError(code);
   };
   const signed = { baseUrl, fetch, app, initData: session.initData, onError };

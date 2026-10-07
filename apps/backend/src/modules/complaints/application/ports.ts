@@ -27,7 +27,8 @@ export type ComplaintStore = {
 
 // What people get from the bots (docs/17): the author never learns the decision itself.
 export type ComplaintTeller = {
-  team(complaint: ComplaintRecord, againstName: string): Promise<void>;
+  // The team sees the public id, never the Telegram ID (docs/65 A3).
+  team(complaint: ComplaintRecord, against: { firstName: string; publicId: string }): Promise<void>;
   warning(userId: number, side: Side): Promise<void>;
   blocked(userId: number, side: Side, until: number | null): Promise<void>;
   resolved(userId: number, side: Side): Promise<void>;
@@ -64,6 +65,7 @@ export type ComplaintsDeps = {
   // How many trips a person drove or rode: the history for the moderator.
   readonly trips: (userId: number, side: Side) => Promise<number>;
   readonly chat: (key: string) => Promise<HistoryLine[]>;
+  readonly forgetChat: (key: string) => Promise<void>;
   readonly cancelAll: (userId: number) => Promise<void>;
   readonly refund: (
     moderatorId: number,

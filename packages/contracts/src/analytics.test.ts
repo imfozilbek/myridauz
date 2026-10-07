@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { analyticsBatchSchema, MAX_ANALYTICS_BATCH } from './analytics';
+import { MAX_ANALYTICS_BATCH } from './analytics';
+import { goodEvents } from './analytics-batch';
+
+const accepted = (events: unknown[]) => goodEvents({ events }) !== null;
 
 const event = {
   name: 'screen_open',
@@ -10,21 +13,19 @@ const event = {
   version: '0.1.0',
 };
 
-describe('analyticsBatchSchema', () => {
+describe('goodEvents', () => {
   it('accepts a valid batch', () => {
-    expect(analyticsBatchSchema.parse({ events: [event] }).events).toHaveLength(1);
+    expect(goodEvents({ events: [event] })?.events).toHaveLength(1);
   });
 
   it('rejects free text in screen ids', () => {
-    expect(analyticsBatchSchema.safeParse({ events: [{ ...event, screen: 'Ali +998 90' }] }).success).toBe(
-      false,
-    );
+    expect(accepted([{ ...event, screen: 'Ali +998 90' }])).toBe(false);
   });
 
   it('requires a code for client errors', () => {
     const error = { ...event, name: 'client_error' };
-    expect(analyticsBatchSchema.safeParse({ events: [error] }).success).toBe(false);
-    expect(analyticsBatchSchema.safeParse({ events: [{ ...error, code: 'render' }] }).success).toBe(true);
+    expect(accepted([error])).toBe(false);
+    expect(accepted([{ ...error, code: 'render' }])).toBe(true);
   });
 
   it('keeps what broke a screen, never free text of a person (G52, docs/112)', () => {
@@ -35,35 +36,40 @@ describe('analyticsBatchSchema', () => {
       error: 'TypeError',
       client: 'android 8.0',
     };
-    const ok = (detail: string) => analyticsBatchSchema.safeParse({ events: [{ ...crash, detail }] }).success;
+    const ok = (detail: string) => accepted([{ ...crash, detail }]);
     expect(ok("Cannot read properties of undefined (reading 'lat')")).toBe(true);
     expect(ok('phone #')).toBe(true);
     expect(ok('+998 90 123 45 67')).toBe(false);
     expect(ok('Алишер')).toBe(false);
     expect(ok('x'.repeat(121))).toBe(false);
-    const client = (value: string) =>
-      analyticsBatchSchema.safeParse({ events: [{ ...crash, client: value }] }).success;
+    const client = (value: string) => accepted([{ ...crash, client: value }]);
     expect(client('tdesktop 7.10')).toBe(true);
     expect(client('android 9.6 chrome 83')).toBe(true);
     expect(client('Ali Valiyev')).toBe(false);
   });
 
+  it('takes only the ways of choosing a point the Mini App has (G44, docs/69)', () => {
+    const saved = (method: string) => accepted([{ ...event, name: 'place_point_saved', method }]);
+    expect(saved('search')).toBe(true);
+    expect(saved('auto')).toBe(false);
+  });
+
+  it('keeps the good events when one is bad (G43)', () => {
+    expect(goodEvents({ events: [{ ...event, screen: 'Free text' }, event] })?.events).toEqual([event]);
+  });
+
   it('limits the batch size', () => {
     const events = Array.from({ length: MAX_ANALYTICS_BATCH + 1 }, () => event);
-    expect(analyticsBatchSchema.safeParse({ events }).success).toBe(false);
-    expect(analyticsBatchSchema.safeParse({ events: [] }).success).toBe(false);
+    expect(accepted(events)).toBe(false);
+    expect(accepted([])).toBe(false);
   });
 
   it('drops personal fields and refuses free text in codes (G12, docs/29)', () => {
     const extra = { ...event, phone: '+998901234567', name: 'screen_open', firstName: 'Ali' };
-    const [parsed] = analyticsBatchSchema.parse({ events: [extra] }).events;
+    const [parsed] = goodEvents({ events: [extra] })?.events ?? [];
     expect(JSON.stringify(parsed)).not.toMatch(/998|Ali/);
     const apiError = { ...event, name: 'api_error' };
-    expect(analyticsBatchSchema.safeParse({ events: [{ ...apiError, code: 'users.blocked' }] }).success).toBe(
-      true,
-    );
-    expect(analyticsBatchSchema.safeParse({ events: [{ ...apiError, code: 'Ali Valiyev' }] }).success).toBe(
-      false,
-    );
+    expect(accepted([{ ...apiError, code: 'users.blocked' }])).toBe(true);
+    expect(accepted([{ ...apiError, code: 'Ali Valiyev' }])).toBe(false);
   });
 });

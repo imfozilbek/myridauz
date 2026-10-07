@@ -1,6 +1,7 @@
 import { APPLICATION_STATUSES, CAR_COLORS, MODERATION_REASONS, type Car } from '@platform/contracts';
 import type { ApplicationRepository } from '../application/ports';
 import type { Application } from '../domain/application';
+import { oneOf } from '../../../shared/storage/one-of';
 
 type Row = {
   user_id: number;
@@ -18,9 +19,6 @@ type Row = {
   decided_by: number | null;
   updated_at: number;
 };
-
-const oneOf = <T extends string>(values: readonly T[], value: string | null): T | null =>
-  values.find((item) => item === value) ?? null;
 
 function toCar(row: Row): Car | null {
   const color = oneOf(CAR_COLORS, row.car_color);

@@ -97,3 +97,23 @@
   padding: 0 32px 8px;
   text-align: center;
 }
+
+/* A short path drawn as segments over the step (G58, «2 of 2»). */
+.step-segments {
+  display: flex;
+  gap: 6px;
+  padding: 0 20px 8px;
+}
+
+.step-segments > * {
+  flex: 1;
+}
+
+.step-head.step-head-plain {
+  grid-template-columns: 1fr;
+}
+
+/* The gradient of the body shows through (docs/121 §5). */
+.step.step-tinted {
+  background: transparent;
+}

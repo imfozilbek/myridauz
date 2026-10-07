@@ -39,12 +39,26 @@ const EXPLAINED: readonly string[] = [
   'drivers.incomplete',
   'trips.wrong_status',
   'calls.unavailable',
+  // G43, docs/111: codes that had no text.
+  'complaints.wrong_status',
+  'drivers.wrong_status',
+  'shares.too_many',
+  'pitaks.not_found',
+  'auth.not_admin',
+  'channels.not_found',
+  'network',
+  'expired.description',
 ];
 
 // Codes that mean the same for a person as an explained one.
 const SAME_AS: Readonly<Record<string, string>> = {
   'pricing.out_of_bounds': 'trips.price_out_of_bounds',
   'drivers.photo_too_large': 'users.avatar_too_large',
+  // No answer from the API: the network dropped or was too slow (G43).
+  'network.failed': 'network',
+  'network.timeout': 'network',
+  // The launch data of Telegram lives 24 hours: a new launch signs again (G43).
+  'auth.expired': 'expired.description',
 };
 
 // The text of an answer code of the API, null for a code without one (the dashboard, G52).

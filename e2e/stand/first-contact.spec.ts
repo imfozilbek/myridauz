@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
+import { addFace, passConsent } from '../registration';
 import { applyAsDriver } from '../driver-application';
 import { say, type Reply } from './bot-kit';
 import { answered, beforeStart, DRIVER_BOT } from './first-contact-kit';
@@ -59,10 +60,10 @@ for (const platform of PLATFORMS)
     await expect(mainButton(page)).toHaveText(TEXT.continue);
     await expect(page.getByText(TEXT.offerLink)).toBeVisible();
     await shot(page, `${platform}/03-welcome`);
-    await mainButton(page).click();
-    await expect(page.getByText(TEXT.about)).toBeVisible();
-    await expect(page.getByPlaceholder('Ism')).toHaveValue(person.name);
-    await page.getByText(MALE, { exact: true }).click();
+    await passConsent(page, () => shot(page, `${platform}/03-welcome-ticked`));
+    await expect(page.getByRole('textbox')).toHaveValue(person.name);
+    await page.getByRole('radio', { name: MALE }).click();
+    await addFace(page);
     await expect(mainButton(page)).toHaveText(TEXT.sendPhone);
     await shot(page, `${platform}/04-about`);
     await mainButton(page).click();

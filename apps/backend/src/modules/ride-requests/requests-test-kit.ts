@@ -35,6 +35,7 @@ export function setup() {
         publicId: publicIdOf(userId),
         firstName: `P${userId}`,
         avatarKey: null,
+        avatarShown: false,
         gender: 'female',
       }),
     },

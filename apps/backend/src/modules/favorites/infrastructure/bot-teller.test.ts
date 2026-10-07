@@ -14,16 +14,15 @@ const trip = {
   driver: { firstName: 'Jasur' },
 } as Trip;
 
-describe('news of a saved driver only to who wants them (docs/88 L1)', () => {
-  it('skips the passengers with «Bot xabarlari» off', async () => {
+describe('news of a saved driver (docs/125 №11)', () => {
+  it('go to every passenger who saved the driver', async () => {
     const send = vi.fn<(jobs: readonly NotificationJob[]) => Promise<void>>(async () => undefined);
     const tell = favoriteTeller({
       brand: loadBrand(),
       placeName: async (id) => id,
       send,
-      wantsNews: async (id) => id !== 10,
     });
     await tell([10, 11], trip);
-    expect(send.mock.calls[0]?.[0].map((job) => job.chatId)).toEqual([11]);
+    expect(send.mock.calls[0]?.[0].map((job) => job.chatId)).toEqual([10, 11]);
   });
 });

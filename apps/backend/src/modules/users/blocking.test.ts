@@ -6,6 +6,7 @@ import { people } from './application/people';
 import type { UsersDeps } from './application/ports';
 import { register } from './application/register';
 import { createMemoryUsers } from './infrastructure/memory-stores';
+import { noFaces } from './test-kit';
 
 const NOW = 1_000_000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -24,6 +25,7 @@ function setup() {
     users,
     avatars: createMemoryImages(),
     trips: { relation: async () => 'none' },
+    ...noFaces,
     now: () => NOW,
     newId: () => 'id',
   };

@@ -42,6 +42,27 @@ export async function sendAlbum(
   if (!response.ok) throw new Error(`telegram.sendMediaGroup_${response.status}`);
 }
 
+// One private photo with a caption and buttons: the card of a new face for the team (G51).
+export async function sendPhoto(
+  fetch: Fetch,
+  token: string,
+  chatId: number,
+  photo: Photo,
+  card: { readonly caption: string; readonly markup: object },
+): Promise<void> {
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  form.append(
+    'photo',
+    new Blob([await new Response(photo.body).arrayBuffer()], { type: photo.type }),
+    'photo',
+  );
+  form.append('caption', card.caption);
+  form.append('reply_markup', JSON.stringify(card.markup));
+  const response = await fetch(telegramUrl(token, 'sendPhoto'), { method: 'POST', body: form });
+  if (!response.ok) throw new Error(`telegram.sendPhoto_${response.status}`);
+}
+
 // sendMessage that returns the id of the message: support links a copy to the person (docs/02).
 export async function sendText(
   fetch: Fetch,

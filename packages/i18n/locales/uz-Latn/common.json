@@ -11,13 +11,10 @@
   "retry": "Qayta urinish",
   "money": "{amount} soʻm",
   "language": "Til",
-  "soon": "Bu boʻlim tez orada ishga tushadi.",
-  "passenger.welcome": "Safar toping",
   "passenger.findTrip": "Safar topish",
   "passenger.findTripHint": "Yoʻnalishingiz boʻyicha safarlar",
   "passenger.leaveRequest": "Soʻrov qoldirish",
   "passenger.leaveRequestHint": "Haydovchilar sizni topadi",
-  "driver.welcome": "Safaringizga yoʻlovchi toping",
   "driver.newTripHint": "Yoʻnalish, vaqt, joylar",
   "driver.passengerRequests": "Yoʻlovchilar soʻrovlari",
   "driver.passengerRequestsHint": "Yoʻnalishingizdagi",
@@ -50,5 +47,7 @@
   "welcome.shareCosts": "Yoʻl xarajatini birga boʻlamiz.",
   "welcome.costsBack": "Yoʻl xarajatingiz qaytadi.",
   "welcome.bonus": "Boshlash uchun {bonus} bonus.",
-  "welcome.passengersFind": "Yoʻlovchilar sizni oʻzi topadi."
+  "welcome.passengersFind": "Yoʻlovchilar sizni oʻzi topadi.",
+  "offline": "Internet yoʻq",
+  "offlineHint": "Internet qaytganda maʼlumotlar oʻzi yangilanadi."
 }

@@ -22,7 +22,9 @@ describe('createCompanyClient (G34)', () => {
     const answer = { company: null, edition: { version: '1.1', date: '2026-10-02' } };
     const fetch = vi.fn<Fetch>(async () => Response.json(answer));
     expect(await createCompanyClient({ ...options, fetch }).current()).toEqual(answer);
-    expect(fetch.mock.calls).toEqual([['https://api.test/public/company']]);
+    expect(fetch.mock.calls).toEqual([
+      ['https://api.test/public/company', { signal: expect.any(AbortSignal) }],
+    ]);
   });
 
   it('fails with the status when the public answer fails', async () => {

@@ -90,4 +90,12 @@ describe('the map follows the size of its box (G36, docs/100)', () => {
     sized();
     expect(map.center).toEqual([69.3, 41.35]);
   });
+
+  it('jumps without a flight when the phone asks for less motion (G43)', async () => {
+    document.documentElement.dataset['motion'] = 'low';
+    const { view, map } = await open();
+    view.moveTo({ lat: 41.35, lng: 69.3 });
+    delete document.documentElement.dataset['motion'];
+    expect(map.calls).toEqual(['jump 69.3,41.35']);
+  });
 });

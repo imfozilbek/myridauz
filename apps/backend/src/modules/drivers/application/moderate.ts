@@ -70,6 +70,7 @@ export async function decideApplication(
   await deps.applications.save(next);
   const reasons = [...next.reasons];
   await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now() });
+  if (next.status === 'approved') await deps.people.approveFace(userId);
   await deps.people.setDriver(userId, next.status === 'approved');
   const bonus = next.status === 'approved' ? await deps.driverApproved(userId) : null;
   const fixedPlate = next.car?.plate !== application.car?.plate ? (next.car?.plate ?? null) : null;

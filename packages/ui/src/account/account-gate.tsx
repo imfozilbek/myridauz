@@ -2,6 +2,7 @@ import './account.css';
 import type { UsersClient } from '@platform/api-client';
 import type { MeResponse, MiniApp } from '@platform/contracts';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useFeedChange } from '../feed/feed-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { AccountContext, UsersClientContext, type Account } from './account-context';
@@ -27,6 +28,8 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
     client.getMe().then(setMe, () => setFailed(true));
   }, [client]);
   useEffect(load, [load]);
+  // A decision of the team (a block, a new photo rule) shows without a reload (G43, docs/64).
+  useFeedChange(() => void client.getMe().then(setMe, () => undefined));
   const onAvatarChanged = useCallback(() => {
     setAvatarVersion((version) => version + 1);
     load();
@@ -39,7 +42,6 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
             app,
             client,
             profile: me.profile,
-            settings: me.settings,
             avatarVersion,
             onAvatarChanged,
             onProfileChanged: load,
@@ -55,8 +57,8 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
     if (me.state === 'blocked') return <BlockedScreen until={me.until} />;
     if (me.state === 'unregistered')
       return <RegistrationFlow welcome={welcome} suggestedName={me.suggestedName} onFinished={setMe} />;
-    const photoMissing = app === 'passenger' && me.settings.passengerAvatarRequired && !me.profile.hasAvatar;
-    return photoMissing ? <AvatarRequiredScreen /> : children;
+    // The face is required for both roles (G58, docs/128 §1): a failed upload is asked again here.
+    return me.profile.hasAvatar ? children : <AvatarRequiredScreen />;
   })();
 
   return (

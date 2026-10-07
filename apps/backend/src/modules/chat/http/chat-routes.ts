@@ -80,7 +80,7 @@ export async function postSystemEvent(env: Bindings, key: string, event: ChatSys
       }),
     );
   } catch (error) {
-    console.warn(String(error));
+    console.warn(JSON.stringify({ event: 'chat_system_failed', message: String(error) }));
   }
 }
 

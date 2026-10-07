@@ -1,4 +1,5 @@
 import type { Gender, UserRole } from '@platform/contracts';
+import type { FaceCheck } from './face';
 
 // One person, one record for all bots (docs/02). Id is the Telegram user id.
 export type Block = { readonly until: number | null }; // until: epoch ms, null: for good (docs/17)
@@ -15,9 +16,9 @@ export type User = {
   readonly consentAt: number;
   readonly block: Block | null;
   readonly avatarKey: string | null;
+  // The check of the photo by the team; null without a photo (docs/118, G51).
+  readonly face: FaceCheck | null;
   readonly writeAccess: boolean;
-  // «Bot xabarlari» off (docs/88 L1): no subscription news and reminders; bookings still come.
-  readonly newsOff: boolean;
   readonly createdAt: number;
   readonly updatedAt: number;
 };

@@ -54,10 +54,11 @@ const MOCK = String((signedContact: string | null) => {
       ).Telegram.WebView.receiveEvent(type, data),
     );
   const insets = { top: 0, bottom: 0, left: 0, right: 0 };
+  const BUTTON_SPACE = 64;
   const button = document.createElement('button');
   button.id = 'tg-main-button';
   button.style.cssText =
-    'position:fixed;left:16px;right:16px;bottom:16px;height:50px;border:0;border-radius:12px;font:600 17px system-ui;display:none;z-index:9';
+    'position:fixed;left:14px;right:14px;bottom:14px;height:50px;border:0;border-radius:12px;font:700 17px system-ui;display:none;z-index:9';
   button.onclick = () => reply('main_button_pressed', undefined);
   // The secondary button stands above the main one, as in Telegram (G18: "Qaytish safari").
   const second = document.createElement('button');
@@ -103,6 +104,11 @@ const MOCK = String((signedContact: string | null) => {
           button.style.background = data.color;
           button.style.color = data.text_color;
           button.style.display = data.is_visible ? 'block' : 'none';
+          // An inactive button sends nothing, as in Telegram (G58: the consent).
+          button.disabled = data.is_active === false;
+          // In Telegram the button is under the web view, not over it: the view gets shorter.
+          const height = data.is_visible ? innerHeight - BUTTON_SPACE : innerHeight;
+          reply('viewport_changed', { height, width: innerWidth, is_expanded: true, is_state_stable: true });
         }
         if (type === 'web_app_setup_secondary_button') {
           second.textContent = data.text;

@@ -40,6 +40,8 @@ export type PeoplePort = {
   // The Telegram ID behind a public id from an admin path (docs/65 A3).
   idOf(publicId: string): Promise<number | undefined>;
   setDriver(id: number, isDriver: boolean): Promise<void>;
+  // The face in an approved application is checked: others may see it now (G51).
+  approveFace(id: number): Promise<void>;
   avatar(key: string): Promise<StoredImage | undefined>;
 };
 

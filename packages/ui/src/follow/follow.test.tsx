@@ -21,6 +21,7 @@ const TRIP: SharedTrip = {
   driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
   plate: '01A123BC',
   meetingPoint: { lat: 41.3, lng: 69.2 },
+  dropoffPoint: { lat: 39.65, lng: 66.97 },
   status: 'boarded',
   followers: 1,
 };
@@ -35,6 +36,9 @@ describe('close people follow a shared trip (docs/43)', () => {
     expect(await screen.findByText('Dilnozaning safari')).toBeTruthy();
     expect(screen.getByText('Mashinaga chiqdi')).toBeTruthy();
     expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    // Where the passenger boards and gets off (the owner, docs/111 Q1).
+    expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
+    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
     await tap('Xabar olish');
     expect(await screen.findByText('Xabarlar yoqildi')).toBeTruthy();
     expect(follow).toHaveBeenCalledWith(TOKEN);
@@ -43,14 +47,18 @@ describe('close people follow a shared trip (docs/43)', () => {
     );
   });
 
-  it('say so when five people already follow, and when the link is closed', async () => {
-    const follow = vi.fn<ChatClient['follow']>(async () => {
-      throw new ApiError(409, 'shares.too_many');
-    });
+  it('say why «Xabar olish» failed, when five people already follow and when the link is closed', async () => {
+    // A lost network says so and keeps the button for one more try (G43, docs/65 B3).
+    const follow = vi
+      .fn<ChatClient['follow']>()
+      .mockRejectedValueOnce(new ApiError(0, 'network.failed'))
+      .mockRejectedValueOnce(new ApiError(409, 'shares.too_many'));
     renderMarket(
       <FollowScreen token={TOKEN} onJoin={() => undefined} />,
       testClients({ chat: { sharedTrip: async () => TRIP, follow } }),
     );
+    await tap('Xabar olish');
+    expect((await screen.findByRole('alert')).textContent).not.toBe('');
     await tap('Xabar olish');
     expect(await screen.findByText('Bu safarni allaqachon 5 kishi kuzatmoqda.')).toBeTruthy();
     cleanup();

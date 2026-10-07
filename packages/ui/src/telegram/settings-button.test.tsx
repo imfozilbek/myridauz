@@ -32,6 +32,7 @@ const ACTIONS = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.passenger.myTripsHint',
+    Screen: () => null,
   },
 ] as const;
 

@@ -31,6 +31,7 @@ function setup(avatarKey: string | null = 'avatars/1/a') {
       find: async (userId) => persons.get(userId),
       idOf: idOfPublic,
       setDriver: async (userId, isDriver) => void (isDriver ? drivers.add(userId) : drivers.delete(userId)),
+      approveFace: async (userId) => void log.push(`face:${userId}`),
       avatar: async () => jpeg,
     },
     notify: {
@@ -71,7 +72,8 @@ describe('driver application (docs/04)', () => {
     expect(decided.ok && decided.value.status).toBe('approved');
     expect(drivers.has(1)).toBe(true);
     expect(decided.ok && decided.value.car.plate).toBe('01A124BC');
-    expect(log).toEqual(['submitted:pending', 'approved:1', 'decided:approved:01A124BC']);
+    // The face in the approved application is approved too (G51).
+    expect(log).toEqual(['submitted:pending', 'face:1', 'approved:1', 'decided:approved:01A124BC']);
     expect(await decideApplication(deps, 900, 1, { action: 'approve' })).toEqual({
       ok: false,
       error: 'drivers.wrong_status',

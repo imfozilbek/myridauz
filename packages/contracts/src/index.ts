@@ -1,19 +1,18 @@
 export {
   ANALYTICS_PATH,
-  analyticsBatchSchema,
   MAX_ANALYTICS_BATCH,
   MINI_APPS,
   QUIET_API_ERRORS,
   DRIVER_STEPS,
   TRIP_STEPS,
   REGISTRATION_STEPS,
-  type AnalyticsBatch,
   type AnalyticsEvent,
   type DriverStep,
   type TripStep,
   type MiniApp,
   type RegistrationStep,
 } from './analytics';
+export { goodEvents, type AnalyticsBatch } from './analytics-batch';
 export {
   API_ERRORS,
   apiErrorSchema,
@@ -66,7 +65,10 @@ export {
 } from './drivers';
 export {
   ADMIN_APPLICATIONS_PATH,
+  ADMIN_FACES_PATH,
   ADMIN_ME_PATH,
+  adminFaceDecisionPath,
+  adminFacePhotoPath,
   adminApplicationPath,
   adminBlockPath,
   adminBlocksPath,
@@ -81,6 +83,8 @@ export {
   blockSchema,
   DECISIONS,
   decisionSchema,
+  faceDecisionSchema,
+  faceQueueSchema,
   TEAM_ROLES,
   teamMeSchema,
   type ApplicationDetail,
@@ -89,6 +93,8 @@ export {
   type BlockJournal,
   type Decision,
   type DecisionInput,
+  type FaceDecision,
+  type FaceSummary,
   type TeamMe,
   type TeamRole,
 } from './moderation';
