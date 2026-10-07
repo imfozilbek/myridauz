@@ -67,6 +67,11 @@
 - Секреты Worker: `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (`46`).
 - Тесты: сигнализация и таймауты (`chat/call.test.ts`), Realtime и доступ (`calls`), WebRTC и экраны (`packages/ui/src/call`).
 
+## G60: звонок заново
+
+- Мятный экран, фото в кольце, машина и номер, общая карточка поездки, одна подсказка «Ilovani yopmang» (макет g60/4).
+- Звонок открыт с подтверждения брони до 24 часов после прибытия, как чат (`129`).
+
 ## Источники
 
 - https://developers.cloudflare.com/realtime/sfu/pricing/
