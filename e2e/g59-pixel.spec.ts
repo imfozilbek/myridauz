@@ -5,6 +5,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { mapDrawn, TILES_MS } from './map-wait';
 import { MAN, mockupData } from './g59-pixel-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -16,15 +17,8 @@ const [PASSENGER] = MINI_APPS;
 const CHILONZOR = '1726294';
 const SAMARQAND = '1718401';
 const OUT = 'screenshots/pixel-g59';
-const TILES_MS = 1500;
 const MAP_HEIGHT = 718;
 test.use({ viewport: { width: 360, height: 776 }, deviceScaleFactor: 1 });
-
-async function mapDrawn(page: Page) {
-  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
-  await page.waitForTimeout(TILES_MS);
-}
 
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `${OUT}/${name}-code.png`, animations: 'disabled' });

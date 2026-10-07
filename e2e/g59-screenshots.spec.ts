@@ -5,6 +5,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { mapDrawn, TILES_MS } from './map-wait';
 import { fromIfAsked } from './market';
 import { HEIGHT, nothingCut, oneSize, WIDTHS } from './sizes';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -14,14 +15,7 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER] = MINI_APPS;
 const PLATFORMS = ['android', 'ios'] as const;
-const TILES_MS = 1500;
 const mainButton = (page: Page) => page.locator('#tg-main-button');
-
-async function mapDrawn(page: Page) {
-  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
-  await page.waitForTimeout(TILES_MS);
-}
 
 for (const platform of PLATFORMS)
   for (const width of WIDTHS)
