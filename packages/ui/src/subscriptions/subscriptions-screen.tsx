@@ -34,7 +34,7 @@ export function SubscriptionsScreen({ onBack }: { readonly onBack: () => void })
 
 function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   useScreenView('subscriptions');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();

@@ -15,7 +15,7 @@ export function ReviewsScreen({
   readonly onBack: () => void;
 }) {
   useScreenView('market.reviews');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   return (
     <List>

@@ -1,0 +1,50 @@
+/* docs/121 §3, mockup g66/4: 3 px at the very top, the pale line of the color under a running piece. */
+.top-loader {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 1000;
+  height: 3px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--top-loader) 20%, transparent);
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.top-loader[data-leaving] {
+  opacity: 0;
+}
+
+/* The piece runs from left to right in 1.2 s and starts again. */
+.top-loader-run {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 36%;
+  background: var(--top-loader);
+  animation: top-loader-run 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes top-loader-run {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+
+/* «Reduce motion» on the phone: the line breathes softly in place. */
+@media (prefers-reduced-motion: reduce) {
+  .top-loader-run {
+    width: 100%;
+    animation: top-loader-breathe 1.2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes top-loader-breathe {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}

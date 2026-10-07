@@ -24,7 +24,7 @@ type Props = {
 // yuborildi», the booking at once with «Javob kutilmoqda» and until when the driver answers.
 export function PendingBooking({ booking, onBack, onCancel, onHome, children }: Props) {
   useScreenView('bookings.pending');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { t, formatDate, formatTime, formatNumber, formatMoney, formatRating } = useI18n();
   const { colors } = useBrand().theme;
   const { trip } = booking;

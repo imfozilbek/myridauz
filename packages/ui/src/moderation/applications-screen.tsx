@@ -15,7 +15,7 @@ import { forgetLinkedApplication, linkedApplication } from './linked-application
 
 // Applications waiting for the team, the oldest first (docs/04).
 export function ApplicationsScreen({ onBack }: { readonly onBack: () => void }) {
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { moderation } = useApiClients();
   const [queue, setQueue] = useState<ApplicationSummary[] | null>(null);

@@ -1,3 +1,4 @@
+import { quietly } from '@platform/api-client';
 import { createContext, useContext, useEffect, useRef } from 'react';
 
 export type Subscribe = (listener: () => void) => () => void;
@@ -8,6 +9,7 @@ export const FeedContext = createContext<Subscribe>(() => () => undefined);
 export const FeedCallContext = createContext<SubscribeCall>(() => () => undefined);
 
 // onChange runs when another person changed something or the person came back to the app (docs/64).
+// Its requests are quiet: the data is already on the screen, the top loader does not show (docs/121 §3).
 export function useFeedChange(onChange: () => void): void {
   const subscribe = useContext(FeedContext);
   const latest = useRef(onChange);
@@ -15,7 +17,7 @@ export function useFeedChange(onChange: () => void): void {
     latest.current = onChange;
   });
   useEffect(() => {
-    return subscribe(() => latest.current());
+    return subscribe(() => void quietly(async () => latest.current()));
   }, [subscribe]);
 }
 

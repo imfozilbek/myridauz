@@ -1,1 +1,3 @@
-export { default } from '@platform/config/vite';
+import miniApp from '@platform/config/vite';
+
+export default miniApp('passenger');

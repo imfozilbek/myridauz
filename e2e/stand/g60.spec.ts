@@ -15,10 +15,12 @@ import { runCron, standSql } from './stand-tools';
 // the past trip and the review. The shots go to screenshots/stand/g60/ for the owner (docs/33).
 const { t } = createI18n(DEFAULT_LOCALE);
 const HOUR = 60 * MINUTE;
-const DRIVER: Person = { id: 900606, name: 'Jasur', phone: '998901110606' };
+// A driver of its own: no other scenario of the stand shares his id, phone or car.
+const PLATE = '01T660UV';
+const DRIVER: Person = { id: 900660, name: 'Jasur', phone: '998901110660' };
 const PASSENGERS = {
   android: { id: 900607, name: 'Madina', phone: '998901110607' },
-  ios: { id: 900608, name: 'Dilnoza', phone: '998901110608' },
+  ios: { id: 900661, name: 'Dilnoza', phone: '998901110661' },
 } as const;
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `screenshots/stand/g60/${name}.png`, animations: 'disabled' });
@@ -27,10 +29,10 @@ test.setTimeout(180_000);
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 test.beforeAll(async () => {
-  await apply(DRIVER, '01S678TU', 'male');
+  await apply(DRIVER, PLATE, 'male');
   for (const passenger of Object.values(PASSENGERS)) await register('passenger', passenger, 'female');
   const moderation = createModerationClient(await signedAs('admin', OWNER));
-  const summary = (await moderation.queue()).find((a) => a.firstName === DRIVER.name);
+  const summary = (await moderation.queue()).find((a) => a.car.plate === PLATE);
   if (summary) await moderation.decide(summary.userId, { action: 'approve' });
   await runCron();
 });

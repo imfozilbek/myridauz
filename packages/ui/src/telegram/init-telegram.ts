@@ -1,4 +1,5 @@
 import type { BrandColors } from '@platform/brands';
+import { paintMounted } from './chrome';
 import { clientOf } from './client-name';
 import { syncFromCloud } from './device-storage';
 import { OUTSIDE_TELEGRAM, type TelegramSession } from './in-telegram-context';
@@ -23,12 +24,9 @@ const PHONE_PLATFORMS = new Set(['ios', 'android', 'android_x']);
 export function initTelegram(colors: BrandColors): TelegramSession {
   if (!isTMA()) return OUTSIDE_TELEGRAM;
   init();
-  void miniApp.mount.ifAvailable()?.[1]?.then(() => {
-    // White header, background and bottom bar: light theme only (docs/20).
-    miniApp.setHeaderColor.ifAvailable(colors.bg);
-    miniApp.setBackgroundColor.ifAvailable(colors.bg);
-    miniApp.setBottomBarColor.ifAvailable(colors.bg);
-  });
+  // White header, background and bottom bar until a screen or the splash asks for its own: light theme
+  // only (docs/20).
+  void miniApp.mount.ifAvailable()?.[1]?.then(() => paintMounted({ header: colors.bg, bottom: colors.bg }));
   void viewport.mount.ifAvailable()?.[1]?.then(() => {
     viewport.expand.ifAvailable();
     viewport.bindCssVars.ifAvailable();

@@ -74,12 +74,12 @@ describe('Telegram wrappers', () => {
   });
 
   it('paints the Telegram header in the color of the screen', () => {
-    const Grouped = () => {
-      useScreenBackground('grouped');
+    const Screen = () => {
+      useScreenBackground();
       return null;
     };
-    renderInShell(<Grouped />, true);
-    expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenCalledWith(colors.bgGrouped);
+    renderInShell(<Screen />, true);
+    expect(sdk.miniApp.setBottomBarColor.ifAvailable).toHaveBeenCalledWith(colors.bgGrouped);
     expect(document.body.style.background).not.toBe('');
   });
 

@@ -22,7 +22,7 @@ import { ProfilePhoto } from './profile-photo';
 // Own profile: photo, name, rating; a driver's car and "Hamyon". The phone is shown only here, to its owner (docs/07).
 export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('profile');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const account = useAccount();
   const { t } = useI18n();
   const [open, setOpen] = useState<'wallet' | 'history' | 'delete' | LegalDocument | null>(null);

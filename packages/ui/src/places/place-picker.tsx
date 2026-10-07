@@ -33,7 +33,7 @@ export function PlacePicker({
   region: open,
 }: PlacePickerProps) {
   useScreenView('places.picker');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const [region, setRegion] = useState<Location | null>(open ?? null);
   const [query, setQuery] = useState('');

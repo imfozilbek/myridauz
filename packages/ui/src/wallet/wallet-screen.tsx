@@ -17,7 +17,7 @@ import '../market/market.css';
 // "Hamyon" of a driver (docs/12): the bonus and its end, the main balance, the history.
 export function WalletScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('wallet');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { track } = useAnalytics();
   const { wallet } = useApiClients();

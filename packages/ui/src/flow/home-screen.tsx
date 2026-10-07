@@ -27,7 +27,7 @@ type HomeScreenProps = {
 // (owner decision 02.10.2026, docs/94 F4).
 export function HomeScreen({ actions, notice, after, top, tiles, onOpen, onProfile }: HomeScreenProps) {
   useScreenView('home');
-  useScreenBackground('grouped');
+  useScreenBackground();
   useSettingsButton(onProfile);
   const pending = usePending();
   return (

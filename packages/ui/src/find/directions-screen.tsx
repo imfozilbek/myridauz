@@ -30,7 +30,7 @@ type Props = {
 // search of any other place, the main directions as cards. One tap on a card opens its trips.
 export function DirectionsScreen({ directory, from, error, onBack, onChangeFrom, onPick }: Props) {
   useScreenView('market.directions');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const names = usePlaceNames(directory);

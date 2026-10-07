@@ -18,18 +18,29 @@ const TOP = `#${[1, 3, 5]
   .map((channel) => channel.toString(16).padStart(2, '0'))
   .join('')
   .toUpperCase()}`;
-const Tinted = () => {
-  useScreenBackground('tinted');
+const Screen = () => {
+  useScreenBackground();
   return null;
 };
 
-// The registration: the light color of the app on top, the grouped gray from the middle (docs/121 §5).
-describe('useScreenBackground tinted (G58)', () => {
+// Every screen of the three Mini App: the light color of the app on top, the grouped gray from the
+// middle (docs/121 §5, G72). No screen is flat any more.
+describe('useScreenBackground (G58, G72)', () => {
   it('mixes the passenger color only with white and paints the Telegram header with the top', () => {
-    renderInShell(<Tinted />, true);
+    renderInShell(<Screen />, true);
     expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenCalledWith(TOP);
     expect(sdk.miniApp.setBottomBarColor.ifAvailable).toHaveBeenCalledWith(colors.bgGrouped);
     expect(document.body.style.background).toContain('linear-gradient');
     expect(document.body.style.background).toContain('55vh');
+  });
+
+  it('paints the Telegram header white over a screen with its own white head (the chat, mockup g60/2)', () => {
+    const Chat = () => {
+      useScreenBackground('white');
+      return null;
+    };
+    renderInShell(<Chat />, true);
+    expect(sdk.miniApp.setHeaderColor.ifAvailable).toHaveBeenLastCalledWith(colors.bg);
+    expect(document.body.style.background).toContain('linear-gradient');
   });
 });

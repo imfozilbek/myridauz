@@ -43,7 +43,7 @@ type Opened = { readonly tripId: string; readonly bookingId?: string };
 
 function MyTrips({ onBack, link }: ScreenProps) {
   useScreenView('market.my_trips');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { market, bookings } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(

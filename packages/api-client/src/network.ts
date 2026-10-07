@@ -1,3 +1,4 @@
+import { counted } from './activity';
 import { ApiError } from './api-error';
 import type { Fetch } from './fetch';
 
@@ -12,17 +13,19 @@ const pause = () => new Promise((resume) => setTimeout(resume, RETRY_DELAY_MS));
 
 // A read is asked once more after a lost answer: nothing changes on the server. A change is never
 // repeated: its lost answer may hide a change that was saved.
-export async function fetchOnce(fetch: Fetch, url: string, init: RequestInit, timeoutMs: number) {
-  const tries = (init.method ?? READ) === READ ? 2 : 1;
-  for (let left = tries; ; left -= 1) {
-    try {
-      return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
-    } catch (error) {
-      if (left <= 1) throw lostAnswer(error);
+// The top loader counts the request with its second try (docs/121 §3).
+export const fetchOnce = (fetch: Fetch, url: string, init: RequestInit, timeoutMs: number) =>
+  counted(async () => {
+    const tries = (init.method ?? READ) === READ ? 2 : 1;
+    for (let left = tries; ; left -= 1) {
+      try {
+        return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+      } catch (error) {
+        if (left <= 1) throw lostAnswer(error);
+      }
+      await pause();
     }
-    await pause();
-  }
-}
+  });
 
 const lostAnswer = (error: unknown) =>
   new ApiError(

@@ -40,7 +40,7 @@ type Props = {
 // stars, tags as chips, a comment behind «+ Izoh yozish», «Sevimli haydovchi» as a switch.
 export function ReviewForm({ bookingId, target, booking, onBack, onComplain, onSent }: Props) {
   useScreenView('reviews.form');
-  useScreenBackground('tinted');
+  useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const { track } = useAnalytics();

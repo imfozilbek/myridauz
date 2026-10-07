@@ -29,7 +29,7 @@ export function TeamTripsScreen({ onBack }: { readonly onBack: () => void }) {
 
 function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   useScreenView('team.trips');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const dayLabel = useDayLabel();
   const { now, days, failed, reload, refresh, more } = useTeamDays();

@@ -25,7 +25,7 @@ const KINDS: readonly StopKind[] = ['pickups', 'dropoffs'];
 // and the dropoffs in the order of the way, and «Yoʻl koʻrsatish» in the chosen navigator.
 export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking[]; onBack: () => void }) {
   useScreenView('bookings.trip_map');
-  useScreenBackground('grouped');
+  useScreenBackground();
   const { t } = useI18n();
   const { map } = useApiClients();
   const { colors } = useBrand().theme;

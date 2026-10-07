@@ -18,13 +18,22 @@ const eventsOf = (body: string): readonly Record<string, unknown>[] => {
 const noPicture = (page: Page) => {
   page.screenshot = async () => Buffer.alloc(0);
 };
+// A picture of a screen waits until the splash has left (docs/121 §4, G72): it is the screen people
+// see after it. A test of the splash itself shoots its element.
+export const afterSplash = (page: Page) => page.locator('#splash').waitFor({ state: 'detached' });
+const pictureAfterSplash = (page: Page) => {
+  const shoot = page.screenshot.bind(page);
+  page.screenshot = async (options) => {
+    await afterSplash(page);
+    return shoot(options);
+  };
+};
 export const test = base.extend<{ crashGuard: undefined; pictures: undefined }>({
   pictures: [
     async ({ context }, use) => {
-      if (process.env['STAND_SHOTS'] === 'off') {
-        context.pages().forEach(noPicture);
-        context.on('page', noPicture);
-      }
+      const prepare = process.env['STAND_SHOTS'] === 'off' ? noPicture : pictureAfterSplash;
+      context.pages().forEach(prepare);
+      context.on('page', prepare);
       await use(undefined);
     },
     { auto: true },
