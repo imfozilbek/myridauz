@@ -14,8 +14,8 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 const { t } = createI18n(DEFAULT_LOCALE);
 const [PASSENGER] = MINI_APPS;
 
-export const YUNUSOBOD = '1726266';
-export const URGANCH = '1733217';
+const YUNUSOBOD = '1726266';
+const URGANCH = '1733217';
 // The way of the last time on this route: «Amir Temur xiyoboni» and «Urganch shahri» (docs/97 K4).
 const WAY = [
   {
@@ -34,7 +34,7 @@ const WAY = [
   },
 ];
 
-export async function mockRequestData(page: Page) {
+async function mockRequestData(page: Page) {
   const recommendation = { from: YUNUSOBOD, to: URGANCH, km: 1000, price: 300000, source: 'formula' };
   await page.route('**/api/prices/recommendation?*', (route) =>
     route.fulfill({ json: { ...recommendation, minPrice: 30000, maxPrice: 600000, roundStep: 5000 } }),
@@ -52,7 +52,7 @@ export async function mockRequestData(page: Page) {
 
 // «Mening soʻrovim» of the mockup (docs/goals/g61/3-offers.png): two offers, the whole car asked.
 const tomorrow = () => tashkentDate(Date.now() + DAY_MS);
-export const asked = () => ({
+const asked = () => ({
   id: 'r1',
   passenger: { id: MAN.id, firstName: MAN.firstName, hasAvatar: false },
   from: YUNUSOBOD,
@@ -66,7 +66,7 @@ export const asked = () => ({
   withWoman: false,
   status: 'open',
 });
-export const offerOf = (
+const offerOf = (
   id: string,
   name: string,
   model: string,
