@@ -61,7 +61,7 @@ export function CarScreen({ car, reasons, onChange, onBack, onDone }: Props) {
           />
           <ProblemNote reasons={reasons} place="plate" />
           {seats > 0 ? (
-            <div className="points-card seats-card car-seats">
+            <div className="car-seats">
               <div className="seats-row">
                 <span>{t('drivers.car.seats')}</span>
                 <Stepper

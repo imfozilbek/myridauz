@@ -4,16 +4,21 @@
   font-family: var(--tgui--font-family);
 }
 
+.car-screen .step-segments,
+.photos-screen .step-segments {
+  padding-bottom: 0;
+}
+
 .car-screen .step-head,
 .photos-screen .step-head {
   row-gap: 0;
-  padding: 2px 22px 0;
+  padding: 1px 22px 0;
 }
 
 .car-screen .step-head h2,
 .photos-screen .step-head h2 {
-  font-size: 22px;
-  line-height: 26px;
+  font-size: 20px;
+  line-height: 24px;
 }
 
 .car-screen .step-hint,
@@ -68,7 +73,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 9px;
-  padding: 4px;
 }
 
 /* A paint dot; the chosen one has a ring of the app color around it, apart from the paint. */
@@ -95,8 +99,13 @@
 }
 
 .car-seats .seats-row {
+  min-height: 54px;
   border-bottom: 0;
   font-size: 15px;
+}
+
+.car-seats .seats-count {
+  font-size: 16px;
 }
 
 .other-car {

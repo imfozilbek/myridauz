@@ -27,7 +27,7 @@
   --plate-h: 62px;
   --plate-border: 3px;
   --plate-region: 62px;
-  --plate-font: 36px;
+  --plate-font: clamp(26px, 9.2vw, 33px);
   --plate-flag: 25px;
   --plate-country: 12px;
 
