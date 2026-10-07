@@ -11,9 +11,9 @@ import { MainButton } from '../telegram/bottom-button';
 import { openExternal } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
+import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
 import { BookingBanner } from './booking-banner';
-import { BookingDriver } from './booking-driver';
 import { mapUrl } from './map-link';
 import { useTripSteps } from './use-trip-steps';
 import './confirmed-booking.css';
@@ -36,7 +36,8 @@ export function ConfirmedBooking(props: Props) {
   const { booking, onBack, onChat, onCall, onComplain, onCancel, onTold, children } = props;
   useScreenView('bookings.passenger');
   useScreenBackground('tinted');
-  const { t } = useI18n();
+  const { t, formatNumber } = useI18n();
+  const { driver } = booking.trip;
   const { colors } = useBrand().theme;
   const steps = useTripSteps(booking, onTold);
   const button = (icon: IconName, label: string, onClick: () => void) => (
@@ -50,7 +51,16 @@ export function ConfirmedBooking(props: Props) {
       <Screen onBack={onBack} />
       <BookingBanner booking={booking} />
       <div className="booking-card">
-        <BookingDriver booking={booking} />
+        <DriverRow
+          driver={driver}
+          car={driver.car}
+          note={
+            driver.rating.average === null
+              ? null
+              : t('find.stars', { rating: formatNumber(driver.rating.average) })
+          }
+          plate={booking.plate}
+        />
         <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
       </div>
       <p className="booking-hint">{t('find.payHint')}</p>

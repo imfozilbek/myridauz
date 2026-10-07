@@ -1,0 +1,11 @@
+/* The first letter on mint while there is no photo (the approved mockups). */
+.person-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--reg-mint, #ccfbf1);
+  font-weight: 700;
+  color: var(--reg-text, var(--tgui--link_color));
+}

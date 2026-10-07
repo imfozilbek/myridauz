@@ -1,0 +1,139 @@
+/* The screen of the close people (G60, mockup g60/3): the values of the mockup at 360 px. */
+.follow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100vh;
+  padding: 14px 14px 18px;
+  box-sizing: border-box;
+}
+
+.follow-state {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.follow-state-off {
+  background: var(--reg-muted);
+}
+
+.follow-state-title {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.follow-state-big {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.follow-state-eta {
+  font-size: 13.5px;
+}
+
+/* Three steps of the way: a bar each, the word under it. */
+.follow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+}
+
+.follow-steps li {
+  padding-top: 8px;
+  border-top: 4px solid color-mix(in srgb, var(--reg-card) 35%, transparent);
+  border-radius: 2px;
+}
+
+.follow-steps li:nth-child(2) {
+  text-align: center;
+}
+
+.follow-steps li:last-child {
+  text-align: right;
+}
+
+.follow-steps li[data-done='true'] {
+  border-top-color: var(--reg-card);
+}
+
+.follow-card {
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.follow-place {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-top: 1px solid var(--reg-divider);
+  background: none;
+  color: var(--reg-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.follow-place:disabled {
+  cursor: default;
+}
+
+.follow-place-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--reg-soft);
+  color: var(--reg-from);
+}
+
+.follow-place-to {
+  color: var(--reg-to);
+}
+
+.follow-place-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 15px;
+  color: var(--reg-ink);
+}
+
+.follow-place-note {
+  font-size: 12px;
+  color: var(--reg-muted);
+}
+
+.follow-note {
+  margin: 0;
+  font-size: 13px;
+  text-align: center;
+  color: var(--reg-muted);
+}
+
+.follow-join {
+  margin-top: auto;
+  padding: 8px;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}

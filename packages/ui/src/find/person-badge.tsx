@@ -1,5 +1,6 @@
 import type { PersonId } from '@platform/contracts';
 import { ProfilePhoto } from '../account/profile/profile-photo';
+import './person-badge.css';
 
 type Props = {
   readonly id: PersonId;

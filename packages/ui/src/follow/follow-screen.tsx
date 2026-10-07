@@ -1,26 +1,25 @@
 import { ApiError } from '@platform/api-client';
 import { SHARE_TOKEN } from '@platform/contracts';
-import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
-import { CellValue } from '../account/cell-value';
-import { mapUrl } from '../bookings/map-link';
-import { Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { PlateView } from '../driver/plate-view';
 import { PlacesGate } from '../market/places-gate';
-import { RouteView } from '../market/route-view';
 import { useLoad } from '../market/use-list';
 import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useFailure } from '../states/use-failure';
-import { haptic, openExternal } from '../telegram/feedback';
 import { launchParam } from '../telegram/launch-param';
 import { requestBotMessages } from '../telegram/permissions';
+import { haptic } from '../telegram/feedback';
+import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
-import '../market/market.css';
+import { brandVars } from '../theme/brand-vars';
+import { useBrand } from '../context/brand-context';
+import { FollowDriver } from './follow-driver';
+import { FollowState } from './follow-state';
+import './follow.css';
 
 // The token of a shared trip, when a close person came from the card (docs/43).
 export const followToken = () => launchParam('follow', SHARE_TOKEN);
@@ -43,8 +42,9 @@ export function FollowScreen(props: Props) {
 
 function Follow({ token, onJoin }: Props) {
   useScreenView('share.follow');
-  useScreenBackground('grouped');
-  const { t, formatDate } = useI18n();
+  useScreenBackground('tinted');
+  const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const { track } = useAnalytics();
   const { chat } = useApiClients();
   const { value, failed } = useLoad(() => chat.sharedTrip(token));
@@ -82,69 +82,24 @@ function Follow({ token, onJoin }: Props) {
       } else fail(caught);
     }
   };
-  const { driver, meetingPoint, dropoffPoint } = value;
   return (
-    <div className="market">
-      <Title weight="1" className="market-title">
-        {t('share.follow.title', { name: value.passengerName })}
-      </Title>
-      <Text className="market-subtitle">{formatDate(new Date(value.departAt))}</Text>
-      <List>
-        <Section>
-          <div className="route-summary">
-            <RouteView from={value.from} to={value.to} departAt={value.departAt} km={value.km} />
-          </div>
-          <Cell after={<CellValue>{t(`share.follow.status.${value.status}`)}</CellValue>}>
-            {t('share.follow.status')}
-          </Cell>
-        </Section>
-        <Section header={t('share.follow.driver')}>
-          <Cell
-            subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
-          >
-            {driver.firstName}
-          </Cell>
-          {value.plate ? (
-            <Cell description={<PlateView plate={value.plate} small />}>{t('share.follow.plate')}</Cell>
-          ) : null}
-          {meetingPoint ? (
-            <Cell onClick={() => openExternal(mapUrl(meetingPoint))} subtitle={t('bookings.openMap')}>
-              {t('share.follow.meeting')}
-            </Cell>
-          ) : null}
-          {dropoffPoint ? (
-            <Cell onClick={() => openExternal(mapUrl(dropoffPoint))} subtitle={t('bookings.openMap')}>
-              {t('way.book.dropoff')}
-            </Cell>
-          ) : null}
-        </Section>
-        <ActionFailure error={failure} />
-      </List>
-      <div className="step-note">
-        {note ? (
-          <Text className="step-hint">{t(`share.${note}`)}</Text>
-        ) : (
-          <>
-            <Button size="l" stretched onClick={() => void subscribe()}>
-              {t('share.follow.subscribe')}
-            </Button>
-            <Text className="step-hint">{t('share.follow.subscribeHint')}</Text>
-          </>
-        )}
-      </div>
+    <div className="follow" style={brandVars(colors)}>
+      <FollowState trip={value} />
+      <FollowDriver trip={value} />
+      <ActionFailure error={failure} />
+      {note ? <p className="follow-note">{t(`share.${note}`)}</p> : null}
       <JoinNote onJoin={join} />
+      {note ? null : <MainButton text={t('share.follow.subscribe')} onClick={() => void subscribe()} />}
     </div>
   );
 }
 
+// «Men ham yoʻlga chiqaman»: the close person leaves the card for the registration (docs/18).
 function JoinNote({ onJoin }: { readonly onJoin: () => void }) {
   const { t } = useI18n();
   return (
-    <div className="step-note">
-      <Button mode="plain" size="l" stretched onClick={onJoin}>
-        {t('share.follow.join')}
-      </Button>
-      <Text className="step-hint">{t('share.follow.joinHint')}</Text>
-    </div>
+    <button type="button" className="follow-join" onClick={onJoin}>
+      {t('share.follow.join')}
+    </button>
   );
 }
