@@ -95,11 +95,18 @@ export async function mockMarket(page: Page) {
     return json(route, { trips: teamTrips.filter((trip) => tashkentDate(trip.departAt) === date) });
   });
   await page.route('**/api/driver/requests?*', (route) => json(route, { requests: [request] }));
-  await page.route('**/api/passenger/requests', (route) =>
-    route.request().method() === 'GET'
-      ? json(route, { requests: [request] })
-      : json(route, { ...request, ...(route.request().postDataJSON() as object) }, 201),
-  );
+  // A sent request is in «Mening soʻrovim» right after (G61).
+  const asked: object[] = [];
+  await page.route('**/api/passenger/requests', (route) => {
+    if (route.request().method() === 'GET') return json(route, { requests: [...asked, request] });
+    const made = {
+      ...request,
+      id: `${request.id.slice(0, -1)}2`,
+      ...(route.request().postDataJSON() as object),
+    };
+    asked.push(made);
+    return json(route, made, 201);
+  });
   let variables = V;
   const state = () => ({
     current: { version: 2, variables, changedBy: 1, changedAt: Date.now() },
