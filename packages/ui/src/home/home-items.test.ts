@@ -53,6 +53,8 @@ describe('the trips of the main screen (G25)', () => {
       seats: 2,
       price: 90_000,
       comment: 'Konditsioner bor',
+      // The rule of the whole car is the driver's, as the price (G61).
+      bookingRule: last.bookingRule,
     });
   });
 });

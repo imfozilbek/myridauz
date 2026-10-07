@@ -66,9 +66,10 @@ export async function sendOffer(
     createdAt: now,
   };
   await deps.offers.save(offer);
-  await deps.notify.offered(request.passengerId, offer.id);
   const [view] = await offerViews(deps, [offer], [request]);
-  return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
+  if (!view) return { ok: false, error: 'bookings.not_found' };
+  await deps.notify.offered(request.passengerId, view);
+  return { ok: true, value: view };
 }
 
 export async function passengerOffers(deps: BookingsDeps, passengerId: number): Promise<Offer[]> {

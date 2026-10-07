@@ -18,11 +18,11 @@ const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry', 'wal
 export const TRIP_STEPS = [
   'route',
   'mode',
-  // The day and the time on one screen (G38, docs/103).
+  // The day and the time on one screen (G38); the seats with «ayol bor» (G38, docs/103 point 8).
   'when',
-  // The seats and «ayol bor» on one screen (G38, docs/103 point 8).
   'seats',
   'price',
+  'rule', // «Qanday band qilinadi?» (G61, docs/09)
   'comment',
   'published',
 ] as const;

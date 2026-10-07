@@ -44,9 +44,10 @@ export function lastTrip(trips: readonly Trip[]): Trip | null {
   return latest ?? null;
 }
 
-export const againOf = ({ pickupMode, seats, price, comment }: Trip): TripAgain => ({
+export const againOf = ({ pickupMode, seats, price, comment, bookingRule }: Trip): TripAgain => ({
   pickupMode,
   seats,
   price,
   comment,
+  bookingRule,
 });

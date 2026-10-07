@@ -105,5 +105,14 @@
   "request.sub": "{route} · {day}",
   "request.hint": "Haydovchilar oʻz vaqti va narxini taklif qiladi.",
   "request.wholeCar": "Boʻsh salon kerak",
-  "request.wholeCarHint": "Haydovchi boshqa yoʻlovchi olmaydi"
+  "request.wholeCarHint": "Haydovchi boshqa yoʻlovchi olmaydi",
+  "rule.title": "Qanday band qilinadi?",
+  "rule.seats": "Faqat joylar",
+  "rule.seatsHint": "Har kim oʻz joyini band qiladi",
+  "rule.seatsOrCar": "Joylar yoki butun salon",
+  "rule.seatsOrCarHint": "Bir kishi hamma {count} joyni ham olishi mumkin",
+  "rule.carOnly": "Faqat butun salon",
+  "rule.carOnlyHint": "Faqat bitta guruh: {count} joy birga",
+  "rule.price": "Butun salon narxi: {count} joy × {price} = {sum}.",
+  "review.rule": "Band qilish"
 }

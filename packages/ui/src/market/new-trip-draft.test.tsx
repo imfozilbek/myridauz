@@ -32,10 +32,10 @@ function open(recommend = async () => recommendation) {
   return publishTrip;
 }
 
-// Route, tomorrow, 08:00, 4 seats, the price: the comment is next.
+// Route, tomorrow, 08:00, 4 seats, the price, seats only (G61): the comment is next.
 async function toComment() {
   await chooseRoute();
-  for (const step of [/^Ertaga/, 'Davom etish', 'Davom etish', 'Davom etish']) await tap(step);
+  for (const step of [/^Ertaga/, 'Davom etish', 'Davom etish', 'Davom etish', 'Davom etish']) await tap(step);
   return screen.findByPlaceholderText('Izoh yozing');
 }
 
@@ -43,16 +43,16 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
   it('«Назад» shows every earlier step with its answer', async () => {
     open();
     fireEvent.change(await toComment(), { target: { value: COMMENT } });
-    // Price, seats, the day and time: each one back.
-    for (let back = 0; back < 3; back += 1) await tap('Orqaga');
+    // The rule, price, seats, the day and time: each one back.
+    for (let back = 0; back < 4; back += 1) await tap('Orqaga');
     // The day and time: tomorrow at 08:00; the way of pickup had no choice, so the route is next
     // with both ends (G40, docs/106 K2).
     expect(await screen.findByText('Davom etish')).toBeTruthy();
     await tap('Orqaga');
     expect(await screen.findByText('Chilonzor')).toBeTruthy();
     expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
-    // Route, day and time, seats, price: each answer kept, one tap each.
-    for (let step = 0; step < 4; step += 1) await tap('Davom etish');
+    // Route, day and time, seats, price, the rule: each answer kept, one tap each.
+    for (let step = 0; step < 5; step += 1) await tap('Davom etish');
     expect(((await screen.findByPlaceholderText('Izoh yozing')) as HTMLTextAreaElement).value).toBe(COMMENT);
   });
 

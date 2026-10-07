@@ -16,7 +16,7 @@ import type { NotificationJob } from '../../notifications';
 import { openButton } from '../../../shared/telegram/open-button';
 import type { BookingNotifier } from '../application/ports';
 
-const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
+const { t, formatDate, formatMoney, formatTime } = createI18n(DEFAULT_LOCALE);
 
 type Wiring = {
   readonly brand: BrandConfig;
@@ -93,16 +93,21 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
         await toDriver(booking, t('bot.booking.cancelledByPassenger', await about(booking)));
       else await lostSeat(booking, t('bot.booking.cancelledByDriver', await about(booking)));
     },
-    offered: async (passengerId, offerId) => {
-      await system(chatKeyOfOffer(offerId), 'offered');
-      await notify([
-        {
-          bot: 'passenger',
-          chatId: passengerId,
-          text: t('bot.offer.new'),
-          markup: open('passenger', { name: OFFER_LINK, id: offerId }),
-        },
-      ]);
+    offered: async (passengerId, offer) => {
+      await system(chatKeyOfOffer(offer.id), 'offered');
+      const { firstName, car } = offer.driver;
+      const at = new Date(offer.departAt);
+      const text = t('bot.offer.new', {
+        name: firstName,
+        car: `${car.make} ${car.model}`,
+        from: await placeName(offer.from),
+        to: await placeName(offer.to),
+        date: formatDate(at),
+        time: formatTime(at),
+        price: formatMoney(offer.price),
+      });
+      const markup = open('passenger', { name: OFFER_LINK, id: offer.id });
+      await notify([{ bot: 'passenger', chatId: passengerId, text, markup }]);
     },
     offerAnswered: async (driverId, accepted, offerId) => {
       if (!accepted) await system(chatKeyOfOffer(offerId), 'declined');

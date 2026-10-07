@@ -1,6 +1,7 @@
 import type {
   Booking,
   Car,
+  Offer,
   Pitak,
   Point,
   Recommendation,
@@ -120,7 +121,8 @@ export type BookingNotifier = {
   declined(booking: Booking): Promise<void>;
   expired(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
-  offered(passengerId: number, offerId: string): Promise<void>;
+  // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
+  offered(passengerId: number, offer: Offer): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;

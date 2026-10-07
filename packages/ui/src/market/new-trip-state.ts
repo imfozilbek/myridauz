@@ -8,7 +8,7 @@ import type { Route } from '../places/route-screen';
 import { returnDraft } from './return-trip';
 import type { TripAgain, TripDraft } from './trip-draft';
 
-const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'comment', 'review'] as const;
+const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'rule', 'comment', 'review'] as const;
 export type Step = (typeof STEPS)[number];
 // A new trip, the way back of the one just published, or the last trip again (G40, docs/106 K3):
 // the last two ask only the day and go to the check.

@@ -9,6 +9,7 @@ import { Cell, List, Section } from '../components';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
+import { useDriver } from '../driver/driver-context';
 import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { PriceStep } from '../market/price-step';
@@ -34,6 +35,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
   const { track } = useAnalytics();
   const { market, bookings } = useApiClients();
   const { commission } = useBrand();
+  const car = useDriver()?.application.car;
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [step, setStep] = useState<Step>('time');
   const [time, setTime] = useState<Time | null>(null);
@@ -90,7 +92,9 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
     );
   }
   const departAt = time.at;
-  const fee = commissionFor(commission, price, request.seats);
+  // «Boʻsh salon kerak»: the offer takes every seat of the car, each at the price of a seat (G61).
+  const seats = request.wholeCar ? (car?.seats ?? request.seats) : request.seats;
+  const fee = commissionFor(commission, price, seats);
   if (money === 'top_up') return <TopUpScreen onBack={() => setMoney('not_enough')} />;
   if (money === 'not_enough')
     return <NotEnoughScreen amount={fee} onBack={() => setMoney(null)} onTopUp={() => setMoney('top_up')} />;
@@ -120,7 +124,7 @@ export function OfferFlow({ request, onBack, onClose }: Props) {
           <div className="route-summary">
             <RouteView from={request.from} to={request.to} departAt={departAt} km={recommendation.km} />
           </div>
-          {line(t('bookings.review.seats'), String(request.seats))}
+          {line(t(request.wholeCar ? 'find.wholeCar' : 'bookings.review.seats'), String(seats))}
           {line(t('market.review.price'), formatMoney(price))}
           {line(t('bookings.offer.commission'), formatMoney(fee))}
         </Section>
