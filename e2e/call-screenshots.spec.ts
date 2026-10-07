@@ -27,9 +27,9 @@ test('passenger: calls the driver, nobody answers; the driver calls back', async
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
   await page.getByText(t('chat.open')).click();
-  await expect(page.getByText(t('calls.call'), { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: t('calls.call') })).toBeVisible();
   await take('1-chat');
-  await page.getByText(t('calls.call'), { exact: true }).click();
+  await page.getByRole('button', { name: t('calls.call') }).click();
   await expect(page.getByText(t('calls.calling'))).toBeVisible();
   await take('2-calling');
   await page.getByText(t('calls.hangUp')).click();

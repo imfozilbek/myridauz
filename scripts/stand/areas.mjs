@@ -18,6 +18,7 @@ export const AREAS = {
     'g54',
     'all-passenger',
     'findings',
+    'g60',
   ],
   requests: ['passenger-requests', 'requests-review'],
   driver: [

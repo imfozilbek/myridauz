@@ -34,8 +34,9 @@ test('passenger: a call opens its chat over the main screen and rings', async ({
   await expect.poll(() => chatSocket.current !== null).toBe(true);
   chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
   await expect(page.getByText(t('calls.incoming'))).toBeVisible();
+  // The trip card of the call (G60, docs/118 path 3): the seats of the booking.
   await expect(
-    page.getByText(t('market.request.seats', { count: String(confirmed.seats) }), { exact: false }),
+    page.getByText(t('bookings.card.seats', { seats: String(confirmed.seats) })).first(),
   ).toBeVisible();
   await take('1-incoming-from-home');
   chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'active', caller: 'other' } }));
