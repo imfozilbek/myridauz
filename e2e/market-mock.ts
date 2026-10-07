@@ -55,6 +55,8 @@ export const request = {
   seats: 2,
   price: 90000,
   pickupMode: 'door',
+  wholeCar: false,
+  withWoman: false,
   status: 'open',
 };
 

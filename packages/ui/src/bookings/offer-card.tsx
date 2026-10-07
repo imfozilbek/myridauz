@@ -21,8 +21,8 @@ export function OfferCard({ offer, onAnswer, onOpen }: Props) {
   const accept = useOneAtATime(() => onAnswer('accept'));
   const decline = useOneAtATime(() => onAnswer('decline'));
   const busy = accept.busy || decline.busy;
-  const car = t('find.car', {
-    make: driver.car.make,
+  // The model and the colour, as on the mockup: the make takes the line of the plate.
+  const car = t('bookings.offer.car', {
     model: driver.car.model,
     color: t(`drivers.color.${driver.car.color}`),
   });
@@ -40,7 +40,9 @@ export function OfferCard({ offer, onAnswer, onOpen }: Props) {
             )}
           </span>
           <span className="offer-card-car">
-            {driver.car.plate ? t('bookings.offer.car', { car, plate: formatPlate(driver.car.plate) }) : car}
+            {driver.car.plate
+              ? t('bookings.offer.carPlate', { car, plate: formatPlate(driver.car.plate) })
+              : car}
           </span>
         </span>
         <span className="offer-card-when">

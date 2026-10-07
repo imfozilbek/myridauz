@@ -120,8 +120,9 @@
   "moved": "Vaqt oʻzgardi: {from} → {to}",
   "disagree": "Rozi emasman",
   "others": "Oʻxshash safarlar",
-  "offer.car": "{car} · {plate}",
+  "offer.car": "{model}, {color}",
   "request.perSeat": "bir joy {price}",
   "request.offers": "Takliflar ({count})",
-  "request.waiting": "Kutayotganda"
+  "request.waiting": "Kutayotganda",
+  "offer.carPlate": "{car} · {plate}"
 }
