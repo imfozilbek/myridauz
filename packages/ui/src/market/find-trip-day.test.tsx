@@ -44,8 +44,8 @@ describe('FindTripFlow: the days and the empty day (G59, docs/97 K2, K6)', { tim
     await findRoute();
     expect(await screen.findByText('Hozircha safar yoʻq')).toBeTruthy();
     await tap('Soʻrov qoldirish');
-    // The route and the day come from the search: the way of the pickup is the next question.
-    expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
+    // The route and the day come from the search: the one screen of the request at once (G61).
+    expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
     expect(screen.queryByText('Qaysi kuni?')).toBeNull();
   });
 });

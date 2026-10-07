@@ -19,6 +19,8 @@ const request = {
   price: 95000,
   status: 'open' as const,
   pickupMode: 'both' as const,
+  wholeCar: false,
+  withWoman: false,
 };
 
 describe('what people need to decide is on the screen (docs/65 C)', () => {

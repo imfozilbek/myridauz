@@ -1,4 +1,4 @@
-import type { PickupMode, Pitak, Recommendation } from '@platform/contracts';
+import type { Pitak, Recommendation } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { asRecord, useFlowDraft } from '../flow/flow-draft';
@@ -7,18 +7,22 @@ import type { Route } from '../places/route-screen';
 import type { RememberedWay } from '../way/remembered-way';
 import { regionOf, type WayEnd } from '../way/way-end';
 
-const STEPS = ['route', 'date', 'mode', 'pickup', 'dropoff', 'price', 'review'] as const;
-export type RequestStepName = (typeof STEPS)[number];
+// The route and the day, then «Qayerdan, qayerga?» with the maps of its two ends (G61, docs/118 path 4).
+const STEPS = ['route', 'date', 'points', 'pickup', 'dropoff'] as const;
+type RequestStepName = (typeof STEPS)[number];
 export type RequestAnswer = {
   readonly route?: Route;
   readonly date?: string;
-  readonly mode?: PickupMode;
+  // The start at the door or at the pitak of the direction (docs/70); none until chosen.
+  readonly mode?: 'door' | 'pitak';
   readonly pickup?: WayEnd | null;
   readonly dropoff?: WayEnd;
   readonly seats?: number;
   readonly price?: number;
+  readonly withWoman?: boolean;
+  readonly wholeCar?: boolean;
 };
-type Saved = { readonly step: RequestStepName; readonly answer: RequestAnswer; readonly editing?: boolean };
+type Saved = { readonly step: RequestStepName; readonly answer: RequestAnswer };
 const DRAFT_KEY = 'new_request';
 
 const isStep = (value: unknown): value is RequestStepName => STEPS.some((step) => step === value);
@@ -35,32 +39,29 @@ function checkSaved(value: unknown): Saved | null {
   return hasPlace(answer['pickup']) && hasPlace(answer['dropoff']) ? (saved as Saved) : null;
 }
 
-// The first step without an answer; with all of them, the check.
-const nextStep = (answer: RequestAnswer): RequestStepName => {
-  const { route, date, mode, pickup, dropoff, price } = answer;
-  if (!route) return 'route';
-  if (!date) return 'date';
-  if (!mode) return 'mode';
-  if (mode !== 'pitak' && !pickup) return 'pickup';
-  return !dropoff ? 'dropoff' : !price ? 'price' : 'review';
-};
+// The first step without an answer; with the route and the day, the one screen of the request.
+const nextStep = ({ route, date }: RequestAnswer): RequestStepName =>
+  !route ? 'route' : !date ? 'date' : 'points';
+
+// The way of the last trip on a route (G35, docs/97 K4): a request starts at the door or at the pitak.
+export const keptWay = (last: RememberedWay | null): RequestAnswer =>
+  last && last.mode !== 'both' ? { mode: last.mode, pickup: last.pickup, dropoff: last.dropoff } : {};
 
 // The answers of a request and its step, kept as a draft after every step (docs/94 F3, F8). From
 // an empty day of the search (G35, docs/97 K6) the route and the day come with it, and the way
-// of the last trip on the route too: the price and the check are left.
+// of the last trip on the route too: only the people and the price are left.
 export function useNewRequest(
   search: { route: Route; date: string } | undefined,
   last: RememberedWay | null,
 ) {
   const { market, map } = useApiClients();
-  const kept = last ? { mode: last.mode, pickup: last.pickup, dropoff: last.dropoff } : {};
-  const answer: RequestAnswer = search ? { ...search, ...kept } : {};
+  const answer: RequestAnswer = search ? { ...search, ...keptWay(last) } : {};
   const start: Saved = { step: nextStep(answer), answer };
   const { value, setValue, restored, clear } = useFlowDraft(DRAFT_KEY, checkSaved, start, Boolean(search));
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   const [sent, setSent] = useState(false);
-  const go = (step: RequestStepName, editing = false) => setValue((saved) => ({ ...saved, step, editing }));
+  const go = (step: RequestStepName) => setValue((saved) => ({ ...saved, step }));
   const next = (patch: RequestAnswer) =>
     setValue((saved) => {
       const changed = { ...saved.answer, ...patch };
@@ -80,5 +81,5 @@ export function useNewRequest(
     // A pitak joins two regions (docs/72): without it the passenger is taken at the door.
     map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
   }, [route, market, map]);
-  return { ...value, editing: value.editing ?? false, recommendation, pitak, restored, sent, done, go, next };
+  return { ...value, recommendation, pitak, restored, sent, done, go, next };
 }

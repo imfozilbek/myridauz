@@ -23,6 +23,8 @@ const request: RideRequest = {
   price: 95000,
   status: 'open',
   pickupMode: 'both',
+  wholeCar: false,
+  withWoman: false,
 };
 
 describe('Mening safarlarim (docs/35)', () => {
