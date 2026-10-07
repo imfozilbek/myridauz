@@ -6,6 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { loadBrand } from '../../brands/index.ts';
+import { baseIsCurrent, buildIsFresh, copyState, markBase, markBuilt } from './reuse.mjs';
 import { serveApp } from './serve-app.mjs';
 import { serveTelegram } from './telegram-stub.mjs';
 import {
@@ -52,24 +53,55 @@ if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_B
       .join(''),
   );
 }
+const migrate = (persist) =>
+  run('pnpm', [
+    'exec',
+    'wrangler',
+    'd1',
+    'migrations',
+    'apply',
+    'DB',
+    '--local',
+    '--persist-to',
+    persist,
+    '--config',
+    config,
+  ]);
+// The clean base gets a new migration once; the copies made from it already have every one (G71).
+const BASE_STAMP = `${STAND_DIR}/base-migrations`;
+const MIGRATIONS = 'apps/backend/migrations';
+if (existsSync(STAND_BASE) && !baseIsCurrent(BASE_STAMP, MIGRATIONS)) {
+  migrate(STAND_BASE);
+  markBase(BASE_STAMP, MIGRATIONS);
+}
+// A stand with no data yet starts from the base too.
+const fresh = existsSync(STAND_BASE) && (process.argv.includes('--fresh') || !existsSync(STAND_STATE));
+const prepare = process.argv.includes('--prepare');
 // --fresh: the people, trips and bookings of earlier runs are gone, the map stays (pnpm stand:check).
-if (process.argv.includes('--fresh') && existsSync(STAND_BASE)) {
+if (fresh) {
   rmSync(STAND_STATE, { recursive: true, force: true });
-  cpSync(STAND_BASE, STAND_STATE, { recursive: true });
+  copyState(STAND_BASE, STAND_STATE);
+} else if (!prepare || !existsSync(STAND_BASE)) migrate(STAND_STATE);
+if (!existsSync(STAND_BASE)) {
+  if (!existsSync(STAND_MAP_READY)) {
+    run('node', ['scripts/map-data.mjs', `--brand=${brand.id}`, '--local']);
+    writeFileSync(STAND_MAP_READY, new Date().toISOString());
+  }
+  cpSync(STAND_STATE, STAND_BASE, { recursive: true });
+  markBase(BASE_STAMP, MIGRATIONS);
 }
-run('pnpm', ['exec', 'wrangler', 'd1', 'migrations', 'apply', 'DB', ...local]);
-if (!existsSync(STAND_MAP_READY)) {
-  run('node', ['scripts/map-data.mjs', `--brand=${brand.id}`, '--local']);
-  writeFileSync(STAND_MAP_READY, new Date().toISOString());
-}
-if (!existsSync(STAND_BASE)) cpSync(STAND_STATE, STAND_BASE, { recursive: true });
 // The Mini Apps ask their own origin: the server of each app passes the API on to the backend.
-// Stands side by side share one build made before them (STAND_BUILT=1, scripts/stand/check.mjs).
-if (process.env.STAND_BUILT !== '1')
+// Stands side by side share one build made before them (STAND_BUILT=1, scripts/stand/check.mjs);
+// the build is made again only when the code of the apps changed after the last one (G71).
+const BUILD_STAMP = `${STAND_DIR}/built-at`;
+if (process.env.STAND_BUILT !== '1' && !buildIsFresh(BUILD_STAMP)) {
+  const startedAt = Date.now();
   for (const app of Object.keys(STAND_APPS))
     run('pnpm', ['--filter', `@platform/miniapp-${app}`, 'build'], { VITE_API_URL: '/' });
+  markBuilt(BUILD_STAMP, startedAt);
+}
 // --prepare: the data and the build only, for the stands that start next.
-if (process.argv.includes('--prepare')) process.exit(0);
+if (prepare) process.exit(0);
 
 const host = `localhost:${STAND_API_PORT}`;
 const api = `http://${host}`;

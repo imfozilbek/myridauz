@@ -2,9 +2,9 @@ import { expect, test, type Locator, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { DOSTON, GAYRAT } from './people';
-import { pressBack } from '../telegram-mock';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { register } from './seed';
+import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
 
 // A passenger looks for a trip on the short path (G35, docs/97): the route on the main screen, the
@@ -93,10 +93,7 @@ for (const platform of PLATFORMS)
     const again = counter();
     // «Назад» up to the main screen: the app keeps its screen while it stays open.
     const recent = page.getByText(t('home.driver.last'));
-    await expect(async () => {
-      if (!(await recent.isVisible())) await pressBack(page);
-      await expect(recent).toBeVisible({ timeout: 1000 });
-    }).toPass();
+    await backUntil(page, recent);
     await shot('11-home-again');
     await again.tap(page.getByText(/→ Jizzax$/u).last());
     await again.tap(card(page, DOSTON.name));

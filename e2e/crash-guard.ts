@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, type Page } from '@playwright/test';
 
 export { expect, type Locator, type Page } from '@playwright/test';
 
@@ -13,7 +13,22 @@ const eventsOf = (body: string): readonly Record<string, unknown>[] => {
 
 // A screen that broke fails the test (G52, lesson 122): the error screen looks like any other
 // screen to a test, so every Mini App of a test is watched for client_error, as people see it.
-export const test = base.extend<{ crashGuard: undefined }>({
+// The stand checks without pictures unless asked (G71): a picture of a phone screen costs the processor
+// more than the step before it. pnpm stand:check --shots takes them again; the waits before stay.
+const noPicture = (page: Page) => {
+  page.screenshot = async () => Buffer.alloc(0);
+};
+export const test = base.extend<{ crashGuard: undefined; pictures: undefined }>({
+  pictures: [
+    async ({ context }, use) => {
+      if (process.env['STAND_SHOTS'] === 'off') {
+        context.pages().forEach(noPicture);
+        context.on('page', noPicture);
+      }
+      await use(undefined);
+    },
+    { auto: true },
+  ],
   crashGuard: [
     async ({ context }, use) => {
       const crashes: string[] = [];

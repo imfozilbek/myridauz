@@ -2,9 +2,9 @@ import { expect, test, type Page } from '../crash-guard';
 import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
-import { pressBack } from '../telegram-mock';
 import { mainButton, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { register } from './seed';
+import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
 
 // The screen of a point (G36, docs/100): the map in full, a sheet at the bottom. The pickup, the
@@ -73,10 +73,7 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('bookings.sent.asked'))).toBeVisible();
     // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map.
     const recent = page.getByText(t('home.driver.last'));
-    await expect(async () => {
-      if (!(await recent.isVisible())) await pressBack(page);
-      await expect(recent).toBeVisible({ timeout: 1000 });
-    }).toPass();
+    await backUntil(page, recent);
     await page
       .getByText(/→ Guliston shahri$/u)
       .last()
