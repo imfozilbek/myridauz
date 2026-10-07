@@ -5,7 +5,7 @@ import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
 import { approvedCar } from '../drivers';
 import { placesOf, roadKmBetween } from '../locations';
-import { recommendationFor } from '../pricing';
+import { directionRecommendationFor, recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
 import { pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
@@ -46,6 +46,7 @@ const tripsDeps = (env: Bindings): TripsDeps => ({
   approvedCar: (driverId) => approvedCar(env, driverId),
   ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),
+  recommendDirection: (from, to) => directionRecommendationFor(env, from, to),
   roadKm: (from, to) => roadKmBetween(env, from, to),
   schedule: loadBrand(env.BRAND).schedule,
   places: () => placesOf(env),

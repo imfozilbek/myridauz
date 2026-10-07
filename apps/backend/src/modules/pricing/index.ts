@@ -3,7 +3,7 @@ import type { Bindings } from '../../env';
 import MAIN_DIRECTIONS from '../../../seed/main-directions.json';
 import { placesOf, routeKm } from '../locations';
 import type { PricingDeps } from './application/ports';
-import { recommendPrice } from './application/recommend';
+import { recommendDirection, recommendPrice } from './application/recommend';
 import { variablesCache } from './application/variables';
 import { STRATEGIES } from './domain/formula';
 import { pricingRoutes } from './http/pricing-routes';
@@ -41,3 +41,6 @@ export const pricingModule = pricingRoutes(pricingDeps);
 // For trips and ride requests: the recommendation and the bounds of a price (docs/09).
 export const recommendationFor = (env: Bindings, from: string, to: string) =>
   recommendPrice(pricingDeps(env), from, to);
+// For «Qayerga borasiz?» and «Safarlar»: a direction may end in a whole region (G59).
+export const directionRecommendationFor = (env: Bindings, from: string, to: string) =>
+  recommendDirection(pricingDeps(env), from, to);

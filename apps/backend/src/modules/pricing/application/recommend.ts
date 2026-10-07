@@ -1,5 +1,6 @@
 import type { Recommendation } from '@platform/contracts';
 import { directionKeys } from '../domain/direction';
+import { measuredPlace } from '../domain/measured-place';
 import type { PricingDeps, Result, RouteKmError } from './ports';
 
 // The team's price for the places or their regions, if any (docs/09: it goes first).
@@ -34,4 +35,16 @@ export async function recommendPrice(
   return manual === undefined
     ? { ok: true, value: { ...base, price: deps.strategy(km.value, variables), source: 'formula' } }
     : { ok: true, value: { ...base, price: manual, source: 'manual' } };
+}
+
+// A direction of «Qayerga borasiz?» may end in a whole region (G59): the same recommendation, measured
+// from the place of the region nearest to its center. Other callers keep places only (docs/59).
+export async function recommendDirection(
+  deps: PricingDeps,
+  from: string,
+  to: string,
+): Promise<Result<Recommendation, RouteKmError>> {
+  const places = await deps.places.places();
+  const result = await recommendPrice(deps, measuredPlace(from, places), measuredPlace(to, places));
+  return result.ok ? { ok: true, value: { ...result.value, from, to } } : result;
 }

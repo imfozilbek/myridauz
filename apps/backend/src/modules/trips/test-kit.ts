@@ -69,6 +69,8 @@ export function setup() {
       };
       return { ok: true, value };
     },
+    // A whole region is measured like its places here: the real rule is tested in pricing (G59).
+    recommendDirection: (from, to) => deps.recommend(from, to),
     // Every other place is one trip away (300 km, 5 hours): the road from the end of a trip (docs/103).
     roadKm: async (from, to) => (from === to ? 0 : TRIP_KM),
     schedule: loadBrand().schedule,
