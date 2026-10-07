@@ -1,6 +1,6 @@
 # 136. G61: новые тексты на согласие владельца
 
-> **Кратко:** тексты заявки на одном экране, «Mening soʻrovim», правила «Butun salon» у водителя и сообщения бота «Yangi taklif» (G61, `118` путь 4). Тексты с макетов `goals/g61/` одобрены вместе с макетами 06.10.2026. Новые тексты ниже ждут согласия владельца; проверка носителем (`25`) остаётся.
+> **Кратко:** тексты заявки на одном экране, «Mening soʻrovim», правила «Butun salon» у водителя и сообщения бота «Yangi taklif» (G61, `118` путь 4). Тексты с макетов `goals/g61/` одобрены вместе с макетами 06.10.2026. Новые тексты ниже одобрены владельцем 07.10.2026 («Все супер»); проверка носителем (`25`) остаётся.
 
 ## С макетов (одобрены 06.10.2026)
 
@@ -10,7 +10,7 @@
 | Правило водителя (g61/2) | «Qanday band qilinadi?», «Faqat joylar», «Har kim oʻz joyini band qiladi», «Joylar yoki butun salon», «Bir kishi hamma {n} joyni ham olishi mumkin», «Faqat butun salon», «Faqat bitta guruh: {n} joy birga», «Butun salon narxi: {n} joy × {цена} = {сумма}.» |
 | «Mening soʻrovim» (g61/3) | «{откуда} → {куда} · {день}», «{n} kishi · bir joy {цена} · Boʻsh salon kerak», «Takliflar ({n})», «Rad etish», «Qabul qilish», «Soʻrovni bekor qilish» |
 
-## Новые: ждут согласия
+## Новые: одобрены 07.10.2026
 
 | # | Где | Текст |
 |---|---|---|
