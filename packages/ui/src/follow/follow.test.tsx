@@ -134,7 +134,7 @@ describe('the passenger shares the trip (docs/43)', () => {
       }),
     );
     await tap('Jasur');
-    await tap('Yaqinlarimga yuborish');
+    await tap('Yaqinlarimga');
     expect(share).toHaveBeenCalledWith(confirmed.id);
     await vi.waitFor(() => expect(open.mock.calls[0]?.[0]).toContain('t.me/share/url'));
     await tap('Mashinaga chiqdim');
@@ -144,7 +144,7 @@ describe('the passenger shares the trip (docs/43)', () => {
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);
     expect(screen.queryByText('Ulashishni toʻxtatish')).toBeNull();
-    await tap('Yaqinlarimga yuborish');
+    await tap('Yaqinlarimga');
     expect(await screen.findByText('Ulashishni toʻxtatish')).toBeTruthy();
   });
 });

@@ -13,20 +13,28 @@ import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
 import { Icon } from '../icons';
 import { useChat } from './use-chat';
+import { useRingOnce } from './use-ring-once';
 import { useChatLayout } from './use-chat-layout';
 import { useChatText } from './use-chat-text';
 import './chat.css';
 
-type Props = { readonly chatKey: string; readonly title?: string; readonly onBack: () => void };
+type Props = {
+  readonly chatKey: string;
+  readonly title?: string;
+  // «Qoʻngʻiroq» of the booking page: the call starts as soon as the chat allows it (G60).
+  readonly ring?: boolean | undefined;
+  readonly onBack: () => void;
+};
 
 // The chat of a booking, like a Telegram chat (docs/07, docs/21): mine on the right, the other
 // person on the left, lines about the booking in the middle. Text only.
-export function ChatScreen({ chatKey, title, onBack }: Props) {
+export function ChatScreen({ chatKey, title, ring = false, onBack }: Props) {
   useScreenView('chat');
   useScreenBackground('grouped');
   const { t } = useI18n();
   const { messages, loaded, state, warning, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
+  useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
   // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
   const { chat: chats } = useApiClients();
   const about = useLoad(() => chats.about(chatKey)).value ?? null;

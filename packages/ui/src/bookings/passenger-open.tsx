@@ -10,12 +10,12 @@ import { errorKey } from '../market/error-text';
 import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
-import { BookingScreen } from './booking-screen';
+import { ConfirmedBooking } from './confirmed-booking';
 import { PendingBooking } from './pending-booking';
 import { cancellable } from './booking-status';
 import { OfferAccepted, OfferScreen } from './offer-list';
 import { RequestOpen } from './request-open';
-import { TripTools, withTold } from './trip-tools';
+import { withTold } from './use-trip-steps';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
 const isStale = (caught: unknown) =>
@@ -47,7 +47,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   // The booking of an accepted offer: its card goes to the close people (docs/89 P9).
   const [accepted, setAccepted] = useState<{ readonly bookingId: string | null } | null>(null);
-  const [talk, setTalk] = useState<{ readonly key: string; readonly title: string } | null>(null);
+  const [talk, setTalk] = useState<{ chatKey: string; title: string; ring?: boolean } | null>(null);
   const [complaint, setComplaint] = useState<string | null>(null);
   const [told, setTold] = useState<Booking | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
@@ -66,7 +66,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
   if (accepted) return <OfferAccepted bookingId={accepted.bookingId} onDone={() => onClose(true)} />;
   if (complaint) return <ComplaintScreen bookingId={complaint} onBack={() => setComplaint(null)} />;
-  if (talk) return <ChatScreen chatKey={talk.key} title={talk.title} onBack={() => setTalk(null)} />;
+  if (talk) return <ChatScreen {...talk} onBack={() => setTalk(null)} />;
   if (offer) {
     const answer = (action: 'accept' | 'decline') =>
       run(
@@ -83,7 +83,7 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
         onBack={() => open(null)}
         onAccept={() => answer('accept')}
         onDecline={() => answer('decline')}
-        onChat={() => setTalk({ key: offer.chatKey, title: offer.driver.firstName })}
+        onChat={() => setTalk({ chatKey: offer.chatKey, title: offer.driver.firstName })}
       >
         <ActionFailure error={failure} />
       </OfferScreen>
@@ -120,11 +120,9 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
   // In the car or arrived: the seat is used, nothing to cancel (docs/35). A waiting request shows
   // «Javob kutilmoqda» and until when, as right after it was sent (G59).
   const inCar = booking.boardedAt !== null || booking.arrivedAt !== null;
-  const actions =
-    cancellable(booking.status) && !inCar
-      ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
-      : [];
-  const openChat = () => setTalk({ key: booking.chatKey, title: booking.trip.driver.firstName });
+  const canCancel = cancellable(booking.status) && !inCar;
+  const openChat = (ring = false) =>
+    setTalk({ chatKey: booking.chatKey, title: booking.trip.driver.firstName, ring });
   if (booking.status === 'requested')
     return (
       <PendingBooking
@@ -137,14 +135,16 @@ export function PassengerOpen({ opened, offers, offerId: linked, onClose, onStal
       </PendingBooking>
     );
   return (
-    <BookingScreen booking={booking} side="passenger" onBack={() => onClose(false)} actions={actions}>
+    <ConfirmedBooking
+      booking={booking}
+      onBack={() => onClose(false)}
+      onChat={() => openChat()}
+      onCall={() => openChat(true)}
+      onComplain={() => setComplaint(booking.id)}
+      onCancel={canCancel ? () => void cancel() : null}
+      onTold={setTold}
+    >
       <ActionFailure error={failure} />
-      <TripTools
-        booking={booking}
-        onChat={openChat}
-        onComplain={() => setComplaint(booking.id)}
-        onTold={setTold}
-      />
-    </BookingScreen>
+    </ConfirmedBooking>
   );
 }

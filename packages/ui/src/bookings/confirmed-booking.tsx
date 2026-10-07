@@ -1,0 +1,89 @@
+import type { Booking } from '@platform/contracts';
+import type { ReactNode } from 'react';
+import { useScreenView } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
+import { useI18n } from '../context/i18n-context';
+import { canComplain } from '../feedback/complain-cell';
+import { Icon, type IconName } from '../icons';
+import { Screen } from '../screen/screen';
+import { ActionFailure } from '../states/action-failure';
+import { MainButton } from '../telegram/bottom-button';
+import { openExternal } from '../telegram/feedback';
+import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
+import { TripCard } from '../trip/trip-card';
+import { BookingBanner } from './booking-banner';
+import { BookingDriver } from './booking-driver';
+import { mapUrl } from './map-link';
+import { useTripSteps } from './use-trip-steps';
+import './confirmed-booking.css';
+
+type Props = {
+  readonly booking: Booking;
+  readonly onBack: () => void;
+  readonly onChat: () => void;
+  readonly onCall: () => void;
+  readonly onComplain: () => void;
+  // Null when the seat is used or the trip went: nothing to cancel (docs/35).
+  readonly onCancel: (() => void) | null;
+  readonly onTold: (booking: Booking) => void;
+  readonly children?: ReactNode;
+};
+
+// The page of a confirmed seat (owner decision 06.10.2026, docs/118 path 3, mockup g60/1): who,
+// which car, where; three big buttons; one main button that follows the trip.
+export function ConfirmedBooking(props: Props) {
+  const { booking, onBack, onChat, onCall, onComplain, onCancel, onTold, children } = props;
+  useScreenView('bookings.passenger');
+  useScreenBackground('tinted');
+  const { t } = useI18n();
+  const { colors } = useBrand().theme;
+  const steps = useTripSteps(booking, onTold);
+  const button = (icon: IconName, label: string, onClick: () => void) => (
+    <button type="button" className="booking-button" onClick={onClick}>
+      <Icon name={icon} size={24} />
+      {label}
+    </button>
+  );
+  return (
+    <div className="booking-page" style={brandVars(colors)}>
+      <Screen onBack={onBack} />
+      <BookingBanner booking={booking} />
+      <div className="booking-card">
+        <BookingDriver booking={booking} />
+        <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
+      </div>
+      <p className="booking-hint">{t('find.payHint')}</p>
+      {children}
+      <ActionFailure error={steps.failure} />
+      <div className="booking-buttons">
+        {button('chat', t('chat.open'), onChat)}
+        {booking.status === 'confirmed' ? button('phone', t('calls.call'), onCall) : null}
+        {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}
+      </div>
+      {steps.note ? (
+        <p className="booking-hint booking-note">
+          {t(`share.${steps.note}`)}
+          {steps.note === 'told' ? (
+            <button type="button" className="booking-link" onClick={steps.stop}>
+              {t('share.stop')}
+            </button>
+          ) : null}
+        </p>
+      ) : null}
+      <div className="booking-links">
+        {canComplain(booking.status) ? (
+          <button type="button" className="booking-link" onClick={onComplain}>
+            {t('complaints.title')}
+          </button>
+        ) : null}
+        {onCancel ? (
+          <button type="button" className="booking-link booking-link-danger" onClick={onCancel}>
+            {t('bookings.cancel')}
+          </button>
+        ) : null}
+      </div>
+      {steps.next ? <MainButton text={t(`share.${steps.next}`)} onClick={steps.step} /> : null}
+    </div>
+  );
+}

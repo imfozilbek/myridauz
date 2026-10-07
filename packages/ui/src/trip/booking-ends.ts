@@ -19,6 +19,9 @@ export function useBookingEnds(booking: Booking) {
   return {
     start: booking.pitak ? booking.pitak.name : placeName(booking.pickup, trip.from),
     end: placeName(booking.dropoff, trip.to),
+    // The exact points open in a map; before the confirmation and 30 days after there are none.
+    startPoint: booking.pitak?.point ?? booking.pickup?.point ?? null,
+    endPoint: booking.dropoff?.point ?? null,
     regionName,
   };
 }
