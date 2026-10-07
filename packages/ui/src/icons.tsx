@@ -61,7 +61,6 @@ import {
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
 import { WAY_ICONS } from './way-icons';
-
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
   trip: Route,
@@ -72,6 +71,7 @@ const ICONS = {
   passengers: Users,
   applications: ClipboardCheck,
   complaints: Flag,
+  arrived: Flag, // the badge of «Yetib keldingizmi?» (mockup g60/6)
   statistics: ChartColumn,
   team: ShieldCheck,
   empty: Inbox,

@@ -28,9 +28,9 @@ export type BrandColors = {
   readonly neutralText: HexColor;
   readonly neutralFace: HexColor;
   readonly dangerText: HexColor; // a number of work waiting for the team (admin, G53)
-  // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
-  readonly routeFrom: HexColor;
-  readonly routeTo: HexColor;
+  readonly routeFrom: HexColor; // point A of a route: green where the trip starts (docs/20)
+  readonly routeTo: HexColor; // point B: red where it ends
+  readonly scrim: HexColor; // the shade over the screen under a sheet, at 35% (mockups g60/6, g60/7)
   // Row line, empty tick frame, inactive main button and its words (the mockups of G58, Pixel Perfect).
   readonly divider: HexColor;
   readonly control: HexColor;

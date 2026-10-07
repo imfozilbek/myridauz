@@ -1,18 +1,21 @@
 import { arrivalAt, type Booking } from '@platform/contracts';
 import { useState } from 'react';
-import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Button, Modal } from '../components';
 import { useAnalytics } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
 import { useDirectory } from '../places/use-directory';
+import { useSheetShown } from '../telegram/sheet-shown';
+import { brandVars } from '../theme/brand-vars';
+import { SheetFace } from './sheet-face';
+import { SheetOverlay } from './sheet-overlay';
 import './arrived-sheet.css';
 
 const HOUR_MS = 60 * 60 * 1000;
-const PHOTO = 72;
 
 // A confirmed seat an hour after its arrival, not told yet: one sheet at a time (docs/122).
 export const asksArrival = (booking: Booking, now: number) =>
@@ -31,8 +34,10 @@ export function ArrivedSheet({
 }) {
   const [later, setLater] = useState<readonly string[]>([]);
   const due = bookings.find((booking) => asksArrival(booking, Date.now()) && !later.includes(booking.id));
+  useSheetShown(due !== undefined);
   return (
     <Modal
+      overlayComponent={<SheetOverlay />}
       open={due !== undefined}
       onOpenChange={(open) => (open || !due ? undefined : setLater([...later, due.id]))}
     >
@@ -45,6 +50,7 @@ type AskProps = { readonly booking: Booking; readonly onLater: () => void; reado
 
 function Ask({ booking, onLater, onTold }: AskProps) {
   const { t, formatTime } = useI18n();
+  const { colors } = useBrand().theme;
   const { track } = useAnalytics();
   const { chat } = useApiClients();
   const { failure, fail, clear } = useFailure();
@@ -63,12 +69,12 @@ function Ask({ booking, onLater, onTold }: AskProps) {
     }
   };
   return (
-    <div className="arrived-sheet">
-      <ProfilePhoto
-        userId={passenger.id}
+    <div className="arrived-sheet" style={brandVars(colors)}>
+      <SheetFace
+        id={passenger.id}
         name={passenger.firstName}
         hasAvatar={passenger.hasAvatar}
-        size={PHOTO}
+        badge="arrived"
       />
       <span className="arrived-kicker">{t('bookings.arrivedAsk.kicker', { name: passenger.firstName })}</span>
       <b className="arrived-title">{t('bookings.arrivedAsk.title')}</b>
@@ -79,10 +85,10 @@ function Ask({ booking, onLater, onTold }: AskProps) {
         })}
       </span>
       <ActionFailure error={failure} />
-      <Button size="l" stretched onClick={() => void arrived()}>
+      <Button size="l" stretched className="sheet-main" onClick={() => void arrived()}>
         {t('bookings.arrivedAsk.yes')}
       </Button>
-      <Button size="l" mode="gray" stretched onClick={onLater}>
+      <Button size="l" mode="gray" stretched className="sheet-second" onClick={onLater}>
         {t('bookings.arrivedAsk.later')}
       </Button>
       <span className="arrived-foot">{t('bookings.arrivedAsk.close')}</span>

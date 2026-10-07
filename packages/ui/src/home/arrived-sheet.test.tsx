@@ -23,6 +23,18 @@ describe('«Yetib keldingizmi?» an hour after the arrival (docs/129, docs/43, m
     expect(screen.queryByText('Yetib keldingizmi?')).toBeNull();
   });
 
+  it('hides the main button while the sheet is open: it would cover «Hali yoʻldaman»', async () => {
+    vi.setSystemTime(arrival + HOUR + 1);
+    renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
+      bookings: async () => [confirmed],
+      covered: 'find_trip',
+    });
+    expect(await screen.findByText('Yetib keldingizmi?')).toBeTruthy();
+    expect(screen.queryByText('Safar topish')).toBeNull();
+    await tap('Hali yoʻldaman');
+    expect(await screen.findByText('Safar topish')).toBeTruthy();
+  });
+
   it('does not ask before the hour', async () => {
     vi.setSystemTime(arrival + HOUR - 60_000);
     home();
