@@ -1,6 +1,9 @@
 import {
   ADMIN_APPLICATIONS_PATH,
+  ADMIN_FACES_PATH,
   ADMIN_ME_PATH,
+  adminFaceDecisionPath,
+  adminFacePhotoPath,
   adminApplicationPath,
   adminBlockPath,
   adminBlocksPath,
@@ -11,19 +14,23 @@ import {
   applicationQueueSchema,
   applicationSummarySchema,
   blockJournalSchema,
+  faceQueueSchema,
   type ApplicationDetail,
   type ApplicationSummary,
   type BlockJournal,
   type BlockInput,
   type CarPhotoKind,
   type DecisionInput,
+  type FaceDecision,
+  type FaceSummary,
   type PersonId,
   teamMeSchema,
   type TeamMe,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
-// The team works with driver applications and blocks from the admin Mini App (docs/04, docs/17).
+// The team works with driver applications, face photos and blocks from the admin Mini App (docs/04,
+// docs/17, G51).
 export function createModerationClient(options: SignedOptions) {
   const { request, post } = signedRequest(options);
   return {
@@ -44,6 +51,13 @@ export function createModerationClient(options: SignedOptions) {
       blockJournalSchema.parse(await (await request(adminBlocksPath(userId))).json()),
     unblock: async (userId: PersonId): Promise<void> => {
       await post(adminUnblockPath(userId), {});
+    },
+    // New face photos, the oldest first: «Rasm mos» or «Mos emas» with a reason (G51, docs/120).
+    faces: async (): Promise<FaceSummary[]> =>
+      faceQueueSchema.parse(await (await request(ADMIN_FACES_PATH)).json()).faces,
+    facePhoto: async (userId: PersonId): Promise<Blob> => (await request(adminFacePhotoPath(userId))).blob(),
+    decideFace: async (userId: PersonId, decision: FaceDecision): Promise<void> => {
+      await post(adminFaceDecisionPath(userId), decision);
     },
   };
 }

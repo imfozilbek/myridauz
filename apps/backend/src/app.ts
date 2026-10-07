@@ -13,7 +13,7 @@ import {
   tripCancelWatch,
 } from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
-import { channelsModule } from './modules/channels';
+import { channelsModule, zoneWatch } from './modules/channels';
 import { chatRoutes } from './modules/chat';
 import { companyModule } from './modules/company';
 import { soundsModule } from './modules/sounds';
@@ -93,8 +93,9 @@ export const app = new Hono<AppEnv>()
   .route('/', companyModule)
   .route('/', soundsModule)
   .route('/', channelsModule)
-  // The cancel watch goes before trips: it wraps the cancel route of the trips module.
+  // The cancel and zone watches go before trips: they wrap the routes of the trips module.
   .route('/', tripCancelWatch)
+  .route('/', zoneWatch)
   .route('/', tripsModule)
   .route('/', requestsModule)
   .route('/', subscriptionsModule)

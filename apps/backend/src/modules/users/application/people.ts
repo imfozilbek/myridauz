@@ -1,4 +1,5 @@
 import type { Gender } from '@platform/contracts';
+import { approvedFace, faceShown } from '../domain/face';
 import { activeBlock, type Block, type User } from '../domain/user';
 import type { UsersDeps } from './ports';
 
@@ -9,6 +10,8 @@ export type Person = {
   readonly publicId: string;
   readonly firstName: string;
   readonly avatarKey: string | null;
+  // Other people may see the photo: the team approved it (docs/118). The team sees it always.
+  readonly avatarShown: boolean;
   // Only for "Mashinada ayol bor" (docs/06): never shown to other people.
   readonly gender: Gender;
 };
@@ -26,17 +29,17 @@ export function people(deps: UsersDeps) {
       const user = await deps.users.find(id);
       if (!user) return undefined;
       const { publicId, firstName, avatarKey, gender } = user;
-      return { id: user.id, publicId, firstName, avatarKey, gender };
-    },
-    // Subscription news and reminders only to who wants them (docs/88 L1); nobody: no news.
-    wantsNews: async (id: number) => {
-      const user = await deps.users.find(id);
-      return user !== undefined && !user.newsOff;
+      return { id: user.id, publicId, firstName, avatarKey, avatarShown: faceShown(user), gender };
     },
     // The Telegram ID behind a public id from a path; undefined: no such person (docs/65 A3).
     idOf: async (publicId: string) => (await deps.users.byPublicId(publicId))?.id,
     // Only an approved driver may publish trips (docs/04).
     setDriver: (id: number, isDriver: boolean) => update(id, { isDriver }),
+    // The team approved a driver application: the face in it is approved too (docs/04, G51).
+    approveFace: async (id: number) => {
+      const face = (await deps.users.find(id))?.face;
+      if (face) await update(id, { face: approvedFace(face) });
+    },
     // days: 1, 7 or 30; null blocks for good. The phone is blocked too: a new account with the same
     // number cannot come back (docs/17). A block is never weaker than the one before, and it works on
     // a deleted account by its id and its held phone (docs/65 A5).

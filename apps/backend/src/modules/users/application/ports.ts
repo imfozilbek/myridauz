@@ -1,4 +1,4 @@
-import type { Arrival } from '@platform/contracts';
+import type { Arrival, AvatarStatus, FaceReason } from '@platform/contracts';
 import type { ImageStore } from '../../../shared/storage/image-store';
 import type { TripRelation } from '../domain/avatar-visibility';
 import type { Block, BlockEntry, User } from '../domain/user';
@@ -29,6 +29,25 @@ export type UserRepository = {
   // Who blocked, when, until when and why: rows are only added.
   logBlock(entry: BlockEntry): Promise<void>;
   blockLog(id: number): Promise<BlockEntry[]>;
+  // New face photos waiting for the team, the oldest first (G51).
+  pendingFaces(): Promise<User[]>;
+  // true once per person: the invite to the channel of their zone is to be sent now (docs/119).
+  claimZoneInvite(id: number, at: number): Promise<boolean>;
+};
+
+// One decision of the team on a face photo (G51); rows are only added.
+export type FaceDecided = {
+  readonly userId: number;
+  readonly status: Exclude<AvatarStatus, 'pending'>;
+  readonly reason: FaceReason | null;
+  readonly by: number;
+  readonly at: number;
+};
+
+// The team hears of a new photo in the admin bot; the person hears of a photo that does not fit.
+export type FaceNotifier = {
+  uploaded(user: User): Promise<void>;
+  rejected(user: User, reason: FaceReason): Promise<void>;
 };
 
 // How two people are linked by trips (G07). Used only for photo visibility (docs/05).
@@ -38,6 +57,8 @@ export type UsersDeps = {
   readonly users: UserRepository;
   readonly avatars: ImageStore;
   readonly trips: TripRelations;
+  readonly faceLog: { add(entry: FaceDecided): Promise<void> };
+  readonly faces: FaceNotifier;
   readonly now: () => number;
   readonly newId: () => string;
 };

@@ -1,0 +1,50 @@
+/* The gender tiles and the note under them (the mockup of G58, one to one). */
+.gender-tiles {
+  display: flex;
+  gap: 10px;
+  margin: 0 14px;
+}
+
+.gender-tile {
+  flex: 1;
+  padding: 16px 10px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 16px;
+  line-height: normal;
+  text-align: center;
+  color: inherit;
+  cursor: pointer;
+}
+
+.gender-tile-on {
+  border-color: var(--reg-strong);
+  background: var(--reg-soft);
+}
+
+.gender-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 8px;
+  border-radius: 12px;
+  background: var(--reg-mint);
+}
+
+.gender-tile-on .gender-icon {
+  background: var(--reg-strong);
+}
+
+.about-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 14px 28px 12px;
+  font-size: 14px;
+  color: var(--reg-muted);
+}

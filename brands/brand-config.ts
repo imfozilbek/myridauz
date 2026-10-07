@@ -31,6 +31,11 @@ export type BrandColors = {
   // Point A and point B of a route: green where the trip starts, red where it ends (docs/20).
   readonly routeFrom: HexColor;
   readonly routeTo: HexColor;
+  // Row line, empty tick frame, inactive main button and its words (the mockups of G58, Pixel Perfect).
+  readonly divider: HexColor;
+  readonly control: HexColor;
+  readonly disabled: HexColor;
+  readonly disabledText: HexColor;
 };
 
 // Each Mini App has its own main color, so a person always knows where they are (docs/20).
@@ -85,16 +90,13 @@ type CallRules = {
 // loop) and <set>-notify.wav; the owner picks the set in the admin Mini App, until then the default.
 type SoundRules = { readonly sets: readonly string[]; readonly defaultSet: string };
 
-// Driver applications (G34, docs/50): the team answers within the hour while it works (Tashkent
-// hours, from included, to excluded); a waiting application reminds its moderator, then the owner.
+// Driver applications (G34, docs/50): team hours [from, to) in Tashkent; waiting ones remind, then the owner.
 type ModerationRules = {
   readonly hours: { readonly from: number; readonly to: number };
   readonly remindMinutes: number;
   readonly ownerMinutes: number;
 };
 
-// The party of the legal documents (docs/30): the requisites come from the admin Mini App (G34); the
-// address answers people until the owner enters one there.
 // When a driver may leave (G38, docs/103): at least leadMinutes after making the trip; another day opens
 // at defaultTime; at most maxActiveTrips; the time to gather people is the road time × factor, within
 // the bounds.
@@ -105,9 +107,8 @@ type ScheduleRules = {
   readonly gather: { readonly factor: number; readonly minMinutes: number; readonly maxMinutes: number };
 };
 
-type Company = {
-  readonly email: string;
-};
+// The party of the legal documents (docs/30): requisites from the admin Mini App (G34).
+type Company = { readonly email: string };
 
 // A channel zone: the username without "@", its name, the plate code of its region (docs/36)
 // and the SOATO codes of its districts and cities.

@@ -9,6 +9,7 @@ export function createMemoryUsers(): UserRepository {
   const idBlocks = new Map<number, Block>();
   const held = new Map<number, string>();
   const log: BlockEntry[] = [];
+  const invited = new Set<number>();
   return {
     find: async (id) => users.get(id),
     byPublicId: async (publicId) => [...users.values()].find((user) => user.publicId === publicId),
@@ -39,6 +40,15 @@ export function createMemoryUsers(): UserRepository {
     releasePhone: async (id) => void held.delete(id),
     logBlock: async (entry) => void log.push(entry),
     blockLog: async (id) => log.filter((entry) => entry.userId === id),
+    pendingFaces: async () =>
+      [...users.values()]
+        .filter((user) => user.face?.status === 'pending')
+        .sort((a, b) => (a.face?.at ?? 0) - (b.face?.at ?? 0)),
+    claimZoneInvite: async (id) => {
+      if (!users.has(id) || invited.has(id)) return false;
+      invited.add(id);
+      return true;
+    },
   };
 }
 

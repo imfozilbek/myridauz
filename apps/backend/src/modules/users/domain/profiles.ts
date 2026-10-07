@@ -1,4 +1,5 @@
 import type { MyProfile, PublicProfile } from '@platform/contracts';
+import { faceShown } from './face';
 import { rolesOf, type User } from './user';
 
 // Ratings arrive in G11: null is shown as "Yangi" (new).
@@ -11,8 +12,9 @@ export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
   phone: user.phone,
   roles: rolesOf(user, isAdmin),
   hasAvatar: user.avatarKey !== null,
+  avatarStatus: user.face?.status ?? null,
+  avatarReason: user.face?.reason ?? null,
   writeAccess: user.writeAccess,
-  news: !user.newsOff,
   rating: NO_RATING,
 });
 
@@ -20,6 +22,6 @@ export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
 export const toPublicProfile = (user: User): PublicProfile => ({
   id: user.publicId,
   firstName: user.firstName,
-  hasAvatar: user.avatarKey !== null,
+  hasAvatar: faceShown(user),
   rating: NO_RATING,
 });

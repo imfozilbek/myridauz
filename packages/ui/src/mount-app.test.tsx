@@ -11,12 +11,12 @@ const active = {
     gender: 'male',
     phone: '+998',
     roles: ['passenger', 'driver'],
-    hasAvatar: false,
+    hasAvatar: true,
     writeAccess: true,
-    news: true,
     rating: null,
+    avatarStatus: null,
+    avatarReason: null,
   },
-  settings: { passengerAvatarRequired: false },
 };
 
 afterEach(() => {
@@ -30,7 +30,7 @@ describe('mountApp', () => {
     const fetch = vi.spyOn(window, 'fetch').mockImplementation(async () => Response.json(active));
     await act(async () =>
       mountApp('driver', Page, {
-        welcome: { textKey: 'common.driver.welcome', points: [] },
+        welcome: { logo: 'logo-driver.svg', points: [] },
       }),
     );
     await waitFor(() => expect(document.body.textContent).toContain('sahifa'));

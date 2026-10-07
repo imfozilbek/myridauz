@@ -17,6 +17,7 @@ const person = (id: number, gender: Person['gender']): Person => ({
   publicId: publicIdOf(id),
   firstName: `P${id}`,
   avatarKey: null,
+  avatarShown: false,
   gender,
 });
 const PLACES = new Map(

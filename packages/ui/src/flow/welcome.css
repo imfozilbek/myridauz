@@ -1,0 +1,145 @@
+/* Screen 1 of the registration (G58): the values of the approved mockup, one to one
+   (docs/goals/g58/src/1-welcome.html, Pixel Perfect, lesson 141). */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  box-sizing: border-box;
+  padding: 46px 0 16px;
+  font-family: var(--tgui--font-family);
+  color: var(--reg-ink);
+}
+
+.welcome-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.welcome-logo {
+  display: block;
+  border-radius: 18px;
+}
+
+.welcome-name {
+  margin: 10px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: normal;
+}
+
+.welcome-slogan {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+.welcome-head {
+  margin: 0;
+  padding: 12px 28px 7px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--reg-muted);
+  text-transform: uppercase;
+}
+
+.welcome-points {
+  margin: 0 14px 16px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--reg-card);
+  list-style: none;
+}
+
+.welcome-point {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 16px;
+}
+
+.welcome-point:last-child {
+  border-bottom: none;
+}
+
+.welcome-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--reg-strong);
+}
+
+/* The two ticks stand right over «Davom etish» (80 px above the bottom of the phone); on a short
+   phone they follow the rows and nothing is covered (docs/121). */
+.welcome-consent {
+  margin: auto 14px 0;
+  padding-top: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.welcome-tick {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 14px;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.welcome-tick:last-child {
+  border-bottom: none;
+}
+
+.welcome-tick input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome-box {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--reg-control);
+  border-radius: 6px;
+}
+
+.welcome-box svg {
+  stroke-width: 2.5;
+}
+
+.welcome-tick input:checked + .welcome-box {
+  border-color: var(--reg-strong);
+  background: var(--reg-strong);
+}
+
+.welcome-tick input:focus-visible + .welcome-box {
+  outline: 2px solid var(--reg-strong);
+  outline-offset: 2px;
+}
+
+/* A tap on a document name opens the document, it does not tick the box. */
+.welcome-tick a {
+  position: relative;
+  z-index: 1;
+  color: var(--reg-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

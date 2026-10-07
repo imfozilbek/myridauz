@@ -1,45 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { createMemoryImages } from '../../shared/storage/memory-images';
-import { createMemoryUsers } from './infrastructure/memory-stores';
 import { readAvatar, setAvatar } from './application/avatar';
 import { checkAccess } from './application/check-access';
+import { decideFace } from './application/faces';
 import { getMe } from './application/get-me';
-import type { TripRelations, UsersDeps } from './application/ports';
 import { getPublicProfile, setWriteAccess } from './application/profile';
 import { register } from './application/register';
-
-const NOW = 1_000_000;
-const settings = { passengerAvatarRequired: false };
-const ali = { id: 1, firstName: 'Ali', isAdmin: false };
-const input = { firstName: 'Ali', gender: 'male' as const, contact: { userId: 1, phone: '998901234567' } };
-const jpeg = (size: number) => ({ body: new ArrayBuffer(size), type: 'image/jpeg' });
-
-function setup(relation: Awaited<ReturnType<TripRelations['relation']>> = 'none') {
-  const users = createMemoryUsers();
-  const avatars = createMemoryImages();
-  let id = 0;
-  const deps: UsersDeps = {
-    users,
-    avatars,
-    trips: { relation: async () => relation },
-    now: () => NOW,
-    newId: () => `id${(id += 1)}`,
-  };
-  const stored = async (userId: number) => {
-    const user = await users.find(userId);
-    if (!user) throw new Error('test.user_missing');
-    return user;
-  };
-  return { deps, users, avatars, stored };
-}
+import { ali, input, jpeg, NOW, setup } from './test-kit';
 
 describe('registration', () => {
   it('registers once with the own Telegram phone', async () => {
     const { deps } = setup();
-    expect(await getMe(deps, ali, settings)).toEqual({
+    expect(await getMe(deps, ali)).toEqual({
       state: 'unregistered',
       suggestedName: 'Ali',
-      settings,
     });
     const result = await register(deps, ali, input);
     expect(result.ok && result.user).toMatchObject({
@@ -48,7 +21,7 @@ describe('registration', () => {
       isDriver: false,
     });
     expect(await register(deps, ali, input)).toEqual({ ok: false, error: 'users.already_registered' });
-    const me = await getMe(deps, { ...ali, isAdmin: true }, settings);
+    const me = await getMe(deps, { ...ali, isAdmin: true });
     expect(me.state === 'active' && me.profile.roles).toEqual(['passenger', 'admin']);
   });
 
@@ -68,7 +41,7 @@ describe('blocking (docs/17)', () => {
     expect(await checkAccess(deps, 1)).toBeNull();
     const user = await stored(1);
     await users.save({ ...user, block: { until: NOW + 10 } });
-    expect(await getMe(deps, ali, settings)).toEqual({ state: 'blocked', until: NOW + 10 });
+    expect(await getMe(deps, ali)).toEqual({ state: 'blocked', until: NOW + 10 });
     await users.save({ ...user, block: { until: NOW - 10 } });
     expect(await checkAccess(deps, 1)).toBeNull();
     await users.blockPhone('+998901234567', { until: null }, 0);
@@ -110,6 +83,9 @@ describe('avatar', () => {
     await register(deps, ali, input);
     await setAvatar(deps, ali, jpeg(10));
     const other = { id: 3, firstName: 'Vali', isAdmin: false };
+    // Until the team approves the photo, others see a person without a photo (docs/118).
+    expect(await readAvatar(deps, other, 1)).toEqual({ ok: false, error: 'users.avatar_hidden' });
+    await decideFace(deps, 900, 1, { action: 'approve' });
     expect((await readAvatar(deps, other, 1)).ok).toBe(true);
     for (const key of avatars.keys()) await avatars.delete(key);
     expect(await readAvatar(deps, other, 1)).toEqual({ ok: false, error: 'users.not_found' });

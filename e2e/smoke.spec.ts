@@ -20,7 +20,8 @@ for (const app of MINI_APPS) {
     if (app.welcome) {
       await expect(page.getByText(app.welcome)).toBeVisible();
       await expect(mainButton).toHaveText(TEXT.continue);
-      await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.brandStrong));
+      // Gray until both ticks of the consent (G58).
+      await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.disabled));
       await register(page, app.welcome);
       await expect(page.getByLabel(TEXT.profile)).toBeVisible();
       expect(api.registrations).toEqual([
@@ -31,8 +32,10 @@ for (const app of MINI_APPS) {
     expect(await telegramEvents(page, 'web_app_set_header_color')).toContainEqual({ color: colors.bg });
     expect(await telegramEvents(page, 'web_app_set_bottom_bar_color')).toContainEqual({ color: colors.bg });
     await expect(page.getByText(app.action).first()).toBeVisible();
-    if (app.mainButton) await expect(mainButton).toHaveText(app.mainButton);
-    else await expect(mainButton).toBeHidden();
+    if (app.mainButton) {
+      await expect(mainButton).toHaveText(app.mainButton);
+      await expect(mainButton).toHaveCSS('background-color', hexToRgb(colors.brandStrong));
+    } else await expect(mainButton).toBeHidden();
 
     await page.evaluate(() => {
       Object.defineProperty(document, 'visibilityState', { value: 'hidden' });

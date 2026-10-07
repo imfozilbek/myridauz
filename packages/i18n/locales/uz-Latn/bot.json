@@ -132,5 +132,11 @@
   "profile.support.description": "{brand} yordam xizmati.\n\nSafar, bron, hamyon yoki hisob boʻyicha savolingizni shu yerga yozing. Jamoamiz shu bot orqali javob beradi.",
   "digest.title": "📊 Jamoa ishi: {date}",
   "digest.line": "{name}: murojaat {answered}/{total}, ariza {applications}",
-  "digest.open": "Javobsiz murojaatlar: {count}"
+  "digest.open": "Javobsiz murojaatlar: {count}",
+  "face.card": "Yangi yuz rasmi: {name}\nTekshiring: yuz aniq koʻrinadi, rasmda bitta odam, rasm haqiqiy.",
+  "face.fits": "Rasm mos",
+  "face.notFit": "Mos emas",
+  "face.alreadyDecided": "Bu rasmga javob berilgan.",
+  "face.rejected": "Yuz rasmingiz tekshiruvdan oʻtmadi.\nSababi: {reason}.\nYuzingiz aniq koʻrinadigan yangi rasm qoʻying.",
+  "face.change": "Rasmni almashtirish"
 }

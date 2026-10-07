@@ -70,8 +70,8 @@ describe('POST /telegram/:role', () => {
       consentAt: 1,
       block: { until: null },
       avatarKey: null,
+      face: null,
       writeAccess: false,
-      newsOff: false,
       createdAt: 1,
       updatedAt: 1,
     });

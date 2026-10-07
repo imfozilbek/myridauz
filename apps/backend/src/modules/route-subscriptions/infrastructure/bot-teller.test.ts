@@ -18,15 +18,12 @@ const subscription: SubscriptionRecord = {
   createdAt: 0,
 };
 
-describe('subscription news only to who wants them (docs/88 L1)', () => {
-  it('stays quiet when «Bot xabarlari» is off', async () => {
+describe('subscription news (docs/125 №11)', () => {
+  it('go to every subscriber: «Bot xabarlari» are always on', async () => {
     const send = vi.fn(async () => undefined);
-    const wantsNews = vi.fn(async (id: number) => id !== 10);
-    const tell = botTeller({ brand: loadBrand(), placeName: async (id) => id, send, wantsNews });
+    const tell = botTeller({ brand: loadBrand(), placeName: async (id) => id, send });
     await tell.many(subscription, 2);
     await tell.renew(subscription);
-    expect(send).not.toHaveBeenCalled();
-    await tell.many({ ...subscription, userId: 11 }, 2);
-    expect(send).toHaveBeenCalledOnce();
+    expect(send).toHaveBeenCalledTimes(2);
   });
 });

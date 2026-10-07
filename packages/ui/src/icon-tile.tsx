@@ -1,12 +1,14 @@
 import { useBrand } from './context/brand-context';
 import { Icon, type IconName } from './icons';
 
-export type Tone = 'brand' | 'accent' | 'deep' | 'danger';
+export type Tone = 'brand' | 'mint' | 'accent' | 'deep' | 'danger';
 
-export const SIZES = {
+const SIZES = {
   cell: { tile: 30, icon: 18, radius: 8 },
   // A tile of the main screen (G53).
   tile: { tile: 40, icon: 22, radius: 11 },
+  // A big choice tile, the gender of the registration (G58).
+  large: { tile: 52, icon: 28, radius: 14 },
   hero: { tile: 96, icon: 52, radius: 26 },
 } as const;
 
@@ -26,12 +28,15 @@ export function IconTile({ name, tone = 'brand', size = 'cell', soft = false }: 
   // the gray tile with a dark icon (G53).
   const softLook: Record<Tone, readonly [string, string]> = {
     brand: [colors.brandSoft, colors.brandText],
+    // A stronger light color: on a light tile it still shows (the mockup of G58).
+    mint: [colors.brandMint, colors.brandText],
     accent: [colors.accentSoft, colors.accent],
     deep: [colors.neutralSoft, colors.neutralText],
     danger: [colors.attentionSoft, colors.danger],
   };
   const solid: Record<Tone, string> = {
     brand: colors.brandStrong,
+    mint: colors.brandStrong,
     accent: colors.accentStrong,
     deep: colors.brandDeep,
     danger: colors.danger,

@@ -15,3 +15,7 @@ export const requestsLinkValue = (from: string, to: string, date: string) => `${
 // «Boshqa safar topish» under a refused, burned or cancelled booking (docs/89 S10): the search of
 // the same route and day, ?find=<from>_<to>_<date>, the same value as the requests link.
 export const FIND_LINK = 'find';
+
+// «Rasmni almashtirish» under a face photo the team did not approve: the profile, to put a new one
+// (docs/118).
+export const PROFILE_PHOTO_LINK: AppLink = { name: 'profile', id: 'photo' };

@@ -42,7 +42,6 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
             app,
             client,
             profile: me.profile,
-            settings: me.settings,
             avatarVersion,
             onAvatarChanged,
             onProfileChanged: load,
@@ -58,8 +57,8 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
     if (me.state === 'blocked') return <BlockedScreen until={me.until} />;
     if (me.state === 'unregistered')
       return <RegistrationFlow welcome={welcome} suggestedName={me.suggestedName} onFinished={setMe} />;
-    const photoMissing = app === 'passenger' && me.settings.passengerAvatarRequired && !me.profile.hasAvatar;
-    return photoMissing ? <AvatarRequiredScreen /> : children;
+    // The face is required for both roles (G58, docs/128 §1): a failed upload is asked again here.
+    return me.profile.hasAvatar ? children : <AvatarRequiredScreen />;
   })();
 
   return (

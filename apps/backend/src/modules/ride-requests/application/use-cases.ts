@@ -34,7 +34,7 @@ export async function views(deps: RequestsDeps, requests: readonly RequestRecord
       const passenger = {
         id: person.publicId,
         firstName: person.firstName,
-        hasAvatar: person.avatarKey !== null,
+        hasAvatar: person.avatarShown,
       };
       const { id, from, to, date, km, seats, price, pickupMode } = request;
       return { id, passenger, from, to, date, km, seats, price, pickupMode, status: statusAt(request, now) };

@@ -79,3 +79,27 @@ describe('createModerationClient', () => {
     ]);
   });
 });
+
+describe('the face photos for the team (G51)', () => {
+  it('lists new photos, loads one and decides it', async () => {
+    const face = { userId: PERSON, firstName: 'Ali', uploadedAt: 5 };
+    const fetch = vi
+      .fn<Fetch>()
+      .mockResolvedValueOnce(Response.json({ faces: [face] }))
+      .mockResolvedValueOnce(new Response(new Blob(['xy'])))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+    const client = createModerationClient({ ...options, app: 'admin', fetch });
+    expect(await client.faces()).toEqual([face]);
+    expect((await client.facePhoto(PERSON)).size).toBe(2);
+    await client.decideFace(PERSON, { action: 'reject', reason: 'not_one_person' });
+    expect(fetch.mock.calls.map(([url]) => url)).toEqual([
+      'https://api.test/admin/faces',
+      `https://api.test/admin/faces/${PERSON}/photo`,
+      `https://api.test/admin/faces/${PERSON}/decision`,
+    ]);
+    expect(fetch.mock.calls[2]?.[1]).toMatchObject({
+      method: 'POST',
+      body: '{"action":"reject","reason":"not_one_person"}',
+    });
+  });
+});
