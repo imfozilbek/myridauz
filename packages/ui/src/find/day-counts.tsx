@@ -1,4 +1,5 @@
 import type { TripDay } from '@platform/contracts';
+import { useEffect, useRef } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { noonOf } from '../market/when';
 import { haptic } from '../telegram/feedback';
@@ -10,7 +11,7 @@ type Props = {
 };
 
 // The days of a week with their trips (G59, docs/118 path 2): «Bugun 3 ta», «Ertaga 8 ta», «8-okt 5 ta».
-// All seven in two rows of four, nothing past the edge (docs/121); an empty day says «0 ta», pale.
+// A ribbon, three in sight (mockup screen 5); an empty day says «0 ta», pale.
 export function DayCounts({ days, date, onDay }: Props) {
   const { t, formatShortDate } = useI18n();
   const name = (day: string, index: number) =>
@@ -19,8 +20,15 @@ export function DayCounts({ days, date, onDay }: Props) {
       : index === 1
         ? t('market.day.tomorrow')
         : formatShortDate(noonOf(day));
+  // The chosen day is always in sight, also a day past the first three.
+  const ribbon = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    ribbon.current
+      ?.querySelector('[aria-selected="true"]')
+      ?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }, [date]);
   return (
-    <div className="day-counts" role="tablist">
+    <div className="day-counts" role="tablist" ref={ribbon}>
       {days.map((day, index) => (
         <button
           key={day.date}

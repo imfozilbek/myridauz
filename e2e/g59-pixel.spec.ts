@@ -6,6 +6,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
+import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of G59 (lessons 141, 147): the code is shot at the size of the approved journey
@@ -40,6 +41,17 @@ async function mockupCounts(page: Page) {
   const counts = [3, 8, 5, 0, 0, 0, 0];
   const days = counts.map((trips, index) => ({ date: tashkentDate(Date.now() + index * DAY_MS), trips }));
   await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days } }));
+  // «Ertaga» of the mockup: 08:00 and 13:00, two trips of one seat hidden by «2» people.
+  const tomorrow = tashkentDate(Date.now() + DAY_MS);
+  const at = (time: string) => ({ departAt: Date.parse(`${tomorrow}T${time}:00+05:00`) });
+  const nodira = tripOf('2', 'Nodira', true, 0, { ...at('13:00'), seatsLeft: 2 });
+  const trips = [
+    tripOf('1', 'Jasur', false, 0, at('08:00')),
+    { ...nodira, driver: { ...nodira.driver, rating: { average: 4.8, count: 23 } } },
+    tripOf('3', 'Bekzod', false, 0, { ...at('15:00'), seatsLeft: 1 }),
+    tripOf('4', 'Akmal', false, 0, { ...at('17:00'), seatsLeft: 1 }),
+  ];
+  await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips } }));
 }
 
 const shot = (page: Page, name: string) =>

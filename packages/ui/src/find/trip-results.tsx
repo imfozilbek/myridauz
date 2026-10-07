@@ -1,4 +1,4 @@
-import type { Trip, TripDays } from '@platform/contracts';
+import type { Location, Trip, TripDays } from '@platform/contracts';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -15,6 +15,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { DayCounts } from './day-counts';
+import { HiddenTrips } from './hidden-trips';
 import { LearnBlock } from './learn-block';
 import { ResultsHead } from './results-head';
 import { SearchTripCard } from './search-trip-card';
@@ -50,7 +51,9 @@ export function TripResults(props: Props) {
   const shown = trips?.filter((trip) => fitsFilters(trip, filters)) ?? null;
   useListPlace(RESULTS, trips !== null);
   if (failed) return <ErrorScreen onRetry={load} onBack={onBack} />;
-  const region = route.to.parentId === null ? route.to : directory.find(route.to.parentId);
+  const regionOf = (place: Location) =>
+    place.parentId === null ? place : (directory.find(place.parentId) ?? place);
+  const region = regionOf(route.to);
   // Nothing shown, and a filter may be why: how many it hid, or the empty day (docs/89 P6).
   const filtered = !stale && shown?.length === 0 && (trips?.length !== 0 || filters.woman);
   const learn = (empty: boolean) => (
@@ -63,26 +66,22 @@ export function TripResults(props: Props) {
       onRequest={onRequest}
     />
   );
-  const place = (trip: Trip) => {
-    const wide = route.from.parentId === null || route.to.parentId === null;
-    const [from, to] = [directory.find(trip.from)?.name, directory.find(trip.to)?.name];
-    return wide && from && to ? t('common.route', { from, to }) : null;
-  };
   return (
     <div className="find" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={refresh} />
-      <ResultsHead route={route} region={region} km={days.km} />
+      <ResultsHead route={route} from={regionOf(route.from)} region={region} km={days.km} />
       <DayCounts days={days.days} date={date} onDay={onDay} />
       <TripFiltersRow filters={filters} onFilters={onFilters} />
       <div className={stale ? 'search-trips list-stale' : 'search-trips'}>
         {shown?.map((trip) => (
           <div key={trip.id} data-row={trip.id}>
-            <SearchTripCard trip={trip} places={place(trip)} onOpen={() => onOpen(trip)} />
+            <SearchTripCard trip={trip} onOpen={() => onOpen(trip)} />
           </div>
         ))}
       </div>
       {trips === null ? <ScreenSkeleton /> : null}
-      {route.to.parentId === null && !route.to.oneCity && region ? (
+      {trips && !filtered ? <HiddenTrips trips={trips} filters={filters} /> : null}
+      {route.to.parentId === null && !route.to.oneCity ? (
         <button type="button" className="results-district" onClick={onDistrict}>
           {t('find.district', { region: names.short(region) })}
         </button>

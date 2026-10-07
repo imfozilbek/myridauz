@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 14px 0;
+  padding: 22px 14px 0;
 }
 
 .results-art {
@@ -28,11 +28,19 @@
 }
 
 .day-counts {
-  /* All seven days in two rows of four: nothing goes past the edge of a phone (docs/121). */
+  /* A ribbon of the seven days, three in sight, the rest by a swipe (mockup screen 5). */
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 16px) / 3);
   gap: 8px;
-  margin: 12px 14px 0;
+  margin: 6px 14px 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.day-counts::-webkit-scrollbar {
+  display: none;
 }
 
 .day-count {
@@ -47,6 +55,7 @@
   background: var(--reg-card);
   font: inherit;
   color: var(--reg-ink);
+  scroll-snap-align: start;
   cursor: pointer;
 }
 
@@ -82,7 +91,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
+}
+
+.find-marks .find-pill {
+  font-size: 13px;
 }
 
 .find-people-ask {
@@ -108,7 +121,7 @@
 
 .find-round {
   justify-content: center;
-  width: 36px;
+  width: 35.5px;
   padding: 0;
 }
 

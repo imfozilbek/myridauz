@@ -5,20 +5,20 @@ import { Icon } from '../icons';
 import { freeCar } from '../market/trip-filters';
 import { PersonBadge } from './person-badge';
 
-const BADGE = 26;
+const BADGE = 22;
 
-type Props = { readonly trip: Trip; readonly places: string | null; readonly onOpen: () => void };
+type Props = { readonly trip: Trip; readonly onOpen: () => void };
 
 // A trip in «Safarlar» (journey of path 2, screen 5): the times and the price, the free seats and how
-// the driver picks up, then the driver. places: «Chilonzor → Urgut» when the search was a whole region.
-export function SearchTripCard({ trip, places, onOpen }: Props) {
+// the driver picks up, then the driver.
+export function SearchTripCard({ trip, onOpen }: Props) {
   const { t, formatTime, formatMoney, formatNumber } = useI18n();
   const { driver } = trip;
   const mode =
     trip.pickupMode === 'both' ? 'both' : trip.pickupMode === 'door' || !trip.pitak ? 'door' : 'pitak';
   const facts = [
     t('market.trip.seats', { count: String(trip.seatsLeft) }),
-    trip.woman ? t('market.search.woman') : t(`find.mode.${mode}`),
+    trip.woman ? t('market.search.woman') : t(`find.cardMode.${mode}`),
     ...(freeCar(trip) ? [t('find.carPrice', { price: formatMoney(trip.price * trip.seats) })] : []),
   ];
   // «Tez orada joʻnaydi» and «Narxi tushdi» lead the card (G39, docs/104).
@@ -44,7 +44,6 @@ export function SearchTripCard({ trip, places, onOpen }: Props) {
         </span>
         <span className="search-trip-price">{formatMoney(trip.price)}</span>
       </div>
-      {places ? <p className="search-trip-places">{places}</p> : null}
       <p className="search-trip-facts">{facts.join(' · ')}</p>
       <div className="search-trip-driver">
         <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={BADGE} />

@@ -10,7 +10,7 @@ afterEach(cleanup);
 describe('a trip in «Safarlar» (G59, G39)', () => {
   it('leads with «Tez orada joʻnaydi» and «Narxi tushdi»', () => {
     const changed = { ...trip, departAt: Date.now() + 30 * MINUTE_MS, price: 80000, firstPrice: 95000 };
-    renderMarket(<SearchTripCard trip={changed} places={null} onOpen={() => undefined} />, testClients({}));
+    renderMarket(<SearchTripCard trip={changed} onOpen={() => undefined} />, testClients({}));
     expect(screen.getByText('Tez orada joʻnaydi')).toBeTruthy();
     expect(screen.getByText('Narxi tushdi')).toBeTruthy();
   });
@@ -19,7 +19,6 @@ describe('a trip in «Safarlar» (G59, G39)', () => {
     renderMarket(
       <SearchTripCard
         trip={{ ...trip, departAt: Date.now() + DAY_MS, bookingRule: 'seats_or_car' }}
-        places={null}
         onOpen={() => undefined}
       />,
       testClients({}),
