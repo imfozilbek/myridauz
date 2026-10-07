@@ -35,6 +35,8 @@
   "follow.big.completed": "{name} yetib keldi",
   "follow.big.cancelled": "Safar bekor qilindi",
   "follow.eta": "{place}ga ≈ {time} da yetadi",
+  "follow.arrivedAt": "{place} · {time}",
+  "follow.ended": "Kuzatish tugadi: havola yetib borgandan 24 soat keyin yopiladi.",
   "follow.role": "haydovchi",
   "follow.moved": "Vaqt oʻzgardi: {from} → {to}"
 }

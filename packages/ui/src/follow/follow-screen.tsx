@@ -66,6 +66,7 @@ function Follow({ token, onJoin }: Props) {
     );
   }
   if (!value) return <ScreenSkeleton />;
+  const arrived = value.status === 'arrived' || value.status === 'completed';
   const subscribe = async () => {
     await requestBotMessages();
     clear();
@@ -88,8 +89,15 @@ function Follow({ token, onJoin }: Props) {
       <FollowDriver trip={value} />
       <ActionFailure error={failure} />
       {note ? <p className="follow-note">{t(`share.${note}`)}</p> : null}
-      <JoinNote onJoin={join} />
-      {note ? null : <MainButton text={t('share.follow.subscribe')} onClick={() => void subscribe()} />}
+      {/* After the arrival nothing is left to follow: only when the link closes (mockup g60/6). */}
+      {arrived ? (
+        <p className="follow-note follow-ended">{t('share.follow.ended')}</p>
+      ) : (
+        <JoinNote onJoin={join} />
+      )}
+      {note || arrived ? null : (
+        <MainButton text={t('share.follow.subscribe')} onClick={() => void subscribe()} />
+      )}
     </div>
   );
 }

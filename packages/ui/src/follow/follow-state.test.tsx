@@ -57,9 +57,12 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
     expect(await screen.findByText(/^Vaqt oʻzgardi: \d{2}:\d{2} → \d{2}:\d{2}$/u)).toBeTruthy();
   });
 
-  it('once arrived, says it and not when they will arrive', async () => {
+  it('once arrived, says where and when, and that the following ends (mockup g60/6)', async () => {
     open({ ...TRIP, status: 'arrived' });
     expect(await screen.findByText('Madina yetib keldi')).toBeTruthy();
     expect(screen.queryByText(/yetadi$/u)).toBeNull();
+    expect(screen.getByText(/^Fargʻona shahri · \d\d:\d\d$/u)).toBeTruthy();
+    expect(screen.getByText(/^Kuzatish tugadi:/u)).toBeTruthy();
+    expect(screen.queryByText('Xabar olish')).toBeNull();
   });
 });

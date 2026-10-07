@@ -40,7 +40,14 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
                 time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
               })}
             </span>
-          ) : null}
+          ) : (
+            <span className="follow-state-eta">
+              {t('share.follow.arrivedAt', {
+                place: directory.find(trip.to)?.name ?? '',
+                time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
+              })}
+            </span>
+          )}
           <ol className="follow-steps" aria-label={t('share.follow.status')}>
             {STEPS.map((step, index) => (
               <li key={step} data-done={String(index < done)}>

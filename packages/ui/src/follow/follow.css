@@ -141,3 +141,10 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* «Kuzatish tugadi» at the bottom, where the main button was (mockup g60/6). */
+.follow-ended {
+  margin-top: auto;
+  padding: 0 24px 18px;
+  line-height: 16px;
+}
