@@ -69,6 +69,7 @@ export default defineConfig({
         'g60-pixel.spec.ts',
         'g60-pixel-after.spec.ts',
         'g60-pixel-sheets.spec.ts',
+        'look-sizes-screenshots.spec.ts',
       ],
     },
   ],
