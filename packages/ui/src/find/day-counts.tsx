@@ -10,7 +10,7 @@ type Props = {
 };
 
 // The days of a week with their trips (G59, docs/118 path 2): «Bugun 3 ta», «Ertaga 8 ta», «8-okt 5 ta».
-// Three fit the screen, the others come by a swipe; an empty day says «0 ta» and stays pale.
+// All seven in two rows of four, nothing past the edge (docs/121); an empty day says «0 ta», pale.
 export function DayCounts({ days, date, onDay }: Props) {
   const { t, formatShortDate } = useI18n();
   const name = (day: string, index: number) =>

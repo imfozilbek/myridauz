@@ -28,13 +28,11 @@
 }
 
 .day-counts {
+  /* All seven days in two rows of four: nothing goes past the edge of a phone (docs/121). */
   display: grid;
-  grid-auto-columns: calc((100% - 16px) / 3);
-  grid-auto-flow: column;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin: 12px 14px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
 
 .day-count {
@@ -58,7 +56,8 @@
 }
 
 .day-count-name {
-  font-size: 14px;
+  font-size: clamp(12px, 3.8vw, 14px);
+  white-space: nowrap;
   font-weight: 700;
 }
 

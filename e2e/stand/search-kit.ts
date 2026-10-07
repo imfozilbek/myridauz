@@ -13,5 +13,6 @@ export async function searchTo(page: Page, place: string) {
   }
   await page.getByText(t('find.other')).click();
   await page.getByPlaceholder(t('find.other')).fill(place.slice(0, 4));
-  await page.getByText(place, { exact: true }).click();
+  // Only the list of the sheet: the card of the region behind it may have the same name.
+  await page.getByRole('dialog').getByText(place, { exact: true }).click();
 }

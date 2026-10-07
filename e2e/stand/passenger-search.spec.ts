@@ -70,7 +70,7 @@ for (const platform of PLATFORMS)
     await first.tap(page.getByText(t('find.other')));
     await page.getByPlaceholder(t('find.other')).fill('Jizz');
     await shot('03-other-place');
-    await first.tap(page.getByText('Jizzax', { exact: true }));
+    await first.tap(page.getByRole('dialog').getByText('Jizzax', { exact: true }));
     await expect(card(page, GAYRAT.name)).toBeVisible();
     await shot('04-results');
     await first.tap(card(page, GAYRAT.name));
@@ -117,7 +117,7 @@ for (const platform of PLATFORMS)
     await person.tap(mainButton(page).filter({ hasText: TEXT.findTrip }));
     await person.tap(page.getByText(t('find.other')));
     await page.getByPlaceholder(t('find.other')).fill('Urga');
-    await person.tap(page.getByText('Urganch shahri', { exact: true }));
+    await person.tap(page.getByRole('dialog').getByText('Urganch shahri', { exact: true }));
     await expect(page.getByText(t('find.noTrips'))).toBeVisible();
     await shot('20-empty');
     // The route and the day of the search go into the request (K6).
