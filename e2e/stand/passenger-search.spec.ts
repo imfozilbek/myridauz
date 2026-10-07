@@ -3,6 +3,7 @@ import { TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { DOSTON, GAYRAT } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
+import { mapReady, fillEnds } from './request-kit';
 import { register } from './seed';
 import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
@@ -36,14 +37,6 @@ function shooter(page: Page, platform: Platform) {
       animations: 'disabled',
     });
   };
-}
-
-// The map stands still and the name of the pin came: «Shu yerda» takes this place (lesson 77).
-async function mapReady(page: Page, title: string) {
-  await expect(page.getByText(t(title as 'way.point.from'))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  // The name came and the map is inside the place (a center outside its border moves in, G35).
-  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
 }
 
 // The taps of the person: the goal counts them (docs/118: new ≤ 10, again ≤ 4, no trips ≤ 12).
@@ -122,25 +115,14 @@ for (const platform of PLATFORMS)
     await shot('20-empty');
     // The route and the day of the search go into the request (K6).
     await person.tap(page.getByText(t('common.passenger.leaveRequest')));
-    const door = page.getByText(t('way.mode.door'), { exact: true });
-    await expect(door.or(page.getByText(t('way.point.from')))).toBeVisible();
-    if (await door.isVisible()) {
-      await shot('21-mode');
-      await person.tap(door);
-    }
-    await mapReady(page, 'way.point.from');
-    await shot('22-pickup');
+    // The request on one screen (G61, docs/118 path 4): the ends on their maps, then sent.
+    await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+    await shot('21-request');
+    await fillEnds(page, person.tap);
+    await shot('22-ends');
     await person.tap(mainButton(page));
-    await mapReady(page, 'way.point.to');
-    await shot('23-dropoff');
-    await person.tap(mainButton(page));
-    await expect(page.getByText(t('market.price.title'))).toBeVisible();
-    await shot('24-price');
-    await person.tap(mainButton(page));
-    await expect(mainButton(page)).toHaveText(t('market.request.publish'));
-    await shot('25-review');
-    await person.tap(mainButton(page));
-    await expect(mainButton(page)).toHaveText(t('market.done'));
-    await shot('26-done');
+    // Sent: «Mening soʻrovim» at once, the offers come into it.
+    await expect(page.getByText(t('market.request.cancel'))).toBeVisible();
+    await shot('23-mine');
     expect(person.taps()).toBeLessThanOrEqual(12);
   });
