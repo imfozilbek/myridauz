@@ -48,3 +48,17 @@
   padding: 0 4px 0 6px;
   font-size: 12.5px;
 }
+
+/* For the close people the plate is lower and a little wider (mockup g60/3). */
+.follow-card .driver-row {
+  padding-bottom: 11px;
+}
+
+.follow-card .driver-row .plate-badge {
+  margin-top: 10px;
+  line-height: 18px;
+}
+
+.follow-card .driver-row .plate-badge-number {
+  padding: 0 7px;
+}
