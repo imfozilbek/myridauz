@@ -15,12 +15,12 @@ import { runCron, standSql } from './stand-tools';
 // the past trip and the review. The shots go to screenshots/stand/g60/ for the owner (docs/33).
 const { t } = createI18n(DEFAULT_LOCALE);
 const HOUR = 60 * MINUTE;
-// The car of the driver: other drivers of the stand are called Jasur too.
-const PLATE = '01S678TU';
-const DRIVER: Person = { id: 900606, name: 'Jasur', phone: '998901110606' };
+// A driver of its own: no other scenario of the stand shares his id, phone or car.
+const PLATE = '01T660UV';
+const DRIVER: Person = { id: 900660, name: 'Jasur', phone: '998901110660' };
 const PASSENGERS = {
   android: { id: 900607, name: 'Madina', phone: '998901110607' },
-  ios: { id: 900608, name: 'Dilnoza', phone: '998901110608' },
+  ios: { id: 900661, name: 'Dilnoza', phone: '998901110661' },
 } as const;
 const shot = (page: Page, name: string) =>
   page.screenshot({ path: `screenshots/stand/g60/${name}.png`, animations: 'disabled' });
