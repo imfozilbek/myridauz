@@ -1,7 +1,7 @@
 import type { Car } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
-import { PlateBadge } from '../find/plate-badge';
+import { UzPlate } from '../plate/uz-plate';
 import './driver-row.css';
 
 // The face: 46 px on a booking, 44 px for the close people (mockups g60/1, g60/3).
@@ -31,7 +31,7 @@ export function DriverRow({ driver, car, note, plate, photo = PHOTO }: Props) {
         <span className="driver-row-car">
           {t('find.car', { make: car.make, model: car.model, color: t(`drivers.color.${car.color}`) })}
         </span>
-        {plate ? <PlateBadge plate={plate} /> : null}
+        {plate ? <UzPlate plate={plate} /> : null}
       </span>
     </div>
   );

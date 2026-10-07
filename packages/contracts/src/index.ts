@@ -40,7 +40,7 @@ export {
 export { matchesPlace } from './place-search';
 export { checkRoute, ROUTE_ERRORS, zoneOf, type RouteError } from './route-rule';
 export { CAR_CATALOG, catalogSeats, POPULAR_CARS } from './car-catalog';
-export { formatPlate, maskPlate } from './plate';
+export { formatPlate, maskPlate, plateParts } from './plate';
 export {
   APPLICATION_STATUSES,
   CAR_COLORS,

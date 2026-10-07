@@ -1,6 +1,7 @@
-import { formatPlate, type Booking, type ReviewTarget } from '@platform/contracts';
+import type { Booking, ReviewTarget } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
+import { UzPlate } from '../plate/uz-plate';
 
 const PHOTO = 40;
 
@@ -17,11 +18,8 @@ export function ReviewHead({
   const driver = booking?.trip.driver;
   const car =
     target.rateeRole === 'driver' && driver
-      ? [
-          `${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`,
-          ...(booking?.plate ? [formatPlate(booking.plate)] : []),
-        ]
-      : [];
+      ? `${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`
+      : null;
   return (
     <div className="review-head">
       <PersonBadge
@@ -33,7 +31,12 @@ export function ReviewHead({
       />
       <span className="review-head-text">
         <b>{target.rateeName}</b>
-        {car.length > 0 ? <span>{car.join(' · ')}</span> : null}
+        {car ? (
+          <span className="plate-line">
+            {car}
+            {booking?.plate ? <UzPlate plate={booking.plate} size="s" /> : null}
+          </span>
+        ) : null}
       </span>
     </div>
   );

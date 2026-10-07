@@ -5,7 +5,7 @@ import { StepLayout } from '../account/step-layout';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { PlateView } from '../driver/plate-view';
+import { UzPlate } from '../plate/uz-plate';
 import { PlateStep } from '../driver/steps/plate-step';
 import { useBlobUrl } from '../media/use-blob-url';
 import { Screen } from '../screen/screen';
@@ -76,7 +76,7 @@ function PlateCheck({ userId, plate, fixed, onBack, onFix, onApprove }: PlateChe
         ) : (
           <span className="plate-check-photo moderation-photo-empty" />
         )}
-        <PlateView plate={plate} />
+        <UzPlate plate={plate} size="l" />
         {fixed ? <Caption className="plate-check-fixed">{t('moderation.plateCheck.fixed')}</Caption> : null}
         <Button mode="bezeled" size="m" onClick={onFix}>
           {t('moderation.plateCheck.fix')}

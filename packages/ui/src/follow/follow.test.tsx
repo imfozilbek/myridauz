@@ -34,7 +34,7 @@ describe('close people follow a shared trip (docs/43)', () => {
     );
     expect(await screen.findByText(/^Dilnozaning safari · /u)).toBeTruthy();
     expect(screen.getByText('Mashinaga chiqdi')).toBeTruthy();
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // Where the passenger boards and gets off (the owner, docs/111 Q1).
     expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
     expect(screen.getByText('Tushirish joyi')).toBeTruthy();

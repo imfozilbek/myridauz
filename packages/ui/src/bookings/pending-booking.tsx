@@ -1,4 +1,4 @@
-import { formatPlate, type Booking } from '@platform/contracts';
+import type { Booking } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
@@ -11,6 +11,7 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { BookingPoints } from './booking-points';
 import './pending-booking.css';
+import { UzPlate } from '../plate/uz-plate';
 
 type Props = {
   readonly booking: Booking;
@@ -32,7 +33,6 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
   const until = new Date(booking.expiresAt);
   const details = [
     `${driver.car.make} ${driver.car.model}`,
-    formatPlate(driver.car.plate),
     ...(driver.rating.average === null
       ? []
       : [t('find.stars', { rating: formatRating(driver.rating.average) })]),
@@ -60,7 +60,10 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
           <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={42} />
           <span className="pending-driver-text">
             <b>{driver.firstName}</b>
-            <span>{details.join(' · ')}</span>
+            <span className="plate-line">
+              {details.join(' · ')}
+              <UzPlate plate={driver.car.plate} size="s" />
+            </span>
           </span>
         </div>
         <BookingPoints booking={booking} />

@@ -1,11 +1,11 @@
-import '../plate.css';
-import { carSchema, formatPlate, maskPlate, type ModerationReason } from '@platform/contracts';
+import { carSchema, formatPlate, type ModerationReason } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
 import { StepLayout } from '../../account/step-layout';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
 import { Screen } from '../../screen/screen';
+import { UzPlateInput } from '../../plate/uz-plate-input';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { hasProblem, ProblemNote } from '../problem-note';
@@ -20,8 +20,7 @@ type PlateStepProps = {
 };
 
 // The plate is the only thing a driver types: it is unique to the car (docs/04).
-// The field looks like an Uzbek plate. Each place takes only a digit or only a letter,
-// and the rest of the example stays grey after what is typed (maskPlate, docs/50).
+// The field is an Uzbek plate (UzPlateInput, docs/50).
 export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.plate' }: PlateStepProps) {
   useScreenView(screen);
   const { t } = useI18n();
@@ -36,27 +35,17 @@ export function PlateStep({ initial, reasons, onBack, onDone, screen = 'driver.p
   return (
     <StepLayout icon="plate" title={t('drivers.plate.title')} hint={t('drivers.plate.hint')}>
       <Screen onBack={onBack} />
-      <label className={invalid || hasProblem(reasons, 'plate') ? 'plate plate-problem' : 'plate'}>
-        <span className="plate-field">
-          <span className="plate-ghost" aria-hidden>
-            <span className="plate-typed">{value}</span>
-            {maskPlate(value).ghost}
-          </span>
-          <input
-            className="plate-input"
-            value={value}
-            aria-label={t('drivers.plate.title')}
-            autoCapitalize="characters"
-            autoComplete="off"
-            spellCheck={false}
-            onChange={(event) => {
-              setValue(maskPlate(event.target.value).value);
-              setInvalid(false);
-            }}
-          />
-        </span>
-        <span className="plate-country">{t('drivers.plate.country')}</span>
-      </label>
+      <span className="plate-step">
+        <UzPlateInput
+          value={value}
+          label={t('drivers.plate.title')}
+          problem={invalid || hasProblem(reasons, 'plate')}
+          onChange={(next) => {
+            setValue(next);
+            setInvalid(false);
+          }}
+        />
+      </span>
       <span className="step-note">
         <ProblemNote reasons={reasons} place="plate" />
       </span>

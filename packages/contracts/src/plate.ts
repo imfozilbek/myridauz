@@ -9,7 +9,8 @@ const KINDS = {
 type PlateKind = keyof typeof KINDS;
 const KIND_PLACE = 2;
 
-const PLATE_PATTERN = /^\d{2}(?:[A-Z]\d{3}[A-Z]{2}|\d{3}[A-Z]{3})$/;
+// The region is 01 to 99: Tashkent 01 to 09 … Qoraqalpogʻiston 95 to 99; 00 is no region (G62, docs/50).
+const PLATE_PATTERN = /^(?!00)\d{2}(?:[A-Z]\d{3}[A-Z]{2}|\d{3}[A-Z]{3})$/;
 export const plateSchema = z
   .string()
   .transform((value) => value.toUpperCase().replace(/[\s-]/g, ''))
@@ -44,3 +45,20 @@ export function maskPlate(text: string): { readonly value: string; readonly ghos
 
 // A plate is stored without spaces and shown in groups, as on the car: "01 A 123 BC", "10 123 ABC".
 export const formatPlate = (plate: string): string => maskPlate(plate).value || plate;
+
+const REGION = 2;
+
+// The region cell and the number of an Uzbek plate (G62, mockup g62/2-plate): the first two digits go
+// to the region, the rest to the number; each part keeps the grey rest of its example.
+export function plateParts(text: string) {
+  const { value, ghost } = maskPlate(text);
+  const example = value + ghost;
+  const typedRegion = value.slice(0, REGION);
+  const typedNumber = value.slice(REGION + 1);
+  return {
+    region: typedRegion,
+    regionGhost: example.slice(typedRegion.length, REGION),
+    number: typedNumber,
+    numberGhost: example.slice(REGION + 1 + typedNumber.length),
+  };
+}

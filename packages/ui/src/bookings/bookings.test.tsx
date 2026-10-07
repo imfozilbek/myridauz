@@ -22,7 +22,7 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
     );
     expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
     await tap('Jasur');
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // The plate of the page says the seat is confirmed (G60, mockup g60/1).
     expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
     // «The places do not change» was said before the booking, not again (G40, docs/106 C9).
