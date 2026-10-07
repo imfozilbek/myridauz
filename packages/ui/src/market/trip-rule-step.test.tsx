@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { testClients } from '../test-shell';
 import { renderMarket } from './market-test-kit';
 import { TripRuleStep } from './trip-rule-step';
 
@@ -8,6 +9,7 @@ afterEach(cleanup);
 const open = () => {
   const { container } = renderMarket(
     <TripRuleStep model="Cobalt" seats={4} price={90_000} onBack={() => undefined} onDone={vi.fn()} />,
+    testClients({}),
   );
   return { container };
 };
