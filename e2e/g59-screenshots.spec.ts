@@ -55,13 +55,17 @@ for (const platform of PLATFORMS)
       await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
       await shot('04-safar');
       await page.getByLabel(t('market.price.more')).click();
-      await mainButton(page).filter({ hasText: t('find.book', { count: '2' }) }).click();
+      await mainButton(page)
+        .filter({ hasText: t('find.book', { count: '2' }) })
+        .click();
       await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
       await shot('05-points');
       await page.getByText(t('way.book.pickup')).click();
       await mapDrawn(page);
       await shot('06-pickup', false);
-      await mainButton(page).filter({ hasText: t('way.point.takeFrom') }).click();
+      await mainButton(page)
+        .filter({ hasText: t('way.point.takeFrom') })
+        .click();
       await page.getByText(t('way.book.dropoff')).click();
       await mapDrawn(page);
       await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
@@ -69,10 +73,14 @@ for (const platform of PLATFORMS)
       await expect(page.getByRole('status')).toHaveText('Registon maydoni yaqinida');
       await page.waitForTimeout(TILES_MS);
       await shot('07-dropoff', false);
-      await mainButton(page).filter({ hasText: t('way.point.takeTo') }).click();
+      await mainButton(page)
+        .filter({ hasText: t('way.point.takeTo') })
+        .click();
       await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
       await shot('08-review');
-      await mainButton(page).filter({ hasText: t('bookings.send') }).click();
+      await mainButton(page)
+        .filter({ hasText: t('bookings.send') })
+        .click();
       await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
       await shot('09-pending');
     });
