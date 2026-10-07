@@ -1,6 +1,7 @@
 import { chatKeyOfOffer, NO_RATING, type Offer } from '@platform/contracts';
-import { offerStatusAt, type OfferRecord } from '../domain/offer';
-import type { BookingsDeps, RequestFacts } from './ports';
+import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
+import type { BookingsDeps } from './ports';
+import type { RequestFacts } from './request-facts';
 
 // An offer as both sides see it: the driver's name, face and car, never the plate (docs/07).
 export async function offerViews(
@@ -16,6 +17,7 @@ export async function offerViews(
       // The car kept in the offer: a new check of the driver hides nothing (docs/65 A1).
       const [driver, car] = [await deps.people.find(offer.driverId), offer.car];
       if (!request || !driver || !car) return null;
+      const seats = offerSeats(offer, request);
       return {
         id: offer.id,
         requestId: offer.requestId,
@@ -30,9 +32,10 @@ export async function offerViews(
         to: request.to,
         departAt: offer.departAt,
         km: request.km,
-        seats: request.seats,
+        seats,
+        wholeCar: request.wholeCar,
         price: offer.price,
-        commission: deps.wallet.commission(offer.price, request.seats),
+        commission: deps.wallet.commission(offer.price, seats),
         status: offerStatusAt(offer, request.open, now),
         bookingId: offer.bookingId,
         chatKey: chatKeyOfOffer(offer.id),

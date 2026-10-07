@@ -39,6 +39,8 @@ export const offerSchema = z.object({
   departAt: z.number().int(),
   km: z.number().int(),
   seats: z.number().int(),
+  // «Boʻsh salon kerak» (G61): the seats are all the seats of the car.
+  wholeCar: z.boolean(),
   price: z.number().int(),
   commission: z.number().int(),
   status: z.enum(OFFER_STATUSES),

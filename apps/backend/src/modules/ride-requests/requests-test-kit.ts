@@ -9,6 +9,8 @@ const NOW = Date.parse('2026-10-01T01:00:00Z');
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 export const HOME = { lat: 41.2856, lng: 69.2045 };
 const AWAY = { lat: 39.6547, lng: 66.9758 };
+// A man: «Men bilan ayol bor» is his to give (docs/06 rule 4); everyone else is a woman.
+export const MAN = 5;
 export const FAR_NORTH = { lat: 46, lng: 60 };
 const PITAK = {
   id: 'toshkent-avtovokzal',
@@ -36,7 +38,7 @@ export function setup() {
         firstName: `P${userId}`,
         avatarKey: null,
         avatarShown: false,
-        gender: 'female',
+        gender: userId === MAN ? 'male' : 'female',
       }),
     },
     approvedCar: async (userId) => (userId === 9 ? CAR : null),
@@ -74,6 +76,8 @@ export function setup() {
     pickupMode: 'door' as const,
     pickup: HOME,
     dropoff: AWAY,
+    wholeCar: false,
+    withWoman: false,
   };
   return { deps, request, setNow: (next: number) => void (now = next) };
 }

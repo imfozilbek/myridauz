@@ -12,6 +12,8 @@ type Row = {
   km: number;
   seats: number;
   price: number;
+  whole_car: number;
+  with_woman: number;
   status: string;
   pickup_mode: string;
   pickup_lat: number | null;
@@ -34,6 +36,8 @@ const toRequest = (row: Row): RequestRecord => ({
   km: row.km,
   seats: row.seats,
   price: row.price,
+  wholeCar: row.whole_car === 1,
+  withWoman: row.with_woman === 1,
   status: REQUEST_STATUSES.find((status) => status === row.status) ?? 'cancelled',
   pickupMode: PICKUP_MODES.find((mode) => mode === row.pickup_mode) ?? 'both',
   pickup: pointOf(row.pickup_lat, row.pickup_lng),
@@ -42,13 +46,13 @@ const toRequest = (row: Row): RequestRecord => ({
 });
 
 const UPSERT = `INSERT INTO ride_requests (id, passenger_id, from_id, to_id, date, expires_at, km, seats, price,
-  status, pickup_mode, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng, created_at)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  status, pickup_mode, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng, created_at, whole_car, with_woman)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, pickup_lat = excluded.pickup_lat,
   pickup_lng = excluded.pickup_lng, dropoff_lat = excluded.dropoff_lat, dropoff_lng = excluded.dropoff_lng`;
 const NO_POINTS = 'pickup_lat = NULL, pickup_lng = NULL, dropoff_lat = NULL, dropoff_lng = NULL';
 
-// Table ride_requests (migrations/0007_trips.sql).
+// Table ride_requests (migrations/0007_trips.sql, 0045_request_marks.sql).
 export const d1Requests = (db: D1Database): RequestRepository => ({
   save: async (request) => {
     await db
@@ -70,6 +74,8 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
         request.dropoff?.lat ?? null,
         request.dropoff?.lng ?? null,
         request.createdAt,
+        request.wholeCar ? 1 : 0,
+        request.withWoman ? 1 : 0,
       )
       .run();
   },

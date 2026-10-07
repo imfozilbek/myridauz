@@ -39,7 +39,9 @@ export async function sendOffer(
   const { km, minPrice, maxPrice } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
-  if (!(await deps.wallet.canAfford(driverId, deps.wallet.commission(input.price, request.seats))))
+  // The whole car is every seat of this car, priced per seat (docs/09).
+  const seats = request.wholeCar ? car.seats : request.seats;
+  if (!(await deps.wallet.canAfford(driverId, deps.wallet.commission(input.price, seats))))
     return { ok: false, error: 'wallet.not_enough' };
   // An accepted offer is a new trip: the driver hears the schedule now, not the passenger later.
   const busy = await deps.trips.scheduleError(driverId, {
@@ -57,6 +59,7 @@ export async function sendOffer(
     requestId,
     driverId,
     ...input,
+    seats,
     car: { make: car.make, model: car.model, color: car.color },
     status: 'sent',
     bookingId: null,

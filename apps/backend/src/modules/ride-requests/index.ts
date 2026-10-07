@@ -6,7 +6,8 @@ import { peopleOf } from '../users';
 import { pointFitsPlace } from '../map';
 import { pitakOf } from '../pitaks';
 import type { RequestsDeps } from './application/ports';
-import { cancelRequest, views } from './application/use-cases';
+import { cancelRequest } from './application/use-cases';
+import { views } from './application/views';
 import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
@@ -52,6 +53,8 @@ const factsOf = (request: RequestRecord, now: number) => ({
   date: request.date,
   km: request.km,
   seats: request.seats,
+  wholeCar: request.wholeCar,
+  withWoman: request.withWoman,
   pickupMode: request.pickupMode,
   pickup: request.pickup,
   dropoff: request.dropoff,
