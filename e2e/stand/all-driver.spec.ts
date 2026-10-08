@@ -43,7 +43,7 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
   await shot(page, 'android', 'da21-my-trips');
   await page.locator('.trip-card').first().click();
   await shot(page, 'android', 'da22-trip');
-  await visit(page, 'android', t('way.map.title'), 'da23-trip-map');
+  await visit(page, 'android', t('driverTrip.tile.map'), 'da23-trip-map');
 });
 
 test('android: the requests of passengers and an offer', async ({ page }) => {
@@ -97,11 +97,13 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
 test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
   await setBonus(MUROD, 0);
   await openHome(page, 'driver', MUROD, 'android', `?booking=${links['waiting']}`);
-  await page.getByText(t('bookings.confirm')).first().click();
+  // The commission is on the booking; its main button leads to the top up at once (G27, G63).
+  await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
+  await mainButton(page).click();
   await expect(page.getByText(t('wallet.notEnough.title'))).toBeInViewport();
   await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await shot(page, 'android', 'da51-not-enough');
-  await page.getByText(t('wallet.topUp')).first().click();
+  await mainButton(page).click();
   await expect(mainButton(page)).toHaveText(t('account.support'));
   await shot(page, 'android', 'da52-top-up');
   // The walks of passengers use Murod after this one: his bonus comes back.

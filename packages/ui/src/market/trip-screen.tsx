@@ -1,5 +1,5 @@
 import type { Trip } from '@platform/contracts';
-import { Button, Text, Title } from '@telegram-apps/telegram-ui';
+import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, type ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
 import { CellValue } from '../account/cell-value';
@@ -21,22 +21,18 @@ import './market.css';
 type TripScreenProps = {
   readonly trip: Trip;
   readonly onBack: () => void;
-  // The driver's own trip: it can be cancelled while it is active (docs/35).
-  readonly onCancel?: () => void;
   // A passenger books seats on it (G08); a closed one leads to the other trips of its day (docs/89 P8).
   readonly onBook?: () => void;
   readonly onOthers?: () => void;
   // The team looks at a trip: no booking, no cancel (owner decision 29.09.2026).
   readonly readOnly?: boolean;
-  // The driver looks at the own trip: not at himself, his passengers come first (docs/86 V11).
-  readonly own?: boolean;
-  // The bookings of the trip for its driver or the team (G08).
+  // The bookings of the trip for the team (G08).
   readonly children?: ReactNode;
 };
 
-// Everything about one trip; a passenger books from here, its driver sees the bookings (docs/35).
+// Everything about one trip; a passenger books from here, the team sees the bookings (docs/35).
 export function TripScreen(props: TripScreenProps) {
-  const { trip, onBack, onCancel, onBook, onOthers, readOnly = false, own = false, children } = props;
+  const { trip, onBack, onBook, onOthers, readOnly = false, children } = props;
   useScreenView('market.trip');
   const { track } = useAnalytics();
   const { t, formatMoney, formatDate, formatWeekday } = useI18n();
@@ -48,7 +44,6 @@ export function TripScreen(props: TripScreenProps) {
   // A driver who opens the own trip as a passenger cannot book it (G52, docs/112 bookings.own_trip).
   const mine = useAccount()?.profile.id === trip.driver.id;
   const asked = useAskedSeat(trip.id, Boolean(onBook) && !readOnly && !mine);
-  const live = trip.status === 'active' || trip.status === 'full';
   // A trip on the road takes nobody: an old link or "Sevimli" shows why (docs/65 B8).
   const departed = trip.departAt <= Date.now();
   // A trip from a channel or a link that takes nobody says why (docs/65 C).
@@ -97,7 +92,7 @@ export function TripScreen(props: TripScreenProps) {
           {trip.woman ? fact('profile', t('market.search.woman')) : null}
           {wayFacts(trip).map(([icon, text]) => fact(icon, text))}
           {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
-          {onCancel || readOnly ? (
+          {readOnly ? (
             <Cell
               after={
                 <Badge
@@ -113,15 +108,10 @@ export function TripScreen(props: TripScreenProps) {
             </Cell>
           ) : null}
         </Section>
-        {own ? null : <TripDriver trip={trip} favorite={Boolean(onBook) && !readOnly} />}
+        <TripDriver trip={trip} favorite={Boolean(onBook) && !readOnly} />
         {children}
       </List>
       <div className="step-note">
-        {onCancel && live && !departed ? (
-          <Button mode="bezeled" size="l" stretched onClick={onCancel}>
-            {t('market.trip.cancel')}
-          </Button>
-        ) : null}
         {/* «Joy band qilish» is the main button of Telegram, as everywhere (G35, docs/97 PS9). */}
         {onBook && !readOnly && !closed && mine ? <Text>{t('market.trip.yours')}</Text> : null}
         {onBook && !readOnly && !closed && asked ? <Text>{t('market.trip.asked')}</Text> : null}

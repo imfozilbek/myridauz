@@ -1,39 +1,37 @@
 import { MY_TRIP_LINK, OFFER_LINK, type AppLink, type Trip } from '@platform/contracts';
-import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
-import { DriverTripMap } from '../bookings/driver-trip-map';
 import { ChatScreen } from '../chat/chat-screen';
-import { DriverShare } from '../comfort/driver-share';
-import { TripBookings } from '../bookings/trip-bookings';
 import { useApiClients } from '../context/api-clients';
-import { useI18n } from '../context/i18n-context';
+import { OwnTripFlow } from '../own-trip/own-trip-flow';
+import type { TripStep } from '../own-trip/trip-stage';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { confirm, haptic } from '../telegram/feedback';
-import { ActionFailure } from '../states/action-failure';
-import { errorKey } from './error-text';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
 import { MY_TRIPS, MyTripsList } from './my-trips-list';
 import { PlacesGate } from './places-gate';
-import { TripChangeCells, TripChangeScreen, type TripChange } from './trip-change';
-import { TripScreen } from './trip-screen';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
 import { waitingRequests } from '../home/home-items';
 
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
-type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
+type ScreenProps = {
+  readonly onBack: () => void;
+  readonly link?: AppLink;
+  // «Yoʻlga chiqdim» and «Yetib keldik» of a trip on the server (G63 B1): the main button of
+  // «Mening safarim» shows once the app gives it.
+  readonly onTripStep?: (trip: Trip, step: TripStep) => unknown;
+};
 
-export function MyTripsScreen({ onBack, link }: ScreenProps) {
+export function MyTripsScreen(props: ScreenProps) {
   useForgetOnLeave(MY_TRIPS);
   return (
-    <PlacesGate onBack={onBack}>
-      <MyTrips onBack={onBack} {...(link ? { link } : {})} />
+    <PlacesGate onBack={props.onBack}>
+      <MyTrips {...props} />
     </PlacesGate>
   );
 }
@@ -41,17 +39,15 @@ export function MyTripsScreen({ onBack, link }: ScreenProps) {
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
 type Opened = { readonly tripId: string; readonly bookingId?: string };
 
-function MyTrips({ onBack, link }: ScreenProps) {
+function MyTrips({ onBack, link, onTripStep }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
-  const { t } = useI18n();
   const { market, bookings } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(
     () => Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
     MY_TRIPS,
   );
   const [opened, setOpened] = useState<Opened | null>(null);
-  const [failure, setFailure] = useState<TranslationKey | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
   // A bot button opens its booking, trip or the booking of an accepted offer (docs/65 B5).
@@ -64,54 +60,27 @@ function MyTrips({ onBack, link }: ScreenProps) {
   });
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
-  const [mapOpen, setMapOpen] = useState(false);
-  const [change, setChange] = useState<TripChange | null>(null);
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
-  // A cancel is asked first; a failed one keeps the trip open with the reason (docs/65 B3, B4).
-  const cancel = async (open: Trip) => {
-    if (!(await confirm(t('market.trip.cancelAsk'), t('market.trip.cancel')))) return;
-    try {
-      setFailure(null);
-      await market.cancelTrip(open.id);
-      haptic.success();
-      setOpened(null);
-      reload();
-    } catch (caught) {
-      haptic.error();
-      setFailure(errorKey(caught));
-    }
-  };
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
-  if (trip && booking && value) {
+  if (trip && booking) {
     const close = (changed: boolean) => {
       setOpened({ tripId: trip.id });
       if (changed) reload();
     };
-    // The map of a confirmed booking goes back to that booking, not to its trip (docs/94 B8).
-    const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
-    if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
-    const toMap = () => (reload(), setMapOpen(true));
-    return <DriverBooking booking={booking} onClose={close} onMap={toMap} />;
+    return <DriverBooking booking={booking} onClose={close} />;
   }
-  if (trip && change)
-    return <TripChangeScreen trip={trip} change={change} onDone={() => (setChange(null), reload())} />;
   if (trip && value) {
-    const back = () => (setOpened(null), setFailure(null), setMapOpen(false));
-    // A trip ahead may move later or get cheaper (G39, docs/104).
-    const ahead = (trip.status === 'active' || trip.status === 'full') && trip.departAt > Date.now();
-    const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
-    if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
+    const step = onTripStep;
     return (
-      <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)} own>
-        <ActionFailure error={failure} />
-        {ahead ? <TripChangeCells trip={trip} onChange={setChange} /> : null}
-        <TripBookings
-          bookings={ofTrip}
-          onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
-          onMap={() => setMapOpen(true)}
-        />
-        <DriverShare trip={trip} />
-      </TripScreen>
+      <OwnTripFlow
+        trip={trip}
+        bookings={value[1].filter((item) => item.trip.id === trip.id)}
+        onBack={() => setOpened(null)}
+        onBooking={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
+        onChanged={reload}
+        onClosed={() => (setOpened(null), reload())}
+        onStep={step ? (next: TripStep) => step(trip, next) : undefined}
+      />
     );
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;

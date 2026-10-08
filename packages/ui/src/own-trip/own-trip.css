@@ -1,0 +1,145 @@
+/* «Mening safarim» of a driver (G63, mockup g63/3): the values of the mockup at 360 px. */
+.own-trip {
+  display: flex;
+  flex-direction: column;
+  /* The height Telegram gives: the main button is outside it, the cancel stays above it. */
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 12px 12px 0;
+  box-sizing: border-box;
+  color: var(--reg-ink);
+}
+
+.own-banner {
+  display: flex;
+  align-items: center;
+  gap: 10.33px;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--reg-line);
+  border-radius: 13.5px;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+}
+
+.own-banner[data-stage='soon'],
+.own-banner[data-stage='on_way'] {
+  border-color: var(--reg-success-line);
+  background: var(--reg-success-pale);
+  color: var(--reg-success);
+}
+
+.own-banner[data-stage='over'] {
+  border-color: var(--reg-divider);
+  background: var(--reg-card);
+  color: var(--reg-muted);
+}
+
+.own-banner svg {
+  flex: none;
+}
+
+/* The tick is drawn bigger than the clock in the same place: the text does not move. */
+.own-banner:not([data-stage='published']) svg {
+  margin: 0 -2px;
+}
+
+.own-banner-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.own-banner-text b {
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--reg-ink);
+}
+
+.own-banner[data-stage='published'] .own-banner-text span {
+  color: var(--reg-deep);
+}
+
+.own-banner[data-stage='soon'] .own-banner-text span,
+.own-banner[data-stage='on_way'] .own-banner-text span {
+  color: var(--reg-success-deep);
+}
+
+.own-head {
+  margin: 10px 12px 4.33px;
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 13px;
+  text-transform: uppercase;
+  color: var(--reg-muted);
+}
+
+.own-tiles {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.own-tile {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 77.33px;
+  padding: 9.33px 2px 7.33px;
+  border: 0;
+  border-radius: 13.5px;
+  background: var(--reg-card);
+  color: var(--reg-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.own-tile span {
+  align-self: stretch;
+  margin-top: 15px;
+  font-size: clamp(10px, 3.2vw, 11.5px);
+  font-weight: 700;
+  line-height: 13px;
+  text-align: center;
+}
+
+.own-links {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding: 18px 0 19.2px;
+}
+
+/* Over the main button the link stands closer to the bottom (mockup g63/3, phones 2 and 3). */
+.own-trip[data-button] .own-links {
+  padding-bottom: 9.5px;
+}
+
+.own-cancel {
+  padding: 4px;
+  border: 0;
+  background: none;
+  color: var(--reg-to);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.own-note {
+  margin: 10px 13px 0;
+  font-size: 12.5px;
+  color: var(--reg-muted);
+  text-align: center;
+}
+
+.own-note-link {
+  margin-left: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  cursor: pointer;
+}

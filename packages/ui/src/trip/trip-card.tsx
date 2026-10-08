@@ -1,9 +1,8 @@
-import { arrivalAt, roadMs, type Booking, type Point } from '@platform/contracts';
+import { arrivalAt, type Booking, type Point } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useBookingEnds } from './booking-ends';
+import { TripPoint, TripRoad } from './trip-point';
 import './trip-card.css';
-
-const HOUR_MS = 60 * 60 * 1000;
 
 type Props = {
   readonly booking: Booking;
@@ -23,37 +22,22 @@ export function TripCard({ booking, sum = true, onPoint }: Props) {
   const past = booking.status === 'completed';
   const departs = formatTime(new Date(trip.departAt));
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
-  const point = (kind: 'from' | 'to', name: string, note: string) => {
-    const place = kind === 'from' ? startPoint : endPoint;
-    const content = (
-      <>
-        <span className="trip-card-dot" aria-hidden />
-        <span className="trip-card-names">
-          <span className="trip-card-name">{name}</span>
-          <span className="trip-card-note">{note}</span>
-        </span>
-      </>
-    );
-    const className = `trip-card-point trip-card-${kind}`;
-    return place && onPoint ? (
-      <button type="button" className={className} onClick={() => onPoint(place)}>
-        {content}
-      </button>
-    ) : (
-      <div className={className}>{content}</div>
-    );
-  };
+  const point = (kind: 'from' | 'to', name: string, note: string) => (
+    <TripPoint
+      kind={kind}
+      name={name}
+      note={note}
+      place={kind === 'from' ? startPoint : endPoint}
+      onPoint={onPoint}
+    />
+  );
   return (
     <div className="trip-sheet">
       <div className={past ? 'trip-card-way trip-card-past' : 'trip-card-way'}>
         {past
           ? point('from', start, t('bookings.card.region', { region: regionName(trip.from), time: departs }))
           : point('from', start, t('bookings.card.pickup', { time: departs }))}
-        {past ? (
-          <span className="trip-card-road">
-            {t('find.road', { km: String(trip.km), hours: String(Math.round(roadMs(trip.km) / HOUR_MS)) })}
-          </span>
-        ) : null}
+        {past ? <TripRoad km={trip.km} /> : null}
         {past
           ? point('to', end, t('bookings.card.region', { region: regionName(trip.to), time: arrives }))
           : point('to', end, t('bookings.card.dropoff', { time: arrives }))}

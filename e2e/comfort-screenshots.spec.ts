@@ -59,7 +59,8 @@ test('driver: "Qaytish safari" and the trip shared with the family', async ({ pa
   await page.locator('#tg-main-button').click();
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
-  await expect(page.getByText(t('share.driverSendHint'))).toBeVisible();
+  // «Yaqinlarimga» is a tile of «Mening safarim» (G63, mockup g63/3).
+  await expect(page.getByText(t('bookings.toClose'))).toBeVisible();
   await shot('7-driver-share');
 });
 

@@ -128,11 +128,13 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
-  const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
-  await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
+  // «Joy soʻraganlar» (G63): the request near the way first, the far one under it (docs/70).
+  const near = await page.getByText('Aziza').boundingBox();
+  const far = await page.getByText('Bobur').boundingBox();
+  expect(near?.y ?? Infinity).toBeLessThan(far?.y ?? 0);
   await expect(page.getByText(/\+3\skm/u)).toBeVisible();
   await shot(page, '6-requests');
-  await page.getByText(t('way.map.title')).click();
+  await page.getByText(t('driverTrip.tile.map')).click();
   await drawn(page);
   await expect(page.getByText('Chorsu')).toBeVisible();
   await expect(page.getByText('Sardor')).toBeHidden();

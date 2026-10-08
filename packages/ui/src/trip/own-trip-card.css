@@ -1,0 +1,56 @@
+/* The card of the own trip (G63, mockup g63/3, journey screen 6): the values of the mockup at 360 px.
+   The words get smaller on a narrow phone, never cut or broken in two (docs/121). */
+.trip-sheet-own {
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.trip-sheet-own .trip-card-way {
+  gap: 4px;
+  padding: 8px 14px 9px 13px;
+}
+
+.trip-sheet-own .trip-card-name {
+  font-size: clamp(12.5px, 3.889vw, 14px);
+  line-height: 17px;
+}
+
+.trip-sheet-own .trip-card-note {
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.trip-sheet-own .trip-card-from .trip-card-dot {
+  margin-top: 4.8px;
+}
+
+/* The end stays by the road line, above its name (journey screen 6). */
+.trip-sheet-own .trip-card-to .trip-card-dot {
+  margin-top: -4.4px;
+}
+
+/* A grey line from the start to the end with a gap at each dot. */
+.trip-sheet-own .trip-card-from .trip-card-dot::after {
+  top: 13px;
+  width: 1.33px;
+  height: 22px;
+  background: var(--reg-route-line);
+}
+
+.trip-sheet-own .trip-card-road {
+  margin: -2px 0 -3.4px 20px;
+  color: var(--reg-accent);
+}
+
+.trip-sheet-own .trip-card-sum {
+  align-items: baseline;
+  padding: 8.2px 14px 9.4px 13px;
+  font-size: clamp(12px, 3.889vw, 14px);
+}
+
+.trip-sheet-rule {
+  flex: none;
+  font-size: clamp(10px, 3.2vw, 11.5px);
+  color: var(--reg-muted);
+  text-align: right;
+}

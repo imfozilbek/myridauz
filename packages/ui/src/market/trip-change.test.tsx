@@ -31,25 +31,28 @@ describe('the driver changes the own trip (G39, docs/104)', () => {
   it('moves the time only later, at most +1 hour in all', async () => {
     const retimeTrip = vi.fn(async (_id: string, departAt: number) => ({ ...own, departAt }));
     await open({ retimeTrip });
+    await tap('Vaqt yoki narx');
     await tap('Vaqtni surish');
     expect(screen.getByText('soat 09:00')).toBeTruthy();
     expect(screen.queryByText('soat 09:15')).toBeNull();
     await tap('soat 08:30');
     expect(retimeTrip).toHaveBeenCalledWith('t1', AT + 30 * MINUTE);
-    expect(await screen.findByText('Yoʻlovchilar')).toBeTruthy();
+    expect(await screen.findByText('Yoʻlovchilar (0)')).toBeTruthy();
   });
 
   it('lowers the price by the steps of the route, not below the bound', async () => {
     const lowerTripPrice = vi.fn(async (_id: string, price: number) => ({ ...own, price }));
     await open({ lowerTripPrice });
+    await tap('Vaqt yoki narx');
     await tap('Narxni tushirish');
     await tap(/^85.000/);
     expect(lowerTripPrice).toHaveBeenCalledWith('t1', 85000);
   });
 
-  it('offers no time change after the whole hour is used', async () => {
+  it('goes straight to the price after the whole hour is used', async () => {
     await open({}, { ...own, departAt: AT + 60 * MINUTE });
-    expect(screen.getByText('Narxni tushirish')).toBeTruthy();
+    await tap('Vaqt yoki narx');
+    expect(await screen.findByText('Yangi narx')).toBeTruthy();
     expect(screen.queryByText('Vaqtni surish')).toBeNull();
   });
 });

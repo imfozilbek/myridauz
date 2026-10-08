@@ -40,7 +40,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     expect(screen.getAllByText(/4,8/)).toHaveLength(2);
   });
 
-  it('a driver sees the answer deadline and the balance before confirming', async () => {
+  it('a driver sees the answer deadline and the commission before confirming', async () => {
     renderMarket(
       <MyTripsScreen onBack={() => undefined} />,
       testClients({
@@ -50,12 +50,11 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
       }),
     );
     await openOwnTrip();
+    expect(await screen.findByText(/komissiya 19\s000$/u)).toBeTruthy();
     await tap('Dilnoza');
     expect(screen.getByText('Javob berish muddati')).toBeTruthy();
     // The rule about changing seats is the passenger's, not the driver's (G27).
     expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
-    await tap('Tasdiqlash');
-    expect(await screen.findByText(/Hamyoningizda: 481\s000/)).toBeTruthy();
   });
 
   it('a driver without the commission is led to top up, not to a «Tasdiqlash» that fails (G27)', async () => {
@@ -69,10 +68,14 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
       }),
     );
     await openOwnTrip();
-    await tap('Dilnoza');
-    await tap('Tasdiqlash');
+    // On the trip and on the booking the button leads to the top up (G27).
+    await tap('Hisobni toʻldirish');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
-    expect(screen.getByText('Hisobni toʻldirish')).toBeTruthy();
+    expect(answer).not.toHaveBeenCalled();
+    await tap('Orqaga');
+    await tap('Dilnoza');
+    await tap('Hisobni toʻldirish');
+    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     expect(answer).not.toHaveBeenCalled();
   });
 });

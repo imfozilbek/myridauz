@@ -92,16 +92,19 @@ for (const platform of PLATFORMS)
     await shot(page, platform, name('1-search-before'));
     await openOwnTrip(page, platform, trip);
     await shot(page, platform, name('2-trip-before'));
+    // «Vaqt yoki narx» of «Mening safarim» (G63) opens the two changes of G39.
+    await page.getByText(t('driverTrip.tile.change')).click();
     await page.getByText(t('market.change.time')).click();
     await shot(page, platform, name('3-time'));
     // The answer of Telegram's window is «Ha, oʻzgartirish» (the stand mock takes the first button).
     await page.getByText(t('market.change.at', { time: tashkentTime(trip.departAt + 30 * MINUTE) })).click();
-    await expect(page.getByText(t('market.change.section'))).toBeVisible();
+    await expect(page.getByText(t('driverTrip.tile.change'))).toBeVisible();
+    await page.getByText(t('driverTrip.tile.change')).click();
     await page.getByText(t('market.change.price')).click();
     await shot(page, platform, name('4-price'));
     const { roundStep } = await (await driverMarket()).recommend(CHILONZOR, ANDIJON);
     await page.getByText(formatMoney(trip.price - roundStep), { exact: true }).click();
-    await expect(page.getByText(t('market.change.section'))).toBeVisible();
+    await expect(page.getByText(t('driverTrip.tile.change'))).toBeVisible();
     await shot(page, platform, name('5-trip-after'));
     // Leaving within an hour: «Tez orada joʻnaydi» too (the time of the stand is moved by hand).
     const soon = Date.now() + 40 * MINUTE;
