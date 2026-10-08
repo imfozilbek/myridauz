@@ -8,6 +8,8 @@ import { RiderLine } from './rider-line';
 const FACE = 36;
 const LETTER = 14;
 const TOOL_ICON = 16;
+// The bubble of the chat is drawn smaller than the phone beside it (mockups g63/3, g63/5).
+const CHAT_ICON = 14.4;
 
 type Props = {
   readonly booking: Booking;
@@ -59,7 +61,7 @@ export function RiderRow({ booking, onChat, onCall, onOpen, line }: Props) {
         </span>
       </div>
       <button type="button" className="rider-tool" aria-label={t('chat.open')} onClick={onChat}>
-        <Icon name="chat" size={TOOL_ICON} />
+        <Icon name="chat" size={CHAT_ICON} />
       </button>
       {onCall ? (
         <button type="button" className="rider-tool" aria-label={t('calls.call')} onClick={onCall}>

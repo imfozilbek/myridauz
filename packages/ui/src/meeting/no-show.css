@@ -16,8 +16,8 @@ button.no-show-mark {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 10.4px;
-  padding: 10px 14px 10px 13px;
+  margin-bottom: 9.8px;
+  padding: 10px 14px 8.5px 13px;
   border: 1px solid var(--reg-line);
   border-radius: 13.5px;
   background: var(--reg-soft);
@@ -43,4 +43,10 @@ button.no-show-mark {
   font-size: 14px;
   line-height: 17px;
   color: var(--reg-ink);
+}
+
+.no-show-banner-text span {
+  position: relative;
+  top: -1px;
+  line-height: 15px;
 }
