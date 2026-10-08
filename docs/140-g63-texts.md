@@ -1,6 +1,6 @@
 # 140. G63: новые тексты на согласие владельца
 
-> **Кратко:** тексты сервера G63: «Yoʻlga chiqdim» и «Yetib keldik» водителя, напоминание бота, проверка способа посадки (B1, `35`); встреча водителя и возврат комиссии за неявку (B2, `126`, `129`); источник «ссылка водителя» в статистике (B3, `119`). Все тексты новые (№11 изменён), ждут согласия владельца (`33`); проверка носителем (`25`) остаётся. Тексты экранов G63 (кнопки, карточки) будут в этом же документе на шаге G63 C: карточка канала (21 … 23) и встреча, «Safar tugadi», «Qaytish», прошлая поездка водителя (C3, 24 … 54) уже здесь.
+> **Кратко:** все новые узбекские тексты G63, 93 строки: сервер (выезд и приезд, встреча, возврат за неявку, просмотры), экран публикации, «Mening safarim» с карточкой канала, встреча и «после поездки». Новые, кроме изменённых №11 и №67 … 70; ждут согласия владельца (`33`), проверка носителем (`25`) остаётся.
 
 ## Новые: ждут согласия
 
@@ -10,7 +10,7 @@
 | 2 | Ошибка: второе нажатие «Yoʻlga chiqdim» (`trips.already_departed`) | Yoʻlga chiqqaningiz allaqachon belgilangan. |
 | 3 | Ошибка: «Yetib keldik» до выезда (`trips.not_departed`) | Avval «Yoʻlga chiqdim» tugmasini bosing. |
 | 4 | Ошибка: второе нажатие «Yetib keldik» (`trips.already_arrived`) | Yetib kelganingiz allaqachon belgilangan. |
-| 5 | Ошибка публикации: «Pitakdan olaman» или «Ikkalasi ham», а у направления нет пятака (`trips.no_pitak`) | Bu yoʻnalishda pitak yoʻq. «Shahar boʻylab yigʻaman» usulini tanlang. |
+| 5 | Ошибка публикации: «Pitakdan» или «Ikkalasi», а у направления нет пятака (`trips.no_pitak`) | Bu yoʻnalishda pitak yoʻq. «Uydan» usulini tanlang. |
 | 6 | Бот водителя: через 1 час после времени выезда нет «Yoʻlga chiqdim» (`bot.trip.departReminder`), кнопка «Ochish» открывает поездку | Yoʻlga chiqdingizmi? Safar boshlansa, «Yoʻlga chiqdim» tugmasini bosing. |
 | 7 | Бот попутчика: водитель нажал «Men keldim» (`bot.booking.driverCame`), кнопка открывает бронь | Haydovchi uchrashuv joyiga keldi.<br>{from} → {to}, soat {time}. |
 | 8 | Ошибка: метка встречи вне окна встречи (`bookings.not_meeting_time`) | Hozir uchrashuv vaqti emas. Belgini joʻnashdan biroz oldin va safar tugaguncha qoʻyish mumkin. |
@@ -68,6 +68,59 @@
 | 53 | «Hamyon»: строка возврата (`wallet.refund`) | Qaytarildi · {name} kelmadi |
 | 54 | «Hamyon»: дата возврата (`wallet.confirmed`) | {day} · egasi tasdiqladi |
 
+## Экран публикации C1 (ждут согласия)
+
+Ключи в `market.json` (`market.publish.*`) и `way.json` (`way.trip.*`).
+
+| # | Где | Текст |
+|---|---|---|
+| 55 | «Safar eʼlon qilish»: подзаголовок: машина и номер (`publish.car`) | {model}, {color} · {plate} |
+| 56 | «Safar eʼlon qilish»: заголовок карточки (`publish.head`) | Safar |
+| 57 | «Safar eʼlon qilish»: строка дня и времени (`publish.day`) | {date}, {time} |
+| 58 | «Safar eʼlon qilish»: подсказка под «boʻsh joylar» (`publish.carSeats`) | Mashinada {count} joy |
+| 59 | «Safar eʼlon qilish»: подсказка под «mashinada ayol bor» (`publish.womanHint`) | Siz bilan ketayotgan odam ayolmi? |
+| 60 | «Safar eʼlon qilish»: подсказка под «bir joy narxi» (`publish.price`) | Tavsiya: {price} · komissiya {commission} |
+| 61 | «Safar eʼlon qilish»: подсказка под «qanday band qilinadi?» (`publish.rule`) | {rule} · {sum} |
+| 62 | «Safar eʼlon qilish»: строка комментария, пока он пустой (`publish.comment`) | Izoh (ixtiyoriy) |
+| 63 | «Safar eʼlon qilish»: главная кнопка (`publish.send`) | Eʼlon qilish |
+| 64 | «Qayerdan olasiz?»: подсказка при «Uydan» (`way.trip.mode.doorHint`) | Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi. |
+| 65 | «Qayerdan olasiz?»: карточка пятака (`way.trip.pitak`) | {direction} yoʻnalishi pitagi |
+| 66 | «Qayerdan olasiz?»: карточка пятака, открывает карту (`way.trip.onMap`) | Xaritada |
+| 67 | «Qayerdan olasiz?» (`way.trip.mode.title`, **изменён**; было «Yoʻlovchilarni qayerdan olasiz?») | Qayerdan olasiz? |
+| 68 | «Qayerdan olasiz?» (`way.trip.mode.door`, **изменён**; было «Shahar boʻylab yigʻaman») | Uydan |
+| 69 | «Qayerdan olasiz?» (`way.trip.mode.pitak`, **изменён**; было «Pitakdan olaman») | Pitakdan |
+| 70 | «Qayerdan olasiz?» (`way.trip.mode.both`, **изменён**; было «Ikkalasi ham») | Ikkalasi |
+
+## «Mening safarim» C2 (ждут согласия)
+
+Ключи в `driver-trip.json` (`driverTrip.*`); карточка канала выше, № 21 … 23.
+
+| # | Где | Текст |
+|---|---|---|
+| 71 | «Mening safarim»: плашка после публикации (`published.title`) | Safar eʼlon qilindi |
+| 72 | «Mening safarim»: плашка после публикации, вторая строка (`published.sub`) | Yoʻlovchilar qidiruvda koʻrmoqda |
+| 73 | «Mening safarim»: плашка за 30 минут (`soon.title`) | Joʻnashga {minutes} daqiqa |
+| 74 | «Mening safarim»: плашка за 30 минут, вторая строка (`soon.sub`) | {passengers} yoʻlovchi tasdiqlangan · {seats} boʻsh joy |
+| 75 | «Mening safarim»: плашка в пути (`onWay.title`) | Yoʻldasiz |
+| 76 | «Mening safarim»: плашка в пути, вторая строка (окончание по последней букве места) (`onWay.sub`) | {place}{last, select, q {qa} k {ka} other {ga}} ≈ {time} da |
+| 77 | «Mening safarim»: заголовок заявок (`asked`) | Joy soʻraganlar ({count}) |
+| 78 | «Mening safarim»: заголовок попутчиков (`passengers`) | Yoʻlovchilar ({count}) |
+| 79 | «Mening safarim»: заголовок карточки (`trip`) | Safar |
+| 80 | «Mening safarim»: день и время в карточке (`when`) | {day}, {time} |
+| 81 | «Mening safarim»: места и цена в карточке (`free`) | {count} boʻsh joy · {price} |
+| 82 | «Mening safarim»: все места заняты (`full`) | Hamma joy band · {price} |
+| 83 | «Mening safarim»: правило салона в карточке (`rule.seatsOrCar`) | Joylar yoki salon |
+| 84 | «Mening safarim»: комиссия в карточке заявки (`commission`) | komissiya {amount} |
+| 85 | «Mening safarim»: плитка (`tile.story`) | Hikoyaga |
+| 86 | «Mening safarim»: плитка (`tile.change`) | Vaqt yoki narx |
+| 87 | «Mening safarim»: плитка (`tile.map`) | Yoʻl xaritasi |
+| 88 | «Mening safarim»: главная кнопка (`main.departed`) | Yoʻlga chiqdim |
+| 89 | «Mening safarim»: главная кнопка (`main.arrived`) | Yetib keldik |
+| 90 | «Mening safarim»: причина у плитки «Hikoyaga»: старый Telegram (`story.noApp`) | Hikoyaga joylash uchun Telegramni yangilang. |
+| 91 | «Mening safarim»: причина у плитки «Hikoyaga»: нет мест (`story.closed`) | Hikoyaga faqat boʻsh joyi bor safar joylanadi. |
+| 92 | «Mening safarim»: причина у плитки «Hikoyaga»: в пути (`story.left`) | Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi. |
+| 93 | «Mening safarim»: причина у плитки «Vaqt yoki narx»: в пути (`change.closed`) | Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi. |
+
 ## Как это работает (коротко)
 
 - «Yoʻlga chiqdim» работает за 1 час до выезда и позже, один раз.
@@ -75,7 +128,7 @@
 - Нет нажатия через 1 час: бот спрашивает один раз (текст 6). Через 2 часа Cron сам ставит выезд.
 - После нажатия заявки без ответа сразу истекают: попутчик и водитель получают те же сообщения бота, что и при истечении срока ответа (тексты есть, новых нет). Подтвердить заявку в пути нельзя.
 - «Yetib keldik» работает только в пути. Сроки после поездки (оценка, жалоба) не меняются. Близкие водителя сразу видят «Yetib keldi»; поделиться такой поездкой уже нельзя.
-- «Qaytish safari» и «Oxirgi yoʻnalish» берут способ посадки прошлой поездки, только если у нового направления есть пятак; иначе тихо «Shahar boʻylab yigʻaman», без лишнего шага.
+- «Qaytish safari» и «Oxirgi yoʻnalish» берут способ посадки прошлой поездки, только если у нового направления есть пятак; иначе тихо «Uydan», без лишнего шага.
 - Галочка «Mashinada ayol bor» сохраняется, только если водитель мужчина и мест в поездке меньше, чем в машине. Иначе она тихо не сохраняется, без ошибки (`06`, правило 3).
 - Встреча (`126`): с 30 минут до выезда и до закрытия поездки водитель ставит у каждого попутчика «Men keldim», потом «Keldi» или «Kelmadi». «Keldi» и «Kelmadi» ставятся один раз. «Kelmadi» нельзя после «Mashinaga chiqdim» попутчика. После «Keldi» или «Kelmadi» поездку и бронь уже нельзя отменить.
 - «Kelmadi» сам подаёт жалобу команде. Модератор только предлагает возврат комиссии; деньги идут в «Hamyon» после «Qaytarishni tasdiqlash» владельца (тексты 11 … 19). Неявка не считается поездкой: нет оценки, нет в истории.
