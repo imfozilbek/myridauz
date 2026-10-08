@@ -55,6 +55,8 @@ export type TripFacts = {
   readonly departAt: number;
   // «Yoʻlga chiqdim» of the driver (G63): the trip is on the road even before its time.
   readonly departedAt: number | null;
+  // «Yetib keldik» of the driver (G63): the ride is over for the stars before the trip closes.
+  readonly arrivedAt: number | null;
   readonly km: number;
   readonly seats: number;
   readonly price: number;

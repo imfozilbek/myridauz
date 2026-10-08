@@ -1,31 +1,25 @@
-import type { Trip } from '@platform/contracts';
-
-const MINUTE_MS = 60 * 1000;
-// «Yoʻlga chiqdim» works from an hour before the time of the trip (docs/35). The server keeps the
-// same rule as DEPART_EARLY_MS and onTheWay of @platform/contracts (G63 B1).
-const DEPART_EARLY_MS = 60 * MINUTE_MS;
+import { DEPART_EARLY_MS, MINUTE_MS, onTheWay, tripEndsAt, type Trip } from '@platform/contracts';
 
 export type TripStage = 'published' | 'soon' | 'on_way' | 'over';
 export type TripStep = 'departed' | 'arrived';
-// The marks «Yoʻlga chiqdim» and «Yetib keldik» come with the trip from G63 B1: a trip without
-// them has neither, and its time alone puts it on the road, as on the server.
-type Timed = Pick<Trip, 'departAt' | 'status'> & {
-  readonly departedAt?: number | null;
-  readonly arrivedAt?: number | null;
-};
+type Timed = Pick<Trip, 'departAt' | 'km' | 'status' | 'departedAt' | 'arrivedAt'>;
 
-const marked = (at: number | null | undefined) => typeof at === 'number';
-const over = (trip: Timed) =>
-  trip.status === 'completed' || trip.status === 'cancelled' || marked(trip.arrivedAt);
+// Past for its driver (lead decision 08.10.2026): «Yetib keldik» went through or the server closed
+// the trip. The past trip opens at once; the deadlines after it still count from its end (docs/129).
+export const tripPast = (trip: Pick<Trip, 'status' | 'arrivedAt'>) =>
+  trip.status === 'completed' || trip.arrivedAt !== null;
+
+// Over: past, cancelled, or its time ended, when the server closes it by itself (docs/35): the page
+// never offers a step the server refuses, even before the list is fresh.
+const over = (trip: Timed, now: number) =>
+  tripPast(trip) || trip.status === 'cancelled' || now >= tripEndsAt(trip.departAt, trip.km);
+// «Yoʻlga chiqdim» works from DEPART_EARLY_MS before the time of the trip, as on the server.
 const hourBefore = (trip: Timed, now: number) => now >= trip.departAt - DEPART_EARLY_MS;
 
-// On the road: the driver tapped «Yoʻlga chiqdim», or the time of the trip came. The rule of the
-// server, so the page never offers a cancel or a change the server refuses.
-const onTheWay = (trip: Timed, now: number) => marked(trip.departedAt) || now >= trip.departAt;
-
 // Where the own trip is (mockup g63/3): published, the hour before the departure, on the way, over.
+// On the way by the rule of the server (onTheWay): no cancel or change the server refuses.
 export function tripStage(trip: Timed, now: number): TripStage {
-  if (over(trip)) return 'over';
+  if (over(trip, now)) return 'over';
   if (onTheWay(trip, now)) return 'on_way';
   return hourBefore(trip, now) ? 'soon' : 'published';
 }
@@ -33,8 +27,8 @@ export function tripStage(trip: Timed, now: number): TripStage {
 // The main button: nothing until the hour before, then «Yoʻlga chiqdim» until the driver taps it
 // (the time alone does not), then «Yetib keldik».
 export function tripStep(trip: Timed, now: number): TripStep | null {
-  if (over(trip)) return null;
-  if (marked(trip.departedAt)) return 'arrived';
+  if (over(trip, now)) return null;
+  if (trip.departedAt !== null) return 'arrived';
   return hourBefore(trip, now) ? 'departed' : null;
 }
 

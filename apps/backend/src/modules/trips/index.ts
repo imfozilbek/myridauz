@@ -28,7 +28,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const trip = await tripsDeps(env).trips.find(id);
   if (!trip) return undefined;
   const now = Date.now();
-  const { driverId, from, to, departAt, departedAt, km, seats, price, pickupMode } = trip;
+  const { driverId, from, to, departAt, departedAt, arrivedAt, km, seats, price, pickupMode } = trip;
   const over = statusAt(trip, now) === 'completed';
   const { endsAt } = trip;
   return {
@@ -38,6 +38,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
     to,
     departAt,
     departedAt,
+    arrivedAt,
     km,
     seats,
     price,

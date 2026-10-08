@@ -43,7 +43,7 @@ export async function filedRideOf(deps: BookingsDeps, bookingId: string): Promis
 async function asRide(deps: BookingsDeps, booking: BookingRecord): Promise<Ride | undefined> {
   const trip = await deps.trips.find(booking.tripId);
   if (!trip) return undefined;
-  const { driverId, departAt, endsAt, over } = trip;
+  const { driverId, departAt, endsAt, over, arrivedAt } = trip;
   return {
     bookingId: booking.id,
     tripId: trip.id,
@@ -51,7 +51,8 @@ async function asRide(deps: BookingsDeps, booking: BookingRecord): Promise<Ride 
     passengerId: booking.passengerId,
     departAt,
     endsAt,
-    over,
+    // «Yetib keldik» ends the ride at once: the stars come right after it (docs/129, docs/124 В).
+    over: over || arrivedAt !== null,
     commission: booking.commission,
     chatKey: chatKeyOf(booking),
   };

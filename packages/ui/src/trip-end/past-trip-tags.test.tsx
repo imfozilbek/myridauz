@@ -27,6 +27,12 @@ describe('the tags of a past trip in «Oʻtgan» (docs/129, mockup g63/5 phone 4
     expect(screen.getByText('Komissiya qaytarildi')).toBeTruthy();
   });
 
+  it('asks the stars once the driver arrived, before the server closes the trip', () => {
+    const arrived = { ...madina.trip, departedAt: madina.trip.departAt, arrivedAt: rateUntil - 7 * DAY };
+    renderInShell(<PastTripTags trip={arrived} bookings={[madina]} now={rateUntil - 6.5 * DAY} />);
+    expect(screen.getByText('Baho bering · 6 kun')).toBeTruthy();
+  });
+
   it('shows nothing on a live trip or when nothing is left', () => {
     const { container } = renderInShell(
       <>

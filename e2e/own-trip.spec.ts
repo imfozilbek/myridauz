@@ -51,6 +51,10 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   await expect(main).toHaveText(TEXT.publish);
   await expect(page.locator('.points-value').nth(0)).toContainText('Samarqand shahri');
   await expect(page.locator('.points-value').nth(1)).toContainText('Chilonzor');
+  // Back from the one screen: the trip is past at once, the server has not closed it yet (lead decision).
+  await pressBack(page);
+  await expect(page.getByText(t('driverAfter.past.after'))).toBeVisible();
+  await expect(main).toHaveText(t('driverAfter.back.publish'));
   expect(own.calls).toEqual([
     'answer confirm',
     'depart',

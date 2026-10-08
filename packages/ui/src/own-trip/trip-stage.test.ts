@@ -1,6 +1,7 @@
+import { tripEndsAt } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { trip } from '../market/market-test-kit';
-import { minutesLeft, tripStage, tripStep } from './trip-stage';
+import { minutesLeft, tripPast, tripStage, tripStep } from './trip-stage';
 
 const MINUTE = 60 * 1000;
 const AT = trip.departAt;
@@ -48,5 +49,21 @@ describe('the stage of the own trip (mockup g63/3, docs/118 path 6)', () => {
 
   it('a full trip goes through the same stages', () => {
     expect(tripStage({ ...trip, status: 'full' }, AT - 30 * MINUTE)).toBe('soon');
+  });
+
+  it('is over once its time ended, as the server closes it, before the list is fresh', () => {
+    const left = { ...trip, departedAt: AT };
+    const end = tripEndsAt(trip.departAt, trip.km);
+    expect(tripStep(left, end - 1)).toBe('arrived');
+    expect(tripStage(left, end)).toBe('over');
+    expect(tripStep(left, end)).toBeNull();
+  });
+
+  it('is past once the driver arrived or the server closed it (lead decision 08.10.2026)', () => {
+    const left = { ...trip, departedAt: AT };
+    expect(tripPast({ ...left, arrivedAt: AT + 300 * MINUTE })).toBe(true);
+    expect(tripPast({ ...trip, status: 'completed' })).toBe(true);
+    expect(tripPast(left)).toBe(false);
+    expect(tripPast({ ...trip, status: 'cancelled' })).toBe(false);
   });
 });

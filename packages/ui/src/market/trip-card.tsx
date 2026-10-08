@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { tripPast } from '../own-trip/trip-stage';
 import { CarSwatch } from '../driver/car-swatch';
 import { RatingBadge } from '../feedback/rating-badge';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
@@ -32,6 +33,8 @@ export function TripCard(props: TripCardProps) {
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const wayFacts = useWayFacts();
+  // A trip the driver arrived on is over before the server closes it (lead decision 08.10.2026).
+  const status = tripPast(trip) ? 'completed' : trip.status;
   // «Tez orada joʻnaydi» and «Narxi tushdi» lead the marks of the search (G39, docs/104, 10).
   const marks: readonly Fact[] = own
     ? []
@@ -44,7 +47,7 @@ export function TripCard(props: TripCardProps) {
     ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
     ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
     ...wayFacts(trip),
-    ...(showStatus || own ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
+    ...(showStatus || own ? [[statusIcon(status), t(`market.status.${status}`)] as const] : []),
   ];
   const recommended = otherPrice(trip);
   return (

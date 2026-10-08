@@ -63,6 +63,7 @@ export function setup() {
       to: '1718401',
       departAt: NOW + 30 * HOUR,
       departedAt: null,
+      arrivedAt: null,
       endsAt: NOW + 37 * HOUR,
       km: 300,
       seats: 3,
@@ -135,6 +136,11 @@ export function setup() {
     departEarly: (tripId: string) => {
       const facts = trips.get(tripId);
       if (facts) trips.set(tripId, { ...facts, departedAt: now });
+    },
+    // «Yetib keldik» of the driver: the trip is not closed yet (G63).
+    arrive: (tripId: string) => {
+      const facts = trips.get(tripId);
+      if (facts) trips.set(tripId, { ...facts, departedAt: facts.departedAt ?? now, arrivedAt: now });
     },
     requestOpen: (requestId: string) => requests.get(requestId)?.open,
     // A new face or car photo: the driver goes to the team's check again (docs/05).

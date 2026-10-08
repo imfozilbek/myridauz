@@ -3,6 +3,7 @@ import { daysLeft } from '../bookings/done-tools';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { refundWaits } from '../meeting/no-show-text';
+import { tripPast } from '../own-trip/trip-stage';
 import { brandVars } from '../theme/brand-vars';
 import { ridersOf } from './trip-sums';
 import './past-trip-tags.css';
@@ -16,7 +17,7 @@ export function PastTripTags({ trip, bookings, now }: Props) {
   const { t } = useI18n();
   // The list of «Mening safarlarim» has no colours of the app of its own: the tags bring them.
   const { colors } = useBrand().theme;
-  if (trip.status !== 'completed') return null;
+  if (!tripPast(trip)) return null;
   const riders = ridersOf(bookings);
   const { rateUntil } = afterTrip(trip.departAt, trip.km);
   const tags: (readonly [Tone, string])[] = [];

@@ -38,6 +38,7 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
   const share = useCloseShare(trip.id, fail);
   const story = useTripStory(trip);
   const posting = useRef(false);
+  const cancelling = useRef(false);
   const answerBooking = useAnswerBooking({
     onDone: () => {
       balance.reload();
@@ -69,16 +70,21 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
       open(laterTimes(trip).length > 0 ? { screen: 'choice' } : { screen: 'change', change: 'price' });
     else open({ screen: 'map' });
   };
-  // A cancel is asked first; the passengers hear about it (docs/65 B4).
+  // A cancel is asked first; the passengers hear about it (docs/65 B4). A second tap while it is
+  // asked or sent does nothing (docs/65 A4).
   const cancel = async () => {
-    if (!(await confirm(t('market.trip.cancelAsk'), t('market.trip.cancel')))) return;
-    clear();
+    if (cancelling.current) return;
+    cancelling.current = true;
     try {
+      if (!(await confirm(t('market.trip.cancelAsk'), t('market.trip.cancel')))) return;
+      clear();
       await market.cancelTrip(trip.id);
       haptic.success();
       onClosed();
     } catch (caught) {
       fail(caught);
+    } finally {
+      cancelling.current = false;
     }
   };
   return { balance: balance.balance, failure, note, share, answer, tile, cancel };

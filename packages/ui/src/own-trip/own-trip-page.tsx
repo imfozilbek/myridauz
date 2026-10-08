@@ -14,6 +14,7 @@ import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { OwnTripCard } from '../trip/own-trip-card';
+import { taken } from '../trip-end/trip-sums';
 import { OwnTripBanner } from './own-trip-banner';
 import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
 import { RiderRow } from './rider-row';
@@ -49,8 +50,6 @@ type Props = {
   readonly children?: ReactNode;
 };
 
-const riding = (booking: Booking) => booking.status === 'confirmed' || booking.status === 'completed';
-
 // «Mening safarim» of a driver (owner decision 06.10.2026, docs/118 path 6, mockup g63/3 A with the
 // main button of C): the plate of the stage, the requests answered in their cards, the passengers
 // with the chat and the call, the trip, four tiles; the cancel only before the departure.
@@ -63,8 +62,10 @@ export function OwnTripPage(props: Props) {
   const { colors } = useBrand().theme;
   const step = tripStep(trip, now);
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
-  const riders = bookings.filter(riding);
+  const riders = bookings.filter(taken);
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
+  // Before the departure: people still look for the trip and the driver may cancel it (docs/35).
+  const notLeft = stage === 'published' || stage === 'soon';
   return (
     <div className="own-trip" style={brandVars(colors)} data-button={step ? '' : undefined}>
       <Screen onBack={onBack} />
@@ -82,7 +83,7 @@ export function OwnTripPage(props: Props) {
         </Section>
       ) : null}
       {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
-      {stage === 'published' || stage === 'soon' ? <TripPublicity trip={trip} /> : null}
+      {notLeft ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (
         <>
           <h2 className="own-head">{t('driverTrip.asked', { count: String(requested.length) })}</h2>
@@ -125,7 +126,7 @@ export function OwnTripPage(props: Props) {
       <OwnTripTiles onTile={onTile} />
       {children}
       <div className="own-links">
-        {stage === 'published' || stage === 'soon' ? (
+        {notLeft ? (
           <button type="button" className="own-cancel" onClick={() => void onCancel()}>
             {t('market.trip.cancel')}
           </button>

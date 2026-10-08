@@ -1,7 +1,7 @@
 import type { BookingsClient } from '@platform/api-client';
 import { ApiError } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
-import { cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -38,6 +38,22 @@ const open = (start: readonly Booking[], meet: BookingsClient['meet'], onChat = 
   );
 
 const marked = (booking: Booking, patch: Partial<Booking>) => async () => ({ ...booking, ...patch });
+
+// «Mening safarim» brings the fresh list a moment after the mark: until then the page is as it was.
+const away = { onBack: vi.fn(), onChanged: vi.fn(), onChat: vi.fn(), onCall: vi.fn() };
+const openStale = (start: readonly Booking[], meet: BookingsClient['meet']) =>
+  renderMarket(
+    <PlacesGate>
+      <DriverMeeting bookings={start} {...away} />
+    </PlacesGate>,
+    testClients({ bookings: { meet } }),
+  );
+const twice = async (text: string) => {
+  const button = await screen.findByText(text);
+  fireEvent.click(button);
+  fireEvent.click(button);
+  return button;
+};
 
 describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () => {
   it('shows each point: the passenger who came, the place by the rule of docs/121, who waits', async () => {
@@ -100,5 +116,32 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
     await tap('Yozish');
     await tap('Qoʻngʻiroq');
     expect(onChat).toHaveBeenCalledTimes(2);
+  });
+
+  it('a double tap, or a tap before the fresh list, sends a mark once (docs/65 A4)', async () => {
+    let release: () => void = () => undefined;
+    const answer = { ...madina, driverCameAt: MEETING_NOW };
+    const meet = vi.fn<BookingsClient['meet']>(
+      () => new Promise((resolve) => (release = () => resolve(answer))),
+    );
+    openStale([madina], meet);
+    const button = await twice('Men keldim');
+    await act(async () => release());
+    fireEvent.click(button);
+    expect(meet).toHaveBeenCalledOnce();
+  });
+
+  it('«Kelmadi» tapped twice is asked once and sent once', async () => {
+    const came = { ...akmal, driverCameAt: MEETING_NOW };
+    const meet = vi.fn<BookingsClient['meet']>(marked(came, { noShowAt: MEETING_NOW }));
+    asked.mockClear();
+    asked.mockReturnValueOnce(true);
+    openStale([came], meet);
+    const button = await twice('Kelmadi');
+    await vi.waitFor(() => expect(meet).toHaveBeenCalledWith('a1', 'no_show'));
+    await act(async () => undefined);
+    fireEvent.click(button);
+    expect(asked).toHaveBeenCalledOnce();
+    expect(meet).toHaveBeenCalledOnce();
   });
 });

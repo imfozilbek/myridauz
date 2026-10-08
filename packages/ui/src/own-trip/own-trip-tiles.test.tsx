@@ -1,5 +1,5 @@
 import { ApiError } from '@platform/api-client';
-import type { Booking, Trip } from '@platform/contracts';
+import { DAY_MS, type Booking, type Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
@@ -140,8 +140,8 @@ describe('an over trip keeps its four tiles, each says how the trip ended (docs/
     }
   });
 
-  it('an arrived trip (a completed one is the past trip), its passengers completed too', async () => {
-    await open({ ...trip, departedAt: 1, arrivedAt: 2 }, {}, [{ ...confirmed, status: 'completed' }]);
+  it('a trip whose time ended before the list is fresh (an arrived one is the past trip)', async () => {
+    await open({ ...trip, departAt: Date.now() - DAY_MS }, {}, [{ ...confirmed, status: 'completed' }]);
     for (const tile of ['Yoʻl xaritasi', 'Vaqt yoki narx']) {
       await tap(tile);
       expect(note()).toBe('Safar tugadi');
