@@ -1,0 +1,83 @@
+/* «Safar xaritasi» of the driver (mockup g63/4 screen 12): the map on top, the sheet of the points
+   over its lower edge. */
+.trip-map .trip-map-box {
+  position: relative;
+  /* The sheet starts at 418 px of the 759 px phone of the mockup, over the lower 16 px of the map. */
+  height: 57.2vh;
+}
+.trip-map-pin {
+  display: flex;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 30%));
+}
+.trip-map-pin svg {
+  stroke: currentColor;
+}
+.trip-map-pin circle {
+  fill: currentColor;
+}
+.trip-map-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8.8px;
+  margin-top: -16px;
+  padding: 19.95px 17.6px 16px;
+  border-radius: 16px 16px 0 0;
+  background: var(--tgui--secondary_bg_color);
+}
+/* The title of the mockup is 23 px (its words 250 px wide at 1.25×, mockup g63/4 screen 12); its
+   two lines 26.1 px apart, the words a part of a pixel left and lower than the box gives them. */
+.trip-map-title {
+  margin: 0 0 5.45px -0.3px;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 26.1px;
+  position: relative;
+  top: 0.4px;
+}
+/* A point without a meeting is a div, not a button: its padding stays inside the width. */
+.trip-map-stop {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56.8px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--tgui--bg_color);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.trip-map-number {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--tgui--button_color);
+  color: var(--tgui--button_text_color);
+  font-weight: 700;
+}
+.trip-map-who {
+  display: flex;
+  flex-direction: column;
+  gap: 4.4px;
+  min-width: 0;
+  /* The words stand above the middle of the card (mockup g63/4 screen 12). */
+  margin-top: -3.6px;
+}
+/* Who gets in there at the size of the mockup: its «Madina · 2 joy» is 148 px wide at 1.25×. */
+.trip-map-who b {
+  font-size: 15.2px;
+  line-height: 20px;
+  margin-left: -0.4px;
+}
+.trip-map-who span {
+  color: var(--tgui--hint_color);
+  font-size: 13px;
+  margin-left: -0.2px;
+}

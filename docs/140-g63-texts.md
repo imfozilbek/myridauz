@@ -27,7 +27,7 @@
 | 19 | Админка, после отказа (`complaints.refundRejected`) | Loyiha egasi qaytarmaslikka qaror qildi. |
 | 20 | Админка, «Statistika», «Qayerdan kelishdi»: люди, пришедшие по ссылке водителя (`stats.arrival.driver`) | Haydovchi havolasi |
 | 21 | «Mening safarim»: карточка канала, заголовок (`driverTrip.channel.title`); решение владельца 08.10.2026, `119` строка 1 | Safaringiz kanalda chiqdi |
-| 22 | «Mening safarim»: карточка канала, подпись: канал и сколько разных людей открыли поездку (`driverTrip.channel.views`); пока никто не открыл, только название канала | {channel} · {count} kishi koʻrdi |
+| 22 | «Mening safarim»: карточка канала, подпись: канал и сколько разных людей открыли поездку (`driverTrip.channel.views`); пока никто не открыл, только название канала | {channel} · {count} koʻrdi (решение владельца 08.10.2026, вариант 1) |
 | 23 | «Mening safarim»: кнопка в карточке канала, ссылка поездки через «Поделиться» Telegram (`driverTrip.channel.share`) | Havolani yoʻlovchilarga yuborish |
 
 ## Экраны C3: встреча, конец поездки, прошлая поездка (согласие 08.10.2026)

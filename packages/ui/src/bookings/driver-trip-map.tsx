@@ -17,7 +17,7 @@ import { stopsInOrder, type Stop } from './driver-stops';
 import { NavigatorSheet } from './navigator-sheet';
 import { StopCard } from './stop-card';
 import { useNavigator } from './use-navigator';
-import '../way/way.css';
+import './driver-trip-map.css';
 
 // The pin of a point, as big as on the mockup g63/4 screen 12.
 const PIN = 47;

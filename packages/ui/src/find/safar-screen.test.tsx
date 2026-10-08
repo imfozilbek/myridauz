@@ -40,7 +40,7 @@ describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 },
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();
   });
 
-  it('tells once and quietly that a person opened the trip: «N kishi koʻrdi» of the driver (G63)', async () => {
+  it('tells once and quietly that a person opened the trip: «N koʻrdi» of the driver (G63)', async () => {
     // No top loader for it (docs/121 §3), and a failure stays unseen.
     const busy: number[] = [];
     const tripViewed = vi.fn<ChannelsClient['tripViewed']>(async () => {

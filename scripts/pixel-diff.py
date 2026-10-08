@@ -2,11 +2,13 @@
 at half strength and their difference side by side, with a red numbered box on every region that
 differs, on all four parts.
 
-Usage: python3 scripts/pixel-diff.py <mockup.png> <code.png> <out.png> [title]
+Usage: python3 scripts/pixel-diff.py <mockup.png> <code.png> <out.png> [title] [--skip x0,y0,x1,y1[,label] ...]
 The code shot is scaled to the mockup size. A pixel differs when one of its channels differs by more
 than TOLERANCE. Differing pixels are grown by GROW px and grouped into regions; a region with fewer than
 MIN_AREA differing pixels is antialiasing, not a difference. The rounded corners of a phone are not
-compared. Prints the share of differing pixels, then one line per region: number, box, pixels.
+compared, nor a --skip box: the tiles of a map, which change with the map data, or words the owner chose
+against the mockup (owner decisions 08.10.2026, docs/141); it is drawn blue with its label (by default
+«xarita») on all four parts and the share counts only the compared pixels. Prints the share of differing pixels, then one line per region: number, box, pixels.
 """
 
 import sys
@@ -23,6 +25,8 @@ GAP = 20
 # The overlay: the mockup and the code at half strength each, a shift shows as a double line.
 OVERLAY = 0.5
 RED = (230, 30, 30)
+BLUE = (40, 110, 230)
+SKIP_LABEL = 'xarita'
 BOX_WIDTH = 3
 LABEL_SIZE = 22
 LABEL_HEIGHT = 25
@@ -32,14 +36,20 @@ TITLE_ROOM = 40
 BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 
 
-def differing(mockup: Image.Image, code: Image.Image) -> np.ndarray:
-    """The pixels that differ, without the four rounded corners of the phone."""
+Box = tuple[int, int, int, int]
+Skip = tuple[Box, str]
+
+
+def differing(mockup: Image.Image, code: Image.Image, skips: list[Skip]) -> np.ndarray:
+    """The pixels that differ, without the four rounded corners of the phone and the skipped boxes."""
     left = np.asarray(mockup).astype(int)
     right = np.asarray(code).astype(int)
     mask = np.abs(left - right).max(axis=2) > TOLERANCE
     height, width = mask.shape
     for top, side in [(0, 0), (0, width - CORNER), (height - CORNER, 0), (height - CORNER, width - CORNER)]:
         mask[top:top + CORNER, side:side + CORNER] = False
+    for (x0, y0, x1, y1), _ in skips:
+        mask[y0:y1, x0:x1] = False
     return mask
 
 
@@ -54,11 +64,14 @@ def regions(mask: np.ndarray) -> list[tuple[int, int, int, int, int]]:
     return sorted(found, key=lambda box: (box[1] // GAP, box[0]))
 
 
-def numbered(image: Image.Image, boxes: list[tuple[int, int, int, int, int]]) -> Image.Image:
-    """A copy of the image with a red box and its number on every region."""
+def numbered(image: Image.Image, boxes: list[tuple[int, int, int, int, int]], skips: list[Skip]) -> Image.Image:
+    """A copy of the image with a red box and its number on every region, a blue one on every skipped box."""
     marked = image.copy()
     draw = ImageDraw.Draw(marked)
     font = ImageFont.truetype(BOLD, LABEL_SIZE)
+    for (x0, y0, x1, y1), label in skips:
+        draw.rectangle([x0, y0, x1, y1], outline=BLUE, width=BOX_WIDTH)
+        draw.text((x0 + 4, y0 + 2), label, fill=BLUE, font=font)
     for number, (x0, y0, x1, y1, _) in enumerate(boxes, start=1):
         draw.rectangle([x0, y0, x1, y1], outline=RED, width=BOX_WIDTH)
         label = str(number)
@@ -68,12 +81,15 @@ def numbered(image: Image.Image, boxes: list[tuple[int, int, int, int, int]]) ->
     return marked
 
 
-def main(mockup_path: str, code_path: str, out_path: str, title: str = '') -> None:
+def main(mockup_path: str, code_path: str, out_path: str, title: str = '', skips: tuple[Skip, ...] = ()) -> None:
     mockup = Image.open(mockup_path).convert('RGB')
     code = Image.open(code_path).convert('RGB').resize(mockup.size)
-    mask = differing(mockup, code)
+    mask = differing(mockup, code, list(skips))
     width, height = mockup.size
-    share = mask.sum() / (width * height)
+    skipped = np.zeros((height, width), dtype=bool)
+    for (x0, y0, x1, y1), _ in skips:
+        skipped[y0:y1, x0:x1] = True
+    share = mask.sum() / (width * height - skipped.sum())
     boxes = regions(mask)
     overlay = Image.blend(mockup, code, OVERLAY)
     heat = np.asarray(overlay).copy()
@@ -91,7 +107,7 @@ def main(mockup_path: str, code_path: str, out_path: str, title: str = '') -> No
     if title:
         draw.text((0, 4), title, fill='black', font=head)
     for index, (name, part) in enumerate(parts):
-        sheet.paste(numbered(part, boxes), (index * (width + GAP), top))
+        sheet.paste(numbered(part, boxes, list(skips)), (index * (width + GAP), top))
         draw.text((index * (width + GAP), top - HEAD_ROOM + 16), name, fill='black', font=head)
     sheet.save(out_path)
     print(f'{out_path}: {share:.2%} differ, {len(boxes)} regions')
@@ -100,4 +116,11 @@ def main(mockup_path: str, code_path: str, out_path: str, title: str = '') -> No
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:5])
+    words = sys.argv[1:]
+    marks = [index for index, word in enumerate(words) if word == '--skip']
+    fields = [words[index + 1].split(',') for index in marks]
+    boxes_skipped = tuple(
+        (tuple(int(n) for n in field[:4]), field[4] if len(field) > 4 else SKIP_LABEL) for field in fields
+    )
+    plain = [word for index, word in enumerate(words) if index not in marks and index - 1 not in marks]
+    main(*plain[:4], skips=boxes_skipped)

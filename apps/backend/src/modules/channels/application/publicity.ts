@@ -32,7 +32,7 @@ export type PublicityDeps = {
   readonly now: () => number;
 };
 
-// «Safaringiz kanalda chiqdi», «N kishi koʻrdi» and «Havolani yoʻlovchilarga yuborish» (G63, docs/119):
+// «Safaringiz kanalda chiqdi», «N koʻrdi» and «Havolani yoʻlovchilarga yuborish» (G63, docs/119):
 // only for the driver of the trip. The channels are those the server posts to: both ends of the trip
 // and the team's channels. A post is there only once Telegram gave it an id (channel_posts): the posts
 // go out at the publishing, so a trip published while they were off, a channel added later or a send

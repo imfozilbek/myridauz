@@ -3,6 +3,7 @@ import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { UzPlate } from '../plate/uz-plate';
+import './offer-card.css';
 
 const PHOTO = 44;
 

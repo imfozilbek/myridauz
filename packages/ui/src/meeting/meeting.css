@@ -65,9 +65,12 @@
   color: var(--reg-secondary);
 }
 
+/* The name of the place stands a part of a pixel higher than its line (mockup g63/4 screen 13). */
 .meet-place b {
   font-size: 17.5px;
   line-height: 22.4px;
+  position: relative;
+  top: -0.8px;
   color: var(--reg-ink);
 }
 
@@ -85,11 +88,13 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
-  margin-top: 3.2px;
+  margin-top: 2.4px;
 }
+/* The note of the passenger starts a part of a pixel left of the name (mockup g63/4 screen 13). */
 .meet-who-text span {
   color: var(--tgui--hint_color);
   font-size: 13.7px;
+  margin-left: -0.8px;
 }
 
 /* A face without a photo: light from the bottom right (mockup g63/4 screen 13). */

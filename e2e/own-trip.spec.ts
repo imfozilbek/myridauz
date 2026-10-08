@@ -24,7 +24,7 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   expect(api.published).toEqual([expect.objectContaining({ from: '1726294', to: '1718401', seats: 4 })]);
   // The channel of the direction posted the trip, three people opened it (docs/119).
   await expect(page.getByText(t('driverTrip.channel.title'))).toBeVisible();
-  await expect(page.getByText('Samarqand yoʻli · 3 kishi koʻrdi')).toBeVisible();
+  await expect(page.getByText('Samarqand yoʻli · 3 koʻrdi')).toBeVisible();
   await expect(page.getByText(t('driverTrip.channel.share'))).toBeVisible();
   // A passenger asks: the personal channel brings the request to the open page (docs/64).
   await expect.poll(() => api.feed.sockets.length).toBeGreaterThan(0);

@@ -21,7 +21,7 @@
 .meet-map-open {
   position: absolute;
   right: 8.8px;
-  bottom: 8.4px;
+  bottom: 8px;
   display: flex;
   align-items: center;
   gap: 5.2px;
