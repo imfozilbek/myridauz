@@ -4,6 +4,7 @@ import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { usePlaceNames } from '../places/place-names';
 import { minutesLeft, type TripStage } from './trip-stage';
+import './own-trip-banner.css';
 
 // The clock of a published trip and the tick of the green plates (mockup g63/3).
 const CLOCK = 16;

@@ -23,10 +23,10 @@ export function createChannelsClient(options: SignedOptions) {
     remove: async (username: string): Promise<void> => {
       await request(adminChannelPath(username), { method: 'DELETE' });
     },
-    // After the publishing (G63, docs/119): «Safaringiz kanalda chiqdi», «N kishi koʻrdi», the link.
+    // After the publishing (G63, docs/119): «Safaringiz kanalda chiqdi», «N koʻrdi», the link.
     tripPublicity: async (tripId: string): Promise<TripPublicity> =>
       tripPublicitySchema.parse(await (await request(driverTripPublicityPath(tripId))).json()),
-    // A person opened the trip page: «N kishi koʻrdi» counts each person once, never the driver.
+    // A person opened the trip page: «N koʻrdi» counts each person once, never the driver.
     tripViewed: async (tripId: string): Promise<void> => {
       await request(tripViewPath(tripId), { method: 'POST' });
     },

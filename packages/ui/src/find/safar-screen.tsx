@@ -49,7 +49,7 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   useEffect(() => {
     track({ name: 'trip_open', screen: 'market.trip' });
   }, [track]);
-  // «N kishi koʻrdi» of the driver (G63, docs/119): once, quietly; a failure is never seen.
+  // «N koʻrdi» of the driver (G63, docs/119): once, quietly; a failure is never seen.
   useEffect(() => {
     quietly(() => channels.tripViewed(trip.id)).catch(() => undefined);
   }, [channels, trip.id]);

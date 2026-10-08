@@ -31,7 +31,7 @@ wireAccountDeletion(async (env, userId) => {
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);
   await forgetFollows(env, userId);
-  // The trips the person opened forget them: «N kishi koʻrdi» counts only people with an account (G63).
+  // The trips the person opened forget them: «N koʻrdi» counts only people with an account (G63).
   await forgetTripViews(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);

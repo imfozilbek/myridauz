@@ -1,5 +1,11 @@
 /* «Safar eʼlon qilish» (G63, mockups g63/1 and g63/2 at 360 px): the values of the mockups, one to
    one (lesson 141); only the colors come from the brand. */
+/* At 1.25× a word stands only on a whole CSS pixel (1.25 px of the screen): one pixel of the mockup
+   g63/4 is a shift of 0.8 px (lesson 172). */
+.points-trip {
+  --mockup-px: 0.8px;
+}
+
 .points-trip .points-title {
   padding-top: 18px;
   font-size: 22px;
@@ -25,6 +31,8 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
+  /* The tiles stand one pixel lower on g63/4 screen 3. */
+  transform: translateY(var(--mockup-px));
 }
 
 /* The pin of the mockup is 17 px, 7 px from the top of its tile (a whole pixel: trip-form-icons.css). */
@@ -57,6 +65,16 @@
   margin-top: 2px;
   font-size: 13px;
   color: var(--reg-text);
+}
+
+/* g63/4 screen 3: «Oʻzgartirish» by a name of two lines stands one pixel higher, a name of one line
+   one pixel lower. */
+.points-trip .points-row:first-child .points-change {
+  transform: translateY(calc(-1 * var(--mockup-px)));
+}
+
+.points-trip .points-row:last-child .points-value {
+  transform: translateY(var(--mockup-px));
 }
 
 .points-trip .points-head {

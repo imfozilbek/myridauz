@@ -1,9 +1,10 @@
 /* «Qayerdan olasiz?» (G63, mockup g63/2 at 360 px): the chips, the pitak of the direction and the
-   doors under the words, from the start of the words. */
+   doors under the words, from the start of the words; the whole row one pixel lower (g63/4 screen 3). */
 .points-trip .seats-row.trip-row-wide {
   flex-wrap: wrap;
   row-gap: 6px;
   padding-top: 7px;
+  transform: translateY(var(--mockup-px));
 }
 
 .points-trip .trip-row-more {

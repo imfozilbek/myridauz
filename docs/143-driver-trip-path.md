@@ -29,7 +29,7 @@
 Вариант A и главная кнопка из C. Сверху вниз:
 
 1. **Плашка этапа:** «Safar eʼlon qilindi» (янтарная); за час до выезда «Joʻnashga N daqiqa» и «N yoʻlovchi tasdiqlangan · N boʻsh joy» (зелёная); в пути «Yoʻldasiz» и примерный приезд; конец серая. После «Kelmadi» вместо неё плашка неявки.
-2. **«Safaringiz kanalda chiqdi»:** «канал · N kishi koʻrdi» и «Havolani yoʻlovchilarga yuborish». Только до выезда (`119` место 1).
+2. **«Safaringiz kanalda chiqdi»:** «канал · N koʻrdi» и «Havolani yoʻlovchilarga yuborish». Только до выезда (`119` место 1).
 3. **«Joy soʻraganlar (N)»:** по времени просьбы, первая сверху (макет g63/4 экран 6); карточка с «Tasdiqlash» и «Rad etish», комиссия и «+N km» видны в карточке, окна нет (`122`). Денег на комиссию мало: вместо «Tasdiqlash» кнопка «Hisobni toʻldirish».
 4. **«Yoʻlovchilar (N)»:** подтверждённые попутчики, чат и звонок; номера не видны (`07`).
 5. **«Safar»:** общая карточка поездки.
