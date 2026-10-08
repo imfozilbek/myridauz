@@ -145,4 +145,5 @@
 | 139 | [139-g62-pixel-perfect.md](139-g62-pixel-perfect.md) | G62: сверка Pixel Perfect заявки водителя, спорные места макета |
 | 140 | [140-g63-texts.md](140-g63-texts.md) | G63: новые тексты выезда и приезда водителя, напоминания бота и проверки пятака на согласие владельца |
 | 141 | [141-g63-pixel-perfect.md](141-g63-pixel-perfect.md) | G63: сверка Pixel Perfect экранов водителя, слияние C1, C2, C3, ревью связки поездки |
+| 143 | [143-driver-trip-path.md](143-driver-trip-path.md) | Путь 6 водителя (G63): публикация на одном экране, «Mening safarim», встреча, «Safar tugadi», «Qaytish», прошлая поездка |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

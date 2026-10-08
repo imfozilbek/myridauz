@@ -208,4 +208,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/139-g62-pixel-perfect.md` | G62: сверка Pixel Perfect заявки водителя, спорные места макета |
 | `docs/140-g63-texts.md` | G63: новые тексты публикации, «Mening safarim», встречи и «после поездки» водителя на согласие владельца |
 | `docs/141-g63-pixel-perfect.md` | G63: сверка Pixel Perfect публикации, «Mening safarim», встречи и «после поездки», спорные места макета |
+| `docs/143-driver-trip-path.md` | Путь 6 водителя (G63): публикация на одном экране, «Mening safarim», встреча, «Safar tugadi», «Qaytish», прошлая поездка |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |
