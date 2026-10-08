@@ -9,7 +9,8 @@ import { ActionFailure } from '../states/action-failure';
 import { ChangeChoice } from './change-choice';
 import type { Opened } from './own-trip-opened';
 import { OwnTripPage } from './own-trip-page';
-import type { TripStep } from './trip-stage';
+import { tripStage, type TripStep } from './trip-stage';
+import { useNow } from './use-now';
 import { useOwnTripActions } from './use-own-trip-actions';
 
 type Props = {
@@ -30,7 +31,9 @@ type Props = {
 export function OwnTripFlow({ trip, bookings, onBack, onBooking, onChanged, onClosed, onStep }: Props) {
   const { t } = useI18n();
   const [opened, setOpened] = useState<Opened | null>(null);
-  const actions = useOwnTripActions({ trip, bookings, open: setOpened, onChanged, onClosed });
+  const now = useNow();
+  const stage = tripStage(trip, now);
+  const actions = useOwnTripActions({ trip, stage, bookings, open: setOpened, onChanged, onClosed });
   const back = () => setOpened(null);
   if (opened?.screen === 'chat' || opened?.screen === 'call')
     return (
@@ -66,6 +69,8 @@ export function OwnTripFlow({ trip, bookings, onBack, onBooking, onChanged, onCl
   return (
     <OwnTripPage
       trip={trip}
+      stage={stage}
+      now={now}
       bookings={bookings}
       balance={actions.balance}
       onBack={onBack}

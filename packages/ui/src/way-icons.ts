@@ -7,7 +7,7 @@ import {
   LocateFixed,
   MapPin,
   Navigation,
-  PencilLine,
+  PenLine,
   Signpost,
   Waypoints,
   type LucideIcon,
@@ -30,5 +30,5 @@ export const WAY_ICONS = {
   anyWay: Waypoints,
   day: CalendarDays,
   // «Vaqt yoki narx» of the own trip (mockup g63/3): the time and the price change there.
-  edit: PencilLine,
+  edit: PenLine,
 } satisfies Record<string, LucideIcon>;

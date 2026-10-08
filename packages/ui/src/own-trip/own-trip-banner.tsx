@@ -4,6 +4,10 @@ import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
 import { minutesLeft, type TripStage } from './trip-stage';
 
+// The clock of a published trip and the tick of the green plates (mockup g63/3).
+const CLOCK = 16;
+const TICK = 20;
+
 type Props = {
   readonly trip: Trip;
   readonly stage: TripStage;
@@ -17,6 +21,7 @@ type Props = {
 export function OwnTripBanner({ trip, stage, riders, now }: Props) {
   const { t, formatTime } = useI18n();
   const directory = usePlaces();
+  const place = directory.find(trip.to)?.name ?? trip.to;
   const [title, line] =
     stage === 'published'
       ? [t('market.published.title'), t('driverTrip.published.sub')]
@@ -28,15 +33,17 @@ export function OwnTripBanner({ trip, stage, riders, now }: Props) {
         : stage === 'on_way'
           ? [
               t('driverTrip.onWay.title'),
+              // The text picks the ending of the place by its last letter: «Oltiariqqa», «Samarqandga».
               t('driverTrip.onWay.sub', {
-                place: directory.find(trip.to)?.name ?? trip.to,
+                place,
+                last: place.slice(-1),
                 time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
               }),
             ]
           : [t(trip.status === 'cancelled' ? 'market.trip.cancelled' : 'bookings.done.title'), null];
   return (
     <div className="own-banner" data-stage={stage}>
-      <Icon name={stage === 'published' ? 'waiting' : 'selected'} size={16} />
+      {stage === 'published' ? <Icon name="waiting" size={CLOCK} /> : <Icon name="selected" size={TICK} />}
       <span className="own-banner-text">
         <b>{title}</b>
         {line ? <span>{line}</span> : null}

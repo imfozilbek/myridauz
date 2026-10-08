@@ -2,7 +2,8 @@ import type { Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { useOneAtATime } from '../telegram/one-at-a-time';
-import { useRiderLine, useRiderStars } from './rider-line';
+import { RiderLine, useRiderStars } from './rider-line';
+import './seat-request-card.css';
 
 const FACE = 42;
 const LETTER = 16;
@@ -21,7 +22,6 @@ type Props = {
 // how many; the commission is in the card, the answer is one tap, no window in between (docs/122).
 export function SeatRequestCard({ booking, short, onAnswer, onTopUp, onOpen }: Props) {
   const { t } = useI18n();
-  const line = useRiderLine(booking, true);
   const stars = useRiderStars(booking);
   const confirm = useOneAtATime(() => (short ? onTopUp() : onAnswer('confirm')));
   const decline = useOneAtATime(() => onAnswer('decline'));
@@ -43,7 +43,7 @@ export function SeatRequestCard({ booking, short, onAnswer, onTopUp, onOpen }: P
             <b>{passenger.firstName}</b>
             {stars ? <span className="seat-card-stars">{stars}</span> : null}
           </span>
-          <span className="seat-card-line">{line}</span>
+          <RiderLine booking={booking} withCommission className="seat-card-line" />
         </span>
         <b className="seat-card-count">{t('market.request.seats', { count: String(booking.seats) })}</b>
       </button>

@@ -10,7 +10,7 @@ const TILES: readonly (readonly [OwnTripTile, IconName, TranslationKey])[] = [
   ['change', 'edit', 'driverTrip.tile.change'],
   ['map', 'navigate', 'driverTrip.tile.map'],
 ];
-const TILE_ICON = 16;
+const TILE_ICON = 18;
 
 // Four tiles under the trip (mockup g63/3): the close people, the story, the time or the price and
 // the map of the way. They never hide (docs/121): a tile that cannot work now says why on its tap.

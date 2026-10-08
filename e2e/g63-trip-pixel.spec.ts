@@ -28,16 +28,27 @@ test.describe('360 × 760, the phones of the mockup', () => {
 });
 
 for (const width of WIDTHS)
-  for (const [name, now, full] of [PHONES[0], PHONES[1]])
+  for (const [name, now, full] of PHONES)
     test(`${width}px: «Mening safarim» ${name} fits (docs/121)`, async ({ page }) => {
       await page.setViewportSize({ width, height: HEIGHT });
       await openTripAt(page, now, full);
       await nothingCut(page);
+      // One kind is one size: the buttons of the requests, the passengers with their tools.
       await oneSize(page, full ? '.rider-tool' : '.seat-card-buttons button');
+      if (full) await oneSize(page, '.rider-row');
       // The tiles stand in one row of one height; the first is wider while its word needs it (mockup).
       const heights = await page
         .locator('.own-tile')
         .evaluateAll((tiles) => tiles.map((tile) => tile.clientHeight));
       expect(new Set(heights).size).toBe(1);
+      // A line under a name breaks only after «·»: no part of it is broken in two.
+      const broken = await page
+        .locator('.line-part')
+        .evaluateAll(
+          (parts) =>
+            parts.filter((part) => part.clientHeight > parseFloat(getComputedStyle(part).lineHeight) + 1)
+              .length,
+        );
+      expect(broken).toBe(0);
       await page.screenshot({ path: `screenshots/look/g63-trip-${name}-${width}.png`, fullPage: true });
     });

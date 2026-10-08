@@ -2,9 +2,9 @@ import type { Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
-import { useRiderLine } from './rider-line';
+import { RiderLine } from './rider-line';
 
-const FACE = 34;
+const FACE = 36;
 const LETTER = 14;
 const TOOL_ICON = 16;
 
@@ -21,7 +21,6 @@ type Props = {
 // them, then the chat and the call; numbers are never shown (docs/07).
 export function RiderRow({ booking, onChat, onCall, onOpen }: Props) {
   const { t } = useI18n();
-  const line = useRiderLine(booking, false);
   const { passenger } = booking;
   return (
     <div className="rider-row">
@@ -39,7 +38,7 @@ export function RiderRow({ booking, onChat, onCall, onOpen }: Props) {
             <b>{passenger.firstName}</b>
             {` · ${t('market.request.seats', { count: String(booking.seats) })}`}
           </span>
-          <span className="rider-line">{line}</span>
+          <RiderLine booking={booking} withCommission={false} className="rider-line" />
         </span>
       </button>
       <button type="button" className="rider-tool" aria-label={t('chat.open')} onClick={onChat}>

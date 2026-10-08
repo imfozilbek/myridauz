@@ -5,26 +5,19 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { usePlaceLabel } from '../market/places-gate';
 import { haptic } from '../telegram/feedback';
-import { canShareStory, openStory } from '../telegram/story';
+import { openStory } from '../telegram/story';
 import { drawStory } from './story-picture';
 
-// Why a story cannot go now: the Telegram of the driver has no stories, or the trip takes nobody.
-type StoryBlock = 'noApp' | 'closed';
-
 // «Hikoyaga» (docs/88 L19): an open trip goes to the driver's Telegram story, friends book a seat
-// from it. Only the route, the time, the seats and the price: never a name, car or phone.
+// from it. Only the route, the time, the seats and the price: never a name, car or phone. When it
+// cannot go, the tile says why (tileBlock of «Mening safarim»).
 export function useTripStory(trip: Trip) {
   const { t, formatDate, formatTime, formatMoney } = useI18n();
   const { track } = useAnalytics();
   const { chat } = useApiClients();
   const brand = useBrand();
   const place = usePlaceLabel();
-  const block: StoryBlock | null = !canShareStory()
-    ? 'noApp'
-    : trip.status !== 'active' || trip.departAt <= Date.now()
-      ? 'closed'
-      : null;
-  const post = async () => {
+  return async () => {
     const from = place(trip.from);
     const to = place(trip.to);
     const day = new Date(trip.departAt);
@@ -51,5 +44,4 @@ export function useTripStory(trip: Trip) {
     track({ name: 'driver_trip_story', screen: 'market.own_trip' });
     haptic.success();
   };
-  return { block, post };
 }

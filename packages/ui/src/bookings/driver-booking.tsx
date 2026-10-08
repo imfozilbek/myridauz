@@ -1,13 +1,9 @@
 import type { Booking, DriverBookingAction } from '@platform/contracts';
-import type { TranslationKey } from '@platform/i18n';
-import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
-import { useAnalytics } from '../context/analytics-context';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { confirm, haptic } from '../telegram/feedback';
-import { errorKey } from '../market/error-text';
+import { confirm } from '../telegram/feedback';
 import { ActionFailure } from '../states/action-failure';
+import { useFailure } from '../states/use-failure';
 import { ComplainCell, canComplain } from '../feedback/complain-cell';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ChatScreen } from '../chat/chat-screen';
@@ -15,11 +11,11 @@ import { Cell, Section } from '../components';
 import { IconTile } from '../icon-tile';
 import { AnswerDeadline } from './answer-deadline';
 import { BookingScreen, type BookingAction } from './booking-screen';
+import { useAnswerBooking } from './use-answer-booking';
 import { short, useBalance } from './use-balance';
 import { NotEnoughScreen, TopUpScreen } from './wallet-steps';
 
 type Step = 'view' | 'not_enough' | 'top_up' | 'chat' | 'complain';
-const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
 type Props = {
   readonly booking: Booking;
   readonly onClose: (changed: boolean) => void;
@@ -31,24 +27,18 @@ type Props = {
 // commission goes back.
 export function DriverBooking({ booking, onClose }: Props) {
   const { t } = useI18n();
-  const { track } = useAnalytics();
-  const { bookings } = useApiClients();
   const [step, setStep] = useState<Step>('view');
-  const { balance } = useBalance();
-  const [failure, setFailure] = useState<TranslationKey | null>(null);
+  const { balance } = useBalance(booking.status === 'requested');
+  const { failure, fail, clear } = useFailure();
+  const answerBooking = useAnswerBooking({
+    onDone: () => onClose(true),
+    onShort: () => setStep('not_enough'),
+    fail,
+  });
   // A failed answer keeps the booking open with the reason (docs/65 B3).
-  const answer = async (action: DriverBookingAction) => {
-    try {
-      setFailure(null);
-      await bookings.answer(booking.id, action);
-      track({ name: 'booking_step', screen: 'bookings.driver', step: STEP_OF[action] });
-      haptic.success();
-      onClose(true);
-    } catch (caught) {
-      haptic.error();
-      if (caught instanceof ApiError && caught.code === 'wallet.not_enough') setStep('not_enough');
-      else setFailure(errorKey(caught));
-    }
+  const answer = (action: DriverBookingAction) => {
+    clear();
+    return answerBooking(booking, action);
   };
   if (step === 'chat')
     return (

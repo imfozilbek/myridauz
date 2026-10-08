@@ -73,6 +73,13 @@ describe('«Hikoyaga» (docs/88 L19)', () => {
     expect(tracked.map((event) => event.name)).toContain('driver_trip_story');
   });
 
+  it('a trip on the road goes to no story, and says why', async () => {
+    await open({ ...trip, departAt: Date.now() - 60 * 1000 });
+    await tap('Hikoyaga');
+    expect(await screen.findByText('Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi.')).toBeTruthy();
+    expect(story.openStory).not.toHaveBeenCalled();
+  });
+
   it('stays and says why: a full trip, an old Telegram, a failed upload', async () => {
     await open({ ...trip, status: 'full' });
     await tap('Hikoyaga');
@@ -104,6 +111,13 @@ describe('«Vaqt yoki narx» and «Yoʻl xaritasi» (mockup g63/3)', () => {
     expect(await screen.findByText('Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.')).toBeTruthy();
   });
 
+  it('a trip that left early keeps its time and price too (G63 B1)', async () => {
+    const left = { ...trip, departedAt: Date.now() - 60 * 1000 };
+    await open(left);
+    await tap('Vaqt yoki narx');
+    expect(await screen.findByText('Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.')).toBeTruthy();
+  });
+
   it('the map waits for a confirmed passenger, then opens', async () => {
     await open(trip);
     await tap('Yoʻl xaritasi');
@@ -112,5 +126,25 @@ describe('«Vaqt yoki narx» and «Yoʻl xaritasi» (mockup g63/3)', () => {
     await open(trip, {}, [confirmed]);
     await tap('Yoʻl xaritasi');
     expect(await screen.findByText('Olib ketish')).toBeTruthy();
+  });
+});
+
+describe('an over trip keeps its four tiles, each says how the trip ended (docs/121)', () => {
+  const note = () => document.querySelector('.own-note')?.textContent;
+
+  it('a cancelled trip', async () => {
+    await open({ ...trip, status: 'cancelled' }, {}, [confirmed]);
+    for (const tile of ['Yaqinlarimga', 'Hikoyaga', 'Vaqt yoki narx', 'Yoʻl xaritasi']) {
+      await tap(tile);
+      expect(note()).toBe('Safar bekor qilindi');
+    }
+  });
+
+  it('a completed trip, with its passengers already completed too', async () => {
+    await open({ ...trip, status: 'completed' }, {}, [{ ...confirmed, status: 'completed' }]);
+    await tap('Yoʻl xaritasi');
+    expect(note()).toBe('Safar tugadi');
+    await tap('Vaqt yoki narx');
+    expect(note()).toBe('Safar tugadi');
   });
 });

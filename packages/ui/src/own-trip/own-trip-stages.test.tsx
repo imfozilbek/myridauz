@@ -1,4 +1,5 @@
 import type { Booking, Trip } from '@platform/contracts';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking, confirmed } from '../bookings/booking-test-kit';
@@ -41,7 +42,10 @@ describe('«Mening safarim» after the publishing (mockup g63/3, phone 1)', () =
     expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
     expect(screen.getByText('★ 4,8')).toBeTruthy();
     // The commission is in the card before any tap: no window in between (owner decision 06.10.2026).
-    expect(screen.getByText(/^Qatortol · \+2\skm · komissiya 19\s000$/u)).toBeTruthy();
+    // Each part stays whole, so a narrow phone breaks the line only after «·» (docs/121).
+    const parts = [...document.querySelectorAll('.seat-card-line .line-part')].map((part) => part.textContent);
+    expect(parts.join(' ')).toMatch(/^Qatortol · \+2\skm · komissiya 19\s000$/u);
+    expect(parts).toHaveLength(3);
     expect(screen.getByText('2 kishi')).toBeTruthy();
     expect(screen.getByText('Rad etish')).toBeTruthy();
     expect(screen.getByText('Tasdiqlash')).toBeTruthy();
@@ -84,12 +88,24 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'departed');
   });
 
-  it('on the way says when the trip arrives, asks «Yetib keldik» and offers no cancel', async () => {
+  it('from the time of the trip is on the way as on the server: no cancel, «Yoʻlga chiqdim» stays', async () => {
     vi.setSystemTime(trip.departAt + 10 * MINUTE);
     const onTripStep = await open({ ...trip, seatsLeft: 1 }, [rider]);
     expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
     expect(screen.getByText(/^Fargʻona shahriga ≈\s13:20\sda$/u)).toBeTruthy();
+    expect(screen.queryByText(/daqiqa/u)).toBeNull();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+    await tap('Yoʻlga chiqdim');
+    expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'departed');
+  });
+
+  it('after an early «Yoʻlga chiqdim» is on the way and asks «Yetib keldik» (G63 B1)', async () => {
+    vi.setSystemTime(trip.departAt - 15 * MINUTE);
+    const left = { ...trip, seatsLeft: 1, departedAt: trip.departAt - 20 * MINUTE };
+    const onTripStep = await open(left, [rider]);
+    expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
+    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+    expect(document.querySelector('.own-trip')?.hasAttribute('data-button')).toBe(true);
     await tap('Yetib keldik');
     expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'arrived');
   });
@@ -106,6 +122,7 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     await openCard();
     expect(await screen.findByText('Joʻnashga 30 daqiqa')).toBeTruthy();
     expect(screen.queryByText('Yoʻlga chiqdim')).toBeNull();
+    expect(document.querySelector('.own-trip')?.hasAttribute('data-button')).toBe(false);
   });
 
   it('a cancelled trip says so in grey, without a cancel or a main button', async () => {
@@ -114,5 +131,16 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     expect(document.querySelector('.own-banner')?.getAttribute('data-stage')).toBe('over');
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
     expect(screen.queryByText('Yoʻlga chiqdim')).toBeNull();
+  });
+});
+
+describe('the end of the place before «≈ 13:00 da» (docs/25)', () => {
+  it('follows its last letter: qa after q, ka after k, ga after the rest', () => {
+    const { t } = createI18n(DEFAULT_LOCALE);
+    const say = (place: string) => t('driverTrip.onWay.sub', { place, last: place.slice(-1), time: '13:00' });
+    expect(say('Oltiariq')).toBe('Oltiariqqa ≈\u00a013:00\u00a0da');
+    expect(say('Muborak')).toBe('Muborakka ≈\u00a013:00\u00a0da');
+    expect(say('Samarqand shahri')).toBe('Samarqand shahriga ≈\u00a013:00\u00a0da');
+    expect(say('Yakkabogʻ')).toBe('Yakkabogʻga ≈\u00a013:00\u00a0da');
   });
 });

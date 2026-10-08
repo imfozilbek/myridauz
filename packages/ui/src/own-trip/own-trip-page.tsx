@@ -14,14 +14,16 @@ import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
 import { RiderRow } from './rider-row';
 import { SeatRequestCard } from './seat-request-card';
 import { TripMainButton } from './trip-main-button';
-import { tripStage, type TripStep } from './trip-stage';
+import { tripStep, type TripStage, type TripStep } from './trip-stage';
 import type { RiderScreen } from './own-trip-opened';
-import { useNow } from './use-now';
 import './own-trip.css';
 import './own-trip-people.css';
 
 type Props = {
   readonly trip: Trip;
+  readonly stage: TripStage;
+  // The time the page shows: it moves on by itself (useNow).
+  readonly now: number;
   // The bookings of this trip.
   readonly bookings: readonly Booking[];
   // The wallet of the driver; null until it comes (docs/65 C).
@@ -43,18 +45,18 @@ const riding = (booking: Booking) => booking.status === 'confirmed' || booking.s
 // main button of C): the plate of the stage, the requests answered in their cards, the passengers
 // with the chat and the call, the trip, four tiles; the cancel only before the departure.
 export function OwnTripPage(props: Props) {
-  const { trip, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep, children } = props;
+  const { trip, stage, now, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep, children } =
+    props;
   useScreenView('market.own_trip');
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
-  const now = useNow();
-  const stage = tripStage(trip, now);
+  const step = onStep ? tripStep(trip, now) : null;
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const riders = bookings.filter(riding);
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return (
-    <div className="own-trip" style={brandVars(colors)}>
+    <div className="own-trip" style={brandVars(colors)} data-button={step ? '' : undefined}>
       <Screen onBack={onBack} />
       <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
       {requested.length > 0 ? (
@@ -100,7 +102,7 @@ export function OwnTripPage(props: Props) {
           </button>
         ) : null}
       </div>
-      {onStep ? <TripMainButton stage={stage} onPress={onStep} /> : null}
+      {step && onStep ? <TripMainButton step={step} onPress={onStep} /> : null}
     </div>
   );
 }

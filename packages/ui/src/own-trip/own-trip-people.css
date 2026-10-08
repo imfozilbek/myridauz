@@ -1,11 +1,5 @@
-/* The requests and the passengers of «Mening safarim» (G63, mockup g63/3) at 360 px. */
-.seat-card {
-  margin-bottom: 8px;
-  padding: 10.67px 13.33px 11.33px;
-  border-radius: 13.5px;
-  background: var(--reg-card);
-}
-
+/* The requests and the passengers of «Mening safarim» (G63, mockup g63/3) at 360 px. On a narrow
+   phone the words and the gaps get smaller, so a line is never broken in two (docs/121). */
 .seat-card-head,
 .rider-open {
   display: flex;
@@ -22,10 +16,6 @@
   cursor: pointer;
 }
 
-.seat-card-head {
-  width: 100%;
-}
-
 .seat-card-who,
 .rider-who {
   display: flex;
@@ -34,62 +24,19 @@
   min-width: 0;
 }
 
-.seat-card-who {
-  margin-top: 3.5px;
-}
-
-.seat-card-name {
-  font-size: 15px;
-  line-height: 18px;
-}
-
-.seat-card-stars {
-  margin-left: 6px;
-  font-size: 13px;
-  color: var(--reg-brand);
-}
-
 .seat-card-line,
 .rider-line {
-  font-size: 12px;
+  font-size: clamp(10.5px, 3.334vw, 12px);
   line-height: 15px;
   color: var(--reg-muted);
+}
+
+/* A part of the line stays whole, so the line breaks only after «·»; only a part wider than the
+   line itself breaks inside. */
+.line-part {
+  display: inline-block;
+  max-width: 100%;
   overflow-wrap: anywhere;
-}
-
-.seat-card-count {
-  flex: none;
-  margin-top: 2.67px;
-  font-size: 15px;
-  line-height: 18px;
-}
-
-.seat-card-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 9.33px;
-}
-
-.seat-card-buttons button {
-  min-height: 31.33px;
-  padding: 4px;
-  border: 0;
-  border-radius: 9px;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.seat-card-decline {
-  background: var(--reg-bg);
-  color: var(--reg-muted);
-}
-
-.seat-card-confirm {
-  background: var(--reg-strong);
-  color: var(--reg-card);
 }
 
 .own-riders {
@@ -100,7 +47,7 @@
 .rider-row {
   display: flex;
   align-items: center;
-  gap: 11.33px;
+  gap: clamp(8px, 3.148vw, 11.33px);
   min-height: 54px;
   padding: 0 13.33px;
 }
@@ -110,21 +57,21 @@
 }
 
 .rider-open {
-  gap: 12px;
+  gap: clamp(8px, 3.056vw, 11px);
 }
 
 .rider-name {
-  font-size: 14.5px;
+  font-size: 14px;
   line-height: 16px;
 }
 
 .rider-line {
-  font-size: 11.5px;
+  font-size: clamp(10px, 3.2vw, 11.5px);
 }
 
 /* A face without a photo is light grey here (mockup g63/3). */
 .own-trip .person-badge-plain {
-  background: var(--reg-face-soft);
+  background: var(--reg-face-pale);
 }
 
 .rider-tool {

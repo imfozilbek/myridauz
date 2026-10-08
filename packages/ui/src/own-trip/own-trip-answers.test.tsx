@@ -1,8 +1,10 @@
 import { ApiError, type BookingsClient, type ChatClient } from '@platform/api-client';
 import type { Booking } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { booking, confirmed, wallet } from '../bookings/booking-test-kit';
+import { FakePeer, fakeStream } from '../call/fake-voice';
+import { FakeSocket } from '../chat/fake-socket';
 import { openOwnTrip, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
@@ -84,14 +86,48 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
 });
 
 describe('a confirmed passenger has the chat and the call (mockup g63/3)', () => {
-  it('opens the chat of the booking by each button', async () => {
-    const socketUrl = vi.fn<ChatClient['socketUrl']>(async () => Promise.reject(new Error('offline')));
-    await open(() => [confirmed], { socketUrl });
-    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
-    await vi.waitFor(() => expect(socketUrl).toHaveBeenCalledWith(confirmed.chatKey));
-    cleanup();
+  const answered = async () => {
+    await vi.waitFor(() => expect(FakeSocket.last).not.toBeNull());
+    const socket = FakeSocket.last as FakeSocket;
+    act(() => {
+      socket.open();
+      socket.receive({ type: 'history', messages: [], canCall: true });
+    });
+    return () => socket.sent.map((data) => JSON.parse(data) as Record<string, unknown>);
+  };
+  const RING = { type: 'call', action: 'ring' };
+
+  beforeEach(() => {
+    FakeSocket.last = null;
+    vi.stubGlobal('WebSocket', FakeSocket);
+    vi.stubGlobal('RTCPeerConnection', FakePeer);
+    vi.stubGlobal('navigator', { ...navigator, mediaDevices: { getUserMedia: async () => fakeStream() } });
+  });
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('the call button rings the passenger as the chat header does', async () => {
+    const socketUrl = vi.fn<ChatClient['socketUrl']>(async () => 'wss://api.test/socket');
     await open(() => [confirmed], { socketUrl });
     fireEvent.click(await screen.findByRole('button', { name: 'Qoʻngʻiroq' }));
-    await vi.waitFor(() => expect(socketUrl).toHaveBeenCalledTimes(2));
+    const sent = await answered();
+    expect(socketUrl).toHaveBeenCalledWith(confirmed.chatKey);
+    await vi.waitFor(() => expect(sent()).toContainEqual(RING));
+  });
+
+  it('the chat button opens the chat and never rings by itself', async () => {
+    await open(() => [confirmed], { socketUrl: async () => 'wss://api.test/socket' });
+    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
+    const sent = await answered();
+    await act(async () => undefined);
+    expect(sent()).not.toContainEqual(RING);
+  });
+
+  it('asks no wallet while no request waits for an answer (docs/117)', async () => {
+    const mine = vi.fn(async () => wallet);
+    await open(() => [confirmed], { mine });
+    expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
+    await tap('Dilnoza');
+    expect(await screen.findByText('Joyni bekor qilish')).toBeTruthy();
+    expect(mine).not.toHaveBeenCalled();
   });
 });
