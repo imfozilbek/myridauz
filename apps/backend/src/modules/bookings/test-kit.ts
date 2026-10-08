@@ -1,5 +1,6 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
 import type { Car, Trip } from '@platform/contracts';
+import { maskContacts } from '../chat';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
@@ -25,7 +26,6 @@ import { fakeMeeting } from './test-meeting';
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, SCHEDULE, seats } from './test-fakes';
-
 export function setup() {
   let now = NOW;
   let approved = true;
@@ -114,6 +114,7 @@ export function setup() {
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
     meeting: fakeMeeting(notes),
+    mask: (text) => maskContacts(text).text,
     now: () => now,
     newId,
   };

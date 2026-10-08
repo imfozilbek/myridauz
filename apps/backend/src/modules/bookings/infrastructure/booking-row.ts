@@ -3,7 +3,7 @@ import { z } from 'zod';
 import type { BookingRecord, Named } from '../domain/booking';
 import { MARK_COLUMNS, markValues, marksOf, type MarkRow } from './mark-row';
 
-// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047) and back.
+// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047, 0050) and back.
 export type BookingRow = MarkRow & {
   id: string;
   trip_id: string;
@@ -23,6 +23,7 @@ export type BookingRow = MarkRow & {
   dropoff_lat: number | null;
   dropoff_lng: number | null;
   dropoff_name: string | null;
+  note: string | null;
   offer_id: string | null;
   confirmed_at: number | null;
   boarded_at: number | null;
@@ -65,6 +66,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   pickupNamed: namedOf(row.pickup_name),
   dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
   dropoffNamed: namedOf(row.dropoff_name),
+  note: row.note,
   offerId: row.offer_id,
   confirmedAt: row.confirmed_at,
   boardedAt: row.boarded_at,
@@ -77,7 +79,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
 
 const json = (named: Named | null) => (named ? JSON.stringify(named) : null);
 
-// The points and their names: written together, erased together.
+// The points, their names and the note: written together, erased together (docs/69).
 export const pointValues = (b: BookingRecord) =>
   [
     b.pickup?.lat ?? null,
@@ -86,6 +88,7 @@ export const pointValues = (b: BookingRecord) =>
     b.dropoff?.lat ?? null,
     b.dropoff?.lng ?? null,
     json(b.dropoffNamed),
+    b.note,
   ] as const;
 export const POINT_COLUMNS = [
   'pickup_lat',
@@ -94,6 +97,7 @@ export const POINT_COLUMNS = [
   'dropoff_lat',
   'dropoff_lng',
   'dropoff_name',
+  'note',
 ] as const;
 
 export const rowValues = (b: BookingRecord) =>

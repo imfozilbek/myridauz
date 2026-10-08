@@ -27,6 +27,7 @@ function record(kit: ReturnType<typeof setup>, status: BookingRecord['status']):
     pickupNamed: NAMED,
     dropoff: { lat: 39.6547, lng: 66.9758 },
     dropoffNamed: NAMED,
+    note: null,
     offerId: null,
     confirmedAt: NOW,
     boardedAt: null,

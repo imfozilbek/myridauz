@@ -62,6 +62,8 @@ async function offerPoints(deps: BookingsDeps, request: RequestFacts, pitakId: s
     pickupNamed: await describe(pickup),
     dropoff: request.dropoff,
     dropoffNamed: await describe(request.dropoff),
+    // A request has no note: the passenger writes it on a booking only.
+    note: null,
   };
 }
 

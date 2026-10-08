@@ -23,4 +23,15 @@ describe('«Uchrashuv» opened from a point of «Safar xaritasi» (mockup g63/4 
     expect(screen.queryByText(/^1-nuqta/u)).toBeNull();
     expect(screen.queryByText(/^Madina/u)).toBeNull();
   });
+
+  it('shows the note of the passenger under the name (screen 13)', async () => {
+    const noted = { ...madina, note: 'Qizil kurtka, sumka bilan' };
+    renderMarket(
+      <PlacesGate>
+        <DriverMeeting bookings={[noted]} only={[noted.id]} {...away} />
+      </PlacesGate>,
+      testClients({}),
+    );
+    expect(await screen.findByText('Qizil kurtka, sumka bilan')).toBeTruthy();
+  });
 });

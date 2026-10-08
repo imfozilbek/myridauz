@@ -3,14 +3,16 @@ import { asRecord, useFlowDraft } from '../flow/flow-draft';
 import type { RememberedWay } from '../way/remembered-way';
 import type { WayEnd } from '../way/way-end';
 
-// The screens of a booking (G59, docs/118 path 2, B): «Qayerdan, qayerga?» and its two maps.
-const SCREENS = ['points', 'pickup', 'dropoff'] as const;
+// The screens of a booking (G59, docs/118 path 2, B): «Qayerdan, qayerga?», its two maps and the
+// note for the driver (G63).
+const SCREENS = ['points', 'pickup', 'dropoff', 'note'] as const;
 type BookScreen = (typeof SCREENS)[number];
 type Saved = {
   readonly screen: BookScreen;
   readonly mode: BookingMode | null;
   readonly pickup: WayEnd | null;
   readonly dropoff: WayEnd | null;
+  readonly note: string;
 };
 
 const isPoint = (end: unknown) =>
@@ -27,12 +29,20 @@ export function useBooking(trip: Trip, last: RememberedWay | null) {
     const saved = asRecord(value);
     if (!saved || !SCREENS.some((screen) => screen === saved['screen'])) return null;
     const fits = allows(saved['mode']) && isPoint(saved['pickup']) && isPoint(saved['dropoff']);
-    return fits ? (saved as Saved) : null;
+    // A draft from before the note has none.
+    const note = typeof saved['note'] === 'string' ? saved['note'] : '';
+    return fits ? { ...(saved as Saved), note } : null;
   };
   const kept = last && last.mode !== 'both' && allows(last.mode) ? last : null;
   const start: Saved = kept
-    ? { screen: 'points', mode: kept.mode as BookingMode, pickup: kept.pickup, dropoff: kept.dropoff }
-    : { screen: 'points', mode: pitakFirst(trip) ? 'pitak' : null, pickup: null, dropoff: null };
+    ? {
+        screen: 'points',
+        mode: kept.mode as BookingMode,
+        pickup: kept.pickup,
+        dropoff: kept.dropoff,
+        note: '',
+      }
+    : { screen: 'points', mode: pitakFirst(trip) ? 'pitak' : null, pickup: null, dropoff: null, note: '' };
   const { value, setValue, restored, clear } = useFlowDraft(`booking:${trip.id}`, check, start);
   const patch = (change: Partial<Saved>) => setValue((saved) => ({ ...saved, ...change }));
   // Both ends chosen: the request can go (mockup 3-pickup: «Soʻrov yuborish» only with both).

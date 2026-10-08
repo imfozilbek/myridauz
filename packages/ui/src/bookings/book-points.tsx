@@ -5,6 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { errorKey } from '../market/error-text';
+import { TripRow } from '../market/trip-row';
 import { haptic } from '../telegram/feedback';
 import { rememberWay } from '../way/remembered-way';
 import { useNameText } from '../way/way-end';
@@ -30,7 +31,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
   const { bookings } = useApiClients();
   const nameText = useNameText();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
-  const { mode, pickup, dropoff, ready, patch } = flow;
+  const { mode, pickup, dropoff, note, ready, patch } = flow;
   const start =
     mode === 'pitak' ? (trip.pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
   const end = dropoff ? nameText(dropoff.name, dropoff.place) : null;
@@ -39,7 +40,8 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
     if (!ready || !mode || !dropoff?.point) return haptic.error();
     try {
       const at = mode === 'door' ? (pickup?.point ?? null) : null;
-      const booking = await bookings.book(trip.id, { ...choice, mode, pickup: at, dropoff: dropoff.point });
+      const input = { ...choice, mode, pickup: at, dropoff: dropoff.point, note };
+      const booking = await bookings.book(trip.id, input);
       track({ name: 'booking_step', screen: 'bookings.points', step: 'requested' });
       rememberWay(trip.from, trip.to, { mode, pickup: mode === 'door' ? pickup : null, dropoff });
       haptic.success();
@@ -68,6 +70,14 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       onSend={send}
       onBack={onBack}
     >
+      {/* How the driver knows the passenger at the meeting (owner decision 08.10.2026). */}
+      <TripRow
+        icon="chat"
+        label={t(note ? 'market.comment.title' : 'bookings.points.note')}
+        {...(note ? { hint: note } : {})}
+        muted={!note}
+        onOpen={() => patch({ screen: 'note' })}
+      />
       <div className="points-card points-sum">
         <span>
           {t('bookings.points.line', { seats: String(choice.seats), price: formatNumber(trip.price) })}

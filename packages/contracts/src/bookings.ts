@@ -39,6 +39,10 @@ export const BOOKING_ANSWER_HOURS = 24;
 // The seats go up to the free seats of the trip (owner decision 06.10.2026, docs/128 §2). The whole
 // car takes every seat of the trip (docs/09). «Men bilan ayol bor»: a man with 2 seats and more says
 // a woman rides with him, and the trip shows «Mashinada ayol bor» once confirmed (docs/06, rule 4).
+// The note of the passenger for the driver at the meeting («Qizil kurtka, sumka bilan», mockup
+// g63/4 screen 13): short, without contacts (docs/07), gone with the points (docs/69).
+export const BOOKING_NOTE_MAX = 60;
+
 export const bookingInputSchema = z.object({
   seats: z.number().int().min(1).max(MAX_SEATS),
   mode: bookingModeSchema,
@@ -46,6 +50,7 @@ export const bookingInputSchema = z.object({
   dropoff: pointInputSchema,
   wholeCar: z.boolean().default(false),
   withWoman: z.boolean().default(false),
+  note: z.string().trim().max(BOOKING_NOTE_MAX).default(''),
 });
 export type BookingInput = z.input<typeof bookingInputSchema>;
 
@@ -82,6 +87,8 @@ export const bookingSchema = z.object({
   pitak: pitakSchema.nullable(),
   pickup: bookedPlaceSchema.nullable(),
   dropoff: bookedPlaceSchema.nullable(),
+  // The note of the passenger, seen with the exact points (BOOKING_NOTE_MAX).
+  note: z.string().nullable().default(null),
   // For the driver, on a request: the km this passenger adds to the confirmed ones (docs/70).
   extraKm: z.number().int().nullable(),
   plate: z.string().nullable(),

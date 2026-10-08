@@ -35,6 +35,7 @@ const record = (over: Partial<BookingRecord> = {}): BookingRecord => ({
   pickupNamed: NAMED,
   dropoff: { lat: 39.6547, lng: 66.9758 },
   dropoffNamed: { name: null, area: null },
+  note: null,
   offerId: null,
   confirmedAt: null,
   boardedAt: null,

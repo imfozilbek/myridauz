@@ -66,6 +66,7 @@ export async function requestBooking(
     status: 'requested',
     expiresAt: answerDeadline(facts.departAt, now),
     ...points.value,
+    note: input.note ? deps.mask(input.note) : null,
     offerId: null,
     confirmedAt: null,
     boardedAt: null,

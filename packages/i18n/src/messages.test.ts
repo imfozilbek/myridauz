@@ -6,6 +6,8 @@ const MODIFIER_LETTER_TURNED_COMMA = '\u02BB';
 const WRONG_APOSTROPHES = /[oOgG]['`\u2018\u2019\u02BC]/;
 // A number never parts from its unit or from «≈» on a narrow phone: a non breaking space joins them.
 const BREAKABLE_UNIT = /\} (km|soʻm)\b|≈ \{/u;
+// The one line the mockup breaks before «soʻm» (g63/4 screen 4): «Всё как на макете» (07.10.2026).
+const BREAKS_AS_ON_MOCKUP = new Set(['market.rule.price']);
 
 const allMessages = (locale: (typeof ENABLED_LOCALES)[number]) =>
   Object.values(CATALOGS[locale]).flatMap((namespace) => Object.values(namespace));
@@ -22,6 +24,13 @@ describe('messages', () => {
   });
 
   it.each(ENABLED_LOCALES)('%s keeps a number with its unit on one line (G27)', (locale) => {
-    expect(allMessages(locale).filter((message) => BREAKABLE_UNIT.test(message))).toEqual([]);
+    const breakable = Object.entries(CATALOGS[locale]).flatMap(([namespace, messages]) =>
+      Object.entries(messages)
+        .filter(
+          ([key, message]) => BREAKABLE_UNIT.test(message) && !BREAKS_AS_ON_MOCKUP.has(`${namespace}.${key}`),
+        )
+        .map(([key]) => `${namespace}.${key}`),
+    );
+    expect(breakable).toEqual([]);
   });
 });

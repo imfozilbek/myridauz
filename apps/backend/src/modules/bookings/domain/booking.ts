@@ -32,6 +32,8 @@ export type BookingRecord = {
   readonly pickupNamed: Named | null;
   readonly dropoff: Point | null;
   readonly dropoffNamed: Named | null;
+  // The note of the passenger for the meeting, its contacts masked (docs/07); null: none or erased.
+  readonly note: string | null;
   // The offer this booking came from: its chat is the offer's chat (docs/07).
   readonly offerId: string | null;
   // When the driver confirmed it (docs/88 L6); "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
@@ -74,6 +76,7 @@ export const withoutPoints = (booking: BookingRecord): BookingRecord => ({
   pickupNamed: null,
   dropoff: null,
   dropoffNamed: null,
+  note: null,
 });
 
 // Who may move a booking where (docs/35). A cancelled request is "declined" when the driver does it.

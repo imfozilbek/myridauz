@@ -61,7 +61,11 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
           hasAvatar={passenger.hasAvatar}
           size={FACE}
         />
-        <b>{`${passenger.firstName} · ${t('bookings.card.seats', { seats: String(booking.seats) })}`}</b>
+        <span className="meet-who-text">
+          <b>{`${passenger.firstName} · ${t('bookings.card.seats', { seats: String(booking.seats) })}`}</b>
+          {/* How the driver knows the passenger (the note of the booking, mockup g63/4 screen 13). */}
+          {booking.note ? <span>{booking.note}</span> : null}
+        </span>
       </span>
       <MeetActions booking={booking} onMark={onMark} />
       <div className="meet-tools">

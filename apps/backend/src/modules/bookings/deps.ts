@@ -1,7 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { bookingCommission } from '../billing';
-import { postSystemEvent } from '../chat';
+import { maskContacts, postSystemEvent } from '../chat';
 import { recordServerEvent } from '../analytics';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
@@ -88,6 +88,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
   pitak: (id) => pitakById(env, id),
   meeting: meetingPorts(env),
+  mask: (text) => maskContacts(text).text,
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

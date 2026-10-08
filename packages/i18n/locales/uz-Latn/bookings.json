@@ -57,6 +57,8 @@
   "points.all": "Hammasi",
   "points.line": "{seats} joy × {price}",
   "points.hint": "Har bir joy bosilsa xarita ochiladi. Ikkalasi tanlansa, soʻrov yuboriladi.",
+  "points.note": "Izoh (ixtiyoriy)",
+  "note.hint": "Haydovchi sizni tanishi uchun. Masalan: qizil kurtka, sumka bilan.",
   "pending.until": "{name} {date}, {time} gacha javob beradi",
   "pending.home": "Bosh sahifa",
   "pending.at": "{region} · {time}",

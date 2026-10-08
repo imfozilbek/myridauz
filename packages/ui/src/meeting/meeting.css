@@ -115,6 +115,18 @@
   font-size: 16.3px;
 }
 
+/* The name with the seats, the note of the passenger under it (mockup g63/4 screen 13). */
+.meet-who-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.meet-who-text span {
+  color: var(--reg-text);
+  font-size: 13.7px;
+}
+
 /* A face without a photo: light from the bottom right (mockup g63/4 screen 13). */
 .meet-who .profile-empty {
   flex: none;

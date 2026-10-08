@@ -27,6 +27,7 @@ async function booked(kit: ReturnType<typeof setup>, status: BookingRecord['stat
     pickupNamed: NAMED,
     dropoff: { lat: 39.6547, lng: 66.9758 },
     dropoffNamed: NAMED,
+    note: null,
     offerId: null,
     confirmedAt: null,
     boardedAt: null,

@@ -86,6 +86,7 @@ export async function bookingViews(
         pitak: record.pitakId ? (pitaks.get(record.pitakId) ?? null) : null,
         pickup: place(record.pickup, record.pickupNamed, whole),
         dropoff: place(record.dropoff, record.dropoffNamed, whole),
+        note: whole ? record.note : null,
         extraKm: null,
         plate: live && viewer !== 'driver' ? loaded.facts.plate : null,
         chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),

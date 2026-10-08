@@ -117,6 +117,8 @@ export type BookingsDeps = {
   readonly pitak: (id: string) => Promise<Pitak | null>;
   // «Kelmadi» and its refund go through the complaints; the live screens (G63).
   readonly meeting: MeetingPorts;
+  // The contacts of a text masked, as in the chat (docs/07): the note of a booking.
+  readonly mask: (text: string) => string;
   readonly now: () => number;
   readonly newId: () => string;
 };
