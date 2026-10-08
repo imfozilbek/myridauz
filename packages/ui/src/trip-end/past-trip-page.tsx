@@ -1,4 +1,5 @@
 import { afterTrip, type Booking, type Trip } from '@platform/contracts';
+import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -29,14 +30,18 @@ type Props = {
   readonly onBack: () => void;
   readonly onChat: (booking: Booking) => void;
   readonly onCall: (booking: Booking) => void;
+  readonly onMark: (booking: Booking) => void;
   readonly onRow: (row: AfterRow) => void;
   readonly onPublish: (back: ReturnTrip) => void;
+  // The failure of «Kelmadi», under what may still be done.
+  readonly children?: ReactNode;
 };
 
 // The past trip of the driver (owner decision 06.10.2026, docs/129, mockup g63/5 phone 5) in the
 // parts of «Mening safarim»: the plate of the end, the passengers with their stars or the refund, the
 // trip, what may still be done. A month later the plate is grey, as on the booking of g60/6.
-export function PastTripPage({ trip, bookings, onBack, onChat, onCall, onRow, onPublish }: Props) {
+export function PastTripPage(props: Props) {
+  const { trip, bookings, onBack, onChat, onCall, onMark, onRow, onPublish, children } = props;
   useScreenView('trip_end.past');
   useScreenBackground();
   const { t } = useI18n();
@@ -58,11 +63,12 @@ export function PastTripPage({ trip, bookings, onBack, onChat, onCall, onRow, on
         </span>
       </div>
       <h2 className="own-head">{t('driverTrip.passengers', { count: String(seats) })}</h2>
-      <PastRiders key={pastRidersKey(riders)} riders={riders} talk={talk} onChat={onChat} onCall={onCall} />
+      <PastRiders key={pastRidersKey(riders)} {...{ riders, talk, onChat, onCall, now, onMark }} />
       <h2 className="own-head">{t('driverTrip.trip')}</h2>
       <OwnTripCard trip={trip} />
       <h2 className="own-head">{t('driverAfter.past.after')}</h2>
       <AfterRows trip={trip} bookings={bookings} now={now} onRow={onRow} />
+      {children}
       {back ? <MainButton text={t('driverAfter.back.publish')} onClick={() => onPublish(back)} /> : null}
     </div>
   );

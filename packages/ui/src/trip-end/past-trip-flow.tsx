@@ -4,6 +4,8 @@ import { ChatScreen } from '../chat/chat-screen';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ComplaintScreen } from '../feedback/complaint-screen';
+import { useMeetMark } from '../meeting/use-meet-mark';
+import { ActionFailure } from '../states/action-failure';
 import { openInTelegram } from '../telegram/feedback';
 import { WalletScreen } from '../wallet/wallet-screen';
 import type { AfterRow } from './after-rows';
@@ -38,6 +40,7 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
   const [opened, setOpened] = useState<Opened | null>(null);
   const back = () => setOpened(null);
   const riders = bookings.filter(taken);
+  const meet = useMeetMark(() => onChanged());
   const question = t('driverAfter.past.pick');
   const about = (row: About, booking: Booking) =>
     setOpened({ screen: row === 'talk' ? 'chat' : 'complain', booking });
@@ -85,8 +88,11 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
       onBack={onBack}
       onChat={(booking) => setOpened({ screen: 'chat', booking })}
       onCall={(booking) => setOpened({ screen: 'call', booking })}
+      onMark={(booking) => void meet.mark(booking, 'no_show')}
       onRow={(picked) => void row(picked)}
       onPublish={onPublish}
-    />
+    >
+      <ActionFailure error={meet.failure} />
+    </PastTripPage>
   );
 }

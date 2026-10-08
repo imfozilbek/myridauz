@@ -51,11 +51,13 @@ describe('the way back (mockup g63/4 screen 16)', () => {
     expect(back?.route.from.id).toBe(trip.to);
     expect(back?.route.to.id).toBe(trip.from);
     // The one screen takes the answers as they are: no time of its own beside the day and the time.
+    // «Mashinada ayol bor» is never carried: trip.woman also means a woman passenger rode, and a
+    // false «ayol bor» misleads women (docs/06); the driver turns it on again on the one screen.
     expect(back?.again).toEqual({
       pickupMode: trip.pickupMode,
       seats: 3,
       price: 95000,
-      womanOnBoard: true,
+      womanOnBoard: false,
       bookingRule: trip.bookingRule,
       comment: '',
       date: '2026-10-03',

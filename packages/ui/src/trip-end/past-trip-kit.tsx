@@ -1,4 +1,4 @@
-import type { FeedbackClient } from '@platform/api-client';
+import type { BookingsClient, FeedbackClient } from '@platform/api-client';
 import { arrivalAt, HOUR_MS, type Booking, type Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { vi } from 'vitest';
@@ -33,11 +33,16 @@ function Page({ of, start, onPublish }: PageProps) {
   );
 }
 
-type Options = { readonly target?: FeedbackClient['target']; readonly now?: number; readonly of?: Trip };
+type Options = {
+  readonly target?: FeedbackClient['target'];
+  readonly now?: number;
+  readonly of?: Trip;
+  readonly meet?: BookingsClient['meet'];
+};
 
 export function openPast(
   bookings: readonly Booking[],
-  { target = fiveStars, now = EVENING, of = trip }: Options = {},
+  { target = fiveStars, now = EVENING, of = trip, meet = vi.fn() }: Options = {},
 ) {
   vi.setSystemTime(now);
   const onPublish = vi.fn();
@@ -49,6 +54,7 @@ export function openPast(
       feedback: { target, review: async () => undefined },
       wallet: { mine: async () => wallet },
       market: { searchRequests: async () => [] },
+      bookings: { meet },
     }),
   );
   return onPublish;

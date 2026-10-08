@@ -1,13 +1,15 @@
-import { afterTrip, HOUR_MS } from '@platform/contracts';
+import { afterTrip, arrivalAt, HOUR_MS, MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
+import { akmal } from '../meeting/meet-test-kit';
 import { gone, openPast, rode, trip } from './past-trip-kit';
 
 const support = vi.hoisted(() => vi.fn());
 vi.mock('../telegram/feedback', async (original) => ({
   ...(await original<typeof import('../telegram/feedback')>()),
   openInTelegram: support,
+  confirm: async () => true,
 }));
 vi.mock('../chat/chat-screen', () => ({
   ChatScreen: ({ title, ring }: { readonly title: string; readonly ring?: boolean }) => (
@@ -79,5 +81,15 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
     openPast([rode]);
     await tap('Komissiya');
     expect(await screen.findByText('Bonus berildi')).toBeTruthy();
+  });
+
+  it('still takes «Kelmadi» after «Yetib keldik» until the trip closes (docs/129)', async () => {
+    const arrivedAt = arrivalAt(trip.departAt, trip.km);
+    const arrived = { ...trip, status: 'active' as const, departedAt: trip.departAt, arrivedAt };
+    const waiting = { ...akmal, trip: arrived, driverCameAt: trip.departAt - 5 * MINUTE_MS };
+    const meet = vi.fn(async () => ({ ...waiting, noShowAt: arrivedAt }));
+    openPast([waiting], { of: arrived, now: arrivedAt + 30 * MINUTE_MS, meet });
+    (await screen.findByText('Kelmadi · safar tugaguncha belgilash mumkin')).click();
+    await vi.waitFor(() => expect(meet).toHaveBeenCalledWith(waiting.id, 'no_show'));
   });
 });

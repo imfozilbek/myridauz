@@ -1,5 +1,6 @@
 import type { Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
+import { NoShowLine } from '../meeting/no-show-line';
 import { useNoShowText } from '../meeting/no-show-text';
 import { RiderRow } from '../own-trip/rider-row';
 import { useGivenStars } from './use-given-stars';
@@ -10,12 +11,15 @@ type Props = {
   readonly talk: boolean;
   readonly onChat: (booking: Booking) => void;
   readonly onCall: (booking: Booking) => void;
+  // «Kelmadi» stays possible after «Yetib keldik» until the trip closes (docs/129).
+  readonly now: number;
+  readonly onMark: (booking: Booking) => void;
 };
 
 // The passengers of the past trip (mockup g63/5 phone 5) in the rows of «Mening safarim»: the stars
 // the driver gave, or what became of the commission of a passenger who did not come. The page
 // mounts it anew when the rated ones change (pastRidersKey): the stars just sent are read at once.
-export function PastRiders({ riders, talk, onChat, onCall }: Props) {
+export function PastRiders({ riders, talk, onChat, onCall, now, onMark }: Props) {
   const { t } = useI18n();
   const stars = useGivenStars(riders);
   const noShow = useNoShowText();
@@ -35,7 +39,11 @@ export function PastRiders({ riders, talk, onChat, onCall }: Props) {
           booking={booking}
           onChat={() => onChat(booking)}
           onCall={talk ? () => onCall(booking) : undefined}
-          line={(usual) => line(booking) ?? usual}
+          line={(usual) => (
+            <NoShowLine booking={booking} now={now} onMark={() => onMark(booking)}>
+              {line(booking) ?? usual}
+            </NoShowLine>
+          )}
         />
       ))}
     </div>

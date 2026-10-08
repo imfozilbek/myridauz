@@ -25,9 +25,10 @@ export function returnDepartAt(trip: Pick<Trip, 'departAt' | 'km'>, day: string)
   return tashkentDayStart(day) + Math.ceil(inDay / SLOT_MS) * SLOT_MS;
 }
 
-// «Qaytish» (docs/40, question 43): the route the other way with the same seats, price, «Mashinada
-// ayol bor», the rule of the salon (G61) and the way of taking people; a new comment; the day and
-// the time of the way back. Null while a place of the trip is unknown.
+// «Qaytish» (docs/40, question 43): the route the other way with the same seats, price, the rule of
+// the salon (G61) and the way of taking people; a new comment; the day and the time of the way back.
+// «Mashinada ayol bor» starts off: trip.woman is also true for a woman passenger (docs/06 safety).
+// Null while a place of the trip is unknown.
 export function returnTrip(trip: Trip, directory: PlaceDirectory, departAt: number): ReturnTrip | null {
   const from = directory.find(trip.from);
   const to = directory.find(trip.to);
@@ -36,7 +37,7 @@ export function returnTrip(trip: Trip, directory: PlaceDirectory, departAt: numb
     pickupMode: trip.pickupMode,
     seats: trip.seats,
     price: trip.price,
-    womanOnBoard: trip.woman,
+    womanOnBoard: false,
     bookingRule: trip.bookingRule,
     comment: '',
     date: tashkentDate(departAt),
