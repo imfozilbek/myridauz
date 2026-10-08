@@ -11,7 +11,6 @@ export type Stop = {
   // Who gets in or out here: the people of one pitak share it.
   readonly riders: readonly Booking[];
 };
-export type StopKind = 'pickups' | 'dropoffs';
 
 const confirmed = (bookings: readonly Booking[]) =>
   bookings.filter((booking) => booking.status === 'confirmed');
