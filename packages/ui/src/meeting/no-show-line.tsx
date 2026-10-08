@@ -12,6 +12,8 @@ type Props = {
   readonly onMark: () => void;
   // The usual line of the row, while «Kelmadi» is not possible.
   readonly children: ReactNode;
+  // The past trip: the driver said «Yetib keldik», though the trip read before may still be on the way.
+  readonly ended?: boolean;
 };
 
 // The line under a passenger of the own trip (docs/129, mockup g63/5 phone 1): once the driver is at
@@ -19,10 +21,10 @@ type Props = {
 // not come. Once said, the line stays on the way while the refund waits (the plate on top tells about
 // it, as on the mockup); after the trip, what became of the commission (phone 5). Otherwise the usual
 // line, as on «Joʻnashga 30 daqiqa» and «Yoʻldasiz» (mockup g63/4 screens 11 and 14).
-export function NoShowLine({ booking, now, onMark, children }: Props) {
+export function NoShowLine({ booking, now, onMark, children, ended = false }: Props) {
   const { t } = useI18n();
   const text = useNoShowText()(booking);
-  const onWay = booking.trip.arrivedAt === null && meetingOpen(booking.trip, now);
+  const onWay = !ended && booking.trip.arrivedAt === null && meetingOpen(booking.trip, now);
   if (onWay && refundWaits(booking))
     return <span className="no-show-line">{t('driverAfter.noShow.until')}</span>;
   if (text) return <span className="no-show-line">{text}</span>;

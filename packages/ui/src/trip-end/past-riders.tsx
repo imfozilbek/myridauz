@@ -40,7 +40,7 @@ export function PastRiders({ riders, talk, onChat, onCall, now, onMark }: Props)
           onChat={() => onChat(booking)}
           onCall={talk ? () => onCall(booking) : undefined}
           line={(usual) => (
-            <NoShowLine booking={booking} now={now} onMark={() => onMark(booking)}>
+            <NoShowLine booking={booking} now={now} onMark={() => onMark(booking)} ended>
               {line(booking) ?? usual}
             </NoShowLine>
           )}

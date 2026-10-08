@@ -85,6 +85,16 @@ describe('«Kelmadi» in the row of the passenger (docs/129, mockup g63/5 phone 
     expect(screen.queryByText(/kutilmoqda/u)).toBeNull();
   });
 
+  it('says the refund waits on the past trip, though the trip read before «Yetib keldik» is on the way', () => {
+    renderInShell(
+      <NoShowLine booking={gone} now={MEETING_NOW} onMark={vi.fn()} ended>
+        {USUAL}
+      </NoShowLine>,
+    );
+    expect(screen.getByText(/^Kelmadi · qaytarish 9.500 kutilmoqda$/u)).toBeTruthy();
+    expect(screen.queryByText('Kelmadi · safar tugaguncha belgilash mumkin')).toBeNull();
+  });
+
   it('says what the owner decided about the commission', () => {
     line({ ...gone, refund: { state: 'confirmed', amount: 9500 } });
     line({ ...gone, refund: { state: 'rejected', amount: 9500 } });
