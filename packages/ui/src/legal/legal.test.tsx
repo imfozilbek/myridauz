@@ -16,7 +16,7 @@ describe('legal documents (docs/30)', () => {
     renderInShell(<LegalScreen document="offer" onBack={vi.fn()} />);
     expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
     // Without an answer of the API: the base edition and the brand name, never a placeholder (G34).
-    expect(await screen.findByText(/Tahrir 1\.2/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.3/)).toBeTruthy();
     // Each section opens by its title: the needed point is found faster (docs/88 L18).
     const first = screen.getByText('1. Umumiy qoidalar').closest('[aria-expanded]');
     expect(first?.getAttribute('aria-expanded')).toBe('false');
