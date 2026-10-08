@@ -25,7 +25,9 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  padding-top: 1.9px;
+  /* As g64/2 and g64/3: with two lines of the route the head is 46 px high. */
+  margin-bottom: -1.57px;
+  padding-top: 0.57px;
 }
 
 .request-row-name {
@@ -114,7 +116,8 @@
 .request-row-actions .request-act {
   flex: 1;
   min-width: 0;
-  padding: 0 6px;
+  /* The words sit 3 px above the middle of the button, as on g64/2 and g64/3. */
+  padding: 0 6px 6px;
   background: var(--reg-strong);
   font-size: clamp(12.5px, 3.889vw, 14px);
   font-weight: 700;
