@@ -1,5 +1,5 @@
 import type { BookingsClient } from '@platform/api-client';
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking } from '../bookings/booking-test-kit';
@@ -30,10 +30,10 @@ describe('«Mening safarlarim» after «Назад» (docs/94 F2, S3, W1)', { ti
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    await tap('Yana koʻrsatish');
-    expect(rows()).toHaveLength(12);
+    // The live trips stand in one list under the week (G64, mockup g64/6).
+    await waitFor(() => expect(rows()).toHaveLength(12));
     scrolledTo(900);
-    const last = screen.getAllByText('Faol')[11];
+    const last = document.querySelectorAll('.driver-trip')[11];
     if (last) fireEvent.click(last);
     await tap('Orqaga');
     expect(skeleton()).toBeNull();
@@ -42,7 +42,7 @@ describe('«Mening safarlarim» after «Назад» (docs/94 F2, S3, W1)', { ti
     await tap('Orqaga');
     scrollTo.mockClear();
     await tap('again');
-    await waitFor(() => expect(rows()).toHaveLength(10));
+    await waitFor(() => expect(rows()).toHaveLength(12));
     expect(scrollTo).not.toHaveBeenCalledWith(0, 900);
   });
 

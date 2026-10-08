@@ -1,8 +1,8 @@
 import type { Trip } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed, wallet } from '../bookings/booking-test-kit';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
 import { fiveStars } from '../trip-end/past-trip-kit';
@@ -39,8 +39,7 @@ function open(start: Trip, fresh: boolean) {
 }
 
 async function openTrip() {
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 // The past trip and not «Mening safarim»: «Safardan keyin», no main button of the way.
@@ -60,6 +59,7 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
 
   it('its card in the list says it ended and what is left after it', async () => {
     open({ ...left, arrivedAt: NOW - 30 * MINUTE }, true);
+    await tap('Oʻtgan');
     expect(await screen.findByText('Yakunlangan')).toBeTruthy();
     expect(screen.queryByText('Faol')).toBeNull();
     expect(screen.getByText(/^Baho bering · \d kun$/u)).toBeTruthy();

@@ -3,7 +3,7 @@ import type { Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed, wallet } from '../bookings/booking-test-kit';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import type { TripAgain } from '../market/trip-draft';
 import type { Route } from '../places/route-screen';
@@ -41,8 +41,7 @@ function open(shown: Trip, steps: Steps, review = vi.fn<FeedbackClient['review']
 }
 
 async function openTrip() {
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/35)', { timeout: 20_000 }, () => {

@@ -3,7 +3,7 @@ import type { Booking, Trip } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
-import { renderMarket, trip } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { akmal, MEETING_NOW } from '../meeting/meet-test-kit';
 import { testClients } from '../test-shell';
@@ -33,8 +33,7 @@ async function open(shown: Trip, bookings: readonly Booking[], { market, chat, m
       ...(chat && { chat }),
     }),
   );
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 // Two taps before the first answer: the second one does nothing (docs/65 A4).

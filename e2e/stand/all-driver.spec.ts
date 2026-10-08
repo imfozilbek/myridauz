@@ -1,5 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { TEXT, newTripTile } from '../apps';
+import { openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
@@ -41,7 +42,7 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
   await openHome(page, 'driver', MUROD, 'android');
   await page.getByText(t('common.myTrips')).first().click();
   await shot(page, 'android', 'da21-my-trips');
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
   await shot(page, 'android', 'da22-trip');
   await visit(page, 'android', t('driverTrip.tile.map'), 'da23-trip-map');
 });

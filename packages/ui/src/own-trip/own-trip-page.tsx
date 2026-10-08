@@ -1,4 +1,4 @@
-import type { Booking, Trip } from '@platform/contracts';
+import type { Booking, Offer, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { requestsByTime } from '../bookings/trip-bookings-order';
 import { short } from '../bookings/use-balance';
@@ -15,6 +15,7 @@ import { OwnTripCard } from '../trip/own-trip-card';
 import { taken } from '../trip-end/trip-sums';
 import { OwnTripBanner } from './own-trip-banner';
 import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
+import { PrivateTripBanner } from './private-trip-banner';
 import { RiderRow } from './rider-row';
 import { SeatRequestCard } from './seat-request-card';
 import { TripMainButton } from './trip-main-button';
@@ -42,6 +43,9 @@ type Props = {
   readonly onStep: (step: TripStep) => unknown;
   // «Kelmadi» of a passenger at the meeting, asked first (useMeetMark, docs/129).
   readonly onMark: (booking: Booking) => void;
+  // A private trip (G64): its offer and «Safarni hammaga ochish».
+  readonly offer: Offer | null;
+  readonly onOpened: () => unknown;
   // The failure of an action and the note of a tile, under the tiles.
   readonly children?: ReactNode;
 };
@@ -52,7 +56,7 @@ type Props = {
 // cancel only before the departure. The meeting opens from a point of «Yoʻl xaritasi» (screen 12).
 export function OwnTripPage(props: Props) {
   const { trip, stage, now, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep } = props;
-  const { onMark, children } = props;
+  const { onMark, offer, onOpened, children } = props;
   useScreenView('market.own_trip');
   useScreenBackground();
   const { t } = useI18n();
@@ -63,17 +67,21 @@ export function OwnTripPage(props: Props) {
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   // Before the departure: people still look for the trip and the driver may cancel it (docs/35).
   const notLeft = stage === 'published' || stage === 'soon';
+  // A private trip is the plate, the trip and the cancel until the answer (mockup g64/3 phone 3).
+  const open = !trip.private;
   return (
     <div className="own-trip" style={brandVars(colors)} data-button={step ? '' : undefined}>
       <Screen onBack={onBack} />
       {/* After «Kelmadi» its plate stands where the plate of the stage was (mockup g63/5 phone 1). */}
-      {bookings.some(refundWaits) ? (
+      {!open ? (
+        <PrivateTripBanner trip={trip} offer={offer} onOpened={onOpened} />
+      ) : bookings.some(refundWaits) ? (
         <NoShowBanners bookings={bookings} />
       ) : (
         <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
       )}
       {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
-      {notLeft ? <TripPublicity trip={trip} /> : null}
+      {notLeft && open ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (
         <>
           <h2 className="own-head">{t('driverTrip.asked', { count: String(requested.length) })}</h2>
@@ -89,7 +97,7 @@ export function OwnTripPage(props: Props) {
           ))}
         </>
       ) : null}
-      {riders.length > 0 || requested.length === 0 ? (
+      {open && (riders.length > 0 || requested.length === 0) ? (
         <>
           <h2 className="own-head">{t('driverTrip.passengers', { count: String(seats) })}</h2>
           <div className="own-riders">
@@ -113,7 +121,7 @@ export function OwnTripPage(props: Props) {
       ) : null}
       <h2 className="own-head">{t('driverTrip.trip')}</h2>
       <OwnTripCard trip={trip} />
-      <OwnTripTiles onTile={onTile} />
+      {open ? <OwnTripTiles onTile={onTile} /> : null}
       {children}
       <div className="own-links">
         {notLeft ? (

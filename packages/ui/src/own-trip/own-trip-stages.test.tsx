@@ -1,9 +1,9 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking, confirmed } from '../bookings/booking-test-kit';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
 
@@ -18,8 +18,7 @@ const rider: Booking = { ...confirmed, id: 'b2' };
 
 // The card of the trip in the list opens it, whatever its status (docs/83 U6).
 async function openCard() {
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 // «Yoʻlga chiqdim» and «Yetib keldik» go to the server (G63 B1): the trip comes back as it was.

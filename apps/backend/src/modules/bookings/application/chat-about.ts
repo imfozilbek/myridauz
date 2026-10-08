@@ -47,5 +47,11 @@ export async function chatAbout(deps: BookingsDeps, key: string, userId: number)
   const talk = await requestAndOffer(deps, key);
   const offer: Offer | null = talk?.offer ?? null;
   const driver = talk?.driver ?? null;
-  return { booking: booked?.booking ?? null, role: member.role, request: talk?.request ?? null, offer, driver };
+  return {
+    booking: booked?.booking ?? null,
+    role: member.role,
+    request: talk?.request ?? null,
+    offer,
+    driver,
+  };
 }

@@ -72,6 +72,7 @@ export const offer: Offer = {
   tripId: null,
   pitak: null,
   createdAt: 0,
+  passengerName: 'Dilnoza',
 };
 
 export const wallet: Wallet = {

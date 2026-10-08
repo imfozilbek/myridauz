@@ -1,6 +1,7 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test, type Page } from './crash-guard';
 import { openBoard, type Board } from './g64-requests-mock';
+import { openMyTrips, openPrivateTrip } from './g64-trips-mock';
 
 // Pixel Perfect of «Yoʻlovchilar soʻrovlari» (G64, lessons 141, 147, 167): the phones of g64/1 …
 // g64/3 at the size and scale of the mockup (360 × 760 at 1.5) with the data of the mockup; the diff
@@ -44,4 +45,21 @@ test('3-salon-2: «Sardor uchun safar»', async ({ page }) => {
   await openBoard(page, 'salon');
   await sheet(page, 'Sardor', t('requests.action.salon'), '08:00');
   await shot(page, '3-salon-2');
+});
+
+test('6-trips-1: «Mening safarlarim» of the driver', async ({ page }) => {
+  await openMyTrips(page);
+  await page.getByText('2 150 000').waitFor();
+  await shot(page, '6-trips-1');
+});
+
+test('6-trips-2: the trips of «Pa 8»', async ({ page }) => {
+  await openMyTrips(page, 'Pa');
+  await page.getByText('2 150 000').waitFor();
+  await shot(page, '6-trips-2');
+});
+
+test('3-salon-3: the trip waits for Sardor', async ({ page }) => {
+  await openPrivateTrip(page);
+  await shot(page, '3-salon-3');
 });

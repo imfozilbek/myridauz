@@ -2,7 +2,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { publishTrip } from './market';
+import { openOwnTrip, publishTrip } from './market';
 import { mockOwnTrip } from './own-trip-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -35,7 +35,7 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   // An hour before the time of the trip the driver opens it again: «Yoʻlga chiqdim».
   await page.clock.setFixedTime(own.departAt() - 59 * MINUTE);
   await pressBack(page);
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
   const main = page.locator('#tg-main-button');
   await expect(main).toHaveText(t('driverTrip.main.departed'));
   await main.click();

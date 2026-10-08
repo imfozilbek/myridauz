@@ -1,0 +1,18 @@
+/* «Safarni hammaga ochish» under the plate of a private trip (G64): the main color of the app. */
+.private-open {
+  width: 100%;
+  min-height: 45px;
+  margin-bottom: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.private-open:disabled {
+  opacity: 0.6;
+}

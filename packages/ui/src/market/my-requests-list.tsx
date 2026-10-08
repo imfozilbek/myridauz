@@ -3,7 +3,7 @@ import { Button, Caption, Title } from '@telegram-apps/telegram-ui';
 import { BookingCard } from '../bookings/booking-card';
 import { PastBookingRow } from '../bookings/past-booking-row';
 import { FavoritesEntry } from '../comfort/comfort-entries';
-import { List, SegmentedControl } from '../components';
+import { List } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useKeepPlace } from '../screen/keep-place';
@@ -12,13 +12,12 @@ import { brandVars } from '../theme/brand-vars';
 import { Screen } from '../screen/screen';
 import { EmptyState } from '../states/empty-state';
 import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
+import { MineTabs, type MineTab } from './mine-tabs';
 import { Paged } from './paged';
 import { RequestCard } from './request-card';
 
 // The memory of the passenger's «Mening safarlarim»: data, pages and place (docs/94 F2).
 export const MY_REQUESTS = 'market.mine.requests';
-// «Faol» and «Oʻtgan» (owner decision 06.10.2026, docs/129, mockup g60/6).
-export type MineTab = 'live' | 'past';
 const isLive = (booking: Booking) => booking.status === 'requested' || booking.status === 'confirmed';
 
 type Props = {
@@ -72,24 +71,7 @@ export function MyRequestsList(props: Props) {
       <Title weight="1" className="market-title">
         {t('common.myTrips')}
       </Title>
-      <div className="market-tabs">
-        <SegmentedControl>
-          <SegmentedControl.Item
-            selected={tab === 'live'}
-            className={tab === 'live' ? 'market-tab-on' : undefined}
-            onClick={() => onTab('live')}
-          >
-            {t('bookings.tab.live', { count: booked.length + requests.length })}
-          </SegmentedControl.Item>
-          <SegmentedControl.Item
-            selected={tab === 'past'}
-            className={tab === 'past' ? 'market-tab-on' : undefined}
-            onClick={() => onTab('past')}
-          >
-            {t('bookings.tab.past')}
-          </SegmentedControl.Item>
-        </SegmentedControl>
-      </div>
+      <MineTabs tab={tab} live={booked.length + requests.length} onTab={onTab} />
       <List>
         {tab === 'past' ? (
           <Paged

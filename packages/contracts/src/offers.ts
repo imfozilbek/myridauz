@@ -62,6 +62,9 @@ export const offerSchema = z.object({
   // Where the driver picks up: the pitak's name, or null from the door (G64, cards in chat and call).
   pitak: z.string().nullable().default(null),
   createdAt: z.number().int().default(0),
+  // The first name of the passenger of the request: «Sardorga taklif yuborildi» on the private trip
+  // of the driver (G64); the driver sees it on the card of the request already.
+  passengerName: z.string().default(''),
 });
 export type Offer = z.infer<typeof offerSchema>;
 export const offersSchema = z.object({ offers: z.array(offerSchema) });

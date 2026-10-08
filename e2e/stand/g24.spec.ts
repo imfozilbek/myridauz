@@ -4,6 +4,7 @@ import { telegramEvents } from '../telegram-mock';
 import { answer, book, BUXORO, cancelMine, CHILONZOR, publishTrip } from './market-kit';
 import { GULNORA, KAMOLA, LOLA, SARDOR, SHAHNOZA } from './people';
 import { openAs, outsideCalls } from './stand-kit';
+import { openOwnTrip } from '../market';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const shot = (page: Page, name: string) =>
@@ -47,7 +48,7 @@ test.beforeAll(async () => {
 async function openTrip(page: Page) {
   await openAs(page, 'driver', SARDOR);
   await page.getByText(t('common.myTrips')).click();
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
 }
 
 test('3. the driver sees the requests near the way first', async ({ page }) => {

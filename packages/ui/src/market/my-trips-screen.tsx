@@ -1,4 +1,12 @@
-import { MY_TRIP_LINK, OFFER_LINK, type AppLink } from '@platform/contracts';
+import {
+  DAY_MS,
+  MY_TRIP_LINK,
+  OFFER_LINK,
+  tashkentDate,
+  tashkentDayStart,
+  type AppLink,
+  type Trip,
+} from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
@@ -8,10 +16,13 @@ import { OwnTripFlow } from '../own-trip/own-trip-flow';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { sameTrip, type ReturnTrip } from '../trip-end/return-plan';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
+import type { MineTab } from './mine-tabs';
 import { MY_TRIPS, MyTripsList } from './my-trips-list';
-import { PlacesGate } from './places-gate';
+import { NewTripFlow } from './new-trip-flow';
+import { PlacesGate, usePlaces } from './places-gate';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
@@ -53,6 +64,10 @@ function MyTrips({ onBack, link }: ScreenProps) {
   });
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
+  const [tab, setTab] = useState<MineTab>('live');
+  const [again, setAgain] = useState<ReturnTrip | null>(null);
+  const directory = usePlaces();
+  if (again) return <NewTripFlow route={again.route} again={again.again} onBack={() => setAgain(null)} />;
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (trip && booking) {
@@ -71,6 +86,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
         onBooking={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
         onChanged={reload}
         onClosed={() => (setOpened(null), reload())}
+        offer={trip.private ? (value[2].find((item) => item.tripId === trip.id) ?? null) : null}
       />
     );
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -87,6 +103,15 @@ function MyTrips({ onBack, link }: ScreenProps) {
       onTrip={(item) => setOpened({ tripId: item.id })}
       onOffer={(offer) => setChatKey(offer.chatKey)}
       onSubscriptions={() => setSubscriptionsOpen(true)}
+      tab={tab}
+      onTab={setTab}
+      onAgain={(last) => setAgain(sameTrip(last, directory, tomorrowAt(last)))}
     />
   );
+}
+
+// «Ertaga shu safar»: tomorrow of Tashkent at the time of the day of the trip (mockup g64/6).
+function tomorrowAt(trip: Trip): number {
+  const inDay = trip.departAt - tashkentDayStart(tashkentDate(trip.departAt));
+  return tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay;
 }

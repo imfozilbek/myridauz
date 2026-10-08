@@ -58,7 +58,13 @@ describe('a salon trip from a request (G64)', () => {
     const opened = await offerSalonTrip(deps, DRIVER, requestId, ON_THE_DAY);
     if (!opened.ok) throw new Error(opened.error);
     expect(opened.value.trip).toMatchObject({ private: true, seats: 4, price: 90_000 });
-    expect(opened.value.offer).toMatchObject({ tripId: opened.value.trip.id, seats: 4, wholeCar: true });
+    // «Dilnozaga taklif yuborildi» on the private trip of the driver.
+    expect(opened.value.offer).toMatchObject({
+      tripId: opened.value.trip.id,
+      seats: 4,
+      wholeCar: true,
+      passengerName: 'Dilnoza',
+    });
     expect(await offerSalonTrip(deps, DRIVER, requestId, ON_THE_DAY)).toEqual({
       ok: false,
       error: 'bookings.wrong_status',

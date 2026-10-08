@@ -33,6 +33,7 @@ const trip = {
   status: 'active',
   departedAt: DEPART - 600_000,
   arrivedAt: null,
+  private: false,
 } as const;
 
 describe('«Yoʻlga chiqdim» and «Yetib keldik» of the driver app (G63)', () => {

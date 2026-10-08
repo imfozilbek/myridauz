@@ -18,6 +18,7 @@ export async function offerViews(
       const request = requests.find((item) => item.id === offer.requestId);
       // The car kept in the offer: a new check of the driver hides nothing (docs/65 A1).
       const [driver, car] = [await deps.people.find(offer.driverId), offer.car];
+      const passenger = request ? await deps.people.find(request.passengerId) : undefined;
       if (!request || !driver || !car) return null;
       const seats = offerSeats(offer, request);
       // At the pitak when the passenger chose only the pitak or gave no point, as the booking will be.
@@ -47,6 +48,7 @@ export async function offerViews(
         tripId: offer.tripId,
         pitak: byPitak ? (trip?.pitak?.name ?? null) : null,
         createdAt: offer.createdAt,
+        passengerName: passenger?.firstName ?? '',
       };
     }),
   );
