@@ -13,7 +13,8 @@ const MEETING_PIN = 34;
 type Props = {
   readonly point: Point;
   readonly onOpen: () => void;
-  // A smaller pin where the map is a strip under a row (the pitak of the new trip, screen 3).
+  // The pin as big as the mockup of the screen draws it: smaller on the strip under the pitak of the
+  // new trip (g63/4 screen 3), bigger on «Uchrashuv» of the driver (screen 13).
   readonly pin?: number;
 };
 
