@@ -1,19 +1,14 @@
-import { ApiError } from '@platform/api-client';
 import { cleanup, screen } from '@testing-library/react';
 import type { Trip } from '@platform/contracts';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { afterEach, describe, expect, it } from 'vitest';
+import { renderMarket, trip } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
 import { returnDraft } from '../market/return-trip';
 import { TripCard } from '../market/trip-card';
 import { DirectionEdit } from '../pricing/direction-edit';
 import { testClients } from '../test-shell';
-import { DriverShare } from './driver-share';
 
-afterEach(() => {
-  cleanup();
-  vi.unstubAllGlobals();
-});
+afterEach(cleanup);
 
 describe('prices next to each other (docs/40, question 44)', () => {
   it('shows the recommended price under the driver price', async () => {
@@ -48,7 +43,7 @@ describe('prices next to each other (docs/40, question 44)', () => {
   });
 });
 
-describe('the driver side (docs/40, docs/43)', () => {
+describe('the driver side (docs/40)', () => {
   it('turns a trip into the way back: the route reversed, the date and time chosen again', () => {
     const from = {
       id: '1726269',
@@ -81,28 +76,5 @@ describe('the driver side (docs/40, docs/43)', () => {
       bookingRule: 'seats_or_car',
       comment: '',
     });
-  });
-
-  it('shares the own trip with the family and stops sharing', async () => {
-    vi.stubGlobal('open', vi.fn());
-    const shareTrip = vi.fn(async () => ({
-      preparedMessageId: null,
-      link: 'https://t.me/bot?start=follow_x',
-    }));
-    const stopTripSharing = vi.fn(async () => undefined);
-    const { tracked } = renderMarket(
-      <DriverShare trip={trip} />,
-      testClients({ chat: { shareTrip, stopTripSharing } }),
-    );
-    await tap('Yaqinlarimga yuborish');
-    expect(shareTrip).toHaveBeenCalledWith('t1');
-    expect(tracked.map((event) => event.name)).toContain('driver_trip_shared');
-    await tap('Ulashishni toʻxtatish');
-    expect(stopTripSharing).toHaveBeenCalledWith('t1');
-    expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
-    // A trip that left cannot be shared: the driver reads it (docs/86 T4).
-    shareTrip.mockRejectedValueOnce(new ApiError(409, 'shares.wrong_status'));
-    await tap('Yaqinlarimga yuborish');
-    expect(await screen.findByText('Bu safarni endi ulashib boʻlmaydi.')).toBeTruthy();
   });
 });

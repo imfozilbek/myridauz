@@ -1,0 +1,46 @@
+/* The card of the own trip (G63, mockup g63/3, journey screen 6): the values of the mockup at 360 px. */
+.trip-sheet-own {
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.trip-sheet-own .trip-card-way {
+  gap: 4px;
+  padding: 8px 14px 9px;
+}
+
+.trip-sheet-own .trip-card-name {
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.trip-sheet-own .trip-card-note {
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.trip-sheet-own .trip-card-dot {
+  margin-top: 4px;
+}
+
+/* The line from the start runs past the road down to the end. */
+.trip-sheet-own .trip-card-from .trip-card-dot::after {
+  height: 44px;
+}
+
+.trip-sheet-own .trip-card-road {
+  margin: -2px 0 -2px 20px;
+  color: var(--reg-accent);
+}
+
+.trip-sheet-own .trip-card-sum {
+  align-items: baseline;
+  padding: 9px 14px 10px;
+  font-size: 14px;
+}
+
+.trip-sheet-rule {
+  font-size: 11.5px;
+  color: var(--reg-muted);
+  text-align: right;
+}

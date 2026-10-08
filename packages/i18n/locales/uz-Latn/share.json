@@ -1,6 +1,4 @@
 {
-  "section": "Yaqinlarim",
-  "send": "Yaqinlarimga yuborish",
   "sendHint": "Yaqinlaringiz safarni kuzatib boradi",
   "boarded": "Mashinaga chiqdim",
   "arrived": "Yetib keldim",
@@ -22,9 +20,6 @@
   "follow.closed": "Bu safar endi koʻrinmaydi",
   "follow.closedHint": "Ulashish toʻxtatilgan yoki safar tugaganiga bir kun boʻlgan.",
   "follow.join": "Men ham yoʻlga chiqaman",
-  "driverSendHint": "Oilangiz safaringizni kuzatib boradi",
-  "story": "Hikoyaga joylash",
-  "storyHint": "Doʻstlaringiz safarni koʻradi va joy band qiladi",
   "storyTitle": "Yangi safar",
   "storyWhen": "{date} • {time}",
   "storyCaption": "{from} → {to}, {date} soat {time}. {seats} ta joy bor. Joy band qilish: {link}",

@@ -4,22 +4,16 @@ import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
 import { useLoad } from '../market/use-list';
 import { PassengersStack } from './passengers-stack';
 import { requestsInOrder, takenFirst } from './trip-bookings-order';
 
 const PHOTO_SIZE = 40;
-type Props = {
-  readonly bookings: readonly Booking[];
-  readonly onOpen?: (booking: Booking) => void;
-  // «Safar xaritasi» of the driver, once a passenger is confirmed (G24).
-  readonly onMap?: () => void;
-};
+type Props = { readonly bookings: readonly Booking[] };
 
-// The bookings of one trip for its driver or the team: who, how many seats, the status. The
-// requests come first, by the extra way to the passengers already taken (G24, docs/70).
-export function TripBookings({ bookings, onOpen, onMap }: Props) {
+// The bookings of one trip for the team: who, how many seats, the status. The requests come
+// first, by the extra way to the passengers already taken (G24, docs/70).
+export function TripBookings({ bookings }: Props) {
   const { t } = useI18n();
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const fits = requested.filter((booking) => (booking.extraKm ?? 0) <= FAR_EXTRA_KM);
@@ -31,7 +25,6 @@ export function TripBookings({ bookings, onOpen, onMap }: Props) {
     return (
       <Cell
         key={booking.id}
-        onClick={onOpen ? () => onOpen(booking) : undefined}
         before={
           <ProfilePhoto
             userId={booking.passenger.id}
@@ -47,17 +40,9 @@ export function TripBookings({ bookings, onOpen, onMap }: Props) {
       </Cell>
     );
   };
-  const hasConfirmed = bookings.some((booking) => booking.status === 'confirmed');
   return (
     <>
       <PassengersStack bookings={bookings} />
-      {onMap && hasConfirmed ? (
-        <Section>
-          <Cell before={<IconTile name="navigate" tone="accent" />} onClick={onMap}>
-            {t('way.map.title')}
-          </Cell>
-        </Section>
-      ) : null}
       {fits.length > 0 ? <Section header={t('way.driver.fits')}>{fits.map(row)}</Section> : null}
       {others.length > 0 ? <Section header={t('way.driver.others')}>{others.map(row)}</Section> : null}
       {rest.length > 0 || requested.length === 0 ? (

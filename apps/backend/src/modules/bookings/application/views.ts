@@ -1,4 +1,5 @@
 import {
+  NO_RATING,
   chatKeyOfBooking,
   chatKeyOfOffer,
   type BookedPlace,
@@ -46,6 +47,11 @@ export async function bookingViews(
   const trips = await tripsOf(deps, records);
   const pitakIds = [...new Set(records.flatMap((record) => (record.pitakId ? [record.pitakId] : [])))];
   const pitaks = new Map(await Promise.all(pitakIds.map(async (id) => [id, await deps.pitak(id)] as const)));
+  // The driver decides on a request by the rating of the passenger too (mockup g63/3).
+  const ratings =
+    viewer === 'driver'
+      ? await deps.ratings([...new Set(records.map((record) => record.passengerId))])
+      : null;
   const views = await Promise.all(
     records.map(async (record): Promise<Booking | null> => {
       const loaded = trips.get(record.tripId);
@@ -66,6 +72,7 @@ export async function bookingViews(
           id: passenger.publicId,
           firstName: passenger.firstName,
           hasAvatar: viewer !== 'driver' && passenger.avatarKey !== null,
+          ...(ratings ? { rating: ratings.get(record.passengerId) ?? NO_RATING } : {}),
         },
         seats: record.seats,
         wholeCar: record.wholeCar,

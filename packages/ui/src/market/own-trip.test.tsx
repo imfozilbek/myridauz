@@ -16,10 +16,12 @@ describe('the own trip of a driver (docs/86 V11)', () => {
       }),
     );
     await openOwnTrip();
+    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     expect(screen.queryByText('Haydovchi')).toBeNull();
     expect(screen.queryByText('Jasur')).toBeNull();
-    const passengers = screen.getByText('Yoʻlovchilar');
-    const family = screen.getByText('Yaqinlarim');
+    // The passengers first, then the trip and its tiles (mockup g63/3).
+    const passengers = screen.getByText('Yoʻlovchilar (0)');
+    const family = screen.getByText('Yaqinlarimga');
     expect(passengers.compareDocumentPosition(family) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 });

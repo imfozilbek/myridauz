@@ -52,9 +52,6 @@ describe('Mening safarlarim (docs/35)', () => {
     );
     expect(await screen.findByText(/Faol/)).toBeTruthy();
     await openOwnTrip();
-    // The status is a badge; each fact of the way has its icon (docs/88 L15).
-    expect(screen.getAllByText('Faol').some((text) => text.closest('.trip-status'))).toBe(true);
-    expect(document.querySelectorAll('.fact-icon').length).toBeGreaterThan(0);
     vi.stubGlobal('confirm', () => true);
     await tap('Safarni bekor qilish');
     vi.unstubAllGlobals();

@@ -52,13 +52,9 @@ async function openTrip(page: Page) {
 
 test('3. the driver sees the requests near the way first', async ({ page }) => {
   await openTrip(page);
-  const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
-  await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
-  // Kamola stands under «Bu safarga mos», Lola under «Boshqa soʻrovlar»: top to bottom.
+  // «Joy soʻraganlar» (G63, mockup g63/3): Kamola near the way above Lola far from it, top to bottom.
   const top = async (text: string) => (await page.getByText(text, { exact: true }).boundingBox())?.y ?? 0;
-  expect(await top(t('way.driver.fits'))).toBeLessThan(await top(KAMOLA.name));
-  expect(await top(KAMOLA.name)).toBeLessThan(await top(t('way.driver.others')));
-  expect(await top(t('way.driver.others'))).toBeLessThan(await top(LOLA.name));
+  expect(await top(KAMOLA.name)).toBeLessThan(await top(LOLA.name));
   await page.getByText(LOLA.name, { exact: true }).scrollIntoViewIfNeeded();
   await shot(page, '3-requests');
 });
@@ -67,7 +63,7 @@ test('4. the map of the trip opens the stops in the navigator; a cancelled seat 
   page,
 }) => {
   await openTrip(page);
-  await page.getByText(t('way.map.title')).click();
+  await page.getByText(t('driverTrip.tile.map')).click();
   await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
   await expect(page.getByText(SHAHNOZA.name).first()).toBeVisible();

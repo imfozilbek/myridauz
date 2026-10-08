@@ -3,6 +3,7 @@ import { personIdSchema } from './person-id';
 import { MAX_SEATS } from './drivers';
 import { tripSchema } from './trips';
 import { pointInputSchema } from './point';
+import { ratingSchema } from './ratings';
 import { bookedPlaceSchema, bookingModeSchema, pitakSchema } from './pickup';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
@@ -54,7 +55,13 @@ export const MEET_BEFORE_MINUTES = 30;
 export const bookingSchema = z.object({
   id: z.string(),
   trip: tripSchema,
-  passenger: z.object({ id: personIdSchema, firstName: z.string(), hasAvatar: z.boolean() }),
+  passenger: z.object({
+    id: personIdSchema,
+    firstName: z.string(),
+    hasAvatar: z.boolean(),
+    // The driver decides on a request by it too (mockup g63/3): only the driver's view has it.
+    rating: ratingSchema.optional(),
+  }),
   seats: z.number().int(),
   wholeCar: z.boolean().default(false),
   withWoman: z.boolean().default(false),

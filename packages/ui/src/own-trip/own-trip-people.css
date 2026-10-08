@@ -1,0 +1,150 @@
+/* The requests and the passengers of «Mening safarim» (G63, mockup g63/3) at 360 px. */
+.seat-card {
+  margin-bottom: 8px;
+  padding: 10.67px 13.33px 11.33px;
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}
+
+.seat-card-head,
+.rider-open {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10.67px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.seat-card-head {
+  width: 100%;
+}
+
+.seat-card-who,
+.rider-who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.seat-card-who {
+  margin-top: 3.5px;
+}
+
+.seat-card-name {
+  font-size: 15px;
+  line-height: 18px;
+}
+
+.seat-card-stars {
+  margin-left: 6px;
+  font-size: 13px;
+  color: var(--reg-brand);
+}
+
+.seat-card-line,
+.rider-line {
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--reg-muted);
+  overflow-wrap: anywhere;
+}
+
+.seat-card-count {
+  flex: none;
+  margin-top: 2.67px;
+  font-size: 15px;
+  line-height: 18px;
+}
+
+.seat-card-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 9.33px;
+}
+
+.seat-card-buttons button {
+  min-height: 31.33px;
+  padding: 4px;
+  border: 0;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seat-card-decline {
+  background: var(--reg-bg);
+  color: var(--reg-muted);
+}
+
+.seat-card-confirm {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.own-riders {
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}
+
+.rider-row {
+  display: flex;
+  align-items: center;
+  gap: 11.33px;
+  min-height: 54px;
+  padding: 0 13.33px;
+}
+
+.rider-row + .rider-row {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.rider-open {
+  gap: 12px;
+}
+
+.rider-name {
+  font-size: 14.5px;
+  line-height: 16px;
+}
+
+.rider-line {
+  font-size: 11.5px;
+}
+
+/* A face without a photo is light grey here (mockup g63/3). */
+.own-trip .person-badge-plain {
+  background: var(--reg-face-soft);
+}
+
+.rider-tool {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 33.33px;
+  height: 33.33px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.own-empty {
+  margin: 0;
+  padding: 16px 13.33px;
+  font-size: 14px;
+  color: var(--reg-muted);
+}

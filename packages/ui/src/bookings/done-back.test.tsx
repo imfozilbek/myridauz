@@ -10,43 +10,36 @@ import { DriverBooking } from './driver-booking';
 
 afterEach(cleanup);
 
-describe('a «done» screen has «Назад» (docs/94 F9)', () => {
-  it('the seat confirmed by the driver goes back to the trip', async () => {
+describe('the answer goes back to the trip (docs/94 F9, owner decision 06.10.2026)', () => {
+  it('a seat confirmed on its booking closes it with fresh data, no «done» screen', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => confirmed);
     const onClose = vi.fn();
     renderMarket(
       <PlacesGate>
-        <DriverBooking booking={booking} onClose={onClose} onMap={() => undefined} />
+        <DriverBooking booking={booking} onClose={onClose} />
       </PlacesGate>,
       testClients({ bookings: { answer } }),
     );
     await tap('Tasdiqlash');
-    await tap('Tasdiqlash');
-    await screen.findByText('Joy tasdiqlandi');
-    await tap('Orqaga');
-    expect(onClose).toHaveBeenCalledWith(true);
+    await vi.waitFor(() => expect(onClose).toHaveBeenCalledWith(true));
+    expect(answer).toHaveBeenCalledTimes(1);
   });
 });
 
-describe('the map of a confirmed seat goes back to that seat (docs/94 B8)', () => {
-  it('«Назад» from the map shows the booking, not the trip', async () => {
-    let seat = booking;
-    const answer = vi.fn<BookingsClient['answer']>(async () => (seat = confirmed));
+describe('the map of the way goes back to the trip (docs/94 B8)', () => {
+  it('«Назад» from the map shows «Mening safarim»', async () => {
     renderMarket(
       <MyTripsScreen onBack={() => undefined} />,
       testClients({
         market: { myTrips: async () => [trip] },
-        bookings: { driverBookings: async () => [seat], driverOffers: async () => [], answer },
+        bookings: { driverBookings: async () => [confirmed], driverOffers: async () => [] },
         wallet: { mine: async () => wallet },
       }),
     );
     await openOwnTrip();
-    await tap('Dilnoza');
-    await tap('Tasdiqlash');
-    await tap('Tasdiqlash');
-    await tap('Safar xaritasi');
+    await tap('Yoʻl xaritasi');
+    await screen.findByText('Olib ketish');
     await tap('Orqaga');
-    expect(await screen.findByText('Dilnoza')).toBeTruthy();
-    expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
+    expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
   });
 });
