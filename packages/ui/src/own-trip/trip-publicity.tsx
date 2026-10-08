@@ -10,7 +10,7 @@ import { useTripPublicity } from './use-trip-publicity';
 import './trip-publicity.css';
 
 // The chevron of the channel and the paper plane of the link (mockup g59/7-channels-3 phone 1).
-const CHEVRON = 16;
+const CHEVRON = 15;
 const SEND = 18;
 
 // «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119 row 1): the

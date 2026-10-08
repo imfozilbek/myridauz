@@ -8,7 +8,7 @@
   margin-bottom: 10px;
   padding: 12px 14px;
   border: 1px solid var(--reg-line);
-  border-radius: 13.5px;
+  border-radius: 16px;
   background: var(--reg-soft);
 }
 
@@ -38,33 +38,37 @@
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  font-size: clamp(11.5px, 3.611vw, 13px);
-  line-height: 17px;
+  font-size: clamp(11px, 3.52vw, 12.5px);
+  line-height: 18.33px;
   color: var(--reg-muted);
 }
 
 .own-channel-text b {
-  font-size: clamp(13.5px, 4.167vw, 15px);
+  margin-bottom: 1px;
+  font-size: clamp(13.5px, 4.22vw, 15px);
   line-height: 19px;
   color: var(--reg-ink);
 }
 
 .own-channel-top svg {
   flex: none;
+  /* The chevron stands at the right edge of the link below it (mockup). */
+  margin: 2.67px -4px 0 0;
 }
 
 .own-channel-share {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9.33px;
   min-height: 40px;
-  padding: 0 10px;
+  padding: 0 4px 0 2.67px;
   border: 0;
   border-radius: 8px;
   background: var(--reg-mint);
   color: var(--reg-deep);
   font: inherit;
-  font-size: clamp(12.5px, 4.167vw, 15px);
+  /* One line on any phone: the words get smaller with the room beside the paper plane (docs/121). */
+  font-size: min(14.5px, calc((100vw - 88px) * 0.054));
   font-weight: 700;
   text-align: left;
   cursor: pointer;

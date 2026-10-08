@@ -13,13 +13,22 @@ const tashkent = (time: string) => Date.parse(`${time}+05:00`);
 const DEPART = '2026-10-07T08:00';
 const RATING = { average: 4.8, count: 12 };
 
-const trip = (full: boolean) =>
+// The moment of the mockup beside the time: «Yoʻlga chiqdim» tapped (phone 3, journey screen 14),
+// Akmal did not come (g63/5 phone 1), the trip in the channel (g59/7-channels-3 phone 1).
+export type Moment = {
+  readonly departed?: boolean;
+  readonly noShow?: boolean;
+  readonly publicity?: object;
+};
+
+const trip = (full: boolean, moment: Moment = {}) =>
   tripOf('7', 'Jasur', false, 0, {
     departAt: tashkent(DEPART),
     firstDepartAt: tashkent(DEPART),
     bookingRule: 'seats_or_car',
     seatsLeft: full ? 0 : 3,
     status: full ? 'full' : 'active',
+    departedAt: moment.departed ? tashkent('2026-10-07T08:00') : null,
   });
 
 const person = (id: string, firstName: string) => ({ id, firstName, hasAvatar: false, rating: RATING });
@@ -42,8 +51,11 @@ const seat = (full: boolean, id: string, extra: object) => ({
   ...extra,
 });
 
+// Akmal did not come to the pitak: the driver was there at 07:40, the refund waits for the team.
+const noShow = { driverCameAt: tashkent('2026-10-07T07:40'), noShowAt: tashkent('2026-10-07T07:45') };
+
 // Madina from her door near Chilonzor bozori (+2 km), Akmal from the pitak.
-const seats = (full: boolean) => [
+const seats = (full: boolean, moment: Moment) => [
   seat(full, '1', {
     passenger: person('0000000000000000000000000000001f', 'Madina'),
     seats: 2,
@@ -61,14 +73,21 @@ const seats = (full: boolean) => [
     pitak: PITAK,
     pickup: null,
     extraKm: full ? null : 0,
+    ...(moment.noShow ? noShow : {}),
   }),
 ];
 
 // «Mening safarim» at a moment of the mockup: after the publishing (requests), or with the full car.
-export async function openTripAt(page: Page, now: string, full: boolean) {
+// Without the publicity the card of the channel stays away, as on an error (g63/3 is older than it).
+export async function openTripAt(page: Page, now: string, full: boolean, moment: Moment = {}) {
   const { published } = await mockApi(page, 'active');
-  published.push(trip(full));
-  await page.route('**/api/driver/bookings', (route) => route.fulfill({ json: { bookings: seats(full) } }));
+  published.push(trip(full, moment));
+  await page.route('**/api/driver/bookings', (route) =>
+    route.fulfill({ json: { bookings: seats(full, moment) } }),
+  );
+  const { publicity } = moment;
+  if (publicity)
+    await page.route('**/api/driver/trips/*/publicity', (route) => route.fulfill({ json: publicity }));
   await page.clock.setFixedTime(tashkent(now));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));

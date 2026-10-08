@@ -5,7 +5,7 @@
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 10.67px;
+  gap: 9.33px;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -27,7 +27,7 @@
 .seat-card-line,
 .rider-line {
   font-size: clamp(10.5px, 3.334vw, 12px);
-  line-height: 15px;
+  line-height: 13.6px;
   color: var(--reg-muted);
 }
 
@@ -48,8 +48,9 @@
   display: flex;
   align-items: center;
   gap: clamp(8px, 3.148vw, 11.33px);
-  min-height: 54px;
-  padding: 0 13.33px;
+  /* 54 px with the padding; a line of two rows makes the row taller (mockup g63/5 phone 1). */
+  min-height: 36px;
+  padding: 9px 13.33px;
 }
 
 .rider-row + .rider-row {
@@ -87,14 +88,15 @@
 }
 
 .rider-name {
+  display: block;
   font-size: 14px;
-  line-height: 16px;
+  line-height: 15px;
 }
 
 .rider-line,
 .rider-who .no-show-line {
   font-size: clamp(10px, 3.2vw, 11.5px);
-  line-height: 15px;
+  line-height: 14.4px;
 }
 
 /* A face without a photo is light grey here (mockup g63/3). */

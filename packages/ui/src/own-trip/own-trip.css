@@ -12,11 +12,11 @@
 .own-banner {
   display: flex;
   align-items: center;
-  gap: 10.33px;
+  gap: 11px;
   margin-bottom: 10px;
   padding: 10px 14px;
   border: 1px solid var(--reg-line);
-  border-radius: 13.5px;
+  border-radius: 14.5px;
   background: var(--reg-soft);
   color: var(--reg-text);
 }
@@ -41,7 +41,7 @@
 
 /* The tick is drawn bigger than the clock in the same place: the text does not move. */
 .own-banner:not([data-stage='published']) svg {
-  margin: 0 -2px;
+  margin: 0 -1px;
 }
 
 .own-banner-text {
@@ -53,6 +53,9 @@
 }
 
 .own-banner-text b {
+  /* The title stands a little lower than its line (mockups g63/3 and g63/4). */
+  position: relative;
+  top: 0.67px;
   font-size: 14px;
   line-height: 17px;
   color: var(--reg-ink);
@@ -111,12 +114,12 @@
   display: flex;
   justify-content: center;
   margin-top: auto;
-  padding: 18px 0 19.2px;
+  padding: 18px 0;
 }
 
 /* Over the main button the link stands closer to the bottom (mockup g63/3, phones 2 and 3). */
 .own-trip[data-button] .own-links {
-  padding-bottom: 9.5px;
+  padding-bottom: 8.5px;
 }
 
 .own-cancel {

@@ -6,7 +6,7 @@ import { minutesLeft, type TripStage } from './trip-stage';
 
 // The clock of a published trip and the tick of the green plates (mockup g63/3).
 const CLOCK = 16;
-const TICK = 20;
+const TICK = 18;
 
 type Props = {
   readonly trip: Trip;

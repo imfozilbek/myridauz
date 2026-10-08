@@ -17,7 +17,7 @@ button.no-show-mark {
   align-items: center;
   gap: 10.33px;
   margin-bottom: 10px;
-  padding: 10px 14px;
+  padding: 10px 14px 10px 13px;
   border: 1px solid var(--reg-line);
   border-radius: 13.5px;
   background: var(--reg-soft);
@@ -33,11 +33,13 @@ button.no-show-mark {
   flex-direction: column;
   min-width: 0;
   font-size: 12px;
-  line-height: 15px;
+  line-height: 14px;
   color: var(--reg-deep);
 }
 
 .no-show-banner-text b {
+  position: relative;
+  top: 0.67px;
   font-size: 14px;
   line-height: 17px;
   color: var(--reg-ink);
