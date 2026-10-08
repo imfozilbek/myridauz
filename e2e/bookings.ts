@@ -70,7 +70,7 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('bookings.mine'))).toBeVisible();
   await shot('1-list');
   await page.getByText('Jasur').first().click();
-  await expect(page.locator('.plate-badge')).toBeVisible();
+  await expect(page.locator('.uz-plate').first()).toBeVisible();
   await shot('2-booking');
   await pressBack(page);
   // The own request card shows no own name (G37, docs/101 R6): the price of one seat opens it.

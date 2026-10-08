@@ -17,7 +17,7 @@ test('driver application: screenshots', async ({ page }) => {
   });
 });
 
-// What the driver sees when the team asks to fix the face, the front photo and the plate.
+// What the driver sees when the team asks to retake one photo (G62, mockup g62/1 screen 5).
 test('driver fixes the application: screenshots', async ({ page }) => {
   await mockApi(page, 'active', 'changes');
   await mockTelegram(page);
@@ -26,18 +26,14 @@ test('driver fixes the application: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/driver-fix-${name}.png`, fullPage: true });
   };
-  await expect(page.getByText(TEXT.reasonPlate)).toBeVisible();
-  await shot('1-status');
-  await page.locator('#tg-main-button').click();
-  await shot('2-review');
-  await page.getByText(TEXT.plate, { exact: true }).click();
-  await shot('3-plate');
+  // The fix opens at once: the bad photo outlined with its reason.
+  await expect(page.locator('.photo-tile-problem', { hasText: TEXT.reasonSide })).toBeVisible();
+  await expect(page.locator('#tg-main-button')).toHaveText(TEXT.resend);
+  await shot('1-photos');
+  // «Назад» leaves a note on the main screen that opens the fix again.
   await pressBack(page);
-  await page.getByText(TEXT.photos, { exact: true }).click();
-  await expect(page.locator('.photo-frame img')).toHaveCount(3);
-  // The face is the first photo of the same screen (G34).
-  await expect(page.getByText(TEXT.face, { exact: true })).toBeVisible();
-  await shot('4-photos');
+  await expect(page.getByText(TEXT.changes)).toBeVisible();
+  await shot('2-home');
 });
 
 test('moderation: screenshots', async ({ page }) => {

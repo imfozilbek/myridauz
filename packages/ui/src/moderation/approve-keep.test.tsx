@@ -39,11 +39,11 @@ describe('the moderator keeps what was done on an application (docs/94 B9, F3)',
     await screen.findByText('Raqam rasm boʻyicha tuzatildi');
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByText('Tasdiqlash'));
-    expect(await screen.findByText('10 124 ABC')).toBeTruthy();
+    expect(await screen.findByRole('img', { name: '10 124 ABC' })).toBeTruthy();
     await act(async () => fireEvent.click(screen.getByText('Raqam mos, tasdiqlash')));
     expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
     fireEvent.click(screen.getByText('Tasdiqlash'));
-    expect(await screen.findByText('10 124 ABC')).toBeTruthy();
+    expect(await screen.findByRole('img', { name: '10 124 ABC' })).toBeTruthy();
     decide.mockResolvedValueOnce({ ...application, status: 'approved' });
     fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     await screen.findByText('Javob yuborildi');

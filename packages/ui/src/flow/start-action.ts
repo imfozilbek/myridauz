@@ -14,6 +14,8 @@ export type StartAction = {
   readonly hintKey: TranslationKey;
   // A driver waits for the approval of the application before this action works (docs/86 V7).
   readonly waitsApproval?: true;
+  // Pale until the approval, with its own hint (G62, mockup g62/1 screen 4).
+  readonly paleUntilApproval?: true;
   // What its tile says live (G53): read where the tile is drawn, so a section loads only its own data.
   readonly useLive?: () => TileLive;
   // The section the action opens.

@@ -38,7 +38,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await tap('Jasur');
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     mine = [{ ...confirmed, status: 'cancelled_by_driver' }];
     channel.fire();
     expect(await screen.findByText('Haydovchi bekor qildi')).toBeTruthy();
@@ -80,7 +80,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
     await tap('Jasur');
     await tap('Joyni bekor qilish');
     expect(cancelMine).not.toHaveBeenCalled();
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
   });
 
   it('keeps the booking open with the reason when the cancel did not work', async () => {
@@ -99,7 +99,7 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
     await tap('Joyni bekor qilish');
     expect(await screen.findByRole('alert')).toBeTruthy();
     expect(screen.getByText('Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.')).toBeTruthy();
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
   });
 
   it('asks the driver before a trip cancel and shows why it did not work', async () => {

@@ -19,52 +19,66 @@ const toFix = () =>
     }),
   );
 
-describe('ApplicationFlow: «Назад» of the application (docs/94 B4, B5, F3)', () => {
-  it('G34: a new application starts on the make, and «Назад» returns to the main screen', async () => {
+describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G62)', () => {
+  it('a new application starts on the car, and «Назад» returns to the main screen', async () => {
     renderGate(null);
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
-    await tap('Arizani toʻldiring');
-    expect(await screen.findByText('Mashina markasi')).toBeTruthy();
+    await tap('Haydovchi boʻlish');
+    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
     expect(screen.queryByTestId('driver-home')).toBeNull();
     await tap('Orqaga');
-    expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
+    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
     expect(screen.getByTestId('driver-home')).toBeTruthy();
     expect(asked).not.toHaveBeenCalled();
   });
 
-  it('B4: fixing an application has «Назад» to its status', async () => {
-    toFix();
-    await tap('Tuzatish');
-    expect(await screen.findByText('Arizani tekshiring')).toBeTruthy();
+  it('«Oʻzgartirish» and «Назад» of the photos go to the car with its answers', async () => {
+    renderGate(null);
+    await tap('Haydovchi boʻlish');
+    await tap('Cobalt');
+    fireEvent.click(screen.getByRole('button', { name: 'Oq' }));
+    fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01A123BC' } });
+    await tap('Davom etish');
+    await tap('Oʻzgartirish');
+    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Cobalt' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByDisplayValue('01 A 123 BC')).toBeTruthy();
+    await tap('Davom etish');
     await tap('Orqaga');
-    expect(await screen.findByText('Davlat raqami rasmdagiga mos emas')).toBeTruthy();
-    expect(screen.queryByText('Arizani tekshiring')).toBeNull();
+    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
   });
 
-  it('B5: a new make and «Назад» on its model keeps the car as it was', async () => {
+  it('B4: «Назад» out of a fix goes to the main screen, the note there opens the fix again', async () => {
     toFix();
-    await tap('Tuzatish');
-    await tap('Mashina');
-    await tap('Lada');
-    expect(await screen.findByText('Granta')).toBeTruthy();
+    await screen.findByText('Mashinangiz');
     await tap('Orqaga');
-    expect(await screen.findByText('Chevrolet Cobalt')).toBeTruthy();
-    expect(screen.queryByText('Lada Cobalt')).toBeNull();
-    await tap('Mashina');
-    await tap('Lada');
-    await tap('Granta');
-    expect(await screen.findByText('Lada Granta')).toBeTruthy();
+    expect(await screen.findByText('Arizada tuzatish kerak')).toBeTruthy();
+    expect(screen.getByTestId('driver-home')).toBeTruthy();
+    await tap('Arizada tuzatish kerak');
+    expect(await screen.findByText('Mashinangiz')).toBeTruthy();
+  });
+
+  it('B4: a photo fix opens on the photos, «Назад» goes straight to the main screen', async () => {
+    renderGate(
+      application({
+        status: 'changes_requested',
+        car,
+        reasons: ['side_unclear'],
+        photos: { front: true, side: true, interior: true },
+      }),
+    );
+    expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
+    await tap('Orqaga');
+    expect(await screen.findByText('Arizada tuzatish kerak')).toBeTruthy();
+    expect(screen.queryByText('Mashinangiz')).toBeNull();
   });
 
   it('F3: leaving with a changed car asks first and stays on «no»', async () => {
     toFix();
     asked.mockReturnValue(false);
-    await tap('Tuzatish');
-    await tap('Davlat raqami');
-    fireEvent.change(screen.getByDisplayValue('01 A 123 BC'), { target: { value: '01 A 124 BC' } });
-    await tap('Davom etish');
+    fireEvent.change(await screen.findByDisplayValue('01 A 123 BC'), { target: { value: '01A124BC' } });
     await tap('Orqaga');
     expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
-    expect(screen.getByText('Arizani tekshiring')).toBeTruthy();
+    expect(screen.getByText('Mashinangiz')).toBeTruthy();
   });
 });

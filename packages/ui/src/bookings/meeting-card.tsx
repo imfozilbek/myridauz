@@ -2,7 +2,7 @@ import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { PlateBadge } from '../find/plate-badge';
+import { UzPlate } from '../plate/uz-plate';
 import { Icon } from '../icons';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
@@ -45,7 +45,7 @@ export function MeetingCard({ booking, onTold }: Props) {
       <b>{t('bookings.meeting.when', { time: formatTime(new Date(booking.trip.departAt)) })}</b>
       {startPoint ? <MeetingMap point={startPoint} onOpen={() => openExternal(mapUrl(startPoint))} /> : null}
       <span className="meeting-place">{start}</span>
-      {booking.plate ? <PlateBadge plate={booking.plate} /> : null}
+      {booking.plate ? <UzPlate plate={booking.plate} /> : null}
       <ActionFailure error={failure} />
       {booking.cameAt === null ? (
         <button type="button" className="meeting-came" onClick={() => void came()}>

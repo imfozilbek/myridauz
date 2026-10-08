@@ -45,6 +45,14 @@ describe('StartFlow', () => {
     expect(screen.queryByRole('heading', { name: loadBrand().name })).toBeNull();
   });
 
+  it('opens a section at once by the link of a bot button, back goes to the main screen (G62)', () => {
+    window.history.replaceState(null, '', '/?open=my_trips');
+    renderInShell(<StartFlow actions={ACTIONS} />);
+    fireEvent.click(screen.getByText('section'));
+    expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+    window.history.replaceState(null, '', '/');
+  });
+
   it('goes from the main screen to a section and back', () => {
     const { tracked } = renderInShell(<StartFlow actions={ACTIONS} />);
     expect(screen.getByText('Safar topish')).toBeTruthy();

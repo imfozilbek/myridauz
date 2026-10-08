@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { TEXT } from '../apps';
+import { TEXT, newTripTile } from '../apps';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
@@ -63,7 +63,7 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
 
 test('android: publish a trip step by step up to the review', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
-  await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

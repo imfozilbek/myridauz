@@ -29,7 +29,7 @@ const more = () => fireEvent.click(screen.getByRole('button', { name: 'Oshirish'
 describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 }, () => {
   it('shows the driver with the plate, one review and «Barcha izohlar (N) ›»', async () => {
     open(trip);
-    expect(await screen.findByText('01 A 123 BC')).toBeTruthy();
+    expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(await screen.findByText('«Yaxshi haydaydi»')).toBeTruthy();
     await tap('Barcha izohlar (37) ›');
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();

@@ -140,4 +140,6 @@
 | 135 | [135-g60-pixel-perfect.md](135-g60-pixel-perfect.md) | G60: сверка Pixel Perfect экранов пути 3 и спорные места макета |
 | 136 | [136-g61-texts.md](136-g61-texts.md) | G61: новые тексты заявки, «Mening soʻrovim», правила салона и бота на согласие владельца |
 | 137 | [137-g61-pixel-perfect.md](137-g61-pixel-perfect.md) | G61: сверка Pixel Perfect заявки и «Mening soʻrovim», спорные места макета |
+| 138 | [138-g62-texts.md](138-g62-texts.md) | G62: новые тексты заявки водителя, главного экрана и бота при одобрении на согласие владельца |
+| 139 | [139-g62-pixel-perfect.md](139-g62-pixel-perfect.md) | G62: сверка Pixel Perfect заявки водителя, спорные места макета |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

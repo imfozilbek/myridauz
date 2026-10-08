@@ -7,7 +7,7 @@ import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { usePayHint } from './pay-hint';
-import { PlateView } from '../driver/plate-view';
+import { UzPlate } from '../plate/uz-plate';
 import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
@@ -76,7 +76,7 @@ export function BookingScreen({ booking, side, onBack, actions, children }: Prop
         <BookingPlaces booking={booking} />
         {open && booking.plate ? (
           <Section>
-            <Cell description={<PlateView plate={booking.plate} small />}>{t('bookings.plate')}</Cell>
+            <Cell description={<UzPlate plate={booking.plate} size="s" />}>{t('bookings.plate')}</Cell>
           </Section>
         ) : null}
         <Section header={t(side === 'passenger' ? 'market.trip.driver' : 'bookings.passengers')}>

@@ -1,5 +1,5 @@
-import { appHost, type BrandConfig } from '@platform/brands';
-import { formatPlate, hourLabel, isTeamTime } from '@platform/contracts';
+import { appHost, channelOfPlate, type BrandConfig } from '@platform/brands';
+import { formatPlate, hourLabel, isTeamTime, NEW_TRIP_SECTION, OPEN_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { callTelegram, sendAlbum, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { Application } from '../domain/application';
@@ -44,6 +44,22 @@ function receivedText(brand: BrandConfig, sentAt: number): string {
   return t('bot.driver.receivedNight', { from: hourLabel(hours.from), to: hourLabel(hours.to) });
 }
 
+// The approval (G62, docs/119 driver 4): the channel of the region of the car with «Kanalga oʻtish»,
+// and «Safar eʼlon qilish» right into a new trip. A Tashkent car has no channel (docs/15).
+function approvedParts(brand: BrandConfig, application: Application, fixedPlate: string | null) {
+  const plate = fixedPlate ?? application.car?.plate ?? '';
+  const zone = channelOfPlate(brand, plate);
+  const publish = {
+    text: t('bot.driver.publish'),
+    web_app: { url: `https://${appHost(brand, 'driver')}/?${OPEN_LINK}=${NEW_TRIP_SECTION}` },
+  };
+  if (!zone) return { channel: null, buttons: [[publish]] };
+  return {
+    channel: t('bot.driver.channel', { zone: zone.title, username: zone.username }),
+    buttons: [[{ text: t('bot.driver.join'), url: `https://t.me/${zone.username}` }], [publish]],
+  };
+}
+
 export function telegramNotifier(wiring: Wiring): ModerationNotifier {
   const { fetch, brand, adminToken, driverToken } = wiring;
   return {
@@ -81,6 +97,8 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
       if (!driverToken || application.status === 'draft' || application.status === 'pending') return;
       // One reason per line: the driver finds each one marked in the Mini App.
       const reasons = reasonList(application.reasons, '\n').replace(/^/gm, '• ');
+      const approved =
+        application.status === 'approved' ? approvedParts(brand, application, fixedPlate) : null;
       const open = { text: t('bot.open'), web_app: { url: `https://${appHost(brand, 'driver')}` } };
       await quietly(
         callTelegram(fetch, driverToken, 'sendMessage', {
@@ -89,8 +107,9 @@ export function telegramNotifier(wiring: Wiring): ModerationNotifier {
             t(RESULT_TEXT[application.status], { reasons }),
             ...(fixedPlate ? [t('bot.driver.plateFixed', { plate: formatPlate(fixedPlate) })] : []),
             ...(bonus ? [bonusLine(bonus)] : []),
+            ...(approved?.channel ? [approved.channel] : []),
           ].join('\n\n'),
-          reply_markup: { inline_keyboard: [[open]] },
+          reply_markup: { inline_keyboard: approved?.buttons ?? [[open]] },
         }),
       );
     },

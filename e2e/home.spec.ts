@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS } from './apps';
+import { appUrl, MINI_APPS, newTripTile } from './apps';
 import { confirmed } from './bookings-mock';
 import { tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -62,7 +62,7 @@ function scenarios(platform: 'android' | 'ios') {
     await expect(page.getByText(new RegExp(t('bookings.status.confirmed'), 'u'))).toBeVisible();
     await shot(page, '2-passenger-booking');
     await page.getByText(t('bookings.status.confirmed')).first().click();
-    await expect(page.locator('.plate-badge')).toBeVisible();
+    await expect(page.locator('.uz-plate').first()).toBeVisible();
   });
 
   // Owner check 3: the trip and its new requests; a new request comes by itself.
@@ -85,9 +85,9 @@ function scenarios(platform: 'android' | 'ios') {
   test('a driver without trips publishes from the main screen', async ({ page }) => {
     const { go } = await open(page, DRIVER.port);
     await go();
-    await expect(mainButton(page)).toHaveText(t('home.publish'));
+    await expect(newTripTile(page)).toBeVisible();
     await shot(page, '4-driver-empty');
-    await mainButton(page).click();
+    await newTripTile(page).click();
     await expect(page.getByText(t('places.from'))).toBeVisible();
   });
 

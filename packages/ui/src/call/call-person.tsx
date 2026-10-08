@@ -1,7 +1,7 @@
 import type { ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
-import { PlateBadge } from '../find/plate-badge';
+import { UzPlate } from '../plate/uz-plate';
 
 const PHOTO = 118;
 const LETTER = 40;
@@ -37,7 +37,7 @@ export function CallPerson({ about, name }: { readonly about: ChatAbout | null; 
       {car ? (
         <span className="call-car">
           {`${car.model}, ${t(`drivers.color.${car.color}`)} · `}
-          {booking?.plate ? <PlateBadge plate={booking.plate} /> : null}
+          {booking?.plate ? <UzPlate plate={booking.plate} size="s" /> : null}
         </span>
       ) : null}
     </>

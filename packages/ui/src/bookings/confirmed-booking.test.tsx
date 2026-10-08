@@ -26,7 +26,7 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     open();
     await tap('Jasur');
     expect(screen.getByText('Joy tasdiqlandi')).toBeTruthy();
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(screen.getByText(/olib ketish joyi$/u)).toBeTruthy();
     expect(screen.getByText('Pulni haydovchiga safarda oʻzingiz berasiz.')).toBeTruthy();
     for (const button of ['Xabar yozish', 'Qoʻngʻiroq', 'Yaqinlarimga', 'Shikoyat', 'Joyni bekor qilish'])

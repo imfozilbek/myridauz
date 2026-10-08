@@ -15,10 +15,6 @@
   color: var(--reg-ink, var(--tgui--text_color));
 }
 
-.meeting-card .plate-badge {
-  font-size: 18px;
-}
-
 .meeting-came {
   display: flex;
   align-items: center;

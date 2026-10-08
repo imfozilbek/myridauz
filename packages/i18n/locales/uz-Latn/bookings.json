@@ -123,6 +123,5 @@
   "offer.car": "{model}, {color}",
   "request.perSeat": "bir joy {price}",
   "request.offers": "Takliflar ({count})",
-  "request.waiting": "Kutayotganda",
-  "offer.carPlate": "{car} · {plate}"
+  "request.waiting": "Kutayotganda"
 }

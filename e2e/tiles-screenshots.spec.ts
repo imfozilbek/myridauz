@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS } from './apps';
+import { appUrl, MINI_APPS, newTripTile } from './apps';
 import { confirmed, offer } from './bookings-mock';
 import { mockFeedback } from './feedback-mock';
 import { tripOf } from './market-mock';
@@ -63,7 +63,7 @@ for (const platform of ['android', 'ios'] as const) {
       await json(page, '**/api/driver/bookings', { bookings: [] });
       await go();
       await expect(page.getByText(t('common.myTrips'))).toBeVisible();
-      await expect(page.getByText(/^Bonus /u)).toBeVisible();
+      await expect(newTripTile(page)).toBeVisible();
       await shot(page, 'd2-free');
       const trip = tripOf('7', 'Jasur', false, 20);
       const asked = { ...confirmed, id: 'b7', status: 'requested', trip };

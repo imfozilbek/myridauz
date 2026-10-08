@@ -39,7 +39,7 @@ describe('the call (G60, mockup g60/4): the face, the car, the one trip card', (
     expect(await screen.findByText('Sizga qoʻngʻiroq qilishyapti')).toBeTruthy();
     const call = within(screen.getByRole('dialog', { name: 'Qoʻngʻiroq' }));
     expect(call.getByText(/^Cobalt, /u)).toBeTruthy();
-    expect(call.getByText('01 A 123 BC')).toBeTruthy();
+    expect(call.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(call.getByText(/olib ketish joyi$/u)).toBeTruthy();
     expect(call.getByText('2 joy')).toBeTruthy();
     expect(call.getByText('Ilovani yopmang: qoʻngʻiroq uziladi.')).toBeTruthy();
@@ -49,7 +49,7 @@ describe('the call (G60, mockup g60/4): the face, the car, the one trip card', (
     const socket = await ringing('driver');
     const call = within(await screen.findByRole('dialog', { name: 'Qoʻngʻiroq' }));
     expect(call.getAllByText(confirmed.passenger.firstName).length).toBeGreaterThan(0);
-    expect(call.queryByText('01 A 123 BC')).toBeNull();
+    expect(call.queryByRole('img', { name: '01 A 123 BC' })).toBeNull();
     act(() => socket.receive({ type: 'call', call: { status: 'active', caller: 'other' } }));
     expect(screen.queryByText(/Quloqchin/u)).toBeNull();
     expect(call.getByText(/^\d{2}:\d{2}$/u)).toBeTruthy();

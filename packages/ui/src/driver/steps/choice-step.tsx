@@ -12,7 +12,7 @@ import { haptic } from '../../telegram/feedback';
 
 // before: a picture next to the label, like a color dot; after: a short fact on the right, like the
 // seats; subtitle: a longer fact under the label, like a place name, that would squeeze it on the right.
-export type Choice<T> = {
+type Choice<T> = {
   readonly value: T;
   readonly label: string;
   readonly before?: ReactNode;

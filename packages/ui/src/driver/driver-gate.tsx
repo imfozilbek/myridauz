@@ -6,12 +6,16 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { ApplicationFlow } from './application-flow';
 import { DriverContext, type Driver } from './driver-context';
-import { SentScreen } from './sent-screen';
 import { StatusScreen } from './status-screen';
 
 type Loaded = { readonly application: DriverApplication | null };
 
-const LOOKING_AROUND = new Set<DriverApplication['status']>(['approved', 'pending', 'draft']);
+const LOOKING_AROUND = new Set<DriverApplication['status']>([
+  'approved',
+  'pending',
+  'draft',
+  'changes_requested',
+]);
 // No application on the server yet: nothing is sent, no photo is taken.
 const NEW_APPLICATION: DriverApplication = {
   status: 'draft',
@@ -21,18 +25,20 @@ const NEW_APPLICATION: DriverApplication = {
 };
 
 // An approved driver works in the driver Mini App (docs/04). A driver whose application is not sent
-// yet (G34) or is being checked looks around the app; publishing waits for the approval. A rejected
-// application, or one with changes asked, shows what to fix.
+// yet (G34), is being checked or has a fix asked looks around the app; publishing waits for the
+// approval. A fix asked opens at once (G62); a rejected application shows why.
 export function DriverGate({ children }: { readonly children: ReactNode }) {
   const { drivers } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [sent, setSent] = useState(false);
   const load = useCallback(() => {
     setFailed(false);
     drivers.getApplication().then(
-      (application) => setLoaded({ application }),
+      (application) => {
+        setLoaded({ application });
+        if (application?.status === 'changes_requested') setEditing(true);
+      },
       () => setFailed(true),
     );
   }, [drivers]);
@@ -48,9 +54,9 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
   const editCar = useCallback(() => setEditing(true), []);
   const close = useCallback(() => setEditing(false), []);
   const submitted = useCallback((application: DriverApplication) => {
+    // No «Ariza yuborildi»: the main screen says the application is checked (G62).
     setLoaded({ application });
     setEditing(false);
-    setSent(true);
   }, []);
   const application = loaded?.application ?? null;
   const driver = useMemo<Driver | null>(() => {
@@ -60,9 +66,8 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
 
   if (failed) return <ErrorScreen onRetry={load} />;
   if (!loaded) return <ScreenSkeleton />;
-  if (sent) return <SentScreen onDone={() => setSent(false)} />;
   if (!editing && driver) return <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>;
   if (!editing && application) return <StatusScreen application={application} onFix={editCar} />;
-  // «Назад» out of the application: a new one to the main screen, a sent one to where it was (B4).
+  // «Назад» out of the application goes to the main screen (docs/94 B4).
   return <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />;
 }

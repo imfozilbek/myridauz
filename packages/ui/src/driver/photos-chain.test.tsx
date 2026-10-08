@@ -3,7 +3,7 @@ import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { renderInShell, testClients } from '../test-shell';
-import { application } from './driver-test-kit';
+import { application, car } from './driver-test-kit';
 import { PhotosStep } from './steps/photos-step';
 
 vi.mock('../account/profile/compress-image', () => ({ compressImage: async (file: Blob) => file }));
@@ -29,11 +29,15 @@ describe('the car photos one after another (G40, docs/106 K7)', () => {
     const { container } = renderInShell(
       <AccountContext.Provider value={account}>
         <PhotosStep
+          car={car}
           photos={{ front: false, side: false, interior: false }}
           reasons={[]}
+          fixing={false}
+          failure={null}
           onPhotos={vi.fn()}
+          onChange={vi.fn()}
           onBack={vi.fn()}
-          onDone={vi.fn()}
+          onSend={vi.fn()}
         />
       </AccountContext.Provider>,
       false,
@@ -43,7 +47,7 @@ describe('the car photos one after another (G40, docs/106 K7)', () => {
     );
     const input = container.querySelector('input[type=file][capture=environment]') as HTMLInputElement;
     const opened = vi.spyOn(input, 'click');
-    fireEvent.click(screen.getByText('Old tomondan, raqami bilan').closest('button') as HTMLElement);
+    fireEvent.click(screen.getByText('Old tomondan', { exact: true }).closest('button') as HTMLElement);
     expect(opened).toHaveBeenCalledOnce();
     fireEvent.change(input, { target: { files: [new File(['x'], 'car.jpg', { type: 'image/jpeg' })] } });
     await waitFor(() => expect(uploadPhoto).toHaveBeenCalledWith('front', expect.anything()));

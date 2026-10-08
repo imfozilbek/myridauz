@@ -1,5 +1,5 @@
 import './moderation.css';
-import { formatPlate, type ApplicationSummary } from '@platform/contracts';
+import { type ApplicationSummary } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { Cell, List, Section } from '../components';
@@ -10,6 +10,7 @@ import { EmptyState } from '../states/empty-state';
 import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
+import { UzPlate } from '../plate/uz-plate';
 
 export const QUEUE = 'moderation.queue';
 const MINUTE_MS = 60_000;
@@ -60,7 +61,12 @@ export function QueueView({ queue, title, onOpen, onBack, onRefresh }: QueueView
               key={application.userId}
               data-row={application.userId}
               before={<IconTile name="car" />}
-              subtitle={`${application.car.make} ${application.car.model} · ${formatPlate(application.car.plate)}`}
+              subtitle={
+                <span className="plate-line">
+                  {`${application.car.make} ${application.car.model}`}
+                  <UzPlate plate={application.car.plate} size="s" />
+                </span>
+              }
               description={waiting(application)}
               onClick={() => onOpen(application)}
             >

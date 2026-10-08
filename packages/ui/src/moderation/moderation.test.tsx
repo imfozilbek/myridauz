@@ -1,6 +1,6 @@
 import { ApiError } from '@platform/api-client';
 import type { ApplicationDetail, ApplicationSummary, DecisionInput } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell, testClients } from '../test-shell';
 import { ApplicationsScreen } from './applications-screen';
@@ -52,7 +52,8 @@ describe('ApplicationsScreen (docs/04)', () => {
     const { decide } = setup();
     fireEvent.click(await screen.findByText('Ali'));
     expect(screen.getByText('Chevrolet Nexia')).toBeTruthy();
-    expect((await screen.findAllByRole('img')).length).toBe(4);
+    // Four photos and the plate.
+    await waitFor(() => expect(screen.getAllByRole('img')).toHaveLength(5));
     // "Tasdiqlash" is the main button at the bottom, "Rad etish" a red row (docs/86 V10).
     expect(screen.getByText('Rad etish').className).toBe('danger-text');
     expect(screen.getByText('Tuzatishni soʻrash').className).not.toBe('danger-text');
@@ -60,7 +61,7 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.click(screen.getByText('Tasdiqlash'));
     // The plate is compared with the front photo first (docs/50).
     expect(await screen.findByText('Raqamni tekshiring')).toBeTruthy();
-    expect(screen.getByText('10 123 ABC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '10 123 ABC' })).toBeTruthy();
     fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
     expect(decide).toHaveBeenCalledWith('00000000000000000000000000000005', { action: 'approve' });
@@ -74,7 +75,7 @@ describe('ApplicationsScreen (docs/04)', () => {
     fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '10 124 abc' } });
     fireEvent.click(screen.getByText('Davom etish'));
     expect(await screen.findByText('Raqam rasm boʻyicha tuzatildi')).toBeTruthy();
-    expect(screen.getByText('10 124 ABC')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '10 124 ABC' })).toBeTruthy();
     fireEvent.click(screen.getByText('Raqam mos, tasdiqlash'));
     await screen.findByText('Javob yuborildi');
     expect(decide).toHaveBeenCalledWith('00000000000000000000000000000005', {
