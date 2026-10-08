@@ -10,9 +10,10 @@ import type { TripValues } from './trip-draft';
 import { TripPickup } from './trip-pickup';
 import { TripRow } from './trip-row';
 import { RULE_LABELS } from './trip-rule-step';
-import { useDayTimeLabel } from './when';
+import { useShortDay } from './when';
 import '../find/seats.css';
 import './trip-form.css';
+import './trip-controls.css';
 
 export type TripPart = 'when' | 'rule' | 'comment' | 'pitak';
 type Props = {
@@ -33,7 +34,7 @@ export function TripChoice(props: Props) {
   const { values, carSeats, recommendation, pitak, direction, now, onChange, onOpen } = props;
   const { t, formatNumber } = useI18n();
   const { commission } = useBrand();
-  const dayTime = useDayTimeLabel();
+  const shortDay = useShortDay();
   const { seats, price, comment } = values;
   const { minPrice, maxPrice, roundStep } = recommendation;
   const step = (patch: TripAnswer) => {
@@ -51,23 +52,29 @@ export function TripChoice(props: Props) {
       />
       <TripRow
         icon="day"
-        label={values.time ? dayTime(values.date, values.time, now) : t('market.when.title')}
+        label={
+          values.time
+            ? t('market.publish.day', { date: shortDay(values.date, now), time: values.time })
+            : t('market.when.title')
+        }
         onOpen={() => onOpen('when')}
       />
       <TripRow
-        icon="profile"
+        icon="seat"
         label={t('market.review.seats')}
         hint={t('market.publish.carSeats', { count: String(carSeats) })}
         after={
-          <Stepper
-            value={seats}
-            atLeast={seats <= 1}
-            atMost={seats >= carSeats}
-            // All the seats again: nobody else goes, the question about a woman is gone (docs/06).
-            onStep={(by) =>
-              step({ seats: seats + by, ...(seats + by >= carSeats ? { womanOnBoard: false } : {}) })
-            }
-          />
+          <span className="trip-seats">
+            <Stepper
+              value={seats}
+              atLeast={seats <= 1}
+              atMost={seats >= carSeats}
+              // All the seats again: nobody else goes, the question about a woman is gone (docs/06).
+              onStep={(by) =>
+                step({ seats: seats + by, ...(seats + by >= carSeats ? { womanOnBoard: false } : {}) })
+              }
+            />
+          </span>
         }
       />
       {values.askWoman ? (
@@ -96,7 +103,7 @@ export function TripChoice(props: Props) {
         }
       />
       <TripRow
-        icon="car"
+        icon="carSide"
         label={t('market.rule.title')}
         hint={t('market.publish.rule', {
           rule: t(`market.rule.${RULE_LABELS[values.bookingRule]}`),

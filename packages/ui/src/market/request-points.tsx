@@ -94,7 +94,7 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
       hint={t('market.request.hint')}
       error={error ? t(error) : null}
       button={t(exists ? 'market.request.openMine' : 'market.request.publish')}
-      onSend={exists ? () => setMine(true) : () => void publish()}
+      onSend={exists ? () => setMine(true) : publish}
       onBack={onBack}
     >
       <RequestChoice value={choice} recommendation={recommendation} onChange={onAnswer} />

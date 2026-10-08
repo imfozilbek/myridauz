@@ -21,6 +21,7 @@ import { ResultsHead } from './results-head';
 import { SearchTripCard } from './search-trip-card';
 import './find.css';
 import './results.css';
+import './list-stale.css';
 import './trip-card.css';
 
 type Props = {

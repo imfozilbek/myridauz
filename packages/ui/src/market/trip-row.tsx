@@ -25,7 +25,7 @@ export function TripRow({ icon, label, hint, after, onOpen, muted = false, child
         <span className={muted ? 'trip-row-muted' : undefined}>{label}</span>
         {hint ? <span className="seats-hint">{hint}</span> : null}
       </span>
-      {onOpen ? <Icon name="next" size={12} /> : after}
+      {onOpen ? <Icon name="next" size={10} /> : after}
       {children ? <div className="trip-row-more">{children}</div> : null}
     </>
   );

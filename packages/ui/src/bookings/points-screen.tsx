@@ -26,7 +26,8 @@ type Props = {
   readonly error: string | null;
   // No button while the action waits for something else (a driver on the check, G63).
   readonly button: string | null;
-  readonly onSend: () => void;
+  // A promise keeps the button busy until it ends: a second tap sends nothing (docs/65 A4).
+  readonly onSend: () => unknown;
   readonly onBack: () => void;
   // The trip of a driver (G63, mockups g63/1, g63/2): smaller rows, the end in the green of a route.
   readonly look?: 'trip';

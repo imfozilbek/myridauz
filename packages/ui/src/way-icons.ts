@@ -8,6 +8,7 @@ import {
   MapPin,
   Navigation,
   Signpost,
+  User,
   Waypoints,
   type LucideIcon,
 } from 'lucide-react';
@@ -29,4 +30,6 @@ export const WAY_ICONS = {
   pitak: Signpost,
   anyWay: Waypoints,
   day: Calendar,
+  // The free seats of a trip (G63): one person, as on the approved mockup g63/1.
+  seat: User,
 } satisfies Record<string, LucideIcon>;

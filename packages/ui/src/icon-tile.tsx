@@ -6,7 +6,7 @@ export type Tone = 'brand' | 'mint' | 'accent' | 'deep' | 'danger';
 const SIZES = {
   cell: { tile: 30, icon: 18, radius: 8 },
   // A row of a new trip (G63, mockups g63/1, g63/2): the tile of a cell with a smaller icon.
-  row: { tile: 30, icon: 16, radius: 8 },
+  row: { tile: 30, icon: 17, radius: 8 },
   // A tile of the main screen (G53).
   tile: { tile: 40, icon: 22, radius: 11 },
   // A big choice tile, the gender of the registration (G58).

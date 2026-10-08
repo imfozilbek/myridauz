@@ -1,11 +1,10 @@
-import type { Pitak, Recommendation } from '@platform/contracts';
-import { useEffect, useState } from 'react';
-import { useApiClients } from '../context/api-clients';
+import { useState } from 'react';
 import { asRecord, useFlowDraft } from '../flow/flow-draft';
 import { useStepProgress } from '../flow/step-progress';
 import type { Route } from '../places/route-screen';
 import type { RememberedWay } from '../way/remembered-way';
-import { regionOf, type WayEnd } from '../way/way-end';
+import type { WayEnd } from '../way/way-end';
+import { useRouteFacts } from './route-facts';
 
 // The route and the day, then «Qayerdan, qayerga?» with the maps of its two ends (G61, docs/118 path 4).
 const STEPS = ['route', 'date', 'points', 'pickup', 'dropoff'] as const;
@@ -54,12 +53,9 @@ export function useNewRequest(
   search: { route: Route; date: string } | undefined,
   last: RememberedWay | null,
 ) {
-  const { market, map } = useApiClients();
   const answer: RequestAnswer = search ? { ...search, ...keptWay(last) } : {};
   const start: Saved = { step: nextStep(answer), answer };
   const { value, setValue, restored, clear } = useFlowDraft(DRAFT_KEY, checkSaved, start, Boolean(search));
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   const [sent, setSent] = useState(false);
   const go = (step: RequestStepName) => setValue((saved) => ({ ...saved, step }));
   const next = (patch: RequestAnswer) =>
@@ -72,14 +68,6 @@ export function useNewRequest(
     setSent(true);
   };
   useStepProgress(sent ? -1 : STEPS.indexOf(value.step), STEPS.length);
-  const { route } = value.answer;
-  useEffect(() => {
-    if (!route) return;
-    setRecommendation(null);
-    setPitak(undefined);
-    market.recommend(route.from.id, route.to.id).then(setRecommendation, () => go('route'));
-    // A pitak joins two regions (docs/72): without it the passenger is taken at the door.
-    map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
-  }, [route, market, map]);
+  const { recommendation, pitak } = useRouteFacts(value.answer.route, () => go('route'));
   return { ...value, recommendation, pitak, restored, sent, done, go, next };
 }

@@ -72,7 +72,7 @@ export function TripForm(props: Props) {
       {...(pending ? { hint: t('drivers.status.pending.publish') } : {})}
       error={error ? t(error) : null}
       button={pending ? null : t('market.publish.send')}
-      onSend={() => void publish()}
+      onSend={publish}
       onBack={props.onBack}
     >
       <TripChoice

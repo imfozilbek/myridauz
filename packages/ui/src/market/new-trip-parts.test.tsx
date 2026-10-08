@@ -8,6 +8,7 @@ beforeEach(() => localStorage.clear());
 
 const PITAK = 'Qoʻyliq pitagi';
 const DOORS = 'Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi.';
+const smallMap = () => document.querySelector('.meeting-map');
 const chips = () => screen.getAllByRole('radio').map((chip) => chip.textContent);
 
 // G63 (mockup g63/2, docs/70, docs/72): the way of pickup, the rule and the comment of a new trip.
@@ -19,16 +20,23 @@ describe('the parts of a new trip', { timeout: 20_000 }, () => {
     expect(chips()).toEqual(['Pitakdan', 'Uydan', 'Ikkalasi']);
     expect(screen.getByRole('radio', { name: 'Pitakdan' }).getAttribute('aria-checked')).toBe('true');
     expect(screen.getByText('Fargʻona yoʻnalishi pitagi')).toBeTruthy();
+    // The pitak is on the small map right under its card (docs/126, journey g63/4 screen 3).
+    expect(smallMap()).toBeTruthy();
     await tap('Uydan');
     expect(screen.getByText(DOORS)).toBeTruthy();
     expect(screen.queryByText(PITAK)).toBeNull();
+    expect(smallMap()).toBeNull();
     await tap('Ikkalasi');
+    expect(smallMap()).toBeTruthy();
     await tap('Xaritada');
     expect(document.querySelector('.pitak-map')).toBeTruthy();
     expect(screen.getByText(PITAK)).toBeTruthy();
     await tap('Orqaga');
     expect(await screen.findByText('Eʼlon qilish')).toBeTruthy();
     expect(screen.getByRole('radio', { name: 'Ikkalasi' }).getAttribute('aria-checked')).toBe('true');
+    // A tap on the small map opens the same big one.
+    fireEvent.click(screen.getByRole('button', { name: 'Xaritada ochish' }));
+    expect(document.querySelector('.pitak-map')).toBeTruthy();
   });
 
   it('offers only the doors where the direction has no pitak', async () => {
@@ -36,6 +44,7 @@ describe('the parts of a new trip', { timeout: 20_000 }, () => {
     await chooseRoute();
     expect(await screen.findByText(DOORS)).toBeTruthy();
     expect(chips()).toEqual(['Uydan']);
+    expect(smallMap()).toBeNull();
     await tap('Eʼlon qilish');
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ pickupMode: 'door' }));
   });

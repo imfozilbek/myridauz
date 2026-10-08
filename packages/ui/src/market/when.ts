@@ -41,14 +41,3 @@ export function useNearWhenLabel() {
     return t('market.trip.when', { date: formatDate(new Date(ms)), time });
   };
 }
-
-// "Ertaga, 08:00" of a new trip (G63, mockup g63/1): the day by its name when it is near.
-export function useDayTimeLabel() {
-  const { t, formatDate } = useI18n();
-  return (date: string, time: string, now: number) =>
-    date === today(now)
-      ? t('market.publish.today', { time })
-      : date === tomorrow(now)
-        ? t('market.publish.tomorrow', { time })
-        : t('market.publish.day', { date: formatDate(noonOf(date)), time });
-}

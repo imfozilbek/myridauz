@@ -71,7 +71,6 @@ export const TEXT = {
   findTrip: t('common.passenger.findTrip'),
   tomorrow: /^Ertaga/,
   otherDay: t('market.date.otherDay'),
-  priceTitle: t('market.price.title'),
   commentSkip: t('market.comment.skip'),
   publish: t('market.publish.send'),
   // «Mening safarim» of the trip just published (G63): its cancel link is there before the start.

@@ -1,4 +1,4 @@
-import { DAY_MS, tashkentDate, tashkentDayStart } from '@platform/contracts';
+import { DAY_MS, tashkentDate, tashkentDayStart, type Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { chooseRoute, tap } from './market-test-kit';
@@ -85,6 +85,16 @@ describe('NewTripFlow: a new trip on one screen', { timeout: 20_000 }, () => {
     seatsLess();
     expect(seatsShown()).toBe('3');
     expect(screen.queryByText(WOMAN)).toBeNull();
+  });
+
+  it('publishes once when «Eʼlon qilish» is tapped twice while the first one runs (docs/65 A4)', async () => {
+    const { publishTrip } = openNewTrip();
+    publishTrip.mockImplementationOnce(() => new Promise<Trip>(() => undefined));
+    await chooseRoute();
+    const send = await screen.findByText('Eʼlon qilish');
+    fireEvent.click(send);
+    fireEvent.click(send);
+    expect(publishTrip).toHaveBeenCalledTimes(1);
   });
 
   it('shows an error of the API and lets a driver on the check try everything but publishing', async () => {

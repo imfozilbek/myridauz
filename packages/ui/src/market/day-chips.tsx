@@ -2,6 +2,7 @@ import { SegmentedControl } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
 import { noonOf, today, tomorrow } from './when';
+import './day-chips.css';
 
 type Props = {
   readonly date: string;

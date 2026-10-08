@@ -22,8 +22,6 @@
   "price.more": "Oshirish",
   "publish.car": "{model}, {color} · {plate}",
   "publish.head": "Safar",
-  "publish.today": "Bugun, {time}",
-  "publish.tomorrow": "Ertaga, {time}",
   "publish.day": "{date}, {time}",
   "publish.carSeats": "Mashinada {count} joy",
   "publish.womanHint": "Siz bilan ketayotgan odam ayolmi?",

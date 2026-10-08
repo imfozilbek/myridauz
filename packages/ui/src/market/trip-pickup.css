@@ -3,38 +3,19 @@
 .points-trip .seats-row.trip-row-wide {
   flex-wrap: wrap;
   row-gap: 7px;
-  padding-top: 6px;
+  padding-top: 7px;
 }
 
 .points-trip .trip-row-more {
   flex: 1 0 100%;
   box-sizing: border-box;
-  padding: 0 0 11px 41px;
+  padding: 0 0 9px 41px;
 }
 
 .trip-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-}
-
-.trip-chip {
-  height: 22px;
-  padding: 0 8px;
-  border: 1px solid var(--reg-off);
-  border-radius: 11px;
-  background: var(--reg-card);
-  font: inherit;
-  font-size: 12px;
-  color: var(--reg-ink);
-  cursor: pointer;
-}
-
-.trip-chip[aria-checked='true'] {
-  border-color: var(--reg-strong);
-  background: var(--reg-soft);
-  font-weight: 700;
-  color: var(--reg-text);
 }
 
 .trip-pitak {
@@ -44,8 +25,8 @@
   gap: 8px;
   box-sizing: border-box;
   width: 100%;
-  margin-top: 10px;
-  padding: 5px 10px 7px;
+  margin-top: 8px;
+  padding: 6px 8px 8px 10px;
   border: 0;
   border-radius: 10px;
   background: var(--reg-soft);
@@ -62,13 +43,13 @@
 
 .trip-pitak-words b {
   font-size: 13px;
-  line-height: 15px;
+  line-height: 16px;
   color: var(--reg-ink);
 }
 
 .trip-pitak-words span {
   font-size: 12px;
-  line-height: 15px;
+  line-height: 16px;
   color: var(--reg-muted);
 }
 
@@ -76,14 +57,30 @@
   display: flex;
   flex: none;
   align-items: center;
-  gap: 2px;
   font-size: 13px;
   color: var(--reg-text);
 }
 
+/* «›» right after «Xaritada», as thick as a letter (mockup g63/2). */
+.trip-pitak-map svg {
+  stroke-width: 2.5;
+}
+
 .trip-door {
-  margin: 8px 0 -1px;
+  margin: 8.5px 0 0.5px;
   font-size: 12.5px;
   line-height: 14.5px;
   color: var(--reg-muted);
+}
+
+/* The pitak on the small map (docs/126, journey g63/4 screen 3): from the icon tile of the row to the
+   end of the pitak card, a short strip; a tap opens the big map. */
+.trip-row-more .meeting-map {
+  width: calc(100% + 41px);
+  margin: 6px 0 0 -41px;
+  border-radius: 10px;
+}
+
+.trip-row-more .meeting-map-box {
+  height: 54px;
 }

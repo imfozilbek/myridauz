@@ -8,6 +8,7 @@ import { useDriver } from '../driver/driver-context';
 import { usePlaceNames } from '../places/place-names';
 import type { Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { regionOf } from '../way/way-end';
 import type { useNewTrip } from './new-trip-state';
 import { PitakScreen } from './pitak-screen';
 import { usePlaces } from './places-gate';
@@ -42,7 +43,7 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const carSeats = car?.seats ?? 1;
   const known = { now, schedule, rules, recommendation, pitak, carSeats, isMan };
   const values = tripValues({ ...answer, route }, known);
-  const region = (route.to.parentId === null ? undefined : places.find(route.to.parentId)) ?? route.to;
+  const region = places.find(regionOf(route.to)) ?? route.to;
   const direction = names.short(region);
   if (screen === 'when')
     return (

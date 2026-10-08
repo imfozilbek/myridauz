@@ -1,0 +1,50 @@
+/* The controls of «Safar eʼlon qilish» (G63, mockups g63/1, g63/2 at 360 px): the steppers and the
+   switch, one to one (lesson 141); only the colors come from the brand. */
+.points-trip .seats-stepper {
+  gap: 5px;
+}
+
+.points-trip .seats-stepper button {
+  width: 26px;
+  height: 26px;
+  background: var(--reg-mint);
+}
+
+/* «−» and «+» of the mockup: 8.75 px long, 1.75 px thick. */
+.points-trip .seats-stepper svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3.5;
+}
+
+.points-trip .seats-count {
+  font-size: 13px;
+}
+
+/* The number of seats is larger than the price next to it (mockup g63/1). */
+.points-trip .trip-seats .seats-count {
+  font-size: 14.5px;
+}
+
+/* The switch of the mockup (g63/1, screen 2): a 42.5 × 23.5 track of the strong brand color, a plain
+   knob of 17.5 px, 3 px from the edge. */
+.points-trip .seats-woman {
+  --tgui--link_color: var(--reg-strong);
+}
+
+.points-trip .seats-woman > :last-child {
+  width: 42.5px;
+  height: 23.5px;
+  border-radius: 11.75px;
+}
+
+.points-trip .seats-woman > :last-child div::after {
+  width: 17.5px;
+  height: 17.5px;
+  margin-left: 3px;
+  box-shadow: none;
+}
+
+.points-trip .seats-woman input:checked + div::after {
+  transform: translateX(19px) translateY(-50%);
+}

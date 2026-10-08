@@ -1,10 +1,8 @@
-import type { Pitak, Recommendation } from '@platform/contracts';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAnalytics } from '../context/analytics-context';
-import { useApiClients } from '../context/api-clients';
 import { asRecord, useFlowDraft } from '../flow/flow-draft';
 import type { Route } from '../places/route-screen';
-import { regionOf } from '../way/way-end';
+import { useRouteFacts } from './route-facts';
 import type { TripAgain, TripDraft } from './trip-draft';
 
 // The one screen of a new trip and what it opens and comes back from (G63, docs/118 path 6): the
@@ -39,7 +37,6 @@ function checkSaved(value: unknown): Saved | null {
 // R4) comes with its route and day, «Oxirgi yoʻnalish» with the answers of the last trip (G40 K3).
 export function useNewTrip(known: Route | undefined, day?: string, again?: TripAgain) {
   const { track } = useAnalytics();
-  const { market, map } = useApiClients();
   const answer: TripAnswer = { ...(known ? { route: known } : {}), ...(day ? { date: day } : {}), ...again };
   const start: Saved = { screen: known ? 'form' : 'route', answer };
   const { value, setValue, restored, clear } = useFlowDraft(
@@ -48,8 +45,6 @@ export function useNewTrip(known: Route | undefined, day?: string, again?: TripA
     start,
     Boolean(known ?? day),
   );
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
   const open = (screen: TripScreen) => setValue((saved) => ({ ...saved, screen }));
   // A change stays where it is made: a switch of the screen, a letter of the comment.
   const change = (patch: TripAnswer) =>
@@ -67,13 +62,6 @@ export function useNewTrip(known: Route | undefined, day?: string, again?: TripA
     tracked.current = true;
     track({ name: 'trip_step', screen: 'market.publish', step: 'route' });
   }, [route, track]);
-  useEffect(() => {
-    if (!route) return;
-    setRecommendation(null);
-    setPitak(undefined);
-    market.recommend(route.from.id, route.to.id).then(setRecommendation, () => open('route'));
-    // A pitak joins two regions (docs/72): without it the driver takes people at their doors.
-    map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
-  }, [route, market, map]);
+  const { recommendation, pitak } = useRouteFacts(route, () => open('route'));
   return { ...value, recommendation, pitak, restored, clear, open, change, back, reroute };
 }

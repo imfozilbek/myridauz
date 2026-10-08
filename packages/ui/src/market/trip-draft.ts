@@ -40,7 +40,7 @@ type Known = {
 export type TripValues = Omit<TripDraft, 'time'> & {
   // null: the day has no free time left, the day and time are chosen again (docs/103).
   readonly time: string | null;
-  // «Mashinada ayol bor» is asked of a man who takes fewer people than his car has (docs/06, п. 3).
+  // «Mashinada ayol bor» is asked of a man who takes fewer people than his car has (docs/06, point 3).
   readonly askWoman: boolean;
 };
 

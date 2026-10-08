@@ -1,0 +1,9 @@
+/* The day of the results, over the trips (G35, docs/97 K2). */
+.day-chips {
+  padding: 4px 16px 12px;
+}
+
+/* «Boshqa kun» fits a 360 px phone whole, not cut to «Boshq…» (G35). */
+.day-chips .day-chip {
+  padding-inline: 2px;
+}

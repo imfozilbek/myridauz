@@ -65,7 +65,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       hint={t('bookings.points.hint')}
       error={error ? t(error) : null}
       button={t('bookings.send')}
-      onSend={() => void send()}
+      onSend={send}
       onBack={onBack}
     >
       <div className="points-card points-sum">
