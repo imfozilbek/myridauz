@@ -13,12 +13,14 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { requestPosition } from '../telegram/location';
 import { useScreenBackground } from '../telegram/screen-background';
-import { MEETING_PIN } from '../trip/meeting-map';
 import { stopsInOrder, type Stop } from './driver-stops';
 import { NavigatorSheet } from './navigator-sheet';
 import { StopCard } from './stop-card';
 import { useNavigator } from './use-navigator';
 import '../way/way.css';
+
+// The pin of a point, as big as on the mockup g63/4 screen 12.
+const PIN = 47;
 
 type Props = {
   readonly trip: Trip;
@@ -86,7 +88,7 @@ export function DriverTripMap({ trip, bookings, now, onPoint, onBack }: Props) {
       {elements.map((element, index) =>
         createPortal(
           <span className="trip-map-pin" style={{ color: bg }}>
-            <Icon name="pickup" size={MEETING_PIN} color={brandStrong} filled />
+            <Icon name="pickup" size={PIN} color={brandStrong} filled />
           </span>,
           element,
           shown[index]?.id,

@@ -8,10 +8,13 @@ import { openExternal } from '../telegram/feedback';
 import { useBookingEnds } from '../trip/booking-ends';
 import { MeetingMap } from '../trip/meeting-map';
 import { MeetActions } from './meet-actions';
+import './meet-map.css';
 
 const FACE = 63;
 const TOOL_ICON = 17.5;
 const MAP_ICON = 15;
+// The pin of the point on the small map, as tall as on the mockup g63/4 screen 13.
+const PIN = 42;
 
 type Props = {
   readonly booking: Booking;
@@ -43,7 +46,7 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
       </span>
       {startPoint ? (
         <div className="meet-map">
-          <MeetingMap point={startPoint} onOpen={open} />
+          <MeetingMap point={startPoint} onOpen={open} pin={PIN} />
           <button type="button" className="meet-map-open" onClick={open}>
             <Icon name="map" size={MAP_ICON} />
             {t('bookings.openMap')}

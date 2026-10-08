@@ -7,8 +7,8 @@ import { MapRetry } from '../map/map-retry';
 import { useMapView } from '../map/use-map-view';
 import './meeting-map.css';
 
-// The pin of a meeting point, as tall as on the mockups g63/4 screens 12 and 13.
-export const MEETING_PIN = 34;
+// The pin of a meeting point on the card of the passenger (G60); the driver's screens pass their own.
+const MEETING_PIN = 34;
 
 type Props = {
   readonly point: Point;

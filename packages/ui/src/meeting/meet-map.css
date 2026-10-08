@@ -1,0 +1,43 @@
+/* The small map of the point on the card of «Uchrashuv» (G63, mockup g63/4 screen 13) at 360 px. */
+.meet-map {
+  position: relative;
+}
+
+/* The point stands lower than the middle, at 124.8 of the 163 px, as on the mockup g63/4 screen 13:
+   the map is twice that tall around the point and the card shows its top. */
+.meet-map .meeting-map {
+  height: 163px;
+  border-radius: 15px;
+}
+
+.meet-map .meeting-map-box {
+  height: 249.6px;
+}
+
+.meet-map .meeting-map-pin {
+  top: 124.8px;
+}
+
+.meet-map-open {
+  position: absolute;
+  right: 8.8px;
+  bottom: 8.4px;
+  display: flex;
+  align-items: center;
+  gap: 5.2px;
+  height: 25px;
+  padding: 2px 10px 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 13.85px;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  cursor: pointer;
+}
+
+.meet-map-open svg {
+  color: var(--reg-strong);
+}
