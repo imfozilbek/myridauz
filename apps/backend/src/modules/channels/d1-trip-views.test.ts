@@ -32,4 +32,10 @@ describe('the views in D1 and the free plan (docs/117)', () => {
     await views.forget(1);
     expect(fullScans(db)).toEqual([]);
   });
+
+  // D1 counts every index entry as a row written: the key is the table itself (WITHOUT ROWID), so a
+  // first view writes 2 rows (the table and trip_views_user), not 3.
+  it('keeps the views in their key, with no rowid of their own', async () => {
+    await expect(testD1().prepare('SELECT rowid FROM trip_views').all()).rejects.toThrow();
+  });
 });

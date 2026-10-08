@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { driverTripPublicityPath, tripPublicitySchema } from './channels';
+import { driverTripPublicityPath, tripPublicitySchema, tripViewPath } from './channels';
 
 const publicity = {
   channels: [{ username: 'yol_samarqand', title: 'Samarqand', posted: true }],
@@ -12,6 +12,8 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
     expect(tripPublicitySchema.parse(publicity)).toEqual(publicity);
     expect(tripPublicitySchema.parse({ ...publicity, channels: [], views: 0 }).views).toBe(0);
     expect(driverTripPublicityPath('t-1')).toBe('/driver/trips/t-1/publicity');
+    // The trip page of the passenger app says it was opened (search, post button, link).
+    expect(tripViewPath('t-1')).toBe('/trips/t-1/view');
   });
 
   it('refuses a broken answer', () => {

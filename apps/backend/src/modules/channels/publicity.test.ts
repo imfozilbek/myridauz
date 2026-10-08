@@ -4,36 +4,29 @@ import { createMemoryChannelPosts } from './infrastructure/channel-posts';
 import { createMemoryTripViews } from './infrastructure/trip-views';
 
 const NOW = Date.parse('2026-10-08T05:00:00Z');
-const HOUR = 3_600_000;
 const DRIVER = 7;
 // Toshkent shahri has no channel; the zone of Samarqand and a team channel of one district do.
 const PLACES = new Map([
-  ['1726', { parentId: null }],
-  ['1726273', { parentId: '1726' }],
-  ['1718', { parentId: null }],
-  ['1718401', { parentId: '1718' }],
-  ['1703', { parentId: null }],
+  ['1726', { name: 'Toshkent shahri', parentId: null }],
+  ['1726273', { name: 'Mirobod tumani', parentId: '1726' }],
+  ['1718', { name: 'Samarqand viloyati', parentId: null }],
+  ['1718401', { name: 'Urgut tumani', parentId: '1718' }],
+  ['1703', { name: 'Andijon viloyati', parentId: null }],
 ]);
 const CHANNELS = [
   { username: 'yol_andijon', title: 'Andijon', places: ['1703'] },
   { username: 'yol_samarqand', title: 'Samarqand', places: ['1718'] },
   { username: 'yol_urgut', title: 'Urgut yoʻli', places: ['1718401'] },
 ];
-const TRIP: TripFacts = {
-  driverId: DRIVER,
-  from: '1726273',
-  to: '1718401',
-  departAt: NOW + 5 * HOUR,
-  live: true,
-};
+const TRIP: TripFacts = { driverId: DRIVER, from: '1726273', to: '1718401' };
 const LINK = 'https://t.me/test_bot?startapp=trip_trip-1__driver';
 
-function setup(change: Partial<PublicityDeps> = {}, trip: TripFacts = TRIP) {
+function setup(change: Partial<PublicityDeps> = {}) {
   const posts = createMemoryChannelPosts();
   const views = createMemoryTripViews();
   const deps: PublicityDeps = {
     enabled: true,
-    trip: async (id) => (id === 'trip-1' ? trip : undefined),
+    trip: async (id) => (id === 'trip-1' ? TRIP : undefined),
     places: async () => PLACES,
     channels: async () => CHANNELS,
     posts,
@@ -50,30 +43,28 @@ const postedOf = async (deps: PublicityDeps) =>
 
 describe('what the driver sees after the publishing (G63, docs/119)', () => {
   it('names the channels of both ends with the team ones, the people who opened it and the link', async () => {
-    const { deps, views } = setup();
+    const { deps, posts, views } = setup();
+    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, NOW);
     await views.record('trip-1', 21, NOW);
     expect(await tripPublicity(deps, DRIVER, 'trip-1')).toEqual({
       channels: [
         { username: 'yol_samarqand', title: 'Samarqand', posted: true },
-        { username: 'yol_urgut', title: 'Urgut yoʻli', posted: true },
+        { username: 'yol_urgut', title: 'Urgut yoʻli', posted: false },
       ],
       views: 1,
       link: LINK,
     });
   });
 
-  it('shows a post of a trip that left only when Telegram gave it an id', async () => {
-    const left = { ...TRIP, departAt: NOW - HOUR };
-    const { deps, posts } = setup({}, left);
-    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, left.departAt);
-    expect(await postedOf(deps)).toEqual([true, false]);
-    const cancelled = setup({}, { ...TRIP, live: false });
-    expect(await postedOf(cancelled.deps)).toEqual([false, false]);
+  // Published while the posts were off, a channel added later, a send Telegram refused: no post there.
+  it('shows a post only when Telegram gave it an id', async () => {
+    const { deps } = setup();
+    expect(await postedOf(deps)).toEqual([false, false]);
   });
 
   it('shows no post while the channel posts are switched off', async () => {
     const { deps, posts } = setup({ enabled: false });
-    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, TRIP.departAt);
+    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, NOW);
     expect(await postedOf(deps)).toEqual([false, false]);
   });
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { locationIdSchema } from './locations';
-import { DRIVER_TRIPS_PATH } from './trips';
+import { DRIVER_TRIPS_PATH, TRIPS_PATH } from './trips';
 
 // Channels of the team (docs/63): a channel covers a list of places, a region or districts.
 // A trip goes to every channel whose list has the place it leaves or the place it goes to.
@@ -38,3 +38,5 @@ export const tripPublicitySchema = z.object({
   link: z.string().startsWith('https://t.me/'),
 });
 export type TripPublicity = z.infer<typeof tripPublicitySchema>;
+// The trip page of the passenger app says it was opened: from the search, a post button or a link.
+export const tripViewPath = (tripId: string) => `${TRIPS_PATH}/${tripId}/view`;

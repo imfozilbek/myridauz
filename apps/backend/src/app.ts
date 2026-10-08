@@ -93,10 +93,10 @@ export const app = new Hono<AppEnv>()
   .route('/', companyModule)
   .route('/', soundsModule)
   .route('/', channelsModule)
-  // The cancel, zone and view watches go before trips: they wrap the routes of the trips module.
+  .route('/', publicityModule(tripFacts))
+  // The cancel and zone watches go before trips: they wrap the routes of the trips module.
   .route('/', tripCancelWatch)
   .route('/', zoneWatch)
-  .route('/', publicityModule(tripFacts))
   .route('/', tripsModule)
   .route('/', requestsModule)
   .route('/', subscriptionsModule)

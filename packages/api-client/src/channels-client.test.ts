@@ -27,4 +27,12 @@ describe('the publicity of a trip in the driver app (G63, docs/119)', () => {
     const broken = vi.fn<Fetch>(async () => Response.json({ ...publicity, views: -1 }));
     await expect(createChannelsClient({ ...options, fetch: broken }).tripPublicity(ID)).rejects.toThrow();
   });
+
+  it('tells that a person opened the trip page, signed', async () => {
+    const fetch = vi.fn<Fetch>(async () => new Response(null, { status: 204 }));
+    await createChannelsClient({ ...options, app: 'passenger', fetch }).tripViewed(ID);
+    expect(fetch.mock.calls[0]?.[0]).toBe(`https://api.test/trips/${ID}/view`);
+    expect(fetch.mock.calls[0]?.[1]?.method).toBe('POST');
+    expect(new Headers(fetch.mock.calls[0]?.[1]?.headers).get('x-mini-app')).toBe('passenger');
+  });
 });

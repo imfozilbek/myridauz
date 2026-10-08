@@ -62,6 +62,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     save: NOT_USED,
     remove: NOT_USED,
     tripPublicity: NOT_USED,
+    tripViewed: NOT_USED,
     ...overrides.channels,
   },
   bookings: {
