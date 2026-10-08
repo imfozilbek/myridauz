@@ -13,7 +13,7 @@ import {
   tripCancelWatch,
 } from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
-import { channelsModule, zoneWatch } from './modules/channels';
+import { channelsModule, publicityModule, zoneWatch } from './modules/channels';
 import { chatRoutes } from './modules/chat';
 import { companyModule } from './modules/company';
 import { soundsModule } from './modules/sounds';
@@ -33,7 +33,7 @@ import { subscriptionsModule } from './modules/route-subscriptions';
 import { statsModule } from './modules/stats';
 import { sharesModule } from './modules/shares';
 import { teamRole } from './modules/team';
-import { tripForFamily, tripsModule } from './modules/trips';
+import { tripFacts, tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
 import { telegramAuth } from './shared/auth/telegram-auth';
@@ -93,9 +93,10 @@ export const app = new Hono<AppEnv>()
   .route('/', companyModule)
   .route('/', soundsModule)
   .route('/', channelsModule)
-  // The cancel and zone watches go before trips: they wrap the routes of the trips module.
+  // The cancel, zone and view watches go before trips: they wrap the routes of the trips module.
   .route('/', tripCancelWatch)
   .route('/', zoneWatch)
+  .route('/', publicityModule(tripFacts))
   .route('/', tripsModule)
   .route('/', requestsModule)
   .route('/', subscriptionsModule)

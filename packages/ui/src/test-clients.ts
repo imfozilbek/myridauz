@@ -5,25 +5,8 @@ const NOT_USED = async (): Promise<never> => {
   throw new Error('test.client_not_used');
 };
 // Tests of the driver and the team screens replace only the calls they need.
-export const testClients = (overrides: {
-  readonly drivers?: Partial<ApiClients['drivers']>;
-  readonly moderation?: Partial<ApiClients['moderation']>;
-  readonly market?: Partial<ApiClients['market']>;
-  readonly pricing?: Partial<ApiClients['pricing']>;
-  readonly channels?: Partial<ApiClients['channels']>;
-  readonly bookings?: Partial<ApiClients['bookings']>;
-  readonly wallet?: Partial<ApiClients['wallet']>;
-  readonly chat?: Partial<ApiClients['chat']>;
-  readonly subscriptions?: Partial<ApiClients['subscriptions']>;
-  readonly feedback?: Partial<ApiClients['feedback']>;
-  readonly stats?: Partial<ApiClients['stats']>;
-  readonly calls?: Partial<ApiClients['calls']>;
-  readonly comfort?: Partial<ApiClients['comfort']>;
-  readonly map?: Partial<ApiClients['map']>;
-  readonly pitaks?: Partial<ApiClients['pitaks']>;
-  readonly company?: Partial<ApiClients['company']>;
-  readonly sounds?: Partial<ApiClients['sounds']>;
-}): ApiClients => ({
+type Overrides = { readonly [Name in keyof ApiClients]?: Partial<ApiClients[Name]> };
+export const testClients = (overrides: Overrides): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
     uploadPhoto: NOT_USED,
@@ -74,7 +57,13 @@ export const testClients = (overrides: {
     setDirection: NOT_USED,
     ...overrides.pricing,
   },
-  channels: { list: NOT_USED, save: NOT_USED, remove: NOT_USED, ...overrides.channels },
+  channels: {
+    list: NOT_USED,
+    save: NOT_USED,
+    remove: NOT_USED,
+    tripPublicity: NOT_USED,
+    ...overrides.channels,
+  },
   bookings: {
     book: NOT_USED,
     myBookings: NOT_USED,

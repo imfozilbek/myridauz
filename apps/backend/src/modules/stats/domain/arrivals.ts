@@ -11,7 +11,7 @@ const MARKED: readonly [string, ArrivalKind][] = [
   ['ch-', 'channel'],
   ['ad-', 'ad'],
 ];
-const PLAIN: Readonly<Record<string, ArrivalKind>> = { story: 'story', site: 'site' };
+const PLAIN: Readonly<Record<string, ArrivalKind>> = { story: 'story', site: 'site', driver: 'driver' };
 
 // «ch-rida-samarqand» is a channel named rida-samarqand; no mark is a direct visit (G55, docs/116).
 function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {

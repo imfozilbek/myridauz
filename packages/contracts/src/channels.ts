@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { locationIdSchema } from './locations';
+import { DRIVER_TRIPS_PATH } from './trips';
 
 // Channels of the team (docs/63): a channel covers a list of places, a region or districts.
 // A trip goes to every channel whose list has the place it leaves or the place it goes to.
@@ -25,3 +26,15 @@ export const channelSchema = channelInputSchema.extend({
 export type Channel = z.infer<typeof channelSchema>;
 
 export const channelsResponseSchema = z.object({ channels: z.array(channelSchema) });
+
+// What the driver sees right after the publishing (G63, docs/119): the channels of the trip and
+// whether its post is there, how many different people opened it in the app, and the link to send.
+export const driverTripPublicityPath = (tripId: string) => `${DRIVER_TRIPS_PATH}/${tripId}/publicity`;
+export const tripPublicitySchema = z.object({
+  channels: z.array(
+    z.object({ username: z.string().regex(CHANNEL_USERNAME), title: z.string(), posted: z.boolean() }),
+  ),
+  views: z.number().int().min(0),
+  link: z.string().startsWith('https://t.me/'),
+});
+export type TripPublicity = z.infer<typeof tripPublicitySchema>;
