@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import type { ChannelsClient } from '@platform/api-client';
 import type { Trip, TripPublicity } from '@platform/contracts';
 import { activity, counted } from '@platform/api-client';
@@ -6,6 +7,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
+
+// The channel by its name in Telegram (mockup g59/7 phone 1, docs/37): «{brand} | {title}».
+const BRAND = loadBrand().name;
 
 afterEach(() => {
   cleanup();
@@ -52,7 +56,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
     expect(tripPublicity).toHaveBeenCalledWith('t1');
     expect(busy).toEqual([0]);
-    expect(screen.getByText('Fargʻona yoʻli · 12 kishi koʻrdi')).toBeTruthy();
+    expect(screen.getByText(`${BRAND} | Fargʻona yoʻli · 12 kishi koʻrdi`)).toBeTruthy();
     const card = document.querySelector('.own-channel') as HTMLElement;
     expect(card.previousElementSibling?.classList.contains('own-banner')).toBe(true);
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
@@ -67,7 +71,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
   it('shows only the channel while nobody opened the trip yet', async () => {
     open(trip, async () => ({ ...publicity, views: 0 }));
     await openTrip();
-    expect(await screen.findByText('Fargʻona yoʻli')).toBeTruthy();
+    expect(await screen.findByText(`${BRAND} | Fargʻona yoʻli`)).toBeTruthy();
     expect(screen.queryByText(/kishi koʻrdi/u)).toBeNull();
   });
 

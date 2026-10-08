@@ -1,6 +1,7 @@
 import { arrivalAt, type SharedTrip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { usePlaces } from '../market/places-gate';
+import { usePlaceNames } from '../places/place-names';
 
 const STEPS = ['boarded', 'on_the_way', 'arrived'] as const;
 // How far the trip went: no step before the car, all three once arrived.
@@ -11,6 +12,8 @@ const DONE = { waiting: 0, boarded: 1, on_the_way: 2, arrived: 3, completed: 3, 
 export function FollowState({ trip }: { readonly trip: SharedTrip }) {
   const { t, formatDate, formatTime } = useI18n();
   const directory = usePlaces();
+  const { toward } = usePlaceNames(directory);
+  const end = directory.find(trip.to);
   const name = trip.passengerName;
   const done = DONE[trip.status];
   const going = trip.status !== 'cancelled';
@@ -36,7 +39,7 @@ export function FollowState({ trip }: { readonly trip: SharedTrip }) {
           {coming ? (
             <span className="follow-state-eta">
               {t('share.follow.eta', {
-                place: directory.find(trip.to)?.name ?? '',
+                place: end ? toward(end) : '',
                 time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
               })}
             </span>

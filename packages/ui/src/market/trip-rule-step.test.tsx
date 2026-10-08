@@ -39,6 +39,7 @@ describe('«Qanday band qilinadi?» as the mockup 2-whole-car screen 1 (G61)', (
 
   it('shows the price of the whole car under the cards', async () => {
     open();
-    expect(await screen.findByText(/Butun salon narxi: 4 joy × 90.000 = 360.000/)).toBeTruthy();
+    // «soʻm» may go to the next line alone, as on the mockup (g63/4 screen 4): a plain space before it.
+    expect(await screen.findByText(/^Butun salon narxi: 4 joy × 90.000 = 360.000 soʻm\.$/u)).toBeTruthy();
   });
 });

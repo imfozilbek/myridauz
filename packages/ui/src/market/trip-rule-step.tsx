@@ -57,7 +57,7 @@ export function TripRuleStep({ model, seats, price, selected, onBack, onDone }: 
             </div>
           ))}
           <p className="rule-price">
-            {t('market.rule.price', { count, price: formatNumber(price), sum: formatMoney(seats * price) })}
+            {t('market.rule.price', { count, price: formatNumber(price), sum: formatNumber(seats * price) })}
           </p>
         </div>
         <MainButton text={t('common.continue')} onClick={() => onDone(rule)} />

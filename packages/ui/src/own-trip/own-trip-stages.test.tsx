@@ -96,7 +96,7 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     vi.setSystemTime(trip.departAt + 10 * MINUTE);
     const steps = await open({ ...trip, seatsLeft: 1 }, [rider]);
     expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
-    expect(screen.getByText(/^Fargʻona shahriga ≈\s13:20\sda$/u)).toBeTruthy();
+    expect(screen.getByText(/^Fargʻonaga ≈\s13:20\sda$/u)).toBeTruthy();
     expect(screen.queryByText(/daqiqa/u)).toBeNull();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
     await tap('Yoʻlga chiqdim');

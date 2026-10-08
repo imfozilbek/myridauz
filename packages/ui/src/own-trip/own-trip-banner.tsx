@@ -2,6 +2,7 @@ import { arrivalAt, type Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
+import { usePlaceNames } from '../places/place-names';
 import { minutesLeft, type TripStage } from './trip-stage';
 
 // The clock of a published trip and the tick of the green plates (mockup g63/3).
@@ -21,7 +22,9 @@ type Props = {
 export function OwnTripBanner({ trip, stage, riders, now }: Props) {
   const { t, formatTime } = useI18n();
   const directory = usePlaces();
-  const place = directory.find(trip.to)?.name ?? trip.to;
+  const { toward } = usePlaceNames(directory);
+  const end = directory.find(trip.to);
+  const place = end ? toward(end) : trip.to;
   const [title, line] =
     stage === 'published'
       ? [t('driverTrip.published.title'), t('driverTrip.published.sub')]

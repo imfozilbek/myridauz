@@ -116,5 +116,5 @@
   "rule.seatsOrCarHint": "Bir kishi hamma {count} joyni ham olishi mumkin",
   "rule.carOnly": "Faqat butun salon",
   "rule.carOnlyHint": "Faqat bitta guruh: {count} joy birga",
-  "rule.price": "Butun salon narxi: {count} joy × {price} = {sum}."
+  "rule.price": "Butun salon narxi: {count} joy × {price} = {sum} soʻm."
 }

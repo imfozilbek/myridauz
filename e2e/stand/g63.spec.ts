@@ -104,7 +104,6 @@ async function arriveAndRate(page: Page, walk: Walk, trip: Trip) {
   await pressBack(page);
   await seen(page, t('driverAfter.past.after'));
   await seen(page, t('driverAfter.past.rated', { stars: t('find.star').repeat(STARS) }));
-  await seen(page, t('driverAfter.tag.rated'));
   await shoot(page, walk, '12-past');
 }
 

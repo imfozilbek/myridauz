@@ -85,7 +85,6 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     await tap('Orqaga');
     await pastShown();
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
-    expect(screen.getByText('Hammasi baholandi')).toBeTruthy();
   });
 
   it('opened again from the list after «Safar tugadi», the trip is past', async () => {

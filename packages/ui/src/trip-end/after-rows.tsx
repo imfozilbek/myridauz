@@ -3,7 +3,7 @@ import { daysLeft } from '../bookings/done-tools';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useUntilText } from '../trip/until-text';
-import { ridersOf, tripSums } from './trip-sums';
+import { tripSums } from './trip-sums';
 import './after-rows.css';
 
 // The chevron of a row that opens something (mockup g63/5 phone 5).
@@ -31,20 +31,19 @@ export function AfterRows({ trip, bookings, now, onRow }: Props) {
   const sums = tripSums(bookings);
   const left = (until: number) => t('bookings.done.daysLeft', { days: daysLeft(until, now) });
   const over = t('bookings.done.over');
-  const charged = formatNumber(sums.charged);
+  // What stays taken; what may still come back or came back stands beside it (mockup g63/5 phone 5).
+  const charged = formatNumber(sums.charged - sums.waits - sums.refunded);
   const commission =
     sums.waits > 0
       ? t('driverAfter.past.refundable', { charged, refund: formatNumber(sums.waits) })
       : sums.refunded > 0
         ? t('driverAfter.past.refunded', { charged, refund: formatNumber(sums.refunded) })
         : t('driverAfter.past.charged', { charged });
-  const toRate = ridersOf(bookings).some((booking) => booking.rated !== true);
+  // The stars keep their days while they may be given, as on the mockup, rated or not.
   const rows: readonly Row[] = [
     now >= rateUntil
       ? [null, t('driverAfter.past.rate'), over]
-      : toRate
-        ? ['rate', t('driverAfter.past.rate'), left(rateUntil)]
-        : [null, t('driverAfter.past.rate'), t('driverAfter.tag.rated')],
+      : ['rate', t('driverAfter.past.rate'), left(rateUntil)],
     now < talkUntil
       ? [
           'talk',

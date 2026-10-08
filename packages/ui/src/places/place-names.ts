@@ -25,5 +25,12 @@ export function usePlaceNames(directory: PlaceDirectory) {
     const region = parentOf(place);
     return region && place.name.startsWith(short(region)) ? place.name : full(place);
   };
-  return { short, full, from, end };
+  // Where a trip goes, short in a sentence (journeys g63/4 screen 14 and g59 screen 16): «Samarqandga»;
+  // a city by its region alone, a district by its own name, a whole region by its short name.
+  const toward = (place: Location) => {
+    const region = parentOf(place);
+    if (!region) return short(place);
+    return place.name.startsWith(short(region)) ? short(region) : place.name;
+  };
+  return { short, full, from, end, toward };
 }
