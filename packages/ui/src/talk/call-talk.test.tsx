@@ -39,6 +39,16 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     expect(sendOffer).not.toHaveBeenCalled();
   });
 
+  it('tells the driver the offer went, as the card of the board does', async () => {
+    const { socket } = await openTalk({ about: [talk('driver', { offer })] });
+    await screen.findByText('Yoʻlovchi');
+    ring(socket);
+    const call = within(screen.getByRole('dialog', { name: 'Qoʻngʻiroq' }));
+    const sent = (await call.findByText('Taklif yuborildi')) as HTMLButtonElement;
+    expect(sent.disabled).toBe(true);
+    expect(call.queryByText('Taklif yuborish')).toBeNull();
+  });
+
   it('shows the passenger an offer that came during the call and takes it in one tap', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({
       ...offer,

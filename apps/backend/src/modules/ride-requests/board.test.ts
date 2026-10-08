@@ -65,6 +65,8 @@ describe('the board of requests of a driver (G64)', () => {
       ['P1', 7],
     ]);
     expect(board.value.others.map((item) => item.passenger.firstName)).toEqual(['P3', 'P4']);
+    // A trip for a whole car takes every seat of it (G64): the sheet shows them from here.
+    expect(board.value.carSeats).toBe(4);
   });
 
   it('shows one route asked by a bot link without the trip', async () => {

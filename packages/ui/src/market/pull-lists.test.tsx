@@ -61,7 +61,15 @@ const DATA: Record<string, unknown> = {
   wallet,
   'team wallets': { wallets: [], more: false },
   pitaks: { directions: [], pitaks: [] },
-  'requests of a driver': { known: true, date: '2026-10-02', days: [], trip: null, fits: [], others: [] },
+  'requests of a driver': {
+    known: true,
+    date: '2026-10-02',
+    days: [],
+    trip: null,
+    fits: [],
+    others: [],
+    carSeats: 4,
+  },
 };
 
 describe('A pull down at the top of a list refreshes it (docs/94 W1)', { timeout: 20_000 }, () => {

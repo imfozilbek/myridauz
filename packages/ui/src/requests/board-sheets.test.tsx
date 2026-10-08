@@ -63,7 +63,11 @@ describe(
   () => {
     it('fills the sheet from the request and opens the trip for this passenger with the time chosen', async () => {
       const offerSalonTrip = vi.fn<BookingsClient['offerSalonTrip']>(async () => ({ trip, offer }));
-      openBoard({ requestBoard: async () => board({ others: [salon] }), bookings: { offerSalonTrip } });
+      // The board says the seats of the car: a bot link opens the board without the driver's data.
+      openBoard({
+        requestBoard: async () => board({ others: [salon], carSeats: 6 }),
+        bookings: { offerSalonTrip },
+      });
       expect(await screen.findByText('Boʻsh salon kerak')).toBeTruthy();
       await tap('Safar ochib taklif qilish');
       const form = await sheet();
@@ -72,7 +76,7 @@ describe(
       expect(form.getByText('Qoʻyliq pitagi')).toBeTruthy();
       expect(form.getByText('Faqat butun salon')).toBeTruthy();
       // Every seat of the car at the price of the request (G61).
-      expect(form.getByText('4 joy × 95 000 = 380 000')).toBeTruthy();
+      expect(form.getByText('6 joy × 95 000 = 570 000')).toBeTruthy();
       expect(form.getByText('Dilnoza rozi boʻlsa, safar unga band boʻladi.')).toBeTruthy();
       fireEvent.click(await form.findByRole('button', { name: 'Safar ochib taklif qilish' }));
       await waitFor(() => expect(offerSalonTrip).toHaveBeenCalledWith('r2', EIGHT));

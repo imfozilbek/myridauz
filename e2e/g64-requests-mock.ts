@@ -76,7 +76,7 @@ const BOARDS = {
 export async function openBoard(page: Page, board: Board) {
   await mockApi(page, 'active');
   await page.route('**/api/driver/requests/board*', (route) =>
-    route.fulfill({ json: { known: true, days: DAYS, ...BOARDS[board] } }),
+    route.fulfill({ json: { known: true, days: DAYS, carSeats: 4, ...BOARDS[board] } }),
   );
   await page.clock.setFixedTime(tashkent(`${TODAY}T12:20`));
   await mockTelegram(page);

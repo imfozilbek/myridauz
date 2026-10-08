@@ -44,7 +44,14 @@ export function CallTalk({ about, onChanged }: Props) {
           <b>{`${texts.route(request)} · ${texts.day(request.date)}`}</b>
           <span>{texts.facts(request, true)}</span>
         </div>
-        {live ? null : <TalkAction request={request} onSent={onChanged} className="call-talk-action" />}
+        {/* The offer went: «Taklif yuborildi» as on the card of the board (one logic, docs/118 path 7). */}
+        {live ? (
+          <button type="button" className="call-talk-action" disabled>
+            {t('bookings.offer.sent.title')}
+          </button>
+        ) : (
+          <TalkAction request={request} onSent={onChanged} className="call-talk-action" />
+        )}
       </>
     );
   if (!live) return <RequestLine request={request} role="passenger" />;

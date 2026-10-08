@@ -127,7 +127,13 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, on
         }}
         onShort={short}
       />
-      <SalonSheet request={salon} onClose={() => setSalon(null)} onOpened={onTrip} onShort={short} />
+      <SalonSheet
+        request={salon}
+        seats={board.carSeats}
+        onClose={() => setSalon(null)}
+        onOpened={onTrip}
+        onShort={short}
+      />
     </div>
   );
 }

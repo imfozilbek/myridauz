@@ -5,7 +5,6 @@ import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { useDriver } from '../driver/driver-context';
 import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
 import { ActionFailure } from '../states/action-failure';
@@ -22,6 +21,8 @@ const CHECK = 10;
 
 type Props = {
   readonly request: RideRequest | null;
+  // Every seat of the driver's car, as the board says (G61, G64).
+  readonly seats: number;
   readonly onClose: () => void;
   // The trip is open for this passenger only, and the offer is on it: «Mening safarim» follows.
   readonly onOpened: (tripId: string) => void;
@@ -40,6 +41,7 @@ export function SalonSheet({ request, ...props }: Props) {
 
 function SalonForm({
   request,
+  seats,
   onOpened,
   onShort,
 }: Omit<Props, 'request'> & { readonly request: RideRequest }) {
@@ -50,7 +52,6 @@ function SalonForm({
   const day = useRequestDay();
   const ends = useEnds()(request);
   const when = useOfferTime(request);
-  const seats = useDriver()?.application.car?.seats ?? request.seats;
   const pitak = useLoad(() => map.pitakOf(request.from, request.to)).value;
   const { failure, fail, clear } = useFailure();
   const name = request.passenger.firstName;

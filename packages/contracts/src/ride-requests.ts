@@ -88,5 +88,7 @@ export const requestBoardSchema = z.object({
   trip: tripSchema.nullable(),
   fits: z.array(rideRequestSchema.extend({ extraKm: z.number().int() })),
   others: z.array(rideRequestSchema),
+  // The seats of the driver's car: a trip for a whole car takes them all (G64).
+  carSeats: z.number().int(),
 });
 export type RequestBoard = z.infer<typeof requestBoardSchema>;

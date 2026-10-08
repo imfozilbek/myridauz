@@ -66,6 +66,8 @@ async function fromList(context: BrowserContext, page: Page, walk: Offers, trip:
   await shoot(page, walk, '02-offered');
   const phone = await answerByBot(context, walk, walk.list, request, 'accept');
   await booked(walk.list, trip.id);
+  // The page of the booking comes in place of the offer (G61, journey screen 8).
+  await expect(phone.getByRole('button', { name: t('bookings.offer.accept'), exact: true })).toHaveCount(0);
   await shoot(phone, walk, '03-accepted');
   await phone.close();
 }

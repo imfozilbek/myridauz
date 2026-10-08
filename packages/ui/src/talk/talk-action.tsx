@@ -65,12 +65,15 @@ export function TalkAction({ request, onSent, className = 'talk-action' }: Props
         onSent={sent}
         onShort={short}
       />
-      <SalonSheet
-        request={sheet === 'salon' ? request : null}
-        onClose={() => setSheet(null)}
-        onOpened={sent}
-        onShort={short}
-      />
+      {board ? (
+        <SalonSheet
+          request={sheet === 'salon' ? request : null}
+          seats={board.carSeats}
+          onClose={() => setSheet(null)}
+          onOpened={sent}
+          onShort={short}
+        />
+      ) : null}
     </>
   );
 }

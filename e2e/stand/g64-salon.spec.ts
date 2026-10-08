@@ -1,6 +1,7 @@
 import type { BrowserContext } from '@playwright/test';
 import { createMarketClient } from '@platform/api-client';
 import { REQUESTS_LINK, requestsLinkValue } from '@platform/contracts';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test, type Page } from '../crash-guard';
 import { dayAfterTomorrow } from './g27-kit';
 import { seen } from './g63-kit';
@@ -8,6 +9,9 @@ import { answerByBot, asks, person, rowOf, seedWalk, shoot, QARSHI, type Walk } 
 import { CHILONZOR } from './market-kit';
 import { freshDriver } from './schedule-kit';
 import { mainButton, NARROW, PLATFORMS, t, type Platform } from './screen-tour';
+
+const { formatNumber } = createI18n(DEFAULT_LOCALE);
+import { CAR } from './seed';
 import { openAs, outsideCalls, signedAs, type Person } from './stand-kit';
 
 // G64 (docs/118 path 7) on the whole local Rida, Android and iOS: a «Boʻsh salon kerak» request on a
@@ -56,6 +60,9 @@ async function forSalon(context: BrowserContext, page: Page, walk: Salon) {
     .getByRole('button', { name: t('requests.action.salon') })
     .click();
   await expect(mainButton(page)).toHaveText(t('requests.action.salon'));
+  // Every seat of the car at the price of the request, also when a bot link opened the board.
+  const sum = { seats: String(CAR.seats), price: formatNumber(request.price) };
+  await seen(page, t('requests.salon.sum', { ...sum, sum: formatNumber(CAR.seats * request.price) }));
   await shoot(page, walk, '08-salon-sheet');
   await mainButton(page).click();
   await seen(page, t('driverTrip.private.waiting.title', { name: walk.salon.name }));

@@ -11,7 +11,7 @@ afterEach(() => {
   window.history.replaceState(null, '', '/');
 });
 
-const empty: RequestBoard = { known: true, date: '2026-10-02', days: [], trip: null, fits: [], others: [] };
+const empty: RequestBoard = { known: true, date: '2026-10-02', days: [], trip: null, fits: [], others: [], carSeats: 4 };
 
 const open = (link: string, enabled = true) => {
   window.history.replaceState(null, '', `/?requests=${link}`);
