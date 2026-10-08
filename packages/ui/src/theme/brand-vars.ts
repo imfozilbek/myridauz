@@ -40,6 +40,7 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-success-bright': colors.successBright,
     '--reg-attention': colors.attention,
     '--reg-attention-soft': colors.attentionSoft,
+    '--reg-attention-line': colors.attentionLine,
     // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
     '--reg-danger-text': colors.dangerText,
   }) as CSSProperties;

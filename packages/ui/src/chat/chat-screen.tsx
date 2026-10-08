@@ -111,6 +111,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
         open={state === 'open'}
         placeholder={placeholder}
         warned={warning}
+        talk={Boolean(about?.request && !about.booking)}
       />
     </div>
   );

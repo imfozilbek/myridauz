@@ -55,7 +55,10 @@ export function CallPanel({ name, about, call, ended, controls, onChat, onChange
         ) : about ? (
           <CallTalk about={about} onChanged={onChanged} />
         ) : null}
-        {call ? <span className="call-hint">{t('calls.keepOpen')}</span> : null}
+        {/* A talk shows the request and the offer in its place (mockups g64/2, g64/4). */}
+        {call && (about?.booking || !about?.request) ? (
+          <span className="call-hint">{t('calls.keepOpen')}</span>
+        ) : null}
       </div>
       <div className="call-actions">
         {!call ? (

@@ -28,6 +28,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     ring(socket);
     const call = within(screen.getByRole('dialog', { name: 'Qoʻngʻiroq' }));
     expect(call.getByText('Dilnozaning soʻrovi')).toBeTruthy();
+    expect(call.queryByText('Ilovani yopmang: qoʻngʻiroq uziladi.')).toBeNull();
     expect(call.getByText('Chilonzor → Fargʻona · bugun')).toBeTruthy();
     expect(call.getByText('2 kishi · 95 000 · Uyidan yoki pitakdan')).toBeTruthy();
     const send = call.getByText('Taklif yuborish') as HTMLButtonElement;

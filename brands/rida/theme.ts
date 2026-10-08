@@ -23,6 +23,7 @@ export const theme: BrandTheme = {
     successSoft: '#DCFCE7',
     attention: '#B45309',
     attentionSoft: '#FEF3C7',
+    attentionLine: '#FDE68A',
     successPale: '#F0FDF4',
     successLine: '#BBF7D0',
     successDeep: '#166534',

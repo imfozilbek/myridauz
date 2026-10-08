@@ -27,6 +27,15 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
     expect(screen.getByText('2 kishi · 95 000 · Uyidan yoki pitakdan')).toBeTruthy();
   });
 
+  it('has no ready answers about the meeting; the line about hidden numbers only after one', async () => {
+    const { socket } = await openTalk({ about: [talk('driver')] });
+    await screen.findByText('Yoʻlovchi');
+    expect(screen.queryByText('Yoʻldaman')).toBeNull();
+    expect(screen.queryByText('Raqam va havolalar yashiriladi.')).toBeNull();
+    act(() => socket.receive({ type: 'warning' }));
+    expect(await screen.findByText('Raqam va havolalar yashiriladi.')).toBeTruthy();
+  });
+
   it('offers the live trip of the driver in one tap, then shows the offer that waits', async () => {
     const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
     const sent = talk('driver', { offer: { ...offer, tripId: 't1' } });
