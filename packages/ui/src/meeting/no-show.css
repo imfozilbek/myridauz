@@ -15,8 +15,8 @@ button.no-show-mark {
 .no-show-banner {
   display: flex;
   align-items: center;
-  gap: 10.33px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 10.4px;
   padding: 10px 14px 10px 13px;
   border: 1px solid var(--reg-line);
   border-radius: 13.5px;

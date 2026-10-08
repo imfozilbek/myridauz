@@ -5,7 +5,7 @@
   display: flex;
   flex: 1;
   align-items: center;
-  gap: 9.33px;
+  gap: 9.55px;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -59,7 +59,7 @@
 
 .rider-main {
   position: relative;
-  gap: clamp(8px, 3.056vw, 11px);
+  gap: clamp(8px, 2.973vw, 10.7px);
   cursor: auto;
 }
 

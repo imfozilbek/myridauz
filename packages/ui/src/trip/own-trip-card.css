@@ -10,9 +10,12 @@
   padding: 8px 14px 9px 13px;
 }
 
+/* The names stand a little lower than their lines (mockups g63/4 screens 11, 14 and g63/5). */
 .trip-sheet-own .trip-card-name {
   font-size: clamp(12.5px, 3.889vw, 14px);
   line-height: 17px;
+  position: relative;
+  top: 0.4px;
 }
 
 .trip-sheet-own .trip-card-note {
@@ -26,13 +29,13 @@
 
 /* The end stays by the road line, above its name (journey screen 6). */
 .trip-sheet-own .trip-card-to .trip-card-dot {
-  margin-top: -4.4px;
+  margin-top: -4.9px;
 }
 
 /* A grey line from the start to the end with a gap at each dot. */
 .trip-sheet-own .trip-card-from .trip-card-dot::after {
-  top: 13px;
-  width: 1.33px;
+  top: 10.6px;
+  width: 2.4px;
   height: 22px;
   background: var(--reg-route-line);
 }

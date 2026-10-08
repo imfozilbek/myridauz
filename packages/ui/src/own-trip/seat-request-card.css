@@ -17,7 +17,7 @@
 
 /* The name stands higher over the line under it than its line box puts it (mockup). */
 .seat-card-name {
-  padding-bottom: 1.47px;
+  padding-bottom: 0.3px;
   font-size: clamp(14px, 4.445vw, 16px);
   line-height: 18px;
 }

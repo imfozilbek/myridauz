@@ -1,6 +1,6 @@
 /* «Qaytish» of the driver (G63, mockup g63/4 screen 16): the values of the mockup at 360 px. */
 .trip-back {
-  padding-top: 14.6px;
+  padding-top: 14.2px;
 }
 
 .trip-back-title {
@@ -10,7 +10,7 @@
 }
 
 .trip-back-day {
-  margin: 7px 0 9px 2.6px;
+  margin: 7px 0 9.4px 2.6px;
   font-size: 14.7px;
   line-height: 17px;
   color: var(--reg-muted);

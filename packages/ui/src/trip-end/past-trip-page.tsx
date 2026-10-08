@@ -22,7 +22,7 @@ import '../own-trip/own-trip-people.css';
 import './past-trip.css';
 
 // The tick of «Safar tugadi», as on the green plates of «Mening safarim» (mockup g63/5 phone 5).
-const TICK = 20;
+const TICK = 17;
 
 type Props = {
   readonly trip: Trip;
