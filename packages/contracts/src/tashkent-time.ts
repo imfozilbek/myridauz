@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
 // All dates and times of Rida are Tashkent time, UTC+5 without summer time (docs/35).
-const TASHKENT_OFFSET_MS = 5 * 60 * 60 * 1000;
-export const DAY_MS = 24 * 60 * 60 * 1000;
+export const HOUR_MS = 60 * 60 * 1000;
+const TASHKENT_OFFSET_MS = 5 * HOUR_MS;
+export const DAY_MS = 24 * HOUR_MS;
 
 // A calendar day in Tashkent: "2026-10-01".
 export const tashkentDate = (ms: number) => new Date(ms + TASHKENT_OFFSET_MS).toISOString().slice(0, 10);

@@ -1,6 +1,7 @@
 import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
+  expireBookingsOfTrip,
   passengerRideCount,
   filedRideOfBooking,
   rideOfBooking,
@@ -40,7 +41,12 @@ const tripChannels = channels(tripOf);
 // A published trip goes to the channels and to subscribed passengers; a changed one edits its
 // channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18). A new time
 // or a lower price reaches the booked passengers, a lower price the subscribed ones too (G39, docs/104).
+// «Yoʻlga chiqdim» closes the channel posts and the requests without an answer at once (G63).
 handleTripChange(async (env, tripId, event) => {
+  if (event === 'departed') {
+    await expireBookingsOfTrip(env, tripId);
+    return tripChannels.left(env, tripId);
+  }
   if (event === 'published') {
     await tripChannels.posted(env, tripId);
     const trip = await tripOf(env, tripId);

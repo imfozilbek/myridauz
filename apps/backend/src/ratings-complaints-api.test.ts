@@ -33,7 +33,7 @@ const trip = (departAt: number) =>
     seats: 2,
     price: 90_000,
     womanOnBoard: false,
-    pickupMode: 'both',
+    pickupMode: 'door',
     comment: '',
   });
 const press = (fromId: number, data: string) => ({

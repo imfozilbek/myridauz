@@ -5,7 +5,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
 import { claimZoneInvite } from '../users';
-import { closeDeparted, postTrip, refreshPosts, rememberPost } from './application/channels';
+import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import { allChannels, type TeamChannelsDeps } from './application/team';
 import { channelRoutes } from './http/channel-routes';
@@ -57,6 +57,8 @@ export const channels = (tripOf: TripOf) => ({
     rememberPost(channelsDeps(env, tripOf), { ...post, messageId }, post.shown),
   // The Cron job: posts of trips that left stop offering seats (docs/15).
   departed: (env: Bindings) => closeDeparted(channelsDeps(env, tripOf)),
+  // «Yoʻlga chiqdim» of the driver: the posts of the trip stop offering seats at once (G63).
+  left: (env: Bindings, tripId: string) => closePosts(channelsDeps(env, tripOf), tripId),
 });
 
 // The team's channels in the admin Mini App (docs/63).

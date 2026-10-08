@@ -111,6 +111,8 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     bookingRule: 'seats',
     pitak: facts.pickupMode === 'door' ? null : PITAK,
     status: 'active',
+    departedAt: facts.departedAt,
+    arrivedAt: null,
   };
 };
 

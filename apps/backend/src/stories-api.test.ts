@@ -23,7 +23,7 @@ async function publishTrip() {
     seats: 3,
     price: 90_000,
     womanOnBoard: false,
-    pickupMode: 'both',
+    pickupMode: 'door',
     comment: '',
   };
   return read<{ id: string }>(call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }));

@@ -1,4 +1,4 @@
-import type { Recommendation, TripStep } from '@platform/contracts';
+import type { PickupMode, Recommendation, TripStep } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -18,6 +18,9 @@ type Saved = { readonly step: Step; readonly answer: Partial<TripDraft>; readonl
 const DRAFT_KEY = 'new_trip';
 
 const isStep = (value: unknown): value is Step => STEPS.some((step) => step === value);
+// A return or the last trip again repeat the way of pickup (G63): the way step checks a pitak on the
+// new direction first, and takes «around the city» with no question where it has none.
+const repeatFrom = (mode: PickupMode | undefined): Step => (mode && mode !== 'door' ? 'mode' : 'when');
 const isPlace = (value: unknown) => typeof asRecord(value)?.['id'] === 'string';
 
 // The draft of an older version of the app is dropped when its step or its route does not fit.
@@ -40,7 +43,7 @@ export function useNewTrip(known: Route | undefined, day?: string, again?: TripA
   const { market } = useApiClients();
   const start: Saved =
     known && again
-      ? { step: 'when', answer: { route: known, ...again }, kind: 'again' }
+      ? { step: repeatFrom(again.pickupMode), answer: { route: known, ...again }, kind: 'again' }
       : {
           step: known ? 'mode' : 'route',
           answer: { ...(known ? { route: known } : {}), ...(day ? { date: day } : {}) },
@@ -59,8 +62,13 @@ export function useNewTrip(known: Route | undefined, day?: string, again?: TripA
     setValue((saved) => ({ ...saved, step, answer: { ...saved.answer, ...patch } }));
   };
   const type = (comment: string) => setValue((saved) => ({ ...saved, answer: { ...saved.answer, comment } }));
-  const startReturn = (published: TripDraft) =>
-    setValue({ step: 'when', answer: returnDraft(published), kind: 'return' });
+  const startReturn = (published: TripDraft) => {
+    const answer = returnDraft(published);
+    setValue({ step: repeatFrom(answer.pickupMode), answer, kind: 'return' });
+  };
+  // The way chosen before is shown again (docs/94 F8); a repeated trip keeps its own (G63).
+  const { pickupMode } = value.answer;
+  const mode = pickupMode ? (value.kind === 'new' ? { selected: pickupMode } : { kept: pickupMode }) : {};
   useStepProgress(STEPS.indexOf(value.step), STEPS.length);
   const { route } = value.answer;
   useEffect(() => {
@@ -70,5 +78,5 @@ export function useNewTrip(known: Route | undefined, day?: string, again?: TripA
       .recommend(route.from.id, route.to.id)
       .then(setRecommendation, () => setValue((saved) => ({ ...saved, step: 'route' })));
   }, [route, market, setValue]);
-  return { ...value, recommendation, restored, clear, go, next, type, startReturn };
+  return { ...value, recommendation, restored, clear, go, next, type, startReturn, mode };
 }

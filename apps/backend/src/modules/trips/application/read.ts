@@ -66,7 +66,8 @@ export async function cancelTrip(
   if (!trip) return { ok: false, error: 'trips.not_found' };
   const next = cancel(trip, driverId, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
-  await deps.trips.save(next);
+  // A «Yoʻlga chiqdim» between the read and the write keeps the trip on the road (G63).
+  if (!(await deps.trips.cancel(id))) return { ok: false, error: 'trips.wrong_status' };
   await deps.changed(id, 'updated');
   const [view] = await views(deps, [next]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };

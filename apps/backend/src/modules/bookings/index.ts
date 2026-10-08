@@ -5,7 +5,7 @@ import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
-import { expireRequests } from './application/expire';
+import { expireRequests, expireTripRequests } from './application/expire';
 import { chatBooking, chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
@@ -40,6 +40,9 @@ export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
 
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
+// «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.
+export const expireBookingsOfTrip = (env: Bindings, tripId: string) =>
+  expireTripRequests(bookingsDeps(env), tripId);
 
 // The Cron job (docs/69): points 30 days after the trip go, except under an open complaint.
 export const erasePastPoints = (env: Bindings, now: number, complained: ReadonlySet<string>) =>

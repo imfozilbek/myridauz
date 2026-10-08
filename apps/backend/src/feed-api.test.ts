@@ -62,7 +62,7 @@ describe('the personal channel (docs/64, G19)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+        ...json({ ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'door', comment: '' }),
       }),
     );
     seen.length = 0;

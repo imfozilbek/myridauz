@@ -1,10 +1,9 @@
 import { AFTER_TRIP_TALK_HOURS } from './chat';
 import { COMPLAIN_DAYS } from './complaints';
 import { RATING_DAYS } from './ratings';
-import { DAY_MS } from './tashkent-time';
+import { DAY_MS, HOUR_MS } from './tashkent-time';
 import { arrivalAt } from './trips';
 
-const HOUR_MS = 60 * 60 * 1000;
 // A trip closes by itself this long after the arrival (docs/35, docs/129).
 const CLOSES_AFTER_MS = 2 * HOUR_MS;
 // The exact points live this long after the trip (docs/69): enough for a complaint (docs/17).

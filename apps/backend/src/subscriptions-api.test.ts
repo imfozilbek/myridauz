@@ -30,7 +30,7 @@ const trip = (departAt: number) =>
     seats: 2,
     price: 90_000,
     womanOnBoard: false,
-    pickupMode: 'both',
+    pickupMode: 'door',
     comment: '',
   });
 const sentTo = (chatId: number | string) => telegram.filter((item) => item.body.chat_id === chatId);

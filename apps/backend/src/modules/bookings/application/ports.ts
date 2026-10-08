@@ -52,6 +52,8 @@ export type TripFacts = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  // «Yoʻlga chiqdim» of the driver (G63): the trip is on the road even before its time.
+  readonly departedAt: number | null;
   readonly km: number;
   readonly seats: number;
   readonly price: number;
@@ -72,13 +74,14 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
-    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103).
+    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103). Its way
+    // is the trips module's: both where the direction has a pitak, else the door (docs/70).
     scheduleError(
       driverId: number,
       trip: { from: string; to: string; departAt: number; km: number },
     ): Promise<'trips.too_soon' | 'trips.too_many' | 'trips.busy' | null>;
     views(ids: readonly string[]): Promise<Trip[]>;
-    publish(driverId: number, input: Required<TripInput>): Promise<Published>;
+    publish(driverId: number, input: Omit<Required<TripInput>, 'pickupMode'>): Promise<Published>;
     cancel(driverId: number, tripId: string): Promise<void>;
   };
   readonly requests: {

@@ -1,4 +1,4 @@
-import type { Booking } from '@platform/contracts';
+import { onTheWay, type Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
@@ -18,7 +18,8 @@ async function driverView(deps: BookingsDeps, record: BookingRecord): Promise<Re
 }
 
 // The driver confirms (docs/12, docs/35): the commission is taken now, the bonus first.
-// Without money there is no confirmation. The same booking is never charged twice.
+// Without money there is no confirmation. The same booking is never charged twice. A trip on the
+// road, by the clock or by an early «Yoʻlga chiqdim», answers no request (docs/65 B8, G63).
 export async function confirm(
   deps: BookingsDeps,
   driverId: number,
@@ -27,9 +28,9 @@ export async function confirm(
   const found = await mine(deps, driverId, id);
   if (!found) return { ok: false, error: 'bookings.not_found' };
   const { record, facts } = found;
-  if (statusAt(record, deps.now(), false) !== 'requested')
-    return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
+  if (statusAt(record, now, false) !== 'requested' || onTheWay(facts, now))
+    return { ok: false, error: 'bookings.wrong_status' };
   const next: BookingRecord = { ...record, status: 'confirmed', confirmedAt: now, updatedAt: now };
   // The seat first, in one step with the count of seats; then the money (docs/65 A4).
   if (!(await deps.bookings.confirmWithin(next, facts.seats))) {
@@ -60,7 +61,7 @@ export async function answer(
   const found = await mine(deps, driverId, id);
   if (!found) return { ok: false, error: 'bookings.not_found' };
   const { record, facts } = found;
-  const next = move(record, action, deps.now(), facts.departAt);
+  const next = move(record, action, deps.now(), facts);
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };

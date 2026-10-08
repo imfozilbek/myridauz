@@ -73,6 +73,8 @@ describe('the channel post (docs/15)', () => {
     expect(left.text.startsWith('<b>🚗 Safar boshlandi</b>\n')).toBe(true);
     expect(JSON.stringify(left.markup)).not.toMatch(/startapp=trip_|share/u);
     expect(post({ ...TRIP, status: 'completed' }, PLACES, BEFORE).text).toContain('Safar boshlandi');
+    // «Yoʻlga chiqdim» before the time (G63).
+    expect(post({ ...TRIP, departedAt: BEFORE }, PLACES, BEFORE).text).toContain('Safar boshlandi');
   });
 
   it('escapes names for HTML and tags a region once', () => {

@@ -60,6 +60,7 @@ export function setup() {
       from: '1726273',
       to: '1718401',
       departAt: NOW + 30 * HOUR,
+      departedAt: null,
       endsAt: NOW + 37 * HOUR,
       km: 300,
       seats: 3,
@@ -127,6 +128,11 @@ export function setup() {
     // The driver spent part of the bonus on earlier trips.
     spend: (amount: number) => charge(walletDeps, DRIVER, newId(), amount),
     setNow: (next: number) => void (now = next),
+    // «Yoʻlga chiqdim» of the driver before the time of the trip (G63).
+    departEarly: (tripId: string) => {
+      const facts = trips.get(tripId);
+      if (facts) trips.set(tripId, { ...facts, departedAt: now });
+    },
     requestOpen: (requestId: string) => requests.get(requestId)?.open,
     // A new face or car photo: the driver goes to the team's check again (docs/05).
     recheck: () => void (approved = false),

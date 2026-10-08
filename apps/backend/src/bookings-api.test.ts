@@ -25,7 +25,7 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+        ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
       }),
     );
     const asked = await read<{ id: string; status: string }>(
@@ -63,7 +63,7 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, {
         app: 'driver',
-        ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+        ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
       }),
     );
     const asked = await read<{ id: string }>(

@@ -1,6 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { TripRecord } from '../domain/trip';
+import { regionIn } from '../../../shared/places/place-match';
 import type { TripsDeps } from './ports';
 import { NO_RIDERS, tripView, type Riders } from './views';
 
@@ -36,8 +37,7 @@ async function recommendedOf(deps: TripsDeps, trips: readonly TripRecord[]): Pro
 
 // The main pitak of each direction once: the region of the start and of the end (docs/72).
 async function pitaksOf(deps: TripsDeps, trips: readonly TripRecord[]) {
-  const places = await deps.places();
-  const regionOf = (id: string) => places.get(id)?.parentId ?? id;
+  const regionOf = regionIn(await deps.places());
   const directions = [...new Set(trips.map((trip) => `${regionOf(trip.from)}:${regionOf(trip.to)}`))];
   const found = await Promise.all(
     directions.map(async (direction) => {

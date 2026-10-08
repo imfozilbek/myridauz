@@ -1,5 +1,7 @@
 import {
   BOOKING_ANSWER_HOURS,
+  HOUR_MS,
+  onTheWay,
   type BookingMode,
   type BookingStatus,
   type PlaceName,
@@ -41,7 +43,6 @@ export type BookingRecord = {
   readonly updatedAt: number;
 };
 
-const HOUR_MS = 60 * 60 * 1000;
 // An answer is waited for 24 hours, but never after the departure (docs/35).
 export const answerDeadline = (departAt: number, now: number) =>
   Math.min(now + BOOKING_ANSWER_HOURS * HOUR_MS, departAt);
@@ -76,16 +77,16 @@ const MOVES: Moves = {
   driver_cancel: { requested: 'declined', confirmed: 'cancelled_by_driver' },
 };
 
-// A confirmed booking is not cancelled after the departure: the ride happened or it is a complaint,
-// never a refund by a tap (docs/65 A4).
+// A confirmed booking is not cancelled after the departure, by the clock or by «Yoʻlga chiqdim»: the
+// ride happened or it is a complaint, never a refund by a tap (docs/65 A4, G63).
 export function move(
   booking: BookingRecord,
   action: BookingAction,
   now: number,
-  departAt: number,
+  trip: { readonly departAt: number; readonly departedAt: number | null },
 ): BookingRecord | 'bookings.wrong_status' {
   const status = statusAt(booking, now, false);
-  if (status === 'confirmed' && action !== 'confirm' && departAt <= now) return 'bookings.wrong_status';
+  if (status === 'confirmed' && action !== 'confirm' && onTheWay(trip, now)) return 'bookings.wrong_status';
   const next = MOVES[action][status];
   if (!next) return 'bookings.wrong_status';
   const moved = { ...booking, status: next, updatedAt: now };

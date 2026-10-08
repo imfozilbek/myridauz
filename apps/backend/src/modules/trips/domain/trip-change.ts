@@ -1,12 +1,12 @@
-import { DAY_MS, MAX_TRIP_SHIFT_MS, tashkentDate } from '@platform/contracts';
+import { DAY_MS, MAX_TRIP_SHIFT_MS, onTheWay, tashkentDate } from '@platform/contracts';
 import { endsAt, isLive, type TripRecord } from './trip';
 
 export type ChangeError = 'trips.not_found' | 'trips.wrong_status' | 'trips.invalid_input';
 
-// Only the driver changes a trip, one that is live and has not left yet (docs/104).
+// Only the driver changes a trip, one that is live and has not left yet (docs/104, G63).
 function blocked(trip: TripRecord, driverId: number, now: number): ChangeError | null {
   if (trip.driverId !== driverId) return 'trips.not_found';
-  return isLive(trip, now) && trip.departAt > now ? null : 'trips.wrong_status';
+  return isLive(trip, now) && !onTheWay(trip, now) ? null : 'trips.wrong_status';
 }
 
 // Later only, at most +1 hour from the first time in all, the same day; the end moves along

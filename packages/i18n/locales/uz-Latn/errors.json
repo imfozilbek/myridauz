@@ -49,5 +49,10 @@
   "shares.too_many": "Bu safarni kuzatuvchilar soni chegaraga yetdi.",
   "pitaks.not_found": "Bu pitak topilmadi. Roʻyxatni yangilang.",
   "auth.not_admin": "Bu boʻlim faqat jamoa uchun.",
-  "users.face_decided": "Bu rasm allaqachon koʻrib chiqilgan. Roʻyxatni yangilang."
+  "users.face_decided": "Bu rasm allaqachon koʻrib chiqilgan. Roʻyxatni yangilang.",
+  "trips.too_early_to_depart": "Hali erta. «Yoʻlga chiqdim» safar vaqtidan 1 soat oldin ishlaydi.",
+  "trips.already_departed": "Yoʻlga chiqqaningiz allaqachon belgilangan.",
+  "trips.not_departed": "Avval «Yoʻlga chiqdim» tugmasini bosing.",
+  "trips.already_arrived": "Yetib kelganingiz allaqachon belgilangan.",
+  "trips.no_pitak": "Bu yoʻnalishda pitak yoʻq. «Shahar boʻylab yigʻaman» usulini tanlang."
 }

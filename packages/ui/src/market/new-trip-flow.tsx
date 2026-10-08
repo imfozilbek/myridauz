@@ -64,7 +64,7 @@ function TripStepScreen({
       return route ? (
         <TripModeStep
           route={route}
-          {...(draft.pickupMode ? { selected: draft.pickupMode } : {})}
+          {...flow.mode}
           onBack={() => go('route')}
           onDone={(pickupMode) => next('mode', { pickupMode }, 'when')}
           onSkip={() => {

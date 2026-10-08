@@ -1,5 +1,6 @@
 import {
   DAY_MS,
+  onTheWay,
   TRIP_DAYS_AHEAD,
   tripEndsAt,
   type BookingRule,
@@ -39,6 +40,9 @@ export type TripRecord = {
   readonly priceToldAt: number | null;
   // Seats, seats or the whole car, only the whole car (docs/09, docs/118).
   readonly bookingRule: BookingRule;
+  // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63, docs/35): not statuses, two marks.
+  readonly departedAt: number | null;
+  readonly arrivedAt: number | null;
 };
 
 export const endsAt = tripEndsAt;
@@ -57,13 +61,14 @@ export const isLive = (trip: TripRecord, now: number) =>
 export const statusAt = (trip: TripRecord, now: number): Trip['status'] =>
   (trip.status === 'active' || trip.status === 'full') && trip.endsAt <= now ? 'completed' : trip.status;
 
-// Only the driver cancels, only a trip that has not left yet (docs/35). A trip on the road keeps
-// its confirmed seats, as a booking does after the departure (docs/65 A4, docs/83 N02).
+// Only the driver cancels, only a trip that has not left yet (docs/35): not after its time, not
+// after «Yoʻlga chiqdim». A trip on the road keeps its confirmed seats, as a booking does after the
+// departure (docs/65 A4, docs/83 N02).
 export function cancel(
   trip: TripRecord,
   driverId: number,
   now: number,
 ): TripRecord | 'trips.not_found' | 'trips.wrong_status' {
   if (trip.driverId !== driverId) return 'trips.not_found';
-  return isLive(trip, now) && trip.departAt > now ? { ...trip, status: 'cancelled' } : 'trips.wrong_status';
+  return isLive(trip, now) && !onTheWay(trip, now) ? { ...trip, status: 'cancelled' } : 'trips.wrong_status';
 }

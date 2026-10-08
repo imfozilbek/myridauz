@@ -31,7 +31,7 @@ async function bookedChat(driver = DRIVER, passenger = PASSENGER) {
   const published = await read<{ id: string }>(
     call('/driver/trips', driver, {
       app: 'driver',
-      ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+      ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
     }),
   );
   return read<{ id: string; chatKey: string }>(

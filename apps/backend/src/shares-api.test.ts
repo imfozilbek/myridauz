@@ -39,7 +39,7 @@ async function confirmedBooking() {
   const published = await read<{ id: string }>(
     call('/driver/trips', driver, {
       app: 'driver',
-      ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+      ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
     }),
   );
   const booking = await read<{ id: string }>(
