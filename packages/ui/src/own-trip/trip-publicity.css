@@ -56,10 +56,11 @@
   margin: 2.67px -4px 0 0;
 }
 
+/* The words stand 9.8 px after the paper plane (mockup g59/7-channels-3, measured). */
 .own-channel-share {
   display: flex;
   align-items: center;
-  gap: 9.33px;
+  gap: 9.8px;
   min-height: 40px;
   padding: 0 4px 0 2.67px;
   border: 0;
