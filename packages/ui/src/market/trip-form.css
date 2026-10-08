@@ -1,0 +1,123 @@
+/* «Safar eʼlon qilish» (G63, mockups g63/1 and g63/2 at 360 px): the values of the mockups, one to
+   one (lesson 141); only the colors come from the brand. */
+.points-trip .points-title {
+  padding-top: 18px;
+  font-size: 22px;
+}
+
+.points-trip .points-sub {
+  margin-top: -1px;
+  padding-bottom: 11px;
+  font-size: 13px;
+}
+
+.points-trip .points-card {
+  margin: 0 12px;
+}
+
+.points-trip .points-row {
+  gap: 11px;
+  min-height: 47px;
+  padding: 8px 13px;
+}
+
+.points-trip .points-tile {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.points-trip .points-dropoff {
+  background: var(--reg-from);
+}
+
+.points-trip .points-label {
+  font-size: 11.5px;
+  line-height: 13px;
+}
+
+.points-trip .points-value {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.points-trip .points-change {
+  font-size: 13px;
+  color: var(--reg-text);
+}
+
+.points-trip .points-head {
+  margin: 9px 0 4px;
+  padding: 0 24px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.points-trip .seats-card {
+  padding: 0;
+}
+
+/* A row is 73 px of the mockup drawn at 1.5×, its line included. */
+.points-trip .seats-row {
+  box-sizing: border-box;
+  gap: 11px;
+  min-height: 48.67px;
+  padding: 0 13px;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.points-trip .seats-text {
+  flex: 1;
+  padding: 8px 0;
+}
+
+.points-trip .seats-hint {
+  font-size: 11.5px;
+  line-height: 14.5px;
+}
+
+.points-trip .seats-stepper {
+  gap: 5px;
+}
+
+.points-trip .seats-stepper button {
+  width: 26px;
+  height: 26px;
+  background: var(--reg-mint);
+}
+
+.points-trip .seats-count {
+  font-size: 13px;
+}
+
+/* The switch of the mockup is smaller and of the strong brand color (mockup g63/1, screen 2). */
+.points-trip .seats-woman {
+  --tgui--link_color: var(--reg-strong);
+}
+
+.points-trip .seats-woman > :last-child {
+  zoom: 0.82;
+}
+
+/* A row that opens a screen of its own is a button: it looks like the other rows. */
+.trip-row {
+  box-sizing: border-box;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--reg-divider);
+  background: none;
+  font: inherit;
+  color: var(--reg-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.trip-row > svg {
+  margin-right: -4px;
+  color: var(--reg-muted);
+}
+
+.trip-row-muted {
+  color: var(--reg-muted);
+}

@@ -45,18 +45,10 @@ describe('funnelOf (docs/29)', () => {
     expect([opened?.drop, started?.drop, submitted?.drop]).toEqual([null, 0, 100]);
   });
 
+  // A new trip is one screen (G63, docs/118 path 6): the route on it, then published.
   it('follows the steps of a new trip in order and asks only for the events it reads', () => {
     const steps = funnelOf('new_trip', [row('trip_step', 'driver', 'route', 10)]).steps;
-    expect(steps.map((step) => step.step)).toEqual([
-      'route',
-      'mode',
-      'when',
-      'seats',
-      'price',
-      'rule',
-      'comment',
-      'published',
-    ]);
+    expect(steps.map((step) => step.step)).toEqual(['route', 'published']);
     expect(FUNNEL_EVENTS).toContain('driver_approved');
     expect(FUNNEL_EVENTS).not.toContain('client_error');
   });

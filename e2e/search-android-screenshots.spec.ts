@@ -62,10 +62,11 @@ test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshken
   await shot(page, '5-review');
 });
 
-test('driver: the pitak of the direction on the way step', async ({ page }) => {
+test('driver: the pitak of the direction from its card of the new trip', async ({ page }) => {
   await open(page, DRIVER.port);
   await newTripTile(page).click();
   await chooseRoute(page);
+  await page.getByText(t('way.trip.onMap')).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '6-driver-way');

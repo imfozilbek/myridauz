@@ -30,13 +30,6 @@ export function useShortDay() {
         : formatDate(noonOf(date));
 }
 
-// "1-oktabr, soat 07:30".
-export function useWhenLabel() {
-  const { t, formatDate, formatTime } = useI18n();
-  return (ms: number) =>
-    t('market.trip.when', { date: formatDate(new Date(ms)), time: formatTime(new Date(ms)) });
-}
-
 // "Bugun, soat 07:30", "Ertaga, soat 07:30", else "3-oktabr, soat 07:30": the nearest trips by days.
 export function useNearWhenLabel() {
   const { t, formatDate, formatTime } = useI18n();
@@ -47,4 +40,15 @@ export function useNearWhenLabel() {
     if (day === tomorrow(now)) return t('market.trip.whenTomorrow', { time });
     return t('market.trip.when', { date: formatDate(new Date(ms)), time });
   };
+}
+
+// "Ertaga, 08:00" of a new trip (G63, mockup g63/1): the day by its name when it is near.
+export function useDayTimeLabel() {
+  const { t, formatDate } = useI18n();
+  return (date: string, time: string, now: number) =>
+    date === today(now)
+      ? t('market.publish.today', { time })
+      : date === tomorrow(now)
+        ? t('market.publish.tomorrow', { time })
+        : t('market.publish.day', { date: formatDate(noonOf(date)), time });
 }

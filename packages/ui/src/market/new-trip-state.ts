@@ -1,74 +1,79 @@
-import type { Recommendation, TripStep } from '@platform/contracts';
-import { useEffect, useState } from 'react';
+import type { Pitak, Recommendation } from '@platform/contracts';
+import { useEffect, useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { asRecord, useFlowDraft } from '../flow/flow-draft';
-import { useStepProgress } from '../flow/step-progress';
 import type { Route } from '../places/route-screen';
-import { returnDraft } from './return-trip';
+import { regionOf } from '../way/way-end';
 import type { TripAgain, TripDraft } from './trip-draft';
 
-const STEPS = ['route', 'mode', 'when', 'seats', 'price', 'rule', 'comment', 'review'] as const;
-export type Step = (typeof STEPS)[number];
-// A new trip, the way back of the one just published, or the last trip again (G40, docs/106 K3):
-// the last two ask only the day and go to the check.
-const KINDS = ['new', 'return', 'again'] as const;
-type TripKind = (typeof KINDS)[number];
-type Saved = { readonly step: Step; readonly answer: Partial<TripDraft>; readonly kind: TripKind };
+// The one screen of a new trip and what it opens and comes back from (G63, docs/118 path 6): the
+// route at first or one end of it, the day and time, the rule, the comment, the pitak on the map.
+const SCREENS = ['route', 'from', 'to', 'form', 'when', 'rule', 'comment', 'pitak'] as const;
+export type TripScreen = (typeof SCREENS)[number];
+export type TripAnswer = Partial<TripDraft>;
+type Saved = { readonly screen: TripScreen; readonly answer: TripAnswer };
 const DRAFT_KEY = 'new_trip';
 
-const isStep = (value: unknown): value is Step => STEPS.some((step) => step === value);
+// Another route has its own price and pitak: both are taken anew (docs/09, docs/72).
+const ROUTE_BOUND = new Set(['price', 'pickupMode']);
+const offRoute = (answer: TripAnswer) =>
+  Object.fromEntries(Object.entries(answer).filter(([key]) => !ROUTE_BOUND.has(key))) as TripAnswer;
+
+const isScreen = (value: unknown): value is TripScreen => SCREENS.some((screen) => screen === value);
 const isPlace = (value: unknown) => typeof asRecord(value)?.['id'] === 'string';
 
-// The draft of an older version of the app is dropped when its step or its route does not fit.
+// The draft of an older version of the app is dropped when its screen or its route does not fit.
 function checkSaved(value: unknown): Saved | null {
   const saved = asRecord(value);
   const answer = asRecord(saved?.['answer']);
-  if (!saved || !answer || !isStep(saved['step']) || !KINDS.some((kind) => kind === saved['kind']))
-    return null;
+  if (!saved || !answer || !isScreen(saved['screen'])) return null;
   const route = answer['route'];
   if (route !== undefined && !(isPlace(asRecord(route)?.['from']) && isPlace(asRecord(route)?.['to'])))
     return null;
   return saved as Saved;
 }
 
-// The answers of a new trip and its step, kept as a draft after every step and every typed letter
-// of the comment (docs/94 F3, F8): «Назад» and a reopened app show each answer as it was.
-// A trip from the empty day of the requests (G37, docs/101 R4) comes with its route and day.
+// The answers of a new trip and the screen open, kept as a draft after every change and every typed
+// letter of the comment (docs/94 F3, F8). A trip from the empty day of the requests (G37, docs/101
+// R4) comes with its route and day, «Oxirgi yoʻnalish» with the answers of the last trip (G40 K3).
 export function useNewTrip(known: Route | undefined, day?: string, again?: TripAgain) {
   const { track } = useAnalytics();
-  const { market } = useApiClients();
-  const start: Saved =
-    known && again
-      ? { step: 'when', answer: { route: known, ...again }, kind: 'again' }
-      : {
-          step: known ? 'mode' : 'route',
-          answer: { ...(known ? { route: known } : {}), ...(day ? { date: day } : {}) },
-          kind: 'new',
-        };
+  const { market, map } = useApiClients();
+  const answer: TripAnswer = { ...(known ? { route: known } : {}), ...(day ? { date: day } : {}), ...again };
+  const start: Saved = { screen: known ? 'form' : 'route', answer };
   const { value, setValue, restored, clear } = useFlowDraft(
     DRAFT_KEY,
     checkSaved,
     start,
-    known !== undefined || day !== undefined,
+    Boolean(known ?? day),
   );
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
-  const go = (step: Step) => setValue((saved) => ({ ...saved, step }));
-  const next = (passed: TripStep, patch: Partial<TripDraft>, step: Step) => {
-    track({ name: 'trip_step', screen: `market.${passed}`, step: passed });
-    setValue((saved) => ({ ...saved, step, answer: { ...saved.answer, ...patch } }));
-  };
-  const type = (comment: string) => setValue((saved) => ({ ...saved, answer: { ...saved.answer, comment } }));
-  const startReturn = (published: TripDraft) =>
-    setValue({ step: 'when', answer: returnDraft(published), kind: 'return' });
-  useStepProgress(STEPS.indexOf(value.step), STEPS.length);
+  const [pitak, setPitak] = useState<Pitak | null | undefined>(undefined);
+  const open = (screen: TripScreen) => setValue((saved) => ({ ...saved, screen }));
+  // A change stays where it is made: a switch of the screen, a letter of the comment.
+  const change = (patch: TripAnswer) =>
+    setValue((saved) => ({ ...saved, answer: { ...saved.answer, ...patch } }));
+  // A screen of its own comes back to the one screen with its answer.
+  const back = (patch: TripAnswer = {}) =>
+    setValue((saved) => ({ screen: 'form', answer: { ...saved.answer, ...patch } }));
+  const reroute = (next: Route) =>
+    setValue((saved) => ({ screen: 'form', answer: { ...offRoute(saved.answer), route: next } }));
   const { route } = value.answer;
+  // The route is on the screen once a flow: the first step of the funnel (docs/29).
+  const tracked = useRef(false);
+  useEffect(() => {
+    if (!route || tracked.current) return;
+    tracked.current = true;
+    track({ name: 'trip_step', screen: 'market.publish', step: 'route' });
+  }, [route, track]);
   useEffect(() => {
     if (!route) return;
     setRecommendation(null);
-    market
-      .recommend(route.from.id, route.to.id)
-      .then(setRecommendation, () => setValue((saved) => ({ ...saved, step: 'route' })));
-  }, [route, market, setValue]);
-  return { ...value, recommendation, restored, clear, go, next, type, startReturn };
+    setPitak(undefined);
+    market.recommend(route.from.id, route.to.id).then(setRecommendation, () => open('route'));
+    // A pitak joins two regions (docs/72): without it the driver takes people at their doors.
+    map.pitakOf(regionOf(route.from), regionOf(route.to)).then(setPitak, () => setPitak(null));
+  }, [route, market, map]);
+  return { ...value, recommendation, pitak, restored, clear, open, change, back, reroute };
 }

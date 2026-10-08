@@ -1,138 +1,104 @@
-import type { MarketClient } from '@platform/api-client';
 import { DAY_MS, tashkentDate, tashkentDayStart } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DriverContext, type Driver } from '../driver/driver-context';
-import { testClients } from '../test-shell';
-import { chooseRoute, recommendation, renderMarket, tap, trip } from './market-test-kit';
-import { NewTripFlow } from './new-trip-flow';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { chooseRoute, tap } from './market-test-kit';
+import { openNewTrip, seatsLess, seatsMore, tomorrowAtEight } from './new-trip-test-kit';
 
 afterEach(cleanup);
 // A draft of one test never opens the next one (docs/94 F3).
 beforeEach(() => localStorage.clear());
 
 const HOUR = 60 * 60 * 1000;
-const driver: Driver = {
-  application: {
-    status: 'approved',
-    car: { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 },
-    photos: { front: true, side: true, interior: true },
-    reasons: [],
-  },
-  editCar: () => undefined,
-};
+const WOMAN = 'Mashinada ayol bor';
+const seatsShown = () => screen.getAllByText(/^\d$/u)[0]?.textContent;
 
-function setup(gender: 'male' | 'female' = 'male', status: Driver['application']['status'] = 'approved') {
-  const publishTrip = vi.fn<MarketClient['publishTrip']>(async () => trip);
-  const clients = testClients({ market: { recommend: async () => recommendation, publishTrip } });
-  const result = renderMarket(
-    <DriverContext.Provider value={{ ...driver, application: { ...driver.application, status } }}>
-      <NewTripFlow onBack={() => undefined} />
-    </DriverContext.Provider>,
-    clients,
-    gender,
-  );
-  return { ...result, publishTrip };
-}
-
-describe('NewTripFlow: a new trip, one question per screen (docs/19)', { timeout: 20_000 }, () => {
-  it('asks the route, day and time on one screen, seats, price, comment and publishes', async () => {
-    const { publishTrip, tracked } = setup();
+// G63 (docs/118 path 6, mockups g63/1, g63/2): the trip on one screen, its answers ready.
+describe('NewTripFlow: a new trip on one screen', { timeout: 20_000 }, () => {
+  it('shows the car, the route, all the seats, the price with its commission; publishes and opens the trip', async () => {
+    const { publishTrip, tracked } = openNewTrip();
     await chooseRoute();
-    await tap(/^Ertaga/);
-    // A thin bar on top: how much of the trip is filled (docs/88 L4).
-    const filled = async () => Number((await screen.findByRole('progressbar')).getAttribute('aria-valuenow'));
-    const atTime = await filled();
-    expect(atTime).toBeGreaterThan(0);
-    await tap('Davom etish');
-    // The seats of the car are chosen in advance.
-    expect(await screen.findByText('Nechta boʻsh joy bor?')).toBeTruthy();
-    await tap('Davom etish');
-    // The price field is filled with the recommendation; + adds one step.
-    expect(await screen.findByText(/Tavsiya: 95/)).toBeTruthy();
-    // The commission per seat by the rule of the brand, like the backend takes it (docs/86 V8).
-    expect(screen.getByText(/^Har bir joy uchun 9\s500\ssoʻm komissiya$/u)).toBeTruthy();
-    fireEvent.click(screen.getByLabelText('Oshirish'));
-    expect(screen.getByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
-    await tap('Davom etish');
-    // «Qanday band qilinadi?» (G61, docs/09): seats only at first, the whole car is 4 seats × the price.
-    expect(await screen.findByText('Qanday band qilinadi?')).toBeTruthy();
-    expect(screen.getByText(/^Butun salon narxi: 4 joy × 100\s000 = 400\s000\ssoʻm\.$/u)).toBeTruthy();
-    // A card chooses, «Davom etish» goes on, as the mockup 2-whole-car screen 1.
-    await tap('Joylar yoki butun salon');
-    await tap('Davom etish');
-    expect((await screen.findByPlaceholderText('Izoh yozing')).tagName).toBe('TEXTAREA');
-    expect(await filled()).toBeGreaterThan(atTime);
-    await tap('Izohsiz davom etish');
-    expect(await screen.findByText(/^Har bir joy uchun 10\s000\ssoʻm komissiya$/u)).toBeTruthy();
+    expect(await screen.findByText('Safar eʼlon qilish')).toBeTruthy();
+    expect(screen.getByText('Cobalt, Oq · 01 A 123 BC')).toBeTruthy();
+    expect(screen.getByText('Chilonzor, Toshkent shahri')).toBeTruthy();
+    expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
+    expect(screen.getByText('Mashinada 4 joy')).toBeTruthy();
+    expect(seatsShown()).toBe('4');
+    expect((screen.getAllByLabelText('Oshirish')[0] as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText(/^Tavsiya: 95\s000 · komissiya 9\s500$/u)).toBeTruthy();
+    await tomorrowAtEight();
     await tap('Eʼlon qilish');
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     const departAt = tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + 8 * HOUR;
     expect(publishTrip).toHaveBeenCalledWith({
       from: '1726269',
-      pickupMode: 'door',
       to: '1730401',
       departAt,
       seats: 4,
-      price: 100000,
+      price: 95000,
       womanOnBoard: false,
       comment: '',
-      bookingRule: 'seats_or_car',
+      pickupMode: 'pitak',
+      bookingRule: 'seats',
     });
-    const steps = tracked
-      .filter((event) => event.name === 'trip_step')
-      .map((event) => ('step' in event ? event.step : ''));
-    expect(steps).toEqual(['route', 'mode', 'when', 'seats', 'price', 'rule', 'comment', 'published']);
+    // «Mening safarim» of the new trip at once: no «Safar eʼlon qilindi» between (G63).
+    await waitFor(() => expect(tracked.some((event) => event.screen === 'market.trip')).toBe(true));
+    const steps = tracked.filter((event) => event.name === 'trip_step').map((event) => event.step);
+    expect(steps).toEqual(['route', 'published']);
   });
 
-  // G38 (docs/103 point 8): tap the third chair, 3 seats; somebody already goes, «ayol bor» is asked.
-  it('takes the seats by the chairs and «ayol bor» on the same screen', async () => {
-    const { publishTrip } = setup();
+  it('takes the seats down to one and up to the seats of the car; the price by the steps of the route', async () => {
+    const { publishTrip } = openNewTrip();
     await chooseRoute();
-    await tap(/^Ertaga/);
-    await tap('Davom etish');
-    expect(screen.queryByText('Mashinada ayol bor')).toBeNull();
-    fireEvent.click(await screen.findByLabelText('3 ta boʻsh joy'));
-    expect(screen.getByText('3 ta boʻsh joy', { selector: '.seat-count' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('checkbox'));
-    for (const step of ['Davom etish', 'Davom etish', 'Davom etish', 'Izohsiz davom etish', 'Eʼlon qilish'])
-      await tap(step);
-    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    await screen.findByText('Mashinada 4 joy');
+    for (let tap = 0; tap < 3; tap += 1) seatsLess();
+    expect(seatsShown()).toBe('1');
+    expect((screen.getAllByLabelText('Kamaytirish')[0] as HTMLButtonElement).disabled).toBe(true);
+    seatsMore();
+    fireEvent.click(screen.getAllByLabelText('Oshirish')[1] as HTMLElement);
+    expect(screen.getByText(/^100\s000$/u)).toBeTruthy();
+    expect(screen.getByText(/komissiya 10\s000$/u)).toBeTruthy();
+    await tap('Eʼlon qilish');
+    expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ seats: 2, price: 100000 }));
+  });
+
+  it('asks «Mashinada ayol bor» of a man only while he takes fewer people than his car has', async () => {
+    const { publishTrip } = openNewTrip();
+    await chooseRoute();
+    await screen.findByText('Mashinada 4 joy');
+    expect(screen.queryByText(WOMAN)).toBeNull();
+    seatsLess();
+    expect(screen.getByText('Siz bilan ketayotgan odam ayolmi?')).toBeTruthy();
+    fireEvent.click(screen.getByRole('checkbox', { name: WOMAN }));
+    // All the seats again: the row goes and its answer with it.
+    seatsMore();
+    expect(screen.queryByText(WOMAN)).toBeNull();
+    seatsLess();
+    expect((screen.getByRole('checkbox', { name: WOMAN }) as HTMLInputElement).checked).toBe(false);
+    fireEvent.click(screen.getByRole('checkbox', { name: WOMAN }));
+    await tap('Eʼlon qilish');
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ seats: 3, womanOnBoard: true }));
   });
 
-  it('skips the woman question for a woman driver and shows an error of the API', async () => {
-    const { publishTrip } = setup('female');
-    publishTrip.mockRejectedValueOnce(new Error('offline'));
+  it('never asks a woman driver: her mark is set by itself (docs/06)', async () => {
+    openNewTrip({ gender: 'female' });
     await chooseRoute();
-    for (const step of [
-      /^Ertaga/,
-      'Davom etish',
-      'Davom etish',
-      'Davom etish',
-      'Davom etish',
-      'Izohsiz davom etish',
-      'Eʼlon qilish',
-    ])
-      await tap(step);
-    expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
-    expect(screen.queryByText('Mashinada ayol bormi?')).toBeNull();
+    await screen.findByText('Mashinada 4 joy');
+    seatsLess();
+    expect(seatsShown()).toBe('3');
+    expect(screen.queryByText(WOMAN)).toBeNull();
   });
 
-  it('lets a driver whose application is checked try everything but publishing', async () => {
-    const { publishTrip } = setup('male', 'pending');
+  it('shows an error of the API and lets a driver on the check try everything but publishing', async () => {
+    const { publishTrip } = openNewTrip();
+    publishTrip.mockRejectedValueOnce(new Error('offline'));
     await chooseRoute();
-    for (const step of [
-      /^Ertaga/,
-      'Davom etish',
-      'Davom etish',
-      'Davom etish',
-      'Davom etish',
-      'Izohsiz davom etish',
-    ])
-      await tap(step);
+    await tap('Eʼlon qilish');
+    expect(await screen.findByText('Birozdan keyin qayta urinib koʻring.')).toBeTruthy();
+    cleanup();
+    localStorage.clear();
+    const pending = openNewTrip({ status: 'pending' });
+    await chooseRoute();
     expect(await screen.findByText('Ariza tasdiqlangach safarni eʼlon qila olasiz.')).toBeTruthy();
     expect(screen.queryByText('Eʼlon qilish')).toBeNull();
-    expect(publishTrip).not.toHaveBeenCalled();
+    expect(pending.publishTrip).not.toHaveBeenCalled();
   });
 });

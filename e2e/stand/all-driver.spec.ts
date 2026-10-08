@@ -61,7 +61,9 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
   await shot(page, 'android', 'da32-request');
 });
 
-test('android: publish a trip step by step up to the review', async ({ page }) => {
+// One screen (G63, docs/118 path 6): the way of pickup, the seats of the car with «Mashinada ayol
+// bor» when fewer, the rule and the comment on their own screens and back.
+test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
   await newTripTile(page).click();
   await page.getByText(TEXT.from).click();
@@ -69,29 +71,23 @@ test('android: publish a trip step by step up to the review', async ({ page }) =
   await page.getByText('Chilonzor').click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText('Samarqand shahri', { exact: true }).click();
-  await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
-  await shot(page, 'android', 'da40-mode');
+  await expect(mainButton(page)).toHaveText(TEXT.publish);
+  await shot(page, 'android', 'da40-publish');
   await page.getByText(t('way.trip.mode.door')).click();
-  await shot(page, 'android', 'da41-date');
-  await page.getByText(TEXT.tomorrow).click();
-  await mainButton(page).click();
-  await shot(page, 'android', 'da42-seats');
-  // Three chairs of four: somebody already goes, «Mashinada ayol bor» is right here (G38).
-  await page.getByLabel(t('market.trip.seats', { count: 3 })).click();
+  // Three seats of four: somebody already goes, «Mashinada ayol bor» is right under them (G38).
+  await page.getByLabel(t('market.price.less')).first().click();
   await expect(page.getByText(t('market.search.woman'))).toBeVisible();
   await shot(page, 'android', 'da43-seats-woman');
-  await mainButton(page).click();
-  await shot(page, 'android', 'da44-price');
-  await mainButton(page).click();
   // «Qanday band qilinadi?» (G61): seats or the whole car.
-  await expect(page.getByText(t('market.rule.title'))).toBeVisible();
+  await page.getByText(t('market.rule.title')).click();
   await shot(page, 'android', 'da44a-rule');
   await page.getByText(t('market.rule.seatsOrCar')).click();
   await mainButton(page).click();
+  await page.getByText(t('market.publish.comment')).click();
   await shot(page, 'android', 'da45-comment');
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
-  await shot(page, 'android', 'da46-review');
+  await shot(page, 'android', 'da46-publish');
 });
 
 test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {

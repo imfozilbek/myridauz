@@ -17,5 +17,11 @@ export function usePlaceNames(directory: PlaceDirectory) {
     const region = place.parentId === null ? undefined : directory.find(place.parentId);
     return region ? `${place.name}, ${short(region)}` : short(place);
   };
-  return { short, full, from };
+  // An end of a new trip (G63, journey g63/4 screen 3): the place with its region in full, a city
+  // named after its region alone («Samarqand shahri», not «…, Samarqand viloyati»).
+  const end = (place: Location) => {
+    const region = place.parentId === null ? undefined : directory.find(place.parentId);
+    return region && !place.name.startsWith(short(region)) ? `${place.name}, ${region.name}` : place.name;
+  };
+  return { short, full, from, end };
 }

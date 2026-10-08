@@ -1,5 +1,5 @@
 import {
-  CalendarDays,
+  Calendar,
   ChevronDown,
   ChevronUp,
   CircleDot,
@@ -23,9 +23,10 @@ export const WAY_ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
-  // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon.
+  // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon. The
+  // day is the plain calendar of the approved mockup g63/1.
   door: House,
   pitak: Signpost,
   anyWay: Waypoints,
-  day: CalendarDays,
+  day: Calendar,
 } satisfies Record<string, LucideIcon>;

@@ -253,21 +253,6 @@
   padding-inline: 0;
 }
 
-/* The chairs of the car in one row, a finger-sized tap each (G38, docs/103 point 8). */
-.seat-chairs {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  padding: 8px 16px;
-}
-
-.seat-count {
-  display: block;
-  padding: 4px 16px 16px;
-  text-align: center;
-}
-
 /* The list of the last day while the next one loads: dimmed only after a wait a person notices,
    so a fast answer changes nothing on the screen (G41, docs/108). */
 .list-stale {

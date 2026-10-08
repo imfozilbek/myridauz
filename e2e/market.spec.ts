@@ -6,13 +6,22 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const [PASSENGER, DRIVER] = MINI_APPS;
 
-test('driver: publishes a trip with the recommended price (G07)', async ({ page }) => {
+test('driver: publishes a trip on one screen with the recommended price (G07, G63)', async ({ page }) => {
   const api = await mockApi(page, 'active');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await publishTrip(page);
   expect(api.published).toEqual([
-    expect.objectContaining({ from: '1726294', to: '1718401', seats: 4, price: 90000, comment: '' }),
+    expect.objectContaining({
+      from: '1726294',
+      to: '1718401',
+      seats: 4,
+      price: 90000,
+      comment: '',
+      // The pitak of the direction is taken first; the whole car chosen on its own screen (G63).
+      pickupMode: 'pitak',
+      bookingRule: 'seats_or_car',
+    }),
   ]);
 });
 

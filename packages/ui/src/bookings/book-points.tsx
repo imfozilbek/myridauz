@@ -9,7 +9,7 @@ import { haptic } from '../telegram/feedback';
 import { rememberWay } from '../way/remembered-way';
 import { useNameText } from '../way/way-end';
 import type { useBooking } from './book-state';
-import { PointsScreen } from './points-screen';
+import { PointsScreen, usePassengerWords } from './points-screen';
 
 type Props = {
   readonly trip: Trip;
@@ -25,6 +25,7 @@ type Props = {
 export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props) {
   useScreenView('bookings.points');
   const { t, formatMoney, formatNumber, formatDate, formatTime } = useI18n();
+  const words = usePassengerWords();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const nameText = useNameText();
@@ -51,6 +52,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
   const day = new Date(trip.departAt);
   return (
     <PointsScreen
+      {...words}
       sub={t('bookings.points.sub', {
         route,
         date: formatDate(day),

@@ -79,7 +79,9 @@ describe('The requests a driver looks for (G37, docs/101)', { timeout: 20_000 },
     expect(screen.queryByText(/taklifingizni kutmoqda/u)).toBeNull();
     expect(screen.queryByText('Xabar bering')).toBeNull();
     await tap('Safar eʼlon qilish');
-    // No pitak on the direction: no choice of the way, the day is next (G40, docs/106 K2).
-    expect(await screen.findByText('Qachon joʻnaysiz?')).toBeTruthy();
+    // The one screen with the route and the day (G63); no pitak on the direction: the doors only.
+    expect(await screen.findByText('Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi.')).toBeTruthy();
+    // The day of the requests; late in the evening it has no free time left (docs/103).
+    expect(screen.getByText(/^(Bugun, \d\d:\d\d|Qachon joʻnaysiz\?)$/u)).toBeTruthy();
   });
 });

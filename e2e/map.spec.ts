@@ -104,8 +104,9 @@ test('the passenger who goes from a pitak sees the pitak on «Qayerdan, qayerga?
   expect(state.booked).toMatchObject({ seats: 1, mode: 'pitak', pickup: null, dropoff: HOME });
 });
 
-// The driver sees the pitak of the direction on a small map before choosing the way (G26).
-test('the driver sees the pitak of the direction on the mode step', async ({ page }) => {
+// The pitak of the direction is on its card of the new trip; «Xaritada» shows it on the small map
+// of the app (G26, G63 mockup g63/2).
+test('the driver sees the pitak of the direction on the map from the new trip', async ({ page }) => {
   await mockApi(page, 'active');
   await mockMap(page, mapState());
   await mockTelegram(page);
@@ -113,6 +114,7 @@ test('the driver sees the pitak of the direction on the mode step', async ({ pag
   await newTripTile(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.both'))).toBeVisible();
+  await page.getByText(t('way.trip.onMap')).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '5-driver-mode');
