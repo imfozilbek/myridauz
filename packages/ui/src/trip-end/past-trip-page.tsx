@@ -19,6 +19,7 @@ import { useReturnPlan } from './use-return-plan';
 import '../meeting/no-show.css';
 import '../own-trip/own-trip.css';
 import '../own-trip/own-trip-people.css';
+import '../own-trip/own-trip-banner.css';
 import './past-trip.css';
 
 // The tick of «Safar tugadi», as on the green plates of «Mening safarim» (mockup g63/5 phone 5).
