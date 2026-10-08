@@ -45,7 +45,7 @@ export function TripPickup({ mode, pitak, direction, onMode, onMap }: Props) {
             </span>
             <span className="trip-pitak-map">
               {t('way.trip.onMap')}
-              <Icon name="next" size={12} />
+              <Icon name="next" size={10} />
             </span>
           </button>
           <MeetingMap point={pitak.point} onOpen={onMap} />
