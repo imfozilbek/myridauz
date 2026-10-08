@@ -5,6 +5,7 @@ import { confirmed, wallet } from '../bookings/booking-test-kit';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
+import { fiveStars } from '../trip-end/past-trip-kit';
 
 afterEach(cleanup);
 
@@ -14,10 +15,12 @@ const rider = { ...confirmed, id: 'b2' };
 const left: Trip = { ...trip, seatsLeft: 1, departedAt: trip.departAt };
 const NOW = trip.departAt + 6 * 60 * MINUTE;
 
-// The list keeps what the server answers: fresh: after «Yetib keldik» it brings the mark.
+// The list keeps what the server answers: fresh: after «Yetib keldik» it brings the mark. The seat is
+// rated once the stars came (docs/24).
 function open(start: Trip, fresh: boolean) {
   vi.setSystemTime(NOW);
   let shown = start;
+  let rated = false;
   const arriveTrip = vi.fn(async () => {
     const arrived = { ...left, arrivedAt: Date.now() };
     if (fresh) shown = arrived;
@@ -27,8 +30,8 @@ function open(start: Trip, fresh: boolean) {
     <MyTripsScreen onBack={() => undefined} />,
     testClients({
       market: { myTrips: async () => [shown], searchRequests: async () => [], arriveTrip },
-      bookings: { driverBookings: async () => [rider], driverOffers: async () => [] },
-      feedback: { review: async () => undefined },
+      bookings: { driverBookings: async () => [{ ...rider, rated }], driverOffers: async () => [] },
+      feedback: { review: async () => void (rated = true), target: fiveStars },
       wallet: { mine: async () => wallet },
     }),
   );
@@ -70,6 +73,19 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     await tap('Orqaga');
     await pastShown();
     expect(arriveTrip).toHaveBeenCalledOnce();
+  });
+
+  it('the stars of «Safar tugadi» are on the past trip at once, not offered again', async () => {
+    open(left, true);
+    await openTrip();
+    await tap('Yetib keldik');
+    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    await tap('Yuborish');
+    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
+    await tap('Orqaga');
+    await pastShown();
+    expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
+    expect(screen.getByText('Hammasi baholandi')).toBeTruthy();
   });
 
   it('opened again from the list after «Safar tugadi», the trip is past', async () => {

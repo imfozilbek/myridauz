@@ -28,6 +28,7 @@ export const AREAS = {
     'screens-driver',
     'all-driver',
     'trip-changes',
+    'g63',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin'],
   bots: ['bots', 'bots-team', 'complaints-time'],

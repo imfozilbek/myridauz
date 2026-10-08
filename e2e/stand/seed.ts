@@ -11,7 +11,7 @@ import { DRIVERS, MEN, OWNER, PASSENGERS } from './people';
 import { contactOf, signedAs, type Person } from './stand-kit';
 
 // The people of the scenarios, made through the API of the stand like the apps make them (docs/75).
-const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white', seats: 4 } as const;
+export const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white', seats: 4 } as const;
 // Any photo does on the stand: a region picture of the brand stands for a face and a car.
 export const PHOTO = new Blob([readFileSync(`brands/${loadBrand().id}/public/regions/1726.webp`)], {
   type: 'image/webp',
@@ -44,6 +44,14 @@ export async function apply(person: Person, plate: string, gender: Gender) {
   if (status === 'approved' || status === 'pending') return;
   for (const kind of CAR_PHOTO_KINDS) await drivers.uploadPhoto(kind, PHOTO);
   await drivers.submit({ ...CAR, plate });
+}
+
+// A driver of one scenario only, approved by the owner at once (G60, G63): his own id, phone and car.
+export async function approvedDriver(person: Person, plate: string) {
+  await apply(person, plate, 'male');
+  const moderation = createModerationClient(await signedAs('admin', OWNER));
+  const summary = (await moderation.queue()).find((application) => application.car.plate === plate);
+  if (summary) await moderation.decide(summary.userId, { action: 'approve' });
 }
 
 export default async function seed() {

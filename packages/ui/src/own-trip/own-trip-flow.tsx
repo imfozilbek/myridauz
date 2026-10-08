@@ -33,7 +33,9 @@ export function OwnTripFlow(props: OwnTripProps) {
       />
     );
   if (after?.screen === 'end')
-    return <TripEndFlow trip={trip} bookings={bookings} onPublish={publish} onClose={close} />;
+    return (
+      <TripEndFlow trip={trip} bookings={bookings} onPublish={publish} onClose={close} onRated={onChanged} />
+    );
   if (arrived || tripPast(trip))
     return (
       <PastTripFlow

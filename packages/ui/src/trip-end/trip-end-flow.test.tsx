@@ -23,6 +23,7 @@ function open(
   searchRequests: MarketClient['searchRequests'],
   onPublish = vi.fn(),
   onClose = vi.fn(),
+  onRated = vi.fn(),
 ) {
   renderMarket(
     <PlacesGate>
@@ -31,6 +32,7 @@ function open(
         bookings={[madina, sardor, gone, rated]}
         onPublish={onPublish}
         onClose={onClose}
+        onRated={onRated}
       />
     </PlacesGate>,
     testClients({ feedback: { review }, market: { searchRequests }, wallet: { mine: async () => wallet } }),
@@ -50,7 +52,8 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
 
   it('rates the passengers not rated yet, five stars unless lowered, then offers the way back', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
-    const onPublish = open(review, async () => [request, request]);
+    const onRated = vi.fn();
+    const onPublish = open(review, async () => [request, request], vi.fn(), vi.fn(), onRated);
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
     expect(screen.queryByText('Akmal')).toBeNull();
     expect(screen.queryByText('Bobur')).toBeNull();
@@ -59,6 +62,8 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     await tap('Yuborish');
     expect(review.mock.calls).toEqual([[{ bookingId: 'm1', stars: 5 }], [{ bookingId: 's1', stars: 3 }]]);
     expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
+    // The list brings the seats marked rated: the past trip does not offer the stars again.
+    expect(onRated).toHaveBeenCalledOnce();
     expect(screen.getByText(/^Ertaga, /u)).toBeTruthy();
     expect(screen.getByText('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')).toBeTruthy();
     expect(screen.getByText('Hammasi tayyor: faqat vaqtni tasdiqlang.')).toBeTruthy();

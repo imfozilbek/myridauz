@@ -65,12 +65,7 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
     );
   if (opened?.screen === 'rate')
     return (
-      <TripEndFlow
-        trip={trip}
-        bookings={bookings}
-        onPublish={onPublish}
-        onClose={() => (back(), onChanged())}
-      />
+      <TripEndFlow trip={trip} bookings={bookings} onPublish={onPublish} onClose={back} onRated={onChanged} />
     );
   if (opened?.screen === 'wallet') return <WalletScreen onBack={back} />;
   const row = async (picked: AfterRow) => {

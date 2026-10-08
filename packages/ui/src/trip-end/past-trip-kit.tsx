@@ -16,7 +16,8 @@ export const gone = { ...akmal, trip, status: 'completed' as const, noShowAt: tr
 // The evening of the trip: the chat is open until tomorrow, six days are left to rate (mockup).
 const EVENING = arrivalAt(trip.departAt, trip.km) + 7 * HOUR_MS;
 
-const fiveStars = async () => ({
+// The five stars the driver gave, as the server reads them back.
+export const fiveStars = async () => ({
   rateeId: madina.passenger.id,
   rateeName: 'Madina',
   rateeRole: 'passenger' as const,
