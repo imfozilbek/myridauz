@@ -1,13 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  adjust,
-  burnExpired,
-  canAfford,
-  charge,
-  grantWelcome,
-  refund,
-  walletView,
-} from './application/wallet';
+import { adjust, burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { walletView } from './application/wallet-view';
 import { adminWallets } from './application/admin-wallets';
 import { grantMissedWelcome } from './application/missed';
 import type { WalletDeps } from './application/ports';
@@ -25,6 +18,7 @@ function setup(promo = PROMO) {
     wallet: createMemoryWallet(),
     promo,
     people: { find: async (id) => ({ firstName: 'Jasur', publicId: publicIdOf(id) }), idOf: idOfPublic },
+    passengers: async () => new Map(),
     now: () => now,
     newId: () => `op-${(id += 1)}`,
   };

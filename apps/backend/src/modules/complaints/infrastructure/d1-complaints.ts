@@ -1,64 +1,51 @@
-import type { ComplaintReason, ComplaintStatus } from '@platform/contracts';
 import type { ComplaintStore } from '../application/ports';
-import type { ComplaintRecord } from '../domain/complaint';
 import { allIn } from '../../../shared/storage/in-list';
+import { REFUND_COLUMNS, refundValues, toComplaint, type Row } from './complaint-row';
 
-type Row = {
-  id: string;
-  author_id: number;
-  against_id: number;
-  booking_id: string;
-  reason: string;
-  comment: string;
-  status: string;
-  decision: string | null;
-  decided_by: number | null;
-  created_at: number;
-  decided_at: number | null;
-};
-
-const toComplaint = (row: Row): ComplaintRecord => ({
-  id: row.id,
-  authorId: row.author_id,
-  againstId: row.against_id,
-  bookingId: row.booking_id,
-  reason: row.reason as ComplaintReason,
-  comment: row.comment,
-  status: row.status as ComplaintStatus,
-  decision: row.decision,
-  decidedBy: row.decided_by,
-  createdAt: row.created_at,
-  decidedAt: row.decided_at,
-});
+const COLUMNS = [
+  'id',
+  'author_id',
+  'against_id',
+  'booking_id',
+  'reason',
+  'comment',
+  'status',
+  'decision',
+  'decided_by',
+  'created_at',
+  'decided_at',
+  ...REFUND_COLUMNS,
+] as const;
+const SAVE = `INSERT OR REPLACE INTO complaints (${COLUMNS.join(', ')})
+  VALUES (${COLUMNS.map(() => '?').join(', ')})`;
+// The decision and a proposed refund are written in one step, once (docs/65 A4).
+const RESOLVE = `UPDATE complaints SET status = 'resolved', decision = ?, decided_by = ?, decided_at = ?,
+  ${REFUND_COLUMNS.map((column) => `${column} = ?`).join(', ')} WHERE id = ? AND status != 'resolved'`;
+// The owner answers a proposed refund once: a second tap changes nothing (G63).
+const ANSWER = `UPDATE complaints SET refund_state = ?, refund_decided_by = ?, refund_decided_at = ?
+  WHERE id = ? AND refund_state = ?`;
 
 // Tables complaints and complaint_chat_reads (migrations/0012_ratings_complaints.sql).
 export const d1Complaints = (db: D1Database): ComplaintStore => ({
   save: async (c) => {
+    const { id, authorId, againstId, bookingId, reason, comment, status } = c;
+    const decided = [c.decision, c.decidedBy, c.createdAt, c.decidedAt] as const;
+    const values = [id, authorId, againstId, bookingId, reason, comment, status, ...decided];
     await db
-      .prepare(
-        'INSERT OR REPLACE INTO complaints (id, author_id, against_id, booking_id, reason, comment, status, ' +
-          'decision, decided_by, created_at, decided_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      )
-      .bind(
-        c.id,
-        c.authorId,
-        c.againstId,
-        c.bookingId,
-        c.reason,
-        c.comment,
-        c.status,
-        c.decision,
-        c.decidedBy,
-        c.createdAt,
-        c.decidedAt,
-      )
+      .prepare(SAVE)
+      .bind(...values, ...refundValues(c))
       .run();
   },
   resolve: async (c) => {
-    const sql = `UPDATE complaints SET status = 'resolved', decision = ?, decided_by = ?, decided_at = ?
-      WHERE id = ? AND status != 'resolved'`;
-    const result = await db.prepare(sql).bind(c.decision, c.decidedBy, c.decidedAt, c.id).run();
-    return result.meta.changes === 1;
+    const values = [c.decision, c.decidedBy, c.decidedAt, ...refundValues(c), c.id];
+    return (
+      (
+        await db
+          .prepare(RESOLVE)
+          .bind(...values)
+          .run()
+      ).meta.changes === 1
+    );
   },
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM complaints WHERE id = ?').bind(id).first<Row>();
@@ -85,5 +72,31 @@ export const d1Complaints = (db: D1Database): ComplaintStore => ({
   logChatRead: async (complaintId, moderatorId, at) => {
     const sql = 'INSERT INTO complaint_chat_reads (complaint_id, moderator_id, at) VALUES (?, ?, ?)';
     await db.prepare(sql).bind(complaintId, moderatorId, at).run();
+  },
+  refundsProposed: async () =>
+    (await db.prepare("SELECT * FROM complaints WHERE refund_state = 'proposed'").all<Row>()).results.map(
+      toComplaint,
+    ),
+  ofAuthorRides: async (authorId, bookingIds) => {
+    const sql = (marks: string) =>
+      `SELECT * FROM complaints WHERE author_id = ? AND booking_id IN (${marks})`;
+    return (await allIn<Row>(db, sql, bookingIds, [authorId])).map(toComplaint);
+  },
+  answerRefund: async ({ id, refund }, expected) => {
+    const values = [
+      refund?.state ?? null,
+      refund?.decidedBy ?? null,
+      refund?.decidedAt ?? null,
+      id,
+      expected,
+    ];
+    return (
+      (
+        await db
+          .prepare(ANSWER)
+          .bind(...values)
+          .run()
+      ).meta.changes === 1
+    );
   },
 });

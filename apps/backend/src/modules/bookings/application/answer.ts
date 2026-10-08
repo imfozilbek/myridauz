@@ -3,10 +3,11 @@ import { move, statusAt, type BookingAction, type BookingRecord } from '../domai
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { withExtraWay } from './extra-way';
+import { withDriverExtras } from './driver-views';
 
 type AnswerError = 'bookings.not_found' | 'bookings.wrong_status' | 'bookings.no_seats' | 'wallet.not_enough';
 
-async function mine(deps: BookingsDeps, driverId: number, id: string) {
+export async function mine(deps: BookingsDeps, driverId: number, id: string) {
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
   return record && facts?.driverId === driverId ? { record, facts } : undefined;
@@ -84,7 +85,7 @@ export async function driverBookings(deps: BookingsDeps, driverId: number): Prom
     [...records].sort((a, b) => b.createdAt - a.createdAt),
     'driver',
   );
-  return withExtraWay(views, records);
+  return withDriverExtras(deps, driverId, withExtraWay(views, records));
 }
 
 // The team looks at the bookings of a trip (owner decision 29.09.2026: trips are not approved).

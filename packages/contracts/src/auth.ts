@@ -65,6 +65,10 @@ export const API_ERRORS = [
   'bookings.outside_country',
   'bookings.wrong_mode',
   'bookings.outside_area',
+  // The meeting of the driver at the point of the passenger (docs/126, G63).
+  'bookings.not_meeting_time',
+  'bookings.already_met',
+  'bookings.already_no_show',
   'wallet.not_enough',
   'wallet.invalid_input',
   'auth.not_owner',

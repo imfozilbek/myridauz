@@ -4,6 +4,7 @@ import { MAX_SEATS } from './drivers';
 import { tripSchema } from './trips';
 import { pointInputSchema } from './point';
 import { bookedPlaceSchema, bookingModeSchema, pitakSchema } from './pickup';
+import { complaintRefundSchema } from './complaints';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
 // request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
@@ -86,6 +87,13 @@ export const bookingSchema = z.object({
   arrivedAt: z.number().int().nullable(),
   // «Men keldim» of the passenger at the meeting point (docs/126).
   cameAt: z.number().int().nullable().default(null),
+  // The driver at the point: «Men keldim», then «Keldi» or «Kelmadi» (docs/126, G63).
+  driverCameAt: z.number().int().nullable().default(null),
+  metAt: z.number().int().nullable().default(null),
+  noShowAt: z.number().int().nullable().default(null),
+  // Only for the driver: the refund of the commission of a no-show (docs/35, docs/129). null while
+  // the team decides; "rejected" also when the team decided without a refund.
+  refund: complaintRefundSchema.nullable().default(null),
 });
 export type Booking = z.infer<typeof bookingSchema>;
 export const bookingsSchema = z.object({ bookings: z.array(bookingSchema) });

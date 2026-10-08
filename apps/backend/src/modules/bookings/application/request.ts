@@ -5,7 +5,7 @@ import {
   type Booking,
   type BookingInput,
 } from '@platform/contracts';
-import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
+import { answerDeadline, move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
@@ -71,6 +71,7 @@ export async function requestBooking(
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: now,
     updatedAt: now,
   };

@@ -5,7 +5,18 @@ import {
   HIGH_PRIORITY,
   type ComplaintReason,
   type ComplaintStatus,
+  type RefundState,
 } from '@platform/contracts';
+
+// The refund of the commission of a no-show (docs/35, G63): a moderator proposes it with the
+// decision, the owner confirms or rejects it once.
+type RefundMark = {
+  readonly state: RefundState;
+  readonly proposedBy: number;
+  readonly proposedAt: number;
+  readonly decidedBy: number | null;
+  readonly decidedAt: number | null;
+};
 
 // One complaint of one person about the other side of a ride (docs/17).
 export type ComplaintRecord = {
@@ -16,11 +27,12 @@ export type ComplaintRecord = {
   readonly reason: ComplaintReason;
   readonly comment: string;
   readonly status: ComplaintStatus;
-  // "none", "warning", "block:7", "block:forever", with ":refund" when the commission went back.
+  // "none", "warning", "block:7", "block:forever", with ":refund" when a refund was proposed.
   readonly decision: string | null;
   readonly decidedBy: number | null;
   readonly createdAt: number;
   readonly decidedAt: number | null;
+  readonly refund: RefundMark | null;
 };
 
 export const isHigh = (reason: ComplaintReason) => HIGH_PRIORITY.includes(reason);

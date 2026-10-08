@@ -40,3 +40,8 @@ export function chargedFor(operations: readonly Operation[], bookingId: string):
       .reduce((sum, op) => sum + op.amount, 0);
   return { bonus: taken('bonus'), main: taken('main') };
 }
+
+// The commission of a booking went back already: by a cancel or by the owner on a no-show.
+// It goes back once (docs/35).
+export const returnedFor = (operations: readonly Operation[], bookingId: string) =>
+  operations.some((op) => op.bookingId === bookingId && op.kind !== 'commission');

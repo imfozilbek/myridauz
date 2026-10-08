@@ -20,6 +20,7 @@ import {
   scheduleCheck,
 } from './test-fakes';
 import { idOfPublic } from '../../test-people';
+import { fakeMeeting } from './test-meeting';
 
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
@@ -43,6 +44,7 @@ export function setup() {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
     people: { find: async (userId) => people.get(userId), idOf: idOfPublic },
+    passengers: async () => new Map(),
     now: () => now,
     newId,
   };
@@ -110,6 +112,7 @@ export function setup() {
     track: (step) => void notes.push(`step: ${step}`),
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
+    meeting: fakeMeeting(notes),
     now: () => now,
     newId,
   };

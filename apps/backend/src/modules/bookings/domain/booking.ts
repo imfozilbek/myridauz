@@ -39,9 +39,16 @@ export type BookingRecord = {
   readonly boardedAt: number | null;
   readonly arrivedAt: number | null;
   readonly cameAt: number | null;
+  // The driver at the point (docs/126, G63): «Men keldim», «Keldi», «Kelmadi»; never cleared.
+  readonly driverCameAt: number | null;
+  readonly metAt: number | null;
+  readonly noShowAt: number | null;
   readonly createdAt: number;
   readonly updatedAt: number;
 };
+
+// A new booking: the driver has marked nothing at the point yet (G63).
+export const NO_MARKS = { driverCameAt: null, metAt: null, noShowAt: null } as const;
 
 // An answer is waited for 24 hours, but never after the departure (docs/35).
 export const answerDeadline = (departAt: number, now: number) =>
@@ -77,8 +84,11 @@ const MOVES: Moves = {
   driver_cancel: { requested: 'declined', confirmed: 'cancelled_by_driver' },
 };
 
-// A confirmed booking is not cancelled after the departure, by the clock or by «Yoʻlga chiqdim»: the
-// ride happened or it is a complaint, never a refund by a tap (docs/65 A4, G63).
+// After «Keldi» or «Kelmadi» of the driver the meeting is over (G63).
+export const metOrMissed = (booking: BookingRecord) => booking.metAt !== null || booking.noShowAt !== null;
+
+// A confirmed booking is not cancelled after the departure (by the clock or by «Yoʻlga chiqdim»), nor
+// after the meeting: the ride happened or it is a complaint, never a refund by a tap (docs/35, docs/65 A4).
 export function move(
   booking: BookingRecord,
   action: BookingAction,
@@ -86,7 +96,8 @@ export function move(
   trip: { readonly departAt: number; readonly departedAt: number | null },
 ): BookingRecord | 'bookings.wrong_status' {
   const status = statusAt(booking, now, false);
-  if (status === 'confirmed' && action !== 'confirm' && onTheWay(trip, now)) return 'bookings.wrong_status';
+  const over = onTheWay(trip, now) || metOrMissed(booking);
+  if (status === 'confirmed' && action !== 'confirm' && over) return 'bookings.wrong_status';
   const next = MOVES[action][status];
   if (!next) return 'bookings.wrong_status';
   const moved = { ...booking, status: next, updatedAt: now };

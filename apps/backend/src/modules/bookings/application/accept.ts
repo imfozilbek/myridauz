@@ -1,5 +1,5 @@
 import type { Offer, Point } from '@platform/contracts';
-import type { BookingRecord, Named } from '../domain/booking';
+import { NO_MARKS, type BookingRecord, type Named } from '../domain/booking';
 import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerViews } from './offer-views';
 import type { BookingsDeps, Result } from './ports';
@@ -107,6 +107,7 @@ async function acceptTaken(
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: now,
     updatedAt: now,
   };

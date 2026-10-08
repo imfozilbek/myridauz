@@ -1,43 +1,20 @@
 import type { Complaint, complaintDecisionSchema } from '@platform/contracts';
 import type { z } from 'zod';
-import { isHigh, queueOrder, type ComplaintRecord } from '../domain/complaint';
+import { queueOrder } from '../domain/complaint';
 import { blockPerson } from './block';
-import type { ComplaintsDeps, Ride, Side } from './ports';
+import { complaintView as view, sideOf } from './complaint-view';
+import type { ComplaintsDeps, Ride } from './ports';
 
 // Who decides: a moderator, or the owner who may also block a member of the team.
 export type Moderator = { readonly id: number; readonly owner: boolean };
 
 type Decision = z.output<typeof complaintDecisionSchema>;
-const sideOf = (ride: Ride, userId: number): Side => (userId === ride.driverId ? 'driver' : 'passenger');
 
-async function party(deps: ComplaintsDeps, userId: number, side: Side) {
-  const [person, trips, complaints] = await Promise.all([
-    deps.people.find(userId),
-    deps.trips(userId, side),
-    deps.store.countAgainst(userId),
-  ]);
-  const firstName = person?.firstName ?? '';
-  const id = person?.publicId ?? '';
-  return { id, firstName, hasAvatar: Boolean(person?.avatarKey), role: side, trips, complaints };
-}
-
-async function view(deps: ComplaintsDeps, complaint: ComplaintRecord): Promise<Complaint | null> {
-  const ride = await deps.filedRide(complaint.bookingId);
-  if (!ride) return null;
-  const { id, reason, comment, status, createdAt, authorId, againstId } = complaint;
-  const [author, against] = await Promise.all([
-    party(deps, authorId, sideOf(ride, authorId)),
-    party(deps, againstId, sideOf(ride, againstId)),
-  ]);
-  const base = { id, reason, high: isHigh(reason), comment, status, createdAt };
-  return { ...base, tripId: ride.tripId, departAt: ride.departAt, author, against };
-}
-
-// The queue of the team (docs/17): open complaints, high priority first.
+// The queue of the team (docs/17): open complaints, high priority first, and the decided ones
+// whose refund waits for the owner (docs/35, G63).
 export async function complaintQueue(deps: ComplaintsDeps): Promise<Complaint[]> {
-  const views = await Promise.all(
-    (await deps.store.open()).sort(queueOrder).map((known) => view(deps, known)),
-  );
+  const [open, waiting] = await Promise.all([deps.store.open(), deps.store.refundsProposed()]);
+  const views = await Promise.all([...open, ...waiting].sort(queueOrder).map((known) => view(deps, known)));
   return views.filter((known) => known !== null);
 }
 
@@ -73,7 +50,8 @@ export async function complaintChat(deps: ComplaintsDeps, moderatorId: number, i
 }
 
 // The decision (docs/17): nothing, a warning, or a block by Telegram ID and phone with the
-// person's live trips and bookings cancelled. A no-show may give the driver the commission back.
+// person's live trips and bookings cancelled. On a no-show the moderator may propose to give the
+// driver the commission back: no money moves until the owner confirms (docs/35, G63).
 export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: string, decision: Decision) {
   const moderatorId = moderator.id;
   const complaint = await deps.store.find(id);
@@ -89,7 +67,13 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
   const refund =
     decision.refund && complaint.reason === 'no_show' && side === 'passenger' && ride.commission > 0;
-  const decided = { decision: refund ? `${label}:refund` : label, decidedBy: moderatorId, decidedAt: now };
+  const proposal = { state: 'proposed', proposedBy: moderatorId, proposedAt: now } as const;
+  const decided = {
+    decision: refund ? `${label}:refund` : label,
+    decidedBy: moderatorId,
+    decidedAt: now,
+    refund: refund ? { ...proposal, decidedBy: null, decidedAt: null } : null,
+  };
   // The decision is written first, in one step: a second tap changes nothing (docs/65 A4).
   if (!(await deps.store.resolve({ ...complaint, status: 'resolved', ...decided })))
     return 'complaints.wrong_status' as const;
@@ -108,7 +92,6 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   // A deleted account kept its phone for this complaint only (docs/58).
   await deps.people.releasePhone(against);
   await forgetEvidence(deps, ride);
-  if (refund) await deps.refund(moderatorId, ride.driverId, ride.commission, `no_show:${complaint.id}`);
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
   return 'ok' as const;
 }

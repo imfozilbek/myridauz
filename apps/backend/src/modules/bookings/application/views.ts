@@ -86,6 +86,11 @@ export async function bookingViews(
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,
         cameAt: record.cameAt,
+        // The marks of the driver at the point (G63); the refund only the driver gets (driver-views.ts).
+        driverCameAt: record.driverCameAt,
+        metAt: record.metAt,
+        noShowAt: record.noShowAt,
+        refund: null,
       };
     }),
   );

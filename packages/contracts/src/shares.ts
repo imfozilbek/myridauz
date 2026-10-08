@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { CAR_COLORS } from './drivers';
 import { locationIdSchema } from './locations';
-import { PASSENGER_BOOKINGS_PATH } from './bookings';
+import { DRIVER_BOOKINGS_PATH, PASSENGER_BOOKINGS_PATH } from './bookings';
 
 // "Yaqinlarimga yuborish" (docs/43): close people follow the trip by a link, without registration.
 export const bookingSharePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/share`;
@@ -10,6 +10,10 @@ export const bookingBoardedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${
 export const bookingArrivedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/arrived`;
 // «Men keldim» at the meeting point (docs/126).
 export const bookingCamePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/came`;
+// The driver at each point (docs/126): «Men keldim», then «Keldi» or «Kelmadi» (G63).
+export const DRIVER_MEET_STEPS = ['came', 'met', 'no_show'] as const;
+export type DriverMeetStep = (typeof DRIVER_MEET_STEPS)[number];
+export const driverMeetPath = (id: string, step: DriverMeetStep) => `${DRIVER_BOOKINGS_PATH}/${id}/${step}`;
 // The driver shares a trip with the family the same way (docs/43). G18.
 export const driverTripSharePath = (tripId: string) => `/driver/trips/${tripId}/share`;
 export const driverTripShareStopPath = (tripId: string) => `${driverTripSharePath(tripId)}/stop`;
