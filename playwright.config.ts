@@ -76,6 +76,7 @@ export default defineConfig({
         'g63-trip-pixel.spec.ts',
         'g63-publish-pixel.spec.ts',
         'g63-after-pixel.spec.ts',
+        'g63-note-pixel.spec.ts',
         'g61-sizes-screenshots.spec.ts',
         'g62-sizes-screenshots.spec.ts',
         'g63-sizes-screenshots.spec.ts',
