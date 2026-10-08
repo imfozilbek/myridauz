@@ -13,7 +13,8 @@ import type { BookingsDeps } from '../application/ports';
 import { markProgress } from '../application/progress';
 import { cancelByPassenger, passengerBookings, requestBooking } from '../application/request';
 import { unreadOf } from '../../chat';
-import { failWith, ONE } from './fail';
+import { ONE } from '../../../shared/routes/one-id';
+import { failWith } from './fail';
 
 const STATUS = {
   'auth.not_admin': 403,

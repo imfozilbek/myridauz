@@ -1,8 +1,11 @@
 import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
+  expireBookingsOfTrip,
+  passengerNamesOf,
   passengerRideCount,
   filedRideOfBooking,
+  ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
   tellBookedOfRetime,
@@ -29,7 +32,7 @@ import {
   wireTripStanding,
 } from './modules/trips';
 import { peopleOf, wireFaceTeam, wireRegistered } from './modules/users';
-import { refundNoShow } from './modules/wallet';
+import { refundNoShow, wireWalletNames } from './modules/wallet';
 import type { Bindings } from './env';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -40,7 +43,12 @@ const tripChannels = channels(tripOf);
 // A published trip goes to the channels and to subscribed passengers; a changed one edits its
 // channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18). A new time
 // or a lower price reaches the booked passengers, a lower price the subscribed ones too (G39, docs/104).
+// «Yoʻlga chiqdim» closes the channel posts and the requests without an answer at once (G63).
 handleTripChange(async (env, tripId, event) => {
+  if (event === 'departed') {
+    await expireBookingsOfTrip(env, tripId);
+    return tripChannels.left(env, tripId);
+  }
   if (event === 'published') {
     await tripChannels.posted(env, tripId);
     const trip = await tripOf(env, tripId);
@@ -103,10 +111,11 @@ handleRequestPublished(async (env, requestId) => {
 // Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
 handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));
 
-// The ratings ask about rides of ended trips and show first names only (docs/24).
+// The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
+// who did not come is neither rated nor rates (docs/129, G63).
 wireRatings({
   ended: async (env, from, to) => ridesOfTrips(env, await tripsEnded(env, from, to)),
-  ride: rideOfBooking,
+  ride: ratableRideOfBooking,
   names: async (env, ids) => {
     const people = peopleOf(env);
     const found = await Promise.all(
@@ -123,8 +132,11 @@ wireTripStanding((env) => ({
 }));
 wireHiddenRequesters(hiddenByComplaints);
 
+// «Hamyon» names the passenger of a no-show refund (G63).
+wireWalletNames(passengerNamesOf);
+
 // Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
-// commission back (docs/17, docs/35).
+// commission back once the owner confirms (docs/17, docs/35).
 wireComplaints({
   ride: rideOfBooking,
   filedRide: filedRideOfBooking,

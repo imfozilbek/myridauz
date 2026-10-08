@@ -38,6 +38,7 @@ export function setup() {
   let id = 0;
   const riders: Rider[] = [];
   const events: string[] = [];
+  const signals: string[] = [];
   const cars = new Map<number, Car>([
     [1, CAR],
     [2, CAR],
@@ -82,6 +83,7 @@ export function setup() {
         ? { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } }
         : null,
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
+    signal: async (people) => void signals.push(...people.map(({ userId, app }) => `${app} ${userId}`)),
     mask: (text) => maskContacts(text).text,
     newId: () => `trip-${(id += 1)}`,
     now: () => now,
@@ -104,5 +106,6 @@ export function setup() {
     recheck: (userId: number) => void cars.delete(userId),
     ride: (rider: Rider) => void riders.push(rider),
     events,
+    signals,
   };
 }

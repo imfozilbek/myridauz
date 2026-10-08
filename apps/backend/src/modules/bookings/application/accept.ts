@@ -1,5 +1,5 @@
 import type { Offer, Point } from '@platform/contracts';
-import type { BookingRecord, Named } from '../domain/booking';
+import { NO_MARKS, type BookingRecord, type Named } from '../domain/booking';
 import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
 import { offerViews } from './offer-views';
 import type { BookingsDeps, Result } from './ports';
@@ -62,6 +62,8 @@ async function offerPoints(deps: BookingsDeps, request: RequestFacts, pitakId: s
     pickupNamed: await describe(pickup),
     dropoff: request.dropoff,
     dropoffNamed: await describe(request.dropoff),
+    // A request has no note: the passenger writes it on a booking only.
+    note: null,
   };
 }
 
@@ -84,8 +86,6 @@ async function acceptTaken(
     price: offer.price,
     womanOnBoard: false,
     comment: '',
-    // The passenger chose the way already: the trip of the offer takes any (docs/70).
-    pickupMode: 'both',
     // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
     bookingRule: request.wholeCar ? 'car_only' : 'seats',
   });
@@ -109,6 +109,7 @@ async function acceptTaken(
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: now,
     updatedAt: now,
   };

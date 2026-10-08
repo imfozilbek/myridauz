@@ -1,4 +1,4 @@
-import { arrivalAt, formatPlate, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
+import { arrivalAt, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
@@ -6,6 +6,7 @@ import { usePlaces } from '../market/places-gate';
 import { useBookingEnds } from '../trip/booking-ends';
 import { today, tomorrow } from '../market/when';
 import './chat-head.css';
+import { UzPlate } from '../plate/uz-plate';
 
 type Props = {
   readonly about: ChatAbout | null;
@@ -25,12 +26,7 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
   const booking = about?.booking ?? null;
   const other = booking ? (about?.role === 'passenger' ? booking.trip.driver : booking.passenger) : null;
   const car = booking && about?.role === 'passenger' ? booking.trip.driver.car : null;
-  const carLine = car
-    ? [
-        `${car.model}, ${t(`drivers.color.${car.color}`)}`,
-        ...(booking?.plate ? [formatPlate(booking.plate)] : []),
-      ]
-    : [];
+  const carLine = car ? `${car.model}, ${t(`drivers.color.${car.color}`)}` : null;
   return (
     <div className="chat-top">
       <div className="chat-head">
@@ -46,7 +42,12 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
         ) : null}
         <span className="chat-head-text">
           <b>{name}</b>
-          {carLine.length > 0 ? <span>{carLine.join(' · ')}</span> : null}
+          {carLine ? (
+            <span className="plate-line">
+              {carLine}
+              {booking?.plate ? <UzPlate plate={booking.plate} size="s" /> : null}
+            </span>
+          ) : null}
         </span>
         {onCall ? (
           <button type="button" className="chat-call" aria-label={t('calls.call')} onClick={onCall}>

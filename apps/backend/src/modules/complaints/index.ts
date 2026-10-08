@@ -5,9 +5,11 @@ import { notify, notifyTeam } from '../notifications';
 import { teamRole } from '../team';
 import { peopleOf } from '../users';
 import { hiddenFromSearch } from './application/file';
+import { fileNoShow, noShowRefunds } from './application/no-show';
 import type { ComplaintsDeps, Ride, Side } from './application/ports';
 import { blockRoutes } from './http/block-routes';
 import { complaintRoutes } from './http/complaint-routes';
+import { refundRoutes } from './http/refund-routes';
 import { botTeller } from './infrastructure/bot-teller';
 import { d1Complaints } from './infrastructure/d1-complaints';
 import { createMemoryComplaints } from './infrastructure/memory-complaints';
@@ -20,13 +22,7 @@ type Wiring = {
   filedRide: (env: Bindings, bookingId: string) => Promise<Ride | undefined>;
   trips: (env: Bindings, userId: number, side: Side) => Promise<number>;
   cancelAll: (env: Bindings, userId: number) => Promise<void>;
-  refund: (
-    env: Bindings,
-    moderatorId: number,
-    driverId: number,
-    amount: number,
-    reason: string,
-  ) => Promise<unknown>;
+  refund: (env: Bindings, ownerId: number, driverId: number, bookingId: string) => Promise<'ok' | 'nothing'>;
 };
 let wiring: Wiring | undefined;
 export const wireComplaints = (next: Wiring) => void (wiring = next);
@@ -44,7 +40,7 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
     chat: (key) => chatHistory(env, key),
     forgetChat: (key) => forgetChat(env, key),
     cancelAll: (userId) => cancelAll(env, userId),
-    refund: (moderatorId, driverId, amount, reason) => refund(env, moderatorId, driverId, amount, reason),
+    refund: (ownerId, driverId, bookingId) => refund(env, ownerId, driverId, bookingId),
     tell: botTeller({
       brand: loadBrand(env.BRAND),
       send: (jobs) => notify(env, jobs),
@@ -55,7 +51,15 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
   };
 };
 
-export const complaintsModule = complaintRoutes(complaintsDeps).route('/', blockRoutes(complaintsDeps));
+export const complaintsModule = complaintRoutes(complaintsDeps)
+  .route('/', blockRoutes(complaintsDeps))
+  .route('/', refundRoutes(complaintsDeps));
+
+// «Kelmadi» of the driver and the refunds the driver sees (G63, docs/35).
+export const fileNoShowOf = (env: Bindings, driverId: number, bookingId: string) =>
+  fileNoShow(complaintsDeps(env), driverId, bookingId);
+export const noShowRefundsOf = (env: Bindings, driverId: number, bookingIds: readonly string[]) =>
+  noShowRefunds(complaintsDeps(env), driverId, bookingIds);
 
 // Complaints from 3 different people in 30 days: out of the trip search (docs/17).
 export const hiddenByComplaints = (env: Bindings, ids: readonly number[]) =>

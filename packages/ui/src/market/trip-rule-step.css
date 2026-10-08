@@ -1,6 +1,25 @@
-/* «Qanday band qilinadi?» (G61, mockup 2-whole-car screen 1): the values of the mockup at 360 px. */
+/* «Qanday band qilinadi?» (G61, mockup 2-whole-car screen 1; G63, journey g63/4 screen 4): the values
+   of the mockups at 360 px, the title of TelegramUI is an h3. */
 .rule-screen {
   font-family: var(--tgui--font-family);
+}
+
+/* The bar of the steps: its place, its gaps and its colors on the mockup g63/4 screen 4: the steps
+   done in the accent of the app, the step to come grey. */
+.rule-screen .step-segments {
+  --tgui--link_color: var(--reg-star);
+
+  gap: 6.4px;
+  margin-top: -2.4px;
+  padding: 0 27.2px 4.8px 28px;
+}
+
+.rule-screen .step-segments [role='progressbar'] {
+  background: var(--reg-route-line);
+}
+
+.rule-screen .step-segments [role='progressbar']::after {
+  display: none;
 }
 
 .rule-screen .step-head {
@@ -8,9 +27,9 @@
   padding: 6px 22px 0;
 }
 
-.rule-screen .step-head h2 {
+.rule-screen .step-head h3 {
   font-size: 22px;
-  line-height: 26px;
+  line-height: 24.67px;
 }
 
 .rule-screen .step-hint {
@@ -21,14 +40,14 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 4px 14px 0;
+  padding: 2px 14px 0;
 }
 
 .rule-card {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
+  padding: 12px 14px;
   border: 2px solid transparent;
   border-radius: 14px;
   background: var(--reg-card);
@@ -41,34 +60,46 @@
 }
 
 .rule-card svg {
-  color: var(--reg-face);
+  color: var(--reg-route-line);
 }
 
+/* The chosen answer is a thick ring of the color of the app around a hole of the card color. */
 .rule-card-on svg {
   color: var(--reg-strong);
+}
+
+.rule-card-on svg:last-of-type {
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.rule-card-on svg:last-of-type path:last-child {
+  fill: var(--reg-soft);
+  transform: scale(0.8);
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .rule-text {
   display: flex;
   flex-direction: column;
-  gap: 0;
   min-width: 0;
 }
 
 .rule-label {
   font-size: 16px;
-  line-height: 18px;
+  line-height: 19px;
   font-weight: 700;
   color: var(--reg-ink);
 }
 
 .rule-hint,
 .rule-price {
-  font-size: 13px;
-  line-height: 16px;
+  font-size: 12.5px;
+  line-height: 15px;
   color: var(--reg-muted);
 }
 
 .rule-price {
-  margin: 10px 14px 0;
+  margin: 6px 14px 0 12px;
 }

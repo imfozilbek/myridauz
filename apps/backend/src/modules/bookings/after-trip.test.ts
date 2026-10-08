@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { passengerBookings } from './application/request';
 import { bookingViews } from './application/views';
-import type { BookingRecord } from './domain/booking';
+import { NO_MARKS, type BookingRecord } from './domain/booking';
 import { DILNOZA, HOUR, NOW, setup } from './test-kit';
 
 const NAMED = {
@@ -27,11 +27,13 @@ function record(kit: ReturnType<typeof setup>, status: BookingRecord['status']):
     pickupNamed: NAMED,
     dropoff: { lat: 39.6547, lng: 66.9758 },
     dropoffNamed: NAMED,
+    note: null,
     offerId: null,
     confirmedAt: NOW,
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: NOW,
     updatedAt: NOW,
   };

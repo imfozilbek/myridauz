@@ -1,6 +1,6 @@
 import type { BookingsClient, MarketClient } from '@platform/api-client';
 import { OFFER_LINK } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -34,7 +34,8 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
     expect(screen.getByText('2 kishi · bir joy 95 000 · Boʻsh salon kerak')).toBeTruthy();
     expect(screen.getByText('Takliflar (1)')).toBeTruthy();
     const jasur = card('Jasur');
-    expect(jasur.textContent).toContain('Cobalt, Oq · 01 A 123 BC');
+    expect(jasur.textContent).toContain('Cobalt, Oq');
+    expect(within(jasur).getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(jasur.textContent).toMatch(/95\s000/u);
     expect(screen.getByText('Soʻrovni bekor qilish')).toBeTruthy();
   });

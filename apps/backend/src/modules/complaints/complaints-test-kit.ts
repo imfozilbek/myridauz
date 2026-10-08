@@ -47,7 +47,10 @@ export function setup() {
     chat: async () => [{ author: DRIVER, text: 'Salom', at: NOW }],
     forgetChat: async (key) => void log.push(`forget ${key}`),
     cancelAll: async (id) => void log.push(`cancel ${id}`),
-    refund: async (_moderator, driverId, amount) => void log.push(`refund ${driverId} ${amount}`),
+    refund: async (_owner, driverId, bookingId) => {
+      log.push(`refund ${driverId} ${bookingId}`);
+      return 'ok';
+    },
     tell: {
       team: async (complaint) => void log.push(`team ${complaint.reason}`),
       warning: async (id, side) => void log.push(`warning ${id} ${side}`),

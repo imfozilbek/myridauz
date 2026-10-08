@@ -20,6 +20,7 @@ const complaint = (id: string, reason: Complaint['reason']): Complaint => ({
   departAt: 1,
   author: { ...person, firstName: 'Madina', role: 'passenger' },
   against: { ...person, firstName: 'Jasur', role: 'driver' },
+  refund: null,
 });
 
 describe('The queue of complaints (docs/94 F2, S3, W1)', () => {

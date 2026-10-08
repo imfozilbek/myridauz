@@ -10,7 +10,7 @@ import { locations, renderMarket } from '../market/market-test-kit';
 import { LocationsClientContext } from '../places/directory';
 import { testClients } from '../test-shell';
 import { DriverData } from './driver-data';
-import { DriverTiles, WALLET_SECTION } from './driver-tiles';
+import { DriverTiles } from './driver-tiles';
 import { PassengerData } from './passenger-data';
 import { PassengerTiles } from './passenger-tiles';
 
@@ -42,7 +42,6 @@ export const PASSENGER_ACTIONS = [
   action('my_trips', Shown),
 ];
 export const DRIVER_ACTIONS = [action('new_trip', Shown, 'home.publish'), action('my_trips', Shown)];
-const DRIVER_SECTIONS = [action(WALLET_SECTION, Shown, 'wallet.title')];
 
 export const approved: Driver = {
   application: {
@@ -111,9 +110,8 @@ export function renderHome(
       <StartFlow
         actions={actions}
         home={home}
-        sections={DRIVER_SECTIONS}
-        tiles={(go) => <DriverTiles go={go} />}
-        {...(data.covered ? { covered: data.covered } : {})}
+        tiles={() => <DriverTiles />}
+        {...(data.covered ? { mainTile: data.covered } : {})}
       />
     </DriverData>
   );

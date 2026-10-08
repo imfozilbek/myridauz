@@ -17,6 +17,8 @@ export const OPERATION_KINDS = [
   'admin_adjustment',
 ] as const;
 export type OperationKind = (typeof OPERATION_KINDS)[number];
+// The reason of the refund of a no-show the owner confirmed (docs/35): the row names the booking.
+export const NO_SHOW_REASON = 'no_show';
 
 const operationSchema = z.object({
   id: z.string(),
@@ -27,6 +29,8 @@ const operationSchema = z.object({
   bookingId: z.string().nullable(),
   reason: z.string().nullable(),
   createdAt: z.number().int(),
+  // The first name of the passenger of a no-show refund: «Qaytarildi · Akmal kelmadi» (G63).
+  passenger: z.string().optional(),
 });
 export type WalletOperation = z.infer<typeof operationSchema>;
 

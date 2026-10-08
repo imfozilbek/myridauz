@@ -17,7 +17,6 @@ const B = {
   offers: t('bookings.request.offers', { count: '1' }),
   accept: t('bookings.offer.accept'),
   confirm: t('bookings.confirm'),
-  sure: t('bookings.confirm.title'),
   confirmed: t('bookings.confirmed.title'),
   notEnough: t('wallet.notEnough.title'),
   topUp: t('wallet.topUp'),
@@ -70,7 +69,7 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('bookings.mine'))).toBeVisible();
   await shot('1-list');
   await page.getByText('Jasur').first().click();
-  await expect(page.locator('.plate-badge')).toBeVisible();
+  await expect(page.locator('.uz-plate').first()).toBeVisible();
   await shot('2-booking');
   await pressBack(page);
   // The own request card shows no own name (G37, docs/101 R6): the price of one seat opens it.
@@ -82,31 +81,30 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await shot('5-accepted');
 }
 
-// The driver opens the own trip, a booking of Madina, confirms after "Joyni tasdiqlaysizmi?";
-// without money, goes to top up.
+// The driver opens the own trip and answers the request of Madina right in its card: the commission
+// is there, no window in between (G63, docs/122); without money the card leads to the top up.
 export async function confirmBooking(page: Page, shot: Shot = none, money = true) {
   const mainButton = page.locator('#tg-main-button');
   await page.getByText(B.myTrips).click();
   await openOwnTrip(page);
   await expect(page.getByText('Madina')).toBeVisible();
+  await expect(page.getByText(/komissiya 18\s000/u)).toBeVisible();
   await shot('1-trip');
-  await page.getByText('Madina').click();
-  await shot('2-booking');
-  await page.getByText(B.confirm, { exact: true }).click();
-  // Without money for the commission the way to top up comes at once, no «Tasdiqlash» (docs/83 N20).
   if (money) {
-    await expect(page.getByText(B.sure)).toBeVisible();
-    await shot('3-sure');
-    await mainButton.click();
-    await expect(page.getByText(B.confirmed)).toBeVisible();
-    await shot('4-confirmed');
+    await Promise.all([
+      page.waitForRequest('**/api/driver/bookings/*/confirm'),
+      page.getByRole('button', { name: B.confirm, exact: true }).click(),
+    ]);
+    await shot('2-confirmed');
     return;
   }
+  // Without money for the commission the way to top up comes instead, no «Tasdiqlash» (docs/83 N20).
+  await page.getByRole('button', { name: B.topUp, exact: true }).click();
   await expect(page.getByText(B.notEnough)).toBeVisible();
-  await shot('4-not-enough');
+  await shot('3-not-enough');
   await mainButton.click();
   await expect(page.getByRole('heading', { name: t('wallet.topUp.title') })).toBeVisible();
-  await shot('5-top-up');
+  await shot('4-top-up');
 }
 
 // "Hamyon" from the driver's profile: the bonus, its end, the history.

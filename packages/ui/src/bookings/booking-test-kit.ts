@@ -19,6 +19,7 @@ export const booking: Booking = {
   // Before the confirmation the driver sees the area only (docs/70).
   pickup: { point: null, name: null, area: { step: 'mahalla', name: 'Qatortol' } },
   dropoff: { point: null, name: null, area: { step: 'district', name: 'Samarqand shahri' } },
+  note: null,
   extraKm: 2,
   plate: null,
   chatKey: 'b00000000-0000-4000-8000-0000000000b1',
@@ -26,6 +27,10 @@ export const booking: Booking = {
   boardedAt: null,
   arrivedAt: null,
   cameAt: null,
+  driverCameAt: null,
+  metAt: null,
+  noShowAt: null,
+  refund: null,
 };
 
 // The morning of the trip in Toshkent: «Mashinaga chiqdim» is there only on its day (docs/89 P7).

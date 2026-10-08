@@ -1,0 +1,74 @@
+/* The controls of «Safar eʼlon qilish» (G63, mockups g63/1, g63/2 at 360 px): the steppers and the
+   switch, one to one (lesson 141); only the colors come from the brand. */
+/* The price keeps 6 px to its buttons, the seats 5 px (mockup g63/1). */
+.points-trip .seats-stepper {
+  gap: 6px;
+}
+
+.points-trip .trip-seats .seats-stepper {
+  gap: 5px;
+}
+
+.points-trip .seats-stepper button {
+  width: 26px;
+  height: 26px;
+  background: var(--reg-mint);
+}
+
+/* An end of the stepper is paler than in the search (mockup g63/1: «+» of all the seats). */
+.points-trip .seats-stepper button:disabled {
+  opacity: 0.35;
+}
+
+/* «−» and «+» of the mockup: 8.75 px long, 1.9 px thick. */
+.points-trip .seats-stepper svg {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3.85;
+}
+
+/* The numbers stand under the middle of their buttons: the price 0.33 px, the seats 0.5 px. */
+.points-trip .seats-count {
+  padding-top: 0.67px;
+  font-size: 13px;
+}
+
+/* The number of seats is larger than the price next to it and a little to the right of the middle,
+   its «−» and «+» a little higher (mockup g63/1). */
+.points-trip .trip-seats .seats-count {
+  padding-top: 1px;
+  font-size: 14px;
+  transform: translateX(0.17px);
+}
+
+.points-trip .trip-seats .seats-stepper svg {
+  transform: translateY(-0.33px);
+}
+
+/* The switch of the mockup (g63/1, screen 2): a 42 × 24 track of the strong brand color, a plain
+   knob of 18 px, 3 px from the edge. */
+.points-trip .seats-woman {
+  --tgui--link_color: var(--reg-strong);
+}
+
+/* The track is rounded by itself, not cut by its frame: its edge is as soft as on the mockup. */
+.points-trip .seats-woman > :last-child {
+  width: 42px;
+  height: 24px;
+  overflow: visible;
+}
+
+.points-trip .seats-woman > :last-child div::before {
+  border-radius: 12px;
+}
+
+.points-trip .seats-woman > :last-child div::after {
+  width: 18px;
+  height: 18px;
+  margin-left: 3px;
+  box-shadow: none;
+}
+
+.points-trip .seats-woman input:checked + div::after {
+  transform: translateX(18px) translateY(-50%);
+}

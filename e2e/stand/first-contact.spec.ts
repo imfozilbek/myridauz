@@ -67,11 +67,11 @@ for (const platform of PLATFORMS)
     await expect(mainButton(page)).toHaveText(TEXT.sendPhone);
     await shot(page, `${platform}/04-about`);
     await mainButton(page).click();
-    // No application yet: the main screen with the card «Arizani toʻldiring», then the application.
+    // No application yet: the main screen with the big tile «Haydovchi boʻlish», then the application.
     await applyAsDriver(page, (name) => shot(page, `${platform}/05-${name}`));
     const told = await toldBy('driver', person, RECEIVED);
     if (platform === 'android') {
-      await answered(page, DRIVER_BOT, t('drivers.review.send'), { text: told });
+      await answered(page, DRIVER_BOT, t('drivers.send'), { text: told });
       await shot(page, '09-bot-received');
     }
   });

@@ -10,7 +10,7 @@ const offer = { departAt: NOW + 26 * HOUR, price: 90_000 };
 // The marks of a request go into the trip and the booking of the accepted offer (G61, docs/118 path 4).
 async function accepted(marks: { wholeCar?: boolean; withWoman?: boolean }) {
   const { deps, addRequest, bonus } = setup();
-  const published: Required<TripInput>[] = [];
+  const published: Omit<Required<TripInput>, 'pickupMode'>[] = [];
   const publish = deps.trips.publish;
   deps.trips.publish = (driverId, input) => {
     published.push(input);

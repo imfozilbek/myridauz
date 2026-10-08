@@ -9,17 +9,19 @@ type Props = TileLive & {
   readonly tone: Tone;
   readonly title: string;
   readonly onClick: () => void;
+  // Waits for the approval of the application: grey, it still opens and explains (G62).
+  readonly pale?: boolean;
 };
 
 // One tile of the main screen (owner decision 04.10.2026, G53): an icon, a title and a short hint,
 // a red-free badge for what waits for the person, or a big number of the day.
 export function HomeTile(props: Props) {
-  const { icon, tone, title, hint, badge, value, urgent, onClick } = props;
+  const { icon, tone, title, hint, badge, value, urgent, onClick, pale = false } = props;
   const { formatNumber } = useI18n();
   const { colors } = useBrand().theme;
   const shown = badge && badge > 0 ? Math.min(badge, MAX_BADGE) : 0;
   return (
-    <button type="button" className="home-tile" onClick={onClick}>
+    <button type="button" className={pale ? 'home-tile home-tile-pale' : 'home-tile'} onClick={onClick}>
       <IconTile name={icon} tone={tone} size="tile" soft />
       {shown > 0 ? (
         <span className="home-tile-badge" style={{ background: colors.accent, color: colors.bg }}>

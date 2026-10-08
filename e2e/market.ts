@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT } from './apps';
+import { TEXT, newTripTile } from './apps';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -18,37 +18,23 @@ export async function chooseRoute(page: Page, wholeRegion = false) {
   await page.getByText(wholeRegion ? TEXT.wholeRegion : 'Samarqand shahri', { exact: true }).click();
 }
 
-// A driver publishes a trip, one question per screen (G07). The test person is a woman: no woman step.
+// A driver publishes a trip on one screen (G63, docs/118 path 6): the route by lists, then «Safar
+// eʼlon qilish» with every answer ready; the rule of the whole car opens its own screen and comes
+// back (G61). «Eʼlon qilish» opens «Mening safarim» of the new trip at once.
 export async function publishTrip(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
-  await page.locator('#tg-main-button', { hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await chooseRoute(page);
-  await shot('2-mode');
-  await page.getByText(t('way.trip.mode.both')).click();
-  await expect(page.getByText(TEXT.tomorrow)).toBeVisible();
-  await shot('2-date');
-  await page.getByText(TEXT.tomorrow).click();
-  await shot('3-time');
-  await mainButton.click();
-  await expect(page.getByText(TEXT.tripSeatsTitle)).toBeVisible();
-  await shot('4-seats');
-  await mainButton.click();
-  await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
-  await shot('5-price');
-  await mainButton.click();
-  // «Qanday band qilinadi?» (G61): the whole car may be booked too.
-  await expect(page.getByText(t('market.rule.title'))).toBeVisible();
-  await page.getByText(t('market.rule.seatsOrCar')).click();
-  await shot('5a-rule');
-  await mainButton.click();
-  await expect(page.getByText(TEXT.commentSkip)).toBeVisible();
-  await shot('6-comment');
-  await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton).toHaveText(TEXT.publish);
-  await shot('7-review');
+  await shot('2-publish');
+  await page.getByText(t('market.rule.title')).click();
+  await page.getByText(t('market.rule.seatsOrCar')).click();
+  await shot('3-rule');
   await mainButton.click();
-  await expect(page.getByText(TEXT.published)).toBeVisible();
-  await shot('8-published');
+  await expect(mainButton).toHaveText(TEXT.publish);
+  await mainButton.click();
+  await expect(page.getByText(TEXT.tripOpened)).toBeVisible();
+  await shot('4-published');
 }
 
 // The passenger's search (G59, docs/118 path 2): «Qayerdan» is asked only when the place of the person

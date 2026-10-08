@@ -27,6 +27,7 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     decidedBy: null,
     createdAt: deps.now(),
     decidedAt: null,
+    refund: null,
   };
   await deps.store.save(complaint);
   if (!isHigh(complaint.reason)) return { id: complaint.id };

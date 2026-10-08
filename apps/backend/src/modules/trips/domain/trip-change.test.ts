@@ -1,34 +1,9 @@
 import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { lowerPrice, priceNoticeDue, retime } from './trip-change';
-import { endsAt, type TripRecord } from './trip';
+import { aTrip as trip, BEFORE as NOW, DEPART, DRIVER } from '../test-record';
 
 const MINUTE = 60 * 1000;
-// 2026-10-02 08:00 in Tashkent.
-const DEPART = Date.parse('2026-10-02T03:00:00Z');
-const NOW = DEPART - 5 * 60 * MINUTE;
-const DRIVER = 7;
-const trip: TripRecord = {
-  id: 't1',
-  driverId: DRIVER,
-  from: '1726269',
-  to: '1718401',
-  departAt: DEPART,
-  endsAt: endsAt(DEPART, 300),
-  km: 300,
-  seats: 3,
-  price: 90000,
-  bookingRule: 'seats',
-  womanOnBoard: false,
-  comment: '',
-  car: null,
-  status: 'active',
-  pickupMode: 'both',
-  createdAt: NOW,
-  firstDepartAt: DEPART,
-  firstPrice: 90000,
-  priceToldAt: null,
-};
 
 describe('the time of a trip (G39, docs/104, 8)', () => {
   it('moves only later, up to +1 hour from the first time in all, and the end moves along', () => {

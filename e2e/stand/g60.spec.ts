@@ -1,14 +1,12 @@
 import { BOOKING_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { createModerationClient } from '@platform/api-client';
 import type { Page } from '@playwright/test';
 import { expect, test } from '../crash-guard';
 import { confirmedSeat, MINUTE, moveTrip } from './g27-kit';
 import { phone } from './g33-kit';
-import { OWNER } from './people';
 import { PLATFORMS } from './screen-tour';
-import { apply, register } from './seed';
-import { openAs, outsideCalls, signedAs, type Person } from './stand-kit';
+import { approvedDriver, register } from './seed';
+import { openAs, outsideCalls, type Person } from './stand-kit';
 import { runCron, standSql } from './stand-tools';
 
 // G60 (docs/118 path 3, docs/129) on the whole local Rida, Android and iOS: the booking, its chat,
@@ -29,11 +27,8 @@ test.setTimeout(180_000);
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 test.beforeAll(async () => {
-  await apply(DRIVER, PLATE, 'male');
+  await approvedDriver(DRIVER, PLATE);
   for (const passenger of Object.values(PASSENGERS)) await register('passenger', passenger, 'female');
-  const moderation = createModerationClient(await signedAs('admin', OWNER));
-  const summary = (await moderation.queue()).find((a) => a.car.plate === PLATE);
-  if (summary) await moderation.decide(summary.userId, { action: 'approve' });
   await runCron();
 });
 

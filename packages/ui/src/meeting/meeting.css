@@ -1,0 +1,106 @@
+/* «Uchrashuv» of the driver (G63, mockup g63/4 screen 13): the values of the mockup at 360 px. */
+.meet {
+  display: flex;
+  flex-direction: column;
+  gap: 10.8px;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 11.4px 15.2px 16px;
+  box-sizing: border-box;
+  color: var(--reg-ink);
+}
+
+.meet-came {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 41px;
+  margin: 0;
+  padding: 0 13px;
+  border-radius: 16.25px;
+  background: var(--reg-ink);
+  color: var(--reg-card);
+  /* One line at 360 px, smaller on a narrow phone (docs/121). */
+  font-size: clamp(12.5px, 4.08vw, 14.7px);
+}
+
+.meet-came svg {
+  flex: none;
+  margin-top: -0.8px;
+  color: var(--reg-success-bright);
+}
+
+.meet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14.8px 15.2px 15.6px;
+  border-radius: 20px;
+  background: var(--reg-card);
+}
+
+/* The frame is a shadow: a border of 2.5 px would be drawn as 2 px (mockup g63/4 screen 13). */
+.meet-card-now {
+  box-shadow: inset 0 0 0 2.5px var(--reg-strong);
+}
+
+.meet-chip {
+  align-self: flex-start;
+  margin: 0.6px 0 0 -0.4px;
+  /* The words stand lower in the chip than its middle (mockup g63/4 screen 13). */
+  padding: 3.7px 8.3px 0 9px;
+  border-radius: 10px;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+  font-size: 13.7px;
+  font-weight: 700;
+  line-height: 19.1px;
+}
+
+.meet-place {
+  display: flex;
+  flex-direction: column;
+  margin: 3.2px 0 0 0.4px;
+  font-size: 14.7px;
+  line-height: 18px;
+  color: var(--reg-secondary);
+}
+
+.meet-place b {
+  font-size: 17.5px;
+  line-height: 22.4px;
+  color: var(--reg-ink);
+}
+
+.meet-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1px 0 2.1px;
+  font-size: 16.3px;
+}
+
+/* The name with the seats, the note of the passenger under it (mockup g63/4 screen 13). */
+.meet-who-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin-top: 3.2px;
+}
+.meet-who-text span {
+  color: var(--tgui--hint_color);
+  font-size: 13.7px;
+}
+
+/* A face without a photo: light from the bottom right (mockup g63/4 screen 13). */
+.meet-who .profile-empty {
+  flex: none;
+  background: linear-gradient(135deg, var(--reg-off), var(--reg-bg));
+}
+
+/* The person icon of a face without a photo is smaller here (mockup g63/4 screen 13). */
+.meet-who .profile-empty svg {
+  width: 28px;
+  height: 28px;
+  margin-top: 1.6px;
+}

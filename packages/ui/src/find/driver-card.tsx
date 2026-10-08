@@ -1,7 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from './person-badge';
-import { PlateBadge } from './plate-badge';
+import { UzPlate } from '../plate/uz-plate';
 
 const PHOTO = 60;
 
@@ -32,7 +32,7 @@ export function DriverCard({ trip }: { readonly trip: Trip }) {
             color: t(`drivers.color.${driver.car.color}`),
           })}
         </span>
-        <PlateBadge plate={driver.car.plate} />
+        <UzPlate plate={driver.car.plate} />
       </span>
     </div>
   );

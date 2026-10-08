@@ -1,7 +1,8 @@
-import { formatPlate, type Offer } from '@platform/contracts';
+import type { Offer } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { useOneAtATime } from '../telegram/one-at-a-time';
+import { UzPlate } from '../plate/uz-plate';
 
 const PHOTO = 44;
 
@@ -40,9 +41,8 @@ export function OfferCard({ offer, onAnswer, onOpen }: Props) {
             )}
           </span>
           <span className="offer-card-car">
-            {driver.car.plate
-              ? t('bookings.offer.carPlate', { car, plate: formatPlate(driver.car.plate) })
-              : car}
+            {car}
+            {driver.car.plate ? <UzPlate plate={driver.car.plate} size="s" /> : null}
           </span>
         </span>
         <span className="offer-card-when">

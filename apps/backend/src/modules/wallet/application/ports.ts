@@ -24,6 +24,8 @@ export type WalletDeps = {
     // The Telegram ID behind a public id from an admin path (docs/65 A3).
     idOf(publicId: string): Promise<number | undefined>;
   };
+  // The first names of the passengers of bookings: a no-show refund names one (G63).
+  readonly passengers: (bookingIds: readonly string[]) => Promise<ReadonlyMap<string, string>>;
   readonly now: () => number;
   readonly newId: () => string;
 };

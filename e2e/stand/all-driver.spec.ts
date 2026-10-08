@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { TEXT } from '../apps';
+import { TEXT, newTripTile } from '../apps';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
@@ -43,7 +43,7 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
   await shot(page, 'android', 'da21-my-trips');
   await page.locator('.trip-card').first().click();
   await shot(page, 'android', 'da22-trip');
-  await visit(page, 'android', t('way.map.title'), 'da23-trip-map');
+  await visit(page, 'android', t('driverTrip.tile.map'), 'da23-trip-map');
 });
 
 test('android: the requests of passengers and an offer', async ({ page }) => {
@@ -61,47 +61,45 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
   await shot(page, 'android', 'da32-request');
 });
 
-test('android: publish a trip step by step up to the review', async ({ page }) => {
+// One screen (G63, docs/118 path 6): the way of pickup, the seats of the car with «Mashinada ayol
+// bor» when fewer, the rule and the comment on their own screens and back.
+test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
-  await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
   await page.getByAltText('Samarqand viloyati').click();
   await page.getByText('Samarqand shahri', { exact: true }).click();
-  await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
-  await shot(page, 'android', 'da40-mode');
+  await expect(mainButton(page)).toHaveText(TEXT.publish);
+  await shot(page, 'android', 'da40-publish');
   await page.getByText(t('way.trip.mode.door')).click();
-  await shot(page, 'android', 'da41-date');
-  await page.getByText(TEXT.tomorrow).click();
-  await mainButton(page).click();
-  await shot(page, 'android', 'da42-seats');
-  // Three chairs of four: somebody already goes, «Mashinada ayol bor» is right here (G38).
-  await page.getByLabel(t('market.trip.seats', { count: 3 })).click();
+  // Three seats of four: somebody already goes, «Mashinada ayol bor» is right under them (G38).
+  await page.getByLabel(t('market.price.less')).first().click();
   await expect(page.getByText(t('market.search.woman'))).toBeVisible();
   await shot(page, 'android', 'da43-seats-woman');
-  await mainButton(page).click();
-  await shot(page, 'android', 'da44-price');
-  await mainButton(page).click();
   // «Qanday band qilinadi?» (G61): seats or the whole car.
-  await expect(page.getByText(t('market.rule.title'))).toBeVisible();
+  await page.getByText(t('market.rule.title')).click();
   await shot(page, 'android', 'da44a-rule');
   await page.getByText(t('market.rule.seatsOrCar')).click();
   await mainButton(page).click();
+  await page.getByText(t('market.publish.comment')).click();
   await shot(page, 'android', 'da45-comment');
   await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
-  await shot(page, 'android', 'da46-review');
+  await shot(page, 'android', 'da46-publish');
 });
 
 test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
   await setBonus(MUROD, 0);
   await openHome(page, 'driver', MUROD, 'android', `?booking=${links['waiting']}`);
-  await page.getByText(t('bookings.confirm')).first().click();
+  // The commission is on the booking; its main button leads to the top up at once (G27, G63).
+  await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
+  await mainButton(page).click();
   await expect(page.getByText(t('wallet.notEnough.title'))).toBeInViewport();
   await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await shot(page, 'android', 'da51-not-enough');
-  await page.getByText(t('wallet.topUp')).first().click();
+  await mainButton(page).click();
   await expect(mainButton(page)).toHaveText(t('account.support'));
   await shot(page, 'android', 'da52-top-up');
   // The walks of passengers use Murod after this one: his bonus comes back.

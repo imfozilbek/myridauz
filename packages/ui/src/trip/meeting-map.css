@@ -1,5 +1,6 @@
 /* The small map of a meeting point (docs/126): a strip the width of the card. */
 .meeting-map {
+  position: relative;
   display: block;
   width: 100%;
   padding: 0;
@@ -13,4 +14,24 @@
 .meeting-map-box {
   height: 120px;
   pointer-events: none;
+}
+
+/* The pin (journey g63/4 screens 3 and 13): filled with the color of the app in a white line, its
+   middle white, a soft shadow; the tip stands on the middle of the map, where the point is. */
+.meeting-map-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  transform: translate(-50%, -95%);
+  pointer-events: none;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 30%));
+}
+
+.meeting-map-pin svg {
+  stroke: currentColor;
+}
+
+.meeting-map-pin circle {
+  fill: currentColor;
 }

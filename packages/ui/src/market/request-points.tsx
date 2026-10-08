@@ -1,6 +1,6 @@
 import type { Pitak, Recommendation } from '@platform/contracts';
 import { useState } from 'react';
-import { PointsScreen } from '../bookings/points-screen';
+import { PointsScreen, usePassengerWords } from '../bookings/points-screen';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
@@ -27,6 +27,7 @@ type Props = {
 // chooses the people and the price; drivers answer with their time and price (docs/09).
 export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, onBack, onSent }: Props) {
   const { t } = useI18n();
+  const words = usePassengerWords();
   const shortDay = useShortDay();
   const { market } = useApiClients();
   const nameText = useNameText();
@@ -82,6 +83,7 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
     mode === 'pitak' ? (pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
   return (
     <PointsScreen
+      {...words}
       sub={t('market.request.sub', {
         route: t('common.route', { from: route.from.name, to: route.to.name }),
         day: shortDay(date, now),
@@ -92,7 +94,7 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
       hint={t('market.request.hint')}
       error={error ? t(error) : null}
       button={t(exists ? 'market.request.openMine' : 'market.request.publish')}
-      onSend={exists ? () => setMine(true) : () => void publish()}
+      onSend={exists ? () => setMine(true) : publish}
       onBack={onBack}
     >
       <RequestChoice value={choice} recommendation={recommendation} onChange={onAnswer} />

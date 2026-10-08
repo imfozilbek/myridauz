@@ -39,4 +39,6 @@ export const TRIP: Trip = {
   comment: '',
   bookingRule: 'seats',
   status: 'active',
+  departedAt: null,
+  arrivedAt: null,
 };

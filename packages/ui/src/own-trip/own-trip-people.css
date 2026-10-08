@@ -1,0 +1,127 @@
+/* The requests and the passengers of «Mening safarim» (G63, mockup g63/3) at 360 px. On a narrow
+   phone the words and the gaps get smaller, so a line is never broken in two (docs/121). */
+.seat-card-head,
+.rider-main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 9.55px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.seat-card-who,
+.rider-who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.seat-card-line,
+.rider-line {
+  font-size: clamp(10.5px, 3.334vw, 12px);
+  line-height: 13.6px;
+  color: var(--reg-muted);
+}
+
+/* A part of the line stays whole, so the line breaks only after «·»; only a part wider than the
+   line itself breaks inside. */
+.line-part {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.own-riders {
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}
+
+.rider-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 3.148vw, 11.33px);
+  /* 54 px with the padding; a line of two rows makes the row taller (mockup g63/5 phone 1). */
+  min-height: 36px;
+  padding: 9px 13.33px;
+}
+
+.rider-row + .rider-row {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.rider-main {
+  position: relative;
+  gap: clamp(8px, 2.973vw, 10.7px);
+  cursor: auto;
+}
+
+/* The name opens the booking, and its tap zone covers the whole row but the chat and the call. */
+.rider-open {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rider-open::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+/* «Kelmadi» of the meeting stands over that zone: a tap on it marks, never opens (docs/129). */
+.rider-who .no-show-mark {
+  position: relative;
+  z-index: 1;
+}
+
+.rider-name {
+  display: block;
+  font-size: 14px;
+  line-height: 15px;
+}
+
+.rider-line,
+.rider-who .no-show-line {
+  font-size: clamp(10px, 3.2vw, 11.5px);
+  line-height: 14.4px;
+}
+
+/* A face without a photo is light grey here (mockup g63/3). */
+.own-trip .person-badge-plain {
+  background: var(--reg-face-pale);
+}
+
+.rider-tool {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 33.33px;
+  height: 33.33px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.own-empty {
+  margin: 0;
+  padding: 16px 13.33px;
+  font-size: 14px;
+  color: var(--reg-muted);
+}

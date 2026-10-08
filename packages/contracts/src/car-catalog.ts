@@ -32,7 +32,7 @@ export const CAR_CATALOG: Readonly<Record<string, Models>> = {
   Lada: { Granta: 4, Vesta: 4, Niva: 4, Largus: 6 },
 };
 
-// The first screen: the cars most people have, chosen by one tap without the make.
+// The buttons of «Mashinangiz»: the cars most people have, chosen by one tap without the make (G62).
 export const POPULAR_CARS: readonly { readonly make: string; readonly model: string }[] = [
   { make: 'Chevrolet', model: 'Cobalt' },
   { make: 'Chevrolet', model: 'Nexia' },
@@ -40,6 +40,7 @@ export const POPULAR_CARS: readonly { readonly make: string; readonly model: str
   { make: 'Chevrolet', model: 'Lacetti' },
   { make: 'Chevrolet', model: 'Spark' },
   { make: 'Chevrolet', model: 'Damas' },
+  { make: 'Chevrolet', model: 'Malibu' },
 ];
 
 // Seats of a model from the list; a name typed after "Boshqa" has none, the driver answers.

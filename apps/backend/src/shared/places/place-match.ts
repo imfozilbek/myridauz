@@ -2,6 +2,10 @@ import type { Location } from '@platform/contracts';
 
 type Places = ReadonlyMap<string, Pick<Location, 'id' | 'parentId' | 'oneCity'>>;
 
+// A place and its region (docs/14): a region is its own region.
+export const regionIn = (places: ReadonlyMap<string, Pick<Location, 'parentId'>>) => (id: string) =>
+  places.get(id)?.parentId ?? id;
+
 // Does a trip or a request place fit a search (docs/14)? A search by a region finds all its places.
 // A place of a one-city region (Toshkent shahri) stands for the whole city: a driver picks up anywhere in it.
 export function placeMatches(placeId: string, searchId: string, places: Places): boolean {

@@ -62,10 +62,17 @@ test('T21, T23, T25. a no-show complaint: a warning and the commission back to t
   ).complain({ bookingId: seat.id, reason: 'no_show' });
   const team = createFeedbackClient(await signedAs('admin', OWNER));
   const complaint = (await team.queue()).find((c) => c.tripId === trip.id);
-  // The refund goes to the main balance: it never burns like a bonus (docs/12).
-  const before = (await walletOf(JAHONGIR)).main;
+  // The team proposes the refund, the owner confirms it; it goes back to the balances the commission
+  // came from (docs/12, docs/35, G63).
+  const total = async () => {
+    const wallet = await walletOf(JAHONGIR);
+    return wallet.main + wallet.bonus;
+  };
+  const before = await total();
   await team.decide(complaint?.id ?? '', { action: 'warning', refund: true });
-  expect((await walletOf(JAHONGIR)).main).toBe(before + seat.commission);
+  expect(await total()).toBe(before);
+  await team.answerRefund(complaint?.id ?? '', 'confirm');
+  expect(await total()).toBe(before + seat.commission);
 });
 
 test('T40, T41, T46, T47. a formula with a history, a channel added and removed, the numbers', async () => {

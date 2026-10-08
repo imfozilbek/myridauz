@@ -32,14 +32,14 @@ describe('the screen of the close people (G60, mockup g60/3)', () => {
   it('says big where the person is and when they arrive, with three steps', async () => {
     open();
     expect(await screen.findByText('Madina yoʻlda')).toBeTruthy();
-    expect(screen.getByText(/^Fargʻona shahriga ≈ \d{2}:\d{2} da yetadi$/u)).toBeTruthy();
+    expect(screen.getByText(/^Fargʻonaga ≈ \d{2}:\d{2} da yetadi$/u)).toBeTruthy();
     const steps = within(screen.getByRole('list', { name: 'Holati' })).getAllByRole('listitem');
     expect(steps.map((step) => step.dataset.done)).toEqual(['true', 'true', 'false']);
   });
 
   it('shows the driver with the plate, the two places and «Xabar olish»', async () => {
     open();
-    expect(await screen.findByText('01 A 123 BC')).toBeTruthy();
+    expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     expect(screen.getByText('Uchrashuv joyi')).toBeTruthy();
     expect(screen.getByText('Tushirish joyi')).toBeTruthy();
     expect(screen.getByText('Xabar olish')).toBeTruthy();

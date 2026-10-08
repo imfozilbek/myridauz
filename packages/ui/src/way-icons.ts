@@ -1,5 +1,5 @@
 import {
-  CalendarDays,
+  Calendar,
   ChevronDown,
   ChevronUp,
   CircleDot,
@@ -7,7 +7,9 @@ import {
   LocateFixed,
   MapPin,
   Navigation,
+  PenLine,
   Signpost,
+  User,
   Waypoints,
   type LucideIcon,
 } from 'lucide-react';
@@ -23,9 +25,14 @@ export const WAY_ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
-  // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon.
+  // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon. The
+  // day is the plain calendar of the approved mockup g63/1.
   door: House,
   pitak: Signpost,
   anyWay: Waypoints,
-  day: CalendarDays,
+  day: Calendar,
+  // «Vaqt yoki narx» of the own trip (mockup g63/3): the time and the price change there.
+  edit: PenLine,
+  // The free seats of a trip (G63): one person, as on the approved mockup g63/1.
+  seat: User,
 } satisfies Record<string, LucideIcon>;

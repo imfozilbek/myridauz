@@ -63,6 +63,7 @@ const GROWING = [
   'application_log',
   'user_arrivals',
   'face_log',
+  'trip_views',
 ] as const;
 // «SCAN t» reads every row of t, through an index or not; «SEARCH t USING INDEX» reads only what it needs.
 const SCAN = /^SCAN (\w+)/u;

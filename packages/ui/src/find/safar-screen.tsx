@@ -1,7 +1,9 @@
+import { quietly } from '@platform/api-client';
 import type { Trip, UserReviews } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAccount } from '../account/account-context';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
+import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useAskedSeat } from '../market/asked-seat';
@@ -43,9 +45,14 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
   const start = usePlaces().find(trip.from);
   const [choice, setChoice] = useState<SeatChoice>(() => firstChoice(trip));
   const [reviews, setReviews] = useState<UserReviews | null>(null);
+  const { channels } = useApiClients();
   useEffect(() => {
     track({ name: 'trip_open', screen: 'market.trip' });
   }, [track]);
+  // «N kishi koʻrdi» of the driver (G63, docs/119): once, quietly; a failure is never seen.
+  useEffect(() => {
+    quietly(() => channels.tripViewed(trip.id)).catch(() => undefined);
+  }, [channels, trip.id]);
   // The own trip and a trip already asked are not booked again (G52, docs/112).
   const mine = useAccount()?.profile.id === trip.driver.id;
   const asked = useAskedSeat(trip.id, !mine);

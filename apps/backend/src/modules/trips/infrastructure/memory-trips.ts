@@ -1,6 +1,8 @@
 import type { TripRepository } from '../application/ports';
 import type { TripRecord } from '../domain/trip';
 
+const live = (trip: TripRecord) => trip.status === 'active' || trip.status === 'full';
+
 export function createMemoryTrips(): TripRepository {
   const trips = new Map<string, TripRecord>();
   return {
@@ -17,16 +19,14 @@ export function createMemoryTrips(): TripRepository {
         .filter(
           (trip) =>
             trip.status === 'active' &&
+            trip.departedAt === null &&
             trip.departAt >= from &&
             trip.departAt < to &&
             places.includes(trip.from),
         )
         .sort((a, b) => a.departAt - b.departAt),
     departing: async (from, to) =>
-      [...trips.values()].filter(
-        (trip) =>
-          (trip.status === 'active' || trip.status === 'full') && trip.departAt >= from && trip.departAt < to,
-      ),
+      [...trips.values()].filter((trip) => live(trip) && trip.departAt >= from && trip.departAt < to),
     ended: async (from, to) =>
       [...trips.values()].filter(
         (trip) => trip.status !== 'cancelled' && trip.endsAt >= from && trip.endsAt < to,
@@ -43,8 +43,31 @@ export function createMemoryTrips(): TripRepository {
         .slice(0, limit),
     completeOver: async (now) => {
       for (const trip of trips.values())
-        if ((trip.status === 'active' || trip.status === 'full') && trip.endsAt <= now)
-          trips.set(trip.id, { ...trip, status: 'completed' });
+        if (live(trip) && trip.endsAt <= now) trips.set(trip.id, { ...trip, status: 'completed' });
     },
+    // The same conditions as the UPDATE of D1: a cancel or a second tap that came first wins.
+    depart: async (id, at) => {
+      const trip = trips.get(id);
+      if (!trip || !live(trip) || trip.departedAt !== null) return false;
+      trips.set(id, { ...trip, departedAt: at });
+      return true;
+    },
+    arrive: async (id, at) => {
+      const trip = trips.get(id);
+      if (!trip || !live(trip) || trip.arrivedAt !== null) return false;
+      if (trip.departedAt === null && trip.departAt > at) return false;
+      trips.set(id, { ...trip, departedAt: trip.departedAt ?? trip.departAt, arrivedAt: at });
+      return true;
+    },
+    cancel: async (id) => {
+      const trip = trips.get(id);
+      if (!trip || !live(trip) || trip.departedAt !== null) return false;
+      trips.set(id, { ...trip, status: 'cancelled' });
+      return true;
+    },
+    notDeparted: async (from, to) =>
+      [...trips.values()].filter(
+        (trip) => live(trip) && trip.departedAt === null && trip.departAt >= from && trip.departAt <= to,
+      ),
   };
 }

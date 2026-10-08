@@ -4,7 +4,8 @@ import type { AppEnv, Bindings } from '../../../env';
 import { sendSignals } from '../../feed';
 import type { WalletDeps } from '../application/ports';
 import { adminWallets } from '../application/admin-wallets';
-import { adjust, walletView } from '../application/wallet';
+import { adjust } from '../application/wallet';
+import { walletView } from '../application/wallet-view';
 
 const STATUS = {
   'auth.not_admin': 403,

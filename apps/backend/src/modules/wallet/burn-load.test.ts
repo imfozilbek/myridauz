@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { IN_LIST_LIMIT } from '../../shared/storage/in-list';
 import { fullScans, testD1 } from '../../test-d1';
 import { grantMissedWelcome } from './application/missed';
-import { burnExpired, walletView } from './application/wallet';
+import { burnExpired } from './application/wallet';
+import { walletView } from './application/wallet-view';
 import type { WalletDeps } from './application/ports';
 import { d1Wallet } from './infrastructure/d1-wallet';
 
@@ -41,6 +42,7 @@ describe('burning bonuses at scale', () => {
       wallet: d1Wallet(db),
       promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
       people: { find: async () => undefined, idOf: async () => undefined },
+      passengers: async () => new Map(),
       now: () => NOW,
       newId: () => `id${(id += 1)}`,
     };

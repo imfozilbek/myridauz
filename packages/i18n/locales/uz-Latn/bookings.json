@@ -19,10 +19,7 @@
   "none": "Hali soʻrov yoʻq",
   "confirm": "Tasdiqlash",
   "decline": "Rad etish",
-  "confirm.title": "Joyni tasdiqlaysizmi?",
-  "confirm.hint": "Tasdiqlasangiz, hamyoningizdan {amount} komissiya olinadi. Yoʻlovchiga davlat raqamingiz, sizga esa uning aniq joylari koʻrinadi.",
   "confirmed.title": "Joy tasdiqlandi",
-  "confirmed.hint": "Yoʻlovchining aniq joylari endi «Safar xaritasi»da.",
   "offer.send": "Taklif yuborish",
   "offer.time.title": "Soat nechada olib ketasiz?",
   "offer.review.title": "Taklifni tekshiring",
@@ -40,7 +37,6 @@
   "cancelAsk": "Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.",
   "driverCancelAsk": "Joyni bekor qilasizmi? Yoʻlovchi bu haqda xabar oladi.",
   "answerUntil": "Javob berish muddati",
-  "confirm.balance": "Hamyoningizda: {amount}",
   "map.failed": "Xarita yuklanmadi",
   "map.failedHint": "Qayta urinib koʻring yoki joyni roʻyxatdan tanlang.",
   "map.credit": "© OpenStreetMap",
@@ -61,6 +57,8 @@
   "points.all": "Hammasi",
   "points.line": "{seats} joy × {price}",
   "points.hint": "Har bir joy bosilsa xarita ochiladi. Ikkalasi tanlansa, soʻrov yuboriladi.",
+  "points.note": "Izoh (ixtiyoriy)",
+  "note.hint": "Haydovchi sizni tanishi uchun. Masalan: qizil kurtka, sumka bilan.",
   "pending.until": "{name} {date}, {time} gacha javob beradi",
   "pending.home": "Bosh sahifa",
   "pending.at": "{region} · {time}",
@@ -123,6 +121,5 @@
   "offer.car": "{model}, {color}",
   "request.perSeat": "bir joy {price}",
   "request.offers": "Takliflar ({count})",
-  "request.waiting": "Kutayotganda",
-  "offer.carPlate": "{car} · {plate}"
+  "request.waiting": "Kutayotganda"
 }

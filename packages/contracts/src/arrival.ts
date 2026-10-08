@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TRIP_LINK } from './launch-links';
 
 // Where a person came from and on what (G55, docs/116). A link of the bot may end with a mark of
 // its source: t.me/<bot>?startapp=<link>__<mark>. Only marks and names, never a person's words.
@@ -14,6 +15,8 @@ const SOURCE_PATTERN = /^[a-z][a-z0-9_.]{0,47}$/;
 // A driver's Telegram story of the trip (docs/88 L19).
 export const VIA_STORY = 'story';
 export const VIA_SITE = 'site';
+// The link the driver sends to people after the publishing (G63, docs/119).
+export const VIA_DRIVER = 'driver';
 
 export const arrivalSchema = z.object({
   source: z.string().regex(SOURCE_PATTERN).optional(),
@@ -24,6 +27,11 @@ export type Arrival = z.infer<typeof arrivalSchema>;
 
 // A link with its mark: the link stays as it was, the screens of links read it without the mark.
 export const withVia = (start: string, via: string) => `${start}${VIA_SEPARATOR}${via}`;
+
+// A trip ready to book in the passenger bot: t.me/<bot>?startapp=trip_<id>__<mark>. The button of a
+// channel post, a driver's story and the driver's own link (docs/15, docs/116, docs/119).
+export const tripBookLink = (bot: string, tripId: string, via: string) =>
+  `https://t.me/${bot}?startapp=${withVia(`${TRIP_LINK}_${tripId}`, via)}`;
 
 // The link and the mark of a start parameter; an empty link is a mark alone (an ad to the home).
 export function splitStart(param: string): { readonly start: string | null; readonly via: string | null } {

@@ -1,8 +1,8 @@
-import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
+import { meetingStartsAt, type Booking } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { PlateBadge } from '../find/plate-badge';
+import { UzPlate } from '../plate/uz-plate';
 import { Icon } from '../icons';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
@@ -12,13 +12,11 @@ import { MeetingMap } from '../trip/meeting-map';
 import { mapUrl } from './map-link';
 import './meeting-card.css';
 
-const MINUTE_MS = 60 * 1000;
-
 // From MEET_BEFORE_MINUTES before the departure until the passenger is in the car (docs/126).
 export const meetingTime = (booking: Booking, now: number) =>
   booking.status === 'confirmed' &&
   booking.boardedAt === null &&
-  now >= booking.trip.departAt - MEET_BEFORE_MINUTES * MINUTE_MS;
+  now >= meetingStartsAt(booking.trip.departAt);
 
 type Props = { readonly booking: Booking; readonly onTold: (booking: Booking) => void };
 
@@ -45,7 +43,7 @@ export function MeetingCard({ booking, onTold }: Props) {
       <b>{t('bookings.meeting.when', { time: formatTime(new Date(booking.trip.departAt)) })}</b>
       {startPoint ? <MeetingMap point={startPoint} onOpen={() => openExternal(mapUrl(startPoint))} /> : null}
       <span className="meeting-place">{start}</span>
-      {booking.plate ? <PlateBadge plate={booking.plate} /> : null}
+      {booking.plate ? <UzPlate plate={booking.plate} /> : null}
       <ActionFailure error={failure} />
       {booking.cameAt === null ? (
         <button type="button" className="meeting-came" onClick={() => void came()}>

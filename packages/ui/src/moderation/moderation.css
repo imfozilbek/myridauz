@@ -84,10 +84,6 @@
   object-fit: cover;
 }
 
-.plate-check .plate {
-  margin: 0;
-}
-
 .plate-check-fixed {
   color: var(--tgui--link_color);
   text-align: center;

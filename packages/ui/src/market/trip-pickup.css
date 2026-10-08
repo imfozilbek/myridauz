@@ -1,0 +1,95 @@
+/* «Qayerdan olasiz?» (G63, mockup g63/2 at 360 px): the chips, the pitak of the direction and the
+   doors under the words, from the start of the words. */
+.points-trip .seats-row.trip-row-wide {
+  flex-wrap: wrap;
+  row-gap: 6px;
+  padding-top: 7px;
+}
+
+.points-trip .trip-row-more {
+  flex: 1 0 100%;
+  box-sizing: border-box;
+  padding: 0 0 9px 41px;
+}
+
+.trip-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+/* The word of a chip stands half a pixel under its middle (mockup g63/2). */
+.trip-chips > * {
+  padding-top: 1px;
+}
+
+.trip-pitak {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px 8px 9px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--reg-soft);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trip-pitak-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trip-pitak-words b {
+  font-size: 13px;
+  line-height: 14px;
+  color: var(--reg-ink);
+}
+
+.trip-pitak-words span {
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--reg-muted);
+}
+
+/* «Xaritada ›» stands 1 px under the middle of the card (mockup g63/2). */
+.trip-pitak-map {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--reg-text);
+}
+
+/* «›» 1.33 px after «Xaritada», as thick as a letter, its middle 1 px over the middle of the word
+   (mockup g63/2). */
+.trip-pitak-map svg {
+  margin: 0 0 2px 1.33px;
+  stroke-width: 2.25;
+}
+
+.trip-door {
+  margin: 9px 0 -0.34px;
+  font-size: 12.5px;
+  line-height: 14.67px;
+  color: var(--reg-muted);
+}
+
+/* The pitak on the small map (docs/126, journey g63/4 screen 3): from the icon tile of the row to the
+   end of the pitak card, a short strip; a tap opens the big map. */
+.trip-row-more .meeting-map {
+  width: calc(100% + 41px);
+  margin: 6px 0 0 -41px;
+  border-radius: 10px;
+}
+
+.trip-row-more .meeting-map-box {
+  height: 54px;
+}

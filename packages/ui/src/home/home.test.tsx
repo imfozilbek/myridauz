@@ -103,7 +103,7 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
 
   it('offers the last route of a driver whose trips are over', async () => {
     driver([{ ...trip, status: 'completed' }]);
-    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Safar eʼlon qilish/u })).toBeTruthy();
     await tap('Oxirgi yoʻnalish');
     expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
   });
@@ -112,7 +112,7 @@ describe('the main screen of a driver (G25)', { timeout: 20_000 }, () => {
     driver([]);
     expect(await screen.findByText('Mening safarlarim')).toBeTruthy();
     expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
-    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Safar eʼlon qilish/u })).toBeTruthy();
   });
 
   it('does not invite a driver on the check to publish', async () => {

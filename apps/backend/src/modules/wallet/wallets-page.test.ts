@@ -30,6 +30,7 @@ describe('the wallets of the team by pages', () => {
         find: async (id) => ({ firstName: `D${id}`, publicId: `p${id}` }),
         idOf: async () => undefined,
       },
+      passengers: async () => new Map(),
       now: () => 0,
       newId: () => 'id',
     };

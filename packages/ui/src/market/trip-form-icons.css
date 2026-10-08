@@ -1,0 +1,19 @@
+/* The icons of the rows of «Safar» (G63, mockups g63/1 and g63/2 at 1.5×), one to one (lesson 141).
+   An icon of 17 px in a tile of 30 px stands on a whole pixel by its margin, else it jumps a pixel
+   with the place of its row: 7 px from the top of the tile, the comment 6 px, the calendar 7.67 px;
+   the person of the seats 2.125 px left of the middle. */
+.points-trip .seats-row > span:first-child > svg {
+  margin-top: 1px;
+}
+
+.points-trip .seats-row > span:first-child > svg.lucide-calendar {
+  transform: translateY(0.67px);
+}
+
+.points-trip .seats-row > span:first-child > svg.lucide-message-square {
+  margin-top: -1px;
+}
+
+.points-trip .seats-row > span:first-child > svg.lucide-user {
+  transform: translateX(-2.125px);
+}

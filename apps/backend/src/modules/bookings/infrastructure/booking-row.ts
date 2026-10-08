@@ -1,9 +1,10 @@
 import { placeNameSchema, type BookingMode, type BookingStatus, type Point } from '@platform/contracts';
 import { z } from 'zod';
 import type { BookingRecord, Named } from '../domain/booking';
+import { MARK_COLUMNS, markValues, marksOf, type MarkRow } from './mark-row';
 
-// A row of the table bookings (migrations 0008, 0009, 0024, 0043) and back.
-export type BookingRow = {
+// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047, 0050) and back.
+export type BookingRow = MarkRow & {
   id: string;
   trip_id: string;
   passenger_id: number;
@@ -22,6 +23,7 @@ export type BookingRow = {
   dropoff_lat: number | null;
   dropoff_lng: number | null;
   dropoff_name: string | null;
+  note: string | null;
   offer_id: string | null;
   confirmed_at: number | null;
   boarded_at: number | null;
@@ -64,18 +66,20 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   pickupNamed: namedOf(row.pickup_name),
   dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
   dropoffNamed: namedOf(row.dropoff_name),
+  note: row.note,
   offerId: row.offer_id,
   confirmedAt: row.confirmed_at,
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
   cameAt: row.came_at,
+  ...marksOf(row),
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
 
 const json = (named: Named | null) => (named ? JSON.stringify(named) : null);
 
-// The points and their names: written together, erased together.
+// The points, their names and the note: written together, erased together (docs/69).
 export const pointValues = (b: BookingRecord) =>
   [
     b.pickup?.lat ?? null,
@@ -84,6 +88,7 @@ export const pointValues = (b: BookingRecord) =>
     b.dropoff?.lat ?? null,
     b.dropoff?.lng ?? null,
     json(b.dropoffNamed),
+    b.note,
   ] as const;
 export const POINT_COLUMNS = [
   'pickup_lat',
@@ -92,6 +97,7 @@ export const POINT_COLUMNS = [
   'dropoff_lat',
   'dropoff_lng',
   'dropoff_name',
+  'note',
 ] as const;
 
 export const rowValues = (b: BookingRecord) =>
@@ -113,6 +119,7 @@ export const rowValues = (b: BookingRecord) =>
     b.boardedAt,
     b.arrivedAt,
     b.cameAt,
+    ...markValues(b),
     b.createdAt,
     b.updatedAt,
   ] as const;
@@ -134,6 +141,7 @@ export const ROW_COLUMNS = [
   'boarded_at',
   'arrived_at',
   'came_at',
+  ...MARK_COLUMNS,
   'created_at',
   'updated_at',
 ] as const;

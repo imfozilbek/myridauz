@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, TEXT, newTripTile } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
@@ -104,15 +104,16 @@ test('the passenger who goes from a pitak sees the pitak on «Qayerdan, qayerga?
   expect(state.booked).toMatchObject({ seats: 1, mode: 'pitak', pickup: null, dropoff: HOME });
 });
 
-// The driver sees the pitak of the direction on a small map before choosing the way (G26).
-test('the driver sees the pitak of the direction on the mode step', async ({ page }) => {
+// The pitak of the direction is on its card of the new trip, «Xaritada» shows it (G26, mockup g63/2).
+test('the driver sees the pitak of the direction on the map from the new trip', async ({ page }) => {
   await mockApi(page, 'active');
   await mockMap(page, mapState());
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.both'))).toBeVisible();
+  await page.getByText(t('way.trip.onMap')).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '5-driver-mode');
@@ -128,11 +129,15 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
-  const headers = page.getByText(new RegExp(`^(${t('way.driver.fits')}|${t('way.driver.others')})$`, 'u'));
-  await expect(headers).toHaveText([t('way.driver.fits'), t('way.driver.others')]);
+  // «Joy soʻraganlar» (mockup g63/4 screen 6): by the time they came, the far one asked first on top;
+  // the extra way stays in each card.
+  const [first, later] = await Promise.all(
+    ['Bobur', 'Aziza'].map((name) => page.getByText(name).boundingBox()),
+  );
+  expect(first?.y ?? Infinity).toBeLessThan(later?.y ?? 0);
   await expect(page.getByText(/\+3\skm/u)).toBeVisible();
   await shot(page, '6-requests');
-  await page.getByText(t('way.map.title')).click();
+  await page.getByText(t('driverTrip.tile.map')).click();
   await drawn(page);
   await expect(page.getByText('Chorsu')).toBeVisible();
   await expect(page.getByText('Sardor')).toBeHidden();
@@ -141,8 +146,4 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
   const [opened] = await telegramEvents(page, 'web_app_open_link');
   expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);
-  await expect(page.getByText(t('way.map.navigatorChange'))).toBeVisible();
-  await page.getByText(t('way.map.dropoffs')).click();
-  await expect(page.getByText('Registon mahallasi').first()).toBeVisible();
-  await shot(page, '8-dropoffs');
 });

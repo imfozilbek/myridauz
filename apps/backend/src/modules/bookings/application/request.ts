@@ -1,5 +1,11 @@
-import { arrivalAt, MAX_REQUESTED_BOOKINGS, type Booking, type BookingInput } from '@platform/contracts';
-import { answerDeadline, move, statusAt, type BookingRecord } from '../domain/booking';
+import {
+  arrivalAt,
+  MAX_REQUESTED_BOOKINGS,
+  onTheWay,
+  type Booking,
+  type BookingInput,
+} from '@platform/contracts';
+import { answerDeadline, move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
@@ -32,8 +38,9 @@ export async function requestBooking(
   const now = deps.now();
   const facts = await deps.trips.find(tripId);
   if (!facts?.live) return { ok: false, error: 'bookings.not_found' };
-  // A trip that already left takes no seats: an old link or "Sevimli" opens it (docs/65 B8).
-  if (facts.departAt <= now) return { ok: false, error: 'bookings.departed' };
+  // A trip that already left takes no seats: an old link or "Sevimli" opens it (docs/65 B8). An early
+  // «Yoʻlga chiqdim» of the driver counts too (G63).
+  if (onTheWay(facts, now)) return { ok: false, error: 'bookings.departed' };
   if (facts.driverId === passengerId) return { ok: false, error: 'bookings.own_trip' };
   const [trip] = await deps.trips.views([tripId]);
   if (!trip || trip.seatsLeft < seats) return { ok: false, error: 'bookings.no_seats' };
@@ -59,11 +66,13 @@ export async function requestBooking(
     status: 'requested',
     expiresAt: answerDeadline(facts.departAt, now),
     ...points.value,
+    note: input.note ? deps.mask(input.note) : null,
     offerId: null,
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: now,
     updatedAt: now,
   };
@@ -84,7 +93,7 @@ export async function cancelByPassenger(
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
   if (record?.passengerId !== passengerId || !facts) return { ok: false, error: 'bookings.not_found' };
-  const next = move(record, 'passenger_cancel', deps.now(), facts.departAt);
+  const next = move(record, 'passenger_cancel', deps.now(), facts);
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };

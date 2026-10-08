@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, TEXT, newTripTile } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
 import { mapDrawn, TILES_MS } from './map-wait';
@@ -62,10 +62,11 @@ test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshken
   await shot(page, '5-review');
 });
 
-test('driver: the pitak of the direction on the way step', async ({ page }) => {
+test('driver: the pitak of the direction from its card of the new trip', async ({ page }) => {
   await open(page, DRIVER.port);
-  await mainButton(page).filter({ hasText: TEXT.newTrip }).click();
+  await newTripTile(page).click();
   await chooseRoute(page);
+  await page.getByText(t('way.trip.onMap')).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '6-driver-way');

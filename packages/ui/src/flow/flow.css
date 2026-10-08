@@ -102,3 +102,20 @@
 .home-tiles > :last-child:nth-child(odd) {
   grid-column: span 2;
 }
+
+/* A tile waiting for the approval of the application: pale, it still opens (G62, mockup g62/1). */
+.home-tile-pale {
+  background: color-mix(in srgb, var(--tgui--bg_color) 45%, transparent);
+}
+
+.home-tile-pale > :first-child {
+  opacity: 0.55;
+}
+
+.home-tile-pale .home-tile-title {
+  color: var(--tgui--hint_color);
+}
+
+.home-tile-pale .home-tile-hint {
+  opacity: 0.75;
+}

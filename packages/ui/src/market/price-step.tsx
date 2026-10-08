@@ -10,6 +10,7 @@ import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
 import { useSeatCommission } from './seat-commission';
 import './market.css';
+import './price-step.css';
 
 type PriceStepProps = {
   readonly recommendation: Recommendation;

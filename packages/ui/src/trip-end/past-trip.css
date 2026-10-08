@@ -1,0 +1,29 @@
+/* The past trip of the driver (G63, mockup g63/5 phone 5) in the parts of «Mening safarim»: only
+   what differs from them, at 360 px. The mockup puts this page 0.8 px higher than «Mening safarim». */
+.own-trip.past-trip {
+  padding-top: 11.2px;
+  padding-bottom: 16px;
+}
+
+/* The plate of «Safar tugadi»: its edges stand lower than the page around them (mockup). */
+.past-trip .own-banner {
+  margin: 0.8px 0 10px;
+  padding: 9.2px 14px 10px;
+}
+
+/* The tick of «Safar tugadi» is smaller here than on the plates of «Mening safarim». */
+.past-trip .own-banner[data-stage] svg {
+  margin: 0 -0.5px;
+}
+
+/* The sum of the past trip stands lower in its row than on «Mening safarim» (mockup g63/5 phone 5). */
+.past-trip .trip-card-sum {
+  padding-top: 9.2px;
+  padding-bottom: 8.2px;
+  padding-right: 13px;
+}
+
+.past-after {
+  border-radius: 14px;
+  background: var(--reg-card);
+}

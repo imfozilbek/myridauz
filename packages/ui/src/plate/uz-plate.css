@@ -1,0 +1,136 @@
+/* An Uzbek plate (G62, mockup g62/2-plate) in three sizes; the values of the mockup at 360 px. */
+.uz-plate {
+  --plate-h: 35px;
+  --plate-border: 2px;
+  --plate-region: 40px;
+  --plate-font: 22px;
+  --plate-flag: 16px;
+  --plate-country: 9px;
+
+  display: inline-flex;
+  box-sizing: border-box;
+  align-items: stretch;
+  height: var(--plate-h);
+  overflow: hidden;
+  border: var(--plate-border) solid var(--reg-ink, var(--tgui--text_color));
+  border-radius: calc(var(--plate-h) / 6);
+  background: var(--reg-card, var(--tgui--bg_color));
+  color: var(--reg-ink, var(--tgui--text_color));
+  font-family: ui-monospace, 'DejaVu Sans Mono', monospace;
+  font-size: var(--plate-font);
+  font-weight: 700;
+  line-height: 1;
+  white-space: pre;
+}
+
+.uz-plate-l {
+  --plate-h: 62px;
+  --plate-border: 3px;
+  --plate-region: 62px;
+  --plate-font: clamp(26px, 9.2vw, 33px);
+  --plate-flag: 25px;
+  --plate-country: 12px;
+
+  display: flex;
+  width: 100%;
+}
+
+.uz-plate-s {
+  --plate-h: 23px;
+  --plate-border: 1.5px;
+  --plate-region: 26px;
+  --plate-font: 13px;
+  --plate-flag: 10px;
+  --plate-country: 6px;
+}
+
+.uz-plate-region {
+  display: grid;
+  flex: none;
+  width: var(--plate-region);
+  place-items: center;
+  border-right: var(--plate-border) solid currentcolor;
+}
+
+.uz-plate-number {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 0 calc(var(--plate-h) / 5);
+  letter-spacing: 0.06em;
+}
+
+.uz-plate-country {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--plate-h) / 20);
+  padding-right: calc(var(--plate-h) / 8);
+  font-family: var(--tgui--font-family, sans-serif);
+  font-size: var(--plate-country);
+  font-weight: 800;
+}
+
+/* The flag of Uzbekistan: blue, white and green with thin red lines (national colors, not the brand). */
+.uz-plate-flag {
+  width: var(--plate-flag);
+  aspect-ratio: 2 / 1;
+  background: linear-gradient(
+    #0099b5 0 32%,
+    #ce1126 32% 36%,
+    #fff 36% 64%,
+    #ce1126 64% 68%,
+    #1eb53a 68% 100%
+  );
+}
+
+/* The plate field: a clear input over the whole plate, the caret drawn after the typed text. */
+.uz-plate-input {
+  position: relative;
+}
+
+.uz-plate-problem {
+  border-color: var(--tgui--destructive_text_color);
+}
+
+.uz-plate-ghost {
+  color: var(--reg-off, var(--tgui--hint_color));
+}
+
+.uz-plate-field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  opacity: 0;
+  font-size: 16px;
+}
+
+.uz-plate-caret {
+  display: none;
+  width: 2px;
+  height: 0.9em;
+  margin: 0 -1px;
+  vertical-align: -0.1em;
+  background: var(--reg-strong, var(--tgui--link_color));
+}
+
+.uz-plate-input:focus-within .uz-plate-caret {
+  display: inline-block;
+}
+
+/* A line of text with a small plate after it: the car, then its plate (G62). */
+.plate-line {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+/* The plate field of the application step, inside the step's side margins. */
+.plate-step {
+  display: block;
+  margin: 8px 24px 0;
+}

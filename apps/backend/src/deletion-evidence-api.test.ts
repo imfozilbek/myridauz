@@ -17,7 +17,7 @@ const trip = {
   seats: 3,
   price: 90_000,
   womanOnBoard: false,
-  pickupMode: 'both',
+  pickupMode: 'door',
   comment: '',
 };
 

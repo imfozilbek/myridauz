@@ -43,16 +43,9 @@
   color: var(--tgui--hint_color);
 }
 
-/* A small plate without the country on the call (mockup g60/4). */
-.call-car .plate-badge {
-  margin-top: 0;
-  color: var(--reg-ink, var(--tgui--text_color));
-  font-size: 13px;
-  line-height: 14px;
-}
-
-.call-car .plate-badge-country {
-  display: none;
+/* The plate on the call: the one plate of G62 in size s. */
+.call-car .uz-plate {
+  margin-top: 4px;
 }
 
 .call-status {

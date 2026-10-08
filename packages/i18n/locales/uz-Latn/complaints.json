@@ -41,6 +41,14 @@
   "blockForever": "Butunlay bloklash",
   "blockForeverEffect": "Hisobi butunlay bloklanadi. Faol safarlari va band qilingan joylari bekor qilinadi.",
   "refund": "Haydovchiga komissiyani qaytarish",
-  "refundEffect": "Yoʻlovchi kelmagan boʻlsa, komissiya haydovchining asosiy hisobiga qaytadi.",
+  "refundEffect": "Yoʻlovchi kelmagan boʻlsa, qaytarish taklif qilinadi. Loyiha egasi tasdiqlagach, komissiya haydovchining hamyoniga qaytadi.",
+  "refundTitle": "Komissiyani qaytarish",
+  "refundTag": "Qaytarish",
+  "refundAmount": "Haydovchiga {amount}",
+  "refundConfirm": "Qaytarishni tasdiqlash",
+  "refundReject": "Qaytarmaslik",
+  "refundWaiting": "Loyiha egasi tasdiqlashini kutmoqda.",
+  "refundConfirmed": "Komissiya haydovchiga qaytarildi.",
+  "refundRejected": "Loyiha egasi qaytarmaslikka qaror qildi.",
   "decided": "Qaror saqlandi"
 }

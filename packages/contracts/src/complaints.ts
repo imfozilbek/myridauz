@@ -8,6 +8,15 @@ export const ADMIN_COMPLAINTS_PATH = '/admin/complaints';
 export const adminComplaintPath = (id: string) => `${ADMIN_COMPLAINTS_PATH}/${id}`;
 export const adminComplaintChatPath = (id: string) => `${adminComplaintPath(id)}/chat`;
 export const adminComplaintDecisionPath = (id: string) => `${adminComplaintPath(id)}/decision`;
+// The refund of a no-show: a moderator proposes it with the decision, the owner answers (docs/35, G63).
+export const REFUND_ANSWERS = ['confirm', 'reject'] as const;
+export type RefundAnswer = (typeof REFUND_ANSWERS)[number];
+export const adminComplaintRefundPath = (id: string, answer: RefundAnswer) =>
+  `${adminComplaintPath(id)}/refund/${answer}`;
+export const REFUND_STATES = ['proposed', 'confirmed', 'rejected'] as const;
+export type RefundState = (typeof REFUND_STATES)[number];
+export const complaintRefundSchema = z.object({ state: z.enum(REFUND_STATES), amount: z.number().int() });
+export type ComplaintRefund = z.infer<typeof complaintRefundSchema>;
 
 export const COMPLAINT_REASONS = [
   'harassment',
@@ -61,6 +70,8 @@ export const complaintSchema = z.object({
   departAt: z.number().int(),
   author: partySchema,
   against: partySchema,
+  // The refund of the commission proposed with the decision of a no-show (docs/35).
+  refund: complaintRefundSchema.nullable().default(null),
 });
 export type Complaint = z.infer<typeof complaintSchema>;
 export const complaintQueueSchema = z.object({ complaints: z.array(complaintSchema) });
@@ -81,7 +92,7 @@ export const complaintDecisionSchema = z.object({
   days: z
     .union([z.literal(BLOCK_DAYS[0]), z.literal(BLOCK_DAYS[1]), z.literal(BLOCK_DAYS[2]), z.null()])
     .optional(),
-  // A no-show: the commission goes back to the driver (admin_adjustment, docs/35).
+  // A no-show: the refund of the commission is proposed; the owner confirms it (docs/35, G63).
   refund: z.boolean().default(false),
 });
 export type ComplaintDecision = z.input<typeof complaintDecisionSchema>;

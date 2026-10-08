@@ -72,7 +72,7 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     await findRoute();
     await tap(/^Jasur ★/u);
     // The driver on top: the plate is seen before the booking (owner decision, G59).
-    expect(await screen.findByText('01 A 123 BC')).toBeTruthy();
+    expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Oshirish' }));
     expect(screen.getByText(/190\s000/u)).toBeTruthy();
     await tap('2 ta joy band qilish');

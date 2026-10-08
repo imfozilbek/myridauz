@@ -1,5 +1,4 @@
 import {
-  DriverApproved,
   DriverData,
   DriverGate,
   DriverHome,
@@ -7,24 +6,23 @@ import {
   DriverTiles,
   HomeScreenOffer,
   MyTripsScreen,
+  NEW_TRIP_SECTION,
   NewTripFlow,
   RequestsSearchFlow,
   StartFlow,
   useDriverTripsLive,
   usePending,
-  WALLET_SECTION,
-  WalletScreen,
   type StartAction,
 } from '@platform/ui';
 
 // The main screen has at most 3 actions (docs/19).
 const ACTIONS: readonly StartAction[] = [
   {
-    id: 'new_trip',
+    id: NEW_TRIP_SECTION,
     icon: 'newTrip',
     tone: 'brand',
     labelKey: 'home.publish',
-    hintKey: 'common.driver.newTripHint',
+    hintKey: 'home.publishHint',
     waitsApproval: true,
     Screen: NewTripFlow,
   },
@@ -34,7 +32,8 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.driver.passengerRequests',
     hintKey: 'common.driver.passengerRequestsHint',
-    // On the check its own screen says why it waits; the tile keeps its hint (the mockup of G53).
+    // On the check its own screen says why it waits; the tile is pale with its hint (G62).
+    paleUntilApproval: true,
     Screen: RequestsSearchFlow,
   },
   {
@@ -49,20 +48,8 @@ const ACTIONS: readonly StartAction[] = [
   },
 ];
 
-// «Hamyon» opens from its tile once the application is approved (G53).
-const SECTIONS: readonly StartAction[] = [
-  {
-    id: WALLET_SECTION,
-    icon: 'wallet',
-    tone: 'deep',
-    labelKey: 'wallet.title',
-    hintKey: 'wallet.rule',
-    Screen: WalletScreen,
-  },
-];
-
-// The main screen right after the registration (G34): before sending, the card of the application;
-// while it is checked, a note says what waits (docs/04).
+// The main screen right after the registration: before sending, the big tile «Haydovchi boʻlish»;
+// while it is checked, a note says what waits (G62, docs/118 path 5).
 export function StartPage() {
   return (
     <DriverGate>
@@ -71,26 +58,19 @@ export function StartPage() {
   );
 }
 
-// An approved driver publishes from the main button and its tile (G25, G53); until the
-// application is approved there is no main button. The tiles read the trips of the block above.
+// An approved driver publishes from the big tile on top (G62, mockup g62/1 screen 6); until the
+// application is approved the tile waits pale in the grid. The tiles read the trips of the block above.
 function DriverStart() {
   const pending = usePending();
   return (
     <DriverData>
       <StartFlow
         actions={ACTIONS}
-        sections={SECTIONS}
-        coveredTile
         notice={<DriverNotice />}
-        after={
-          <>
-            <DriverApproved />
-            <HomeScreenOffer />
-          </>
-        }
+        after={<HomeScreenOffer />}
         home={(go) => <DriverHome go={go} />}
-        tiles={(go) => <DriverTiles go={go} />}
-        {...(pending ? {} : { covered: 'new_trip' })}
+        tiles={() => <DriverTiles />}
+        {...(pending ? {} : { mainTile: NEW_TRIP_SECTION })}
       />
     </DriverData>
   );

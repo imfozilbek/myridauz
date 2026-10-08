@@ -1,66 +1,59 @@
 import './driver.css';
-import { carSchema, type CarInput, type DriverApplication, type DriverStep } from '@platform/contracts';
+import {
+  CAR_PHOTO_KINDS,
+  carSchema,
+  formatPlate,
+  type CarInput,
+  type DriverApplication,
+} from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { useState, type ReactNode } from 'react';
+import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { DraftRestored } from '../flow/draft-restored';
-import { useStepProgress } from '../flow/step-progress';
 import { errorKey } from '../market/error-text';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { haptic } from '../telegram/feedback';
-import { nextStep, previousStep, progressOf, type Step } from './application-steps';
 import { useCarAnswers } from './car-answers';
-import { CarStep, type CarStepName } from './car-step';
+import { CarScreen } from './car-form/car-screen';
+import { hasProblem } from './problem-note';
 import { PhotosStep } from './steps/photos-step';
-import { PlateStep } from './steps/plate-step';
-import { ReviewStep, type ReviewTarget } from './steps/review-step';
 import { useReasons } from './use-reasons';
-
-const CAR_STEPS: readonly string[] = ['make', 'model', 'color', 'seats'];
-const isCarStep = (step: Step): step is CarStepName => CAR_STEPS.includes(step);
 
 type ApplicationFlowProps = {
   readonly initial: DriverApplication | null;
   readonly onSubmitted: (application: DriverApplication) => void;
-  // To the main screen, or an application already sent back to its status (docs/94 B4).
+  // To the main screen (docs/94 B4).
   readonly onClose: () => void;
 };
 
-// The application, one question per screen (docs/04, docs/19). A sent application opens on the
-// review; a new one on the make, with the answers of a draft (G34).
+const NO_PHOTOS = { front: false, side: false, interior: false };
+
+// The application in 2 screens (G62, docs/118 path 5): the car, then its photos and the sending.
+// A fix opens on the car when the team asked about it, else on the photos.
 export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFlowProps) {
   const { track } = useAnalytics();
   const { drivers } = useApiClients();
-  const reviewing = initial?.car !== null && initial?.car !== undefined;
-  const { step, car, shown, answer, go, dirty, restored, clear } = useCarAnswers(initial?.car ?? undefined);
-  // A new application is a draft and is not lost; a sent one being changed asks before leaving.
-  const guard = useUnsavedGuard(reviewing && dirty);
-  const [photos, setPhotos] = useState(initial?.photos ?? { front: false, side: false, interior: false });
-  const [failure, setFailure] = useState<TranslationKey | null>(null);
-  useStepProgress(...progressOf(step));
+  const known = initial?.car ?? undefined;
+  const fixing = initial?.status === 'changes_requested';
   const { reasons, keepOnly, fixed } = useReasons(initial?.reasons ?? []);
-
-  const done = (current: Step, patch: Partial<CarInput>, passed?: DriverStep) => {
-    const alone = current === 'make' && !('model' in patch);
-    answer(patch, alone, (next) => nextStep(current, next, 'model' in patch, reviewing));
-    if (!alone && Object.keys(patch).length > 0) fixed(current === 'plate' ? 'plate' : 'car');
-    if (passed) track({ name: 'driver_application_step', screen: 'driver', step: passed });
-  };
-  const back = (current: Step) => () => {
-    const to = reviewing ? 'review' : previousStep(current, car);
-    if (to) go(to);
-    else onClose();
-  };
+  const carAsked = hasProblem(reasons, 'car') || hasProblem(reasons, 'plate');
+  const first = fixing && !carAsked ? 'photos' : 'car';
+  const { step, car, change, go, dirty, restored, clear } = useCarAnswers(known, first);
+  // A new application is a draft and is not lost; a sent one being changed asks before leaving.
+  const guard = useUnsavedGuard(known !== undefined && dirty);
+  const [photos, setPhotos] = useState(initial?.photos ?? NO_PHOTOS);
+  const [failure, setFailure] = useState<TranslationKey | null>(null);
   const leave = guard(() => {
+    if (known === undefined) return onClose();
     clear();
     onClose();
   });
 
   const send = async () => {
-    const parsed = carSchema.safeParse(car);
     setFailure(null);
     try {
+      const parsed = carSchema.safeParse(car);
       if (!parsed.success) throw new Error('ui.car_incomplete');
       const application = await drivers.submit(parsed.data);
       track({ name: 'driver_application_step', screen: 'driver', step: 'submitted' });
@@ -73,61 +66,47 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
     }
   };
 
-  const screen = (): ReactNode => {
-    if (isCarStep(step)) {
-      return (
-        // A new screen for each step: the typing of "Boshqa" does not stay on the next question.
-        <CarStep
-          key={step}
-          step={step}
-          car={shown}
-          onBack={back(step)}
-          onDone={(patch, passed) => done(step, patch, passed)}
-        />
-      );
-    }
-    if (step === 'plate') {
-      return (
-        <PlateStep
-          initial={car.plate ?? ''}
-          reasons={reasons}
-          onBack={back('plate')}
-          onDone={(plate) => done('plate', { plate }, 'plate')}
-        />
-      );
-    }
-    if (step === 'photos') {
-      return (
-        <PhotosStep
-          photos={photos}
-          reasons={reasons}
-          onPhotos={(next) => {
-            setPhotos(next.photos);
-            keepOnly(next.reasons);
-          }}
-          onBack={back('photos')}
-          onDone={() => done('photos', {}, 'photos')}
-        />
-      );
-    }
-    const complete = carSchema.safeParse(car);
-    if (!complete.success) return null;
+  const complete = carSchema.safeParse(car);
+  if (step === 'photos' && complete.success)
     return (
-      <ReviewStep
+      <PhotosStep
         car={complete.data}
         photos={photos}
         reasons={reasons}
-        recheck={initial?.status === 'approved'}
+        fixing={fixing}
         failure={failure}
-        onEdit={(target: ReviewTarget) => go(target)}
+        onPhotos={(next) => {
+          const all = CAR_PHOTO_KINDS.every((kind) => next.photos[kind]);
+          if (all && !CAR_PHOTO_KINDS.every((kind) => photos[kind]))
+            track({ name: 'driver_application_step', screen: 'driver', step: 'photos' });
+          setPhotos(next.photos);
+          keepOnly(next.reasons);
+        }}
+        onChange={() => go('car')}
+        // A fix opened on the photos goes back to the main screen, not to the car (docs/94 B4).
+        onBack={first === 'photos' ? leave : () => go('car')}
         onSend={send}
-        onBack={reviewing ? leave : back('review')}
       />
     );
+  // A changed field is no longer what the team asked about: its red mark goes away.
+  const edit = (patch: Partial<CarInput>) => {
+    change(patch);
+    if ('plate' in patch && formatPlate(patch.plate ?? '') !== formatPlate(known?.plate ?? ''))
+      fixed('plate');
+    if (['make', 'model', 'color', 'seats'].some((field) => field in patch)) fixed('car');
   };
   return (
     <>
-      {screen()}
+      <CarScreen
+        car={car}
+        reasons={reasons}
+        onChange={edit}
+        onBack={leave}
+        onDone={() => {
+          track({ name: 'driver_application_step', screen: 'driver', step: 'car' });
+          go('photos');
+        }}
+      />
       <DraftRestored shown={restored} />
     </>
   );

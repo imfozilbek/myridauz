@@ -12,6 +12,8 @@ import {
   rideRequestSchema,
   rideRequestsSchema,
   scheduleSchema,
+  tripArrivePath,
+  tripDepartPath,
   tripPath,
   tripPricePath,
   tripTimePath,
@@ -70,6 +72,9 @@ export function createMarketClient(options: SignedOptions) {
       trip(await post(tripTimePath(id), { departAt })),
     lowerTripPrice: async (id: string, price: number): Promise<Trip> =>
       trip(await post(tripPricePath(id), { price })),
+    // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63, docs/35).
+    departTrip: async (id: string): Promise<Trip> => trip(await post(tripDepartPath(id), {})),
+    arriveTrip: async (id: string): Promise<Trip> => trip(await post(tripArrivePath(id), {})),
     searchRequests: async (search: RequestSearch): Promise<RideRequest[]> =>
       rideRequestsSchema.parse(await (await request(`${DRIVER_REQUESTS_PATH}?${query(search)}`)).json())
         .requests,
