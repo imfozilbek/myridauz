@@ -1,3 +1,4 @@
+import type { RefundState } from '@platform/contracts';
 import type { HistoryLine } from '../../chat';
 import type { ComplaintRecord } from '../domain/complaint';
 
@@ -26,10 +27,10 @@ export type ComplaintStore = {
   countAgainst(userId: number): Promise<number>;
   logChatRead(complaintId: string, moderatorId: number, at: number): Promise<void>;
   // The refunds of no-shows (docs/35, G63): the ones waiting for the owner, the complaints of an
-  // author about these rides, and the owner's answer, written only while the refund is proposed.
+  // author about these rides, and the refund of the complaint, written only from the expected state.
   refundsProposed(): Promise<ComplaintRecord[]>;
   ofAuthorRides(authorId: number, bookingIds: readonly string[]): Promise<ComplaintRecord[]>;
-  answerRefund(complaint: ComplaintRecord): Promise<boolean>;
+  answerRefund(complaint: ComplaintRecord, expected: RefundState): Promise<boolean>;
 };
 
 // What people get from the bots (docs/17): the author never learns the decision itself.

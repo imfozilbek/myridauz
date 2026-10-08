@@ -17,6 +17,7 @@ import {
 } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { ONE } from '../../../shared/routes/one-id';
 import type { TripsDeps } from '../application/ports';
 import { lowerTripPrice, retimeTrip } from '../application/change';
 import { publishTrip } from '../application/publish';
@@ -36,13 +37,13 @@ const STATUS = {
   'trips.too_soon': 422,
   'trips.busy': 409,
   'trips.wrong_status': 409,
+  'trips.no_pitak': 400,
   'locations.not_found': 404,
   'locations.same_place': 422,
   'locations.inside_city': 422,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.json({ error }, STATUS[error]);
-const ONE = ':id{[0-9a-f-]{36}}';
 
 // Drivers publish and cancel their trips; passengers search and open them (docs/09).
 export function tripRoutes(deps: (env: Bindings) => TripsDeps) {

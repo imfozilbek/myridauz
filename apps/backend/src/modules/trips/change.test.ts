@@ -5,7 +5,8 @@ import { publishTrip } from './application/publish';
 import { HOUR, NOW, setup } from './test-kit';
 
 const MINUTE = HOUR / 60;
-const BACK = { from: '1718401', to: '1726273' };
+// The way back has no pitak in the kit: its trip takes people at the door (docs/70).
+const BACK = { from: '1718401', to: '1726273', pickupMode: 'door' } as const;
 
 async function published(later = 0) {
   const kit = setup();

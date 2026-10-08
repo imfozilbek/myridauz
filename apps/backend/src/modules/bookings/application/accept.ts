@@ -84,8 +84,6 @@ async function acceptTaken(
     price: offer.price,
     womanOnBoard: false,
     comment: '',
-    // The passenger chose the way already: the trip of the offer takes any (docs/70).
-    pickupMode: 'both',
     // The trip of an offer is the passenger's request: seats as asked, or the whole car (docs/09).
     bookingRule: request.wholeCar ? 'car_only' : 'seats',
   });

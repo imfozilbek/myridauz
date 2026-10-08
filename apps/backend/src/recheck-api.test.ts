@@ -16,7 +16,7 @@ describe('a new face of an approved driver (docs/05, docs/65 A1)', () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     const trip = { from: '1726273', to: '1718401', departAt: Date.now() + 5 * 3_600_000, seats: 3 };
-    const input = { ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'both', comment: '' };
+    const input = { ...trip, price: 90_000, womanOnBoard: false, pickupMode: 'door', comment: '' };
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(input) }),
     );

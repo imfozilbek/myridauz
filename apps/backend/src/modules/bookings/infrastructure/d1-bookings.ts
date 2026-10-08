@@ -8,7 +8,7 @@ import {
   toBooking,
   type BookingRow,
 } from './booking-row';
-import { MARK_COLUMNS } from './mark-row';
+import { MARK_COLUMNS, markOnceSql } from './mark-row';
 
 // Table bookings (migrations/0008_bookings_wallet.sql, 0024, 0026, 0047).
 const marks = (count: number) => Array.from({ length: count }, () => '?').join(', ');
@@ -56,6 +56,8 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
       .run();
     return result.meta.changes === 1;
   },
+  markOnce: async (id, step, now) =>
+    (await db.prepare(markOnceSql(step)).bind(now, id).run()).meta.changes === 1,
   find: async (id) => {
     const row = await db.prepare('SELECT * FROM bookings WHERE id = ?').bind(id).first<BookingRow>();
     return row ? toBooking(row) : undefined;

@@ -32,7 +32,7 @@ describe('trip reminders (G10)', () => {
       seats: 3,
       price: 90_000,
       womanOnBoard: false,
-      pickupMode: 'both',
+      pickupMode: 'door',
       comment: '',
     };
     const published = await read<{ id: string }>(

@@ -33,7 +33,7 @@ async function tripWithTwo() {
   const published = await read<{ id: string }>(
     call('/driver/trips', DRIVER, {
       app: 'driver',
-      ...json({ ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' }),
+      ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
     }),
   );
   const ids: string[] = [];
@@ -44,7 +44,7 @@ async function tripWithTwo() {
     await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, asDriver);
     ids.push(asked.id);
   }
-  return { departAt, missed: ids[0] ?? '', rode: ids[1] ?? '' };
+  return { tripId: published.id, departAt, missed: ids[0] ?? '', rode: ids[1] ?? '' };
 }
 
 const driverBooking = async (id: string) =>
@@ -57,7 +57,7 @@ describe('the meeting of the driver and a no-show through the API (docs/126, doc
     await approvedDriver(DRIVER);
     for (const id of [MISSED, RODE, MODERATOR]) await registerUser(id);
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
-    const { departAt, missed, rode } = await tripWithTwo();
+    const { tripId, departAt, missed, rode } = await tripWithTwo();
     expect((await call(driverMeetPath(missed, 'came'), DRIVER, asDriver)).status).toBe(409);
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(departAt - 10 * 60_000);
@@ -75,10 +75,15 @@ describe('the meeting of the driver and a no-show through the API (docs/126, doc
     expect((await read<Booking>(call(driverMeetPath(missed, 'no_show'), DRIVER, asDriver))).noShowAt).toBe(
       Date.now(),
     );
+    // After «Keldi» or «Kelmadi» the ride has begun: the trip is not cancelled any more.
+    const cancel = await call(`/driver/trips/${tripId}/cancel`, DRIVER, asDriver);
+    expect([cancel.status, await cancel.json()]).toEqual([409, { error: 'trips.wrong_status' }]);
 
     const queue = await read<{ complaints: Complaint[] }>(call('/admin/complaints', OWNER, { app: 'admin' }));
     const filed = queue.complaints.find((complaint) => complaint.reason === 'no_show');
     expect(filed?.against.role).toBe('passenger');
+    // A no-show is not a ride: the team sees no rides of this passenger (docs/129).
+    expect(filed?.against.trips).toBe(0);
     const id = filed?.id ?? '';
     const decision = { ...asAdmin, ...json({ action: 'none', refund: true }) };
     expect((await call(`/admin/complaints/${id}/decision`, MODERATOR, decision)).status).toBe(204);

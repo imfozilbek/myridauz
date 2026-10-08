@@ -91,7 +91,8 @@ export const bookingSchema = z.object({
   driverCameAt: z.number().int().nullable().default(null),
   metAt: z.number().int().nullable().default(null),
   noShowAt: z.number().int().nullable().default(null),
-  // Only for the driver: the refund of the commission of a no-show (docs/35, docs/129).
+  // Only for the driver: the refund of the commission of a no-show (docs/35, docs/129). null while
+  // the team decides; "rejected" also when the team decided without a refund.
   refund: complaintRefundSchema.nullable().default(null),
 });
 export type Booking = z.infer<typeof bookingSchema>;

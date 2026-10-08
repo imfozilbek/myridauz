@@ -114,6 +114,7 @@ export * from './team-hours';
 export * from './trips';
 export * from './trip-counts';
 export * from './trip-changes';
+export * from './trip-progress';
 export * from './wallet';
 export * from './chat';
 export * from './feed';

@@ -49,5 +49,7 @@ export function tripView(
     pitak: trip.pickupMode === 'door' ? null : pitak,
     comment: trip.comment,
     status: status === 'active' && seatsLeft === 0 ? 'full' : status,
+    departedAt: trip.departedAt,
+    arrivedAt: trip.arrivedAt,
   };
 }

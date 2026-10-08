@@ -27,8 +27,8 @@ export function createMemoryComplaints(): ComplaintStore & { readonly reads: Cha
     refundsProposed: async () => all().filter((known) => known.refund?.state === 'proposed'),
     ofAuthorRides: async (authorId, bookingIds) =>
       all().filter((known) => known.authorId === authorId && bookingIds.includes(known.bookingId)),
-    answerRefund: async (complaint) => {
-      if (complaints.get(complaint.id)?.refund?.state !== 'proposed') return false;
+    answerRefund: async (complaint, expected) => {
+      if (complaints.get(complaint.id)?.refund?.state !== expected) return false;
       complaints.set(complaint.id, complaint);
       return true;
     },

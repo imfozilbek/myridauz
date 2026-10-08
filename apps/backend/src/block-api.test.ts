@@ -26,7 +26,7 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     await registerUser(PASSENGER);
     await registerUser(MODERATOR);
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
-    const input = { ...trip, womanOnBoard: false, pickupMode: 'both', comment: '' };
+    const input = { ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' };
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(input) }),
     );

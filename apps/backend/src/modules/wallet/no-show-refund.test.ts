@@ -59,6 +59,15 @@ describe('the refund of a no-show after the owner confirms it (docs/35, G63)', (
     expect(commission).not.toHaveProperty('passenger');
   });
 
+  it('a cancel after the refund of a no-show gives nothing more (docs/35)', async () => {
+    const { deps, balances } = setup();
+    await adjust(deps, OWNER, DRIVER, { balance: 'main', amount: 20_000, reason: 'main' });
+    await charge(deps, DRIVER, 'b1', 9000);
+    expect(await refundNoShow(deps, OWNER, DRIVER, 'b1')).toBe('ok');
+    await refund(deps, DRIVER, 'b1');
+    expect(await balances()).toEqual({ bonus: 0, main: 20_000 });
+  });
+
   it('gives nothing for a booking the cancel refunded already or never charged', async () => {
     const { deps, balances } = setup();
     await adjust(deps, OWNER, DRIVER, { balance: 'main', amount: 20_000, reason: 'main' });

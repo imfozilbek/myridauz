@@ -1,9 +1,8 @@
-import { DAY_MS, tashkentDate, tashkentDayStart } from './tashkent-time';
+import { DAY_MS, HOUR_MS, tashkentDate, tashkentDayStart } from './tashkent-time';
 
 // The hours the team checks driver applications, Tashkent time: from included, to excluded (G34).
 export type TeamHours = { readonly from: number; readonly to: number };
 
-const HOUR_MS = 60 * 60 * 1000;
 export const MINUTE_MS = 60 * 1000;
 
 // The team hours of the Tashkent day that starts at dayStart.

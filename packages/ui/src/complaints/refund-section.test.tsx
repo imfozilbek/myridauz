@@ -50,6 +50,8 @@ describe('the refund of a no-show in the admin app (docs/35, G63)', () => {
   it('the owner sees the sum and confirms the refund', async () => {
     const answerRefund = vi.fn<FeedbackClient['answerRefund']>(async () => undefined);
     const { tracked } = open('owner', answerRefund);
+    // The queue marks the case that waits for the owner.
+    expect(await screen.findByText('Qaytarish')).toBeTruthy();
     await tap('Kelmadi');
     expect(await screen.findByText(/9\s000/u)).toBeTruthy();
     expect(screen.queryByText('Ogohlantirish')).toBeNull();
@@ -76,6 +78,8 @@ describe('the refund of a no-show in the admin app (docs/35, G63)', () => {
 
   it('a refund answered already shows how, without the buttons', async () => {
     open('owner', undefined, { ...waiting, refund: { state: 'confirmed', amount: 9000 } });
+    expect(await screen.findByText('Kelmadi')).toBeTruthy();
+    expect(screen.queryByText('Qaytarish')).toBeNull();
     await tap('Kelmadi');
     expect(await screen.findByText('Komissiya haydovchiga qaytarildi.')).toBeTruthy();
     expect(screen.queryByText('Qaytarmaslik')).toBeNull();
@@ -83,5 +87,11 @@ describe('the refund of a no-show in the admin app (docs/35, G63)', () => {
     open('owner', undefined, { ...waiting, refund: { state: 'rejected', amount: 9000 } });
     await tap('Kelmadi');
     expect(await screen.findByText('Loyiha egasi qaytarmaslikka qaror qildi.')).toBeTruthy();
+  });
+
+  it('in the queue a high priority wins over the refund tag', async () => {
+    open('owner', undefined, { ...waiting, high: true });
+    expect(await screen.findByText('Muhim')).toBeTruthy();
+    expect(screen.queryByText('Qaytarish')).toBeNull();
   });
 });

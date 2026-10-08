@@ -1,19 +1,20 @@
-import { driverTripCancelPath } from '@platform/contracts';
+import { driverTripCancelPath, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
-import { expireRequests } from './application/expire';
+import { expireRequests, expireTripRequests } from './application/expire';
 import { chatBooking, chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
+import { meetingBegun } from './application/meeting';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
-import { showedUp } from './domain/meeting';
+import { isRide } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -26,12 +27,16 @@ export const bookingsModule = new Hono<AppEnv>()
 
 // The driver cancelled a trip: its requests are declined and its bookings cancelled "by the driver",
 // the commissions go back to the wallet (docs/12, docs/35). Runs around the trips route, like the avatar watch.
+// After «Keldi» or «Kelmadi» the ride has begun: the trip is not cancelled any more (G63).
 const CANCEL_PATH = driverTripCancelPath(':id');
 export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (context, next) => {
-  await next();
-  if (context.req.method !== 'POST' || context.res.status !== 200) return;
+  if (context.req.method !== 'POST') return next();
   const deps = bookingsDeps(context.env);
   const driverId = context.get('session').user.id;
+  if (await meetingBegun(deps, driverId, context.req.param('id') ?? ''))
+    return context.json({ error: 'trips.wrong_status' satisfies ApiErrorCode }, 409);
+  await next();
+  if (context.res.status !== 200) return;
   for (const booking of await deps.bookings.byTrips([context.req.param('id') ?? '']))
     if (booking.status === 'requested' || booking.status === 'confirmed')
       await answer(deps, driverId, booking.id, 'driver_cancel');
@@ -43,6 +48,9 @@ export const tellBookedOfRetime = (env: Bindings, tripId: string) =>
 
 // The Cron job (docs/35): requests without an answer in time become expired, the passenger hears it.
 export const expireBookings = (env: Bindings, now: number) => expireRequests(bookingsDeps(env), now);
+// «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.
+export const expireBookingsOfTrip = (env: Bindings, tripId: string) =>
+  expireTripRequests(bookingsDeps(env), tripId);
 
 // The Cron job (docs/69): points 30 days after the trip go, except under an open complaint.
 export const erasePastPoints = (env: Bindings, now: number, complained: ReadonlySet<string>) =>
@@ -80,9 +88,7 @@ export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(b
 
 // The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
 export const passengerRideCount = async (env: Bindings, passengerId: number) =>
-  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(
-    (booking) => (booking.status === 'confirmed' || booking.status === 'completed') && showedUp(booking),
-  ).length;
+  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(isRide).length;
 
 // «Hamyon» names the passenger of a no-show refund (G63): the first name of each booking.
 export const passengerNamesOf = async (env: Bindings, bookingIds: readonly string[]) => {

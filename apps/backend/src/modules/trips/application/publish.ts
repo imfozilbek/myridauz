@@ -1,5 +1,6 @@
 import type { Trip, TripInput } from '@platform/contracts';
 import { departError, endsAt, type TripRecord } from '../domain/trip';
+import { directionPitak, offerWay } from './direction-pitak';
 import type { Result, TripsDeps } from './ports';
 import { scheduleError, type ScheduleError } from './schedule';
 import { views } from './views-of';
@@ -10,6 +11,7 @@ export type PublishError =
   | 'trips.in_past'
   | 'trips.invalid_input'
   | 'trips.price_out_of_bounds'
+  | 'trips.no_pitak'
   | ScheduleError
   | 'locations.not_found'
   | 'locations.same_place'
@@ -21,7 +23,7 @@ type Input = Required<
   Pick<TripInput, 'bookingRule'> & { readonly comment: string };
 
 // Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09),
-// at a time the driver makes (docs/103).
+// at a time the driver makes (docs/103), by the pitak only where the direction has one (docs/70).
 export async function publishTrip(
   deps: TripsDeps,
   driverId: number,
@@ -38,11 +40,15 @@ export async function publishTrip(
   const { km, minPrice, maxPrice, price: recommended } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
+  if (input.pickupMode !== 'door' && !(await directionPitak(deps, input.from, input.to)))
+    return { ok: false, error: 'trips.no_pitak' };
   const busy = await scheduleError(deps, driverId, { ...input, km });
   if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
     ...input,
     comment: deps.mask(input.comment),
+    // «Mashinada ayol bor» of the driver: only a man with a seat left in the car (docs/06 rule 3).
+    womanOnBoard: input.womanOnBoard && driver.gender === 'male' && input.seats < car.seats,
     bookingRule: input.bookingRule ?? 'seats',
     car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     id: deps.newId(),
@@ -54,6 +60,8 @@ export async function publishTrip(
     firstDepartAt: input.departAt,
     firstPrice: input.price,
     priceToldAt: null,
+    departedAt: null,
+    arrivedAt: null,
   };
   await deps.trips.save(trip);
   await deps.announce(trip);
@@ -62,4 +70,13 @@ export async function publishTrip(
   return view
     ? { ok: true, value: { ...view, recommendedPrice: recommended } }
     : { ok: false, error: 'trips.not_driver' };
+}
+
+// An accepted offer becomes a trip (docs/35): the way is the one the direction has (docs/70).
+export async function publishOfferTrip(
+  deps: TripsDeps,
+  driverId: number,
+  input: Omit<Input, 'pickupMode'>,
+): Promise<Result<Trip, PublishError>> {
+  return publishTrip(deps, driverId, { ...input, pickupMode: await offerWay(deps, input.from, input.to) });
 }

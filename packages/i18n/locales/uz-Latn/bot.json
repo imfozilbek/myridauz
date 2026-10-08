@@ -62,6 +62,7 @@
   "moderation.picked": "✅ {reason}",
   "moderation.pickReason": "Kamida bitta sababni tanlang.",
   "trip.published": "Safaringiz eʼlon qilindi: {from} → {to}, {date} soat {time}, bir joy {price}.\n\nYoʻlovchi joy band qilsa, shu yerga xabar keladi.",
+  "trip.departReminder": "Yoʻlga chiqdingizmi? Safar boshlansa, «Yoʻlga chiqdim» tugmasini bosing.",
   "booking.requested": "Yangi soʻrov: {name}, {seats} ta joy.\n{from} → {to}\n{date}, soat {time}\nJavob berish muddati: {answerDate}, soat {answerTime}.\n\nJavob berish uchun ilovani oching.",
   "booking.confirmed": "Joyingiz tasdiqlandi.\n{from} → {to}\n{date}, soat {time}\nMashina: {car}, davlat raqami {plate}.\n\nHaydovchi sizni bron qilgan joyingizdan olib ketadi.",
   "booking.declined": "Haydovchi soʻrovingizni qabul qila olmadi: {from} → {to}, {date}. Boshqa safarni toping.",

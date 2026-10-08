@@ -1,5 +1,5 @@
 import { BALANCES, NO_SHOW_REASON } from '@platform/contracts';
-import { chargedFor } from '../domain/ledger';
+import { chargedFor, returnedFor } from '../domain/ledger';
 import type { WalletDeps } from './ports';
 import { row } from './wallet';
 
@@ -14,7 +14,7 @@ export async function refundNoShow(
   bookingId: string,
 ): Promise<'ok' | 'nothing'> {
   const operations = await deps.wallet.operations(driverId);
-  if (operations.some((op) => op.bookingId === bookingId && op.kind !== 'commission')) return 'nothing';
+  if (returnedFor(operations, bookingId)) return 'nothing';
   const taken = chargedFor(operations, bookingId);
   const kind = 'admin_adjustment' as const;
   const rows = BALANCES.filter((balance) => taken[balance] > 0).map((balance) =>

@@ -25,10 +25,13 @@ describe('the main numbers (docs/29)', () => {
         trip('t2', NOW + 2 * HOUR, 'full'),
         trip('t3', NOW - HOUR, 'active'),
         trip('t4', NOW + HOUR, 'cancelled'),
+        trip('t5', NOW + HOUR, 'active'),
       ].join(', ')}`);
+    // «Yoʻlga chiqdim» before the time: on the road, not live (G63).
+    await db.exec(`UPDATE trips SET departed_at = ${NOW} WHERE id = 't5'`);
     const numbers = await d1Numbers(db).numbers(NOW - 24 * HOUR);
     expect(numbers.activeTrips).toBe(2);
-    expect(numbers.trips).toBe(4);
+    expect(numbers.trips).toBe(5);
     // Each count reads only its period, through an index (G56).
     await d1Numbers(db).arrivals(NOW - 24 * HOUR);
     expect(fullScans(db)).toEqual([]);

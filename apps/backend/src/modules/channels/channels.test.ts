@@ -1,7 +1,7 @@
 import type { Trip } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from '../notifications';
-import { closeDeparted, postTrip, refreshPosts, rememberPost } from './application/channels';
+import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import type { ChannelsDeps } from './application/ports';
 import { channelsOf } from './domain/route-channels';
 import { createMemoryChannelPosts } from './infrastructure/channel-posts';
@@ -130,5 +130,16 @@ describe('posting and editing through the queue (docs/15)', () => {
     expect(sent).toHaveLength(1);
     expect(sent[0]?.text.startsWith('<b>🚗 Safar boshlandi</b>')).toBe(true);
     expect(JSON.stringify(sent[0]?.markup)).not.toContain('startapp=trip_');
+  });
+
+  it('closes the posts at once when the driver pressed «Yoʻlga chiqdim» early (G63)', async () => {
+    const { deps, sent, change, later } = setup();
+    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
+    change({ departedAt: BEFORE });
+    await closePosts(deps, 'trip-1');
+    expect(sent[0]?.text.startsWith('<b>🚗 Safar boshlandi</b>')).toBe(true);
+    later(TRIP.departAt);
+    await closeDeparted(deps);
+    expect(sent).toHaveLength(1);
   });
 });

@@ -66,6 +66,8 @@ export const trip: Trip = {
   pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } },
   comment: 'Katta yuk olmayman',
   status: 'active',
+  departedAt: null,
+  arrivedAt: null,
 };
 
 const unused = async (): Promise<never> => {

@@ -1,4 +1,4 @@
-import type { Trip } from '@platform/contracts';
+import { onTheWay, type Trip } from '@platform/contracts';
 import { isLive, statusAt } from '../domain/trip';
 import type { TripsDeps } from './ports';
 import { views } from './views-of';
@@ -10,7 +10,7 @@ export async function familyView(deps: TripsDeps, id: string) {
   if (!trip) return undefined;
   const [driver, car] = [await deps.people.find(trip.driverId), trip.car];
   if (!driver || !car) return undefined;
-  const { driverId, from, to, departAt, km } = trip;
+  const { driverId, from, to, departAt, departedAt, arrivedAt, km } = trip;
   return {
     id,
     driverId,
@@ -20,6 +20,8 @@ export async function familyView(deps: TripsDeps, id: string) {
     from,
     to,
     departAt,
+    departedAt,
+    arrivedAt,
     km,
     status: statusAt(trip, deps.now()),
   };
@@ -32,8 +34,8 @@ export async function upcomingOf(deps: TripsDeps, driverIds: readonly number[]):
   const own = await Promise.all(
     driverIds.filter((id) => !hidden.has(id)).map((id) => deps.trips.byDriver(id)),
   );
-  // Only trips that have not left yet: a saved driver's trip on the road takes nobody (docs/65 B8).
-  const live = own.flat().filter((trip) => isLive(trip, now) && trip.departAt > now);
+  // Only trips that have not left yet: a saved driver's trip on the road takes nobody (docs/65 B8, G63).
+  const live = own.flat().filter((trip) => isLive(trip, now) && !onTheWay(trip, now));
   const shown = await views(deps, live);
   return shown.filter((trip) => trip.status === 'active').sort((a, b) => a.departAt - b.departAt);
 }

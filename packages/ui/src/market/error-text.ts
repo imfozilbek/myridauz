@@ -52,6 +52,12 @@ const EXPLAINED: readonly string[] = [
   'bookings.already_no_show',
   'network',
   'expired.description',
+  // G63, docs/140: «Yoʻlga chiqdim», «Yetib keldik» and a pitak way without a pitak.
+  'trips.too_early_to_depart',
+  'trips.already_departed',
+  'trips.not_departed',
+  'trips.already_arrived',
+  'trips.no_pitak',
 ];
 
 // Codes that mean the same for a person as an explained one.

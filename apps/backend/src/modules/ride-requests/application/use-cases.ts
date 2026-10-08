@@ -7,7 +7,7 @@ import {
   type Point,
   type RideRequestData,
 } from '@platform/contracts';
-import { placeMatches } from '../../../shared/places/place-match';
+import { placeMatches, regionIn } from '../../../shared/places/place-match';
 import {
   cancel,
   dateError,
@@ -37,8 +37,7 @@ const plain = ({ lat, lng }: Point) => ({ lat, lng });
 // The way of a request (docs/70): «Pitakdan» only where the direction has a pitak; a point at the
 // door unless only the pitak suits; the points in the districts of the route (docs/69).
 async function wayError(deps: RequestsDeps, input: RideRequestData) {
-  const places = await deps.places();
-  const regionOf = (id: string) => places.get(id)?.parentId ?? id;
+  const regionOf = regionIn(await deps.places());
   const pitak = await deps.pitakOf(regionOf(input.from), regionOf(input.to));
   if (input.pickupMode === 'pitak' && !pitak) return 'bookings.wrong_mode';
   if (input.pickupMode !== 'pitak' && !input.pickup) return 'bookings.wrong_mode';

@@ -29,10 +29,23 @@ export type TripRepository = {
   pricedBetween(from: number, to: number, limit: number): Promise<TripRecord[]>;
   // The Cron job: trips over by now become completed (docs/35).
   completeOver(now: number): Promise<void>;
+  // «Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35): one conditional write each, false when a
+  // cancel, the Cron or a second tap came first. The arrival takes the time of the trip as the
+  // departure when there was none.
+  depart(id: string, at: number): Promise<boolean>;
+  arrive(id: string, at: number): Promise<boolean>;
+  // The driver's cancel, also one conditional write: a «Yoʻlga chiqdim» that came first wins (G63).
+  cancel(id: string): Promise<boolean>;
+  // Live trips without «Yoʻlga chiqdim» whose time is in [from, to]: the Cron reminds and departs.
+  notDeparted(from: number, to: number): Promise<TripRecord[]>;
 };
 
-// retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104).
-export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper';
+// retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:
+// «Yoʻlga chiqdim» (G63).
+export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper' | 'departed';
+
+// Someone whose open Mini App refreshes its screens (docs/64).
+type Watcher = { readonly userId: number; readonly app: 'driver' | 'passenger' };
 
 // A confirmed booking holds seats and gives "ayol bor" when a woman rides (docs/06). G08.
 // Its points (docs/70) measure the extra way of a new passenger.
@@ -72,6 +85,8 @@ export type TripsDeps = {
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).
   readonly changed: (tripId: string, event: TripEvent) => Promise<void>;
+  // The driver moved the trip on: the open screens of the driver and the riders refresh (G63).
+  readonly signal: (people: readonly Watcher[]) => Promise<void>;
   // Phones and links hidden in the comment: every searcher reads it (docs/07).
   readonly mask: (text: string) => string;
   readonly newId: () => string;

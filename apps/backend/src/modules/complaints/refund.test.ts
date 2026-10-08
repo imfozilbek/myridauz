@@ -45,6 +45,20 @@ describe('the refund of a no-show: a moderator proposes, the owner confirms (doc
     expect(log.filter((line) => line.startsWith('refund'))).toHaveLength(1);
   });
 
+  it('a refund that failed waits for the owner again: a new tap gives the money once', async () => {
+    const { deps, log, id } = await proposed();
+    const broken = {
+      ...deps,
+      refund: async () => {
+        throw new Error('d1 down');
+      },
+    };
+    await expect(answerRefund(broken, BY_OWNER, id, 'confirm')).rejects.toThrow('d1 down');
+    expect((await deps.store.find(id))?.refund).toMatchObject({ state: 'proposed', decidedBy: null });
+    expect(await answerRefund(deps, BY_OWNER, id, 'confirm')).toBe('ok');
+    expect(log.filter((line) => line.startsWith('refund'))).toEqual([`refund ${DRIVER} b1`]);
+  });
+
   it('a rejected refund moves no money', async () => {
     const { deps, log, id } = await proposed();
     expect(await answerRefund(deps, BY_OWNER, id, 'reject')).toBe('ok');
@@ -83,5 +97,15 @@ describe('«Kelmadi» puts the case into the queue of the team (docs/124 В)', (
     expect(await noShowRefunds(deps, DRIVER, ['b1', 'b2'])).toEqual(new Map([['b1', 'proposed']]));
     await answerRefund(deps, BY_OWNER, id, 'confirm');
     expect(await noShowRefunds(deps, DRIVER, ['b1'])).toEqual(new Map([['b1', 'confirmed']]));
+  });
+
+  it('a case decided without a refund tells the driver no refund comes', async () => {
+    const { deps } = setup();
+    const filed = await fileComplaint(deps, DRIVER, input('b2'));
+    const id = typeof filed === 'string' ? '' : filed.id;
+    // Waiting for the team: no answer yet.
+    expect(await noShowRefunds(deps, DRIVER, ['b2'])).toEqual(new Map());
+    await decide(deps, BY_MODERATOR, id, { action: 'none', refund: false });
+    expect(await noShowRefunds(deps, DRIVER, ['b2'])).toEqual(new Map([['b2', 'rejected']]));
   });
 });

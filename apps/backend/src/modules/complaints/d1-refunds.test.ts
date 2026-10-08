@@ -50,10 +50,13 @@ describe('the refunds of no-shows in D1', () => {
       ...decided,
       refund: { ...proposal, state: 'confirmed' as const, decidedBy: 900, decidedAt: NOW + 2 },
     };
-    expect(await store.answerRefund(answer)).toBe(true);
-    expect(await store.answerRefund(answer)).toBe(false);
+    expect(await store.answerRefund(answer, 'proposed')).toBe(true);
+    expect(await store.answerRefund(answer, 'proposed')).toBe(false);
     expect(await store.find('c1')).toEqual(answer);
     expect(await store.refundsProposed()).toEqual([]);
+    // The money did not move: the answer goes back, the owner confirms again (G63).
+    expect(await store.answerRefund(decided, 'confirmed')).toBe(true);
+    expect(await store.refundsProposed()).toEqual([decided]);
     expect(fullScans(db)).toEqual([]);
   });
 });

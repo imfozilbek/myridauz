@@ -3,7 +3,8 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { markMeeting } from '../application/meeting';
 import type { BookingsDeps } from '../application/ports';
-import { failWith, ONE } from './fail';
+import { ONE } from '../../../shared/routes/one-id';
+import { failWith } from './fail';
 
 const STATUS = {
   'bookings.not_found': 404,

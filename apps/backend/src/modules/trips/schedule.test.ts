@@ -4,10 +4,11 @@ import { driverSchedule } from './application/schedule';
 import { HOUR, NOW, setup } from './test-kit';
 
 // G38 (owner decisions 03.10.2026, docs/103). In the kit a trip is 300 km, 5 hours on the road, so
-// gathering its people takes 2.5 hours; every other place is 5 hours away.
+// gathering its people takes 2.5 hours; every other place is 5 hours away. These directions have
+// no pitak: their trips take people at the door (docs/70).
 const DAY = 24 * HOUR;
-const BACK = { from: '1718401', to: '1726273' };
-const ELSEWHERE = { from: '1718233', to: '1726294' };
+const BACK = { from: '1718401', to: '1726273', pickupMode: 'door' } as const;
+const ELSEWHERE = { from: '1718233', to: '1726294', pickupMode: 'door' } as const;
 
 describe('when a driver may leave (docs/103)', () => {
   it('leaves an hour after the trip is made at the earliest', async () => {

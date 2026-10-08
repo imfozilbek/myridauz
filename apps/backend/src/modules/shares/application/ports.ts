@@ -26,6 +26,9 @@ export type DriverTrip = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63): the family reads them at once.
+  readonly departedAt: number | null;
+  readonly arrivedAt: number | null;
   readonly km: number;
   readonly status: Trip['status'];
 };
