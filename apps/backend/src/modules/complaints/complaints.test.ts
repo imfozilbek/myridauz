@@ -49,7 +49,7 @@ describe('complaints (docs/17)', () => {
     expect((await openComplaint(deps, id))?.status).toBe('in_review');
   });
 
-  it('blocks by the decision, cancels live trips and bookings, tells both, gives the commission back', async () => {
+  it('blocks by the decision, cancels live trips and bookings, tells both, proposes the refund', async () => {
     const { deps, log } = setup();
     const filed = await fileComplaint(deps, DRIVER, input('b1'));
     const id = typeof filed === 'string' ? '' : filed.id;
@@ -58,7 +58,6 @@ describe('complaints (docs/17)', () => {
       'block 101 7',
       'cancel 101',
       `blocked 101 passenger ${NOW + 7 * DAY_MS}`,
-      `refund ${DRIVER} 9000`,
       `resolved ${DRIVER}`,
     ]);
     expect((await deps.store.find(id))?.decision).toBe('block:7:refund');
@@ -70,7 +69,7 @@ describe('complaints (docs/17)', () => {
       action: 'warning',
       refund: true,
     });
-    expect(log.slice(5)).toEqual([`warning ${DRIVER} driver`, 'resolved 102']);
+    expect(log.slice(4)).toEqual([`warning ${DRIVER} driver`, 'resolved 102']);
   });
 
   it('decides a complaint once when two moderators tap at the same moment (docs/65 A4)', async () => {
@@ -79,6 +78,6 @@ describe('complaints (docs/17)', () => {
     const id = typeof filed === 'string' ? '' : filed.id;
     const twice = () => decide(deps, BY_MODERATOR, id, { action: 'block', days: 7, refund: true });
     expect((await Promise.all([twice(), twice()])).sort()).toEqual(['complaints.wrong_status', 'ok']);
-    expect(log.filter((line) => /^(refund|block )/.test(line))).toHaveLength(2);
+    expect(log.filter((line) => /^block /.test(line))).toHaveLength(1);
   });
 });

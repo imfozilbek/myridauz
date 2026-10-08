@@ -27,6 +27,7 @@ import type { BookingsDeps } from './application/ports';
 import { d1Offers } from './infrastructure/d1-offers';
 import { createMemoryOffers } from './infrastructure/memory-bookings';
 import { bookingStore } from './infrastructure/store';
+import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 
 const localOffers = createMemoryOffers();
@@ -86,6 +87,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   ),
   places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
   pitak: (id) => pitakById(env, id),
+  meeting: meetingPorts(env),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

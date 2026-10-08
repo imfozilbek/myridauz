@@ -1,9 +1,6 @@
 import type { ApiClients } from './context/api-clients';
+import { NOT_USED } from './test-not-used';
 
-// Test helper: API clients where every call fails unless a test gives its own.
-const NOT_USED = async (): Promise<never> => {
-  throw new Error('test.client_not_used');
-};
 // Tests of the driver and the team screens replace only the calls they need.
 export const testClients = (overrides: {
   readonly drivers?: Partial<ApiClients['drivers']>;
@@ -81,6 +78,7 @@ export const testClients = (overrides: {
     cancelMine: NOT_USED,
     driverBookings: NOT_USED,
     answer: NOT_USED,
+    meet: NOT_USED,
     tripBookings: NOT_USED,
     sendOffer: NOT_USED,
     // No offer sent yet: the requests of a day ask for them (G41, docs/90 F-D1).
@@ -121,6 +119,7 @@ export const testClients = (overrides: {
     complaint: NOT_USED,
     chat: NOT_USED,
     decide: NOT_USED,
+    answerRefund: NOT_USED,
     ...overrides.feedback,
   },
   stats: { get: NOT_USED, ...overrides.stats },

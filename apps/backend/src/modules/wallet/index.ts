@@ -1,10 +1,12 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
+import { sendSignals } from '../feed';
 import { peopleOf } from '../users';
 import type { WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
-import { adjust, burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { refundNoShow as refundOnce } from './application/no-show-refund';
+import { burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
@@ -12,10 +14,16 @@ import { createMemoryWallet } from './infrastructure/memory-wallet';
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
 
+// The first names of the passengers of bookings (G63): set by the app (module-events.ts).
+type Names = (env: Bindings, bookingIds: readonly string[]) => Promise<ReadonlyMap<string, string>>;
+let passengerNames: Names = async () => new Map();
+export const wireWalletNames = (names: Names) => void (passengerNames = names);
+
 const walletDeps = (env: Bindings): WalletDeps => ({
   wallet: env.DB ? d1Wallet(env.DB) : localWallet,
   promo: loadBrand(env.BRAND).promo,
   people: peopleOf(env),
+  passengers: (bookingIds) => passengerNames(env, bookingIds),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });
@@ -35,14 +43,13 @@ export const burnBonuses = (env: Bindings) => burnExpired(walletDeps(env));
 export const missedWelcome = (env: Bindings, approved: readonly number[]) =>
   grantMissedWelcome(walletDeps(env), approved);
 
-// A no-show on a complaint: the moderator gives the commission back by hand (admin_adjustment, docs/35).
-export const refundNoShow = (
-  env: Bindings,
-  moderatorId: number,
-  driverId: number,
-  amount: number,
-  reason: string,
-) => adjust(walletDeps(env), moderatorId, driverId, { balance: 'main', amount, reason });
+// A no-show on a complaint: the owner confirmed the refund the moderator proposed (docs/35, G63).
+// The open «Hamyon» of the driver shows it at once (docs/64).
+export async function refundNoShow(env: Bindings, ownerId: number, driverId: number, bookingId: string) {
+  const result = await refundOnce(walletDeps(env), ownerId, driverId, bookingId);
+  if (result === 'ok') await sendSignals(env, [{ userId: driverId, app: 'driver' }]);
+  return result;
+}
 
 // A deleted account: both balances go to zero (docs/65 A5).
 export const closeWalletOf = (env: Bindings, driverId: number) => closeWallet(walletDeps(env), driverId);

@@ -1,9 +1,10 @@
 import { placeNameSchema, type BookingMode, type BookingStatus, type Point } from '@platform/contracts';
 import { z } from 'zod';
 import type { BookingRecord, Named } from '../domain/booking';
+import { MARK_COLUMNS, markValues, marksOf, type MarkRow } from './mark-row';
 
-// A row of the table bookings (migrations 0008, 0009, 0024, 0043) and back.
-export type BookingRow = {
+// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047) and back.
+export type BookingRow = MarkRow & {
   id: string;
   trip_id: string;
   passenger_id: number;
@@ -69,6 +70,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
   cameAt: row.came_at,
+  ...marksOf(row),
   createdAt: row.created_at,
   updatedAt: row.updated_at,
 });
@@ -113,6 +115,7 @@ export const rowValues = (b: BookingRecord) =>
     b.boardedAt,
     b.arrivedAt,
     b.cameAt,
+    ...markValues(b),
     b.createdAt,
     b.updatedAt,
   ] as const;
@@ -134,6 +137,7 @@ export const ROW_COLUMNS = [
   'boarded_at',
   'arrived_at',
   'came_at',
+  ...MARK_COLUMNS,
   'created_at',
   'updated_at',
 ] as const;

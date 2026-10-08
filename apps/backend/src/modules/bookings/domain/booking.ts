@@ -37,9 +37,16 @@ export type BookingRecord = {
   readonly boardedAt: number | null;
   readonly arrivedAt: number | null;
   readonly cameAt: number | null;
+  // The driver at the point (docs/126, G63): «Men keldim», «Keldi», «Kelmadi»; never cleared.
+  readonly driverCameAt: number | null;
+  readonly metAt: number | null;
+  readonly noShowAt: number | null;
   readonly createdAt: number;
   readonly updatedAt: number;
 };
+
+// A new booking: the driver has marked nothing at the point yet (G63).
+export const NO_MARKS = { driverCameAt: null, metAt: null, noShowAt: null } as const;
 
 const HOUR_MS = 60 * 60 * 1000;
 // An answer is waited for 24 hours, but never after the departure (docs/35).

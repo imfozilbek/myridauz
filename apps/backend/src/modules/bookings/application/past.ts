@@ -1,3 +1,4 @@
+import { showedUp } from '../domain/meeting';
 import type { BookingsDeps, TripFacts } from './ports';
 
 // A ride that is over: "Safarlar tarixi" of the profile (G18, docs/18).
@@ -24,7 +25,10 @@ export async function pastRides(
     side === 'passenger'
       ? await deps.bookings.byPassenger(userId)
       : await deps.bookings.byTrips(await deps.trips.ofDriver(userId));
-  const rode = bookings.filter((booking) => booking.status === 'confirmed' || booking.status === 'completed');
+  // A passenger who did not come rode nothing (docs/129, G63).
+  const rode = bookings.filter(
+    (booking) => (booking.status === 'confirmed' || booking.status === 'completed') && showedUp(booking),
+  );
   const trips = new Map<string, Promise<TripFacts | undefined>>();
   const tripOf = (id: string) => trips.get(id) ?? trips.set(id, deps.trips.find(id)).get(id);
   const rides = await Promise.all(

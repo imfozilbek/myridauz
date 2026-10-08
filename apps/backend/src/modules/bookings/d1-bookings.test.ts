@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { testD1 } from '../../test-d1';
-import { withoutPoints, type BookingRecord } from './domain/booking';
+import { NO_MARKS, withoutPoints, type BookingRecord } from './domain/booking';
 import { d1Bookings } from './infrastructure/d1-bookings';
 
 // The SQL of the bookings on SQLite with the real migrations (G24, docs/69).
@@ -40,6 +40,7 @@ const record = (over: Partial<BookingRecord> = {}): BookingRecord => ({
   boardedAt: null,
   arrivedAt: null,
   cameAt: null,
+  ...NO_MARKS,
   createdAt: NOW,
   updatedAt: NOW,
   ...over,
@@ -63,6 +64,18 @@ describe('bookings in D1 (G24)', () => {
     const confirmed = record({ status: 'confirmed', confirmedAt: NOW + 7, updatedAt: NOW + 7 });
     expect(await bookings.confirmWithin(confirmed, 3)).toBe(true);
     expect((await bookings.find('b1'))?.confirmedAt).toBe(NOW + 7);
+  });
+
+  it('keeps the marks of the driver; a later save of an older copy never clears one (G63)', async () => {
+    const bookings = d1Bookings(db);
+    const confirmed = record({ status: 'confirmed' });
+    await bookings.save(confirmed);
+    const marked = { ...confirmed, driverCameAt: NOW + 1, metAt: NOW + 2, noShowAt: NOW + 3 };
+    await bookings.save(marked);
+    expect(await bookings.find('b1')).toEqual(marked);
+    // The passenger taps «Men keldim» on the copy read before the driver's marks.
+    await bookings.save({ ...confirmed, cameAt: NOW + 4 });
+    expect(await bookings.find('b1')).toEqual({ ...marked, cameAt: NOW + 4 });
   });
 
   it('erases the points with the status in one step, and by id, person and age', async () => {

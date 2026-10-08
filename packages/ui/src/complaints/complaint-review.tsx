@@ -25,6 +25,7 @@ import { haptic } from '../telegram/feedback';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { DecisionSection } from './decision-section';
+import { RefundSection } from './refund-section';
 
 const PHOTO_SIZE = 48;
 // A system line comes as its event (docs/35): the moderator reads it in words.
@@ -130,10 +131,13 @@ function Review({ complaint, onBack, onDecided }: ReviewProps & { readonly compl
             ))
           )}
         </Section>
-        <DecisionSection
-          noShow={complaint.reason === 'no_show'}
-          onDecide={(decision) => void decide(decision)}
-        />
+        <RefundSection complaint={complaint} onDone={onDecided} />
+        {complaint.status === 'resolved' ? null : (
+          <DecisionSection
+            noShow={complaint.reason === 'no_show'}
+            onDecide={(decision) => void decide(decision)}
+          />
+        )}
         <ActionFailure error={failure} />
       </List>
     </div>

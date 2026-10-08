@@ -1,4 +1,5 @@
 import type { BookingRecord } from '../domain/booking';
+import { showedUp } from '../domain/meeting';
 import type { BookingsDeps } from './ports';
 
 // A ride: a confirmed booking of a trip. Ratings and complaints are about rides (docs/17, docs/24).
@@ -23,6 +24,12 @@ export const chatKeyOf = (booking: BookingRecord) =>
 export async function rideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
   const booking = await deps.bookings.find(bookingId);
   return booking && rode(booking) ? asRide(deps, booking) : undefined;
+}
+
+// A ride to rate: a passenger who did not come is not rated and rates nothing (docs/129, G63).
+export async function ratableRideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
+  const booking = await deps.bookings.find(bookingId);
+  return booking && rode(booking) && showedUp(booking) ? asRide(deps, booking) : undefined;
 }
 
 // The ride of a filed complaint stays after a later cancel: the team still decides it (docs/65 A5).
@@ -60,13 +67,24 @@ type EndedTrip = {
 };
 export async function ridesOf(deps: BookingsDeps, trips: readonly EndedTrip[]): Promise<Ride[]> {
   const byId = new Map(trips.map((trip) => [trip.id, trip]));
-  return (await deps.bookings.byTrips([...byId.keys()])).filter(rode).flatMap((booking) => {
-    const trip = byId.get(booking.tripId);
-    if (!trip) return [];
-    const { driverId, departAt, endsAt } = trip;
-    const ride = { bookingId: booking.id, tripId: trip.id, driverId, passengerId: booking.passengerId };
-    return [
-      { ...ride, departAt, endsAt, over: true, commission: booking.commission, chatKey: chatKeyOf(booking) },
-    ];
-  });
+  // A passenger who did not come rode nothing: no rating asks (docs/129, G63).
+  const booked = await deps.bookings.byTrips([...byId.keys()]);
+  return booked
+    .filter((booking) => rode(booking) && showedUp(booking))
+    .flatMap((booking) => {
+      const trip = byId.get(booking.tripId);
+      if (!trip) return [];
+      const { driverId, departAt, endsAt } = trip;
+      const ride = { bookingId: booking.id, tripId: trip.id, driverId, passengerId: booking.passengerId };
+      return [
+        {
+          ...ride,
+          departAt,
+          endsAt,
+          over: true,
+          commission: booking.commission,
+          chatKey: chatKeyOf(booking),
+        },
+      ];
+    });
 }

@@ -25,6 +25,11 @@ export type ComplaintStore = {
   against(userIds: readonly number[], since: number): Promise<ComplaintRecord[]>;
   countAgainst(userId: number): Promise<number>;
   logChatRead(complaintId: string, moderatorId: number, at: number): Promise<void>;
+  // The refunds of no-shows (docs/35, G63): the ones waiting for the owner, the complaints of an
+  // author about these rides, and the owner's answer, written only while the refund is proposed.
+  refundsProposed(): Promise<ComplaintRecord[]>;
+  ofAuthorRides(authorId: number, bookingIds: readonly string[]): Promise<ComplaintRecord[]>;
+  answerRefund(complaint: ComplaintRecord): Promise<boolean>;
 };
 
 // What people get from the bots (docs/17): the author never learns the decision itself.
@@ -69,12 +74,8 @@ export type ComplaintsDeps = {
   readonly chat: (key: string) => Promise<HistoryLine[]>;
   readonly forgetChat: (key: string) => Promise<void>;
   readonly cancelAll: (userId: number) => Promise<void>;
-  readonly refund: (
-    moderatorId: number,
-    driverId: number,
-    amount: number,
-    reason: string,
-  ) => Promise<unknown>;
+  // The owner confirmed: the commission of the booking goes back once (docs/35).
+  readonly refund: (ownerId: number, driverId: number, bookingId: string) => Promise<'ok' | 'nothing'>;
   readonly tell: ComplaintTeller;
   readonly now: () => number;
   readonly newId: () => string;

@@ -3,6 +3,7 @@ import {
   adminComplaintChatPath,
   adminComplaintDecisionPath,
   adminComplaintPath,
+  adminComplaintRefundPath,
   COMPLAINTS_PATH,
   complaintChatSchema,
   complaintQueueSchema,
@@ -16,6 +17,7 @@ import {
   type Complaint,
   type ComplaintDecision,
   type ComplaintInput,
+  type RefundAnswer,
   type ReviewInput,
   type ReviewTarget,
   type UserReviews,
@@ -41,6 +43,9 @@ export function createFeedbackClient(options: SignedOptions) {
       complaintChatSchema.parse(await (await post(adminComplaintChatPath(id), {})).json()).lines,
     decide: async (id: string, decision: ComplaintDecision): Promise<void> =>
       void (await post(adminComplaintDecisionPath(id), decision)),
+    // Only the owner confirms or rejects the refund of a no-show (docs/35, G63).
+    answerRefund: async (id: string, answer: RefundAnswer): Promise<void> =>
+      void (await post(adminComplaintRefundPath(id, answer), {})),
   };
 }
 

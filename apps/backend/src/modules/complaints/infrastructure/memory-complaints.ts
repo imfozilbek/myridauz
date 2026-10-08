@@ -24,5 +24,13 @@ export function createMemoryComplaints(): ComplaintStore & { readonly reads: Cha
       all().filter((known) => ids.includes(known.againstId) && known.createdAt >= since),
     countAgainst: async (userId) => all().filter((known) => known.againstId === userId).length,
     logChatRead: async (complaintId, moderatorId, at) => void reads.push({ complaintId, moderatorId, at }),
+    refundsProposed: async () => all().filter((known) => known.refund?.state === 'proposed'),
+    ofAuthorRides: async (authorId, bookingIds) =>
+      all().filter((known) => known.authorId === authorId && bookingIds.includes(known.bookingId)),
+    answerRefund: async (complaint) => {
+      if (complaints.get(complaint.id)?.refund?.state !== 'proposed') return false;
+      complaints.set(complaint.id, complaint);
+      return true;
+    },
   };
 }

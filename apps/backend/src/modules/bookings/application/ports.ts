@@ -15,6 +15,7 @@ import type {
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
+import type { MeetingPorts } from './meeting-ports';
 import type { RequestFacts } from './request-facts';
 
 // Ports of the bookings module: D1 in production, memory in tests.
@@ -109,6 +110,8 @@ export type BookingsDeps = {
   };
   // The pitak a booking fixed, even if the team closed it later (docs/72).
   readonly pitak: (id: string) => Promise<Pitak | null>;
+  // «Kelmadi» and its refund go through the complaints; the live screens (G63).
+  readonly meeting: MeetingPorts;
   readonly now: () => number;
   readonly newId: () => string;
 };
@@ -124,9 +127,11 @@ export type BookingNotifier = {
   // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
   offered(passengerId: number, offer: Offer): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
-  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126).
+  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)
+  // and of the driver for the passenger (G63).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
   came(booking: Booking): Promise<void>;
+  driverCame(booking: Booking): Promise<void>;
   // The driver moved the time or lowered the price (G39, docs/104).
   tripRetimed(booking: Booking): Promise<void>;
 };

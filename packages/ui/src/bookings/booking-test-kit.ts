@@ -26,6 +26,10 @@ export const booking: Booking = {
   boardedAt: null,
   arrivedAt: null,
   cameAt: null,
+  driverCameAt: null,
+  metAt: null,
+  noShowAt: null,
+  refund: null,
 };
 
 // The morning of the trip in Toshkent: «Mashinaga chiqdim» is there only on its day (docs/89 P7).

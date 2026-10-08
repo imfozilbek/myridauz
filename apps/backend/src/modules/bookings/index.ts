@@ -10,16 +10,19 @@ import { chatBooking, chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
-import { filedRideOf, rideOf, ridesOf } from './application/rides';
+import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
+import { showedUp } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
+import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
 import { bookingStore } from './infrastructure/store';
 
 export const bookingsModule = new Hono<AppEnv>()
   .route('/', bookingRoutes(bookingsDeps))
-  .route('/', offerRoutes(bookingsDeps));
+  .route('/', offerRoutes(bookingsDeps))
+  .route('/', meetingRoutes(bookingsDeps));
 
 // The driver cancelled a trip: its requests are declined and its bookings cancelled "by the driver",
 // the commissions go back to the wallet (docs/12, docs/35). Runs around the trips route, like the avatar watch.
@@ -67,17 +70,32 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);
 export const filedRideOfBooking = (env: Bindings, bookingId: string) =>
   filedRideOf(bookingsDeps(env), bookingId);
+export const ratableRideOfBooking = (env: Bindings, bookingId: string) =>
+  ratableRideOf(bookingsDeps(env), bookingId);
 export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]) =>
   ridesOf(bookingsDeps(env), trips);
 
 // A blocked person: live trips and open bookings are cancelled (docs/17, G11).
 export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(bookingsDeps(env), userId);
 
-// The history of a passenger for a moderator: how many rides they took (docs/17).
+// The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
 export const passengerRideCount = async (env: Bindings, passengerId: number) =>
   (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(
-    (booking) => booking.status === 'confirmed' || booking.status === 'completed',
+    (booking) => (booking.status === 'confirmed' || booking.status === 'completed') && showedUp(booking),
   ).length;
+
+// «Hamyon» names the passenger of a no-show refund (G63): the first name of each booking.
+export const passengerNamesOf = async (env: Bindings, bookingIds: readonly string[]) => {
+  const deps = bookingsDeps(env);
+  const named = await Promise.all(
+    bookingIds.map(async (id) => {
+      const booking = await deps.bookings.find(id);
+      const person = booking && (await deps.people.find(booking.passengerId));
+      return person ? [[id, person.firstName] as const] : [];
+    }),
+  );
+  return new Map(named.flat());
+};
 
 // "Safarlar tarixi" (G18): the rides of a person that are over.
 export const pastRidesOf = (env: Bindings, userId: number, side: 'passenger' | 'driver') =>

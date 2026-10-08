@@ -140,6 +140,7 @@
   "face.rejected": "Yuz rasmingiz tekshiruvdan oʻtmadi.\nSababi: {reason}.\nYuzingiz aniq koʻrinadigan yangi rasm qoʻying.",
   "face.change": "Rasmni almashtirish",
   "booking.came": "{name} uchrashuv joyiga keldi.\n{from} → {to}, soat {time}.",
+  "booking.driverCame": "Haydovchi uchrashuv joyiga keldi.\n{from} → {to}, soat {time}.",
   "driver.channel": "«{zone}» kanalida safarlaringiz chiqadi, yoʻlovchilar u yerdan topadi: t.me/{username}",
   "driver.join": "Kanalga oʻtish",
   "driver.publish": "Safar eʼlon qilish"
