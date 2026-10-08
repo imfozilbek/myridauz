@@ -32,6 +32,8 @@ describe('the pieces of the stand (G71)', () => {
     expect(pickFiles(['--area', 'requests']).files).toEqual([
       'e2e/stand/passenger-requests.spec.ts',
       'e2e/stand/requests-review.spec.ts',
+      'e2e/stand/g64.spec.ts',
+      'e2e/stand/g64-salon.spec.ts',
     ]);
     const two = pickFiles(['--area', 'bots,channels']);
     expect(two.areas).toEqual(['bots', 'channels']);
