@@ -1,0 +1,118 @@
+/* «Uchrashuv» of the driver (G63, mockup g63/4 screen 13): the values of the mockup at 360 px. */
+.meet {
+  display: flex;
+  flex-direction: column;
+  gap: 10.4px;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 10.4px 15px 16px;
+  box-sizing: border-box;
+  color: var(--reg-ink);
+}
+
+.meet-came {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42.4px;
+  margin: 0;
+  padding: 0 13px;
+  border-radius: 13px;
+  background: var(--reg-ink);
+  color: var(--reg-card);
+  font-size: 16px;
+}
+
+.meet-came svg {
+  flex: none;
+  color: var(--reg-from);
+}
+
+.meet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 13px;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background: var(--reg-card);
+}
+
+.meet-card-now {
+  border-color: var(--reg-strong);
+}
+
+.meet-chip {
+  align-self: flex-start;
+  padding: 0 9px;
+  border-radius: 8px;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+  font-size: 13.7px;
+  font-weight: 700;
+  line-height: 23px;
+}
+
+.meet-map {
+  position: relative;
+}
+
+.meet-map .meeting-map-box {
+  height: 163px;
+}
+
+.meet-map-open {
+  position: absolute;
+  right: 9.6px;
+  bottom: 8.6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 25px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.meet-map-open svg {
+  color: var(--reg-strong);
+}
+
+.meet-place {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2px;
+  font-size: 14.7px;
+  line-height: 18px;
+  color: var(--reg-muted);
+}
+
+.meet-place b {
+  font-size: 17.5px;
+  line-height: 22px;
+  color: var(--reg-ink);
+}
+
+.meet-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 3px 0 2px;
+  font-size: 16.3px;
+}
+
+.meet-who .profile-empty {
+  flex: none;
+  background: var(--reg-bg);
+}
+
+/* The person icon of a face without a photo is smaller here (mockup g63/4 screen 13). */
+.meet-who .profile-empty svg {
+  width: 26px;
+  height: 26px;
+}

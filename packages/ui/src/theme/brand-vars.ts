@@ -10,6 +10,7 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-text': colors.brandText,
     '--reg-soft': colors.brandSoft,
     '--reg-mint': colors.brandMint,
+    '--reg-deep': colors.brandDeep,
     '--reg-ink': colors.text,
     '--reg-muted': colors.textMuted,
     '--reg-bg': colors.bgGrouped,
@@ -22,10 +23,13 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-accent-soft': colors.accentSoft,
     '--reg-star': colors.accent,
     '--reg-face': colors.neutralFace,
+    '--reg-face-soft': colors.neutralSoft,
     '--reg-face-text': colors.neutralText,
     '--reg-off': colors.disabled,
     '--reg-success': colors.success,
     '--reg-success-soft': colors.successSoft,
     '--reg-attention': colors.attention,
     '--reg-attention-soft': colors.attentionSoft,
+    // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
+    '--reg-danger-text': colors.dangerText,
   }) as CSSProperties;

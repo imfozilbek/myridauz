@@ -1,4 +1,5 @@
 import { FAR_EXTRA_KM, type Booking } from '@platform/contracts';
+import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, Section } from '../components';
@@ -15,11 +16,13 @@ type Props = {
   readonly onOpen?: (booking: Booking) => void;
   // «Safar xaritasi» of the driver, once a passenger is confirmed (G24).
   readonly onMap?: () => void;
+  // The line under a passenger of the own trip: «Kelmadi» until the trip closes (G63, docs/129).
+  readonly line?: (booking: Booking, usual: string) => ReactNode;
 };
 
 // The bookings of one trip for its driver or the team: who, how many seats, the status. The
 // requests come first, by the extra way to the passengers already taken (G24, docs/70).
-export function TripBookings({ bookings, onOpen, onMap }: Props) {
+export function TripBookings({ bookings, onOpen, onMap, line }: Props) {
   const { t } = useI18n();
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const fits = requested.filter((booking) => (booking.extraKm ?? 0) <= FAR_EXTRA_KM);
@@ -28,6 +31,7 @@ export function TripBookings({ bookings, onOpen, onMap }: Props) {
   const row = (booking: Booking) => {
     const status = t(`bookings.status.${booking.status}`);
     const extra = booking.extraKm ? t('way.driver.extra', { km: String(booking.extraKm) }) : null;
+    const usual = extra ? `${status} · ${extra}` : status;
     return (
       <Cell
         key={booking.id}
@@ -40,7 +44,7 @@ export function TripBookings({ bookings, onOpen, onMap }: Props) {
             size={PHOTO_SIZE}
           />
         }
-        subtitle={extra ? `${status} · ${extra}` : status}
+        subtitle={line ? line(booking, usual) : usual}
         after={<CellValue>{t('market.request.seats', { count: String(booking.seats) })}</CellValue>}
       >
         {booking.passenger.firstName}

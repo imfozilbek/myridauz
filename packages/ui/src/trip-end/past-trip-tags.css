@@ -1,0 +1,29 @@
+/* The tags of a past trip in «Oʻtgan» of the driver (G63, mockup g63/5 phone 4) at 360 px. */
+.past-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.past-tag {
+  padding: 0 7px;
+  border-radius: 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 18.4px;
+}
+
+.past-tag-due {
+  background: var(--reg-strong, var(--tgui--button_color));
+  color: var(--reg-card, var(--tgui--button_text_color));
+}
+
+.past-tag-plain {
+  background: var(--reg-face-soft, var(--tgui--secondary_bg_color));
+  color: var(--reg-face-text, var(--tgui--text_color));
+}
+
+.past-tag-done {
+  background: var(--reg-success-soft, var(--tgui--secondary_bg_color));
+  color: var(--reg-success, var(--tgui--link_color));
+}

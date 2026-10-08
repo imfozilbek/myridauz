@@ -5,6 +5,7 @@ import {
   CircleDot,
   House,
   LocateFixed,
+  MapIcon,
   MapPin,
   Navigation,
   Signpost,
@@ -23,6 +24,8 @@ export const WAY_ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
+  // «Xaritada ochish» on the small map of a meeting point (docs/126, G63).
+  map: MapIcon,
   // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon.
   door: House,
   pitak: Signpost,

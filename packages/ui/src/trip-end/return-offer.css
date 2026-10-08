@@ -1,0 +1,92 @@
+/* «Qaytish» of the driver (G63, mockup g63/4 screen 16): the values of the mockup at 360 px. */
+.trip-back {
+  padding-top: 14px;
+}
+
+.trip-back-title {
+  margin: 0 0 0 1px;
+  font-size: 21px;
+  line-height: 24px;
+}
+
+.trip-back-day {
+  margin: 6px 0 9px 1px;
+  font-size: 14.5px;
+  line-height: 17px;
+  color: var(--reg-muted);
+}
+
+/* The big line of the way: amber rings and a line from the start to below the end. */
+.trip-back .safar-card.route-line {
+  position: relative;
+  margin: 0 0 10px;
+  padding: 24.5px 18.4px 23px;
+  border-radius: 16px;
+}
+
+.trip-back .route-line::before {
+  content: '';
+  position: absolute;
+  left: 26.4px;
+  top: 50.4px;
+  bottom: 28.8px;
+  width: 3.2px;
+  background: var(--reg-strong);
+}
+
+.trip-back .route-line-dot {
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  margin-top: 6px;
+  border: 3px solid var(--reg-strong);
+  background: var(--reg-card);
+}
+
+.trip-back .route-line-from .route-line-dot::after {
+  display: none;
+}
+
+.trip-back .route-line-to .route-line-dot {
+  border-color: var(--reg-to);
+}
+
+.trip-back .route-line-name,
+.trip-back .route-line-time {
+  font-size: 17.5px;
+  line-height: 24px;
+}
+
+.trip-back .route-line-time {
+  font-size: 17px;
+  color: var(--reg-muted);
+}
+
+.trip-back .route-line-approx {
+  font-weight: 700;
+}
+
+.trip-back .route-line-region {
+  font-size: 14.2px;
+  line-height: 20px;
+}
+
+.trip-back .route-line-way {
+  gap: 6px;
+  padding: 15px 0 16px 31.4px;
+  font-size: 14.3px;
+}
+
+.trip-back-requests {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 11.5px 13.6px 13.6px;
+  font-size: 14.7px;
+  line-height: 17.6px;
+  color: var(--reg-face-text);
+}
+
+.trip-back-requests b {
+  color: var(--reg-text);
+}

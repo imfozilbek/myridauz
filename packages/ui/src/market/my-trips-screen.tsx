@@ -7,6 +7,7 @@ import { DriverTripMap } from '../bookings/driver-trip-map';
 import { ChatScreen } from '../chat/chat-screen';
 import { DriverShare } from '../comfort/driver-share';
 import { TripBookings } from '../bookings/trip-bookings';
+import { OwnTripSeam } from '../meeting/own-trip-seam';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -101,17 +102,24 @@ function MyTrips({ onBack, link }: ScreenProps) {
     const ahead = (trip.status === 'active' || trip.status === 'full') && trip.departAt > Date.now();
     const ofTrip = value[1].filter((item) => item.trip.id === trip.id);
     if (mapOpen) return <DriverTripMap bookings={ofTrip} onBack={() => setMapOpen(false)} />;
+    // The meeting and the end of the trip (G63 C3): the lead moves them into «Mening safarim» of C2.
     return (
-      <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)} own>
-        <ActionFailure error={failure} />
-        {ahead ? <TripChangeCells trip={trip} onChange={setChange} /> : null}
-        <TripBookings
-          bookings={ofTrip}
-          onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
-          onMap={() => setMapOpen(true)}
-        />
-        <DriverShare trip={trip} />
-      </TripScreen>
+      <OwnTripSeam trip={trip} bookings={ofTrip} onBack={back} onChanged={reload}>
+        {(seam) => (
+          <TripScreen trip={trip} onBack={back} onCancel={() => void cancel(trip)} own>
+            {seam.top}
+            <ActionFailure error={failure} />
+            {ahead ? <TripChangeCells trip={trip} onChange={setChange} /> : null}
+            <TripBookings
+              bookings={ofTrip}
+              line={seam.line}
+              onOpen={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
+              onMap={() => setMapOpen(true)}
+            />
+            <DriverShare trip={trip} />
+          </TripScreen>
+        )}
+      </OwnTripSeam>
     );
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
@@ -120,6 +128,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
   return (
     <MyTripsList
       trips={trips}
+      booked={booked}
       waiting={(item) => waitingRequests(item, booked)}
       offers={offers}
       onBack={onBack}
