@@ -1,0 +1,34 @@
+/* A chip of one choice (G62 the model of the car, G63 the way of pickup): the values of their
+   approved mockups (lesson 141); only the colors come from the brand. */
+.choice-chip {
+  border: 1px solid var(--reg-divider);
+  background: var(--reg-card);
+  font: inherit;
+  color: var(--reg-ink);
+  cursor: pointer;
+}
+
+.choice-chip[aria-checked='true'],
+.choice-chip[aria-pressed='true'] {
+  border-color: var(--reg-strong);
+  background: var(--reg-soft);
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+/* The model of the car (mockup g62/1, screen 2). */
+.choice-chip-md {
+  height: 31px;
+  padding: 0 13px;
+  border-radius: 16px;
+  font-size: 13px;
+}
+
+/* The way of pickup in its row (mockup g63/2). */
+.choice-chip-sm {
+  height: 22px;
+  padding: 0 8px;
+  border-color: var(--reg-off);
+  border-radius: 11px;
+  font-size: 12px;
+}

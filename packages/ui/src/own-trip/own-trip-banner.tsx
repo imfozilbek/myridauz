@@ -24,7 +24,7 @@ export function OwnTripBanner({ trip, stage, riders, now }: Props) {
   const place = directory.find(trip.to)?.name ?? trip.to;
   const [title, line] =
     stage === 'published'
-      ? [t('market.published.title'), t('driverTrip.published.sub')]
+      ? [t('driverTrip.published.title'), t('driverTrip.published.sub')]
       : stage === 'soon'
         ? [
             t('driverTrip.soon.title', { minutes: String(minutesLeft(trip, now)) }),

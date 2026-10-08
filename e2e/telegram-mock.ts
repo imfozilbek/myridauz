@@ -31,17 +31,10 @@ const MOCK = String((signedContact: string | null) => {
       auth_date: '1790000000',
       hash: 'test',
     }).toString();
-  const LOCATION = {
-    latitude: 41.3113,
-    longitude: 69.2795,
-    altitude: null,
-    course: null,
-    speed: null,
-    horizontal_accuracy: 10,
-    vertical_accuracy: null,
-    course_accuracy: null,
-    speed_accuracy: null,
-  };
+  // The place and its accuracy; the rest of a location is unknown, as on most phones.
+  const UNKNOWN = { altitude: null, course: null, speed: null, vertical_accuracy: null };
+  const LOCATION = { latitude: 41.3113, longitude: 69.2795, horizontal_accuracy: 10, ...UNKNOWN };
+  const UNKNOWN_ACCURACY = { course_accuracy: null, speed_accuracy: null };
   Object.assign(window, { __tg: tg });
   // Chrome 153+ in Telegram on Android and desktop gives a Promise from scrollTo (lesson 132).
   const scroll = window.scrollTo.bind(window);
@@ -66,7 +59,10 @@ const MOCK = String((signedContact: string | null) => {
   second.style.cssText =
     'position:fixed;left:16px;right:16px;bottom:74px;height:50px;border:0;border-radius:12px;font:600 17px system-ui;display:none;z-index:9';
   second.onclick = () => reply('secondary_button_pressed', undefined);
-  document.addEventListener('DOMContentLoaded', () => document.body.append(button, second));
+  // The bottom bar under the buttons is of the color the app asks for, as in Telegram (docs/21).
+  const bar = document.createElement('div');
+  bar.style.cssText = `position:fixed;left:0;right:0;bottom:0;height:${BUTTON_SPACE}px;display:none;z-index:8`;
+  document.addEventListener('DOMContentLoaded', () => document.body.append(bar, button, second));
   Object.assign(window, {
     TelegramWebviewProxy: {
       postEvent(type: string, raw?: string) {
@@ -84,6 +80,7 @@ const MOCK = String((signedContact: string | null) => {
         if (type === 'web_app_open_popup') reply('popup_closed', { button_id: data.buttons?.[0]?.id });
         if (type === 'web_app_request_content_safe_area') reply('content_safe_area_changed', insets);
         if (type === 'web_app_request_theme') reply('theme_changed', { theme_params: {} });
+        if (type === 'web_app_set_bottom_bar_color') bar.style.background = data.color;
         // Phone sharing (requestContact) and bot messages (requestWriteAccess), as a person allows them.
         if (type === 'web_app_request_phone') {
           tg.phoneShared = true;
@@ -98,12 +95,13 @@ const MOCK = String((signedContact: string | null) => {
         if (type === 'web_app_check_location')
           reply('location_checked', { available: true, access_requested: true, access_granted: true });
         if (type === 'web_app_request_location')
-          reply('location_requested', { available: true, ...LOCATION });
+          reply('location_requested', { available: true, ...LOCATION, ...UNKNOWN_ACCURACY });
         if (type === 'web_app_setup_main_button') {
           button.textContent = data.text;
           button.style.background = data.color;
           button.style.color = data.text_color;
           button.style.display = data.is_visible ? 'block' : 'none';
+          bar.style.display = button.style.display;
           // An inactive button sends nothing, as in Telegram (G58: the consent).
           button.disabled = data.is_active === false;
           // In Telegram the button is under the web view, not over it: the view gets shorter.

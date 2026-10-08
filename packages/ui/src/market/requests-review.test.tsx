@@ -13,7 +13,12 @@ import { RequestsSearchFlow } from './requests-search-flow';
 afterEach(() => {
   cleanup();
   localStorage.clear();
+  vi.useRealTimers();
 });
+
+// 06:00 and 23:30 in Tashkent (UTC+5): the first free time of the day and none (docs/103).
+const MORNING = Date.parse('2026-10-08T01:00:00Z');
+const LATE_EVENING = Date.parse('2026-10-08T18:30:00Z');
 
 const own = { bookings: { myBookings: async () => [], myOffers: async () => [] } };
 
@@ -73,13 +78,28 @@ describe('The requests a driver looks for (G37, docs/101)', { timeout: 20_000 },
     await waitFor(() => expect(searchRequests).toHaveBeenCalledTimes(2));
   });
 
-  it('speaks of waiting passengers only when there are some, and publishes a trip from an empty day (R3, R4)', async () => {
+  // An empty day publishes a trip on the one screen with the route and that day (G63); no pitak on
+  // the direction: the doors only.
+  const publishFromEmptyDay = async (now: number) => {
+    vi.useFakeTimers({ toFake: ['Date'], now });
     await open(async () => []);
     expect(await screen.findByText('Bu kunga soʻrov yoʻq')).toBeTruthy();
     expect(screen.queryByText(/taklifingizni kutmoqda/u)).toBeNull();
     expect(screen.queryByText('Xabar bering')).toBeNull();
     await tap('Safar eʼlon qilish');
-    // No pitak on the direction: no choice of the way, the day is next (G40, docs/106 K2).
-    expect(await screen.findByText('Qachon joʻnaysiz?')).toBeTruthy();
+    expect(await screen.findByText('Yoʻlovchilar uyidan: oʻzlari xaritada belgilaydi.')).toBeTruthy();
+  };
+
+  it('speaks of waiting passengers only when there are some, and publishes a trip from an empty day (R3, R4)', async () => {
+    await publishFromEmptyDay(MORNING);
+    // The first free time of the day: an hour from now (docs/103).
+    expect(screen.getByText('Bugun, 07:00')).toBeTruthy();
+  });
+
+  it('asks the day and the time again when the empty day has no free time left (docs/103)', async () => {
+    await publishFromEmptyDay(LATE_EVENING);
+    expect(screen.getByText('Qachon joʻnaysiz?')).toBeTruthy();
+    await tap('Eʼlon qilish');
+    expect(await screen.findByText('Bu kunda boʻsh vaqt yoʻq. Boshqa kunni tanlang.')).toBeTruthy();
   });
 });

@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, newTripTile } from '../apps';
+import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
 import { searchTo } from './search-kit';
 import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
@@ -32,30 +33,26 @@ async function chooseRoute(page: Page) {
   await page.getByText('Urgut', { exact: true }).click();
 }
 
-test('3. the driver sees the pitak of the direction and publishes «Ikkalasi ham»', async ({ page }) => {
+// One screen (G63, mockup g63/2): the pitak of the direction on its card, «Xaritada» on the map.
+test('3. the driver sees the pitak of the direction and publishes «Ikkalasi»', async ({ page }) => {
   await openAs(page, 'driver', DRIVER);
   await newTripTile(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
-  // The pitak of the direction stands on the small map above the choice.
   await expect(page.getByText(PITAK, { exact: false }).first()).toBeVisible();
+  await page.getByText(t('way.trip.mode.both')).click();
+  await page.getByText(t('way.trip.onMap')).click();
   await pitakMapDrawn(page);
   await shot(page, '3-driver-pitak');
-  await page.getByText(t('way.trip.mode.both')).click();
-  await page.getByText(TEXT.tomorrow).click();
-  await mainButton(page).click();
-  await expect(page.getByText(TEXT.tripSeatsTitle)).toBeVisible();
-  await mainButton(page).click();
-  await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
-  await mainButton(page).click();
+  await pressBack(page);
   // «Qanday band qilinadi?» (G61): seats only.
+  await page.getByText(t('market.rule.title')).click();
   await page.getByText(t('market.rule.seats')).click();
   await mainButton(page).click();
-  await page.getByText(TEXT.commentSkip).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
-  await shot(page, '3-driver-review');
+  await shot(page, '3-driver-publish');
   await mainButton(page).click();
-  await expect(page.getByText(TEXT.published)).toBeVisible();
+  await expect(page.getByText(TEXT.tripOpened)).toBeVisible();
 });
 
 // A passenger finds the trip of tomorrow by lists and asks a seat on it (G35: the seats are in the check).

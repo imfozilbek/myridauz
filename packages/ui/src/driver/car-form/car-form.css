@@ -50,25 +50,6 @@
   gap: 8px;
 }
 
-.car-chip {
-  height: 31px;
-  padding: 0 13px;
-  border: 1px solid var(--reg-divider);
-  border-radius: 16px;
-  background: var(--reg-card);
-  color: var(--reg-ink);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.car-chip[aria-pressed='true'] {
-  border-color: var(--reg-strong);
-  background: var(--reg-soft);
-  color: var(--reg-text);
-  font-weight: 700;
-}
-
 .car-colors {
   display: flex;
   flex-wrap: wrap;

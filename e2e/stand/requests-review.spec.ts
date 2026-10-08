@@ -90,7 +90,8 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('market.requests.hint'))).toHaveCount(0);
     await shot('05-d-empty');
     await page.getByText(t('market.requests.publish')).click();
-    // No pitak to Termiz: no choice of the way, the day is next (G40, docs/106 K2).
-    await expect(page.getByText(t('market.when.title'))).toBeVisible();
+    // One screen with the route and the day (G63); no pitak to Termiz: only «Uydan» (docs/72).
+    await expect(page.getByText(t('way.trip.mode.doorHint'))).toBeVisible();
+    await expect(page.getByText(t('way.trip.mode.pitak'))).toHaveCount(0);
     await shot('06-d-publish');
   });

@@ -12,7 +12,7 @@ const shot = (page: Page, name: string) =>
   page.screenshot({ path: `${OUT}/${name}-code.png`, animations: 'disabled' });
 
 const PHONES = [
-  ['3-1', '2026-10-06T14:20', false, t('market.published.title')],
+  ['3-1', '2026-10-06T14:20', false, t('driverTrip.published.title')],
   ['3-2', '2026-10-07T07:30', true, t('driverTrip.soon.title', { minutes: '30' })],
   ['3-3', '2026-10-07T08:10', true, t('driverTrip.onWay.title')],
 ] as const;

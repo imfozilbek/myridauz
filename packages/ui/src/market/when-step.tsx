@@ -1,13 +1,4 @@
-import {
-  DAY_MS,
-  MINUTE_MS,
-  TRIP_DAYS_AHEAD,
-  daySlots,
-  defaultSlot,
-  tashkentDate,
-  tashkentDayStart,
-  type Schedule,
-} from '@platform/contracts';
+import { DAY_MS, TRIP_DAYS_AHEAD, defaultSlot, tashkentDate, type Schedule } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -19,14 +10,8 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DayChips } from './day-chips';
+import { departAtOf, firstDayOf, slotsOn } from './first-when';
 import { today, useDayLabel } from './when';
-
-const HOUR_MINUTES = 60;
-// "07:30" on a Tashkent day → the moment in ms.
-const at = (date: string, time: string) => {
-  const [hours = 0, minutes = 0] = time.split(':').map(Number);
-  return tashkentDayStart(date) + (hours * HOUR_MINUTES + minutes) * MINUTE_MS;
-};
 
 type WhenStepProps = {
   readonly now: number;
@@ -47,11 +32,9 @@ export function WhenStep({ now, schedule, fixedDate, initial, onBack, onDone }: 
   const dayLabel = useDayLabel();
   const first = today(now);
   const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
-  const slotsOf = (day: string) => daySlots(day, now, schedule.windows, rules);
-  const firstDay = slotsOf(first).length > 0 ? first : tashkentDate(now + DAY_MS);
-  const [date, setDate] = useState(fixedDate ?? initial?.date ?? firstDay);
+  const [date, setDate] = useState(fixedDate ?? initial?.date ?? firstDayOf(now, schedule, rules));
   const [calendar, setCalendar] = useState(false);
-  const slots = slotsOf(date);
+  const slots = slotsOn(date, now, schedule, rules);
   const kept = initial?.time && initial.date === date && slots.includes(initial.time) ? initial.time : null;
   const [picked, setPicked] = useState<string | null>(kept);
   const time = picked !== null && slots.includes(picked) ? picked : defaultSlot(slots, date === first, rules);
@@ -103,7 +86,7 @@ export function WhenStep({ now, schedule, fixedDate, initial, onBack, onDone }: 
       {time && !schedule.full ? (
         <MainButton
           text={t('common.continue')}
-          onClick={() => onDone({ date, time, departAt: at(date, time) })}
+          onClick={() => onDone({ date, time, departAt: departAtOf(date, time) })}
         />
       ) : null}
     </StepLayout>

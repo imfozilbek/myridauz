@@ -2,7 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
-import { findTrips, publishTrip, openOwnTrip } from './market';
+import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -43,22 +43,10 @@ test('passenger: "Safarlar tarixi" in the profile', async ({ page }) => {
   await shot('4-history');
 });
 
-test('driver: "Qaytish safari" and the trip shared with the family', async ({ page }) => {
+// Published, «Mening safarim» of the new trip opens at once (G63): the family gets it from there.
+test('driver: the trip just published, shared with the family', async ({ page }) => {
   const shot = await open(page, DRIVER.port);
   await publishTrip(page);
-  const secondary = page.locator('#tg-secondary-button');
-  await expect(secondary).toHaveText(t('market.published.return'));
-  await shot('5-published');
-  await secondary.click();
-  await page.getByText(TEXT.tomorrow).click();
-  await page.locator('#tg-main-button').click();
-  await expect(page.locator('#tg-main-button')).toHaveText(TEXT.publish);
-  await shot('6-return-review');
-  await page.locator('#tg-main-button').click();
-  await expect(page.getByText(TEXT.published)).toBeVisible();
-  await page.locator('#tg-main-button').click();
-  await page.getByText(t('common.myTrips')).click();
-  await openOwnTrip(page);
   // «Yaqinlarimga» is a tile of «Mening safarim» (G63, mockup g63/3).
   await expect(page.getByText(t('bookings.toClose'))).toBeVisible();
   await shot('7-driver-share');

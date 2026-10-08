@@ -3,7 +3,6 @@ import type { Trip } from '@platform/contracts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderMarket, trip } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
-import { returnDraft } from '../market/return-trip';
 import { TripCard } from '../market/trip-card';
 import { DirectionEdit } from '../pricing/direction-edit';
 import { testClients } from '../test-shell';
@@ -40,41 +39,5 @@ describe('prices next to each other (docs/40, question 44)', () => {
     cleanup();
     renderMarket(edit(null, 4), testClients({}));
     expect(await screen.findByText(/kamida 10 ta safar kerak\. Hozir: 4 ta/u)).toBeTruthy();
-  });
-});
-
-describe('the driver side (docs/40)', () => {
-  it('turns a trip into the way back: the route reversed, the date and time chosen again', () => {
-    const from = {
-      id: '1726269',
-      parentId: '1726',
-      type: 'district' as const,
-      name: 'Chilonzor',
-      lat: 41,
-      lng: 69,
-      oneCity: false,
-    };
-    const to = { ...from, id: '1730401', parentId: '1730', name: 'Fargʻona shahri' };
-    const draft = {
-      route: { from, to },
-      date: '2026-10-02',
-      time: '08:00',
-      departAt: 1,
-      seats: 3,
-      price: 95000,
-      womanOnBoard: true,
-      comment: 'Yuk yoʻq',
-      pickupMode: 'door' as const,
-      bookingRule: 'seats_or_car' as const,
-    };
-    expect(returnDraft(draft)).toEqual({
-      route: { from: to, to: from },
-      pickupMode: 'door',
-      seats: 3,
-      price: 95000,
-      womanOnBoard: true,
-      bookingRule: 'seats_or_car',
-      comment: '',
-    });
   });
 });

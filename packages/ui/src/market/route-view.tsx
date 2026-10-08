@@ -4,6 +4,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import { usePlaceLabel, type PlaceLabel } from './places-gate';
+import './route-view.css';
 
 const MARK_SIZE = 20;
 

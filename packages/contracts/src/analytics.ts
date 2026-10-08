@@ -15,17 +15,8 @@ export type DriverStep = (typeof DRIVER_STEPS)[number];
 // The main screen (G25): a trip of the block, the question card, the last route, the main button.
 // The tiles of «Hamyon» and «Yordam» (G53).
 const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry', 'wallet', 'support'] as const;
-export const TRIP_STEPS = [
-  'route',
-  'mode',
-  // The day and the time on one screen (G38); the seats with «ayol bor» (G38, docs/103 point 8).
-  'when',
-  'seats',
-  'price',
-  'rule', // «Qanday band qilinadi?» (G61, docs/09)
-  'comment',
-  'published',
-] as const;
+// A new trip is one screen (G63, docs/118 path 6): the route on it, then published.
+export const TRIP_STEPS = ['route', 'published'] as const;
 export type TripStep = (typeof TRIP_STEPS)[number];
 // The booking funnel (G08): both ways, from the first tap to the confirmation.
 const BOOKING_STEPS = [

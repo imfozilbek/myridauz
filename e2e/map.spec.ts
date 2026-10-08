@@ -104,8 +104,8 @@ test('the passenger who goes from a pitak sees the pitak on «Qayerdan, qayerga?
   expect(state.booked).toMatchObject({ seats: 1, mode: 'pitak', pickup: null, dropoff: HOME });
 });
 
-// The driver sees the pitak of the direction on a small map before choosing the way (G26).
-test('the driver sees the pitak of the direction on the mode step', async ({ page }) => {
+// The pitak of the direction is on its card of the new trip, «Xaritada» shows it (G26, mockup g63/2).
+test('the driver sees the pitak of the direction on the map from the new trip', async ({ page }) => {
   await mockApi(page, 'active');
   await mockMap(page, mapState());
   await mockTelegram(page);
@@ -113,6 +113,7 @@ test('the driver sees the pitak of the direction on the mode step', async ({ pag
   await newTripTile(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.both'))).toBeVisible();
+  await page.getByText(t('way.trip.onMap')).click();
   await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);
   await shot(page, '5-driver-mode');
@@ -129,8 +130,7 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
   // «Joy soʻraganlar» (G63): the request near the way first, the far one under it (docs/70).
-  const near = await page.getByText('Aziza').boundingBox();
-  const far = await page.getByText('Bobur').boundingBox();
+  const [near, far] = await Promise.all(['Aziza', 'Bobur'].map((name) => page.getByText(name).boundingBox()));
   expect(near?.y ?? Infinity).toBeLessThan(far?.y ?? 0);
   await expect(page.getByText(/\+3\skm/u)).toBeVisible();
   await shot(page, '6-requests');
