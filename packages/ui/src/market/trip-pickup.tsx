@@ -7,6 +7,9 @@ import { MeetingMap } from '../trip/meeting-map';
 import { TripRow } from './trip-row';
 import './trip-pickup.css';
 
+// The pin over the small map of the pitak, as on the mockup g63/4 screen 3.
+const PITAK_PIN = 30;
+
 type Props = {
   readonly mode: PickupMode;
   readonly pitak: Pitak | null;
@@ -45,10 +48,10 @@ export function TripPickup({ mode, pitak, direction, onMode, onMap }: Props) {
             </span>
             <span className="trip-pitak-map">
               {t('way.trip.onMap')}
-              <Icon name="next" size={12} />
+              <Icon name="next" size={10} />
             </span>
           </button>
-          <MeetingMap point={pitak.point} onOpen={onMap} />
+          <MeetingMap point={pitak.point} onOpen={onMap} pin={PITAK_PIN} />
         </>
       ) : (
         <p className="trip-door">{t('way.trip.mode.doorHint')}</p>

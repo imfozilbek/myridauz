@@ -35,7 +35,7 @@
 | `color.attention` | `#B45309` | Плашка «ждёт человека»: «2 ta taklif», «2 ta yangi soʻrov», «Javob kutilmoqda»; заметка «Ariza tekshirilmoqda» (G53) |
 | `color.routeFrom` | `#16A34A` | Точка A маршрута (откуда), решение владельца 29.09.2026 |
 | `color.routeTo` | `#DC2626` | Точка B маршрута (куда) |
-| `color.routeLine` | `#D1D5DB` | Линия от A к B на карточке своей поездки водителя (G63) |
+| `color.routeLine` | `#D1D5DB` | Линия от A к B на карточке своей поездки водителя; пустой кружок выбора «Qanday band qilinadi?» (G63) |
 | `color.brand.deep` | `#115E59` | Глубокий бирюзовый: логотип (`36`) |
 | `color.accent.strong` | `#D97706` | Насыщенный янтарный: логотип (`36`) |
 | `color.brand.mint` | `#CCFBF1` | Второй текст на бирюзовом в картинках (`38`) |

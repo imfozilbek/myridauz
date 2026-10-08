@@ -13,6 +13,7 @@ import { RULE_LABELS } from './trip-rule-step';
 import { useShortDay } from './when';
 import '../find/seats.css';
 import './trip-form.css';
+import './trip-form-icons.css';
 import './trip-controls.css';
 
 export type TripPart = 'when' | 'rule' | 'comment' | 'pitak';

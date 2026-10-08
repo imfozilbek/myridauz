@@ -16,18 +16,22 @@
   pointer-events: none;
 }
 
-/* The tip of the pin on the point in the middle; a white dot inside (mockup g63/4 screen 13). */
+/* The pin (journey g63/4 screens 3 and 13): filled with the color of the app in a white line, its
+   middle white, a soft shadow; the tip stands on the middle of the map, where the point is. */
 .meeting-map-pin {
   position: absolute;
   left: 50%;
   top: 50%;
   display: flex;
-  transform: translate(-50%, -100%);
+  transform: translate(-50%, -95%);
   pointer-events: none;
   filter: drop-shadow(0 2px 3px rgb(0 0 0 / 30%));
 }
 
+.meeting-map-pin svg {
+  stroke: currentColor;
+}
+
 .meeting-map-pin circle {
-  fill: var(--tgui--bg_color);
-  stroke: none;
+  fill: currentColor;
 }

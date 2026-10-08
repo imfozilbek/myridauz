@@ -6,8 +6,8 @@ import { HEIGHT, nothingCut, oneSize, WIDTHS } from './sizes';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// docs/121 on narrow and wide phones (G63): «Safar eʼlon qilish» with all its rows; nothing is cut,
-// the icon tiles, the stepper buttons and the chips are of one height each.
+// docs/121 on narrow and wide phones (G63): «Safar eʼlon qilish» with all its rows and the screen of
+// its rule; nothing is cut, the icon tiles, the stepper buttons and the circles are of one size each.
 for (const width of WIDTHS) {
   test(`${width}px: «Safar eʼlon qilish» fits`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
@@ -20,6 +20,11 @@ for (const width of WIDTHS) {
     await page.getByRole('radio', { name: t('way.trip.mode.door') }).click();
     await nothingCut(page);
     await page.screenshot({ path: `screenshots/look/g63-publish-door-${width}.png`, fullPage: true });
+    // «Qanday band qilinadi?» of the row (journey g63/4 screen 4): the cards and their circles.
+    await page.getByText(t('market.rule.title')).click();
+    await nothingCut(page);
+    await oneSize(page, '.rule-card label');
+    await page.screenshot({ path: `screenshots/look/g63-publish-rule-${width}.png`, fullPage: true });
   });
 }
 
