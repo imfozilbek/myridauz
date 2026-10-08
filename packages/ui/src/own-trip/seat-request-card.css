@@ -2,7 +2,7 @@
    than g63/3), smaller on a narrow phone (docs/121). */
 .seat-card {
   margin-bottom: 8px;
-  padding: 10.67px 13.33px 11.63px;
+  padding: 10.67px 13px 11.63px 13.33px;
   border-radius: 13.5px;
   background: var(--reg-card);
 }

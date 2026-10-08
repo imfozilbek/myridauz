@@ -61,6 +61,12 @@
   color: var(--reg-ink);
 }
 
+/* The words of a published trip stand higher on their plate (mockup g63/4 screen 6). */
+.own-banner[data-stage='published'] .own-banner-text {
+  position: relative;
+  top: -0.8px;
+}
+
 .own-banner[data-stage='published'] .own-banner-text span {
   color: var(--reg-deep);
 }
@@ -106,7 +112,7 @@
   margin-top: 15px;
   font-size: clamp(10px, 3.2vw, 11.5px);
   font-weight: 700;
-  line-height: 13px;
+  line-height: 13.6px;
   text-align: center;
 }
 
