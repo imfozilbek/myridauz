@@ -7,7 +7,7 @@ import { ridersOf, tripSums } from './trip-sums';
 import './after-rows.css';
 
 // The chevron of a row that opens something (mockup g63/5 phone 5).
-const CHEVRON = 12;
+const CHEVRON = 9.6;
 
 export type AfterRow = 'rate' | 'talk' | 'complain' | 'support' | 'commission';
 

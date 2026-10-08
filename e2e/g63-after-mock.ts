@@ -94,7 +94,7 @@ export async function openTrip(page: Page) {
   await page.locator('.trip-card').first().click();
 }
 
-const SHOTS = 'screenshots/pixel-g63-after';
+const SHOTS = 'screenshots/pixel-g63';
 export const shot = (page: Page, name: string) =>
   page.screenshot({ path: `${SHOTS}/${name}-code.png`, animations: 'disabled' });
 // One part of a page that another step draws (C2) or redesigns (G64): the part alone against its

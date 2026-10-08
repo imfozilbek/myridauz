@@ -17,6 +17,8 @@ export type BrandColors = {
   readonly accentText: HexColor;
   readonly text: HexColor;
   readonly textMuted: HexColor;
+  // The second grey of a line under a title: the place of a meeting point, «Safar tugadi» (mockup g63/4).
+  readonly textSecondary: HexColor;
   readonly danger: HexColor;
   // The plates of a status on the main screen (G53): done is green, waits for the person is amber.
   readonly success: HexColor;
@@ -37,6 +39,9 @@ export type BrandColors = {
   readonly neutralFace: HexColor;
   // A face without a photo among the passengers of the own trip (mockup g63/3).
   readonly neutralFacePale: HexColor;
+  // The grey tag «Qaytarish kutilmoqda» of a past trip in «Oʻtgan»: background, words (mockup g63/5).
+  readonly neutralPale: HexColor;
+  readonly neutralPaleText: HexColor;
   readonly dangerText: HexColor; // a number of work waiting for the team (admin, G53)
   readonly routeFrom: HexColor; // point A of a route: green where the trip starts (docs/20)
   readonly routeTo: HexColor; // point B: red where it ends

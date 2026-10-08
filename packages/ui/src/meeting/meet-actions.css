@@ -4,11 +4,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 52.8px;
+  gap: 8.2px;
+  min-height: 52.6px;
   padding: 0 8px;
   border: 0;
-  border-radius: 13px;
+  border-radius: 16.25px;
   background: var(--reg-strong);
   color: var(--reg-card);
   font: inherit;
@@ -30,17 +30,21 @@
   color: var(--reg-to);
 }
 
+.meet-main > svg {
+  margin-top: 1.6px;
+}
+
 .meet-tools {
-  margin-top: -1px;
+  margin-top: -0.2px;
 }
 
 .meet-tools button {
   gap: 6px;
-  min-height: 41.6px;
-  border-radius: 11px;
+  min-height: 41.2px;
+  border-radius: 13.75px;
   background: var(--reg-bg);
   color: var(--reg-text);
-  font-size: clamp(12.5px, 4.17vw, 15px);
+  font-size: clamp(12.5px, 4.1vw, 14.77px);
 }
 
 .meet-done {
@@ -48,7 +52,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 52.8px;
+  min-height: 52.6px;
   margin: 0;
   font-size: 17px;
   font-weight: 700;

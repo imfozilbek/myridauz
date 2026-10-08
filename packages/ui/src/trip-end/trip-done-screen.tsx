@@ -15,7 +15,7 @@ import { useSeatsLeft } from './use-seats-left';
 import './trip-end.css';
 
 // The flag of the badge and the wallet of its tile (mockup g63/4 screen 15).
-const FLAG = 30;
+const FLAG = 31.5;
 const WALLET = 20;
 
 type Props = {

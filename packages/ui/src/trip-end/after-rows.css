@@ -5,8 +5,8 @@
   gap: 8px;
   box-sizing: border-box;
   width: 100%;
-  min-height: 48px;
-  padding: 0 10px 0 13px;
+  min-height: 48.8px;
+  padding: 1.6px 10px 0 13px;
   border: 0;
   background: none;
   color: var(--reg-ink);
@@ -24,7 +24,7 @@ button.past-after-row {
   flex: 1;
   flex-direction: column;
   min-width: 0;
-  line-height: 18px;
+  line-height: 16.4px;
 }
 
 .past-after-text span {
@@ -33,9 +33,11 @@ button.past-after-row {
   color: var(--reg-muted);
 }
 
+/* The small chevron is as bold as the sign «›» of the mockup g63/5 phone 5. */
 .past-after-row > svg {
   flex: none;
   color: var(--reg-muted);
+  stroke-width: 3;
 }
 
 /* A line between the rows that takes no height: every row is of one size (docs/121). */

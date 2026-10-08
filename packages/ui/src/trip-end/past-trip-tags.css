@@ -19,8 +19,8 @@
 }
 
 .past-tag-plain {
-  background: var(--reg-bg);
-  color: var(--reg-face-text);
+  background: var(--reg-neutral-pale);
+  color: var(--reg-neutral-pale-text);
 }
 
 .past-tag-done {
