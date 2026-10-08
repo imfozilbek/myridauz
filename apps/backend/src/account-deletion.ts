@@ -1,4 +1,5 @@
 import { cancelAllOf, chatsOf, erasePointsOf, filedRideOfBooking } from './modules/bookings';
+import { forgetTripViews } from './modules/channels';
 import { forgetChat, forgetUnread } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
@@ -30,6 +31,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);
   await forgetFollows(env, userId);
+  // The trips the person opened forget them: «N kishi koʻrdi» counts only people with an account (G63).
+  await forgetTripViews(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);
   // A new account of the same person starts without old reviews and money (docs/65 A5).

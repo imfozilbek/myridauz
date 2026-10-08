@@ -1,4 +1,4 @@
-import { arrivalAt, channelVia, tashkentDate, withVia, type Trip } from '@platform/contracts';
+import { arrivalAt, channelVia, tashkentDate, tripBookLink, withVia, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import { postState, regionOf } from '../domain/route-channels';
 
@@ -108,7 +108,7 @@ export const channelPost =
       return { text, markup: { inline_keyboard: [[subscribe]] } };
     }
     const text = [...route(trip, places), '', ...details(trip), '', tags(trip, places)].join('\n');
-    const bookUrl = `https://t.me/${passengerBot}?startapp=${withVia(`trip_${trip.id}`, via)}`;
+    const bookUrl = tripBookLink(passengerBot, trip.id, via);
     const book = { text: t('bot.channel.book'), url: bookUrl };
     const share = { text: t('bot.channel.share'), url: shareUrl(bookUrl, trip, places) };
     return { text, markup: { inline_keyboard: [[book], [share], [subscribe]] } };

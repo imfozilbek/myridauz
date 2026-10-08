@@ -1,5 +1,5 @@
 import { channelOf, loadBrand, type BrandConfig } from '@platform/brands';
-import { channelVia, TRIPS_PATH, type Trip } from '@platform/contracts';
+import { channelVia, tripBookLink, TRIPS_PATH, VIA_DRIVER, type Trip } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
@@ -9,15 +9,21 @@ import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from 
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import { allChannels, type TeamChannelsDeps } from './application/team';
 import { channelRoutes } from './http/channel-routes';
+import { publicityRoutes } from './http/publicity-routes';
 import { botIsAdmin, inChannel } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
+import type { PublicityDeps, TripFacts } from './application/publicity';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
 import { channelPost } from './infrastructure/post-text';
 import { createMemoryTeamChannels, d1TeamChannels } from './infrastructure/team-channels';
+import { createMemoryTripViews, d1TripViews } from './infrastructure/trip-views';
 import { zoneMessage } from './infrastructure/zone-message';
 
 const localPosts = createMemoryChannelPosts();
 const localTeam = createMemoryTeamChannels();
+const localViews = createMemoryTripViews();
+const postsOf = (env: Bindings) => (env.DB ? d1ChannelPosts(env.DB) : localPosts);
+const viewsOf = (env: Bindings) => (env.DB ? d1TripViews(env.DB) : localViews);
 
 // The region channels of the brand and the channels the team added in the admin (docs/63).
 async function teamDeps(env: Bindings): Promise<TeamChannelsDeps> {
@@ -42,7 +48,7 @@ const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
     channels: async () => allChannels(await teamDeps(env)),
     places: () => placesOf(env),
     trip: (id) => tripOf(env, id),
-    posts: env.DB ? d1ChannelPosts(env.DB) : localPosts,
+    posts: postsOf(env),
     render: channelPost(brand.bots.passenger),
     send: (jobs) => notify(env, jobs),
     now: () => Date.now(),
@@ -90,3 +96,22 @@ export const zoneWatch = new Hono<AppEnv>().use(TRIPS_PATH, async (context, next
   const brand = loadBrand(context.env.BRAND);
   await inviteToZone(zoneDeps(context.env, brand), user.id, channelOf(brand, from));
 });
+
+// The facts of the driver's trip: set by the app, so channels does not depend on trips (app.ts).
+type TripFactsOf = (env: Bindings, id: string) => Promise<TripFacts | undefined>;
+
+const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
+  enabled: env.CHANNEL_POSTS === 'on',
+  trip: (id) => tripOf(env, id),
+  places: () => placesOf(env),
+  channels: async () => allChannels(await teamDeps(env)),
+  posts: postsOf(env),
+  views: viewsOf(env),
+  link: (tripId) => tripBookLink(loadBrand(env.BRAND).bots.passenger, tripId, VIA_DRIVER),
+  now: () => Date.now(),
+});
+
+// What the driver sees after the publishing, and the views of the trip page (G63, docs/119).
+export const publicityModule = (tripOf: TripFactsOf) => publicityRoutes((env) => publicityDeps(env, tripOf));
+// A deleted account (docs/30): the trips it opened forget it.
+export const forgetTripViews = (env: Bindings, userId: number) => viewsOf(env).forget(userId);
