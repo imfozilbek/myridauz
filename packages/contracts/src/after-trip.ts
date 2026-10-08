@@ -13,10 +13,11 @@ export const POINTS_KEEP_DAYS = 30;
 export const tripEndsAt = (departAt: number, km: number) => arrivalAt(departAt, km) + CLOSES_AFTER_MS;
 
 // What a person may still do after the trip, and until when (docs/129): the server checks the same.
-export function afterTrip(departAt: number, km: number) {
+// The day of writing counts from «Yetib keldik» when the car came (mockup g63/5 phone 5).
+export function afterTrip(departAt: number, km: number, arrivedAt: number | null = null) {
   const end = tripEndsAt(departAt, km);
   return {
-    talkUntil: arrivalAt(departAt, km) + AFTER_TRIP_TALK_HOURS * HOUR_MS,
+    talkUntil: (arrivedAt ?? arrivalAt(departAt, km)) + AFTER_TRIP_TALK_HOURS * HOUR_MS,
     rateUntil: end + RATING_DAYS * DAY_MS,
     complainUntil: end + COMPLAIN_DAYS * DAY_MS,
     pointsUntil: end + POINTS_KEEP_DAYS * DAY_MS,

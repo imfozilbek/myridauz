@@ -5,7 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { errorKey } from '../market/error-text';
-import { TripRow } from '../market/trip-row';
+import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
 import { rememberWay } from '../way/remembered-way';
 import { useNameText } from '../way/way-end';
@@ -69,15 +69,23 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       button={t('bookings.send')}
       onSend={send}
       onBack={onBack}
+      extra={
+        // How the driver knows the passenger at the meeting (owner decision 08.10.2026): a third
+        // row of the same card, as the two ends.
+        <button type="button" className="points-row" onClick={() => patch({ screen: 'note' })}>
+          <span className="points-tile points-note">
+            <Icon name="chat" size={20} />
+          </span>
+          <span className="points-text">
+            <span className="points-label">{t('bookings.points.note')}</span>
+            <span className={note ? 'points-value' : 'points-value points-empty'}>
+              {note || t('market.comment.placeholder')}
+            </span>
+          </span>
+          <Icon name="next" size={18} />
+        </button>
+      }
     >
-      {/* How the driver knows the passenger at the meeting (owner decision 08.10.2026). */}
-      <TripRow
-        icon="chat"
-        label={t(note ? 'market.comment.title' : 'bookings.points.note')}
-        {...(note ? { hint: note } : {})}
-        muted={!note}
-        onOpen={() => patch({ screen: 'note' })}
-      />
       <div className="points-card points-sum">
         <span>
           {t('bookings.points.line', { seats: String(choice.seats), price: formatNumber(trip.price) })}

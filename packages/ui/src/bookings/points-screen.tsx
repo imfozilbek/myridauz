@@ -31,6 +31,8 @@ type Props = {
   readonly onBack: () => void;
   // The trip of a driver (G63, mockups g63/1, g63/2): smaller rows, the end in the green of a route.
   readonly look?: 'trip';
+  // One more row of the card under the two ends: the note of a booking (G63).
+  readonly extra?: ReactNode;
 };
 
 // The words of a booking and of a request: «Qayerdan, qayerga?», their two ends and «Hammasi».
@@ -74,6 +76,7 @@ export function PointsScreen(props: Props) {
       <div className="points-card">
         {row('pickup', start)}
         {row('dropoff', end)}
+        {props.extra}
       </div>
       <p className="find-head points-head">{head}</p>
       {children}

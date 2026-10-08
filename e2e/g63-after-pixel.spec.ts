@@ -19,7 +19,7 @@ import { TILES_MS } from './map-wait';
 test.use({ viewport: { width: 360, height: 759 }, deviceScaleFactor: 1.25 });
 
 test('13: «Uchrashuv», Madina at the point (g63/4 screen 13)', async ({ page }) => {
-  const came = madina({ cameAt: tashkent('2026-10-07T07:40') });
+  const came = madina({ cameAt: tashkent('2026-10-07T07:40'), note: 'Qizil kurtka, sumka bilan' });
   await openDriver(page, '2026-10-07T07:45', { trips: [live], bookings: [came] });
   await openTrip(page);
   await page.getByText(t('driverTrip.tile.map')).click();

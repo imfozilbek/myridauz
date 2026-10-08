@@ -30,7 +30,8 @@ async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Tal
   if (!booking || !trip) return { canCall: false, canWrite: true };
   const now = deps.now();
   const status = statusAt(booking, now, trip.over);
-  const after = now < arrivalAt(trip.departAt, trip.km) + AFTER_TRIP_TALK_HOURS * HOUR_MS;
+  // The day of writing counts from «Yetib keldik» when the car came, as on the screens (afterTrip).
+  const after = now < (trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km)) + AFTER_TRIP_TALK_HOURS * HOUR_MS;
   if (status === 'completed') return { canCall: after, canWrite: after };
   return { canCall: status === 'confirmed', canWrite: true };
 }

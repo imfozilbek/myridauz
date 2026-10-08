@@ -12,7 +12,7 @@ export function useAfterTripChat(about: ChatAbout | null, messages: readonly Cha
   const { departAt, km } = booking.trip;
   const ended = arrivalAt(departAt, km);
   const now = Date.now();
-  const { talkUntil } = afterTrip(departAt, km);
+  const { talkUntil } = afterTrip(departAt, km, booking.trip.arrivedAt);
   const later = messages.findIndex((message) => message.at > ended);
   return {
     endAt: later === -1 ? messages.length : later,

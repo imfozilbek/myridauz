@@ -27,7 +27,7 @@ type Row = readonly [AfterRow | null, string, string];
 export function AfterRows({ trip, bookings, now, onRow }: Props) {
   const { t, formatNumber } = useI18n();
   const untilText = useUntilText();
-  const { rateUntil, talkUntil, complainUntil } = afterTrip(trip.departAt, trip.km);
+  const { rateUntil, talkUntil, complainUntil } = afterTrip(trip.departAt, trip.km, trip.arrivedAt);
   const sums = tripSums(bookings);
   const left = (until: number) => t('bookings.done.daysLeft', { days: daysLeft(until, now) });
   const over = t('bookings.done.over');

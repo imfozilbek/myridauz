@@ -7,8 +7,8 @@ import {
   Phone,
   PhoneCall,
   PhoneOff,
+  RectangleHorizontal,
   Wallet,
-  WalletMinimal,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -26,6 +26,7 @@ export const TALK_ICONS = {
   // «Xaritada ochish» on the small map of a meeting point (docs/126, G63).
   map: MapIcon,
   wallet: Wallet,
-  // «Hamyon: … yechildi» of «Safar tugadi»: the plain wallet of the mockup g63/4 screen 15.
-  walletPlain: WalletMinimal,
+  // «Hamyon: … yechildi» of «Safar tugadi» (mockup g63/4 screen 15): Lucide has no wallet as flat as
+  // the mockup one; the wide rounded rectangle is the nearest by pixels (0.84 against 0.65).
+  walletPlain: RectangleHorizontal,
 } satisfies Record<string, LucideIcon>;

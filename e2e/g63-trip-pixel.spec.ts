@@ -76,7 +76,7 @@ test.describe('journey-12: the map of the way from the tile', () => {
   test.use({ viewport: { width: 360, height: 759 }, deviceScaleFactor: 1.25 });
   test('the map', async ({ page }) => {
     await mockMap(page, mapState());
-    await openTripAt(page, SOON, true);
+    await openTripAt(page, SOON, true, { stops: true });
     await page.getByText(t('driverTrip.tile.map')).click();
     await expect(page.locator('.trip-map-box[data-state="ready"]')).toBeVisible();
     await page.waitForTimeout(TILES_MS);

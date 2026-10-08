@@ -19,6 +19,8 @@ export type Moment = {
   readonly departed?: boolean;
   readonly noShow?: boolean;
   readonly publicity?: object;
+  // The two points of «Safar xaritasi» (journey screen 12): Madina near Grand, Sardor at his pitak.
+  readonly stops?: boolean;
 };
 
 const trip = (full: boolean, moment: Moment = {}) =>
@@ -55,6 +57,32 @@ const seat = (full: boolean, id: string, extra: object) => ({
 const noShow = { driverCameAt: tashkent('2026-10-07T07:40'), noShowAt: tashkent('2026-10-07T07:45') };
 
 // Madina from her door near Chilonzor bozori (+2 km), Akmal from the pitak.
+const SOBIR = { id: 'sobir', name: 'Sobir Rahimov avtostansiyasi', point: { lat: 41.2795, lng: 69.2042 } };
+const GRAND = {
+  point: { lat: 41.2856, lng: 69.2034 },
+  name: { step: 'landmark', name: 'Grand' },
+  area: null,
+};
+const stops = () => [
+  seat(true, '1', {
+    passenger: person('0000000000000000000000000000001f', 'Madina'),
+    seats: 2,
+    commission: 18000,
+    mode: 'door',
+    pitak: null,
+    pickup: GRAND,
+    extraKm: null,
+  }),
+  seat(true, '3', {
+    passenger: person('0000000000000000000000000000003f', 'Sardor'),
+    seats: 1,
+    commission: 9000,
+    mode: 'pitak',
+    pitak: SOBIR,
+    pickup: null,
+    extraKm: null,
+  }),
+];
 const seats = (full: boolean, moment: Moment) => [
   seat(full, '1', {
     passenger: person('0000000000000000000000000000001f', 'Madina'),
@@ -83,7 +111,7 @@ export async function openTripAt(page: Page, now: string, full: boolean, moment:
   const { published } = await mockApi(page, 'active');
   published.push(trip(full, moment));
   await page.route('**/api/driver/bookings', (route) =>
-    route.fulfill({ json: { bookings: seats(full, moment) } }),
+    route.fulfill({ json: { bookings: moment.stops ? stops() : seats(full, moment) } }),
   );
   const { publicity } = moment;
   if (publicity)

@@ -20,7 +20,8 @@
    over its lower edge. */
 .trip-map .trip-map-box {
   position: relative;
-  height: 55vh;
+  /* The sheet starts at 418 px of the 759 px phone of the mockup, over the lower 16 px of the map. */
+  height: 57.2vh;
 }
 .trip-map-pin {
   display: flex;
@@ -36,24 +37,25 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 8.8px;
   margin-top: -16px;
-  padding: 18px 16px 16px;
+  padding: 18.6px 17.6px 16px;
   border-radius: 16px 16px 0 0;
   background: var(--tgui--secondary_bg_color);
 }
 .trip-map-title {
-  margin: 0 0 6px;
-  font-size: 22px;
+  margin: 0 0 3px;
+  font-size: 24px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 28px;
 }
 .trip-map-stop {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  min-height: 56.8px;
+  padding: 0 12px;
   border: 0;
   border-radius: 14px;
   background: var(--tgui--bg_color);
@@ -77,6 +79,8 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  /* The words stand 2.4 px above the middle of the card (mockup g63/4 screen 12). */
+  margin-top: -6.4px;
 }
 .trip-map-who span {
   color: var(--tgui--hint_color);
