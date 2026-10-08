@@ -1,0 +1,45 @@
+/* «Qachon joʻnaysiz?» of the sheets (mockups g64/1 phone 3, g64/3 phone 2) at 360 px. */
+.time-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7.33px;
+  min-height: 32px;
+  margin: 0 12px;
+}
+
+.time-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 32px;
+  padding: 0 12px;
+  border: 1.33px solid var(--reg-off);
+  border-radius: 16px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--reg-ink);
+  cursor: pointer;
+}
+
+.time-chip[aria-checked='true'],
+.time-chip[data-checked='true'] {
+  border-color: var(--reg-strong);
+  background: var(--reg-soft);
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+/* «Boshqa»: the native list of the phone opens over the chip. */
+.time-chip-list {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* A question after the times stands closer to them (mockup g64/1 phone 3). */
+.time-chips + .board-sheet-label {
+  margin-top: 8px;
+}

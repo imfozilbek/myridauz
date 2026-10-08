@@ -26,7 +26,7 @@ export {
   useComplaintsLive,
 } from './home/admin-tiles';
 export { linkedStats } from './stats/stats-screen';
-export { RequestsSearchFlow } from './market/requests-search-flow';
+export { RequestsFlow } from './requests/requests-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';
 export { DriverHome } from './home/driver-home';

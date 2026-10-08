@@ -1,0 +1,21 @@
+{
+  "board.trip": "Safaringiz: {day} {time}, {to}",
+  "board.tripSub": "{seats} boʻsh joy · {price}",
+  "board.fits": "Safaringizga mos ({count})",
+  "board.others": "Boshqa soʻrovlar ({count})",
+  "card.route": "{from} → {to}",
+  "card.pitak": "Pitakdan",
+  "card.door": "Uyidan",
+  "action.onTrip": "Safarimga taklif qilish",
+  "action.salon": "Safar ochib taklif qilish",
+  "offer.title": "{name}ga taklif",
+  "offer.sub": "{from} → {to} · {day} · {count} kishi",
+  "offer.otherTime": "Boshqa",
+  "offer.theirPrice": "{name} taklifi: {price}",
+  "salon.title": "{name} uchun safar",
+  "salon.sub": "Soʻrovdan toʻldirildi. Faqat vaqtni tanlang.",
+  "salon.sum": "{seats} joy × {price} = {sum}",
+  "salon.hint": "{name} rozi boʻlsa, safar unga band boʻladi.",
+  "day.today": "bugun",
+  "day.tomorrow": "ertaga"
+}

@@ -27,58 +27,6 @@
   color: var(--reg-muted);
 }
 
-.day-counts {
-  /* A ribbon of the seven days, three in sight, the rest by a swipe (mockup screen 5). */
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: calc((100% - 16px) / 3);
-  gap: 8px;
-  margin: 6px 14px 0;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-}
-
-.day-counts::-webkit-scrollbar {
-  display: none;
-}
-
-.day-count {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  height: 46px;
-  justify-content: center;
-  border: 2px solid transparent;
-  border-radius: 11px;
-  background: var(--reg-card);
-  font: inherit;
-  color: var(--reg-ink);
-  scroll-snap-align: start;
-  cursor: pointer;
-}
-
-.day-count[aria-selected='true'] {
-  border-color: var(--reg-strong);
-  background: var(--reg-soft);
-}
-
-.day-count-name {
-  font-size: clamp(12px, 3.8vw, 14px);
-  white-space: nowrap;
-  font-weight: 700;
-}
-
-.day-count-trips {
-  font-size: 13px;
-  color: var(--reg-text);
-}
-
-.day-count[data-empty='true'] .day-count-trips {
-  color: var(--reg-control);
-}
-
 .find-filters {
   display: flex;
   flex-direction: column;

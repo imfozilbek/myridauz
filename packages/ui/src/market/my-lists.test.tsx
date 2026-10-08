@@ -1,14 +1,10 @@
-import type { BookingsClient, MarketClient } from '@platform/api-client';
-import { offer } from '../bookings/booking-test-kit';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { DriverContext, type Driver } from '../driver/driver-context';
 import { testClients } from '../test-shell';
-import { recommendation, renderMarket, tap, trip, openOwnTrip } from './market-test-kit';
+import { renderMarket, tap, trip, openOwnTrip } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { MyTripsScreen } from './my-trips-screen';
-import { RequestsSearchFlow } from './requests-search-flow';
 
 afterEach(cleanup);
 
@@ -86,60 +82,5 @@ describe('Mening safarlarim (docs/35)', () => {
     await tap('bir joy uchun');
     await tap('Soʻrovni bekor qilish');
     expect(cancelRequest).toHaveBeenCalledWith('r1');
-  });
-});
-
-describe('RequestsSearchFlow: a driver finds passengers (docs/09)', () => {
-  it('shows the requests of a day and sends an offer with the commission', async () => {
-    const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => [request]);
-    const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
-    renderMarket(
-      <RequestsSearchFlow onBack={() => undefined} />,
-      testClients({
-        market: { searchRequests, recommend: async () => recommendation },
-        bookings: { sendOffer },
-      }),
-    );
-    for (const step of [
-      'Qayerdan',
-      'Toshkent shahri',
-      'Butun shahar',
-      'Fargʻona viloyati',
-      'Butun viloyat',
-      /^Ertaga/,
-    ])
-      await tap(step);
-    expect(await screen.findByText('Yoʻlovchilar taklifingizni kutmoqda: vaqt va narx.')).toBeTruthy();
-    await tap('Dilnoza');
-    await tap('Taklif yuborish');
-    await tap('Davom etish');
-    await tap('Davom etish');
-    // 10% of 95 000 per seat, 2 seats (docs/12).
-    expect(await screen.findByText(/19\s000/)).toBeTruthy();
-    await tap('Taklif yuborish');
-    expect(await screen.findByText('Taklif yuborildi')).toBeTruthy();
-    expect(sendOffer.mock.calls[0]?.[1]).toMatchObject({ price: 95000 });
-    expect(searchRequests.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
-  });
-
-  it('keeps the requests private while the application of the driver is checked', async () => {
-    const searchRequests = vi.fn<MarketClient['searchRequests']>(async () => [request]);
-    const pending: Driver = {
-      application: {
-        status: 'pending',
-        car: null,
-        photos: { front: true, side: true, interior: true },
-        reasons: [],
-      },
-      editCar: () => undefined,
-    };
-    renderMarket(
-      <DriverContext.Provider value={pending}>
-        <RequestsSearchFlow onBack={() => undefined} />
-      </DriverContext.Provider>,
-      testClients({ market: { searchRequests } }),
-    );
-    expect(await screen.findByText('Yoʻlovchilar soʻrovlarini ariza tasdiqlangach koʻrasiz.')).toBeTruthy();
-    expect(searchRequests).not.toHaveBeenCalled();
   });
 });

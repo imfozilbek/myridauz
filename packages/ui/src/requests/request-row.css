@@ -1,0 +1,134 @@
+/* One request of «Yoʻlovchilar soʻrovlari» (G64): the values of the mockups g64/1 and g64/2 at 360 px
+   (62 px of the mockup at 1.5 are 41.33 px). On a narrow phone the words get smaller (docs/121). */
+.request-row {
+  margin: 0 12px 8px;
+  padding: 10.67px 13.33px;
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}
+
+.request-row-head {
+  display: flex;
+  align-items: center;
+  gap: 10.67px;
+}
+
+.request-row-head .person-badge-plain {
+  box-sizing: border-box;
+  padding-top: 1.33px;
+  background: var(--reg-face-pale);
+  font-weight: 700;
+}
+
+.request-row-who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 1.9px;
+}
+
+.request-row-name {
+  font-size: clamp(14px, 4.445vw, 16px);
+  line-height: 18px;
+}
+
+.request-row-stars {
+  margin-left: 4.67px;
+  font-size: clamp(11px, 3.473vw, 12.5px);
+  color: var(--reg-brand);
+}
+
+.request-row-line {
+  font-size: clamp(10.5px, 3.334vw, 12px);
+  line-height: 14px;
+  color: var(--reg-muted);
+}
+
+/* A part stays whole: the line breaks only after «·» (docs/121). */
+.request-row-part {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.request-row-price {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-right: -0.67px;
+  padding-top: 2.26px;
+  font-size: clamp(10.5px, 3.334vw, 12px);
+  line-height: 14px;
+  color: var(--reg-muted);
+}
+
+.request-row-price b {
+  font-size: clamp(14px, 4.445vw, 16px);
+  line-height: 18px;
+  color: var(--reg-ink);
+}
+
+.request-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4.67px;
+  margin-top: 6px;
+}
+
+.request-mark {
+  display: inline-flex;
+  align-items: center;
+  height: 17.33px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: var(--reg-neutral-pale);
+  font-size: clamp(10.5px, 3.195vw, 11.5px);
+  color: var(--reg-neutral-pale-text);
+}
+
+.request-mark[data-tone='strong'] {
+  background: var(--reg-mint);
+  font-weight: 700;
+  color: var(--reg-text);
+}
+
+.request-row-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.request-row-actions button {
+  height: 40px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.request-tool {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+}
+
+.request-row-actions .request-act {
+  flex: 1;
+  min-width: 0;
+  padding: 0 6px;
+  background: var(--reg-strong);
+  font-size: clamp(12.5px, 3.889vw, 14px);
+  font-weight: 700;
+  color: var(--reg-card);
+}
+
+.request-row-actions .request-act:disabled {
+  background: var(--reg-off);
+  color: var(--reg-muted);
+}

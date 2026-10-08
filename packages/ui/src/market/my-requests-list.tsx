@@ -121,12 +121,7 @@ export function MyRequestsList(props: Props) {
               items={requests}
               render={(request) => (
                 <div key={request.id} data-row={`request:${request.id}`}>
-                  <RequestCard
-                    request={request}
-                    own
-                    offers={sent(request)}
-                    onOpen={() => onRequest(request)}
-                  />
+                  <RequestCard request={request} offers={sent(request)} onOpen={() => onRequest(request)} />
                 </div>
               )}
             />

@@ -1,0 +1,142 @@
+/* The sheets of «Yoʻlovchilar soʻrovlari» (G64): the values of the mockups g64/1 phone 3 and g64/3
+   phone 2 at 360 px (the mockups are at 1.5). The sheet stands where the mockup puts it; the native
+   main button of Telegram is under it. */
+.board-sheet {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 10px 0 16px;
+  border-radius: 19.33px 19.33px 0 0;
+  background: var(--reg-bg);
+  color: var(--reg-ink);
+}
+
+/* The sheet of the library is white and less round: the sheet of the mockup shows instead. */
+.board-sheet-modal {
+  border-radius: 19.33px 19.33px 0 0;
+  background: transparent;
+}
+
+.board-sheet[data-sheet='offer'] {
+  min-height: calc(100dvh - 248px);
+}
+
+.board-sheet[data-sheet='salon'] {
+  min-height: calc(100dvh - 118px);
+}
+
+.board-sheet-grab {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--reg-route-line);
+}
+
+.board-sheet-title {
+  margin: 8px 20px 0;
+  font-size: 19px;
+  line-height: 22px;
+}
+
+.board-sheet-sub {
+  margin: 0 20px;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.board-sheet-label {
+  margin: 16px 24px 4.33px;
+  font-size: 11.5px;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--reg-muted);
+}
+
+.board-sheet-hint {
+  margin: 8.5px 24.67px 0;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.board-sheet-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44.33px;
+  margin: 0 12px;
+  padding: 0 13.33px;
+  border-radius: 12.5px;
+  background: var(--reg-card);
+  font-size: 14px;
+}
+
+.board-sheet-price .seats-stepper {
+  gap: 5.67px;
+}
+
+.board-sheet-price .seats-stepper button {
+  width: 26px;
+  height: 26px;
+  background: var(--reg-mint);
+}
+
+.board-sheet-price .seats-count {
+  font-size: 13px;
+  font-variant-numeric: normal;
+}
+
+.salon-rows {
+  margin: 7.33px 12px 0;
+  border-radius: 12.5px;
+  background: var(--reg-card);
+}
+
+.salon-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 8.83px 14.67px 8.83px 13.33px;
+  color: var(--reg-from);
+}
+
+.salon-row + .salon-row {
+  border-top: 0.67px solid var(--reg-divider);
+}
+
+.salon-row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--reg-ink);
+}
+
+.salon-row-label,
+.salon-row-note {
+  font-size: 11.5px;
+  line-height: 13.33px;
+  color: var(--reg-muted);
+}
+
+.salon-row-note {
+  line-height: 14px;
+}
+
+.salon-row:last-child {
+  padding-bottom: 7.5px;
+}
+
+/* «Qachon joʻnaysiz?» under the rows stands closer (mockup g64/3 phone 2). */
+.salon-rows + .board-sheet-label {
+  margin-top: 9.33px;
+}
+
+.salon-row-text b {
+  font-size: 14px;
+  line-height: 17px;
+}

@@ -1,0 +1,81 @@
+import { ApiError, type BookingsClient } from '@platform/api-client';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { offer } from '../bookings/booking-test-kit';
+import { tap, trip } from '../market/market-test-kit';
+import { board, EIGHT, NOW, openBoard, salon, TEN } from './board-test-kit';
+
+beforeEach(() => void vi.useFakeTimers({ toFake: ['Date'], now: NOW }));
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
+
+const sheet = async () => within(await screen.findByRole('dialog'));
+
+describe(
+  '«Taklif yuborish»: one sheet with the time and the price (mockup g64/1 phone 3)',
+  { timeout: 20_000 },
+  () => {
+    it('chooses the first time, starts the price from the passenger and moves it by the step', async () => {
+      const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
+      openBoard({ bookings: { sendOffer } });
+      await tap('Taklif yuborish');
+      const form = await sheet();
+      expect(form.getByText('Dilnozaga taklif')).toBeTruthy();
+      expect(form.getByText('Chilonzor → Fargʻona · bugun · 2 kishi')).toBeTruthy();
+      expect(form.getByText('Dilnoza taklifi: 95 000')).toBeTruthy();
+      expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');
+      fireEvent.click(form.getByRole('radio', { name: '10:00' }));
+      fireEvent.click(form.getByLabelText('Oshirish'));
+      expect(form.getByText('100 000')).toBeTruthy();
+      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 100000 }));
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    });
+
+    it('«Boshqa» takes any free time of the day from the native list', async () => {
+      const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
+      openBoard({ bookings: { sendOffer } });
+      await tap('Taklif yuborish');
+      const form = await sheet();
+      fireEvent.change(form.getByLabelText('Boshqa'), { target: { value: '15:30' } });
+      expect(form.getByText('15:30', { selector: 'label' })).toBeTruthy();
+      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      await waitFor(() => expect(sendOffer.mock.calls[0]?.[1].departAt).toBe(EIGHT + 7.5 * 3_600_000));
+    });
+
+    it('a wallet with less than the commission leads to the top up, not to an error', async () => {
+      const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => {
+        throw new ApiError(402, 'wallet.not_enough');
+      });
+      openBoard({ bookings: { sendOffer } });
+      await tap('Taklif yuborish');
+      fireEvent.click(await (await sheet()).findByRole('button', { name: 'Taklif yuborish' }));
+      expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    });
+  },
+);
+
+describe(
+  '«Safar ochib taklif qilish»: a trip from a «Boʻsh salon kerak» request (mockup g64/3)',
+  { timeout: 20_000 },
+  () => {
+    it('fills the sheet from the request and opens the trip for this passenger with the time chosen', async () => {
+      const offerSalonTrip = vi.fn<BookingsClient['offerSalonTrip']>(async () => ({ trip, offer }));
+      openBoard({ requestBoard: async () => board({ others: [salon] }), bookings: { offerSalonTrip } });
+      expect(await screen.findByText('Boʻsh salon kerak')).toBeTruthy();
+      await tap('Safar ochib taklif qilish');
+      const form = await sheet();
+      expect(form.getByText('Dilnoza uchun safar')).toBeTruthy();
+      expect(form.getByText('Bugun')).toBeTruthy();
+      expect(form.getByText('Qoʻyliq pitagi')).toBeTruthy();
+      expect(form.getByText('Faqat butun salon')).toBeTruthy();
+      // Every seat of the car at the price of the request (G61).
+      expect(form.getByText('4 joy × 95 000 = 380 000')).toBeTruthy();
+      expect(form.getByText('Dilnoza rozi boʻlsa, safar unga band boʻladi.')).toBeTruthy();
+      fireEvent.click(await form.findByRole('button', { name: 'Safar ochib taklif qilish' }));
+      await waitFor(() => expect(offerSalonTrip).toHaveBeenCalledWith('r2', EIGHT));
+    });
+  },
+);

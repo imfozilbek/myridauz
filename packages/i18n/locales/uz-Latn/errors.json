@@ -12,6 +12,7 @@
   "trips.busy": "Bu vaqtda boshqa safaringiz bor. Boshqa vaqtni tanlang.",
   "trips.not_driver": "Safar eʼlon qilish uchun haydovchi arizangiz tasdiqlangan boʻlishi kerak.",
   "bookings.no_seats": "Boʻsh joy qolmagan. Boshqa safarni tanlang.",
+  "bookings.salon_taken": "Safaringizda band joylar bor. Butun salonni taklif qilib boʻlmaydi.",
   "bookings.too_many": "Javob kutayotgan soʻrovlar soni chegaraga yetdi. Haydovchilar javobini kuting.",
   "bookings.own_trip": "Oʻz safaringizga joy soʻray olmaysiz.",
   "bookings.wrong_status": "Bu soʻrov allaqachon oʻzgargan. Roʻyxatni yangilang.",

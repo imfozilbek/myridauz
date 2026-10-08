@@ -8,7 +8,7 @@ import {
   MyTripsScreen,
   NEW_TRIP_SECTION,
   NewTripFlow,
-  RequestsSearchFlow,
+  RequestsFlow,
   StartFlow,
   useDriverTripsLive,
   usePending,
@@ -34,7 +34,7 @@ const ACTIONS: readonly StartAction[] = [
     hintKey: 'common.driver.passengerRequestsHint',
     // On the check its own screen says why it waits; the tile is pale with its hint (G62).
     paleUntilApproval: true,
-    Screen: RequestsSearchFlow,
+    Screen: RequestsFlow,
   },
   {
     id: 'my_trips',
