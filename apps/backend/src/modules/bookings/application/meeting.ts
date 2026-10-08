@@ -29,15 +29,37 @@ export async function markMeeting(
   if (record.status !== 'confirmed') return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
   if (!meetingOpen(facts, now)) return { ok: false, error: 'bookings.not_meeting_time' };
-  const next = mark(record, step, now);
-  if (typeof next === 'string') return { ok: false, error: next };
-  if (next) {
-    await deps.bookings.save(next);
-    await tellPassenger(deps, next, step);
+  const written = await write(deps, record, step, now);
+  if (typeof written === 'string') return { ok: false, error: written };
+  // Only the tap that wrote the mark tells the passenger and files the complaint (docs/65 A4).
+  if (written.fresh) {
+    await tellPassenger(deps, written.record, step);
     if (step === 'no_show') await deps.meeting.fileNoShow(driverId, id);
   }
-  const [view] = await withDriverExtras(deps, driverId, await bookingViews(deps, [next ?? record], 'driver'));
+  const [view] = await withDriverExtras(deps, driverId, await bookingViews(deps, [written.record], 'driver'));
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
+}
+
+type Written = { readonly record: BookingRecord; readonly fresh: boolean };
+type MarkError = Exclude<MeetError, 'bookings.not_found' | 'bookings.not_meeting_time'>;
+
+// The mark goes in one guarded step: of two taps at once, or a tap and a cancel, one wins. The other
+// reads the booking again and answers by what is there now.
+async function write(
+  deps: BookingsDeps,
+  record: BookingRecord,
+  step: DriverMeetStep,
+  now: number,
+): Promise<Written | MarkError> {
+  const next = mark(record, step, now);
+  if (typeof next === 'string') return next;
+  if (next === null) return { record, fresh: false };
+  if (await deps.bookings.markOnce(record.id, step, now)) return { record: next, fresh: true };
+  const current = await deps.bookings.find(record.id);
+  if (current?.status !== 'confirmed') return 'bookings.wrong_status';
+  const again = mark(current, step, now);
+  if (again === null) return { record: current, fresh: false };
+  return typeof again === 'string' ? again : 'bookings.wrong_status';
 }
 
 // The bot message refreshes the screen of the passenger by itself (docs/64).

@@ -23,7 +23,7 @@ const RESOLVE = `UPDATE complaints SET status = 'resolved', decision = ?, decide
   ${REFUND_COLUMNS.map((column) => `${column} = ?`).join(', ')} WHERE id = ? AND status != 'resolved'`;
 // The owner answers a proposed refund once: a second tap changes nothing (G63).
 const ANSWER = `UPDATE complaints SET refund_state = ?, refund_decided_by = ?, refund_decided_at = ?
-  WHERE id = ? AND refund_state = 'proposed'`;
+  WHERE id = ? AND refund_state = ?`;
 
 // Tables complaints and complaint_chat_reads (migrations/0012_ratings_complaints.sql).
 export const d1Complaints = (db: D1Database): ComplaintStore => ({
@@ -82,8 +82,14 @@ export const d1Complaints = (db: D1Database): ComplaintStore => ({
       `SELECT * FROM complaints WHERE author_id = ? AND booking_id IN (${marks})`;
     return (await allIn<Row>(db, sql, bookingIds, [authorId])).map(toComplaint);
   },
-  answerRefund: async ({ id, refund }) => {
-    const values = [refund?.state ?? null, refund?.decidedBy ?? null, refund?.decidedAt ?? null, id];
+  answerRefund: async ({ id, refund }, expected) => {
+    const values = [
+      refund?.state ?? null,
+      refund?.decidedBy ?? null,
+      refund?.decidedAt ?? null,
+      id,
+      expected,
+    ];
     return (
       (
         await db

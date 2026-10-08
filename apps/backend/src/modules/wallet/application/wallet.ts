@@ -1,5 +1,5 @@
 import type { Adjustment, OperationKind } from '@platform/contracts';
-import { balanceOf, chargedFor, splitCharge, type Operation } from '../domain/ledger';
+import { balanceOf, chargedFor, returnedFor, splitCharge, type Operation } from '../domain/ledger';
 import { appendCharge } from './append-charge';
 import { burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
 import type { WalletDeps } from './ports';
@@ -64,9 +64,11 @@ export async function charge(
   return 'ok';
 }
 
-// The passenger cancelled: the commission goes back to the balances it came from (docs/12).
+// The passenger cancelled: the commission goes back to the balances it came from (docs/12), once.
 export async function refund(deps: WalletDeps, driverId: number, bookingId: string): Promise<void> {
-  const taken = chargedFor(await deps.wallet.operations(driverId), bookingId);
+  const operations = await deps.wallet.operations(driverId);
+  if (returnedFor(operations, bookingId)) return;
+  const taken = chargedFor(operations, bookingId);
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => taken[balance] > 0)
     .map((balance) => row(deps, driverId, { kind: 'refund', balance, amount: taken[balance], bookingId }));

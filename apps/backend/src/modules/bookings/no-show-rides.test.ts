@@ -1,14 +1,11 @@
-import { MEET_BEFORE_MINUTES } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { confirm } from './application/answer';
 import { markMeeting } from './application/meeting';
 import { pastRides } from './application/past';
 import { requestBooking } from './application/request';
 import { filedRideOf, ratableRideOf, ridesOf } from './application/rides';
-import { ALI, DILNOZA, DRIVER, HOUR, NOW, seats, setup } from './test-kit';
-
-const DEPART = NOW + 30 * HOUR;
-const ENDS = NOW + 37 * HOUR;
+import { DEPART, ENDS, MEETING } from './test-booked';
+import { ALI, DILNOZA, DRIVER, HOUR, seats, setup } from './test-kit';
 
 // Dilnoza did not come, Ali rode: the trip is over.
 async function tripWithNoShow() {
@@ -23,7 +20,7 @@ async function tripWithNoShow() {
     ids.push(asked.value.id);
   }
   const [missed = '', rode = ''] = ids;
-  kit.setNow(DEPART - (MEET_BEFORE_MINUTES - 1) * 60_000);
+  kit.setNow(MEETING);
   await markMeeting(kit.deps, DRIVER, missed, 'no_show');
   kit.setNow(ENDS + HOUR);
   return { ...kit, tripId, missed, rode };

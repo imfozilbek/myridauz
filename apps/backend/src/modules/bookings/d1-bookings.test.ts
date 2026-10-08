@@ -78,6 +78,24 @@ describe('bookings in D1 (G24)', () => {
     expect(await bookings.find('b1')).toEqual({ ...marked, cameAt: NOW + 4 });
   });
 
+  it('writes each mark of the driver once, in one guarded step (G63, docs/65 A4)', async () => {
+    const bookings = d1Bookings(db);
+    await bookings.save(record({ status: 'confirmed' }));
+    expect(await bookings.markOnce('b1', 'came', NOW + 1)).toBe(true);
+    expect(await bookings.markOnce('b1', 'came', NOW + 2)).toBe(false);
+    expect(await bookings.markOnce('b1', 'met', NOW + 3)).toBe(true);
+    expect(await bookings.markOnce('b1', 'no_show', NOW + 4)).toBe(false);
+    expect(await bookings.find('b1')).toEqual(
+      record({ status: 'confirmed', driverCameAt: NOW + 1, metAt: NOW + 3, updatedAt: NOW + 3 }),
+    );
+    // «Kelmadi» never after the passenger got in; no mark on a booking that is not confirmed.
+    await bookings.save(record({ id: 'b2', status: 'confirmed', boardedAt: NOW }));
+    expect(await bookings.markOnce('b2', 'no_show', NOW + 5)).toBe(false);
+    await bookings.save(record({ id: 'b3', status: 'cancelled_by_passenger' }));
+    expect(await bookings.markOnce('b3', 'came', NOW + 5)).toBe(false);
+    expect(await bookings.markOnce('b2', 'met', NOW + 6)).toBe(true);
+  });
+
   it('erases the points with the status in one step, and by id, person and age', async () => {
     const bookings = d1Bookings(db);
     await bookings.save(record());

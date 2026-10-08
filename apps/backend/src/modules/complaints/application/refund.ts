@@ -4,7 +4,8 @@ import type { ComplaintsDeps } from './ports';
 
 // The owner answers the refund a moderator proposed on a no-show (docs/35, owner decision
 // 06.10.2026): confirmed, the commission of the booking goes back to the driver once.
-// The answer is written first, in one step: a second tap or a second owner changes nothing.
+// The answer is written first, in one step: a second tap or a second owner changes nothing, and a
+// confirm and a reject at once cannot both win. Then the money moves.
 export async function answerRefund(deps: ComplaintsDeps, owner: Moderator, id: string, answer: RefundAnswer) {
   if (!owner.owner) return 'auth.not_owner' as const;
   const complaint = await deps.store.find(id);
@@ -13,7 +14,16 @@ export async function answerRefund(deps: ComplaintsDeps, owner: Moderator, id: s
   if (complaint.refund?.state !== 'proposed') return 'complaints.wrong_status' as const;
   const state = answer === 'confirm' ? ('confirmed' as const) : ('rejected' as const);
   const refund = { ...complaint.refund, state, decidedBy: owner.id, decidedAt: deps.now() };
-  if (!(await deps.store.answerRefund({ ...complaint, refund }))) return 'complaints.wrong_status' as const;
-  if (state === 'confirmed') await deps.refund(owner.id, ride.driverId, ride.bookingId);
+  if (!(await deps.store.answerRefund({ ...complaint, refund }, 'proposed')))
+    return 'complaints.wrong_status' as const;
+  if (state === 'rejected') return 'ok' as const;
+  try {
+    await deps.refund(owner.id, ride.driverId, ride.bookingId);
+  } catch (error) {
+    // The money did not move: the refund waits for the owner again, a new tap repeats it. The wallet
+    // gives the commission back once whatever happens (docs/35).
+    await deps.store.answerRefund(complaint, 'confirmed');
+    throw error;
+  }
   return 'ok' as const;
 }

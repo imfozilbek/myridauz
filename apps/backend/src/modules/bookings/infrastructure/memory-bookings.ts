@@ -1,5 +1,6 @@
 import type { BookingRepository, OfferRepository } from '../application/ports';
 import { withoutPoints, type BookingRecord } from '../domain/booking';
+import { mark } from '../domain/meeting';
 import type { OfferRecord } from '../domain/offer';
 
 // The same rules as D1 without a database (tests and local runs).
@@ -19,6 +20,14 @@ export function createMemoryBookings(): BookingRepository {
         .reduce((sum, other) => sum + other.seats, 0);
       if (rows.get(booking.id)?.status !== 'requested' || taken + booking.seats > tripSeats) return false;
       rows.set(booking.id, { ...booking, status: 'confirmed' });
+      return true;
+    },
+    // Read and written in one step, like the guarded UPDATE of D1 (G63).
+    markOnce: async (id, step, now) => {
+      const booking = rows.get(id);
+      const next = booking?.status === 'confirmed' ? mark(booking, step, now) : null;
+      if (next === null || typeof next === 'string') return false;
+      rows.set(id, next);
       return true;
     },
     find: async (id) => rows.get(id),

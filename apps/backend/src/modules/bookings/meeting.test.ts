@@ -1,24 +1,10 @@
-import { MEET_BEFORE_MINUTES } from '@platform/contracts';
+import { MEET_BEFORE_MINUTES, MINUTE_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
-import { confirm, driverBookings } from './application/answer';
+import { driverBookings } from './application/answer';
 import { markMeeting } from './application/meeting';
 import { requestBooking } from './application/request';
-import { DILNOZA, DRIVER, HOUR, NOW, OLIM, seats, setup } from './test-kit';
-
-const MINUTE = 60 * 1000;
-// The trips of the test kit leave 30 hours after NOW and end 7 hours later.
-const DEPART = NOW + 30 * HOUR;
-const ENDS = NOW + 37 * HOUR;
-const MEETING = DEPART - (MEET_BEFORE_MINUTES - 5) * MINUTE;
-
-async function booked() {
-  const kit = setup();
-  await kit.bonus();
-  const result = await requestBooking(kit.deps, DILNOZA, kit.addTrip(), seats(1));
-  if (!result.ok) throw new Error('no booking');
-  await confirm(kit.deps, DRIVER, result.value.id);
-  return { ...kit, id: result.value.id };
-}
+import { booked, DEPART, ENDS, MEETING } from './test-booked';
+import { ALI, DILNOZA, DRIVER, HOUR, OLIM, seats, setup } from './test-kit';
 
 describe('the driver at the point of the passenger (docs/126, G63)', () => {
   it('only the driver of the trip marks, only a confirmed booking', async () => {
@@ -37,7 +23,7 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
   it('opens MEET_BEFORE_MINUTES before the departure and closes with the trip', async () => {
     const { deps, id, setNow } = await booked();
     const early = { ok: false, error: 'bookings.not_meeting_time' };
-    setNow(DEPART - (MEET_BEFORE_MINUTES + 5) * MINUTE);
+    setNow(DEPART - (MEET_BEFORE_MINUTES + 5) * MINUTE_MS);
     for (const step of ['came', 'met', 'no_show'] as const)
       expect(await markMeeting(deps, DRIVER, id, step)).toEqual(early);
     setNow(ENDS);
@@ -93,5 +79,27 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
     };
     const [view] = await driverBookings(driverDeps, DRIVER);
     expect(view).toMatchObject({ noShowAt: MEETING, metAt: null, refund: proposed, rated: true });
+  });
+
+  it('asks the complaints for the refunds of the no-shows only, and not at all without one', async () => {
+    const { deps, id, setNow, addTrip } = await booked();
+    // Ali asked for a seat on another trip of the driver and comes into no refund.
+    await requestBooking(deps, ALI, addTrip(), seats(1));
+    const asked: string[][] = [];
+    const counting = {
+      ...deps,
+      meeting: {
+        ...deps.meeting,
+        refunds: async (_driver: number, ids: readonly string[]) => {
+          asked.push([...ids]);
+          return new Map();
+        },
+      },
+    };
+    await driverBookings(counting, DRIVER);
+    setNow(MEETING);
+    await markMeeting(deps, DRIVER, id, 'no_show');
+    await driverBookings(counting, DRIVER);
+    expect(asked).toEqual([[id]]);
   });
 });

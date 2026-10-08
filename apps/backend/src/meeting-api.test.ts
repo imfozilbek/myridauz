@@ -79,6 +79,8 @@ describe('the meeting of the driver and a no-show through the API (docs/126, doc
     const queue = await read<{ complaints: Complaint[] }>(call('/admin/complaints', OWNER, { app: 'admin' }));
     const filed = queue.complaints.find((complaint) => complaint.reason === 'no_show');
     expect(filed?.against.role).toBe('passenger');
+    // A no-show is not a ride: the team sees no rides of this passenger (docs/129).
+    expect(filed?.against.trips).toBe(0);
     const id = filed?.id ?? '';
     const decision = { ...asAdmin, ...json({ action: 'none', refund: true }) };
     expect((await call(`/admin/complaints/${id}/decision`, MODERATOR, decision)).status).toBe(204);

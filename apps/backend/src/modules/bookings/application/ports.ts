@@ -15,11 +15,11 @@ import type {
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
-import type { MeetingPorts } from './meeting-ports';
+import type { MarkStore, MeetingPorts } from './meeting-ports';
 import type { RequestFacts } from './request-facts';
 
 // Ports of the bookings module: D1 in production, memory in tests.
-export type BookingRepository = {
+export type BookingRepository = MarkStore & {
   save(booking: BookingRecord): Promise<void>;
   // Saves only if the booking still has the expected status: two answers at once cannot both win.
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;

@@ -13,7 +13,7 @@ import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
-import { showedUp } from './domain/meeting';
+import { isRide } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -80,9 +80,7 @@ export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(b
 
 // The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
 export const passengerRideCount = async (env: Bindings, passengerId: number) =>
-  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(
-    (booking) => (booking.status === 'confirmed' || booking.status === 'completed') && showedUp(booking),
-  ).length;
+  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(isRide).length;
 
 // «Hamyon» names the passenger of a no-show refund (G63): the first name of each booking.
 export const passengerNamesOf = async (env: Bindings, bookingIds: readonly string[]) => {

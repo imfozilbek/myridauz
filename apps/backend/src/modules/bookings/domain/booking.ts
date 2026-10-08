@@ -83,8 +83,11 @@ const MOVES: Moves = {
   driver_cancel: { requested: 'declined', confirmed: 'cancelled_by_driver' },
 };
 
-// A confirmed booking is not cancelled after the departure: the ride happened or it is a complaint,
-// never a refund by a tap (docs/65 A4).
+// After «Keldi» or «Kelmadi» of the driver the meeting is over (G63).
+const metOrMissed = (booking: BookingRecord) => booking.metAt !== null || booking.noShowAt !== null;
+
+// A confirmed booking is not cancelled after the departure, nor after the meeting: the ride happened
+// or it is a complaint, never a refund by a tap (docs/35, docs/65 A4).
 export function move(
   booking: BookingRecord,
   action: BookingAction,
@@ -92,7 +95,8 @@ export function move(
   departAt: number,
 ): BookingRecord | 'bookings.wrong_status' {
   const status = statusAt(booking, now, false);
-  if (status === 'confirmed' && action !== 'confirm' && departAt <= now) return 'bookings.wrong_status';
+  const over = departAt <= now || metOrMissed(booking);
+  if (status === 'confirmed' && action !== 'confirm' && over) return 'bookings.wrong_status';
   const next = MOVES[action][status];
   if (!next) return 'bookings.wrong_status';
   const moved = { ...booking, status: next, updatedAt: now };

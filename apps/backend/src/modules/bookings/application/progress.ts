@@ -1,10 +1,10 @@
-import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
+import type { Booking } from '@platform/contracts';
 import type { BookingRecord } from '../domain/booking';
+import { meetingStartsAt } from '../domain/meeting';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 
 export type Progress = 'came' | 'boarded' | 'arrived';
-const MINUTE_MS = 60 * 1000;
 
 // "Men keldim" at the meeting point tells the driver (docs/126), from MEET_BEFORE_MINUTES before the
 // departure until the passenger is in the car.
@@ -40,9 +40,7 @@ const moved = (record: BookingRecord, step: Progress, now: number): BookingRecor
 
 async function canMeet(deps: BookingsDeps, record: BookingRecord, now: number) {
   const trip = await deps.trips.find(record.tripId);
-  return (
-    trip !== undefined && record.boardedAt === null && now >= trip.departAt - MEET_BEFORE_MINUTES * MINUTE_MS
-  );
+  return trip !== undefined && record.boardedAt === null && now >= meetingStartsAt(trip.departAt);
 }
 
 // The booking as its passenger sees it, for sharing the trip with close people (docs/43).
