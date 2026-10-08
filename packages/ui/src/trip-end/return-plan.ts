@@ -1,5 +1,7 @@
 import {
   arrivalAt,
+  MINUTE_MS,
+  RETURN_REST_MS,
   SLOT_MINUTES,
   tashkentDate,
   tashkentDayStart,
@@ -10,16 +12,12 @@ import type { PlaceDirectory } from '../places/directory';
 import { returnDraft } from '../market/return-trip';
 import type { TripDraft } from '../market/trip-draft';
 
-const MINUTE_MS = 60 * 1000;
 const SLOT_MS = SLOT_MINUTES * MINUTE_MS;
-// The driver rests this long after the arrival before the way back (Claude's choice for the mockup
-// g63/4 screen 16: ≈ 13:00 there, 15:00 back).
-const REST_MS = 2 * 60 * MINUTE_MS;
 
 // The way back on the given day: at the time of the arrival and the rest, on a slot of the
 // publishing (G38); the driver confirms or changes it there.
 export function returnDepartAt(trip: Pick<Trip, 'departAt' | 'km'>, day: string): number {
-  const back = arrivalAt(trip.departAt, trip.km) + REST_MS;
+  const back = arrivalAt(trip.departAt, trip.km) + RETURN_REST_MS;
   const inDay = back - tashkentDayStart(tashkentDate(back));
   return tashkentDayStart(day) + Math.ceil(inDay / SLOT_MS) * SLOT_MS;
 }

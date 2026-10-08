@@ -1,7 +1,9 @@
 import { afterTrip, type Booking, type Trip } from '@platform/contracts';
 import { daysLeft } from '../bookings/done-tools';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { refundWaits } from '../meeting/no-show-text';
+import { brandVars } from '../theme/brand-vars';
 import { ridersOf } from './trip-sums';
 import './past-trip-tags.css';
 
@@ -12,6 +14,8 @@ type Props = { readonly trip: Trip; readonly bookings: readonly Booking[]; reado
 // to give with the days left, all given, the refund of a no-show waiting or back.
 export function PastTripTags({ trip, bookings, now }: Props) {
   const { t } = useI18n();
+  // The list of «Mening safarlarim» has no colours of the app of its own: the tags bring them.
+  const { colors } = useBrand().theme;
   if (trip.status !== 'completed') return null;
   const riders = ridersOf(bookings);
   const { rateUntil } = afterTrip(trip.departAt, trip.km);
@@ -25,7 +29,7 @@ export function PastTripTags({ trip, bookings, now }: Props) {
     tags.push(['done', t('wallet.kind.refund')]);
   if (tags.length === 0) return null;
   return (
-    <span className="past-tags">
+    <span className="past-tags" style={brandVars(colors)}>
       {tags.map(([tone, text]) => (
         <span key={text} className={`past-tag past-tag-${tone}`}>
           {text}

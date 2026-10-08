@@ -13,7 +13,7 @@ export function useMeetMark(onChanged: (booking: Booking) => void) {
   const mark = async (booking: Booking, step: DriverMeetStep) => {
     const name = booking.passenger.firstName;
     const ask = t('driverAfter.noShow.ask', { name });
-    if (step === 'no_show' && !(await confirm(ask, t('driverAfter.noShow.mark')))) return;
+    if (step === 'no_show' && !(await confirm(ask, t('complaints.reason.no_show')))) return;
     clear();
     try {
       onChanged(await bookings.meet(booking.id, step));

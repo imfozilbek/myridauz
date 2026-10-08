@@ -14,16 +14,16 @@
 }
 
 .past-tag-due {
-  background: var(--reg-strong, var(--tgui--button_color));
-  color: var(--reg-card, var(--tgui--button_text_color));
+  background: var(--reg-strong);
+  color: var(--reg-card);
 }
 
 .past-tag-plain {
-  background: var(--reg-face-soft, var(--tgui--secondary_bg_color));
-  color: var(--reg-face-text, var(--tgui--text_color));
+  background: var(--reg-bg);
+  color: var(--reg-face-text);
 }
 
 .past-tag-done {
-  background: var(--reg-success-soft, var(--tgui--secondary_bg_color));
-  color: var(--reg-success, var(--tgui--link_color));
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
 }

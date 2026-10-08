@@ -1,17 +1,23 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { ChatScreen } from '../chat/chat-screen';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import type { TripDraft } from '../market/trip-draft';
+import { openInTelegram } from '../telegram/feedback';
 import { WalletScreen } from '../wallet/wallet-screen';
 import type { AfterRow } from './after-rows';
 import { PastTripPage } from './past-trip-page';
 import { pickRider } from './pick-rider';
+import { RiderPick } from './rider-pick';
 import { TripEndFlow } from './trip-end-flow';
+import { taken } from './trip-sums';
 
+type About = 'talk' | 'complain';
 type Opened =
   | { readonly screen: 'chat' | 'call' | 'complain'; readonly booking: Booking }
+  | { readonly screen: 'pick'; readonly about: About }
   | { readonly screen: 'rate' | 'wallet' };
 
 type Props = {
@@ -23,14 +29,18 @@ type Props = {
   readonly onPublish: (draft: Partial<TripDraft>) => void;
 };
 
-const taken = (booking: Booking) => booking.status === 'confirmed' || booking.status === 'completed';
-
 // The past trip with what opens from it (docs/129): the chat and the call of a passenger, the
-// complaint, the stars not given yet with «Qaytish» after them (docs/124 В) and «Hamyon».
+// complaint (support after its deadline), the stars not given yet with «Qaytish» after them
+// (docs/124 В) and «Hamyon».
 export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: Props) {
   const { t } = useI18n();
+  const { bots } = useBrand();
   const [opened, setOpened] = useState<Opened | null>(null);
   const back = () => setOpened(null);
+  const riders = bookings.filter(taken);
+  const question = t('driverAfter.past.pick');
+  const about = (row: About, booking: Booking) =>
+    setOpened({ screen: row === 'talk' ? 'chat' : 'complain', booking });
   if (opened?.screen === 'chat' || opened?.screen === 'call')
     return (
       <ChatScreen
@@ -41,6 +51,15 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
       />
     );
   if (opened?.screen === 'complain') return <ComplaintScreen bookingId={opened.booking.id} onBack={back} />;
+  if (opened?.screen === 'pick')
+    return (
+      <RiderPick
+        riders={riders}
+        question={question}
+        onPick={(booking) => about(opened.about, booking)}
+        onBack={back}
+      />
+    );
   if (opened?.screen === 'rate')
     return (
       <TripEndFlow
@@ -54,8 +73,10 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
   const row = async (picked: AfterRow) => {
     if (picked === 'rate' || picked === 'commission')
       return setOpened({ screen: picked === 'rate' ? 'rate' : 'wallet' });
-    const booking = await pickRider(bookings.filter(taken), t('driverAfter.past.pick'));
-    if (booking) setOpened({ screen: picked === 'talk' ? 'chat' : 'complain', booking });
+    if (picked === 'support') return openInTelegram(`https://t.me/${bots.support}`);
+    const booking = await pickRider(riders, question);
+    if (booking === 'list') return setOpened({ screen: 'pick', about: picked });
+    return booking ? about(picked, booking) : undefined;
   };
   return (
     <PastTripPage

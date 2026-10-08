@@ -6,6 +6,9 @@ import { brandVars } from '../theme/brand-vars';
 import { refundWaits } from './no-show-text';
 import './no-show.css';
 
+// The tick of the plate (mockup g63/5 phone 1).
+const TICK = 16;
+
 // On top of «Mening safarim» after «Kelmadi» (docs/129, mockup g63/5 phone 1): the refund of the
 // commission went to the team and waits for the owner (docs/35).
 export function NoShowBanners({ bookings }: { readonly bookings: readonly Booking[] }) {
@@ -14,7 +17,7 @@ export function NoShowBanners({ bookings }: { readonly bookings: readonly Bookin
   const style = brandVars(useBrand().theme.colors);
   return bookings.filter(refundWaits).map((booking) => (
     <div key={booking.id} className="no-show-banner" role="status" style={style}>
-      <Icon name="selected" size={16} />
+      <Icon name="selected" size={TICK} />
       <span className="no-show-banner-text">
         <b>{t('driverAfter.noShow.title', { name: booking.passenger.firstName })}</b>
         <span>

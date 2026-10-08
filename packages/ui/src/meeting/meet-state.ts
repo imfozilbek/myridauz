@@ -1,15 +1,14 @@
-import { MEET_BEFORE_MINUTES, tripEndsAt, type Booking, type Trip } from '@platform/contracts';
+import { meetingStartsAt, tripEndsAt, type Booking, type Trip } from '@platform/contracts';
 import { stopsInOrder } from '../bookings/driver-stops';
-
-const MINUTE_MS = 60 * 1000;
 
 export type MeetStep = 'come' | 'answer' | 'met' | 'no_show';
 
 // Where the driver is with one passenger at the point (docs/126): «Men keldim», then «Keldi» or
-// «Kelmadi». A passenger in the car by the own «Mashinaga chiqdim» is met.
+// «Kelmadi». A passenger in the car by the own «Mashinaga chiqdim» or «Yetib keldim» is met: the
+// server refuses «Kelmadi» then (G63 B2).
 export function meetStep(booking: Booking): MeetStep {
   if (booking.noShowAt !== null) return 'no_show';
-  if (booking.metAt !== null || booking.boardedAt !== null) return 'met';
+  if (booking.metAt !== null || booking.boardedAt !== null || booking.arrivedAt !== null) return 'met';
   return booking.driverCameAt === null ? 'come' : 'answer';
 }
 
@@ -23,7 +22,7 @@ export const meetOpen = (booking: Booking) => {
 // server (docs/129): «Kelmadi» is possible until then.
 export const meetingOpen = (trip: Pick<Trip, 'departAt' | 'km' | 'status'>, now: number) =>
   (trip.status === 'active' || trip.status === 'full') &&
-  now >= trip.departAt - MEET_BEFORE_MINUTES * MINUTE_MS &&
+  now >= meetingStartsAt(trip.departAt) &&
   now < tripEndsAt(trip.departAt, trip.km);
 
 export type MeetPoint = { readonly booking: Booking; readonly number: number };

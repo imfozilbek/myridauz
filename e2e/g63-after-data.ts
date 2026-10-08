@@ -13,8 +13,9 @@ export const akmal = (extra: object = {}) =>
   });
 const NO_SHOW = { noShowAt: tashkent('2026-10-07T08:10'), refund: { state: 'proposed', amount: 9000 } };
 
-// Phone 5: Madina rated with five stars, Akmal did not come and his refund waits.
-export const pastTrip = mockupTrip();
+// Phone 5: Madina rated with five stars, Akmal did not come and his refund waits; «Yetib keldik» at
+// 12:55, before the ≈ 13:00 of the road.
+export const pastTrip = mockupTrip({ arrivedAt: tashkent('2026-10-07T12:55') });
 export const pastSeats = [
   seat(pastTrip, '1', 'Madina', 2, { rated: true }),
   seat(pastTrip, '2', 'Akmal', 1, NO_SHOW),

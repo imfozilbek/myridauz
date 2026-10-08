@@ -1,8 +1,7 @@
-import type { Booking } from '@platform/contracts';
+import { MINUTE_MS, type Booking } from '@platform/contracts';
 import { confirmed } from '../bookings/booking-test-kit';
 
 // Test helper for the meeting of the driver (G63): Madina from her door, Akmal from the pitak.
-const MINUTE = 60 * 1000;
 export const madina: Booking = {
   ...confirmed,
   id: 'm1',
@@ -24,4 +23,4 @@ export const akmal: Booking = {
   pickup: null,
 };
 // Ten minutes before the departure: the meeting is open (docs/126).
-export const MEETING_NOW = confirmed.trip.departAt - 10 * MINUTE;
+export const MEETING_NOW = confirmed.trip.departAt - 10 * MINUTE_MS;

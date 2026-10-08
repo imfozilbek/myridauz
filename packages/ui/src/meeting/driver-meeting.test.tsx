@@ -61,6 +61,10 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
     open([madina], meet);
     await tap('Men keldim');
     expect(meet).toHaveBeenLastCalledWith('m1', 'came');
+    // The refusal on the left, the main action on the right (docs/121).
+    await screen.findByText('Keldi');
+    const pair = [...document.querySelectorAll('.meet-answer button')].map((button) => button.textContent);
+    expect(pair).toEqual(['Kelmadi', 'Keldi']);
     await tap('Keldi');
     expect(meet).toHaveBeenLastCalledWith('m1', 'met');
     expect(await screen.findByText('Keldi')).toBeTruthy();

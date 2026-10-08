@@ -5,12 +5,18 @@ import { choose } from '../telegram/feedback';
 const MAX_ANSWERS = 3;
 
 // The passenger a row of «Safardan keyin» is about: the only one, or the one chosen in the native
-// window of Telegram; null when closed or outside Telegram.
-export async function pickRider(riders: readonly Booking[], question: string): Promise<Booking | null> {
+// window of Telegram; 'list' when the window cannot hold them all or Telegram is not there: the
+// list screen asks then (RiderPick). null when the window is closed.
+export async function pickRider(
+  riders: readonly Booking[],
+  question: string,
+): Promise<Booking | 'list' | null> {
   if (riders.length <= 1) return riders[0] ?? null;
-  const answers = riders
-    .slice(0, MAX_ANSWERS)
-    .map(({ id, passenger }) => ({ id, text: passenger.firstName }));
-  const chosen = await choose(question, answers);
+  if (riders.length > MAX_ANSWERS) return 'list';
+  const chosen = await choose(
+    question,
+    riders.map(({ id, passenger }) => ({ id, text: passenger.firstName })),
+  );
+  if (chosen === undefined) return 'list';
   return riders.find(({ id }) => id === chosen) ?? null;
 }

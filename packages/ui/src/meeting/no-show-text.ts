@@ -9,7 +9,7 @@ export function useNoShowText() {
     if (booking.noShowAt === null) return null;
     const amount = formatNumber(booking.refund?.amount ?? booking.commission);
     if (booking.refund?.state === 'confirmed') return t('driverAfter.noShow.refunded', { amount });
-    if (booking.refund?.state === 'rejected') return t('driverAfter.noShow.mark');
+    if (booking.refund?.state === 'rejected') return t('complaints.reason.no_show');
     return t('driverAfter.noShow.waiting', { amount });
   };
 }

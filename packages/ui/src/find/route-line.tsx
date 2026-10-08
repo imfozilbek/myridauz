@@ -4,6 +4,8 @@ import { Icon, type IconName } from '../icons';
 import { usePlaces } from '../market/places-gate';
 
 const HOUR_MS = 60 * 60 * 1000;
+// The car before the way on «Qaytish» (mockup g63/4 screen 16).
+const WAY_ICON = 14;
 
 type Props = {
   readonly from: string;
@@ -38,7 +40,7 @@ export function RouteLine({ from, to, departAt, km, icon }: Props) {
     <div className="safar-card route-line">
       {end(from, formatTime(new Date(departAt)), false, 'from')}
       <div className="route-line-way">
-        {icon ? <Icon name={icon} size={14} /> : null}
+        {icon ? <Icon name={icon} size={WAY_ICON} /> : null}
         {t('find.road', { km: String(km), hours: String(Math.round(roadMs(km) / HOUR_MS)) })}
       </div>
       {end(to, t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(departAt, km))) }), true, 'to')}

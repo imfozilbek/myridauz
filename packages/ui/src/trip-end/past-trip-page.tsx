@@ -1,4 +1,4 @@
-import { arrivalAt, type Booking, type Trip } from '@platform/contracts';
+import { afterTrip, type Booking, type Trip } from '@platform/contracts';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -9,15 +9,17 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
+import { useDoneLine } from '../trip/done-line';
 import { AfterRows, type AfterRow } from './after-rows';
-import { PastRider } from './past-rider';
+import { PastRiders, pastRidersKey } from './past-riders';
 import { PastTripCard } from './past-trip-card';
-import { useGivenStars } from './use-given-stars';
+import { taken } from './trip-sums';
 import { useReturnPlan } from './use-return-plan';
 import '../meeting/no-show.css';
 import './past-trip.css';
 
-const taken = (booking: Booking) => booking.status === 'confirmed' || booking.status === 'completed';
+// The tick of «Safar tugadi» (mockup g63/5 phone 5).
+const TICK = 16;
 
 type Props = {
   readonly trip: Trip;
@@ -31,42 +33,30 @@ type Props = {
 
 // The past trip of the driver (owner decision 06.10.2026, docs/129, mockup g63/5 phone 5): when and
 // where it ended, the passengers with their stars or the refund, the trip, what may still be done.
+// A month later the plate is grey, as on the booking of the passenger (g60/6).
 export function PastTripPage({ trip, bookings, onBack, onChat, onCall, onRow, onPublish }: Props) {
   useScreenView('trip_end.past');
   useScreenBackground();
-  const { t, formatDate, formatTime } = useI18n();
+  const { t } = useI18n();
   const { colors } = useBrand().theme;
   const directory = usePlaces();
+  const done = useDoneLine(trip, directory.find(trip.to)?.name ?? trip.to);
   const riders = bookings.filter(taken);
-  const stars = useGivenStars(riders);
   const { now, draft } = useReturnPlan(trip);
-  const arrival = new Date(arrivalAt(trip.departAt, trip.km));
-  const place = directory.find(trip.to)?.name ?? trip.to;
+  const talk = now < afterTrip(trip.departAt, trip.km).talkUntil;
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return (
     <div className="past-trip" style={brandVars(colors)}>
       <Screen onBack={onBack} />
-      <div className="past-banner">
-        <Icon name="selected" size={16} />
+      <div className={done.old ? 'past-banner past-banner-old' : 'past-banner'}>
+        <Icon name="selected" size={TICK} />
         <span className="past-banner-text">
           <b>{t('bookings.done.title')}</b>
-          <span>
-            {t('bookings.done.when', { date: formatDate(arrival), time: formatTime(arrival), place })}
-          </span>
+          <span>{done.line}</span>
         </span>
       </div>
       <h2 className="past-head">{t('driverAfter.past.riders', { count: String(seats) })}</h2>
-      <div className="past-riders">
-        {riders.map((booking) => (
-          <PastRider
-            key={booking.id}
-            booking={booking}
-            stars={stars.get(booking.id)}
-            onChat={() => onChat(booking)}
-            onCall={() => onCall(booking)}
-          />
-        ))}
-      </div>
+      <PastRiders key={pastRidersKey(riders)} riders={riders} talk={talk} onChat={onChat} onCall={onCall} />
       <h2 className="past-head">{t('driverAfter.past.trip')}</h2>
       <PastTripCard trip={trip} />
       <h2 className="past-head">{t('driverAfter.past.after')}</h2>

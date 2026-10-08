@@ -12,6 +12,9 @@ import { meetingPoints, meetOpen } from './meet-state';
 import { useMeetMark } from './use-meet-mark';
 import './meeting.css';
 
+// The tick of «Madina keldi: uchrashuv joyida» (mockup g63/4 screen 13).
+const TICK = 20;
+
 type Props = {
   // The bookings of the trip: the confirmed ones are the points.
   readonly bookings: readonly Booking[];
@@ -38,7 +41,7 @@ export function DriverMeeting({ bookings, onBack, onChanged, onChat, onCall }: P
       <Screen onBack={onBack} />
       {waiting.map(({ booking }) => (
         <p key={booking.id} className="meet-came" role="status">
-          <Icon name="selected" size={20} />
+          <Icon name="selected" size={TICK} />
           {t('driverAfter.meet.came', { name: booking.passenger.firstName })}
         </p>
       ))}

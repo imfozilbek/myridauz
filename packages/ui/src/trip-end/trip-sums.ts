@@ -2,7 +2,7 @@ import type { Booking } from '@platform/contracts';
 import { refundWaits } from '../meeting/no-show-text';
 
 // A seat the driver took: confirmed before the end, completed after it (docs/35).
-const taken = (booking: Booking) => booking.status === 'confirmed' || booking.status === 'completed';
+export const taken = (booking: Booking) => booking.status === 'confirmed' || booking.status === 'completed';
 
 // Who rode: a passenger who did not come rode nothing (docs/129).
 export const ridersOf = (bookings: readonly Booking[]) =>

@@ -1,5 +1,6 @@
 import type { FeedbackClient, MarketClient } from '@platform/api-client';
 import { ApiError } from '@platform/api-client';
+import { HOUR_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { request, wallet } from '../bookings/booking-test-kit';
@@ -10,7 +11,7 @@ import { testClients } from '../test-shell';
 import { TripEndFlow } from './trip-end-flow';
 
 afterEach(cleanup);
-const ARRIVED = madina.trip.departAt + 6 * 60 * 60 * 1000;
+const ARRIVED = madina.trip.departAt + 6 * HOUR_MS;
 beforeEach(() => vi.setSystemTime(ARRIVED));
 
 const sardor = { ...akmal, id: 's1', passenger: { ...akmal.passenger, firstName: 'Sardor' } };
@@ -21,6 +22,7 @@ function open(
   review: FeedbackClient['review'],
   searchRequests: MarketClient['searchRequests'],
   onPublish = vi.fn(),
+  onClose = vi.fn(),
 ) {
   renderMarket(
     <PlacesGate>
@@ -28,7 +30,7 @@ function open(
         trip={madina.trip}
         bookings={[madina, sardor, gone, rated]}
         onPublish={onPublish}
-        onClose={vi.fn()}
+        onClose={onClose}
       />
     </PlacesGate>,
     testClients({ feedback: { review }, market: { searchRequests }, wallet: { mine: async () => wallet } }),
@@ -76,6 +78,17 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     await tap('Yuborish');
     expect(await screen.findByRole('alert')).toBeTruthy();
     expect(screen.getByText('Safar tugadi')).toBeTruthy();
+  });
+
+  it('«Назад» leaves at once, without the stars and without «Qaytish»', async () => {
+    const onClose = vi.fn();
+    const review = vi.fn<FeedbackClient['review']>();
+    open(review, async () => [], vi.fn(), onClose);
+    expect(await screen.findByText('Safar tugadi')).toBeTruthy();
+    await tap('Orqaga');
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(review).not.toHaveBeenCalled();
+    expect(screen.queryByText('Qaytishga yoʻlovchi olasizmi?')).toBeNull();
   });
 
   it('hides the line of the requests when nobody asks the way back', async () => {

@@ -66,7 +66,7 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
       <MeetActions booking={booking} onMark={onMark} />
       <div className="meet-tools">
         <button type="button" onClick={onChat}>
-          <Icon name="chat" size={TOOL_ICON} />
+          <Icon name="write" size={TOOL_ICON} />
           {t('driverAfter.meet.write')}
         </button>
         <button type="button" onClick={onCall}>

@@ -14,16 +14,22 @@ import { useRateRiders } from './use-rate-riders';
 import { useSeatsLeft } from './use-seats-left';
 import './trip-end.css';
 
+// The flag of the badge and the wallet of its tile (mockup g63/4 screen 15).
+const FLAG = 30;
+const WALLET = 20;
+
 type Props = {
   readonly trip: Trip;
   readonly bookings: readonly Booking[];
-  // After «Yuborish» or «Назад»: the next step after the trip (docs/124 В: the review, then «Qaytish»).
+  // After «Yuborish»: the next step after the trip (docs/124 В: the review, then «Qaytish»).
   readonly onDone: () => void;
+  // «Назад» leaves without the stars: back where the screen was opened from.
+  readonly onBack: () => void;
 };
 
 // «Safar tugadi» of the driver, once after «Yetib keldik» (owner decision 06.10.2026, docs/124 В,
 // mockup g63/4 screen 15): the people and the costs, what the wallet gave, the stars of each passenger.
-export function TripDoneScreen({ trip, bookings, onDone }: Props) {
+export function TripDoneScreen({ trip, bookings, onDone, onBack }: Props) {
   useScreenView('trip_end.done');
   useScreenBackground();
   const { t, formatMoney, formatNumber } = useI18n();
@@ -34,9 +40,9 @@ export function TripDoneScreen({ trip, bookings, onDone }: Props) {
   const rate = useRateRiders(toRate, onDone);
   return (
     <div className="trip-end" style={brandVars(colors)}>
-      <Screen onBack={onDone} />
+      <Screen onBack={onBack} />
       <span className="trip-end-badge">
-        <Icon name="arrived" size={30} />
+        <Icon name="arrived" size={FLAG} />
       </span>
       <h1 className="trip-end-title">{t('bookings.done.title')}</h1>
       <p className="trip-end-sub">
@@ -47,7 +53,7 @@ export function TripDoneScreen({ trip, bookings, onDone }: Props) {
       </p>
       <div className="trip-end-card trip-end-wallet">
         <span className="trip-end-tile">
-          <Icon name="wallet" size={20} />
+          <Icon name="walletPlain" size={WALLET} />
         </span>
         <span className="trip-end-wallet-text">
           <b>{t('driverAfter.done.charged', { amount: formatNumber(sums.charged) })}</b>

@@ -3,6 +3,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  box-sizing: border-box;
   width: 100%;
   min-height: 48px;
   padding: 0 10px 0 13px;
@@ -12,6 +13,9 @@
   font: inherit;
   font-size: 14px;
   text-align: left;
+}
+
+button.past-after-row {
   cursor: pointer;
 }
 

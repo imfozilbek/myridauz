@@ -71,7 +71,7 @@
 }
 
 .trip-end-wallet-text b {
-  font-size: 16.3px;
+  font-size: clamp(14px, 4.53vw, 16.3px);
   color: var(--reg-ink);
 }
 
@@ -106,7 +106,9 @@
 
 .trip-end-stars button {
   display: flex;
-  padding: 0;
+  /* A taller place for the finger, the stars stay where the mockup has them. */
+  margin: -8px 0;
+  padding: 8px 0;
   border: 0;
   background: none;
   color: var(--reg-brand);

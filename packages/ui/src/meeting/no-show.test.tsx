@@ -1,6 +1,7 @@
-import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
+import { MEET_BEFORE_MINUTES, MINUTE_MS, type Booking } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { TripBookings } from '../bookings/trip-bookings';
 import { renderInShell } from '../test-shell';
 import { akmal, MEETING_NOW } from './meet-test-kit';
 import { NoShowBanners } from './no-show-banners';
@@ -8,7 +9,6 @@ import { NoShowLine } from './no-show-line';
 
 afterEach(cleanup);
 
-const MINUTE = 60 * 1000;
 const USUAL = 'Qoʻyliq pitagi';
 const line = (booking: Booking, now = MEETING_NOW, onMark = vi.fn()) =>
   renderInShell(
@@ -26,8 +26,24 @@ describe('«Kelmadi» in the row of the passenger (docs/129, mockup g63/5 phone 
     expect(onMark).toHaveBeenCalledOnce();
   });
 
+  it('marks from the row of «Mening safarim» without opening the booking', () => {
+    const onMark = vi.fn();
+    const onOpen = vi.fn();
+    const mark = (booking: Booking, usual: string) => (
+      <NoShowLine booking={booking} now={MEETING_NOW} onMark={onMark}>
+        {usual}
+      </NoShowLine>
+    );
+    renderInShell(<TripBookings bookings={[akmal]} onOpen={onOpen} line={mark} />);
+    const until = screen.getByText('Kelmadi · safar tugaguncha belgilash mumkin');
+    fireEvent.click(until);
+    fireEvent.keyDown(until, { key: 'Enter' });
+    expect(onMark).toHaveBeenCalledOnce();
+    expect(onOpen).not.toHaveBeenCalled();
+  });
+
   it('keeps the usual line before the meeting, for a passenger who came, and for a request', () => {
-    line(akmal, akmal.trip.departAt - (MEET_BEFORE_MINUTES + 1) * MINUTE);
+    line(akmal, akmal.trip.departAt - (MEET_BEFORE_MINUTES + 1) * MINUTE_MS);
     line({ ...akmal, metAt: MEETING_NOW });
     line({ ...akmal, status: 'requested' });
     expect(screen.getAllByText(USUAL)).toHaveLength(3);

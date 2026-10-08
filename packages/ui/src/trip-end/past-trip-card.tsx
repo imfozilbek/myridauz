@@ -1,11 +1,10 @@
-import { arrivalAt, roadMs, type BookingRule, type Trip } from '@platform/contracts';
+import { arrivalAt, HOUR_MS, roadMs, type BookingRule, type Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import { usePlaces } from '../market/places-gate';
 import '../trip/trip-card.css';
 import './past-trip-card.css';
 
-const HOUR_MS = 60 * 60 * 1000;
 // The short name of the way a trip is booked, at the right of the seats (mockup g63/5 phone 5).
 const RULE = {
   seats: 'market.rule.seats',

@@ -22,16 +22,17 @@ export function MeetActions({ booking, onMark }: Props) {
         {t('bookings.meeting.came')}
       </button>
     );
+  // A pair of a decision: the refusal on the left, the main action on the right (docs/121).
   if (step === 'answer')
     return (
       <div className="meet-answer">
+        <button type="button" className="meet-main meet-no" onClick={() => onMark('no_show')}>
+          <Icon name="close" size={ICON} />
+          {t('complaints.reason.no_show')}
+        </button>
         <button type="button" className="meet-main" onClick={() => onMark('met')}>
           <Icon name="selected" size={ICON} />
           {t('driverAfter.meet.met')}
-        </button>
-        <button type="button" className="meet-main meet-no" onClick={() => onMark('no_show')}>
-          <Icon name="close" size={ICON} />
-          {t('driverAfter.noShow.mark')}
         </button>
       </div>
     );

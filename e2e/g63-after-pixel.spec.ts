@@ -10,7 +10,7 @@ import {
   pastSeats,
   pastTrip,
 } from './g63-after-data';
-import { mockupTrip, openDriver, openTrip, seat, shot, t, tashkent } from './g63-after-mock';
+import { mockupTrip, openDriver, openTrip, part, seat, shot, t, tashkent } from './g63-after-mock';
 import { TILES_MS } from './map-wait';
 
 // Pixel Perfect of the meeting and the end of the trip of the driver (G63 C3, lessons 141, 147, 160):
@@ -29,20 +29,22 @@ test('13: «Uchrashuv», Madina at the point (g63/4 screen 13)', async ({ page }
   await shot(page, 'j13');
 });
 
+// Phone 1 is the page «Mening safarim» of C2: here only the parts of C3 on it, each against its own
+// piece of the mockup (lesson 160): the plate «Akmal kelmadi» and the line under Akmal.
 test('5-1: «Kelmadi» on the own trip, after and before the mark (g63/5 phone 1)', async ({ page }) => {
   const met = madina({ metAt: tashkent('2026-10-07T07:20') });
   const gone = akmal({ noShowAt: tashkent('2026-10-07T07:25') });
   await openDriver(page, '2026-10-07T07:30', { trips: [live], bookings: [met, gone] });
   await openTrip(page);
   await expect(page.getByText('Akmal kelmadi')).toBeVisible();
-  await shot(page, 'a1');
+  await part(page.locator('.no-show-banner'), 'a1-banner');
   await page.route('**/api/driver/bookings', (route) =>
     route.fulfill({ json: { bookings: [met, akmal()] } }),
   );
   await page.reload();
   await openTrip(page);
   await expect(page.getByText(t('driverAfter.noShow.until'))).toBeVisible();
-  await shot(page, 'a1b');
+  await part(page.locator('.no-show-mark'), 'a1-line');
 });
 
 // Phones 2 and 3 of g63/5 are screens 15 and 16 of g63/4: the stars, then «Qaytish».
@@ -73,6 +75,10 @@ test('5-4: the past trips with what is left (g63/5 phone 4)', async ({ page }) =
   await expect(page.getByText(t('driverAfter.tag.rated'))).toBeVisible();
   await page.getByText(t('driverAfter.tag.refund')).scrollIntoViewIfNeeded();
   await shot(page, 'a4');
+  // The list itself is redesigned by G64: the tags of C3 alone.
+  const tags = page.locator('.past-tags');
+  await part(tags.nth(0), 'a4-tags1');
+  await part(tags.nth(1), 'a4-tags2');
 });
 
 test('5-6: the refund in «Hamyon» (g63/5 phone 6)', async ({ page }) => {

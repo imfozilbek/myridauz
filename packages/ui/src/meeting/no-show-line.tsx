@@ -24,7 +24,15 @@ export function NoShowLine({ booking, now, onMark, children }: Props) {
   const possible = booking.status === 'confirmed' && meetOpen(booking) && meetingOpen(booking.trip, now);
   if (!possible) return <>{children}</>;
   return (
-    <button type="button" className="no-show-line no-show-mark" onClick={onMark}>
+    <button
+      type="button"
+      className="no-show-line no-show-mark"
+      onClick={(event) => {
+        // The row around the line opens the booking: a tap on «Kelmadi» stays with the mark.
+        event.stopPropagation();
+        onMark();
+      }}
+    >
       {t('driverAfter.noShow.until')}
     </button>
   );

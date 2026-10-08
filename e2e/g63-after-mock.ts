@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
@@ -94,5 +94,10 @@ export async function openTrip(page: Page) {
   await page.locator('.trip-card').first().click();
 }
 
+const SHOTS = 'screenshots/pixel-g63-after';
 export const shot = (page: Page, name: string) =>
-  page.screenshot({ path: `screenshots/pixel-g63-after/${name}-code.png`, animations: 'disabled' });
+  page.screenshot({ path: `${SHOTS}/${name}-code.png`, animations: 'disabled' });
+// One part of a page that another step draws (C2) or redesigns (G64): the part alone against its
+// piece of the mockup.
+export const part = (locator: Locator, name: string) =>
+  locator.screenshot({ path: `${SHOTS}/${name}-code.png`, animations: 'disabled' });
