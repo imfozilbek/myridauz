@@ -1,8 +1,8 @@
 # 140. G63: новые тексты на согласие владельца
 
-> **Кратко:** все новые узбекские тексты G63, 93 строки: сервер (выезд и приезд, встреча, возврат за неявку, просмотры), экран публикации, «Mening safarim» с карточкой канала, встреча и «после поездки». Новые, кроме изменённых №11 и №67 … 70; ждут согласия владельца (`33`), проверка носителем (`25`) остаётся.
+> **Кратко:** все новые узбекские тексты G63, 100 строк: сервер (выезд и приезд, встреча, возврат за неявку, просмотры), экран публикации, «Mening safarim» с карточкой канала, «Safar xaritasi», встреча, заметка попутчика и «после поездки». **Согласие владельца 08.10.2026: да, тексты как на макетах** (где текст есть на макете, он в коде точно как на макете). Проверка носителем (`25`) остаётся.
 
-## Новые: ждут согласия
+## Новые (согласие 08.10.2026)
 
 | # | Где | Текст |
 |---|---|---|
@@ -30,7 +30,7 @@
 | 22 | «Mening safarim»: карточка канала, подпись: канал и сколько разных людей открыли поездку (`driverTrip.channel.views`); пока никто не открыл, только название канала | {channel} · {count} kishi koʻrdi |
 | 23 | «Mening safarim»: кнопка в карточке канала, ссылка поездки через «Поделиться» Telegram (`driverTrip.channel.share`) | Havolani yoʻlovchilarga yuborish |
 
-## Экраны C3: встреча, конец поездки, прошлая поездка (ждут согласия)
+## Экраны C3: встреча, конец поездки, прошлая поездка (согласие 08.10.2026)
 
 Все ключи в `packages/i18n/locales/uz-Latn/driver-after.json` (раздел `driverAfter`).
 
@@ -68,7 +68,7 @@
 | 53 | «Hamyon»: строка возврата (`wallet.refund`) | Qaytarildi · {name} kelmadi |
 | 54 | «Hamyon»: дата возврата (`wallet.confirmed`) | {day} · egasi tasdiqladi |
 
-## Экран публикации C1 (ждут согласия)
+## Экран публикации C1 (согласие 08.10.2026)
 
 Ключи в `market.json` (`market.publish.*`) и `way.json` (`way.trip.*`).
 
@@ -91,7 +91,7 @@
 | 69 | «Qayerdan olasiz?» (`way.trip.mode.pitak`, **изменён**; было «Pitakdan olaman») | Pitakdan |
 | 70 | «Qayerdan olasiz?» (`way.trip.mode.both`, **изменён**; было «Ikkalasi ham») | Ikkalasi |
 
-## «Mening safarim» C2 (ждут согласия)
+## «Mening safarim» C2 (согласие 08.10.2026)
 
 Ключи в `driver-trip.json` (`driverTrip.*`); карточка канала выше, № 21 … 23.
 
@@ -132,3 +132,17 @@
 - Галочка «Mashinada ayol bor» сохраняется, только если водитель мужчина и мест в поездке меньше, чем в машине. Иначе она тихо не сохраняется, без ошибки (`06`, правило 3).
 - Встреча (`126`): с 30 минут до выезда и до закрытия поездки водитель ставит у каждого попутчика «Men keldim», потом «Keldi» или «Kelmadi». «Keldi» и «Kelmadi» ставятся один раз. «Kelmadi» нельзя после «Mashinaga chiqdim» попутчика. После «Keldi» или «Kelmadi» поездку и бронь уже нельзя отменить.
 - «Kelmadi» сам подаёт жалобу команде. Модератор только предлагает возврат комиссии; деньги идут в «Hamyon» после «Qaytarishni tasdiqlash» владельца (тексты 11 … 19). Неявка не считается поездкой: нет оценки, нет в истории.
+
+## Добавлены 08.10.2026, переделка по макетам (согласие 08.10.2026)
+
+| # | Где | Текст |
+|---|---|---|
+| 94 | «Safar xaritasi», заголовок (`way.map.title`), макет g63/4 экран 12 | {day} {time} · {count} yoʻlovchi |
+| 95 | «Qayerdan, qayerga?» попутчика, третья строка (`bookings.points.note`) | Izoh (ixtiyoriy) |
+| 96 | Экран заметки попутчика, подсказка (`bookings.note.hint`) | Haydovchi sizni tanishi uchun. Masalan: qizil kurtka, sumka bilan. |
+| 97 | Карточка канала: имя канала в Telegram (`driverTrip.channel.name`), макет g59/7 | {brand} \| {title} |
+| 98 | «Qanday band qilinadi?» (`market.rule.price`, **изменён**: «soʻm» переносится, как на макете g63/4 экран 4; было «… = {sum}.») | Butun salon narxi: {count} joy × {price} = {sum} soʻm. |
+| 99 | Политика конфиденциальности, «Qanday maʼlumotlar» (`privacy.2.text`, новые строки, редакция 1.3) | Joy band qilganda haydovchiga yozgan izohingiz: u sizni uchrashuvda taniydi. Unda telefon raqami va havolalar yashiriladi.<br>Qaysi safarlarni ochganingiz. Haydovchi faqat nechta odam koʻrganini koʻradi, kimligini koʻrmaydi. |
+| 100 | Политика конфиденциальности, «Maʼlumotlarni oʻchirish» (`privacy.6.text`, **изменён**: было «Olib ketish va tushirish nuqtalari bundan qisqa saqlanadi … nuqtalar qaror chiqqandan keyin …») | Olib ketish va tushirish nuqtalari va haydovchiga yozilgan izoh bundan qisqa saqlanadi … ular qaror chiqqandan keyin oʻchiriladi. |
+
+Убраны вместе с вкладками «Safar xaritasi» (их нет на макете экрана 12): `way.map.pickups`, `way.map.dropoffs`, `way.map.up`, `way.map.down`, `way.map.navigatorChange`.
