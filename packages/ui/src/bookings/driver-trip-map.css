@@ -21,16 +21,19 @@
   flex-direction: column;
   gap: 8.8px;
   margin-top: -16px;
-  padding: 18.6px 17.6px 16px;
+  padding: 19.95px 17.6px 16px;
   border-radius: 16px 16px 0 0;
   background: var(--tgui--secondary_bg_color);
 }
-/* The title of the mockup is 23 px (its words 250 px wide at 1.25×, mockup g63/4 screen 12). */
+/* The title of the mockup is 23 px (its words 250 px wide at 1.25×, mockup g63/4 screen 12); its
+   two lines 26.1 px apart, the words a part of a pixel left and lower than the box gives them. */
 .trip-map-title {
-  margin: 0 0 3px;
+  margin: 0 0 5.45px -0.3px;
   font-size: 23px;
   font-weight: 700;
-  line-height: 28px;
+  line-height: 26.1px;
+  position: relative;
+  top: 0.4px;
 }
 /* A point without a meeting is a div, not a button: its padding stays inside the width. */
 .trip-map-stop {
@@ -62,17 +65,19 @@
 .trip-map-who {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4.4px;
   min-width: 0;
-  /* The words stand 2.4 px above the middle of the card (mockup g63/4 screen 12). */
-  margin-top: -6.4px;
+  /* The words stand above the middle of the card (mockup g63/4 screen 12). */
+  margin-top: -3.6px;
 }
-/* Who gets in there: 16 px, as the mockup (its «Madina · 2 joy» is 148 px wide at 1.25×). */
+/* Who gets in there at the size of the mockup: its «Madina · 2 joy» is 148 px wide at 1.25×. */
 .trip-map-who b {
-  font-size: 16px;
+  font-size: 15.2px;
   line-height: 20px;
+  margin-left: -0.4px;
 }
 .trip-map-who span {
   color: var(--tgui--hint_color);
   font-size: 13px;
+  margin-left: -0.2px;
 }
