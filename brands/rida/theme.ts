@@ -25,6 +25,7 @@ export const theme: BrandTheme = {
     successPale: '#F0FDF4',
     successLine: '#BBF7D0',
     successDeep: '#166534',
+    successBright: '#34D399',
     accentSoft: '#FFFBEB',
     neutralSoft: '#EEF2F6',
     neutralText: '#334155',

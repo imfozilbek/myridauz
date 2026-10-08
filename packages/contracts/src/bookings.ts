@@ -6,6 +6,7 @@ import { pointInputSchema } from './point';
 import { ratingSchema } from './ratings';
 import { bookedPlaceSchema, bookingModeSchema, pitakSchema } from './pickup';
 import { complaintRefundSchema } from './complaints';
+import { MINUTE_MS } from './team-hours';
 
 // A seat booking (docs/35): a passenger asks, the driver confirms; or the driver offers on a
 // request and the passenger accepts. G08. Direct contacts are never part of it (docs/07).
@@ -52,6 +53,8 @@ export type BookingInput = z.input<typeof bookingInputSchema>;
 // The places open only after the confirmation (docs/07, docs/14).
 // The meeting card and «Men keldim» open this long before the departure (docs/126).
 export const MEET_BEFORE_MINUTES = 30;
+// The meeting at the point opens then, for both sides: the passenger, the driver and the server.
+export const meetingStartsAt = (departAt: number) => departAt - MEET_BEFORE_MINUTES * MINUTE_MS;
 
 export const bookingSchema = z.object({
   id: z.string(),

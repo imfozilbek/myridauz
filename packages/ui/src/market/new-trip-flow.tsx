@@ -17,6 +17,8 @@ type NewTripFlowProps = {
   readonly date?: string;
   // «Oxirgi yoʻnalish»: the answers of the last trip, the day is the first free one (G40, docs/106 K3).
   readonly again?: TripAgain;
+  // The trip is out: «Qaytish» counts its way back (G63, docs/29).
+  readonly onPublished?: () => void;
 };
 
 // A new trip on one screen (G63, docs/118 path 6): the route first when it is not known, then
@@ -31,6 +33,7 @@ export function NewTripFlow(props: NewTripFlowProps) {
   if (limitReached) return <TripLimitScreen onBack={props.onBack} />;
   const done = (trip: Trip) => {
     flow.clear();
+    props.onPublished?.();
     setPublished(trip.id);
   };
   return (

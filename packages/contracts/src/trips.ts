@@ -24,6 +24,9 @@ const ARRIVAL_STEP_MS = 5 * 60 * 1000;
 export const roadMs = (km: number) => (km / ROAD_KMH) * HOUR_MS;
 export const arrivalAt = (departAt: number, km: number) =>
   Math.ceil((departAt + roadMs(km)) / ARRIVAL_STEP_MS) * ARRIVAL_STEP_MS;
+// «Qaytish» offers the way back this long after the arrival: the rest of the driver (G63, mockup
+// g63/4 screen 16: ≈ 13:00 there, 15:00 back). A proposal of Claude, waits for the owner (docs/10, 46).
+export const RETURN_REST_MS = 2 * HOUR_MS;
 // A trip is published at most this far ahead.
 export const TRIP_DAYS_AHEAD = 30;
 export const COMMENT_MAX = 200;

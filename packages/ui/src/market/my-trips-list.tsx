@@ -1,4 +1,4 @@
-import type { Offer, Trip } from '@platform/contracts';
+import type { Booking, Offer, Trip } from '@platform/contracts';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { SentOffers } from '../bookings/sent-offers';
 import { List } from '../components';
@@ -7,6 +7,7 @@ import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
 import { EmptyState } from '../states/empty-state';
+import { PastTripTags } from '../trip-end/past-trip-tags';
 import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
 import { Paged } from './paged';
 import { TripCard } from './trip-card';
@@ -16,6 +17,8 @@ export const MY_TRIPS = 'market.mine.trips';
 
 type Props = {
   readonly trips: readonly Trip[];
+  // The bookings of the driver: a past trip says what is left on its card (G63, docs/129).
+  readonly booked: readonly Booking[];
   // How many new requests wait for the driver's answer on each trip (G41, docs/90 F-D4).
   readonly waiting: (trip: Trip) => number;
   readonly offers: readonly Offer[];
@@ -30,6 +33,7 @@ type Props = {
 // the trip under the finger (docs/94 F2, S3).
 export function MyTripsList({
   trips,
+  booked,
   waiting,
   offers,
   onBack,
@@ -71,7 +75,13 @@ export function MyTripsList({
           items={trips}
           render={(trip) => (
             <div key={trip.id} data-row={trip.id}>
-              <TripCard trip={trip} own requests={waiting(trip)} onOpen={() => onTrip(trip)} />
+              <TripCard trip={trip} own requests={waiting(trip)} onOpen={() => onTrip(trip)}>
+                <PastTripTags
+                  trip={trip}
+                  bookings={booked.filter((booking) => booking.trip.id === trip.id)}
+                  now={Date.now()}
+                />
+              </TripCard>
             </div>
           )}
         />

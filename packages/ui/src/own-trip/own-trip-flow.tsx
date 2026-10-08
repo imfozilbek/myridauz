@@ -1,99 +1,45 @@
-import type { Booking, Trip } from '@platform/contracts';
 import { useState } from 'react';
-import { DriverTripMap } from '../bookings/driver-trip-map';
-import { NotEnoughScreen, TopUpScreen } from '../bookings/wallet-steps';
-import { ChatScreen } from '../chat/chat-screen';
-import { useI18n } from '../context/i18n-context';
-import { TripChangeScreen } from '../market/trip-change';
-import { ActionFailure } from '../states/action-failure';
-import { ChangeChoice } from './change-choice';
-import type { Opened } from './own-trip-opened';
-import { OwnTripPage } from './own-trip-page';
-import { tripStage, type TripStep } from './trip-stage';
-import { useNow } from './use-now';
-import { useOwnTripActions } from './use-own-trip-actions';
+import { useAnalytics } from '../context/analytics-context';
+import { NewTripFlow } from '../market/new-trip-flow';
+import { PastTripFlow } from '../trip-end/past-trip-flow';
+import type { ReturnTrip } from '../trip-end/return-plan';
+import { TripEndFlow } from '../trip-end/trip-end-flow';
+import { OwnTripLive, type OwnTripProps } from './own-trip-live';
 
-type Props = {
-  readonly trip: Trip;
-  // The bookings of this trip, fresh on each signal (docs/64).
-  readonly bookings: readonly Booking[];
-  readonly onBack: () => void;
-  // One booking with its deadline, points, cancel and complaint (DriverBooking, by its id).
-  readonly onBooking: (booking: Booking) => void;
-  readonly onChanged: () => void;
-  // The trip was cancelled: back to the list.
-  readonly onClosed: () => void;
-  readonly onStep?: ((step: TripStep) => unknown) | undefined;
-};
+// After the trip: «Safar tugadi» once after «Yetib keldik», or the publishing of the way back.
+type After = { readonly screen: 'end' } | { readonly screen: 'return'; readonly back: ReturnTrip };
 
-// «Mening safarim» with what opens from it (G63, docs/118 path 6): the chat and the call of a
-// passenger, the wallet when a commission is short, the map of the way and the change of G39.
-export function OwnTripFlow({ trip, bookings, onBack, onBooking, onChanged, onClosed, onStep }: Props) {
-  const { t } = useI18n();
-  const [opened, setOpened] = useState<Opened | null>(null);
-  const now = useNow();
-  const stage = tripStage(trip, now);
-  const actions = useOwnTripActions({ trip, stage, bookings, open: setOpened, onChanged, onClosed });
-  const back = () => setOpened(null);
-  if (opened?.screen === 'chat' || opened?.screen === 'call')
+// The own trip of the driver from the publishing to the end (G63, docs/118 path 6, docs/124 В):
+// «Mening safarim» while it lives, «Safar tugadi» with the stars and «Qaytish» right after the
+// arrival, the past trip once it is completed. The way back opens the one screen of the publishing
+// with the route the other way and the answers of this trip (G63 C1).
+export function OwnTripFlow(props: OwnTripProps) {
+  const { trip, bookings, onBack, onChanged } = props;
+  const { track } = useAnalytics();
+  const [after, setAfter] = useState<After | null>(null);
+  const close = () => setAfter(null);
+  const publish = (back: ReturnTrip) => setAfter({ screen: 'return', back });
+  if (after?.screen === 'return')
     return (
-      <ChatScreen
-        chatKey={opened.booking.chatKey}
-        title={opened.booking.passenger.firstName}
-        ring={opened.screen === 'call'}
-        onBack={back}
+      <NewTripFlow
+        route={after.back.route}
+        again={after.back.again}
+        onBack={close}
+        // Counted once the way back is out (G18, docs/29).
+        onPublished={() => track({ name: 'return_trip_created', screen: 'market.publish' })}
       />
     );
-  if (opened?.screen === 'not_enough')
+  if (after?.screen === 'end')
+    return <TripEndFlow trip={trip} bookings={bookings} onPublish={publish} onClose={close} />;
+  if (trip.status === 'completed')
     return (
-      <NotEnoughScreen
-        amount={opened.booking.commission}
-        onBack={back}
-        onTopUp={() => setOpened({ ...opened, screen: 'top_up' })}
-      />
-    );
-  if (opened?.screen === 'top_up')
-    return <TopUpScreen onBack={() => setOpened({ ...opened, screen: 'not_enough' })} />;
-  if (opened?.screen === 'map')
-    return <DriverTripMap bookings={bookings.filter((item) => item.status === 'confirmed')} onBack={back} />;
-  if (opened?.screen === 'choice')
-    return (
-      <ChangeChoice
+      <PastTripFlow
         trip={trip}
-        onChange={(change) => setOpened({ screen: 'change', change })}
-        onBack={back}
+        bookings={bookings}
+        onBack={onBack}
+        onChanged={onChanged}
+        onPublish={publish}
       />
     );
-  if (opened?.screen === 'change')
-    return <TripChangeScreen trip={trip} change={opened.change} onDone={() => (back(), onChanged())} />;
-  return (
-    <OwnTripPage
-      trip={trip}
-      stage={stage}
-      now={now}
-      bookings={bookings}
-      balance={actions.balance}
-      onBack={onBack}
-      onAnswer={actions.answer}
-      onOpen={(booking, screen) =>
-        screen === 'booking' ? onBooking(booking) : setOpened({ screen, booking })
-      }
-      onTile={actions.tile}
-      onCancel={actions.cancel}
-      onStep={onStep}
-    >
-      <ActionFailure error={actions.failure} />
-      {actions.note ? <p className="own-note">{t(actions.note)}</p> : null}
-      {actions.share.told ? (
-        <p className="own-note">
-          {t(`share.${actions.share.told}`)}
-          {actions.share.told === 'told' ? (
-            <button type="button" className="own-note-link" onClick={() => void actions.share.stop()}>
-              {t('share.stop')}
-            </button>
-          ) : null}
-        </p>
-      ) : null}
-    </OwnTripPage>
-  );
+  return <OwnTripLive {...props} onArrived={() => setAfter({ screen: 'end' })} />;
 }

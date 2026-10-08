@@ -1,0 +1,10 @@
+/* The past trip of the driver (G63, mockup g63/5 phone 5) in the parts of «Mening safarim»: only
+   what differs from them, at 360 px. */
+.own-trip.past-trip {
+  padding-bottom: 16px;
+}
+
+.past-after {
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}

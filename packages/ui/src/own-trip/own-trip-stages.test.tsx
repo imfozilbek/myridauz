@@ -22,16 +22,18 @@ async function openCard() {
   fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
 }
 
-async function open(shown: Trip, bookings: readonly Booking[], onTripStep = vi.fn()) {
+// «Yoʻlga chiqdim» and «Yetib keldik» go to the server (G63 B1): the trip comes back as it was.
+async function open(shown: Trip, bookings: readonly Booking[]) {
+  const steps = { departTrip: vi.fn(async () => shown), arriveTrip: vi.fn(async () => shown) };
   renderMarket(
-    <MyTripsScreen onBack={() => undefined} onTripStep={onTripStep} />,
+    <MyTripsScreen onBack={() => undefined} />,
     testClients({
-      market: { myTrips: async () => [shown] },
+      market: { myTrips: async () => [shown], ...steps },
       bookings: { driverBookings: async () => [...bookings], driverOffers: async () => [] },
     }),
   );
   await openCard();
-  return onTripStep;
+  return steps;
 }
 
 describe('«Mening safarim» after the publishing (mockup g63/3, phone 1)', () => {
@@ -43,7 +45,9 @@ describe('«Mening safarim» after the publishing (mockup g63/3, phone 1)', () =
     expect(screen.getByText('★ 4,8')).toBeTruthy();
     // The commission is in the card before any tap: no window in between (owner decision 06.10.2026).
     // Each part stays whole, so a narrow phone breaks the line only after «·» (docs/121).
-    const parts = [...document.querySelectorAll('.seat-card-line .line-part')].map((part) => part.textContent);
+    const parts = [...document.querySelectorAll('.seat-card-line .line-part')].map(
+      (part) => part.textContent,
+    );
     expect(parts.join(' ')).toMatch(/^Qatortol · \+2\skm · komissiya 19\s000$/u);
     expect(parts).toHaveLength(3);
     expect(screen.getByText('2 kishi')).toBeTruthy();
@@ -77,7 +81,7 @@ describe('«Mening safarim» after the publishing (mockup g63/3, phone 1)', () =
 describe('«Mening safarim» before the departure and on the way (mockup g63/3, phones 2 and 3)', () => {
   it('counts the minutes, lists the passengers and asks «Yoʻlga chiqdim»', async () => {
     vi.setSystemTime(trip.departAt - 30 * MINUTE);
-    const onTripStep = await open({ ...trip, seatsLeft: 1 }, [rider]);
+    const steps = await open({ ...trip, seatsLeft: 1 }, [rider]);
     expect(await screen.findByText('Joʻnashga 30 daqiqa')).toBeTruthy();
     expect(screen.getByText('2 yoʻlovchi tasdiqlangan · 1 boʻsh joy')).toBeTruthy();
     expect(screen.getByText('Yoʻlovchilar (2)')).toBeTruthy();
@@ -85,44 +89,30 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     expect(screen.getByText('Chilonzor bozori yaqinida')).toBeTruthy();
     expect(screen.getByText('Safarni bekor qilish')).toBeTruthy();
     await tap('Yoʻlga chiqdim');
-    expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'departed');
+    await vi.waitFor(() => expect(steps.departTrip).toHaveBeenCalledWith('t1'));
   });
 
   it('from the time of the trip is on the way as on the server: no cancel, «Yoʻlga chiqdim» stays', async () => {
     vi.setSystemTime(trip.departAt + 10 * MINUTE);
-    const onTripStep = await open({ ...trip, seatsLeft: 1 }, [rider]);
+    const steps = await open({ ...trip, seatsLeft: 1 }, [rider]);
     expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
     expect(screen.getByText(/^Fargʻona shahriga ≈\s13:20\sda$/u)).toBeTruthy();
     expect(screen.queryByText(/daqiqa/u)).toBeNull();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
     await tap('Yoʻlga chiqdim');
-    expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'departed');
+    await vi.waitFor(() => expect(steps.departTrip).toHaveBeenCalledWith('t1'));
   });
 
   it('after an early «Yoʻlga chiqdim» is on the way and asks «Yetib keldik» (G63 B1)', async () => {
     vi.setSystemTime(trip.departAt - 15 * MINUTE);
     const left = { ...trip, seatsLeft: 1, departedAt: trip.departAt - 20 * MINUTE };
-    const onTripStep = await open(left, [rider]);
+    const steps = await open(left, [rider]);
     expect(await screen.findByText('Yoʻldasiz')).toBeTruthy();
     expect(screen.queryByText('Safarni bekor qilish')).toBeNull();
     expect(document.querySelector('.own-trip')?.hasAttribute('data-button')).toBe(true);
     await tap('Yetib keldik');
-    expect(onTripStep).toHaveBeenCalledWith(expect.objectContaining({ id: 't1' }), 'arrived');
-  });
-
-  it('waits for the app to give the steps of the trip before showing the main button (G63 B1)', async () => {
-    vi.setSystemTime(trip.departAt - 30 * MINUTE);
-    renderMarket(
-      <MyTripsScreen onBack={() => undefined} />,
-      testClients({
-        market: { myTrips: async () => [trip] },
-        bookings: { driverBookings: async () => [], driverOffers: async () => [] },
-      }),
-    );
-    await openCard();
-    expect(await screen.findByText('Joʻnashga 30 daqiqa')).toBeTruthy();
-    expect(screen.queryByText('Yoʻlga chiqdim')).toBeNull();
-    expect(document.querySelector('.own-trip')?.hasAttribute('data-button')).toBe(false);
+    await vi.waitFor(() => expect(steps.arriveTrip).toHaveBeenCalledWith('t1'));
+    expect(steps.departTrip).not.toHaveBeenCalled();
   });
 
   it('a cancelled trip says so in grey, without a cancel or a main button', async () => {

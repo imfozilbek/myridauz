@@ -2,9 +2,14 @@ import type { Booking, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { requestsInOrder } from '../bookings/trip-bookings-order';
 import { short } from '../bookings/use-balance';
+import { Cell, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { IconTile } from '../icon-tile';
+import { NoShowBanners } from '../meeting/no-show-banners';
+import { NoShowLine } from '../meeting/no-show-line';
+import { refundWaits } from '../meeting/no-show-text';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
@@ -14,6 +19,7 @@ import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
 import { RiderRow } from './rider-row';
 import { SeatRequestCard } from './seat-request-card';
 import { TripMainButton } from './trip-main-button';
+import { TripPublicity } from './trip-publicity';
 import { tripStep, type TripStage, type TripStep } from './trip-stage';
 import type { RiderScreen } from './own-trip-opened';
 import './own-trip.css';
@@ -33,8 +39,12 @@ type Props = {
   readonly onOpen: (booking: Booking, screen: RiderScreen) => void;
   readonly onTile: (tile: OwnTripTile) => void;
   readonly onCancel: () => unknown;
-  // «Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1): the main button shows with it.
-  readonly onStep?: ((step: TripStep) => unknown) | undefined;
+  // «Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1): the main button.
+  readonly onStep: (step: TripStep) => unknown;
+  // «Kelmadi» of a passenger at the meeting, asked first (useMeetMark, docs/129).
+  readonly onMark: (booking: Booking) => void;
+  // «Uchrashuv» while the meeting is open and somebody is to be met (docs/126).
+  readonly onMeeting: (() => void) | null;
   // The failure of an action and the note of a tile, under the tiles.
   readonly children?: ReactNode;
 };
@@ -45,20 +55,34 @@ const riding = (booking: Booking) => booking.status === 'confirmed' || booking.s
 // main button of C): the plate of the stage, the requests answered in their cards, the passengers
 // with the chat and the call, the trip, four tiles; the cancel only before the departure.
 export function OwnTripPage(props: Props) {
-  const { trip, stage, now, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep, children } =
-    props;
+  const { trip, stage, now, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep } = props;
+  const { onMark, onMeeting, children } = props;
   useScreenView('market.own_trip');
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
-  const step = onStep ? tripStep(trip, now) : null;
+  const step = tripStep(trip, now);
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const riders = bookings.filter(riding);
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return (
     <div className="own-trip" style={brandVars(colors)} data-button={step ? '' : undefined}>
       <Screen onBack={onBack} />
-      <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
+      {/* After «Kelmadi» its plate stands where the plate of the stage was (mockup g63/5 phone 1). */}
+      {bookings.some(refundWaits) ? (
+        <NoShowBanners bookings={bookings} />
+      ) : (
+        <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
+      )}
+      {onMeeting ? (
+        <Section>
+          <Cell before={<IconTile name="pickup" tone="accent" />} onClick={onMeeting}>
+            {t('bookings.meeting.title')}
+          </Cell>
+        </Section>
+      ) : null}
+      {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
+      {stage === 'published' || stage === 'soon' ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (
         <>
           <h2 className="own-head">{t('driverTrip.asked', { count: String(requested.length) })}</h2>
@@ -86,6 +110,11 @@ export function OwnTripPage(props: Props) {
                 onChat={() => onOpen(booking, 'chat')}
                 onCall={() => onOpen(booking, 'call')}
                 onOpen={() => onOpen(booking, 'booking')}
+                line={(usual) => (
+                  <NoShowLine booking={booking} now={now} onMark={() => onMark(booking)}>
+                    {usual}
+                  </NoShowLine>
+                )}
               />
             ))}
           </div>
@@ -102,7 +131,7 @@ export function OwnTripPage(props: Props) {
           </button>
         ) : null}
       </div>
-      {step && onStep ? <TripMainButton step={step} onPress={onStep} /> : null}
+      {step ? <TripMainButton step={step} onPress={onStep} /> : null}
     </div>
   );
 }

@@ -1,11 +1,10 @@
-import { MY_TRIP_LINK, OFFER_LINK, type AppLink, type Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, OFFER_LINK, type AppLink } from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
 import { ChatScreen } from '../chat/chat-screen';
 import { useApiClients } from '../context/api-clients';
 import { OwnTripFlow } from '../own-trip/own-trip-flow';
-import type { TripStep } from '../own-trip/trip-stage';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -19,13 +18,7 @@ import './market.css';
 import { waitingRequests } from '../home/home-items';
 
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
-type ScreenProps = {
-  readonly onBack: () => void;
-  readonly link?: AppLink;
-  // «Yoʻlga chiqdim» and «Yetib keldik» of a trip on the server (G63 B1): the main button of
-  // «Mening safarim» shows once the app gives it.
-  readonly onTripStep?: (trip: Trip, step: TripStep) => unknown;
-};
+type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
 
 export function MyTripsScreen(props: ScreenProps) {
   useForgetOnLeave(MY_TRIPS);
@@ -39,7 +32,7 @@ export function MyTripsScreen(props: ScreenProps) {
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
 type Opened = { readonly tripId: string; readonly bookingId?: string };
 
-function MyTrips({ onBack, link, onTripStep }: ScreenProps) {
+function MyTrips({ onBack, link }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
   const { market, bookings } = useApiClients();
@@ -69,8 +62,7 @@ function MyTrips({ onBack, link, onTripStep }: ScreenProps) {
     };
     return <DriverBooking booking={booking} onClose={close} />;
   }
-  if (trip && value) {
-    const step = onTripStep;
+  if (trip && value)
     return (
       <OwnTripFlow
         trip={trip}
@@ -79,16 +71,15 @@ function MyTrips({ onBack, link, onTripStep }: ScreenProps) {
         onBooking={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
         onChanged={reload}
         onClosed={() => (setOpened(null), reload())}
-        onStep={step ? (next: TripStep) => step(trip, next) : undefined}
       />
     );
-  }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const [trips, booked, offers] = value;
   return (
     <MyTripsList
       trips={trips}
+      booked={booked}
       waiting={(item) => waitingRequests(item, booked)}
       offers={offers}
       onBack={onBack}

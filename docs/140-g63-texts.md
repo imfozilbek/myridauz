@@ -1,6 +1,6 @@
 # 140. G63: новые тексты на согласие владельца
 
-> **Кратко:** тексты сервера G63: «Yoʻlga chiqdim» и «Yetib keldik» водителя, напоминание бота, проверка способа посадки (B1, `35`); встреча водителя и возврат комиссии за неявку (B2, `126`, `129`); источник «ссылка водителя» в статистике (B3, `119`). Все тексты новые (№11 изменён), ждут согласия владельца (`33`); проверка носителем (`25`) остаётся. Тексты экранов G63 (кнопки, карточки) будут в этом же документе на шаге G63 C.
+> **Кратко:** тексты сервера G63: «Yoʻlga chiqdim» и «Yetib keldik» водителя, напоминание бота, проверка способа посадки (B1, `35`); встреча водителя и возврат комиссии за неявку (B2, `126`, `129`); источник «ссылка водителя» в статистике (B3, `119`). Все тексты новые (№11 изменён), ждут согласия владельца (`33`); проверка носителем (`25`) остаётся. Тексты экранов G63 (кнопки, карточки) будут в этом же документе на шаге G63 C: карточка канала (21 … 23) и встреча, «Safar tugadi», «Qaytish», прошлая поездка водителя (C3, 24 … 54) уже здесь.
 
 ## Новые: ждут согласия
 
@@ -26,6 +26,47 @@
 | 18 | Админка, после подтверждения (`complaints.refundConfirmed`) | Komissiya haydovchiga qaytarildi. |
 | 19 | Админка, после отказа (`complaints.refundRejected`) | Loyiha egasi qaytarmaslikka qaror qildi. |
 | 20 | Админка, «Statistika», «Qayerdan kelishdi»: люди, пришедшие по ссылке водителя (`stats.arrival.driver`) | Haydovchi havolasi |
+| 21 | «Mening safarim»: карточка канала, заголовок (`driverTrip.channel.title`); решение владельца 08.10.2026, `119` строка 1 | Safaringiz kanalda chiqdi |
+| 22 | «Mening safarim»: карточка канала, подпись: канал и сколько разных людей открыли поездку (`driverTrip.channel.views`); пока никто не открыл, только название канала | {channel} · {count} kishi koʻrdi |
+| 23 | «Mening safarim»: кнопка в карточке канала, ссылка поездки через «Поделиться» Telegram (`driverTrip.channel.share`) | Havolani yoʻlovchilarga yuborish |
+
+## Экраны C3: встреча, конец поездки, прошлая поездка (ждут согласия)
+
+Все ключи в `packages/i18n/locales/uz-Latn/driver-after.json` (раздел `driverAfter`).
+
+| # | Где | Текст |
+|---|---|---|
+| 24 | «Uchrashuv»: тёмная плашка, попутчик пришёл (`meet.came`) | {name} keldi: uchrashuv joyida |
+| 25 | «Uchrashuv»: номер точки и время (`meet.point`) | {number}-nuqta · {time} |
+| 26 | «Uchrashuv»: кнопка (`meet.met`) | Keldi |
+| 27 | «Uchrashuv»: кнопка чата (`meet.write`) | Yozish |
+| 28 | Окно Telegram перед «Kelmadi» (`noShow.ask`) | {name} kelmadimi? Komissiyani qaytarish soʻrovi jamoaga yuboriladi. |
+| 29 | «Mening safarim»: строка попутчика после «Men keldim» (`noShow.until`) | Kelmadi · safar tugaguncha belgilash mumkin |
+| 30 | Строка попутчика: возврат ждёт владельца (`noShow.waiting`) | Kelmadi · qaytarish {amount} kutilmoqda |
+| 31 | Строка попутчика: возврат сделан (`noShow.refunded`) | Kelmadi · {amount} qaytarildi |
+| 32 | «Mening safarim»: плашка неявки, заголовок (`noShow.title`) | {name} kelmadi |
+| 33 | Плашка неявки, вторая строка (`noShow.sent`) | Komissiya {amount}: qaytarish soʻrovi jamoaga yuborildi |
+| 34 | «Safar tugadi»: итог (`done.sum`) | {passengers} yoʻlovchi · {sum} yoʻl xarajati |
+| 35 | «Safar tugadi»: кошелёк (`done.charged`) | Hamyon: {amount} yechildi |
+| 36 | «Safar tugadi»: остаток кошелька (`done.left`) | Qoldi ≈ {seats} joyga yetadi |
+| 37 | «Safar tugadi»: заголовок звёзд (`done.rate`) | Yoʻlovchilarni baholang |
+| 38 | «Qaytish»: заголовок (`back.title`) | Qaytishga yoʻlovchi olasizmi? |
+| 39 | «Qaytish»: заявки на обратный путь (`back.requests`) | {from} → {to}: {count} ta soʻrov bor |
+| 40 | «Qaytish»: подсказка (`back.ready`) | Hammasi tayyor: faqat vaqtni tasdiqlang. |
+| 41 | «Qaytish» и прошлая поездка: главная кнопка (`back.publish`) | Qaytishni eʼlon qilish |
+| 42 | Прошлая поездка: звёзды попутчику (`past.rated`) | Baho: {stars} qoʻydingiz |
+| 43 | Прошлая поездка: заголовок блока (`past.after`) | Safardan keyin |
+| 44 | Прошлая поездка: строка (`past.rate`) | Yoʻlovchilarni baholash |
+| 45 | Прошлая поездка: строка (`past.talk`) | Suhbatlar |
+| 46 | Прошлая поездка: срок чата (`past.talkUntil`) | Yozish mumkin: {until} |
+| 47 | Прошлая поездка: комиссия (`past.charged`) | {charged} yechildi |
+| 48 | Прошлая поездка: комиссия, возврат возможен (`past.refundable`) | {charged} yechildi · {refund} qaytishi mumkin |
+| 49 | Прошлая поездка: комиссия, возврат сделан (`past.refunded`) | {charged} yechildi · {refund} qaytarildi |
+| 50 | Окно Telegram: выбор попутчика (`past.pick`) | Qaysi yoʻlovchi? |
+| 51 | «Oʻtgan»: метка (`tag.refund`) | Qaytarish kutilmoqda |
+| 52 | «Oʻtgan» и строка звёзд: метка (`tag.rated`) | Hammasi baholandi |
+| 53 | «Hamyon»: строка возврата (`wallet.refund`) | Qaytarildi · {name} kelmadi |
+| 54 | «Hamyon»: дата возврата (`wallet.confirmed`) | {day} · egasi tasdiqladi |
 
 ## Как это работает (коротко)
 

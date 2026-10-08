@@ -22,7 +22,8 @@
 }
 
 .own-banner[data-stage='soon'],
-.own-banner[data-stage='on_way'] {
+.own-banner[data-stage='on_way'],
+.own-banner[data-stage='done'] {
   border-color: var(--reg-success-line);
   background: var(--reg-success-pale);
   color: var(--reg-success);
@@ -62,7 +63,8 @@
 }
 
 .own-banner[data-stage='soon'] .own-banner-text span,
-.own-banner[data-stage='on_way'] .own-banner-text span {
+.own-banner[data-stage='on_way'] .own-banner-text span,
+.own-banner[data-stage='done'] .own-banner-text span {
   color: var(--reg-success-deep);
 }
 

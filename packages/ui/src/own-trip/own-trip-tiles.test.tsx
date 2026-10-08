@@ -140,11 +140,11 @@ describe('an over trip keeps its four tiles, each says how the trip ended (docs/
     }
   });
 
-  it('a completed trip, with its passengers already completed too', async () => {
-    await open({ ...trip, status: 'completed' }, {}, [{ ...confirmed, status: 'completed' }]);
-    await tap('Yoʻl xaritasi');
-    expect(note()).toBe('Safar tugadi');
-    await tap('Vaqt yoki narx');
-    expect(note()).toBe('Safar tugadi');
+  it('an arrived trip (a completed one is the past trip), its passengers completed too', async () => {
+    await open({ ...trip, departedAt: 1, arrivedAt: 2 }, {}, [{ ...confirmed, status: 'completed' }]);
+    for (const tile of ['Yoʻl xaritasi', 'Vaqt yoki narx']) {
+      await tap(tile);
+      expect(note()).toBe('Safar tugadi');
+    }
   });
 });

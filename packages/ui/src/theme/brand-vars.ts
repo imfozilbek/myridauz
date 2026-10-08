@@ -33,6 +33,10 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-success-pale': colors.successPale,
     '--reg-success-line': colors.successLine,
     '--reg-success-deep': colors.successDeep,
+    // The tick of «{name} keldi» on the dark plate of «Uchrashuv» (G63, mockup g63/4 screen 13).
+    '--reg-success-bright': colors.successBright,
     '--reg-attention': colors.attention,
     '--reg-attention-soft': colors.attentionSoft,
+    // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
+    '--reg-danger-text': colors.dangerText,
   }) as CSSProperties;

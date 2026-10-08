@@ -27,6 +27,8 @@ export type BrandColors = {
   readonly successPale: HexColor;
   readonly successLine: HexColor;
   readonly successDeep: HexColor;
+  // The tick of «{name} keldi» on the dark plate of «Uchrashuv» (mockup g63/4 screen 13).
+  readonly successBright: HexColor;
   // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
   readonly accentSoft: HexColor;
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).

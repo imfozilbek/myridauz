@@ -1,0 +1,120 @@
+/* «Safar tugadi» of the driver (G63, mockup g63/4 screen 15): the values of the mockup at 360 px. */
+.trip-end {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 17px 15px 16px;
+  box-sizing: border-box;
+  color: var(--reg-ink);
+}
+
+.trip-end-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--reg-mint);
+  color: var(--reg-strong);
+}
+
+.trip-end-title {
+  margin: 6px 0 0;
+  font-size: 21px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.trip-end-sub {
+  margin: 0 0 9px;
+  font-size: 13.7px;
+  line-height: 17px;
+  color: var(--reg-muted);
+  text-align: center;
+}
+
+.trip-end-card {
+  margin-bottom: 11.4px;
+  border-radius: 16px;
+  background: var(--reg-card);
+}
+
+.trip-end-wallet {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 80px;
+  padding: 0 13.6px;
+}
+
+.trip-end-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--reg-mint);
+  color: var(--reg-strong);
+}
+
+.trip-end-wallet-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14.2px;
+  color: var(--reg-muted);
+}
+
+.trip-end-wallet-text b {
+  font-size: clamp(14px, 4.53vw, 16.3px);
+  color: var(--reg-ink);
+}
+
+.trip-end-rate {
+  padding: 14px 13px 16px;
+  text-align: center;
+}
+
+.trip-end-rate > b {
+  font-size: 15.7px;
+}
+
+.trip-end-riders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 0;
+  margin-top: 7px;
+}
+
+.trip-end-rider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14.5px;
+  line-height: 18px;
+}
+
+.trip-end-stars {
+  display: flex;
+  margin-top: 2px;
+}
+
+.trip-end-stars button {
+  display: flex;
+  /* A taller place for the finger, the stars stay where the mockup has them. */
+  margin: -8px 0;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--reg-brand);
+  cursor: pointer;
+}
+
+.trip-end-stars button[aria-pressed='true'] ~ button {
+  color: var(--reg-control);
+}

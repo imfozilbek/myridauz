@@ -1,0 +1,75 @@
+/* «Safaringiz kanalda chiqdi» on «Mening safarim» (G63, mockup g59/7-channels-3 phone 1) at 360 px:
+   the amber card with the channel and the link. The words get smaller on a narrow phone, never cut
+   (docs/121). */
+.own-channel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--reg-line);
+  border-radius: 13.5px;
+  background: var(--reg-soft);
+}
+
+.own-channel-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.own-channel-art {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.own-channel-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  font-size: clamp(11.5px, 3.611vw, 13px);
+  line-height: 17px;
+  color: var(--reg-muted);
+}
+
+.own-channel-text b {
+  font-size: clamp(13.5px, 4.167vw, 15px);
+  line-height: 19px;
+  color: var(--reg-ink);
+}
+
+.own-channel-top svg {
+  flex: none;
+}
+
+.own-channel-share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--reg-mint);
+  color: var(--reg-deep);
+  font: inherit;
+  font-size: clamp(12.5px, 4.167vw, 15px);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.own-channel-share svg {
+  flex: none;
+}

@@ -21,5 +21,8 @@
   "story.noApp": "Hikoyaga joylash uchun Telegramni yangilang.",
   "story.closed": "Hikoyaga faqat boʻsh joyi bor safar joylanadi.",
   "story.left": "Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi.",
-  "change.closed": "Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi."
+  "change.closed": "Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.",
+  "channel.title": "Safaringiz kanalda chiqdi",
+  "channel.views": "{channel} · {count} kishi koʻrdi",
+  "channel.share": "Havolani yoʻlovchilarga yuborish"
 }

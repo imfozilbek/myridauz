@@ -1,8 +1,5 @@
-import { MEET_BEFORE_MINUTES, MINUTE_MS, type DriverMeetStep } from '@platform/contracts';
+import { meetingStartsAt, type DriverMeetStep } from '@platform/contracts';
 import { holdsSeats, type BookingRecord } from './booking';
-
-// The meeting at the point opens MEET_BEFORE_MINUTES before the departure, for both sides (docs/126).
-export const meetingStartsAt = (departAt: number) => departAt - MEET_BEFORE_MINUTES * MINUTE_MS;
 
 // The driver marks the meeting until the trip closes (docs/129).
 export const meetingOpen = (trip: { departAt: number; endsAt: number; over: boolean }, now: number) =>

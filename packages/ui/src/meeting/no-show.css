@@ -1,0 +1,44 @@
+/* «Kelmadi» on «Mening safarim» of the driver (G63, mockup g63/5 phone 1) at 360 px. */
+.no-show-line {
+  color: var(--reg-danger-text, var(--tgui--destructive_text_color));
+}
+
+button.no-show-mark {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.no-show-banner {
+  display: flex;
+  align-items: center;
+  gap: 10.33px;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--reg-line);
+  border-radius: 13.5px;
+  background: var(--reg-soft);
+  color: var(--reg-success);
+}
+
+.no-show-banner svg {
+  flex: none;
+}
+
+.no-show-banner-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 15px;
+  color: var(--reg-deep);
+}
+
+.no-show-banner-text b {
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--reg-ink);
+}

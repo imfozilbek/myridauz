@@ -1,6 +1,5 @@
-import type { Booking } from '@platform/contracts';
+import { meetingStartsAt, type Booking } from '@platform/contracts';
 import type { BookingRecord } from '../domain/booking';
-import { meetingStartsAt } from '../domain/meeting';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 

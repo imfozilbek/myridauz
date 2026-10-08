@@ -1,7 +1,7 @@
 /* The requests and the passengers of «Mening safarim» (G63, mockup g63/3) at 360 px. On a narrow
    phone the words and the gaps get smaller, so a line is never broken in two (docs/121). */
 .seat-card-head,
-.rider-open {
+.rider-main {
   display: flex;
   flex: 1;
   align-items: center;
@@ -56,8 +56,34 @@
   border-top: 1px solid var(--reg-divider);
 }
 
-.rider-open {
+.rider-main {
+  position: relative;
   gap: clamp(8px, 3.056vw, 11px);
+  cursor: auto;
+}
+
+/* The name opens the booking, and its tap zone covers the whole row but the chat and the call. */
+.rider-open {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rider-open::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+}
+
+/* «Kelmadi» of the meeting stands over that zone: a tap on it marks, never opens (docs/129). */
+.rider-who .no-show-mark {
+  position: relative;
+  z-index: 1;
 }
 
 .rider-name {
@@ -65,8 +91,10 @@
   line-height: 16px;
 }
 
-.rider-line {
+.rider-line,
+.rider-who .no-show-line {
   font-size: clamp(10px, 3.2vw, 11.5px);
+  line-height: 15px;
 }
 
 /* A face without a photo is light grey here (mockup g63/3). */
