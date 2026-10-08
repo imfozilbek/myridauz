@@ -29,6 +29,7 @@ function record(kit: ReturnType<typeof setup>, status: BookingRecord['status']):
     dropoffNamed: NAMED,
     note: null,
     offerId: null,
+    talkId: null,
     confirmedAt: NOW,
     boardedAt: null,
     arrivedAt: null,

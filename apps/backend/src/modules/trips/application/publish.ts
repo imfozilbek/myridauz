@@ -17,17 +17,19 @@ export type PublishError =
   | 'locations.same_place'
   | 'locations.inside_city';
 
-type Input = Required<
+export type Input = Required<
   Pick<TripInput, 'from' | 'to' | 'departAt' | 'seats' | 'price' | 'womanOnBoard' | 'pickupMode'>
 > &
   Pick<TripInput, 'bookingRule'> & { readonly comment: string };
 
 // Only an approved driver publishes (docs/04), within the seats of the car and the price bounds (docs/09),
 // at a time the driver makes (docs/103), by the pitak only where the direction has one (docs/70).
+// A trip for one request (G64) is announced nowhere: only its passenger sees it until the answer.
 export async function publishTrip(
   deps: TripsDeps,
   driverId: number,
   input: Input,
+  forRequest: string | null = null,
 ): Promise<Result<Trip, PublishError>> {
   const now = deps.now();
   const [car, driver] = await Promise.all([deps.approvedCar(driverId), deps.people.find(driverId)]);
@@ -62,10 +64,13 @@ export async function publishTrip(
     priceToldAt: null,
     departedAt: null,
     arrivedAt: null,
+    forRequest,
   };
   await deps.trips.save(trip);
-  await deps.announce(trip);
-  await deps.changed(trip.id, 'published');
+  if (forRequest === null) {
+    await deps.announce(trip);
+    await deps.changed(trip.id, 'published');
+  }
   const [view] = await views(deps, [trip]);
   return view
     ? { ok: true, value: { ...view, recommendedPrice: recommended } }

@@ -4,10 +4,11 @@ import { toTrip, type TripRow as Row } from './trip-row';
 
 const UPSERT = `INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price,
   woman_on_board, comment, status, pickup_mode, created_at, car_make, car_model, car_color, car_plate,
-  first_depart_at, first_price, price_told_at, booking_rule)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  first_depart_at, first_price, price_told_at, booking_rule, for_request)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, depart_at = excluded.depart_at,
-  ends_at = excluded.ends_at, price = excluded.price, price_told_at = excluded.price_told_at`;
+  ends_at = excluded.ends_at, price = excluded.price, price_told_at = excluded.price_told_at,
+  for_request = excluded.for_request`;
 
 // «Yoʻlga chiqdim», «Yetib keldik» and the cancel (G63): one conditional write each, like the confirm
 // of a booking; a cancel, a departure, the completion Cron or a second tap that came first wins.
@@ -18,7 +19,7 @@ const ARRIVE = `UPDATE trips SET departed_at = COALESCE(departed_at, depart_at),
 const CANCEL = `UPDATE trips SET status = 'cancelled' WHERE id = ? AND ${LIVE} AND departed_at IS NULL`;
 const changed = (result: D1Result) => result.meta.changes === 1;
 
-// Table trips (migrations 0007, 0035, 0043, 0046). The route never changes; the driver moves the time
+// Table trips (migrations 0007, 0035, 0043, 0046, 0051). The route never changes; the driver moves the time
 // later and lowers the price (G39, docs/104). save never writes the marks of the road.
 export const d1Trips = (db: D1Database): TripRepository => ({
   save: async (trip) => {
@@ -47,6 +48,7 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         trip.firstPrice,
         trip.priceToldAt,
         trip.bookingRule,
+        trip.forRequest,
       )
       .run();
   },
@@ -81,13 +83,14 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to)
         .all<Row>()
     ).results.map(toTrip),
-  // Through trips_from (migration 0040): only the trips from the places of the search (G56).
+  // Through trips_from (migration 0040): only the trips from the places of the search (G56); a trip
+  // opened for one request is nobody else's (G64).
   leaving: async (from, to, places) =>
     (
       await allIn<Row>(
         db,
         (marks) =>
-          `SELECT * FROM trips WHERE status = 'active' AND depart_at >= ? AND depart_at < ? AND departed_at IS NULL AND from_id IN (${marks})`,
+          `SELECT * FROM trips WHERE status = 'active' AND depart_at >= ? AND depart_at < ? AND departed_at IS NULL AND for_request IS NULL AND from_id IN (${marks})`,
         places,
         [from, to],
       )

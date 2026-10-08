@@ -32,10 +32,13 @@ export type AlertRules = {
 // Voice calls (docs/08): an unanswered ring ends after ringSeconds, a call whose voice did not
 // connect ends after connectSeconds; then the chat takes over. A ring first opens the Mini App of the
 // callee (docs/115); the bot calls them in only if they are still not in the chat after inviteSeconds.
+// requestRings: a driver rings a passenger about one request at most so many times before a booking
+// (G64, docs/127); the owner changes it (docs/128).
 type CallRules = {
   readonly ringSeconds: number;
   readonly connectSeconds: number;
   readonly inviteSeconds: number;
+  readonly requestRings: number;
 };
 
 // The sounds of the brand (docs/115): each set has brands/<brand>/public/sounds/<set>-ring.wav (one

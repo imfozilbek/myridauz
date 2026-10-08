@@ -28,7 +28,7 @@ export const brandConfig: BrandConfig = {
   alerts: { errorGrowth: 3, minErrors: 10, dropGrowth: 20, minPeople: 20, repeatHours: 6 },
   // docs/08: no answer in 30 seconds or no voice in 15 seconds: the call ends, the chat stays.
   // docs/115: the bot calls a person in 5 seconds after the ring if their Mini App did not open the chat.
-  calls: { ringSeconds: 30, connectSeconds: 15, inviteSeconds: 5 },
+  calls: { ringSeconds: 30, connectSeconds: 15, inviteSeconds: 5, requestRings: 3 },
   // docs/115 (owner decision 04.10.2026): three sets, the third («ri-da, ri-DAAA») by default.
   sounds: { sets: ['1', '2', '3'], defaultSet: '3' },
   // G34 (owner decision 02.10.2026): an answer within the hour from 7:00 to 23:00; a reminder to the

@@ -20,6 +20,7 @@ export function createMemoryTrips(): TripRepository {
           (trip) =>
             trip.status === 'active' &&
             trip.departedAt === null &&
+            trip.forRequest === null &&
             trip.departAt >= from &&
             trip.departAt < to &&
             places.includes(trip.from),

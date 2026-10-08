@@ -12,6 +12,10 @@ export function createMemoryRequests(): RequestRepository {
       [...requests.values()]
         .filter((request) => request.status === 'open' && request.date === date)
         .sort((a, b) => a.createdAt - b.createdAt),
+    openFrom: async (date) =>
+      [...requests.values()]
+        .filter((request) => request.status === 'open' && request.date >= date)
+        .sort((a, b) => a.createdAt - b.createdAt),
     expireOver: async (now) => {
       for (const request of requests.values())
         if (request.status === 'open' && request.expiresAt <= now)

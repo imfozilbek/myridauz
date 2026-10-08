@@ -29,9 +29,11 @@ export async function searchTrips(deps: TripsDeps, search: TripSearch, viewer?: 
   return markedFirst(search.woman ? found.filter((trip) => trip.woman) : found, deps.now());
 }
 
-export async function tripDetail(deps: TripsDeps, id: string): Promise<Trip | undefined> {
+// A trip opened for one request is its driver's only (G64): its passenger sees the offer instead.
+export async function tripDetail(deps: TripsDeps, id: string, viewer: number): Promise<Trip | undefined> {
   const trip = await deps.trips.find(id);
-  return trip ? (await views(deps, [trip]))[0] : undefined;
+  if (!trip || (trip.forRequest !== null && trip.driverId !== viewer)) return undefined;
+  return (await views(deps, [trip]))[0];
 }
 
 // The team looks at the trips day by day; nothing waits for its approval (owner decision 29.09.2026).

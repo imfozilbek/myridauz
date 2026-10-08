@@ -4,6 +4,7 @@ import type { MessageStore, StoredCall, StoredMessage } from '../application/por
 export function createMemoryMessages(): MessageStore {
   const messages: StoredMessage[] = [];
   const notifiedAt = new Map<number, number>();
+  const rang = new Map<number, number>();
   let current: StoredCall | null = null;
   return {
     add: (message) => {
@@ -17,5 +18,7 @@ export function createMemoryMessages(): MessageStore {
     notified: (userId, at) => void notifiedAt.set(userId, at),
     call: () => current,
     saveCall: (call) => void (current = call),
+    rings: (userId) => rang.get(userId) ?? 0,
+    rang: (userId) => void rang.set(userId, (rang.get(userId) ?? 0) + 1),
   };
 }

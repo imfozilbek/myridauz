@@ -2,7 +2,7 @@ import {
   chatKeySchema,
   chatSocketPath,
   type ApiErrorCode,
-  type Booking,
+  type ChatAbout,
   type ChatSystemEvent,
 } from '@platform/contracts';
 import { Hono } from 'hono';
@@ -12,27 +12,24 @@ import { signTicket, verifyTicket } from '../application/ticket';
 
 // Who may open a chat: the bookings module knows (docs/07). null: not a member of this chat.
 export type MemberOf = (env: Bindings, key: string, userId: number) => Promise<Member | null>;
-// The booking of the chat as this member sees it; null when there is none or the person is not in it.
-export type BookingOf = (
-  env: Bindings,
-  key: string,
-  userId: number,
-) => Promise<{ readonly booking: Booking; readonly role: Member['role'] } | null>;
+// The booking, the request and the offer of the chat as this member sees them (G54, G64); null for a
+// person who is not in it.
+export type AboutOf = (env: Bindings, key: string, userId: number) => Promise<ChatAbout | null>;
 
 const secretOf = (env: Bindings) => env.PASSENGER_BOT_TOKEN ?? '';
 const fail = (code: ApiErrorCode, status: 400 | 403 | 503) => Response.json({ error: code }, { status });
 
 // The signed API gives a ticket; the socket shows the ticket and goes to the chat's Durable Object.
-export function chatRoutes(memberOf: MemberOf, bookingOf: BookingOf) {
+export function chatRoutes(memberOf: MemberOf, aboutOf: AboutOf) {
   return (
     new Hono<AppEnv>()
-      // Who calls and about which trip, on the call screen (G54, docs/115).
+      // Who calls and about which trip or request, on the chat and the call screen (G54, G64).
       .get('/chats/:key/about', async (context) => {
         const key = context.req.param('key');
         const about = chatKeySchema.safeParse(key).success
-          ? await bookingOf(context.env, key, context.get('session').user.id)
+          ? await aboutOf(context.env, key, context.get('session').user.id)
           : null;
-        return context.json(about ?? { booking: null, role: null });
+        return context.json(about ?? { booking: null, role: null, request: null, offer: null });
       })
       .post('/chats/:key/ticket', async (context) => {
         const key = context.req.param('key');

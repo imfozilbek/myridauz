@@ -1,4 +1,4 @@
-import type { CallAction, CallEnding, CallTrack, ChatServerEvent } from '@platform/contracts';
+import type { CallAction, CallEnding, CallRefusal, CallTrack, ChatServerEvent } from '@platform/contracts';
 import { callView, inCall } from './call-view';
 import { otherRole, type ChatSocket, type Member, type RoomDeps, type StoredCall } from './ports';
 import { systemEvent } from './room';
@@ -28,9 +28,18 @@ async function end(deps: RoomDeps, call: StoredCall, reason: CallEnding) {
 const endingOf = (call: StoredCall): CallEnding =>
   call.status === 'active' ? 'ended' : call.status === 'ringing' ? 'missed' : 'failed';
 
+// A driver before a booking rings only while the passenger allows calls and within the limit (G64).
+const refusalOf = (deps: RoomDeps, member: Member): CallRefusal | null => {
+  if (member.callsOff) return 'off';
+  return member.ringLimit !== null && deps.store.rings(member.userId) >= member.ringLimit ? 'limit' : null;
+};
+
 async function ring(deps: RoomDeps, from: ChatSocket, call: StoredCall | null) {
   const { member } = from;
   if (!member.canCall || call) return send(from, { type: 'call', call: callView(call, member.userId) });
+  const refused = refusalOf(deps, member);
+  if (refused) return send(from, { type: 'callRefused', reason: refused });
+  if (member.ringLimit !== null) deps.store.rang(member.userId);
   const calleeRole = otherRole(member.role);
   const since = deps.now();
   const here = present(deps, member.otherId);

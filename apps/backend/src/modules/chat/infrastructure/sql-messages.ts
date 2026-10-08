@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS messages (
   at INTEGER NOT NULL
 );
 CREATE TABLE IF NOT EXISTS notified (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS call_state (id INTEGER PRIMARY KEY CHECK (id = 1), body TEXT NOT NULL);`;
+CREATE TABLE IF NOT EXISTS call_state (id INTEGER PRIMARY KEY CHECK (id = 1), body TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS rings (user_id INTEGER PRIMARY KEY, count INTEGER NOT NULL);`;
 
 type Row = { id: number; author: number; text: string; event: string | null; masked: number; at: number };
 const toMessage = (row: Row): StoredMessage => ({
@@ -70,5 +71,13 @@ export function sqlMessages(sql: SqlStorage): MessageStore {
             JSON.stringify(call),
           )
         : sql.exec('DELETE FROM call_state')),
+    rings: (userId) =>
+      sql.exec<{ count: number }>('SELECT count FROM rings WHERE user_id = ?', userId).toArray()[0]?.count ??
+      0,
+    rang: (userId) =>
+      void sql.exec(
+        'INSERT INTO rings (user_id, count) VALUES (?, 1) ON CONFLICT (user_id) DO UPDATE SET count = count + 1',
+        userId,
+      ),
   };
 }

@@ -19,7 +19,7 @@ async function ringing(role: 'passenger' | 'driver') {
     testClients({
       chat: {
         socketUrl: async () => 'wss://api.test/socket',
-        about: async () => ({ booking: confirmed, role }),
+        about: async () => ({ booking: confirmed, role, request: null, offer: null }),
       },
     }),
   );

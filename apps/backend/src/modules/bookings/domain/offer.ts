@@ -17,6 +17,11 @@ export type OfferRecord = {
   readonly car: OfferCar | null;
   readonly status: Offer['status'];
   readonly bookingId: string | null;
+  // The talk of the pair (G64): its chat holds the offer; null for an offer before G64.
+  readonly talkId: string | null;
+  // The trip the booking goes on (G64): a trip of the driver or one opened for the request; null:
+  // a trip is made when the passenger accepts (G08).
+  readonly tripId: string | null;
   readonly createdAt: number;
 };
 

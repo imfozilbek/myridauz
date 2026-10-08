@@ -41,6 +41,7 @@ const request: RideRequest = {
   pickupMode: 'both',
   wholeCar: false,
   withWoman: false,
+  callsOff: false,
 };
 
 describe('the request of a passenger for a driver (docs/86 V6)', () => {

@@ -68,6 +68,7 @@ export const trip: Trip = {
   status: 'active',
   departedAt: null,
   arrivedAt: null,
+  private: false,
 };
 
 const unused = async (): Promise<never> => {

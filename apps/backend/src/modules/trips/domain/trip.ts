@@ -43,6 +43,8 @@ export type TripRecord = {
   // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63, docs/35): not statuses, two marks.
   readonly departedAt: number | null;
   readonly arrivedAt: number | null;
+  // Opened for one «Boʻsh salon kerak» request (G64): only its passenger sees it until the answer.
+  readonly forRequest: string | null;
 };
 
 export const endsAt = tripEndsAt;

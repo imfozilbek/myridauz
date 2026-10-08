@@ -11,6 +11,6 @@ describe('a trip that already left (G27, docs/83 N02)', () => {
     // 3 h to leave: an hour after the departure the trip is still on the road.
     setNow(NOW + 4 * HOUR);
     expect(await cancelTrip(deps, 1, id)).toEqual({ ok: false, error: 'trips.wrong_status' });
-    expect((await tripDetail(deps, id))?.status).toBe('active');
+    expect((await tripDetail(deps, id, 0))?.status).toBe('active');
   });
 });

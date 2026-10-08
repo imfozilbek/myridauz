@@ -1,9 +1,9 @@
-import { placeNameSchema, type BookingMode, type BookingStatus, type Point } from '@platform/contracts';
-import { z } from 'zod';
+import type { BookingMode, BookingStatus } from '@platform/contracts';
 import type { BookingRecord, Named } from '../domain/booking';
 import { MARK_COLUMNS, markValues, marksOf, type MarkRow } from './mark-row';
+import { namedOf, pointOf } from './named-json';
 
-// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047, 0050) and back.
+// A row of the table bookings (migrations 0008, 0009, 0024, 0043, 0047, 0050, 0051) and back.
 export type BookingRow = MarkRow & {
   id: string;
   trip_id: string;
@@ -25,6 +25,7 @@ export type BookingRow = MarkRow & {
   dropoff_name: string | null;
   note: string | null;
   offer_id: string | null;
+  talk_id: string | null;
   confirmed_at: number | null;
   boarded_at: number | null;
   arrived_at: number | null;
@@ -32,22 +33,6 @@ export type BookingRow = MarkRow & {
   created_at: number;
   updated_at: number;
 };
-
-const namedSchema = z.object({ name: placeNameSchema.nullable(), area: placeNameSchema.nullable() });
-
-const pointOf = (lat: number | null, lng: number | null): Point | null =>
-  lat === null || lng === null ? null : { lat, lng };
-
-// The names are JSON: a broken or an old value reads as no names, never as an error.
-function namedOf(json: string | null): Named | null {
-  if (json === null) return null;
-  try {
-    const parsed = namedSchema.safeParse(JSON.parse(json));
-    return parsed.success ? parsed.data : null;
-  } catch {
-    return null;
-  }
-}
 
 export const toBooking = (row: BookingRow): BookingRecord => ({
   id: row.id,
@@ -68,6 +53,7 @@ export const toBooking = (row: BookingRow): BookingRecord => ({
   dropoffNamed: namedOf(row.dropoff_name),
   note: row.note,
   offerId: row.offer_id,
+  talkId: row.talk_id,
   confirmedAt: row.confirmed_at,
   boardedAt: row.boarded_at,
   arrivedAt: row.arrived_at,
@@ -115,6 +101,7 @@ export const rowValues = (b: BookingRecord) =>
     b.pitakId,
     ...pointValues(b),
     b.offerId,
+    b.talkId,
     b.confirmedAt,
     b.boardedAt,
     b.arrivedAt,
@@ -137,6 +124,7 @@ export const ROW_COLUMNS = [
   'pitak_id',
   ...POINT_COLUMNS,
   'offer_id',
+  'talk_id',
   'confirmed_at',
   'boarded_at',
   'arrived_at',

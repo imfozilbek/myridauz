@@ -3,27 +3,32 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
+import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
 import { expireRequests, expireTripRequests } from './application/expire';
-import { chatBooking, chatMember } from './application/chat-member';
+import { chatAbout } from './application/chat-about';
+import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
 import { meetingBegun } from './application/meeting';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
 import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides';
+import { expireTripOffers } from './application/salon-trip';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
 import { isRide } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
+import { talkRoutes } from './http/talk-routes';
 import { bookingStore } from './infrastructure/store';
 
 export const bookingsModule = new Hono<AppEnv>()
   .route('/', bookingRoutes(bookingsDeps))
   .route('/', offerRoutes(bookingsDeps))
-  .route('/', meetingRoutes(bookingsDeps));
+  .route('/', meetingRoutes(bookingsDeps))
+  .route('/', talkRoutes(bookingsDeps));
 
 // The driver cancelled a trip: its requests are declined and its bookings cancelled "by the driver",
 // the commissions go back to the wallet (docs/12, docs/35). Runs around the trips route, like the avatar watch.
@@ -40,6 +45,7 @@ export const tripCancelWatch = new Hono<AppEnv>().use(CANCEL_PATH, async (contex
   for (const booking of await deps.bookings.byTrips([context.req.param('id') ?? '']))
     if (booking.status === 'requested' || booking.status === 'confirmed')
       await answer(deps, driverId, booking.id, 'driver_cancel');
+  await expireTripOffers(deps, driverId, context.req.param('id') ?? '');
 });
 
 // The driver moved the time: the booked passengers hear it (G39, docs/104).
@@ -61,8 +67,8 @@ export const erasePointsOf = (env: Bindings, userId: number) => bookingStore(env
 // For the chat: who may open it (docs/07).
 export const chatMemberOf = (env: Bindings, key: string, userId: number) =>
   chatMember(bookingsDeps(env), key, userId);
-export const chatBookingOf = (env: Bindings, key: string, userId: number) =>
-  chatBooking(bookingsDeps(env), key, userId);
+export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
+  chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
 // Confirmed bookings of these trips as their passengers see them: the reminders (G10).
@@ -109,3 +115,6 @@ export const pastRidesOf = (env: Bindings, userId: number, side: 'passenger' | '
 
 // "Maʼlumotlarimni oʻchirish" (docs/30): every chat of the person.
 export const chatsOf = (env: Bindings, userId: number) => chatKeysOf(bookingsDeps(env), userId);
+
+// The trip the board of requests of a driver fills (G64, docs/118 path 7).
+export const boardTripOf = (env: Bindings, driverId: number) => boardTrip(bookingsDeps(env), driverId);

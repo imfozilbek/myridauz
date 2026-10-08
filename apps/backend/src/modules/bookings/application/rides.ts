@@ -1,5 +1,6 @@
 import { holdsSeats, type BookingRecord } from '../domain/booking';
 import { isRide } from '../domain/meeting';
+import { bookingChatKey } from '../domain/talk';
 import type { BookingsDeps } from './ports';
 
 // A ride: a confirmed booking of a trip. Ratings and complaints are about rides (docs/17, docs/24).
@@ -16,9 +17,6 @@ export type Ride = {
   // The chat of the booking, or of the offer it came from (docs/07).
   readonly chatKey: string;
 };
-
-export const chatKeyOf = (booking: BookingRecord) =>
-  booking.offerId ? `o${booking.offerId}` : `b${booking.id}`;
 
 export async function rideOf(deps: BookingsDeps, bookingId: string): Promise<Ride | undefined> {
   const booking = await deps.bookings.find(bookingId);
@@ -54,7 +52,7 @@ async function asRide(deps: BookingsDeps, booking: BookingRecord): Promise<Ride 
     // «Yetib keldik» ends the ride at once: the stars come right after it (docs/129, docs/124 В).
     over: over || arrivedAt !== null,
     commission: booking.commission,
-    chatKey: chatKeyOf(booking),
+    chatKey: bookingChatKey(booking),
   };
 }
 
@@ -81,7 +79,7 @@ export async function ridesOf(deps: BookingsDeps, trips: readonly EndedTrip[]): 
         endsAt,
         over: true,
         commission: booking.commission,
-        chatKey: chatKeyOf(booking),
+        chatKey: bookingChatKey(booking),
       },
     ];
   });

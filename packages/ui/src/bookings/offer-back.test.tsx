@@ -25,6 +25,7 @@ const request: RideRequest = {
   pickupMode: 'both',
   wholeCar: false,
   withWoman: false,
+  callsOff: false,
 };
 
 describe('an offer keeps its answers (docs/94 F8, F9)', { timeout: 20_000 }, () => {

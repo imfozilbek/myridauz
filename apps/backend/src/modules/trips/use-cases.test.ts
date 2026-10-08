@@ -38,7 +38,7 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     const published = await publishTrip(deps, 1, { ...trip, comment: 'tel 90 123 45 67, @ali_uz' });
     const comment = published.ok ? published.value.comment : '';
     expect(comment).not.toMatch(/123|ali_uz/);
-    expect((await tripDetail(deps, published.ok ? published.value.id : ''))?.comment).toBe(comment);
+    expect((await tripDetail(deps, published.ok ? published.value.id : '', 0))?.comment).toBe(comment);
   });
 
   it('keeps the price of a published trip when the formula changes (docs/23)', async () => {
@@ -46,7 +46,7 @@ describe('publishing a trip (docs/09, docs/35)', () => {
     const published = await publishTrip(deps, 1, trip);
     setFormula(150000);
     const id = published.ok ? published.value.id : '';
-    expect((await tripDetail(deps, id))?.price).toBe(90000);
+    expect((await tripDetail(deps, id, 0))?.price).toBe(90000);
   });
 });
 
@@ -60,7 +60,7 @@ describe('a driver on a new check (docs/65 A1)', () => {
     expect((await searchTrips(deps, search, 2)).map((item) => item.id)).toEqual([id]);
     // The driver does not find the own trip: nothing to book there (G41, docs/90 F-P8).
     expect(await searchTrips(deps, search, 1)).toEqual([]);
-    expect((await tripDetail(deps, id))?.driver.car.model).toBe('Cobalt');
+    expect((await tripDetail(deps, id, 0))?.driver.car.model).toBe('Cobalt');
     expect((await myTrips(deps, 1)).map((item) => item.id)).toEqual([id]);
     expect((await familyView(deps, id))?.plate).toBe('01A123BC');
     // Only a new trip waits for the team.
@@ -101,7 +101,7 @@ describe('finding trips (docs/06, docs/14)', () => {
     ride({ tripId, passengerId: 2, seats: 1, withWoman: false, pickup: null, dropoff: null });
     expect(await searchTrips(deps, search)).toMatchObject([{ woman: true, seatsLeft: 2, status: 'active' }]);
     ride({ tripId, passengerId: 3, seats: 2, withWoman: false, pickup: null, dropoff: null });
-    expect(await tripDetail(deps, tripId)).toMatchObject({ seatsLeft: 0, status: 'full' });
+    expect(await tripDetail(deps, tripId, 0)).toMatchObject({ seatsLeft: 0, status: 'full' });
     expect(await searchTrips(deps, { ...search, woman: undefined })).toEqual([]);
   });
 });
@@ -118,7 +118,7 @@ describe('my trips and the end of a trip (docs/35)', () => {
     expect(await cancelTrip(deps, 1, secondId)).toEqual({ ok: false, error: 'trips.wrong_status' });
     // 3 h to leave, 5 h on the road (300 km at 60 km/h), 2 h after arrival.
     setNow(NOW + 10 * HOUR);
-    expect((await tripDetail(deps, firstId))?.status).toBe('completed');
+    expect((await tripDetail(deps, firstId, 0))?.status).toBe('completed');
     await deps.trips.completeOver(NOW + 10 * HOUR);
     expect((await myTrips(deps, 1)).map((item) => item.status)).toEqual(['cancelled', 'completed']);
   });

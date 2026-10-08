@@ -73,6 +73,13 @@ export const requestPublished = async (env: Bindings, request: RideRequest) =>
     price: request.price,
   });
 
+// The routes a driver follows for requests (G64): the board of the driver shows their requests.
+export const requestRoutesOf = async (env: Bindings, userId: number) =>
+  (await subscriptionsDeps(env).subscriptions.byUser(userId, 'requests')).map(({ from, to }) => ({
+    from,
+    to,
+  }));
+
 // The Cron job: waiting matches together, renewal offers, dated subscriptions that are over.
 export const sendWaitingSubscriptions = (env: Bindings) => sendWaiting(subscriptionsDeps(env));
 

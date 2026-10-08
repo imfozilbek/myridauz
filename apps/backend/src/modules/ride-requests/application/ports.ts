@@ -1,4 +1,4 @@
-import type { Car, Pitak, Point, Recommendation, RouteError } from '@platform/contracts';
+import type { Car, Pitak, Point, Rating, Recommendation, RouteError, Stops, Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { RequestRecord } from '../domain/ride-request';
 
@@ -9,6 +9,8 @@ export type RequestRepository = {
   byPassenger(passengerId: number): Promise<RequestRecord[]>;
   // Open requests of one day in Tashkent, the oldest first.
   openOn(date: string): Promise<RequestRecord[]>;
+  // Open requests of this day and later, the oldest first: the board of a driver (G64).
+  openFrom(date: string): Promise<RequestRecord[]>;
   // The Cron job: requests of a day that is over become expired (docs/35), without points.
   expireOver(now: number): Promise<void>;
   // "Maʼlumotlarimni oʻchirish" (docs/30): the points of the person go at once.
@@ -33,6 +35,14 @@ export type RequestsDeps = {
   readonly published: (requestId: string) => Promise<void>;
   // Complaints from 3 people hide a person from every search, of trips and of requests (docs/17).
   readonly hidden: (userIds: readonly number[]) => Promise<ReadonlySet<number>>;
+  // The board of a driver (G64, docs/118 path 7): the routes of the driver's trips and subscriptions,
+  // and the nearest live trip with free seats with the stops of its passengers (docs/70).
+  readonly board: {
+    directions(driverId: number): Promise<readonly { readonly from: string; readonly to: string }[]>;
+    trip(driverId: number): Promise<{ readonly trip: Trip; readonly stops: Stops } | null>;
+  };
+  // The ratings of passengers on the cards of drivers (G64, docs/24).
+  readonly ratings: (userIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
   readonly newId: () => string;
   readonly now: () => number;
 };

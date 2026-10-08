@@ -4,11 +4,12 @@ import { webhookRoutes } from './bots/webhook-routes';
 import type { AppEnv } from './env';
 import './account-deletion';
 import './module-events';
+import './board-events';
 import { analyticsModule } from './modules/analytics';
 import {
   bookingForShare,
   bookingsModule,
-  chatBookingOf,
+  chatAboutOf,
   chatMemberOf,
   tripCancelWatch,
 } from './modules/bookings';
@@ -112,7 +113,7 @@ export const app = new Hono<AppEnv>()
     chatRoutes(async (env, key, userId) => {
       const member = await chatMemberOf(env, key, userId);
       return member && { ...member, canCall: member.canCall && callsReady(env) };
-    }, chatBookingOf),
+    }, chatAboutOf),
   )
   .route(
     '/',

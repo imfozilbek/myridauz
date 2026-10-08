@@ -2,7 +2,8 @@ import type { ChatSystemEvent } from '@platform/contracts';
 
 // Who is in the chat of a booking (docs/07): its passenger and its driver, nobody else.
 export type Role = 'passenger' | 'driver';
-// canCall: the booking is confirmed, a voice call is open (docs/08).
+// canCall: the booking is confirmed, a voice call is open (docs/08); in a talk about a request also
+// before a booking (G64, docs/118 path 7).
 export type Member = {
   readonly userId: number;
   readonly role: Role;
@@ -10,6 +11,10 @@ export type Member = {
   readonly canCall: boolean;
   // Read only 24 hours after the trip (docs/129).
   readonly canWrite: boolean;
+  // Before a booking in a talk (G64): the passenger turned the calls of drivers off, and how many
+  // times a driver may ring about the request (null: no limit).
+  readonly callsOff: boolean;
+  readonly ringLimit: number | null;
 };
 export const otherRole = (role: Role): Role => (role === 'passenger' ? 'driver' : 'passenger');
 
@@ -34,6 +39,9 @@ export type MessageStore = {
   // The call of this chat right now, if any (docs/08): kept so it survives the chat's sleep.
   call(): StoredCall | null;
   saveCall(call: StoredCall | null): void;
+  // How many times a person rang in this chat (G64): the limit of a driver before a booking.
+  rings(userId: number): number;
+  rang(userId: number): void;
 };
 
 type CallStatus = 'ringing' | 'connecting' | 'active';

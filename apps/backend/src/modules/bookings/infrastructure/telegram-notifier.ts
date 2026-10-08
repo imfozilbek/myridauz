@@ -1,7 +1,6 @@
 import type { BrandConfig } from '@platform/brands';
 import {
   BOOKING_LINK,
-  chatKeyOfOffer,
   FIND_LINK,
   formatPlate,
   OFFER_LINK,
@@ -94,7 +93,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       else await lostSeat(booking, t('bot.booking.cancelledByDriver', await about(booking)));
     },
     offered: async (passengerId, offer) => {
-      await system(chatKeyOfOffer(offer.id), 'offered');
+      await system(offer.chatKey, 'offered');
       const { firstName, car } = offer.driver;
       const at = new Date(offer.departAt);
       const text = t('bot.offer.new', {
@@ -109,10 +108,10 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       const markup = open('passenger', { name: OFFER_LINK, id: offer.id });
       await notify([{ bot: 'passenger', chatId: passengerId, text, markup }]);
     },
-    offerAnswered: async (driverId, accepted, offerId) => {
-      if (!accepted) await system(chatKeyOfOffer(offerId), 'declined');
+    offerAnswered: async (driverId, accepted, offer) => {
+      if (!accepted) await system(offer.chatKey, 'declined');
       const text = t(accepted ? 'bot.offer.accepted' : 'bot.offer.declined');
-      const markup = open('driver', { name: OFFER_LINK, id: offerId });
+      const markup = open('driver', { name: OFFER_LINK, id: offer.id });
       await notify([{ bot: 'driver', chatId: driverId, text, markup }]);
     },
     progress: (booking, step) => closeOnes(booking, step),

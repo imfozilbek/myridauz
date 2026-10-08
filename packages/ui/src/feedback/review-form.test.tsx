@@ -23,7 +23,7 @@ function open(feedback: Partial<FeedbackClient>, comfort: Partial<ComfortClient>
     <ReviewScreen bookingId={done.id} onBack={onBack} onComplain={() => undefined} />,
     testClients({
       feedback: { target: async () => TARGET, ...feedback },
-      chat: { about: async () => ({ booking: done, role: 'passenger' }) },
+      chat: { about: async () => ({ booking: done, role: 'passenger', request: null, offer: null }) },
       comfort: { favorites: async () => ({ drivers: [], trips: [] }), ...comfort },
     }),
   );

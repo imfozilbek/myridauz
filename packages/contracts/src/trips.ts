@@ -13,6 +13,12 @@ export const TRIPS_PATH = '/trips';
 // The team sees the trips of yesterday, today and later; trips are not approved (owner decision 29.09.2026).
 export const ADMIN_TRIPS_PATH = '/admin/trips';
 export const tripPath = (id: string) => `${TRIPS_PATH}/${id}`;
+// A trip opened for one passenger's request: the driver opens it for everybody (G64, docs/118 path 7).
+export const driverTripOpenPath = (id: string) => `${DRIVER_TRIPS_PATH}/${id}/open`;
+// «Bu oy N safar», «Yoʻl xarajati qaytdi» (G64, docs/118 path 7): this month of Tashkent.
+export const DRIVER_MONTH_PATH = `${DRIVER_TRIPS_PATH}/month`;
+export const driverMonthSchema = z.object({ trips: z.number().int(), costs: z.number().int() });
+export type DriverMonth = z.infer<typeof driverMonthSchema>;
 
 export const TRIP_STATUSES = ['active', 'full', 'completed', 'cancelled'] as const;
 // The average speed with stops, measured on the owner's route (decision 29.09.2026):
@@ -95,6 +101,8 @@ export const tripSchema = z.object({
   // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63, docs/35); an older answer has neither.
   departedAt: z.number().int().nullable().default(null),
   arrivedAt: z.number().int().nullable().default(null),
+  // Opened from a «Boʻsh salon kerak» request (G64): only that passenger sees it until the answer.
+  private: z.boolean().default(false),
 });
 export type Trip = z.infer<typeof tripSchema>;
 export const tripsSchema = z.object({ trips: z.array(tripSchema) });

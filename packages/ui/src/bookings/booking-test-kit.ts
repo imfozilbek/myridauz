@@ -69,6 +69,9 @@ export const offer: Offer = {
   status: 'sent',
   bookingId: null,
   chatKey: 'o00000000-0000-4000-8000-0000000000c1',
+  tripId: null,
+  pitak: null,
+  createdAt: 0,
 };
 
 export const wallet: Wallet = {
@@ -111,4 +114,5 @@ export const request = {
   pickupMode: 'both' as const,
   wholeCar: false,
   withWoman: false,
+  callsOff: false,
 };

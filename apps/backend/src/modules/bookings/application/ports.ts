@@ -1,7 +1,5 @@
 import type {
-  Booking,
   Car,
-  Offer,
   Pitak,
   Point,
   Recommendation,
@@ -9,13 +7,15 @@ import type {
   Trip,
   TripInput,
   Rating,
+  RideRequest,
   PickupMode,
   Where,
 } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
-import type { OfferRecord } from '../domain/offer';
 import type { MarkStore, MeetingPorts } from './meeting-ports';
+import type { BookingNotifier } from './notifier-port';
+import type { OfferRepository, TalkRepository } from './offer-ports';
 import type { RequestFacts } from './request-facts';
 
 // Ports of the bookings module: D1 in production, memory in tests.
@@ -37,14 +37,8 @@ export type BookingRepository = MarkStore & {
   erasePointsOf(passengerId: number): Promise<void>;
 };
 
-export type OfferRepository = {
-  save(offer: OfferRecord): Promise<void>;
-  // Saves only if the offer still has the expected status: an offer is accepted once (docs/65 A4).
-  replace(offer: OfferRecord, expected: OfferRecord['status']): Promise<boolean>;
-  find(id: string): Promise<OfferRecord | undefined>;
-  byRequests(requestIds: readonly string[]): Promise<OfferRecord[]>;
-  byDriver(driverId: number): Promise<OfferRecord[]>;
-};
+export type { OfferRepository } from './offer-ports';
+export type { BookingNotifier } from './notifier-port';
 
 // What bookings need of a trip (the trips module owns it).
 export type TripFacts = {
@@ -73,6 +67,9 @@ type Published = { ok: true; value: Trip } | { ok: false; error: string };
 export type BookingsDeps = {
   readonly bookings: BookingRepository;
   readonly offers: OfferRepository;
+  readonly talks: TalkRepository;
+  // How many times a driver rings about one request before a booking (brand, G64).
+  readonly requestRings: number;
   readonly trips: {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
@@ -85,10 +82,17 @@ export type BookingsDeps = {
     ): Promise<'trips.too_soon' | 'trips.too_many' | 'trips.busy' | null>;
     views(ids: readonly string[]): Promise<Trip[]>;
     publish(driverId: number, input: Omit<Required<TripInput>, 'pickupMode'>): Promise<Published>;
+    // «Safar ochib taklif qilish» (G64): a trip only the passenger of the request sees; opened for
+    // everybody by the driver, or released as an ordinary trip once the passenger takes it.
+    publishPrivate(driverId: number, input: Required<TripInput>, requestId: string): Promise<Published>;
+    open(driverId: number, tripId: string): Promise<Published>;
+    release(tripId: string): Promise<void>;
     cancel(driverId: number, tripId: string): Promise<void>;
   };
   readonly requests: {
     find(id: string): Promise<RequestFacts | undefined>;
+    // The request as drivers see it, on top of a talk (G64).
+    view(id: string): Promise<RideRequest | undefined>;
     ofPassenger(passengerId: number): Promise<RequestFacts[]>;
     matched(id: string): Promise<void>;
     cancel(passengerId: number, id: string): Promise<void>;
@@ -121,26 +125,6 @@ export type BookingsDeps = {
   readonly mask: (text: string) => string;
   readonly now: () => number;
   readonly newId: () => string;
-};
-
-// Bot messages to the other side (docs/07): a new request, an answer, a cancel, an offer.
-export type BookingNotifier = {
-  requested(booking: Booking): Promise<void>;
-  // The passenger answers this message with the pickup point (docs/14).
-  confirmed(booking: Booking): Promise<void>;
-  declined(booking: Booking): Promise<void>;
-  expired(booking: Booking): Promise<void>;
-  cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
-  // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
-  offered(passengerId: number, offer: Offer): Promise<void>;
-  offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
-  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)
-  // and of the driver for the passenger (G63).
-  progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
-  came(booking: Booking): Promise<void>;
-  driverCame(booking: Booking): Promise<void>;
-  // The driver moved the time or lowered the price (G39, docs/104).
-  tripRetimed(booking: Booking): Promise<void>;
 };
 
 type Recommended =

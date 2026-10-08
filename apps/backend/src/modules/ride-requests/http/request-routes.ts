@@ -1,6 +1,9 @@
 import {
+  DRIVER_REQUESTS_BOARD_PATH,
   DRIVER_REQUESTS_PATH,
   PASSENGER_REQUESTS_PATH,
+  requestBoardQuerySchema,
+  requestCallsInputSchema,
   requestSearchSchema,
   rideRequestInputSchema,
   type ApiErrorCode,
@@ -8,6 +11,8 @@ import {
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { ONE } from '../../../shared/routes/one-id';
+import { requestBoard } from '../application/board';
+import { setRequestCalls } from '../application/calls';
 import type { RequestsDeps } from '../application/ports';
 import { cancelRequest, myRequests, publishRequest, searchRequests } from '../application/use-cases';
 
@@ -44,6 +49,24 @@ export function requestRoutes(deps: (env: Bindings) => RequestsDeps) {
     .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/cancel`, async (context) => {
       const passengerId = context.get('session').user.id;
       const result = await cancelRequest(deps(context.env), passengerId, context.req.param('id'));
+      return result.ok ? context.json(result.value) : fail(context, result.error);
+    })
+    .post(`${PASSENGER_REQUESTS_PATH}/${ONE}/calls`, async (context) => {
+      const input = requestCallsInputSchema.safeParse(await context.req.json().catch(() => null));
+      if (!input.success) return fail(context, 'trips.invalid_input');
+      const passengerId = context.get('session').user.id;
+      const result = await setRequestCalls(
+        deps(context.env),
+        passengerId,
+        context.req.param('id'),
+        input.data.on,
+      );
+      return result.ok ? context.json(result.value) : fail(context, result.error);
+    })
+    .get(DRIVER_REQUESTS_BOARD_PATH, async (context) => {
+      const query = requestBoardQuerySchema.safeParse(context.req.query());
+      if (!query.success) return fail(context, 'trips.invalid_input');
+      const result = await requestBoard(deps(context.env), context.get('session').user.id, query.data);
       return result.ok ? context.json(result.value) : fail(context, result.error);
     })
     .get(DRIVER_REQUESTS_PATH, async (context) => {

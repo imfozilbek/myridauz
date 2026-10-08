@@ -16,6 +16,8 @@ type Row = {
   car_plate: string | null;
   status: Offer['status'];
   booking_id: string | null;
+  talk_id: string | null;
+  trip_id: string | null;
   created_at: number;
 };
 
@@ -36,19 +38,21 @@ const toOffer = (row: Row): OfferRecord => ({
   car: carOf(row),
   status: row.status,
   bookingId: row.booking_id,
+  talkId: row.talk_id,
+  tripId: row.trip_id,
   createdAt: row.created_at,
 });
 
 const all = async (statement: D1PreparedStatement) => (await statement.all<Row>()).results.map(toOffer);
 
-// Table offers (migrations/0008_bookings_wallet.sql, 0045_request_marks.sql).
+// Table offers (migrations/0008_bookings_wallet.sql, 0045_request_marks.sql, 0051_request_talks.sql).
 export const d1Offers = (db: D1Database): OfferRepository => ({
   save: async (offer) => {
     await db
       .prepare(
         `INSERT INTO offers (id, request_id, driver_id, depart_at, price, status, booking_id, created_at,
-         car_make, car_model, car_color, seats, car_plate)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         car_make, car_model, car_color, seats, car_plate, talk_id, trip_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT (id) DO UPDATE SET status = excluded.status, booking_id = excluded.booking_id`,
       )
       .bind(
@@ -65,6 +69,8 @@ export const d1Offers = (db: D1Database): OfferRepository => ({
         offer.car?.color ?? null,
         offer.seats,
         offer.car?.plate ?? null,
+        offer.talkId,
+        offer.tripId,
       )
       .run();
   },

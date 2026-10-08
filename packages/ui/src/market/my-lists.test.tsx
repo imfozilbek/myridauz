@@ -25,6 +25,7 @@ const request: RideRequest = {
   pickupMode: 'both',
   wholeCar: false,
   withWoman: false,
+  callsOff: false,
 };
 
 describe('Mening safarlarim (docs/35)', () => {

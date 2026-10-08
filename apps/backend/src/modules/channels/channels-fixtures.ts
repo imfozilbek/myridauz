@@ -41,4 +41,5 @@ export const TRIP: Trip = {
   status: 'active',
   departedAt: null,
   arrivedAt: null,
+  private: false,
 };

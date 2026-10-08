@@ -20,10 +20,16 @@ const id = z.string().regex(/^[A-Za-z0-9_-]{1,128}$/u);
 export const callTrackSchema = z.object({ sessionId: id, trackName: id });
 export type CallTrack = z.infer<typeof callTrackSchema>;
 
+// A ring the server did not pass on (G64, docs/118 path 7): the passenger turned calls about the
+// request off, or the driver rang about it as many times as the brand allows.
+export const CALL_REFUSALS = ['off', 'limit'] as const;
+export type CallRefusal = (typeof CALL_REFUSALS)[number];
+
 export const callServerEvents = [
   z.object({ type: z.literal('call'), call: callViewSchema.nullable() }),
   z.object({ type: z.literal('callEnded'), reason: z.enum(CALL_ENDINGS) }),
   z.object({ type: z.literal('callTrack'), track: callTrackSchema }),
+  z.object({ type: z.literal('callRefused'), reason: z.enum(CALL_REFUSALS) }),
 ] as const;
 
 export const callClientEvents = [

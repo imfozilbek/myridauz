@@ -35,7 +35,7 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35)', () => {
     expect(home.ok && home.value).toMatchObject({ arrivedAt: NOW + 7 * HOUR, status: 'active' });
     expect(signals.slice(2)).toEqual(['driver 1', 'passenger 3']);
     expect(await arriveTrip(deps, 1, id)).toEqual({ ok: false, error: 'trips.already_arrived' });
-    expect(await tripDetail(deps, id)).toMatchObject({ departedAt: NOW + 2 * HOUR + 30 * MINUTE });
+    expect(await tripDetail(deps, id, 0)).toMatchObject({ departedAt: NOW + 2 * HOUR + 30 * MINUTE });
   });
 
   it('takes the time of the trip as the departure when the driver forgot the button', async () => {

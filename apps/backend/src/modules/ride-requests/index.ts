@@ -5,6 +5,7 @@ import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
 import { pointFitsPlace } from '../map';
 import { pitakOf } from '../pitaks';
+import { ratingsOfPeople } from '../ratings';
 import type { RequestsDeps } from './application/ports';
 import { cancelRequest } from './application/use-cases';
 import { views } from './application/views';
@@ -25,6 +26,15 @@ type Hidden = (env: Bindings, userIds: readonly number[]) => Promise<ReadonlySet
 let hiddenOf: Hidden = async () => new Set();
 export const wireHiddenRequesters = (hidden: Hidden) => void (hiddenOf = hidden);
 
+// The board of a driver (G64): the directions and the nearest trip, from the trips, the subscriptions
+// and the bookings, set by the app (module-events.ts).
+type Board = {
+  readonly directions: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['directions']>;
+  readonly trip: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['trip']>;
+};
+let boardOf: Board = { directions: async () => [], trip: async () => null };
+export const wireRequestBoard = (board: Board) => void (boardOf = board);
+
 const requestsDeps = (env: Bindings): RequestsDeps => ({
   requests: env.DB ? d1Requests(env.DB) : localRequests,
   people: peopleOf(env),
@@ -35,6 +45,11 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   fits: pointFitsPlace,
   published: (requestId) => onPublished(env, requestId),
   hidden: (userIds) => hiddenOf(env, userIds),
+  board: {
+    directions: (driverId) => boardOf.directions(env, driverId),
+    trip: (driverId) => boardOf.trip(env, driverId),
+  },
+  ratings: (userIds) => ratingsOfPeople(env, userIds),
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });
@@ -53,12 +68,14 @@ const factsOf = (request: RequestRecord, now: number) => ({
   date: request.date,
   km: request.km,
   seats: request.seats,
+  price: request.price,
   wholeCar: request.wholeCar,
   withWoman: request.withWoman,
   pickupMode: request.pickupMode,
   pickup: request.pickup,
   dropoff: request.dropoff,
   open: isOpen(request, now),
+  callsOff: request.callsOff,
 });
 export const requestFacts = async (env: Bindings, id: string) => {
   const request = await requestsDeps(env).requests.find(id);
