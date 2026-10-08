@@ -49,7 +49,7 @@ const at = (lat: number, lng: number, name: string) => ({
   area: { step: 'mahalla', name },
 });
 // The bookings of the driver's trip (G24): two confirmed passengers with their points, one request
-// near the way, one far, and a cancelled booking whose points are erased.
+// near the way, one far and asked first, and a cancelled booking whose points are erased.
 const DRIVER_BOOKINGS = [
   {
     ...confirmed,
@@ -65,6 +65,7 @@ const DRIVER_BOOKINGS = [
     status: 'requested',
     plate: null,
     extraKm: 24,
+    createdAt: confirmed.createdAt - 60_000,
     passenger: person('1b', 'Bobur'),
   },
   { ...confirmed, id: 'b-1', passenger: person('1c', 'Madina'), pickup: at(41.2856, 69.2034, 'Qatortol') },

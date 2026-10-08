@@ -1,4 +1,10 @@
-import { addProtocol, Map as MapLibreMap, setWorkerUrl, type ErrorEvent as MapErrorEvent } from 'maplibre-gl';
+import {
+  addProtocol,
+  Map as MapLibreMap,
+  Marker,
+  setWorkerUrl,
+  type ErrorEvent as MapErrorEvent,
+} from 'maplibre-gl';
 // The map draws its tiles in a worker: Vite bundles it and gives its address.
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -42,6 +48,7 @@ function follow(map: MapLibreMap, box: HTMLElement) {
 
 const view = (map: MapLibreMap, colors: MapColors, box: HTMLElement): MapView => {
   const sized = follow(map, box);
+  let markers: Marker[] = [];
   return {
     center: () => {
       const { lat, lng } = map.getCenter();
@@ -56,6 +63,13 @@ const view = (map: MapLibreMap, colors: MapColors, box: HTMLElement): MapView =>
     },
     clip: (parts) => clip(map, colors, parts),
     show: (marks, line) => show(map, colors, marks, line),
+    // The tip of a pin stands on its point.
+    pins: (pins) => {
+      for (const marker of markers) marker.remove();
+      markers = pins.map(({ point, element }) =>
+        new Marker({ element, anchor: 'bottom' }).setLngLat([point.lng, point.lat]).addTo(map),
+      );
+    },
     fit: (points, covered) => fit(map, points, covered),
     area: (center, km) => area(map, colors, center, km),
     remove: () => (sized.stop(), map.remove()),

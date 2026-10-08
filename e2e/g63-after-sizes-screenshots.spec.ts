@@ -14,7 +14,8 @@ for (const width of WIDTHS) {
     const came = madina({ cameAt: tashkent('2026-10-07T07:40'), driverCameAt: tashkent('2026-10-07T07:41') });
     await openDriver(page, '2026-10-07T07:45', { trips: [live], bookings: [came] });
     await openTrip(page);
-    await page.getByText(t('bookings.meeting.title')).click();
+    await page.getByText(t('driverTrip.tile.map')).click();
+  await page.locator('.trip-map-stop').first().click();
     await expect(page.getByText(t('driverAfter.meet.met'), { exact: true })).toBeVisible();
     await nothingCut(page);
     await oneSize(page, '.meet-tools button');

@@ -75,7 +75,4 @@ test('4. the map of the trip opens the stops in the navigator; a cancelled seat 
   await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
   const [opened] = await telegramEvents(page, 'web_app_open_link');
   expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);
-  await page.getByText(t('way.map.dropoffs')).click();
-  await expect(page.getByText(SHAHNOZA.name).first()).toBeVisible();
-  await shot(page, '4-dropoffs');
 });

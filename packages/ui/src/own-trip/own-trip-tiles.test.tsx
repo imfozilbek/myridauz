@@ -125,7 +125,7 @@ describe('«Vaqt yoki narx» and «Yoʻl xaritasi» (mockup g63/3)', () => {
     cleanup();
     await open(trip, {}, [confirmed]);
     await tap('Yoʻl xaritasi');
-    expect(await screen.findByText('Olib ketish')).toBeTruthy();
+    expect(await screen.findByText(/ · \d+ yoʻlovchi$/u)).toBeTruthy();
   });
 });
 

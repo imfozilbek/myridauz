@@ -8,7 +8,7 @@ import { useMapView } from '../map/use-map-view';
 import './meeting-map.css';
 
 // The pin of a meeting point, as tall as on the mockups g63/4 screens 12 and 13.
-const MEETING_PIN = 34;
+export const MEETING_PIN = 34;
 
 type Props = {
   readonly point: Point;

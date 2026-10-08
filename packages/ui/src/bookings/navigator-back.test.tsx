@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fakeMap } from '../map/fake-map';
 import { MapEngineContext } from '../map/map-engine';
 import { native, pressBack } from '../test-native';
+import { locations, trip } from '../market/market-test-kit';
+import { PlacesGate } from '../market/places-gate';
 import { renderInShell } from '../test-shell';
 import { confirmed } from './booking-test-kit';
 import { DriverTripMap } from './driver-trip-map';
@@ -23,9 +25,13 @@ describe('the sheet of navigators over «Safar xaritasi» (docs/94 C6, F11)', ()
     const map = fakeMap();
     renderInShell(
       <MapEngineContext.Provider value={async () => map.engine}>
-        <DriverTripMap bookings={[confirmed]} onBack={onBack} />
+        <PlacesGate>
+          <DriverTripMap trip={trip} bookings={[confirmed]} now={Date.now()} onPoint={null} onBack={onBack} />
+        </PlacesGate>
       </MapEngineContext.Provider>,
       true,
+      true,
+      locations,
     );
     await vi.waitFor(() => expect(map.engine).toHaveBeenCalled());
     expect(map.engine.mock.calls[0]?.[4]).toBe(true);

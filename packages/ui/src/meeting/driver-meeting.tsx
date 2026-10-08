@@ -18,6 +18,8 @@ const TICK = 20;
 type Props = {
   // The bookings of the trip: the confirmed ones are the points.
   readonly bookings: readonly Booking[];
+  // The passengers of the point opened on «Safar xaritasi» (screen 12).
+  readonly only: readonly string[];
   readonly onBack: () => void;
   // A mark changed a booking: the page shows it at once, the list refreshes.
   readonly onChanged: (booking: Booking) => void;
@@ -26,14 +28,15 @@ type Props = {
 };
 
 // «Uchrashuv» of the driver (owner decision 06.10.2026, docs/126, docs/124 В, mockup g63/4 screen
-// 13): the passenger who said «Men keldim» on top, then every point in the order of the way.
-export function DriverMeeting({ bookings, onBack, onChanged, onChat, onCall }: Props) {
+// 13): the passenger who said «Men keldim» on top, then the point opened on the map, with its
+// number in the order of the way.
+export function DriverMeeting({ bookings, only, onBack, onChanged, onChat, onCall }: Props) {
   useScreenView('bookings.meeting');
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const { mark, failure } = useMeetMark(onChanged);
-  const points = meetingPoints(bookings);
+  const points = meetingPoints(bookings).filter(({ booking }) => only.includes(booking.id));
   const now = points.find(({ booking }) => meetOpen(booking))?.booking.id;
   const waiting = points.filter(({ booking }) => booking.cameAt !== null && meetOpen(booking));
   return (

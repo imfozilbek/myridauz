@@ -1,7 +1,7 @@
 import type { Booking } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { confirmed } from './booking-test-kit';
-import { requestsInOrder, takenFirst } from './trip-bookings-order';
+import { requestsByTime, requestsInOrder, takenFirst } from './trip-bookings-order';
 
 const of = (id: string, status: Booking['status'], over: Partial<Booking> = {}): Booking => ({
   ...confirmed,
@@ -18,6 +18,15 @@ describe('the bookings of a trip for its driver (docs/90 F-D11)', () => {
       of('soon', 'requested', { extraKm: 0, expiresAt: 200 }),
     ]);
     expect(order.map((booking) => booking.id)).toEqual(['soon', 'late', 'far']);
+  });
+
+  it('puts the requests of «Mening safarim» by the time they came, the oldest first (mockup g63/4)', () => {
+    const order = requestsByTime([
+      of('near', 'requested', { extraKm: 0, createdAt: 300 }),
+      of('far', 'requested', { extraKm: 2, createdAt: 100 }),
+      of('middle', 'requested', { extraKm: 1, createdAt: 200 }),
+    ]);
+    expect(order.map((booking) => booking.id)).toEqual(['far', 'middle', 'near']);
   });
 
   it('puts the taken seats first and the cancelled or declined ones last', () => {

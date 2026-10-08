@@ -38,7 +38,7 @@ describe('the map of the way goes back to the trip (docs/94 B8)', () => {
     );
     await openOwnTrip();
     await tap('Yoʻl xaritasi');
-    await screen.findByText('Olib ketish');
+    await screen.findByText(/ · \d+ yoʻlovchi$/u);
     await tap('Orqaga');
     expect(await screen.findByText('Yoʻlovchilar (2)')).toBeTruthy();
   });

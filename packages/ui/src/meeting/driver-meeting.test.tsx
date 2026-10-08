@@ -21,6 +21,7 @@ function Page({ start, onChat }: { readonly start: readonly Booking[]; readonly 
   return (
     <DriverMeeting
       bookings={bookings}
+      only={start.map(({ id }) => id)}
       onBack={() => undefined}
       onChanged={changed}
       onChat={onChat}
@@ -44,7 +45,7 @@ const away = { onBack: vi.fn(), onChanged: vi.fn(), onChat: vi.fn(), onCall: vi.
 const openStale = (start: readonly Booking[], meet: BookingsClient['meet']) =>
   renderMarket(
     <PlacesGate>
-      <DriverMeeting bookings={start} {...away} />
+      <DriverMeeting bookings={start} only={start.map(({ id }) => id)} {...away} />
     </PlacesGate>,
     testClients({ bookings: { meet } }),
   );

@@ -22,7 +22,8 @@ test('13: «Uchrashuv», Madina at the point (g63/4 screen 13)', async ({ page }
   const came = madina({ cameAt: tashkent('2026-10-07T07:40') });
   await openDriver(page, '2026-10-07T07:45', { trips: [live], bookings: [came] });
   await openTrip(page);
-  await page.getByText(t('bookings.meeting.title')).click();
+  await page.getByText(t('driverTrip.tile.map')).click();
+  await page.locator('.trip-map-stop').first().click();
   await expect(page.getByText('Madina keldi: uchrashuv joyida')).toBeVisible();
   await expect(page.locator('.meeting-map-box[data-state="ready"]')).toBeVisible();
   await page.waitForTimeout(TILES_MS);

@@ -1,6 +1,6 @@
 import type { Point } from '@platform/contracts';
 import { vi } from 'vitest';
-import type { MapEngine, MapMark } from './map-engine';
+import type { MapEngine, MapMark, PlacedPin } from './map-engine';
 
 const TASHKENT = { lat: 41.3111, lng: 69.2797 };
 
@@ -10,6 +10,7 @@ export function fakeMap(failures = 0) {
   let center: Point = TASHKENT;
   let left = failures;
   let marks: readonly MapMark[] = [];
+  let pinned: readonly PlacedPin[] = [];
   let clipped = false;
   // What happened to the map, in order: a cut, its removal, a move.
   const log: string[] = [];
@@ -30,10 +31,18 @@ export function fakeMap(failures = 0) {
         log.push(clipped ? 'clip' : 'unclip');
       },
       show: (shown) => void (marks = shown),
+      pins: (placed) => void (pinned = placed),
       fit: () => undefined,
       area: () => void log.push('area'),
       remove: () => undefined,
     };
   });
-  return { engine, at: () => center, marks: () => marks, clipped: () => clipped, log: () => log };
+  return {
+    engine,
+    at: () => center,
+    marks: () => marks,
+    pins: () => pinned,
+    clipped: () => clipped,
+    log: () => log,
+  };
 }

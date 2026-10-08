@@ -7,6 +7,11 @@ const TAKEN = new Set<Booking['status']>(['confirmed', 'completed']);
 export const requestsInOrder = (requests: readonly Booking[]): Booking[] =>
   [...requests].sort((a, b) => (a.extraKm ?? 0) - (b.extraKm ?? 0) || a.expiresAt - b.expiresAt);
 
+// The requests on «Mening safarim» of the driver (mockup g63/4 screens 6 and 11): by the time they
+// came, the oldest first; the extra way stays in each card.
+export const requestsByTime = (requests: readonly Booking[]): Booking[] =>
+  [...requests].sort((a, b) => a.createdAt - b.createdAt);
+
 // The other bookings: the taken seats first, the cancelled, declined and expired ones after them.
 export const takenFirst = (bookings: readonly Booking[]): Booking[] =>
   [...bookings].sort((a, b) => Number(TAKEN.has(b.status)) - Number(TAKEN.has(a.status)));

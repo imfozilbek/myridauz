@@ -44,20 +44,23 @@ async function openTrip() {
 }
 
 describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { timeout: 20_000 }, () => {
-  it('shows «Uchrashuv» once the meeting opens, while the page stays open', async () => {
+  it('a point of «Yoʻl xaritasi» opens «Uchrashuv» once the meeting opens (mockup g63/4 screens 12, 13)', async () => {
     vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'], shouldAdvanceTime: true });
     open(madina.trip, [madina], meetingStartsAt(madina.trip.departAt) - MINUTE_MS + STEP_MS / 2);
     await openTrip();
     expect(await screen.findByText('Madina')).toBeTruthy();
-    expect(screen.queryByText('Uchrashuv')).toBeNull();
     // The effects of the page run first: its clock is set before the time moves on.
     await act(async () => undefined);
     await act(async () => {
       vi.advanceTimersByTime(3 * STEP_MS);
     });
-    expect(await screen.findByText('Uchrashuv')).toBeTruthy();
+    // No row of its own on the page, as on the mockup (screen 11).
+    expect(screen.queryByText('Uchrashuv')).toBeNull();
     // Before «Men keldim» the row still says where the passenger is taken (mockup g63/4 screen 11).
     expect(screen.queryByText(/^Kelmadi/u)).toBeNull();
+    await tap('Yoʻl xaritasi');
+    await tap('Madina · 2 joy');
+    expect(await screen.findByText('Men keldim')).toBeTruthy();
   });
 
   it('«Kelmadi» in the row asks first and marks without opening the booking', async () => {
@@ -77,7 +80,8 @@ describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { tim
   it('«Qoʻngʻiroq» of the meeting rings, back comes to the meeting, «Yozish» opens the chat', async () => {
     open(madina.trip, [madina], MEETING_NOW);
     await openTrip();
-    await tap('Uchrashuv');
+    await tap('Yoʻl xaritasi');
+    await tap('Madina · 2 joy');
     await tap('Qoʻngʻiroq');
     await tap('chat Madina ring');
     await tap('Yozish');

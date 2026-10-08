@@ -6,7 +6,7 @@ import { ChatScreen } from '../chat/chat-screen';
 import { useI18n } from '../context/i18n-context';
 import { TripChangeScreen } from '../market/trip-change';
 import { DriverMeeting } from '../meeting/driver-meeting';
-import { meetingOpen, meetingPoints } from '../meeting/meet-state';
+import { meetingOpen } from '../meeting/meet-state';
 import { useMeetMark } from '../meeting/use-meet-mark';
 import { ActionFailure } from '../states/action-failure';
 import { ChangeChoice } from './change-choice';
@@ -35,12 +35,13 @@ type Props = OwnTripProps & {
 };
 
 // «Mening safarim» with what opens from it (G63, docs/118 path 6): the chat and the call of a
-// passenger, the wallet when a commission is short, the map of the way, the change of G39 and
-// «Uchrashuv» with its own chat and call (docs/126); back from those comes to the meeting.
+// passenger, the wallet when a commission is short, the map of the way, the change of G39. A point
+// of the map opens its «Uchrashuv» with its own chat and call (mockup g63/4 screens 12, 13).
 export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onClosed, onArrived }: Props) {
   const { t } = useI18n();
   const [opened, setOpened] = useState<Opened | null>(null);
-  const [meeting, setMeeting] = useState(false);
+  // The passengers of the point whose meeting is open.
+  const [meeting, setMeeting] = useState<readonly string[] | null>(null);
   const now = useNow();
   const stage = tripStage(trip, now);
   const actions = useOwnTripActions({ trip, stage, bookings, open: setOpened, onChanged, onClosed });
@@ -60,7 +61,8 @@ export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onCl
     return (
       <DriverMeeting
         bookings={bookings}
-        onBack={() => setMeeting(false)}
+        only={meeting}
+        onBack={() => setMeeting(null)}
         onChanged={() => onChanged()}
         onChat={(booking) => setOpened({ screen: 'chat', booking })}
         onCall={(booking) => setOpened({ screen: 'call', booking })}
@@ -77,7 +79,15 @@ export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onCl
   if (opened?.screen === 'top_up')
     return <TopUpScreen onBack={() => setOpened({ ...opened, screen: 'not_enough' })} />;
   if (opened?.screen === 'map')
-    return <DriverTripMap bookings={bookings.filter((item) => item.status === 'confirmed')} onBack={back} />;
+    return (
+      <DriverTripMap
+        trip={trip}
+        bookings={bookings.filter((item) => item.status === 'confirmed')}
+        now={now}
+        onPoint={meetingOpen(trip, now) ? (stop) => setMeeting(stop.riders.map(({ id }) => id)) : null}
+        onBack={back}
+      />
+    );
   if (opened?.screen === 'choice')
     return (
       <ChangeChoice
@@ -88,7 +98,6 @@ export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onCl
     );
   if (opened?.screen === 'change')
     return <TripChangeScreen trip={trip} change={opened.change} onDone={() => (back(), onChanged())} />;
-  const meetable = meetingOpen(trip, now) && meetingPoints(bookings).length > 0;
   return (
     <OwnTripPage
       trip={trip}
@@ -105,7 +114,6 @@ export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onCl
       onCancel={actions.cancel}
       onStep={steps.step}
       onMark={(booking) => void meet.mark(booking, 'no_show')}
-      onMeeting={meetable ? () => setMeeting(true) : null}
     >
       <ActionFailure error={steps.failure ?? meet.failure ?? actions.failure} />
       {actions.note ? <p className="own-note">{t(actions.note)}</p> : null}

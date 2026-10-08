@@ -129,9 +129,12 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
-  // «Joy soʻraganlar» (G63): the request near the way first, the far one under it (docs/70).
-  const [near, far] = await Promise.all(['Aziza', 'Bobur'].map((name) => page.getByText(name).boundingBox()));
-  expect(near?.y ?? Infinity).toBeLessThan(far?.y ?? 0);
+  // «Joy soʻraganlar» (mockup g63/4 screen 6): by the time they came, the far one asked first on top;
+  // the extra way stays in each card.
+  const [first, later] = await Promise.all(
+    ['Bobur', 'Aziza'].map((name) => page.getByText(name).boundingBox()),
+  );
+  expect(first?.y ?? Infinity).toBeLessThan(later?.y ?? 0);
   await expect(page.getByText(/\+3\skm/u)).toBeVisible();
   await shot(page, '6-requests');
   await page.getByText(t('driverTrip.tile.map')).click();
@@ -143,8 +146,4 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
   const [opened] = await telegramEvents(page, 'web_app_open_link');
   expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);
-  await expect(page.getByText(t('way.map.navigatorChange'))).toBeVisible();
-  await page.getByText(t('way.map.dropoffs')).click();
-  await expect(page.getByText('Registon mahallasi').first()).toBeVisible();
-  await shot(page, '8-dropoffs');
 });

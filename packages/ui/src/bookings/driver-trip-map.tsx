@@ -1,95 +1,97 @@
-import type { Booking } from '@platform/contracts';
-import { useEffect, useRef, useState } from 'react';
-import { Cell, List, SegmentedControl, Section } from '../components';
+import { tashkentDate, type Booking, type Trip } from '@platform/contracts';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { Icon } from '../icons';
 import { MapRetry } from '../map/map-retry';
 import { useMapView } from '../map/use-map-view';
-import { useDraft } from '../screen/draft';
+import { useShortDay } from '../market/when';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { requestPosition } from '../telegram/location';
 import { useScreenBackground } from '../telegram/screen-background';
-import { handOrderOf, inHandOrder, stopsInOrder, withMoved, type StopKind } from './driver-stops';
-import { StopList } from './stop-list';
+import { MEETING_PIN } from '../trip/meeting-map';
+import { stopsInOrder, type Stop } from './driver-stops';
 import { NavigatorSheet } from './navigator-sheet';
+import { StopCard } from './stop-card';
 import { useNavigator } from './use-navigator';
 import '../way/way.css';
 
-const KINDS: readonly StopKind[] = ['pickups', 'dropoffs'];
+type Props = {
+  readonly trip: Trip;
+  readonly bookings: readonly Booking[];
+  readonly now: number;
+  // A pickup point opens its meeting (screen 13); null while the meeting is not open.
+  readonly onPoint: ((stop: Stop) => void) | null;
+  readonly onBack: () => void;
+};
 
-// «Safar xaritasi» of the driver (G24, docs/70): the confirmed passengers on the map, the pickups
-// and the dropoffs in the order of the way, and «Yoʻl koʻrsatish» in the chosen navigator.
-export function DriverTripMap({ bookings, onBack }: { bookings: readonly Booking[]; onBack: () => void }) {
+// «Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126): the map with a pin on every
+// point, the day and the passengers, the points in the order of the way from where the driver
+// stands, and «Yoʻl koʻrsatish» in the chosen navigator. Before the departure the pickups, on the
+// way the dropoffs.
+export function DriverTripMap({ trip, bookings, now, onPoint, onBack }: Props) {
   useScreenView('bookings.trip_map');
   useScreenBackground();
-  const { t } = useI18n();
+  const { t, formatTime } = useI18n();
+  const shortDay = useShortDay();
   const { map } = useApiClients();
-  const { colors } = useBrand().theme;
-  const [kind, setKind] = useState<StopKind>('pickups');
-  // An order set by hand comes back after the system unloaded the app in a navigator (docs/94 C7).
-  const handOrder = useDraft(`stops:${bookings[0]?.trip.id ?? ''}`, handOrderOf);
-  const [stops, setStops] = useState(() => {
-    const order = stopsInOrder(bookings, null);
-    return handOrder.restored ? inHandOrder(order, handOrder.restored) : order;
-  });
-  const byHand = useRef(handOrder.restored !== null);
-  const { save } = handOrder;
+  const { bg, brandStrong } = useBrand().theme.colors;
+  const kind = trip.departedAt === null ? 'pickups' : 'dropoffs';
+  const [stops, setStops] = useState(() => stopsInOrder(bookings, null));
   useEffect(() => {
-    if (byHand.current)
-      save({ pickups: stops.pickups.map(({ id }) => id), dropoffs: stops.dropoffs.map(({ id }) => id) });
-  }, [stops, save]);
-  const shown = stops[kind];
-  const start = shown[0]?.point ?? stops.dropoffs[0]?.point ?? { lat: 0, lng: 0 };
-  const { box, view, failed, retry } = useMapView(map, start, true);
-  const navigator = useNavigator();
-  // Where the driver stands orders the pickups, until the driver changes the order by hand.
-  useEffect(() => {
-    void requestPosition().then((here) => {
-      if (here && !byHand.current) setStops(stopsInOrder(bookings, here));
-    });
+    void requestPosition().then((here) => (here ? setStops(stopsInOrder(bookings, here)) : undefined));
     // Asked once, when the screen opens.
   }, []);
+  const shown = stops[kind];
+  const start = shown[0]?.point ?? { lat: 0, lng: 0 };
+  const { box, view, failed, retry } = useMapView(map, start, true);
+  const navigator = useNavigator();
+  const elements = useMemo(() => shown.map(() => document.createElement('span')), [shown]);
   useEffect(() => {
     if (!view) return;
-    const color = kind === 'pickups' ? colors.brandStrong : colors.accent;
-    const marks = shown.map((stop, index) => ({ point: stop.point, color, label: String(index + 1) }));
-    const points = shown.map((stop) => stop.point);
-    view.show(marks, points.length > 1 ? points : null);
-    view.fit(points);
-  }, [view, shown, kind, colors]);
-  const move = (index: number, by: -1 | 1) => {
-    byHand.current = true;
-    setStops((now) => ({ ...now, [kind]: withMoved(now[kind], index, by) }));
-  };
+    view.pins(shown.map((stop, index) => ({ point: stop.point, element: elements[index] as HTMLElement })));
+    view.fit(shown.map((stop) => stop.point));
+  }, [view, shown, elements]);
+  const passengers = bookings
+    .filter((booking) => booking.status === 'confirmed')
+    .reduce((sum, booking) => sum + booking.seats, 0);
+  const title = t('way.map.title', {
+    day: shortDay(tashkentDate(trip.departAt), now),
+    time: formatTime(new Date(trip.departAt)),
+    count: String(passengers),
+  });
+  const open = kind === 'pickups' ? onPoint : null;
   return (
     <div className="trip-map">
       {/* The open sheet of navigators takes «Назад» and the main button first (docs/94 C6). */}
       <Screen onBack={navigator.asking ? navigator.cancel : onBack} />
       <div ref={box} className="trip-map-box" hidden={failed} data-state={view ? 'ready' : 'loading'} />
-      <List>
-        {failed ? <MapRetry onRetry={retry} /> : null}
-        <div className="trip-map-tabs">
-          <SegmentedControl>
-            {KINDS.map((each) => (
-              <SegmentedControl.Item key={each} selected={each === kind} onClick={() => setKind(each)}>
-                {t(`way.map.${each}`)}
-              </SegmentedControl.Item>
-            ))}
-          </SegmentedControl>
-        </div>
-        <StopList stops={shown} onMove={move} />
-        {navigator.navigator ? (
-          <Section>
-            <Cell before={<IconTile name="navigate" />} onClick={navigator.change}>
-              {t('way.map.navigatorChange')}
-            </Cell>
-          </Section>
-        ) : null}
-      </List>
+      {failed ? <MapRetry onRetry={retry} /> : null}
+      <section className="trip-map-sheet">
+        <h2 className="trip-map-title">{title}</h2>
+        {shown.map((stop, index) => (
+          <StopCard
+            key={stop.id}
+            stop={stop}
+            number={index + 1}
+            place={kind === 'pickups' ? trip.from : trip.to}
+            onOpen={open ? () => open(stop) : null}
+          />
+        ))}
+      </section>
+      {elements.map((element, index) =>
+        createPortal(
+          <span className="trip-map-pin" style={{ color: bg }}>
+            <Icon name="pickup" size={MEETING_PIN} color={brandStrong} filled />
+          </span>,
+          element,
+          shown[index]?.id,
+        ),
+      )}
       <NavigatorSheet navigator={navigator} />
       {shown.length > 0 && !navigator.asking ? (
         <MainButton text={t('way.map.go')} onClick={() => navigator.go(shown.map((stop) => stop.point))} />

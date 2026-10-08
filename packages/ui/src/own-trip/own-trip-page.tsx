@@ -1,12 +1,10 @@
 import type { Booking, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
-import { requestsInOrder } from '../bookings/trip-bookings-order';
+import { requestsByTime } from '../bookings/trip-bookings-order';
 import { short } from '../bookings/use-balance';
-import { Cell, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
 import { NoShowBanners } from '../meeting/no-show-banners';
 import { NoShowLine } from '../meeting/no-show-line';
 import { refundWaits } from '../meeting/no-show-text';
@@ -44,24 +42,23 @@ type Props = {
   readonly onStep: (step: TripStep) => unknown;
   // «Kelmadi» of a passenger at the meeting, asked first (useMeetMark, docs/129).
   readonly onMark: (booking: Booking) => void;
-  // «Uchrashuv» while the meeting is open and somebody is to be met (docs/126).
-  readonly onMeeting: (() => void) | null;
   // The failure of an action and the note of a tile, under the tiles.
   readonly children?: ReactNode;
 };
 
 // «Mening safarim» of a driver (owner decision 06.10.2026, docs/118 path 6, mockup g63/3 A with the
-// main button of C): the plate of the stage, the requests answered in their cards, the passengers
-// with the chat and the call, the trip, four tiles; the cancel only before the departure.
+// main button of C; journey g63/4 screens 6 and 11): the plate of the stage, the requests by their
+// time answered in their cards, the passengers with the chat and the call, the trip, four tiles; the
+// cancel only before the departure. The meeting opens from a point of «Yoʻl xaritasi» (screen 12).
 export function OwnTripPage(props: Props) {
   const { trip, stage, now, bookings, balance, onBack, onAnswer, onOpen, onTile, onCancel, onStep } = props;
-  const { onMark, onMeeting, children } = props;
+  const { onMark, children } = props;
   useScreenView('market.own_trip');
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const step = tripStep(trip, now);
-  const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
+  const requested = requestsByTime(bookings.filter((booking) => booking.status === 'requested'));
   const riders = bookings.filter(taken);
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   // Before the departure: people still look for the trip and the driver may cancel it (docs/35).
@@ -75,13 +72,6 @@ export function OwnTripPage(props: Props) {
       ) : (
         <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
       )}
-      {onMeeting ? (
-        <Section>
-          <Cell before={<IconTile name="pickup" tone="accent" />} onClick={onMeeting}>
-            {t('bookings.meeting.title')}
-          </Cell>
-        </Section>
-      ) : null}
       {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
       {notLeft ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (

@@ -55,8 +55,8 @@ test.beforeAll(async () => {
 });
 
 // 3. The clock of the stand moves to the opening of the meeting, 30 minutes before the departure
-// (docs/126); the bot button opens the trip again: «Uchrashuv», «Men keldim», «Keldi», then
-// «Yoʻlga chiqdim» on the main button. It returns the page of the driver that is open now.
+// (docs/126); the bot button opens the trip again: «Yoʻl xaritasi», the point, «Men keldim»,
+// «Keldi», then «Yoʻlga chiqdim» on the main button (mockup g63/4 screens 11, 12, 13). It returns the page of the driver that is open now.
 async function meetAndLeave(context: BrowserContext, page: Page, walk: Walk, trip: Trip) {
   const departAt = Date.now() + MEET_BEFORE_MINUTES * MINUTE;
   moveTrip(trip.id, departAt, tripEndsAt(departAt, trip.km));
@@ -70,13 +70,16 @@ async function meetAndLeave(context: BrowserContext, page: Page, walk: Walk, tri
   await seen(later, t('driverTrip.channel.views', { channel: CHANNEL, count: '1' }));
   await expect(mainButton(later)).toHaveText(t('driverTrip.main.departed'));
   await shoot(later, walk, '06-soon');
-  await later.getByText(t('bookings.meeting.title'), { exact: true }).click();
+  await later.getByText(t('driverTrip.tile.map')).click();
+  await later.locator('.trip-map-stop').first().click();
   await later.getByRole('button', { name: t('bookings.meeting.came') }).click();
   await toldBy('passenger', walk.passenger, wordsOf('bot.booking.driverCame'));
   await shoot(later, walk, '07-came');
   await later.getByRole('button', { name: t('driverAfter.meet.met'), exact: true }).click();
   await expect(later.locator('.meet-done')).toHaveText(t('driverAfter.meet.met'));
   await shoot(later, walk, '08-met');
+  // Back to the map, then back to «Mening safarim».
+  await pressBack(later);
   await pressBack(later);
   await press(later, t('driverTrip.main.departed'));
   await seen(later, t('driverTrip.onWay.title'));
