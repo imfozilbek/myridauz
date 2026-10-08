@@ -2,7 +2,7 @@ import { STARS, type Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 
-const STAR = 12;
+const STAR = 12.8;
 
 type Props = {
   readonly riders: readonly Booking[];

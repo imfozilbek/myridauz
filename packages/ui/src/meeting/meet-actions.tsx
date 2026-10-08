@@ -5,7 +5,7 @@ import { meetStep } from './meet-state';
 import { useNoShowText } from './no-show-text';
 import './meet-actions.css';
 
-const ICON = 20;
+const ICON = 22;
 
 type Props = { readonly booking: Booking; readonly onMark: (step: DriverMeetStep) => void };
 

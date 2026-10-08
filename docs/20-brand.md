@@ -21,6 +21,7 @@
 | `color.accent.text` | `#B45309` | Янтарный текст на белом |
 | `color.text` | `#1F2937` | Основной текст |
 | `color.text.muted` | `#6B7280` | Второстепенный текст |
+| `color.text.secondary` | `#4B5563` | Второй серый под заголовком: место точки «Uchrashuv», строка под «Safar tugadi», «Hammasi tayyor…» на «Qaytish» (G63) |
 | `color.danger` | `#DC2626` | Ошибки, отмена, блокировка; опасное действие (удалить) красное: главная кнопка Telegram и строка (`DangerCell`) |
 | `color.success` | `#15803D` | Плашка статуса «готово» на главном экране: «Tasdiqlandi» (G53) |
 | `color.successSoft`, `color.attentionSoft` | `#DCFCE7`, `#FEF3C7` | Фон плашек «готово» и «ждёт» (G53) |
@@ -30,6 +31,7 @@
 | `color.neutralSoft`, `color.neutralText` | `#EEF2F6`, `#334155` | Серая плитка главного экрана: фон и иконка (G53) |
 | `color.neutralFace` | `#CBD5E1` | Серое лицо без фото на экранах поездки, буква `neutralText` (G60) |
 | `color.neutralFacePale` | `#E2E8F0` | Лицо без фото среди попутчиков «Mening safarim» (G63) |
+| `color.neutralPale`, `color.neutralPaleText` | `#F3F4F6`, `#374151` | Серая метка «Qaytarish kutilmoqda» прошлой поездки в «Oʻtgan»: фон и текст (G63) |
 | `color.scrim` | `#000000` | Тень под шторкой главного экрана, 35 % (G60) |
 | `color.dangerText` | `#B91C1C` | Цифра работы команды, которая ждёт («Arizalar 3»), G53; строка «Kelmadi» попутчика у водителя (G63) |
 | `color.attention` | `#B45309` | Плашка «ждёт человека»: «2 ta taklif», «2 ta yangi soʻrov», «Javob kutilmoqda»; заметка «Ariza tekshirilmoqda» (G53) |

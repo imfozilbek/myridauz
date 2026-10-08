@@ -1,17 +1,17 @@
 /* «Qaytish» of the driver (G63, mockup g63/4 screen 16): the values of the mockup at 360 px. */
 .trip-back {
-  padding-top: 14px;
+  padding-top: 14.6px;
 }
 
 .trip-back-title {
-  margin: 0 0 0 1px;
-  font-size: 21px;
+  margin: 0 0 0 1.8px;
+  font-size: 20.8px;
   line-height: 24px;
 }
 
 .trip-back-day {
-  margin: 6px 0 9px 1px;
-  font-size: 14.5px;
+  margin: 7px 0 9px 2.6px;
+  font-size: 14.7px;
   line-height: 17px;
   color: var(--reg-muted);
 }
@@ -19,9 +19,9 @@
 /* The big line of the way: amber rings and a line from the start to below the end. */
 .trip-back .safar-card.route-line {
   position: relative;
-  margin: 0 0 10px;
-  padding: 24.5px 18.4px 23px;
-  border-radius: 16px;
+  margin: 0 0 12px;
+  padding: 25.3px 17.6px 19.8px 18.4px;
+  border-radius: 20px;
 }
 
 .trip-back .route-line::before {
@@ -29,18 +29,22 @@
   position: absolute;
   left: 26.4px;
   top: 50.4px;
-  bottom: 28.8px;
+  bottom: 27.5px;
   width: 3.2px;
   background: var(--reg-strong);
 }
 
+/* The rings stand a little right of the line (mockup); a shadow draws the ring of 3.3 px that a
+   border would draw as 3 px. */
 .trip-back .route-line-dot {
   z-index: 1;
-  width: 20px;
-  height: 20px;
-  margin-top: 6px;
-  border: 3px solid var(--reg-strong);
+  width: 21px;
+  height: 21px;
+  left: 1.1px;
+  margin-top: 5.6px;
+  border: 0;
   background: var(--reg-card);
+  box-shadow: inset 0 0 0 3.3px var(--reg-strong);
 }
 
 .trip-back .route-line-from .route-line-dot::after {
@@ -48,17 +52,18 @@
 }
 
 .trip-back .route-line-to .route-line-dot {
-  border-color: var(--reg-to);
+  box-shadow: inset 0 0 0 3.3px var(--reg-to);
 }
 
 .trip-back .route-line-name,
 .trip-back .route-line-time {
-  font-size: clamp(15px, 4.86vw, 17.5px);
+  font-size: clamp(15px, 4.82vw, 17.35px);
   line-height: 24px;
 }
 
 .trip-back .route-line-time {
-  font-size: 17px;
+  margin-top: -0.8px;
+  font-size: 16.2px;
   color: var(--reg-muted);
 }
 
@@ -72,19 +77,28 @@
 }
 
 .trip-back .route-line-way {
-  gap: 6px;
-  padding: 15px 0 16px 31.4px;
-  font-size: 14.3px;
+  gap: 6.6px;
+  padding: 15.2px 0 14.5px 31.4px;
+  font-size: 14.1px;
+}
+
+/* The car of the way is bigger and in the main colour (mockup g63/4 screen 16). */
+.trip-back .route-line-way svg {
+  width: 18.4px;
+  height: 18.4px;
+  /* No taller than the words: the row keeps the height of its line. */
+  margin: -1.1px 0;
+  color: var(--reg-strong);
 }
 
 .trip-back-requests {
   display: flex;
   flex-direction: column;
   margin: 0;
-  padding: 11.5px 13.6px 13.6px;
+  padding: 12.3px 13.6px 12.8px;
   font-size: 14.7px;
   line-height: 17.6px;
-  color: var(--reg-face-text);
+  color: var(--reg-secondary);
 }
 
 .trip-back-requests b {

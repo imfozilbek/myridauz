@@ -10,8 +10,8 @@ import { MeetingMap } from '../trip/meeting-map';
 import { MeetActions } from './meet-actions';
 
 const FACE = 63;
-const TOOL_ICON = 16;
-const MAP_ICON = 14;
+const TOOL_ICON = 17.5;
+const MAP_ICON = 15;
 
 type Props = {
   readonly booking: Booking;
