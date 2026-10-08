@@ -20,6 +20,13 @@ describe('«Qanday band qilinadi?» as the mockup 2-whole-car screen 1 (G61)', (
     expect(await screen.findByText(/^Cobalt · 4 ta joy · bir joy 90.000/)).toBeTruthy();
   });
 
+  it('has the bar of the steps of the newer mockup on top: three of four (g63/4 screen 4)', async () => {
+    open();
+    await screen.findByText('Faqat joylar');
+    const bars = screen.getAllByRole('progressbar').map((bar) => bar.getAttribute('aria-valuenow'));
+    expect(bars).toEqual(['100', '100', '100', '0']);
+  });
+
   it('shows the three rules as cards with a radio, seats only chosen first', async () => {
     const { container } = open();
     await screen.findByText('Faqat joylar');

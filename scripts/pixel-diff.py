@@ -1,5 +1,6 @@
-"""Pixel Perfect (lessons 141, 147, 160, 165): the mockup, the code and their difference side by side,
-with a red numbered box on every region that differs, on all three parts.
+"""Pixel Perfect (lessons 141, 147, 160, 165, 167): the mockup, the code, the two laid over each other
+at half strength and their difference side by side, with a red numbered box on every region that
+differs, on all four parts.
 
 Usage: python3 scripts/pixel-diff.py <mockup.png> <code.png> <out.png> [title]
 The code shot is scaled to the mockup size. A pixel differs when one of its channels differs by more
@@ -19,6 +20,8 @@ GROW = 6
 MIN_AREA = 12
 CORNER = 40
 GAP = 20
+# The overlay: the mockup and the code at half strength each, a shift shows as a double line.
+OVERLAY = 0.5
 RED = (230, 30, 30)
 BOX_WIDTH = 3
 LABEL_SIZE = 22
@@ -72,9 +75,15 @@ def main(mockup_path: str, code_path: str, out_path: str, title: str = '') -> No
     width, height = mockup.size
     share = mask.sum() / (width * height)
     boxes = regions(mask)
-    heat = np.asarray(Image.blend(mockup, code, 0.5)).copy()
+    overlay = Image.blend(mockup, code, OVERLAY)
+    heat = np.asarray(overlay).copy()
     heat[mask] = RED
-    parts = [('Maket', mockup), ('Kod', code), (f'Farq {share:.1%}', Image.fromarray(heat.astype('uint8')))]
+    parts = [
+        ('Maket', mockup),
+        ('Kod', code),
+        ('Ustma-ust', overlay),
+        (f'Farq {share:.1%}', Image.fromarray(heat.astype('uint8'))),
+    ]
     top = HEAD_ROOM + (TITLE_ROOM if title else 0)
     sheet = Image.new('RGB', (width * len(parts) + GAP * (len(parts) - 1), height + top), 'white')
     draw = ImageDraw.Draw(sheet)

@@ -2,7 +2,7 @@ import type { Booking } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { meetingOpen, meetOpen } from './meet-state';
-import { useNoShowText } from './no-show-text';
+import { refundWaits, useNoShowText } from './no-show-text';
 import './no-show.css';
 
 type Props = {
@@ -16,11 +16,15 @@ type Props = {
 
 // The line under a passenger of the own trip (docs/129, mockup g63/5 phone 1): once the driver is at
 // the point («Men keldim», docs/126) and until the trip closes, the driver may say the passenger did
-// not come; after it, what became of the commission. Otherwise the usual line, as on «Joʻnashga 30
-// daqiqa» and «Yoʻldasiz» (mockup g63/4 screens 11 and 14).
+// not come. Once said, the line stays on the way while the refund waits (the plate on top tells about
+// it, as on the mockup); after the trip, what became of the commission (phone 5). Otherwise the usual
+// line, as on «Joʻnashga 30 daqiqa» and «Yoʻldasiz» (mockup g63/4 screens 11 and 14).
 export function NoShowLine({ booking, now, onMark, children }: Props) {
   const { t } = useI18n();
   const text = useNoShowText()(booking);
+  const onWay = booking.trip.arrivedAt === null && meetingOpen(booking.trip, now);
+  if (onWay && refundWaits(booking))
+    return <span className="no-show-line">{t('driverAfter.noShow.until')}</span>;
   if (text) return <span className="no-show-line">{text}</span>;
   const there = booking.driverCameAt !== null;
   const possible =

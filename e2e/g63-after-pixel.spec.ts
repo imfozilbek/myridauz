@@ -30,16 +30,15 @@ test('13: «Uchrashuv», Madina at the point (g63/4 screen 13)', async ({ page }
   await shot(page, 'journey-13');
 });
 
-// Phone 1 is «Mening safarim» of C2 with the parts of C3 on it: the whole page, and each part
-// against its own piece of the mockup (lesson 160): the plate «Akmal kelmadi» and the line under
-// Akmal once the driver is at his point («Men keldim», docs/126).
+// Phone 1 is «Mening safarim» of C2 with the parts of C3 on it (the whole page: g63-trip-pixel),
+// each part against its own piece of the mockup (lesson 160): the plate «Akmal kelmadi» and the line
+// under Akmal once the driver is at his point («Men keldim», docs/126).
 test('5-1: «Kelmadi» on the own trip, after and before the mark (g63/5 phone 1)', async ({ page }) => {
   const met = madina({ metAt: tashkent('2026-10-07T07:20') });
   const gone = akmal({ noShowAt: tashkent('2026-10-07T07:25') });
   await openDriver(page, '2026-10-07T07:30', { trips: [live], bookings: [met, gone] });
   await openTrip(page);
   await expect(page.getByText('Akmal kelmadi')).toBeVisible();
-  await shot(page, 'after-01');
   await part(page.locator('.no-show-banner'), 'after-01-banner');
   const there = akmal({ driverCameAt: tashkent('2026-10-07T07:28') });
   await page.route('**/api/driver/bookings', (route) => route.fulfill({ json: { bookings: [met, there] } }));

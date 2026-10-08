@@ -21,6 +21,8 @@ type Props = {
 };
 
 export const RULE_LABELS = { seats: 'seats', seats_or_car: 'seatsOrCar', car_only: 'carOnly' } as const;
+// The bar of the steps on top, three of four, as the newer mockup g63/4 screen 4 draws it.
+const RULE_STEPS = [3, 4] as const;
 
 // «Qanday band qilinadi?» (G61, docs/09, docs/118, mockup 2-whole-car screen 1): seats only, seats
 // or the whole car, only the whole car, as cards with a radio. The price is always per seat: the
@@ -38,6 +40,7 @@ export function TripRuleStep({ model, seats, price, selected, onBack, onDone }: 
   return (
     <div className="rule-screen" style={brandVars(colors)}>
       <StepLayout
+        steps={RULE_STEPS}
         title={t('market.rule.title')}
         hint={t('market.rule.sub', { model, count, price: formatMoney(price) })}
       >

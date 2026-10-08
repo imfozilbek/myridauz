@@ -72,12 +72,22 @@ describe('«Kelmadi» in the row of the passenger (docs/129, mockup g63/5 phone 
     expect(screen.queryByText(/^Kelmadi/u)).toBeNull();
   });
 
-  it('says what became of the commission after the mark', () => {
-    line(gone);
+  it('keeps the line of the mark while the refund waits, the plate tells the rest (g63/5 phone 1)', () => {
+    const onMark = vi.fn();
+    line(gone, MEETING_NOW, onMark);
     line({ ...gone, refund: { state: 'proposed', amount: 9500 } });
+    const kept = screen.getAllByText('Kelmadi · safar tugaguncha belgilash mumkin');
+    expect(kept).toHaveLength(2);
+    // Marked once: the line is no button any more.
+    expect(kept.every((text) => text.closest('button') === null)).toBe(true);
+    fireEvent.click(kept[0] as HTMLElement);
+    expect(onMark).not.toHaveBeenCalled();
+    expect(screen.queryByText(/kutilmoqda/u)).toBeNull();
+  });
+
+  it('says what the owner decided about the commission', () => {
     line({ ...gone, refund: { state: 'confirmed', amount: 9500 } });
     line({ ...gone, refund: { state: 'rejected', amount: 9500 } });
-    expect(screen.getAllByText(/^Kelmadi · qaytarish 9.500 kutilmoqda$/u)).toHaveLength(2);
     expect(screen.getByText(/^Kelmadi · 9.500 qaytarildi$/u)).toBeTruthy();
     expect(screen.getByText('Kelmadi')).toBeTruthy();
   });

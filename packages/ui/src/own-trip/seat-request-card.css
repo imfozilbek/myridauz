@@ -1,8 +1,8 @@
-/* One request of «Mening safarim» (G63, mockup g63/3): the values of the mockup at 360 px, smaller
-   on a narrow phone (docs/121). */
+/* One request of «Mening safarim» (G63): the values of the mockup g63/4 screen 6 at 360 px (newer
+   than g63/3), smaller on a narrow phone (docs/121). */
 .seat-card {
   margin-bottom: 8px;
-  padding: 10.67px 13.33px 11.33px;
+  padding: 10.67px 13.33px 11.63px;
   border-radius: 13.5px;
   background: var(--reg-card);
 }
@@ -12,10 +12,12 @@
 }
 
 .seat-card-who {
-  margin-top: 2px;
+  margin-top: 0.53px;
 }
 
+/* The name stands higher over the line under it than its line box puts it (mockup). */
 .seat-card-name {
+  padding-bottom: 1.47px;
   font-size: clamp(14px, 4.445vw, 16px);
   line-height: 18px;
 }
@@ -28,7 +30,7 @@
 
 .seat-card-count {
   flex: none;
-  margin-top: 2.67px;
+  margin-top: 1.07px;
   font-size: clamp(14px, 4.445vw, 16px);
   line-height: 18px;
 }
@@ -37,11 +39,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 9.33px;
+  margin-top: 8.36px;
 }
 
 .seat-card-buttons button {
-  min-height: 31.33px;
+  min-height: 32px;
   padding: 4px;
   border: 0;
   border-radius: 10px;

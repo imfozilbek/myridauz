@@ -4,6 +4,24 @@
   font-family: var(--tgui--font-family);
 }
 
+/* The bar of the steps: its place, its gaps and its colors on the mockup g63/4 screen 4: the steps
+   done in the accent of the app, the step to come grey. */
+.rule-screen .step-segments {
+  --tgui--link_color: var(--reg-star);
+
+  gap: 6.4px;
+  margin-top: -2.4px;
+  padding: 0 27.2px 4.8px 28px;
+}
+
+.rule-screen .step-segments [role='progressbar'] {
+  background: var(--reg-route-line);
+}
+
+.rule-screen .step-segments [role='progressbar']::after {
+  display: none;
+}
+
 .rule-screen .step-head {
   row-gap: 0;
   padding: 6px 22px 0;

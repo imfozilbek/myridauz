@@ -24,12 +24,6 @@
   margin-top: 4.8px;
 }
 
-/* The name of the start stands a pixel lower than its line box (mockup g63/3, journey screen 6). */
-.trip-sheet-own .trip-card-from .trip-card-name {
-  position: relative;
-  top: 1px;
-}
-
 /* The end stays by the road line, above its name (journey screen 6). */
 .trip-sheet-own .trip-card-to .trip-card-dot {
   margin-top: -4.4px;
