@@ -25,3 +25,9 @@ export async function oneSize(page: Page, selector: string) {
     .evaluateAll((items) => items.map((item) => `${item.clientWidth}x${item.clientHeight}`));
   expect(new Set(sizes).size, `${selector}: ${sizes.join(' ')}`).toBe(1);
 }
+
+// Pills the mockup sizes by their words (the times of a sheet) keep one height (docs/121).
+export async function oneHeight(page: Page, selector: string) {
+  const heights = await page.locator(selector).evaluateAll((items) => items.map((item) => item.clientHeight));
+  expect(new Set(heights).size, `${selector}: ${heights.join(' ')}`).toBe(1);
+}

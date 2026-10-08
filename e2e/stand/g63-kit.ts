@@ -24,16 +24,19 @@ const DAY_ROW = new RegExp(`^(${t('market.day.today')}|${t('market.day.tomorrow'
 
 export type Walk = { readonly platform: Platform; readonly driver: Person; readonly passenger: Person };
 
-// A picture of the screen only with --shots (e2e/crash-guard.ts), as android-01-publish.png.
-export const shoot = async (page: Page, walk: Walk, name: string) => {
-  // The data and the small maps are drawn first: the picture shows the screen people see.
-  await page.waitForLoadState('networkidle');
-  await expect(page.locator('[aria-busy="true"], [data-state="loading"]')).toHaveCount(0);
-  await page.screenshot({
-    path: `screenshots/stand/g63/${walk.platform}-${name}.png`,
-    animations: 'disabled',
-  });
-};
+// A picture of the screen only with --shots (e2e/crash-guard.ts), as g63/android-01-publish.png.
+export const shootIn =
+  (goal: string) =>
+  async (page: Page, { platform }: { readonly platform: Platform }, name: string) => {
+    // The data and the small maps are drawn first: the picture shows the screen people see.
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator('[aria-busy="true"], [data-state="loading"]')).toHaveCount(0);
+    await page.screenshot({
+      path: `screenshots/stand/${goal}/${platform}-${name}.png`,
+      animations: 'disabled',
+    });
+  };
+export const shoot = shootIn('g63');
 export const seen = (page: Page, text: string) =>
   expect(page.getByText(text, { exact: true }).first()).toBeVisible();
 const more = (page: Page) => page.getByRole('button', { name: t('market.price.more') });

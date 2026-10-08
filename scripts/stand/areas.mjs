@@ -20,7 +20,7 @@ export const AREAS = {
     'findings',
     'g60',
   ],
-  requests: ['passenger-requests', 'requests-review'],
+  requests: ['passenger-requests', 'requests-review', 'g64', 'g64-salon'],
   driver: [
     'driver-account',
     'driver-market',

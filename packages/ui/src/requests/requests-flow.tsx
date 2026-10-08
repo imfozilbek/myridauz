@@ -7,6 +7,7 @@ import { MyTripsScreen } from '../market/my-trips-screen';
 import { NewTripFlow } from '../market/new-trip-flow';
 import { PendingLock } from '../market/pending-lock';
 import { PlacesGate } from '../market/places-gate';
+import type { Route } from '../places/route-screen';
 import { BoardScreen } from './board-screen';
 
 type Props = {
@@ -21,19 +22,26 @@ type Over =
   | { readonly screen: 'trip'; readonly tripId: string }
   | { readonly screen: 'publish'; readonly date: string };
 
+// A trip goes between districts: a whole region of the board is asked again in the trip (G37 R4).
+const tripRoute = (route: Route | null) =>
+  !route || route.from.type === 'region' || route.to.type === 'region' ? {} : { route };
+
 // «Yoʻlovchilar soʻrovlari» of a driver (G64, docs/118 path 7): the board, and from it the talk
 // before a booking (numbers hidden, docs/07), the wallet when it holds too little, the trip opened
 // for a whole car, a new trip on an empty day. «Назад» comes back to the board.
 export function RequestsFlow({ onBack, initial }: Props) {
   const [query, setQuery] = useState<RequestBoardQuery>(initial ?? {});
   const [over, setOver] = useState<Over | null>(null);
+  // The route chosen for the board: an empty day publishes a trip on it.
+  const [route, setRoute] = useState<Route | null>(null);
   const pending = usePending();
   const close = () => setOver(null);
   if (pending) return <PendingLock onBack={onBack} />;
   if (over?.screen === 'chat') return <ChatScreen chatKey={over.chatKey} ring={over.ring} onBack={close} />;
   if (over?.screen === 'trip')
     return <MyTripsScreen onBack={close} link={{ name: MY_TRIP_LINK, id: over.tripId }} />;
-  if (over?.screen === 'publish') return <NewTripFlow date={over.date} onBack={close} />;
+  if (over?.screen === 'publish')
+    return <NewTripFlow {...tripRoute(route)} date={over.date} onBack={close} />;
   if (over?.screen === 'topUp')
     return <TopUpScreen onBack={() => setOver({ screen: 'short', commission: over.commission })} />;
   if (over?.screen === 'short')
@@ -50,7 +58,10 @@ export function RequestsFlow({ onBack, initial }: Props) {
         key={JSON.stringify(query)}
         query={query}
         onDay={(date) => setQuery({ ...query, date })}
-        onRoute={(route) => setQuery({ from: route.from.id, to: route.to.id })}
+        onRoute={(chosen) => {
+          setRoute(chosen);
+          setQuery({ from: chosen.from.id, to: chosen.to.id });
+        }}
         onTalk={(chatKey, ring) => setOver({ screen: 'chat', chatKey, ring })}
         onShort={(commission) => setOver({ screen: 'short', commission })}
         onTrip={(tripId) => setOver({ screen: 'trip', tripId })}

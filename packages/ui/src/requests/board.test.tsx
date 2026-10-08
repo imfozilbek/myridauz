@@ -83,6 +83,17 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     expect(screen.queryByText('Safar eʼlon qilish')).toBeNull();
   });
 
+  it('the route chosen for the board goes on to the new trip of an empty day (G37 R4)', async () => {
+    openBoard({
+      requestBoard: async (query) => (query.from ? board({ others: [] }) : board({ known: false })),
+    });
+    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
+      await tap(step);
+    await tap('Safar eʼlon qilish');
+    expect(await screen.findByText('Chilonzor, Toshkent shahri')).toBeTruthy();
+    expect(screen.getByText('Mashinada 4 joy')).toBeTruthy();
+  });
+
   it('keeps the requests private while the application of the driver is checked', async () => {
     const requestBoard = vi.fn(async () => board());
     const pending = { ...approved, application: { ...approved.application, status: 'pending' as const } };

@@ -48,17 +48,19 @@ const MOCK = String((signedContact: string | null) => {
     );
   const insets = { top: 0, bottom: 0, left: 0, right: 0 };
   const BUTTON_SPACE = 64;
-  const button = document.createElement('button');
-  button.id = 'tg-main-button';
-  button.style.cssText =
-    'position:fixed;left:14px;right:14px;bottom:14px;height:50px;border:0;border-radius:12px;font:700 17px system-ui;display:none;z-index:9';
-  button.onclick = () => reply('main_button_pressed', undefined);
+  // The buttons of Telegram are outside the page: no sheet turns their taps off, no tap reaches it.
+  const TAPS = 'pointerdown pointerup mousedown mouseup touchstart touchend click'.split(' ');
+  const FIXED = 'position:fixed;height:50px;border:0;border-radius:12px;display:none;pointer-events:auto';
+  const nativeButton = (id: string, side: number, bottom: number, weight: number, event: string) => {
+    const native = Object.assign(document.createElement('button'), { id });
+    native.onclick = () => reply(event, undefined);
+    native.style.cssText = `${FIXED};z-index:9;left:${side}px;right:${side}px;bottom:${bottom}px;font:${weight} 17px system-ui`;
+    for (const kind of TAPS) native.addEventListener(kind, (tap) => tap.stopPropagation());
+    return native;
+  };
+  const button = nativeButton('tg-main-button', 14, 14, 700, 'main_button_pressed');
   // The secondary button stands above the main one, as in Telegram (G18: "Qaytish safari").
-  const second = document.createElement('button');
-  second.id = 'tg-secondary-button';
-  second.style.cssText =
-    'position:fixed;left:16px;right:16px;bottom:74px;height:50px;border:0;border-radius:12px;font:600 17px system-ui;display:none;z-index:9';
-  second.onclick = () => reply('secondary_button_pressed', undefined);
+  const second = nativeButton('tg-secondary-button', 16, 74, 600, 'secondary_button_pressed');
   // The bottom bar under the buttons is of the color the app asks for, as in Telegram (docs/21).
   const bar = document.createElement('div');
   bar.style.cssText = `position:fixed;left:0;right:0;bottom:0;height:${BUTTON_SPACE}px;display:none;z-index:8`;
