@@ -15,7 +15,7 @@ for (const width of WIDTHS) {
     await openDriver(page, '2026-10-07T07:45', { trips: [live], bookings: [came] });
     await openTrip(page);
     await page.getByText(t('driverTrip.tile.map')).click();
-  await page.locator('.trip-map-stop').first().click();
+    await page.locator('.trip-map-stop').first().click();
     await expect(page.getByText(t('driverAfter.meet.met'), { exact: true })).toBeVisible();
     await nothingCut(page);
     await oneSize(page, '.meet-tools button');
