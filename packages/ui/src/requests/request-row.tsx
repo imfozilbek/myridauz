@@ -28,6 +28,8 @@ type Props = {
   readonly route: string;
   // The way the driver's trip adds for this passenger, under «Safaringizga mos».
   readonly extraKm?: number;
+  // The day of the trip a whole car opens, when it is not today (mockup g64/3 phone 1).
+  readonly day?: string | undefined;
   readonly action: RowAction;
   // A live offer of the driver waits for the answer: one offer at a time (docs/35).
   readonly offered: boolean;
@@ -39,7 +41,17 @@ type Props = {
 // One request on «Yoʻlovchilar soʻrovlari» (G64, mockups g64/2 and g64/3): who and the rating, the
 // route, the price of a seat and how many, the marks; a chat and a call before a booking, numbers
 // hidden (docs/07), and the one action.
-export function RequestRow({ request, route, extraKm, action, offered, onAction, onChat, onCall }: Props) {
+export function RequestRow({
+  request,
+  route,
+  extraKm,
+  day,
+  action,
+  offered,
+  onAction,
+  onChat,
+  onCall,
+}: Props) {
   const { t, formatNumber } = useI18n();
   const act = useOneAtATime(onAction);
   const { passenger } = request;
@@ -61,15 +73,8 @@ export function RequestRow({ request, route, extraKm, action, offered, onAction,
             <b>{passenger.firstName}</b>
             {stars ? <span className="request-row-stars">{stars}</span> : null}
           </span>
-          <span className="request-row-line">
-            <span className="request-row-part">{extra ? `${route} ·` : route}</span>
-            {extra ? (
-              <>
-                {' '}
-                <span className="request-row-part">{extra}</span>
-              </>
-            ) : null}
-          </span>
+          {/* One line of words: it wraps where the words of the mockup wrap (g64/2 phone 1). */}
+          <span className="request-row-line">{[route, extra, day].filter(Boolean).join(' · ')}</span>
         </span>
         <span className="request-row-price">
           <b>{formatNumber(request.price)}</b>

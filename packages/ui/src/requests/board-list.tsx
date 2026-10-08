@@ -1,6 +1,7 @@
 import type { RequestBoard, RideRequest } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useEnds } from './ends';
+import { useLaterDay } from './request-day';
 import { RequestRow, type RowAction } from './request-row';
 
 type BoardHandlers = {
@@ -18,12 +19,14 @@ type Props = BoardHandlers & {
 export function BoardList({ board, offered, onAction, onTalk }: Props) {
   const { t } = useI18n();
   const ends = useEnds();
+  const laterDay = useLaterDay();
   const row = (request: RideRequest, action: RowAction, extraKm?: number) => (
     <RequestRow
       key={request.id}
       request={request}
       route={t('requests.card.route', ends(request))}
       {...(extraKm === undefined ? {} : { extraKm })}
+      day={action === 'salon' ? laterDay(request.date) : undefined}
       action={action}
       offered={offered.has(request.id)}
       onAction={() => onAction(request, action)}

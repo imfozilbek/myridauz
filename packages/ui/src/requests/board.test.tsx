@@ -6,7 +6,7 @@ import { DriverContext } from '../driver/driver-context';
 import { approved } from '../home/home-test-kit';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
-import { asked, board, NOW, openBoard } from './board-test-kit';
+import { asked, board, NOW, openBoard, salon } from './board-test-kit';
 import { RequestsFlow } from './requests-flow';
 
 beforeEach(() => void vi.useFakeTimers({ toFake: ['Date'], now: NOW }));
@@ -41,13 +41,28 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     expect(await screen.findByText('Safaringiz: bugun 08:00, Fargʻona')).toBeTruthy();
     expect(screen.getByText('3 boʻsh joy · 95 000')).toBeTruthy();
     expect(screen.getByText('Safaringizga mos (1)')).toBeTruthy();
-    expect(screen.getByText('+2 km')).toBeTruthy();
+    // One line of words that wraps as the words of the mockup do (g64/2 phone 1).
+    expect(screen.getByText('Chilonzor → Fargʻona · +2 km')).toBeTruthy();
     // No day buttons while a trip leads the screen (mockup g64/2).
     expect(screen.queryByText('Ertaga')).toBeNull();
     await tap('Safarimga taklif qilish');
     await waitFor(() =>
       expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: trip.departAt, price: 95000, tripId: 't1' }),
     );
+  });
+
+  it('a whole car of another day says the day of the trip it opens (mockup g64/3 phone 1)', async () => {
+    const later = { ...salon, date: '2026-10-03' };
+    openBoard({
+      requestBoard: async () =>
+        board({ date: '2026-10-03', others: [later, { ...asked, date: '2026-10-03' }] }),
+    });
+    expect(await screen.findByText('Chilonzor → Fargʻona · ertaga')).toBeTruthy();
+    expect(screen.getByText('Chilonzor → Fargʻona')).toBeTruthy();
+    cleanup();
+    openBoard({ requestBoard: async () => board({ others: [salon] }) });
+    expect(await screen.findByText('Chilonzor → Fargʻona')).toBeTruthy();
+    expect(screen.queryByText(/· bugun/u)).toBeNull();
   });
 
   it('a request with a live offer of the driver says «Taklif yuborildi» and asks no second one', async () => {

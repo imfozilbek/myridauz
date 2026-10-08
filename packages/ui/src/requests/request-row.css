@@ -45,13 +45,6 @@
   color: var(--reg-muted);
 }
 
-/* A part stays whole: the line breaks only after «·» (docs/121). */
-.request-row-part {
-  display: inline-block;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-}
-
 .request-row-price {
   display: flex;
   flex: none;

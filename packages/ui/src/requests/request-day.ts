@@ -13,3 +13,10 @@ export function useRequestDay() {
     return formatShortDate(noonOf(date));
   };
 }
+
+// The day of a later request only: today is the day of the board itself (mockups g64/1, g64/3).
+export function useLaterDay() {
+  const day = useRequestDay();
+  const [now] = useState(Date.now);
+  return (date: string) => (date === today(now) ? undefined : day(date));
+}
