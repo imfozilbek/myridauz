@@ -6,29 +6,31 @@ import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
 import { sendApplicationReminders, sendTeamDigest } from './modules/assignments';
 import { askForRatings } from './modules/ratings';
-import { sendReminders } from './modules/reminders';
+import { sendReminders, watchLateDepartures } from './modules/reminders';
 import { expireRequests } from './modules/ride-requests';
 import { sendWaitingSubscriptions } from './modules/route-subscriptions';
 import { checkStatsAlerts } from './modules/stats';
 import { purgeSupport } from './modules/support';
 import { completeTrips } from './modules/trips';
 import { burnBonuses } from './modules/wallet';
+import { TICK_MINUTES } from './shared/cron/tick';
 
 // The Cron of wrangler.toml runs every 15 minutes. The first tick of an hour also runs the hourly
 // jobs, and the first tick of DAILY_HOUR_UTC (05:00 in Tashkent, the quietest hour) the daily ones:
 // a rare job does not read D1 96 times a day (G56, docs/117).
-const TICK_MINUTES = 15;
 const DAILY_HOUR_UTC = 0;
 
 // Closes trips, requests and bookings whose time is over, sends waiting subscription messages and
-// trip reminders, edits channel posts of trips that left, reminds the team of waiting driver
-// applications (docs/15, docs/24, docs/35, G10, G34).
+// trip reminders, asks a driver who forgot «Yoʻlga chiqdim» and departs the trip later, edits channel
+// posts of trips that left, reminds the team of waiting driver applications (docs/15, docs/24,
+// docs/35, G10, G34, G63).
 const everyTick = (env: Bindings, now: number): Job[] => [
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
   ['expireBookings', () => expireBookings(env, now)],
   ['sendWaitingSubscriptions', () => sendWaitingSubscriptions(env)],
   ['sendReminders', () => sendReminders(env, now)],
+  ['watchLateDepartures', () => watchLateDepartures(env, now)],
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
 ];

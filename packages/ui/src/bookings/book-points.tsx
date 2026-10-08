@@ -5,11 +5,12 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { errorKey } from '../market/error-text';
+import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
 import { rememberWay } from '../way/remembered-way';
 import { useNameText } from '../way/way-end';
 import type { useBooking } from './book-state';
-import { PointsScreen } from './points-screen';
+import { PointsScreen, usePassengerWords } from './points-screen';
 
 type Props = {
   readonly trip: Trip;
@@ -25,11 +26,12 @@ type Props = {
 export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props) {
   useScreenView('bookings.points');
   const { t, formatMoney, formatNumber, formatDate, formatTime } = useI18n();
+  const words = usePassengerWords();
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const nameText = useNameText();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
-  const { mode, pickup, dropoff, ready, patch } = flow;
+  const { mode, pickup, dropoff, note, ready, patch } = flow;
   const start =
     mode === 'pitak' ? (trip.pitak?.name ?? null) : pickup ? nameText(pickup.name, pickup.place) : null;
   const end = dropoff ? nameText(dropoff.name, dropoff.place) : null;
@@ -38,7 +40,8 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
     if (!ready || !mode || !dropoff?.point) return haptic.error();
     try {
       const at = mode === 'door' ? (pickup?.point ?? null) : null;
-      const booking = await bookings.book(trip.id, { ...choice, mode, pickup: at, dropoff: dropoff.point });
+      const input = { ...choice, mode, pickup: at, dropoff: dropoff.point, note };
+      const booking = await bookings.book(trip.id, input);
       track({ name: 'booking_step', screen: 'bookings.points', step: 'requested' });
       rememberWay(trip.from, trip.to, { mode, pickup: mode === 'door' ? pickup : null, dropoff });
       haptic.success();
@@ -51,6 +54,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
   const day = new Date(trip.departAt);
   return (
     <PointsScreen
+      {...words}
       sub={t('bookings.points.sub', {
         route,
         date: formatDate(day),
@@ -63,8 +67,24 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       hint={t('bookings.points.hint')}
       error={error ? t(error) : null}
       button={t('bookings.send')}
-      onSend={() => void send()}
+      onSend={send}
       onBack={onBack}
+      extra={
+        // How the driver knows the passenger at the meeting (owner decision 08.10.2026): a third
+        // row of the same card, as the two ends.
+        <button type="button" className="points-row" onClick={() => patch({ screen: 'note' })}>
+          <span className="points-tile points-note">
+            <Icon name="chat" size={20} />
+          </span>
+          <span className="points-text">
+            <span className="points-label">{t('bookings.points.note')}</span>
+            <span className={note ? 'points-value' : 'points-value points-empty'}>
+              {note || t('market.comment.placeholder')}
+            </span>
+          </span>
+          <Icon name="next" size={18} />
+        </button>
+      }
     >
       <div className="points-card points-sum">
         <span>

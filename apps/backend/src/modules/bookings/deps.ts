@@ -1,7 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { bookingCommission } from '../billing';
-import { postSystemEvent } from '../chat';
+import { maskContacts, postSystemEvent } from '../chat';
 import { recordServerEvent } from '../analytics';
 import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
@@ -11,7 +11,7 @@ import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } fro
 import {
   cancelFor,
   driverTripIds,
-  publishFor,
+  publishOfferTripFor,
   scheduleErrorFor,
   tripChanged,
   tripFacts,
@@ -27,6 +27,7 @@ import type { BookingsDeps } from './application/ports';
 import { d1Offers } from './infrastructure/d1-offers';
 import { createMemoryOffers } from './infrastructure/memory-bookings';
 import { bookingStore } from './infrastructure/store';
+import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 
 const localOffers = createMemoryOffers();
@@ -52,7 +53,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
     ofDriver: (driverId) => driverTripIds(env, driverId),
     scheduleError: (driverId, trip) => scheduleErrorFor(env, driverId, trip),
     views: (ids) => tripViewsOf(env, ids),
-    publish: (driverId, input) => publishFor(env, driverId, input),
+    publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
     cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
   },
   requests: {
@@ -86,6 +87,8 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   ),
   places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
   pitak: (id) => pitakById(env, id),
+  meeting: meetingPorts(env),
+  mask: (text) => maskContacts(text).text,
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

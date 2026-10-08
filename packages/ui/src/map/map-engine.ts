@@ -6,6 +6,8 @@ export type MapSource = { readonly archiveUrl: string; readonly fontsUrl: string
 
 // A mark on the map (G24): the start, the end, the pitak, a stop of the driver, with a short label.
 export type MapMark = { readonly point: Point; readonly color: string; readonly label?: string };
+// A pin the page draws (an icon of the library), held by the map at its point (mockup g63/4 screen 12).
+export type PlacedPin = { readonly point: Point; readonly element: HTMLElement };
 // The parts of a border: rings of [lng, lat], the outer one first (docs/71).
 export type BorderParts = readonly (readonly (readonly (readonly [number, number])[])[])[];
 
@@ -29,6 +31,8 @@ export type MapView = {
   // The map of one district; null: the whole of Uzbekistan (every map starts so).
   clip(parts: BorderParts | null): void;
   show(marks: readonly MapMark[], line: readonly Point[] | null): void;
+  // Pins at their points; the new ones take the place of the old ones.
+  pins(pins: readonly PlacedPin[]): void;
   // covered: the share of the height at the top hidden by a card.
   fit(points: readonly Point[], covered?: number): void;
   // The area of a place before a booking: a circle of so many km in the middle (docs/126).

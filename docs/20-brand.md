@@ -21,20 +21,27 @@
 | `color.accent.text` | `#B45309` | Янтарный текст на белом |
 | `color.text` | `#1F2937` | Основной текст |
 | `color.text.muted` | `#6B7280` | Второстепенный текст |
+| `color.text.secondary` | `#4B5563` | Второй серый под заголовком: место точки «Uchrashuv», строка под «Safar tugadi», «Hammasi tayyor…» на «Qaytish» (G63) |
 | `color.danger` | `#DC2626` | Ошибки, отмена, блокировка; опасное действие (удалить) красное: главная кнопка Telegram и строка (`DangerCell`) |
 | `color.success` | `#15803D` | Плашка статуса «готово» на главном экране: «Tasdiqlandi» (G53) |
 | `color.successSoft`, `color.attentionSoft` | `#DCFCE7`, `#FEF3C7` | Фон плашек «готово» и «ждёт» (G53) |
+| `color.successPale`, `color.successLine`, `color.successDeep` | `#F0FDF4`, `#BBF7D0`, `#166534` | Зелёная плашка поездки «Joʻnashga 30 daqiqa», «Yoʻldasiz»: фон, рамка, вторая строка (G63) |
+| `color.successBright` | `#34D399` | Галочка «{name} keldi» на тёмной плашке экрана «Uchrashuv» водителя (G63) |
 | `color.accentSoft` | `#FFFBEB` (у водителя `#F0FDFA`) | Светлый фон иконки второго цвета на плитке (G53) |
 | `color.neutralSoft`, `color.neutralText` | `#EEF2F6`, `#334155` | Серая плитка главного экрана: фон и иконка (G53) |
 | `color.neutralFace` | `#CBD5E1` | Серое лицо без фото на экранах поездки, буква `neutralText` (G60) |
+| `color.neutralFacePale` | `#E2E8F0` | Лицо без фото среди попутчиков «Mening safarim» (G63) |
+| `color.neutralPale`, `color.neutralPaleText` | `#F3F4F6`, `#374151` | Серая метка «Qaytarish kutilmoqda» прошлой поездки в «Oʻtgan»: фон и текст (G63) |
 | `color.scrim` | `#000000` | Тень под шторкой главного экрана, 35 % (G60) |
-| `color.dangerText` | `#B91C1C` | Цифра работы команды, которая ждёт («Arizalar 3»), G53 |
+| `color.dangerText` | `#B91C1C` | Цифра работы команды, которая ждёт («Arizalar 3»), G53; строка «Kelmadi» попутчика у водителя (G63) |
 | `color.attention` | `#B45309` | Плашка «ждёт человека»: «2 ta taklif», «2 ta yangi soʻrov», «Javob kutilmoqda»; заметка «Ariza tekshirilmoqda» (G53) |
 | `color.routeFrom` | `#16A34A` | Точка A маршрута (откуда), решение владельца 29.09.2026 |
 | `color.routeTo` | `#DC2626` | Точка B маршрута (куда) |
+| `color.routeLine` | `#D1D5DB` | Линия от A к B на карточке своей поездки водителя; пустой кружок выбора «Qanday band qilinadi?» (G63) |
 | `color.brand.deep` | `#115E59` | Глубокий бирюзовый: логотип (`36`) |
 | `color.accent.strong` | `#D97706` | Насыщенный янтарный: логотип (`36`) |
 | `color.brand.mint` | `#CCFBF1` | Второй текст на бирюзовом в картинках (`38`) |
+| `color.brand.line` | `#99F6E4` (у водителя `#FDE68A`, в админке `#CBD5E1`) | Рамка светлой плашки главного цвета: «Safar eʼlon qilindi» (G63) |
 
 Машинная копия этой таблицы: `brands/rida/theme.ts` (`colors`), единственный источник HEX
 для кода, Mini App и бренд-пакета (`38`). Меняем вместе.

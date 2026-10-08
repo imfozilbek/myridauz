@@ -1,0 +1,43 @@
+/* Point A (green) and point B (red): the place, its region and the time (owner decision 29.09.2026). */
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.route-stop {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.route-mark {
+  display: flex;
+  flex: none;
+  padding-top: 2px;
+}
+
+/* A thin line from A down to B. */
+.route-stop:first-child .route-mark::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  bottom: -10px;
+  left: 9px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--tgui--divider);
+}
+
+.route-place {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.route-time {
+  flex: none;
+}

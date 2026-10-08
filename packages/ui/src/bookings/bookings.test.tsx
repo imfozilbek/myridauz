@@ -62,7 +62,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
       bookings: { driverBookings: async () => [booking], driverOffers: async () => [offer], answer },
     });
 
-  it('confirms after "Joyni tasdiqlaysizmi?" with the commission', async () => {
+  it('confirms on the booking at once: the commission is on the screen, no window (docs/122)', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => confirmed);
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     expect(await screen.findByText('Yuborilgan takliflar')).toBeTruthy();
@@ -70,16 +70,13 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     await tap('Dilnoza');
     // The driver never sees a passenger's contacts, only the name.
     expect(screen.queryByText(/\+998/)).toBeNull();
-    await tap('Tasdiqlash');
-    expect(screen.getByText('Joyni tasdiqlaysizmi?')).toBeTruthy();
+    expect(screen.getByText('Komissiya')).toBeTruthy();
     expect(screen.getByText(/19\s000/)).toBeTruthy();
     await tap('Tasdiqlash');
-    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
     expect(answer).toHaveBeenCalledWith('b1', 'confirm');
-    // The buttons go where the text calls: the map of the trip and the chat (docs/89 D5).
-    expect(screen.getByText('Safar xaritasi')).toBeTruthy();
-    expect(screen.getByText('Xabar yozish')).toBeTruthy();
-    expect(screen.queryByText('Tayyor')).toBeNull();
+    // Back on «Mening safarim»: no «Joy tasdiqlandi» screen in between (owner decision 06.10.2026).
+    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    expect(screen.queryByText('Joy tasdiqlandi')).toBeNull();
   });
 
   it('without money explains how to top up', async () => {
@@ -89,7 +86,6 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     await openOwnTrip();
     await tap('Dilnoza');
-    await tap('Tasdiqlash');
     await tap('Tasdiqlash');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     await tap('Hisobni toʻldirish');
@@ -108,5 +104,6 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     await tap('Dilnoza');
     await tap('Rad etish');
     expect(answer).toHaveBeenCalledWith('b1', 'decline');
+    expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
   });
 });

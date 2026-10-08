@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { answer, confirm } from './application/answer';
 import { eraseOldPoints } from './application/erase';
 import { cancelByPassenger } from './application/request';
-import type { BookingRecord } from './domain/booking';
+import { NO_MARKS, type BookingRecord } from './domain/booking';
 import { DILNOZA, DRIVER, HOUR, NOW, setup } from './test-kit';
 
 const DAY = 24 * HOUR;
@@ -27,11 +27,13 @@ async function booked(kit: ReturnType<typeof setup>, status: BookingRecord['stat
     pickupNamed: NAMED,
     dropoff: { lat: 39.6547, lng: 66.9758 },
     dropoffNamed: NAMED,
+    note: null,
     offerId: null,
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: NOW,
     updatedAt: NOW,
   };

@@ -3,7 +3,7 @@ import { personIdSchema } from './person-id';
 import { ratingSchema } from './ratings';
 import { CAR_COLORS, MAX_SEATS } from './drivers';
 import { locationIdSchema } from './locations';
-import { dateSchema } from './tashkent-time';
+import { dateSchema, HOUR_MS } from './tashkent-time';
 import { pickupModeSchema, pitakSchema } from './pickup';
 
 // A trip a driver publishes (docs/09, docs/35). G07.
@@ -18,13 +18,15 @@ export const TRIP_STATUSES = ['active', 'full', 'completed', 'cancelled'] as con
 // The average speed with stops, measured on the owner's route (decision 29.09.2026):
 // Yashnobod → Yakkabogʻ, ≈ 417 km in about 7 hours, that is 60 km/h. The same speed for every route.
 const ROAD_KMH = 60;
-const HOUR_MS = 60 * 60 * 1000;
 // The arrival people see is approximate: rounded up to 5 minutes ("≈ 15:00", not "≈ 14:57").
 const ARRIVAL_STEP_MS = 5 * 60 * 1000;
 // The time on the road of so many km.
 export const roadMs = (km: number) => (km / ROAD_KMH) * HOUR_MS;
 export const arrivalAt = (departAt: number, km: number) =>
   Math.ceil((departAt + roadMs(km)) / ARRIVAL_STEP_MS) * ARRIVAL_STEP_MS;
+// «Qaytish» offers the way back this long after the arrival: the rest of the driver (G63, mockup
+// g63/4 screen 16: ≈ 13:00 there, 15:00 back). A proposal of Claude, waits for the owner (docs/10, 46).
+export const RETURN_REST_MS = 2 * HOUR_MS;
 // A trip is published at most this far ahead.
 export const TRIP_DAYS_AHEAD = 30;
 export const COMMENT_MAX = 200;
@@ -90,6 +92,9 @@ export const tripSchema = z.object({
   pitak: pitakSchema.nullable(),
   comment: z.string(),
   status: z.enum(TRIP_STATUSES),
+  // «Yoʻlga chiqdim» and «Yetib keldik» of the driver (G63, docs/35); an older answer has neither.
+  departedAt: z.number().int().nullable().default(null),
+  arrivedAt: z.number().int().nullable().default(null),
 });
 export type Trip = z.infer<typeof tripSchema>;
 export const tripsSchema = z.object({ trips: z.array(tripSchema) });

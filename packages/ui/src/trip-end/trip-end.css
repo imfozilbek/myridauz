@@ -1,0 +1,130 @@
+/* «Safar tugadi» of the driver (G63, mockup g63/4 screen 15): the values of the mockup at 360 px. */
+.trip-end {
+  display: flex;
+  flex-direction: column;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding: 17px 15px 16px;
+  box-sizing: border-box;
+  color: var(--reg-ink);
+}
+
+.trip-end-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--reg-mint);
+  color: var(--reg-strong);
+}
+
+.trip-end-title {
+  margin: 6.8px 0 0;
+  font-size: 20.8px;
+  line-height: 26px;
+  text-align: center;
+}
+
+.trip-end-sub {
+  margin: 0.4px 0 9.4px;
+  font-size: 13.7px;
+  line-height: 17px;
+  color: var(--reg-secondary);
+  text-align: center;
+}
+
+.trip-end-card {
+  margin-bottom: 11.4px;
+  border-radius: 20px;
+  background: var(--reg-card);
+}
+
+.trip-end-wallet {
+  display: flex;
+  align-items: center;
+  gap: 10.8px;
+  min-height: 79.2px;
+  padding: 0 13.6px;
+}
+
+.trip-end-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 37.6px;
+  height: 37.6px;
+  border-radius: 12.5px;
+  background: var(--reg-mint);
+  color: var(--reg-strong);
+}
+
+.trip-end-wallet-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4.4px;
+  min-width: 0;
+  font-size: 14.2px;
+  color: var(--reg-muted);
+}
+
+/* The second line starts a little left of the first (mockup g63/4 screen 15). */
+.trip-end-wallet-text span {
+  margin-left: -0.6px;
+}
+
+.trip-end-wallet-text b {
+  font-size: clamp(14px, 4.53vw, 16.3px);
+  color: var(--reg-ink);
+}
+
+.trip-end-rate {
+  padding: 14.8px 13px 15.2px;
+  text-align: center;
+}
+
+.trip-end-rate > b {
+  font-size: 15.8px;
+}
+
+.trip-end-riders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 0;
+  margin-top: 7.6px;
+}
+
+.trip-end-rider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.trip-end-stars {
+  display: flex;
+  margin-top: 0.2px;
+}
+
+/* A chosen star is a plain filled star, as the sign «★» of the mockup g63/4 screen 15. */
+.trip-end-stars svg:not([fill='none']) {
+  stroke-width: 0;
+}
+
+.trip-end-stars button {
+  display: flex;
+  /* A taller place for the finger, the stars stay where the mockup has them. */
+  margin: -8px 0;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--reg-brand);
+  cursor: pointer;
+}
+
+.trip-end-stars button[aria-pressed='true'] ~ button {
+  color: var(--reg-control);
+}

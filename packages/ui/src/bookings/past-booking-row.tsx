@@ -61,7 +61,11 @@ function useChips(booking: Booking): readonly Chip[] {
   const { t } = useI18n();
   if (booking.status !== 'completed') return [['plain', t(`bookings.status.${booking.status}`)]];
   const now = Date.now();
-  const { talkUntil, rateUntil, pointsUntil } = afterTrip(booking.trip.departAt, booking.trip.km);
+  const { talkUntil, rateUntil, pointsUntil } = afterTrip(
+    booking.trip.departAt,
+    booking.trip.km,
+    booking.trip.arrivedAt,
+  );
   // A month later only the end of the exact points is left to say (mockup g60/6).
   if (now >= pointsUntil) return [['gone', t('bookings.past.erased')]];
   const chips: Chip[] = [];

@@ -26,10 +26,6 @@
   "step.approved": "Ariza tasdiqlandi",
   "step.trip_created": "Safar eʼlon qildi",
   "step.route": "Yoʻnalish",
-  "step.when": "Kun va soat",
-  "step.seats": "Joylar",
-  "step.price": "Narx",
-  "step.comment": "Izoh",
   "step.published": "Eʼlon qilindi",
   "crashes": "Ilova buzilishlari",
   "refusals": "Rad etilgan amallar",
@@ -44,7 +40,6 @@
   "funnel.way": "Qayerdan va qayerga",
   "step.from": "Qayerdan tanladi",
   "step.to": "Qayerga tanladi",
-  "step.mode": "Olib ketish usuli",
   "step.done": "Safarlarni koʻrdi",
   "arrivals": "Qayerdan kelishdi",
   "arrivalsHint": "Yangi foydalanuvchilar birinchi marta qayerdan kelgani.",
@@ -53,12 +48,12 @@
   "arrival.ad": "Reklama",
   "arrival.story": "Haydovchi hikoyasi",
   "arrival.site": "Sayt",
+  "arrival.driver": "Haydovchi havolasi",
   "arrival.direct": "Toʻgʻridan toʻgʻri",
   "arrival.other": "Boshqa havola",
   "platforms": "Qurilmalar",
   "platform.android": "Android",
   "platform.ios": "iPhone",
   "platform.desktop": "Kompyuter",
-  "platform.other": "Boshqa",
-  "step.rule": "Band qilish usuli"
+  "platform.other": "Boshqa"
 }

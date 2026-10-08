@@ -5,6 +5,7 @@ import {
   DRIVER_BOOKINGS_PATH,
   DRIVER_OFFERS_PATH,
   driverBookingPath,
+  driverMeetPath,
   offerSchema,
   offersSchema,
   PASSENGER_BOOKINGS_PATH,
@@ -16,6 +17,7 @@ import {
   type Booking,
   type BookingInput,
   type DriverBookingAction,
+  type DriverMeetStep,
   type Offer,
   type OfferAction,
   type OfferInput,
@@ -39,6 +41,9 @@ export function createBookingsClient(options: SignedOptions) {
     driverBookings: async (): Promise<Booking[]> => bookings(await request(DRIVER_BOOKINGS_PATH)),
     answer: async (id: string, action: DriverBookingAction): Promise<Booking> =>
       booking(await post(driverBookingPath(id, action), {})),
+    // The driver at the point (docs/126, G63): «Men keldim», «Keldi», «Kelmadi».
+    meet: async (id: string, step: DriverMeetStep): Promise<Booking> =>
+      booking(await post(driverMeetPath(id, step), {})),
     tripBookings: async (tripId: string): Promise<Booking[]> =>
       bookings(await request(`${ADMIN_TRIPS_PATH}/${tripId}/bookings`)),
     sendOffer: async (requestId: string, input: OfferInput): Promise<Offer> =>

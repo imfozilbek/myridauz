@@ -22,6 +22,7 @@ export function DoneTools({ booking, onOpen }: Props) {
   const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(
     booking.trip.departAt,
     booking.trip.km,
+    booking.trip.arrivedAt,
   );
   const untilText = useUntilText();
   const until = (ms: number) => untilText(ms, now);

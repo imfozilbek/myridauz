@@ -46,8 +46,18 @@ const EXPLAINED: readonly string[] = [
   'pitaks.not_found',
   'auth.not_admin',
   'channels.not_found',
+  // G63: the meeting of the driver at the point (docs/126).
+  'bookings.not_meeting_time',
+  'bookings.already_met',
+  'bookings.already_no_show',
   'network',
   'expired.description',
+  // G63, docs/140: «Yoʻlga chiqdim», «Yetib keldik» and a pitak way without a pitak.
+  'trips.too_early_to_depart',
+  'trips.already_departed',
+  'trips.not_departed',
+  'trips.already_arrived',
+  'trips.no_pitak',
 ];
 
 // Codes that mean the same for a person as an explained one.

@@ -14,13 +14,13 @@
 
 1. **Qayerdan:** область, потом район. Если человек уже разрешил доступ к месту, область и район выбраны сами; можно поменять.
 2. **Qayerga:** область, потом район.
-3. **«Yoʻlovchilarni qayerdan olasiz?»**
-   - «Shahar boʻylab yigʻaman»: забирает каждого из дома;
-   - «Pitakdan olaman»: ждёт на пятаке, собирает всех и уезжает;
-   - «Ikkalasi ham»: оба способа.
-4. **Пятак водитель не выбирает.** Система сама берёт пятак направления «область А → область Б» и показывает: название, точку на карте. Направления нет в списке пятаков: кнопки «Pitakdan olaman» нет.
+3. **«Qayerdan olasiz?»** на экране «Safar eʼlon qilish» (G63, `143`):
+   - «Uydan»: забирает каждого из дома;
+   - «Pitakdan»: ждёт на пятаке, собирает всех и уезжает;
+   - «Ikkalasi»: оба способа.
+4. **Пятак водитель не выбирает.** Система сама берёт пятак направления «область А → область Б» и показывает: название, точку на маленькой карте. Направления нет в списке пятаков: есть только «Uydan».
 5. **Точку на карте водитель не ставит.** Ни для посадки, ни для высадки.
-6. Дальше: день и время на одном экране (G38, `103`), места, цена, «Mashinada ayol bor», комментарий, проверка, «Eʼlon qilish».
+6. На том же экране: день и время (G38, `103`), места, «Mashinada ayol bor», цена, «Qanday band qilinadi?», комментарий, «Eʼlon qilish».
 
 ## Попутчик ищет и бронирует (G59, `118` путь 2)
 
@@ -68,7 +68,7 @@
 | Бронь (G59): «Qayerdan, qayerga?», карты, страница брони | `ui/bookings/book-flow.tsx`, `book-points.tsx`, `book-point.tsx`, `pending-booking.tsx` |
 | Число поездок по дням и направлениям | `backend/trips/application/trip-counts.ts` (`/trips/days`, `/trips/directions`) |
 | Карта точки в зоне | `ui/way/point-screen.tsx` (`zone`), `use-clip.ts` |
-| Пятак у водителя на карте | `ui/market/trip-mode-step.tsx`, `ui/map/pitak-map.tsx` |
+| Пятак у водителя на карте | `ui/market/trip-pickup.tsx`, `pitak-screen.tsx`, `ui/map/pitak-map.tsx` |
 | Поиск места в зоне, граница области | `GET /map/search?zone=`, `GET /map/borders/:id` (область = все её районы) |
 | Зона | `contracts/route-rule.ts` `zoneOf` |
 | Поиск поездок без способа и точек | `backend/trips/application/read.ts` |

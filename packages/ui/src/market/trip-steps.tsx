@@ -12,21 +12,24 @@ type CommentProps = Step<string> & {
   readonly initial: string;
   // Each letter goes to the draft: a closed app gives the comment back (docs/94 F3).
   readonly onType: (text: string) => void;
+  // The note of a booking has its own hint and limit (G63); a trip keeps its own.
+  readonly hint?: string;
+  readonly max?: number;
 };
 
 // The only text of a trip, and it may stay empty (docs/19: typing only when it is needed).
-export function CommentStep({ initial, onType, onBack, onDone }: CommentProps) {
+export function CommentStep({ initial, onType, onBack, onDone, hint, max = COMMENT_MAX }: CommentProps) {
   const { t } = useI18n();
   const [text, setText] = useState(initial);
   return (
-    <StepLayout icon="request" title={t('market.comment.title')} hint={t('market.comment.hint')}>
+    <StepLayout icon="request" title={t('market.comment.title')} hint={hint ?? t('market.comment.hint')}>
       <Screen onBack={onBack} />
       <List>
         <Section>
           <Textarea
             placeholder={t('market.comment.placeholder')}
             value={text}
-            maxLength={COMMENT_MAX}
+            maxLength={max}
             onChange={(event) => {
               setText(event.target.value);
               onType(event.target.value);

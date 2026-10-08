@@ -1,3 +1,4 @@
+import { activity, counted, type ChannelsClient } from '@platform/api-client';
 import type { Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -13,13 +14,17 @@ const REVIEWS = {
   rating: { average: 4.8, count: 37 },
   reviews: [{ id: 'r1', authorName: 'Dilnoza', stars: 5, tags: [], text: 'Yaxshi haydaydi', at: 1 }],
 };
-const open = (shown: Trip, gender: 'male' | 'female' = 'male') => {
+const open = (
+  shown: Trip,
+  gender: 'male' | 'female' = 'male',
+  tripViewed: ChannelsClient['tripViewed'] = async () => undefined,
+) => {
   const onBook = vi.fn<(choice: SeatChoice) => void>();
   renderMarket(
     <PlacesGate>
       <SafarScreen trip={shown} onBack={() => undefined} onBook={onBook} />
     </PlacesGate>,
-    testClients({ feedback: { reviewsOf: async () => REVIEWS } }),
+    testClients({ feedback: { reviewsOf: async () => REVIEWS }, channels: { tripViewed } }),
     gender,
   );
   return onBook;
@@ -33,6 +38,23 @@ describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 },
     expect(await screen.findByText('«Yaxshi haydaydi»')).toBeTruthy();
     await tap('Barcha izohlar (37) ›');
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();
+  });
+
+  it('tells once and quietly that a person opened the trip: «N kishi koʻrdi» of the driver (G63)', async () => {
+    // No top loader for it (docs/121 §3), and a failure stays unseen.
+    const busy: number[] = [];
+    const tripViewed = vi.fn<ChannelsClient['tripViewed']>(async () => {
+      const before = activity.busy();
+      await counted(async () => void busy.push(activity.busy() - before));
+      throw new Error('network.failed');
+    });
+    open(trip, 'male', tripViewed);
+    expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
+    await vi.waitFor(() => expect(tripViewed).toHaveBeenCalledWith('t1'));
+    await tap('Barcha izohlar (37) ›');
+    expect(tripViewed).toHaveBeenCalledOnce();
+    expect(busy).toEqual([0]);
+    expect(screen.queryByRole('alert')).toBeNull();
   });
 
   it('counts the seats up to the free ones only, and «Jami» is the seats × the share (docs/128 §2)', async () => {

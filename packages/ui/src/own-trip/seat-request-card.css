@@ -1,0 +1,64 @@
+/* One request of «Mening safarim» (G63): the values of the mockup g63/4 screen 6 at 360 px (newer
+   than g63/3), smaller on a narrow phone (docs/121). */
+.seat-card {
+  margin-bottom: 8px;
+  padding: 10.67px 13px 11.63px 13.33px;
+  border-radius: 13.5px;
+  background: var(--reg-card);
+}
+
+.seat-card-head {
+  width: 100%;
+}
+
+.seat-card-who {
+  margin-top: 0.53px;
+}
+
+/* The name stands higher over the line under it than its line box puts it (mockup). */
+.seat-card-name {
+  padding-bottom: 0.3px;
+  font-size: clamp(14px, 4.445vw, 16px);
+  line-height: 18px;
+}
+
+.seat-card-stars {
+  margin-left: 5px;
+  font-size: clamp(11px, 3.473vw, 12.5px);
+  color: var(--reg-brand);
+}
+
+.seat-card-count {
+  flex: none;
+  margin-top: 1.07px;
+  font-size: clamp(14px, 4.445vw, 16px);
+  line-height: 18px;
+}
+
+.seat-card-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8.36px;
+}
+
+.seat-card-buttons button {
+  min-height: 32px;
+  padding: 4px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.seat-card-decline {
+  background: var(--reg-bg);
+  color: var(--reg-muted);
+}
+
+.seat-card-confirm {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}

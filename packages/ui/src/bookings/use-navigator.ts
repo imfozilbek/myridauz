@@ -27,22 +27,14 @@ export function useNavigator() {
     setAsking(null);
     if (stops) open(chosen, stops);
   };
-  // Asks which navigator; with stops, opens them in the chosen one.
-  const ask = async (stops: readonly Point[] | null) => {
+  // Asks which navigator, then opens the stops in the chosen one.
+  const ask = async (stops: readonly Point[]) => {
     const options = navigators.map((id) => ({ id, text: t(`way.navigator.${id}`) }));
     const answer = await choose(t('way.map.navigator'), options);
-    if (answer === undefined) return setAsking(stops ?? []);
+    if (answer === undefined) return setAsking(stops);
     const chosen = navigators.find((id) => id === answer);
     if (chosen) pick(chosen, stops);
   };
   const go = (stops: readonly Point[]) => (navigator ? open(navigator, stops) : void ask(stops));
-  return {
-    navigator,
-    navigators,
-    asking,
-    go,
-    change: () => void ask(null),
-    pick,
-    cancel: () => setAsking(null),
-  };
+  return { navigators, asking, go, pick, cancel: () => setAsking(null) };
 }

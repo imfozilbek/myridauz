@@ -1,26 +1,37 @@
 import type { Point } from '@platform/contracts';
-import { useEffect } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { Icon } from '../icons';
 import { MapRetry } from '../map/map-retry';
 import { useMapView } from '../map/use-map-view';
 import './meeting-map.css';
 
-// The small map of a meeting point (docs/126): it does not move; a tap opens the big map.
-export function MeetingMap({ point, onOpen }: { readonly point: Point; readonly onOpen: () => void }) {
+// The pin of a meeting point on the card of the passenger (G60); the driver's screens pass their own.
+const MEETING_PIN = 34;
+
+type Props = {
+  readonly point: Point;
+  readonly onOpen: () => void;
+  // The pin as big as the mockup of the screen draws it: smaller on the strip under the pitak of the
+  // new trip (g63/4 screen 3), bigger on «Uchrashuv» of the driver (screen 13).
+  readonly pin?: number;
+};
+
+// The small map of a meeting point (docs/126): it does not move, the point stays in its middle
+// under the tip of the pin of the color of the app, as on the big map; a tap opens the big map.
+export function MeetingMap({ point, onOpen, pin = MEETING_PIN }: Props) {
   const { map } = useApiClients();
   const { t } = useI18n();
-  const { brandStrong } = useBrand().theme.colors;
+  const { bg, brandStrong } = useBrand().theme.colors;
   const { box, view, failed, retry } = useMapView(map, point, true);
-  useEffect(() => {
-    view?.show([{ point, color: brandStrong }], null);
-    // The view draws the mark once it is ready.
-  }, [view]);
   if (failed) return <MapRetry onRetry={retry} />;
   return (
     <button type="button" className="meeting-map" aria-label={t('bookings.openMap')} onClick={onOpen}>
       <div ref={box} className="meeting-map-box" data-state={view ? 'ready' : 'loading'} />
+      <span className="meeting-map-pin" style={{ color: bg }}>
+        <Icon name="pickup" size={pin} color={brandStrong} filled />
+      </span>
     </button>
   );
 }

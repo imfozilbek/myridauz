@@ -1,68 +1,24 @@
-import { loadBrand } from '@platform/brands';
 import type { TripInput } from '@platform/contracts';
-import type { Bindings } from '../../env';
-import { bookingStore } from '../bookings/infrastructure/store';
-import { maskContacts } from '../chat';
-import { approvedCar } from '../drivers';
-import { placesOf, roadKmBetween } from '../locations';
-import { directionRecommendationFor, recommendationFor } from '../pricing';
-import { peopleOf } from '../users';
-import { pitakOf } from '../pitaks';
-import type { TripEvent, TripsDeps } from './application/ports';
-import { publishTrip } from './application/publish';
+import { Hono } from 'hono';
+import type { AppEnv, Bindings } from '../../env';
+import { publishOfferTrip } from './application/publish';
 import { realPrices } from './application/prices';
 import { cancelTrip } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
 import { scheduleError } from './application/schedule';
+import { tripsDeps } from './deps';
+import { progressRoutes } from './http/progress-routes';
 import { tripRoutes } from './http/trip-routes';
-import { d1Trips } from './infrastructure/d1-trips';
-import { createMemoryTrips } from './infrastructure/memory-trips';
 import { isLive, statusAt } from './domain/trip';
-import { telegramAnnouncer } from './infrastructure/telegram-announcer';
 
-// Without D1 (tests) trips live in memory.
-const localTrips = createMemoryTrips();
-
-// What follows a published or changed trip (channel posts, route subscriptions): set by the app,
-// which knows every module (app.ts), so trips does not depend on them.
-type ChangeHandler = (env: Bindings, tripId: string, event: TripEvent) => Promise<void>;
-let onChange: ChangeHandler = async () => undefined;
-export const handleTripChange = (handler: ChangeHandler) => void (onChange = handler);
+export { handleTripChange, wireTripStanding } from './deps';
 // A booking was confirmed or cancelled: the seats left changed (G08).
-export const tripChanged = (env: Bindings, tripId: string) => onChange(env, tripId, 'updated');
+export const tripChanged = (env: Bindings, tripId: string) => tripsDeps(env).changed(tripId, 'updated');
 
-// Ratings and complaints come from their modules, set by the app (module-events.ts), G11.
-type Standing = Pick<TripsDeps, 'ratings' | 'hidden'>;
-type StandingOf = (env: Bindings) => Standing;
-let standingOf: StandingOf = () => ({ ratings: async () => new Map(), hidden: async () => new Set() });
-export const wireTripStanding = (next: StandingOf) => void (standingOf = next);
-
-const tripsDeps = (env: Bindings): TripsDeps => ({
-  trips: env.DB ? d1Trips(env.DB) : localTrips,
-  riders: async (tripIds) =>
-    (await bookingStore(env).byTrips(tripIds)).filter((booking) => booking.status === 'confirmed'),
-  people: peopleOf(env),
-  approvedCar: (driverId) => approvedCar(env, driverId),
-  ...standingOf(env),
-  recommend: (from, to) => recommendationFor(env, from, to),
-  recommendDirection: (from, to) => directionRecommendationFor(env, from, to),
-  roadKm: (from, to) => roadKmBetween(env, from, to),
-  schedule: loadBrand(env.BRAND).schedule,
-  places: () => placesOf(env),
-  announce: telegramAnnouncer({
-    fetch: (input, init) => fetch(input, init),
-    driverToken: env.DRIVER_BOT_TOKEN,
-    placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-  }),
-  pitakOf: (from, to) => pitakOf(env, from, to),
-  changed: (tripId, event) => onChange(env, tripId, event),
-  mask: (text) => maskContacts(text).text,
-  newId: () => crypto.randomUUID(),
-  now: Date.now,
-});
-
-export const tripsModule = tripRoutes(tripsDeps);
+export const tripsModule = new Hono<AppEnv>()
+  .route('/', tripRoutes(tripsDeps))
+  .route('/', progressRoutes(tripsDeps));
 
 // The Cron job (docs/35): trips over by now become completed.
 export const completeTrips = (env: Bindings, now: number) => tripsDeps(env).trips.completeOver(now);
@@ -72,7 +28,7 @@ export const tripFacts = async (env: Bindings, id: string) => {
   const trip = await tripsDeps(env).trips.find(id);
   if (!trip) return undefined;
   const now = Date.now();
-  const { driverId, from, to, departAt, km, seats, price, pickupMode } = trip;
+  const { driverId, from, to, departAt, departedAt, arrivedAt, km, seats, price, pickupMode } = trip;
   const over = statusAt(trip, now) === 'completed';
   const { endsAt } = trip;
   return {
@@ -81,6 +37,8 @@ export const tripFacts = async (env: Bindings, id: string) => {
     from,
     to,
     departAt,
+    departedAt,
+    arrivedAt,
     km,
     seats,
     price,
@@ -107,8 +65,11 @@ export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
     found.filter((trip) => trip !== undefined),
   );
 };
-export const publishFor = (env: Bindings, driverId: number, input: Required<TripInput>) =>
-  publishTrip(tripsDeps(env), driverId, input);
+export const publishOfferTripFor = (
+  env: Bindings,
+  driverId: number,
+  input: Omit<Required<TripInput>, 'pickupMode'>,
+) => publishOfferTrip(tripsDeps(env), driverId, input);
 export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
   await cancelTrip(tripsDeps(env), driverId, tripId);
 };
@@ -137,3 +98,15 @@ export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>
 
 // Real prices of trips that left, not cancelled: the team's median hint (docs/09).
 export const realPricesSince = (env: Bindings, from: number) => realPrices(tripsDeps(env), from);
+
+// The Cron job (G63, docs/35): live trips without «Yoʻlga chiqdim» whose time is in [from, to], and
+// the departure the Cron writes by itself.
+export const tripsNotDeparted = async (env: Bindings, from: number, to: number) =>
+  (await tripsDeps(env).trips.notDeparted(from, to)).map(({ id, driverId, departAt }) => ({
+    id,
+    driverId,
+    departAt,
+  }));
+export const departByCron = async (env: Bindings, tripId: string, at: number) => {
+  await tripsDeps(env).trips.depart(tripId, at);
+};

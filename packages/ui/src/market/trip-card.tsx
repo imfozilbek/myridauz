@@ -1,8 +1,10 @@
 import { tripMarks, type Trip } from '@platform/contracts';
 import { Caption, Tappable, Text } from '@telegram-apps/telegram-ui';
+import type { ReactNode } from 'react';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { tripPast } from '../own-trip/trip-stage';
 import { CarSwatch } from '../driver/car-swatch';
 import { RatingBadge } from '../feedback/rating-badge';
 import { FactChips, statusIcon, type Fact } from './fact-chips';
@@ -20,14 +22,19 @@ type TripCardProps = {
   // New requests waiting for the driver: seen on the card, not only inside the trip (G41).
   readonly requests?: number;
   readonly onOpen: () => void;
+  // What is left of a past own trip (G63, docs/129): the tags under the marks.
+  readonly children?: ReactNode;
 };
 
 // One trip in a list, everything a person decides by: the day, the distance and the price,
 // A and B with the times, the driver's comment, the driver and the car, the seats and the marks.
-export function TripCard({ trip, showStatus = false, own = false, requests = 0, onOpen }: TripCardProps) {
+export function TripCard(props: TripCardProps) {
+  const { trip, showStatus = false, own = false, requests = 0, onOpen, children } = props;
   const { t, formatMoney, formatDate } = useI18n();
   const { driver } = trip;
   const wayFacts = useWayFacts();
+  // A trip the driver arrived on is over before the server closes it (lead decision 08.10.2026).
+  const status = tripPast(trip) ? 'completed' : trip.status;
   // «Tez orada joʻnaydi» and «Narxi tushdi» lead the marks of the search (G39, docs/104, 10).
   const marks: readonly Fact[] = own
     ? []
@@ -40,7 +47,7 @@ export function TripCard({ trip, showStatus = false, own = false, requests = 0, 
     ['passengers', t('market.trip.seats', { count: String(trip.seatsLeft) })],
     ...(trip.woman ? [['profile', t('market.search.woman')] as const] : []),
     ...wayFacts(trip),
-    ...(showStatus || own ? [[statusIcon(trip.status), t(`market.status.${trip.status}`)] as const] : []),
+    ...(showStatus || own ? [[statusIcon(status), t(`market.status.${status}`)] as const] : []),
   ];
   const recommended = otherPrice(trip);
   return (
@@ -63,6 +70,7 @@ export function TripCard({ trip, showStatus = false, own = false, requests = 0, 
         <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
         {trip.comment ? <Caption className="trip-card-comment">{trip.comment}</Caption> : null}
         <FactChips facts={facts} marks={marks} />
+        {children}
         {own ? null : (
           <div className="trip-card-foot">
             <ProfilePhoto

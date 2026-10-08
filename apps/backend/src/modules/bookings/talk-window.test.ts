@@ -1,7 +1,7 @@
 import { AFTER_TRIP_TALK_HOURS, arrivalAt } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { chatMember } from './application/chat-member';
-import type { BookingRecord } from './domain/booking';
+import { NO_MARKS, type BookingRecord } from './domain/booking';
 import { DILNOZA, HOUR, NOW, setup } from './test-kit';
 
 const KM = 300;
@@ -25,11 +25,13 @@ async function ride(status: BookingRecord['status'], kit = setup(), extra: { ove
     pickupNamed: null,
     dropoff: null,
     dropoffNamed: null,
+    note: null,
     offerId: null,
     confirmedAt: NOW,
     boardedAt: null,
     arrivedAt: null,
     cameAt: null,
+    ...NO_MARKS,
     createdAt: NOW,
     updatedAt: NOW,
   };

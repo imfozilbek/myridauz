@@ -1,14 +1,13 @@
-import type { Adjustment, OperationKind, Wallet } from '@platform/contracts';
-import { balanceOf, chargedFor, splitCharge, type Operation } from '../domain/ledger';
+import type { Adjustment, OperationKind } from '@platform/contracts';
+import { balanceOf, chargedFor, returnedFor, splitCharge, type Operation } from '../domain/ledger';
 import { appendCharge } from './append-charge';
-import { bonusExpiresAt, burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
+import { burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
 import type { WalletDeps } from './ports';
 
 type Row = Pick<Operation, 'kind' | 'balance' | 'amount'> & Partial<Operation>;
-const HISTORY_LIMIT = 100;
 const EMPTY = { bookingId: null, reason: null, createdBy: null, expiresAt: null } as const;
 
-const row = (deps: WalletDeps, driverId: number, input: Row): Operation => ({
+export const row = (deps: WalletDeps, driverId: number, input: Row): Operation => ({
   ...EMPTY,
   id: deps.newId(),
   driverId,
@@ -22,27 +21,6 @@ const grantRow = (deps: WalletDeps, driverId: number, grant: Grant) =>
     amount: grant.amount,
     expiresAt: grant.expiresAt,
   });
-
-export async function walletView(deps: WalletDeps, driverId: number): Promise<Wallet> {
-  const operations = await deps.wallet.operations(driverId);
-  return {
-    bonus: balanceOf(operations, 'bonus'),
-    main: balanceOf(operations, 'main'),
-    bonusExpiresAt: balanceOf(operations, 'bonus') > 0 ? bonusExpiresAt(operations) : null,
-    operations: operations
-      .slice(-HISTORY_LIMIT)
-      .reverse()
-      .map(({ id, kind, balance, amount, bookingId, reason, createdAt }) => ({
-        id,
-        kind,
-        balance,
-        amount,
-        bookingId,
-        reason,
-        createdAt,
-      })),
-  };
-}
 
 // A bonus whose time is over is not money any more, even before the Cron job burns it.
 const usable = (operations: readonly Operation[], now: number): Operation[] => {
@@ -86,9 +64,11 @@ export async function charge(
   return 'ok';
 }
 
-// The passenger cancelled: the commission goes back to the balances it came from (docs/12).
+// The passenger cancelled: the commission goes back to the balances it came from (docs/12), once.
 export async function refund(deps: WalletDeps, driverId: number, bookingId: string): Promise<void> {
-  const taken = chargedFor(await deps.wallet.operations(driverId), bookingId);
+  const operations = await deps.wallet.operations(driverId);
+  if (returnedFor(operations, bookingId)) return;
+  const taken = chargedFor(operations, bookingId);
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => taken[balance] > 0)
     .map((balance) => row(deps, driverId, { kind: 'refund', balance, amount: taken[balance], bookingId }));

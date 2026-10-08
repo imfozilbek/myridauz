@@ -85,6 +85,14 @@ type ListProps = {
   readonly onRefresh: () => unknown;
 };
 
+// High priority, or a refund that waits for the owner (docs/35, G63).
+function tagOf(complaint: Complaint, t: ReturnType<typeof useI18n>['t']) {
+  if (complaint.high) return <CellValue>{t('complaints.high')}</CellValue>;
+  return complaint.refund?.state === 'proposed' ? (
+    <CellValue>{t('complaints.refundTag')}</CellValue>
+  ) : undefined;
+}
+
 // Back from a complaint the queue stands at the same place; a complaint decided by another
 // moderator goes away without moving the row under the finger (docs/94 F2, S3).
 function ComplaintsList({ queue, onOpen, onBack, onRefresh }: ListProps) {
@@ -113,7 +121,7 @@ function ComplaintsList({ queue, onOpen, onBack, onRefresh }: ListProps) {
               data-row={complaint.id}
               before={<IconTile name="complaints" tone={complaint.high ? 'accent' : 'brand'} />}
               subtitle={`${complaint.against.firstName} · ${formatDate(new Date(complaint.createdAt))}`}
-              after={complaint.high ? <CellValue>{t('complaints.high')}</CellValue> : undefined}
+              after={tagOf(complaint, t)}
               onClick={() => onOpen(complaint.id)}
             >
               {t(`complaints.reason.${complaint.reason}`)}

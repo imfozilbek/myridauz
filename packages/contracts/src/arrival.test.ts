@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { arrivalSchema, channelVia, splitStart, withVia } from './arrival';
+import { arrivalSchema, channelVia, splitStart, tripBookLink, VIA_DRIVER, withVia } from './arrival';
 
 describe('the mark of a link (G55, docs/116)', () => {
   it('goes after the link and comes back without changing it', () => {
@@ -33,5 +33,14 @@ describe('the mark of a link (G55, docs/116)', () => {
     ).toBe(true);
     expect(arrivalSchema.safeParse({ via: 'Ali Valiyev' }).success).toBe(false);
     expect(arrivalSchema.safeParse({ client: '+998901234567' }).success).toBe(false);
+  });
+
+  it('builds the link of a trip ready to book with the mark of its source (G63, docs/119)', () => {
+    const id = '6f1c2f7e-3c1b-4f5e-9a3d-2b8c1d0e4f5a';
+    const link = tripBookLink('test_bot', id, VIA_DRIVER);
+    expect(link).toBe(`https://t.me/test_bot?startapp=trip_${id}__driver`);
+    const start = link.split('?startapp=')[1] ?? '';
+    expect(start.length).toBeLessThanOrEqual(64);
+    expect(splitStart(start)).toEqual({ start: `trip_${id}`, via: 'driver' });
   });
 });

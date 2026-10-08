@@ -20,11 +20,6 @@ import {
   Inbox,
   Languages,
   Megaphone,
-  Mic,
-  MicOff,
-  Phone,
-  PhoneCall,
-  PhoneOff,
   MessageSquarePlus,
   Minus,
   Plus,
@@ -36,8 +31,6 @@ import {
   Trash2,
   UserRound,
   Users,
-  Wallet,
-  MessageSquare,
   Send,
   Smartphone,
   Share2,
@@ -60,6 +53,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
+import { TALK_ICONS } from './talk-icons';
 import { WAY_ICONS } from './way-icons';
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
@@ -81,10 +75,10 @@ const ICONS = {
   next: ChevronRight,
   profile: UserRound,
   camera: Camera,
-  phone: Phone,
   document: FileText,
   blocked: Ban,
   ...WAY_ICONS,
+  ...TALK_ICONS,
   ...PLACE_ICONS,
   car: CarFront,
   carSide: Car,
@@ -92,18 +86,11 @@ const ICONS = {
   less: Minus,
   more: Plus,
   price: Banknote,
-  wallet: Wallet,
-  chat: MessageSquare,
   share: Share2,
   subscriptions: Bell,
   star: Star,
   favorite: Heart, // "Sevimli haydovchilar" and "Safarlar tarixi" (G18, docs/18)
   history: History,
-  // A voice call (docs/08): start, hang up, microphone on and off.
-  call: PhoneCall,
-  hangUp: PhoneOff,
-  microphone: Mic,
-  muted: MicOff,
   // "Maʼlumotlarimni oʻchirish" (docs/30); the phone is never shown (docs/07); a channel (docs/63).
   erase: Trash2,
   hidden: EyeOff,

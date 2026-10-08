@@ -1,0 +1,23 @@
+/* The list of the last day while the next one loads: dimmed only after a wait a person notices,
+   so a fast answer changes nothing on the screen (G41, docs/108). */
+.list-stale {
+  animation: list-dim 200ms ease-out 250ms forwards;
+}
+
+@keyframes list-dim {
+  to {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-stale {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+/* A weak Android draws it in jerks: the same as «less motion» (G43). */
+:root[data-motion='low'] .list-stale {
+  animation: none;
+  opacity: 0.5;
+}

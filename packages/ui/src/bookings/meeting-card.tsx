@@ -1,4 +1,4 @@
-import { MEET_BEFORE_MINUTES, type Booking } from '@platform/contracts';
+import { meetingStartsAt, type Booking } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -12,13 +12,11 @@ import { MeetingMap } from '../trip/meeting-map';
 import { mapUrl } from './map-link';
 import './meeting-card.css';
 
-const MINUTE_MS = 60 * 1000;
-
 // From MEET_BEFORE_MINUTES before the departure until the passenger is in the car (docs/126).
 export const meetingTime = (booking: Booking, now: number) =>
   booking.status === 'confirmed' &&
   booking.boardedAt === null &&
-  now >= booking.trip.departAt - MEET_BEFORE_MINUTES * MINUTE_MS;
+  now >= meetingStartsAt(booking.trip.departAt);
 
 type Props = { readonly booking: Booking; readonly onTold: (booking: Booking) => void };
 

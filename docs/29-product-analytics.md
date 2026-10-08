@@ -19,8 +19,8 @@
 |---|---|
 | Экраны | `screen_open` (Mini App, экран; первый экран сессии ещё: вид ссылки `source`, метка источника `via`, платформа `client`, G55 `116`) |
 | Скорость (G72) | `app_ready`: мс от нажатия до готового первого экрана (пока стоит сплэш, `121` §4), Mini App и платформа `client`; больше 120 000 мс не принимаем |
-| Шаги | `registration_step` (consent, about, phone, done; G34), `driver_application_step`, `trip_step`, `booking_step`, `way_step` (поиск списками: opened, from, to, done; G26) |
-| Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created`, `driver_trip_shared`, `driver_trip_story` |
+| Шаги | `registration_step` (consent, about, phone, done; G34), `driver_application_step`, `trip_step` (route, published; G63), `booking_step`, `way_step` (поиск списками: opened, from, to, done; G26) |
+| Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created` (обратная поездка опубликована после «Qaytish», G63), `driver_trip_shared`, `driver_trip_story` |
 | Ошибки | `client_error` (экран упал: код `render`, `uncaught` или `rejection`, класс ошибки, текст без цифр и знаков, экран, приложение Telegram и его версия, движок WebView и его главная версия, место в сборке `where`, G52 `112`), `api_error` (код ответа API и последний открытый экран, G12) |
 | Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id) |
 | Сервер | `driver_approved` |
@@ -40,7 +40,7 @@
    → написал в чат → бронь подтверждена → поездка состоялась.
 2. **Водитель:** открыл → начал заявку → отправил на модерацию
    → одобрен → создал поездку → подтвердил бронь.
-3. **Создание поездки** по шагам: откуда → куда → когда → места → цена → готово.
+3. **Создание поездки** (G63: один экран, `143`): маршрут выбран → опубликовано. Уход между ними: экран открыт, «Eʼlon qilish» не нажата.
 
 На каждом шаге видно, сколько людей ушло. Большой уход = место, где застревают.
 

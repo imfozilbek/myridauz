@@ -15,10 +15,11 @@ import type {
 import type { Person } from '../../users';
 import type { BookingRecord } from '../domain/booking';
 import type { OfferRecord } from '../domain/offer';
+import type { MarkStore, MeetingPorts } from './meeting-ports';
 import type { RequestFacts } from './request-facts';
 
 // Ports of the bookings module: D1 in production, memory in tests.
-export type BookingRepository = {
+export type BookingRepository = MarkStore & {
   save(booking: BookingRecord): Promise<void>;
   // Saves only if the booking still has the expected status: two answers at once cannot both win.
   replace(booking: BookingRecord, expected: BookingRecord['status']): Promise<boolean>;
@@ -52,6 +53,10 @@ export type TripFacts = {
   readonly from: string;
   readonly to: string;
   readonly departAt: number;
+  // «Yoʻlga chiqdim» of the driver (G63): the trip is on the road even before its time.
+  readonly departedAt: number | null;
+  // «Yetib keldik» of the driver (G63): the ride is over for the stars before the trip closes.
+  readonly arrivedAt: number | null;
   readonly km: number;
   readonly seats: number;
   readonly price: number;
@@ -72,13 +77,14 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
-    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103).
+    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103). Its way
+    // is the trips module's: both where the direction has a pitak, else the door (docs/70).
     scheduleError(
       driverId: number,
       trip: { from: string; to: string; departAt: number; km: number },
     ): Promise<'trips.too_soon' | 'trips.too_many' | 'trips.busy' | null>;
     views(ids: readonly string[]): Promise<Trip[]>;
-    publish(driverId: number, input: Required<TripInput>): Promise<Published>;
+    publish(driverId: number, input: Omit<Required<TripInput>, 'pickupMode'>): Promise<Published>;
     cancel(driverId: number, tripId: string): Promise<void>;
   };
   readonly requests: {
@@ -109,6 +115,10 @@ export type BookingsDeps = {
   };
   // The pitak a booking fixed, even if the team closed it later (docs/72).
   readonly pitak: (id: string) => Promise<Pitak | null>;
+  // «Kelmadi» and its refund go through the complaints; the live screens (G63).
+  readonly meeting: MeetingPorts;
+  // The contacts of a text masked, as in the chat (docs/07): the note of a booking.
+  readonly mask: (text: string) => string;
   readonly now: () => number;
   readonly newId: () => string;
 };
@@ -124,9 +134,11 @@ export type BookingNotifier = {
   // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
   offered(passengerId: number, offer: Offer): Promise<void>;
   offerAnswered(driverId: number, accepted: boolean, offerId: string): Promise<void>;
-  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126).
+  // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)
+  // and of the driver for the passenger (G63).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
   came(booking: Booking): Promise<void>;
+  driverCame(booking: Booking): Promise<void>;
   // The driver moved the time or lowered the price (G39, docs/104).
   tripRetimed(booking: Booking): Promise<void>;
 };

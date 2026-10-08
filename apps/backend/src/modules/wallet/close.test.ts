@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { closeWallet } from './application/close';
 import type { WalletDeps } from './application/ports';
-import { adjust, charge, grantWelcome, walletView } from './application/wallet';
+import { adjust, charge, grantWelcome } from './application/wallet';
+import { walletView } from './application/wallet-view';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 import { idOfPublic, publicIdOf } from '../../test-people';
 
@@ -15,6 +16,7 @@ function setup() {
     wallet: createMemoryWallet(),
     promo: PROMO,
     people: { find: async (n) => ({ firstName: 'Jasur', publicId: publicIdOf(n) }), idOf: idOfPublic },
+    passengers: async () => new Map(),
     now: () => Date.parse('2026-10-01T05:00:00Z'),
     newId: () => `op-${(id += 1)}`,
   };

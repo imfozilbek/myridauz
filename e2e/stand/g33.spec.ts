@@ -64,16 +64,9 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
     await openAs(page, 'driver', DRAFT_DRIVERS[platform], { platform });
     await newTripTile(page).click();
     await g33.chooseRoute(page);
+    // One screen (G63): the way of pickup on it, the comment on its own screen.
     await page.getByText(t('way.trip.mode.door')).click();
-    await page.getByText(TEXT.tomorrow).click();
-    await mainButton(page).click();
-    await expect(page.getByText(TEXT.tripSeatsTitle)).toBeVisible();
-    await mainButton(page).click();
-    await expect(page.getByText(TEXT.priceTitle)).toBeVisible();
-    await mainButton(page).click();
-    // «Qanday band qilinadi?» (G61): seats only.
-    await page.getByText(t('market.rule.seats')).click();
-    await mainButton(page).click();
+    await page.getByText(t('market.publish.comment')).click();
     await page.getByPlaceholder(t('market.comment.placeholder')).fill(COMMENT);
     // Telegram closes the Mini App; the person opens it again later.
     await page.reload();

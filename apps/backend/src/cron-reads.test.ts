@@ -22,7 +22,8 @@ INSERT INTO wallet_operations (id, driver_id, kind, balance, amount, expires_at,
 INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price, status, created_at)
   VALUES ('t1', 1, '1726', '1718', ${ago(6)}, ${ago(1)}, 300, 4, 100000, 'active', 0),
   ('t2', 1, '1726', '1718', ${ago(40)}, ${ago(35)}, 300, 4, 100000, 'completed', 0),
-  ('t3', 1, '1726', '1718', ${ago(-3)}, ${ago(-8)}, 300, 4, 100000, 'active', 0);
+  ('t3', 1, '1726', '1718', ${ago(-3)}, ${ago(-8)}, 300, 4, 100000, 'active', 0),
+  ('t4', 2, '1726', '1718', ${ago(1.5)}, ${ago(-5)}, 300, 4, 100000, 'active', 0);
 INSERT INTO bookings (id, trip_id, passenger_id, seats, price, commission, status, expires_at, created_at, updated_at)
   VALUES ('b1', 't1', 2, 1, 100000, 10000, 'confirmed', 0, 0, 0),
   ('b2', 't2', 2, 1, 100000, 10000, 'completed', 0, 0, 0),
@@ -53,18 +54,18 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = cronJobs(env, NOW);
-    expect(jobs).toHaveLength(14);
+    expect(jobs).toHaveLength(15);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
 
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
-    expect(names(NOW + 15 * 60_000)).toHaveLength(7);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(7, 12)]);
-    expect(names(NOW).slice(12)).toEqual(['grantMissedBonuses', 'purgeSupport']);
+    expect(names(NOW + 15 * 60_000)).toHaveLength(8);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(8, 13)]);
+    expect(names(NOW).slice(13)).toEqual(['grantMissedBonuses', 'purgeSupport']);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(14);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(15);
   });
 });

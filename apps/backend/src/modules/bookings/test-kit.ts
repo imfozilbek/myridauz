@@ -1,5 +1,6 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
 import type { Car, Trip } from '@platform/contracts';
+import { maskContacts } from '../chat';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
@@ -20,11 +21,11 @@ import {
   scheduleCheck,
 } from './test-fakes';
 import { idOfPublic } from '../../test-people';
+import { fakeMeeting } from './test-meeting';
 
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
 export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, SCHEDULE, seats } from './test-fakes';
-
 export function setup() {
   let now = NOW;
   let approved = true;
@@ -43,6 +44,7 @@ export function setup() {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
     people: { find: async (userId) => people.get(userId), idOf: idOfPublic },
+    passengers: async () => new Map(),
     now: () => now,
     newId,
   };
@@ -60,6 +62,8 @@ export function setup() {
       from: '1726273',
       to: '1718401',
       departAt: NOW + 30 * HOUR,
+      departedAt: null,
+      arrivedAt: null,
       endsAt: NOW + 37 * HOUR,
       km: 300,
       seats: 3,
@@ -109,6 +113,8 @@ export function setup() {
     track: (step) => void notes.push(`step: ${step}`),
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),
+    meeting: fakeMeeting(notes),
+    mask: (text) => maskContacts(text).text,
     now: () => now,
     newId,
   };
@@ -127,6 +133,16 @@ export function setup() {
     // The driver spent part of the bonus on earlier trips.
     spend: (amount: number) => charge(walletDeps, DRIVER, newId(), amount),
     setNow: (next: number) => void (now = next),
+    // «Yoʻlga chiqdim» of the driver before the time of the trip (G63).
+    departEarly: (tripId: string) => {
+      const facts = trips.get(tripId);
+      if (facts) trips.set(tripId, { ...facts, departedAt: now });
+    },
+    // «Yetib keldik» of the driver: the trip is not closed yet (G63).
+    arrive: (tripId: string) => {
+      const facts = trips.get(tripId);
+      if (facts) trips.set(tripId, { ...facts, departedAt: facts.departedAt ?? now, arrivedAt: now });
+    },
     requestOpen: (requestId: string) => requests.get(requestId)?.open,
     // A new face or car photo: the driver goes to the team's check again (docs/05).
     recheck: () => void (approved = false),

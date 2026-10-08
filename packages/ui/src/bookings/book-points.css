@@ -62,6 +62,12 @@
   background: var(--reg-star);
 }
 
+/* The note of a booking: a quiet tile, the note is not a place (G63). */
+.points-note {
+  background: var(--reg-mint);
+  color: var(--reg-strong);
+}
+
 .points-text {
   display: flex;
   flex: 1;

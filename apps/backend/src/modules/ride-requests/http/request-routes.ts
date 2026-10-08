@@ -7,6 +7,7 @@ import {
 } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { ONE } from '../../../shared/routes/one-id';
 import type { RequestsDeps } from '../application/ports';
 import { cancelRequest, myRequests, publishRequest, searchRequests } from '../application/use-cases';
 
@@ -27,7 +28,6 @@ const STATUS = {
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.json({ error }, STATUS[error]);
-const ONE = ':id{[0-9a-f-]{36}}';
 
 // Passengers publish and cancel requests; drivers find them (docs/09).
 export function requestRoutes(deps: (env: Bindings) => RequestsDeps) {

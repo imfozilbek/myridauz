@@ -11,8 +11,9 @@ export async function createDriverShare(
 ): Promise<Result<Share, 'shares.not_found' | 'shares.wrong_status'>> {
   const trip = await deps.driverTrip(tripId);
   if (trip?.driverId !== driverId) return { ok: false, error: 'shares.not_found' };
-  const status = driverShareStatus(trip, deps.now());
-  if (status === 'cancelled' || status === 'completed') return { ok: false, error: 'shares.wrong_status' };
+  // Nothing to follow on a trip that is over or arrived (G63).
+  if (['cancelled', 'completed', 'arrived'].includes(driverShareStatus(trip, deps.now())))
+    return { ok: false, error: 'shares.wrong_status' };
   const text = await deps.texts.driverCard(trip);
   return { ok: true, value: await issueLink(deps, { kind: 'trip', id: tripId }, driverId, text) };
 }

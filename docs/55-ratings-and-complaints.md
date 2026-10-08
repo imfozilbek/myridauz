@@ -35,7 +35,7 @@
 - «Chatni koʻrish»: только внутри жалобы; каждый просмотр пишется в `complaint_chat_reads`.
 - Решения: «Chora koʻrilmasin», «Ogohlantirish», блокировка на 1, 7, 30 дней или навсегда.
 - Блокировка: Telegram ID и телефон (новый аккаунт с тем же номером не зарегистрируется), живые поездки и брони отменяются, другие стороны получают обычные сообщения.
-- Неявка попутчика: переключатель «Haydovchiga komissiyani qaytarish» (`admin_adjustment`, `35`).
+- Неявка попутчика: переключатель «Haydovchiga komissiyani qaytarish» только предлагает возврат. Деньги идут после «Qaytarishni tasdiqlash» владельца, до этого жалоба в очереди с меткой «Qaytarish» (G63, `52`).
 - Автор жалобы получает только «Shikoyatingiz koʻrib chiqildi».
 
 ## G60: сроки 7 дней (`129`)

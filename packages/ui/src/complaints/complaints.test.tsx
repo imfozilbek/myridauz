@@ -27,6 +27,7 @@ const complaint = (id: string, reason: Complaint['reason'], high: boolean): Comp
   departAt: Date.parse('2026-10-04T03:30:00Z'),
   author: party(101, 'Madina', 'passenger'),
   against: party(1, 'Jasur', 'driver'),
+  refund: null,
 });
 
 describe('complaints of the team (docs/17)', () => {
@@ -57,7 +58,7 @@ describe('complaints of the team (docs/17)', () => {
     expect(screen.getByText('Bot unga ogohlantirish yuboradi.')).toBeTruthy();
     expect(screen.getByText(/^Hisobi 7\skunga bloklanadi\. Faol safarlari/u)).toBeTruthy();
     expect(screen.getByText(/^Hisobi butunlay bloklanadi\./u)).toBeTruthy();
-    expect(screen.queryByText(/asosiy hisobiga qaytadi/u)).toBeNull();
+    expect(screen.queryByText(/hamyoniga qaytadi/u)).toBeNull();
     await tap('Chatni koʻrish');
     expect(await screen.findByText('Tezroq chiq')).toBeTruthy();
     await tap('7 kunga bloklash');
@@ -82,7 +83,9 @@ describe('complaints of the team (docs/17)', () => {
     renderMarket(<ComplaintsScreen onBack={() => undefined} />, clients);
     await tap('Kelmadi');
     expect(
-      await screen.findByText('Yoʻlovchi kelmagan boʻlsa, komissiya haydovchining asosiy hisobiga qaytadi.'),
+      await screen.findByText(
+        'Yoʻlovchi kelmagan boʻlsa, qaytarish taklif qilinadi. Loyiha egasi tasdiqlagach, komissiya haydovchining hamyoniga qaytadi.',
+      ),
     ).toBeTruthy();
     await tap('Haydovchiga komissiyani qaytarish');
     await tap('Ogohlantirish');

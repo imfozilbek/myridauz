@@ -1,4 +1,11 @@
-import type { ArrivalKind, Arrivals, Platform } from '@platform/contracts';
+import {
+  VIA_DRIVER,
+  VIA_SITE,
+  VIA_STORY,
+  type ArrivalKind,
+  type Arrivals,
+  type Platform,
+} from '@platform/contracts';
 
 // One group of new people: the mark of their source and their platform, as kept at the registration.
 export type ArrivalCount = {
@@ -11,7 +18,11 @@ const MARKED: readonly [string, ArrivalKind][] = [
   ['ch-', 'channel'],
   ['ad-', 'ad'],
 ];
-const PLAIN: Readonly<Record<string, ArrivalKind>> = { story: 'story', site: 'site' };
+const PLAIN: Readonly<Record<string, ArrivalKind>> = {
+  [VIA_STORY]: 'story',
+  [VIA_SITE]: 'site',
+  [VIA_DRIVER]: 'driver',
+};
 
 // «ch-rida-samarqand» is a channel named rida-samarqand; no mark is a direct visit (G55, docs/116).
 function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {

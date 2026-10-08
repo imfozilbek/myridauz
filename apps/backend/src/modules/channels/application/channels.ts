@@ -50,10 +50,13 @@ export async function rememberPost(deps: ChannelsDeps, post: ChannelPost, shown:
   if (shownOf(trip) !== shown) await edit(deps, trip, [post]);
 }
 
-// The Cron job: a trip that left says so in its posts and stops offering seats, once (docs/15).
+// A trip that left says so in its posts and stops offering seats, once (docs/15).
+export async function closePosts(deps: ChannelsDeps, tripId: string): Promise<void> {
+  await refreshPosts(deps, tripId);
+  await deps.posts.close(tripId);
+}
+
+// The Cron job: the posts of trips whose time came; «Yoʻlga chiqdim» closed its posts at once (G63).
 export async function closeDeparted(deps: ChannelsDeps): Promise<void> {
-  for (const tripId of await deps.posts.departed(deps.now())) {
-    await refreshPosts(deps, tripId);
-    await deps.posts.close(tripId);
-  }
+  for (const tripId of await deps.posts.departed(deps.now())) await closePosts(deps, tripId);
 }

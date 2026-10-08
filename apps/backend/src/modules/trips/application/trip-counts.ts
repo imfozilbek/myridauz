@@ -7,7 +7,7 @@ import {
   type DirectionCard,
   type TripDays,
 } from '@platform/contracts';
-import { placeMatches, placesMatching } from '../../../shared/places/place-match';
+import { placeMatches, placesMatching, regionIn } from '../../../shared/places/place-match';
 import { POPULAR_REGIONS } from '../domain/popular-regions';
 import type { TripRecord } from '../domain/trip';
 import type { Result, TripsDeps } from './ports';
@@ -59,7 +59,7 @@ export async function directionCards(
   viewer?: number,
 ): Promise<DirectionCard[]> {
   const { open, places, today, tomorrow } = await openTrips(deps, from, 2, viewer);
-  const regionOf = (id: string) => places.get(id)?.parentId ?? id;
+  const regionOf = regionIn(places);
   const home = regionOf(from);
   const byRegion = new Map<string, Open[]>();
   for (const item of open) {

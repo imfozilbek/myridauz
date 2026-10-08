@@ -1,4 +1,5 @@
 import { POPULAR_CARS, type CarInput } from '@platform/contracts';
+import { ChoiceChip } from '../../chips/choice-chip';
 import { useI18n } from '../../context/i18n-context';
 import { haptic } from '../../telegram/feedback';
 import { carLabel, type CarName } from '../car-choices';
@@ -22,22 +23,18 @@ export function ModelChips({ car, onPick, onOther }: Props) {
   return (
     <div className="car-chips">
       {chips.map((each) => (
-        <button
+        <ChoiceChip
           key={`${each.make} ${each.model}`}
-          type="button"
-          className="car-chip"
-          aria-pressed={same(car, each)}
+          pressed={same(car, each)}
           onClick={() => {
             haptic.select();
             onPick(each);
           }}
         >
           {carLabel(each)}
-        </button>
+        </ChoiceChip>
       ))}
-      <button type="button" className="car-chip" onClick={onOther}>
-        {t('drivers.car.other')}
-      </button>
+      <ChoiceChip onClick={onOther}>{t('drivers.car.other')}</ChoiceChip>
     </div>
   );
 }

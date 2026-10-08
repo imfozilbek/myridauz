@@ -1,12 +1,13 @@
-import type { Booking } from '@platform/contracts';
+import { onTheWay, type Booking } from '@platform/contracts';
 import { move, statusAt, type BookingAction, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { withExtraWay } from './extra-way';
+import { withDriverExtras } from './driver-views';
 
 type AnswerError = 'bookings.not_found' | 'bookings.wrong_status' | 'bookings.no_seats' | 'wallet.not_enough';
 
-async function mine(deps: BookingsDeps, driverId: number, id: string) {
+export async function mine(deps: BookingsDeps, driverId: number, id: string) {
   const record = await deps.bookings.find(id);
   const facts = record ? await deps.trips.find(record.tripId) : undefined;
   return record && facts?.driverId === driverId ? { record, facts } : undefined;
@@ -18,7 +19,8 @@ async function driverView(deps: BookingsDeps, record: BookingRecord): Promise<Re
 }
 
 // The driver confirms (docs/12, docs/35): the commission is taken now, the bonus first.
-// Without money there is no confirmation. The same booking is never charged twice.
+// Without money there is no confirmation. The same booking is never charged twice. A trip on the
+// road, by the clock or by an early «Yoʻlga chiqdim», answers no request (docs/65 B8, G63).
 export async function confirm(
   deps: BookingsDeps,
   driverId: number,
@@ -27,9 +29,9 @@ export async function confirm(
   const found = await mine(deps, driverId, id);
   if (!found) return { ok: false, error: 'bookings.not_found' };
   const { record, facts } = found;
-  if (statusAt(record, deps.now(), false) !== 'requested')
-    return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
+  if (statusAt(record, now, false) !== 'requested' || onTheWay(facts, now))
+    return { ok: false, error: 'bookings.wrong_status' };
   const next: BookingRecord = { ...record, status: 'confirmed', confirmedAt: now, updatedAt: now };
   // The seat first, in one step with the count of seats; then the money (docs/65 A4).
   if (!(await deps.bookings.confirmWithin(next, facts.seats))) {
@@ -60,7 +62,7 @@ export async function answer(
   const found = await mine(deps, driverId, id);
   if (!found) return { ok: false, error: 'bookings.not_found' };
   const { record, facts } = found;
-  const next = move(record, action, deps.now(), facts.departAt);
+  const next = move(record, action, deps.now(), facts);
   if (typeof next === 'string') return { ok: false, error: next };
   if (!(await deps.bookings.replace(next, record.status)))
     return { ok: false, error: 'bookings.wrong_status' };
@@ -83,7 +85,7 @@ export async function driverBookings(deps: BookingsDeps, driverId: number): Prom
     [...records].sort((a, b) => b.createdAt - a.createdAt),
     'driver',
   );
-  return withExtraWay(views, records);
+  return withDriverExtras(deps, driverId, withExtraWay(views, records));
 }
 
 // The team looks at the bookings of a trip (owner decision 29.09.2026: trips are not approved).

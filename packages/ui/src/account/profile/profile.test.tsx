@@ -134,6 +134,6 @@ describe('delete my data (docs/30)', () => {
     expect(screen.getByText('Hujjatlar')).toBeTruthy();
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
-    expect(await screen.findByText(/Tahrir 1\.2/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.3/)).toBeTruthy();
   });
 });
