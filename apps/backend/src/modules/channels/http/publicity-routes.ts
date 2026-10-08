@@ -8,7 +8,7 @@ import { recordView, tripPublicity, type PublicityDeps } from '../application/pu
 const STATUS = { 'trips.not_found': 404 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const NO_CONTENT = 204;
 
-// What the driver sees after the publishing (G63, docs/119), and the count behind «N kishi koʻrdi».
+// What the driver sees after the publishing (G63, docs/119), and the count behind «N koʻrdi».
 export function publicityRoutes(deps: (env: Bindings) => PublicityDeps) {
   return (
     new Hono<AppEnv>()

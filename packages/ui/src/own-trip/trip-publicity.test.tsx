@@ -56,7 +56,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
     expect(tripPublicity).toHaveBeenCalledWith('t1');
     expect(busy).toEqual([0]);
-    expect(screen.getByText(`${BRAND} | Fargʻona yoʻli · 12 kishi koʻrdi`)).toBeTruthy();
+    expect(screen.getByText(`${BRAND} | Fargʻona yoʻli · 12 koʻrdi`)).toBeTruthy();
     const card = document.querySelector('.own-channel') as HTMLElement;
     expect(card.previousElementSibling?.classList.contains('own-banner')).toBe(true);
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
@@ -72,7 +72,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     open(trip, async () => ({ ...publicity, views: 0 }));
     await openTrip();
     expect(await screen.findByText(`${BRAND} | Fargʻona yoʻli`)).toBeTruthy();
-    expect(screen.queryByText(/kishi koʻrdi/u)).toBeNull();
+    expect(screen.queryByText(/koʻrdi/u)).toBeNull();
   });
 
   it('keeps the link button before any channel posted the trip', async () => {
