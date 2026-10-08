@@ -106,4 +106,14 @@ describe('what a talk shows on top and in the call (G64)', () => {
     });
     expect(await chatAbout(deps, key, ALI)).toBeNull();
   });
+
+  it('names the driver with the car and the rating to the passenger before any offer', async () => {
+    const { deps, addRequest } = setup();
+    const requestId = addRequest();
+    const key = await keyOf(await openTalk(deps, DRIVER, requestId));
+    const about = await chatAbout(deps, key, DILNOZA);
+    expect(about?.offer).toBeNull();
+    expect(about?.driver).toMatchObject({ car: { model: 'Cobalt' }, rating: { average: null } });
+    expect(about?.driver?.firstName).toBeTruthy();
+  });
 });

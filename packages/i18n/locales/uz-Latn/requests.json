@@ -17,5 +17,20 @@
   "salon.sum": "{seats} joy × {price} = {sum}",
   "salon.hint": "{name} rozi boʻlsa, safar unga band boʻladi.",
   "day.today": "bugun",
-  "day.tomorrow": "ertaga"
+  "day.tomorrow": "ertaga",
+  "talk.request": "Soʻrov: {route}, {day}",
+  "talk.mine": "Soʻrovingiz: {route}, {day}",
+  "talk.sent": "Siz taklif yubordingiz",
+  "talk.offered": "{name} taklif yubordi",
+  "talk.salon": "butun salon",
+  "talk.sum": "{price} × {count} = {sum}",
+  "talk.seatsPrice": "{count} joy × {price}",
+  "talk.waiting": "{name} javobini kutyapsiz",
+  "talk.callRequest": "{name}ning soʻrovi",
+  "talk.callOffer": "{name}ning taklifi",
+  "talk.now": "hozir keldi",
+  "talk.accept": "Taklifni qabul qilish",
+  "talk.callsOn": "Haydovchilar qoʻngʻiroq qilishi mumkin",
+  "talk.callsHint": "Oʻchirsangiz, haydovchilar faqat yozadi.",
+  "talk.when": "{day} {time}"
 }

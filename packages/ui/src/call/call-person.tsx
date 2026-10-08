@@ -2,23 +2,18 @@ import type { ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { UzPlate } from '../plate/uz-plate';
+import { otherSide } from './other-side';
 
 const PHOTO = 118;
 const LETTER = 40;
 
-// The other side of a chat: the driver with the car for a passenger, the passenger for a driver.
-export function otherName({ booking, role }: ChatAbout): string | null {
-  if (!booking) return null;
-  return role === 'passenger' ? booking.trip.driver.firstName : booking.passenger.firstName;
-}
-
 // Who is on the call (mockup g60/4): the face in a ring, the name, the car and the plate. A driver
-// knows the own car: the passenger is a face and a name.
+// knows the own car: the passenger is a face and a name. Before a booking the offer shows the car
+// (mockups g64/2, g64/4): the head is a face and a name.
 export function CallPerson({ about, name }: { readonly about: ChatAbout | null; readonly name: string }) {
   const { t } = useI18n();
-  const booking = about?.booking ?? null;
-  const other = booking ? (about?.role === 'passenger' ? booking.trip.driver : booking.passenger) : null;
-  const car = booking && about?.role === 'passenger' ? booking.trip.driver.car : null;
+  const other = about ? otherSide(about) : null;
+  const car = about?.booking ? other?.car : null;
   return (
     <>
       <span className="call-ring">
@@ -37,7 +32,7 @@ export function CallPerson({ about, name }: { readonly about: ChatAbout | null; 
       {car ? (
         <span className="call-car">
           {`${car.model}, ${t(`drivers.color.${car.color}`)} · `}
-          {booking?.plate ? <UzPlate plate={booking.plate} size="s" /> : null}
+          {car.plate ? <UzPlate plate={car.plate} size="s" /> : null}
         </span>
       ) : null}
     </>

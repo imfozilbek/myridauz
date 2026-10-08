@@ -2,7 +2,8 @@ import type { PickupMode, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 
-const WAYS: Record<PickupMode, TranslationKey> = {
+// How a passenger wants to be taken, as a mark of a card and a part of a line (G64).
+export const WAYS: Record<PickupMode, TranslationKey> = {
   pitak: 'requests.card.pitak',
   door: 'requests.card.door',
   both: 'way.request.both',

@@ -1,4 +1,4 @@
-import type { ChatAbout, Offer } from '@platform/contracts';
+import { NO_RATING, type ChatAbout, type Offer } from '@platform/contracts';
 import { chatBooking, chatMember } from './chat-member';
 import { offerViews } from './offer-views';
 import type { BookingsDeps } from './ports';
@@ -17,7 +17,25 @@ async function requestAndOffer(deps: BookingsDeps, key: string) {
   const latest = [...offers].sort((a, b) => b.createdAt - a.createdAt)[0];
   const facts = await deps.requests.find(requestId);
   const [offer] = latest && facts ? await offerViews(deps, [latest], [facts]) : [];
-  return { request: (await deps.requests.view(requestId)) ?? null, offer: offer ?? null };
+  const driver = talk ? await talkDriver(deps, talk.driverId) : null;
+  return { request: (await deps.requests.view(requestId)) ?? null, offer: offer ?? null, driver };
+}
+
+// The driver of a talk as the passenger sees him before an offer: the face, the car, the rating (G64).
+async function talkDriver(deps: BookingsDeps, driverId: number): Promise<Offer['driver'] | null> {
+  const [person, car, ratings] = await Promise.all([
+    deps.people.find(driverId),
+    deps.approvedCar(driverId),
+    deps.ratings([driverId]),
+  ]);
+  if (!person || !car) return null;
+  return {
+    id: person.publicId,
+    firstName: person.firstName,
+    hasAvatar: person.avatarShown,
+    car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
+    rating: ratings.get(driverId) ?? NO_RATING,
+  };
 }
 
 // What the chat screen and the call show (G54, G64): the booking, the side of the person, the request
@@ -28,5 +46,6 @@ export async function chatAbout(deps: BookingsDeps, key: string, userId: number)
   const booked = await chatBooking(deps, key, userId);
   const talk = await requestAndOffer(deps, key);
   const offer: Offer | null = talk?.offer ?? null;
-  return { booking: booked?.booking ?? null, role: member.role, request: talk?.request ?? null, offer };
+  const driver = talk?.driver ?? null;
+  return { booking: booked?.booking ?? null, role: member.role, request: talk?.request ?? null, offer, driver };
 }

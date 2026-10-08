@@ -29,7 +29,7 @@ export function chatRoutes(memberOf: MemberOf, aboutOf: AboutOf) {
         const about = chatKeySchema.safeParse(key).success
           ? await aboutOf(context.env, key, context.get('session').user.id)
           : null;
-        return context.json(about ?? { booking: null, role: null, request: null, offer: null });
+        return context.json(about ?? { booking: null, role: null, request: null, offer: null, driver: null });
       })
       .post('/chats/:key/ticket', async (context) => {
         const key = context.req.param('key');

@@ -3,6 +3,7 @@ import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
+import { useRiderStars } from '../own-trip/rider-line';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { RequestMarks } from './request-marks';
 import './request-row.css';
@@ -15,7 +16,7 @@ const TOOL_ICON = 17;
 // «Safarimga taklif qilish» on the driver's trip, «Safar ochib taklif qilish» for a whole car,
 // «Taklif yuborish» with a time and a price (docs/118 path 7).
 export type RowAction = 'onTrip' | 'salon' | 'offer';
-const ACTIONS: Record<RowAction, TranslationKey> = {
+export const ACTIONS: Record<RowAction, TranslationKey> = {
   onTrip: 'requests.action.onTrip',
   salon: 'requests.action.salon',
   offer: 'bookings.offer.send',
@@ -39,16 +40,10 @@ type Props = {
 // route, the price of a seat and how many, the marks; a chat and a call before a booking, numbers
 // hidden (docs/07), and the one action.
 export function RequestRow({ request, route, extraKm, action, offered, onAction, onChat, onCall }: Props) {
-  const { t, formatRating, formatNumber } = useI18n();
+  const { t, formatNumber } = useI18n();
   const act = useOneAtATime(onAction);
   const { passenger } = request;
-  const rating = passenger.rating?.average;
-  const stars =
-    rating === undefined
-      ? null
-      : rating === null
-        ? t('reviews.new')
-        : t('find.stars', { rating: formatRating(rating) });
+  const stars = useRiderStars(request);
   const extra = extraKm === undefined ? null : t('way.driver.extra', { km: String(extraKm) });
   return (
     <div className="request-row">

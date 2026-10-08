@@ -1,8 +1,10 @@
 import { arrivalAt, tashkentDate, type Booking, type ChatAbout } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
+import { otherSide } from '../call/other-side';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
 import { usePlaces } from '../market/places-gate';
+import { useRiderStars } from '../own-trip/rider-line';
 import { useBookingEnds } from '../trip/booking-ends';
 import { today, tomorrow } from '../market/when';
 import './chat-head.css';
@@ -21,11 +23,13 @@ const LETTER = 16;
 
 // The head of a chat (owner decision 06.10.2026, docs/118 path 3, mockup g60/2): the face, the
 // name, the car and its plate, the call; under them the line of the trip that opens the booking.
+// Before a booking (G64, mockups g64/4, g64/5): the driver sees «Sardor ★ 4,8 · Yoʻlovchi».
 export function ChatHead({ about, name, onCall, onTrip }: Props) {
   const { t } = useI18n();
   const booking = about?.booking ?? null;
-  const other = booking ? (about?.role === 'passenger' ? booking.trip.driver : booking.passenger) : null;
-  const car = booking && about?.role === 'passenger' ? booking.trip.driver.car : null;
+  const other = about ? otherSide(about) : null;
+  const stars = useRiderStars(other?.rider ?? { passenger: {} });
+  const car = other?.car ?? null;
   const carLine = car ? `${car.model}, ${t(`drivers.color.${car.color}`)}` : null;
   return (
     <div className="chat-top">
@@ -41,12 +45,17 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
           />
         ) : null}
         <span className="chat-head-text">
-          <b>{name}</b>
+          <span className="chat-head-name">
+            <b>{name}</b>
+            {stars ? <span className="chat-head-stars">{stars}</span> : null}
+          </span>
           {carLine ? (
             <span className="plate-line">
               {carLine}
-              {booking?.plate ? <UzPlate plate={booking.plate} size="s" /> : null}
+              {car?.plate ? <UzPlate plate={car.plate} size="s" /> : null}
             </span>
+          ) : other?.rider ? (
+            <span>{t('home.role.passenger')}</span>
           ) : null}
         </span>
         {onCall ? (

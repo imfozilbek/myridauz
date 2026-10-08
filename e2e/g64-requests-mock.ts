@@ -9,9 +9,9 @@ import { mockTelegram, telegramUrl } from './telegram-mock';
 // the whole car Chilonzor → Samarqand, Dilnoza with a woman from Sergeli, Nilufar Yunusobod → Termiz.
 const { t } = createI18n(DEFAULT_LOCALE);
 const [, DRIVER] = MINI_APPS;
-const tashkent = (time: string) => Date.parse(`${time}+05:00`);
+export const tashkent = (time: string) => Date.parse(`${time}+05:00`);
 const TODAY = '2026-10-06';
-const TOMORROW = '2026-10-07';
+export const TOMORROW = '2026-10-07';
 const RATING = { average: 4.8, count: 12 };
 const SAMARQAND = '1718401';
 
@@ -27,7 +27,7 @@ const ask = (n: number, name: string, from: string, to: string, extra: object) =
   callsOff: false,
   ...extra,
 });
-const sardor = (date: string) =>
+export const sardor = (date: string) =>
   ask(1, 'Sardor', '1726294', SAMARQAND, {
     date,
     seats: 2,

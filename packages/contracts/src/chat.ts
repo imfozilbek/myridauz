@@ -22,12 +22,13 @@ export const requestTalkSchema = z.object({ chatKey: z.string() });
 export const chatAboutPath = (key: string) => `/chats/${key}/about`;
 // role: the side of the person who asks; the call screen shows the other side.
 // A talk about a request (G64): the request on top of the chat and the offer of this driver, the
-// latest one; both null in a chat of a booking.
+// latest one; both null in a chat of a booking. driver: who the passenger talks to before any offer.
 export const chatAboutSchema = z.object({
   booking: bookingSchema.nullable(),
   role: z.enum(['passenger', 'driver']).nullable(),
   request: rideRequestSchema.nullable().default(null),
   offer: offerSchema.nullable().default(null),
+  driver: offerSchema.shape.driver.nullable().default(null),
 });
 export type ChatAbout = z.infer<typeof chatAboutSchema>;
 export const chatTicketSchema = z.object({ url: z.string() });

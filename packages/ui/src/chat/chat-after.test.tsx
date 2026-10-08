@@ -20,7 +20,13 @@ const ended = arrivalAt(done.trip.departAt, done.trip.km);
 describe('the chat in the 24 hours after the trip (G60, docs/129, mockup g60/7)', () => {
   it('marks the end of the trip and says until when one can write', async () => {
     vi.useFakeTimers({ toFake: ['Date'], now: ended + HOUR });
-    const about = async () => ({ booking: done, role: 'passenger' as const, request: null, offer: null });
+    const about = async () => ({
+      booking: done,
+      role: 'passenger' as const,
+      request: null,
+      offer: null,
+      driver: null,
+    });
     renderMarket(
       <ChatScreen chatKey="b1" title="Jasur" onBack={() => undefined} />,
       testClients({ chat: { socketUrl: async () => 'wss://api.test/socket', about } }),

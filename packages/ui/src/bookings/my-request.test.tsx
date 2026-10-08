@@ -1,6 +1,6 @@
-import type { BookingsClient, MarketClient } from '@platform/api-client';
+import { ApiError, type BookingsClient, type MarketClient } from '@platform/api-client';
 import { OFFER_LINK } from '@platform/contracts';
-import { cleanup, fireEvent, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -73,5 +73,36 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
     expect(screen.getByText('Kanalga qoʻshilish')).toBeTruthy();
     await tap('Soʻrovni bekor qilish');
     await vi.waitFor(() => expect(cancelRequest).toHaveBeenCalledWith('r1'));
+  });
+
+  it('lets the drivers call about the request; the passenger turns it off in one tap (G64, docs/127)', async () => {
+    const setRequestCalls = vi.fn<MarketClient['setRequestCalls']>(async () => ({
+      ...salon,
+      callsOff: true,
+    }));
+    open({}, { setRequestCalls });
+    await tap('bir joy uchun');
+    const calls = (await screen.findByLabelText(
+      'Haydovchilar qoʻngʻiroq qilishi mumkin',
+    )) as HTMLInputElement;
+    expect(screen.getByText('Oʻchirsangiz, haydovchilar faqat yozadi.')).toBeTruthy();
+    expect(calls.checked).toBe(true);
+    fireEvent.click(calls);
+    expect(setRequestCalls).toHaveBeenCalledWith('r1', false);
+    expect(calls.checked).toBe(false);
+  });
+
+  it('puts the switch back and says why when the change fails', async () => {
+    const setRequestCalls = vi.fn<MarketClient['setRequestCalls']>(async () => {
+      throw new ApiError(409, 'trips.wrong_status');
+    });
+    open({}, { setRequestCalls });
+    await tap('bir joy uchun');
+    const calls = (await screen.findByLabelText(
+      'Haydovchilar qoʻngʻiroq qilishi mumkin',
+    )) as HTMLInputElement;
+    fireEvent.click(calls);
+    await waitFor(() => expect(calls.checked).toBe(true));
+    expect(screen.getByRole('alert')).toBeTruthy();
   });
 });

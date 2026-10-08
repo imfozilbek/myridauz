@@ -3,6 +3,7 @@ import { Button, Caption } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
+import { CallTalk } from '../talk/call-talk';
 import { TripCard } from '../trip/trip-card';
 import { CallPerson } from './call-person';
 import type { CallControls } from './use-call';
@@ -16,6 +17,8 @@ type Props = {
   readonly ended: CallEnding | null;
   readonly controls: CallControls;
   readonly onChat: () => void;
+  // An offer sent or taken during the call changes the talk (G64).
+  readonly onChanged: () => unknown;
 };
 
 const SECOND = 1000;
@@ -25,7 +28,7 @@ const clock = (ms: number) => `${pad(Math.floor(ms / 60_000))}:${pad(Math.floor(
 // The call (owner decision 06.10.2026, docs/118 path 3, mockup g60/4): a soft mint screen, the face
 // in a ring, the car and its plate, the one card of the trip, big buttons with words. When it ends,
 // one tap goes back to the chat.
-export function CallPanel({ name, about, call, ended, controls, onChat }: Props) {
+export function CallPanel({ name, about, call, ended, controls, onChat, onChanged }: Props) {
   const { t } = useI18n();
   const talking = useTalkTime(call?.status === 'active');
   const status = !call
@@ -49,6 +52,8 @@ export function CallPanel({ name, about, call, ended, controls, onChat }: Props)
           <div className="call-card">
             <TripCard booking={about.booking} />
           </div>
+        ) : about ? (
+          <CallTalk about={about} onChanged={onChanged} />
         ) : null}
         {call ? <span className="call-hint">{t('calls.keepOpen')}</span> : null}
       </div>
