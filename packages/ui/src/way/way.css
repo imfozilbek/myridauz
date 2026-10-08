@@ -49,7 +49,9 @@
   font-weight: 700;
   line-height: 28px;
 }
+/* A point without a meeting is a div, not a button: its padding stays inside the width. */
 .trip-map-stop {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;

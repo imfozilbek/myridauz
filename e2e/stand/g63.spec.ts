@@ -40,8 +40,12 @@ const WALKS: Record<Platform, Walk & { readonly plate: string }> = {
 };
 // One star less than the five of «Safar tugadi»: the past trip shows the stars the server keeps.
 const STARS = 4;
-// The trip goes to Samarqand: the channel of its zone posts it (docs/63).
-const CHANNEL = channelOf(loadBrand(), SAMARQAND)?.title ?? '';
+// The trip goes to Samarqand: the channel of its zone posts it (docs/63), by its Telegram name (docs/37).
+const BRAND = loadBrand();
+const CHANNEL = t('driverTrip.channel.name', {
+  brand: BRAND.name,
+  title: channelOf(BRAND, SAMARQAND)?.title ?? '',
+});
 
 test.use({ viewport: NARROW });
 test.setTimeout(180_000);
