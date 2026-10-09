@@ -91,7 +91,8 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
     toOwners: async ({ name, publicId }, moderatorId) => {
       const moderator = (await peopleOf(env).find(moderatorId))?.firstName ?? String(moderatorId);
       const text = t('bot.moderation.ownerWaiting', { minutes: String(ownerMinutes), name, moderator });
-      await tellOwners(env, { id: `late:${publicId}`, text, ring: true });
+      const sign = { kind: 'late' as const, name, moderator, minutes: ownerMinutes };
+      await tellOwners(env, { id: `late:${publicId}`, text, ring: true, sign });
     },
   });
 }

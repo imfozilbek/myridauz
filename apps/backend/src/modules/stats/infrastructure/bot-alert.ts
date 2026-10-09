@@ -10,6 +10,7 @@ export function alertSign(alert: Alert) {
       id: 'errors',
       text: t('bot.stats.errors', { hour: alert.hour, usual: alert.usual }),
       ring: true,
+      sign: { kind: 'errors' as const, hour: alert.hour, usual: alert.usual },
     };
   const text = t('bot.stats.drop', {
     funnel: t(`stats.funnel.${alert.funnel}`),
@@ -17,5 +18,11 @@ export function alertSign(alert: Alert) {
     drop: alert.drop,
     usual: alert.usual,
   });
-  return { id: `drop:${alert.funnel}:${alert.step}`, text, ring: false };
+  const { funnel, step, drop, usual } = alert;
+  return {
+    id: `drop:${funnel}:${step}`,
+    text,
+    ring: false,
+    sign: { kind: 'drop' as const, funnel, step, drop, usual },
+  };
 }

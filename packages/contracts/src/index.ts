@@ -125,6 +125,7 @@ export * from './ratings';
 export * from './channels';
 export * from './complaints';
 export * from './stats';
+export * from './attention';
 export * from './calls';
 export * from './favorites';
 export * from './history';

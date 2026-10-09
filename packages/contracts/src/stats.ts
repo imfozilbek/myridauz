@@ -17,6 +17,7 @@ export const FUNNEL_STEPS = {
 } as const satisfies Record<FunnelId, readonly string[]>;
 export type FunnelStepId = (typeof FUNNEL_STEPS)[FunnelId][number];
 const STEP_IDS = [...new Set(Object.values(FUNNEL_STEPS).flat())] as [FunnelStepId, ...FunnelStepId[]];
+export const funnelStepIdSchema = z.enum(STEP_IDS);
 // activeTrips: the trips people can book now, on the main screen of the admin (G53).
 export const MAIN_NUMBERS = [
   'newUsers',
@@ -32,7 +33,7 @@ const count = z.number().int().nonnegative();
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
 
 export const funnelStepSchema = z.object({
-  step: z.enum(STEP_IDS),
+  step: funnelStepIdSchema,
   count,
   // The share of people of the previous step who did not come here, 0 … 100; null on the first step.
   drop: z.number().min(0).max(100).nullable(),

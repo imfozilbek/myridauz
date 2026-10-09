@@ -45,7 +45,19 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
         average: formatNumber(rating.average ?? 0),
         count: rating.count,
       };
-      await tellOwners(env, { id: `rating:${publicId}`, text: t('bot.rating.team', values), ring: false });
+      const sign = {
+        kind: 'rating' as const,
+        name,
+        person: publicId,
+        average: rating.average ?? 0,
+        count: rating.count,
+      };
+      await tellOwners(env, {
+        id: `rating:${publicId}`,
+        text: t('bot.rating.team', values),
+        ring: false,
+        sign,
+      });
     },
     mask: (text) => maskContacts(text).text,
     now: Date.now,

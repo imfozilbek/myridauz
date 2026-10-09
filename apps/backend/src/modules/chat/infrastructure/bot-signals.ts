@@ -52,6 +52,12 @@ export const botSignals = (env: Bindings): ChatSignals => ({
     const person = await peopleOf(env).find(userId);
     const id = person?.publicId ?? '';
     const values = { name: person?.firstName ?? '', id, count: String(count), key };
-    await tellOwners(env, { id: `contact:${id}`, text: t('bot.chat.contactAttempts', values), ring: false });
+    const sign = { kind: 'contact' as const, name: values.name, person: id, count, chat: key };
+    await tellOwners(env, {
+      id: `contact:${id}`,
+      text: t('bot.chat.contactAttempts', values),
+      ring: false,
+      sign,
+    });
   },
 });

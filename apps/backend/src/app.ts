@@ -33,6 +33,7 @@ import { ratingsModule } from './modules/ratings';
 import { requestsModule } from './modules/ride-requests';
 import { subscriptionsModule } from './modules/route-subscriptions';
 import { statsModule } from './modules/stats';
+import { attentionModule } from './modules/team-queue';
 import { sharesModule } from './modules/shares';
 import { teamRole } from './modules/team';
 import { tripFacts, tripForFamily, tripsModule } from './modules/trips';
@@ -113,6 +114,7 @@ export const app = new Hono<AppEnv>()
   .route('/', ratingsModule)
   .route('/', complaintsModule)
   .route('/', statsModule)
+  .route('/', attentionModule)
   .route('/', bookingsModule)
   .route('/', walletModule)
   .route(
