@@ -1,6 +1,6 @@
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
-import { closeDepartedPosts, showChannelBoards } from './module-events';
+import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
@@ -38,12 +38,13 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['showTeamQueue', () => showQueue(env)],
 ];
 
-// Burns bonuses that are over, ends subscriptions whose time is over, asks both sides of ended rides
-// for a rating, checks the signals of the dashboard, erases the points of rides 30 days after the
-// trip, sends the summary of the day to the owner at 21:00 (docs/12, docs/24, docs/29, docs/69,
-// docs/92, docs/122, G11, G12, G24, G68).
+// Ends subscriptions whose time is over, sends the summaries of the channels (22:00, Monday), burns
+// bonuses that are over, asks both sides of ended rides for a rating, checks the signals of the
+// dashboard, erases the points of rides 30 days after the trip, sends the summary of the day to the
+// owner at 21:00 (docs/12, docs/24, docs/29, docs/69, docs/92, docs/122, G11, G12, G24, G68).
 const everyHour = (env: Bindings, now: number): Job[] => [
   ['endSubscriptions', () => endSubscriptions(env)],
+  ['sendChannelSummaries', () => sendChannelSummaries(env)],
   ['burnBonuses', () => burnBonuses(env)],
   ['askForRatings', () => askForRatings(env)],
   ['checkStatsAlerts', () => checkStatsAlerts(env)],

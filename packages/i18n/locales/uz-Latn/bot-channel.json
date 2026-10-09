@@ -42,5 +42,16 @@
   "board.hint": "vaqtni bossangiz, safar ochiladi",
   "board.find": "🔎 Safar topish",
   "board.subscribe": "🔔 Xabar bering",
-  "board.shareText": "Bugun, {date}: {count} ta safar"
+  "board.shareText": "Bugun, {date}: {count} ta safar",
+  "daySum.title": "🌙 Kun yakuni: {date}",
+  "daySum.trips": "🚗 {trips} ta safar · 👥 {people} kishi yetib bordi",
+  "daySum.seats": "💺 {seats} ta boʻsh joy band boʻldi",
+  "daySum.tomorrow": "Ertaga allaqachon {count} ta safar bor.",
+  "daySum.find": "🔎 Ertangi safarlar",
+  "weekSum.title": "📊 Hafta: {channel} yoʻnalishi",
+  "weekSum.trips": "🚗 {trips} safar · 👥 {people} kishi",
+  "weekSum.rating": "⭐ Haydovchilar oʻrtacha {average}",
+  "weekSum.thanks": "Rahmat, yoʻl bir boʻlsin! 🤝",
+  "weekSum.share": "📤 Doʻstlarga ulashish",
+  "weekSum.shareText": "{channel} yoʻnalishi: bir haftada {trips} ta safar"
 }

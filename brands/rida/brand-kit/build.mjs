@@ -47,10 +47,15 @@ for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegr
 for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
 for (const r of ['driver', 'passenger', 'support']) await asset(`telegram/bot-${r}-welcome`, welcome.botWelcome(r), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());
+// The picture of a region is also the link preview of its direction on the site: the board of the
+// day of a channel shows it above the trips (G68, docs/122).
+const OG = '../landing/og';
+fs.mkdirSync(OG, { recursive: true });
 for (const r of regions) {
   const id = `${String(r.n).padStart(2, '0')}-${r.user.replace('rida_', '')}`;
   await asset(`telegram/channels/rida-kanal-avatar-${id}`, channels.channelAvatar(r), [640]);
   await asset(`telegram/channels/rida-kanal-${id}`, channels.channelPost(r), [1280]);
+  fs.copyFileSync(`${OUT}/telegram/channels/rida-kanal-${id}.png`, `${OG}/${r.code}.png`);
 }
 // Web
 put(`${OUT}/web/favicon.svg`, brand.icon(1, 'squircle', 64));

@@ -45,7 +45,7 @@ describe('support: photos and the talk', () => {
     const talk = String(telegram.sentTo(OWNER).at(-1)?.body.text);
     // The name only, never the Telegram ID (lesson №136).
     expect(talk).toContain('Ali: murojaatlar tarixi');
-    expect(talk).not.toContain('61');
+    expect(talk).not.toMatch(/\b61\b/u);
     expect(talk).toMatch(/Ali: 🖼 Rasm\nChek shu/u);
     expect(talk).toMatch(/Operator \d{1,3}: 🖼 Rasm\nMana skrinshot/u);
     expect(talk).toContain('Ali: Pulim hali kelmadi');

@@ -2,7 +2,7 @@ import type { BrandConfig } from '@platform/brands';
 import { LEGAL_DOCUMENTS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, legalTitle } from '@platform/i18n';
 import { directionPage, directionQuestions, startOf } from './direction-page';
-import { directions } from './directions';
+import { directions, type Direction } from './directions';
 import { documentPage } from './document';
 import { home } from './home';
 import type { HeroRoads, MapData } from './map-data';
@@ -12,6 +12,12 @@ import { questions } from './sections/faq';
 import { breadcrumbs, faqPage, organization } from './structured-data';
 
 type Build = { year: number; map: MapData; roads: HeroRoads; script: string };
+
+// The picture of the region of a direction, the hub has none (brands/<brand>/landing/og, G68).
+const imageOf = ({ from, to }: Direction) => {
+  const code = from.code ?? to.code;
+  return code ? { image: `/og/${code}.png` } : {};
+};
 
 // Every file of the landing in dist: the main page, a page of every direction (docs/60),
 // the three documents and the files for search engines.
@@ -49,6 +55,7 @@ export function renderSite(brand: BrandConfig, { year, map, roads, script }: Bui
       path: current.path,
       body: directionPage(brand, i18n, { map, all, current, items: own }),
       start: startOf(current),
+      ...imageOf(current),
       head: faqPage(own) + breadcrumbs(brand, trail),
       script,
     });

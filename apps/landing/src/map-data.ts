@@ -6,6 +6,8 @@ export type MapData = {
   readonly cities: readonly {
     readonly id: string;
     readonly name: string;
+    // The code of the region: the picture of its direction is /og/<code>.png (G68); none for the hub.
+    readonly code: string | null;
     readonly soato: string;
     // The center place of the region: prices are counted between these places (docs/16).
     readonly place: string;

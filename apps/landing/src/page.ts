@@ -19,6 +19,8 @@ type Page = {
   readonly script?: string;
   // A page of a direction: the passenger bot opens the search with the route (docs/89 S4).
   readonly start?: string;
+  // The picture of the link preview: a direction shows its region (G68, the board of the day).
+  readonly image?: string;
 };
 
 // The frame of every page: head with the link preview, the header with the logo, the footer
@@ -52,7 +54,7 @@ export function page({ brand, i18n, year, title, path, body, script = '', ...mor
 <meta property="og:title" content="${escape(title)}">
 <meta property="og:description" content="${description}">
 <meta property="og:url" content="${url}">
-<meta property="og:image" content="https://${brand.domain}/og-image.png">
+<meta property="og:image" content="https://${brand.domain}${more.image ?? '/og-image.png'}">
 <style>${styles(brand)}</style>
 ${more.head ?? ''}
 </head>

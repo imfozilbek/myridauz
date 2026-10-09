@@ -40,7 +40,7 @@ import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
 // modules do not depend on each other in circles. The trips and their channel posts: trip-events.ts.
-export { closeDepartedPosts, showChannelBoards } from './trip-events';
+export { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './trip-events';
 
 // A new face goes to the member who gets the person's application that day (docs/92, G51); a new
 // person who came by a channel post hears of the channel of that zone (docs/119).

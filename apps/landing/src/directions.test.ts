@@ -25,6 +25,12 @@ describe('directions for search engines (docs/60)', () => {
     expect(directions({ ...MAP, cities: [] })).toEqual([]);
   });
 
+  // The board of the day of a channel previews this page: the picture of its region (G68).
+  it('previews with the picture of the region of the direction, the main page with the brand', () => {
+    expect(page).toContain(`<meta property="og:image" content="https://${brand.domain}/og/30.png">`);
+    expect(site['index.html']).toContain(`content="https://${brand.domain}/og-image.png"`);
+  });
+
   it('shows the chosen route on the map and opens the bot with it', () => {
     expect(page).toContain(`<title>${escape(t('landing.direction.meta', values))}</title>`);
     expect(page).toContain(`<h1>${escape(t('landing.direction.title', values))}</h1>`);

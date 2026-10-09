@@ -53,6 +53,7 @@ handleTripChange(async (env, tripId, event) => {
 // clock too (G68, docs/122).
 export const closeDepartedPosts = (env: Bindings) => tripChannels.departed(env);
 export const showChannelBoards = (env: Bindings) => boards.all(env);
+export const sendChannelSummaries = (env: Bindings) => boards.summaries(env);
 
 // Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
 handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));
