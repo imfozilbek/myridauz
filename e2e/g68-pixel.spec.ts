@@ -6,7 +6,7 @@ import { openPassengerHome } from './g66-home-mock';
 import { ask, asked, DEPART, NOW, offers, seat, taken, trip, withLists } from './g68-sheet-mock';
 
 // Pixel Perfect of the sheet of the open Mini App (G68, lessons 141, 147, 151): the phones of the
-// mockups g68/7 and g68/8 at 360 × 807 and their scale 1.375 (495 px wide), with their data; the diff
+// mockups g68/7 and g68/8 at 360 × 808 and their scale 1.375 (495 px wide), with their data; the diff
 // is read by scripts/pixel-diff.py.
 const { t } = createI18n(DEFAULT_LOCALE);
 const OUT = 'screenshots/pixel-g68';
