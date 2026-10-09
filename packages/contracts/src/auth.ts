@@ -111,6 +111,7 @@ export const API_ERRORS = [
   'channels.invalid_input',
   'channels.bot_not_admin',
   'team.invalid_input',
+  'team.not_found',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

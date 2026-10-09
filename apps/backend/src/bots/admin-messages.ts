@@ -5,18 +5,16 @@ import { answerPerson, recordSupport, supportDeps, tellAnswered } from '../modul
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import { toSupportBot } from './support-bot';
-import { onTeamCommand } from './team-bot';
 import type { BotMessage } from './telegram-update';
 import { mediaOf } from './media';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const TEAM_COMMAND = '/team';
 const MEDIA_ANSWER = { voice: 'bot.support.voiceAnswer', photo: 'bot.support.photoAnswer' } as const;
 
 export async function onAdminMessage(context: BotContext, message: BotMessage, role: TeamRole | null) {
   const chatId = message.chat.id;
+  // The team is changed in «Jamoa» of the admin app only (G75, docs/50): no /team here.
   if (role === null) return toSupportBot(context.brand, chatId);
-  if (message.text?.split(' ')[0] === TEAM_COMMAND) return onTeamCommand(context, message, role);
   if (!message.reply_to_message) return {};
   const media = await mediaOf(context, 'admin', message);
   const said = message.text ?? message.caption;

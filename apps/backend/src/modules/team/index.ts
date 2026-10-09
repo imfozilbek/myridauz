@@ -4,6 +4,7 @@ import { members, roleOf, setModerator, type Team } from './application/team';
 import { d1Team } from './infrastructure/d1-team';
 import { createMemoryTeam } from './infrastructure/memory-team';
 import { recordAction } from '../journal';
+import { teamRoutes } from './http/team-routes';
 import { peopleOf } from '../users';
 
 const localTeam = createMemoryTeam();
@@ -25,3 +26,10 @@ export async function changeModerator(env: Bindings, actorId: number, userId: nu
   await recordAction(env, { memberId: actorId, kind: 'team', subject, action, since: null });
   return result;
 }
+
+export const teamModule = teamRoutes({
+  members: teamMembers,
+  change: changeModerator,
+  find: (env, userId) => peopleOf(env).find(userId),
+  idOf: (env, publicId) => peopleOf(env).idOf(publicId),
+});
