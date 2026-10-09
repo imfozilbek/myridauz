@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { tap } from '../market/market-test-kit';
 import { PASSENGER_ACTIONS } from './home-test-actions';
-import { renderHome } from './home-test-kit';
+import { renderHome, sheetClosed } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 afterEach(cleanup);
@@ -22,6 +22,7 @@ describe('«Yetib keldingizmi?» an hour after the arrival (docs/129, docs/43, m
     expect(screen.getByText('Ha, yetib keldim')).toBeTruthy();
     await tap('Hali yoʻldaman');
     expect(screen.queryByText('Yetib keldingizmi?')).toBeNull();
+    await sheetClosed();
   });
 
   it('hides the main button while the sheet is open: it would cover «Hali yoʻldaman»', async () => {
@@ -34,6 +35,7 @@ describe('«Yetib keldingizmi?» an hour after the arrival (docs/129, docs/43, m
     await tap('Hali yoʻldaman');
     // On the day of the trip the main button is its step (G66).
     expect(await screen.findByText('Mashinaga chiqdim')).toBeTruthy();
+    await sheetClosed();
   });
 
   it('does not ask before the hour', async () => {
