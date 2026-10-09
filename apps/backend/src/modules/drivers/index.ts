@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { MY_AVATAR_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
 import { assignTo } from '../assignments';
@@ -21,6 +20,7 @@ import { d1Decisions } from './infrastructure/d1-decisions';
 import { signalledNotifier } from './infrastructure/signalled-notifier';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { d1Applications } from './infrastructure/d1-applications';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 and R2 (tests) the module keeps its data in memory.
 const localApplications = createMemoryApplications();
@@ -40,7 +40,7 @@ const driversDeps = (env: Bindings): DriversDeps => {
     notify: signalledNotifier(
       env,
       telegramNotifier({
-        brand: loadBrand(env.BRAND),
+        brand: brandOf(env),
         show: (cards, rings) => showCards(env, cards, rings),
         assign: (userId) => assignTo(env, 'application', userId),
         queue: (news) => showQueue(env, news),

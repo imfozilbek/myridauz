@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import MAIN_DIRECTIONS from '../../../seed/main-directions.json';
 import { placesOf, routeKm } from '../locations';
@@ -9,6 +8,7 @@ import { STRATEGIES } from './domain/formula';
 import { pricingRoutes } from './http/pricing-routes';
 import { d1Pricing } from './infrastructure/d1-pricing';
 import { createMemoryPricing } from './infrastructure/memory-pricing';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const VARIABLES_TTL_MS = 60 * 1000;
 const cache = variablesCache(VARIABLES_TTL_MS);
@@ -29,7 +29,7 @@ const pricingDeps = (env: Bindings): PricingDeps => ({
       return result.ok ? { ok: true, value: result.value.km } : result;
     },
   },
-  strategy: STRATEGIES[loadBrand(env.BRAND).pricing],
+  strategy: STRATEGIES[brandOf(env).pricing],
   variables: cache,
   mainDirections: MAIN_DIRECTIONS.map(([from = '', to = '']) => [from, to] as const),
   realPrices: (since) => realPricesOf(env, since),

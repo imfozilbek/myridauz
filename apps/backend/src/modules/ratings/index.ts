@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { maskContacts } from '../chat';
@@ -13,6 +12,7 @@ import { reviewRoutes } from './http/review-routes';
 import { botAsker } from './infrastructure/bot-asker';
 import { d1Ratings } from './infrastructure/d1-ratings';
 import { createMemoryRatings } from './infrastructure/memory-ratings';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
 const localRatings = createMemoryRatings();
@@ -37,7 +37,7 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
       publicId: async (id) => (await peopleOf(env).find(id))?.publicId,
       idOf: (publicId) => peopleOf(env).idOf(publicId),
     },
-    ask: botAsker(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
+    ask: botAsker(brandOf(env), (jobs) => notify(env, jobs)),
     alertTeam: async ({ name, publicId }, rating) => {
       const values = {
         name,

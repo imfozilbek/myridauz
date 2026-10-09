@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
@@ -11,6 +10,7 @@ import { pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 (tests) trips live in memory.
 const localTrips = createMemoryTrips();
@@ -37,7 +37,7 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   recommend: (from, to) => recommendationFor(env, from, to),
   recommendDirection: (from, to) => directionRecommendationFor(env, from, to),
   roadKm: (from, to) => roadKmBetween(env, from, to),
-  schedule: loadBrand(env.BRAND).schedule,
+  schedule: brandOf(env).schedule,
   places: () => placesOf(env),
   pitakOf: (from, to) => pitakOf(env, from, to),
   changed: (tripId, event) => onChange(env, tripId, event),

@@ -1,4 +1,4 @@
-import { appHost, loadBrand } from '@platform/brands';
+import { appHost } from '@platform/brands';
 import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
@@ -15,6 +15,7 @@ import { remindWaiting, type Waiting } from './application/remind';
 import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
 import { createMemoryAssignments } from './infrastructure/memory-assignments';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const localAssignments = createMemoryAssignments();
@@ -40,7 +41,7 @@ const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
       ),
     );
     const text = digestText(day, rows, numbers, (id) => names.get(id) ?? String(id));
-    const url = `https://${appHost(loadBrand(env.BRAND), 'admin')}/?stats=day`;
+    const url = `https://${appHost(brandOf(env), 'admin')}/?stats=day`;
     const markup = { inline_keyboard: [[{ text: t('bot.summary.open'), web_app: { url } }]] };
     const job = (chatId: number) => ({
       bot: 'admin' as const,
@@ -85,7 +86,7 @@ export async function waitingSupport(env: Bindings) {
 
 // The Cron job (G34): a waiting application reminds its moderator, then the owners, in team hours.
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
   return remindWaiting({
     store: storeOf(env),

@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { chatHistory, forgetChat } from '../chat';
 import { notify } from '../notifications';
@@ -14,6 +13,7 @@ import { refundRoutes } from './http/refund-routes';
 import { botTeller } from './infrastructure/bot-teller';
 import { d1Complaints } from './infrastructure/d1-complaints';
 import { createMemoryComplaints } from './infrastructure/memory-complaints';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localComplaints = createMemoryComplaints();
 
@@ -43,7 +43,7 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
     cancelAll: (userId) => cancelAll(env, userId),
     refund: (ownerId, driverId, bookingId) => refund(env, ownerId, driverId, bookingId),
     tell: botTeller({
-      brand: loadBrand(env.BRAND),
+      brand: brandOf(env),
       send: (jobs) => notify(env, jobs),
       queue: (news) => showQueue(env, news),
     }),

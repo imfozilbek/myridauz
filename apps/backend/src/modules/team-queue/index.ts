@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { attentionSignSchema, isTeamTime, tashkentDate } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
@@ -14,6 +13,7 @@ import { diqqatNews, type Signal } from './infrastructure/diqqat-card';
 import { attentionRoutes } from './http/attention-routes';
 import { queueOf, type Case } from './domain/queue';
 import { navbatCard, navbatRing, newCaseRing } from './infrastructure/navbat-card';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // The cases come from drivers, complaints and users, set by the app (module-events.ts): the queue
 // does not depend on them.
@@ -39,7 +39,7 @@ function ringsOf(news: QueueNews | undefined, total: number, members: number[], 
 // The card is a window on the work: a failure must not stop the step that changed the queue.
 export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> {
   try {
-    const brand = loadBrand(env.BRAND);
+    const brand = brandOf(env);
     const now = Date.now();
     const [cases, members] = await Promise.all([casesOf(env), teamMembers(env)]);
     const queue = queueOf(cases, now, brand.moderation.hours);
@@ -78,7 +78,7 @@ export const attentionModule = attentionRoutes(signsOf)
 // (G75); errors and a late case ring in team hours only. A sign must not stop the step that found it.
 export async function tellOwners(env: Bindings, signal: Signal): Promise<void> {
   try {
-    const brand = loadBrand(env.BRAND);
+    const brand = brandOf(env);
     const now = Date.now();
     const sign = attentionSignSchema.safeParse(signal.sign);
     if (sign.success) await signsOf(env).keep(tashkentDate(now), { id: signal.id, at: now, sign: sign.data });

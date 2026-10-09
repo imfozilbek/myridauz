@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import {
   ADMIN_NAVBAT_PATH,
   MINUTE_MS,
@@ -11,6 +10,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { teamOnly } from '../../../shared/auth/team-only';
 import type { TakeStore } from '../application/takes';
 import { queueOf, waitedMinutes, type Case } from '../domain/queue';
+import { brandOf } from '../../../shared/brand/brand-of';
 
 type NavbatDeps = {
   readonly cases: (env: Bindings) => Promise<Case[]>;
@@ -28,7 +28,7 @@ export const navbatRoutes = ({ cases, takes, name }: NavbatDeps) =>
   new Hono<AppEnv>()
     .get(ADMIN_NAVBAT_PATH, teamOnly, async (context) => {
       const { env } = context;
-      const { hours, ownerMinutes } = loadBrand(env.BRAND).moderation;
+      const { hours, ownerMinutes } = brandOf(env).moderation;
       const now = Date.now();
       const viewer = context.get('session').user.id;
       const [all, opened] = await Promise.all([cases(env), takes(env).fresh(now - TAKE_MINUTES * MINUTE_MS)]);

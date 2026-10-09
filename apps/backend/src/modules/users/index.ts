@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { ME_PATH, type FaceDecision } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
@@ -19,6 +18,7 @@ import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { createMemoryUsers } from './infrastructure/memory-stores';
 import { bookingStore, rideTogether } from '../bookings/infrastructure/store';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 and R2 (local runs, tests) the module keeps its data in memory.
 export const localUsers = createMemoryUsers();
@@ -44,7 +44,7 @@ const usersDeps = (env: Bindings): UsersDeps => ({
   faceLog: env.DB ? d1FaceLog(env.DB) : { add: async () => undefined },
   faces: telegramFaces({
     fetch: (input, init) => fetch(input, init),
-    brand: loadBrand(env.BRAND),
+    brand: brandOf(env),
     adminToken: env.ADMIN_BOT_TOKEN,
     recipients: (userId) => faceTeam(env, userId),
     avatars: avatarsOf(env),

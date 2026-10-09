@@ -1,4 +1,4 @@
-import { commissionFor, loadBrand } from '@platform/brands';
+import { commissionFor } from '@platform/brands';
 import { isQuietTime, type Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals } from '../feed';
@@ -15,6 +15,7 @@ import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 import { moneySign, walletCard, walletRing } from './infrastructure/wallet-card';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
@@ -34,7 +35,7 @@ let links: Links = {
 export const wireWalletLinks = (wired: Links) => void (links = wired);
 
 const walletDeps = (env: Bindings): WalletDeps => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     wallet: env.DB ? d1Wallet(env.DB) : localWallet,
     promo: brand.promo,

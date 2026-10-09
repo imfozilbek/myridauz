@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import {
   SUBSCRIPTION_KINDS,
   tashkentDate,
@@ -18,6 +17,7 @@ import type { SubscriptionsDeps } from './application/ports';
 import { subscriptionRoutes } from './http/subscription-routes';
 import { botTeller } from './infrastructure/bot-teller';
 import { createMemorySubscriptions, d1Subscriptions } from './infrastructure/subscription-store';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localSubscriptions = createMemorySubscriptions();
 
@@ -28,7 +28,7 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
     return (placeId, searchId) => placeMatches(placeId, searchId, places);
   },
   tell: botTeller({
-    brand: loadBrand(env.BRAND),
+    brand: brandOf(env),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
     show: (news) => showNews(env, news),
     now: Date.now,

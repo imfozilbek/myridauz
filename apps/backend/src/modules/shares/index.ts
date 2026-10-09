@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { Hono } from 'hono';
 import { tripBookLink, VIA_STORY, type Booking } from '@platform/contracts';
 import type { AppEnv, Bindings } from '../../env';
@@ -15,6 +14,7 @@ import { d1Shares } from './infrastructure/d1-shares';
 import { createMemoryShares } from './infrastructure/memory-shares';
 import { prepareCard } from './infrastructure/prepared-card';
 import { shareTexts } from './infrastructure/share-texts';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localShares = createMemoryShares();
 const localStories = createMemoryImages();
@@ -22,7 +22,7 @@ const localStories = createMemoryImages();
 const FOLLOW_START = 'follow_';
 
 const base = (env: Bindings) => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     shares: env.DB ? d1Shares(env.DB) : localShares,
     texts: shareTexts(brand, async (id) => (await placesOf(env)).get(id)?.name ?? id),
@@ -54,7 +54,7 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
   stories: env.MEDIA ? r2Images(env.MEDIA) : localStories,
-  bookLink: (tripId: string) => tripBookLink(loadBrand(env.BRAND).bots.passenger, tripId, VIA_STORY),
+  bookLink: (tripId: string) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_STORY),
 });
 
 export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =>

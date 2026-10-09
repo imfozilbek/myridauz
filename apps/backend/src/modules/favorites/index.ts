@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
@@ -9,6 +8,7 @@ import type { FavoritesDeps } from './application/ports';
 import { favoriteRoutes } from './http/favorite-routes';
 import { favoriteTeller } from './infrastructure/bot-teller';
 import { createMemoryFavorites, d1Favorites } from './infrastructure/favorite-store';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localFavorites = createMemoryFavorites();
 
@@ -25,7 +25,7 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
   driver: (id) => sources.driver(env, id),
   upcoming: (ids) => sources.upcoming(env, ids),
   tell: favoriteTeller({
-    brand: loadBrand(env.BRAND),
+    brand: brandOf(env),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
     show: (news) => showNews(env, news),
     now: Date.now,

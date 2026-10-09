@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { localAnalyticsRows } from '../analytics';
 import { tellOwners } from '../team-queue';
@@ -11,6 +10,7 @@ import { alertSign } from './infrastructure/bot-alert';
 import { createMemoryCache, d1Cache } from './infrastructure/d1-cache';
 import { d1Numbers } from './infrastructure/d1-numbers';
 import { memoryEvents } from './infrastructure/memory-events';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localCache = createMemoryCache();
 const DATASET = /^[a-z][a-z0-9_]{0,63}$/;
@@ -32,7 +32,7 @@ function eventsOf(env: Bindings): EventSource | null {
 }
 
 const statsDeps = (env: Bindings): StatsDeps => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     events: eventsOf(env),
     numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers, arrivals: async () => [] },

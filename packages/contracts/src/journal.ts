@@ -12,6 +12,7 @@ export const JOURNAL_KINDS = [
   'unblock',
   'refund',
   'team',
+  'limits',
 ] as const;
 export type JournalKind = (typeof JOURNAL_KINDS)[number];
 
