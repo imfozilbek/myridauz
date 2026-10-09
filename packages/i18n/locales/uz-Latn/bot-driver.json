@@ -41,5 +41,13 @@
   "dapp.changes": "✏️ Tuzatish kerak",
   "dapp.ringApproved": "✅ Haydovchi arizangiz tasdiqlandi",
   "dapp.ringRejected": "❌ Haydovchi arizangiz rad etildi",
-  "dapp.ringChanges": "✏️ Haydovchi arizangizda tuzatish kerak"
+  "dapp.ringChanges": "✏️ Haydovchi arizangizda tuzatish kerak",
+  "dwallet.title": "💳 Hamyoningiz",
+  "dwallet.bonus": "🎁 Bonus: {amount} · {date}gacha",
+  "dwallet.main": "💰 Asosiy hisob: {amount}",
+  "dwallet.seats": "🪑 Bu pul ≈ {count} ta joyga yetadi",
+  "dwallet.open": "💳 Hamyonni ochish",
+  "dwallet.fewSeats": "💳 Hamyoningizdagi pul faqat {count} ta joyga yetadi",
+  "dwallet.empty": "💳 Hamyoningizda komissiya uchun pul qolmadi",
+  "dwallet.bonusEnds": "🎁 Bonusingiz {date} kuni tugaydi: {amount} qoldi"
 }

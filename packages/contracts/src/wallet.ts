@@ -36,6 +36,10 @@ export const walletOperationSchema = z.object({
 });
 export type WalletOperation = z.infer<typeof walletOperationSchema>;
 
+// Fewer seats than this the money still confirms: «Hamyon» turns red and asks to top up (mockup
+// g65/1 phone 2), the driver bot says it once (G68, docs/122).
+export const FEW_SEATS = 5;
+
 export const walletSchema = z.object({
   bonus: z.number().int(),
   main: z.number().int(),

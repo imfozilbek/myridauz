@@ -13,7 +13,7 @@ import { sendWaitingSubscriptions } from './modules/route-subscriptions';
 import { checkStatsAlerts } from './modules/stats';
 import { purgeSupport } from './modules/support';
 import { completeTrips } from './modules/trips';
-import { burnBonuses } from './modules/wallet';
+import { burnBonuses, warnBonusEnd } from './modules/wallet';
 import { TICK_MINUTES } from './shared/cron/tick';
 
 // The Cron of wrangler.toml runs every 15 minutes. The first tick of an hour also runs the hourly
@@ -47,10 +47,12 @@ const everyHour = (env: Bindings, now: number): Job[] => [
   ['sendTeamDigest', () => sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to))],
 ];
 
-// Gives bonus 1 to approved drivers without it, deletes old support messages and forgets the live
-// cards of the bots nobody changed for a month (docs/12, G32, G68).
+// Gives bonus 1 to approved drivers without it, tells the drivers whose bonus ends in 3 days,
+// deletes old support messages and forgets the live cards of the bots nobody changed for a month
+// (docs/12, docs/122, G32, G68).
 const everyDay = (env: Bindings, now: number): Job[] => [
   ['grantMissedBonuses', () => grantMissedBonuses(env)],
+  ['warnBonusEnd', () => warnBonusEnd(env)],
   ['purgeSupport', () => purgeSupport(env, now)],
   ['forgetOldCards', () => forgetOldCards(env, now)],
 ];

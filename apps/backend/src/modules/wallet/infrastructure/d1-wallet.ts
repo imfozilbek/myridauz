@@ -43,6 +43,10 @@ const BURN = `INSERT INTO wallet_operations (id, driver_id, kind, balance, amoun
   GROUP BY driver_id
   HAVING SUM(amount) > 0 AND (MAX(expires_at) IS NULL OR MAX(expires_at) <= ?1)`;
 
+// The drivers whose bonus ends in (?1, ?2], through wallet_bonus_ends (G56, G68).
+const BONUS_ENDS = `SELECT DISTINCT driver_id FROM wallet_operations
+  WHERE balance = 'bonus' AND expires_at > ?1 AND expires_at <= ?2`;
+
 // The balances of one page of drivers, the least main money first (G42, docs/90 F-A5).
 const BALANCES = `SELECT driver_id,
   SUM(CASE WHEN balance = 'bonus' THEN amount ELSE 0 END) AS bonus,
@@ -91,6 +95,10 @@ export const d1Wallet = (db: D1Database): WalletRepository => ({
   burnExpired: async (now, since, newId) => {
     await db.prepare(BURN).bind(now, newId(), since).run();
   },
+  bonusEndsBetween: async (from, to) =>
+    (await db.prepare(BONUS_ENDS).bind(from, to).all<{ driver_id: number }>()).results.map(
+      (row) => row.driver_id,
+    ),
   withJournal: async (driverIds) =>
     (
       await allIn<{ driver_id: number }>(

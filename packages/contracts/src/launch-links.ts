@@ -29,3 +29,5 @@ export const OPEN_LINK = 'open';
 export const OPEN_LINK_VALUE = /^[a-z_]{1,32}$/u;
 // «Safar eʼlon qilish»: the section of a new trip in the driver app.
 export const NEW_TRIP_SECTION = 'new_trip';
+// «Hamyon» of the driver: its tiles and the wallet messages of the driver bot open it (G65, G68).
+export const WALLET_SECTION = 'wallet';

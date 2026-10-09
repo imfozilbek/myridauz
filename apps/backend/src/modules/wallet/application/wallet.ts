@@ -3,6 +3,7 @@ import { balanceOf, chargedFor, returnedFor, splitCharge, type Operation } from 
 import { appendCharge } from './append-charge';
 import { burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
 import type { WalletDeps } from './ports';
+import { tellFewSeats } from './wallet-news';
 
 type Row = Pick<Operation, 'kind' | 'balance' | 'amount'> & Partial<Operation>;
 const EMPTY = { bookingId: null, reason: null, createdBy: null, expiresAt: null } as const;
@@ -50,7 +51,8 @@ export async function charge(
   amount: number,
 ): Promise<'ok' | 'not_enough' | 'duplicate'> {
   const operations = await deps.wallet.operations(driverId);
-  const split = splitCharge(usable(operations, deps.now()), amount);
+  const held = usable(operations, deps.now());
+  const split = splitCharge(held, amount);
   if (!split) return 'not_enough';
   const rows = (['bonus', 'main'] as const)
     .filter((balance) => split[balance] > 0)
@@ -60,7 +62,9 @@ export async function charge(
   const appended = await appendCharge(deps.wallet, rows);
   if (appended !== 'ok') return appended;
   const next = nextGrant([...operations, ...rows], deps.promo, deps.now());
-  if (next) await deps.wallet.append([grantRow(deps, driverId, next)]);
+  const granted = next ? [grantRow(deps, driverId, next)] : [];
+  if (granted.length > 0) await deps.wallet.append(granted);
+  await tellFewSeats(deps, driverId, held, [...held, ...rows, ...granted]);
   return 'ok';
 }
 

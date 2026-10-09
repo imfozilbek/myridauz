@@ -54,5 +54,15 @@ export function createMemoryWallet(): WalletRepository {
         if (amount > 0) rows.push(burnRow(driverId, -amount, now, newId()));
       }
     },
+    bonusEndsBetween: async (from, to) => [
+      ...new Set(
+        rows
+          .filter(
+            (op) =>
+              op.balance === 'bonus' && op.expiresAt !== null && op.expiresAt > from && op.expiresAt <= to,
+          )
+          .map((op) => op.driverId),
+      ),
+    ],
   };
 }
