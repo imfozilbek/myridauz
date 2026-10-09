@@ -29,7 +29,9 @@ async function shot(page: Page, name: string) {
   await wholeWords(page);
   // The letters of the mockup have coloured edges: Chromium draws them so only on an opaque layer. The
   // sheet gets the white it already stands on, with the corners of the drawer (docs/156).
-  await page.addStyleTag({ content: '.action-sheet{background:var(--reg-card);border-radius:16px 16px 0 0}' });
+  await page.addStyleTag({
+    content: '.action-sheet{background:var(--reg-card);border-radius:16px 16px 0 0}',
+  });
   await page.screenshot({ path: `${OUT}/${name}-code.png`, animations: 'disabled' });
 }
 
