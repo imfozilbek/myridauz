@@ -17,11 +17,24 @@ export type BotMessage = {
   readonly chat: string;
   readonly text: string;
   readonly buttons: readonly Button[];
+  // The texts of the buttons row by row, as Telegram puts them under the message.
+  readonly rows: readonly (readonly string[])[];
+  // The id of a sent message; the message an edit, a pin or a delete is about; the card a ring
+  // answers (G68, docs/122).
+  readonly messageId: number | null;
+  readonly target: number | null;
+  readonly replyTo: number | null;
 };
-type Call = { readonly token: string; readonly method: string; readonly body: Record<string, unknown> };
+type Call = {
+  readonly token: string;
+  readonly method: string;
+  readonly body: Record<string, unknown>;
+  readonly id?: number;
+};
+const idOf = (value: unknown) => (typeof value === 'number' ? value : null);
 type Markup = { inline_keyboard?: { text: string; url?: string; web_app?: { url: string } }[][] };
 
-const messageOf = ({ token, method, body }: Call): BotMessage => {
+const messageOf = ({ token, method, body, id }: Call): BotMessage => {
   const markup = (body['reply_markup'] ?? {}) as Markup;
   const buttons = (markup.inline_keyboard ?? []).flat().map((button) => ({
     text: button.text,
@@ -36,6 +49,10 @@ const messageOf = ({ token, method, body }: Call): BotMessage => {
     // A voice or an album carries its line as a caption.
     text: String(body['text'] ?? body['caption'] ?? ''),
     buttons,
+    rows: (markup.inline_keyboard ?? []).map((row) => row.map((button) => button.text)),
+    messageId: id ?? null,
+    target: idOf(body['message_id']),
+    replyTo: idOf((body['reply_parameters'] as { message_id?: unknown } | undefined)?.message_id),
   };
 };
 

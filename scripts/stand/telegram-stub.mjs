@@ -61,7 +61,9 @@ export function serveTelegram(port) {
     incoming.on('end', () => {
       lastId += 1;
       const id = lastId;
-      sent.push({ token, method, body: bodyOf(raw, incoming.headers['content-type']), at: Date.now() });
+      const body = bodyOf(raw, incoming.headers['content-type']);
+      // The id a sent message got: a snapshot draws the edits and the answers on it (G68).
+      sent.push({ token, method, body, at: Date.now(), ...(method.startsWith('send') ? { id } : {}) });
       outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result: resultOf(method, id) }));
     });
   });

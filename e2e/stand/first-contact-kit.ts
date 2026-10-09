@@ -4,8 +4,8 @@ import type { Page } from '@playwright/test';
 import type { Reply } from './bot-kit';
 import { t } from './screen-tour';
 
-// The first contact of a person with a bot (docs/95): Telegram itself is not on the stand, so its
-// chat screen is drawn here from what the bot really sends, to be shot like a Mini App screen.
+// The chat of a person with a bot (docs/95, G68): Telegram itself is not on the stand, so its chat
+// screen is drawn here from what the bot really sends, to be shot like a Mini App screen.
 const brand = loadBrand();
 const KIT = `brands/${brand.id}/brand-kit/kit/telegram`;
 const image = (file: string) => `data:image/png;base64,${readFileSync(`${KIT}/${file}`).toString('base64')}`;
@@ -25,21 +25,30 @@ const STYLE = `
     padding: 8px; text-align: center; max-width: 80%; }
   footer { position: fixed; bottom: 0; left: 0; right: 0; background: rgb(255, 255, 255); padding: 12px;
     text-align: center; color: rgb(51, 144, 236); font-weight: 600; }
+  .pin, .quote { color: rgb(51, 144, 236); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pin { background: rgb(255, 255, 255); border-top: 1px solid rgb(229, 229, 229); padding: 6px 12px; }
+  .quote, blockquote { border-left: 3px solid rgb(51, 144, 236); background: rgb(233, 243, 251);
+    border-radius: 4px; padding: 2px 8px; margin: 2px 0; font-size: 14px; }
+  .keys { display: flex; flex-direction: column; gap: 4px; max-width: 80%; }
+  .keys div { display: flex; gap: 4px; } .keys .button { flex: 1; max-width: none; margin: 0; }
 `;
 
-const escape = (text: string) =>
+export const escape = (text: string) =>
   text.replace(/[&<>]/gu, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char] ?? char);
 
 type Bot = { readonly name: string; readonly avatar: string; readonly picture: string };
-export const DRIVER_BOT: Bot = {
-  name: t('bot.profile.driver.name', { brand: brand.name }),
-  avatar: 'bot-driver-avatar.png',
-  picture: 'bot-driver-description.png',
-};
+export const botOf = (role: 'passenger' | 'driver'): Bot => ({
+  name: t(`bot.profile.${role}.name`, { brand: brand.name }),
+  avatar: `bot-${role}-avatar.png`,
+  picture: `bot-${role}-description.png`,
+});
+export const DRIVER_BOT = botOf('driver');
 
-async function draw(page: Page, bot: Bot, body: string, footer = '') {
+// pinned: the first line of the message on top of the chat (docs/122 rule 6).
+export async function draw(page: Page, bot: Bot, body: string, footer = '', pinned = '') {
   const header = `<header><img src="${image(bot.avatar)}"><div><b>${escape(bot.name)}</b><small>bot</small></div></header>`;
-  const html = `<style>${STYLE}</style>${header}<main>${body}</main>${footer ? `<footer>${footer}</footer>` : ''}`;
+  const pin = pinned ? `<div class="pin">📌 ${pinned}</div>` : '';
+  const html = `<style>${STYLE}</style>${header}${pin}<main>${body}</main>${footer ? `<footer>${footer}</footer>` : ''}`;
   await page.setContent(html);
 }
 
