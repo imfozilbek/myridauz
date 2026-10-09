@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { confirmedSeat, toldBy, wordsOf } from './g27-kit';
+import { confirmedSeat, tailOf, toldBy } from './g27-kit';
 import { openSocket, shot } from './g33-kit';
 import { person } from './g64-kit';
 import { ANVAR, DIYORA, LOLA } from './people';
@@ -31,7 +31,7 @@ test('G54. the open Mini App opens the chat and rings by itself; no bot message'
   await shot(page, 'g54-incoming-from-home');
   await page.waitForTimeout(AFTER_INVITE_MS);
   const invited = (await botMessages()).filter(
-    (m) => m.chatId === LOLA.id && m.text.includes(wordsOf('bot.call.incoming')),
+    (m) => m.chatId === LOLA.id && m.text.includes(tailOf('bot.ring.call')),
   );
   expect(invited).toEqual([]);
   driver.send(JSON.stringify({ type: 'call', action: 'end' }));
@@ -46,11 +46,11 @@ test('G54. a closed Mini App: the bot calls the person in after 5 seconds', asyn
   await new Promise((resolve) => setTimeout(resolve, 3_000));
   expect(
     (await botMessages()).filter(
-      (m) => m.chatId === DIYORA.id && m.text.includes(wordsOf('bot.call.incoming')),
+      (m) => m.chatId === DIYORA.id && m.text.includes(tailOf('bot.ring.call')),
     ),
   ).toEqual([]);
   await new Promise((resolve) => setTimeout(resolve, AFTER_INVITE_MS - 3_000));
-  await toldBy('passenger', DIYORA, wordsOf('bot.call.incoming'));
+  await toldBy('passenger', DIYORA, tailOf('bot.ring.call'));
   driver.send(JSON.stringify({ type: 'call', action: 'end' }));
   driver.close();
 });
