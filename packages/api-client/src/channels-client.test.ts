@@ -36,3 +36,14 @@ describe('the publicity of a trip in the driver app (G63, docs/119)', () => {
     expect(new Headers(fetch.mock.calls[0]?.[1]?.headers).get('x-mini-app')).toBe('passenger');
   });
 });
+
+describe('«Kanallar» of a person (G65, docs/119)', () => {
+  it('reads the channels that are there and «✓ Aʼzosiz», in both apps', async () => {
+    const mine = { channels: [{ username: 'yol_samarqand', member: true }] };
+    for (const app of ['passenger', 'driver'] as const) {
+      const fetch = vi.fn<Fetch>(async () => Response.json(mine));
+      expect(await createChannelsClient({ ...options, app, fetch }).mine()).toEqual(mine.channels);
+      expect(fetch.mock.calls[0]?.[0]).toBe('https://api.test/me/channels');
+    }
+  });
+});

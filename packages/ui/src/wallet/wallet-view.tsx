@@ -9,13 +9,12 @@ import { useRefundText } from './refund-text';
 
 type Props = {
   readonly wallet: Wallet;
-  // The rule of the commission under the balances, for the driver (docs/86 V8).
-  readonly rule?: string;
   readonly children?: ReactNode;
 };
 
-// The two balances and the journal (docs/12): every sum with its reason, newest first.
-export function WalletView({ wallet, rule, children }: Props) {
+// The two balances and the journal of a driver for the team (docs/12): every sum with its reason,
+// newest first.
+export function WalletView({ wallet, children }: Props) {
   const { t, formatMoney, formatDate } = useI18n();
   const refundText = useRefundText();
   // The money that came back is green and bold (mockup g63/5 phone 6).
@@ -26,7 +25,7 @@ export function WalletView({ wallet, rule, children }: Props) {
     : undefined;
   return (
     <List>
-      <Section footer={rule}>
+      <Section>
         <Cell subtitle={until} after={<CellValue>{formatMoney(wallet.bonus)}</CellValue>}>
           {t('wallet.bonus')}
         </Cell>

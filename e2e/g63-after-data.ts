@@ -66,6 +66,7 @@ export const mockupWallet = {
   bonus: 473000,
   main: 0,
   bonusExpiresAt: tashkent('2026-11-04T00:00'),
+  seatsLeft: 52,
   operations: [
     op('w4', 'admin_adjustment', 9000, '2026-10-08T11:00', {
       bookingId: 'e2',

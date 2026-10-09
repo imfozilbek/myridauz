@@ -79,6 +79,7 @@ export const wallet: Wallet = {
   bonus: 481000,
   main: 0,
   bonusExpiresAt: Date.parse('2026-10-31T00:00:00Z'),
+  seatsLeft: 53,
   operations: [
     {
       id: 'w2',
@@ -88,6 +89,8 @@ export const wallet: Wallet = {
       bookingId: 'b1',
       reason: null,
       createdAt: Date.parse('2026-10-01T04:00:00Z'),
+      passenger: 'Sardor',
+      seats: 2,
     },
     {
       id: 'w1',

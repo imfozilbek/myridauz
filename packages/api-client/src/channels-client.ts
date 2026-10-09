@@ -4,15 +4,19 @@ import {
   channelSchema,
   channelsResponseSchema,
   driverTripPublicityPath,
+  MY_CHANNELS_PATH,
+  myChannelsSchema,
   tripPublicitySchema,
   tripViewPath,
   type Channel,
   type ChannelInput,
+  type MyChannel,
   type TripPublicity,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
-// The team's channels in the admin Mini App (docs/63), and the channels of a driver's trip.
+// The team's channels in the admin Mini App (docs/63), the channels of a driver's trip, and
+// «Kanallar» of a person (G65).
 export function createChannelsClient(options: SignedOptions) {
   const { request, putJson } = signedRequest(options);
   return {
@@ -30,6 +34,8 @@ export function createChannelsClient(options: SignedOptions) {
     tripViewed: async (tripId: string): Promise<void> => {
       await request(tripViewPath(tripId), { method: 'POST' });
     },
+    mine: async (): Promise<MyChannel[]> =>
+      myChannelsSchema.parse(await (await request(MY_CHANNELS_PATH)).json()).channels,
   };
 }
 

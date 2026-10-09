@@ -1,8 +1,8 @@
 import type { ApiClients } from './context/api-clients';
+import { otherClients, type Overrides } from './test-clients-other';
 import { NOT_USED } from './test-not-used';
 
 // Tests of the driver and the team screens replace only the calls they need.
-type Overrides = { readonly [Name in keyof ApiClients]?: Partial<ApiClients[Name]> };
 export const testClients = (overrides: Overrides): ApiClients => ({
   drivers: {
     getApplication: NOT_USED,
@@ -66,6 +66,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     remove: NOT_USED,
     tripPublicity: NOT_USED,
     tripViewed: NOT_USED,
+    mine: NOT_USED,
     ...overrides.channels,
   },
   bookings: {
@@ -85,62 +86,13 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     offerSalonTrip: NOT_USED,
     ...overrides.bookings,
   },
-  wallet: { mine: NOT_USED, all: NOT_USED, of: NOT_USED, adjust: NOT_USED, ...overrides.wallet },
-  chat: {
-    socketUrl: NOT_USED,
-    about: async () => ({ booking: null, role: null, request: null, offer: null, driver: null }),
-    share: NOT_USED,
-    stopSharing: NOT_USED,
-    shareTrip: NOT_USED,
-    putTripStory: NOT_USED,
-    stopTripSharing: NOT_USED,
-    came: NOT_USED,
-    boarded: NOT_USED,
-    arrived: NOT_USED,
-    sharedTrip: NOT_USED,
-    follow: NOT_USED,
-    ...overrides.chat,
-  },
-  subscriptions: {
+  wallet: {
     mine: NOT_USED,
-    subscribe: NOT_USED,
-    remove: NOT_USED,
-    renew: NOT_USED,
-    ...overrides.subscriptions,
-  },
-  feedback: {
-    target: NOT_USED,
-    review: NOT_USED,
-    reviewsOf: NOT_USED,
-    complain: NOT_USED,
-    queue: NOT_USED,
-    complaint: NOT_USED,
-    chat: NOT_USED,
-    decide: NOT_USED,
-    answerRefund: NOT_USED,
-    ...overrides.feedback,
-  },
-  stats: { get: NOT_USED, ...overrides.stats },
-  calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
-  comfort: { favorites: NOT_USED, save: NOT_USED, forget: NOT_USED, history: NOT_USED, ...overrides.comfort },
-  map: {
-    archiveUrl: 'https://api.test/map/archive.pmtiles',
-    fontsUrl: 'https://api.test/map/fonts/{fontstack}/{range}.pbf',
-    search: NOT_USED,
-    where: NOT_USED,
-    near: async () => [],
-    border: NOT_USED,
-    pitakOf: NOT_USED,
-    ...overrides.map,
-  },
-  pitaks: {
+    detail: NOT_USED,
     all: NOT_USED,
-    add: NOT_USED,
-    change: NOT_USED,
-    direction: NOT_USED,
-    history: NOT_USED,
-    ...overrides.pitaks,
+    of: NOT_USED,
+    adjust: NOT_USED,
+    ...overrides.wallet,
   },
-  company: { current: NOT_USED, state: NOT_USED, save: NOT_USED, ...overrides.company },
-  sounds: { current: NOT_USED, state: NOT_USED, pick: NOT_USED, ...overrides.sounds },
+  ...otherClients(overrides),
 });

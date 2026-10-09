@@ -81,7 +81,7 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
   it('opens the wallet for the commission', async () => {
     openPast([rode]);
     await tap('Komissiya');
-    expect(await screen.findByText('Bonus berildi')).toBeTruthy();
+    expect(await screen.findByText('Boshlash bonusi')).toBeTruthy();
   });
 
   it('still takes «Kelmadi» after «Yetib keldik» until the trip closes (docs/129)', async () => {

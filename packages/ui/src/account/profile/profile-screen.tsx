@@ -11,8 +11,9 @@ import { HistoryEntry } from '../../comfort/comfort-entries';
 import { HistoryScreen } from '../../comfort/history-screen';
 import { LegalLinks } from '../../legal/legal-links';
 import { LegalScreen } from '../../legal/legal-screen';
-import type { LegalDocument } from '@platform/contracts';
+import type { AppLink, LegalDocument } from '@platform/contracts';
 import { CarCell, WalletCell } from '../../driver/car-cell';
+import { MyTripsScreen } from '../../market/my-trips-screen';
 import { WalletScreen } from '../../wallet/wallet-screen';
 import { AvatarPicker } from './avatar-picker';
 import { DeleteAccountCell, DeleteAccountScreen } from './delete-account';
@@ -26,8 +27,11 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   const account = useAccount();
   const { t } = useI18n();
   const [open, setOpen] = useState<'wallet' | 'history' | 'delete' | LegalDocument | null>(null);
+  // «Safarni ochish» of a commission opens the trip or the booking in «Mening safarlarim» (G65).
+  const [link, setLink] = useState<AppLink | null>(null);
   if (!account) return null;
-  if (open === 'wallet') return <WalletScreen onBack={() => setOpen(null)} />;
+  if (link) return <MyTripsScreen link={link} onBack={() => setLink(null)} />;
+  if (open === 'wallet') return <WalletScreen onBack={() => setOpen(null)} onOpen={setLink} />;
   if (open === 'history') return <HistoryScreen onBack={() => setOpen(null)} />;
   if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={() => setOpen(null)} />;
   if (open) return <LegalScreen document={open} onBack={() => setOpen(null)} />;
