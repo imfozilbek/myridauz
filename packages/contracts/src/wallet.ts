@@ -20,7 +20,7 @@ export type OperationKind = (typeof OPERATION_KINDS)[number];
 // The reason of the refund of a no-show the owner confirmed (docs/35): the row names the booking.
 export const NO_SHOW_REASON = 'no_show';
 
-const operationSchema = z.object({
+export const walletOperationSchema = z.object({
   id: z.string(),
   kind: z.enum(OPERATION_KINDS),
   balance: z.enum(BALANCES),
@@ -29,17 +29,22 @@ const operationSchema = z.object({
   bookingId: z.string().nullable(),
   reason: z.string().nullable(),
   createdAt: z.number().int(),
-  // The first name of the passenger of a no-show refund: «Qaytarildi · Akmal kelmadi» (G63).
+  // The passenger and the seats of the booking of a commission or a refund: «Komissiya · Sardor,
+  // 2 joy» (G65, mockup g65/1); a no-show refund: «Qaytarildi · Akmal kelmadi» (G63).
   passenger: z.string().optional(),
+  seats: z.number().int().optional(),
 });
-export type WalletOperation = z.infer<typeof operationSchema>;
+export type WalletOperation = z.infer<typeof walletOperationSchema>;
 
 export const walletSchema = z.object({
   bonus: z.number().int(),
   main: z.number().int(),
   // The current bonus burns at this time if it is not spent (docs/12).
   bonusExpiresAt: z.number().int().nullable(),
-  operations: z.array(operationSchema),
+  // «≈ 52 joyga yetadi» (G65, mockup g65/1): the seats the balances still confirm at the seat price
+  // of the driver's last trip; 0 with no money; null with money but no trip yet.
+  seatsLeft: z.number().int().nullable(),
+  operations: z.array(walletOperationSchema),
 });
 export type Wallet = z.infer<typeof walletSchema>;
 

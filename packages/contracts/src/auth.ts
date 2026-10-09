@@ -72,6 +72,8 @@ export const API_ERRORS = [
   // A whole car offered on a trip that already has a booking (G64, docs/118 path 7).
   'bookings.salon_taken',
   'wallet.not_enough',
+  // A commission or a refund of another driver, or a row without a booking (G65).
+  'wallet.not_found',
   'wallet.invalid_input',
   'auth.not_owner',
   'chat.not_member',

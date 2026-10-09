@@ -6,6 +6,7 @@ import { adjust, charge, refund } from './application/wallet';
 import { walletView } from './application/wallet-view';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 import { idOfPublic, publicIdOf } from '../../test-people';
+import { NO_LINKS } from './test-links';
 
 const DRIVER = 1;
 const OWNER = 900;
@@ -16,7 +17,8 @@ function setup() {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
     people: { find: async (n) => ({ firstName: 'Jasur', publicId: publicIdOf(n) }), idOf: idOfPublic },
-    passengers: async (bookingIds) => new Map(bookingIds.map((bookingId) => [bookingId, 'Akmal'])),
+    ...NO_LINKS,
+    bookings: async (ids) => new Map(ids.map((id) => [id, { passenger: 'Akmal', seats: 1 }])),
     now: () => Date.parse('2026-10-01T05:00:00Z'),
     newId: () => `op-${(id += 1)}`,
   };
@@ -56,7 +58,8 @@ describe('the refund of a no-show after the owner confirms it (docs/35, G63)', (
       reason: NO_SHOW_REASON,
       passenger: 'Akmal',
     });
-    expect(commission).not.toHaveProperty('passenger');
+    // G65: every row of a booking names its passenger and seats (mockup g65/1).
+    expect(commission).toMatchObject({ kind: 'commission', passenger: 'Akmal', seats: 1 });
   });
 
   it('a cancel after the refund of a no-show gives nothing more (docs/35)', async () => {

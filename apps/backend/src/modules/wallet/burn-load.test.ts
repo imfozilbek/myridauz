@@ -6,6 +6,7 @@ import { burnExpired } from './application/wallet';
 import { walletView } from './application/wallet-view';
 import type { WalletDeps } from './application/ports';
 import { d1Wallet } from './infrastructure/d1-wallet';
+import { NO_LINKS } from './test-links';
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = Date.parse('2026-11-01T01:00:00Z');
@@ -42,7 +43,7 @@ describe('burning bonuses at scale', () => {
       wallet: d1Wallet(db),
       promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
       people: { find: async () => undefined, idOf: async () => undefined },
-      passengers: async () => new Map(),
+      ...NO_LINKS,
       now: () => NOW,
       newId: () => `id${(id += 1)}`,
     };

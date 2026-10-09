@@ -1,8 +1,9 @@
-import { loadBrand } from '@platform/brands';
+import { commissionFor, loadBrand } from '@platform/brands';
+import type { Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals } from '../feed';
 import { peopleOf } from '../users';
-import type { WalletDeps } from './application/ports';
+import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { refundNoShow as refundOnce } from './application/no-show-refund';
@@ -14,19 +15,34 @@ import { createMemoryWallet } from './infrastructure/memory-wallet';
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
 
-// The first names of the passengers of bookings (G63): set by the app (module-events.ts).
-type Names = (env: Bindings, bookingIds: readonly string[]) => Promise<ReadonlyMap<string, string>>;
-let passengerNames: Names = async () => new Map();
-export const wireWalletNames = (names: Names) => void (passengerNames = names);
+// The bookings and the trips behind the rows (G63, G65): set by the app (module-events.ts), so the
+// wallet does not depend on bookings and trips.
+type Links = {
+  readonly bookings: (env: Bindings, ids: readonly string[]) => Promise<ReadonlyMap<string, WalletBooking>>;
+  readonly booking: (env: Bindings, id: string) => Promise<Booking | undefined>;
+  readonly lastPrice: (env: Bindings, driverId: number) => Promise<number | null>;
+};
+let links: Links = {
+  bookings: async () => new Map(),
+  booking: async () => undefined,
+  lastPrice: async () => null,
+};
+export const wireWalletLinks = (wired: Links) => void (links = wired);
 
-const walletDeps = (env: Bindings): WalletDeps => ({
-  wallet: env.DB ? d1Wallet(env.DB) : localWallet,
-  promo: loadBrand(env.BRAND).promo,
-  people: peopleOf(env),
-  passengers: (bookingIds) => passengerNames(env, bookingIds),
-  now: Date.now,
-  newId: () => crypto.randomUUID(),
-});
+const walletDeps = (env: Bindings): WalletDeps => {
+  const brand = loadBrand(env.BRAND);
+  return {
+    wallet: env.DB ? d1Wallet(env.DB) : localWallet,
+    promo: brand.promo,
+    people: peopleOf(env),
+    bookings: (ids) => links.bookings(env, ids),
+    booking: (id) => links.booking(env, id),
+    lastPrice: (id) => links.lastPrice(env, id),
+    perSeat: (price) => commissionFor(brand.commission, price, 1),
+    now: Date.now,
+    newId: () => crypto.randomUUID(),
+  };
+};
 
 export const walletModule = walletRoutes(walletDeps);
 

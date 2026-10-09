@@ -1,14 +1,15 @@
 import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
+  driverBookingOf,
   expireBookingsOfTrip,
-  passengerNamesOf,
   passengerRideCount,
   filedRideOfBooking,
   ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
   tellBookedOfRetime,
+  walletBookingsOf,
 } from './modules/bookings';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
@@ -24,6 +25,7 @@ import { tellTripFamily } from './modules/shares';
 import {
   driverTripIds,
   handleTripChange,
+  lastTripPrice,
   tripForFamily,
   tripsEnded,
   realPricesSince,
@@ -32,7 +34,7 @@ import {
   wireTripStanding,
 } from './modules/trips';
 import { peopleOf, wireFaceTeam, wireRegistered } from './modules/users';
-import { refundNoShow, wireWalletNames } from './modules/wallet';
+import { refundNoShow, wireWalletLinks } from './modules/wallet';
 import type { Bindings } from './env';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -132,8 +134,9 @@ wireTripStanding((env) => ({
 }));
 wireHiddenRequesters(hiddenByComplaints);
 
-// «Hamyon» names the passenger of a no-show refund (G63).
-wireWalletNames(passengerNamesOf);
+// «Hamyon» names the passenger and seats of its rows, opens the booking behind a commission and
+// counts the seats left at the price of the last trip (G63, G65).
+wireWalletLinks({ bookings: walletBookingsOf, booking: driverBookingOf, lastPrice: lastTripPrice });
 
 // Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
 // commission back once the owner confirms (docs/17, docs/35).

@@ -1,27 +1,37 @@
-import { NO_SHOW_REASON, type Wallet } from '@platform/contracts';
-import { balanceOf, type Operation } from '../domain/ledger';
+import type { Wallet } from '@platform/contracts';
+import { balanceOf } from '../domain/ledger';
 import { bonusExpiresAt } from '../domain/promo';
 import type { WalletDeps } from './ports';
 
 const HISTORY_LIMIT = 100;
 
-// «Hamyon» (docs/12): the balances and the latest operations, the newest first. A refund of a
-// no-show names the passenger who did not come: «Qaytarildi · Akmal kelmadi» (docs/129, G63).
+// «Hamyon» (docs/12, G65 mockup g65/1): the balances, how many seats they still confirm, and the
+// latest operations, the newest first. A row of a booking names its passenger and seats: «Komissiya ·
+// Sardor, 2 joy», «Qaytarildi · Akmal kelmadi» (docs/129, G63).
 export async function walletView(deps: WalletDeps, driverId: number): Promise<Wallet> {
   const operations = await deps.wallet.operations(driverId);
   const latest = operations.slice(-HISTORY_LIMIT).reverse();
-  const noShowOf = (op: Operation) => (op.reason === NO_SHOW_REASON ? op.bookingId : null);
-  const noShows = latest.flatMap((op) => noShowOf(op) ?? []);
-  const names = noShows.length > 0 ? await deps.passengers(noShows) : new Map<string, string>();
+  const bookingIds = [...new Set(latest.flatMap((op) => op.bookingId ?? []))];
+  const [bookings, price] = await Promise.all([
+    bookingIds.length > 0 ? deps.bookings(bookingIds) : new Map(),
+    deps.lastPrice(driverId),
+  ]);
+  const bonus = balanceOf(operations, 'bonus');
+  const main = balanceOf(operations, 'main');
   return {
-    bonus: balanceOf(operations, 'bonus'),
-    main: balanceOf(operations, 'main'),
-    bonusExpiresAt: balanceOf(operations, 'bonus') > 0 ? bonusExpiresAt(operations) : null,
+    bonus,
+    main,
+    bonusExpiresAt: bonus > 0 ? bonusExpiresAt(operations) : null,
+    seatsLeft: seatsLeft(bonus + main, price === null ? null : deps.perSeat(price)),
     operations: latest.map((op) => {
       const { id, kind, balance, amount, bookingId, reason, createdAt } = op;
       const row = { id, kind, balance, amount, bookingId, reason, createdAt };
-      const passenger = names.get(noShowOf(op) ?? '');
-      return passenger === undefined ? row : { ...row, passenger };
+      const booking = bookings.get(bookingId ?? '');
+      return booking ? { ...row, passenger: booking.passenger, seats: booking.seats } : row;
     }),
   };
 }
+
+// No money confirms no seat; money without a price of a trip yet says nothing (G65).
+export const seatsLeft = (total: number, perSeat: number | null) =>
+  total <= 0 ? 0 : perSeat === null ? null : Math.floor(total / perSeat);
