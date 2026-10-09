@@ -16,12 +16,10 @@ type DateStepProps = {
   readonly initial?: string;
   readonly onBack: () => void;
   readonly onDone: (date: string) => void;
-  // «Boshqa kun» of the results (G35, docs/97 K2): the calendar at once, «Назад» to the results.
-  readonly calendar?: boolean;
 };
 
 // "Bugun", "Ertaga" by one tap; any other day from the phone calendar (docs/19).
-export function DateStep({ now, initial, onBack, onDone, calendar: only = false }: DateStepProps) {
+export function DateStep({ now, initial, onBack, onDone }: DateStepProps) {
   useScreenView('market.date');
   const { t } = useI18n();
   const dayLabel = useDayLabel();
@@ -29,7 +27,7 @@ export function DateStep({ now, initial, onBack, onDone, calendar: only = false 
   const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
   const known = initial && initial >= first && initial <= last ? initial : null;
   const listed = known === first || known === tomorrow(now) ? known : null;
-  const [calendar, setCalendar] = useState(only || (known !== null && listed === null));
+  const [calendar, setCalendar] = useState(known !== null && listed === null);
   // Never an empty field (a blank bar on an iPhone): the day after tomorrow, the first day the
   // chips do not have; «Davom etish» is there at once (G37).
   const [other, setOther] = useState(listed === null && known ? known : tomorrow(now + DAY_MS));
@@ -40,7 +38,7 @@ export function DateStep({ now, initial, onBack, onDone, calendar: only = false 
   const tick = (date: string) => (date === listed ? { after: <Icon name="selected" /> } : {});
   return (
     <StepLayout icon="trip" title={t('market.date.title')}>
-      <Screen onBack={calendar && !only ? () => setCalendar(false) : onBack} />
+      <Screen onBack={calendar ? () => setCalendar(false) : onBack} />
       <List>
         <Section>
           {calendar ? (

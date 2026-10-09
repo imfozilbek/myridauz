@@ -9,17 +9,14 @@ import './driver.css';
 
 type StatusScreenProps = { readonly application: DriverApplication; readonly onFix: () => void };
 
-// What to fix (docs/04); a waiting application looks around the app instead (G34): every reason on its own line, the same places are red
-// in the application. The answer also comes from the driver bot.
+// A rejected application (docs/04): every reason on its own line, the same places are red in the
+// application. Waiting and «fix» applications look around the app instead (G34, G62, DriverGate).
+// The answer also comes from the driver bot.
 export function StatusScreen({ application, onFix }: StatusScreenProps) {
   useScreenView(`driver.status.${application.status}`);
   const { t } = useI18n();
-  const title =
-    application.status === 'rejected'
-      ? 'drivers.status.rejected.title'
-      : 'drivers.status.changes_requested.title';
   return (
-    <StepLayout icon="error" title={t(title)} hint={t('drivers.status.fixHint')}>
+    <StepLayout icon="error" title={t('drivers.status.rejected.title')} hint={t('drivers.status.fixHint')}>
       <List>
         <Section>
           {application.reasons.map((reason) => (
