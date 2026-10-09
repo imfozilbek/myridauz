@@ -213,4 +213,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/146-requests-and-trips-path.md` | Путь 7 (G64): «Yoʻlovchilar soʻrovlari», чат и звонок до брони, одна логика предложения, поездка для всего салона, «Mening safarlarim» водителя |
 | `docs/148-g65-texts.md`, `docs/149-g65-pixel-perfect.md` | G65: новые тексты на согласие владельца; сверка Pixel Perfect «Hamyon», «Profil», «Kanallar», спорные места макетов |
 | `docs/150-g66-texts.md`, `docs/151-g66-pixel-perfect.md` | G66: тексты главных экранов на согласие владельца; сверка Pixel Perfect главных экранов, спорные места макетов |
+| `docs/152-g68-texts.md`, `docs/153-g68-team-bots.md` | G68: тексты живых карточек ботов на согласие владельца; боты команды («Navbat», «Diqqat», итог дня, обращение) |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

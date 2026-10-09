@@ -96,7 +96,7 @@
 - После действия шторка закрывается, сверху короткая плашка («Madina tasdiqlandi»), экран обновляется сам.
 - Отдельного окна комиссии нет (решение владельца 06.10.2026): сумма комиссии и «Safar boʻlmasa, qaytariladi» видны в шторке и в карточке заявки до «Tasdiqlash»; одно касание подтверждает.
 
-## Как сделано (G68, части A и B)
+## Как сделано (G68, части A, B и C)
 
 | Что | Где в коде |
 |---|---|
@@ -106,4 +106,5 @@
 | Карточки водителя: заявка водителя, поездка и заявка попутчика, кошелёк, новости заявок | `drivers/infrastructure/application-card.ts`, `bookings/infrastructure/driver-card.ts`, `ask-card.ts`, `wallet/infrastructure/wallet-card.ts` |
 | Чат и звонок: звонок под карточкой, «💬 N ta yangi xabar» | `bookings/chat-news.ts`, `chat/infrastructure/bot-signals.ts` |
 | «Kerak emas» в боте | `bots/news-callbacks.ts` (`news_off:<подписка>`) |
-| Тексты | `152` |
+| Боты команды: «Navbat», «Diqqat», итог дня, карточка обращения | `153` |
+| Тексты | `152`, `153` |
