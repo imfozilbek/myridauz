@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT, newTripTile } from '../apps';
+import { TEXT, publishButton } from '../apps';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
 import { searchTo } from './search-kit';
@@ -36,7 +36,7 @@ async function chooseRoute(page: Page) {
 // One screen (G63, mockup g63/2): the pitak of the direction on its card, «Xaritada» on the map.
 test('3. the driver sees the pitak of the direction and publishes «Ikkalasi»', async ({ page }) => {
   await openAs(page, 'driver', DRIVER);
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.title'))).toBeVisible();
   await expect(page.getByText(PITAK, { exact: false }).first()).toBeVisible();

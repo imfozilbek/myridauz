@@ -52,14 +52,20 @@ describe('the main screen of a passenger (G25, G66 mockup g66/1)', { timeout: 20
     expect(screen.queryByText(NAME)).toBeNull();
   });
 
-  it('gives the main button to the step of the trip on its day, no search then', async () => {
+  it('gives the main button to the step of the trip from the meeting on, the search before it', async () => {
+    // The morning of the trip day, 2 hours before: the search stays, no seat told too early.
     vi.setSystemTime(TRIP_DAY);
+    passenger(async () => [confirmed]);
+    expect(await screen.findByRole('button', { name: 'Safar topish' })).toBeTruthy();
+    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    cleanup();
+    vi.setSystemTime(confirmed.trip.departAt - 20 * MINUTE_MS);
     passenger(async () => [confirmed]);
     expect(await screen.findByRole('button', { name: 'Mashinaga chiqdim' })).toBeTruthy();
     expect(screen.queryByText('Safar topish')).toBeNull();
     expect(screen.queryByText('Qayerga borasiz?')).toBeNull();
     cleanup();
-    passenger(async () => [{ ...confirmed, boardedAt: TRIP_DAY }]);
+    passenger(async () => [{ ...confirmed, boardedAt: Date.now() }]);
     expect(await screen.findByRole('button', { name: 'Yetib keldim' })).toBeTruthy();
   });
 

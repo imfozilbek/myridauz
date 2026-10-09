@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, newTripTile } from './apps';
+import { appUrl, MINI_APPS, publishButton } from './apps';
 import { chooseRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -16,7 +16,7 @@ export async function openRuleStep(page: Page) {
   await mockApi(page, 'active');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await page.getByText(t('market.rule.title')).click();
   await page.getByText(t('market.rule.seatsOrCar')).click();

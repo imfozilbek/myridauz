@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, newTripTile, TEXT } from './apps';
+import { appUrl, MINI_APPS, publishButton, TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
 import { TILES_MS } from './map-wait';
 import { chooseRoute } from './market';
@@ -38,7 +38,7 @@ export async function openPublish(page: Page) {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   const main = page.locator('#tg-main-button');
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
   await page.getByText(t('market.day.tomorrow'), { exact: true }).click();

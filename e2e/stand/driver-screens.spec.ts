@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { TEXT, newTripTile } from '../apps';
+import { TEXT, publishButton } from '../apps';
 import { applyAsDriver } from '../driver-application';
 import { OWNER } from './people';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
@@ -32,6 +32,6 @@ test('T15, T11, D07. the team approves in the admin Mini App; the driver can pub
   // The driver opens the app on the own phone.
   const phone = await page.context().newPage();
   await openHome(phone, 'driver', NEWCOMER, 'android');
-  await expect(newTripTile(phone)).toBeVisible();
+  await expect(publishButton(phone)).toBeVisible();
   await shot(phone, 'android', 'd30-approved-home');
 });

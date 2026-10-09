@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { TEXT, newTripTile } from '../apps';
+import { TEXT, publishButton } from '../apps';
 import { openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
@@ -67,7 +67,7 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
 // bor» when fewer, the rule and the comment on their own screens and back.
 test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

@@ -26,8 +26,11 @@ export async function oneSize(page: Page, selector: string) {
   expect(new Set(sizes).size, `${selector}: ${sizes.join(' ')}`).toBe(1);
 }
 
-// Pills the mockup sizes by their words (the times of a sheet) keep one height (docs/121).
+// Pills the mockup sizes by their words (the times of a sheet) keep one height (docs/121), with their
+// line: a tile with a red line is as high as the others (G66).
 export async function oneHeight(page: Page, selector: string) {
-  const heights = await page.locator(selector).evaluateAll((items) => items.map((item) => item.clientHeight));
+  const heights = await page
+    .locator(selector)
+    .evaluateAll((items) => items.map((item) => (item as HTMLElement).offsetHeight));
   expect(new Set(heights).size, `${selector}: ${heights.join(' ')}`).toBe(1);
 }

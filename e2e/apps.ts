@@ -18,9 +18,9 @@ export const MINI_APPS = [
     name: 'driver',
     port: 4102,
     welcome: t('common.welcome.costsBack'),
-    // G62: an approved driver publishes from the big tile on top, no main button.
+    // G66: an approved driver publishes with the main button under «Qayerdan / Qayerga».
     action: t('home.publish'),
-    mainButton: null,
+    mainButton: t('home.publish'),
   },
   { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications'), mainButton: null },
 ] as const;
@@ -92,5 +92,5 @@ export const appUrl = (port: number) => `http://localhost:${port}/`;
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;
 
-// «Safar eʼlon qilish» of an approved driver: the big tile on top of the main screen (G62).
-export const newTripTile = (page: Page) => page.locator('.main-tile', { hasText: TEXT.newTrip });
+// «Safar eʼlon qilish» of an approved driver: the main button under «Qayerdan / Qayerga» (G66).
+export const publishButton = (page: Page) => page.locator('#tg-main-button', { hasText: TEXT.newTrip });

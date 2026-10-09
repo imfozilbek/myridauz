@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT, newTripTile } from '../apps';
+import { TEXT, publishButton } from '../apps';
 import { pressBack, telegramEvents } from '../telegram-mock';
 import { confirmedSeat } from './g27-kit';
 import * as g33 from './g33-kit';
@@ -62,7 +62,7 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
   for (const platform of PLATFORMS) {
     const page = await g33.phone(browser);
     await openAs(page, 'driver', DRAFT_DRIVERS[platform], { platform });
-    await newTripTile(page).click();
+    await publishButton(page).click();
     await g33.chooseRoute(page);
     // One screen (G63): the way of pickup on it, the comment on its own screen.
     await page.getByText(t('way.trip.mode.door')).click();
@@ -70,7 +70,7 @@ test('F3. a new trip half done → the app closes → the draft comes back', asy
     await page.getByPlaceholder(t('market.comment.placeholder')).fill(COMMENT);
     // Telegram closes the Mini App; the person opens it again later.
     await page.reload();
-    await newTripTile(page).click();
+    await publishButton(page).click();
     await page.waitForLoadState('networkidle');
     await shot(page, `f3-reopened-${platform}`);
     await expect.soft(page.getByText(DRAFT_BACK), 'F3: the draft is back').toBeVisible();

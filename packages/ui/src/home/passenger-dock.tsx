@@ -1,4 +1,4 @@
-import { DAY_MS, tashkentDate, type Booking, type Location } from '@platform/contracts';
+import { DAY_MS, meetingStartsAt, tashkentDate, type Booking, type Location } from '@platform/contracts';
 import { passengerStep, useTripSteps } from '../bookings/use-trip-steps';
 import { useI18n } from '../context/i18n-context';
 import { useTripDays } from '../find/use-trip-days';
@@ -16,16 +16,23 @@ import { usePassengerData } from './passenger-data';
 import { RouteDock } from './route-dock';
 import { useHomeTap } from './use-home-tap';
 
-// The bottom of the main screen of a passenger (G66, mockup g66/1): on the day of a trip its step
-// alone, «Mashinaga chiqdim» then «Yetib keldim»; otherwise «Qayerdan / Qayerga» and «Safar topish».
+// The bottom of the main screen of a passenger (G66, mockup g66/1): from the meeting on (30 minutes
+// before the departure, with its card, docs/126) the step of the trip alone, «Mashinaga chiqdim» then
+// «Yetib keldim»; before it «Qayerdan / Qayerga» and «Safar topish», so a tap in the morning never
+// tells the driver and the close ones a seat taken too early.
 export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
   const [places] = useDirectory();
   const now = Date.now();
-  const today = (load.value?.[0] ?? []).find((booking) => passengerStep(booking, now) !== null);
+  const today = (load.value?.[0] ?? []).find((booking) => stepNow(booking, now));
   if (today) return <TripStep booking={today} onTold={load.refresh} />;
   return <FindDock go={go} directory={places.status === 'ready' ? places.directory : null} />;
 }
+
+const stepNow = (booking: Booking, now: number) => {
+  const step = passengerStep(booking, now);
+  return step === 'arrived' || (step === 'boarded' && now >= meetingStartsAt(booking.trip.departAt));
+};
 
 function TripStep({ booking, onTold }: { readonly booking: Booking; readonly onTold: () => void }) {
   const { t } = useI18n();

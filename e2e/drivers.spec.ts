@@ -1,6 +1,6 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, newTripTile, TEXT } from './apps';
+import { appUrl, MINI_APPS, publishButton, TEXT } from './apps';
 import { applyAsDriver } from './driver-application';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -30,14 +30,14 @@ test('driver: the fix opens at once, the retaken photo goes again with «Qayta y
   expect(api.submitted).toEqual([expect.objectContaining({ model: 'Cobalt', plate: '01A123BC' })]);
 });
 
-test('driver: approved, «Siz haydovchisiz!» with the bonus, then the big tile publishes (G62)', async ({
+test('driver: approved, «Siz haydovchisiz!» with the bonus, then the main button publishes (G62, G66)', async ({
   page,
 }) => {
   await mockApi(page, 'active', 'approved');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await expect(page.getByText(TEXT.approved)).toBeVisible();
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await expect(page.getByText(TEXT.from)).toBeVisible();
 });
 

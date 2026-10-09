@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT, newTripTile } from './apps';
+import { appUrl, MINI_APPS, TEXT, publishButton } from './apps';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -16,7 +16,7 @@ test('driver: main screen and a new trip', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   const shot = shooter(page, 'trip-new');
-  await expect(newTripTile(page)).toBeVisible();
+  await expect(publishButton(page)).toBeVisible();
   await shot('1-home');
   await publishTrip(page, shot);
 });
