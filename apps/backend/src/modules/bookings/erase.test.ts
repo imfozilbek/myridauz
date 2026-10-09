@@ -29,6 +29,7 @@ async function booked(kit: ReturnType<typeof setup>, status: BookingRecord['stat
     dropoffNamed: NAMED,
     note: null,
     offerId: null,
+    talkId: null,
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,

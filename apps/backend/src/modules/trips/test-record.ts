@@ -29,4 +29,5 @@ export const aTrip: TripRecord = {
   priceToldAt: null,
   departedAt: null,
   arrivedAt: null,
+  forRequest: null,
 };

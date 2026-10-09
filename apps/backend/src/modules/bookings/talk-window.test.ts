@@ -27,6 +27,7 @@ async function ride(status: BookingRecord['status'], kit = setup(), extra: { ove
     dropoffNamed: null,
     note: null,
     offerId: null,
+    talkId: null,
     confirmedAt: NOW,
     boardedAt: null,
     arrivedAt: null,

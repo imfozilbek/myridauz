@@ -9,11 +9,12 @@ import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { CallPanel } from '../call/call-panel';
-import { otherName } from '../call/call-person';
+import { otherName } from '../call/other-side';
 import { useApiClients } from '../context/api-clients';
 import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
+import { TalkBottom, TalkTop } from '../talk/chat-talk';
 import { ChatHead } from './chat-head';
 import { ChatClosed, ChatInput } from './chat-input';
 import { useChat } from './use-chat';
@@ -56,7 +57,8 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
   useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
   // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
   const { chat: chats } = useApiClients();
-  const about = useLoad(() => chats.about(chatKey)).value ?? null;
+  const aboutLoad = useLoad(() => chats.about(chatKey));
+  const about = aboutLoad.value ?? null;
   const name = title ?? (about && otherName(about)) ?? t('chat.title');
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
@@ -79,9 +81,12 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
           ended={calling.ended}
           controls={controls}
           onChat={calling.dismiss}
+          onChanged={aboutLoad.refresh}
         />
       ) : null}
+      <TalkTop about={about} />
       {controls.noMicrophone ? <Text className="chat-warning">{t('calls.noMicrophone')}</Text> : null}
+      {calling.refused ? <Text className="chat-warning">{t(`calls.refused.${calling.refused}`)}</Text> : null}
       <div className="chat-messages">
         {/* «No messages yet» only once the history came: never a flash of it while connecting (G41). */}
         {messages.length === 0 && loaded ? <Caption className="chat-empty">{t('chat.empty')}</Caption> : null}
@@ -92,6 +97,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
           </Fragment>
         ))}
         {endAt === messages.length ? <TripEnded /> : null}
+        <TalkBottom about={about} onChanged={aboutLoad.refresh} />
         <div ref={end} />
       </div>
       {canWrite ? null : <ChatClosed name={name} onAgain={onAgain} />}
@@ -105,6 +111,7 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
         open={state === 'open'}
         placeholder={placeholder}
         warned={warning}
+        talk={Boolean(about?.request && !about.booking)}
       />
     </div>
   );

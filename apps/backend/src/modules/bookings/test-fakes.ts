@@ -3,7 +3,6 @@ import type { Person } from '../users';
 import { loadBrand } from '@platform/brands';
 import { earliestDepart, NO_RATING, type BookingInput, type Trip } from '@platform/contracts';
 import type { BookingsDeps, TripFacts } from './application/ports';
-import type { RequestFacts } from './application/request-facts';
 import { publicIdOf } from '../../test-people';
 
 export const DRIVER = 1;
@@ -114,6 +113,7 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     status: 'active',
     departedAt: facts.departedAt,
     arrivedAt: null,
+    private: false,
   };
 };
 
@@ -124,20 +124,3 @@ export function scheduleCheck(departAt: number, now: number, trips: Iterable<Tri
   const live = [...trips].filter((trip) => trip.driverId === driverId && trip.live).length;
   return live >= SCHEDULE.maxActiveTrips ? 'trips.too_many' : null;
 }
-
-// A request of Dilnoza for 2 people on the next day (docs/35).
-export const fakeRequest = (id: string): RequestFacts => ({
-  id,
-  passengerId: DILNOZA,
-  from: '1726273',
-  to: '1718401',
-  date: '2026-10-02',
-  km: 300,
-  seats: 2,
-  wholeCar: false,
-  withWoman: false,
-  pickupMode: 'both',
-  pickup: HOME,
-  dropoff: AWAY,
-  open: true,
-});

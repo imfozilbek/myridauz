@@ -69,6 +69,8 @@ export const API_ERRORS = [
   'bookings.not_meeting_time',
   'bookings.already_met',
   'bookings.already_no_show',
+  // A whole car offered on a trip that already has a booking (G64, docs/118 path 7).
+  'bookings.salon_taken',
   'wallet.not_enough',
   'wallet.invalid_input',
   'auth.not_owner',

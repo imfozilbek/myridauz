@@ -1,9 +1,10 @@
-import type { TripInput } from '@platform/contracts';
+import { DAY_MS, type TripInput } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
-import { publishOfferTrip } from './application/publish';
+import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
+import { publishOfferTrip, type Input } from './application/publish';
 import { realPrices } from './application/prices';
-import { cancelTrip } from './application/read';
+import { cancelTrip, MY_TRIPS_LIMIT } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
 import { scheduleError } from './application/schedule';
@@ -49,6 +50,19 @@ export const tripFacts = async (env: Bindings, id: string) => {
     over,
   };
 };
+// The directions of a driver for the board of requests (G64): the routes of the trips of the last
+// days, both ways (a driver goes back the same road).
+const DIRECTION_DAYS = 60;
+export const driverDirections = async (env: Bindings, driverId: number) => {
+  const since = Date.now() - DIRECTION_DAYS * DAY_MS;
+  const trips = (await tripsDeps(env).trips.latestOf(driverId, MY_TRIPS_LIMIT)).filter(
+    (t) => t.departAt >= since,
+  );
+  return trips.flatMap(({ from, to }) => [
+    { from, to },
+    { from: to, to: from },
+  ]);
+};
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
 // An offer becomes a trip when it is accepted: the driver hears the schedule now (docs/103).
@@ -70,6 +84,12 @@ export const publishOfferTripFor = (
   driverId: number,
   input: Omit<Required<TripInput>, 'pickupMode'>,
 ) => publishOfferTrip(tripsDeps(env), driverId, input);
+// «Safar ochib taklif qilish» (G64): a trip for one request; opened for everybody or taken.
+export const publishPrivateTripFor = (env: Bindings, driverId: number, input: Input, requestId: string) =>
+  publishPrivateTrip(tripsDeps(env), driverId, input, requestId);
+export const openTripFor = (env: Bindings, driverId: number, tripId: string) =>
+  openTrip(tripsDeps(env), driverId, tripId);
+export const releaseTripFor = (env: Bindings, tripId: string) => releaseTrip(tripsDeps(env), tripId);
 export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
   await cancelTrip(tripsDeps(env), driverId, tripId);
 };

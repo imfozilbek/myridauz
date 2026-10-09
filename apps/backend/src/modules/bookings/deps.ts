@@ -7,11 +7,20 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { notify } from '../notifications';
-import { cancelRequestOf, markMatched, passengerRequestFacts, requestFacts } from '../ride-requests';
+import {
+  cancelRequestOf,
+  markMatched,
+  passengerRequestFacts,
+  requestFacts,
+  requestViewOf,
+} from '../ride-requests';
 import {
   cancelFor,
   driverTripIds,
+  openTripFor,
   publishOfferTripFor,
+  publishPrivateTripFor,
+  releaseTripFor,
   scheduleErrorFor,
   tripChanged,
   tripFacts,
@@ -26,11 +35,14 @@ import { chargeCommission, refundCommission, walletCanAfford } from '../wallet';
 import type { BookingsDeps } from './application/ports';
 import { d1Offers } from './infrastructure/d1-offers';
 import { createMemoryOffers } from './infrastructure/memory-bookings';
+import { d1Talks } from './infrastructure/d1-talks';
+import { createMemoryTalks } from './infrastructure/memory-talks';
 import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 
 const localOffers = createMemoryOffers();
+const localTalks = createMemoryTalks();
 
 // A confirmed or cancelled booking changes the seats left: the channel posts follow (docs/15).
 const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsDeps['notify'] => ({
@@ -48,16 +60,22 @@ const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsD
 export const bookingsDeps = (env: Bindings): BookingsDeps => ({
   bookings: bookingStore(env),
   offers: env.DB ? d1Offers(env.DB) : localOffers,
+  talks: env.DB ? d1Talks(env.DB) : localTalks,
+  requestRings: loadBrand(env.BRAND).calls.requestRings,
   trips: {
     find: (id) => tripFacts(env, id),
     ofDriver: (driverId) => driverTripIds(env, driverId),
     scheduleError: (driverId, trip) => scheduleErrorFor(env, driverId, trip),
     views: (ids) => tripViewsOf(env, ids),
     publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
+    publishPrivate: (driverId, input, requestId) => publishPrivateTripFor(env, driverId, input, requestId),
+    open: (driverId, tripId) => openTripFor(env, driverId, tripId),
+    release: (tripId) => releaseTripFor(env, tripId),
     cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
   },
   requests: {
     find: (id) => requestFacts(env, id),
+    view: (id) => requestViewOf(env, id),
     ofPassenger: (passengerId) => passengerRequestFacts(env, passengerId),
     matched: (id) => markMatched(env, id),
     cancel: async (passengerId, id) => void (await cancelRequestOf(env, passengerId, id)),

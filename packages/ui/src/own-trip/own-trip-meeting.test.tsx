@@ -3,7 +3,7 @@ import { meetingStartsAt, MINUTE_MS, type Booking, type Trip } from '@platform/c
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
-import { renderMarket, tap } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, tap } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { akmal, madina, MEETING_NOW } from '../meeting/meet-test-kit';
 import { testClients } from '../test-shell';
@@ -39,8 +39,7 @@ function open(trip: Trip, bookings: readonly Booking[], now: number, meet = vi.f
   );
 }
 async function openTrip() {
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { timeout: 20_000 }, () => {

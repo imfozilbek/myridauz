@@ -1,0 +1,42 @@
+/* A talk about a request in the call (G64): the values of the mockups g64/2 and g64/4 at 360 px. */
+.call-talk {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 14px 12px;
+  border-radius: 13px;
+  background: var(--reg-card);
+  font-size: 12px;
+  line-height: 15px;
+  text-align: left;
+  color: var(--reg-muted);
+}
+
+.call-talk b {
+  font-size: 14px;
+  color: var(--reg-ink);
+}
+
+.call-talk b + span {
+  margin-top: 1px;
+}
+
+.call-talk-action {
+  width: 100%;
+  min-height: 45px;
+  margin-top: 6.67px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.call-talk-action:disabled {
+  opacity: 0.6;
+}

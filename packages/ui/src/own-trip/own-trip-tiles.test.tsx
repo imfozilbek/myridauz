@@ -1,9 +1,9 @@
 import { ApiError } from '@platform/api-client';
 import { DAY_MS, type Booking, type Trip } from '@platform/contracts';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
-import { recommendation, renderMarket, tap, trip } from '../market/market-test-kit';
+import { openOwnTrip, recommendation, renderMarket, tap, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
 
@@ -28,8 +28,7 @@ async function open(shown: Trip, chat: object = {}, bookings: readonly Booking[]
       chat,
     }),
   );
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
   await screen.findByText('Yaqinlarimga');
   return rendered;
 }

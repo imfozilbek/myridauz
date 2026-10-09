@@ -51,5 +51,6 @@ export function tripView(
     status: status === 'active' && seatsLeft === 0 ? 'full' : status,
     departedAt: trip.departedAt,
     arrivedAt: trip.arrivedAt,
+    private: trip.forRequest !== null,
   };
 }

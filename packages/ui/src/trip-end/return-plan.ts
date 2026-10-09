@@ -29,7 +29,15 @@ export function returnDepartAt(trip: Pick<Trip, 'departAt' | 'km'>, day: string)
 // the salon (G61) and the way of taking people; a new comment; the day and the time of the way back.
 // «Mashinada ayol bor» starts off: trip.woman is also true for a woman passenger (docs/06 safety).
 // Null while a place of the trip is unknown.
-export function returnTrip(trip: Trip, directory: PlaceDirectory, departAt: number): ReturnTrip | null {
+export const returnTrip = (trip: Trip, directory: PlaceDirectory, departAt: number) =>
+  tripPlan(trip, directory, departAt, true);
+
+// «Ertaga shu safar» (G64, mockup g64/6): the same trip the same way on another day, with the same
+// answers as the way back takes them.
+export const sameTrip = (trip: Trip, directory: PlaceDirectory, departAt: number) =>
+  tripPlan(trip, directory, departAt, false);
+
+function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back: boolean): ReturnTrip | null {
   const from = directory.find(trip.from);
   const to = directory.find(trip.to);
   if (!from || !to) return null;
@@ -43,5 +51,5 @@ export function returnTrip(trip: Trip, directory: PlaceDirectory, departAt: numb
     date: tashkentDate(departAt),
     time: tashkentTime(departAt),
   };
-  return { route: { from: to, to: from }, again };
+  return { route: back ? { from: to, to: from } : { from, to }, again };
 }

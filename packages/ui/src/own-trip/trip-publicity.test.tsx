@@ -4,7 +4,7 @@ import type { Trip, TripPublicity } from '@platform/contracts';
 import { activity, counted } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderMarket, trip } from '../market/market-test-kit';
+import { openOwnTrip, renderMarket, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
 
@@ -38,8 +38,7 @@ function open(shown: Trip, tripPublicity: ChannelsClient['tripPublicity']) {
   );
 }
 async function openTrip() {
-  await vi.waitFor(() => expect(document.querySelector('.trip-card')).toBeTruthy());
-  fireEvent.click(document.querySelector('.trip-card') as HTMLElement);
+  await openOwnTrip();
 }
 
 describe('the trip in the channel on «Mening safarim» (owner decision 08.10.2026, docs/119)', () => {

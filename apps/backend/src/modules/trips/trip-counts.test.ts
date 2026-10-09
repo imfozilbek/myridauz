@@ -55,6 +55,6 @@ describe('«Men bilan ayol bor» (docs/06 rule 4)', () => {
   it('a confirmed man with it gives the trip the woman mark', async () => {
     const { deps, ride, todayId } = await market();
     ride({ tripId: todayId, passengerId: 3, seats: 2, withWoman: true, pickup: null, dropoff: null });
-    expect(await tripDetail(deps, todayId)).toMatchObject({ woman: true, seatsLeft: 1 });
+    expect(await tripDetail(deps, todayId, 0)).toMatchObject({ woman: true, seatsLeft: 1 });
   });
 });

@@ -13,6 +13,10 @@ import {
   passengerBookingCancelPath,
   passengerOfferPath,
   requestOffersPath,
+  requestTalkPath,
+  requestTalkSchema,
+  requestTripPath,
+  salonTripSchema,
   tripBookingsPath,
   type Booking,
   type BookingInput,
@@ -21,6 +25,7 @@ import {
   type Offer,
   type OfferAction,
   type OfferInput,
+  type SalonTrip,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -52,6 +57,12 @@ export function createBookingsClient(options: SignedOptions) {
     myOffers: async (): Promise<Offer[]> => offers(await request(PASSENGER_OFFERS_PATH)),
     answerOffer: async (id: string, action: OfferAction): Promise<Offer> =>
       offer(await post(passengerOfferPath(id, action), {})),
+    // The chat of a request and this driver, before any offer (G64, docs/118 path 7).
+    openTalk: async (requestId: string): Promise<string> =>
+      requestTalkSchema.parse(await (await post(requestTalkPath(requestId), {})).json()).chatKey,
+    // «Safar ochib taklif qilish» (G64): a trip only this passenger sees, and the offer on it.
+    offerSalonTrip: async (requestId: string, departAt: number): Promise<SalonTrip> =>
+      salonTripSchema.parse(await (await post(requestTripPath(requestId), { departAt })).json()),
   };
 }
 

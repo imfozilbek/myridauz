@@ -35,7 +35,9 @@ export async function upcomingOf(deps: TripsDeps, driverIds: readonly number[]):
     driverIds.filter((id) => !hidden.has(id)).map((id) => deps.trips.byDriver(id)),
   );
   // Only trips that have not left yet: a saved driver's trip on the road takes nobody (docs/65 B8, G63).
-  const live = own.flat().filter((trip) => isLive(trip, now) && !onTheWay(trip, now));
+  const live = own
+    .flat()
+    .filter((trip) => isLive(trip, now) && !onTheWay(trip, now) && trip.forRequest === null);
   const shown = await views(deps, live);
   return shown.filter((trip) => trip.status === 'active').sort((a, b) => a.departAt - b.departAt);
 }

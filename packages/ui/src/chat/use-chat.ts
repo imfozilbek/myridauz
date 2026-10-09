@@ -104,8 +104,8 @@ export function useChat(key: string) {
   const emit = useCallback((event: Exclude<ChatClientEvent, { type: 'send' }>) => {
     socket.current?.send(JSON.stringify(event));
   }, []);
-  const { canCall, call, ended, onTrack, dismiss } = calls;
-  const calling = { canCall, call, ended, emit, onTrack, dismiss };
+  const { canCall, call, ended, refused, onTrack, dismiss } = calls;
+  const calling = { canCall, call, ended, refused, emit, onTrack, dismiss };
   return { messages, loaded, state, warning, canWrite, delivered, send, retry, calling };
 }
 

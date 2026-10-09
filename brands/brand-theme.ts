@@ -25,6 +25,8 @@ export type BrandColors = {
   readonly successSoft: HexColor;
   readonly attention: HexColor;
   readonly attentionSoft: HexColor;
+  // The frame of an offer inside a talk, on both sides (G64, mockups g64/4, g64/5).
+  readonly attentionLine: HexColor;
   // The green plate of a trip on its way: background, frame and second line (mockup g63/3).
   readonly successPale: HexColor;
   readonly successLine: HexColor;

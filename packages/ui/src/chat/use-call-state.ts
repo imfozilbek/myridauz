@@ -1,7 +1,7 @@
-import type { CallEnding, CallTrack, CallView, ChatServerEvent } from '@platform/contracts';
+import type { CallEnding, CallRefusal, CallTrack, CallView, ChatServerEvent } from '@platform/contracts';
 import { useCallback, useRef, useState } from 'react';
 
-type CallEvent = Extract<ChatServerEvent, { type: 'call' | 'callEnded' | 'callTrack' }>;
+type CallEvent = Extract<ChatServerEvent, { type: 'call' | 'callEnded' | 'callTrack' | 'callRefused' }>;
 
 // How a call cut without a word ended, as the server says it: a talk is over, the rest failed.
 const endingOf = (call: CallView): CallEnding => (call.status === 'active' ? 'ended' : 'failed');
@@ -12,6 +12,8 @@ export function useCallState() {
   const [canCall, setCanCall] = useState(false);
   const [call, setCall] = useState<CallView | null>(null);
   const [ended, setEnded] = useState<CallEnding | null>(null);
+  // A ring the server did not pass on (G64): the passenger turned calls off, or the limit is reached.
+  const [refused, setRefused] = useState<CallRefusal | null>(null);
   const shown = useRef<CallView | null>(null);
   const onTrack = useRef<(track: CallTrack) => void>(() => undefined);
   const show = useCallback((next: CallView | null) => {
@@ -25,6 +27,7 @@ export function useCallState() {
     (event: CallEvent) => {
       if (event.type === 'call') show(event.call);
       else if (event.type === 'callEnded') setEnded(event.reason);
+      else if (event.type === 'callRefused') setRefused(event.reason);
       else onTrack.current(event.track);
     },
     [show],
@@ -34,10 +37,14 @@ export function useCallState() {
     setCanCall,
     call,
     ended,
+    refused,
     onTrack,
     handle,
     // The socket is gone: so is the call on the server.
     lost: useCallback(() => show(null), [show]),
-    dismiss: useCallback(() => setEnded(null), []),
+    dismiss: useCallback(() => {
+      setEnded(null);
+      setRefused(null);
+    }, []),
   };
 }

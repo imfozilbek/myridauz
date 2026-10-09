@@ -73,6 +73,8 @@ test('5-5: the past trip (g63/5 phone 5)', async ({ page }) => {
 test('5-4: the past trips with what is left (g63/5 phone 4)', async ({ page }) => {
   await openDriver(page, '2026-10-08T10:00', pastList);
   await page.getByText(t('common.myTrips')).click();
+  // The past trips stand on «Oʻtgan» (G64, mockup g64/6).
+  await page.getByText(t('bookings.tab.past')).click();
   await expect(page.getByText(t('driverAfter.tag.rated'))).toBeVisible();
   await page.getByText(t('driverAfter.tag.refund')).scrollIntoViewIfNeeded();
   await shot(page, 'after-04');

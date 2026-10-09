@@ -56,6 +56,7 @@ export function TripResults(props: Props) {
     place.parentId === null ? place : (directory.find(place.parentId) ?? place);
   const region = regionOf(route.to);
   // Nothing shown, and a filter may be why: how many it hid, or the empty day (docs/89 P6).
+  const counts = days.days.map((day) => ({ date: day.date, count: day.trips }));
   const filtered = !stale && shown?.length === 0 && (trips?.length !== 0 || filters.woman);
   const learn = (empty: boolean) => (
     <LearnBlock
@@ -71,7 +72,7 @@ export function TripResults(props: Props) {
     <div className="find" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={refresh} />
       <ResultsHead route={route} from={regionOf(route.from)} region={region} km={days.km} />
-      <DayCounts days={days.days} date={date} onDay={onDay} />
+      <DayCounts days={counts} date={date} onDay={onDay} />
       <TripFiltersRow filters={filters} onFilters={onFilters} />
       <div className={stale ? 'search-trips list-stale' : 'search-trips'}>
         {shown?.map((trip) => (

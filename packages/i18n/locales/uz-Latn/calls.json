@@ -15,5 +15,7 @@
   "ended.missed": "Javob berilmadi",
   "ended.failed": "Ulanib boʻlmadi",
   "ended.ended": "Qoʻngʻiroq tugadi",
-  "writeChat": "Chatga yozish"
+  "writeChat": "Chatga yozish",
+  "refused.off": "Yoʻlovchi qoʻngʻiroqlarni oʻchirgan. Chatda yozing.",
+  "refused.limit": "Bu soʻrov boʻyicha qoʻngʻiroqlar soni tugadi. Chatda yozing."
 }

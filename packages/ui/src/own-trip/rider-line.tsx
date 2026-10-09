@@ -1,4 +1,4 @@
-import type { Booking } from '@platform/contracts';
+import type { Booking, Rating } from '@platform/contracts';
 import { Fragment } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { useBookingEnds } from '../trip/booking-ends';
@@ -33,8 +33,10 @@ export function RiderLine({ booking, withCommission, className }: Props) {
   );
 }
 
-// «★ 4,8», or «Yangi» while the passenger has few ratings (docs/24); nothing from an old server.
-export function useRiderStars({ passenger }: Booking): string | null {
+// «★ 4,8», or «Yangi» while the passenger has few ratings (docs/24); nothing from an old server. A
+// booking and a request (G64) name the passenger the same way.
+type Rider = { readonly passenger: { readonly rating?: Rating | undefined } };
+export function useRiderStars({ passenger }: Rider): string | null {
   const { t, formatRating } = useI18n();
   if (!passenger.rating) return null;
   const { average } = passenger.rating;

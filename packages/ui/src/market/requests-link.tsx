@@ -4,7 +4,7 @@ import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
-import { RequestsSearchFlow } from './requests-search-flow';
+import { RequestsFlow } from '../requests/requests-flow';
 
 type Linked = { readonly from: string; readonly to: string; readonly date: string };
 
@@ -15,7 +15,7 @@ function linkedRequests(): Linked | null {
 }
 
 // "Ochish" under a bot message about a new request on a followed route opens the requests of that
-// route and day in the driver app (docs/83 N08); back goes to the day, the route, the main screen.
+// route and day in the driver app (docs/83 N08, G64); back goes to the main screen.
 export function RequestsLink({
   enabled,
   children,
@@ -32,13 +32,11 @@ export function RequestsLink({
   return <LinkedRequests linked={linked} onClose={close} />;
 }
 
-// Unknown places start from the route, never with a wrong one.
+// Unknown places open the board of the driver's own directions, never a wrong route.
 function LinkedRequests({ linked, onClose }: { readonly linked: Linked; readonly onClose: () => void }) {
   const [state, retry] = useDirectory();
   if (state.status === 'loading') return <ScreenSkeleton onBack={onClose} />;
   if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={onClose} />;
-  const from = state.directory.find(linked.from);
-  const to = state.directory.find(linked.to);
-  const initial = from && to ? { route: { from, to }, date: linked.date } : undefined;
-  return <RequestsSearchFlow onBack={onClose} {...(initial ? { initial } : {})} />;
+  const known = state.directory.find(linked.from) && state.directory.find(linked.to);
+  return <RequestsFlow onBack={onClose} initial={known ? linked : { date: linked.date }} />;
 }

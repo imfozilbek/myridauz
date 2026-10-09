@@ -5,6 +5,7 @@ import { appUrl, MINI_APPS } from './apps';
 import { mapState, mockMap } from './map-mock';
 import { request, tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
+import { openOwnTrip } from './market';
 
 // The data of the mockups g63/4 (screens 13, 15, 16) and g63/5 (six phones), one to one: Qoʻyliq
 // pitagi → Samarqand shahri on 7 October at 08:00, Madina, Akmal and Sardor (lesson 151).
@@ -91,7 +92,7 @@ export async function openDriver(page: Page, now: string, { trips, bookings, bon
 // «Mening safarlarim», then the trip of the mockup.
 export async function openTrip(page: Page) {
   await page.getByText(t('common.myTrips')).click();
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
 }
 
 const SHOTS = 'screenshots/pixel-g63';

@@ -1,5 +1,6 @@
-import { chatKeyOfOffer, NO_RATING, type Offer } from '@platform/contracts';
+import { NO_RATING, type Offer } from '@platform/contracts';
 import { offerSeats, offerStatusAt, type OfferRecord } from '../domain/offer';
+import { offerChatKey } from '../domain/talk';
 import type { BookingsDeps } from './ports';
 import type { RequestFacts } from './request-facts';
 
@@ -11,13 +12,18 @@ export async function offerViews(
 ): Promise<Offer[]> {
   const now = deps.now();
   const ratings = await deps.ratings([...new Set(offers.map((offer) => offer.driverId))]);
+  const trips = await deps.trips.views([...new Set(offers.flatMap((offer) => offer.tripId ?? []))]);
   const views = await Promise.all(
     offers.map(async (offer): Promise<Offer | null> => {
       const request = requests.find((item) => item.id === offer.requestId);
       // The car kept in the offer: a new check of the driver hides nothing (docs/65 A1).
       const [driver, car] = [await deps.people.find(offer.driverId), offer.car];
+      const passenger = request ? await deps.people.find(request.passengerId) : undefined;
       if (!request || !driver || !car) return null;
       const seats = offerSeats(offer, request);
+      // At the pitak when the passenger chose only the pitak or gave no point, as the booking will be.
+      const trip = trips.find((item) => item.id === offer.tripId);
+      const byPitak = request.pickupMode === 'pitak' || !request.pickup;
       return {
         id: offer.id,
         requestId: offer.requestId,
@@ -38,7 +44,11 @@ export async function offerViews(
         commission: deps.wallet.commission(offer.price, seats),
         status: offerStatusAt(offer, request.open, now),
         bookingId: offer.bookingId,
-        chatKey: chatKeyOfOffer(offer.id),
+        chatKey: offerChatKey(offer),
+        tripId: offer.tripId,
+        pitak: byPitak ? (trip?.pitak?.name ?? null) : null,
+        createdAt: offer.createdAt,
+        passengerName: passenger?.firstName ?? '',
       };
     }),
   );

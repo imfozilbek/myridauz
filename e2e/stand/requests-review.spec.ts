@@ -74,7 +74,8 @@ for (const platform of PLATFORMS)
     await page.getByText(t('common.myTrips')).first().click();
     await expect(page.locator('.trip-card')).toHaveCount(1);
     await shot('03-p-mine');
-    // The driver: the request of today, then tomorrow and its empty day (R2, R3, R4).
+    // The driver: the request of today on «Yoʻlovchilar soʻrovlari», then tomorrow and its empty day
+    // (R2, R4, G64).
     await openHome(page, 'driver', HUMOYUN, platform);
     await page.getByText(t('common.driver.passengerRequests')).first().click();
     await page.getByText(TEXT.from).click();
@@ -83,11 +84,10 @@ for (const platform of PLATFORMS)
     // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
     await page.getByAltText('Surxondaryo viloyati').click();
     await page.getByText('Termiz shahri', { exact: true }).click();
-    await expect(page.locator('.trip-card').filter({ hasText: SEEKERS[platform].name })).toBeVisible();
+    await expect(page.locator('.request-row').filter({ hasText: SEEKERS[platform].name })).toBeVisible();
     await shot('04-d-requests');
     await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
     await expect(page.getByText(t('market.requests.empty'))).toBeVisible();
-    await expect(page.getByText(t('market.requests.hint'))).toHaveCount(0);
     await shot('05-d-empty');
     await page.getByText(t('market.requests.publish')).click();
     // One screen with the route and the day (G63); no pitak to Termiz: only «Uydan» (docs/72).

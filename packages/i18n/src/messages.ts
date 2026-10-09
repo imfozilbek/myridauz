@@ -20,6 +20,7 @@ import moderation from '../locales/uz-Latn/moderation.json' with { type: 'json' 
 import pitaks from '../locales/uz-Latn/pitaks.json' with { type: 'json' };
 import places from '../locales/uz-Latn/places.json' with { type: 'json' };
 import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
+import requests from '../locales/uz-Latn/requests.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
 import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
@@ -54,6 +55,8 @@ const REFERENCE = {
   pitaks,
   places,
   pricing,
+  // The board of requests of a driver and its windows (G64, docs/118 path 7).
+  requests,
   reviews,
   share,
   stats,

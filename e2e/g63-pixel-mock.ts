@@ -4,6 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
 import { PITAK, tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
+import { openOwnTrip } from './market';
 
 // The data of the mockup g63/3 (3-trip.png), one to one: Qoʻyliq pitagi → Samarqand shahri tomorrow
 // at 08:00, 90 000 a seat, «Joylar yoki salon»; Madina asks 2 seats, Akmal 1 (lesson 151).
@@ -120,6 +121,6 @@ export async function openTripAt(page: Page, now: string, full: boolean, moment:
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
   await page.getByText(t('driverTrip.tile.map')).waitFor();
 }

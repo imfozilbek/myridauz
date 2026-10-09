@@ -1,5 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { TEXT, newTripTile } from '../apps';
+import { openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
@@ -41,24 +42,22 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
   await openHome(page, 'driver', MUROD, 'android');
   await page.getByText(t('common.myTrips')).first().click();
   await shot(page, 'android', 'da21-my-trips');
-  await page.locator('.trip-card').first().click();
+  await openOwnTrip(page);
   await shot(page, 'android', 'da22-trip');
   await visit(page, 'android', t('driverTrip.tile.map'), 'da23-trip-map');
 });
 
+// «Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7): Murod has a trip tomorrow, so its banner stands
+// on top and the requests of its day under it; the chat of a request carries the same offer.
 test('android: the requests of passengers and an offer', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
   await page.getByText(t('common.driver.passengerRequests')).first().click();
-  await shot(page, 'android', 'da30-requests-route');
-  await page.getByText(TEXT.from).click();
-  await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
-  await page.getByAltText('Samarqand viloyati').click();
-  await page.getByText('Samarqand shahri', { exact: true }).click();
-  await page.getByText(TEXT.tomorrow).click();
-  await shot(page, 'android', 'da31-requests');
-  await page.locator('.trip-card').filter({ hasText: WAITING.name }).first().click();
-  await shot(page, 'android', 'da32-request');
+  const row = page.locator('.request-row', { hasText: WAITING.name });
+  await expect(row).toBeVisible();
+  await shot(page, 'android', 'da30-requests');
+  await row.getByRole('button', { name: t('chat.open') }).click();
+  await expect(page.locator('.talk-action')).toBeVisible();
+  await shot(page, 'android', 'da31-request-talk');
 });
 
 // One screen (G63, docs/118 path 6): the way of pickup, the seats of the car with «Mashinada ayol

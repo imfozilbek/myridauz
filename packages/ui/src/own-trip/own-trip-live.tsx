@@ -1,4 +1,4 @@
-import type { Booking, Trip } from '@platform/contracts';
+import type { Booking, Offer, Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { DriverTripMap } from '../bookings/driver-trip-map';
 import { NotEnoughScreen, TopUpScreen } from '../bookings/wallet-steps';
@@ -27,6 +27,8 @@ export type OwnTripProps = {
   readonly onChanged: () => void;
   // The trip was cancelled: back to the list.
   readonly onClosed: () => void;
+  // The offer on a private trip of a «Boʻsh salon kerak» request (G64).
+  readonly offer?: Offer | null;
 };
 
 type Props = OwnTripProps & {
@@ -37,7 +39,8 @@ type Props = OwnTripProps & {
 // «Mening safarim» with what opens from it (G63, docs/118 path 6): the chat and the call of a
 // passenger, the wallet when a commission is short, the map of the way, the change of G39. A point
 // of the map opens its «Uchrashuv» with its own chat and call (mockup g63/4 screens 12, 13).
-export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onClosed, onArrived }: Props) {
+export function OwnTripLive(props: Props) {
+  const { trip, bookings, onBack, onBooking, onChanged, onClosed, onArrived, offer = null } = props;
   const { t } = useI18n();
   const [opened, setOpened] = useState<Opened | null>(null);
   // The passengers of the point whose meeting is open.
@@ -114,6 +117,8 @@ export function OwnTripLive({ trip, bookings, onBack, onBooking, onChanged, onCl
       onCancel={actions.cancel}
       onStep={steps.step}
       onMark={(booking) => void meet.mark(booking, 'no_show')}
+      offer={offer}
+      onOpened={onChanged}
     >
       <ActionFailure error={steps.failure ?? meet.failure ?? actions.failure} />
       {actions.note ? <p className="own-note">{t(actions.note)}</p> : null}

@@ -1,25 +1,18 @@
 // Test helper: bookings over fake trips and requests, with the real wallet in memory (docs/12).
-import type { Car, Trip } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import type { Car } from '@platform/contracts';
 import { maskContacts } from '../chat';
 import { commissionFor } from '@platform/brands';
 import { canAfford, charge, grantWelcome, refund } from '../wallet/application/wallet';
 import type { WalletDeps } from '../wallet/application/ports';
 import { createMemoryWallet } from '../wallet/infrastructure/memory-wallet';
-import type { BookingsDeps, TripFacts } from './application/ports';
+import type { BookingsDeps } from './application/ports';
 import type { RequestFacts } from './application/request-facts';
 import { createMemoryBookings, createMemoryOffers } from './infrastructure/memory-bookings';
-import {
-  DRIVER,
-  fakeNotifier,
-  fakePeople,
-  fakePlaces,
-  fakeRecommend,
-  fakeRequest,
-  fakeTripView,
-  NOW,
-  PITAK,
-  scheduleCheck,
-} from './test-fakes';
+import { createMemoryTalks } from './infrastructure/memory-talks';
+import { fakeRequest, fakeRequestView } from './test-requests';
+import { fakeTrips } from './test-trips';
+import { DRIVER, fakeNotifier, fakePeople, fakePlaces, fakeRecommend, NOW, PITAK } from './test-fakes';
 import { idOfPublic } from '../../test-people';
 import { fakeMeeting } from './test-meeting';
 
@@ -32,7 +25,6 @@ export function setup() {
   let id = 0;
   const newId = () => `00000000-0000-0000-0000-${String((id += 1)).padStart(12, '0')}`;
   const people = fakePeople();
-  const trips = new Map<string, TripFacts>();
   const requests = new Map<string, RequestFacts>();
   const notes: string[] = [];
   const close = (requestId: string, passengerId?: number) => {
@@ -49,51 +41,16 @@ export function setup() {
     newId,
   };
   const bookings = createMemoryBookings();
-  const view = async (facts: TripFacts): Promise<Trip> => {
-    const taken = (await bookings.byTrips([facts.id]))
-      .filter((booking) => booking.status === 'confirmed')
-      .reduce((sum, booking) => sum + booking.seats, 0);
-    return fakeTripView(facts, taken);
-  };
-  const addTrip = (extra: Partial<TripFacts> = {}) => {
-    const facts: TripFacts = {
-      id: newId(),
-      driverId: DRIVER,
-      from: '1726273',
-      to: '1718401',
-      departAt: NOW + 30 * HOUR,
-      departedAt: null,
-      arrivedAt: null,
-      endsAt: NOW + 37 * HOUR,
-      km: 300,
-      seats: 3,
-      price: 90_000,
-      live: true,
-      over: false,
-      pickupMode: 'both',
-      plate: '01A123BC',
-      ...extra,
-    };
-    trips.set(facts.id, facts);
-    return facts.id;
-  };
+  const { trips, port, addTrip } = fakeTrips(bookings, newId, () => now, notes);
   const deps: BookingsDeps = {
     bookings,
     offers: createMemoryOffers(),
-    trips: {
-      find: async (tripId) => trips.get(tripId),
-      ofDriver: async (driverId) =>
-        [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
-      scheduleError: async (driverId, trip) => scheduleCheck(trip.departAt, now, trips.values(), driverId),
-      views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
-      publish: async (driverId, input) => {
-        const tripId = addTrip({ ...input, driverId });
-        return { ok: true, value: await view(trips.get(tripId) as TripFacts) };
-      },
-      cancel: async (_driverId, tripId) => void notes.push(`trip cancelled ${tripId}`),
-    },
+    talks: createMemoryTalks(),
+    requestRings: loadBrand().calls.requestRings,
+    trips: port,
     requests: {
       find: async (requestId) => requests.get(requestId),
+      view: async (requestId) => fakeRequestView(requests.get(requestId)),
       ofPassenger: async (passengerId) => [...requests.values()].filter((r) => r.passengerId === passengerId),
       matched: async (requestId) => close(requestId),
       cancel: async (passengerId, requestId) => close(requestId, passengerId),
@@ -144,6 +101,8 @@ export function setup() {
       if (facts) trips.set(tripId, { ...facts, departedAt: facts.departedAt ?? now, arrivedAt: now });
     },
     requestOpen: (requestId: string) => requests.get(requestId)?.open,
+    // The request closed: cancelled by the passenger or over (docs/35).
+    close: (requestId: string) => close(requestId),
     // A new face or car photo: the driver goes to the team's check again (docs/05).
     recheck: () => void (approved = false),
   };

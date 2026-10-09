@@ -20,6 +20,7 @@ type Row = {
   pickup_lng: number | null;
   dropoff_lat: number | null;
   dropoff_lng: number | null;
+  calls_off: number;
   created_at: number;
 };
 
@@ -42,17 +43,19 @@ const toRequest = (row: Row): RequestRecord => ({
   pickupMode: PICKUP_MODES.find((mode) => mode === row.pickup_mode) ?? 'both',
   pickup: pointOf(row.pickup_lat, row.pickup_lng),
   dropoff: pointOf(row.dropoff_lat, row.dropoff_lng),
+  callsOff: row.calls_off === 1,
   createdAt: row.created_at,
 });
 
 const UPSERT = `INSERT INTO ride_requests (id, passenger_id, from_id, to_id, date, expires_at, km, seats, price,
-  status, pickup_mode, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng, created_at, whole_car, with_woman)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  status, pickup_mode, pickup_lat, pickup_lng, dropoff_lat, dropoff_lng, created_at, whole_car, with_woman,
+  calls_off) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT (id) DO UPDATE SET status = excluded.status, pickup_lat = excluded.pickup_lat,
-  pickup_lng = excluded.pickup_lng, dropoff_lat = excluded.dropoff_lat, dropoff_lng = excluded.dropoff_lng`;
+  pickup_lng = excluded.pickup_lng, dropoff_lat = excluded.dropoff_lat, dropoff_lng = excluded.dropoff_lng,
+  calls_off = excluded.calls_off`;
 const NO_POINTS = 'pickup_lat = NULL, pickup_lng = NULL, dropoff_lat = NULL, dropoff_lng = NULL';
 
-// Table ride_requests (migrations/0007_trips.sql, 0045_request_marks.sql).
+// Table ride_requests (migrations/0007_trips.sql, 0045_request_marks.sql, 0051_request_talks.sql).
 export const d1Requests = (db: D1Database): RequestRepository => ({
   save: async (request) => {
     await db
@@ -76,6 +79,7 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
         request.createdAt,
         request.wholeCar ? 1 : 0,
         request.withWoman ? 1 : 0,
+        request.callsOff ? 1 : 0,
       )
       .run();
   },
@@ -91,6 +95,14 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
     (
       await db
         .prepare("SELECT * FROM ride_requests WHERE status = 'open' AND date = ? ORDER BY created_at")
+        .bind(date)
+        .all<Row>()
+    ).results.map(toRequest),
+  // Through the index (status, date): the open requests from this day on (G64).
+  openFrom: async (date) =>
+    (
+      await db
+        .prepare("SELECT * FROM ride_requests WHERE status = 'open' AND date >= ? ORDER BY created_at")
         .bind(date)
         .all<Row>()
     ).results.map(toRequest),

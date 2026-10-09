@@ -1,0 +1,143 @@
+/* «Mening safarlarim» of a driver (G64, mockup g64/6): the values of the mockup at 360 px. */
+.driver-again,
+.driver-trip,
+.driver-month {
+  display: flex;
+  box-sizing: border-box;
+  width: calc(100% - 24px);
+  margin: 8.67px 12px 0;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  text-align: left;
+}
+
+.driver-again,
+.driver-trip {
+  align-items: flex-start;
+  gap: 11px;
+  cursor: pointer;
+}
+
+.driver-again > svg,
+.driver-trip > svg {
+  flex: none;
+  margin-left: auto;
+  color: var(--reg-control);
+}
+
+.driver-again {
+  align-items: center;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 0 14px 0 13px;
+}
+
+.driver-again-plus {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.driver-again-text,
+.driver-trip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.driver-again-text b {
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.driver-again-text span,
+.driver-trip-sub {
+  font-size: 12px;
+  line-height: 14.33px;
+  color: var(--reg-muted);
+}
+
+.driver-again-text span {
+  font-size: 11.5px;
+  line-height: 14px;
+}
+
+.driver-trip {
+  padding: 9.5px 11px 11.33px 13px;
+}
+
+.driver-again + [data-row] .driver-trip {
+  margin-top: 10px;
+}
+
+.driver-trip > svg {
+  margin-top: 5px;
+}
+
+.driver-trip-when {
+  font-size: 14px;
+  line-height: 17px;
+}
+
+/* «bugun · 16:00» starts with its capital letter (mockup g64/6). */
+.driver-trip-when::first-letter {
+  text-transform: uppercase;
+}
+
+.driver-trip-route {
+  font-size: 14px;
+  line-height: 16.33px;
+}
+
+.driver-trip-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 7px;
+}
+
+.driver-tag {
+  padding: 1px 7px;
+  border-radius: 8px;
+  background: var(--reg-bg);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 14px;
+  color: var(--reg-secondary);
+}
+
+.driver-tag-new {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.driver-tag-full {
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+}
+
+/* The title a little higher and the chosen tab in the ink of the text (mockup g64/6). */
+.driver-trips .market-title {
+  padding-top: calc(var(--screen-top) - 0.67px);
+}
+
+.driver-trips .market-tab-on {
+  color: var(--reg-ink);
+}
+
+.driver-month-costs {
+  align-items: flex-end;
+}
+
+.driver-month-costs b {
+  color: var(--reg-text);
+}

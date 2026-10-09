@@ -1,0 +1,68 @@
+/* «Yoʻlovchilar soʻrovlari» (G64): the values of the mockups g64/1 and g64/2 at 360 px (the mockups
+   are at 1.5). */
+.board {
+  padding-bottom: 16px;
+  color: var(--reg-ink);
+}
+
+.board-title {
+  margin: 0;
+  padding: 15.33px 20px 0;
+  font-size: clamp(18px, 5.834vw, 21px);
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.board .day-counts {
+  grid-auto-columns: calc((100% - 14.67px) / 3);
+  gap: 7.33px;
+  margin: 6.67px 12px 10.67px;
+}
+
+.board .day-count {
+  height: 46.67px;
+}
+
+.board .day-count-name {
+  font-size: clamp(11.5px, 3.611vw, 13px);
+}
+
+.board .day-count-trips {
+  font-size: clamp(11px, 3.334vw, 12px);
+}
+
+.board-trip {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: calc(100% - 24px);
+  margin: 6.67px 12px 0;
+  padding: 10.67px 13.33px 9px;
+  border: 1.33px solid var(--reg-line);
+  border-radius: 12.67px;
+  background: var(--reg-soft);
+  font: inherit;
+  text-align: left;
+  color: var(--reg-ink);
+  cursor: pointer;
+}
+
+.board-trip b {
+  font-size: clamp(11.5px, 3.611vw, 13px);
+  line-height: 14.33px;
+}
+
+.board-trip span {
+  font-size: clamp(10.5px, 3.334vw, 12px);
+  line-height: 14.67px;
+  color: var(--reg-text);
+}
+
+.board-label {
+  display: block;
+  margin: 20px 24px 3.33px;
+  font-size: 11.5px;
+  line-height: 14px;
+  text-transform: uppercase;
+  color: var(--reg-muted);
+}

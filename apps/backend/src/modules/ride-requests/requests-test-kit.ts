@@ -26,9 +26,14 @@ const PLACES = new Map(
   ].map((place) => [place.id, place]),
 );
 
+type Board = RequestsDeps['board'];
+type BoardTrip = Awaited<ReturnType<Board['trip']>>;
+
 export function setup() {
   let now = NOW;
   let id = 0;
+  let routes: Awaited<ReturnType<Board['directions']>> = [];
+  let nearest: BoardTrip = null;
   const deps: RequestsDeps = {
     requests: createMemoryRequests(),
     people: {
@@ -64,6 +69,8 @@ export function setup() {
     fits: (point) => point.lat < 45,
     published: async () => undefined,
     hidden: async () => new Set(),
+    board: { directions: async () => routes, trip: async () => nearest },
+    ratings: async (ids) => new Map(ids.map((userId) => [userId, { average: 4.8, count: 12 }])),
     newId: () => `request-${(id += 1)}`,
     now: () => now,
   };
@@ -79,5 +86,11 @@ export function setup() {
     wholeCar: false,
     withWoman: false,
   };
-  return { deps, request, setNow: (next: number) => void (now = next) };
+  return {
+    deps,
+    request,
+    setNow: (next: number) => void (now = next),
+    directions: (next: typeof routes) => void (routes = next),
+    boardTrip: (next: BoardTrip) => void (nearest = next),
+  };
 }

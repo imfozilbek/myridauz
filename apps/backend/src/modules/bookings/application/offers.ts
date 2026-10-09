@@ -1,30 +1,23 @@
-import { tashkentDate, type Offer, type OfferInput } from '@platform/contracts';
+import type { Offer, OfferInput } from '@platform/contracts';
 import { offerStatusAt, type OfferRecord } from '../domain/offer';
+import { newTripPlan, ownTripPlan, type PlanError } from './offer-plan';
 import { offerViews } from './offer-views';
 import type { BookingsDeps, Result } from './ports';
+import { talkOf } from './talks';
 
-type OfferError =
-  | 'bookings.not_found'
-  | 'bookings.own_trip'
-  | 'bookings.no_seats'
-  | 'bookings.invalid_input'
-  | 'bookings.wrong_status'
-  | 'trips.not_driver'
-  | 'trips.price_out_of_bounds'
-  | 'trips.too_many'
-  | 'trips.too_soon'
-  | 'trips.busy'
-  | 'wallet.not_enough';
+export type OfferError =
+  PlanError | 'bookings.own_trip' | 'bookings.wrong_status' | 'trips.not_driver' | 'wallet.not_enough';
 
 const LIVE_FIRST: Record<Offer['status'], number> = { sent: 0, accepted: 1, declined: 2, expired: 2 };
 
-// A driver offers a time on the request's day and a price within the bounds (docs/09, docs/35).
-// Only with money for the commission: an accepted offer is charged at once (docs/35).
+// A driver offers a time and a price on a request (docs/09, docs/35), or a seat of a trip of theirs
+// (G64). Only with money for the commission: an accepted offer is charged at once (docs/35). The offer
+// lives in the talk of the pair: the same chat as the messages before it (G64).
 export async function sendOffer(
   deps: BookingsDeps,
   driverId: number,
   requestId: string,
-  input: Required<OfferInput>,
+  input: OfferInput,
 ): Promise<Result<Offer, OfferError>> {
   const now = deps.now();
   const [car, request] = await Promise.all([deps.approvedCar(driverId), deps.requests.find(requestId)]);
@@ -32,37 +25,29 @@ export async function sendOffer(
   if (!request?.open) return { ok: false, error: 'bookings.not_found' };
   if (request.passengerId === driverId) return { ok: false, error: 'bookings.own_trip' };
   if (request.seats > car.seats) return { ok: false, error: 'bookings.no_seats' };
-  if (input.departAt <= now || tashkentDate(input.departAt) !== request.date)
-    return { ok: false, error: 'bookings.invalid_input' };
-  const recommendation = await deps.recommend(request.from, request.to);
-  if (!recommendation.ok) return { ok: false, error: 'bookings.not_found' };
-  const { km, minPrice, maxPrice } = recommendation.value;
-  if (input.price < minPrice || input.price > maxPrice)
-    return { ok: false, error: 'trips.price_out_of_bounds' };
-  // The whole car is every seat of this car, priced per seat (docs/09).
-  const seats = request.wholeCar ? car.seats : request.seats;
-  if (!(await deps.wallet.canAfford(driverId, deps.wallet.commission(input.price, seats))))
+  const plan = input.tripId
+    ? await ownTripPlan(deps, driverId, request, input.tripId)
+    : await newTripPlan(deps, driverId, request, input, car);
+  if (!plan.ok) return plan;
+  const { departAt, price, seats } = plan.value;
+  if (!(await deps.wallet.canAfford(driverId, deps.wallet.commission(price, seats))))
     return { ok: false, error: 'wallet.not_enough' };
-  // An accepted offer is a new trip: the driver hears the schedule now, not the passenger later.
-  const busy = await deps.trips.scheduleError(driverId, {
-    from: request.from,
-    to: request.to,
-    departAt: input.departAt,
-    km,
-  });
-  if (busy) return { ok: false, error: busy };
   const sent = await deps.offers.byRequests([requestId]);
   if (sent.some((offer) => offer.driverId === driverId && offerStatusAt(offer, request.open, now) === 'sent'))
     return { ok: false, error: 'bookings.wrong_status' };
+  const talk = await talkOf(deps, requestId, driverId);
   const offer: OfferRecord = {
     id: deps.newId(),
     requestId,
     driverId,
-    ...input,
+    departAt,
+    price,
     seats,
     car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     status: 'sent',
     bookingId: null,
+    talkId: talk.id,
+    tripId: input.tripId ?? null,
     createdAt: now,
   };
   await deps.offers.save(offer);

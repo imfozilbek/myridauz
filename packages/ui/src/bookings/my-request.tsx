@@ -8,6 +8,7 @@ import { usePlaces } from '../market/places-gate';
 import { useShortDay } from '../market/when';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
+import { CallsSwitch } from '../talk/calls-switch';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { OfferCard } from './offer-card';
@@ -72,6 +73,7 @@ export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer
           ))}
         </>
       ) : null}
+      {open ? <CallsSwitch request={request} /> : null}
       {open ? <WaitingChannel request={request} /> : null}
       {open ? (
         <button type="button" className="my-request-cancel" onClick={onCancel}>

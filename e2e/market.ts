@@ -72,7 +72,11 @@ export async function findTrips(page: Page, shot: Shot = none) {
   await shot('4-trip');
 }
 
-// A card of the own trips of a driver has no driver on it (docs/83 U6): it opens by the card itself.
+// A trip of «Mening safarlarim» of a driver (G64, mockup g64/6): a live one from its row, an over
+// one from «Oʻtgan».
 export async function openOwnTrip(page: Page) {
-  await page.locator('.trip-card').first().click();
+  const live = page.locator('.driver-trip');
+  await page.locator('.market-tabs').waitFor();
+  if ((await live.count()) === 0) await page.getByText(t('bookings.tab.past')).click();
+  await page.locator('.driver-trip, .trip-card').first().click();
 }

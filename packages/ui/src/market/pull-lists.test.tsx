@@ -10,25 +10,19 @@ import { DriverHome } from '../home/driver-home';
 import { PassengerData } from '../home/passenger-data';
 import { PassengerHome } from '../home/passenger-home';
 import { PitaksScreen } from '../pitaks/pitaks-screen';
+import { RequestsFlow } from '../requests/requests-flow';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { testClients } from '../test-shell';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
 import { WalletScreen } from '../wallet/wallet-screen';
 import { pullDown } from './list-test-kit';
 import { renderMarket } from './market-test-kit';
-import { RequestsSearchFlow } from './requests-search-flow';
 import { TeamTripsScreen } from './team-trips-screen';
 
 afterEach(cleanup);
 
 const back = () => undefined;
 const go = () => undefined;
-const place = (id: string, parentId: string, name: string) =>
-  ({ id, parentId, type: 'district', name, lat: 41, lng: 69, oneCity: false }) as const;
-const route = {
-  from: place('1726269', '1726', 'Chilonzor'),
-  to: place('1730401', '1730', 'Fargʻona shahri'),
-};
 
 type Case = readonly [string, ReactNode, (load: () => Promise<never>) => Parameters<typeof testClients>[0]];
 const empty = async () => [];
@@ -56,9 +50,9 @@ const CASES: readonly Case[] = [
   ['pitaks', <PitaksScreen onBack={back} />, (load) => ({ pitaks: { all: load } })],
   ['team trips', <TeamTripsScreen onBack={back} />, (load) => ({ market: { teamTrips: load } })],
   [
-    'requests of a day',
-    <RequestsSearchFlow onBack={back} initial={{ route, date: '2026-10-02' }} />,
-    (load) => ({ market: { searchRequests: load } }),
+    'requests of a driver',
+    <RequestsFlow onBack={back} initial={{ from: '1726269', to: '1730401', date: '2026-10-02' }} />,
+    (load) => ({ market: { requestBoard: load }, bookings: { driverOffers: empty } }),
   ],
   ['subscriptions', <SubscriptionsScreen onBack={back} />, (load) => ({ subscriptions: { mine: load } })],
 ];
@@ -67,6 +61,15 @@ const DATA: Record<string, unknown> = {
   wallet,
   'team wallets': { wallets: [], more: false },
   pitaks: { directions: [], pitaks: [] },
+  'requests of a driver': {
+    known: true,
+    date: '2026-10-02',
+    days: [],
+    trip: null,
+    fits: [],
+    others: [],
+    carSeats: 4,
+  },
 };
 
 describe('A pull down at the top of a list refreshes it (docs/94 W1)', { timeout: 20_000 }, () => {

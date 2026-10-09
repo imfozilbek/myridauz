@@ -34,8 +34,9 @@ export type BookingRecord = {
   readonly dropoffNamed: Named | null;
   // The note of the passenger for the meeting, its contacts masked (docs/07); null: none or erased.
   readonly note: string | null;
-  // The offer this booking came from: its chat is the offer's chat (docs/07).
+  // The offer this booking came from: its chat is the offer's chat (docs/07), or the talk's (G64).
   readonly offerId: string | null;
+  readonly talkId: string | null;
   // When the driver confirmed it (docs/88 L6); "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43).
   readonly confirmedAt: number | null;
   readonly boardedAt: number | null;

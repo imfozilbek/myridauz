@@ -19,6 +19,8 @@ const EXPLAINED: readonly string[] = [
   'bookings.too_many',
   'bookings.own_trip',
   'bookings.wrong_status',
+  // A whole car on a trip that already has bookings (G64).
+  'bookings.salon_taken',
   'bookings.departed',
   'bookings.outside_country',
   'bookings.invalid_input',

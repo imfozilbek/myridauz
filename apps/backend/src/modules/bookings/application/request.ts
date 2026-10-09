@@ -68,6 +68,7 @@ export async function requestBooking(
     ...points.value,
     note: input.note ? deps.mask(input.note) : null,
     offerId: null,
+    talkId: null,
     confirmedAt: null,
     boardedAt: null,
     arrivedAt: null,

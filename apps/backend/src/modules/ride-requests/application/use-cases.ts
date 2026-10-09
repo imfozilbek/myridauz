@@ -78,6 +78,7 @@ export async function publishRequest(
     expiresAt: expiresAt(input.date),
     km,
     status: 'open',
+    callsOff: false,
     createdAt: now,
   };
   await deps.requests.save(request);

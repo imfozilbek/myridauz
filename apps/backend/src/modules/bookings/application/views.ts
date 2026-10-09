@@ -1,14 +1,7 @@
-import {
-  NO_RATING,
-  chatKeyOfBooking,
-  chatKeyOfOffer,
-  type BookedPlace,
-  type Booking,
-  type Point,
-  type Trip,
-} from '@platform/contracts';
+import { NO_RATING, type BookedPlace, type Booking, type Point, type Trip } from '@platform/contracts';
 import type { Named } from '../domain/booking';
 import { holdsSeats, statusAt, type BookingRecord } from '../domain/booking';
+import { bookingChatKey } from '../domain/talk';
 import type { BookingsDeps, TripFacts } from './ports';
 
 // Who looks at a booking decides what opens (docs/05, docs/07, docs/14).
@@ -89,7 +82,7 @@ export async function bookingViews(
         note: whole ? record.note : null,
         extraKm: null,
         plate: live && viewer !== 'driver' ? loaded.facts.plate : null,
-        chatKey: record.offerId ? chatKeyOfOffer(record.offerId) : chatKeyOfBooking(record.id),
+        chatKey: bookingChatKey(record),
         confirmedAt: record.confirmedAt,
         boardedAt: record.boardedAt,
         arrivedAt: record.arrivedAt,

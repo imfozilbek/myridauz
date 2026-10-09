@@ -35,14 +35,22 @@ export function OwnTripCard({ trip }: { readonly trip: Trip }) {
         <TripRoad km={trip.km} />
         <TripPoint kind="to" name={placeName(trip.to)} note={arrives} />
       </div>
-      <div className="trip-card-sum">
-        <span>
-          {trip.seatsLeft > 0
-            ? t('driverTrip.free', { count: String(trip.seatsLeft), price })
-            : t('driverTrip.full', { price })}
-        </span>
-        <span className="trip-sheet-rule">{t(RULE_LABEL[trip.bookingRule])}</span>
-      </div>
+      {/* The trip of one «Boʻsh salon kerak» request: the whole car and its sum (mockup g64/3). */}
+      {trip.private ? (
+        <div className="trip-card-sum">
+          <span>{t('driverTrip.private.salon', { count: String(trip.seats) })}</span>
+          <b>{formatNumber(trip.price * trip.seats)}</b>
+        </div>
+      ) : (
+        <div className="trip-card-sum">
+          <span>
+            {trip.seatsLeft > 0
+              ? t('driverTrip.free', { count: String(trip.seatsLeft), price })
+              : t('driverTrip.full', { price })}
+          </span>
+          <span className="trip-sheet-rule">{t(RULE_LABEL[trip.bookingRule])}</span>
+        </div>
+      )}
     </div>
   );
 }

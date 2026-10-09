@@ -1,14 +1,20 @@
 import {
   ADMIN_TRIPS_PATH,
+  DRIVER_MONTH_PATH,
+  DRIVER_REQUESTS_BOARD_PATH,
   DRIVER_REQUESTS_PATH,
   DRIVER_SCHEDULE_PATH,
   DRIVER_TRIPS_PATH,
   directionCardsSchema,
+  driverMonthSchema,
   driverTripCancelPath,
+  driverTripOpenPath,
   PASSENGER_REQUESTS_PATH,
+  passengerRequestCallsPath,
   passengerRequestCancelPath,
   PRICE_RECOMMENDATION_PATH,
   recommendationSchema,
+  requestBoardSchema,
   rideRequestSchema,
   rideRequestsSchema,
   scheduleSchema,
@@ -24,7 +30,10 @@ import {
   TRIP_DIRECTIONS_PATH,
   tripDaysSchema,
   type DirectionCard,
+  type DriverMonth,
   type Recommendation,
+  type RequestBoard,
+  type RequestBoardQuery,
   type RequestSearch,
   type RideRequest,
   type RideRequestInput,
@@ -84,6 +93,19 @@ export function createMarketClient(options: SignedOptions) {
       rideRequest(await post(PASSENGER_REQUESTS_PATH, input)),
     cancelRequest: async (id: string): Promise<RideRequest> =>
       rideRequest(await post(passengerRequestCancelPath(id), {})),
+    // The passenger turns the calls of drivers about the request off and on (G64, docs/127).
+    setRequestCalls: async (id: string, on: boolean): Promise<RideRequest> =>
+      rideRequest(await post(passengerRequestCallsPath(id), { on })),
+    // «Yoʻlovchilar soʻrovlari» of the driver (G64, docs/118 path 7).
+    requestBoard: async (search: RequestBoardQuery): Promise<RequestBoard> =>
+      requestBoardSchema.parse(
+        await (await request(`${DRIVER_REQUESTS_BOARD_PATH}?${query(search)}`)).json(),
+      ),
+    // A trip opened for one request, opened for everybody (G64).
+    openTrip: async (id: string): Promise<Trip> => trip(await post(driverTripOpenPath(id), {})),
+    // «Bu oy N safar», «Yoʻl xarajati qaytdi» (G64).
+    month: async (): Promise<DriverMonth> =>
+      driverMonthSchema.parse(await (await request(DRIVER_MONTH_PATH)).json()),
     // The admin Mini App: the trips of one day, to look at (not to approve).
     teamTrips: async (date: string): Promise<Trip[]> =>
       tripsSchema.parse(await (await request(`${ADMIN_TRIPS_PATH}?${query({ date })}`)).json()).trips,

@@ -120,7 +120,8 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
         return result.ok ? context.json(result.value) : fail(context, result.error);
       })
       .get(`${TRIPS_PATH}/${ONE}`, async (context) => {
-        const trip = await tripDetail(deps(context.env), context.req.param('id'));
+        const viewer = context.get('session').user.id;
+        const trip = await tripDetail(deps(context.env), context.req.param('id'), viewer);
         return trip ? context.json(trip) : fail(context, 'trips.not_found');
       })
       .get(ADMIN_TRIPS_PATH, async (context) => {

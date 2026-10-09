@@ -20,12 +20,15 @@ type Props = {
   readonly warned: boolean;
   // «Xabar · ertaga 20:55 gacha» in the 24 hours after the trip (mockup g60/7).
   readonly placeholder: string;
+  // A talk before a booking (G64, mockup g64/5): no ready answers about the meeting; the line about
+  // hidden numbers comes only when the server hid one.
+  readonly talk: boolean;
 };
 
 // The bottom of a chat (mockup g60/2): ready answers in one tap, the grey line with a lock about
 // hidden numbers, the field and the round «send».
 export function ChatInput(props: Props) {
-  const { hidden, form, text, onText, onSubmit, onReply, open, warned, placeholder } = props;
+  const { hidden, form, text, onText, onSubmit, onReply, open, warned, placeholder, talk } = props;
   const { t } = useI18n();
   if (hidden) return null;
   return (
@@ -37,23 +40,27 @@ export function ChatInput(props: Props) {
         onSubmit();
       }}
     >
-      <div className="chat-replies">
-        {REPLIES.map((key) => (
-          <button
-            key={key}
-            type="button"
-            className="chat-reply"
-            disabled={!open}
-            onClick={() => onReply(t(key))}
-          >
-            {t(key)}
-          </button>
-        ))}
-      </div>
-      <p className={warned ? 'chat-lock chat-lock-warned' : 'chat-lock'}>
-        <Icon name="locked" size={14} />
-        {t('chat.hidden')}
-      </p>
+      {talk ? null : (
+        <div className="chat-replies">
+          {REPLIES.map((key) => (
+            <button
+              key={key}
+              type="button"
+              className="chat-reply"
+              disabled={!open}
+              onClick={() => onReply(t(key))}
+            >
+              {t(key)}
+            </button>
+          ))}
+        </div>
+      )}
+      {talk && !warned ? null : (
+        <p className={warned ? 'chat-lock chat-lock-warned' : 'chat-lock'}>
+          <Icon name="locked" size={14} />
+          {t('chat.hidden')}
+        </p>
+      )}
       <div className="chat-field">
         <Textarea
           aria-label={t('chat.placeholder')}

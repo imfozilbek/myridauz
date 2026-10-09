@@ -68,6 +68,7 @@ export const trip: Trip = {
   status: 'active',
   departedAt: null,
   arrivedAt: null,
+  private: false,
 };
 
 const unused = async (): Promise<never> => {
@@ -111,8 +112,16 @@ export function renderMarket(ui: ReactNode, clients: ApiClients, gender: 'male' 
 }
 
 export const tap = async (text: string | RegExp) => fireEvent.click(await screen.findByText(text));
-// A card of the own trips has no driver on it (U6): it opens by its status.
-export const openOwnTrip = () => tap('Faol');
+// A trip of «Mening safarlarim» opens from its row (G64, mockup g64/6), an over one from «Oʻtgan».
+export async function openOwnTrip() {
+  await waitFor(() => expect(document.querySelector('.driver-trip, .market-tabs')).not.toBeNull());
+  const live = document.querySelector('.driver-trip');
+  if (!live) {
+    fireEvent.click(screen.getByText('Oʻtgan'));
+    await waitFor(() => expect(document.querySelector('.trip-card')).not.toBeNull());
+  }
+  fireEvent.click((live ?? document.querySelector('.trip-card')) as HTMLElement);
+}
 
 // From Chilonzor (Toshkent shahri) to Fargʻona shahri, or to the whole Fargʻona region: «Qayerga»
 // opens by itself, both ends chosen go on without «Davom etish» (G40, docs/106 K1).

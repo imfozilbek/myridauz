@@ -26,6 +26,8 @@ export type RequestRecord = {
   readonly pickupMode: PickupMode;
   readonly pickup: Point | null;
   readonly dropoff: Point | null;
+  // The passenger turned the calls of drivers off (G64, docs/127).
+  readonly callsOff: boolean;
   readonly createdAt: number;
 };
 
