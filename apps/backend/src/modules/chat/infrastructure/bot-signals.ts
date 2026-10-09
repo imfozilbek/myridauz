@@ -43,8 +43,7 @@ export const botSignals = (env: Bindings): ChatSignals => ({
   // A call cannot ring a closed Mini App: the bot calls the person in (docs/08).
   incomingCall: (to, key) =>
     ringOr(env, { to, key, kind: 'call' }, t('bot.call.incoming'), t('bot.call.answer')),
-  missedCall: (to, key) =>
-    ringOr(env, { to, key, kind: 'missed' }, t('bot.call.missed'), t('bot.chat.open')),
+  missedCall: (to, key) => ringOr(env, { to, key, kind: 'missed' }, t('bot.call.missed'), t('bot.chat.open')),
   read: async (to, key) => void (await ringUnderSeat(env, { to, key, kind: 'read' })),
   contactAttempts: async (userId, key, count) => {
     const person = await peopleOf(env).find(userId);

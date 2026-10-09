@@ -89,9 +89,11 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
   it('counts the unread messages of the chat under the seats (docs/122 rule 5)', async () => {
     const booking = { ...(await asked()), status: 'confirmed' as const };
     expect(card(booking).text).not.toContain('yangi xabar');
-    expect(card(booking, booking.trip.departAt - DAY_MS, 2).text.split('\n').at(-1)).toBe(
-      '💬 2 ta yangi xabar',
-    );
+    expect(
+      card(booking, booking.trip.departAt - DAY_MS, 2)
+        .text.split('\n')
+        .at(-1),
+    ).toBe('💬 2 ta yangi xabar');
   });
 
   it('rings quietly at night, but «2 soat qoldi» wakes the person (docs/122 rule 3)', async () => {

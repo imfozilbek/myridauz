@@ -8,7 +8,8 @@ const { t } = createI18n(DEFAULT_LOCALE);
 // A message or a call in the chat of a seat, under its trip card (G68, docs/122 rule 5).
 export type ChatRing = 'message' | 'call' | 'missed';
 const BUTTONS = { message: 'bot.chat.open', call: 'bot.call.answer', missed: 'bot.chat.open' } as const;
-export const isChatRing = (ring: string | undefined): ring is ChatRing => ring !== undefined && ring in BUTTONS;
+export const isChatRing = (ring: string | undefined): ring is ChatRing =>
+  ring !== undefined && ring in BUTTONS;
 
 // The ring of a chat opens that chat in the Mini App of its bot; the other rings have no button.
 export function chatRingButton(
