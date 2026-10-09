@@ -1,0 +1,196 @@
+/* The sheet of the open Mini App (G68, mockups g68/7, g68/8): the values of the mockups at 360 px. */
+.action-sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 11px 18px 16px;
+  text-align: center;
+}
+
+/* «1 / 3» at the top right while more things wait (mockup g68/7 screen 5). */
+.action-count {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--tgui--secondary_bg_color);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--reg-ink);
+}
+
+/* A ringing call: a soft halo around the face (mockup g68/8 «Qoʻngʻiroq»). */
+.action-calling .sheet-face {
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px var(--reg-soft);
+}
+
+.action-kicker {
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--reg-text);
+}
+
+.action-title {
+  margin-top: 3px;
+  font-size: 22px;
+  line-height: 26px;
+}
+
+.action-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--reg-muted);
+}
+
+.action-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-self: stretch;
+  margin-top: 12px;
+  padding: 10px 13px;
+  border-radius: 12px;
+  background: var(--tgui--secondary_bg_color);
+  text-align: left;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--reg-muted);
+}
+
+.action-block-head {
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--reg-ink);
+}
+
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.action-row b {
+  font-size: 15px;
+  color: var(--reg-ink);
+}
+
+.action-quote {
+  font-size: 15px;
+  line-height: 19px;
+  color: var(--reg-ink);
+}
+
+.action-car {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.action-car-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: var(--reg-card);
+  color: var(--reg-muted);
+}
+
+.action-car-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--reg-ink);
+}
+
+.action-alert {
+  margin-top: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--reg-text);
+}
+
+.action-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.action-chip {
+  padding: 5px 11px;
+  border: 1px solid var(--reg-divider);
+  border-radius: 14px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--reg-ink);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 9px;
+  align-self: stretch;
+  margin-top: 10px;
+}
+
+.action-main,
+.action-second {
+  min-height: 54px;
+  border-radius: 14px;
+  font-size: 17px;
+}
+
+.action-second {
+  color: var(--reg-danger-text);
+}
+
+.action-calling .action-second {
+  background: var(--reg-danger);
+  color: var(--reg-card);
+}
+
+.action-calling .action-main {
+  background: var(--reg-success);
+}
+
+.action-foot,
+.action-note {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--reg-muted);
+}
+
+.action-foot button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+/* «Madina tasdiqlandi · 20 000 komissiya» on top, under the header (mockup g68/7 screen 4). */
+.action-plaque {
+  top: 8px;
+  bottom: auto;
+}

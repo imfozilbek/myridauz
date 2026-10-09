@@ -45,4 +45,6 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-attention-line': colors.attentionLine,
     // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
     '--reg-danger-text': colors.dangerText,
+    // «Rad etish» of a call in the sheet of the open Mini App (G68, mockup g68/8).
+    '--reg-danger': colors.danger,
   }) as CSSProperties;

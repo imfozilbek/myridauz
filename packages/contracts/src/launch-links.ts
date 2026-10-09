@@ -34,3 +34,8 @@ export const WALLET_SECTION = 'wallet';
 // The trips of the team in the admin app: «Bronni ochish» under a support question opens one of
 // them, ?open=trips&trip=<id> (G68, mockup g68/4).
 export const TEAM_TRIPS_SECTION = 'trips';
+
+// A ring of a bot that asks for an answer opens the main screen with its sheet first (docs/122,
+// G68): ?sheet=<id>, the id of the booking or the offer, or the chat key.
+export const SHEET_LINK = 'sheet';
+export const SHEET_LINK_VALUE = /^[bot]?[0-9a-f-]{36}$/u;

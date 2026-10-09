@@ -26,6 +26,7 @@ import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import requests from '../locales/uz-Latn/requests.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
+import sheet from '../locales/uz-Latn/sheet.json' with { type: 'json' };
 import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
@@ -62,6 +63,8 @@ const REFERENCE = {
   requests,
   reviews,
   share,
+  // The sheet of the open Mini App: the bot calls, the app answers (G68, docs/122).
+  sheet,
   stats,
   subscriptions,
   wallet,

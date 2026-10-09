@@ -1,5 +1,6 @@
 import { MY_TRIP_LINK } from '@platform/contracts';
 import { useState } from 'react';
+import { DriverActions } from '../action-sheet/driver-actions';
 import type { HomeGo } from '../flow/start-action';
 import { useDirectory } from '../places/use-directory';
 import { Screen } from '../screen/screen';
@@ -18,6 +19,7 @@ export function DriverHome({ go }: { readonly go: HomeGo }) {
     <>
       <Screen onRefresh={load.refresh} />
       <Now go={go} load={load} />
+      <DriverActions />
     </>
   );
 }

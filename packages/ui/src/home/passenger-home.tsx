@@ -1,5 +1,7 @@
 import { BOOKING_LINK } from '@platform/contracts';
 import { useState } from 'react';
+import { useActionsWaiting } from '../action-sheet/action-queue';
+import { PassengerActions } from '../action-sheet/passenger-actions';
 import { MeetingCard, meetingTime } from '../bookings/meeting-card';
 import type { HomeGo } from '../flow/start-action';
 import { PlacesKnown } from '../market/places-gate';
@@ -18,13 +20,16 @@ import { useHomeTap } from './use-home-tap';
 // the meeting instead of it 30 minutes before the departure (docs/126). Search lives at the bottom.
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
+  // One sheet at a time (docs/122): «Yetib keldingizmi?» and a saved driver wait for the answers.
+  const free = !useActionsWaiting();
   // A pull down at the top of the main screen refreshes the bookings (docs/94 W1).
   return (
     <>
       <Screen onRefresh={load.refresh} />
       <Seat go={go} load={load} />
-      <ArrivedSheet bookings={load.value?.[0] ?? []} onTold={load.refresh} />
-      {load.value && !load.value[0].some((booking) => asksArrival(booking, Date.now())) ? (
+      <PassengerActions go={go} />
+      {free ? <ArrivedSheet bookings={load.value?.[0] ?? []} onTold={load.refresh} /> : null}
+      {free && load.value && !load.value[0].some((booking) => asksArrival(booking, Date.now())) ? (
         <FavoriteSheet go={go} bookings={load.value[0]} />
       ) : null}
     </>

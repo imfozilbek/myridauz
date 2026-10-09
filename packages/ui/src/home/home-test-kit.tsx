@@ -1,7 +1,10 @@
+import type { BookingsClient, ChatClient } from '@platform/api-client';
 import type { Booking, Favorites, Offer, RequestBoard, RideRequest, Trip, Wallet } from '@platform/contracts';
 import { waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { expect } from 'vitest';
+import { ActionSheet } from '../action-sheet/action-sheet';
+import { OpenChatContext, type OpenChat } from '../chat/open-chat';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { FeedContext } from '../feed/feed-context';
 import { searchMarket } from '../find/search-test-kit';
@@ -49,6 +52,12 @@ type Data = {
   readonly placesFail?: number;
   // The map knows the district of a point: «Qayerdan» where the person stands (G66).
   readonly where?: boolean;
+  // The sheet of the open Mini App over the main screen, as in the apps (G68, docs/122).
+  readonly sheet?: boolean;
+  // The answers of the sheet: «Tasdiqlash», «Qabul qilish»; the unread chats and «Javob yozish».
+  readonly answers?: Partial<BookingsClient>;
+  readonly chat?: Partial<ChatClient>;
+  readonly openChat?: OpenChat;
 };
 
 const none = async () => [];
@@ -63,15 +72,17 @@ export function renderHome(
   data: Data,
   driver: Driver = approved,
 ) {
-  let signal: () => void = () => undefined;
+  // Every list of the screen hears the signal: the main lists and the sheet (G68).
+  const listeners = new Set<() => void>();
   const subscribe = (listener: () => void) => {
-    signal = listener;
-    return () => undefined;
+    listeners.add(listener);
+    return () => void listeners.delete(listener);
   };
   const clients = testClients({
     bookings: {
       ...(data.bookings ? { myBookings: data.bookings } : {}),
       ...(data.requests ? { driverBookings: data.requests } : {}),
+      ...data.answers,
       myOffers: data.offers ?? none,
     },
     ...(data.wallet ? { wallet: { mine: data.wallet } } : {}),
@@ -84,6 +95,7 @@ export function renderHome(
       ...(data.board ? { requestBoard: data.board } : {}),
     },
     map: data.where ? testMap() : { where: async () => Promise.reject(new Error('none')) },
+    ...(data.chat ? { chat: data.chat } : {}),
   });
   let fails = data.placesFail ?? 0;
   const places = {
@@ -125,10 +137,13 @@ export function renderHome(
   const result = renderMarket(
     <LocationsClientContext.Provider value={places}>
       <FeedContext.Provider value={subscribe}>
-        {data.bookings ? passenger : <DriverContext.Provider value={driver}>{flow}</DriverContext.Provider>}
+        <OpenChatContext.Provider value={data.openChat ?? (() => undefined)}>
+          {data.bookings ? passenger : <DriverContext.Provider value={driver}>{flow}</DriverContext.Provider>}
+          {data.sheet ? <ActionSheet /> : null}
+        </OpenChatContext.Provider>
       </FeedContext.Provider>
     </LocationsClientContext.Provider>,
     clients,
   );
-  return { ...result, signal: () => signal() };
+  return { ...result, signal: () => listeners.forEach((listener) => listener()) };
 }

@@ -8,6 +8,9 @@ export const otherClients = (overrides: Overrides) => ({
   chat: {
     socketUrl: NOT_USED,
     about: async () => ({ booking: null, role: null, request: null, offer: null, driver: null }),
+    // No unread chats: the sheet «Yangi xabar» stays away unless a test brings one (G68).
+    unread: async () => [],
+    answer: NOT_USED,
     share: NOT_USED,
     stopSharing: NOT_USED,
     shareTrip: NOT_USED,
