@@ -15,6 +15,7 @@ export const toMyProfile = (user: User, isAdmin: boolean): MyProfile => ({
   avatarStatus: user.face?.status ?? null,
   avatarReason: user.face?.reason ?? null,
   writeAccess: user.writeAccess,
+  joinedAt: user.createdAt,
   rating: NO_RATING,
 });
 

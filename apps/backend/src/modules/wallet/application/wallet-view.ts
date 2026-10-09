@@ -5,6 +5,10 @@ import type { WalletDeps } from './ports';
 
 const HISTORY_LIMIT = 100;
 
+// No money confirms no seat; money without a price of a trip yet says nothing (G65).
+const seatsLeft = (total: number, perSeat: number | null) =>
+  total <= 0 ? 0 : perSeat === null ? null : Math.floor(total / perSeat);
+
 // «Hamyon» (docs/12, G65 mockup g65/1): the balances, how many seats they still confirm, and the
 // latest operations, the newest first. A row of a booking names its passenger and seats: «Komissiya ·
 // Sardor, 2 joy», «Qaytarildi · Akmal kelmadi» (docs/129, G63).
@@ -31,7 +35,3 @@ export async function walletView(deps: WalletDeps, driverId: number): Promise<Wa
     }),
   };
 }
-
-// No money confirms no seat; money without a price of a trip yet says nothing (G65).
-export const seatsLeft = (total: number, perSeat: number | null) =>
-  total <= 0 ? 0 : perSeat === null ? null : Math.floor(total / perSeat);

@@ -10,6 +10,7 @@ export const profile = {
   roles: ['passenger' as const],
   hasAvatar: true,
   writeAccess: false,
+  joinedAt: Date.parse('2026-08-09T00:00:00Z'),
   rating: null,
   avatarStatus: null,
   avatarReason: null,

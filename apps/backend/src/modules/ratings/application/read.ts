@@ -47,3 +47,15 @@ export async function starsOfRides(deps: RatingsDeps, userId: number) {
     new Map(reviews.map((review) => [review.bookingId, review.stars]));
   return { given: byBooking(given), received: byBooking(received) };
 }
+
+const PERCENT = 100;
+const ON_TIME = 'on_time';
+
+// The numbers on top of «Profil» (G65, mockup g65/3): the rating and how often others marked the person
+// «Vaqtida»; nothing while the rating is still new, as «Yangi».
+export async function standingOf(deps: RatingsDeps, userId: number) {
+  const reviews = await published(deps, [userId]);
+  const rating = ratingOf(reviews.map((review) => review.stars));
+  const onTime = reviews.filter((review) => review.tags.includes(ON_TIME)).length;
+  return { rating, onTime: rating.average === null ? null : Math.round((PERCENT * onTime) / reviews.length) };
+}

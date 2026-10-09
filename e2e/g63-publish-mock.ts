@@ -20,6 +20,7 @@ const MAN = {
   roles: ['passenger', 'driver'],
   hasAvatar: true,
   writeAccess: true,
+  joinedAt: Date.parse('2026-08-09T00:00:00Z'),
   rating: null,
   avatarStatus: null,
   avatarReason: null,
