@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 13.18px 17px 17.27px;
+  padding: 11px 17px 17.27px;
   text-align: center;
 }
 
@@ -17,13 +17,13 @@
 }
 
 .action-sheet .sheet-face {
-  margin-top: 12.73px;
+  margin-top: 11.28px;
 }
 
 /* «1 / 3» at the top right while more things wait (mockup g68/7 screen 5). */
 .action-count {
   position: absolute;
-  top: 16.54px;
+  top: 17.99px;
   right: 16.18px;
   padding: 2px 8px;
   border-radius: 10px;
@@ -36,7 +36,7 @@
 
 /* A ringing call: two soft rings around the face (mockup g68/8 «Qoʻngʻiroq»). */
 .action-calling .sheet-face {
-  margin-top: 11px;
+  margin-top: 11.72px;
   border-radius: 50%;
   box-shadow:
     0 0 0 7px color-mix(in srgb, var(--reg-strong) 20%, transparent),
@@ -47,7 +47,7 @@
   margin-top: 6.37px;
   font-size: 13.55px;
   font-weight: 700;
-  line-height: 15.73px;
+  line-height: 16.82px;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--reg-text);
@@ -56,21 +56,21 @@
 .action-title {
   margin-top: 2.47px;
   font-size: 21.82px;
-  line-height: 26px;
+  line-height: 26.73px;
 }
 
 .action-sub {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: -0.23px;
+  margin-top: 1.22px;
   font-size: 14.73px;
-  line-height: 17.27px;
+  line-height: 16.54px;
   color: var(--reg-secondary);
 }
 
 .action-alert {
-  margin-top: 6.57px;
+  margin-top: 8.02px;
   font-size: 13.64px;
   font-weight: 700;
   line-height: 17px;
@@ -79,7 +79,7 @@
 
 .action-buttons {
   display: flex;
-  gap: 9px;
+  gap: 7.55px;
   align-self: stretch;
   margin-top: 9.77px;
 }
@@ -91,7 +91,7 @@
   gap: 8px;
   min-height: 55px;
   padding-inline: 4px;
-  border-radius: 14px;
+  border-radius: 15.45px;
   font-size: clamp(13px, calc(7.5vw - 10px), 16.91px);
 }
 
