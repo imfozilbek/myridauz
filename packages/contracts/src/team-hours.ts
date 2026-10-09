@@ -29,3 +29,8 @@ export function teamWaitMs(since: number, now: number, hours: TeamHours): number
 
 // "7:00", "23:00": an hour of the team as people read it.
 export const hourLabel = (hour: number) => `${hour}:00`;
+
+// The night of the bots, Tashkent time: no sound from 22:00 to 07:00, but for a call and
+// «2 soat qoldi» (G68, docs/122 rule 3).
+const BOTS_DAY: TeamHours = { from: 7, to: 22 };
+export const isQuietTime = (ms: number) => !isTeamTime(ms, BOTS_DAY);

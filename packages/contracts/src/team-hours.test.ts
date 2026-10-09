@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DAY_MS, tashkentDayStart } from './tashkent-time';
-import { hourLabel, isTeamTime, MINUTE_MS, teamWaitMs } from './team-hours';
+import { hourLabel, isQuietTime, isTeamTime, MINUTE_MS, teamWaitMs } from './team-hours';
 
 const HOURS = { from: 7, to: 23 };
 const DAY = tashkentDayStart('2026-10-02');
@@ -36,5 +36,13 @@ describe('team hours (G34)', () => {
   it('reads an hour as people do', () => {
     expect(hourLabel(7)).toBe('7:00');
     expect(hourLabel(23)).toBe('23:00');
+  });
+
+  it('the bots keep quiet from 22:00 to 07:00 Tashkent time (G68, docs/122 rule 3)', () => {
+    expect(isQuietTime(at(21, 59))).toBe(false);
+    expect(isQuietTime(at(22))).toBe(true);
+    expect(isQuietTime(at(2))).toBe(true);
+    expect(isQuietTime(at(6, 59))).toBe(true);
+    expect(isQuietTime(at(7))).toBe(false);
   });
 });
