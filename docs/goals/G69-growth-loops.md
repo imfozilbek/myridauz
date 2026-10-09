@@ -15,7 +15,8 @@ Definition of Done
 [ ] Петля 4: строка на странице «Yaqinlarimga», via=follow.
 [ ] Карточки «Men Rida bilan» (docs/123): регистрация, первая и
     5/10/25 поездка, водитель одобрен, 10/50/100 попутчиков; история
-    (shareToStory) и чат (shareMessage); экран праздника; via=share-*.
+    (shareToStory) и чат (shareMessage); экран праздника после отзыва,
+    до «Qaytish»; via=share-* с коротким кодом автора (docs/116, 158).
 [ ] «Почему хочется нажать» (docs/123): выгода, вид карточки заранее,
     кнопка с адресатом, своим голосом (3 фразы на выбор), история без эмодзи, «Keyinroq»; экран «Sizning taʼsiringiz» и
     знаки 1/5/25; события share_shown и share_done.
