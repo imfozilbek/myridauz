@@ -30,10 +30,12 @@ for (const platform of PLATFORMS)
   test(`${platform}: home, profile, wallet and my trips`, async ({ page }) => {
     await openHome(page, 'driver', MUROD, platform);
     await shot(page, platform, 'da10-home');
+    // «Hamyon» is the last tile of the main screen (G65, docs/118 path 9).
+    await visit(page, platform, t('wallet.title'), 'da12-wallet', t('wallet.history'));
     await page.getByLabel(t('account.profile.open')).click();
     await shot(page, platform, 'da11-profile');
-    await visit(page, platform, t('wallet.title'), 'da12-wallet');
     await visit(page, platform, t('comfort.history.title'), 'da13-history');
+    await visit(page, platform, t('channels.title'), 'da14-channels', t('channels.mine.all'));
   });
 
 test('android: a trip, its seats, its map and a waiting seat', async ({ page }) => {

@@ -8,7 +8,7 @@
 |---|---|---|
 | «Sevimli haydovchilarga qoʻshish» | Экран поездки и экран после отзыва | Попутчик |
 | «Sevimli haydovchilar» | «Mening safarlarim» → внизу | Попутчик |
-| «Safarlar tarixi» | Профиль | Попутчик и водитель |
+| «Safarlar tarixi» | «Profil», первая группа (G65, g65/3) | Попутчик и водитель |
 | «Qaytish» | После «Yetib keldik»: «Safar tugadi», потом «Qaytish»; на прошлой поездке кнопка «Qaytishni eʼlon qilish» (G63, `143`) | Водитель |
 | «Tavsiya: 90 000 soʻm» | Карточка поездки в поиске и экран поездки | Попутчик и водитель |
 | «Yaqinlarimga yuborish» | Экран своей поездки, раздел «Yaqinlarim» | Водитель |
