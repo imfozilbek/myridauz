@@ -79,7 +79,11 @@ export type ChatSignals = {
 // The messages a person of this chat has not seen yet (G53): the plate «1 xabar» on the main screen.
 // Adding one also refreshes the open Mini App of that person (docs/64).
 export type UnreadCounter = {
-  add(to: { readonly userId: number; readonly role: Role }): Promise<void>;
+  // last: the message itself, already without contacts (docs/07), for the sheet of the Mini App (G68).
+  add(
+    to: { readonly userId: number; readonly role: Role },
+    last: { readonly text: string; readonly at: number },
+  ): Promise<void>;
   // True when something was unread.
   clear(userId: number): Promise<boolean>;
 };

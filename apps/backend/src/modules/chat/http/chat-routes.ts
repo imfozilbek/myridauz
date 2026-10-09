@@ -9,6 +9,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { Member } from '../application/ports';
 import { signTicket, verifyTicket } from '../application/ticket';
+import { chatSheetRoutes } from './chat-sheet-routes';
 
 // Who may open a chat: the bookings module knows (docs/07). null: not a member of this chat.
 export type MemberOf = (env: Bindings, key: string, userId: number) => Promise<Member | null>;
@@ -23,6 +24,7 @@ const fail = (code: ApiErrorCode, status: 400 | 403 | 503) => Response.json({ er
 export function chatRoutes(memberOf: MemberOf, aboutOf: AboutOf) {
   return (
     new Hono<AppEnv>()
+      .route('/', chatSheetRoutes(memberOf))
       // Who calls and about which trip or request, on the chat and the call screen (G54, G64).
       .get('/chats/:key/about', async (context) => {
         const key = context.req.param('key');
