@@ -45,9 +45,7 @@ test('G54. a closed Mini App: the bot calls the person in after 5 seconds', asyn
   // Nothing before the 5 seconds: the Mini App may still open the chat.
   await new Promise((resolve) => setTimeout(resolve, 3_000));
   expect(
-    (await botMessages()).filter(
-      (m) => m.chatId === DIYORA.id && m.text.includes(tailOf('bot.ring.call')),
-    ),
+    (await botMessages()).filter((m) => m.chatId === DIYORA.id && m.text.includes(tailOf('bot.ring.call'))),
   ).toEqual([]);
   await new Promise((resolve) => setTimeout(resolve, AFTER_INVITE_MS - 3_000));
   await toldBy('passenger', DIYORA, tailOf('bot.ring.call'));

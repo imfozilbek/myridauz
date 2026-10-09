@@ -4,7 +4,6 @@ import { bookingCommission } from '../billing';
 import { maskContacts, postSystemEvent } from '../chat';
 import { recordServerEvent } from '../analytics';
 import { approvedCar } from '../drivers';
-import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { notify } from '../notifications';
 import {
@@ -42,6 +41,7 @@ import { createMemoryTalks } from './infrastructure/memory-talks';
 import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
+import { requestNewsOf } from './request-news';
 
 const localOffers = createMemoryOffers();
 const localTalks = createMemoryTalks();
@@ -101,10 +101,10 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
         brand: loadBrand(env.BRAND),
         notify: (jobs) => notify(env, jobs),
         system: (key, event) => postSystemEvent(env, key, event),
-        placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
         closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
         passenger: passengerNewsOf(env),
         driver: (tripId, about, ring) => driverNewsOf(env, deps)(tripId, about, ring),
+        request: (id, offer) => requestNewsOf(env, deps)(id, offer),
       }),
     ),
     places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },

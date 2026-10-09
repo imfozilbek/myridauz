@@ -8,6 +8,7 @@ import {
   ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
+  tellRequest,
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
@@ -16,7 +17,12 @@ import { assignTo } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
 import { approvedCar } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
-import { handleRequestPublished, requestViewOf, wireHiddenRequesters } from './modules/ride-requests';
+import {
+  handleRequestChanged,
+  handleRequestPublished,
+  requestViewOf,
+  wireHiddenRequesters,
+} from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
 import { requestPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
@@ -70,9 +76,13 @@ wireFavorites({
 
 // A published request reaches subscribed drivers (docs/24).
 handleRequestPublished(async (env, requestId) => {
+  // Its own card waits quietly on top of the passenger bot (G68, docs/122).
+  await tellRequest(env, requestId);
   const request = await requestViewOf(env, requestId);
   if (request) await requestPublished(env, request);
 });
+// A request cancelled or burned: its card says so (G68).
+handleRequestChanged(tellRequest);
 
 // The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
 // who did not come is neither rated nor rates (docs/129, G63).

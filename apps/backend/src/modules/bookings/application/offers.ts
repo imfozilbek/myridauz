@@ -53,7 +53,7 @@ export async function sendOffer(
   await deps.offers.save(offer);
   const [view] = await offerViews(deps, [offer], [request]);
   if (!view) return { ok: false, error: 'bookings.not_found' };
-  await deps.notify.offered(request.passengerId, view);
+  await deps.notify.offered(view);
   return { ok: true, value: view };
 }
 

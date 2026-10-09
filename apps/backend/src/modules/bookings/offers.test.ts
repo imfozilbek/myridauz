@@ -78,7 +78,7 @@ describe('a driver offers on a request (docs/35)', () => {
     expect(notes).toEqual(
       // The passenger accepted: their card changes quietly, no ring about their own step (docs/122).
       expect.arrayContaining([
-        'offer to 10',
+        'offer sent',
         'offer accepted',
         'passenger: confirmed 01A123BC by the passenger',
       ]),

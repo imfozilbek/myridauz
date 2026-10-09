@@ -50,7 +50,7 @@ export const fakeNotifier = (notes: string[]): BookingsDeps['notify'] => ({
   declined: async () => void notes.push('passenger: declined'),
   expired: async () => void notes.push('passenger: expired'),
   cancelled: async (_booking, by) => void notes.push(`cancelled by ${by}`),
-  offered: async (passengerId) => void notes.push(`offer to ${passengerId}`),
+  offered: async () => void notes.push('offer sent'),
   came: async (booking) => void notes.push(`driver: came ${booking.passenger.firstName}`),
   driverCame: async (booking) => void notes.push(`passenger: driver came ${booking.passenger.firstName}`),
   noShow: async (booking) => void notes.push(`passenger: no show ${booking.passenger.firstName}`),

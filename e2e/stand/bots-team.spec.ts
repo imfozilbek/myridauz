@@ -41,8 +41,8 @@ test('S06. 2 stars by the button: thanks, a review and a complaint are offered',
 test('S05. the offer comes with a button that opens this offer', async () => {
   const request = await askRide(AZIZA);
   const offer = await offerOn(GAYRAT, request.id);
-  await toldBy('passenger', AZIZA, wordsOf('bot.offer.new'));
-  const message = await told('passenger', AZIZA.id, wordsOf('bot.offer.new'));
+  await toldBy('passenger', AZIZA, wordsOf('bot.ring.offer'));
+  const message = await told('passenger', AZIZA.id, wordsOf('bot.ring.offer'));
   expect(message?.buttons[0]?.url).toContain(offer.id);
 });
 

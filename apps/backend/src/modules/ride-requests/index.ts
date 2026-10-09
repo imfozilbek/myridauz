@@ -12,7 +12,7 @@ import { views } from './application/views';
 import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
-import { isOpen, withoutPoints, type RequestRecord } from './domain/ride-request';
+import { isOpen, statusAt, withoutPoints, type RequestRecord } from './domain/ride-request';
 
 // Without D1 (tests) requests live in memory.
 const localRequests = createMemoryRequests();
@@ -21,6 +21,9 @@ const localRequests = createMemoryRequests();
 type Published = (env: Bindings, requestId: string) => Promise<void>;
 let onPublished: Published = async () => undefined;
 export const handleRequestPublished = (handler: Published) => void (onPublished = handler);
+// A request cancelled or burned: its card in the passenger bot says so (G68), set by the app too.
+let onChanged: Published = async () => undefined;
+export const handleRequestChanged = (handler: Published) => void (onChanged = handler);
 // People hidden by complaints (docs/17): set by the app, the complaints module knows them.
 type Hidden = (env: Bindings, userIds: readonly number[]) => Promise<ReadonlySet<number>>;
 let hiddenOf: Hidden = async () => new Set();
@@ -44,6 +47,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   pitakOf: (from, to) => pitakOf(env, from, to),
   fits: pointFitsPlace,
   published: (requestId) => onPublished(env, requestId),
+  changed: (requestId) => onChanged(env, requestId),
   hidden: (userIds) => hiddenOf(env, userIds),
   board: {
     directions: (driverId) => boardOf.directions(env, driverId),
@@ -57,7 +61,9 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
 export const requestsModule = requestRoutes(requestsDeps);
 
 // The Cron job (docs/35): requests of a day that is over become expired.
-export const expireRequests = (env: Bindings, now: number) => requestsDeps(env).requests.expireOver(now);
+export async function expireRequests(env: Bindings, now: number): Promise<void> {
+  for (const id of await requestsDeps(env).requests.expireOver(now)) await onChanged(env, id);
+}
 
 // For offers (G08): the facts of a request and "matched" when a passenger accepts an offer.
 const factsOf = (request: RequestRecord, now: number) => ({
@@ -75,6 +81,7 @@ const factsOf = (request: RequestRecord, now: number) => ({
   pickup: request.pickup,
   dropoff: request.dropoff,
   open: isOpen(request, now),
+  status: statusAt(request, now),
   callsOff: request.callsOff,
 });
 export const requestFacts = async (env: Bindings, id: string) => {

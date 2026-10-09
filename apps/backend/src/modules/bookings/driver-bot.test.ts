@@ -30,10 +30,10 @@ async function driverBot(at: (booking: Booking) => number = dayBefore) {
     brand: loadBrand(),
     notify: async () => undefined,
     system: async () => undefined,
-    placeName: async (id) => id,
     closeOnes: async () => undefined,
     passenger: async () => undefined,
     driver: (tripId, about, ring?: DriverRing) => news(tripId, about, ring),
+    request: async () => undefined,
   });
   const change = (next: Partial<Booking>) => (booking = { ...booking, ...next });
   return { notifier, shown, booking: () => booking, change };

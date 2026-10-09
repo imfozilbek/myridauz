@@ -12,7 +12,8 @@ export type RequestRepository = {
   // Open requests of this day and later, the oldest first: the board of a driver (G64).
   openFrom(date: string): Promise<RequestRecord[]>;
   // The Cron job: requests of a day that is over become expired (docs/35), without points.
-  expireOver(now: number): Promise<void>;
+  // The requests that burned now: their cards in the bot say so (G68).
+  expireOver(now: number): Promise<string[]>;
   // "Maʼlumotlarimni oʻchirish" (docs/30): the points of the person go at once.
   erasePointsOf(passengerId: number): Promise<void>;
 };
@@ -33,6 +34,8 @@ export type RequestsDeps = {
   readonly fits: (point: Point, placeId: string) => boolean;
   // A request was published: drivers subscribed to its route hear about it (docs/24).
   readonly published: (requestId: string) => Promise<void>;
+  // A request cancelled or burned: its card in the passenger bot says so (G68, docs/122).
+  readonly changed: (requestId: string) => Promise<void>;
   // Complaints from 3 people hide a person from every search, of trips and of requests (docs/17).
   readonly hidden: (userIds: readonly number[]) => Promise<ReadonlySet<number>>;
   // The board of a driver (G64, docs/118 path 7): the routes of the driver's trips and subscriptions,

@@ -6,14 +6,7 @@ import { requestBooking } from './application/request';
 import { passengerCard } from './infrastructure/passenger-card';
 import { passengerNews } from './infrastructure/passenger-news';
 import { DILNOZA, seats, setup } from './test-kit';
-
-const PLACES = new Map([
-  ['1726273', { name: 'Chilonzor', parentId: '1726' }],
-  ['1726', { name: 'Toshkent shahri', parentId: null }],
-  ['1718401', { name: 'Samarqand shahri', parentId: '1718' }],
-  ['1718', { name: 'Samarqand viloyati', parentId: null }],
-]);
-const PITAK = { id: 'p1', name: 'Chilonzor pitagi', point: { lat: 41.28, lng: 69.2 } };
+import { PITAK, PLACES } from './card-places';
 
 async function asked(): Promise<Booking> {
   const { deps, addTrip } = setup();

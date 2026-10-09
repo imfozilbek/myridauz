@@ -17,9 +17,12 @@ export function createMemoryRequests(): RequestRepository {
         .filter((request) => request.status === 'open' && request.date >= date)
         .sort((a, b) => a.createdAt - b.createdAt),
     expireOver: async (now) => {
-      for (const request of requests.values())
-        if (request.status === 'open' && request.expiresAt <= now)
-          requests.set(request.id, withoutPoints({ ...request, status: 'expired' }));
+      const burned = [...requests.values()].filter(
+        (request) => request.status === 'open' && request.expiresAt <= now,
+      );
+      for (const request of burned)
+        requests.set(request.id, withoutPoints({ ...request, status: 'expired' }));
+      return burned.map((request) => request.id);
     },
     erasePointsOf: async (passengerId) => {
       for (const request of requests.values())

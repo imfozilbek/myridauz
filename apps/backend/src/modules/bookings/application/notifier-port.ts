@@ -9,14 +9,14 @@ export type BookingNotifier = {
   declined(booking: Booking): Promise<void>;
   expired(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
-  // The offer as the passenger sees it: the bot names the driver, the car, the time and the price (G61).
-  offered(passengerId: number, offer: Offer): Promise<void>;
+  // The offer as the passenger sees it: the card of its request counts it, the first one rings (G68).
+  offered(offer: Offer): Promise<void>;
   // The answer goes to the driver and, as a line, to the chat of the offer (G64: the talk's chat).
   // An accepted offer is a booking of a trip: the ring comes under that trip's card (G68).
   offerAnswered(
     driverId: number,
     accepted: boolean,
-    offer: Pick<Offer, 'id' | 'chatKey'>,
+    offer: Pick<Offer, 'id' | 'chatKey' | 'requestId'>,
     booking?: { readonly id: string; readonly tripId: string },
   ): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)

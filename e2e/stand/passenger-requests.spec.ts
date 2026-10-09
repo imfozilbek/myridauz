@@ -26,7 +26,7 @@ const requestOf = async (passenger: typeof TIMUR, id: string) =>
 test('P60, P61, P62. a request, an offer by the bot, accepted: a confirmed seat at once', async () => {
   const request = await askRide(TIMUR);
   const offer = await offerOn(BOBUR, request.id);
-  await toldBy('passenger', TIMUR, wordsOf('bot.offer.new'));
+  await toldBy('passenger', TIMUR, wordsOf('bot.ring.offer'));
   const { bookingId } = await answerOffer(TIMUR, offer.id, 'accept');
   const seat = (await myBookings(TIMUR)).find((booking) => booking.id === bookingId);
   expect(seat?.status).toBe('confirmed');

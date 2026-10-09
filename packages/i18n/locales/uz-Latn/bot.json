@@ -62,7 +62,6 @@
   "moderation.picked": "✅ {reason}",
   "moderation.pickReason": "Kamida bitta sababni tanlang.",
   "trip.departReminder": "Yoʻlga chiqdingizmi? Safar boshlansa, «Yoʻlga chiqdim» tugmasini bosing.",
-  "offer.new": "Yangi taklif: {name}, {car}.\n{from} → {to}\n{date}, soat {time}\nBir joy: {price}.\n\nKoʻrish uchun ilovani oching.",
   "offer.declined": "Yoʻlovchi taklifingizni rad etdi.",
   "chat.newMessage": "Sizga yangi xabar keldi. Javob berish uchun chatni oching.",
   "chat.open": "Chatni ochish",

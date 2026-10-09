@@ -107,12 +107,13 @@ export const d1Requests = (db: D1Database): RequestRepository => ({
         .all<Row>()
     ).results.map(toRequest),
   expireOver: async (now) => {
-    await db
+    const burned = await db
       .prepare(
-        `UPDATE ride_requests SET status = 'expired', ${NO_POINTS} WHERE status = 'open' AND expires_at <= ?`,
+        `UPDATE ride_requests SET status = 'expired', ${NO_POINTS} WHERE status = 'open' AND expires_at <= ? RETURNING id`,
       )
       .bind(now)
-      .run();
+      .all<{ id: string }>();
+    return burned.results.map((row) => row.id);
   },
   erasePointsOf: async (passengerId) => {
     await db.prepare(`UPDATE ride_requests SET ${NO_POINTS} WHERE passenger_id = ?`).bind(passengerId).run();

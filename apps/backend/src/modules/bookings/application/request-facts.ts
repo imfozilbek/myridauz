@@ -1,4 +1,4 @@
-import type { PickupMode, Point } from '@platform/contracts';
+import type { PickupMode, Point, RideRequest } from '@platform/contracts';
 
 // A passenger's request as the bookings module needs it (docs/35).
 export type RequestFacts = {
@@ -19,6 +19,8 @@ export type RequestFacts = {
   readonly pickup: Point | null;
   readonly dropoff: Point | null;
   readonly open: boolean;
+  // Open, matched to an offer, cancelled or burned (docs/35): its card in the bot says it (G68).
+  readonly status: RideRequest['status'];
   // The passenger turned the calls of drivers off (G64, docs/127).
   readonly callsOff: boolean;
 };
