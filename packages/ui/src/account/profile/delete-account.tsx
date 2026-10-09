@@ -1,26 +1,12 @@
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Section } from '../../components';
 import { useScreenView } from '../../context/analytics-context';
 import { useI18n } from '../../context/i18n-context';
-import { DangerCell } from '../../danger-cell';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import type { UsersClient } from '@platform/api-client';
 import { StepLayout } from '../step-layout';
-
-// The last cell of the profile: a person removes their data by themselves (docs/30, law OʻRQ-547).
-export function DeleteAccountCell({ onOpen }: { readonly onOpen: () => void }) {
-  const { t } = useI18n();
-  return (
-    <Section>
-      <DangerCell icon="erase" onClick={onOpen}>
-        {t('account.delete.open')}
-      </DangerCell>
-    </Section>
-  );
-}
 
 type Stage = 'confirm' | 'failed' | 'done';
 

@@ -7,6 +7,7 @@ import { DriverContext, type Driver } from '../driver/driver-context';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { ManagementScreen } from '../pricing/management-screen';
 import { testClients } from '../test-shell';
+import { WALLET_ACTION } from './wallet-flow';
 
 afterEach(cleanup);
 
@@ -20,16 +21,18 @@ const approved: Driver = {
   editCar: () => undefined,
 };
 
+// «Hamyon» opens from its tile on the main screen of an approved driver (docs/118 path 9).
+const { Screen: WalletFlow } = WALLET_ACTION;
+
 describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
   const profile = () => (
     <DriverContext.Provider value={approved}>
-      <ProfileScreen onBack={() => undefined} />
+      <WalletFlow onBack={() => undefined} />
     </DriverContext.Provider>
   );
 
-  it('opens from the profile: the sum, «≈ N joyga yetadi», the bonus and its end, the history', async () => {
+  it('shows the sum, «≈ N joyga yetadi», the bonus and its end, the history', async () => {
     const { tracked } = renderMarket(profile(), testClients({ wallet: { mine: async () => wallet } }));
-    await tap('Hamyon');
     expect(await screen.findByText(/^481\s000\ssoʻm$/u)).toBeTruthy();
     expect(screen.getByText('≈ 53 joyga yetadi')).toBeTruthy();
     expect(screen.getByText(/gacha$/)).toBeTruthy();
@@ -47,7 +50,6 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
 
   it('turns red below 5 seats and asks to top up', async () => {
     renderMarket(profile(), testClients({ wallet: { mine: async () => ({ ...wallet, seatsLeft: 4 }) } }));
-    await tap('Hamyon');
     expect(await screen.findByText('≈ 4 joyga yetadi · toʻldiring')).toBeTruthy();
     expect(document.querySelector('.wallet-card-low')).toBeTruthy();
   });
@@ -61,7 +63,6 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
       booking: { ...confirmed, seats: 2, price: 95_000, commission: 19_000 },
     }));
     renderMarket(profile(), testClients({ wallet: { mine: async () => wallet, detail } }));
-    await tap('Hamyon');
     await tap('Komissiya · Sardor, 2 joy');
     expect(await screen.findByText(/^\u221219\s000\ssoʻm$/u)).toBeTruthy();
     expect(detail).toHaveBeenCalledWith('w2');
@@ -72,8 +73,13 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
     expect(screen.getByText('Safarni ochish')).toBeTruthy();
   });
 
-  it('is not in the profile of a passenger', () => {
-    renderMarket(<ProfileScreen onBack={() => undefined} />, testClients({}));
+  it('is not in the profile, not even of a driver (mockup g65/3)', () => {
+    renderMarket(
+      <DriverContext.Provider value={approved}>
+        <ProfileScreen onBack={() => undefined} />
+      </DriverContext.Provider>,
+      testClients({}),
+    );
     expect(screen.queryByText('Hamyon')).toBeNull();
   });
 });

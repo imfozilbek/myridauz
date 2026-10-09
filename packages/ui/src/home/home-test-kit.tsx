@@ -9,6 +9,7 @@ import { FindTripFlow } from '../market/find-trip-flow';
 import { locations, renderMarket } from '../market/market-test-kit';
 import { LocationsClientContext } from '../places/directory';
 import { testClients } from '../test-shell';
+import { WALLET_ACTION } from '../wallet/wallet-flow';
 import { DriverData } from './driver-data';
 import { DriverTiles } from './driver-tiles';
 import { PassengerData } from './passenger-data';
@@ -110,7 +111,8 @@ export function renderHome(
       <StartFlow
         actions={actions}
         home={home}
-        tiles={() => <DriverTiles />}
+        tiles={(go) => <DriverTiles go={go} />}
+        sections={[WALLET_ACTION]}
         {...(data.covered ? { mainTile: data.covered } : {})}
       />
     </DriverData>

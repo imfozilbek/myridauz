@@ -107,11 +107,13 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
   await shot('4-top-up');
 }
 
-// "Hamyon" from the driver's profile: the bonus, its end, the history.
+// "Hamyon" from its tile on the main screen of an approved driver (docs/118 path 9, G65): the bonus,
+// its end, the history.
 export async function openWallet(page: Page, shot: Shot = none) {
-  await page.getByLabel(TEXT.profile).click();
-  await shot('1-profile');
-  await page.getByText(B.wallet, { exact: true }).click();
+  const tile = page.getByRole('button', { name: new RegExp(`^${B.wallet}`, 'u') });
+  await expect(tile).toBeVisible();
+  await shot('1-home');
+  await tile.click();
   await expect(page.getByText(B.history)).toBeVisible();
   await shot('2-wallet');
 }

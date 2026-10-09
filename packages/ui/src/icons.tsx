@@ -53,6 +53,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { PLACE_ICONS } from './place-icons';
+import { PROFILE_ICONS } from './profile-icons';
 import { TALK_ICONS } from './talk-icons';
 import { WAY_ICONS } from './way-icons';
 // One meaning = one icon in all three Mini Apps (docs/19).
@@ -78,6 +79,7 @@ const ICONS = {
   document: FileText,
   blocked: Ban,
   ...WAY_ICONS,
+  ...PROFILE_ICONS,
   ...TALK_ICONS,
   ...PLACE_ICONS,
   car: CarFront,

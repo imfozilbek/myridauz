@@ -1,0 +1,71 @@
+/* What stands on the right of a row of «Profil» and the last button (G65, mockup g65/3). */
+.profile-row-after {
+  display: flex;
+  flex: none;
+  margin-right: 3.08px;
+}
+
+.profile-row-chevron {
+  display: grid;
+  flex: none;
+  place-items: center;
+  color: var(--reg-muted);
+}
+
+/* «Bot xabarlari» is always on: the switch of the mockup, pale, it never moves. The row is named
+   so the rules win over those of TelegramUI. */
+.profile-row .profile-switch {
+  --tgui--link_color: var(--reg-strong);
+
+  flex: none;
+  width: 42px;
+  height: 24px;
+  overflow: visible;
+  opacity: 0.44;
+}
+
+.profile-row .profile-switch div::before {
+  border-radius: 12px;
+}
+
+.profile-row .profile-switch div::after {
+  width: 18px;
+  height: 18px;
+  margin-left: 3px;
+  box-shadow: none;
+}
+
+.profile-row .profile-switch input:checked + div::after {
+  transform: translateX(18px) translateY(-50%);
+}
+
+/* The small drawings of the channels the person is in (mockup 7-channels-3, phone 1). */
+.profile-arts {
+  display: flex;
+  flex: none;
+}
+
+.profile-arts img {
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--reg-card);
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.profile-arts img + img {
+  margin-left: -4px;
+}
+
+.profile-delete {
+  display: block;
+  margin: 8.13px auto 0;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--reg-danger-text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}

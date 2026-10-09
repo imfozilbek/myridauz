@@ -17,7 +17,8 @@ for (const app of MINI_APPS) {
     await shot('6-home');
     if (!app.welcome) return;
     await page.getByLabel(TEXT.profile).click();
-    await expect(page.getByText('Yangi', { exact: true })).toBeVisible();
+    // A new person: «Yangi» on the rating and on «vaqtida» (G65, mockup g65/3).
+    await expect(page.getByText('Yangi', { exact: true })).toHaveCount(2);
     await shot('7-profile');
   });
 }

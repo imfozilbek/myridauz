@@ -13,5 +13,20 @@
   "save": "Saqlash",
   "remove": "Kanalni oʻchirish",
   "empty": "Hozircha tuman kanallari yoʻq.",
-  "botHint": "Avval botni kanalga administrator qilib qoʻshing."
+  "botHint": "Avval botni kanalga administrator qilib qoʻshing.",
+  "mine.hint.passenger": "Har bir kanalda shu joydagi yangi safarlar",
+  "mine.hint.driver": "Safarlaringiz shu kanallarda chiqadi",
+  "mine.search": "Viloyat yoki shahar",
+  "mine.forYou": "Siz uchun",
+  "mine.all": "Barcha kanallar",
+  "mine.zone": "{brand} | {zone}",
+  "mine.join": "Qoʻshilish",
+  "mine.member": "✓ Aʼzosiz",
+  "mine.reason.often": "Koʻp borasiz",
+  "mine.reason.request": "Soʻrovingiz shu yerga",
+  "mine.reason.search": "Oxirgi qidiruv",
+  "mine.reason.drives": "Koʻp yurasiz",
+  "mine.reason.requests": "Soʻrovlar koʻp",
+  "mine.reason.lastTrip": "Oxirgi safaringiz",
+  "mine.nothing": "Bunday kanal topilmadi"
 }
