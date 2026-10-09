@@ -80,8 +80,14 @@ describe('admin bot: the moderation card (docs/04)', () => {
     expect(decided.text).toBe(
       'Rad etildi: Rasmda davlat raqami oʻqilmaydi, Yon tomondan olingan rasm tiniq emas',
     );
-    const told = telegram.sentTo(APPLICANT).at(-1)?.body.text;
-    expect(told).toContain('• Rasmda davlat raqami oʻqilmaydi\n• Yon tomondan olingan rasm tiniq emas');
+    // The card of the application lists the reasons; the answer rings under it (G68, docs/122).
+    const told = telegram.sentTo(APPLICANT).map((sent) => String(sent.body.text));
+    expect(
+      told.some((text) =>
+        text.includes('• Rasmda davlat raqami oʻqilmaydi\n• Yon tomondan olingan rasm tiniq emas'),
+      ),
+    ).toBe(true);
+    expect(told.at(-1)).toBe('❌ Haydovchi arizangiz rad etildi');
     // "Tasdiqlash" first asks to compare the plate; the fix opens the admin Mini App on this application.
     const check = await reply(await send('admin', press(OWNER, `mod:${APPLICANT}:approve`)));
     expect(check.text).toBe('Rasmdagi davlat raqamini kartadagi raqam bilan solishtiring.');

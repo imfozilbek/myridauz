@@ -32,5 +32,14 @@
   "dring.cancelled": "🙋 {name} joyini bekor qildi. Komissiya hamyoningizga qaytdi.",
   "dring.offerAccepted": "✅ {name} taklifingizni qabul qildi",
   "dring.soon": "🚏 Safarga 2 soat qoldi: {count} yoʻlovchi. Birinchisi {time} da kutadi: {place}",
-  "dring.came": "📍 {name} uchrashuv joyiga keldi"
+  "dring.came": "📍 {name} uchrashuv joyiga keldi",
+  "dapp.title": "🪪 Haydovchi arizangiz",
+  "dapp.checking": "✅ Yuborildi · ⏳ Tekshirilmoqda · Javob",
+  "dapp.answered": "✅ Yuborildi · ✅ Tekshirildi · {answer}",
+  "dapp.approved": "✅ Tasdiqlandi",
+  "dapp.rejected": "❌ Rad etildi",
+  "dapp.changes": "✏️ Tuzatish kerak",
+  "dapp.ringApproved": "✅ Haydovchi arizangiz tasdiqlandi",
+  "dapp.ringRejected": "❌ Haydovchi arizangiz rad etildi",
+  "dapp.ringChanges": "✏️ Haydovchi arizangizda tuzatish kerak"
 }

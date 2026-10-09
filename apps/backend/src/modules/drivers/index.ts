@@ -6,6 +6,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { recordServerEvent } from '../analytics';
+import { showCards } from '../notifications';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
 import { missedWelcome, welcomeBonus } from '../wallet';
@@ -41,7 +42,7 @@ export const driversDeps = (env: Bindings): DriversDeps => {
         fetch: (input, init) => fetch(input, init),
         brand: loadBrand(env.BRAND),
         adminToken: env.ADMIN_BOT_TOKEN,
-        driverToken: env.DRIVER_BOT_TOKEN,
+        show: (cards, rings) => showCards(env, cards, rings),
         recipients: (userId) => assignTo(env, 'application', userId),
         photos,
         people,

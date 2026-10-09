@@ -14,7 +14,7 @@ describe('the card of a new application', () => {
       },
       brand: loadBrand(),
       adminToken: 'a',
-      driverToken: undefined,
+      show: async () => undefined,
       recipients: async (userId) => (userId === 31 ? [100] : [100, 200]),
       photos: { get: async () => undefined } as never,
       people: { avatar: async () => undefined } as never,
