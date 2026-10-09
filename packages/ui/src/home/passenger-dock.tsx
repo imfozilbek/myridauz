@@ -1,6 +1,7 @@
 import { DAY_MS, meetingStartsAt, tashkentDate, type Booking, type Location } from '@platform/contracts';
 import { passengerStep, useTripSteps } from '../bookings/use-trip-steps';
 import { useI18n } from '../context/i18n-context';
+import { useNow } from '../own-trip/use-now';
 import { useTripDays } from '../find/use-trip-days';
 import type { HomeGo } from '../flow/start-action';
 import { rememberRoute } from '../market/recent-routes';
@@ -23,7 +24,7 @@ import { useHomeTap } from './use-home-tap';
 export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
   const [places] = useDirectory();
-  const now = Date.now();
+  const now = useNow();
   const today = (load.value?.[0] ?? []).find((booking) => stepNow(booking, now));
   if (today) return <TripStep booking={today} onTold={load.refresh} />;
   return <FindDock go={go} directory={places.status === 'ready' ? places.directory : null} />;

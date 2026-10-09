@@ -1,9 +1,9 @@
 import { MY_TRIP_LINK, NEW_TRIP_SECTION, type Trip } from '@platform/contracts';
-import { useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { usePending } from '../driver/driver-context';
 import type { HomeGo } from '../flow/start-action';
-import { tripStep } from '../own-trip/trip-stage';
+import { tripStep, type TripStep } from '../own-trip/trip-stage';
+import { useNow } from '../own-trip/use-now';
 import { useTripSteps } from '../own-trip/use-trip-steps';
 import { usePlaceNames } from '../places/place-names';
 import type { PlaceDirectory } from '../places/directory';
@@ -18,27 +18,32 @@ import { todayTrip } from './driver-day';
 import { RouteDock } from './route-dock';
 import { useHomeTap } from './use-home-tap';
 
-// The bottom of the main screen of a driver (G66, mockup g66/2): on the day of a trip only its step,
-// «Yoʻlga chiqdim» then «Yetib keldik»; otherwise «Qayerdan / Qayerga» and «Safar eʼlon qilish»,
-// inert with «Tekshiruvdan keyin ochiladi» while the application is checked.
+// The bottom of the main screen of a driver (G66, mockup g66/2): from the hour before the trip of
+// today, when the server takes it (docs/35), only its step, «Yoʻlga chiqdim» then «Yetib keldik»;
+// before it «Qayerdan / Qayerga» and «Safar eʼlon qilish», inert with «Tekshiruvdan keyin ochiladi»
+// while the application is checked. The time moves on by itself: the step comes on an open screen.
 export function DriverDock({ go }: { readonly go: HomeGo }) {
   const load = useDriverData();
   const [places] = useDirectory();
-  const [now] = useState(Date.now);
+  const now = useNow();
   const today = load.value ? todayTrip(load.value[0], now) : undefined;
-  if (today) return <TripDay trip={today} go={go} onChanged={load.refresh} />;
+  const next = today ? tripStep(today, now) : null;
+  if (today && next) return <TripDay trip={today} next={next} go={go} onChanged={load.refresh} />;
   return <PublishDock go={go} directory={places.status === 'ready' ? places.directory : null} />;
 }
 
-type DayProps = { readonly trip: Trip; readonly go: HomeGo; readonly onChanged: () => void };
+type DayProps = {
+  readonly trip: Trip;
+  readonly next: TripStep;
+  readonly go: HomeGo;
+  readonly onChanged: () => void;
+};
 
-// Before the hour of the trip the server answers why it is early (docs/35).
-function TripDay({ trip, go, onChanged }: DayProps) {
+function TripDay({ trip, next, go, onChanged }: DayProps) {
   const { t } = useI18n();
   const sheet = useAnySheet();
   const opened = () => go('my_trips', { link: { name: MY_TRIP_LINK, id: trip.id } });
   const { step, failure } = useTripSteps({ trip, onChanged, onArrived: opened });
-  const next = tripStep(trip, Date.now()) ?? 'departed';
   return (
     <>
       {failure ? (

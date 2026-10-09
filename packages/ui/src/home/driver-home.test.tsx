@@ -60,6 +60,13 @@ describe('what is now on the main screen of a driver (G66, mockup g66/2)', { tim
     expect(screen.queryByText('Safar eʼlon qilish')).toBeNull();
   });
 
+  it('keeps publishing at the bottom before the hour of the trip of today (docs/35)', async () => {
+    driver([{ ...trip, departAt: Date.now() + 3 * 60 * MINUTE_MS }]);
+    expect(await screen.findByText(/^Bugun \d\d:\d\d$/u)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
+    expect(screen.queryByText('Yoʻlga chiqdim')).toBeNull();
+  });
+
   it('shows nothing above the tiles without a trip ahead', async () => {
     driver([{ ...trip, status: 'completed' }]);
     expect(await screen.findByText('Mening safarlarim')).toBeTruthy();

@@ -1,8 +1,8 @@
-import { mkdirSync, mkdtempSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, statSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { baseIsCurrent, copyState, markBase } from './reuse.mjs';
+import { baseIsCurrent, buildIsFresh, copyState, markBase, markBuilt } from './reuse.mjs';
 
 const folder = () => mkdtempSync(join(tmpdir(), 'stand-'));
 
@@ -31,5 +31,19 @@ describe('what the stand reuses (G71)', () => {
     expect(baseIsCurrent(stamp, migrations)).toBe(true);
     writeFileSync(join(migrations, '0002_next.sql'), '');
     expect(baseIsCurrent(stamp, migrations)).toBe(false);
+  });
+
+  it('builds again when the build of one app is older than the code, whatever the stamp says', () => {
+    const root = folder();
+    const [code, build, stamp] = ['code.ts', 'index.html', 'built-at'].map((name) => join(root, name));
+    writeFileSync(code, 'new code');
+    writeFileSync(build, 'old build');
+    const past = new Date(Date.now() - 60_000);
+    utimesSync(build, past, past);
+    markBuilt(stamp, Date.now() + 1000);
+    expect(buildIsFresh(stamp, [code], [build])).toBe(false);
+    writeFileSync(build, 'new build');
+    utimesSync(code, past, past);
+    expect(buildIsFresh(stamp, [code], [build])).toBe(true);
   });
 });

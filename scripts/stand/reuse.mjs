@@ -28,17 +28,16 @@ function newestChange(paths) {
 }
 
 // The Mini Apps are built again only when their code, the packages or the brand changed after the
-// last build of the stand.
-const BUILT_FROM = [
-  'apps/miniapp-passenger',
-  'apps/miniapp-driver',
-  'apps/miniapp-admin',
-  'packages',
-  'brands',
-];
-export function buildIsFresh(stamp) {
+// last build of the stand, or when the build of one app is older than the code: a stamp alone once
+// served the old main screen of the driver (G66, lesson 192).
+const APPS = ['apps/miniapp-passenger', 'apps/miniapp-driver', 'apps/miniapp-admin'];
+const SOURCES = [...APPS, 'packages', 'brands', 'pnpm-lock.yaml'];
+const BUILDS = APPS.map((app) => join(app, 'dist/index.html'));
+export function buildIsFresh(stamp, sources = SOURCES, builds = BUILDS) {
   if (!existsSync(stamp)) return false;
-  return newestChange([...BUILT_FROM, 'pnpm-lock.yaml']) < Number(readFileSync(stamp, 'utf8'));
+  const newest = newestChange(sources);
+  const built = (path) => (statSync(path, { throwIfNoEntry: false })?.mtimeMs ?? 0) > newest;
+  return newest < Number(readFileSync(stamp, 'utf8')) && builds.every(built);
 }
 export const markBuilt = (stamp, startedAt) => writeFileSync(stamp, String(startedAt));
 

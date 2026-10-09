@@ -109,5 +109,5 @@ export async function openDriverHome(page: Page, state: DriverState) {
   await page.clock.setFixedTime(state === 'today' ? at('07', '15:20') : at('07', '15:00'));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await page.locator('.home-dock, .driver-day').first().waitFor();
+  await page.locator('.home-dock, .drive-day').first().waitFor();
 }

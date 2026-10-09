@@ -2,6 +2,7 @@ import { MINUTE_MS, tashkentDate, type Booking, type Location, type Trip } from 
 import { useState } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { useNow } from '../own-trip/use-now';
 import { Icon } from '../icons';
 import { useShortDay } from '../market/when';
 import type { PlaceDirectory } from '../places/directory';
@@ -49,18 +50,18 @@ export function DriverNextCard({ trip, bookings, directory, onOpen }: Props) {
   const start = trip.pitak?.name ?? directory.find(trip.from)?.name ?? '';
   const { waiting } = tripPeople(trip, bookings);
   return (
-    <button type="button" className="driver-card" style={brandVars(colors)} onClick={onOpen}>
-      <span className="driver-card-top">
-        <span className="driver-card-pill">{t('home.meta', { when, more: seats })}</span>
+    <button type="button" className="drive-now" style={brandVars(colors)} onClick={onOpen}>
+      <span className="drive-now-top">
+        <span className="drive-now-pill">{t('home.meta', { when, more: seats })}</span>
         <Icon name="next" size={ARROW} color={colors.textMuted} />
       </span>
-      <span className="driver-card-route">{route(trip)}</span>
-      <span className="driver-card-foot">
-        <span className="driver-card-note">
+      <span className="drive-now-route">{route(trip)}</span>
+      <span className="drive-now-foot">
+        <span className="drive-now-note">
           {t('home.meta', { when: t('find.from', { place: start }), more: formatMoney(trip.price) })}
         </span>
         {waiting > 0 ? (
-          <span className="driver-card-new">{t('home.newRequests', { count: String(waiting) })}</span>
+          <span className="drive-now-new">{t('home.newRequests', { count: String(waiting) })}</span>
         ) : null}
       </span>
     </button>
@@ -73,7 +74,8 @@ export function DriverDayCard({ trip, bookings, directory, onOpen }: Props) {
   const { t, formatTime } = useI18n();
   const { colors } = useBrand().theme;
   const route = useRegions(directory);
-  const [now] = useState(Date.now);
+  // «N daqiqadan keyin» counts down on an open screen.
+  const now = useNow();
   const minutes = Math.max(0, Math.ceil((trip.departAt - now) / MINUTE_MS));
   const start = trip.pitak?.name ?? directory.find(trip.from)?.name ?? '';
   const { confirmed, waiting } = tripPeople(trip, bookings);
@@ -82,21 +84,21 @@ export function DriverDayCard({ trip, bookings, directory, onOpen }: Props) {
   const people = t('home.day.people', { count: String(confirmed.length) });
   const state = waiting > 0 ? t('home.newRequests', { count: String(waiting) }) : t('home.day.allConfirmed');
   return (
-    <button type="button" className="driver-card driver-day" style={brandVars(colors)} onClick={onOpen}>
-      <span className="driver-day-time">
+    <button type="button" className="drive-now drive-day" style={brandVars(colors)} onClick={onOpen}>
+      <span className="drive-day-time">
         {t('home.trip.when', { day: t('market.day.today'), time: formatTime(new Date(trip.departAt)) })}
       </span>
-      <span className="driver-card-note">{soon}</span>
+      <span className="drive-now-note">{soon}</span>
       {confirmed.length > 0 ? (
-        <span className="driver-day-faces">
+        <span className="drive-day-faces">
           {confirmed.slice(0, FACES).map((booking) => (
-            <span key={booking.id} className="driver-day-face">
+            <span key={booking.id} className="drive-day-face">
               {booking.passenger.firstName.slice(0, 1).toUpperCase()}
             </span>
           ))}
         </span>
       ) : null}
-      <span className="driver-card-note">{meta(people, state)}</span>
+      <span className="drive-now-note">{meta(people, state)}</span>
     </button>
   );
 }
