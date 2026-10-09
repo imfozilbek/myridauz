@@ -35,7 +35,7 @@ export async function sendOffer(
   const sent = await deps.offers.byRequests([requestId]);
   if (sent.some((offer) => offer.driverId === driverId && offerStatusAt(offer, request.open, now) === 'sent'))
     return { ok: false, error: 'bookings.wrong_status' };
-  const talk = await talkOf(deps, requestId, driverId);
+  const talk = await talkOf(deps, request, driverId);
   const offer: OfferRecord = {
     id: deps.newId(),
     requestId,

@@ -42,6 +42,7 @@ import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { requestNewsOf } from './request-news';
+import { tellPairTalked } from './infrastructure/pair-sign';
 
 const localOffers = createMemoryOffers();
 const localTalks = createMemoryTalks();
@@ -107,6 +108,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
         request: (id, offer) => requestNewsOf(env, deps)(id, offer),
       }),
     ),
+    pairTalked: (driverId, passengerId, talks) => tellPairTalked(env, driverId, passengerId, talks),
     places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
     pitak: (id) => pitakById(env, id),
     meeting: meetingPorts(env),

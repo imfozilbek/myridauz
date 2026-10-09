@@ -29,6 +29,15 @@ export const attentionSignSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('rating'), name, person, average: z.number(), count }),
   // A driver whose wallet is enough for few seats (docs/12).
   z.object({ kind: z.literal('money'), name, person, seats: count }),
+  // A pair talked about requests this many times and never booked (docs/129 rule 5).
+  z.object({
+    kind: z.literal('pair'),
+    driver: name,
+    driverId: person,
+    passenger: name,
+    passengerId: person,
+    count,
+  }),
 ]);
 export type AttentionSign = z.infer<typeof attentionSignSchema>;
 

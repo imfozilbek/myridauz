@@ -113,6 +113,8 @@ export type BookingsDeps = {
   readonly rated: (userId: number) => Promise<ReadonlySet<string>>;
   readonly recommend: (from: string, to: string) => Promise<Recommended>;
   readonly notify: BookingNotifier;
+  // A pair talked about requests this many times and never booked: «Diqqat» of the owner (docs/129).
+  readonly pairTalked: (driverId: number, passengerId: number, talks: number) => Promise<void>;
   // A step of the booking funnel no Mini App sees: a refused or a burned request (docs/89 S2).
   readonly track: (step: 'declined' | 'expired') => void;
   // The names of a point and where a point of a trip may lie (docs/69), from the map module.
