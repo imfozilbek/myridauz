@@ -33,7 +33,7 @@ export type HealthDeps = {
 
 // Two calls to Telegram a channel: a few channels an hour keep the Cron light (docs/117), the oldest
 // check first, never checked first of all.
-export const CHECKED_PER_RUN = 3;
+const CHECKED_PER_RUN = 3;
 
 // The hourly Cron job: the channels checked the longest ago are read again.
 export async function checkChannels(deps: HealthDeps): Promise<void> {
