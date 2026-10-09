@@ -3,7 +3,8 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { tap } from '../market/market-test-kit';
 import { rememberRoute } from '../market/recent-routes';
-import { PASSENGER_ACTIONS, renderHome } from './home-test-kit';
+import { PASSENGER_ACTIONS } from './home-test-actions';
+import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 afterEach(() => {
@@ -23,7 +24,6 @@ const place = (id: string, parentId: string, name: string): Location => ({
 const open = () =>
   renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
     bookings: async () => [],
-    covered: 'find_trip',
   });
 
 describe('«Oxirgi yoʻnalish» tile on the main screen (G35 K5, G53)', { timeout: 20_000 }, () => {
@@ -34,7 +34,7 @@ describe('«Oxirgi yoʻnalish» tile on the main screen (G35 K5, G53)', { timeou
     });
     open();
     expect(await screen.findByText('Oxirgi yoʻnalish')).toBeTruthy();
-    await tap('Chilonzor → Fargʻona shahri');
+    await tap('Chilonzor → Fargʻona');
     // The trips of the route with their days, no route screen on the way.
     expect(await screen.findByRole('tab', { name: /Bugun/u, selected: true })).toBeTruthy();
     expect(screen.queryByText('Davom etish')).toBeNull();

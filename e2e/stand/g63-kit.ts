@@ -4,7 +4,7 @@ import { commissionFor, loadBrand } from '@platform/brands';
 import { TRIP_LINK, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, type Page } from '../crash-guard';
-import { newTripTile, TEXT } from '../apps';
+import { publishButton, TEXT } from '../apps';
 import { chooseRoute } from '../market';
 import { SAMARQAND, walletOf } from './g27-kit';
 import { CHILONZOR } from './market-kit';
@@ -56,7 +56,7 @@ export async function publishOnOneScreen(page: Page, walk: Walk): Promise<Trip> 
   const market = createMarketClient(await signedAs('driver', walk.driver));
   const { price, roundStep } = await market.recommend(CHILONZOR, SAMARQAND);
   await openAs(page, 'driver', walk.driver, { platform: walk.platform });
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   // Every seat of the car: no «+» above them, so no «Mashinada ayol bor» (docs/06).

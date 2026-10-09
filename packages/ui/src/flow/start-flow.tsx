@@ -10,7 +10,7 @@ import { haptic } from '../telegram/feedback';
 import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
-import type { HomeGo, Launch, StartAction } from './start-action';
+import type { HomeGo, Launch, StartAction, TileLive } from './start-action';
 import { useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
@@ -26,8 +26,9 @@ type StartFlowProps = {
   // The action of the main button: the list does not repeat it (G25). It stays while the home
   // block loads or fails, so the main action is always one tap away.
   readonly covered?: string;
-  // The main action as the big tile above the others, no main button (the driver, G62).
-  readonly mainTile?: string;
+  // The block «Qayerdan / Qayerga» at the bottom with the main button of its own (G66, docs/118): it
+  // decides the button, like «Mashinaga chiqdim» on the day of a trip. The tiles are square then.
+  readonly dock?: (go: HomeGo) => ReactNode;
   // Tiles of the app after its actions (G53): they open a section or the profile.
   readonly tiles?: (go: HomeGo, openProfile: () => void) => ReactNode;
   // Sections opened only by those tiles, not drawn as action tiles (G53).
@@ -43,7 +44,7 @@ const photoLinked = () =>
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
 export function StartFlow(props: StartFlowProps) {
-  const { actions, opened, notice, after, home, covered, mainTile, tiles, sections = NO_SECTIONS } = props;
+  const { actions, opened, notice, after, home, covered, dock, tiles, sections = NO_SECTIONS } = props;
   const { t } = useI18n();
   const tap = useHomeTap();
   const sheet = useAnySheet();
@@ -60,10 +61,6 @@ export function StartFlow(props: StartFlowProps) {
     haptic.tap();
     setScreen('profile');
   }, []);
-  const openAction = useCallback((action: StartAction) => {
-    haptic.tap();
-    setScreen({ action });
-  }, []);
   const go = useCallback<HomeGo>(
     (id, launch) => {
       const action = [...actions, ...sections].find((item) => item.id === id);
@@ -71,14 +68,21 @@ export function StartFlow(props: StartFlowProps) {
     },
     [actions, sections],
   );
+  const openAction = useCallback(
+    (action: StartAction, opens?: TileLive['opens']) => {
+      haptic.tap();
+      if (opens) go(opens.id, opens.launch);
+      else setScreen({ action });
+    },
+    [go],
+  );
   if (screen === 'home') {
     const main = actions.find((action) => action.id === covered);
-    const big = actions.find((action) => action.id === mainTile);
     return (
       <>
         <HomeScreen
-          actions={actions.filter((action) => action !== main && action !== big)}
-          {...(big ? { main: big } : {})}
+          actions={actions.filter((action) => action !== main)}
+          square={Boolean(dock)}
           notice={notice}
           after={after}
           top={home ? <ErrorBoundary>{home(go)}</ErrorBoundary> : undefined}
@@ -86,8 +90,10 @@ export function StartFlow(props: StartFlowProps) {
           onOpen={openAction}
           onProfile={openProfile}
         />
+        {/* After the main screen: the block paints the bottom bar after the screen does (G66). */}
+        {dock?.(go)}
         {/* Under a sheet the native button would cover its buttons (mockups g60/6, g60/7). */}
-        {main && !sheet ? (
+        {main && !dock && !sheet ? (
           <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} />
         ) : null}
       </>

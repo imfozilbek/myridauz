@@ -3,6 +3,8 @@
 export const BOOKING_LINK = 'booking';
 export const OFFER_LINK = 'offer';
 export const MY_TRIP_LINK = 'mytrip';
+// «Soʻrovim» of the main screen opens the open request of the passenger (G66, mockup g66/1).
+export const REQUEST_LINK = 'request';
 // A trip ready to book: a channel post, a subscription, a new trip of a saved driver (docs/15, G60).
 export const TRIP_LINK = 'trip';
 export const LINK_ID = /^[0-9a-f-]{36}$/u;

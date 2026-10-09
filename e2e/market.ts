@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT, newTripTile } from './apps';
+import { TEXT, publishButton } from './apps';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -23,7 +23,7 @@ export async function chooseRoute(page: Page, wholeRegion = false) {
 // back (G61). «Eʼlon qilish» opens «Mening safarim» of the new trip at once.
 export async function publishTrip(page: Page, shot: Shot = none) {
   const mainButton = page.locator('#tg-main-button');
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await expect(mainButton).toHaveText(TEXT.publish);
   await shot('2-publish');

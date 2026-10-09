@@ -33,3 +33,18 @@ export function useScreenBackground(head?: 'white'): void {
     if (inTelegram) paintScreen({ header, bottom });
   }, [inTelegram, header, top, bottom]);
 }
+
+// The white bottom bar under the route block of the main screen (G66, mockups g66/1, g66/2): the white
+// panel and the Telegram button look like one sheet. The block paints after the screen and gives the
+// gray back when it leaves (the day of a trip shows the button alone on the gray, mockup g66/2 screen 4).
+export function useWhiteBottomBar(): void {
+  const inTelegram = useInTelegram();
+  const { colors } = useBrand().theme;
+  const header = tint(colors.brandStrong);
+  const { bg, bgGrouped } = colors;
+  useLayoutEffect(() => {
+    if (!inTelegram) return undefined;
+    paintScreen({ header, bottom: bg });
+    return () => paintScreen({ header, bottom: bgGrouped });
+  }, [inTelegram, header, bg, bgGrouped]);
+}

@@ -24,6 +24,8 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-route-line': colors.routeLine,
     '--reg-accent': colors.accentStrong,
     '--reg-accent-soft': colors.accentSoft,
+    '--reg-accent-deep': colors.accentDeep,
+    '--reg-card-line': colors.cardLine,
     '--reg-star': colors.accent,
     '--reg-face': colors.neutralFace,
     '--reg-face-pale': colors.neutralFacePale,

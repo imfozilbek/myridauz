@@ -10,15 +10,29 @@ import { FEW_SEATS } from '../wallet/wallet-card';
 import { WALLET_SECTION } from '../wallet/wallet-flow';
 import { useHomeTap } from './use-home-tap';
 
-// The last tile of a driver: «Yordam», the support bot, while the application is checked (G62,
-// mockup g62/1 screens 1 and 4); after the approval «Hamyon» with the seats the money still
-// confirms (docs/118 path 9, G65). «Yordam» of an approved driver lives in «Profil» (mockup g65/3).
-export function DriverTiles({ go }: { readonly go: HomeGo }) {
-  const driver = useDriver();
-  return driver?.application.status === 'approved' ? (
-    <WalletTile onOpen={() => go(WALLET_SECTION)} />
-  ) : (
-    <SupportTile />
+type Props = { readonly go: HomeGo; readonly openProfile: () => void };
+
+// The last tiles of a driver (G66, mockup g66/2): «Hamyon» and «Profil» once the application is sent,
+// «Yordam» lives in «Profil» (mockup g65/3). Before sending, «Yordam» alone (mockup g62/1 screen 1).
+export function DriverTiles({ go, openProfile }: Props) {
+  const { t } = useI18n();
+  const status = useDriver()?.application.status;
+  if (status === 'draft') return <SupportTile />;
+  return (
+    <>
+      {status === 'approved' ? (
+        <WalletTile onOpen={() => go(WALLET_SECTION)} />
+      ) : (
+        <BonusTile onOpen={() => go(WALLET_SECTION)} />
+      )}
+      <HomeTile
+        icon="profile"
+        tone="mint"
+        title={t('account.profile.title')}
+        hint={t('home.driver.profileHint')}
+        onClick={openProfile}
+      />
+    </>
   );
 }
 
@@ -34,9 +48,26 @@ function WalletTile({ onOpen }: { readonly onOpen: () => void }) {
   return (
     <HomeTile
       icon="wallet"
-      tone={low ? 'danger' : 'accent'}
+      tone="mint"
       title={t('wallet.title')}
-      hint={seats === null ? t('wallet.hint') : t(low ? 'wallet.card.low' : 'wallet.card.seats', { count })}
+      hint={seats === null ? t('wallet.hint') : t(low ? 'home.wallet.low' : 'wallet.card.seats', { count })}
+      alarm={low}
+      onClick={tap('wallet', onOpen)}
+    />
+  );
+}
+
+// While the application is checked: the bonus that waits for the approval (docs/12, mockup g66/2).
+function BonusTile({ onOpen }: { readonly onOpen: () => void }) {
+  const { t, formatMoney } = useI18n();
+  const { promo } = useBrand();
+  const tap = useHomeTap();
+  return (
+    <HomeTile
+      icon="wallet"
+      tone="mint"
+      title={t('wallet.title')}
+      hint={t('home.wallet.bonus', { amount: formatMoney(promo.amount * promo.grants) })}
       onClick={tap('wallet', onOpen)}
     />
   );
@@ -49,7 +80,7 @@ function SupportTile() {
   return (
     <HomeTile
       icon="chat"
-      tone="deep"
+      tone="mint"
       title={t('home.support')}
       hint={t('home.supportHint')}
       onClick={tap('support', () => openInTelegram(`https://t.me/${bots.support}`))}

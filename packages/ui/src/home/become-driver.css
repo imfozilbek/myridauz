@@ -1,0 +1,51 @@
+/* «Haydovchi boʻling» under the tiles of a passenger (G66, mockup g66/1 at 360 px): a soft amber row
+   in its amber line, the car on a light amber square, an arrow at the end. */
+.become-driver {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10.67px 14px;
+  border: 1px solid var(--reg-attention-line);
+  border-radius: 16px;
+  background: var(--reg-accent-soft);
+  color: var(--reg-ink);
+  font-family: var(--tgui--font-family);
+  text-align: start;
+  cursor: pointer;
+}
+
+.become-driver-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--reg-attention-soft);
+}
+
+.become-driver-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.become-driver-title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.become-driver-hint {
+  font-size: 12.5px;
+  line-height: 19.33px;
+  color: var(--reg-accent-deep);
+}
+
+.become-driver > svg {
+  flex: none;
+  margin-right: -4.33px;
+}

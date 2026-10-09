@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, newTripTile } from './apps';
+import { appUrl, MINI_APPS, publishButton } from './apps';
 import { confirmed } from './bookings-mock';
 import { tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -40,7 +40,8 @@ function scenarios(platform: 'android' | 'ios') {
     await json(page, '**/api/passenger/offers', () => ({ offers: [] }));
     await go();
     await expect(page.getByText(t('way.toEmpty'))).toBeVisible();
-    await expect(page.getByText(t('way.here'))).toBeVisible();
+    // «Qayerdan» where the person stands, at the bottom (G66, mockup g66/1).
+    await expect(page.getByText(t('home.dock.here'))).toBeVisible();
     await expect(mainButton(page)).toHaveText(t('common.passenger.findTrip'));
     await shot(page, '1-passenger-empty');
     await page.getByText(t('way.toEmpty')).click();
@@ -59,9 +60,9 @@ function scenarios(platform: 'android' | 'ios') {
     await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
     status = 'confirmed';
     feed.changed();
-    await expect(page.getByText(new RegExp(t('bookings.status.confirmed'), 'u'))).toBeVisible();
+    await expect(page.getByText(new RegExp(t('bookings.confirmed.title'), 'u'))).toBeVisible();
     await shot(page, '2-passenger-booking');
-    await page.getByText(t('bookings.status.confirmed')).first().click();
+    await page.getByText(t('bookings.confirmed.title')).first().click();
     await expect(page.locator('.uz-plate').first()).toBeVisible();
   });
 
@@ -73,32 +74,37 @@ function scenarios(platform: 'android' | 'ios') {
     let requests = [request('r1'), request('r2')];
     await json(page, '**/api/driver/bookings', () => ({ bookings: requests }));
     await go();
-    await expect(page.getByText(t('home.requests', { count: '2' }), { exact: false })).toBeVisible();
+    await expect(page.getByText(t('home.newRequests', { count: '2' }), { exact: false })).toBeVisible();
     await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
     requests = [...requests, request('r3')];
     feed.changed();
-    await expect(page.getByText(t('home.requests', { count: '3' }), { exact: false })).toBeVisible();
+    await expect(page.getByText(t('home.newRequests', { count: '3' }), { exact: false })).toBeVisible();
     await shot(page, '3-driver-trip');
   });
 
-  // Owner check 4: a new driver publishes from the main screen; a driver who drove gets the last route.
+  // Owner check 4: a driver without trips publishes from the main button at the bottom (G66).
   test('a driver without trips publishes from the main screen', async ({ page }) => {
     const { go } = await open(page, DRIVER.port);
     await go();
-    await expect(newTripTile(page)).toBeVisible();
+    await expect(publishButton(page)).toBeVisible();
+    await expect(page.getByText(t('home.dock.toDriver'))).toBeVisible();
     await shot(page, '4-driver-empty');
-    await newTripTile(page).click();
+    await publishButton(page).click();
     await expect(page.getByText(t('places.from'))).toBeVisible();
   });
 
-  // The one screen of a new trip opens with the answers of the last trip (G40 K3, G63).
+  // «Qayerga» at the bottom, then the one screen of a new trip opens with the route and the answers
+  // of the last trip (G40 K3, G63, G66).
   test('a driver whose trips are over repeats the last trip on one screen (G40, G63)', async ({ page }) => {
     const { go, published } = await open(page, DRIVER.port);
     published.push(tripOf('8', 'Dilnoza', false, -48, { status: 'completed' }));
     await go();
-    await expect(page.getByText(t('home.driver.last'))).toBeVisible();
-    await shot(page, '5-driver-last-route');
-    await page.getByText(t('home.driver.last')).click();
+    await expect(page.getByText(t('home.dock.here'))).toBeVisible();
+    await page.getByText(t('home.dock.toDriver')).click();
+    await page.getByAltText('Samarqand viloyati').click();
+    await page.getByText('Samarqand shahri', { exact: true }).click();
+    await publishButton(page).click();
     await expect(page.locator('#tg-main-button')).toHaveText(t('market.publish.send'));
+    await shot(page, '5-driver-last-trip');
   });
 }

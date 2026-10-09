@@ -1,0 +1,73 @@
+/* The main screens of people (G66, docs/121, mockups g66/1 … g66/3): square tiles, as drawn a little
+   lower than wide (160.67 × 154.67 at 360 px), the words right under the icon as on g66/1; the edges
+   and the gaps follow the width of the phone (14 and 10.67 px at 360 px). */
+.home:has(.home-tiles-square),
+.home-dock {
+  --home-gutter: clamp(10.67px, 3.889vw, 14.67px);
+  --home-gap: clamp(8px, 2.963vw, 12px);
+}
+
+/* The cards stand 10 px apart and 14.67 px under the header at 360 px, as on g66/1. */
+.home:has(.home-tiles-square) .home-stack {
+  gap: clamp(7.5px, 2.778vw, 11.25px);
+  padding-top: clamp(11.11px, 4.074vw, 15.28px);
+}
+
+.home-tiles-square {
+  gap: var(--home-gap);
+}
+
+.home-tiles-square .home-tile {
+  aspect-ratio: 241 / 232;
+  min-height: 0;
+  gap: 0;
+}
+
+/* Long words may pass the bottom padding; the icon never shrinks for them. */
+.home-tiles-square .home-tile > * {
+  flex-shrink: 0;
+}
+
+.home-tiles-square .home-tile-title {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19.2px;
+}
+
+.home-tiles-square .home-tile-hint {
+  margin-top: 1px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+/* «Hamyon» below 5 seats: light red in a red line, the hint red and bold (mockup g66/2 phone 3). */
+.home-tile-alarm {
+  border: 1px solid var(--tile-alarm-line);
+  background: var(--tile-alarm);
+}
+
+.home-tile-alarm .home-tile-hint {
+  font-weight: 700;
+  color: var(--tile-alarm-ink);
+}
+
+/* The profile on top: the face 44 px, the name a bit larger (mockups g66/1, g66/2). */
+.home:has(.home-tiles-square) .home-profile {
+  gap: 12.67px;
+  padding: 12.33px 13.33px 11px;
+}
+
+.home:has(.home-tiles-square) .home-profile .home-card-title {
+  font-size: 17px;
+  line-height: 20.74px;
+}
+
+.home:has(.home-tiles-square) .home-profile .home-card-hint {
+  line-height: 12.9px;
+}
+
+/* Under the white block at the bottom the last tiles still scroll into sight. */
+.home:has(~ .home-dock) .home-stack {
+  padding-bottom: 168px;
+}

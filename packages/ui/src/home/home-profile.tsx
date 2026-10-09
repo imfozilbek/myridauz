@@ -1,3 +1,4 @@
+import { formatPlate } from '@platform/contracts';
 import type { CSSProperties } from 'react';
 import { useAccount } from '../account/account-context';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -10,6 +11,8 @@ import { useLoad } from '../market/use-list';
 import { HomeCard } from './home-card';
 
 const PHOTO = 42;
+// The face of a person on the main screens of G66 (mockups g66/1, g66/2).
+const FACE = 44;
 const ICON = 22;
 
 // The first card of the main screen: who the person is here, like the mockup of G53. The
@@ -33,7 +36,7 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
       label={t('account.profile.open')}
       onClick={onOpen}
     >
-      <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} size={PHOTO} />
+      <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} size={FACE} />
       <span className="home-card-words">
         <span className="home-card-title">{profile.firstName}</span>
         <span className="home-card-hint">{role}</span>
@@ -42,15 +45,16 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
   );
 }
 
-// «Yoʻlovchi», or «Haydovchi · Cobalt, oq» with the car of the application.
+// «Yoʻlovchi», or «Haydovchi · Cobalt, oq · 01 A 123 BC» with the car of the application (mockup
+// g66/2); «Haydovchi» alone before the application is sent (mockup g62/1 screen 1).
 function useRole(): string {
   const { t } = useI18n();
   const driver = useDriver();
   if (!driver) return t('home.role.passenger');
-  const { car } = driver.application;
-  if (!car) return t('home.role.driverNew');
+  const { car, status } = driver.application;
+  if (!car || status === 'draft') return t('home.role.driverNew');
   const color = t(`drivers.color.${car.color}`).toLocaleLowerCase('uz');
-  return t('home.role.driver', { model: car.model, color });
+  return t('home.role.driver', { model: car.model, color, plate: formatPlate(car.plate) });
 }
 
 function TeamCard() {

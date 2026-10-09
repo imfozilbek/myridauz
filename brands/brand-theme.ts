@@ -35,6 +35,13 @@ export type BrandColors = {
   readonly successBright: HexColor;
   // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
   readonly accentSoft: HexColor;
+  // The words under «Haydovchi boʻling» on the amber row of the main screen (mockup g66/1).
+  readonly accentDeep: HexColor;
+  // The line around the card of the trip on the main screen (mockups g66/1, g66/2).
+  readonly cardLine: HexColor;
+  // The number on a tile and ⇅ of «Qayerdan / Qayerga»: the same in every app (mockups g66/1, g66/2).
+  readonly badge: HexColor;
+  readonly routeSwap: HexColor;
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;
@@ -45,6 +52,9 @@ export type BrandColors = {
   readonly neutralPale: HexColor;
   readonly neutralPaleText: HexColor;
   readonly dangerText: HexColor; // a number of work waiting for the team (admin, G53)
+  // «Hamyon» for fewer than 5 seats on the main screen: light red, a red line (mockup g66/2).
+  readonly dangerSoft: HexColor;
+  readonly dangerLine: HexColor;
   readonly routeFrom: HexColor; // point A of a route: green where the trip starts (docs/20)
   readonly routeTo: HexColor; // point B: red where it ends
   readonly routeLine: HexColor; // the line from A to B on the card of the own trip (mockup g63/3)

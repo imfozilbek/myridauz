@@ -1,4 +1,11 @@
-import { BOOKING_LINK, OFFER_LINK, type AppLink, type Booking, type RideRequest } from '@platform/contracts';
+import {
+  BOOKING_LINK,
+  OFFER_LINK,
+  REQUEST_LINK,
+  type AppLink,
+  type Booking,
+  type RideRequest,
+} from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { FavoritesScreen } from '../comfort/favorites-screen';
@@ -53,9 +60,10 @@ function MyRequests({ onBack, link }: ScreenProps) {
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
   // A bot button: a booking opens itself, a new offer opens its request with all the offers and
-  // their answers right in the cards (docs/65 B5, G61 mockup 3-offers A).
+  // their answers right in the cards (docs/65 B5, G61 mockup 3-offers A); «Soʻrovim» its request.
   useLinkOpen(link, value ?? null, (open, [, , offers]) => {
     if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id });
+    if (open.name === REQUEST_LINK) setOpened({ kind: 'request', id: open.id });
     const offer = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
     if (offer) setOpened({ kind: 'request', id: offer.requestId });
   });

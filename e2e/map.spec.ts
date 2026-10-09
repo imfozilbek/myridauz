@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT, newTripTile } from './apps';
+import { appUrl, MINI_APPS, TEXT, publishButton } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
@@ -110,7 +110,7 @@ test('the driver sees the pitak of the direction on the map from the new trip', 
   await mockMap(page, mapState());
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await newTripTile(page).click();
+  await publishButton(page).click();
   await chooseRoute(page);
   await expect(page.getByText(t('way.trip.mode.both'))).toBeVisible();
   await page.getByText(t('way.trip.onMap')).click();

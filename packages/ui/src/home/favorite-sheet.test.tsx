@@ -4,7 +4,8 @@ import type { Booking } from '@platform/contracts';
 import { confirmed } from '../bookings/booking-test-kit';
 import { trip } from '../market/market-test-kit';
 import { tap } from '../market/market-test-kit';
-import { PASSENGER_ACTIONS, renderHome } from './home-test-kit';
+import { PASSENGER_ACTIONS } from './home-test-actions';
+import { renderHome, sheetClosed } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 afterEach(cleanup);
@@ -23,12 +24,14 @@ describe('«Sevimli haydovchi»: a new trip of a saved driver (docs/129, mockup 
     expect(await screen.findByText('Jasur yangi safar eʼlon qildi')).toBeTruthy();
     await tap('Band qilish');
     expect(screen.queryByText('Jasur yangi safar eʼlon qildi')).toBeNull();
+    await sheetClosed();
   });
 
   it('«Keyinroq» does not ask about the same trip again', async () => {
     localStorage.clear();
     home();
     await tap('Keyinroq');
+    await sheetClosed();
     cleanup();
     home();
     await screen.findAllByText(/Qayer/u);

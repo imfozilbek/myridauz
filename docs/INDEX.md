@@ -116,7 +116,7 @@
 | 111 | [111-gaps-audit.md](111-gaps-audit.md) | Глобальный аудит 04.10.2026: недоработки, цели G42 … G50, вопросы владельцу |
 | 112 | [112-stats-errors.md](112-stats-errors.md) | Ошибки из статистики 04.10.2026: падение экрана попутчика, лишние отказы, цель G52 |
 | 113 | [113-lessons-learned-8.md](113-lessons-learned-8.md) | Журнал уроков: продолжение 8 (№122 и дальше) |
-| 114 | [114-tile-home.md](114-tile-home.md) | Главный экран плитками: попутчик A, водитель A, админка C (G53) |
+| 114 | [114-tile-home.md](114-tile-home.md) | Главный экран плитками: попутчик и водитель (G66), админка C (G53) |
 | 115 | [115-sounds-and-ring.md](115-sounds-and-ring.md) | Звуки Rida (три набора, выбор в админке) и звонок внутри открытой или свёрнутой Mini App (G54) |
 | 116 | [116-where-people-come-from.md](116-where-people-come-from.md) | Откуда пришли люди (метка в ссылке) и с какой платформы; первое касание в профиле (G55) |
 | 117 | [117-free-tier.md](117-free-tier.md) | Rida в бесплатном тарифе Cloudflare: бюджет на 1 000 людей, Cron по индексам и уровням, проверка плана запросов (G56) |
@@ -146,5 +146,5 @@
 | 140 | [140-g63-texts.md](140-g63-texts.md) | G63: новые тексты выезда и приезда водителя, напоминания бота и проверки пятака на согласие владельца |
 | 141 | [141-g63-pixel-perfect.md](141-g63-pixel-perfect.md) | G63: сверка Pixel Perfect экранов водителя, слияние C1, C2, C3, ревью связки поездки |
 | 143 | [143-driver-trip-path.md](143-driver-trip-path.md) | Путь 6 водителя (G63): публикация на одном экране, «Mening safarim», встреча, «Safar tugadi», «Qaytish», прошлая поездка |
-| 144 … 149 | [144-g64-texts.md](144-g64-texts.md), [145-g64-pixel-perfect.md](145-g64-pixel-perfect.md), [146-requests-and-trips-path.md](146-requests-and-trips-path.md), [148-g65-texts.md](148-g65-texts.md), [149-g65-pixel-perfect.md](149-g65-pixel-perfect.md) | G64: новые тексты на согласие владельца; сверка Pixel Perfect и споры макетов; путь 7 как сделано (заявки, разговор до брони, поездка для салона, «Mening safarlarim»). G65: новые тексты и сверка Pixel Perfect «Hamyon», «Profil», «Kanallar» |
+| 144 … 151 | [144-g64-texts.md](144-g64-texts.md), [145-g64-pixel-perfect.md](145-g64-pixel-perfect.md), [146-requests-and-trips-path.md](146-requests-and-trips-path.md), [148-g65-texts.md](148-g65-texts.md), [149-g65-pixel-perfect.md](149-g65-pixel-perfect.md), [150-g66-texts.md](150-g66-texts.md), [151-g66-pixel-perfect.md](151-g66-pixel-perfect.md) | G64: новые тексты на согласие владельца; сверка Pixel Perfect и споры макетов; путь 7 как сделано (заявки, разговор до брони, поездка для салона, «Mening safarlarim»). G65: новые тексты и сверка Pixel Perfect «Hamyon», «Profil», «Kanallar». G66: тексты и сверка Pixel Perfect главных экранов |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

@@ -1,0 +1,126 @@
+/* The white panel at the bottom of the main screen (G66, mockups g66/1, g66/2 at 360 px): it stands
+   right above the Telegram button. In Telegram the view ends there already; elsewhere the view is
+   taller than its stable height by the space of the button. */
+.home-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(100vh - var(--tg-viewport-stable-height, 100vh));
+  z-index: 5;
+  box-sizing: border-box;
+  padding: 12px var(--home-gutter, 14px) 10.67px;
+  border-radius: 20px 20px 0 0;
+  background: var(--reg-card);
+  box-shadow: 0 -6px 18px rgb(15 23 42 / 6%);
+  font-family: var(--tgui--font-family);
+}
+
+/* The two ends in one gray block, a line between them and ⇅ on the line. */
+.home-dock-route {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  background: var(--reg-bg);
+}
+
+.home-dock-end {
+  display: flex;
+  align-items: center;
+  gap: 11.33px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 9.67px 56px 8.33px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--reg-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* The line between the ends carries ⇅ in a white round. */
+.home-dock-line {
+  position: relative;
+  height: 1px;
+  background: var(--reg-off);
+}
+
+/* The green start and the red end as rings, as on the mockups. */
+.home-dock-ring {
+  flex: none;
+  box-sizing: border-box;
+  width: 12.67px;
+  height: 12.67px;
+  border-radius: 50%;
+}
+
+.home-dock-from {
+  box-shadow: inset 0 0 0 2.67px var(--reg-from);
+}
+
+.home-dock-to {
+  box-shadow: inset 0 0 0 2.67px var(--reg-to);
+}
+
+.home-dock-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.home-dock-label {
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--reg-muted);
+}
+
+.home-dock-value {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.home-dock-empty {
+  font-size: 16px;
+  line-height: 20px;
+  color: var(--reg-control);
+}
+
+/* An end with a line under its place: a little more room above, as on the mockups. */
+.home-dock-end:has(.home-dock-hint) {
+  padding-top: 9.67px;
+  padding-bottom: 10.67px;
+}
+
+.home-dock-hint {
+  margin-top: -1.67px;
+  font-size: 11.5px;
+  line-height: 14px;
+  color: var(--reg-text);
+}
+
+.home-dock-swap {
+  position: absolute;
+  top: -23px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--reg-off);
+  border-radius: 50%;
+  background: var(--reg-card);
+  cursor: pointer;
+}
+
+/* A step of the trip that did not work: the reason right above the button (docs/65 B3). */
+.home-dock-failure {
+  position: fixed;
+  left: var(--home-gutter, 14px);
+  right: var(--home-gutter, 14px);
+  bottom: calc(100vh - var(--tg-viewport-stable-height, 100vh) + 10px);
+  z-index: 5;
+}
