@@ -1,6 +1,6 @@
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { sheetClosed } from '../home/home-test-kit';
+import { sheetClosed } from '../home/sheet-closed';
 import { tap } from '../market/market-test-kit';
 import { renderInShell } from '../test-shell';
 import type { ActionItem } from './action-item';

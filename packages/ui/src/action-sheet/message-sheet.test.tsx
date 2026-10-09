@@ -2,7 +2,8 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { PASSENGER_ACTIONS } from '../home/home-test-actions';
-import { renderHome, sheetClosed } from '../home/home-test-kit';
+import { renderHome } from '../home/home-test-kit';
+import { sheetClosed } from '../home/sheet-closed';
 import { PassengerHome } from '../home/passenger-home';
 import { tap } from '../market/market-test-kit';
 

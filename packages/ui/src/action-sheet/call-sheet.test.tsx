@@ -3,7 +3,7 @@ import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { holdLiveCall } from '../call/live-call';
-import { sheetClosed } from '../home/home-test-kit';
+import { sheetClosed } from '../home/sheet-closed';
 import { ChatLink } from '../chat/chat-link';
 import { FakeSocket } from '../chat/fake-socket';
 import { FeedCallContext } from '../feed/feed-context';

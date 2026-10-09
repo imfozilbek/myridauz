@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking } from '../bookings/booking-test-kit';
 import { DriverHome } from '../home/driver-home';
 import { DRIVER_ACTIONS } from '../home/home-test-actions';
-import { renderHome, sheetClosed } from '../home/home-test-kit';
+import { renderHome } from '../home/home-test-kit';
+import { sheetClosed } from '../home/sheet-closed';
 import { tap, trip } from '../market/market-test-kit';
 
 afterEach(cleanup);

@@ -54,7 +54,10 @@ describe('what the stand reuses (G71)', () => {
     writeFileSync(code, 'code');
     utimesSync(code, past, past);
     writeFileSync(build, 'the build of the stand: the API on its own origin');
-    markBuilt(stamp, Date.now() - 1000);
+    // The build ends before its stamp: a time of the file and a clock of the same millisecond differ.
+    const built = new Date(Date.now() - 30_000);
+    utimesSync(build, built, built);
+    markBuilt(stamp, Date.now() - 45_000);
     expect(buildIsFresh(stamp, [code], [build])).toBe(true);
     // The e2e servers build the same folder with their own API address, later (playwright.config.ts).
     const later = new Date(Date.now() + 5000);

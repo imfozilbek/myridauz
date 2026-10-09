@@ -1,8 +1,6 @@
 import type { BookingsClient, ChatClient } from '@platform/api-client';
 import type { Booking, Favorites, Offer, RequestBoard, RideRequest, Trip, Wallet } from '@platform/contracts';
-import { waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { expect } from 'vitest';
 import { ActionSheet } from '../action-sheet/action-sheet';
 import { OpenChatContext, type OpenChat } from '../chat/open-chat';
 import { DriverContext, type Driver } from '../driver/driver-context';
@@ -61,10 +59,6 @@ type Data = {
 };
 
 const none = async () => [];
-
-// A sheet closes on a 300 ms timer of vaul that sets React state: a test waits for it, or the timer
-// can outlive the test file and fail the run on «window is not defined» (lesson №194).
-export const sheetClosed = () => waitFor(() => expect(document.querySelector('[vaul-drawer]')).toBeNull());
 
 export function renderHome(
   home: (go: HomeGo) => ReactNode,
