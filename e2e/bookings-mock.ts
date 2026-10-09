@@ -1,16 +1,13 @@
 import type { Page, Route } from '@playwright/test';
 import { request, tripOf } from './market-mock';
+import { TEST_NOW } from './test-clock';
 
 // Bookings, offers and the wallet as the Mini Apps see them (G08).
 const HOUR = 3_600_000;
-const MINUTE = 60_000;
-const DAY = 24 * HOUR;
-const TASHKENT_OFFSET = 5 * HOUR;
 const trip = tripOf('1', 'Jasur', false, 26);
-// The confirmed seat leaves later today in Toshkent: «Mashinaga chiqdim» is there only on the day
-// of the trip (docs/89 P7), and late in the evening the hour is the last minute of the day.
-const endOfToday = Math.floor((Date.now() + TASHKENT_OFFSET) / DAY) * DAY + DAY - TASHKENT_OFFSET;
-const today = tripOf('1', 'Jasur', false, 0, { departAt: Math.min(Date.now() + HOUR, endOfToday - MINUTE) });
+// The confirmed seat leaves in an hour, later today in Toshkent: «Mashinaga chiqdim» is there only on
+// the day of the trip (docs/89 P7), and the meeting opens only 30 minutes before (test-clock.ts).
+const today = tripOf('1', 'Jasur', false, 0, { departAt: TEST_NOW + HOUR });
 const passenger = { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false };
 const booking = (id: string, status: string, extra: object = {}) => ({
   id: `00000000-0000-4000-8000-0000000000b${id}`,
@@ -20,8 +17,8 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   price: 90000,
   commission: 18000,
   status,
-  createdAt: Date.now() - HOUR,
-  expiresAt: Date.now() + 20 * HOUR,
+  createdAt: TEST_NOW - HOUR,
+  expiresAt: TEST_NOW + 20 * HOUR,
   mode: 'door',
   pitak: null,
   // Until the confirmation the driver sees the area and the extra way only (docs/70).
@@ -30,7 +27,7 @@ const booking = (id: string, status: string, extra: object = {}) => ({
   extraKm: 2,
   plate: null,
   chatKey: `b00000000-0000-4000-8000-0000000000b${id}`,
-  confirmedAt: status === 'confirmed' ? Date.now() - HOUR / 2 : null,
+  confirmedAt: status === 'confirmed' ? TEST_NOW - HOUR / 2 : null,
   boardedAt: null,
   arrivedAt: null,
   cameAt: null,
@@ -87,12 +84,12 @@ const operation = (
   amount,
   bookingId: null,
   reason,
-  createdAt: Date.now() - hoursAgo * HOUR,
+  createdAt: TEST_NOW - hoursAgo * HOUR,
 });
 const wallet = (bonus: number) => ({
   bonus,
   main: 0,
-  bonusExpiresAt: Date.now() + 29 * 24 * HOUR,
+  bonusExpiresAt: TEST_NOW + 29 * 24 * HOUR,
   // 9 000 a seat of the last trip (G65).
   seatsLeft: Math.floor(bonus / 9000),
   operations:
