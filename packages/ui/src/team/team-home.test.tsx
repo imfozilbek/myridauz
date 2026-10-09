@@ -85,6 +85,22 @@ describe('the main screen of the team', () => {
     expect(avatar).toHaveBeenCalledWith(id);
   });
 
+  it('opens the one person of a sign in «Odamlar», a sign of many in the list', async () => {
+    const person = 'a'.repeat(32);
+    const signs = [
+      {
+        id: 'rating:1',
+        at: 1,
+        sign: { kind: 'rating' as const, name: 'Jasur', person, average: 3.1, count: 12 },
+      },
+    ];
+    const { go } = renderTeamHome('owner', {
+      team: { navbat: async () => NAVBAT, attention: async () => ({ signs }) },
+    });
+    fireEvent.click(await screen.findByText('1 kishida reyting past'));
+    expect(go).toHaveBeenCalledWith('people', { person });
+  });
+
   it('says «Hammasi koʻrildi» when nothing waits', async () => {
     const empty = { items: [], counts: { application: 0, complaint: 0, face: 0, support: 0 } };
     renderTeamHome('moderator', {

@@ -36,6 +36,7 @@ import driverAfter from '../locales/uz-Latn/driver-after.json' with { type: 'jso
 // The team in the admin app: «Diqqat», «Navbat» and the cases (G75, docs/120).
 import team from '../locales/uz-Latn/team.json' with { type: 'json' };
 import navbat from '../locales/uz-Latn/navbat.json' with { type: 'json' };
+import manage from '../locales/uz-Latn/manage.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -75,6 +76,7 @@ const REFERENCE = {
   driverAfter,
   team,
   navbat,
+  manage,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

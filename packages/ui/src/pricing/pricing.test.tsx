@@ -4,7 +4,7 @@ import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { locations, tap } from '../market/market-test-kit';
 import { renderInShell, testClients } from '../test-shell';
-import { ManagementScreen } from './management-screen';
+import { ManagementScreen } from '../manage/management-screen';
 
 afterEach(cleanup);
 

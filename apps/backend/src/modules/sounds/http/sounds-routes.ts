@@ -23,10 +23,7 @@ export function soundsRoutes(deps: (env: Bindings) => SoundsDeps) {
       )
       // The sounds are the owner's, reading too (docs/120, G75).
       .use(ADMIN_SOUNDS_PATH, ownerOnly)
-      .get(ADMIN_SOUNDS_PATH, async (context) => {
-        const canEdit = context.get('session').teamRole === 'owner';
-        return context.json(await soundsState(deps(context.env), canEdit));
-      })
+      .get(ADMIN_SOUNDS_PATH, async (context) => context.json(await soundsState(deps(context.env))))
       .post(ADMIN_SOUNDS_PATH, async (context) => {
         const input = soundChoiceSchema.safeParse(await context.req.json().catch(() => null));
         const state = input.success

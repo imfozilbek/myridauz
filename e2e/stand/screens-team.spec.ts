@@ -11,7 +11,6 @@ for (const platform of PLATFORMS)
   test(`${platform}: the admin Mini App and one step from it`, async ({ page }) => {
     await openHome(page, 'admin', OWNER, platform);
     await shot(page, platform, 't10-home');
-    await visit(page, platform, t('common.admin.applications'), 't11-applications');
-    await visit(page, platform, t('common.admin.complaints'), 't12-complaints');
+    // «Navbat» is on the main screen; «Boshqaruv» is the owner's (G75, mockup g67/1).
     await visit(page, platform, t('common.admin.management'), 't13-management');
   });

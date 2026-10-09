@@ -30,7 +30,6 @@ describe('the sounds of the brand (G54, docs/115)', () => {
       sets: ['1', '2', '3'],
       changedBy: null,
       changedAt: null,
-      canEdit: true,
     });
     const refused = await pick(MODERATOR, { set: '1' });
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
@@ -39,7 +38,7 @@ describe('the sounds of the brand (G54, docs/115)', () => {
     expect([unknown.status, await unknown.json()]).toEqual([400, { error: 'sounds.unknown_set' }]);
     expect((await pick(OWNER, null)).status).toBe(400);
     const saved = (await (await pick(OWNER, { set: '1' })).json()) as SoundsState;
-    expect(saved).toMatchObject({ set: '1', changedBy: OWNER, canEdit: true });
+    expect(saved).toMatchObject({ set: '1', changedBy: OWNER });
     expect(saved.changedAt).toEqual(expect.any(Number));
     expect(await played()).toEqual({ set: '1' });
   });

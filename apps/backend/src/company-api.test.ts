@@ -55,7 +55,7 @@ describe('company requisites (G34, docs/30)', () => {
     // «Hujjatlar va kompaniya» is in «Boshqaruv»: the owner's only, reading too (docs/120, G75).
     expect((await call(ADMIN_COMPANY_PATH, MODERATOR, { app: 'admin' })).status).toBe(403);
     const read = (await (await call(ADMIN_COMPANY_PATH, OWNER, { app: 'admin' })).json()) as CompanyState;
-    expect([read.canEdit, read.history.length]).toEqual([true, 2]);
+    expect(read.history.length).toBe(2);
     const answer = await (await ask(`https://${loadBrand().domain}`)).json();
     expect(answer).toMatchObject({ company: { ...company, form: 'AJ' }, edition: { version: '1.5' } });
   });

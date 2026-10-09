@@ -23,8 +23,11 @@ test('D01, D03, D05, D06. the application screen by screen, then «on the check�
 
 test('T15, T11, D07. the team approves in the admin Mini App; the driver can publish', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
-  await page.getByText(t('common.admin.applications')).first().click();
-  await page.getByText(NEWCOMER.name).first().click();
+  // The application waits in «Navbat» of the main screen (G75, mockup g67/1).
+  await page
+    .getByText(t('team.case.application', { name: NEWCOMER.name }))
+    .first()
+    .click();
   await shot(page, 'android', 't20-application');
   await mainButton(page).filter({ hasText: TEXT.approve }).click();
   await mainButton(page).filter({ hasText: TEXT.plateMatches }).click();

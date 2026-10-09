@@ -5,7 +5,7 @@ import { ProfileScreen } from '../account/profile/profile-screen';
 import { confirmed, wallet } from '../bookings/booking-test-kit';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { renderMarket, tap } from '../market/market-test-kit';
-import { ManagementScreen } from '../pricing/management-screen';
+import { ManagementScreen } from '../manage/management-screen';
 import { testClients } from '../test-shell';
 import { WALLET_ACTION } from './wallet-flow';
 

@@ -14,6 +14,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ChannelEdit } from './channel-edit';
+import { ChannelHealthLine } from './channel-health-line';
 import '../market/market.css';
 
 // "Kanallar" for the team (docs/63): the region channels and the district channels the team added.
@@ -22,9 +23,12 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('channels');
   useScreenBackground();
   const { t } = useI18n();
-  const { channels } = useApiClients();
+  const clients = useApiClients();
+  const { channels } = clients;
   const { value, failed, reload, refresh } = useLoad(() => channels.list(), 'channels');
   const [directory, retry] = useDirectory();
+  // The health comes from the Cron check; the list never waits for it (G75).
+  const health = useLoad(() => clients.team.channelHealth(), 'manage.channels').value;
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
   if (failed || directory.status === 'error')
     return <ErrorScreen onRetry={() => (reload(), retry())} onBack={onBack} />;
@@ -45,6 +49,9 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
       key={channel.username}
       before={<IconTile name="channel" tone={channel.fixed ? 'deep' : 'brand'} />}
       subtitle={`@${channel.username} · ${channel.fixed ? t('channels.fixed') : t('channels.places', { count: String(channel.places.length) })}`}
+      description={
+        <ChannelHealthLine health={health?.channels.find((one) => one.username === channel.username)} />
+      }
       {...(channel.fixed ? {} : { onClick: () => setOpen(channel) })}
     >
       {channel.title}

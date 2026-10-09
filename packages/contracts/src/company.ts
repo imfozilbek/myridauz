@@ -49,10 +49,9 @@ const companyVersionSchema = z.object({
 });
 export type CompanyVersion = z.infer<typeof companyVersionSchema>;
 
-// The admin screen: the requisites now, every change before (newest first); only the owner edits.
+// The admin screen of the owner: the requisites now, every change before (newest first).
 export const companyStateSchema = z.object({
   current: companyVersionSchema.nullable(),
   history: z.array(companyVersionSchema),
-  canEdit: z.boolean(),
 });
 export type CompanyState = z.infer<typeof companyStateSchema>;

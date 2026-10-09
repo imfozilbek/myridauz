@@ -17,8 +17,8 @@ export type Signal = {
 };
 
 const DIQQAT_ROUTE = 'diqqat';
-// «Odamlar»: the section of the team and the people in the admin app (G53).
-const PEOPLE_SECTION = 'management';
+// «Odamlar» of the admin app: a person by the public id, the blocks and their history (G75).
+const PEOPLE_SECTION = 'people';
 
 // «Diqqat» of the owner (mockup g68/4): one quiet card a day, its lines the signs of the day; only
 // errors and a late case ring under it.

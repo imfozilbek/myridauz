@@ -29,16 +29,21 @@ const open = async (page: Page, platform: Platform, label: string, name: string)
 
 test('android: an application, its plate check and the reasons', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
-  await open(page, 'android', t('common.admin.applications'), 'ta10-queue');
-  await open(page, 'android', APPLICANT.name, 'ta11-application');
+  await shot(page, 'android', 'ta10-navbat');
+  await open(page, 'android', t('team.case.application', { name: APPLICANT.name }), 'ta11-application');
   await visit(page, 'android', t('moderation.approve'), 'ta12-plate-check');
   await visit(page, 'android', t('moderation.requestChanges'), 'ta13-reasons');
 });
 
 test('android: a complaint', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
-  await open(page, 'android', t('common.admin.complaints'), 'ta20-complaints');
-  await open(page, 'android', SHERZOD.name, 'ta21-complaint');
+  await open(page, 'android', t('team.filter.complaint'), 'ta20-complaints');
+  await open(
+    page,
+    'android',
+    t('team.case.complaint', { name: NARGIZA.name, against: SHERZOD.name }),
+    'ta21-complaint',
+  );
 });
 
 const management = async (page: Page, platform: Platform) => {
@@ -59,6 +64,9 @@ for (const platform of PLATFORMS)
 
 // Each tool from «Boshqaruv» on its own page: «Back» from a tool goes to the main screen.
 const tools: readonly [string, string, string, string][] = [
+  [t('manage.people'), 'ta47-people', t('manage.person.search'), 'ta48-people-search'],
+  [t('manage.team'), 'ta49-team', t('manage.teamAdd'), 'ta50-team-add'],
+  [t('manage.limits'), 'ta51-limits', t('manage.limit.schedule.maxActiveTrips'), 'ta52-limit-edit'],
   [t('wallet.team.title'), 'ta36-wallets', MUROD.name, 'ta37-wallet-adjust'],
   [t('channels.title'), 'ta38-channels', t('channels.add'), 'ta39-channel-edit'],
   [t('pitaks.title'), 'ta40-pitaks', t('pitaks.add'), 'ta41-pitak-edit'],
@@ -82,6 +90,11 @@ test('android: the hand price of one direction', async ({ page }) => {
   await page.getByText(t('pricing.title')).first().click();
   await page.getByText('Samarqand viloyati').first().click();
   await shot(page, 'android', 'ta46-direction');
+});
+
+test('android: the journal of the team', async ({ page }) => {
+  await management(page, 'android');
+  await open(page, 'android', t('manage.journal'), 'ta53-journal');
 });
 
 test('android: the history of pitaks', async ({ page }) => {

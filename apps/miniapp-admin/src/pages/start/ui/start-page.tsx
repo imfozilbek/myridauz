@@ -5,6 +5,8 @@ import {
   ManagementScreen,
   NAVBAT_SECTION,
   NavbatScreen,
+  PEOPLE_SECTION,
+  PeopleScreen,
   STATS_SECTION,
   StartFlow,
   StatsScreen,
@@ -25,6 +27,14 @@ const SECTIONS: readonly StartAction[] = [
     labelKey: 'team.section.navbat',
     hintKey: 'team.empty',
     Screen: NavbatScreen,
+  },
+  {
+    id: PEOPLE_SECTION,
+    icon: 'passengers',
+    tone: 'brand',
+    labelKey: 'manage.people',
+    hintKey: 'manage.peopleHint',
+    Screen: PeopleScreen,
   },
   {
     id: STATS_SECTION,

@@ -23,10 +23,7 @@ export function companyRoutes(deps: (env: Bindings) => CompanyDeps) {
       )
       // The requisites are the owner's, reading too (docs/120, G75).
       .use(ADMIN_COMPANY_PATH, ownerOnly)
-      .get(ADMIN_COMPANY_PATH, async (context) => {
-        const canEdit = context.get('session').teamRole === 'owner';
-        return context.json(await companyState(deps(context.env), canEdit));
-      })
+      .get(ADMIN_COMPANY_PATH, async (context) => context.json(await companyState(deps(context.env))))
       .post(ADMIN_COMPANY_PATH, async (context) => {
         const input = companySchema.safeParse(await context.req.json().catch(() => null));
         if (!input.success) return context.json({ error: 'company.invalid_input' }, BAD_REQUEST);

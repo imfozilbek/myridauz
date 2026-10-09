@@ -36,3 +36,17 @@
 | `support.title`, `support.about` | обращение (нет на макете) | «{name} · murojaat», «Mavzu» | ждёт |
 | `support.voice`, `support.photo`, `support.placeholder`, `support.send` | обращение | «Ovozli xabar», «Rasm», «Javobingizni yozing», «Javob yuborish» | ждёт |
 | `errors.support.not_sent` | ответ не дошёл | «Javob odamga yetib bormadi. Birozdan keyin qayta yuboring.» | ждёт |
+
+## «Boshqaruv» и его экраны (`manage.*`, макета внутренних экранов нет: вид как у «Boshqaruv» g67/2 экран 6)
+
+| Ключи | Где | Текст | Согласие |
+|---|---|---|---|
+| `ownerOnly`, `group.*` | «Boshqaruv» | «Faqat egasi koʻradi», «Odamlar va safarlar», «Pul», «Joylar»; четвёртая группа: имя бренда | ждёт |
+| `people`, `peopleHint`, `tripsToday`, `walletsLow`, `pricingHint` | строки | «Odamlar», «Qidirish, bloklar, tarix», «Bugun {count} ta», «{count} tasida pul kam», «Yoʻnalish narxlari» | ждёт |
+| `channelsHint`, `count`, `statisticsHint`, `team`, `teamHint`, `company` | строки | «{count} ta · {subscribers} obunachi», «{count} ta», «Kun, hafta, xatolar, manbalar», «Jamoa», «{count} moderator», «Hujjatlar va kompaniya» | ждёт |
+| `limits`, `limitsHint`, `journal`, `journalHint` | строки, нет на макете | «Cheklovlar», «Odamlar uchun chegaralar», «Jurnal», «Jamoaning har bir qarori» | ждёт |
+| `person.*` | «Odamlar» | «Qidirish», «ID raqami», «Ochish», «Roʻyxatdan oʻtgan», «Reyting», «Hali baho yoʻq», «{average} ({count} ta baho)», «Safarlar», «Haydovchi: {trips} · yoʻlovchi: {rides}», «Unga shikoyatlar», «Bloklangan» | ждёт |
+| `teamAdd`, `teamAddButton`, `teamRemove`, `teamRemoveAsk` | «Jamoa» | «Moderator qoʻshish», «Qoʻshish», «Jamoadan olib tashlash», «{name} jamoadan olib tashlansinmi?» | ждёт |
+| `limit.*` (36 ключей), `limitGroup.*`, `limitHistory`, `limitChange`, `limitRange`, `limitNew`, `limitSave`, `unit.*` | «Cheklovlar» | названия лимитов (`manage.json`), «Oʻzgarishlar», «{before} → {after} · {by} · {date}», «Yangi qiymat», «Saqlash», «{value} ta / daq / soat / kun / %» | ждёт |
+| `journalEmpty`, `journalMore`, `entry.*` | «Jurnal» | «Hali qaror yoʻq», «Yana», «Ariza tasdiqlandi», «{days} kunga blok», «Komissiya qaytarildi», «Jamoaga qoʻshildi» и др. | ждёт |
+| `channel.*` | «Kanallar» | «{count} obunachi», «oyda {count} kishi keldi», «Bot yoza olmaydi», «{count} post bormadi» | ждёт |

@@ -1,4 +1,4 @@
-import type { AppLink, Location, NavbatKind } from '@platform/contracts';
+import type { AppLink, Location, NavbatKind, PersonId } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
@@ -45,6 +45,8 @@ export type Launch = {
   readonly again?: TripAgain;
   // A case of «Navbat» opened from the main screen of the team, in the filter it was seen (G75).
   readonly navbat?: NavbatOpen;
+  // A person of a sign of «Diqqat» opened in «Odamlar» (G75).
+  readonly person?: PersonId;
 };
 // «Hammasi» or one kind of cases (docs/120).
 export type NavbatFilter = 'all' | NavbatKind;

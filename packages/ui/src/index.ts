@@ -11,10 +11,17 @@ export { MyRequestsScreen } from './market/my-requests-screen';
 export { MyTripsScreen } from './market/my-trips-screen';
 export { NewRequestFlow } from './market/new-request-flow';
 export { NewTripFlow } from './market/new-trip-flow';
-export { ManagementScreen } from './pricing/management-screen';
+export { ManagementScreen } from './manage/management-screen';
 export { StatsScreen } from './stats/stats-screen';
 export { TeamTripsScreen } from './market/team-trips-screen';
-export { MANAGEMENT_SECTION, NAVBAT_SECTION, STATS_SECTION, TRIPS_SECTION } from './team/team-sections';
+export {
+  MANAGEMENT_SECTION,
+  NAVBAT_SECTION,
+  PEOPLE_SECTION,
+  STATS_SECTION,
+  TRIPS_SECTION,
+} from './team/team-sections';
+export { PeopleScreen } from './manage/people-screen';
 export { NavbatScreen } from './navbat/navbat-screen';
 export { linkedCase } from './navbat/linked-case';
 export { TeamHome } from './team/team-home';
