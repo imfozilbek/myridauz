@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { expect, test } from '../crash-guard';
 import {
   createMarketClient,
@@ -5,12 +6,15 @@ import {
   createPricingClient,
   createWalletClient,
 } from '@platform/api-client';
-import { DAY_MS, TRIP_DAYS_AHEAD, tashkentDate } from '@platform/contracts';
+import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { confirmedSeat, outcome, SAMARQAND, walletRowOf } from './g27-kit';
 import { CHILONZOR } from './market-kit';
 import { AZIZA, BOBUR, KAMRON, OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
 import { standSql } from './stand-tools';
+
+// The brand defaults (docs/127): the owner changed nothing on the stand.
+const TRIP_DAYS_AHEAD = loadBrand().schedule.daysAhead;
 
 // The team (docs/79 T01 … T49): who may do what in the admin Mini App. The owner decides money,
 // prices and blocks lifted; a moderator moderates; nobody else gets in.

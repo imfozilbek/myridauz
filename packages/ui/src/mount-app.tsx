@@ -20,6 +20,7 @@ import {
   createPitaksClient,
   createCompanyClient,
   createSoundsClient,
+  createLimitsClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
@@ -97,6 +98,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     pitaks: createPitaksClient(signed),
     company: createCompanyClient(signed),
     sounds: createSoundsClient(signed),
+    limits: createLimitsClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).

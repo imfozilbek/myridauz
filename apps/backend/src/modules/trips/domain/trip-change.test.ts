@@ -4,18 +4,20 @@ import { lowerPrice, priceNoticeDue, retime } from './trip-change';
 import { aTrip as trip, BEFORE as NOW, DEPART, DRIVER } from '../test-record';
 
 const MINUTE = 60 * 1000;
+// The brand's shift of a trip time (docs/104).
+const SHIFT = 60;
 
 describe('the time of a trip (G39, docs/104, 8)', () => {
   it('moves only later, up to +1 hour from the first time in all, and the end moves along', () => {
-    const later = retime(trip, DRIVER, DEPART + 40 * MINUTE, NOW);
+    const later = retime(trip, DRIVER, DEPART + 40 * MINUTE, NOW, SHIFT);
     expect(later).toMatchObject({ departAt: DEPART + 40 * MINUTE, endsAt: trip.endsAt + 40 * MINUTE });
     if (typeof later === 'string') return;
-    expect(retime(later, DRIVER, DEPART + 60 * MINUTE, NOW)).toMatchObject({
+    expect(retime(later, DRIVER, DEPART + 60 * MINUTE, NOW, SHIFT)).toMatchObject({
       departAt: DEPART + 60 * MINUTE,
     });
     // The hour is counted from the first time, not from the last change.
-    expect(retime(later, DRIVER, DEPART + 70 * MINUTE, NOW)).toBe('trips.invalid_input');
-    expect(retime(later, DRIVER, DEPART + 20 * MINUTE, NOW)).toBe('trips.invalid_input');
+    expect(retime(later, DRIVER, DEPART + 70 * MINUTE, NOW, SHIFT)).toBe('trips.invalid_input');
+    expect(retime(later, DRIVER, DEPART + 20 * MINUTE, NOW, SHIFT)).toBe('trips.invalid_input');
   });
 
   it('keeps the day, and only the driver changes a trip that has not left', () => {
@@ -25,12 +27,12 @@ describe('the time of a trip (G39, docs/104, 8)', () => {
       firstDepartAt: Date.parse('2026-10-02T18:30:00Z'),
     };
     // 23:30 + 40 minutes is the next day in Tashkent.
-    expect(retime(late, DRIVER, late.departAt + 40 * MINUTE, NOW)).toBe('trips.invalid_input');
-    expect(retime(trip, 8, DEPART + 10 * MINUTE, NOW)).toBe('trips.not_found');
-    expect(retime({ ...trip, status: 'cancelled' }, DRIVER, DEPART + 10 * MINUTE, NOW)).toBe(
+    expect(retime(late, DRIVER, late.departAt + 40 * MINUTE, NOW, SHIFT)).toBe('trips.invalid_input');
+    expect(retime(trip, 8, DEPART + 10 * MINUTE, NOW, SHIFT)).toBe('trips.not_found');
+    expect(retime({ ...trip, status: 'cancelled' }, DRIVER, DEPART + 10 * MINUTE, NOW, SHIFT)).toBe(
       'trips.wrong_status',
     );
-    expect(retime(trip, DRIVER, DEPART + 10 * MINUTE, DEPART + MINUTE)).toBe('trips.wrong_status');
+    expect(retime(trip, DRIVER, DEPART + 10 * MINUTE, DEPART + MINUTE, SHIFT)).toBe('trips.wrong_status');
   });
 });
 

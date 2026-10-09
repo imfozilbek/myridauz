@@ -40,6 +40,8 @@ export type WalletDeps = {
   readonly lastPrice: (driverId: number) => Promise<number | null>;
   // The commission of one seat at a price, by the rule of the brand (docs/12).
   readonly perSeat: (price: number) => number;
+  // Fewer seats than this the money confirms: «Hamyon» turns red once (brand, G68, docs/122).
+  readonly fewSeats: number;
   // The wallet card of the driver bot with its news under it (G68).
   readonly tell: (driverId: number, view: Wallet, news: WalletNews) => Promise<void>;
   readonly now: () => number;

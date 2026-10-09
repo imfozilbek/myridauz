@@ -1,4 +1,4 @@
-import { AFTER_TRIP_TALK_HOURS, arrivalAt, type Booking } from '@platform/contracts';
+import { arrivalAt, type Booking } from '@platform/contracts';
 import type { Member } from '../../chat';
 import { statusAt } from '../domain/booking';
 import type { BookingsDeps } from './ports';
@@ -46,7 +46,8 @@ async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Tal
   const now = deps.now();
   const status = statusAt(booking, now, trip.over);
   // The day of writing counts from «Yetib keldik» when the car came, as on the screens (afterTrip).
-  const after = now < (trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km)) + AFTER_TRIP_TALK_HOURS * HOUR_MS;
+  const talkMs = deps.limits.chat.afterTripHours * HOUR_MS;
+  const after = now < (trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km)) + talkMs;
   if (status === 'completed') return { canCall: after, canWrite: after };
   return { canCall: status === 'confirmed', canWrite: true };
 }
@@ -90,7 +91,7 @@ async function talkPair(deps: BookingsDeps, id: string): Promise<Pair | null> {
   const people = { passengerId: request.passengerId, driverId: talk.driverId };
   const bookingId = await talkBookingId(deps, id, talk.requestId);
   if (bookingId !== null) return { ...people, ...BOOKED, ...(await talkOf(deps, bookingId)) };
-  const before = { callsOff: request.callsOff, ringLimit: deps.requestRings };
+  const before = { callsOff: request.callsOff, ringLimit: deps.limits.calls.requestRings };
   return { ...people, ...before, canCall: request.open, canWrite: true };
 }
 

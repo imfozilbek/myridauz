@@ -16,10 +16,11 @@ type Props = { readonly trip: Trip; readonly bookings: readonly Booking[]; reado
 export function PastTripTags({ trip, bookings, now }: Props) {
   const { t } = useI18n();
   // The list of «Mening safarlarim» has no colours of the app of its own: the tags bring them.
-  const { colors } = useBrand().theme;
+  const brand = useBrand();
+  const { colors } = brand.theme;
   if (!tripPast(trip)) return null;
   const riders = ridersOf(bookings);
-  const { rateUntil } = afterTrip(trip.departAt, trip.km);
+  const { rateUntil } = afterTrip(brand, trip.departAt, trip.km);
   const tags: (readonly [Tone, string])[] = [];
   if (riders.length > 0 && riders.every((booking) => booking.rated === true))
     tags.push(['done', t('driverAfter.tag.rated')]);

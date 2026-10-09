@@ -5,13 +5,16 @@ import { tashkentDayStart, tashkentTime } from './tashkent-time';
 
 // When a driver may leave (G38, docs/103). The numbers are the brand's (docs/22).
 export type ScheduleRules = {
-  // A trip leaves at least this long after it is made.
+  // A trip leaves at least this long after it is made, at most daysAhead later.
   readonly leadMinutes: number;
+  readonly daysAhead: number;
   // The time a day other than today opens with.
   readonly defaultTime: string;
   readonly maxActiveTrips: number;
   // The time to gather people before a trip: its time on the road × factor, within the bounds.
   readonly gather: { readonly factor: number; readonly minMinutes: number; readonly maxMinutes: number };
+  // A trip moves at most this much later than its first time (docs/104).
+  readonly shiftMinutes: number;
 };
 
 // A trip of the driver as the schedule sees it: where and when it starts and ends.

@@ -60,6 +60,8 @@ export type SharesDeps = {
   ) => Promise<string | null>;
   readonly link: (token: string) => string;
   readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
+  // The close ones who follow one trip at most (brand, docs/43, docs/128 §4).
+  readonly followers: number;
   readonly now: () => number;
 };
 

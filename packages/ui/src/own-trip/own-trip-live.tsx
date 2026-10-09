@@ -16,6 +16,7 @@ import { tripStage } from './trip-stage';
 import { useNow } from './use-now';
 import { useOwnTripActions } from './use-own-trip-actions';
 import { useTripSteps } from './use-trip-steps';
+import { useBrand } from '../context/brand-context';
 
 export type OwnTripProps = {
   readonly trip: Trip;
@@ -46,6 +47,7 @@ export function OwnTripLive(props: Props) {
   // The passengers of the point whose meeting is open.
   const [meeting, setMeeting] = useState<readonly string[] | null>(null);
   const now = useNow();
+  const { meetMinutes } = useBrand().schedule;
   const stage = tripStage(trip, now);
   const actions = useOwnTripActions({ trip, stage, bookings, open: setOpened, onChanged, onClosed });
   const steps = useTripSteps({ trip, onChanged, onArrived });
@@ -87,7 +89,9 @@ export function OwnTripLive(props: Props) {
         trip={trip}
         bookings={bookings.filter((item) => item.status === 'confirmed')}
         now={now}
-        onPoint={meetingOpen(trip, now) ? (stop) => setMeeting(stop.riders.map(({ id }) => id)) : null}
+        onPoint={
+          meetingOpen(trip, now, meetMinutes) ? (stop) => setMeeting(stop.riders.map(({ id }) => id)) : null
+        }
         onBack={back}
       />
     );

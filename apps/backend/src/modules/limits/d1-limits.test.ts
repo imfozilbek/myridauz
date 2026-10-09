@@ -14,7 +14,7 @@ describe('the limits of the owner in D1', () => {
     await db.exec(
       `INSERT INTO limit_values (key, value, changed_by, changed_at) VALUES ('gone.key', 1, 900, 0)`,
     );
-    expect(await limits.values()).toEqual(new Map([['promo.grants', 4]]));
+    expect(await limits.values()).toEqual({ 'promo.grants': 4 });
     expect((await limits.history(1)).map((change) => change.after)).toEqual([4]);
     expect(fullScans(db).filter((scan) => scan.includes('limit_history'))).toEqual([]);
   });

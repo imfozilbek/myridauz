@@ -1,9 +1,9 @@
-import { MEET_BEFORE_MINUTES, MINUTE_MS } from '@platform/contracts';
+import { MINUTE_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { driverBookings } from './application/answer';
 import { markMeeting } from './application/meeting';
 import { requestBooking } from './application/request';
-import { booked, DEPART, ENDS, MEETING } from './test-booked';
+import { booked, DEPART, ENDS, MEET_MINUTES, MEETING } from './test-booked';
 import { ALI, DILNOZA, DRIVER, HOUR, OLIM, seats, setup } from './test-kit';
 
 describe('the driver at the point of the passenger (docs/126, G63)', () => {
@@ -20,10 +20,10 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
     });
   });
 
-  it('opens MEET_BEFORE_MINUTES before the departure and closes with the trip', async () => {
+  it("opens the brand's minutes before the departure and closes with the trip", async () => {
     const { deps, id, setNow } = await booked();
     const early = { ok: false, error: 'bookings.not_meeting_time' };
-    setNow(DEPART - (MEET_BEFORE_MINUTES + 5) * MINUTE_MS);
+    setNow(DEPART - (MEET_MINUTES + 5) * MINUTE_MS);
     for (const step of ['came', 'met', 'no_show'] as const)
       expect(await markMeeting(deps, DRIVER, id, step)).toEqual(early);
     setNow(ENDS);

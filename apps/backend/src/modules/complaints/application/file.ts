@@ -1,4 +1,4 @@
-import { COMPLAIN_DAYS, complaintInputSchema, COMPLAINT_WINDOW_DAYS, DAY_MS } from '@platform/contracts';
+import { complaintInputSchema, DAY_MS } from '@platform/contracts';
 import type { z } from 'zod';
 import { hiddenPeople } from '../domain/complaint';
 import type { ComplaintsDeps } from './ports';
@@ -13,7 +13,7 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     return 'complaints.not_found' as const;
   if (await deps.store.ofAuthor(authorId, input.bookingId)) return 'complaints.already' as const;
   // A week after the trip a complaint goes through «Yordam» (docs/129).
-  if (ride.endsAt + COMPLAIN_DAYS * DAY_MS <= deps.now()) return 'complaints.too_late' as const;
+  if (ride.endsAt + deps.limits.days * DAY_MS <= deps.now()) return 'complaints.too_late' as const;
   const againstId = authorId === ride.driverId ? ride.passengerId : ride.driverId;
   const complaint = {
     id: deps.newId(),
@@ -35,17 +35,18 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
   return { id: complaint.id };
 }
 
-// People out of the search: complaints from 3 different people in 30 days (docs/17). Only the
+// People out of the search: complaints from 3 different people in 30 days (docs/17, brand). Only the
 // complaints the team can open count: one whose ride is gone never leaves the queue (docs/90 F-A1).
 export async function hiddenFromSearch(deps: ComplaintsDeps, userIds: readonly number[]) {
   if (userIds.length === 0) return new Set<number>();
   const now = deps.now();
-  const since = now - COMPLAINT_WINDOW_DAYS * DAY_MS;
+  const since = now - deps.limits.windowDays * DAY_MS;
   // A decided complaint hides nobody: only the open ones need their ride.
   const recent = (await deps.store.against(userIds, since)).filter((known) => known.status !== 'resolved');
   const rides = await Promise.all(recent.map((complaint) => deps.filedRide(complaint.bookingId)));
   return hiddenPeople(
     recent.filter((_, index) => rides[index] !== undefined),
     now,
+    deps.limits,
   );
 }

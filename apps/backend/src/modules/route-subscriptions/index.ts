@@ -33,6 +33,7 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
     show: (news) => showNews(env, news),
     now: Date.now,
   }),
+  limits: brandOf(env).subscriptions,
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });

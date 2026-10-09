@@ -2,7 +2,6 @@ import {
   DAY_MS,
   DRIVER_TAGS,
   PASSENGER_TAGS,
-  RATING_DAYS,
   reviewInputSchema,
   type ReviewTarget,
 } from '@platform/contracts';
@@ -13,12 +12,12 @@ import type { RatingsDeps, Ride } from './ports';
 type Input = z.output<typeof reviewInputSchema>;
 type Failure = 'reviews.not_found' | 'reviews.not_over' | 'reviews.too_late';
 
-// Only the two sides of a ride that is over, within RATING_DAYS (docs/24).
+// Only the two sides of a ride that is over, within the brand's days (docs/24).
 async function rideFor(deps: RatingsDeps, bookingId: string, raterId: number): Promise<Ride | Failure> {
   const ride = await deps.rides.find(bookingId);
   if (!ride || (raterId !== ride.driverId && raterId !== ride.passengerId)) return 'reviews.not_found';
   if (!ride.over) return 'reviews.not_over';
-  return ride.endsAt + RATING_DAYS * DAY_MS < deps.now() ? 'reviews.too_late' : ride;
+  return ride.endsAt + deps.limits.days * DAY_MS < deps.now() ? 'reviews.too_late' : ride;
 }
 
 const rateeOf = (ride: Ride, raterId: number) =>
@@ -53,9 +52,12 @@ async function watch(deps: RatingsDeps, userId: number, now: number) {
   const stars = (await deps.store.about([userId]))
     .filter((review) => !review.hidden)
     .map((review) => review.stars);
-  if (!needsModerator(stars) || !(await deps.store.flag(userId, now))) return;
+  if (!needsModerator(stars, deps.limits) || !(await deps.store.flag(userId, now))) return;
   const name = (await deps.names([userId])).get(userId) ?? '';
-  await deps.alertTeam({ name, publicId: (await deps.people.publicId(userId)) ?? '' }, ratingOf(stars));
+  await deps.alertTeam(
+    { name, publicId: (await deps.people.publicId(userId)) ?? '' },
+    ratingOf(stars, deps.limits),
+  );
 }
 
 // The review screen: whom the person rates and their own review of this ride.

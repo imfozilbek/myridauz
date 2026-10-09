@@ -1,6 +1,6 @@
 import type { BrowserContext } from '@playwright/test';
 import { channelOf, loadBrand } from '@platform/brands';
-import { MEET_BEFORE_MINUTES, MY_TRIP_LINK, tripEndsAt, type Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, tripEndsAt, type Trip } from '@platform/contracts';
 import { expect, test, type Page } from '../crash-guard';
 import { pressBack } from '../telegram-mock';
 import { MINUTE, moveTrip, SAMARQAND, toldBy } from './g27-kit';
@@ -19,6 +19,9 @@ import { freshDriver } from './schedule-kit';
 import { mainButton, NARROW, PLATFORMS, t, type Platform } from './screen-tour';
 import { approvedDriver, register } from './seed';
 import { openAs, outsideCalls } from './stand-kit';
+
+// The brand defaults (docs/127): the owner changed nothing on the stand.
+const MEET_BEFORE_MINUTES = loadBrand().schedule.meetMinutes;
 
 // G63 (docs/143, docs/118 path 6) on the whole local Rida, Android and iOS: a driver publishes on
 // one screen, a passenger books on a second phone, the meeting, the way and the end of the trip.

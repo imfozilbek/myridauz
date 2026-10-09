@@ -17,9 +17,11 @@ export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((
 // gives, and each thing with its deadline. The chat stays to read; the complaint goes to support.
 export function DoneTools({ booking, onOpen }: Props) {
   const { t } = useI18n();
-  const { bots, name } = useBrand();
+  const brand = useBrand();
+  const { bots, name } = brand;
   const now = Date.now();
   const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(
+    brand,
     booking.trip.departAt,
     booking.trip.km,
     booking.trip.arrivedAt,

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_SEATS } from './drivers';
 import { personIdSchema } from './person-id';
 import { locationIdSchema } from './locations';
 import { dateSchema } from './tashkent-time';
@@ -16,14 +17,13 @@ export const passengerRequestCallsPath = (id: string) => `${PASSENGER_REQUESTS_P
 export const requestCallsInputSchema = z.object({ on: z.boolean() });
 
 export const REQUEST_STATUSES = ['open', 'matched', 'expired', 'cancelled'] as const;
-export const MAX_OPEN_REQUESTS = 3;
-export const REQUEST_MAX_SEATS = 4;
 
 export const rideRequestInputSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
   date: dateSchema,
-  seats: z.number().int().min(1).max(REQUEST_MAX_SEATS),
+  // At most the seats of a car; the brand's limit (4) is the server's rule (docs/128 §4).
+  seats: z.number().int().min(1).max(MAX_SEATS),
   price: z.number().int().min(1),
   // How the passenger wants to be picked up and where they go (docs/70): the start point is
   // needed unless only the pitak suits; the drop-off point always.

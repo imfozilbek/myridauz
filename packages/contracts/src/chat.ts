@@ -48,9 +48,6 @@ export type UnreadChat = z.infer<typeof unreadChatSchema>;
 export const unreadChatsSchema = z.object({ chats: z.array(unreadChatSchema) });
 export const chatMessagesPath = (key: string) => `/chats/${key}/messages`;
 export const chatTextSchema = z.object({ text: z.string().trim().min(1).max(MAX_CHAT_TEXT) });
-// After the trip the chat and the call stay this many hours from the arrival, then the chat is read
-// only (docs/129): a forgotten thing and «rahmat», not a deal past Rida.
-export const AFTER_TRIP_TALK_HOURS = 24;
 // System lines about the booking, shown in the middle of the chat.
 // missed_call: a call that did not happen (docs/08, G13).
 export const CHAT_SYSTEM_EVENTS = [

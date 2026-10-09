@@ -1,4 +1,4 @@
-import { FEW_SEATS, WALLET_SECTION } from '@platform/contracts';
+import { WALLET_SECTION } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -40,9 +40,10 @@ function WalletTile({ onOpen }: { readonly onOpen: () => void }) {
   const { t } = useI18n();
   const { wallet } = useApiClients();
   const tap = useHomeTap();
+  const { fewSeats } = useBrand().wallet;
   const { value } = useLoad(() => wallet.mine(), 'wallet');
   const seats = value?.seatsLeft ?? null;
-  const low = seats !== null && seats < FEW_SEATS;
+  const low = seats !== null && seats < fewSeats;
   const count = String(seats);
   return (
     <HomeTile

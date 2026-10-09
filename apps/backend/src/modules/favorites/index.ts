@@ -31,6 +31,7 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
     now: Date.now,
   }),
   idOf: (publicId) => peopleOf(env).idOf(publicId),
+  max: brandOf(env).favorites.max,
   now: Date.now,
 });
 

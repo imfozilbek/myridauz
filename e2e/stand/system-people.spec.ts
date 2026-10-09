@@ -1,6 +1,6 @@
+import { loadBrand } from '@platform/brands';
 import { expect, test } from '../crash-guard';
 import { createModerationClient, createSubscriptionsClient, createUsersClient } from '@platform/api-client';
-import { MAX_SUBSCRIPTIONS } from '@platform/contracts';
 import { CHILONZOR, publishTrip } from './market-kit';
 import {
   confirmedSeat,
@@ -15,6 +15,9 @@ import {
 } from './g27-kit';
 import { BOBUR, DIYORA, LAZIZA, NIGORA, OWNER, SEVARA } from './people';
 import { signedAs } from './stand-kit';
+
+// The brand defaults (docs/127): the owner changed nothing on the stand.
+const MAX_SUBSCRIPTIONS = loadBrand().subscriptions.max;
 
 // People who leave and people who wait (docs/81 F07, F08, docs/77 P70, P72): a deleted account and
 // a block cancel the seats with a word to the driver and the money back; a subscription brings

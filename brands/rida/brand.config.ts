@@ -40,8 +40,22 @@ export const brandConfig: BrandConfig = {
   // another day opens at 08:00; at most 3 trips; gathering people takes half the road, 1 to 3 hours.
   schedule: {
     leadMinutes: 60,
+    daysAhead: 30,
     defaultTime: '08:00',
     maxActiveTrips: 3,
     gather: { factor: 0.5, minMinutes: 60, maxMinutes: 180 },
+    shiftMinutes: 60,
+    meetMinutes: 30,
+    autoDepartHours: 2,
   },
+  // docs/127 §2..7: the limits of people; the owner changes them in «Cheklovlar» (docs/128 §4).
+  bookings: { maxPending: 3, answerHours: 24 },
+  requests: { maxOpen: 3, maxSeats: 4 },
+  wallet: { fewSeats: 5 },
+  chat: { afterTripHours: 24 },
+  subscriptions: { max: 5, anyDateDays: 30 },
+  shares: { followers: 5 },
+  favorites: { max: 50 },
+  ratings: { days: 7, blindDays: 7, remindHours: 24, minShown: 3, lowAverage: 3.5, lowCount: 10 },
+  complaints: { days: 7, hideAfter: 3, windowDays: 30 },
 };

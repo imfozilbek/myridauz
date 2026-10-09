@@ -22,6 +22,7 @@ function setup(start: number) {
     depart: async (tripId, at) => void done.push(`departed ${tripId} ${at}`),
     first: createMemoryFirst(),
     remind: async (trip) => void done.push(`reminded ${trip.id}`),
+    autoDepartHours: loadBrand().schedule.autoDepartHours,
     now: () => now,
   };
   return { deps, asked, done, at: (next: number) => void (now = next) };

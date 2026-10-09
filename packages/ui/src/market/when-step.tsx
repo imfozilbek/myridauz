@@ -1,4 +1,4 @@
-import { DAY_MS, TRIP_DAYS_AHEAD, defaultSlot, tashkentDate, type Schedule } from '@platform/contracts';
+import { DAY_MS, defaultSlot, tashkentDate, type Schedule } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -28,7 +28,7 @@ export function WhenStep({ now, schedule, initial, onBack, onDone }: WhenStepPro
   const { t } = useI18n();
   const rules = useBrand().schedule;
   const first = today(now);
-  const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
+  const last = tashkentDate(now + rules.daysAhead * DAY_MS);
   const [date, setDate] = useState(initial?.date ?? firstDayOf(now, schedule, rules));
   const [calendar, setCalendar] = useState(false);
   const slots = slotsOn(date, now, schedule, rules);

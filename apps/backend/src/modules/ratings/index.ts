@@ -60,6 +60,7 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
       });
     },
     mask: (text) => maskContacts(text).text,
+    limits: brandOf(env).ratings,
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };

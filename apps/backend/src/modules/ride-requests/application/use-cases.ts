@@ -1,6 +1,5 @@
 import {
   DAY_MS,
-  MAX_OPEN_REQUESTS,
   tashkentDayStart,
   type RequestSearch,
   type RideRequest,
@@ -51,8 +50,10 @@ export async function publishRequest(
   input: RideRequestData,
 ): Promise<Result<RideRequest, PublishError>> {
   const now = deps.now();
-  const timeError = dateError(input.date, now);
+  const timeError = dateError(input.date, now, deps.limits.schedule.daysAhead);
   if (timeError) return { ok: false, error: timeError };
+  // The seats of one request: the brand's limit, the owner changes it (docs/127 §3).
+  if (input.seats > deps.limits.requests.maxSeats) return { ok: false, error: 'trips.invalid_input' };
   const recommendation = await deps.recommend(input.from, input.to);
   if (!recommendation.ok) return recommendation;
   const { km, minPrice, maxPrice } = recommendation.value;
@@ -64,7 +65,7 @@ export async function publishRequest(
     (item) => item.from === input.from && item.to === input.to && item.date === input.date,
   );
   if (same) return { ok: false, error: 'trips.request_exists' };
-  if (open.length >= MAX_OPEN_REQUESTS) return { ok: false, error: 'trips.too_many' };
+  if (open.length >= deps.limits.requests.maxOpen) return { ok: false, error: 'trips.too_many' };
   const pointsError = await wayError(deps, input);
   if (pointsError) return { ok: false, error: pointsError };
   const passenger = await deps.people.find(passengerId);

@@ -1,9 +1,4 @@
-import {
-  MAX_SUBSCRIPTIONS,
-  type Subscription,
-  type SubscriptionInput,
-  type SubscriptionKind,
-} from '@platform/contracts';
+import { type Subscription, type SubscriptionInput, type SubscriptionKind } from '@platform/contracts';
 import { expiresAtOf, isActive, type SubscriptionRecord } from '../domain/subscription';
 import type { Result, SubscriptionsDeps } from './ports';
 
@@ -24,7 +19,7 @@ export async function mySubscriptions(deps: SubscriptionsDeps, userId: number, k
   return kept.sort((a, b) => stopped(a) - stopped(b) || b.createdAt - a.createdAt).map(view);
 }
 
-// "Xabar bering" (docs/24): at most MAX_SUBSCRIPTIONS live ones; the same route twice is one.
+// "Xabar bering" (docs/24): at most the brand's live ones; the same route twice is one.
 export async function subscribe(
   deps: SubscriptionsDeps,
   userId: number,
@@ -35,7 +30,7 @@ export async function subscribe(
   const live = (await deps.subscriptions.byUser(userId, kind)).filter((known) => isActive(known, now));
   const twin = live.find((known) => same(known, input));
   if (twin) return { ok: true, value: view(twin) };
-  if (live.length >= MAX_SUBSCRIPTIONS) return { ok: false, error: 'subscriptions.too_many' };
+  if (live.length >= deps.limits.max) return { ok: false, error: 'subscriptions.too_many' };
   const subscription: SubscriptionRecord = {
     ...input,
     // Only passengers look for "Mashinada ayol bor" (docs/06).
@@ -43,7 +38,7 @@ export async function subscribe(
     id: deps.newId(),
     userId,
     kind,
-    expiresAt: expiresAtOf(input.date, now),
+    expiresAt: expiresAtOf(input.date, now, deps.limits.anyDateDays),
     expired: false,
     createdAt: now,
   };
@@ -67,7 +62,7 @@ export async function unsubscribe(
   return subscription !== undefined;
 }
 
-// "Uzaytirish": an "any date" subscription lives ANY_DATE_DAYS more days (docs/24).
+// "Uzaytirish": an "any date" subscription lives the brand's days more (docs/24).
 export async function renew(
   deps: SubscriptionsDeps,
   userId: number,
@@ -79,9 +74,13 @@ export async function renew(
   const now = deps.now();
   if (!isActive(subscription, now)) {
     const live = (await deps.subscriptions.byUser(userId, kind)).filter((known) => isActive(known, now));
-    if (live.length >= MAX_SUBSCRIPTIONS) return { ok: false, error: 'subscriptions.too_many' };
+    if (live.length >= deps.limits.max) return { ok: false, error: 'subscriptions.too_many' };
   }
-  const renewed = { ...subscription, expiresAt: expiresAtOf(null, now), expired: false };
+  const renewed = {
+    ...subscription,
+    expiresAt: expiresAtOf(null, now, deps.limits.anyDateDays),
+    expired: false,
+  };
   await deps.subscriptions.save(renewed);
   return { ok: true, value: view(renewed) };
 }

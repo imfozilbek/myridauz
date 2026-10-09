@@ -16,7 +16,7 @@ const HISTORY = 'SELECT * FROM limit_history ORDER BY changed_at DESC LIMIT ?1';
 export const d1Limits = (db: D1Database): LimitStore => ({
   values: async () => {
     const { results } = await db.prepare('SELECT key, value FROM limit_values').all<ValueRow>();
-    return new Map(results.flatMap((row) => (isKey(row.key) ? [[row.key, row.value] as const] : [])));
+    return Object.fromEntries(results.flatMap((row) => (isKey(row.key) ? [[row.key, row.value]] : [])));
   },
   change: async ({ key, before, after, by, at }) => {
     await db.batch([
@@ -37,7 +37,7 @@ export function createMemoryLimits(): LimitStore {
   const values = new Map<LimitKey, number>();
   const changes: LimitChange[] = [];
   return {
-    values: async () => new Map(values),
+    values: async () => Object.fromEntries(values),
     change: async (change) => {
       values.set(change.key, change.after);
       changes.unshift(change);

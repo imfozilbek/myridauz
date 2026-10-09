@@ -13,7 +13,7 @@ type MeetError =
   | 'bookings.already_met'
   | 'bookings.already_no_show';
 
-// The driver at each point of a confirmed booking (docs/126, G63), from MEET_BEFORE_MINUTES before
+// The driver at each point of a confirmed booking (docs/126, G63), from the brand's minutes before
 // the departure until the trip closes. «Men keldim» tells the passenger in the bot; «Keldi» and
 // «Kelmadi» refresh the open screen of the passenger. «Kelmadi» files a no_show complaint of the
 // driver: the team decides it and the owner confirms the refund (docs/35, docs/124 В).
@@ -28,7 +28,8 @@ export async function markMeeting(
   const { record, facts } = found;
   if (record.status !== 'confirmed') return { ok: false, error: 'bookings.wrong_status' };
   const now = deps.now();
-  if (!meetingOpen(facts, now)) return { ok: false, error: 'bookings.not_meeting_time' };
+  if (!meetingOpen(facts, now, deps.limits.schedule.meetMinutes))
+    return { ok: false, error: 'bookings.not_meeting_time' };
   const written = await write(deps, record, step, now);
   if (typeof written === 'string') return { ok: false, error: written };
   // Only the tap that wrote the mark tells the passenger and files the complaint (docs/65 A4).

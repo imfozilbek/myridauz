@@ -15,6 +15,7 @@ import type { Opened } from './own-trip-opened';
 import { tileBlock } from './tile-block';
 import type { TripStage } from './trip-stage';
 import { useCloseShare } from './use-close-share';
+import { useBrand } from '../context/brand-context';
 
 type Options = {
   readonly trip: Trip;
@@ -31,6 +32,7 @@ type Options = {
 export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onClosed }: Options) {
   const { t } = useI18n();
   const { market } = useApiClients();
+  const { shiftMinutes } = useBrand().schedule;
   const balance = useBalance(bookings.some((booking) => booking.status === 'requested'));
   const { failure, fail, clear } = useFailure();
   // Why a tile cannot work now: it stays on the page and says so (docs/121).
@@ -67,7 +69,11 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
     else if (which === 'story') void postStory();
     // Only the price is left once the time moved the whole hour (docs/104).
     else if (which === 'change')
-      open(laterTimes(trip).length > 0 ? { screen: 'choice' } : { screen: 'change', change: 'price' });
+      open(
+        laterTimes(trip, shiftMinutes).length > 0
+          ? { screen: 'choice' }
+          : { screen: 'change', change: 'price' },
+      );
     else open({ screen: 'map' });
   };
   // A cancel is asked first; the passengers hear about it (docs/65 B4). A second tap while it is

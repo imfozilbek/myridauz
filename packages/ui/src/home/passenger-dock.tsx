@@ -16,6 +16,7 @@ import { DOCK_FROM, DOCK_TO } from './dock-sections';
 import { usePassengerData } from './passenger-data';
 import { RouteDock } from './route-dock';
 import { useHomeTap } from './use-home-tap';
+import { useBrand } from '../context/brand-context';
 
 // The bottom of the main screen of a passenger (G66, mockup g66/1): from the meeting on (30 minutes
 // before the departure, with its card, docs/126) the step of the trip alone, «Mashinaga chiqdim» then
@@ -25,14 +26,15 @@ export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
   const [places] = useDirectory();
   const now = useNow();
-  const today = (load.value?.[0] ?? []).find((booking) => stepNow(booking, now));
+  const { meetMinutes } = useBrand().schedule;
+  const today = (load.value?.[0] ?? []).find((booking) => stepNow(booking, now, meetMinutes));
   if (today) return <TripStep booking={today} onTold={load.refresh} />;
   return <FindDock go={go} directory={places.status === 'ready' ? places.directory : null} />;
 }
 
-const stepNow = (booking: Booking, now: number) => {
+const stepNow = (booking: Booking, now: number, minutes: number) => {
   const step = passengerStep(booking, now);
-  return step === 'arrived' || (step === 'boarded' && now >= meetingStartsAt(booking.trip.departAt));
+  return step === 'arrived' || (step === 'boarded' && now >= meetingStartsAt(booking.trip.departAt, minutes));
 };
 
 function TripStep({ booking, onTold }: { readonly booking: Booking; readonly onTold: () => void }) {

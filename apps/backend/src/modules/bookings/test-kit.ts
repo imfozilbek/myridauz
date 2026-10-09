@@ -47,7 +47,7 @@ export function setup() {
     bookings,
     offers: createMemoryOffers(),
     talks: createMemoryTalks(),
-    requestRings: loadBrand().calls.requestRings,
+    limits: loadBrand(),
     trips: port,
     requests: {
       find: async (requestId) => requests.get(requestId),

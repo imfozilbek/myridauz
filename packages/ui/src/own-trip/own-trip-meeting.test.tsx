@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import type { BookingsClient } from '@platform/api-client';
 import { meetingStartsAt, MINUTE_MS, type Booking, type Trip } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
@@ -45,7 +46,11 @@ async function openTrip() {
 describe('the meeting on «Mening safarim» (G63 C3, docs/126, docs/129)', { timeout: 20_000 }, () => {
   it('a point of «Yoʻl xaritasi» opens «Uchrashuv» once the meeting opens (mockup g63/4 screens 12, 13)', async () => {
     vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'], shouldAdvanceTime: true });
-    open(madina.trip, [madina], meetingStartsAt(madina.trip.departAt) - MINUTE_MS + STEP_MS / 2);
+    open(
+      madina.trip,
+      [madina],
+      meetingStartsAt(madina.trip.departAt, loadBrand().schedule.meetMinutes) - MINUTE_MS + STEP_MS / 2,
+    );
     await openTrip();
     expect(await screen.findByText('Madina')).toBeTruthy();
     // The effects of the page run first: its clock is set before the time moves on.

@@ -1,4 +1,5 @@
-import { MEET_BEFORE_MINUTES, MINUTE_MS, type Booking } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import { MINUTE_MS, type Booking } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket } from '../market/market-test-kit';
@@ -8,6 +9,8 @@ import { renderInShell, testClients } from '../test-shell';
 import { akmal, MEETING_NOW } from './meet-test-kit';
 import { NoShowBanners } from './no-show-banners';
 import { NoShowLine } from './no-show-line';
+
+const MEET_BEFORE_MINUTES = loadBrand().schedule.meetMinutes;
 
 afterEach(cleanup);
 

@@ -65,7 +65,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
     bookings: bookingStore(env),
     offers: env.DB ? d1Offers(env.DB) : localOffers,
     talks: env.DB ? d1Talks(env.DB) : localTalks,
-    requestRings: brandOf(env).calls.requestRings,
+    limits: brandOf(env),
     trips: {
       find: (id) => tripFacts(env, id),
       ofDriver: (driverId) => driverTripIds(env, driverId),

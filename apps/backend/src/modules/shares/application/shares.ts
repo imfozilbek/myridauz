@@ -1,4 +1,4 @@
-import { MAX_FOLLOWERS, type Booking, type Share, type SharedTrip } from '@platform/contracts';
+import type { Booking, Share, SharedTrip } from '@platform/contracts';
 import { hashToken, openUntil, shareStatus, type ShareSubject } from '../domain/share';
 import { driverShared } from './driver-shares';
 import { issueLink, tellAll } from './links';
@@ -77,7 +77,7 @@ export async function follow(
   if (!opened) return { ok: false, error: 'shares.not_found' };
   const followers = await deps.shares.followers(opened.subject);
   if (followers.includes(telegramId)) return { ok: true, value: true };
-  if (followers.length >= MAX_FOLLOWERS) return { ok: false, error: 'shares.too_many' };
+  if (followers.length >= deps.followers) return { ok: false, error: 'shares.too_many' };
   await deps.shares.follow(opened.subject, telegramId, deps.now());
   return { ok: true, value: true };
 }

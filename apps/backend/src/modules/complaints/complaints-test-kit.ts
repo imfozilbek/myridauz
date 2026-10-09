@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { DAY_MS } from '@platform/contracts';
 import type { ComplaintsDeps, Ride } from './application/ports';
 import { createMemoryComplaints } from './infrastructure/memory-complaints';
@@ -58,6 +59,7 @@ export function setup() {
       blocked: async (id, side, until) => void log.push(`blocked ${id} ${side} ${until}`),
       resolved: async (id) => void log.push(`resolved ${id}`),
     },
+    limits: loadBrand().complaints,
     now: () => NOW,
     newId: () => `c${Math.random()}`,
   };

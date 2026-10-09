@@ -47,6 +47,7 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
       text,
       link,
     ),
+  followers: brandOf(env).shares.followers,
   now: Date.now,
 });
 

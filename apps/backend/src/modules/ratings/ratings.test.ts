@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { askRatings } from './application/ask';
@@ -10,6 +11,7 @@ import { idOfPublic, publicIdOf } from '../../test-people';
 
 const NOW = Date.parse('2026-10-05T12:00:00Z');
 const HOUR = 3_600_000;
+const RULES = loadBrand().ratings;
 const DRIVER = 1;
 const ride = (n: number, over = true): Ride => ({
   bookingId: `b${n}`,
@@ -35,6 +37,7 @@ function setup(rides: Ride[] = [ride(1)]) {
     ask: async (ask, name, { rater }, reminder) => void asked.push({ ask, name, rater, reminder }),
     alertTeam: async (person) => void alerts.push(person),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
+    limits: RULES,
     now: () => clock,
     newId: () => `r${Math.random()}`,
   };
@@ -44,8 +47,8 @@ const review = (bookingId: string, stars: number, text = '') => ({ bookingId, st
 
 describe('the rating of a person (docs/24)', () => {
   it('shows "Yangi" below 3 ratings and the average with one decimal after', () => {
-    expect(ratingOf([5, 4])).toEqual({ average: null, count: 2 });
-    expect(ratingOf([5, 5, 4])).toEqual({ average: 4.7, count: 3 });
+    expect(ratingOf([5, 4], RULES)).toEqual({ average: null, count: 2 });
+    expect(ratingOf([5, 5, 4], RULES)).toEqual({ average: 4.7, count: 3 });
   });
 
   it('asks both sides once after the ride and reminds once after 24 hours', async () => {

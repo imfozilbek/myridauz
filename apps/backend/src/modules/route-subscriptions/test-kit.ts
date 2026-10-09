@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import type { SubscriptionInput } from '@platform/contracts';
 import { placeMatches } from '../../shared/places/place-match';
 import type { SubscriptionsDeps } from './application/ports';
@@ -44,6 +45,7 @@ export function setup() {
       renew: async (s) => void told.push(`renew ${s.userId}`),
       cheaper: async (s, match) => void told.push(`cheaper ${s.userId} ${match.id}`),
     },
+    limits: loadBrand().subscriptions,
     newId: () => `s${(id += 1)}`,
     now: () => now,
   };

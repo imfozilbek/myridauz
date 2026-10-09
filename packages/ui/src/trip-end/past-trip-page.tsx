@@ -46,12 +46,13 @@ export function PastTripPage(props: Props) {
   useScreenView('trip_end.past');
   useScreenBackground();
   const { t } = useI18n();
-  const { colors } = useBrand().theme;
+  const brand = useBrand();
+  const { colors } = brand.theme;
   const directory = usePlaces();
   const done = useDoneLine(trip, directory.find(trip.to)?.name ?? trip.to);
   const riders = bookings.filter(taken);
   const { now, back } = useReturnPlan(trip);
-  const talk = now < afterTrip(trip.departAt, trip.km, trip.arrivedAt).talkUntil;
+  const talk = now < afterTrip(brand, trip.departAt, trip.km, trip.arrivedAt).talkUntil;
   const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return (
     <div className="own-trip past-trip" style={brandVars(colors)}>

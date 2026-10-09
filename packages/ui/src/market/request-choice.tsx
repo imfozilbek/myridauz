@@ -1,4 +1,4 @@
-import { REQUEST_MAX_SEATS, type Recommendation } from '@platform/contracts';
+import type { Recommendation } from '@platform/contracts';
 import { useAccount } from '../account/account-context';
 import { useI18n } from '../context/i18n-context';
 import { Stepper } from '../find/stepper';
@@ -6,6 +6,7 @@ import { ToggleRow } from '../find/toggle-row';
 import { haptic } from '../telegram/feedback';
 import '../find/seats.css';
 import './request-points.css';
+import { useBrand } from '../context/brand-context';
 
 export type RequestChoiceValue = {
   readonly seats: number;
@@ -27,6 +28,7 @@ const offersWoman = (isMan: boolean, seats: number) => isMan && seats >= 2;
 export function RequestChoice({ value, recommendation, onChange }: Props) {
   const { t, formatMoney, formatNumber } = useI18n();
   const isMan = useAccount()?.profile.gender === 'male';
+  const { maxSeats } = useBrand().requests;
   const { minPrice, maxPrice, roundStep } = recommendation;
   const set = (change: Partial<RequestChoiceValue>) => {
     haptic.select();
@@ -40,7 +42,7 @@ export function RequestChoice({ value, recommendation, onChange }: Props) {
         <Stepper
           value={value.seats}
           atLeast={value.seats <= 1}
-          atMost={value.seats >= REQUEST_MAX_SEATS}
+          atMost={value.seats >= maxSeats}
           onStep={(by) => set({ seats: value.seats + by })}
         />
       </div>

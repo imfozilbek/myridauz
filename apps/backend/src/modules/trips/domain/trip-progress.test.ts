@@ -6,6 +6,7 @@ import { arrive, depart } from './trip-progress';
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
+const SHIFT = 60;
 
 describe('«Yoʻlga chiqdim» of the driver (G63, docs/35)', () => {
   it('works for the own live trip from an hour before its time, once', () => {
@@ -25,7 +26,9 @@ describe('«Yoʻlga chiqdim» of the driver (G63, docs/35)', () => {
     const left = depart(aTrip, DRIVER, DEPART - 30 * MINUTE);
     if (typeof left === 'string') throw new Error(left);
     expect(cancel(left, DRIVER, DEPART - 20 * MINUTE)).toBe('trips.wrong_status');
-    expect(retime(left, DRIVER, DEPART + 30 * MINUTE, DEPART - 20 * MINUTE)).toBe('trips.wrong_status');
+    expect(retime(left, DRIVER, DEPART + 30 * MINUTE, DEPART - 20 * MINUTE, SHIFT)).toBe(
+      'trips.wrong_status',
+    );
     expect(cancel(aTrip, DRIVER, DEPART - 20 * MINUTE)).toMatchObject({ status: 'cancelled' });
   });
 });

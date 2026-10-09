@@ -1,3 +1,4 @@
+import type { BrandConfig } from '@platform/brands';
 import type { RefundState } from '@platform/contracts';
 import type { HistoryLine } from '../../chat';
 import type { ComplaintRecord } from '../domain/complaint';
@@ -81,6 +82,8 @@ export type ComplaintsDeps = {
   // The owner confirmed: the commission of the booking goes back once (docs/35).
   readonly refund: (ownerId: number, driverId: number, bookingId: string) => Promise<'ok' | 'nothing'>;
   readonly tell: ComplaintTeller;
+  // The days to complain and the rule that hides a person (brand with the owner's values, docs/128 §4).
+  readonly limits: BrandConfig['complaints'];
   readonly now: () => number;
   readonly newId: () => string;
 };

@@ -1,12 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DEPART_AUTO_MS,
-  DEPART_EARLY_MS,
-  DEPART_REMIND_MS,
-  onTheWay,
-  tripArrivePath,
-  tripDepartPath,
-} from './trip-progress';
+import { DEPART_EARLY_MS, DEPART_REMIND_MS, onTheWay, tripArrivePath, tripDepartPath } from './trip-progress';
 import { tripSchema } from './trips';
 
 const HOUR = 60 * 60 * 1000;
@@ -19,8 +12,8 @@ describe('the driver on the road (G63, docs/35)', () => {
     expect(onTheWay({ departAt: DEPART, departedAt: null }, DEPART)).toBe(true);
   });
 
-  it('opens the button an hour before, reminds an hour after and departs by itself two hours after', () => {
-    expect([DEPART_EARLY_MS, DEPART_REMIND_MS, DEPART_AUTO_MS]).toEqual([HOUR, HOUR, 2 * HOUR]);
+  it('opens the button an hour before and reminds an hour after (the brand departs it later)', () => {
+    expect([DEPART_EARLY_MS, DEPART_REMIND_MS]).toEqual([HOUR, HOUR]);
     expect(tripDepartPath('t1')).toBe('/driver/trips/t1/depart');
     expect(tripArrivePath('t1')).toBe('/driver/trips/t1/arrive');
   });

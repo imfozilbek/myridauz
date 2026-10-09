@@ -2,8 +2,11 @@ import { meetingStartsAt, type DriverMeetStep } from '@platform/contracts';
 import { holdsSeats, type BookingRecord } from './booking';
 
 // The driver marks the meeting until the trip closes (docs/129).
-export const meetingOpen = (trip: { departAt: number; endsAt: number; over: boolean }, now: number) =>
-  !trip.over && now >= meetingStartsAt(trip.departAt) && now < trip.endsAt;
+export const meetingOpen = (
+  trip: { departAt: number; endsAt: number; over: boolean },
+  now: number,
+  minutes: number,
+) => !trip.over && now >= meetingStartsAt(trip.departAt, minutes) && now < trip.endsAt;
 
 type MarkError = 'bookings.already_met' | 'bookings.already_no_show' | 'bookings.wrong_status';
 

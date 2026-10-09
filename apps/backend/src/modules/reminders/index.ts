@@ -37,5 +37,6 @@ export const watchLateDepartures = (env: Bindings, now: number) =>
     depart: (tripId, at) => departByCron(env, tripId, at),
     first: env.DB ? d1First(env.DB) : localFirst,
     remind: departReminder(brandOf(env), (jobs) => notify(env, jobs)),
+    autoDepartHours: brandOf(env).schedule.autoDepartHours,
     now: () => now,
   });

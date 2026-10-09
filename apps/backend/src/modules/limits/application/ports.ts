@@ -1,4 +1,4 @@
-import type { LimitKey } from '@platform/contracts';
+import type { LimitKey, OwnerLimits } from '@platform/contracts';
 
 // A change of a limit by the owner (docs/128 §4): who, when, before, after.
 export type LimitChange = {
@@ -10,7 +10,7 @@ export type LimitChange = {
 };
 
 export type LimitStore = {
-  values(): Promise<Map<LimitKey, number>>;
+  values(): Promise<OwnerLimits['values']>;
   // The value and its line of history, in one step.
   change(change: LimitChange): Promise<void>;
   // The newest first.

@@ -44,6 +44,7 @@ const walletDeps = (env: Bindings): WalletDeps => {
     booking: (id) => links.booking(env, id),
     lastPrice: (id) => links.lastPrice(env, id),
     perSeat: (price) => commissionFor(brand.commission, price, 1),
+    fewSeats: brand.wallet.fewSeats,
     // A driver may have never opened the bot: the news must not stop the commission.
     tell: async (driverId, view, news) => {
       const now = Date.now();

@@ -1,5 +1,6 @@
 // Test helper: a confirmed booking of Dilnoza and the times of its meeting (docs/126, G63).
-import { MEET_BEFORE_MINUTES, MINUTE_MS } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import { MINUTE_MS } from '@platform/contracts';
 import { confirm } from './application/answer';
 import { requestBooking } from './application/request';
 import { DILNOZA, DRIVER, HOUR, NOW, seats, setup } from './test-kit';
@@ -8,7 +9,8 @@ import { DILNOZA, DRIVER, HOUR, NOW, seats, setup } from './test-kit';
 export const DEPART = NOW + 30 * HOUR;
 export const ENDS = NOW + 37 * HOUR;
 // Five minutes into the meeting window before the departure.
-export const MEETING = DEPART - (MEET_BEFORE_MINUTES - 5) * MINUTE_MS;
+export const MEET_MINUTES = loadBrand().schedule.meetMinutes;
+export const MEETING = DEPART - (MEET_MINUTES - 5) * MINUTE_MS;
 
 export async function booked() {
   const kit = setup();

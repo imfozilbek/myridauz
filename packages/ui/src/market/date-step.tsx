@@ -1,4 +1,4 @@
-import { TRIP_DAYS_AHEAD, DAY_MS, tashkentDate } from '@platform/contracts';
+import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { Cell, Input, List, Section } from '../components';
@@ -9,6 +9,7 @@ import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { today, tomorrow, useDayLabel } from './when';
+import { useBrand } from '../context/brand-context';
 
 type DateStepProps = {
   readonly now: number;
@@ -24,7 +25,7 @@ export function DateStep({ now, initial, onBack, onDone }: DateStepProps) {
   const { t } = useI18n();
   const dayLabel = useDayLabel();
   const first = today(now);
-  const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
+  const last = tashkentDate(now + useBrand().schedule.daysAhead * DAY_MS);
   const known = initial && initial >= first && initial <= last ? initial : null;
   const listed = known === first || known === tomorrow(now) ? known : null;
   const [calendar, setCalendar] = useState(known !== null && listed === null);

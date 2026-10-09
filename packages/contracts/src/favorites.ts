@@ -8,7 +8,6 @@ import { tripSchema } from './trips';
 // the bot tells about each new one. G18.
 export const FAVORITES_PATH = '/passenger/favorites';
 export const favoritePath = (driverId: PersonId) => `${FAVORITES_PATH}/${driverId}`;
-export const MAX_FAVORITES = 50;
 
 export const favoriteDriverSchema = z.object({
   id: personIdSchema,

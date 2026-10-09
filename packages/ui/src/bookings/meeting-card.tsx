@@ -12,11 +12,11 @@ import { MeetingMap } from '../trip/meeting-map';
 import { mapUrl } from './map-link';
 import './meeting-card.css';
 
-// From MEET_BEFORE_MINUTES before the departure until the passenger is in the car (docs/126).
-export const meetingTime = (booking: Booking, now: number) =>
+// From the brand's minutes before the departure until the passenger is in the car (docs/126).
+export const meetingTime = (booking: Booking, now: number, minutes: number) =>
   booking.status === 'confirmed' &&
   booking.boardedAt === null &&
-  now >= meetingStartsAt(booking.trip.departAt);
+  now >= meetingStartsAt(booking.trip.departAt, minutes);
 
 type Props = { readonly booking: Booking; readonly onTold: (booking: Booking) => void };
 

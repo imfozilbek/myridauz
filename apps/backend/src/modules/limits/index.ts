@@ -4,7 +4,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { recordAction } from '../journal';
 import { peopleOf } from '../users';
 import type { LimitStore } from './application/ports';
-import { brandOf, keepLimits } from '../../shared/brand/brand-of';
+import { brandOf, keepLimits, ownerLimits } from '../../shared/brand/brand-of';
 import { createMemoryLimits, d1Limits } from './infrastructure/d1-limits';
 import { limitRoutes } from './http/limit-routes';
 
@@ -48,4 +48,5 @@ export const limitsModule = limitRoutes({
     });
   },
   name: async (env, id) => (await peopleOf(env).find(id))?.firstName ?? '',
+  owners: ownerLimits,
 });

@@ -47,6 +47,7 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
       send: (jobs) => notify(env, jobs),
       queue: (news) => showQueue(env, news),
     }),
+    limits: brandOf(env).complaints,
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };
