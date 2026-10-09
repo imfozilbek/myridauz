@@ -33,6 +33,7 @@ describe('what the team sees about a person (docs/65 C)', () => {
           ...application,
           history: [{ status: 'rejected', reasons: [], at: DAY }],
           samePlate: 2,
+          was: null,
         }),
         blocks: async () => ({
           active: unblock.mock.calls.length > 0 ? null : { until: null },

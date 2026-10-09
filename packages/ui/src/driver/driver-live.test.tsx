@@ -25,7 +25,9 @@ describe('the application status of a driver stays fresh (docs/65 B2, lesson 36)
       undefined,
       clients,
     );
-    await screen.findByText('Tuzatish');
+    // «Rad etish» is the last word (G75, docs/120): no «Tuzatish», only the support.
+    await screen.findByText('Qoʻllab-quvvatlashga yozish');
+    expect(screen.queryByText('Tuzatish')).toBeNull();
     expect(screen.queryByTestId('driver-home')).toBeNull();
     current = application({ status: 'approved', car });
     act(() => listener());

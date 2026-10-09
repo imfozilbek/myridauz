@@ -1,7 +1,13 @@
-import type { ApplicationDetail, ApplicationSummary, CarPhotoKind, DecisionInput } from '@platform/contracts';
+import type {
+  ApplicationDetail,
+  ApplicationSummary,
+  Car,
+  CarPhotoKind,
+  DecisionInput,
+} from '@platform/contracts';
 import type { StoredImage } from '../../../shared/storage/image-store';
 import { afterAvatarChange, decide, type Application } from '../domain/application';
-import type { DriversDeps, Result } from './ports';
+import type { Decided, DriversDeps, Result } from './ports';
 
 type ModerationError = 'drivers.not_found' | 'drivers.wrong_status';
 
@@ -24,6 +30,13 @@ export async function queue(deps: DriversDeps): Promise<ApplicationSummary[]> {
 }
 
 // One application for the team: earlier decisions and the same plate elsewhere (docs/65 C).
+// The car the team approved last, when the driver sends another one (G75, «было → стало»).
+function replaced(decided: readonly Decided[], car: Car): Car | null {
+  const approved = decided.findLast((entry) => entry.status === 'approved')?.car ?? null;
+  const same = approved && JSON.stringify(approved) === JSON.stringify(car);
+  return same ? null : approved;
+}
+
 export async function applicationFor(
   deps: DriversDeps,
   userId: number,
@@ -40,7 +53,7 @@ export async function applicationFor(
     reasons: reasons as ApplicationSummary['reasons'],
     at,
   }));
-  return { ...view, history, samePlate };
+  return { ...view, history, samePlate, was: replaced(decided, view.car) };
 }
 
 // The team sees the face and the car of an applicant (docs/05: moderators see photos always).
@@ -69,7 +82,8 @@ export async function decideApplication(
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);
   const reasons = [...next.reasons];
-  await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now() });
+  const car = next.status === 'approved' ? next.car : null;
+  await deps.decisions.add({ userId, status: next.status, reasons, by: moderatorId, at: deps.now(), car });
   if (next.status === 'approved') await deps.people.approveFace(userId);
   await deps.people.setDriver(userId, next.status === 'approved');
   const bonus = next.status === 'approved' ? await deps.driverApproved(userId) : null;

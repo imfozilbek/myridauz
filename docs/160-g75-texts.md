@@ -10,6 +10,14 @@
 | `bot.navbat.case.support` | самое старое дело в «Navbat» | «{name} murojaati» | ждёт |
 | `bot.diqqat.pair` | строка «Diqqat» владельца: одна пара 3 раза говорила о заявках и не забронировала (`129` правило 5) | «🤝 {driver} (ID {driverId}) va {passenger} (ID {passengerId}) {count} marta gaplashdi, lekin bron qilmadi» | ждёт |
 
+## Заявка водителя (`158` К, `120`)
+
+| Ключ | Где | Текст | Согласие |
+|---|---|---|---|
+| `moderation.requestChanges` | кнопка решения в админке | было «Tuzatishni soʻrash», стало «Tuzatish» (`120`, G67) | ждёт |
+| `bot.driver.rejected` | бот водителя: «Rad etish» теперь окончательный | было «…Ilovada belgilangan joylarni tuzatib, qayta yuborishingiz mumkin.», стало «Arizangiz rad etildi.\n{reasons}\nSavolingiz boʻlsa, yordam xizmatiga yozing.» | ждёт |
+| `drivers.status.rejected.hint` | экран «Ariza rad etildi» водителя, кнопка «Qoʻllab-quvvatlashga yozish» вместо «Tuzatish» | «Savolingiz boʻlsa, yordam xizmatiga yozing.» | ждёт |
+
 ## Как читать
 
 - `{driver}`, `{passenger}`: имена людей; `ID`: публичный номер, Telegram ID команда не видит (`65` A3).

@@ -56,7 +56,7 @@ describe('ApplicationsScreen (docs/04)', () => {
     await waitFor(() => expect(screen.getAllByRole('img')).toHaveLength(5));
     // "Tasdiqlash" is the main button at the bottom, "Rad etish" a red row (docs/86 V10).
     expect(screen.getByText('Rad etish').className).toBe('danger-text');
-    expect(screen.getByText('Tuzatishni soʻrash').className).not.toBe('danger-text');
+    expect(screen.getByText('Tuzatish').className).not.toBe('danger-text');
     expect(screen.getByText('Tasdiqlash').closest('button')).not.toBeNull();
     fireEvent.click(screen.getByText('Tasdiqlash'));
     // The plate is compared with the front photo first (docs/50).
@@ -86,7 +86,7 @@ describe('ApplicationsScreen (docs/04)', () => {
 
   it('opens the application of a link from the admin bot', async () => {
     window.history.replaceState(null, '', '/?application=00000000000000000000000000000005');
-    setup(async () => ({ ...application, history: [], samePlate: 0 }));
+    setup(async () => ({ ...application, history: [], samePlate: 0, was: null }));
     expect(await screen.findByText('Chevrolet Nexia')).toBeTruthy();
     expect(window.location.search).toBe('');
   });
@@ -94,7 +94,7 @@ describe('ApplicationsScreen (docs/04)', () => {
   it('asks for changes with ticked reasons and blocks for 7 days', async () => {
     const { decide, block } = setup();
     fireEvent.click(await screen.findByText('Ali'));
-    fireEvent.click(screen.getByText('Tuzatishni soʻrash'));
+    fireEvent.click(screen.getByText('Tuzatish'));
     expect(screen.queryByText('Yuborish')).toBeNull();
     fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
     fireEvent.click(screen.getByText('Rasmda davlat raqami oʻqilmaydi'));

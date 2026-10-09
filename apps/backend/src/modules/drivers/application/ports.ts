@@ -1,3 +1,4 @@
+import type { Car } from '@platform/contracts';
 import type { ImageStore, StoredImage } from '../../../shared/storage/image-store';
 import type { Application } from '../domain/application';
 
@@ -20,6 +21,8 @@ export type Decided = {
   readonly reasons: readonly string[];
   readonly by: number;
   readonly at: number;
+  // The car the team approved; null for the other decisions (G75, «было → стало»).
+  readonly car: Car | null;
 };
 export type DecisionLog = {
   add(entry: Decided): Promise<void>;

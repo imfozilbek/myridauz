@@ -71,6 +71,7 @@ export async function mockDrivers(page: Page, start: DriverStart) {
       json: {
         ...summary,
         samePlate: 1,
+        was: null,
         history: [{ status: 'changes_requested', reasons: ['face_not_visible'], at: Date.now() - DAY }],
       },
     }),

@@ -67,7 +67,7 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
   if (failed) return <ErrorScreen onRetry={load} />;
   if (!loaded) return <ScreenSkeleton />;
   if (!editing && driver) return <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>;
-  if (!editing && application) return <StatusScreen application={application} onFix={editCar} />;
+  if (!editing && application) return <StatusScreen application={application} />;
   // «Назад» out of the application goes to the main screen (docs/94 B4).
   return <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />;
 }

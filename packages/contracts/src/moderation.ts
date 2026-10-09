@@ -59,6 +59,8 @@ export const applicationDetailSchema = applicationSummarySchema.extend({
     }),
   ),
   samePlate: z.number().int(),
+  // The car the team approved before, when the driver sent another one (G75, «было → стало»).
+  was: carSchema.nullable(),
 });
 export type ApplicationDetail = z.infer<typeof applicationDetailSchema>;
 
