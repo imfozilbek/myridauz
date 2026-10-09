@@ -14,20 +14,17 @@ describe('the driver bot after an application is sent', () => {
   const sent = async (hour: number) => {
     const shown: Card[] = [];
     const notifier = telegramNotifier({
-      fetch: async () => new Response(JSON.stringify({ ok: true, result: {} })),
       brand: loadBrand(),
-      adminToken: undefined,
       show: async (cards) => void shown.push(...cards),
-      recipients: async () => [],
-      photos: {} as never,
-      people: {} as never,
+      assign: async () => undefined,
+      queue: async () => undefined,
     });
     const application = {
       ...emptyApplication(31, 0),
       status: 'pending' as const,
       submittedAt: DAY + hour * HOUR_MS,
     };
-    await notifier.submitted(application, { avatarKey: null, firstName: 'Jasur' } as never);
+    await notifier.submitted(application);
     return shown;
   };
 

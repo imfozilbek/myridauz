@@ -72,7 +72,7 @@ export async function submitApplication(
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);
   if (current.status === 'approved') await deps.people.setDriver(userId, false);
-  await deps.notify.submitted(next, person);
+  await deps.notify.submitted(next);
   return { ok: true, value: toView(next) };
 }
 

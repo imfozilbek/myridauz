@@ -13,11 +13,12 @@ describe('complaints (docs/17)', () => {
     expect(await fileComplaint(deps, 101, input('b1'))).toHaveProperty('id');
     expect(await fileComplaint(deps, 101, input('b1'))).toBe('complaints.already');
     expect(await fileComplaint(deps, DRIVER, { ...input('b1'), reason: 'harassment' })).toHaveProperty('id');
-    expect(log).toEqual(['team harassment']);
+    // Every complaint reaches «Navbat» of the team; the urgent one rings day and night (G68).
+    expect(log).toEqual(['team no_show', 'team harassment']);
   });
 
   it('hides a person from search after 3 different people complain, until the decision', async () => {
-    const { deps } = setup();
+    const { deps, log } = setup();
     for (const n of [1, 2]) await fileComplaint(deps, 100 + n, input(`b${n}`));
     expect(await hiddenFromSearch(deps, [DRIVER])).toEqual(new Set());
     await fileComplaint(deps, 103, input('b3'));
@@ -25,6 +26,8 @@ describe('complaints (docs/17)', () => {
     const [first] = await complaintQueue(deps);
     await decide(deps, BY_MODERATOR, first?.id ?? '', { action: 'none', refund: false });
     expect(await hiddenFromSearch(deps, [DRIVER])).toEqual(new Set());
+    // The decided complaint leaves «Navbat» (G68).
+    expect(log.at(-1)).toBe('queue changed');
   });
 
   it('puts high priority first and shows both sides with their history', async () => {
@@ -55,10 +58,12 @@ describe('complaints (docs/17)', () => {
     const id = typeof filed === 'string' ? '' : filed.id;
     expect(await decide(deps, BY_MODERATOR, id, { action: 'block', days: 7, refund: true })).toBe('ok');
     expect(log).toEqual([
+      'team no_show',
       'block 101 7',
       'cancel 101',
       `blocked 101 passenger ${NOW + 7 * DAY_MS}`,
       `resolved ${DRIVER}`,
+      'queue changed',
     ]);
     expect((await deps.store.find(id))?.decision).toBe('block:7:refund');
     expect(await decide(deps, BY_MODERATOR, id, { action: 'warning', refund: false })).toBe(
@@ -69,7 +74,7 @@ describe('complaints (docs/17)', () => {
       action: 'warning',
       refund: true,
     });
-    expect(log.slice(4)).toEqual([`warning ${DRIVER} driver`, 'resolved 102']);
+    expect(log.slice(7)).toEqual([`warning ${DRIVER} driver`, 'resolved 102', 'queue changed']);
   });
 
   it('decides a complaint once when two moderators tap at the same moment (docs/65 A4)', async () => {

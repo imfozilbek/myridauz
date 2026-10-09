@@ -15,13 +15,10 @@ describe('the approval in the driver bot', () => {
   const message = async (bonus: { amount: number; expiresAt: number } | null, plate: string = car.plate) => {
     const shown: { cards: readonly Card[]; rings: readonly Ring[] }[] = [];
     const notifier = telegramNotifier({
-      fetch: async () => new Response(JSON.stringify({ ok: true, result: {} })),
       brand: loadBrand(),
-      adminToken: undefined,
       show: async (cards, rings) => void shown.push({ cards, rings }),
-      recipients: async () => [],
-      photos: {} as never,
-      people: {} as never,
+      assign: async () => undefined,
+      queue: async () => undefined,
     });
     await notifier.decided({ ...APPROVED, car: { ...car, plate } }, null, bonus);
     const [card] = shown[0]?.cards ?? [];

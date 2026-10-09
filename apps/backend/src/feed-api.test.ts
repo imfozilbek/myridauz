@@ -121,7 +121,7 @@ describe('moderation signals (docs/64)', () => {
       async () => [900, 901],
     );
     const application = { userId: 55 } as never;
-    await notifier.submitted(application, {} as never);
+    await notifier.submitted(application);
     expect(seen.map((item) => `${item.name}:${item.app}`)).toEqual(['u900:admin', 'u901:admin']);
     seen.length = 0;
     await notifier.decided(application, null, null);

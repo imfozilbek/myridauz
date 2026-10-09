@@ -88,5 +88,5 @@ export async function avatarChanged(deps: DriversDeps, userId: number): Promise<
   await deps.applications.save(next);
   if (next.status !== 'pending') return;
   await deps.people.setDriver(userId, false);
-  await deps.notify.submitted(next, person);
+  await deps.notify.submitted(next);
 }

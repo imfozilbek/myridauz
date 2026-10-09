@@ -1,0 +1,15 @@
+{
+  "navbat.title": "📋 Navbat · {total} ta ish",
+  "navbat.empty": "📋 Navbat boʻsh",
+  "navbat.counts": "{applications} ariza · {complaints} shikoyat · {faces} rasm",
+  "navbat.oldest": "⏱ Eng eskisi: {case}",
+  "navbat.left": "{minutes} daqiqa kutmoqda · {left} daqiqa qoldi",
+  "navbat.late": "{minutes} daqiqa kutmoqda · {limit} daqiqadan oshdi",
+  "navbat.hint": "Ish kelsa, shu xabar oʻzi yangilanadi",
+  "navbat.start": "▶️ Ishni boshlash",
+  "navbat.case.application": "{name} arizasi",
+  "navbat.case.complaint": "{name} shikoyati",
+  "navbat.case.face": "{name} rasmi",
+  "navbat.ringNew": "📋 Yangi ish keldi: navbat boʻsh edi",
+  "navbat.ringLate": "⏱ {case} {minutes} daqiqa kutmoqda: {left} daqiqa qoldi"
+}

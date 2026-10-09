@@ -48,6 +48,8 @@ export type FaceDecided = {
 export type FaceNotifier = {
   uploaded(user: User): Promise<void>;
   rejected(user: User, reason: FaceReason): Promise<void>;
+  // A decided photo leaves «Navbat» of the team (G68).
+  decided(): Promise<void>;
 };
 
 // How two people are linked by trips (G07). Used only for photo visibility (docs/05).

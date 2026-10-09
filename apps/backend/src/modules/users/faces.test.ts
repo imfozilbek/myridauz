@@ -56,7 +56,7 @@ describe('the face photo check (docs/118, G51)', () => {
       ok: false,
       error: 'users.face_decided',
     });
-    expect(told).toEqual(['card:1', 'log:approved:null:900']);
+    expect(told).toEqual(['card:1', 'log:approved:null:900', 'queue']);
     expect((await people(deps).find(1))?.avatarShown).toBe(true);
     expect(await pendingFaces(deps)).toEqual([]);
   });
@@ -66,7 +66,12 @@ describe('the face photo check (docs/118, G51)', () => {
     await register(deps, ali, input);
     await setAvatar(deps, ali, jpeg(10));
     await decideFace(deps, MODERATOR, 1, { action: 'reject', reason: 'face_not_visible' });
-    expect(told).toEqual(['card:1', 'log:rejected:face_not_visible:900', 'rejected:1:face_not_visible']);
+    expect(told).toEqual([
+      'card:1',
+      'log:rejected:face_not_visible:900',
+      'rejected:1:face_not_visible',
+      'queue',
+    ]);
     const me = await getMe(deps, ali);
     expect(me.state === 'active' && me.profile).toMatchObject({
       avatarStatus: 'rejected',

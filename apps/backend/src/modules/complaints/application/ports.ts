@@ -35,8 +35,11 @@ export type ComplaintStore = {
 
 // What people get from the bots (docs/17): the author never learns the decision itself.
 export type ComplaintTeller = {
-  // The team sees the public id, never the Telegram ID (docs/65 A3).
+  // Every new complaint reaches «Navbat» of the team, an urgent one rings day and night (G68,
+  // docs/122). The team sees the public id, never the Telegram ID (docs/65 A3).
   team(complaint: ComplaintRecord, against: { firstName: string; publicId: string }): Promise<void>;
+  // A decided complaint leaves «Navbat».
+  queueChanged(): Promise<void>;
   warning(userId: number, side: Side): Promise<void>;
   blocked(userId: number, side: Side, until: number | null): Promise<void>;
   resolved(userId: number, side: Side): Promise<void>;

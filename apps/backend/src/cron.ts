@@ -8,6 +8,7 @@ import { sendApplicationReminders, sendTeamDigest } from './modules/assignments'
 import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
 import { sendReminders, watchLateDepartures } from './modules/reminders';
+import { showQueue } from './modules/team-queue';
 import { expireRequests } from './modules/ride-requests';
 import { endSubscriptions } from './modules/route-subscriptions';
 import { checkStatsAlerts } from './modules/stats';
@@ -23,7 +24,8 @@ const DAILY_HOUR_UTC = 0;
 
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
 // forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left,
-// reminds the team of waiting driver applications (docs/15, docs/35, G10, G34, G63).
+// reminds the team of waiting driver applications and keeps the minutes of «Navbat» fresh (docs/15,
+// docs/35, docs/122, G10, G34, G63, G68).
 const everyTick = (env: Bindings, now: number): Job[] => [
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
@@ -32,6 +34,7 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['watchLateDepartures', () => watchLateDepartures(env, now)],
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
+  ['showTeamQueue', () => showQueue(env)],
 ];
 
 // Burns bonuses that are over, ends subscriptions whose time is over, asks both sides of ended rides

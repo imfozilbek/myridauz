@@ -1,9 +1,11 @@
-import { appHost, loadBrand } from '@platform/brands';
+import { loadBrand } from '@platform/brands';
+import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
 import { notify, notifyTeam } from '../notifications';
 import { teamMembers } from '../team';
+import { caseName, showQueue } from '../team-queue';
 import { peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
@@ -57,22 +59,21 @@ export const sendTeamDigest = (env: Bindings, decisions: Decisions) => sendDiges
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
   const brand = loadBrand(env.BRAND);
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
-  const admin = (chatId: number, text: string, markup?: object) => ({
-    bot: 'admin' as const,
-    chatId,
-    text,
-    ...(markup ? { markup } : {}),
-  });
+  const admin = (chatId: number, text: string) => ({ bot: 'admin' as const, chatId, text });
   return remindWaiting({
     store: storeOf(env),
     rules: { hours, remindMinutes, ownerMinutes },
     now: Date.now,
     waiting,
-    toModerator: async (moderatorId, { publicId, name }) => {
-      const url = `https://${appHost(brand, 'admin')}/?application=${publicId}`;
-      const markup = { inline_keyboard: [[{ text: t('bot.open'), web_app: { url } }]] };
-      const text = t('bot.moderation.waiting', { minutes: String(remindMinutes), name });
-      await notify(env, [admin(moderatorId, text, markup)]);
+    // «⏱ Jasur arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi» under the «Navbat» card (G68, docs/122).
+    toModerator: async (moderatorId, { name, submittedAt }) => {
+      const minutes = Math.floor(teamWaitMs(submittedAt, Date.now(), hours) / MINUTE_MS);
+      const text = t('bot.navbat.ringLate', {
+        case: caseName({ kind: 'application', name, since: submittedAt }),
+        minutes: String(minutes),
+        left: String(Math.max(0, ownerMinutes - minutes)),
+      });
+      await showQueue(env, { kind: 'late', memberId: moderatorId, text });
     },
     toOwners: async ({ name }, moderatorId) => {
       const moderator = (await peopleOf(env).find(moderatorId))?.firstName ?? String(moderatorId);

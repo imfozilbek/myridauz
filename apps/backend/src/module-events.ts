@@ -12,10 +12,10 @@ import {
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
-import { hiddenByComplaints, wireComplaints } from './modules/complaints';
+import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
-import { approvedCar } from './modules/drivers';
+import { approvedCar, waitingApplications } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -34,7 +34,8 @@ import {
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
-import { peopleOf, wireFaceTeam, wireRegistered } from './modules/users';
+import { wireTeamQueue } from './modules/team-queue';
+import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -118,4 +119,22 @@ wireComplaints({
     side === 'driver' ? (await driverTripIds(env, userId)).length : passengerRideCount(env, userId),
   cancelAll: cancelAllOf,
   refund: refundNoShow,
+});
+
+// «Navbat» of the team reads its cases from the modules that hold them (G68, docs/122).
+wireTeamQueue(async (env) => {
+  const [applications, complaints, faces] = await Promise.all([
+    waitingApplications(env),
+    waitingComplaints(env),
+    waitingFaces(env),
+  ]);
+  return [
+    ...applications.map(({ name, submittedAt }) => ({
+      kind: 'application' as const,
+      name,
+      since: submittedAt,
+    })),
+    ...complaints.map((item) => ({ kind: 'complaint' as const, ...item })),
+    ...faces.map((item) => ({ kind: 'face' as const, ...item })),
+  ];
 });

@@ -31,9 +31,9 @@ export const brandConfig: BrandConfig = {
   calls: { ringSeconds: 30, connectSeconds: 15, inviteSeconds: 5, requestRings: 3 },
   // docs/115 (owner decision 04.10.2026): three sets, the third («ri-da, ri-DAAA») by default.
   sounds: { sets: ['1', '2', '3'], defaultSet: '3' },
-  // G34 (owner decision 02.10.2026): an answer within the hour from 7:00 to 23:00; a reminder to the
-  // moderator after 30 minutes, to the owner after 50.
-  moderation: { hours: { from: 7, to: 23 }, remindMinutes: 30, ownerMinutes: 50 },
+  // G34 (owner decision 02.10.2026): an answer within the hour from 7:00 to 23:00. G68 (owner decision
+  // 06.10.2026, docs/122): a case rings its moderator after 25 minutes, the owner after 30.
+  moderation: { hours: { from: 7, to: 23 }, remindMinutes: 25, ownerMinutes: 30 },
   // docs/30: the requisites come from the admin Mini App (G34); this address answers until they do.
   company: { email: 'myrida.llc@gmail.com' },
   // G38 (owner decisions 03.10.2026, docs/103): a trip leaves an hour after it is made at the earliest;

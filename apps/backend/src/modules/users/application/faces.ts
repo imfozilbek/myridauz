@@ -36,5 +36,6 @@ export async function decideFace(
   const status = decision.action === 'approve' ? 'approved' : 'rejected';
   await deps.faceLog.add({ userId, status, reason: face.reason, by: moderatorId, at: now });
   if (decision.action === 'reject') await deps.faces.rejected(next, decision.reason);
+  await deps.faces.decided();
   return { ok: true, user: next };
 }

@@ -93,6 +93,7 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   await deps.people.releasePhone(against);
   await forgetEvidence(deps, ride);
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
+  await deps.tell.queueChanged();
   return 'ok' as const;
 }
 
