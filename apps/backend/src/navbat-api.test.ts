@@ -1,4 +1,4 @@
-import { ADMIN_NAVBAT_PATH, navbatSchema, navbatTakePath } from '@platform/contracts';
+import { ADMIN_NAVBAT_PATH, adminBlockPath, navbatSchema, navbatTakePath } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { assignTo } from './modules/assignments';
@@ -19,6 +19,7 @@ afterAll(() => {
 
 const APPLICANT = 43;
 const STRANGER = 44;
+const BLOCKED = 48;
 const OWNER = 900;
 const MODERATOR = 951;
 const jpeg = { body: new Uint8Array(20), headers: { 'content-type': 'image/jpeg' } };
@@ -82,7 +83,23 @@ describe('«Navbat» in the admin app', () => {
     await registerUser(STRANGER);
     await assignTo(testEnv, 'support', STRANGER);
     const asked = (await navbat(OWNER)).items.find((item) => item.kind === 'support');
-    expect(asked).toMatchObject({ id: await pid(STRANGER), name: 'Ali' });
+    expect(asked).toMatchObject({ id: await pid(STRANGER), name: 'Ali', appeal: false });
+  });
+
+  it('marks the question of a blocked person as an appeal of the block (gap К of docs/158)', async () => {
+    await registerUser(BLOCKED);
+    const block = {
+      method: 'POST',
+      body: JSON.stringify({ days: 7 }),
+      headers: { 'content-type': 'application/json' },
+    };
+    expect((await call(adminBlockPath(await pid(BLOCKED)), OWNER, { ...team, ...block })).status).toBe(204);
+    await assignTo(testEnv, 'support', BLOCKED);
+    const id = await pid(BLOCKED);
+    expect((await navbat(OWNER)).items.find((item) => item.id === id)).toMatchObject({
+      kind: 'support',
+      appeal: true,
+    });
   });
 
   it("is the team's only", async () => {

@@ -6,7 +6,7 @@ import { adminIds } from '../../shared/telegram/bot-config';
 import { notify } from '../notifications';
 import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
-import { peopleOf } from '../users';
+import { blockOf, peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
@@ -78,7 +78,9 @@ export async function waitingSupport(env: Bindings) {
   const cases = await Promise.all(
     open.map(async ({ subjectId, at }) => {
       const person = await people.find(subjectId);
-      return person ? [{ id: person.publicId, name: person.firstName, since: at }] : [];
+      // A blocked person writes about the block: an appeal for the team (gap К of docs/158).
+      const appeal = person ? (await blockOf(env, subjectId)) !== null : false;
+      return person ? [{ id: person.publicId, name: person.firstName, since: at, appeal }] : [];
     }),
   );
   return cases.flat();

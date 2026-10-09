@@ -32,7 +32,8 @@ export const navbatItemSchema = z.discriminatedUnion('kind', [
   }),
   z.object({ kind: z.literal('complaint'), ...base, against: name, reason: z.enum(COMPLAINT_REASONS) }),
   z.object({ kind: z.literal('face'), ...base }),
-  z.object({ kind: z.literal('support'), ...base }),
+  // appeal: the person is blocked now and writes about the block (gap К of docs/158).
+  z.object({ kind: z.literal('support'), ...base, appeal: z.boolean() }),
 ]);
 export type NavbatItem = z.infer<typeof navbatItemSchema>;
 
