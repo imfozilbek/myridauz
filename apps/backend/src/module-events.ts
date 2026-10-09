@@ -13,7 +13,7 @@ import {
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
-import { assignTo } from './modules/assignments';
+import { assignTo, waitingSupport } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
 import { approvedCar, waitingApplications } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
@@ -123,18 +123,22 @@ wireComplaints({
 
 // «Navbat» of the team reads its cases from the modules that hold them (G68, docs/122).
 wireTeamQueue(async (env) => {
-  const [applications, complaints, faces] = await Promise.all([
+  const [applications, complaints, faces, support] = await Promise.all([
     waitingApplications(env),
     waitingComplaints(env),
     waitingFaces(env),
+    waitingSupport(env),
   ]);
   return [
-    ...applications.map(({ name, submittedAt }) => ({
+    ...applications.map(({ publicId, name, submittedAt, car }) => ({
       kind: 'application' as const,
+      id: publicId,
       name,
       since: submittedAt,
+      car,
     })),
     ...complaints.map((item) => ({ kind: 'complaint' as const, ...item })),
     ...faces.map((item) => ({ kind: 'face' as const, ...item })),
+    ...support.map((item) => ({ kind: 'support' as const, ...item })),
   ];
 });

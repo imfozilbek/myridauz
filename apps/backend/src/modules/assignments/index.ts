@@ -1,5 +1,5 @@
 import { appHost, loadBrand } from '@platform/brands';
-import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
+import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
@@ -68,6 +68,21 @@ export const operatorOf = async (env: Bindings, subjectId: number): Promise<numb
 // The Cron job: the summary of the day to the owner at 21:00 in Tashkent, once (G68, docs/122).
 export const sendDaySummary = (env: Bindings, sources: Sources) => sendDigest(deps(env, sources));
 
+// The support questions not answered for two days: cases of «Navbat» in the app (G75, docs/158 К).
+// A person who never registered has no public id: that question stays in the bot (docs/65 A3).
+const SUPPORT_DAYS = 2;
+export async function waitingSupport(env: Bindings) {
+  const people = peopleOf(env);
+  const open = await storeOf(env).openSupport(tashkentDate(Date.now() - SUPPORT_DAYS * DAY_MS));
+  const cases = await Promise.all(
+    open.map(async ({ subjectId, at }) => {
+      const person = await people.find(subjectId);
+      return person ? [{ id: person.publicId, name: person.firstName, since: at }] : [];
+    }),
+  );
+  return cases.flat();
+}
+
 // The Cron job (G34): a waiting application reminds its moderator, then the owners, in team hours.
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
   const brand = loadBrand(env.BRAND);
@@ -81,7 +96,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
     toModerator: async (moderatorId, { name, submittedAt }) => {
       const minutes = Math.floor(teamWaitMs(submittedAt, Date.now(), hours) / MINUTE_MS);
       const text = t('bot.navbat.ringLate', {
-        case: caseName({ kind: 'application', name, since: submittedAt }),
+        case: caseName({ kind: 'application', name }),
         minutes: String(minutes),
         left: String(Math.max(0, ownerMinutes - minutes)),
       });

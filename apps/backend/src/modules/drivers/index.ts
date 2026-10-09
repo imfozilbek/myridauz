@@ -81,10 +81,11 @@ export const decisionsBetween = (env: Bindings, from: number, to: number) =>
 export const waitingApplications = async (env: Bindings) => {
   const deps = driversDeps(env);
   const waiting = await Promise.all(
-    (await deps.applications.queue()).map(async ({ userId, submittedAt }) => {
+    (await deps.applications.queue()).map(async ({ userId, submittedAt, car }) => {
       const person = await deps.people.find(userId);
-      if (!person || submittedAt === null) return [];
-      return [{ userId, publicId: person.publicId, name: person.firstName, submittedAt }];
+      if (!person || submittedAt === null || !car) return [];
+      const shown = { make: car.make, model: car.model, plate: car.plate };
+      return [{ userId, publicId: person.publicId, name: person.firstName, submittedAt, car: shown }];
     }),
   );
   return waiting.flat();

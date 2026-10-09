@@ -126,6 +126,7 @@ export * from './channels';
 export * from './complaints';
 export * from './stats';
 export * from './attention';
+export * from './navbat';
 export * from './calls';
 export * from './favorites';
 export * from './history';

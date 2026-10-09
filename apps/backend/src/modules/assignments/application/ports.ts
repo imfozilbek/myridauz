@@ -27,6 +27,8 @@ export type AssignmentStore = {
   // The latest question of this person, not answered yet, is answered now.
   answered(kind: Kind, subjectId: number, at: number): Promise<void>;
   supportOf(day: string): Promise<SupportDone[]>;
+  // The support questions from this day on not answered yet: cases of «Navbat» (G75).
+  openSupport(fromDay: string): Promise<{ readonly subjectId: number; readonly at: number }[]>;
   // true once: the digest of this day is to be sent now.
   markDigest(day: string, at: number): Promise<boolean>;
   // true once: this reminder of the application sent at submittedAt is to be sent now (G34).

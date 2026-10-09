@@ -90,7 +90,11 @@ export const joinedAtOf = async (env: Bindings, id: number) =>
   (await usersDeps(env).users.find(id))?.createdAt;
 // The new face photos for «Navbat» of the team (G68): whose and since when.
 export const waitingFaces = async (env: Bindings) =>
-  (await pendingFaces(usersDeps(env))).map((face) => ({ name: face.firstName, since: face.uploadedAt }));
+  (await pendingFaces(usersDeps(env))).map((face) => ({
+    id: face.userId,
+    name: face.firstName,
+    since: face.uploadedAt,
+  }));
 export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number, decision: FaceDecision) =>
   decideFace(usersDeps(env), moderatorId, userId, decision);
 // The invite to the channel of the zone goes once per person (docs/119).

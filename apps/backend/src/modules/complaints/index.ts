@@ -55,9 +55,13 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
 // The open complaints for «Navbat» of the team (G68): whose and since when.
 export async function waitingComplaints(env: Bindings) {
   const deps = complaintsDeps(env);
+  const name = async (id: number) => (await deps.people.find(id))?.firstName ?? '';
   return Promise.all(
     (await deps.store.open()).map(async (complaint) => ({
-      name: (await deps.people.find(complaint.authorId))?.firstName ?? '',
+      id: complaint.id,
+      name: await name(complaint.authorId),
+      against: await name(complaint.againstId),
+      reason: complaint.reason,
       since: complaint.createdAt,
     })),
   );

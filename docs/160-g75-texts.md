@@ -6,6 +6,8 @@
 
 | Ключ | Где | Текст | Согласие |
 |---|---|---|---|
+| `bot.navbat.counts` | карточка «Navbat»: в очереди и обращения поддержки (`158` К) | было «{n} ariza · {n} shikoyat · {n} rasm», стало то же и « · {n} murojaat», если обращения есть | ждёт |
+| `bot.navbat.case.support` | самое старое дело в «Navbat» | «{name} murojaati» | ждёт |
 | `bot.diqqat.pair` | строка «Diqqat» владельца: одна пара 3 раза говорила о заявках и не забронировала (`129` правило 5) | «🤝 {driver} (ID {driverId}) va {passenger} (ID {passengerId}) {count} marta gaplashdi, lekin bron qilmadi» | ждёт |
 
 ## Как читать
