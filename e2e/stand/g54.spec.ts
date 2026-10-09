@@ -1,4 +1,5 @@
 import { expect, test } from '../crash-guard';
+import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { confirmedSeat, tailOf, toldBy } from './g27-kit';
 import { openSocket, shot } from './g33-kit';
@@ -19,23 +20,27 @@ const CALLER = person(900654, 'Sarvar');
 
 test.beforeAll(() => approvedDriver(CALLER, '01T654UV'));
 
-test('G54. the open Mini App opens the chat and rings by itself; no bot message', async ({ page }) => {
-  const { seat } = await confirmedSeat(CALLER, LOLA);
-  await openAs(page, 'passenger', LOLA);
-  await expect(page.getByText(t('common.myTrips'))).toBeVisible();
-  // The personal channel opens with the main screen.
-  await page.waitForTimeout(1_000);
-  const driver = await openSocket(CALLER, seat.chatKey);
-  driver.send(JSON.stringify(ring));
-  await expect(page.getByText(t('calls.incoming'))).toBeVisible();
-  await shot(page, 'g54-incoming-from-home');
-  await page.waitForTimeout(AFTER_INVITE_MS);
-  const invited = (await botMessages()).filter(
-    (m) => m.chatId === LOLA.id && m.text.includes(tailOf('bot.ring.call')),
-  );
-  expect(invited).toEqual([]);
-  driver.send(JSON.stringify({ type: 'call', action: 'end' }));
-  driver.close();
+// G68 (docs/155): the call rises as a sheet over the open Mini App first; the test keeps the sheet.
+test.describe('the open Mini App', () => {
+  test.use({ actionSheets: 'keep' });
+  test('G54, G68. the open Mini App rings with the sheet of the call; no bot message', async ({ page }) => {
+    const { seat } = await confirmedSeat(CALLER, LOLA);
+    await openAs(page, 'passenger', LOLA);
+    await expect(page.getByText(t('common.myTrips'))).toBeVisible();
+    // The personal channel opens with the main screen.
+    await page.waitForTimeout(1_000);
+    const driver = await openSocket(CALLER, seat.chatKey);
+    driver.send(JSON.stringify(ring));
+    await expect(page.getByText(t('sheet.call.kicker', { brand: loadBrand().name }))).toBeVisible();
+    await shot(page, 'g54-incoming-from-home');
+    await page.waitForTimeout(AFTER_INVITE_MS);
+    const invited = (await botMessages()).filter(
+      (m) => m.chatId === LOLA.id && m.text.includes(tailOf('bot.ring.call')),
+    );
+    expect(invited).toEqual([]);
+    driver.send(JSON.stringify({ type: 'call', action: 'end' }));
+    driver.close();
+  });
 });
 
 test('G54. a closed Mini App: the bot calls the person in after 5 seconds', async () => {

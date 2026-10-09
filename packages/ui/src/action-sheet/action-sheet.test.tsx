@@ -1,5 +1,6 @@
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { sheetClosed } from '../home/home-test-kit';
 import { tap } from '../market/market-test-kit';
 import { renderInShell } from '../test-shell';
 import type { ActionItem } from './action-item';
@@ -45,6 +46,7 @@ describe('the action sheet (G68)', () => {
     expect(screen.getByText('2 / 2')).toBeTruthy();
     await tap('Keyinroq');
     expect(screen.queryByText('Jasur')).toBeNull();
+    await sheetClosed();
   });
 
   it('after an answer the sheet closes and a plaque on top says what happened', async () => {
@@ -53,6 +55,7 @@ describe('the action sheet (G68)', () => {
     expect(await screen.findByText('Aziz tasdiqlandi · 10 000 komissiya')).toBeTruthy();
     expect(screen.queryByText('Aziz · 1 joy')).toBeNull();
     expect(screen.queryByText(/\d+ \/ \d+/u)).toBeNull();
+    await sheetClosed();
   });
 
   it('a failed answer keeps the sheet with the reason', async () => {

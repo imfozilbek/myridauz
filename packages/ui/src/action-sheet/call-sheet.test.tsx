@@ -3,6 +3,7 @@ import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { holdLiveCall } from '../call/live-call';
+import { sheetClosed } from '../home/home-test-kit';
 import { ChatLink } from '../chat/chat-link';
 import { FakeSocket } from '../chat/fake-socket';
 import { FeedCallContext } from '../feed/feed-context';
@@ -78,12 +79,14 @@ describe('the sheet of a call (G68)', () => {
     expect(screen.getByText('home')).toBeTruthy();
     await tap('Rad etish');
     await waitFor(() => expect(sent()).toContainEqual({ type: 'call', action: 'decline' }));
+    await sheetClosed();
   });
 
   it('«Javob berish» opens the chat and takes the call there', async () => {
     await ringing();
     await tap('Javob berish');
     expect(await screen.findByText(`chat ${KEY} answer`)).toBeTruthy();
+    await sheetClosed();
   });
 
   it('the caller hung up: the sheet goes by itself', async () => {
@@ -91,6 +94,8 @@ describe('the sheet of a call (G68)', () => {
     await screen.findByText('Javob berish');
     act(() => socket.receive({ type: 'call', call: null }));
     await waitFor(() => expect(screen.queryByText('Javob berish')).toBeNull());
+    // The drawer closes on its own timer: the test waits for it before the window goes (lesson 203).
+    await sheetClosed();
   });
 
   it('a live call keeps the screen: another caller goes through the bot', () => {

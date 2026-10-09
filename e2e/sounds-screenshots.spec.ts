@@ -18,30 +18,43 @@ const shot = (page: Page) => async (name: string) => {
   await page.screenshot({ path: `screenshots/sounds-${name}.png`, fullPage: true });
 };
 
-test('passenger: a call opens its chat over the main screen and rings', async ({ page }) => {
-  const { feed } = await mockApi(page, 'active');
-  // Who calls and about which trip (G54): the booking of the chat as the passenger sees it.
-  await page.route('**/api/chats/*/about', (route) =>
-    route.fulfill({ json: { booking: confirmed, role: 'passenger' } }),
-  );
-  await page.addInitScript(FAKE_MEDIA);
-  const take = shot(page);
-  await mockTelegram(page);
-  await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await expect(page.getByText(t('common.myTrips'))).toBeVisible();
-  await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
-  feed.call(KEY);
-  await expect.poll(() => chatSocket.current !== null).toBe(true);
-  chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'ringing', caller: 'other' } }));
-  await expect(page.getByText(t('calls.incoming'))).toBeVisible();
-  // The trip card of the call (G60, docs/118 path 3): the seats of the booking.
-  await expect(
-    page.getByText(t('bookings.card.seats', { seats: String(confirmed.seats) })).first(),
-  ).toBeVisible();
-  await take('1-incoming-from-home');
-  chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'active', caller: 'other' } }));
-  await expect(page.locator('.call-clock')).toBeVisible();
-  await take('1b-talking');
+// G68 (docs/155): in the open Mini App the call rises as a sheet first; «Javob berish» opens its chat
+// and takes the call there. This test keeps the sheet.
+test.describe('the sheet of a call', () => {
+  test.use({ actionSheets: 'keep' });
+  test('passenger: a call rises over the main screen, «Javob berish» takes it in its chat', async ({
+    page,
+  }) => {
+    const { feed } = await mockApi(page, 'active');
+    // Who calls and about which trip (G54): the booking of the chat as the passenger sees it.
+    await page.route('**/api/chats/*/about', (route) =>
+      route.fulfill({ json: { booking: confirmed, role: 'passenger' } }),
+    );
+    await page.addInitScript(FAKE_MEDIA);
+    const take = shot(page);
+    await mockTelegram(page);
+    await page.goto(telegramUrl(appUrl(PASSENGER.port)));
+    await expect(page.getByText(t('common.myTrips'))).toBeVisible();
+    await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
+    feed.call(KEY);
+    await expect.poll(() => chatSocket.current !== null).toBe(true);
+    const ringing = JSON.stringify({ type: 'call', call: { status: 'ringing', caller: 'other' } });
+    chatSocket.current?.send(ringing);
+    await expect(page.getByText(t('sheet.call.kicker', { brand: loadBrand().name }))).toBeVisible();
+    await take('1-incoming-from-home');
+    const sheetSocket = chatSocket.current;
+    await page.getByRole('button', { name: t('sheet.call.answer') }).click();
+    // The chat opens its own socket: the call is still ringing there and is taken at once.
+    await expect.poll(() => chatSocket.current !== sheetSocket).toBe(true);
+    chatSocket.current?.send(ringing);
+    // The trip card of the call (G60, docs/118 path 3): the seats of the booking.
+    await expect(
+      page.getByText(t('bookings.card.seats', { seats: String(confirmed.seats) })).first(),
+    ).toBeVisible();
+    chatSocket.current?.send(JSON.stringify({ type: 'call', call: { status: 'active', caller: 'other' } }));
+    await expect(page.locator('.call-clock')).toBeVisible();
+    await take('1b-talking');
+  });
 });
 
 test('admin: the three sets, the owner picks the first', async ({ page }) => {
