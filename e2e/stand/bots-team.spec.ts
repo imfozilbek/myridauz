@@ -1,4 +1,5 @@
 import { expect, test } from '../crash-guard';
+import { showChat } from './bot-chat';
 import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, tailOf, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';
@@ -88,7 +89,7 @@ test('G31. /team add makes a moderator; the new questions go to whom has less wo
   expect(await told('admin', OWNER.id, 'Hamyon haqida savol')).toBeUndefined();
 });
 
-test('G32. a photo in support; the next question comes with «Tarix» of the whole talk', async () => {
+test('G32. a photo in support; the next question comes with «Tarix» of the whole talk', async ({ page }) => {
   await sayByPhoto('support', LAZIZA, 'Chek shu');
   const { member } = assigned(LAZIZA);
   const photoTo = async () =>
@@ -113,8 +114,17 @@ test('G32. a photo in support; the next question comes with «Tarix» of the who
     wordsOf('bot.supportCard.history'),
   ]);
   await press('admin', member, 'support:history', Number(copyOf(LAZIZA, member)));
-  await expect.poll(() => told('admin', member.id, 'Chek shu')).toBeTruthy();
-  const talk = (await told('admin', member.id, 'Chek shu'))?.text;
-  expect(talk).toContain(`${LAZIZA.name}${tailOf('bot.support.historyTitle')}`);
+  // The card quotes the words of the photo too (G68): «Tarix» is the message with its title.
+  const title = `${LAZIZA.name}${tailOf('bot.support.historyTitle')}`;
+  await expect.poll(() => told('admin', member.id, title)).toBeTruthy();
+  const talk = (await told('admin', member.id, title))?.text;
+  expect(talk).toContain('Chek shu');
   expect(talk).not.toContain(String(LAZIZA.id));
+  // The chat of the team member as it looks, next to the mockup g68/4 for the owner.
+  await showChat(
+    page,
+    'admin',
+    (await botMessages()).filter((m) => m.bot === 'admin' && m.chatId === member.id),
+  );
+  await page.screenshot({ path: 'screenshots/stand/g68/8-admin-support.png', fullPage: true });
 });

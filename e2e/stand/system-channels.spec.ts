@@ -1,6 +1,8 @@
 import { expect, test } from '../crash-guard';
 import { channelOf, loadBrand } from '../../brands/index';
 import { createComfortClient, createMarketClient } from '@platform/api-client';
+import { showChat } from './bot-chat';
+import { channelChat } from './first-contact-kit';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { confirmedSeat, MINUTE, moveTrip, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } from './g27-kit';
 import { JAHONGIR, NARGIZA } from './people';
@@ -13,11 +15,12 @@ import { botMessages, clearBotMessages, runCron } from './stand-tools';
 test.describe.configure({ mode: 'serial' });
 const HOUR = 60 * MINUTE;
 // Toshkent has no channel of its own (docs/15): a trip to Samarqand goes to the channel of Samarqand.
-const CHANNEL = `@${channelOf(loadBrand(), SAMARQAND)?.username ?? ''}`;
+const ZONE = channelOf(loadBrand(), SAMARQAND);
+const CHANNEL = `@${ZONE?.username ?? ''}`;
 const posts = async (method: string) =>
   (await botMessages()).filter((m) => m.chat === CHANNEL && m.method === method);
 
-test('S60, S61, S62. a new trip is posted, the post follows a full car and a cancel', async () => {
+test('S60, S61, S62. a new trip is posted, the post follows a full car and a cancel', async ({ page }) => {
   await clearBotMessages();
   const trip = await publishTrip(JAHONGIR, CHILONZOR, SAMARQAND, 'door');
   await expect.poll(async () => (await posts('sendMessage')).length).toBe(1);
@@ -25,6 +28,10 @@ test('S60, S61, S62. a new trip is posted, the post follows a full car and a can
   await answer(JAHONGIR, seat.id, 'confirm');
   await expect.poll(async () => (await posts('editMessageText')).length).toBeGreaterThanOrEqual(1);
   const edits = (await posts('editMessageText')).length;
+  // The post of a full car as the channel shows it, next to the mockup g68/5 for the owner.
+  const shown = (await botMessages()).filter((m) => m.chat === CHANNEL);
+  if (ZONE) await showChat(page, channelChat(ZONE), shown);
+  await page.screenshot({ path: 'screenshots/stand/g68/9-channel-full.png', fullPage: true });
   await createMarketClient(await signedAs('driver', JAHONGIR)).cancelTrip(trip.id);
   await expect.poll(async () => (await posts('editMessageText')).length).toBeGreaterThan(edits);
 });

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { botOf, draw, escape } from './first-contact-kit';
+import { botOf, draw, escape, type Bot } from './first-contact-kit';
 import type { BotMessage } from './stand-tools';
 
 // The chat of one person with one bot as Telegram shows it, for the snapshots of G68 (docs/152):
@@ -32,7 +32,12 @@ const keysOf = (rows: Shown['rows']) =>
         .map((row) => `<div>${row.map((key) => `<span class="button">${escape(key)}</span>`).join('')}</div>`)
         .join('')}</div>`;
 
-export async function showChat(page: Page, bot: 'passenger' | 'driver', messages: readonly BotMessage[]) {
+// A bot by its role, or a channel drawn as its own chat (G68, mockup g68/5).
+export async function showChat(
+  page: Page,
+  bot: 'passenger' | 'driver' | 'admin' | Bot,
+  messages: readonly BotMessage[],
+) {
   const { list, pinned } = chatOf(messages);
   const bubble = (message: Shown) => {
     const quoted = list.find((other) => other.id === message.replyTo);
@@ -43,5 +48,6 @@ export async function showChat(page: Page, bot: 'passenger' | 'driver', messages
   };
   // As tall as the chat: the picture ends with the last message.
   await page.setViewportSize({ width: 390, height: 100 });
-  await draw(page, botOf(bot), list.map(bubble).join(''), '', pinned && firstLine(pinned.text));
+  const shown = typeof bot === 'string' ? botOf(bot) : bot;
+  await draw(page, shown, list.map(bubble).join(''), '', pinned && firstLine(pinned.text));
 }

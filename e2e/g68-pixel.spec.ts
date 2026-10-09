@@ -11,7 +11,7 @@ import { ask, asked, DEPART, NOW, offers, seat, taken, trip, withLists } from '.
 const { t } = createI18n(DEFAULT_LOCALE);
 const OUT = 'screenshots/pixel-g68';
 const WORDS = 'Uydan olib ketaman, 07:50 da Grand oldida boʻlaman.';
-test.use({ viewport: { width: 360, height: 807 }, deviceScaleFactor: 1.375 });
+test.use({ viewport: { width: 360, height: 807 }, deviceScaleFactor: 1.375, actionSheets: 'keep' });
 
 // Nothing is cut (docs/121): every word of a button fits its button.
 async function wholeWords(page: Page) {

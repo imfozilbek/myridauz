@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
 import type { Reply } from './bot-kit';
@@ -36,13 +36,22 @@ const STYLE = `
 export const escape = (text: string) =>
   text.replace(/[&<>]/gu, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[char] ?? char);
 
-type Bot = { readonly name: string; readonly avatar: string; readonly picture: string };
-export const botOf = (role: 'passenger' | 'driver'): Bot => ({
+export type Bot = { readonly name: string; readonly avatar: string; readonly picture: string };
+export const botOf = (role: 'passenger' | 'driver' | 'admin'): Bot => ({
   name: t(`bot.profile.${role}.name`, { brand: brand.name }),
   avatar: `bot-${role}-avatar.png`,
   picture: `bot-${role}-description.png`,
 });
 export const DRIVER_BOT = botOf('driver');
+
+// A channel as its own chat (G68, mockup g68/5): its title and its round picture of the brand kit.
+export function channelChat(zone: { readonly title: string; readonly username: string }): Bot {
+  const slug = zone.username.split('_').at(-1) ?? '';
+  const round = readdirSync(`${KIT}/channels`).find(
+    (file) => file.includes('avatar') && file.endsWith(`-${slug}.png`),
+  );
+  return { name: zone.title, avatar: round ? `channels/${round}` : 'bot-passenger-avatar.png', picture: '' };
+}
 
 // pinned: the first line of the message on top of the chat (docs/122 rule 6).
 export async function draw(page: Page, bot: Bot, body: string, footer = '', pinned = '') {
