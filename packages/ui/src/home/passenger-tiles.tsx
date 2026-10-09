@@ -28,7 +28,8 @@ export function PassengerTiles({ go, openProfile }: Props) {
   const names = usePlaceNames(directory);
   const back = useWayBack(directory);
   const last = useLastRoute(directory);
-  const line = (route: Route) => t('common.route', { from: names.toward(route.from), to: names.toward(route.to) });
+  const line = (route: Route) =>
+    t('common.route', { from: names.toward(route.from), to: names.toward(route.to) });
   return (
     <>
       {back ? (

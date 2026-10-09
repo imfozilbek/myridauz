@@ -4,7 +4,8 @@ import type { Booking } from '@platform/contracts';
 import { confirmed } from '../bookings/booking-test-kit';
 import { trip } from '../market/market-test-kit';
 import { tap } from '../market/market-test-kit';
-import { PASSENGER_ACTIONS, renderHome } from './home-test-kit';
+import { PASSENGER_ACTIONS } from './home-test-actions';
+import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 afterEach(cleanup);

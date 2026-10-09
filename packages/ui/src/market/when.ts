@@ -29,15 +29,3 @@ export function useShortDay() {
         ? t('market.day.tomorrow')
         : formatDate(noonOf(date));
 }
-
-// "Bugun, soat 07:30", "Ertaga, soat 07:30", else "3-oktabr, soat 07:30": the nearest trips by days.
-export function useNearWhenLabel() {
-  const { t, formatDate, formatTime } = useI18n();
-  return (ms: number, now: number) => {
-    const time = formatTime(new Date(ms));
-    const day = tashkentDate(ms);
-    if (day === today(now)) return t('market.trip.whenToday', { time });
-    if (day === tomorrow(now)) return t('market.trip.whenTomorrow', { time });
-    return t('market.trip.when', { date: formatDate(new Date(ms)), time });
-  };
-}

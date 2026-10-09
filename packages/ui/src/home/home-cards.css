@@ -81,51 +81,6 @@ button.home-card:active {
   stroke: var(--mint-ink);
 }
 
-/* The small gray name over a group of cards, like «Yoʻnalish». */
-.home-label {
-  padding: 0 4px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--tgui--hint_color);
-}
-
-/* «Toshkent › Samarqand»: green start, red end on one line. */
-.home-route {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 6px;
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.home-route > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.home-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-/* A plate of a status: its color as the words, its light color behind them. */
-.home-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 9px;
-  border-radius: 9px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--pill);
-  background: var(--pill-soft);
-}
-
 /* A part of the stack in its own wrapper (loading, error) keeps the same gap. */
 .home-stack-part {
   display: flex;

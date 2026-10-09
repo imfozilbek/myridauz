@@ -14,7 +14,7 @@ const [PASSENGER] = MINI_APPS;
 const CHILONZOR = '1726294';
 const SAMARQAND = '1718401';
 const FARGONA = '1730401';
-export const NOW = '2026-10-07T15:00';
+const NOW = '2026-10-07T15:00';
 
 const madina = {
   id: '00000000000000000000000000000001',
@@ -72,7 +72,10 @@ export async function openPassengerHome(page: Page, state: PassengerState = 'qui
   await page.route('**/api/trips/days?*', (route) =>
     json(route, {
       km: 300,
-      days: [3, 8, 6, 4, 5, 2, 7].map((trips, index) => ({ date: `2026-10-${String(7 + index).padStart(2, '0')}`, trips })),
+      days: [3, 8, 6, 4, 5, 2, 7].map((trips, index) => ({
+        date: `2026-10-${String(7 + index).padStart(2, '0')}`,
+        trips,
+      })),
     }),
   );
   await page.addInitScript(

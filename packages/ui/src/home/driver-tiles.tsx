@@ -20,7 +20,11 @@ export function DriverTiles({ go, openProfile }: Props) {
   if (status === 'draft') return <SupportTile />;
   return (
     <>
-      {status === 'approved' ? <WalletTile onOpen={() => go(WALLET_SECTION)} /> : <BonusTile onOpen={() => go(WALLET_SECTION)} />}
+      {status === 'approved' ? (
+        <WalletTile onOpen={() => go(WALLET_SECTION)} />
+      ) : (
+        <BonusTile onOpen={() => go(WALLET_SECTION)} />
+      )}
       <HomeTile
         icon="profile"
         tone="mint"

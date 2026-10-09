@@ -1,49 +1,26 @@
-import type { AppLink, Booking, Favorites, Offer, RideRequest, Trip, Wallet } from '@platform/contracts';
-import { searchMarket } from '../find/search-test-kit';
+import type { Booking, Favorites, Offer, RequestBoard, RideRequest, Trip, Wallet } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { FeedContext } from '../feed/feed-context';
+import { searchMarket } from '../find/search-test-kit';
 import { StartFlow } from '../flow/start-flow';
-import type { HomeGo, Launch, StartAction } from '../flow/start-action';
-import { FindTripFlow } from '../market/find-trip-flow';
+import type { HomeGo, StartAction } from '../flow/start-action';
+import { testMap } from '../map/map-test-kit';
 import { locations, renderMarket } from '../market/market-test-kit';
 import { LocationsClientContext } from '../places/directory';
 import { testClients } from '../test-shell';
 import { WALLET_ACTION } from '../wallet/wallet-flow';
+import { DRIVER_DOCK_SECTIONS, PASSENGER_SECTIONS } from './dock-sections';
 import { DriverData } from './driver-data';
+import { DriverDock } from './driver-dock';
 import { DriverTiles } from './driver-tiles';
+import { NEW_TRIP } from './home-test-actions';
+import { HomeRouteProvider } from './home-route';
 import { PassengerData } from './passenger-data';
+import { PassengerDock } from './passenger-dock';
 import { PassengerTiles } from './passenger-tiles';
 
-// Test helper for the main screen (G25): the actions of an app, the feed signal by hand.
-type Opened = { readonly onBack: () => void } & Launch;
-// A section shows what the main screen gave it: the link, the route, the end to choose.
-function Shown({ link, route, pick }: Opened) {
-  const what = link
-    ? `${link.name}:${link.id}`
-    : route
-      ? `${route.from.name}>${route.to.name}`
-      : (pick ?? 'empty');
-  return <p>{`opened ${what}`}</p>;
-}
-const action = (
-  id: string,
-  Screen: StartAction['Screen'],
-  labelKey: StartAction['labelKey'] = 'common.myTrips',
-): StartAction => ({
-  id,
-  icon: 'trip',
-  tone: 'brand',
-  labelKey,
-  hintKey: 'common.passenger.myTripsHint',
-  Screen,
-});
-export const PASSENGER_ACTIONS = [
-  action('find_trip', FindTripFlow, 'common.passenger.findTrip'),
-  action('my_trips', Shown),
-];
-export const DRIVER_ACTIONS = [action('new_trip', Shown, 'home.publish'), action('my_trips', Shown)];
-
+// Test helper for the main screen (G25, G66): the lists of an app, the feed signal by hand.
 export const approved: Driver = {
   application: {
     status: 'approved',
@@ -62,12 +39,14 @@ type Data = {
   readonly asked?: () => Promise<RideRequest[]>;
   readonly offers?: () => Promise<Offer[]>;
   readonly wallet?: () => Promise<Wallet>;
+  // The requests on the directions of a driver (G66).
+  readonly board?: () => Promise<RequestBoard>;
   // The saved drivers of a passenger and their trips, none by default (G60).
   readonly favorites?: () => Promise<Favorites>;
   // The directory of places fails this many times first.
   readonly placesFail?: number;
-  // The action of the main button (G25).
-  readonly covered?: string;
+  // The map knows the district of a point: «Qayerdan» where the person stands (G66).
+  readonly where?: boolean;
 };
 
 const none = async () => [];
@@ -96,8 +75,9 @@ export function renderHome(
       searchTrips: none,
       myRequests: data.asked ?? none,
       ...(data.trips ? { myTrips: data.trips } : {}),
+      ...(data.board ? { requestBoard: data.board } : {}),
     },
-    map: { where: async () => Promise.reject(new Error('none')) },
+    map: data.where ? testMap() : { where: async () => Promise.reject(new Error('none')) },
   });
   let fails = data.placesFail ?? 0;
   const places = {
@@ -106,37 +86,43 @@ export function renderHome(
       return locations.getLocations();
     },
   };
+  // The block at the bottom as in the apps (G66): none before the application is sent.
+  const sent = driver.application.status !== 'draft';
   const flow = (
     <DriverData>
-      <StartFlow
-        actions={actions}
-        home={home}
-        tiles={(go) => <DriverTiles go={go} />}
-        sections={[WALLET_ACTION]}
-        {...(data.covered ? { mainTile: data.covered } : {})}
-      />
+      <HomeRouteProvider>
+        <StartFlow
+          actions={actions}
+          home={home}
+          tiles={(go, openProfile) => <DriverTiles go={go} openProfile={openProfile} />}
+          sections={[NEW_TRIP, WALLET_ACTION, ...DRIVER_DOCK_SECTIONS]}
+          {...(sent ? { dock: (go: HomeGo) => <DriverDock go={go} /> } : {})}
+        />
+      </HomeRouteProvider>
     </DriverData>
   );
-  // A passenger main screen has its lists and tiles, as in the app (G53).
+  // A passenger main screen has its lists, tiles and block, as in the app (G53, G66).
   const passenger = (
     <PassengerData>
-      <StartFlow
-        actions={actions}
-        home={home}
-        tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
-        {...(data.covered ? { covered: data.covered } : {})}
-      />
+      <HomeRouteProvider>
+        <StartFlow
+          actions={actions}
+          home={home}
+          tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+          dock={(go) => <PassengerDock go={go} />}
+          sections={PASSENGER_SECTIONS}
+          covered="find_trip"
+        />
+      </HomeRouteProvider>
     </PassengerData>
   );
   const result = renderMarket(
     <LocationsClientContext.Provider value={places}>
       <FeedContext.Provider value={subscribe}>
-        <DriverContext.Provider value={driver}>{data.bookings ? passenger : flow}</DriverContext.Provider>
+        {data.bookings ? passenger : <DriverContext.Provider value={driver}>{flow}</DriverContext.Provider>}
       </FeedContext.Provider>
     </LocationsClientContext.Provider>,
     clients,
   );
   return { ...result, signal: () => signal() };
 }
-
-export const linkOf = (link: AppLink) => `opened ${link.name}:${link.id}`;

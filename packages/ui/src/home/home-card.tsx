@@ -1,14 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { useBrand } from '../context/brand-context';
-import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import './home-cards.css';
 
 const ICON = 22;
-const ROUTE_ICON = 16;
-const ARROW = 14;
 const ROW_ARROW = 18;
-const PILL_ICON = 14;
 
 type CardProps = {
   readonly onClick?: () => void;
@@ -55,47 +51,5 @@ export function HomeRowCard({ icon, color, title, hint, arrow = false, onClick }
       </span>
       {arrow ? <Icon name="next" size={ROW_ARROW} color={colors.textMuted} /> : null}
     </HomeCard>
-  );
-}
-
-// «Toshkent › Samarqand»: the green start and the red end, as everywhere a route is (docs/20).
-export function RouteLine({ from, to }: { readonly from: string; readonly to: string }) {
-  const { colors } = useBrand().theme;
-  const { t } = useI18n();
-  return (
-    <span className="home-route" aria-label={t('common.route', { from, to })}>
-      <span>
-        <Icon name="origin" size={ROUTE_ICON} color={colors.routeFrom} />
-        {from}
-      </span>
-      <Icon name="next" size={ARROW} color={colors.textMuted} />
-      <span>
-        <Icon name="destination" size={ROUTE_ICON} color={colors.routeTo} />
-        {to}
-      </span>
-    </span>
-  );
-}
-
-export type PillTone = 'success' | 'attention' | 'muted' | 'brand';
-
-type PillProps = { readonly tone: PillTone; readonly icon?: IconName; readonly children: ReactNode };
-
-// A plate of a status: green when done, amber when it waits for the person, gray when closed, the
-// color of the app for new messages («1 xabar», G53).
-export function Pill({ tone, icon, children }: PillProps) {
-  const { colors } = useBrand().theme;
-  const looks: Record<PillTone, readonly [string, string]> = {
-    success: [colors.success, colors.successSoft],
-    attention: [colors.attention, colors.attentionSoft],
-    muted: [colors.textMuted, colors.neutralSoft],
-    brand: [colors.brandText, colors.brandSoft],
-  };
-  const [color, soft] = looks[tone];
-  return (
-    <span className="home-pill" style={{ '--pill': color, '--pill-soft': soft } as CSSProperties}>
-      {icon ? <Icon name={icon} size={PILL_ICON} color={color} /> : null}
-      {children}
-    </span>
   );
 }

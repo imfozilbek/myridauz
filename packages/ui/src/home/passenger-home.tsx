@@ -2,6 +2,7 @@ import { BOOKING_LINK } from '@platform/contracts';
 import { useState } from 'react';
 import { MeetingCard, meetingTime } from '../bookings/meeting-card';
 import type { HomeGo } from '../flow/start-action';
+import { PlacesKnown } from '../market/places-gate';
 import { useDirectory } from '../places/use-directory';
 import { Screen } from '../screen/screen';
 import { ArrivedSheet, asksArrival } from './arrived-sheet';
@@ -33,18 +34,28 @@ export function PassengerHome({ go }: { readonly go: HomeGo }) {
 type SeatProps = { readonly go: HomeGo; readonly load: PassengerLoad };
 
 function Seat({ go, load: { value, failed, reload, refresh } }: SeatProps) {
-  const [places] = useDirectory();
+  const [places, retryPlaces] = useDirectory();
   const tap = useHomeTap();
   const [now] = useState(Date.now);
-  if (failed) return <HomeFailed onRetry={reload} />;
+  const retry = () => {
+    if (failed) reload();
+    if (places.status === 'error') retryPlaces();
+  };
+  if (failed || places.status === 'error') return <HomeFailed onRetry={retry} />;
   const booking = value ? nextBookings(value[0])[0] : undefined;
-  if (!booking) return null;
-  if (meetingTime(booking, now)) return <MeetingCard booking={booking} onTold={refresh} />;
+  if (!booking || places.status !== 'ready') return null;
+  const { directory } = places;
+  if (meetingTime(booking, now))
+    return (
+      <PlacesKnown directory={directory}>
+        <MeetingCard booking={booking} onTold={refresh} />
+      </PlacesKnown>
+    );
   const link = (name: string) => ({ link: { name, id: booking.id } });
   return (
     <HomeTripCard
       booking={booking}
-      directory={places.status === 'ready' ? places.directory : null}
+      directory={directory}
       onOpen={tap('item', () => go('my_trips', link(BOOKING_LINK)))}
       onTalk={(screen) =>
         tap(screen === 'call' ? 'trip_call' : 'trip_chat', () =>

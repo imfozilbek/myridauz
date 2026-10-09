@@ -1,110 +1,130 @@
-import { OFFER_LINK } from '@platform/contracts';
+import { REQUEST_LINK, DAY_MS } from '@platform/contracts';
 import { loadBrand } from '@platform/brands';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { booking, offer, request, wallet } from '../bookings/booking-test-kit';
-import type { StartAction } from '../flow/start-action';
+import type { ReactNode } from 'react';
+import { AccountContext, useAccount } from '../account/account-context';
+import { booking, offer, request } from '../bookings/booking-test-kit';
 import { tap, trip } from '../market/market-test-kit';
-import { useDriverTripsLive } from './driver-data';
-import { DriverHome } from './driver-home';
-import { approved, DRIVER_ACTIONS, linkOf, PASSENGER_ACTIONS, renderHome } from './home-test-kit';
-import { useBookingsLive, useOffersLive } from './passenger-data';
+import { BecomeDriver } from './become-driver';
+import { linkOf, PASSENGER_ACTIONS } from './home-test-actions';
+import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  localStorage.clear();
+});
 
 // The tile of an action with its badge: the badge is a number inside the tile (G53).
 const tileOf = (title: string) => screen.getByText(title).closest('button');
-const live = (actions: readonly StartAction[], useLive: StartAction['useLive']) =>
-  actions.map((action) => (action.id === 'my_trips' && useLive ? { ...action, useLive } : action));
+const badgeOf = (title: string) => tileOf(title)?.querySelector('.home-tile-badge')?.textContent;
+type Data = Parameters<typeof renderHome>[2];
+const home = (data: Data, more: ReactNode = null) =>
+  renderHome(
+    (go) => (
+      <>
+        <PassengerHome go={go} />
+        {more}
+      </>
+    ),
+    PASSENGER_ACTIONS,
+    data,
+  );
 
-describe('the tiles of a passenger (G53)', { timeout: 20_000 }, () => {
-  it('counts the offers waiting for an answer and opens the first one from the request', async () => {
-    const actions = [
-      ...PASSENGER_ACTIONS,
-      {
-        id: 'leave_request',
-        icon: 'request',
-        tone: 'accent',
-        labelKey: 'common.passenger.leaveRequest',
-        hintKey: 'common.passenger.leaveRequestHint',
-        useLive: useOffersLive,
-        Screen: () => null,
-      } satisfies StartAction,
-    ];
-    renderHome((go) => <PassengerHome go={go} />, actions, {
+describe('the tiles of a passenger (G53, G66 mockup g66/1)', { timeout: 20_000 }, () => {
+  it('turns «Soʻrov qoldirish» into «Soʻrovim»: where, when, the offers; a tap opens the request', async () => {
+    home({
       bookings: async () => [],
       asked: async () => [request],
       offers: async () => [offer, { ...offer, id: 'o2' }, { ...offer, id: 'o3', status: 'declined' }],
-      covered: 'find_trip',
     });
-    expect(await screen.findByText('2 ta taklif')).toBeTruthy();
-    expect(tileOf('Soʻrov qoldirish')?.textContent).toContain('2');
-    await tap('2 ta taklif');
-    expect(screen.getByText(linkOf({ name: OFFER_LINK, id: offer.id }))).toBeTruthy();
+    expect(await screen.findByText(/^Fargʻona, .+ · 2 ta taklif$/u)).toBeTruthy();
+    expect(screen.queryByText('Soʻrov qoldirish')).toBeNull();
+    expect(badgeOf('Soʻrovim')).toBe('2');
+    await tap('Soʻrovim');
+    expect(screen.getByText(linkOf({ name: REQUEST_LINK, id: request.id }))).toBeTruthy();
   });
 
-  it('counts the live bookings on «Mening safarlarim» and opens the profile', async () => {
-    const { tracked } = renderHome(
-      (go) => <PassengerHome go={go} />,
-      live(PASSENGER_ACTIONS, useBookingsLive),
-      {
-        bookings: async () => [
-          { ...booking, unread: 2 },
-          { ...booking, id: 'b2', status: 'declined' },
-        ],
-        covered: 'find_trip',
-      },
-    );
-    await screen.findByText('Javob kutilmoqda');
-    // The messages of the driver not read yet, as on the mockup (G53).
-    expect(screen.getByText('2 xabar')).toBeTruthy();
-    expect(tileOf('Mening safarlarim')?.querySelector('.home-tile-badge')?.textContent).toBe('1');
+  it('keeps «Soʻrov qoldirish» while no request is open', async () => {
+    home({ bookings: async () => [], asked: async () => [{ ...request, status: 'expired' as const }] });
+    expect(await screen.findByText('Soʻrov qoldirish')).toBeTruthy();
+    expect(screen.queryByText('Soʻrovim')).toBeNull();
+  });
+
+  it('counts on «Mening safarlarim» the live seats but the one of the card, and opens the profile', async () => {
+    const { tracked } = home({
+      bookings: async () => [booking, { ...booking, id: 'b2' }, { ...booking, id: 'b3', status: 'declined' }],
+    });
+    await screen.findByText('Rasm va sozlamalar');
+    expect(badgeOf('Mening safarlarim')).toBe('1');
     await tap('Rasm va sozlamalar');
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
   });
+
+  it('offers «Qaytish» with a seat booked: the way back of its trip (docs/118)', async () => {
+    const { tracked } = home({ bookings: async () => [booking] });
+    expect(await screen.findByText('Qaytish')).toBeTruthy();
+    expect(screen.getByText('Fargʻona → Chilonzor')).toBeTruthy();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
+    await tap('Qaytish');
+    expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'come_back' }));
+  });
+
+  it('keeps «Qaytish» a week after the trip, then no more', async () => {
+    const done = (days: number) => ({
+      ...booking,
+      status: 'completed' as const,
+      trip: { ...trip, departAt: Date.now() - days * DAY_MS },
+    });
+    home({ bookings: async () => [done(6)] });
+    expect(await screen.findByText('Qaytish')).toBeTruthy();
+    cleanup();
+    home({ bookings: async () => [done(8)] });
+    expect(await screen.findByText('Rasm va sozlamalar')).toBeTruthy();
+    expect(screen.queryByText('Qaytish')).toBeNull();
+  });
 });
 
-const driver = (status: 'approved' | 'pending' = 'approved') =>
-  renderHome(
-    (go) => <DriverHome go={go} />,
-    live(DRIVER_ACTIONS, useDriverTripsLive),
-    {
-      trips: async () => [trip],
-      requests: async () => [booking, { ...booking, id: 'b2' }],
-      wallet: async () => wallet,
-      ...(status === 'approved' ? { covered: 'new_trip' } : {}),
-    },
-    { ...approved, application: { ...approved.application, status } },
+// A person who is not a driver yet (the account of the tests is both).
+function Passenger({ children }: { readonly children: ReactNode }) {
+  const account = useAccount();
+  const roles = ['passenger'] as const;
+  return (
+    <AccountContext.Provider
+      value={account && { ...account, profile: { ...account.profile, roles: [...roles] } }}
+    >
+      {children}
+    </AccountContext.Provider>
   );
+}
 
-describe('the tiles of a driver (G53, G62)', { timeout: 20_000 }, () => {
-  it('counts the new requests and publishes from the big tile, «Hamyon» is the last tile', async () => {
-    driver();
-    expect(await screen.findByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
-    expect(tileOf('Mening safarlarim')?.querySelector('.home-tile-badge')?.textContent).toBe('2');
-    expect(tileOf('Safar eʼlon qilish')?.className).toBe('main-tile');
-    // «Yordam» of an approved driver lives in «Profil» (docs/118 path 9, mockup g65/3).
-    expect(screen.queryByText('Yordam')).toBeNull();
-    await tap('Hamyon');
-    expect(await screen.findByText('Hisobni toʻldirish')).toBeTruthy();
-  });
-
-  it('turns «Hamyon» red below 5 seats', async () => {
-    renderHome((go) => <DriverHome go={go} />, DRIVER_ACTIONS, {
-      trips: async () => [],
-      requests: async () => [],
-      wallet: async () => ({ ...wallet, seatsLeft: 4 }),
-      covered: 'new_trip',
-    });
-    expect(await screen.findByText(/^≈.4 joyga yetadi · toʻldiring$/u)).toBeTruthy();
-  });
-
-  it('opens the support bot while the application is checked', async () => {
+describe('«Haydovchi boʻling» under the tiles (G66, docs/118)', { timeout: 20_000 }, () => {
+  it('opens the app of drivers for a passenger without a seat', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    driver('pending');
-    await tap('Savolingiz boʻlsa yozing');
-    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
+    home(
+      { bookings: async () => [] },
+      <Passenger>
+        <BecomeDriver />
+      </Passenger>,
+    );
+    await tap('Haydovchi boʻling');
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.driver}?startapp`);
     open.mockRestore();
+  });
+
+  it('hides for a seat booked and for a driver', async () => {
+    home(
+      { bookings: async () => [booking] },
+      <Passenger>
+        <BecomeDriver />
+      </Passenger>,
+    );
+    expect(await screen.findByText('Qaytish')).toBeTruthy();
+    expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
+    cleanup();
+    home({ bookings: async () => [] }, <BecomeDriver />);
+    expect(await screen.findByText('Rasm va sozlamalar')).toBeTruthy();
+    expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
   });
 });

@@ -12,7 +12,6 @@
   "admin.today": "Bugun",
   "admin.newUsers": "yangi foydalanuvchi",
   "meta": "{when} · {more}",
-  "driverCar": "{name}, {model}",
   "role.passenger": "Yoʻlovchi",
   "role.driver": "Haydovchi · {model}, {color} · {plate}",
   "role.owner": "Egasi",

@@ -8,7 +8,7 @@ import './route-dock.css';
 
 const SWAP = 16;
 
-export type DockEnd = {
+type DockEnd = {
   // The place shown, or null: the gray question takes its line.
   readonly value: string | null;
   readonly placeholder: string;

@@ -1,4 +1,11 @@
-import { BOOKING_LINK, OFFER_LINK, REQUEST_LINK, type AppLink, type Booking, type RideRequest } from '@platform/contracts';
+import {
+  BOOKING_LINK,
+  OFFER_LINK,
+  REQUEST_LINK,
+  type AppLink,
+  type Booking,
+  type RideRequest,
+} from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { FavoritesScreen } from '../comfort/favorites-screen';

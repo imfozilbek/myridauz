@@ -30,7 +30,8 @@ export function useRequestLive(): TileLive {
   const count = waiting.filter((offer) => offer.requestId === open.id).length;
   return {
     title: t('home.request.title'),
-    hint: count > 0 ? t('home.meta', { when, more: t('market.request.offers', { count: String(count) }) }) : when,
+    hint:
+      count > 0 ? t('home.meta', { when, more: t('market.request.offers', { count: String(count) }) }) : when,
     badge: count,
     opens: { id: 'my_trips', launch: { link: { name: REQUEST_LINK, id: open.id } } },
   };

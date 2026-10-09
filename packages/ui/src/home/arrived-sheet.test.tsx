@@ -3,7 +3,8 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { tap } from '../market/market-test-kit';
-import { PASSENGER_ACTIONS, renderHome } from './home-test-kit';
+import { PASSENGER_ACTIONS } from './home-test-actions';
+import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 afterEach(cleanup);
@@ -27,18 +28,18 @@ describe('«Yetib keldingizmi?» an hour after the arrival (docs/129, docs/43, m
     vi.setSystemTime(arrival + HOUR + 1);
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
       bookings: async () => [confirmed],
-      covered: 'find_trip',
     });
     expect(await screen.findByText('Yetib keldingizmi?')).toBeTruthy();
-    expect(screen.queryByText('Safar topish')).toBeNull();
+    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
     await tap('Hali yoʻldaman');
-    expect(await screen.findByText('Safar topish')).toBeTruthy();
+    // On the day of the trip the main button is its step (G66).
+    expect(await screen.findByText('Mashinaga chiqdim')).toBeTruthy();
   });
 
   it('does not ask before the hour', async () => {
     vi.setSystemTime(arrival + HOUR - 60_000);
     home();
-    await screen.findAllByText(/Jasur/u);
+    await screen.findByText('Men keldim');
     expect(screen.queryByText('Yetib keldingizmi?')).toBeNull();
   });
 });

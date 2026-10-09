@@ -33,7 +33,11 @@ const pitak = { id: 'chilonzor', name: 'Chilonzor pitagi', point: { lat: 41.2856
 
 const at = (day: string, time: string) => tashkent(`2026-10-${day}T${time}`);
 const done = (id: string, day: string) =>
-  tripOf(id, 'Dilnoza', true, 0, { departAt: at(day, '08:00'), status: 'completed', arrivedAt: at(day, '13:00') });
+  tripOf(id, 'Dilnoza', true, 0, {
+    departAt: at(day, '08:00'),
+    status: 'completed',
+    arrivedAt: at(day, '13:00'),
+  });
 const ahead = (id: string, day: string, time: string) =>
   tripOf(id, 'Dilnoza', true, 0, { departAt: at(day, time), seats: 4, seatsLeft: 1, pitak, price: 90000 });
 const seat = (n: string, firstName: string, status: string, trip: object) => ({
@@ -51,9 +55,12 @@ const TRIPS = {
   today: [done('1', '05'), done('2', '06'), ahead('5', '07', '16:00')],
 };
 const people = (state: DriverState, trips: readonly { id: string }[]) => {
-  const [trip] = trips.slice(-1);
-  if (state === 'tomorrow') return [seat('d1', 'Aziz', 'requested', trip), seat('d2', 'Kamola', 'requested', trip)];
-  if (state === 'today') return ['Madina', 'Sardor', 'Dilshod'].map((name, n) => seat(`e${n}`, name, 'confirmed', trip));
+  const trip = trips.at(-1);
+  if (!trip) return [];
+  if (state === 'tomorrow')
+    return [seat('d1', 'Aziz', 'requested', trip), seat('d2', 'Kamola', 'requested', trip)];
+  if (state === 'today')
+    return ['Madina', 'Sardor', 'Dilshod'].map((name, n) => seat(`e${n}`, name, 'confirmed', trip));
   return [];
 };
 
@@ -65,7 +72,9 @@ export async function openDriverHome(page: Page, state: DriverState) {
   const trips = TRIPS[state];
   const status = state === 'pending' ? 'pending' : 'approved';
   await page.route('**/api/me', (route) =>
-    route.request().method() === 'GET' ? json(route, { state: 'active', profile: dilnoza }) : route.fallback(),
+    route.request().method() === 'GET'
+      ? json(route, { state: 'active', profile: dilnoza })
+      : route.fallback(),
   );
   await page.route('**/api/driver/application', (route) =>
     json(route, { application: { status, car, photos, reasons: [] } }),
@@ -90,10 +99,13 @@ export async function openDriverHome(page: Page, state: DriverState) {
     }),
   );
   // «Siz haydovchisiz!» was seen already: the mockup shows the screen of every day.
-  await page.addInitScript(([here]) => {
-    localStorage.setItem('here_district', here);
-    localStorage.setItem('driver_approval_seen', '1');
-  }, [CHILONZOR] as const);
+  await page.addInitScript(
+    ([here]) => {
+      localStorage.setItem('here_district', here);
+      localStorage.setItem('driver_approval_seen', '1');
+    },
+    [CHILONZOR] as const,
+  );
   await page.clock.setFixedTime(state === 'today' ? at('07', '15:20') : at('07', '15:00'));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));

@@ -76,12 +76,47 @@ function PickTo({ onBack }: Props) {
 
 // Opened only by the block and the card of the seat, never drawn as tiles.
 export const PASSENGER_SECTIONS: readonly StartAction[] = [
-  { id: DOCK_FROM, icon: 'origin', tone: 'brand', labelKey: 'places.from', hintKey: 'places.fromTitle', Screen: PickFrom },
-  { id: DOCK_TO, icon: 'destination', tone: 'brand', labelKey: 'places.to', hintKey: 'places.toTitle', Screen: PickTo },
-  { id: TRIP_TALK, icon: 'chat', tone: 'brand', labelKey: 'chat.open', hintKey: 'chat.open', Screen: TripTalk },
+  {
+    id: DOCK_FROM,
+    icon: 'origin',
+    tone: 'brand',
+    labelKey: 'places.from',
+    hintKey: 'places.fromTitle',
+    Screen: PickFrom,
+  },
+  {
+    id: DOCK_TO,
+    icon: 'destination',
+    tone: 'brand',
+    labelKey: 'places.to',
+    hintKey: 'places.toTitle',
+    Screen: PickTo,
+  },
+  {
+    id: TRIP_TALK,
+    icon: 'chat',
+    tone: 'brand',
+    labelKey: 'chat.open',
+    hintKey: 'chat.open',
+    Screen: TripTalk,
+  },
 ];
 
 export const DRIVER_DOCK_SECTIONS: readonly StartAction[] = [
-  { id: DOCK_FROM, icon: 'origin', tone: 'brand', labelKey: 'places.from', hintKey: 'places.fromTitle', Screen: PickFrom },
-  { id: DOCK_TO, icon: 'destination', tone: 'brand', labelKey: 'places.to', hintKey: 'home.dock.toDriver', Screen: PickPlaceTo },
+  {
+    id: DOCK_FROM,
+    icon: 'origin',
+    tone: 'brand',
+    labelKey: 'places.from',
+    hintKey: 'places.fromTitle',
+    Screen: PickFrom,
+  },
+  {
+    id: DOCK_TO,
+    icon: 'destination',
+    tone: 'brand',
+    labelKey: 'places.to',
+    hintKey: 'home.dock.toDriver',
+    Screen: PickPlaceTo,
+  },
 ];

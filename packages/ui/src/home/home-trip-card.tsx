@@ -14,10 +14,12 @@ const FACE = 38;
 const LETTER = 16;
 const TOOL = 18;
 const ARROW = 14;
+// More than 9 unread messages read «9+»: the small circle keeps one size.
+const MAX_UNREAD = 9;
 
 type Props = {
   readonly booking: Booking;
-  readonly directory: PlaceDirectory | null;
+  readonly directory: PlaceDirectory;
   readonly onOpen: () => void;
   readonly onTalk: (screen: 'chat' | 'call') => void;
 };
@@ -31,7 +33,7 @@ export function HomeTripCard({ booking, directory, onOpen, onTalk }: Props) {
   const shortDay = useShortDay();
   const [now] = useState(Date.now);
   const { driver, departAt } = booking.trip;
-  const to = directory?.find(booking.trip.to);
+  const to = directory.find(booking.trip.to);
   const confirmed = booking.status === 'confirmed';
   const when = t('home.trip.when', {
     day: shortDay(tashkentDate(departAt), now),
@@ -39,9 +41,20 @@ export function HomeTripCard({ booking, directory, onOpen, onTalk }: Props) {
   });
   const state = t(confirmed ? 'bookings.confirmed.title' : 'bookings.status.requested');
   const car = t('home.trip.car', { model: driver.car.model, color: t(`drivers.color.${driver.car.color}`) });
+  // «1 xabar»: the messages of the driver not read yet stay seen on the chat (G53), as a number on it.
+  const unread = booking.unread ?? 0;
   const tool = (screen: 'chat' | 'call', icon: IconName, label: string) => (
     <button type="button" className="home-trip-tool" aria-label={label} onClick={() => onTalk(screen)}>
       <Icon name={icon} size={TOOL} color={colors.brandText} />
+      {unread > 0 && screen === 'chat' ? (
+        <span
+          className="home-trip-unread"
+          style={{ background: colors.badge, color: colors.bg }}
+          aria-label={t('home.unread', { count: String(unread) })}
+        >
+          {unread > MAX_UNREAD ? `${MAX_UNREAD}+` : unread}
+        </span>
+      ) : null}
     </button>
   );
   return (
@@ -52,7 +65,14 @@ export function HomeTripCard({ booking, directory, onOpen, onTalk }: Props) {
           <Icon name="next" size={ARROW} color={colors.textMuted} />
         </span>
         <span className="home-trip-who">
-          <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={FACE} letter={LETTER} plain />
+          <PersonBadge
+            id={driver.id}
+            name={driver.firstName}
+            hasAvatar={driver.hasAvatar}
+            size={FACE}
+            letter={LETTER}
+            plain
+          />
           <span className="home-trip-words">
             <span className="home-trip-name">
               {to ? t('home.meta', { when: driver.firstName, more: names.toward(to) }) : driver.firstName}

@@ -42,7 +42,10 @@ export function DriverNextCard({ trip, bookings, directory, onOpen }: Props) {
   const [now] = useState(Date.now);
   const day = shortDay(tashkentDate(trip.departAt), now);
   const when = t('home.trip.when', { day, time: formatTime(new Date(trip.departAt)) });
-  const seats = t('home.trip.seats', { taken: String(trip.seats - trip.seatsLeft), seats: String(trip.seats) });
+  const seats = t('home.trip.seats', {
+    taken: String(trip.seats - trip.seatsLeft),
+    seats: String(trip.seats),
+  });
   const start = trip.pitak?.name ?? directory.find(trip.from)?.name ?? '';
   const { waiting } = tripPeople(trip, bookings);
   return (

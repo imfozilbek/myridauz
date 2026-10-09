@@ -13,7 +13,6 @@ export {
   Radio,
   Select,
   SegmentedControl,
-  Skeleton,
   Snackbar,
   Spinner,
   Textarea,

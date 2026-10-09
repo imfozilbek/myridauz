@@ -23,6 +23,17 @@ export function PlacesGate({
   return <PlacesContext.Provider value={state.directory}>{children}</PlacesContext.Provider>;
 }
 
+// The directory already loaded around a card that needs it: the meeting on the main screen (G66).
+export function PlacesKnown({
+  directory,
+  children,
+}: {
+  readonly directory: PlaceDirectory;
+  readonly children: ReactNode;
+}) {
+  return <PlacesContext.Provider value={directory}>{children}</PlacesContext.Provider>;
+}
+
 // The directory inside the gate: the names of the places of a trip (G59).
 export function usePlaces(): PlaceDirectory {
   const directory = useContext(PlacesContext);
