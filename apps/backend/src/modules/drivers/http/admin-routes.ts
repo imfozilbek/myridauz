@@ -10,6 +10,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { applicantPhoto, applicationFor, decideApplication, queue } from '../application/moderate';
 import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
+import { recordAction } from '../../journal';
 
 const ONE = `${ADMIN_APPLICATIONS_PATH}/:id{[0-9a-f]+}`;
 const isPhoto = (value: string): value is CarPhotoKind | 'avatar' =>
@@ -50,7 +51,12 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         const moderator = context.get('session').user.id;
         const userId = await userOf(context);
         const result = await decideApplication(deps(context.env), moderator, userId, decision.data);
-        return result.ok ? context.json(result.value) : fail(context, result.error);
+        if (!result.ok) return fail(context, result.error);
+        const { submittedAt } = result.value;
+        const subject = context.req.param('id') ?? '';
+        const action = { memberId: moderator, kind: 'application' as const, subject, since: submittedAt };
+        await recordAction(context.env, { ...action, action: decision.data.action });
+        return context.json(result.value);
       })
   );
 }

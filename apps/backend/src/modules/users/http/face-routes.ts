@@ -4,6 +4,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { decideFace, facePhoto, pendingFaces } from '../application/faces';
 import type { UsersDeps } from '../application/ports';
 import { fail } from './respond';
+import { recordAction } from '../../journal';
 
 const ONE = `${ADMIN_FACES_PATH}/:id{[0-9a-f]+}`;
 const NO_CONTENT = 204;
@@ -33,6 +34,16 @@ export function faceRoutes(deps: (env: Bindings) => UsersDeps) {
       const moderator = context.get('session').user.id;
       const userId = await userOf(context);
       const result = await decideFace(deps(context.env), moderator, userId, decision.data);
-      return result.ok ? context.body(null, NO_CONTENT) : fail(context, result.error);
+      if (!result.ok) return fail(context, result.error);
+      const subject = context.req.param('id') ?? '';
+      const since = result.user.face?.at ?? null;
+      await recordAction(context.env, {
+        memberId: moderator,
+        kind: 'face',
+        subject,
+        action: decision.data.action,
+        since,
+      });
+      return context.body(null, NO_CONTENT);
     });
 }

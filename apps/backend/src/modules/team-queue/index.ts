@@ -9,6 +9,7 @@ import type { SignStore } from './application/attention';
 import { createMemorySigns, d1Signs } from './infrastructure/d1-attention';
 import { createMemoryTakes, d1Takes } from './infrastructure/d1-takes';
 import { navbatRoutes } from './http/navbat-routes';
+import { workRoutes } from './http/work-routes';
 import { diqqatNews, type Signal } from './infrastructure/diqqat-card';
 import { attentionRoutes } from './http/attention-routes';
 import { queueOf, type Case } from './domain/queue';
@@ -59,14 +60,19 @@ const memorySigns = createMemorySigns();
 const signsOf = (env: Bindings): SignStore => (env.DB ? d1Signs(env.DB) : memorySigns);
 // «Navbat» in the admin app (G75): the same cases, who of the team opened each one.
 const memoryTakes = createMemoryTakes();
-export const attentionModule = attentionRoutes(signsOf).route(
-  '/',
-  navbatRoutes({
-    cases: (env) => casesOf(env),
-    takes: (env) => (env.DB ? d1Takes(env.DB) : memoryTakes),
-    name: async (env, memberId) => (await peopleOf(env).find(memberId))?.firstName ?? null,
-  }),
-);
+export const attentionModule = attentionRoutes(signsOf)
+  .route(
+    '/',
+    workRoutes((env) => casesOf(env)),
+  )
+  .route(
+    '/',
+    navbatRoutes({
+      cases: (env) => casesOf(env),
+      takes: (env) => (env.DB ? d1Takes(env.DB) : memoryTakes),
+      name: async (env, memberId) => (await peopleOf(env).find(memberId))?.firstName ?? null,
+    }),
+  );
 
 // A sign of the day for every owner in «Diqqat» (G68, docs/122): the same list in the admin app
 // (G75); errors and a late case ring in team hours only. A sign must not stop the step that found it.
