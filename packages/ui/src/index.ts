@@ -31,8 +31,13 @@ export { LanguageSwitcher, useI18n } from './context/i18n-context';
 export type { StartAction } from './flow/start-action';
 export { DriverHome } from './home/driver-home';
 export { PassengerHome } from './home/passenger-home';
-export { PassengerData, useBookingsLive, useOffersLive } from './home/passenger-data';
+export { PassengerData, useBookingsLive } from './home/passenger-data';
+export { useRequestLive } from './home/request-live';
 export { PassengerTiles } from './home/passenger-tiles';
+export { PassengerDock } from './home/passenger-dock';
+export { BecomeDriver } from './home/become-driver';
+export { PASSENGER_SECTIONS } from './home/dock-sections';
+export { HomeRouteProvider } from './home/home-route';
 export { DriverData, useDriverTripsLive } from './home/driver-data';
 export { DriverTiles } from './home/driver-tiles';
 // The section a bot button opens in the driver app (G62): the apps take it from here.

@@ -36,8 +36,7 @@ export async function requestPosition(): Promise<Point | null> {
   }
 }
 
-// Where the person stands, only when they already allowed it (G25): the main screen never asks.
-export async function knownPosition(): Promise<Point | null> {
+async function askKnown(): Promise<Point | null> {
   try {
     if (locationManager.mount.isAvailable() && !locationManager.isMounted())
       await locationManager.mount({ timeout: CHECK_TIMEOUT_MS });
@@ -45,4 +44,16 @@ export async function knownPosition(): Promise<Point | null> {
   } catch {
     return null;
   }
+}
+
+// One question at a time: Telegram refuses a second one while the first waits, and that refusal
+// read as «nowhere» would wipe the place of a screen asking at the same moment (G66).
+let asking: Promise<Point | null> | null = null;
+
+// Where the person stands, only when they already allowed it (G25): the main screen never asks.
+export function knownPosition(): Promise<Point | null> {
+  asking ??= askKnown().finally(() => {
+    asking = null;
+  });
+  return asking;
 }

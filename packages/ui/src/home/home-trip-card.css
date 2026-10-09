@@ -1,0 +1,106 @@
+/* The seat on the main screen (G66, mockup g66/1 phone 3 at 360 px): a white card in the light line
+   of the app, the state as a green plate, the driver below; the chat and the call on the right. */
+.home-trip {
+  position: relative;
+  box-sizing: border-box;
+  border: 2px solid var(--reg-line);
+  border-radius: 16px;
+  background: var(--reg-card);
+  font-family: var(--tgui--font-family);
+}
+
+.home-trip-open {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 14px 11.67px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--reg-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.home-trip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.home-trip-top svg {
+  flex: none;
+  margin-right: -5px;
+}
+
+.home-trip-pill {
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--reg-success-soft);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--reg-success-deep);
+}
+
+.home-trip-waiting .home-trip-pill {
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention);
+}
+
+/* The face of the driver: his letter in the deep green of the plate (mockup g66/1). */
+.home-trip-who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 81px;
+}
+
+.home-trip .person-badge-plain {
+  font-weight: 700;
+  color: var(--reg-success-deep);
+}
+
+.home-trip-words {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-top: 1.33px;
+}
+
+.home-trip-name {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.home-trip-car {
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+/* The chat and the call: two small light squares at the right of the driver. */
+.home-trip-tools {
+  position: absolute;
+  right: 14.67px;
+  bottom: 16px;
+  display: flex;
+  gap: 10.67px;
+}
+
+.home-trip-tool {
+  display: grid;
+  place-items: center;
+  width: 29.33px;
+  height: 29.33px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: var(--reg-soft);
+  cursor: pointer;
+}

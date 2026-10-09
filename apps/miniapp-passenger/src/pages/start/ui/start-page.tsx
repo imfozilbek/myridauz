@@ -1,13 +1,17 @@
 import {
+  BecomeDriver,
   FindTripFlow,
+  HomeRouteProvider,
   MyRequestsScreen,
   NewRequestFlow,
+  PASSENGER_SECTIONS,
   PassengerData,
+  PassengerDock,
   PassengerHome,
   PassengerTiles,
   StartFlow,
   useBookingsLive,
-  useOffersLive,
+  useRequestLive,
   type StartAction,
 } from '@platform/ui';
 
@@ -27,8 +31,8 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.passenger.leaveRequest',
     hintKey: 'common.passenger.leaveRequestHint',
-    // The tile counts the offers of drivers waiting for an answer (G53).
-    useLive: useOffersLive,
+    // «Soʻrovim» while a request is open: where, when and the offers waiting (G53, G66).
+    useLive: useRequestLive,
     Screen: NewRequestFlow,
   },
   {
@@ -45,14 +49,21 @@ const ACTIONS: readonly StartAction[] = [
 export function StartPage() {
   // «Safar topish» is the main button of the main screen: the list does not repeat it (G25).
   // The tiles read the same bookings, requests and offers as the block above them (G53).
+  // At the bottom «Qayerdan / Qayerga» with «Safar topish»; the picks come back to it (G66, g66/1).
+  // Under the tiles «Haydovchi boʻling» opens the app of drivers.
   return (
     <PassengerData>
-      <StartFlow
-        actions={ACTIONS}
-        covered="find_trip"
-        home={(go) => <PassengerHome go={go} />}
-        tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
-      />
+      <HomeRouteProvider>
+        <StartFlow
+          actions={ACTIONS}
+          covered="find_trip"
+          home={(go) => <PassengerHome go={go} />}
+          tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+          after={<BecomeDriver />}
+          dock={(go) => <PassengerDock go={go} />}
+          sections={PASSENGER_SECTIONS}
+        />
+      </HomeRouteProvider>
     </PassengerData>
   );
 }

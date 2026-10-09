@@ -1,3 +1,4 @@
+import './square-tiles.css';
 import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { usePending } from '../driver/driver-context';
@@ -7,7 +8,6 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { useSettingsButton } from '../telegram/settings-button';
 import { HomeProfile } from '../home/home-profile';
 import { HomeTile } from './home-tile';
-import { MainTile } from './main-tile';
 import { HomeTop } from './home-top';
 import type { StartAction, TileLive } from './start-action';
 
@@ -18,9 +18,10 @@ type HomeScreenProps = {
   readonly top?: ReactNode;
   // Tiles of the app after the tiles of its actions: the profile, the last route, the wallet (G53).
   readonly tiles?: ReactNode;
-  // The main action as the big tile above the others (G62, mockup g62/1 screen 6).
-  readonly main?: StartAction;
-  readonly onOpen: (action: StartAction) => void;
+  // Square tiles under the white block at the bottom (G66, docs/121): the main screens of people.
+  readonly square?: boolean;
+  // A smart tile may open another section, like «Soʻrovim» its request (G66).
+  readonly onOpen: (action: StartAction, opens?: TileLive['opens']) => void;
   readonly onProfile: () => void;
 };
 
@@ -29,7 +30,7 @@ type HomeScreenProps = {
 // «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
 // (owner decision 02.10.2026, docs/94 F4).
 export function HomeScreen(props: HomeScreenProps) {
-  const { actions, notice, after, top, tiles, main, onOpen, onProfile } = props;
+  const { actions, notice, after, top, tiles, square = false, onOpen, onProfile } = props;
   useScreenView('home');
   useScreenBackground();
   useSettingsButton(onProfile);
@@ -41,16 +42,15 @@ export function HomeScreen(props: HomeScreenProps) {
       <div className="home-stack">
         <HomeProfile onOpen={onProfile} />
         {notice}
-        {main ? <MainAction action={main} onOpen={() => onOpen(main)} /> : null}
         <HomeTop>{top}</HomeTop>
-        <div className="home-tiles">
+        <div className={square ? 'home-tiles home-tiles-square' : 'home-tiles'}>
           {actions.map((action) => (
             <ActionTile
               key={action.id}
               action={action}
               waiting={pending && Boolean(action.waitsApproval)}
               pale={pending && Boolean(action.waitsApproval || action.paleUntilApproval)}
-              onOpen={() => onOpen(action)}
+              onOpen={(opens) => onOpen(action, opens)}
             />
           ))}
           {tiles}
@@ -66,7 +66,7 @@ type ActionTileProps = {
   readonly action: StartAction;
   readonly waiting: boolean;
   readonly pale: boolean;
-  readonly onOpen: () => void;
+  readonly onOpen: (opens?: TileLive['opens']) => void;
 };
 
 const NOTHING_LIVE = (): TileLive => ({});
@@ -82,19 +82,13 @@ function ActionTile({ action, waiting, pale, onOpen }: ActionTileProps) {
     <HomeTile
       icon={action.icon}
       tone={action.tone}
-      title={t(action.labelKey)}
+      title={live.title ?? t(action.labelKey)}
       hint={hint}
       pale={pale}
       {...(live.badge === undefined ? {} : { badge: live.badge })}
       {...(live.value === undefined ? {} : { value: live.value })}
       {...(live.urgent ? { urgent: true } : {})}
-      onClick={onOpen}
+      onClick={() => onOpen(live.opens)}
     />
   );
-}
-
-// The big tile of the main action, with the hint of its section (G62).
-function MainAction({ action, onOpen }: { readonly action: StartAction; readonly onOpen: () => void }) {
-  const { t } = useI18n();
-  return <MainTile icon={action.icon} title={t(action.labelKey)} hint={t(action.hintKey)} onClick={onOpen} />;
 }

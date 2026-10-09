@@ -22,5 +22,16 @@
   "check.text": "Odatda 30 daqiqagacha. Javob botga keladi.",
   "admin.activeTrips": "faol eʼlon",
   "unread": "{count} xabar",
-  "publishHint": "Yoʻlovchilar sizni oʻzi topadi"
+  "publishHint": "Yoʻlovchilar sizni oʻzi topadi",
+  "dock.here": "Joylashuvingiz boʻyicha aniqlandi",
+  "dock.trips": "Bugun {today}, ertaga {tomorrow} ta safar",
+  "dock.toDriver": "Qayerga ketyapsiz?",
+  "dock.swap": "Joylarni almashtirish",
+  "request.title": "Soʻrovim",
+  "request.when": "{to}, {date}",
+  "comeBack": "Qaytish",
+  "becomeDriver.title": "Haydovchi boʻling",
+  "becomeDriver.hint": "Mashinangiz bormi? Xarajatni boʻling",
+  "trip.when": "{day} {time}",
+  "trip.car": "{model}, {color}"
 }

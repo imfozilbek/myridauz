@@ -29,6 +29,7 @@ export const theme: BrandTheme = {
     successDeep: '#166534',
     successBright: '#34D399',
     accentSoft: '#FFFBEB',
+    accentDeep: '#92400E',
     neutralSoft: '#EEF2F6',
     neutralText: '#334155',
     neutralFace: '#CBD5E1',
@@ -59,6 +60,7 @@ export const theme: BrandTheme = {
       accentStrong: '#0F766E',
       accentText: '#0F766E',
       accentSoft: '#F0FDFA',
+      accentDeep: '#115E59',
     },
     admin: {
       brand: '#475569',

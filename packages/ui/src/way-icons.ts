@@ -1,4 +1,5 @@
 import {
+  ArrowUpDown,
   Calendar,
   ChevronDown,
   ChevronUp,
@@ -11,6 +12,7 @@ import {
   Signpost,
   User,
   Waypoints,
+  Undo2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -35,4 +37,7 @@ export const WAY_ICONS = {
   edit: PenLine,
   // The free seats of a trip (G63): one person, as on the approved mockup g63/1.
   seat: User,
+  // The ends change places on the main screen; «Qaytish», the way back (G66, mockup g66/1).
+  swap: ArrowUpDown,
+  comeBack: Undo2,
 } satisfies Record<string, LucideIcon>;

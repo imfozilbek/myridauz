@@ -26,7 +26,10 @@ export type StartAction = {
 // another hint, or a number of the day (the admin Mini App).
 export type TileLive = {
   readonly badge?: number;
+  // «Soʻrov qoldirish» becomes «Soʻrovim» and opens the open request (G66, docs/118).
+  readonly title?: string;
   readonly hint?: string;
+  readonly opens?: { readonly id: string; readonly launch?: Launch };
   readonly value?: number;
   // The number is work waiting for the team: it is red (G53).
   readonly urgent?: boolean;

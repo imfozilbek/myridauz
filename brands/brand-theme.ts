@@ -35,6 +35,8 @@ export type BrandColors = {
   readonly successBright: HexColor;
   // The light background of the second color, like the tile «Soʻrov qoldirish» (G53).
   readonly accentSoft: HexColor;
+  // The words under «Haydovchi boʻling» on the amber row of the main screen (mockup g66/1).
+  readonly accentDeep: HexColor;
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;

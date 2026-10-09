@@ -14,7 +14,24 @@ export const DRIVER_STEPS = ['car', 'color', 'plate', 'seats', 'photos', 'submit
 export type DriverStep = (typeof DRIVER_STEPS)[number];
 // The main screen (G25): a trip of the block, the question card, the last route, the main button.
 // The tiles of «Hamyon» and «Yordam» (G53).
-const HOME_TARGETS = ['item', 'card', 'last_route', 'main_button', 'retry', 'wallet', 'support'] as const;
+// The block «Qayerdan / Qayerga» at the bottom of the main screen: its ends and ⇅ (G66).
+const HOME_TARGETS = [
+  'item',
+  'card',
+  'last_route',
+  'main_button',
+  'retry',
+  'wallet',
+  'support',
+  'dock_from',
+  'dock_to',
+  'dock_swap',
+  // G66: the seat on the main screen, its chat and call, the way back, the row of drivers.
+  'trip_chat',
+  'trip_call',
+  'come_back',
+  'become_driver',
+] as const;
 // A new trip is one screen (G63, docs/118 path 6): the route on it, then published.
 export const TRIP_STEPS = ['route', 'published'] as const;
 export type TripStep = (typeof TRIP_STEPS)[number];

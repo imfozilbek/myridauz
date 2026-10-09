@@ -3,7 +3,7 @@ import { createContext, useContext, type ReactNode } from 'react';
 import { useApiClients } from '../context/api-clients';
 import type { TileLive } from '../flow/start-action';
 import { useLoad } from '../market/use-list';
-import { nextBookings, waitingOffers } from './home-items';
+import { nextBookings } from './home-items';
 
 type PassengerLists = readonly [readonly Booking[], readonly RideRequest[], readonly Offer[]];
 export type PassengerLoad = ReturnType<typeof useLoad<PassengerLists>>;
@@ -27,14 +27,9 @@ export function usePassengerData(): PassengerLoad {
   return load;
 }
 
-// «Soʻrov qoldirish»: the offers of drivers the passenger has not answered yet.
-export function useOffersLive(): TileLive {
-  const { value } = usePassengerData();
-  return value ? { badge: waitingOffers(value[1], value[2]).length } : {};
-}
-
-// «Mening safarlarim»: the seats that are asked or confirmed now.
+// «Mening safarlarim»: the seats asked or confirmed now, but the nearest one: its card is right above
+// (G66, mockup g66/1 phone 3).
 export function useBookingsLive(): TileLive {
   const { value } = usePassengerData();
-  return value ? { badge: nextBookings(value[0], Infinity).length } : {};
+  return value ? { badge: Math.max(0, nextBookings(value[0], Infinity).length - 1) } : {};
 }

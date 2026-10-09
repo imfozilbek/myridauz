@@ -7,7 +7,14 @@ import { haptic } from '../telegram/feedback';
 import { useShareTrip } from './use-share-trip';
 
 // «Mashinaga chiqdim» the day before the trip is a mistake (docs/89 P7): from its day on, by Toshkent.
-const tripDayCame = (departAt: number) => Date.now() >= tashkentDayStart(tashkentDate(departAt));
+// The same step stands on the booking and as the main button of the main screen (G66).
+export function passengerStep(booking: Booking, now: number): 'boarded' | 'arrived' | null {
+  const onTheDay =
+    booking.status === 'confirmed' && now >= tashkentDayStart(tashkentDate(booking.trip.departAt));
+  if (!onTheDay) return null;
+  if (booking.boardedAt === null) return 'boarded';
+  return booking.arrivedAt === null ? 'arrived' : null;
+}
 
 // The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
 // has just told («Mashinaga chiqdim», «Yetib keldim») shows before the screen has it.
@@ -45,14 +52,7 @@ export function useTripSteps(booking: Booking, onTold: (booking: Booking) => voi
       onTold(await chat[name](booking.id));
       track({ name, screen: 'bookings.passenger' });
     }, 'told');
-  const onTheDay = booking.status === 'confirmed' && tripDayCame(booking.trip.departAt);
-  const next = !onTheDay
-    ? null
-    : booking.boardedAt === null
-      ? ('boarded' as const)
-      : booking.arrivedAt === null
-        ? ('arrived' as const)
-        : null;
+  const next = passengerStep(booking, Date.now());
   return {
     failure,
     note,
