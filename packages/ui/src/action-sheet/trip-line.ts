@@ -1,6 +1,6 @@
-import { tashkentDate, type Booking, type Location } from '@platform/contracts';
+import { tashkentDate, type Booking, type ChatAbout, type Location } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { useShortDay } from '../market/when';
+import { noonOf, useShortDay } from '../market/when';
 import type { PlaceDirectory } from '../places/directory';
 import { usePlaceNames } from '../places/place-names';
 import { useNameText } from '../way/way-end';
@@ -26,6 +26,24 @@ export function useSheetWords(directory: PlaceDirectory) {
     when,
     line: (way: Way) =>
       t('sheet.trip', { when: when(way.departAt), from: place(way.from), to: place(way.to) }),
+    // The trip of a chat: its booking, its offer, or the day of its request (G64).
+    about: ({ booking, offer, request }: ChatAbout) => {
+      const way = booking?.trip ?? offer;
+      if (way) return t('sheet.trip', { when: when(way.departAt), from: place(way.from), to: place(way.to) });
+      if (!request) return null;
+      const at = noonOf(request.date).getTime();
+      return t('sheet.trip', { when: day(at), from: place(request.from), to: place(request.to) });
+    },
+    // Where the other one waits at the meeting (mockup g68/8): «Grand yaqinida kutmoqda».
+    waits: ({ pitak, pickup }: Booking) => {
+      if (pitak) return t('sheet.meet.waitsIn', { place: pitak.name });
+      const name = pickup?.point ? pickup.name : null;
+      if (!name) return t('sheet.meet.waitsHere');
+      const near = name.step === 'landmark' || name.step === 'settlement';
+      return near
+        ? t('sheet.meet.waits', { place: nameText(name, '') })
+        : t('sheet.meet.waitsIn', { place: name.name });
+    },
     // Where the driver picks the passenger up: the pitak, the point, or the area before the answer.
     pickup: ({ pitak, pickup }: Booking) => {
       if (pitak) return pitak.name;

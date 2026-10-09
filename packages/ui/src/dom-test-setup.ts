@@ -1,5 +1,6 @@
 import { configure } from '@testing-library/react';
 import { beforeEach, vi } from 'vitest';
+import { forgetSheets } from './action-sheet/action-queue';
 import { forgetAllLists } from './screen/list-memory';
 
 // The first screen of a test file loads TelegramUI; in the full run with coverage on a busy
@@ -12,6 +13,7 @@ configure({ asyncUtilTimeout: ASYNC_WAIT_MS });
 const TEST_NOW = Date.parse('2026-10-01T12:00:00Z');
 beforeEach(() => {
   forgetAllLists();
+  forgetSheets();
   vi.useFakeTimers({ toFake: ['Date'], shouldAdvanceTime: true });
   vi.setSystemTime(TEST_NOW);
 });

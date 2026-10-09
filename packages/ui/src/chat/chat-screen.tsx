@@ -29,6 +29,8 @@ type Props = {
   readonly title?: string;
   // «Qoʻngʻiroq» of the booking page: the call starts as soon as the chat allows it (G60).
   readonly ring?: boolean | undefined;
+  // «Javob berish» of the sheet of a call: the ringing call is taken as soon as it shows (G68).
+  readonly answer?: boolean | undefined;
   // The line of the trip opens its booking (mockup g60/2); a chat opened by a ring has none.
   readonly onTrip?: (() => void) | undefined;
   // «Jasurning yangi safarlari» under a closed chat (mockup g60/6).
@@ -47,7 +49,7 @@ export function ChatScreen(props: Props) {
   );
 }
 
-function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Props) {
+function ChatRoom({ chatKey, title, ring = false, answer = false, onTrip, onBack, onAgain }: Props) {
   useScreenView('chat');
   useScreenBackground('white');
   const { t } = useI18n();
@@ -55,6 +57,8 @@ function ChatRoom({ chatKey, title, ring = false, onTrip, onBack, onAgain }: Pro
   const { messages, loaded, state, warning, canWrite, delivered, send, retry, calling } = useChat(chatKey);
   const controls = useCall(chatKey, calling);
   useRingOnce(ring && calling.canCall && !calling.call, controls.ring);
+  const rings = calling.call?.status === 'ringing' && calling.call.caller === 'other';
+  useRingOnce(answer && rings, controls.accept);
   // Who is on the other side and which trip: the chat opened by a ring has no title (G54).
   const { chat: chats } = useApiClients();
   const aboutLoad = useLoad(() => chats.about(chatKey));

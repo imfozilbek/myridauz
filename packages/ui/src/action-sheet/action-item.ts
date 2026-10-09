@@ -22,7 +22,7 @@ export type ActionItem = {
   readonly key: string;
   readonly kind: ActionKind;
   readonly face: { readonly id: PersonId; readonly name: string; readonly hasAvatar: boolean };
-  readonly badge: IconName;
+  readonly badge?: IconName;
   readonly kicker: string;
   readonly title: string;
   readonly sub?: ReactNode;
@@ -42,6 +42,8 @@ export type ActionItem = {
   readonly later?: string | null;
   // Grey words under the buttons: «Raqamlar yashirin».
   readonly note?: string;
+  // Put aside in any way (an answer, «Keyinroq», a tap beside): an answer once seen stays away.
+  readonly onAside?: () => void;
 };
 
 export const itemKey = (kind: ActionKind, id: string) => `${kind}:${id}`;

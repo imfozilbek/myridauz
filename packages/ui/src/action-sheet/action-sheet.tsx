@@ -7,6 +7,7 @@ import { Icon } from '../icons';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { useSheetShown } from '../telegram/sheet-shown';
 import { ActionCard } from './action-card';
+import type { ActionItem } from './action-item';
 import { pinFirst, putAside, useActionQueue } from './action-queue';
 
 // Long enough to read «Madina tasdiqlandi · 20 000 komissiya» once.
@@ -33,16 +34,17 @@ export function ActionSheet() {
     if (!item) setDone(0);
   }, [item]);
   const total = done + queue.length;
-  const leave = (key: string) => {
+  const leave = (gone: ActionItem) => {
     setDone((count) => count + 1);
-    putAside(key);
+    gone.onAside?.();
+    putAside(gone.key);
   };
   return (
     <>
       <Modal
         overlayComponent={<SheetOverlay />}
         open={item !== undefined}
-        onOpenChange={(open) => (open || !item ? undefined : leave(item.key))}
+        onOpenChange={(open) => (open || !item ? undefined : leave(item))}
       >
         {item ? (
           <ActionCard
@@ -51,10 +53,10 @@ export function ActionSheet() {
             counter={total > 1 ? t('sheet.counter', { index: String(done + 1), total: String(total) }) : null}
             laterLabel={t('sheet.later')}
             onDone={(words) => {
-              leave(item.key);
+              leave(item);
               if (words) setPlaque(words);
             }}
-            onLater={() => leave(item.key)}
+            onLater={() => leave(item)}
           />
         ) : null}
       </Modal>

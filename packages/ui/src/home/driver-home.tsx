@@ -19,7 +19,7 @@ export function DriverHome({ go }: { readonly go: HomeGo }) {
     <>
       <Screen onRefresh={load.refresh} />
       <Now go={go} load={load} />
-      <DriverActions />
+      <DriverActions go={go} />
     </>
   );
 }

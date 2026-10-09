@@ -1,50 +1,50 @@
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { holdLiveCall } from '../call/live-call';
-import { FeedCallContext } from '../feed/feed-context';
+import { renderInShell } from '../test-shell';
 import { ChatLink } from './chat-link';
+import { useOpenChat } from './open-chat';
 
-// The chat screen itself is tested apart: here only which chat opens.
+// The chat screen itself is tested apart: here only which chat opens and how. A ringing call comes
+// as a sheet now (G68): action-sheet/call-sheet.test.tsx.
 vi.mock('./chat-screen', () => ({
-  ChatScreen: ({ chatKey }: { readonly chatKey: string }) => <p>chat {chatKey}</p>,
+  ChatScreen: ({ chatKey, ring }: { readonly chatKey: string; readonly ring?: boolean }) => (
+    <p>{`chat ${chatKey}${ring ? ' ring' : ''}`}</p>
+  ),
 }));
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.history.replaceState(null, '', '/');
+});
 
-const FIRST = 'b00000000-0000-0000-0000-000000000001';
-const SECOND = 'b00000000-0000-0000-0000-000000000002';
+const KEY = 'b00000000-0000-4000-8000-000000000001';
 
-function setup() {
-  let ring: (chat: string) => void = () => undefined;
-  const subscribe = (listener: (chat: string) => void) => {
-    ring = listener;
-    return () => undefined;
-  };
-  render(
-    <FeedCallContext.Provider value={subscribe}>
-      <ChatLink>
-        <p>home</p>
-      </ChatLink>
-    </FeedCallContext.Provider>,
+function Home() {
+  const open = useOpenChat();
+  return (
+    <button type="button" onClick={() => open(KEY, 'ring')}>
+      call
+    </button>
   );
-  return (chat: string) => act(() => ring(chat));
 }
 
-describe('a ringing call opens its chat (G54, docs/115)', () => {
-  it('opens the chat of the call over any screen, and the next call over the open chat', () => {
-    const ring = setup();
-    expect(screen.getByText('home')).toBeTruthy();
-    ring(FIRST);
-    expect(screen.getByText(`chat ${FIRST}`)).toBeTruthy();
-    ring(SECOND);
-    expect(screen.getByText(`chat ${SECOND}`)).toBeTruthy();
+describe('the chat over any screen (docs/07, G68)', () => {
+  it('a bot link opens its chat at once', () => {
+    window.history.replaceState(null, '', `/?chat=${KEY}`);
+    renderInShell(
+      <ChatLink>
+        <p>home</p>
+      </ChatLink>,
+    );
+    expect(screen.getByText(`chat ${KEY}`)).toBeTruthy();
   });
 
-  it('keeps a live call on the screen: the other caller goes through the bot', () => {
-    const ring = setup();
-    ring(FIRST);
-    const release = holdLiveCall();
-    ring(SECOND);
-    expect(screen.getByText(`chat ${FIRST}`)).toBeTruthy();
-    release();
+  it('«Qoʻngʻiroq» of a sheet opens the chat and rings', () => {
+    renderInShell(
+      <ChatLink>
+        <Home />
+      </ChatLink>,
+    );
+    act(() => void fireEvent.click(screen.getByText('call')));
+    expect(screen.getByText(`chat ${KEY} ring`)).toBeTruthy();
   });
 });

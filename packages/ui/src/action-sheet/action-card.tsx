@@ -10,6 +10,8 @@ import type { ActionItem, SheetAction } from './action-item';
 import './action-sheet.css';
 
 const ICON = 20;
+// The face of a ringing call is bigger, without a badge (mockup g68/8 «Qoʻngʻiroq»).
+const CALL_FACE = 94;
 
 type Props = {
   readonly item: ActionItem;
@@ -38,7 +40,7 @@ export function ActionCard({ item, counter, laterLabel, onDone, onLater }: Props
   return (
     <div className={item.call ? 'action-sheet action-calling' : 'action-sheet'} style={brandVars(colors)}>
       {counter ? <span className="action-count">{counter}</span> : null}
-      <SheetFace {...item.face} badge={item.badge} />
+      <SheetFace {...item.face} badge={item.badge} {...(item.call ? { size: CALL_FACE } : {})} />
       <span className="action-kicker">{item.kicker}</span>
       <b className="action-title">{item.title}</b>
       {item.sub ? <span className="action-sub">{item.sub}</span> : null}

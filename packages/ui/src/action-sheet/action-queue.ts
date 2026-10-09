@@ -54,3 +54,10 @@ export function pinFirst(id: string): void {
   pinned = id;
   changed();
 }
+
+// Tests start from a clean session.
+export function forgetSheets(): void {
+  aside.clear();
+  pinned = null;
+  changed();
+}

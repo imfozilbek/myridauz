@@ -10,13 +10,15 @@ afterEach(cleanup);
 
 const NOW = Date.parse('2026-10-01T05:00:00Z');
 const WORDS = 'Uydan olib ketaman, 07:50 da Grand oldida boʻlaman.';
+// Confirmed long ago: no «Joyingiz tasdiqlandi» before the message.
+const seat = { ...confirmed, confirmedAt: NOW - 3 * 24 * 3_600_000 };
 
 function passenger(key: string) {
   vi.setSystemTime(NOW);
   const answer = vi.fn(async () => undefined);
   const openChat = vi.fn();
   renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
-    bookings: async () => [confirmed],
+    bookings: async () => [seat],
     sheet: true,
     openChat,
     chat: {

@@ -39,7 +39,8 @@
   "call.hidden": "Raqamlar yashirin",
   "meet.kicker": "Uchrashuv",
   "meet.came": "{name} keldi",
-  "meet.waits": "{place} yaqinida kutmoqda",
+  "meet.waits": "{place} kutmoqda",
+  "meet.waitsIn": "{place}da kutmoqda",
   "meet.waitsHere": "Uchrashuv joyida kutmoqda",
   "meet.five": "5 daqiqada",
   "meet.ten": "10 daqiqada",
@@ -53,7 +54,6 @@
   "answer.offer": "Taklif qabul qilindi",
   "answer.offerSub": "Taklifingizga rozi boʻldi",
   "answer.seat": "Joyingiz tasdiqlandi",
-  "answer.seatSub": "{name} sizni olib ketadi",
   "answer.open": "Safarni ochish",
   "answer.ok": "Yaxshi"
 }
