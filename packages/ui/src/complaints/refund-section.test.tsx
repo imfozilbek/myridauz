@@ -39,7 +39,7 @@ function open(
   const clients = testClients({
     feedback: { queue: async () => [complaint], complaint: async () => complaint, answerRefund },
     moderation: {
-      me: async () => ({ firstName: 'Ali', role }),
+      me: async () => ({ id: null, firstName: 'Ali', hasAvatar: false, role }),
       blocks: async () => ({ active: null, entries: [] }),
     },
   });

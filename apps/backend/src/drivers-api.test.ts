@@ -91,7 +91,11 @@ describe('drivers API (docs/04)', () => {
 
   it('tells a team member their name and role, nobody else (G53)', async () => {
     const owner = await call('/admin/me', OWNER, { app: 'admin' });
-    expect(await owner.json()).toMatchObject({ role: 'owner' });
+    // The card of the member shows the own photo (mockup g67/1): the public id, never the Telegram ID.
+    expect(await owner.json()).toMatchObject({ role: 'owner', id: null, hasAvatar: false });
+    await registerUser(OWNER);
+    const registered = await call('/admin/me', OWNER, { app: 'admin' });
+    expect(await registered.json()).toMatchObject({ id: await pid(OWNER), hasAvatar: false });
     expect((await call('/admin/me', STRANGER, { app: 'passenger' })).status).toBe(403);
   });
 

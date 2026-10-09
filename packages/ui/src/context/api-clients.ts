@@ -16,6 +16,7 @@ import type {
   SoundsClient,
   StatsClient,
   SubscriptionsClient,
+  TeamClient,
   WalletClient,
 } from '@platform/api-client';
 import { createContext, useContext } from 'react';
@@ -40,6 +41,7 @@ export type ApiClients = {
   readonly company: CompanyClient;
   readonly sounds: SoundsClient;
   readonly limits: LimitsClient;
+  readonly team: TeamClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

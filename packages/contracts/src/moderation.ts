@@ -34,7 +34,14 @@ export type TeamRole = (typeof TEAM_ROLES)[number];
 
 // Who opened the admin Mini App: the name and the role on its main screen (G53).
 export const ADMIN_ME_PATH = '/admin/me';
-export const teamMeSchema = z.object({ firstName: z.string(), role: z.enum(TEAM_ROLES) });
+// The card shows the own photo (mockup g67/1): the public id, never the Telegram ID (docs/65 A3);
+// null for an owner who never registered in the apps of people.
+export const teamMeSchema = z.object({
+  id: personIdSchema.nullable(),
+  firstName: z.string(),
+  hasAvatar: z.boolean(),
+  role: z.enum(TEAM_ROLES),
+});
 export type TeamMe = z.infer<typeof teamMeSchema>;
 
 export const applicationSummarySchema = z.object({

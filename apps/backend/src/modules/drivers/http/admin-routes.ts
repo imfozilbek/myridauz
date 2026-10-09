@@ -27,11 +27,18 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
       )
       // The name and the role of the team member on the main screen (G53).
-      .get(ADMIN_ME_PATH, (context) => {
+      .get(ADMIN_ME_PATH, async (context) => {
         const { user, teamRole } = context.get('session');
-        return teamRole
-          ? context.json({ firstName: user.firstName, role: teamRole })
-          : fail(context, 'auth.not_admin');
+        if (!teamRole) return fail(context, 'auth.not_admin');
+        const person = await deps(context.env).people.find(user.id);
+        const id = person?.publicId ?? null;
+        const hasAvatar = Boolean(person?.avatarKey);
+        return context.json({
+          id,
+          firstName: person?.firstName ?? user.firstName,
+          hasAvatar,
+          role: teamRole,
+        });
       })
       .get(ADMIN_APPLICATIONS_PATH, async (context) =>
         context.json({ applications: await queue(deps(context.env)) }),

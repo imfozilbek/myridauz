@@ -74,4 +74,18 @@ export const otherClients = (overrides: Overrides) => ({
   sounds: { current: NOT_USED, state: NOT_USED, pick: NOT_USED, ...overrides.sounds },
   // The brand defaults: the owner changed nothing unless a test says so (G75).
   limits: { current: async () => ({ values: {} }), state: NOT_USED, change: NOT_USED, ...overrides.limits },
+  team: {
+    navbat: NOT_USED,
+    take: async () => undefined,
+    attention: NOT_USED,
+    work: NOT_USED,
+    journal: NOT_USED,
+    members: NOT_USED,
+    add: NOT_USED,
+    person: NOT_USED,
+    channelHealth: NOT_USED,
+    avatar: NOT_USED,
+    remove: NOT_USED,
+    ...overrides.team,
+  },
 });

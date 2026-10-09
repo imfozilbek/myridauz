@@ -17,14 +17,8 @@ export { NewTripFlow } from './market/new-trip-flow';
 export { ManagementScreen } from './pricing/management-screen';
 export { StatsScreen } from './stats/stats-screen';
 export { TeamTripsScreen } from './market/team-trips-screen';
-export {
-  AdminTiles,
-  MANAGEMENT_SECTION,
-  STATS_SECTION,
-  TRIPS_SECTION,
-  useApplicationsLive,
-  useComplaintsLive,
-} from './home/admin-tiles';
+export { MANAGEMENT_SECTION, STATS_SECTION, TRIPS_SECTION } from './team/team-sections';
+export { TeamHome } from './team/team-home';
 export { linkedStats } from './stats/stats-screen';
 export { RequestsFlow } from './requests/requests-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';

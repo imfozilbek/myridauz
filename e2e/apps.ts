@@ -22,7 +22,8 @@ export const MINI_APPS = [
     action: t('home.publish'),
     mainButton: t('home.publish'),
   },
-  { name: 'admin', port: 4103, welcome: null, action: t('common.admin.applications'), mainButton: null },
+  // G75: the owner has «Boshqaruv» on the main screen of the team (mockup g67/1).
+  { name: 'admin', port: 4103, welcome: null, action: t('common.admin.management'), mainButton: null },
 ] as const;
 
 export const TEXT = {
@@ -88,6 +89,8 @@ export const TEXT = {
   decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;
+// The applications of drivers, as a button of the admin bot opens them (docs/50).
+export const ADMIN_APPLICATIONS = `${appUrl(MINI_APPS[2].port)}?open=applications`;
 
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;

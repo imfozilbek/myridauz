@@ -1,4 +1,4 @@
-import type { AppLink, Location } from '@platform/contracts';
+import type { AppLink, Location, NavbatKind } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
@@ -43,6 +43,11 @@ export type Launch = {
   readonly route?: { readonly from: Location; readonly to: Location };
   // «Oxirgi yoʻnalish»: the answers of the last trip, only the day is asked (G40, docs/106 K3).
   readonly again?: TripAgain;
+  // A case of «Navbat» opened from the main screen of the team, in the filter it was seen (G75).
+  readonly navbat?: NavbatOpen;
 };
+// «Hammasi» or one kind of cases (docs/120).
+export type NavbatFilter = 'all' | NavbatKind;
+type NavbatOpen = { readonly filter: NavbatFilter; readonly kind: NavbatKind; readonly id: string };
 // The block of the main screen opens the section of an action with what to show first.
 export type HomeGo = (actionId: string, launch?: Launch) => void;

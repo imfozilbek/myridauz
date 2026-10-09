@@ -87,6 +87,7 @@ export default defineConfig({
         'look-sizes-screenshots.spec.ts',
         'g65-sizes-screenshots.spec.ts',
         'g66-pixel.spec.ts',
+        'g67-pixel.spec.ts',
         'g66-sizes-screenshots.spec.ts',
         'g68-pixel.spec.ts',
       ],

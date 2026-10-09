@@ -60,8 +60,8 @@ test('admin: the complaints queue, the chat and the decision', async ({ page }) 
   await mockApi(page, 'active');
   await mockFeedback(page);
   const shot = shooter(page, 'complaints');
-  await open(page, telegramUrl(appUrl(ADMIN.port)));
-  await page.getByText(t('common.admin.complaints'), { exact: true }).click();
+  // A button of the admin bot opens the complaints (docs/17); «Navbat» opens one case (G75).
+  await open(page, telegramUrl(`${appUrl(ADMIN.port)}?open=complaints`));
   await expect(page.getByText(t('complaints.high'))).toBeVisible();
   await shot('1-queue');
   await page.getByText(t('complaints.reason.harassment')).click();

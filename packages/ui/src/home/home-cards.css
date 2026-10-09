@@ -88,11 +88,6 @@ button.home-card:active {
   gap: 12px;
 }
 
-/* A row across the grid of tiles: «Boshqaruv» under the numbers of the admin. */
-.home-tiles-row {
-  grid-column: 1 / -1;
-}
-
 /* A TelegramUI section among the cards (the offer of the home screen, the application) is a card too. */
 .home-stack section {
   margin: 0;

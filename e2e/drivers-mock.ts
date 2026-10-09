@@ -60,7 +60,7 @@ export async function mockDrivers(page: Page, start: DriverStart) {
   });
   // The team member on the main screen of the admin Mini App (G53).
   await page.route('**/api/admin/me', (route) =>
-    route.fulfill({ json: { firstName: 'Fozil', role: 'owner' } }),
+    route.fulfill({ json: { id: 'f'.repeat(32), firstName: 'Fozil', hasAvatar: false, role: 'owner' } }),
   );
   await page.route('**/api/admin/applications', (route) =>
     route.fulfill({ json: { applications: [summary] } }),

@@ -1,5 +1,4 @@
 import {
-  AdminTiles,
   ApplicationsScreen,
   ComplaintsScreen,
   linkedApplication,
@@ -10,22 +9,22 @@ import {
   STATS_SECTION,
   StartFlow,
   StatsScreen,
+  TeamHome,
   TeamTripsScreen,
   TRIPS_SECTION,
-  useApplicationsLive,
-  useComplaintsLive,
   type StartAction,
 } from '@platform/ui';
 
-// The work of the team as number tiles: how many applications and complaints wait (G53).
-const ACTIONS: readonly StartAction[] = [
+const NO_ACTIONS: readonly StartAction[] = [];
+
+// What the main screen of the team and the links of the admin bot open (G53, G75, docs/120).
+const SECTIONS: readonly StartAction[] = [
   {
     id: 'applications',
     icon: 'applications',
     tone: 'brand',
     labelKey: 'common.admin.applications',
     hintKey: 'common.admin.applicationsHint',
-    useLive: useApplicationsLive,
     Screen: ApplicationsScreen,
   },
   {
@@ -34,13 +33,8 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'common.admin.complaints',
     hintKey: 'common.admin.complaintsHint',
-    useLive: useComplaintsLive,
     Screen: ComplaintsScreen,
   },
-];
-
-// The numbers of the day open their screens; «Boshqaruv» keeps prices, wallets and the rest (G53).
-const SECTIONS: readonly StartAction[] = [
   {
     id: STATS_SECTION,
     icon: 'statistics',
@@ -75,13 +69,15 @@ const opened = () => {
   return linkedApplication() === null ? null : 'applications';
 };
 
+// The main screen of the team: «Diqqat», «Navbat» and «Boshqaruv» of the owner, «Navbat» and the
+// own numbers of a moderator (mockup g67/1).
 export function StartPage() {
   const open = opened();
   return (
     <StartFlow
-      actions={ACTIONS}
+      actions={NO_ACTIONS}
       sections={SECTIONS}
-      tiles={(go) => <AdminTiles go={go} />}
+      home={(go) => <TeamHome go={go} />}
       {...(open === null ? {} : { opened: open })}
     />
   );

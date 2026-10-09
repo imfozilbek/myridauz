@@ -1,14 +1,14 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { ADMIN_APPLICATIONS, appUrl, MINI_APPS, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
 import { fromIfAsked, openOwnTrip, searchRoute } from './market';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const [PASSENGER, DRIVER, ADMIN] = MINI_APPS;
+const [PASSENGER, DRIVER] = MINI_APPS;
 const DAY = 86_400_000;
 const shot = async (page: Page, name: string) => {
   await page.mouse.move(0, 0);
@@ -103,8 +103,8 @@ test('moderation: after a decision the next application opens at once (S9)', asy
     decided = true;
     return route.fulfill({ json: { ...summary, status: 'approved' } });
   });
-  await open(page, ADMIN.port);
-  await page.getByText(ADMIN.action).click();
+  await mockTelegram(page);
+  await page.goto(telegramUrl(ADMIN_APPLICATIONS));
   await page.getByText('Jasur').click();
   await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   await page.locator('#tg-main-button', { hasText: TEXT.plateMatches }).click();
