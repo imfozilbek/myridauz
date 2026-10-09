@@ -23,7 +23,7 @@ export const handleAfterSent = (handler: AfterSentHandler<Bindings>) => void (af
 // A ring answers its card: the card's id is found now, when the card is surely sent before it.
 async function withReply(env: Bindings, job: NotificationJob): Promise<NotificationJob> {
   if (!job.replyCard) return job;
-  const card = await cardsOf(env).find(job.bot, Number(job.chatId), job.replyCard);
+  const card = await cardsOf(env).find(job.bot, job.chatId, job.replyCard);
   return card ? { ...job, replyTo: card.messageId } : job;
 }
 

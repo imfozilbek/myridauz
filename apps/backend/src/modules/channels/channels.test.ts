@@ -1,33 +1,8 @@
-import type { Trip } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
-import type { NotificationJob } from '../notifications';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
-import type { ChannelsDeps } from './application/ports';
 import { channelsOf } from './domain/route-channels';
-import { createMemoryChannelPosts } from './infrastructure/channel-posts';
-import { channelPost } from './infrastructure/post-text';
+import { BEFORE, setup } from './channels-kit';
 import { CHANNELS, PLACES, TRIP } from './channels-fixtures';
-
-// Before the trip leaves (TRIP departs 2.10.2026 08:30 in Tashkent).
-const BEFORE = Date.parse('2026-10-01T00:00:00Z');
-
-function setup(trip: Trip = TRIP, enabled = true) {
-  let now = trip;
-  let clock = BEFORE;
-  const sent: NotificationJob[] = [];
-  const deps: ChannelsDeps = {
-    enabled,
-    channels: async () => CHANNELS,
-    places: async () => PLACES,
-    trip: async (id) => (id === now.id ? now : undefined),
-    posts: createMemoryChannelPosts(),
-    render: channelPost('test_bot'),
-    send: async (jobs) => void sent.push(...jobs),
-    now: () => clock,
-  };
-  const change = (next: Partial<Trip>) => void (now = { ...now, ...next });
-  return { deps, sent, change, later: (ms: number) => void (clock = ms) };
-}
 
 describe('the channels of a trip (docs/15)', () => {
   it('posts to the channels of both regions, never to Toshkent shahri', () => {
@@ -86,9 +61,12 @@ describe('posting and editing through the queue (docs/15)', () => {
     change({ seatsLeft: 0, status: 'full' });
     await refreshPosts(deps, 'trip-1');
     expect(sent[1]).toMatchObject({ chatId: '@ch_buxoro', edit: 41 });
-    // Only the subscription stays: "Joy band qilish" is gone.
+    // «Joy band qilish» is gone, «Shunga oʻxshash safarlar» takes its place (G68, mockup g68/5).
     expect(JSON.stringify(sent[1]?.markup)).not.toContain('startapp=trip_');
+    expect(JSON.stringify(sent[1]?.markup)).toContain('startapp=find_');
     expect(sent[1]?.html).toBe(true);
+    // A post comes without sound: the board of the day is the one sound of a channel (docs/122).
+    expect(sent[0]?.silent).toBe(true);
   });
 
   it('marks the links of each channel with that channel (G55, docs/116)', async () => {
@@ -106,7 +84,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     change({ seatsLeft: 2 });
     await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.text).toContain('💺 <b>2</b> ta boʻsh joy');
+    expect(sent[0]?.text).toContain('🟩🟩⬜⬜ 2 ta boʻsh joy');
   });
 
   it('posts nothing while autoposting is off, nor a trip that is not active', async () => {
@@ -128,7 +106,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     await closeDeparted(deps);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);
-    expect(sent[0]?.text.startsWith('<b>🚗 Safar boshlandi</b>')).toBe(true);
+    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
     expect(JSON.stringify(sent[0]?.markup)).not.toContain('startapp=trip_');
   });
 
@@ -137,7 +115,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
     change({ departedAt: BEFORE });
     await closePosts(deps, 'trip-1');
-    expect(sent[0]?.text.startsWith('<b>🚗 Safar boshlandi</b>')).toBe(true);
+    expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);
     later(TRIP.departAt);
     await closeDeparted(deps);
     expect(sent).toHaveLength(1);

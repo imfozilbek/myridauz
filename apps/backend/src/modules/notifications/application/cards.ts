@@ -1,12 +1,14 @@
 import type { NotificationJob } from './job';
 
 type BotName = NotificationJob['bot'];
+// A person, or a channel as «@username»: the board of the day (G68, docs/122).
+export type ChatId = number | string;
 
 // A live card (G68, docs/122 rule 1): one message per thing a person follows, edited without sound
 // when the thing changes. The text has HTML marks: bold, quote, monospace.
 export type Card = {
   readonly bot: BotName;
-  readonly chatId: number;
+  readonly chatId: ChatId;
   // What the card is about: «trip:<booking id>», «request:<id>», «news:<route>:<day>».
   readonly key: string;
   readonly text: string;
@@ -23,12 +25,16 @@ export type Card = {
   readonly editOnly?: boolean;
   // Another person or the clock changed it: the open Mini App refreshes too (docs/64).
   readonly refresh?: boolean;
+  // A link whose big picture shows above the text: the board of the day (docs/122).
+  readonly preview?: string;
+  // Sent once and never edited: a summary of the day or the week (docs/122).
+  readonly once?: boolean;
 };
 
 // A short news under its card, with sound when the person has something to do (rule 2).
 export type Ring = {
   readonly bot: BotName;
-  readonly chatId: number;
+  readonly chatId: ChatId;
   readonly text: string;
   readonly markup?: object;
   // The card it answers; none: the ring stands alone.
@@ -40,10 +46,10 @@ export type Ring = {
 export type CardRow = { readonly messageId: number; readonly hash: string; readonly pinned: boolean };
 
 export type CardStore = {
-  readonly find: (bot: BotName, chatId: number, key: string) => Promise<CardRow | null>;
-  readonly save: (bot: BotName, chatId: number, key: string, row: CardRow, now: number) => Promise<void>;
+  readonly find: (bot: BotName, chatId: ChatId, key: string) => Promise<CardRow | null>;
+  readonly save: (bot: BotName, chatId: ChatId, key: string, row: CardRow, now: number) => Promise<void>;
   // The first message of a card takes its place; false: another one took it a moment before.
-  readonly claim: (bot: BotName, chatId: number, key: string, row: CardRow, now: number) => Promise<boolean>;
+  readonly claim: (bot: BotName, chatId: ChatId, key: string, row: CardRow, now: number) => Promise<boolean>;
 };
 
 const FNV_OFFSET = 0x811c9dc5;
@@ -64,7 +70,7 @@ function hashOf(card: Card): string {
 export async function cardJob(store: CardStore, card: Card): Promise<NotificationJob | null> {
   const hash = hashOf(card);
   const row = await store.find(card.bot, card.chatId, card.key);
-  if (card.editOnly && !row) return null;
+  if ((card.editOnly && !row) || (card.once && row)) return null;
   const pinned = card.pin === undefined || card.pin === row?.pinned;
   if (row && row.hash === hash && pinned) return null;
   return {
@@ -74,6 +80,7 @@ export async function cardJob(store: CardStore, card: Card): Promise<Notificatio
     html: true,
     ...(row || !card.loud ? { silent: true } : {}),
     ...(card.markup ? { markup: card.markup } : {}),
+    ...(card.preview ? { preview: card.preview } : {}),
     ...(row ? { edit: row.messageId } : {}),
     ...(!row && card.answers ? { replyCard: card.answers } : {}),
     after: {

@@ -1,6 +1,6 @@
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
-import { closeDepartedPosts } from './module-events';
+import { closeDepartedPosts, showChannelBoards } from './module-events';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
@@ -23,9 +23,9 @@ import { TICK_MINUTES } from './shared/cron/tick';
 const DAILY_HOUR_UTC = 0;
 
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
-// forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left,
-// reminds the team of waiting driver applications and keeps the minutes of «Navbat» fresh (docs/15,
-// docs/35, docs/122, G10, G34, G63, G68).
+// forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
+// boards of the day, reminds the team of waiting driver applications and keeps the minutes of
+// «Navbat» fresh (docs/15, docs/35, docs/122, G10, G34, G63, G68).
 const everyTick = (env: Bindings, now: number): Job[] => [
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
@@ -33,6 +33,7 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['sendReminders', () => sendReminders(env, now)],
   ['watchLateDepartures', () => watchLateDepartures(env, now)],
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
+  ['showChannelBoards', () => showChannelBoards(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
   ['showTeamQueue', () => showQueue(env)],
 ];

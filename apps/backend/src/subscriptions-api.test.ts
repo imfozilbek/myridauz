@@ -36,6 +36,10 @@ const trip = (departAt: number) =>
     comment: '',
   });
 const sentTo = (chatId: number | string) => telegram.filter((item) => item.body.chat_id === chatId);
+// The posts of trips in a channel, not its board of the day (G68).
+const BOARD = '<b>📋';
+const isPost = (item: (typeof telegram)[number]) =>
+  typeof item.body.text === 'string' && !item.body.text.startsWith(BOARD);
 
 describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
   it('tells a subscribed passenger about a new trip and posts it to the channel of its region', async () => {
@@ -58,7 +62,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     expect(String(told?.body.text)).toContain('Bugungi yangi safarlar');
     expect(String(told?.body.text)).toContain('Ali · ');
     expect(JSON.stringify(told?.body.reply_markup)).toContain('?find=1726273_1718401_');
-    const [post] = sentTo(SAMARQAND);
+    const [post] = sentTo(SAMARQAND).filter(isPost);
     expect(JSON.stringify(post?.body.reply_markup)).toContain(`startapp=trip_${published.id}`);
     expect(post?.body.parse_mode).toBe('HTML');
     expect(sentTo(TOSHKENT_REGION)).toEqual([]);
@@ -67,10 +71,10 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const edit = telegram.find(
-      (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND,
+      (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND && isPost(item),
     );
     expect(edit?.body.chat_id).toBe(SAMARQAND);
-    expect(String(edit?.body.text)).toContain('Joy qolmagan');
+    expect(String(edit?.body.text)).toContain('Joy qolmadi');
   });
 
   it('tells a subscribed driver about a new request and lets a person manage the list', async () => {

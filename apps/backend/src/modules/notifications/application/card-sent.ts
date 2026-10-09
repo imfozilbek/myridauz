@@ -1,8 +1,8 @@
-import type { CardStore } from './cards';
+import type { CardStore, ChatId } from './cards';
 import type { CardSent, NotificationJob } from './job';
 
 type BotName = NotificationJob['bot'];
-type Act = (bot: BotName, chatId: number, messageId: number) => Promise<void>;
+type Act = (bot: BotName, chatId: ChatId, messageId: number) => Promise<void>;
 
 // What a card does in the private chat with a bot (docs/122 rule 6): on top of it or off it, and
 // a copy that came late goes away.
@@ -25,7 +25,7 @@ export async function cardSent(
   now: number,
 ): Promise<void> {
   const { after, messageId, replaced } = sent;
-  const chatId = Number(job.chatId);
+  const { chatId } = job;
   const before = await store.find(job.bot, chatId, after.key);
   const fresh = job.edit === undefined && replaced === null;
   if (

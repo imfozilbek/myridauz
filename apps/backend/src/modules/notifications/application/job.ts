@@ -42,6 +42,8 @@ export type NotificationJob = {
   readonly replyCard?: string;
   // A link whose big picture shows above the text: the board of the day (docs/122, «Kanallar»).
   readonly preview?: string;
+  // The message `edit` names is deleted: the post of a cancelled trip (docs/122, G68).
+  readonly remove?: boolean;
 };
 
 export type AfterSentHandler<Env> = (env: Env, after: ChannelPostSent, messageId: number) => Promise<void>;

@@ -1,6 +1,6 @@
 import { DAY_MS } from '@platform/contracts';
 import type { Bindings } from '../../../env';
-import type { CardRow, CardStore } from '../application/cards';
+import type { CardRow, CardStore, ChatId } from '../application/cards';
 
 type Row = { message_id: number; hash: string; pinned: number };
 
@@ -42,7 +42,7 @@ export const d1Cards = (db: D1Database): CardStore => ({
 // In memory: tests and local runs without D1.
 export function createMemoryCards(): CardStore {
   const rows = new Map<string, CardRow>();
-  const id = (bot: string, chatId: number, key: string) => `${bot}|${chatId}|${key}`;
+  const id = (bot: string, chatId: ChatId, key: string) => `${bot}|${chatId}|${key}`;
   return {
     find: async (bot, chatId, key) => rows.get(id(bot, chatId, key)) ?? null,
     save: async (bot, chatId, key, row) => void rows.set(id(bot, chatId, key), row),

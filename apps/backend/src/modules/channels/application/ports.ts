@@ -28,7 +28,7 @@ export type ChannelsDeps = {
     places: ReadonlyMap<string, Place>,
     now: number,
     channel: string,
-  ) => { text: string; markup: object };
+  ) => { readonly text: string; readonly markup: object; readonly remove?: boolean };
   readonly now: () => number;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
 };
