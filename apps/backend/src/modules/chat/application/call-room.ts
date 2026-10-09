@@ -21,7 +21,10 @@ async function end(deps: RoomDeps, call: StoredCall, reason: CallEnding) {
   if (reason !== 'missed' && reason !== 'failed') return;
   systemEvent(deps, 'missed_call');
   if (!present(deps, call.calleeId))
-    await deps.signals.missedCall({ userId: call.calleeId, role: call.calleeRole }, deps.key);
+    await deps.signals.missedCall(
+      { userId: call.calleeId, role: call.calleeRole, from: call.callerId },
+      deps.key,
+    );
 }
 
 // Hung up: a talk is over; a ring nobody took is missed; a call that never connected failed.
@@ -54,7 +57,10 @@ async function invite(deps: RoomDeps, call: StoredCall) {
   deps.store.saveCall({ ...call, invited: true });
   deps.wakeAt(call.since + deps.calls.ringMs);
   if (!present(deps, call.calleeId))
-    await deps.signals.incomingCall({ userId: call.calleeId, role: call.calleeRole }, deps.key);
+    await deps.signals.incomingCall(
+      { userId: call.calleeId, role: call.calleeRole, from: call.callerId },
+      deps.key,
+    );
 }
 
 export async function callAction(deps: RoomDeps, from: ChatSocket, action: CallAction): Promise<void> {

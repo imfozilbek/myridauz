@@ -18,6 +18,7 @@ describe('«Boshqa safar topish» under a booking that ended', () => {
       places: async () => new Map(),
       show: async (cards, rings) => void shown.push({ cards, rings }),
       telegramId: async () => 42,
+      unread: async () => 0,
       now: Date.now,
     });
     const { trip } = asked.value;

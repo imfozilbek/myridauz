@@ -75,6 +75,7 @@ export const bookingForShare = (env: Bindings, id: string) => passengerView(book
 export {
   answerFromBot,
   ASK_PREFIX,
+  chatRing,
   confirmedBookings,
   passengerNewsOf,
   requestsPastHalf,

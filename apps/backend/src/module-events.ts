@@ -1,6 +1,7 @@
 import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
+  chatRing,
   driverBookingOf,
   passengerRideCount,
   filedRideOfBooking,
@@ -9,6 +10,7 @@ import {
   ridesOfTrips,
   walletBookingsOf,
 } from './modules/bookings';
+import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
@@ -37,6 +39,9 @@ export { closeDepartedPosts } from './trip-events';
 // person who came by a channel post hears of the channel of that zone (docs/119).
 wireFaceTeam((env, userId) => assignTo(env, 'application', userId));
 wireRegistered((env) => (userId, came) => inviteFromMark(env, userId, came?.via));
+
+// A message or a call about a seat rings under its trip card in the bot (G68, docs/122 rule 5).
+wireChatRings(chatRing);
 
 // The admin price table shows the median of real prices (G18, docs/09).
 wireRealPrices(realPricesSince);

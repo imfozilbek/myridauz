@@ -30,10 +30,11 @@ export function room() {
       openCall: async (to) => void signals.push(`open ${to.role} ${to.userId}`),
       incomingCall: async (to) => void signals.push(`ringing ${to.role} ${to.userId}`),
       missedCall: async (to) => void signals.push(`missed ${to.role} ${to.userId}`),
+      read: async (to) => void signals.push(`read ${to.role} ${to.userId}`),
     },
     unread: {
       add: async (to) => void unread.set(to.userId, (unread.get(to.userId) ?? 0) + 1),
-      clear: async (userId) => void unread.delete(userId),
+      clear: async (userId) => unread.delete(userId),
     },
     now: () => now,
     calls: { ringMs: 30 * SECOND, connectMs: 15 * SECOND, inviteMs: 5 * SECOND },

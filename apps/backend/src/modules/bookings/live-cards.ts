@@ -27,6 +27,7 @@ export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon' | 'askAg
 export const requestsPastHalf = (env: Bindings, now: number) =>
   bookingStore(env).waitingPastHalf(now, now - 2 * TICK_MINUTES * MINUTE_MS);
 export { answerFromBot } from './bot-answer';
+export { chatRing } from './chat-news';
 export { ASK_PREFIX } from './infrastructure/ask-card';
 
 // «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1); the

@@ -16,7 +16,8 @@ export const d1Unread = (env: Bindings, key: string): UnreadCounter => ({
     await sendSignals(env, [{ userId: to.userId, app: to.role }]);
   },
   clear: async (userId) => {
-    await env.DB?.prepare(CLEAR).bind(key, userId).run();
+    const done = await env.DB?.prepare(CLEAR).bind(key, userId).run();
+    return (done?.meta.changes ?? 0) > 0;
   },
 });
 

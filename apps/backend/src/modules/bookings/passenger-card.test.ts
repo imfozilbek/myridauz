@@ -21,8 +21,8 @@ async function asked(): Promise<Booking> {
   if (!result.ok) throw new Error(result.error);
   return result.value;
 }
-const card = (booking: Booking, now = booking.trip.departAt - DAY_MS) =>
-  passengerCard({ brand: loadBrand(), chatId: 9, booking, places: PLACES, now });
+const card = (booking: Booking, now = booking.trip.departAt - DAY_MS, unread = 0) =>
+  passengerCard({ brand: loadBrand(), chatId: 9, booking, places: PLACES, unread, now });
 const buttons = (shown: Card) => JSON.stringify(shown.markup);
 
 describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 variant 2)', () => {
@@ -86,6 +86,14 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
     expect(missed.pin).toBe(false);
   });
 
+  it('counts the unread messages of the chat under the seats (docs/122 rule 5)', async () => {
+    const booking = { ...(await asked()), status: 'confirmed' as const };
+    expect(card(booking).text).not.toContain('yangi xabar');
+    expect(card(booking, booking.trip.departAt - DAY_MS, 2).text.split('\n').at(-1)).toBe(
+      '💬 2 ta yangi xabar',
+    );
+  });
+
   it('rings quietly at night, but «2 soat qoldi» wakes the person (docs/122 rule 3)', async () => {
     const booking = await asked();
     const night = tashkentDayStart(tashkentDate(booking.trip.departAt)) + 23 * HOUR_MS;
@@ -95,11 +103,15 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
       places: async () => PLACES,
       show: async (_cards, sent) => void rings.push(...sent),
       telegramId: async () => 9,
+      unread: async () => 0,
       now: () => night,
     });
     await tell({ ...booking, status: 'confirmed' }, 'confirmed');
     await tell({ ...booking, status: 'confirmed', pitak: PITAK }, 'soon');
-    expect(rings.map((ring) => ring.quiet)).toEqual([true, false]);
+    // A message waits for the morning; a call that rings now does not (docs/122 rule 3).
+    await tell({ ...booking, status: 'confirmed' }, 'message');
+    await tell({ ...booking, status: 'confirmed' }, 'call');
+    expect(rings.map((ring) => ring.quiet)).toEqual([true, false, true, false]);
     expect(rings[1]?.text).toMatch(/^🚏 Safarga 2 soat qoldi: \d\d:\d\d da pitakda boʻling$/u);
     expect(rings[0]?.card).toBe(`trip:${booking.id}`);
   });

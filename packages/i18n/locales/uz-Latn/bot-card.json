@@ -15,6 +15,7 @@
   "card.driver": "🚗 {name} ⭐ {rating} · {car}",
   "card.newDriver": "🚗 {name} · yangi haydovchi · {car}",
   "card.seats": "💺 {seats} joy · {price}",
+  "card.unread": "💬 {count} ta yangi xabar",
   "card.updated": "✏️ {time} da yangilandi",
   "card.chat": "💬 Chat",
   "card.call": "📞 Qoʻngʻiroq",
@@ -30,5 +31,8 @@
   "ring.soonDoor": "🏠 Safarga 2 soat qoldi: haydovchi {time} da sizni olib ketadi",
   "ring.departed": "🚗 {name} yoʻlga chiqdi",
   "ring.noShow": "❌ {name} sizni uchrashuv joyida topmadi. Boshqa safar bor.",
+  "ring.message": "💬 {name} sizga xabar yozdi",
+  "ring.call": "📞 {name} sizga qoʻngʻiroq qilyapti",
+  "ring.missed": "📞 {name} qoʻngʻiroq qildi, lekin gaplasha olmadingiz",
   "ring.driverCame": "📍 {name} uchrashuv joyiga keldi"
 }

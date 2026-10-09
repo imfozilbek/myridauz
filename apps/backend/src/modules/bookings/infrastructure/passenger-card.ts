@@ -92,11 +92,13 @@ type Facts = {
   readonly chatId: number;
   readonly booking: Booking;
   readonly places: Places;
+  // Unread messages in the chat of the seat (docs/122 rule 5).
+  readonly unread: number;
   readonly now: number;
 };
 
 // The card shows where the seat stands now: waiting, confirmed, on the road, arrived or ended.
-export function passengerCard({ brand, chatId, booking, places, now }: Facts): Card {
+export function passengerCard({ brand, chatId, booking, places, unread, now }: Facts): Card {
   const stage = stageOf(booking);
   const price = bold(formatMoney(booking.price * booking.seats));
   const text = [
@@ -105,6 +107,7 @@ export function passengerCard({ brand, chatId, booking, places, now }: Facts): C
     ...endBlocks(booking, places),
     driverBlock(booking),
     t('bot.card.seats', { seats: String(booking.seats), price }),
+    ...(unread > 0 ? [t('bot.card.unread', { count: String(unread) })] : []),
   ].join('\n');
   return {
     bot: 'passenger',
