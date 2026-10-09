@@ -1,0 +1,84 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+:root{--grp:#F1F2F4;--text:#1F2937;--muted:#6B7280;--line:#EEF0F2;--red:#DC2626;--redSoft:#FEE2E2;--green:#16A34A;
+--brand:#14B8A6;--strong:#0D9488;--btext:#0F766E;--mint:#CCFBF1;--soft:#F0FDFA}
+.drv{--brand:#F59E0B;--strong:#D97706;--btext:#B45309;--mint:#FDE68A;--soft:#FFFBEB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"DejaVu Sans",sans-serif;background:#E5E7EB;color:var(--text);padding:28px;width:max-content}
+h1{font-size:30px;margin-bottom:6px}
+.sub{font-size:18px;color:#374151;margin-bottom:18px;max-width:1150px}
+.var{font-size:24px;font-weight:800;margin:18px 0 4px}
+.var small{display:block;font-size:16px;font-weight:400;color:#374151;margin-top:2px}
+.row{display:flex;gap:24px;align-items:flex-start}
+.col{width:360px}
+.lab{font-size:18px;font-weight:700;margin:8px 0 6px}
+.lab small{display:block;font-size:14px;font-weight:400;color:#4B5563;margin-top:2px;min-height:34px}
+.ph{width:360px;height:760px;background:var(--grp);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.ttl{font-size:26px;font-weight:800;padding:22px 20px 12px}
+.ttl small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:4px;line-height:1.35}
+.card{background:#fff;border-radius:16px;margin:0 14px 12px;overflow:hidden}
+.pad{padding:14px 16px}
+.cell{display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:16px;border-bottom:1px solid var(--line)}
+.cell:last-child{border-bottom:none}
+.cell .w{flex:1;min-width:0}
+.cell .h{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.3}
+.chev{color:#9CA3AF}
+.tile{width:36px;height:36px;border-radius:10px;background:var(--mint);color:var(--btext);display:flex;align-items:center;justify-content:center;flex:none}
+.tile.red{background:var(--redSoft);color:var(--red)}
+.tile.grey{background:#E5E7EB;color:#4B5563}
+.big{width:76px;height:76px;border-radius:22px}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 28px;gap:12px}
+.center h2{font-size:22px;font-weight:800}
+.center p{font-size:15px;color:var(--muted);line-height:1.45}
+.foot{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.btn{height:50px;border-radius:12px;background:var(--strong);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+.btn.ghost{background:#fff;color:var(--btext)}
+.link{text-align:center;font-size:15px;color:var(--btext)}
+.head{font-size:13px;color:var(--muted);text-transform:uppercase;padding:6px 30px 7px}
+.note{font-size:13px;color:var(--muted);padding:0 28px 12px;line-height:1.4}
+.star{color:#C2410C;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 10px;font-size:13px;font-weight:700;background:#E5E7EB;color:#374151}
+.chip.b{background:var(--strong);color:#fff}
+.chip.g{background:#DCFCE7;color:#166534}
+.seg{display:flex;background:#E5E7EB;border-radius:10px;padding:3px;margin:0 14px 12px}
+.seg div{flex:1;text-align:center;padding:9px;font-size:15px;border-radius:8px}
+.seg .on{background:#fff;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bar{height:4px;background:var(--strong);width:38%;}
+.sheetback{position:absolute;inset:0;background:rgba(17,24,39,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:10px 0 0;display:flex;flex-direction:column}
+.grab{width:40px;height:5px;border-radius:3px;background:#D1D5DB;margin:0 auto 10px}
+.route{display:flex;gap:10px}
+.dots{display:flex;flex-direction:column;align-items:center;padding-top:5px}
+.dot{width:10px;height:10px;border-radius:50%;border:2.5px solid var(--green)}
+.dot.to{border-color:var(--red)}
+.vline{width:2px;height:24px;background:#D1D5DB;margin:3px 0}
+.field{background:#fff;border-radius:14px;margin:0 14px 12px;padding:14px 16px;font-size:16px;min-height:110px;color:#9CA3AF}
+.sk{background:#E5E7EB;border-radius:8px}
+</style></head><body><svg width="0" height="0" style="position:absolute"><defs><symbol id="ban" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" />
+  <path d="M4.929 4.929 19.07 19.071" /></symbol><symbol id="chevron-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></symbol><symbol id="refresh-cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+  <path d="M21 3v5h-5" />
+  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+  <path d="M8 16H3v5" /></symbol><symbol id="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" /></symbol><symbol id="send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" />
+  <path d="m21.854 2.147-10.94 10.939" /></symbol><symbol id="square-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" />
+  <path d="M8 12h8" />
+  <path d="M12 8v8" /></symbol><symbol id="ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+  <path d="M13 5v2" />
+  <path d="M13 17v2" />
+  <path d="M13 11v2" /></symbol><symbol id="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" />
+  <path d="m6 6 12 12" /></symbol></defs></svg><h1>Holat ekranlari: A yoki B</h1><div class="sub">Bir xil uslub: blok, «Rasmingizni qoʻshing», eski kirish, internet yoʻq, xato, safarlar chegarasi, «Tekshiruvdan keyin», ariza rad etildi, Telegramdan tashqari. <span class="star">*</span> yangi matn.</div><div class="var">A · Markazda<small>Katta belgi, sarlavha, matn va bitta tugma. Telegramning boʻsh holatiga oʻxshaydi.</small></div><div class="row"><div class="col"><div class="lab">Blok<small>Yoʻlovchi va haydovchi</small></div><div class="ph "><div class="center"><div class="tile big red"><svg width="36" height="36" style="color:currentColor"><use href="#ban"/></svg></div><h2>Hisobingiz bloklangan</h2><p>Blok 14-oktabr kuni tugaydi.</p><p>Savollar boʻlsa, qoʻllab-quvvatlash xizmatiga yozing.</p></div>
+<div class="foot"><div class="btn">Qoʻllab-quvvatlashga yozish</div></div></div></div><div class="col"><div class="lab">Ilovani qayta oching<small>Eski kirish (24 soat)</small></div><div class="ph "><div class="center"><div class="tile big "><svg width="36" height="36" style="color:currentColor"><use href="#refresh-cw"/></svg></div><h2>Ilovani qayta oching</h2><p>Xavfsizlik uchun kirish vaqti tugadi. Ilovani yopib, qaytadan oching.</p></div>
+<div class="foot"><div class="btn">Yopish</div></div></div></div><div class="col"><div class="lab">Safarlar chegarasi<small>Haydovchi, 4-safar</small></div><div class="ph drv"><div class="center"><div class="tile big "><svg width="36" height="36" style="color:currentColor"><use href="#square-plus"/></svg></div><h2>Faol safarlar 3 ta <span class="star">*</span></h2><p>Yangi safar eʼlon qilish uchun bittasini bekor qiling yoki yakunlang. <span class="star">*</span></p></div>
+<div class="foot"><div class="btn">Mening safarlarim</div></div></div></div></div><div class="var">B · Kartada<small>Sarlavha tepada, sabab kartada, keyin nima boʻlishi qatorlarda.</small></div><div class="row"><div class="col"><div class="lab">Blok<small>Muddat va sabab koʻrinadi</small></div><div class="ph "><div class="ttl">Hisobingiz bloklangan</div>
+<div class="card"><div class="cell"><div class="tile red"><svg width="22" height="22" style="color:currentColor"><use href="#ban"/></svg></div><div class="w"><b>14-oktabrgacha</b><div class="h">Shikoyat boʻyicha · 7 kun <span class="star">*</span></div></div></div></div>
+<div class="head">Bu vaqtda <span class="star">*</span></div>
+<div class="card"><div class="cell"><div class="tile grey"><svg width="20" height="20" style="color:currentColor"><use href="#search"/></svg></div><div class="w">Safar qidirish va band qilish yopiq <span class="star">*</span></div></div>
+<div class="cell"><div class="tile grey"><svg width="20" height="20" style="color:currentColor"><use href="#ticket"/></svg></div><div class="w">Faol joylar bekor qilindi <span class="star">*</span></div></div></div>
+<div class="note">Savollar boʻlsa, qoʻllab-quvvatlash xizmatiga yozing.</div>
+<div class="foot"><div class="btn">Qoʻllab-quvvatlashga yozish</div></div></div></div><div class="col"><div class="lab">Ilovani qayta oching<small>Ikki qadam</small></div><div class="ph "><div class="ttl">Ilovani qayta oching<small>Xavfsizlik uchun kirish vaqti tugadi.</small></div>
+<div class="card"><div class="cell"><div class="tile"><svg width="20" height="20" style="color:currentColor"><use href="#x"/></svg></div><div class="w">1. Ilovani yoping <span class="star">*</span></div></div>
+<div class="cell"><div class="tile"><svg width="20" height="20" style="color:currentColor"><use href="#send"/></svg></div><div class="w">2. Botdagi «Ochish» tugmasini bosing <span class="star">*</span></div></div></div>
+<div class="foot"><div class="btn">Yopish</div></div></div></div><div class="col"><div class="lab">Safarlar chegarasi<small>Faol safarlar shu yerda</small></div><div class="ph drv"><div class="ttl">Safar eʼlon qilish<small>Faol safarlar 3 ta: bittasini bekor qiling yoki yakunlang. <span class="star">*</span></small></div>
+<div class="card"><div class="cell"><div class="w"><b>Bugun · 16:00</b><div style="font-size:15px;margin-top:2px">Chilonzor → Samarqand</div><div style="margin-top:6px"><span class="chip b">1 ta yangi soʻrov</span></div></div><span class="chev"><svg width="18" height="18" style="color:currentColor"><use href="#chevron-right"/></svg></span></div>
+<div class="cell"><div class="w"><b>Ertaga · 08:00</b><div style="font-size:15px;margin-top:2px">Chilonzor → Samarqand</div><div style="margin-top:6px"><span class="chip g">Hamma joy band</span></div></div><span class="chev"><svg width="18" height="18" style="color:currentColor"><use href="#chevron-right"/></svg></span></div>
+<div class="cell"><div class="w"><b>9-okt · 15:00</b><div style="font-size:15px;margin-top:2px">Samarqand → Chilonzor</div><div style="margin-top:6px"><span class="chip">4 boʻsh joy</span></div></div><span class="chev"><svg width="18" height="18" style="color:currentColor"><use href="#chevron-right"/></svg></span></div></div>
+<div class="foot"><div class="btn">Mening safarlarim</div></div></div></div></div></body></html>
