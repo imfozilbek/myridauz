@@ -24,6 +24,9 @@ const MISSED = 72;
 const RODE = 73;
 const MODERATOR = 74;
 const HOUR = 3_600_000;
+// 09:00 in Tashkent: the trip and «Men keldim» stay inside the day of the bots (07:00 … 22:00). At
+// night a card goes without a ring, so a test on the real clock fails in the evening (lesson 204).
+const MORNING = Date.parse('2026-10-09T04:00:00Z');
 const asDriver = { method: 'POST', app: 'driver' } as const;
 const asAdmin = { method: 'POST', app: 'admin' } as const;
 
@@ -54,12 +57,13 @@ const driverBooking = async (id: string) =>
 
 describe('the meeting of the driver and a no-show through the API (docs/126, docs/35, G63)', () => {
   it('marks the meeting, files «Kelmadi» for the team and refunds after the owner confirms', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(MORNING);
     await approvedDriver(DRIVER);
     for (const id of [MISSED, RODE, MODERATOR]) await registerUser(id);
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
     const { tripId, departAt, missed, rode } = await tripWithTwo();
     expect((await call(driverMeetPath(missed, 'came'), DRIVER, asDriver)).status).toBe(409);
-    vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(departAt - 10 * 60_000);
     // Only the driver of the trip marks it.
     expect((await call(driverMeetPath(missed, 'came'), MISSED, asDriver)).status).toBe(404);
