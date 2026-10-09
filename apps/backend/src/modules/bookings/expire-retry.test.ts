@@ -21,12 +21,13 @@ describe('the expiry of requests without an answer', () => {
       told.push(booking.passenger.firstName);
     };
     const cron = { ...deps, notify: { ...deps.notify, expired } };
-    await expireRequests(cron, NOW + 25 * HOUR);
+    // Asked at 06:00: 24 hours end at night, so the answer waits till 08:00 (docs/127).
+    await expireRequests(cron, NOW + 27 * HOUR);
     expect(told).toEqual(['Ali']);
     failing = '';
-    await expireRequests(cron, NOW + 26 * HOUR);
+    await expireRequests(cron, NOW + 28 * HOUR);
     expect(told).toEqual(['Ali', 'Dilnoza']);
-    await expireRequests(cron, NOW + 27 * HOUR);
+    await expireRequests(cron, NOW + 29 * HOUR);
     expect(told).toEqual(['Ali', 'Dilnoza']);
   });
 });

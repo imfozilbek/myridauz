@@ -5,7 +5,8 @@ import {
   type Booking,
   type BookingInput,
 } from '@platform/contracts';
-import { answerDeadline, move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
+import { answerDeadline } from '../domain/answer-deadline';
+import { move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
