@@ -23,7 +23,8 @@ function chatOf(messages: readonly BotMessage[]) {
   return { list: [...shown.values()], pinned: pinned === null ? undefined : shown.get(pinned) };
 }
 
-const firstLine = (text: string) => escape(text.split('\n')[0]?.replace(/<[^>]+>/gu, '') ?? '');
+// The first line as plain text: escaped first, so the marks of the bots are harmless text to drop.
+const firstLine = (text: string) => escape(text.split('\n')[0] ?? '').replace(/&lt;\/?[a-z]+.*?&gt;/gu, '');
 const keysOf = (rows: Shown['rows']) =>
   rows.length === 0
     ? ''
