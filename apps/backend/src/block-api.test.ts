@@ -42,9 +42,10 @@ describe('a block from the admin app (docs/17, docs/65 A5)', () => {
     expect(mine.bookings.find((booking) => booking.id === asked.id)?.status).toBe('cancelled_by_driver');
     expect(telegram.sentTo(PASSENGER).length).toBeGreaterThan(before);
     // The seat is gone: «Boshqa safar topish» opens the same route and day (docs/89 S10).
-    expect(JSON.stringify(telegram.sentTo(PASSENGER).at(-1)?.body)).toContain('?find=');
-    expect(JSON.stringify(telegram.sentTo(DRIVER))).toContain(`?booking=${asked.id}`);
-    expect(telegram.sentTo(DRIVER).length).toBeGreaterThan(0);
+    expect(JSON.stringify(telegram.sentTo(PASSENGER).map((sent) => sent.body))).toContain('?find=');
+    // The trip card of the driver bot says so and leaves the top of the chat (G68).
+    expect(JSON.stringify(telegram.sentTo(DRIVER))).toContain('❌ Safar bekor qilindi');
+    expect(telegram.sentTo(DRIVER).some((sent) => sent.method === 'unpinChatMessage')).toBe(true);
     // A moderator never blocks a member of the team; the owner may.
     const refused = await call(`/admin/users/${await pid(MODERATOR)}/block`, MODERATOR, block(null));
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);

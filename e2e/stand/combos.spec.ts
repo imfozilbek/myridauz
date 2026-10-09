@@ -30,7 +30,7 @@ test('C06, P12. a seat cancelled before the answer: the driver hears it; an empt
   const seat = await book(TIMUR, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
   await cancelMine(TIMUR, seat.id);
   expect((await bookingOf(TIMUR, seat.id))?.status).toBe('cancelled_by_passenger');
-  await toldBy('driver', GAYRAT, wordsOf('bot.booking.cancelledByPassenger'));
+  await toldBy('driver', GAYRAT, wordsOf('bot.ask.withdrawn'));
   const market = createMarketClient(await signedAs('passenger', TIMUR));
   const far = new Date(Date.now() + 20 * 24 * 60 * MINUTE).toISOString().slice(0, 10);
   expect(await market.searchTrips({ from: CHILONZOR, to: '1735401', date: far })).toEqual([]);

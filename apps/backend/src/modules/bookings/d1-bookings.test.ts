@@ -54,6 +54,17 @@ beforeEach(async () => {
 });
 
 describe('bookings in D1 (G24)', () => {
+  it('reads the requests that passed half of their time only in the last window (G68)', async () => {
+    const bookings = d1Bookings(db);
+    const half = (id: string, createdAt: number) =>
+      bookings.save(record({ id, createdAt, expiresAt: createdAt + 2 * 3_600_000 }));
+    await half('fresh', NOW - 3_600_000 + 60_000);
+    await half('just', NOW - 3_600_000 - 60_000);
+    await half('long', NOW - 3_600_000 - 40 * 60_000);
+    const since = NOW - 30 * 60_000;
+    expect((await bookings.waitingPastHalf(NOW, since)).map((booking) => booking.id)).toEqual(['just']);
+  });
+
   it('keeps the way, the pitak, the points and their names', async () => {
     const bookings = d1Bookings(db);
     await bookings.save(record({ mode: 'pitak', pitakId: 'p1' }));

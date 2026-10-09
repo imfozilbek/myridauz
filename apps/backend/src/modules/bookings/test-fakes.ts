@@ -42,14 +42,18 @@ export const fakeRecommend: BookingsDeps['recommend'] = async (from, to) => ({
 });
 
 export const fakeNotifier = (notes: string[]): BookingsDeps['notify'] => ({
-  requested: async (booking) => void notes.push(`driver: request ${booking.passenger.firstName}`),
-  confirmed: async (booking) => void notes.push(`passenger: confirmed ${booking.plate}`),
+  // The notes say whose view came: the passenger's card is made of the passenger's own view.
+  requested: async (booking) =>
+    void notes.push(`driver: request ${booking.passenger.firstName} (commission ${booking.commission})`),
+  confirmed: async (booking, own) =>
+    void notes.push(`passenger: confirmed ${booking.plate}${own ? ' by the passenger' : ''}`),
   declined: async () => void notes.push('passenger: declined'),
   expired: async () => void notes.push('passenger: expired'),
   cancelled: async (_booking, by) => void notes.push(`cancelled by ${by}`),
   offered: async (passengerId) => void notes.push(`offer to ${passengerId}`),
   came: async (booking) => void notes.push(`driver: came ${booking.passenger.firstName}`),
   driverCame: async (booking) => void notes.push(`passenger: driver came ${booking.passenger.firstName}`),
+  noShow: async (booking) => void notes.push(`passenger: no show ${booking.passenger.firstName}`),
   progress: async (booking, step) => void notes.push(`close ones: ${booking.passenger.firstName} ${step}`),
   tripRetimed: async (booking) => void notes.push(`passenger: retimed ${booking.passenger.firstName}`),
   offerAnswered: async (_driverId, accepted) =>

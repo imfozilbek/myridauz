@@ -31,7 +31,7 @@ export const AREAS = {
     'g63',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin'],
-  bots: ['bots', 'bots-team', 'complaints-time'],
+  bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots'],
   channels: ['system-channels', 'system-cron', 'system-people'],
 };
 const NAMES = Object.keys(AREAS);

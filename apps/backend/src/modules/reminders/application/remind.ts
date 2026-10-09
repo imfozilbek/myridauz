@@ -8,7 +8,7 @@ export type RemindersDeps = {
   readonly first: (key: string) => Promise<boolean>;
   readonly tell: {
     passenger(booking: Booking, kind: ReminderKind): Promise<void>;
-    driver(trip: Trip, riders: number, kind: ReminderKind): Promise<void>;
+    driver(trip: Trip, kind: ReminderKind): Promise<void>;
   };
   readonly now: () => number;
 };
@@ -29,7 +29,6 @@ export async function remindTrips(deps: RemindersDeps): Promise<void> {
     if (riders.length === 0) continue;
     for (const booking of riders)
       if (await deps.first(`${booking.id}:${kind}`)) await deps.tell.passenger(booking, kind);
-    const seats = riders.reduce((sum, booking) => sum + booking.seats, 0);
-    if (await deps.first(`${trip.id}:${kind}:driver`)) await deps.tell.driver(trip, seats, kind);
+    if (await deps.first(`${trip.id}:${kind}:driver`)) await deps.tell.driver(trip, kind);
   }
 }

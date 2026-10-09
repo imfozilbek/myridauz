@@ -78,9 +78,9 @@ export async function requestBooking(
     updatedAt: now,
   };
   await deps.bookings.save(record);
-  const [forDriver] = await bookingViews(deps, [record], 'driver');
-  if (forDriver) await deps.notify.requested(forDriver);
+  // The bots get the passenger's own view: the driver's card loads the trip as its driver sees it.
   const [view] = await bookingViews(deps, [record], 'passenger');
+  if (view) await deps.notify.requested(view);
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
 }
 
@@ -100,9 +100,8 @@ export async function cancelByPassenger(
     return { ok: false, error: 'bookings.wrong_status' };
   // A cancelled confirmed booking gives the commission back (docs/12, owner decision 29.09.2026).
   if (record.status === 'confirmed') await deps.wallet.refund(facts.driverId, id);
-  const [forDriver] = await bookingViews(deps, [next], 'driver');
-  if (forDriver) await deps.notify.cancelled(forDriver, 'passenger');
   const [view] = await bookingViews(deps, [next], 'passenger');
+  if (view) await deps.notify.cancelled(view, 'passenger');
   return view ? { ok: true, value: view } : { ok: false, error: 'bookings.not_found' };
 }
 

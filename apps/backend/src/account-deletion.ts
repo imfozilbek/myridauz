@@ -4,6 +4,7 @@ import { forgetChat, forgetUnread } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
 import { forgetFavorites } from './modules/favorites';
+import { forgetCards } from './modules/notifications';
 import { forgetRatings } from './modules/ratings';
 import { eraseRequestPointsOf } from './modules/ride-requests';
 import { forgetSubscriptions } from './modules/route-subscriptions';
@@ -27,6 +28,8 @@ wireAccountDeletion(async (env, userId) => {
   for (const key of await chatsOf(env, userId)) if (!evidence.has(key)) await forgetChat(env, key);
   // The plates «1 xabar» of the person go with the account (G53).
   await forgetUnread(env, userId);
+  // The live cards of the bots too (G68).
+  await forgetCards(env, userId);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);

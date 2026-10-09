@@ -1,12 +1,18 @@
 import type { Bindings } from '../../env';
 import { sendSignals, signalsOf } from '../feed';
 import { teamMembers } from '../team';
-import { deliver, type Tokens } from './application/deliver';
+import { deliver, type Delivery, type Tokens } from './application/deliver';
 import { keepDead } from './application/dead-letter';
 import type { AfterSentHandler, NotificationJob } from './application/job';
+import { cardJob, ringJob, type Card, type CardStore, type Ring } from './application/cards';
+import { cardSent, type ChatOps } from './application/card-sent';
+import { createMemoryCards, d1Cards } from './infrastructure/d1-cards';
 import { recordServerEvent } from '../analytics';
+import { callTelegram } from '../../shared/telegram/telegram-api';
 
 export type { NotificationJob } from './application/job';
+export type { Card, Ring } from './application/cards';
+export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
 
 const tokensOf = (env: Bindings): Tokens => ({
   passenger: env.PASSENGER_BOT_TOKEN,
@@ -19,10 +25,53 @@ const send = (input: string, init?: RequestInit) => fetch(input, init);
 let afterSent: AfterSentHandler<Bindings> = async () => undefined;
 export const handleAfterSent = (handler: AfterSentHandler<Bindings>) => void (afterSent = handler);
 
-async function deliverNow(env: Bindings, job: NotificationJob) {
-  const delivery = await deliver(send, tokensOf(env), job);
-  if (delivery.outcome === 'sent' && job.after && delivery.messageId !== null)
-    await afterSent(env, job.after, delivery.messageId);
+// The live cards (G68, docs/122): D1, or memory where there is none (tests, local runs).
+const memoryCards = createMemoryCards();
+const cardsOf = (env: Bindings): CardStore => (env.DB ? d1Cards(env.DB) : memoryCards);
+const opsOf = (env: Bindings): ChatOps => {
+  const call = (method: string, params: object, bot: NotificationJob['bot']) =>
+    callTelegram(send, tokensOf(env)[bot] ?? '', method, params);
+  return {
+    pin: (bot, chatId, messageId) =>
+      call('pinChatMessage', { chat_id: chatId, message_id: messageId, disable_notification: true }, bot),
+    unpin: (bot, chatId, messageId) =>
+      call('unpinChatMessage', { chat_id: chatId, message_id: messageId }, bot),
+    remove: (bot, chatId, messageId) =>
+      call('deleteMessage', { chat_id: chatId, message_id: messageId }, bot),
+  };
+};
+
+// A ring answers its card: the card's id is found now, when the card is surely sent before it.
+async function withReply(env: Bindings, job: NotificationJob): Promise<NotificationJob> {
+  if (!job.replyCard) return job;
+  const card = await cardsOf(env).find(job.bot, Number(job.chatId), job.replyCard);
+  return card ? { ...job, replyTo: card.messageId } : job;
+}
+
+const withoutEdit = (job: NotificationJob): NotificationJob =>
+  Object.fromEntries(Object.entries(job).filter(([field]) => field !== 'edit')) as NotificationJob;
+
+async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery> {
+  let sent = await withReply(env, job);
+  let delivery = await deliver(send, tokensOf(env), sent);
+  const card = sent.after?.type === 'card' ? sent.after : null;
+  let replaced: number | null = null;
+  // The person deleted the card, or it is too old to edit: a new card takes its place.
+  if (delivery.outcome === 'gone' && card && !card.editOnly) {
+    replaced = sent.edit ?? null;
+    sent = withoutEdit(sent);
+    delivery = await deliver(send, tokensOf(env), sent);
+  }
+  if (delivery.outcome !== 'sent') return delivery;
+  // An edit keeps the id of the message it changed.
+  const messageId = sent.edit ?? delivery.messageId;
+  // The message is in Telegram already: a failed bookkeeping must not send it once more.
+  if (card && messageId !== null)
+    await cardSent(cardsOf(env), opsOf(env), sent, { after: card, messageId, replaced }, Date.now()).catch(
+      (error: unknown) => console.warn(JSON.stringify({ event: 'card_sent_failed', message: String(error) })),
+    );
+  else if (sent.after?.type === 'channelPost' && delivery.messageId !== null)
+    await afterSent(env, sent.after, delivery.messageId);
   return delivery;
 }
 
@@ -34,9 +83,14 @@ async function deliverNow(env: Bindings, job: NotificationJob) {
 const DIRECT_LIMIT = 5;
 const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
 
-export async function notify(env: Bindings, jobs: readonly NotificationJob[]): Promise<void> {
+// signalled: whose open Mini App refreshes; a quiet card alone (one's own step) refreshes nobody.
+export async function notify(
+  env: Bindings,
+  jobs: readonly NotificationJob[],
+  signalled: readonly NotificationJob[] = jobs,
+): Promise<void> {
   if (jobs.length === 0) return;
-  await sendSignals(env, signalsOf(jobs));
+  await sendSignals(env, signalsOf(signalled));
   const queue = env.NOTIFICATIONS;
   if (queue && jobs.length > DIRECT_LIMIT) {
     await queue.sendBatch(jobs.map((body) => ({ body })));
@@ -48,6 +102,20 @@ export async function notify(env: Bindings, jobs: readonly NotificationJob[]): P
     if (delivery.outcome === 'retry') later.push({ body, delaySeconds: delivery.afterSeconds });
   }
   if (queue && later.length > 0) await queue.sendBatch(later);
+}
+
+// Live cards and their rings (G68, docs/122): a card is sent, edited or left as it is; a ring
+// comes after its card, so it can answer it.
+export async function showCards(env: Bindings, cards: readonly Card[], rings: readonly Ring[] = []) {
+  const store = cardsOf(env);
+  const changed = await Promise.all(cards.map(async (card) => ({ card, job: await cardJob(store, card) })));
+  const jobs = changed.flatMap(({ job }) => (job ? [job] : []));
+  // A news card refreshes the open Mini App even when its message did not change or is not there.
+  const news = changed.flatMap(({ card, job }) =>
+    card.loud || card.refresh ? [job ?? { bot: card.bot, chatId: card.chatId, text: '' }] : [],
+  );
+  const ringing = rings.map(ringJob);
+  await notify(env, [...jobs, ...ringing], [...news, ...ringing]);
 }
 
 // A message for every team member through the admin bot (docs/02).

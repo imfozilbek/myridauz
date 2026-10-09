@@ -13,6 +13,7 @@ const HOUR = 3_600_000;
 const DRIVER = 1;
 const ride = (n: number, over = true): Ride => ({
   bookingId: `b${n}`,
+  tripId: `t${n}`,
   driverId: DRIVER,
   passengerId: 100 + n,
   endsAt: NOW - HOUR,
@@ -31,7 +32,7 @@ function setup(rides: Ride[] = [ride(1)]) {
     },
     names: async (ids) => new Map(ids.map((id) => [id, id === DRIVER ? 'Jasur' : `P${id}`])),
     people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
-    ask: async (ask, name, rater, reminder) => void asked.push({ ask, name, rater, reminder }),
+    ask: async (ask, name, { rater }, reminder) => void asked.push({ ask, name, rater, reminder }),
     alertTeam: async (person) => void alerts.push(person),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
     now: () => clock,

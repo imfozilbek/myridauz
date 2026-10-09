@@ -20,7 +20,8 @@ describe('the bot message of a new offer', () => {
           system: async () => undefined,
           placeName: async (id) => (id === '1726273' ? 'Chilonzor' : 'Samarqand'),
           closeOnes: async () => undefined,
-          telegramId: async () => 42,
+          passenger: async () => undefined,
+          driver: async () => undefined,
         }).offered,
       },
     };

@@ -8,6 +8,7 @@ import { safeEqual } from '../shared/http/safe-equal';
 import { botToken } from '../shared/telegram/bot-config';
 import type { Fetch } from '../shared/telegram/telegram-api';
 import { onAdminCallback } from './admin-callbacks';
+import { isAskButton, onAskCallback } from './ask-callbacks';
 import { onAdminMessage } from './admin-messages';
 import { onRatingCallback } from './rating-callbacks';
 import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
@@ -52,7 +53,12 @@ export function webhookRoutes(fetch: Fetch) {
 async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data: TelegramUpdate) {
   if (role === SUPPORT_BOT) return data.message ? onSupportMessage(bot, data.message) : {};
   const query = data.callback_query;
-  if (query) return role === 'admin' ? onAdminCallback(bot, query) : onRatingCallback(bot, role, query);
+  if (query) {
+    if (role === 'admin') return onAdminCallback(bot, query);
+    return role === 'driver' && isAskButton(query.data)
+      ? onAskCallback(bot, query)
+      : onRatingCallback(bot, role, query);
+  }
   const message = data.message;
   if (!message) return {};
   const fromId = message.from?.id ?? 0;

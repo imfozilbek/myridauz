@@ -71,14 +71,16 @@ export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
   chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
-// Confirmed bookings of these trips as their passengers see them: the reminders (G10).
-export const confirmedBookings = async (env: Bindings, tripIds: readonly string[]) => {
-  const deps = bookingsDeps(env);
-  const confirmed = (await deps.bookings.byTrips(tripIds)).filter(
-    (booking) => booking.status === 'confirmed',
-  );
-  return bookingViews(deps, confirmed, 'passenger');
-};
+// The live trip cards (G68, docs/122) and the confirmed bookings the reminders tell (G10).
+export {
+  answerFromBot,
+  ASK_PREFIX,
+  confirmedBookings,
+  passengerNewsOf,
+  requestsPastHalf,
+  tellDriver,
+  tellTripPassengers,
+} from './live-cards';
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);

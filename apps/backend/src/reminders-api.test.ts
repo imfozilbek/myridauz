@@ -3,15 +3,19 @@ import { approvedDriver, json, read } from './bookings-test-api';
 import { sendReminders } from './modules/reminders';
 import { call, registerUser, testEnv, doorBooking } from './test-api';
 
-const telegram: { chat: unknown; text: string }[] = [];
-vi.stubGlobal('fetch', async (_input: string, init?: RequestInit) => {
+const telegram: { chat: unknown; text: string; method: string }[] = [];
+let messageId = 100;
+vi.stubGlobal('fetch', async (input: string, init?: RequestInit) => {
   const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {};
-  telegram.push({ chat: body.chat_id, text: String(body.text ?? '') });
-  return Response.json({ ok: true, result: { message_id: 1 } });
+  const method = input.split('/').pop() ?? '';
+  telegram.push({ chat: body.chat_id, text: String(body.text ?? ''), method });
+  return Response.json({ ok: true, result: { message_id: messageId++ } });
 });
 // 2026-10-01 10:00 in Tashkent: the day time.
+const START = Date.parse('2026-10-01T05:00:00Z');
+const HOUR = 3_600_000;
 vi.useFakeTimers({ toFake: ['Date'] });
-vi.setSystemTime(Date.parse('2026-10-01T05:00:00Z'));
+vi.setSystemTime(START);
 afterAll(() => {
   vi.unstubAllGlobals();
   vi.useRealTimers();
@@ -20,11 +24,11 @@ afterAll(() => {
 const DRIVER = 81;
 const PASSENGER = 82;
 
-describe('trip reminders (G10)', () => {
-  it('reminds the passenger and the driver of a booked trip once, a day before', async () => {
+describe('trip reminders (G10, G68)', () => {
+  it('the day before both trip cards say «Ertaga» quietly; 2 hours before both ring', async () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
-    const departAt = Date.now() + 23 * 3_600_000;
+    const departAt = START + 47 * HOUR;
     const trip = {
       from: '1726273',
       to: '1718401',
@@ -43,11 +47,25 @@ describe('trip reminders (G10)', () => {
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     telegram.length = 0;
+    vi.setSystemTime(START + 24 * HOUR);
     await sendReminders(testEnv, Date.now());
     await sendReminders(testEnv, Date.now());
-    expect(telegram.map((item) => item.chat)).toEqual([PASSENGER, DRIVER]);
-    expect(telegram[0]?.text).toContain('Eslatma: safaringiz bor.');
+    expect(telegram.map((item) => `${String(item.chat)} ${item.method}`)).toEqual([
+      `${PASSENGER} editMessageText`,
+      `${DRIVER} editMessageText`,
+    ]);
+    expect(telegram[0]?.text).toContain('Ertaga');
     expect(telegram[0]?.text).toContain('01 A 123 BC');
-    expect(telegram[1]?.text).toContain('Yoʻlovchilar: 2 kishi');
+    expect(telegram[1]?.text).toContain('Ertaga');
+    // Two hours before: a ring under the card (docs/122).
+    telegram.length = 0;
+    vi.setSystemTime(departAt - 90 * 60_000);
+    await sendReminders(testEnv, Date.now());
+    const ring = telegram.find((item) => item.chat === PASSENGER && item.method === 'sendMessage');
+    expect(ring?.text).toContain('2 soat qoldi');
+    const driverRing = telegram.find((item) => item.chat === DRIVER && item.method === 'sendMessage');
+    expect(driverRing?.text).toMatch(
+      /^🚏 Safarga 2 soat qoldi: 2 yoʻlovchi\. Birinchisi \d\d:\d\d da kutadi: /u,
+    );
   });
 });

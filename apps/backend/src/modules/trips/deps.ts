@@ -11,7 +11,6 @@ import { pitakOf } from '../pitaks';
 import type { TripEvent, TripsDeps } from './application/ports';
 import { d1Trips } from './infrastructure/d1-trips';
 import { createMemoryTrips } from './infrastructure/memory-trips';
-import { telegramAnnouncer } from './infrastructure/telegram-announcer';
 
 // Without D1 (tests) trips live in memory.
 const localTrips = createMemoryTrips();
@@ -40,11 +39,6 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   roadKm: (from, to) => roadKmBetween(env, from, to),
   schedule: loadBrand(env.BRAND).schedule,
   places: () => placesOf(env),
-  announce: telegramAnnouncer({
-    fetch: (input, init) => fetch(input, init),
-    driverToken: env.DRIVER_BOT_TOKEN,
-    placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-  }),
   pitakOf: (from, to) => pitakOf(env, from, to),
   changed: (tripId, event) => onChange(env, tripId, event),
   signal: (people) => sendSignals(env, people),

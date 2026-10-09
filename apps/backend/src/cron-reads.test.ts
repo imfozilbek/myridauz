@@ -54,7 +54,7 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = cronJobs(env, NOW);
-    expect(jobs).toHaveLength(15);
+    expect(jobs).toHaveLength(16);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
@@ -63,9 +63,9 @@ describe('the reads of the Cron', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
     expect(names(NOW + 15 * 60_000)).toHaveLength(8);
     expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(8, 13)]);
-    expect(names(NOW).slice(13)).toEqual(['grantMissedBonuses', 'purgeSupport']);
+    expect(names(NOW).slice(13)).toEqual(['grantMissedBonuses', 'purgeSupport', 'forgetOldCards']);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(15);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(16);
   });
 });

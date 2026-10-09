@@ -39,10 +39,10 @@ test('S27. 2 hours before: the passenger and the driver are reminded once', asyn
   moveTrip(trip.id, Date.now() + 90 * MINUTE, Date.now() + 10 * HOUR);
   await clearBotMessages();
   await runCron();
-  await toldBy('passenger', MALIKA, wordsOf('bot.reminder.passengerSoon'));
-  await toldBy('driver', BOBUR, wordsOf('bot.reminder.driverSoon'));
+  await toldBy('passenger', MALIKA, wordsOf('bot.ring.soonDoor'));
+  await toldBy('driver', BOBUR, wordsOf('bot.dring.soon'));
   await runCron();
-  const soon = wordsOf('bot.reminder.passengerSoon');
+  const soon = wordsOf('bot.ring.soonDoor');
   const reminders = (await botMessages()).filter((m) => m.chatId === MALIKA.id && m.text.includes(soon));
   expect(reminders).toHaveLength(1);
 });

@@ -43,8 +43,9 @@ export function createMemoryTrips(): TripRepository {
         .sort((a, b) => b.departAt - a.departAt)
         .slice(0, limit),
     completeOver: async (now) => {
-      for (const trip of trips.values())
-        if (live(trip) && trip.endsAt <= now) trips.set(trip.id, { ...trip, status: 'completed' });
+      const over = [...trips.values()].filter((trip) => live(trip) && trip.endsAt <= now);
+      for (const trip of over) trips.set(trip.id, { ...trip, status: 'completed' });
+      return over.map((trip) => trip.id);
     },
     // The same conditions as the UPDATE of D1: a cancel or a second tap that came first wins.
     depart: async (id, at) => {

@@ -67,8 +67,8 @@ describe('the meeting of the driver and a no-show through the API (docs/126, doc
     const came = await read<Booking>(call(driverMeetPath(missed, 'came'), DRIVER, asDriver));
     expect(came.driverCameAt).toBe(Date.now());
     const [told] = telegram.sentTo(MISSED);
-    expect(String(told?.body.text)).toContain('Haydovchi uchrashuv joyiga keldi.');
-    expect(JSON.stringify(told?.body.reply_markup)).toContain('web_app');
+    // A ring under the trip card of the passenger (G68): «📍 Ali keldi».
+    expect(String(told?.body.text)).toMatch(/^📍 .+ keldi$/u);
     expect((await read<Booking>(call(driverMeetPath(rode, 'met'), DRIVER, asDriver))).metAt).toBe(Date.now());
     const twice = await call(driverMeetPath(rode, 'no_show'), DRIVER, asDriver);
     expect([twice.status, await twice.json()]).toEqual([409, { error: 'bookings.already_met' }]);

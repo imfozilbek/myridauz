@@ -9,6 +9,7 @@ import {
   offerOn,
   outcome,
   SAMARQAND,
+  tailOf,
   toldBy,
   wordsOf,
 } from './g27-kit';
@@ -29,7 +30,7 @@ test('P60, P61, P62. a request, an offer by the bot, accepted: a confirmed seat 
   const { bookingId } = await answerOffer(TIMUR, offer.id, 'accept');
   const seat = (await myBookings(TIMUR)).find((booking) => booking.id === bookingId);
   expect(seat?.status).toBe('confirmed');
-  await toldBy('driver', BOBUR, wordsOf('bot.offer.accepted'));
+  await toldBy('driver', BOBUR, tailOf('bot.dring.offerAccepted'));
   expect((await requestOf(TIMUR, request.id))?.status).toBe('matched');
 });
 

@@ -1,6 +1,7 @@
 import { arrivalAt, channelVia, tashkentDate, tripBookLink, withVia, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import { postState, regionOf } from '../domain/route-channels';
+import { bold, escapeHtml as escape } from '../../../shared/telegram/html';
 
 const { t, formatMoney, formatDate, formatWeekday, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 
@@ -9,8 +10,6 @@ type Places = ReadonlyMap<string, Place>;
 type Post = { readonly text: string; readonly markup: object };
 
 // The post is HTML (bold lines); names come from the directory and the driver, so they are escaped.
-const escape = (text: string) => text.replace(/&/gu, '&amp;').replace(/</gu, '&lt;').replace(/>/gu, '&gt;');
-const bold = (text: string) => `<b>${text}</b>`;
 const nameOf = (id: string, places: Places) => escape(places.get(id)?.name ?? id);
 
 // "Toshkent shahri → Samarqand viloyati" in bold, then the places: the reader sees the way at once.

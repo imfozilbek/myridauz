@@ -10,11 +10,11 @@ import {
   outcome,
   SAMARQAND,
   setBonus,
-  toldBy,
+  tailOf,
   TO_SAMARQAND,
+  toldBy,
   tomorrow,
   walletOf,
-  wordsOf,
 } from './g27-kit';
 import { AZIZA, BOBUR, NIGORA, SEVARA, TIMUR, ULUGBEK } from './people';
 import { signedAs, type Person } from './stand-kit';
@@ -68,7 +68,7 @@ test('D45, C09, S62. a whole trip cancelled before the departure: every passenge
   expect((await bookingOf(TIMUR, seats[0]?.id ?? ''))?.status).toBe('cancelled_by_driver');
   expect((await bookingOf(SEVARA, seats[1]?.id ?? ''))?.status).toBe('cancelled_by_driver');
   for (const passenger of [TIMUR, SEVARA])
-    await toldBy('passenger', passenger, wordsOf('bot.booking.cancelledByDriver'));
+    await toldBy('passenger', passenger, tailOf('bot.ring.cancelledByDriver'));
   expect((await walletOf(ULUGBEK)).bonus).toBe(before.bonus);
 });
 

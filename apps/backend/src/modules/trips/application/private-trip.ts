@@ -31,7 +31,6 @@ export async function openTrip(
     return { ok: false, error: 'trips.wrong_status' };
   const opened = { ...trip, forRequest: null };
   await deps.trips.save(opened);
-  await deps.announce(opened);
   await deps.changed(id, 'published');
   const [view] = await views(deps, [opened]);
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };

@@ -40,6 +40,14 @@ export function createMemoryBookings(): BookingRepository {
       for (const booking of expired) rows.set(booking.id, booking);
       return expired;
     },
+    waitingPastHalf: async (now, since) =>
+      list().filter(
+        (booking) =>
+          booking.status === 'requested' &&
+          booking.expiresAt > now &&
+          booking.createdAt + booking.expiresAt <= 2 * now &&
+          booking.createdAt + booking.expiresAt > 2 * since,
+      ),
     keepingPoints: async (before) =>
       list()
         .filter((booking) => booking.pickup !== null || booking.dropoff !== null)

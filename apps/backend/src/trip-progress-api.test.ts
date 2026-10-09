@@ -76,9 +76,11 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» through the API (G63, docs/35
     const left = await read<{ departedAt: number }>(step('depart'));
     expect(left.departedAt).toBe(Date.now());
     // The request without an answer ends at once, both sides hear it; no answer after the departure.
+    // The booked passenger hears «… yoʻlga chiqdi» under the trip card (G68).
     expect(signals).toEqual([
       `u${OTHER} passenger`,
       `u${DRIVER} driver`,
+      `u${PASSENGER} passenger`,
       `u${DRIVER} driver`,
       `u${PASSENGER} passenger`,
     ]);

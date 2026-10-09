@@ -27,8 +27,8 @@ export type TripRepository = {
   between(from: number, to: number, limit: number): Promise<TripRecord[]>;
   // Trips that left in [from, to), not cancelled, the latest first: the real prices (docs/09).
   pricedBetween(from: number, to: number, limit: number): Promise<TripRecord[]>;
-  // The Cron job: trips over by now become completed (docs/35).
-  completeOver(now: number): Promise<void>;
+  // The Cron job: trips over by now become completed (docs/35); the ids of those it completed.
+  completeOver(now: number): Promise<string[]>;
   // «Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35): one conditional write each, false when a
   // cancel, the Cron or a second tap came first. The arrival takes the time of the trip as the
   // departure when there was none.
@@ -42,7 +42,8 @@ export type TripRepository = {
 
 // retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:
 // «Yoʻlga chiqdim» (G63).
-export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper' | 'departed';
+export type TripEvent =
+  'published' | 'updated' | 'retimed' | 'cheaper' | 'departed' | 'arrived' | 'completed';
 
 // Someone whose open Mini App refreshes its screens (docs/64).
 type Watcher = { readonly userId: number; readonly app: 'driver' | 'passenger' };
@@ -79,8 +80,6 @@ export type TripsDeps = {
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;
-  // The driver bot tells about the new trip.
-  readonly announce: (trip: TripRecord) => Promise<void>;
   // The main pitak of the direction «region A → region B», when people may see it (docs/72).
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).

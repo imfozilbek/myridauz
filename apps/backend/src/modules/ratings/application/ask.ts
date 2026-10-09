@@ -1,11 +1,12 @@
 import { DAY_MS, RATING_DAYS, RATING_REMIND_HOURS } from '@platform/contracts';
-import type { Ask, RatingsDeps, Ride } from './ports';
+import type { Ask, AskedAt, RatingsDeps, Ride } from './ports';
 
 const HOUR_MS = 60 * 60 * 1000;
 // The rides that ended in the last two days get the first ask: each ride is asked once, and two
 // days cover the hours the Cron did not run, without reading two weeks of trips each time (G56).
 const ASK_WINDOW_MS = 2 * DAY_MS;
-const raterRole = (ride: Ride, raterId: number) => (raterId === ride.driverId ? 'driver' : 'passenger');
+const raterRole = (ride: Ride, raterId: number): AskedAt['rater'] =>
+  raterId === ride.driverId ? 'driver' : 'passenger';
 
 // The Cron job (docs/24): after a ride both sides get "Safar qanday oʻtdi?" once, with 1 … 5;
 // who has not answered in RATING_REMIND_HOURS gets one reminder; after RATING_DAYS nothing more.
@@ -38,6 +39,7 @@ async function send(
   const names = await deps.names([...new Set(asks.map((ask) => ask.rateeId))]);
   for (const ask of asks) {
     const ride = rideOf(ask);
-    if (ride) await deps.ask(ask, names.get(ask.rateeId) ?? '', raterRole(ride, ask.raterId), reminder);
+    const at = ride && { rater: raterRole(ride, ask.raterId), tripId: ride.tripId };
+    if (at) await deps.ask(ask, names.get(ask.rateeId) ?? '', at, reminder);
   }
 }

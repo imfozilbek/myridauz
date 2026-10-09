@@ -79,7 +79,11 @@ describe('chat access (docs/07)', () => {
       app: 'driver',
     });
     const toPassenger = sent.filter((message) => message.chatId === PASSENGER);
-    expect(toPassenger.map((message) => message.token)).toEqual([testEnv.PASSENGER_BOT_TOKEN]);
+    // The trip card and the ring under it, both from the passenger bot (G68).
+    expect(new Set(toPassenger.map((message) => message.token))).toEqual(
+      new Set([testEnv.PASSENGER_BOT_TOKEN]),
+    );
+    expect(toPassenger.length).toBeGreaterThan(0);
   });
 
   it('opens a voice call only after the confirmation, only to the two people (G13)', async () => {

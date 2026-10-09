@@ -3,7 +3,7 @@ import { channelOf, loadBrand } from '@platform/brands';
 import { MEET_BEFORE_MINUTES, MY_TRIP_LINK, tripEndsAt, type Trip } from '@platform/contracts';
 import { expect, test, type Page } from '../crash-guard';
 import { pressBack } from '../telegram-mock';
-import { MINUTE, moveTrip, SAMARQAND, toldBy, wordsOf } from './g27-kit';
+import { MINUTE, moveTrip, SAMARQAND, toldBy } from './g27-kit';
 import {
   bookAndConfirm,
   commissionOf,
@@ -77,7 +77,7 @@ async function meetAndLeave(context: BrowserContext, page: Page, walk: Walk, tri
   await later.getByText(t('driverTrip.tile.map')).click();
   await later.locator('.trip-map-stop').first().click();
   await later.getByRole('button', { name: t('bookings.meeting.came') }).click();
-  await toldBy('passenger', walk.passenger, wordsOf('bot.booking.driverCame'));
+  await toldBy('passenger', walk.passenger, t('bot.ring.driverCame', { name: walk.driver.name }));
   await shoot(later, walk, '07-came');
   await later.getByRole('button', { name: t('driverAfter.meet.met'), exact: true }).click();
   await expect(later.locator('.meet-done')).toHaveText(t('driverAfter.meet.met'));
