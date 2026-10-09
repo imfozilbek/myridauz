@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import type { Booking } from '@platform/contracts';
+import { SHEET_LINK, type Booking } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { appButton } from '../../../shared/telegram/open-button';
 
@@ -11,7 +11,8 @@ const BUTTONS = { message: 'bot.chat.open', call: 'bot.call.answer', missed: 'bo
 export const isChatRing = (ring: string | undefined): ring is ChatRing =>
   ring !== undefined && ring in BUTTONS;
 
-// The ring of a chat opens that chat in the Mini App of its bot; the other rings have no button.
+// The ring of a chat opens the Mini App of its bot: a message with its sheet and ready answers
+// (G68, docs/122), a call right in the chat; the other rings have no button.
 export function chatRingButton(
   brand: BrandConfig,
   role: 'passenger' | 'driver',
@@ -19,6 +20,7 @@ export function chatRingButton(
   ring: string | undefined,
 ): { markup?: object } {
   if (!isChatRing(ring)) return {};
-  const open = appButton(brand, role, t(BUTTONS[ring]), { name: 'chat', id: booking.chatKey });
+  const link = { name: ring === 'message' ? SHEET_LINK : 'chat', id: booking.chatKey };
+  const open = appButton(brand, role, t(BUTTONS[ring]), link);
   return { markup: { inline_keyboard: [[open]] } };
 }

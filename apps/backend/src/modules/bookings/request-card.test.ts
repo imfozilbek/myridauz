@@ -39,11 +39,11 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
     expect(burned.pin).toBe(false);
   });
 
-  it('the first offer rings under the card: who, when, the share, and a button to the offer', () => {
+  it('the first offer rings under the card: who, when, the share; the button opens its sheet (G68)', () => {
     const offer = { id: 'o1', departAt: NOW + 3_600_000, price: 95_000, driver: { firstName: 'Jasur' } };
     const ring = firstOfferRing(loadBrand(), fakeRequest('r1'), offer as never, false);
     expect(ring.text).toMatch(/^📨 Soʻrovingizga taklif keldi: Jasur, \d\d:\d\d, 95\s000\ssoʻm$/u);
     expect(ring.card).toBe('request:r1');
-    expect(JSON.stringify(ring.markup)).toContain('?offer=o1');
+    expect(JSON.stringify(ring.markup)).toContain('?sheet=o1');
   });
 });

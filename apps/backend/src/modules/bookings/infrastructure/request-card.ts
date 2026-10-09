@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { OFFER_LINK, REQUEST_LINK, tashkentDayStart, type Offer } from '@platform/contracts';
+import { REQUEST_LINK, SHEET_LINK, tashkentDayStart, type Offer } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
@@ -70,7 +70,8 @@ export const firstOfferRing = (
     price: formatMoney(offer.price),
   }),
   markup: {
-    inline_keyboard: [[appButton(brand, 'passenger', t('bot.open'), { name: OFFER_LINK, id: offer.id })]],
+    // The main screen with the sheet of the offer: «Qabul qilish» in one tap (G68, docs/122).
+    inline_keyboard: [[appButton(brand, 'passenger', t('bot.open'), { name: SHEET_LINK, id: offer.id })]],
   },
   card: passengerRequestCard(request.id),
   quiet,

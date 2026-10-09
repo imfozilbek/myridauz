@@ -45,7 +45,7 @@ const cardOf = (id: number) => telegram.sentTo(id).find((sent) => sent.method ==
 
 // A message or a call in the chat of a seat rings under the trip card (G68, docs/122 rule 5).
 describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
-  it('a message rings under the trip card with a button to the chat; a read rings nothing', async () => {
+  it('a message rings under the trip card; its button opens the sheet of it; a read rings nothing', async () => {
     const seat = await confirmedSeat();
     const card = cardOf(PASSENGER);
     const signals = botSignals(testEnv);
@@ -55,7 +55,7 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     expect(ring?.body.text).toMatch(/^💬 .+ sizga xabar yozdi$/u);
     expect(ring?.body.reply_parameters).toMatchObject({ message_id: card?.id });
     expect(ring?.body).not.toHaveProperty('disable_notification');
-    expect(JSON.stringify(ring?.body.reply_markup)).toContain(`chat=${seat.chatKey}`);
+    expect(JSON.stringify(ring?.body.reply_markup)).toContain(`sheet=${seat.chatKey}`);
     const before = telegram.sentTo(PASSENGER).filter((sent) => sent.method === 'sendMessage').length;
     await signals.read(passenger, seat.chatKey);
     expect(telegram.sentTo(PASSENGER).filter((sent) => sent.method === 'sendMessage')).toHaveLength(before);

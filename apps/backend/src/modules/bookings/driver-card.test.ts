@@ -85,6 +85,8 @@ describe('a request in the driver bot, answered right there (docs/122, mockup g6
     expect(buttons(shown)).toContain(`ask:${madina.id}:yes`);
     expect(buttons(shown)).toContain(`ask:${madina.id}:no`);
     expect(buttons(shown)).toContain('💬 Chat');
+    // «Ilovada ochish» opens the main screen with the sheet of this request (G68, mockup g68/7).
+    expect(buttons(shown)).toContain(`?sheet=${madina.id}`);
     // A request refreshes the open app of the driver, at night too, when it comes quietly (docs/64).
     expect({ loud: shown.loud, answers: shown.answers, refresh: shown.refresh }).toEqual({
       loud: true,
