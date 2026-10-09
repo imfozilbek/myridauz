@@ -4,8 +4,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 11px 18px 16px;
+  padding: 11px 17px 18px;
   text-align: center;
+}
+
+/* The grabber of the mockups g68/7, g68/8: wider and lighter than the one of g60. */
+.action-sheet .sheet-grab {
+  width: 40px;
+  background: var(--reg-route-line);
+}
+
+.action-sheet .sheet-face {
+  margin-top: 12px;
 }
 
 /* «1 / 3» at the top right while more things wait (mockup g68/7 screen 5). */
@@ -22,15 +32,18 @@
   color: var(--reg-ink);
 }
 
-/* A ringing call: a soft halo around the face (mockup g68/8 «Qoʻngʻiroq»). */
+/* A ringing call: two soft rings around the face (mockup g68/8 «Qoʻngʻiroq»). */
 .action-calling .sheet-face {
+  margin-top: 11px;
   border-radius: 50%;
-  box-shadow: 0 0 0 6px var(--reg-soft);
+  box-shadow:
+    0 0 0 7px color-mix(in srgb, var(--reg-strong) 20%, transparent),
+    0 0 0 13px color-mix(in srgb, var(--reg-strong) 10%, transparent);
 }
 
 .action-kicker {
-  margin-top: 8px;
-  font-size: 12.5px;
+  margin-top: 7.1px;
+  font-size: 13.2px;
   font-weight: 700;
   line-height: 15px;
   letter-spacing: 0.04em;
@@ -39,7 +52,7 @@
 }
 
 .action-title {
-  margin-top: 3px;
+  margin-top: 3.2px;
   font-size: 22px;
   line-height: 26px;
 }
@@ -48,118 +61,44 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 3px;
-  font-size: 14px;
-  line-height: 17px;
-  color: var(--reg-muted);
-}
-
-.action-block {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  align-self: stretch;
-  margin-top: 12px;
-  padding: 10px 13px;
-  border-radius: 12px;
-  background: var(--tgui--secondary_bg_color);
-  text-align: left;
-  font-size: 14px;
+  margin-top: 0.5px;
+  font-size: 14.8px;
   line-height: 18px;
-  color: var(--reg-muted);
-}
-
-.action-block-head {
-  font-size: 15px;
-  line-height: 18px;
-  color: var(--reg-ink);
-}
-
-.action-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.action-row b {
-  font-size: 15px;
-  color: var(--reg-ink);
-}
-
-.action-quote {
-  font-size: 15px;
-  line-height: 19px;
-  color: var(--reg-ink);
-}
-
-.action-car {
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-
-.action-car-icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  background: var(--reg-card);
-  color: var(--reg-muted);
-}
-
-.action-car-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  color: var(--reg-ink);
+  color: var(--reg-secondary);
 }
 
 .action-alert {
-  margin-top: 10px;
+  margin-top: 7.3px;
   font-size: 13.5px;
   font-weight: 700;
   line-height: 17px;
   color: var(--reg-text);
 }
 
-.action-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.action-chip {
-  padding: 5px 11px;
-  border: 1px solid var(--reg-divider);
-  border-radius: 14px;
-  background: var(--reg-card);
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 17px;
-  color: var(--reg-ink);
-}
-
 .action-buttons {
   display: flex;
   gap: 9px;
   align-self: stretch;
-  margin-top: 10px;
+  margin-top: 10.5px;
 }
 
-.action-main,
-.action-second {
-  min-height: 54px;
+/* The words stay whole in a half-width button: the gap of the mockup, the content in the middle,
+   a smaller font on a narrow phone (docs/121). */
+.action-buttons .action-main,
+.action-buttons .action-second {
+  gap: 8px;
+  min-height: 55px;
+  padding-inline: 4px;
   border-radius: 14px;
-  font-size: 17px;
+  font-size: clamp(13px, calc(7.5vw - 10px), 17px);
+}
+
+.action-buttons button span {
+  font-size: inherit;
 }
 
 .action-second {
+  background: var(--tgui--secondary_bg_color);
   color: var(--reg-danger-text);
 }
 
@@ -168,8 +107,9 @@
   color: var(--reg-card);
 }
 
+/* «Javob berish» is the bright green of the mockup, the green of «from» (g68/8 «Qoʻngʻiroq»). */
 .action-calling .action-main {
-  background: var(--reg-success);
+  background: var(--reg-from);
 }
 
 .action-foot,

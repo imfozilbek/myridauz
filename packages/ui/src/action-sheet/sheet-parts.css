@@ -1,0 +1,106 @@
+/* The short cards of a sheet (G68, mockups g68/7, g68/8): the trip, the words, the car. */
+.action-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-self: stretch;
+  margin-top: 13.5px;
+  padding: 10px 15px;
+  border-radius: 12px;
+  background: var(--tgui--secondary_bg_color);
+  text-align: left;
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--reg-muted);
+}
+
+/* The buttons right under a trip card stand lower, under the car of a meeting higher (g68/7, g68/8). */
+.action-block + .action-buttons {
+  margin-top: 15px;
+}
+
+.action-car + .action-buttons {
+  margin-top: 10px;
+}
+
+.action-block-head {
+  margin-bottom: 1px;
+  font-size: 15px;
+  line-height: 17px;
+  color: var(--reg-ink);
+}
+
+.action-row {
+  display: flex;
+  line-height: 19.4px;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.action-row b {
+  font-size: 15px;
+  color: var(--reg-ink);
+}
+
+.action-quote {
+  font-size: 15.7px;
+  line-height: 17.5px;
+  color: var(--reg-ink);
+}
+
+.action-car {
+  flex-direction: row;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 13px 12px;
+}
+
+.action-car-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 70px;
+  height: 47px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--reg-off), var(--reg-bg));
+  color: var(--reg-muted);
+}
+
+.action-car-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: var(--reg-ink);
+}
+
+.action-car-text b {
+  font-size: 15.3px;
+  line-height: 19px;
+}
+
+/* The ready answers of a message and a meeting (mockup g68/8 «Xabar», «Uchrashuv»). */
+.action-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.action-chip {
+  padding: 6.35px 12.5px;
+  border: 1px solid var(--reg-divider);
+  border-radius: 16px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 14.2px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--reg-ink);
+}
+
+/* The plate under the name is as low as the line of the mockups (g68/8 «Taklif», «Qoʻngʻiroq»). */
+.action-sheet .uz-plate-s {
+  --plate-h: 20px;
+}

@@ -32,7 +32,12 @@ export function useOfferItems(directory: PlaceDirectory, go: HomeGo): ActionItem
     haptic.success();
     refresh();
   };
-  return waiting.map((offer) => {
+  // One request is one thing to answer: its first offer, the others behind «Barcha takliflar (n)»
+  // (mockup g68/8 «Taklif»). The bot rings with the first offer too (docs/122).
+  const firsts = waiting.filter(
+    (offer, at) => waiting.findIndex((o) => o.requestId === offer.requestId) === at,
+  );
+  return firsts.map((offer) => {
     const { driver } = offer;
     const same = waiting.filter((other) => other.requestId === offer.requestId).length;
     const pickup = offer.pitak ? t('way.card.pitak', { pitak: offer.pitak }) : t('way.card.door');

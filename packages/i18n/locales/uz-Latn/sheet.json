@@ -11,7 +11,6 @@
   "request.kicker": "Yangi soʻrov",
   "request.pickup": "Olib ketish",
   "request.price": "{seats} joy × {price}",
-  "request.commission": "Komissiya, safar boʻlmasa qaytadi",
   "request.left": "Javob berish uchun {minutes} daqiqa",
   "request.leftHours": "Javob berish uchun {hours} soat",
   "request.confirm": "Tasdiqlash",

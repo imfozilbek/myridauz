@@ -40,7 +40,7 @@ describe('the sheet of a new request (G68)', () => {
     expect(screen.getByText('Qatortol atrofi')).toBeTruthy();
     expect(screen.getByText(/^2 joy × 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
-    expect(screen.getByText('Komissiya, safar boʻlmasa qaytadi')).toBeTruthy();
+    expect(screen.getByText('Komissiya')).toBeTruthy();
     expect(screen.getByText(/^19.000$/u)).toBeTruthy();
     expect(screen.getByText('Javob berish uchun 29 daqiqa')).toBeTruthy();
     await tap('Keyinroq');

@@ -22,10 +22,18 @@ describe('the unread chats and a ready answer (G68)', () => {
     const fetch = vi.fn<Fetch>(async (url) =>
       String(url).endsWith('/unread') ? Response.json({ chats }) : new Response(null, { status: 204 }),
     );
-    const client = createChatClient({ baseUrl: 'https://api.test', fetch, app: 'passenger', initData: 'a=1' });
+    const client = createChatClient({
+      baseUrl: 'https://api.test',
+      fetch,
+      app: 'passenger',
+      initData: 'a=1',
+    });
     expect(await client.unread()).toEqual(chats);
     await client.answer(key, 'Yaxshi');
     expect(fetch.mock.calls[1]?.[0]).toBe(`https://api.test/chats/${key}/messages`);
-    expect(fetch.mock.calls[1]?.[1]).toMatchObject({ method: 'POST', body: JSON.stringify({ text: 'Yaxshi' }) });
+    expect(fetch.mock.calls[1]?.[1]).toMatchObject({
+      method: 'POST',
+      body: JSON.stringify({ text: 'Yaxshi' }),
+    });
   });
 });

@@ -35,7 +35,9 @@ describe('the unread messages of a chat (G53)', () => {
       { key: BOOKING, count: 2, text: 'Grand oldida boʻlaman', at: 3 },
       { key: OFFER, count: 1, text: 'Ha', at: 2 },
     ]);
-    expect(await lastUnread(env, 10, 'driver')).toEqual([{ key: TALK, count: 1, text: 'Qayerdasiz?', at: 2 }]);
+    expect(await lastUnread(env, 10, 'driver')).toEqual([
+      { key: TALK, count: 1, text: 'Qayerdasiz?', at: 2 },
+    ]);
   });
 
   it('forgets every counter of a deleted account', async () => {

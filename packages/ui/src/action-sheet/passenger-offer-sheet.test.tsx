@@ -40,8 +40,11 @@ describe('the sheet of a new offer (G68)', () => {
     expect(screen.getByText('2 joy')).toBeTruthy();
     expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
+    // The bottom panel of the main screen stands above any sheet: it leaves while one is open.
+    expect(document.querySelector('.home-dock')).toBeNull();
     await tap('Keyinroq');
     await sheetClosed();
+    expect(document.querySelector('.home-dock')).not.toBeNull();
   });
 
   it('«Qabul qilish» books the seat in one tap and says so on top', async () => {
@@ -52,11 +55,14 @@ describe('the sheet of a new offer (G68)', () => {
     await sheetClosed();
   });
 
-  it('two offers: «Barcha takliflar (2)» opens the request with its offers', async () => {
+  it('two offers: one sheet, «Barcha takliflar (2)» opens the request with its offers', async () => {
     passenger([
       { ...offer, id: 'o13' },
       { ...offer, id: 'o14' },
     ]);
+    // One request is one thing to answer: no «1 / 2» (mockup g68/8 «Taklif»).
+    expect(await screen.findByText('Barcha takliflar (2)')).toBeTruthy();
+    expect(screen.queryByText('1 / 2')).toBeNull();
     await tap('Barcha takliflar (2)');
     expect(await screen.findByText(`opened ${REQUEST_LINK}:r1`)).toBeTruthy();
     await sheetClosed();

@@ -1,5 +1,6 @@
 import { UzPlate } from '../plate/uz-plate';
 import { Icon } from '../icons';
+import './sheet-parts.css';
 
 // One row of the short card: «2 joy × 100 000 · 200 000» (mockup g68/7 screen 3).
 export type BlockRow = { readonly label: string; readonly value?: string; readonly strong?: boolean };
@@ -45,7 +46,7 @@ export function CarBlock({ car, plate }: { readonly car: string; readonly plate:
   return (
     <div className="action-block action-car">
       <span className="action-car-icon" aria-hidden>
-        <Icon name="carSide" size={22} />
+        <Icon name="carSide" size={26} />
       </span>
       <span className="action-car-text">
         <b>{car}</b>

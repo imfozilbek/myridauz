@@ -62,7 +62,7 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
               value: formatNumber(price * seats),
               strong: true,
             },
-            { label: t('sheet.request.commission'), value: formatNumber(commission) },
+            { label: t('bookings.offer.commission'), value: formatNumber(commission) },
           ]}
         />
       ),

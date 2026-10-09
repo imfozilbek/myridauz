@@ -90,8 +90,9 @@ export function StartFlow(props: StartFlowProps) {
           onOpen={openAction}
           onProfile={openProfile}
         />
-        {/* After the main screen: the block paints the bottom bar after the screen does (G66). */}
-        {dock?.(go)}
+        {/* After the main screen: the block paints the bottom bar after the screen does (G66). It
+            stands above the sheets of the screen, so it leaves while one is open (G68, lesson 199). */}
+        {sheet ? null : dock?.(go)}
         {/* Under a sheet the native button would cover its buttons (mockups g60/6, g60/7). */}
         {main && !dock && !sheet ? (
           <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} />
