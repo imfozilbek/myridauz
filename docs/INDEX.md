@@ -134,7 +134,7 @@
 | 129 | [129-after-trip.md](129-after-trip.md) | После поездки: сроки (оценка, жалоба, чат, звонок, неявка) и экраны |
 | 130 | [130-g58-texts.md](130-g58-texts.md) | G58: новые тексты регистрации, проверки фото, канала зоны на согласие |
 | 131 | [131-lessons-learned-9.md](131-lessons-learned-9.md) | Журнал уроков (9): №141 и дальше |
-| 142, 147 | [142-lessons-learned-10.md](142-lessons-learned-10.md), [147-lessons-learned-11.md](147-lessons-learned-11.md) | Журнал уроков (10, 11): №162 и №183 и дальше |
+| 142, 147, 157 | [142-lessons-learned-10.md](142-lessons-learned-10.md), [147-lessons-learned-11.md](147-lessons-learned-11.md), [157-lessons-learned-12.md](157-lessons-learned-12.md) | Журнал уроков (10, 11, 12): №162, №183 и №204 и дальше |
 | 132, 133 | [132-g59-texts.md](132-g59-texts.md), [133-g59-pixel-perfect.md](133-g59-pixel-perfect.md) | G59: новые тексты поиска и брони на согласие. G59: сверка Pixel Perfect экранов с 3 по 10 и спорные места макета. |
 | 134, 135 | [134-g60-texts.md](134-g60-texts.md), [135-g60-pixel-perfect.md](135-g60-pixel-perfect.md) | G60: новые тексты брони, чата, встречи и «после поездки» на согласие владельца. G60: сверка Pixel Perfect экранов пути 3 и спорные места макета. |
 | 136, 137 | [136-g61-texts.md](136-g61-texts.md), [137-g61-pixel-perfect.md](137-g61-pixel-perfect.md) | G61: новые тексты заявки, «Mening soʻrovim», правила салона и бота на согласие владельца. G61: сверка Pixel Perfect заявки и «Mening soʻrovim», спорные места макета. |
