@@ -23,10 +23,10 @@ import {
 } from '../application/admin';
 import type { PricingDeps } from '../application/ports';
 import { ownerOnly } from '../../../shared/auth/owner-only';
+import { teamOnly } from '../../../shared/auth/team-only';
 import { recommendPrice } from '../application/recommend';
 
 const STATUS = {
-  'auth.not_admin': 403,
   'pricing.not_found': 404,
   'pricing.invalid_input': 400,
   'pricing.out_of_bounds': 422,
@@ -61,14 +61,11 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
         context.header('cache-control', PUBLIC_CACHE);
         return context.json({ from, to, km, price });
       })
-      .use(`${ADMIN_PRICING_PATH}/*`, async (context, next) =>
-        context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
-      )
-      .use(ADMIN_PRICING_PATH, async (context, next) =>
-        context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
-      )
+      // Prices are the owner's, reading too: a moderator has no «Boshqaruv» (docs/120, G75).
+      .use(`${ADMIN_PRICING_PATH}/*`, teamOnly, ownerOnly)
+      .use(ADMIN_PRICING_PATH, teamOnly, ownerOnly)
       .get(ADMIN_PRICING_PATH, async (context) => context.json(await pricingState(deps(context.env))))
-      .post(ADMIN_PRICING_PATH, ownerOnly, async (context) => {
+      .post(ADMIN_PRICING_PATH, async (context) => {
         const input = pricingVariablesSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const by = context.get('session').user.id;
@@ -79,7 +76,7 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
         if (!input.success) return fail(context, 'pricing.invalid_input');
         return context.json(await preview(deps(context.env), input.data));
       })
-      .post(ADMIN_PRICING_ROLLBACK_PATH, ownerOnly, async (context) => {
+      .post(ADMIN_PRICING_ROLLBACK_PATH, async (context) => {
         const input = rollbackSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const result = await rollback(deps(context.env), input.data.version, context.get('session').user.id);
@@ -88,7 +85,7 @@ export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
       .get(ADMIN_DIRECTIONS_PATH, async (context) =>
         context.json({ directions: await directions(deps(context.env)) }),
       )
-      .put(ADMIN_DIRECTIONS_PATH, ownerOnly, async (context) => {
+      .put(ADMIN_DIRECTIONS_PATH, async (context) => {
         const input = directionPriceSchema.safeParse(await body(context));
         if (!input.success) return fail(context, 'pricing.invalid_input');
         const result = await setDirection(deps(context.env), input.data, context.get('session').user.id);

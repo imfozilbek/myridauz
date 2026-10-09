@@ -1,6 +1,8 @@
 import { ADMIN_WALLETS_PATH, adjustmentSchema, WALLET_PATH, type ApiErrorCode } from '@platform/contracts';
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { ownerOnly } from '../../../shared/auth/owner-only';
+import { teamOnly } from '../../../shared/auth/team-only';
 import { sendSignals } from '../../feed';
 import type { WalletDeps } from '../application/ports';
 import { adminWallets } from '../application/admin-wallets';
@@ -9,8 +11,6 @@ import { walletDetail } from '../application/wallet-detail';
 import { walletView } from '../application/wallet-view';
 
 const STATUS = {
-  'auth.not_admin': 403,
-  'auth.not_owner': 403,
   'wallet.invalid_input': 400,
   'wallet.not_enough': 422,
   'wallet.not_found': 404,
@@ -38,19 +38,15 @@ export function walletRoutes(deps: (env: Bindings) => WalletDeps) {
         const detail = await walletDetail(deps(context.env), id, context.req.param('operationId'));
         return detail ? context.json(detail) : fail(context, 'wallet.not_found');
       })
-      .use(`${ADMIN_WALLETS_PATH}/*`, async (context, next) =>
-        context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
-      )
-      .use(ADMIN_WALLETS_PATH, async (context, next) =>
-        context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
-      )
+      // The wallets are the owner's, reading too (docs/120, G75).
+      .use(`${ADMIN_WALLETS_PATH}/*`, teamOnly, ownerOnly)
+      .use(ADMIN_WALLETS_PATH, teamOnly, ownerOnly)
       .get(ADMIN_WALLETS_PATH, async (context) =>
         context.json(await adminWallets(deps(context.env), pageOf(context.req.query('page')))),
       )
       .get(ONE, async (context) => context.json(await walletView(deps(context.env), await driverOf(context))))
       .post(`${ONE}/adjust`, async (context) => {
         const session = context.get('session');
-        if (session.teamRole !== 'owner') return fail(context, 'auth.not_owner');
         const input = adjustmentSchema.safeParse(await context.req.json().catch(() => null));
         if (!input.success) return fail(context, 'wallet.invalid_input');
         const driverId = await driverOf(context);

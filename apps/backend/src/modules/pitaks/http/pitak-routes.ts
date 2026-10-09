@@ -5,22 +5,21 @@ import {
   PITAK_OF_DIRECTION_PATH,
   type ApiErrorCode,
 } from '@platform/contracts';
-import { Hono, type Context, type MiddlewareHandler } from 'hono';
+import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
+import { ownerOnly } from '../../../shared/auth/owner-only';
+import { teamOnly } from '../../../shared/auth/team-only';
 import { allPitaks, pitakHistory, removeDirection, saveDirection, savePitak } from '../application/admin';
 import type { PitaksDeps } from '../application/ports';
 import { pitakOfDirection } from '../application/pitaks';
 
 const STATUS = {
-  'auth.not_admin': 403,
   'pitaks.not_found': 404,
   'pitaks.invalid_input': 400,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const NO_CONTENT = 204;
 
 const fail = (context: Context<AppEnv>, error: keyof typeof STATUS) => context.json({ error }, STATUS[error]);
-const teamOnly: MiddlewareHandler<AppEnv> = async (context, next) =>
-  context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin');
 const body = (context: Context<AppEnv>) => context.req.json().catch(() => null);
 
 // The pitaks of the team (docs/72): every admin keeps the list, the history says who changed what.
@@ -29,11 +28,12 @@ export function pitakRoutes(deps: (env: Bindings) => PitaksDeps) {
   const direction = `${ADMIN_PITAK_DIRECTIONS_PATH}/:from/:to`;
   return (
     new Hono<AppEnv>()
-      .use(ADMIN_PITAKS_PATH, teamOnly)
-      .use(one, teamOnly)
-      .use(ADMIN_PITAK_HISTORY_PATH, teamOnly)
-      .use(ADMIN_PITAK_DIRECTIONS_PATH, teamOnly)
-      .use(direction, teamOnly)
+      // The pitaks are the owner's, reading too: a moderator has no «Boshqaruv» (docs/120, G75).
+      .use(ADMIN_PITAKS_PATH, teamOnly, ownerOnly)
+      .use(one, teamOnly, ownerOnly)
+      .use(ADMIN_PITAK_HISTORY_PATH, teamOnly, ownerOnly)
+      .use(ADMIN_PITAK_DIRECTIONS_PATH, teamOnly, ownerOnly)
+      .use(direction, teamOnly, ownerOnly)
       // Everyone: the pitak of a direction of regions, when people may see it (docs/71).
       .get(PITAK_OF_DIRECTION_PATH, async (context) => {
         const { from = '', to = '' } = context.req.query();

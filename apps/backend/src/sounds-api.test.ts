@@ -21,13 +21,16 @@ describe('the sounds of the brand (G54, docs/115)', () => {
     expect(response.headers.get('cache-control')).toBe('public, max-age=60');
     expect(await response.json()).toEqual({ set: '3' });
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
-    const seen = (await (await call(ADMIN_SOUNDS_PATH, MODERATOR, { app: 'admin' })).json()) as SoundsState;
+    // «Ovozlar» is in «Boshqaruv»: the owner's only, reading too (docs/120, G75).
+    const hidden = await call(ADMIN_SOUNDS_PATH, MODERATOR, { app: 'admin' });
+    expect([hidden.status, await hidden.json()]).toEqual([403, { error: 'auth.not_owner' }]);
+    const seen = (await (await call(ADMIN_SOUNDS_PATH, OWNER, { app: 'admin' })).json()) as SoundsState;
     expect(seen).toEqual({
       set: '3',
       sets: ['1', '2', '3'],
       changedBy: null,
       changedAt: null,
-      canEdit: false,
+      canEdit: true,
     });
     const refused = await pick(MODERATOR, { set: '1' });
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
