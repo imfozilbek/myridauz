@@ -12,14 +12,12 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic, quote } from '../../../shared/telegram/html';
+import { driverTripCard } from '../../../shared/telegram/card-keys';
 import { appButton } from '../../../shared/telegram/open-button';
 import { whenLines } from './card-when';
 import { roadLines } from './road-order';
 
 const { t, formatMoney, formatTime } = createI18n(DEFAULT_LOCALE);
-
-// The live card of a trip in the driver bot: one per trip, on top of the chat (G68, mockup g68/3).
-export const driverCardKey = (tripId: string) => `trip:${tripId}`;
 
 type Stage = 'published' | 'onWay' | 'arrived' | 'cancelled';
 
@@ -37,10 +35,12 @@ function header(trip: Trip, stage: Stage, bookings: readonly Booking[]): string 
   if (stage === 'cancelled') return bold(t('bot.dcard.cancelled'));
   if (stage === 'arrived') return bold(t('bot.dcard.arrived'));
   if (stage === 'onWay') {
-    // The departure, every pickup and every dropoff: «3 / 5» once both are in the car.
-    const done = 1 + riders.filter((booking) => booking.boardedAt !== null).length;
-    const left = riders.filter((booking) => booking.arrivedAt !== null).length;
-    return bold(t('bot.dcard.onWay', { done: String(done + left), steps: String(1 + 2 * riders.length) }));
+    // The addresses still ahead: a pickup until the passenger got in, a dropoff until they arrived.
+    const left = riders.reduce(
+      (sum, booking) => sum + Number(booking.boardedAt === null) + Number(booking.arrivedAt === null),
+      0,
+    );
+    return bold(left > 0 ? t('bot.dcard.onWay', { count: String(left) }) : t('bot.card.onWay'));
   }
   const taken = riders.reduce((sum, booking) => sum + booking.seats, 0);
   return bold(t('bot.dcard.published', { taken: String(taken), seats: String(trip.seats) }));
@@ -87,7 +87,7 @@ type Facts = {
   readonly now: number;
 };
 
-// The card shows the trip now: published with its passengers, the order of the road on the day
+// The live card of a trip in the driver bot, on top of the chat (G68, mockup g68/3). It shows the trip now: published with its passengers, the order of the road on the day
 // of the trip, arrived or cancelled. On the road it says that the bot keeps quiet (docs/122).
 export function driverCard({ brand, chatId, trip, bookings, places, now }: Facts): Card {
   const stage = stageOf(trip, now);
@@ -106,7 +106,7 @@ export function driverCard({ brand, chatId, trip, bookings, places, now }: Facts
   return {
     bot: 'driver',
     chatId,
-    key: driverCardKey(trip.id),
+    key: driverTripCard(trip.id),
     text,
     footer: italic(t('bot.card.updated', { time: formatTime(new Date(now)) })),
     ...(keyboard ? { markup: { inline_keyboard: keyboard } } : {}),

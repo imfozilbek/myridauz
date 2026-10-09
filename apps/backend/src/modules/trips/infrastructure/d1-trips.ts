@@ -114,9 +114,13 @@ export const d1Trips = (db: D1Database): TripRepository => ({
         .bind(from, to, limit)
         .all<Row>()
     ).results.map(toTrip),
-  completeOver: async (now) => {
-    await db.prepare(`UPDATE trips SET status = 'completed' WHERE ${LIVE} AND ends_at <= ?`).bind(now).run();
-  },
+  completeOver: async (now) =>
+    (
+      await db
+        .prepare(`UPDATE trips SET status = 'completed' WHERE ${LIVE} AND ends_at <= ? RETURNING id`)
+        .bind(now)
+        .all<{ id: string }>()
+    ).results.map((row) => row.id),
   depart: async (id, at) => changed(await db.prepare(DEPART).bind(at, id).run()),
   arrive: async (id, at) => changed(await db.prepare(ARRIVE).bind(at, id, at).run()),
   cancel: async (id) => changed(await db.prepare(CANCEL).bind(id).run()),

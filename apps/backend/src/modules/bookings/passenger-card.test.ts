@@ -49,12 +49,12 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
   it('a request shows no plate yet and opens the booking; a moved time keeps the old one under it', async () => {
     const booking = await asked();
     const waiting = card(booking);
-    expect(waiting.text.split('\n')[0]).toBe('<b>⏳ Javob kutilmoqda</b>');
+    expect(waiting.text.split('\n')[0]).toBe('<b>⏳ Haydovchi javobi kutilmoqda</b>');
     expect(waiting.text).not.toContain('<code>');
     expect(buttons(waiting)).toContain(`?booking=${booking.id}`);
     const later = { ...booking.trip, departAt: booking.trip.departAt + HOUR_MS };
     expect(card({ ...booking, trip: later }, booking.trip.departAt - DAY_MS).text).toMatch(
-      /<i>\d\d:\d\d edi<\/i>/u,
+      /<i>Avval \d\d:\d\d edi<\/i>/u,
     );
   });
 
@@ -66,6 +66,16 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
     expect(onWay.text).toMatch(/≈\s\d\d:\d\d yetib borasiz/u);
     expect(onWay.text).toContain('&lt;Ali&gt;');
     expect(buttons(onWay)).toContain('Yetib keldim');
+  });
+
+  it('after the arrival: «Qaytish safari» finds the trips back, the card leaves the top', async () => {
+    const booking = await asked();
+    const arrived = card({ ...booking, status: 'completed', arrivedAt: 1 });
+    expect(arrived.text.split('\n')[0]).toBe('<b>🏁 Yetib keldingiz</b>');
+    const back = `?find=${booking.trip.to}_${booking.trip.from}_`;
+    expect(buttons(arrived)).toContain('🔁 Qaytish safari');
+    expect(buttons(arrived)).toContain(back);
+    expect(arrived.pin).toBe(false);
   });
 
   it('rings quietly at night, but «2 soat qoldi» wakes the person (docs/122 rule 3)', async () => {
@@ -82,7 +92,7 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
     await tell({ ...booking, status: 'confirmed' }, 'confirmed');
     await tell({ ...booking, status: 'confirmed', pitak: PITAK }, 'soon');
     expect(rings.map((ring) => ring.quiet)).toEqual([true, false]);
-    expect(rings[1]?.text).toMatch(/^🚏 2 soat qoldi: \d\d:\d\d da pitakda boʻling$/u);
+    expect(rings[1]?.text).toMatch(/^🚏 Safarga 2 soat qoldi: \d\d:\d\d da pitakda boʻling$/u);
     expect(rings[0]?.card).toBe(`trip:${booking.id}`);
   });
 });

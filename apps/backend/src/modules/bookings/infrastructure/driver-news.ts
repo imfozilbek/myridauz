@@ -4,15 +4,16 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { escapeHtml } from '../../../shared/telegram/html';
-import { askCard } from './ask-card';
-import { driverCard, driverCardKey } from './driver-card';
+import { askCard, askCardKey } from './ask-card';
+import { driverTripCard } from '../../../shared/telegram/card-keys';
+import { driverCard } from './driver-card';
 import { firstPickup } from './road-order';
 
 const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // The news of a trip in the driver bot (G68, docs/122): a new request rings as its own card, the
 // rest are short rings under the trip card.
-export type DriverRing = 'asked' | 'cancelled' | 'offerAccepted' | 'came' | 'soon';
+export type DriverRing = 'asked' | 'askAgain' | 'cancelled' | 'offerAccepted' | 'came' | 'soon';
 
 // «2 soat qoldi» wakes the driver at night; on the road only a cancel rings (docs/122).
 const ANY_HOUR: ReadonlySet<DriverRing> = new Set(['soon']);
@@ -28,9 +29,7 @@ function quietFor(trip: Trip, ring: DriverRing | undefined, now: number): boolea
 
 const riding = (bookings: readonly Booking[]) => bookings.filter((booking) => booking.status === 'confirmed');
 
-function ringText(trip: Trip, bookings: readonly Booking[], ring: DriverRing, about?: Booking): string {
-  if (ring !== 'soon' && ring !== 'asked')
-    return t(`bot.dring.${ring}`, { name: escapeHtml(about?.passenger.firstName ?? '') });
+function soonText(trip: Trip, bookings: readonly Booking[]): string {
   const riders = riding(bookings);
   const first = firstPickup(riders);
   const early = first?.booking.pitak ? AT_PITAK_EARLY_MINUTES * MINUTE_MS : 0;
@@ -39,6 +38,23 @@ function ringText(trip: Trip, bookings: readonly Booking[], ring: DriverRing, ab
     time: formatTime(new Date(trip.departAt - early)),
     place: first?.place ?? '',
   });
+}
+
+// The words of a ring; none for a new request (its own card) or a request answered meanwhile.
+function ringText(trip: Trip, bookings: readonly Booking[], ring: DriverRing, about?: Booking) {
+  const name = escapeHtml(about?.passenger.firstName ?? '');
+  switch (ring) {
+    case 'asked':
+      return null;
+    case 'soon':
+      return soonText(trip, bookings);
+    case 'askAgain':
+      return about?.status === 'requested'
+        ? t('bot.dring.askAgain', { name, time: formatTime(new Date(about.expiresAt)) })
+        : null;
+    default:
+      return t(`bot.dring.${ring}`, { name });
+  }
 }
 
 type DriverTrip = {
@@ -74,7 +90,9 @@ export const driverNews =
     const ask = booking && askCard({ brand, chatId, booking, quiet });
     // Only «asked» sends a request anew; any other news edits the one sent before.
     const asks = ask ? [ring === 'asked' ? ask : { ...ask, editOnly: true }] : [];
-    const text = ring && ring !== 'asked' ? ringText(trip, bookings, ring, booking) : null;
-    const rings: Ring[] = text ? [{ bot: 'driver', chatId, text, card: driverCardKey(trip.id), quiet }] : [];
+    const text = ring ? ringText(trip, bookings, ring, booking) : null;
+    // «Still waits» answers the request itself, where its buttons are; the rest the trip card.
+    const under = ring === 'askAgain' && booking ? askCardKey(booking.id) : driverTripCard(trip.id);
+    const rings: Ring[] = text ? [{ bot: 'driver', chatId, text, card: under, quiet }] : [];
     await show([card, ...asks], rings);
   };

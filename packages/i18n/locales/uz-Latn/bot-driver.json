@@ -1,6 +1,6 @@
 {
   "dcard.published": "📣 Eʼlon qilindi · {taken} / {seats} joy band",
-  "dcard.onWay": "🚗 Yoʻldasiz · {done} / {steps}",
+  "dcard.onWay": "🚗 Yoʻldasiz · yana {count} ta manzil",
   "dcard.arrived": "🏁 Yetib keldingiz",
   "dcard.cancelled": "❌ Safar bekor qilindi",
   "dcard.passengers": "👥 Yoʻlovchilar",
@@ -15,8 +15,8 @@
   "dcard.open": "📋 Safarni ochish",
   "dcard.share": "🔗 Havolani yuborish",
   "dcard.arrive": "🏁 Yetib keldik",
-  "ask.who": "🙋 {name} ⭐ {rating} · {seats} joy",
-  "ask.whoNew": "🙋 {name} · yangi yoʻlovchi · {seats} joy",
+  "ask.who": "🙋 Yangi soʻrov: {name} ⭐ {rating} · {seats} joy",
+  "ask.whoNew": "🙋 Yangi soʻrov: {name} · hali bahosi yoʻq · {seats} joy",
   "ask.way": "{from} → {to}",
   "ask.deadline": "{time} gacha javob bering",
   "ask.accept": "✅ Qabul qilish",
@@ -28,8 +28,9 @@
   "ask.noMoney": "Hamyonda komissiya uchun pul yetmaydi. Hisobni toʻldiring.",
   "ask.noSeats": "Safarda boʻsh joy qolmadi.",
   "ask.changed": "Bu soʻrov allaqachon oʻzgargan.",
+  "dring.askAgain": "⏳ {name} hali javobingizni kutyapti: {time} gacha javob bering",
   "dring.cancelled": "🙋 {name} joyini bekor qildi. Komissiya hamyoningizga qaytdi.",
   "dring.offerAccepted": "✅ {name} taklifingizni qabul qildi",
-  "dring.soon": "🚏 2 soat qoldi: {count} yoʻlovchi, birinchisi {time} da · {place}",
-  "dring.came": "📍 {name} keldi"
+  "dring.soon": "🚏 Safarga 2 soat qoldi: {count} yoʻlovchi. Birinchisi {time} da kutadi: {place}",
+  "dring.came": "📍 {name} uchrashuv joyiga keldi"
 }

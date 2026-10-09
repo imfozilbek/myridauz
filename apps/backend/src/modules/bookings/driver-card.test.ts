@@ -60,7 +60,7 @@ describe('the trip card of the driver bot (G68, docs/122, mockup g68/3)', () => 
     const onWay = { ...madina.trip, departedAt: madina.trip.departAt };
     const boarded: Booking = { ...sardor, trip: onWay, boardedAt: onWay.departAt };
     const shown = card([{ ...madina, trip: onWay }, boarded], onWay.departAt + HOUR_MS, onWay);
-    expect(shown.text.split('\n')[0]).toBe('<b>🚗 Yoʻldasiz · 2 / 3</b>');
+    expect(shown.text.split('\n')[0]).toBe('<b>🚗 Yoʻldasiz · yana 1 ta manzil</b>');
     expect(shown.text).toContain('1. 🚏 Ali, 1 joy · Chilonzor pitagi · ✅ chiqdi');
     expect(shown.text).toContain('2. 🏁 Ali tushadi · Registon yaqinida');
     expect(shown.text).not.toContain('Dilnoza');
@@ -85,7 +85,7 @@ describe('a request in the driver bot, answered right there (docs/122, mockup g6
     const rated = { ...madina, passenger: { ...madina.passenger, rating: { average: 4.8, count: 5 } } };
     const shown = askCard({ brand: loadBrand(), chatId: 7, booking: rated, quiet: false });
     const lines = shown.text.split('\n');
-    expect(lines[0]).toBe('🙋 <b>Dilnoza</b> ⭐ 4,8 · 2 joy');
+    expect(lines[0]).toBe('🙋 Yangi soʻrov: <b>Dilnoza</b> ⭐ 4,8 · 2 joy');
     expect(lines[1]).toBe('🏠 Chorsu bozori → 🏠 Urgut markazi');
     expect(lines[2]).toMatch(/^<b>\d\d:\d\d gacha javob bering<\/b>$/u);
     expect(buttons(shown)).toContain(`ask:${madina.id}:yes`);

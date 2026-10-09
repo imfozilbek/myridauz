@@ -85,15 +85,18 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
 // The live trip cards (G68, docs/122): the reminders and the trip events refresh them and ring under
 // them; a request card is answered right in the driver bot.
 export { passengerNewsOf };
-export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon') =>
-  driverNewsOf(env, bookingsDeps(env))(tripId, undefined, ring);
+export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon' | 'askAgain', about?: string) =>
+  driverNewsOf(env, bookingsDeps(env))(tripId, about, ring);
+// The requests the driver did not answer in half of the time (G68, docs/122).
+export const requestsPastHalf = (env: Bindings, now: number) => bookingStore(env).waitingPastHalf(now);
 export { answerFromBot } from './bot-answer';
 export { ASK_PREFIX } from './infrastructure/ask-card';
 
-// «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1).
-export async function tellTripDeparted(env: Bindings, tripId: string): Promise<void> {
+// «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1); the
+// end of the trip only edits the cards: «Yetib keldingiz», off the top of the chat.
+export async function tellTripPassengers(env: Bindings, tripId: string, ring?: 'departed'): Promise<void> {
   const news = passengerNewsOf(env);
-  for (const booking of await confirmedBookings(env, [tripId])) await news(booking, 'departed');
+  for (const booking of await confirmedBookings(env, [tripId])) await news(booking, ring);
 }
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.

@@ -28,7 +28,7 @@ function ordered(start: Point | null, stops: readonly Stop[]): Stop[] {
   return [...(from ? nearestOrder(from, located) : located), ...rest];
 }
 
-// The first pickup of the road, for «2 soat qoldi: … birinchisi 07:50 da» (mockup g68/3).
+// The first pickup of the road, for «Safarga 2 soat qoldi: … Birinchisi 07:50 da kutadi» (mockup g68/3).
 export const firstPickup = (riders: readonly Booking[]) => ordered(null, riders.map(pickupOf))[0];
 
 // «Yoʻl tartibi» of the trip day (mockup g68/3): the pickups, then the dropoffs; who got in is marked.

@@ -27,8 +27,8 @@ export type TripRepository = {
   between(from: number, to: number, limit: number): Promise<TripRecord[]>;
   // Trips that left in [from, to), not cancelled, the latest first: the real prices (docs/09).
   pricedBetween(from: number, to: number, limit: number): Promise<TripRecord[]>;
-  // The Cron job: trips over by now become completed (docs/35).
-  completeOver(now: number): Promise<void>;
+  // The Cron job: trips over by now become completed (docs/35); the ids of those it completed.
+  completeOver(now: number): Promise<string[]>;
   // «Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35): one conditional write each, false when a
   // cancel, the Cron or a second tap came first. The arrival takes the time of the trip as the
   // departure when there was none.
@@ -42,7 +42,8 @@ export type TripRepository = {
 
 // retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:
 // «Yoʻlga chiqdim» (G63).
-export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper' | 'departed' | 'arrived';
+export type TripEvent =
+  'published' | 'updated' | 'retimed' | 'cheaper' | 'departed' | 'arrived' | 'completed';
 
 // Someone whose open Mini App refreshes its screens (docs/64).
 type Watcher = { readonly userId: number; readonly app: 'driver' | 'passenger' };

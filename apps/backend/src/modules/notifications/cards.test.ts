@@ -19,7 +19,12 @@ function telegram(refuseEdit?: string) {
 }
 
 const env = () => ({ PASSENGER_BOT_TOKEN: 'p', DB: testD1() }) as never;
-const CARD: Card = { bot: 'passenger', chatId: 5, key: 'trip:b1', text: '<b>Javob kutilmoqda</b>' };
+const CARD: Card = {
+  bot: 'passenger',
+  chatId: 5,
+  key: 'trip:b1',
+  text: '<b>Haydovchi javobi kutilmoqda</b>',
+};
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -53,7 +58,12 @@ describe('live cards of the bots (G68, docs/122 rule 1)', () => {
   it('a ring answers its card with sound; at night or on the road it comes quietly', async () => {
     const calls = telegram();
     const bindings = env();
-    const ring = { bot: 'passenger' as const, chatId: 5, text: '✅ Jasur tasdiqladi', card: CARD.key };
+    const ring = {
+      bot: 'passenger' as const,
+      chatId: 5,
+      text: '✅ Jasur joyingizni tasdiqladi',
+      card: CARD.key,
+    };
     await showCards(bindings, [CARD], [{ ...ring, quiet: false }]);
     await showCards(bindings, [], [{ ...ring, quiet: true }]);
     expect(calls[1]?.body).toMatchObject({ reply_parameters: { message_id: 70 } });

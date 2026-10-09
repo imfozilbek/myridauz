@@ -4,7 +4,8 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
-import { passengerCard, passengerCardKey } from './passenger-card';
+import { passengerTripCard } from '../../../shared/telegram/card-keys';
+import { passengerCard } from './passenger-card';
 
 const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 
@@ -14,7 +15,7 @@ type PassengerRing =
 
 // The trip starts now: these ring at night too (docs/122 rule 3, «2 soat qoldi»).
 const ANY_HOUR: ReadonlySet<PassengerRing> = new Set(['soon', 'driverCame']);
-// Mockup g68/1: «2 soat qoldi: 08:20 da pitakda boʻling» for a trip at 08:30.
+// Mockup g68/1: «Safarga 2 soat qoldi: 08:20 da pitakda boʻling» for a trip at 08:30.
 const AT_PITAK_EARLY_MINUTES = 10;
 
 const at = (ms: number) => formatTime(new Date(ms));
@@ -62,7 +63,7 @@ export const passengerNews =
             bot: 'passenger',
             chatId,
             text: ringText(booking, ring),
-            card: passengerCardKey(booking.id),
+            card: passengerTripCard(booking.id),
             quiet,
           },
         ]

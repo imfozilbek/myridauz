@@ -1,4 +1,4 @@
-import { expireBookingsOfTrip, tellBookedOfRetime, tellDriver, tellTripDeparted } from './modules/bookings';
+import { expireBookingsOfTrip, tellBookedOfRetime, tellDriver, tellTripPassengers } from './modules/bookings';
 import { channels } from './modules/channels';
 import { tellFavoriteFans } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
@@ -18,10 +18,10 @@ const tripChannels = channels(tripOf);
 // unanswered requests (G63); passengers hear it (G68).
 handleTripChange(async (env, tripId, event) => {
   await tellDriver(env, tripId);
-  if (event === 'arrived') return;
+  if (event === 'arrived' || event === 'completed') return tellTripPassengers(env, tripId);
   if (event === 'departed') {
     await expireBookingsOfTrip(env, tripId);
-    await tellTripDeparted(env, tripId);
+    await tellTripPassengers(env, tripId, 'departed');
     return tripChannels.left(env, tripId);
   }
   if (event === 'published') {

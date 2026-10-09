@@ -4,11 +4,16 @@ import type { StoredReview } from '../domain/rating';
 // A ride as the ratings see it: set by the app from the bookings module (module-events.ts).
 export type Ride = {
   readonly bookingId: string;
+  // The trip of the ride: the ask answers its card in the driver bot (G68).
+  readonly tripId: string;
   readonly driverId: number;
   readonly passengerId: number;
   readonly endsAt: number;
   readonly over: boolean;
 };
+
+// Who rates in which bot, and the trip whose card the ask answers (G68).
+export type AskedAt = { readonly rater: 'driver' | 'passenger'; readonly tripId: string };
 
 // The bot asks the rater about the ratee once, then reminds once (docs/24).
 export type Ask = {
@@ -50,12 +55,7 @@ export type RatingsDeps = {
     idOf(publicId: string): Promise<number | undefined>;
   };
   // The bot of the rater: the passenger bot for a passenger, the driver bot for a driver.
-  readonly ask: (
-    ask: Ask,
-    rateeName: string,
-    rater: 'driver' | 'passenger',
-    reminder: boolean,
-  ) => Promise<void>;
+  readonly ask: (ask: Ask, rateeName: string, at: AskedAt, reminder: boolean) => Promise<void>;
   // The team sees the public id, never the Telegram ID (docs/65 A3).
   readonly alertTeam: (person: { name: string; publicId: string }, rating: Rating) => Promise<void>;
   // Contacts in the text become "***", as in the chat (docs/07).

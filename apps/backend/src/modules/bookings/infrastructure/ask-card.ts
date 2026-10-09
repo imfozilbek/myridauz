@@ -4,14 +4,14 @@ import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n'
 import type { Card } from '../../notifications';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
 import { appButton } from '../../../shared/telegram/open-button';
-import { driverCardKey } from './driver-card';
+import { driverTripCard } from '../../../shared/telegram/card-keys';
 
 const { t, formatNumber, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // A request in the driver bot (G68, docs/122, mockup g68/3): the driver answers it right there.
 // «ask:<booking id>:yes» and «ask:<booking id>:no» under it.
 export const ASK_PREFIX = 'ask';
-const askCardKey = (bookingId: string) => `${ASK_PREFIX}:${bookingId}`;
+export const askCardKey = (bookingId: string) => `${ASK_PREFIX}:${bookingId}`;
 
 // What a request became: the card says it instead of the deadline, without buttons.
 const OUTCOMES: Partial<Record<BookingStatus, TranslationKey>> = {
@@ -82,6 +82,6 @@ export function askCard({ brand, chatId, booking, quiet }: Facts): Card {
     text: [...lines, deadline].join('\n'),
     markup: { inline_keyboard: buttons(brand, booking) },
     loud: !quiet,
-    answers: driverCardKey(booking.trip.id),
+    answers: driverTripCard(booking.trip.id),
   };
 }

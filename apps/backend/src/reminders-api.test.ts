@@ -64,6 +64,8 @@ describe('trip reminders (G10, G68)', () => {
     const ring = telegram.find((item) => item.chat === PASSENGER && item.method === 'sendMessage');
     expect(ring?.text).toContain('2 soat qoldi');
     const driverRing = telegram.find((item) => item.chat === DRIVER && item.method === 'sendMessage');
-    expect(driverRing?.text).toMatch(/^🚏 2 soat qoldi: 2 yoʻlovchi, birinchisi \d\d:\d\d da · /u);
+    expect(driverRing?.text).toMatch(
+      /^🚏 Safarga 2 soat qoldi: 2 yoʻlovchi\. Birinchisi \d\d:\d\d da kutadi: /u,
+    );
   });
 });

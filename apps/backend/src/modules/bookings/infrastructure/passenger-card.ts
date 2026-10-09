@@ -4,14 +4,14 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic, mono, quote } from '../../../shared/telegram/html';
+import { passengerTripCard } from '../../../shared/telegram/card-keys';
 import { appButton } from '../../../shared/telegram/open-button';
 import { whenLines } from './card-when';
-import { findOtherButton } from './find-other';
+import { backButton, findOtherButton } from './find-other';
 
 const { t, formatMoney, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 
 // The live card of a seat in the passenger bot: one per booking (G68, docs/122, mockup g68/2).
-export const passengerCardKey = (bookingId: string) => `trip:${bookingId}`;
 
 type Stage = 'waiting' | 'confirmed' | 'onWay' | 'arrived' | 'ended';
 const ENDED: Partial<Record<BookingStatus, 'declined' | 'expired' | 'cancelledByDriver' | 'cancelled'>> = {
@@ -23,7 +23,10 @@ const ENDED: Partial<Record<BookingStatus, 'declined' | 'expired' | 'cancelledBy
 
 function stageOf(booking: Booking): Stage {
   if (ENDED[booking.status]) return 'ended';
+  // The passenger said «Yetib keldim», or the driver «Yetib keldik», or the trip is over.
+  const { trip } = booking;
   if (booking.status === 'completed' || booking.arrivedAt !== null) return 'arrived';
+  if (trip.arrivedAt !== null || trip.status === 'completed') return 'arrived';
   if (booking.boardedAt !== null) return 'onWay';
   return booking.status === 'confirmed' ? 'confirmed' : 'waiting';
 }
@@ -68,7 +71,7 @@ function driverBlock(booking: Booking): string {
   return quote(confirmed && booking.plate ? [line, mono(formatPlate(booking.plate))] : [line]);
 }
 
-function buttons(brand: BrandConfig, booking: Booking, stage: Stage) {
+function buttons(brand: BrandConfig, booking: Booking, stage: Stage, now: number) {
   const open = (text: string) => appButton(brand, 'passenger', text, { name: BOOKING_LINK, id: booking.id });
   const chat = { name: 'chat', id: booking.chatKey };
   const talk = [
@@ -78,6 +81,7 @@ function buttons(brand: BrandConfig, booking: Booking, stage: Stage) {
   if (stage === 'ended') return [[findOtherButton(brand, booking)]];
   if (stage === 'confirmed') return [talk, [open(t('bot.card.share'))]];
   if (stage === 'onWay') return [talk, [open(t('bot.card.arrivedButton'))]];
+  if (stage === 'arrived') return [[backButton(brand, booking, now)]];
   return [[open(t('bot.open'))]];
 }
 
@@ -105,10 +109,10 @@ export function passengerCard({ brand, chatId, booking, places, now }: Facts): C
   return {
     bot: 'passenger',
     chatId,
-    key: passengerCardKey(booking.id),
+    key: passengerTripCard(booking.id),
     text,
     footer: italic(t('bot.card.updated', { time: formatTime(new Date(now)) })),
-    markup: { inline_keyboard: buttons(brand, booking, stage) },
+    markup: { inline_keyboard: buttons(brand, booking, stage, now) },
     pin: stage === 'waiting' || stage === 'confirmed' || stage === 'onWay',
   };
 }

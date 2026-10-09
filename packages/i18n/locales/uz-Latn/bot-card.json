@@ -1,5 +1,5 @@
 {
-  "card.waiting": "⏳ Javob kutilmoqda",
+  "card.waiting": "⏳ Haydovchi javobi kutilmoqda",
   "card.confirmed": "✅ Joy tasdiqlandi",
   "card.onWay": "🚗 Yoʻldasiz",
   "card.arrived": "🏁 Yetib keldingiz",
@@ -9,7 +9,7 @@
   "card.cancelled": "Bekor qilindi",
   "card.day": "{day}, {date}",
   "card.when": "{day} · {time}",
-  "card.wasTime": "{time} edi",
+  "card.wasTime": "Avval {time} edi",
   "card.arrival": "{day} {time} · ≈ {arrival} yetib borasiz",
   "card.driver": "🚗 {name} ⭐ {rating} · {car}",
   "card.newDriver": "🚗 {name} · yangi haydovchi · {car}",
@@ -20,13 +20,14 @@
   "card.call": "📞 Qoʻngʻiroq",
   "card.share": "👨‍👩‍👧 Yaqinlarimga yuborish",
   "card.arrivedButton": "🏁 Yetib keldim",
-  "ring.confirmed": "✅ {name} tasdiqladi",
+  "card.back": "🔁 Qaytish safari",
+  "ring.confirmed": "✅ {name} joyingizni tasdiqladi",
   "ring.declined": "❌ {name} joyni tasdiqlamadi. Boshqa safar bor.",
   "ring.expired": "❌ Haydovchi vaqtida javob bermadi. Boshqa safar bor.",
   "ring.cancelledByDriver": "❌ {name} joyni bekor qildi. Boshqa safar bor.",
-  "ring.retimed": "⏰ Vaqt oʻzgardi: endi {time}",
-  "ring.soonPitak": "🚏 2 soat qoldi: {time} da pitakda boʻling",
-  "ring.soonDoor": "🏠 2 soat qoldi: haydovchi {time} da sizni olib ketadi",
+  "ring.retimed": "⏰ Safar vaqti oʻzgardi: endi {time}",
+  "ring.soonPitak": "🚏 Safarga 2 soat qoldi: {time} da pitakda boʻling",
+  "ring.soonDoor": "🏠 Safarga 2 soat qoldi: haydovchi {time} da sizni olib ketadi",
   "ring.departed": "🚗 {name} yoʻlga chiqdi",
-  "ring.driverCame": "📍 {name} keldi"
+  "ring.driverCame": "📍 {name} uchrashuv joyiga keldi"
 }

@@ -11,3 +11,10 @@ export const findOtherButton = (brand: BrandConfig, { trip }: Booking) =>
     name: FIND_LINK,
     id: requestsLinkValue(trip.from, trip.to, tashkentDate(trip.departAt)),
   });
+
+// «Qaytish safari» under an arrived seat (docs/122): the trips back, from the day of the arrival.
+export const backButton = (brand: BrandConfig, { trip }: Booking, now: number) =>
+  appButton(brand, 'passenger', t('bot.card.back'), {
+    name: FIND_LINK,
+    id: requestsLinkValue(trip.to, trip.from, tashkentDate(now)),
+  });
