@@ -129,6 +129,7 @@ export * from './attention';
 export * from './navbat';
 export * from './journal';
 export * from './team';
+export * from './people';
 export * from './calls';
 export * from './favorites';
 export * from './history';

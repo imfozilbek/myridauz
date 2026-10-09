@@ -81,6 +81,8 @@ export const usersModule = new Hono<AppEnv>()
 // For the bots: a blocked person gets "account blocked" in every bot too (docs/17).
 export const isBlocked = async (env: Bindings, telegramId: number) =>
   (await checkAccess(usersDeps(env), telegramId)) !== null;
+// The block in force, for «Odamlar» of the owner (G75): until when, or null for good.
+export const blockOf = (env: Bindings, userId: number) => checkAccess(usersDeps(env), userId);
 
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));

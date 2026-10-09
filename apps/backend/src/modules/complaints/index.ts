@@ -67,6 +67,10 @@ export async function waitingComplaints(env: Bindings) {
   );
 }
 
+// The complaints against a person, for «Odamlar» of the owner (G75).
+export const complaintsAgainst = (env: Bindings, userId: number) =>
+  complaintsDeps(env).store.countAgainst(userId);
+
 export const complaintsModule = complaintRoutes(complaintsDeps)
   .route('/', blockRoutes(complaintsDeps))
   .route('/', refundRoutes(complaintsDeps));
