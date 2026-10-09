@@ -45,7 +45,7 @@
   "dwallet.title": "💳 Hamyoningiz",
   "dwallet.bonus": "🎁 Bonus: {amount} · {date}gacha",
   "dwallet.main": "💰 Asosiy hisob: {amount}",
-  "dwallet.seats": "🪑 Bu pul ≈ {count} ta joyga yetadi",
+  "dwallet.seats": "🪑 Bu pul ≈ {count} ta joyga yetadi",
   "dwallet.open": "💳 Hamyonni ochish",
   "dwallet.fewSeats": "💳 Hamyoningizdagi pul faqat {count} ta joyga yetadi",
   "dwallet.empty": "💳 Hamyoningizda komissiya uchun pul qolmadi",
