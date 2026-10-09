@@ -135,16 +135,14 @@
 | 130 | [130-g58-texts.md](130-g58-texts.md) | G58: новые тексты регистрации, проверки фото, канала зоны на согласие |
 | 131 | [131-lessons-learned-9.md](131-lessons-learned-9.md) | Журнал уроков (9): №141 и дальше |
 | 142, 147 | [142-lessons-learned-10.md](142-lessons-learned-10.md), [147-lessons-learned-11.md](147-lessons-learned-11.md) | Журнал уроков (10, 11): №162 и №183 и дальше |
-| 132 | [132-g59-texts.md](132-g59-texts.md) | G59: новые тексты поиска и брони на согласие |
-| 133 | [133-g59-pixel-perfect.md](133-g59-pixel-perfect.md) | G59: сверка Pixel Perfect экранов с 3 по 10 и спорные места макета |
-| 134 | [134-g60-texts.md](134-g60-texts.md) | G60: новые тексты брони, чата, встречи и «после поездки» на согласие владельца |
-| 135 | [135-g60-pixel-perfect.md](135-g60-pixel-perfect.md) | G60: сверка Pixel Perfect экранов пути 3 и спорные места макета |
-| 136 | [136-g61-texts.md](136-g61-texts.md) | G61: новые тексты заявки, «Mening soʻrovim», правила салона и бота на согласие владельца |
-| 137 | [137-g61-pixel-perfect.md](137-g61-pixel-perfect.md) | G61: сверка Pixel Perfect заявки и «Mening soʻrovim», спорные места макета |
-| 138 | [138-g62-texts.md](138-g62-texts.md) | G62: новые тексты заявки водителя, главного экрана и бота при одобрении на согласие владельца |
-| 139 | [139-g62-pixel-perfect.md](139-g62-pixel-perfect.md) | G62: сверка Pixel Perfect заявки водителя, спорные места макета |
+| 132, 133 | [132-g59-texts.md](132-g59-texts.md), [133-g59-pixel-perfect.md](133-g59-pixel-perfect.md) | G59: новые тексты поиска и брони на согласие. G59: сверка Pixel Perfect экранов с 3 по 10 и спорные места макета. |
+| 134, 135 | [134-g60-texts.md](134-g60-texts.md), [135-g60-pixel-perfect.md](135-g60-pixel-perfect.md) | G60: новые тексты брони, чата, встречи и «после поездки» на согласие владельца. G60: сверка Pixel Perfect экранов пути 3 и спорные места макета. |
+| 136, 137 | [136-g61-texts.md](136-g61-texts.md), [137-g61-pixel-perfect.md](137-g61-pixel-perfect.md) | G61: новые тексты заявки, «Mening soʻrovim», правила салона и бота на согласие владельца. G61: сверка Pixel Perfect заявки и «Mening soʻrovim», спорные места макета. |
+| 138, 139 | [138-g62-texts.md](138-g62-texts.md), [139-g62-pixel-perfect.md](139-g62-pixel-perfect.md) | G62: новые тексты заявки водителя, главного экрана и бота при одобрении на согласие владельца. G62: сверка Pixel Perfect заявки водителя, спорные места макета. |
 | 140 | [140-g63-texts.md](140-g63-texts.md) | G63: новые тексты выезда и приезда водителя, напоминания бота и проверки пятака на согласие владельца |
 | 141 | [141-g63-pixel-perfect.md](141-g63-pixel-perfect.md) | G63: сверка Pixel Perfect экранов водителя, слияние C1, C2, C3, ревью связки поездки |
 | 143 | [143-driver-trip-path.md](143-driver-trip-path.md) | Путь 6 водителя (G63): публикация на одном экране, «Mening safarim», встреча, «Safar tugadi», «Qaytish», прошлая поездка |
 | 144 … 151 | [144-g64-texts.md](144-g64-texts.md), [145-g64-pixel-perfect.md](145-g64-pixel-perfect.md), [146-requests-and-trips-path.md](146-requests-and-trips-path.md), [148-g65-texts.md](148-g65-texts.md), [149-g65-pixel-perfect.md](149-g65-pixel-perfect.md), [150-g66-texts.md](150-g66-texts.md), [151-g66-pixel-perfect.md](151-g66-pixel-perfect.md) | G64: новые тексты на согласие владельца; сверка Pixel Perfect и споры макетов; путь 7 как сделано (заявки, разговор до брони, поездка для салона, «Mening safarlarim»). G65: новые тексты и сверка Pixel Perfect «Hamyon», «Profil», «Kanallar». G66: тексты и сверка Pixel Perfect главных экранов |
+| 152 … 154 | [152-g68-texts.md](152-g68-texts.md), [153-g68-team-bots.md](153-g68-team-bots.md), [154-g68-channels.md](154-g68-channels.md) | G68: тексты живых карточек ботов попутчика и водителя на согласие владельца, спорные места макета. G68 часть C: боты команды («Navbat», «Diqqat», итог дня, карточка обращения), тексты, отступления от макета. G68: каналы: пост поездки как в боте, его жизнь, доска дня, итоги дня и недели, отступления от макета. |
+| 155, 156 | [155-g68-action-sheet.md](155-g68-action-sheet.md), [156-g68-pixel-perfect.md](156-g68-pixel-perfect.md) | G68 часть D: шторка действия в Mini App (виды, очередь, ссылки ботов, отступления). Сверка Pixel Perfect шторки с макетами g68/7 и g68/8, спорные места |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

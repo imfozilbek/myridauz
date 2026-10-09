@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import type { BookedPlace, Booking, BookingStatus } from '@platform/contracts';
+import { SHEET_LINK, type BookedPlace, type Booking, type BookingStatus } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
@@ -55,6 +55,8 @@ function buttons(brand: BrandConfig, booking: Booking) {
       appButton(brand, 'driver', t('bot.card.chat'), chat),
       appButton(brand, 'driver', t('bot.card.call'), chat),
     ],
+    // The main screen with the sheet of this request: the sum and the commission at hand (G68).
+    [appButton(brand, 'driver', t('bot.ask.open'), { name: SHEET_LINK, id: booking.id })],
   ];
 }
 

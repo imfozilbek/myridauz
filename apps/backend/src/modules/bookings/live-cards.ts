@@ -6,6 +6,7 @@ import { bookingsDeps } from './deps';
 import { driverNewsOf } from './driver-news-of';
 import { bookingStore } from './infrastructure/store';
 import { passengerNewsOf } from './passenger-news-of';
+import { requestNewsOf } from './request-news';
 
 // The live trip cards (G68, docs/122): the reminders and the trip events refresh them and ring under
 // them; a request card is answered right in the driver bot.
@@ -27,6 +28,10 @@ export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon' | 'askAg
 export const requestsPastHalf = (env: Bindings, now: number) =>
   bookingStore(env).waitingPastHalf(now, now - 2 * TICK_MINUTES * MINUTE_MS);
 export { answerFromBot } from './bot-answer';
+export { chatRing } from './chat-news';
+// The request card of the passenger bot: published, cancelled or burned (G68).
+export const tellRequest = (env: Bindings, requestId: string) =>
+  requestNewsOf(env, bookingsDeps(env))(requestId);
 export { ASK_PREFIX } from './infrastructure/ask-card';
 
 // «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1); the

@@ -6,9 +6,14 @@ import type { Media } from '../../../shared/telegram/telegram-files';
 export type SupportBot = 'support' | 'admin';
 export type Writer = { readonly chatId: number; readonly bot: SupportBot };
 
+// One copy of a question in the admin bot of a team member.
+export type Copy = { readonly teamChatId: number; readonly teamMessageId: number };
+
 export type SupportLinks = {
   save(teamChatId: number, teamMessageId: number, writer: Writer, at: number): Promise<void>;
   writer(teamChatId: number, teamMessageId: number): Promise<Writer | undefined>;
+  // The last copy of the person in each team chat since then: who else saw the question (G68).
+  copies(personChatId: number, since: number): Promise<Copy[]>;
 };
 
 // What goes between a person and the team: a text, or a voice message or a photo with a line.
@@ -17,6 +22,9 @@ export type Content = {
   readonly media?: Media | undefined;
   // The buttons under the copy for the team («Javob berish», G31).
   readonly markup?: object;
+  // The card of a question is in HTML and quiet at night (G68, docs/122).
+  readonly html?: boolean;
+  readonly quiet?: boolean;
 };
 
 // Sends the content and returns the id of the sent message.

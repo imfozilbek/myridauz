@@ -1,5 +1,5 @@
 import { telegramFileUrl, telegramUrl } from './api-url';
-import type { Fetch } from './telegram-api';
+import { sendFlags, type Fetch, type SendOptions } from './telegram-api';
 
 // The bytes of a file a bot received. A file id works only in its own bot, so a voice message
 // goes from one bot to another as bytes (docs/50).
@@ -33,12 +33,14 @@ export async function sendMedia(
   media: Media,
   caption: string,
   markup?: object,
+  options?: SendOptions,
 ): Promise<number | undefined> {
   const { method, type, name } = UPLOAD[media.kind];
   const form = new FormData();
   form.append('chat_id', String(chatId));
   form.append('caption', caption);
   if (markup) form.append('reply_markup', JSON.stringify(markup));
+  for (const [key, value] of Object.entries(sendFlags(options))) form.append(key, String(value));
   form.append(media.kind, new Blob([media.data], { type }), name);
   const response = await fetch(telegramUrl(token, method), { method: 'POST', body: form });
   if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);

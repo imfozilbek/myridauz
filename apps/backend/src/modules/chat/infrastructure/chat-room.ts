@@ -5,7 +5,7 @@ import type { Bindings } from '../../../env';
 import type { ChatSocket, Member, RoomDeps } from '../application/ports';
 import { callLeft, callTimeout } from '../application/call-room';
 import { received } from '../application/dispatch';
-import { joined, systemEvent } from '../application/room';
+import { joined, sendText, systemEvent } from '../application/room';
 import { botSignals } from './bot-signals';
 import { d1Unread } from './d1-unread';
 import { sqlMessages } from './sql-messages';
@@ -64,6 +64,11 @@ export class ChatRoom extends DurableObject<Bindings> {
       return new Response(null, { status: 204 });
     }
     const member = JSON.parse(request.headers.get('x-chat-member') ?? 'null') as Member;
+    // A ready answer from the sheet of the Mini App (G68): as from a socket that hears nothing back.
+    if (new URL(request.url).pathname === '/send') {
+      await sendText(this.deps(key), { member, send: () => undefined }, await request.text());
+      return new Response(null, { status: 204 });
+    }
     // The wake-up of a call does not know its chat: the key is kept (docs/08).
     await this.ctx.storage.put(KEY, key);
     const pair = new WebSocketPair();

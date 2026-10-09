@@ -33,13 +33,20 @@ function newestChange(paths) {
 const APPS = ['apps/miniapp-passenger', 'apps/miniapp-driver', 'apps/miniapp-admin'];
 const SOURCES = [...APPS, 'packages', 'brands', 'pnpm-lock.yaml'];
 const BUILDS = APPS.map((app) => join(app, 'dist/index.html'));
+// The build must be the one of the stand too: the e2e servers build the same folders with their own
+// API address, and the stand once served that build (every request 404, lesson 202).
 export function buildIsFresh(stamp, sources = SOURCES, builds = BUILDS) {
   if (!existsSync(stamp)) return false;
+  const [startedAt, endedAt] = readFileSync(stamp, 'utf8').split(' ').map(Number);
+  if (!endedAt) return false;
   const newest = newestChange(sources);
-  const built = (path) => (statSync(path, { throwIfNoEntry: false })?.mtimeMs ?? 0) > newest;
-  return newest < Number(readFileSync(stamp, 'utf8')) && builds.every(built);
+  const ours = (path) => {
+    const at = statSync(path, { throwIfNoEntry: false })?.mtimeMs ?? 0;
+    return at > newest && at <= endedAt;
+  };
+  return newest < startedAt && builds.every(ours);
 }
-export const markBuilt = (stamp, startedAt) => writeFileSync(stamp, String(startedAt));
+export const markBuilt = (stamp, startedAt) => writeFileSync(stamp, `${startedAt} ${Date.now()}`);
 
 // The list of migrations the clean base already has: new ones are applied to the base once.
 const migrations = (folder) =>

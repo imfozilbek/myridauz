@@ -63,8 +63,9 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     expect(trip.recommendedPrice).toBeGreaterThan(0);
     const told = toPassenger();
     expect(told).toHaveLength(1);
-    expect(String(told[0]?.body.text)).toContain('Sevimli haydovchingiz Ali yangi safar');
-    expect(JSON.stringify(told[0]?.body.reply_markup)).toContain(`?trip=${trip.id}`);
+    // A line with ♥ in the news card of the route (G68, docs/122 rule 4).
+    expect(String(told[0]?.body.text)).toContain('♥ Ali · ');
+    expect(JSON.stringify(told[0]?.body.reply_markup)).toContain('?find=1726273_1718401_');
     expect((await favorites()).trips.map((item) => item.id)).toEqual([trip.id]);
     expect(
       (await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'DELETE' })).status,

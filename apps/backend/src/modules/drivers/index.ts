@@ -6,6 +6,8 @@ import type { AppEnv, Bindings } from '../../env';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { recordServerEvent } from '../analytics';
+import { showCards } from '../notifications';
+import { showQueue } from '../team-queue';
 import { teamMembers } from '../team';
 import { peopleOf } from '../users';
 import { missedWelcome, welcomeBonus } from '../wallet';
@@ -26,7 +28,7 @@ const localDecisions = createMemoryDecisions();
 const localPhotos = createMemoryImages();
 const NO_CONTENT = 204;
 
-export const driversDeps = (env: Bindings): DriversDeps => {
+const driversDeps = (env: Bindings): DriversDeps => {
   const people = peopleOf(env);
   const photos = env.MEDIA ? r2Images(env.MEDIA) : localPhotos;
   const teamIds = async () => (await teamMembers(env)).map((member) => member.id);
@@ -38,13 +40,10 @@ export const driversDeps = (env: Bindings): DriversDeps => {
     notify: signalledNotifier(
       env,
       telegramNotifier({
-        fetch: (input, init) => fetch(input, init),
         brand: loadBrand(env.BRAND),
-        adminToken: env.ADMIN_BOT_TOKEN,
-        driverToken: env.DRIVER_BOT_TOKEN,
-        recipients: (userId) => assignTo(env, 'application', userId),
-        photos,
-        people,
+        show: (cards, rings) => showCards(env, cards, rings),
+        assign: (userId) => assignTo(env, 'application', userId),
+        queue: (news) => showQueue(env, news),
       }),
       teamIds,
     ),
@@ -69,16 +68,6 @@ export const avatarWatch = new Hono<AppEnv>().use(MY_AVATAR_PATH, async (context
     await avatarChanged(driversDeps(context.env), context.get('session').user.id);
   }
 });
-
-export {
-  cardMenu,
-  cardText,
-  decisionLine,
-  parseCardAction,
-  plateCheckMenu,
-  reasonMenu,
-} from './infrastructure/moderation-card';
-export { decideApplication } from './application/moderate';
 
 // The Cron job: approved drivers without a wallet get bonus 1 (docs/12).
 export const grantMissedBonuses = async (env: Bindings) =>

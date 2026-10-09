@@ -5,7 +5,12 @@ type Side = {
   readonly firstName: string;
   readonly hasAvatar: boolean;
   // The car with its plate: the passenger sees whom they talk to (mockups g60/2, g64/4).
-  readonly car: { readonly model: string; readonly color: CarColor; readonly plate: string | null } | null;
+  readonly car: {
+    readonly make: string;
+    readonly model: string;
+    readonly color: CarColor;
+    readonly plate: string | null;
+  } | null;
   // The passenger of a request, with the rating, for the driver (mockup g64/5).
   readonly rider: { readonly passenger: { readonly rating?: Rating | undefined } } | null;
 };

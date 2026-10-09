@@ -60,22 +60,32 @@ type CallRules = { readonly ringMs: number; readonly connectMs: number; readonly
 
 export type ChatSocket = { readonly member: Member; send(data: string): void };
 
+// Who hears of this chat and from whom: the bot answers the trip card of that seat (G68, docs/122).
+export type Addressee = { readonly userId: number; readonly role: Role; readonly from: number };
+
 // What the chat asks of the rest of Rida: the bot tells the other person, the team hears of contacts.
 export type ChatSignals = {
-  newMessage(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
+  newMessage(to: Addressee, key: string): Promise<void>;
   contactAttempts(userId: number, key: string, count: number): Promise<void>;
   // The open or folded Mini App of the callee opens this chat and rings (docs/115).
   openCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
   // "Sizga qoʻngʻiroq qilishyapti" while the Mini App is closed; "Sizga qoʻngʻiroq qilishdi" after.
-  incomingCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
-  missedCall(to: { readonly userId: number; readonly role: Role }, key: string): Promise<void>;
+  incomingCall(to: Addressee, key: string): Promise<void>;
+  missedCall(to: Addressee, key: string): Promise<void>;
+  // The person read what was unread: «💬 N ta yangi xabar» leaves the trip card (G68).
+  read(to: Addressee, key: string): Promise<void>;
 };
 
 // The messages a person of this chat has not seen yet (G53): the plate «1 xabar» on the main screen.
 // Adding one also refreshes the open Mini App of that person (docs/64).
 export type UnreadCounter = {
-  add(to: { readonly userId: number; readonly role: Role }): Promise<void>;
-  clear(userId: number): Promise<void>;
+  // last: the message itself, already without contacts (docs/07), for the sheet of the Mini App (G68).
+  add(
+    to: { readonly userId: number; readonly role: Role },
+    last: { readonly text: string; readonly at: number },
+  ): Promise<void>;
+  // True when something was unread.
+  clear(userId: number): Promise<boolean>;
 };
 
 export type RoomDeps = {

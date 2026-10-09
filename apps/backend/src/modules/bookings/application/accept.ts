@@ -80,6 +80,7 @@ export async function declineOffer(
   await deps.notify.offerAnswered(found.offer.driverId, false, {
     id: declined.id,
     chatKey: offerChatKey(declined),
+    requestId: declined.requestId,
   });
   return offerView(deps, declined, found.request);
 }

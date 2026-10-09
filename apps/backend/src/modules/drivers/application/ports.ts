@@ -35,7 +35,7 @@ export type Person = {
   readonly firstName: string;
   readonly avatarKey: string | null;
 };
-export type PeoplePort = {
+type PeoplePort = {
   find(id: number): Promise<Person | undefined>;
   // The Telegram ID behind a public id from an admin path (docs/65 A3).
   idOf(publicId: string): Promise<number | undefined>;
@@ -49,7 +49,7 @@ export type Bonus = { readonly amount: number; readonly expiresAt: number };
 
 // The team gets a card in the admin bot, the driver gets the answer from the driver bot (docs/04).
 export type ModerationNotifier = {
-  submitted(application: Application, person: Person): Promise<void>;
+  submitted(application: Application): Promise<void>;
   // fixedPlate: the plate the team fixed on approval, null when it stayed as the driver wrote it.
   // bonus: the welcome bonus the approval gave, null when none (docs/89 D4).
   decided(application: Application, fixedPlate: string | null, bonus: Bonus | null): Promise<void>;

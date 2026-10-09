@@ -1,44 +1,32 @@
-import { canSendNow, fits, isActive, type Match } from '../domain/subscription';
-import type { SubscriptionsDeps } from './ports';
 import type { SubscriptionKind } from '@platform/contracts';
+import { fits, isActive, type Match, type SubscriptionRecord } from '../domain/subscription';
+import type { SubscriptionsDeps } from './ports';
 
-// A new trip or request: each fitting subscription hears about it now, or together with the
-// others after the pause (docs/24).
-export async function matchNew(deps: SubscriptionsDeps, kind: SubscriptionKind, match: Match): Promise<void> {
+async function fitting(deps: SubscriptionsDeps, kind: SubscriptionKind, match: Match) {
   const now = deps.now();
   const [live, placeMatches] = await Promise.all([deps.subscriptions.live(kind, now), deps.placeMatches()]);
-  for (const subscription of live) {
-    if (!isActive(subscription, now) || !fits(subscription, match, placeMatches)) continue;
-    if (canSendNow(subscription, now)) {
-      await deps.tell.one(subscription, match);
-      await deps.subscriptions.save({ ...subscription, lastSentAt: now });
-    } else await deps.subscriptions.save({ ...subscription, pending: subscription.pending + 1 });
-  }
+  return live.filter(
+    (subscription: SubscriptionRecord) =>
+      isActive(subscription, now) && fits(subscription, match, placeMatches),
+  );
 }
 
-// A trip became cheaper (G39, docs/104, 9): the fitting passengers hear it at once. The trip itself
-// keeps it to one message a day, so the pause of new matches does not hold it.
+// A new trip or request: each fitting subscription hears about it at once. The news card of the
+// route rings once a day; the next news of the day edit it without sound (docs/122 rule 4).
+export async function matchNew(deps: SubscriptionsDeps, kind: SubscriptionKind, match: Match): Promise<void> {
+  for (const subscription of await fitting(deps, kind, match)) await deps.tell.one(subscription, match);
+}
+
+// A trip became cheaper (G39, docs/104, 9): its line in the news card says so.
 export async function matchCheaper(deps: SubscriptionsDeps, match: Match): Promise<void> {
-  const now = deps.now();
-  const [live, placeMatches] = await Promise.all([
-    deps.subscriptions.live('trips', now),
-    deps.placeMatches(),
-  ]);
-  for (const subscription of live)
-    if (isActive(subscription, now) && fits(subscription, match, placeMatches))
-      await deps.tell.cheaper(subscription, match);
+  for (const subscription of await fitting(deps, 'trips', match))
+    await deps.tell.cheaper(subscription, match);
 }
 
-// The Cron job (every 15 minutes): the waiting matches go in one message once the pause is over;
-// "any date" that is over is offered to renew once (docs/24).
-export async function sendWaiting(deps: SubscriptionsDeps): Promise<void> {
-  const now = deps.now();
-  for (const subscription of await deps.subscriptions.waiting()) {
-    if (!canSendNow(subscription, now)) continue;
-    if (isActive(subscription, now)) await deps.tell.many(subscription, subscription.pending);
-    await deps.subscriptions.save({ ...subscription, pending: 0, lastSentAt: now });
-  }
-  for (const subscription of await deps.subscriptions.overdue(now)) {
+// The hourly Cron job: a dated subscription goes after its day; "any date" that is over is offered
+// to renew once (docs/24).
+export async function endOverdue(deps: SubscriptionsDeps): Promise<void> {
+  for (const subscription of await deps.subscriptions.overdue(deps.now())) {
     if (subscription.date === null) {
       await deps.tell.renew(subscription);
       await deps.subscriptions.save({ ...subscription, expired: true });

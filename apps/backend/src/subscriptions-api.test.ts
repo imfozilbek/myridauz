@@ -1,5 +1,6 @@
 import { channelOf, loadBrand } from '@platform/brands';
 import { afterAll, describe, expect, it, vi } from 'vitest';
+import { botSender } from './bots/test-bot';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { call, registerUser, testEnv, doorBooking, REQUEST_WAY } from './test-api';
 
@@ -12,6 +13,7 @@ vi.stubGlobal('fetch', async (input: string, init?: RequestInit) => {
   return Response.json({ ok: true, result: { message_id: (messageId += 1) } });
 });
 afterAll(() => vi.unstubAllGlobals());
+const send = botSender((input, init) => fetch(input, init));
 // The owner approved the post: autoposting is on in this test (docs/33).
 Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
 
@@ -34,6 +36,10 @@ const trip = (departAt: number) =>
     comment: '',
   });
 const sentTo = (chatId: number | string) => telegram.filter((item) => item.body.chat_id === chatId);
+// The posts of trips in a channel, not its board of the day (G68).
+const BOARD = '<b>📋';
+const isPost = (item: (typeof telegram)[number]) =>
+  typeof item.body.text === 'string' && !item.body.text.startsWith(BOARD);
 
 describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
   it('tells a subscribed passenger about a new trip and posts it to the channel of its region', async () => {
@@ -51,10 +57,12 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...trip(Date.now() + 5 * 3_600_000) }),
     );
+    // The news card of the route of the day (G68, docs/122 rule 4): the trip as a line.
     const [told] = sentTo(PASSENGER);
-    expect(String(told?.body.text)).toContain('Siz kutgan safar chiqdi');
-    expect(JSON.stringify(told?.body.reply_markup)).toContain(`?trip=${published.id}`);
-    const [post] = sentTo(SAMARQAND);
+    expect(String(told?.body.text)).toContain('Bugungi yangi safarlar');
+    expect(String(told?.body.text)).toContain('Ali · ');
+    expect(JSON.stringify(told?.body.reply_markup)).toContain('?find=1726273_1718401_');
+    const [post] = sentTo(SAMARQAND).filter(isPost);
     expect(JSON.stringify(post?.body.reply_markup)).toContain(`startapp=trip_${published.id}`);
     expect(post?.body.parse_mode).toBe('HTML');
     expect(sentTo(TOSHKENT_REGION)).toEqual([]);
@@ -63,10 +71,10 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
     const edit = telegram.find(
-      (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND,
+      (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND && isPost(item),
     );
     expect(edit?.body.chat_id).toBe(SAMARQAND);
-    expect(String(edit?.body.text)).toContain('Joy qolmagan');
+    expect(String(edit?.body.text)).toContain('Joy qolmadi');
   });
 
   it('tells a subscribed driver about a new request and lets a person manage the list', async () => {
@@ -82,7 +90,7 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000, ...REQUEST_WAY }),
     );
     const [told] = sentTo(DRIVER);
-    expect(String(told?.body.text)).toContain('Yoʻnalishingizda yangi soʻrov');
+    expect(String(told?.body.text)).toContain('Yoʻnalishingizda soʻrovlar');
     // The button opens the requests of that route and day, not the main screen (docs/83 N08).
     expect(JSON.stringify(told?.body.reply_markup)).toContain(`?requests=1726273_1718401_${route.date}`);
     const mine = await read<{ subscriptions: { id: string }[] }>(
@@ -100,5 +108,34 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
     expect(
       (await call(`/driver/subscriptions/${created.id}`, DRIVER, { method: 'DELETE', app: 'driver' })).status,
     ).toBe(204);
+  });
+
+  it('ends a subscription by «Kerak emas» under its news card, only for its owner (docs/122 rule 4)', async () => {
+    const route = { from: '1726', to: '1718', date: tomorrow(), woman: false };
+    const created = await read<{ id: string }>(
+      call('/driver/subscriptions', DRIVER, { app: 'driver', ...json(route) }),
+    );
+    const press = (fromId: number) => ({
+      callback_query: {
+        id: 'q',
+        from: { id: fromId, first_name: 'Ali' },
+        data: `news_off:${created.id}`,
+        message: { message_id: 5, chat: { id: fromId } },
+      },
+    });
+    const notice = async (response: Response) => ((await response.json()) as { text?: string }).text;
+    expect(await notice(await send('driver', press(PASSENGER)))).toBeUndefined();
+    telegram.length = 0;
+    expect(await notice(await send('driver', press(DRIVER)))).toBe(
+      'Bu yoʻnalish boʻyicha xabar endi kelmaydi',
+    );
+    expect(telegram.find((item) => item.method === 'editMessageReplyMarkup')?.body).toMatchObject({
+      message_id: 5,
+      reply_markup: { inline_keyboard: [] },
+    });
+    const mine = await read<{ subscriptions: unknown[] }>(
+      call('/driver/subscriptions', DRIVER, { app: 'driver' }),
+    );
+    expect(mine.subscriptions).toEqual([]);
   });
 });

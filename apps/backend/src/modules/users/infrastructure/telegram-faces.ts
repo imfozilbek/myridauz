@@ -2,6 +2,7 @@ import { type BrandConfig } from '@platform/brands';
 import { PROFILE_PHOTO_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
+import type { QueueNews } from '../../team-queue';
 import type { ImageStore } from '../../../shared/storage/image-store';
 import { openButton } from '../../../shared/telegram/open-button';
 import { sendPhoto, type Fetch } from '../../../shared/telegram/telegram-api';
@@ -18,6 +19,8 @@ type Wiring = {
   readonly recipients: (userId: number) => Promise<number[]>;
   readonly avatars: ImageStore;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
+  // «Navbat» of the team (G68, docs/122): a new photo is a case.
+  readonly queue: (news?: QueueNews) => Promise<void>;
 };
 
 // A new face goes to the team as a photo with «Rasm mos» and «Mos emas» (docs/120); a photo that
@@ -25,6 +28,7 @@ type Wiring = {
 export function telegramFaces(wiring: Wiring): FaceNotifier {
   return {
     uploaded: async (user) => {
+      await wiring.queue({ kind: 'new' });
       const photo =
         wiring.adminToken && user.avatarKey ? await wiring.avatars.get(user.avatarKey) : undefined;
       if (!wiring.adminToken || !photo) return;
@@ -45,5 +49,6 @@ export function telegramFaces(wiring: Wiring): FaceNotifier {
       const markup = openButton(wiring.brand, bot, t('bot.face.change'), PROFILE_PHOTO_LINK);
       await wiring.send([{ bot, chatId: user.id, text, markup }]);
     },
+    decided: () => wiring.queue(),
   };
 }

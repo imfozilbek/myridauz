@@ -33,6 +33,11 @@ export const withVia = (start: string, via: string) => `${start}${VIA_SEPARATOR}
 export const tripBookLink = (bot: string, tripId: string, via: string) =>
   `https://t.me/${bot}?startapp=${withVia(`${TRIP_LINK}_${tripId}`, via)}`;
 
+// The search of a route in the passenger bot: t.me/<bot>?startapp=find_<from>_<to>__<mark>. The
+// site and the channel posts of a full or ended trip open it (docs/59, G68).
+export const routeFindLink = (bot: string, from: string, to: string, via: string) =>
+  `https://t.me/${bot}?startapp=${withVia(`find_${from}_${to}`, via)}`;
+
 // The link and the mark of a start parameter; an empty link is a mark alone (an ad to the home).
 export function splitStart(param: string): { readonly start: string | null; readonly via: string | null } {
   const at = param.lastIndexOf(VIA_SEPARATOR);

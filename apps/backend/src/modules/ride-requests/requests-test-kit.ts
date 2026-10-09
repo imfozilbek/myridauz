@@ -68,6 +68,7 @@ export function setup() {
     pitakOf: async (from, to) => (from === '1726' && to === '1718' ? PITAK : null),
     fits: (point) => point.lat < 45,
     published: async () => undefined,
+    changed: async () => undefined,
     hidden: async () => new Set(),
     board: { directions: async () => routes, trip: async () => nearest },
     ratings: async (ids) => new Map(ids.map((userId) => [userId, { average: 4.8, count: 12 }])),

@@ -38,7 +38,7 @@ test('V12, P71. a subscription of a day ends with the day; one of any day offers
   );
   await runCron();
   await expect.poll(async () => (await subscriptions.mine()).some((s) => s.id === day.id)).toBe(false);
-  const renew = wordsOf('bot.subscription.renew');
+  const renew = wordsOf('bot.news.ended');
   await expect
     .poll(async () => (await botMessages()).some((m) => m.chatId === AZIZA.id && m.text.includes(renew)))
     .toBe(true);

@@ -1,0 +1,9 @@
+import { createContext, useContext } from 'react';
+
+// Opens a chat over any screen (docs/122): «Javob yozish», «Qoʻngʻiroq» and «Javob berish» of the
+// sheet. ring: the call starts at once; answer: the call that rings in it is taken at once.
+export type OpenChat = (key: string, mode?: 'ring' | 'answer') => void;
+
+export const OpenChatContext = createContext<OpenChat>(() => undefined);
+
+export const useOpenChat = (): OpenChat => useContext(OpenChatContext);

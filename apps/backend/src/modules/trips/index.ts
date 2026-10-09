@@ -4,7 +4,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
 import { publishOfferTrip, type Input } from './application/publish';
 import { realPrices } from './application/prices';
-import { cancelTrip, MY_TRIPS_LIMIT } from './application/read';
+import { cancelTrip, MY_TRIPS_LIMIT, teamTrips } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
 import { scheduleError } from './application/schedule';
@@ -99,6 +99,9 @@ export const releaseTripFor = (env: Bindings, tripId: string) => releaseTrip(tri
 export const cancelFor = async (env: Bindings, driverId: number, tripId: string) => {
   await cancelTrip(tripsDeps(env), driverId, tripId);
 };
+
+// Every trip of a Tashkent day: the boards and the summaries of the channels (G68, docs/122).
+export const tripsOfDate = (env: Bindings, date: string) => teamTrips(tripsDeps(env), date);
 
 // Trips with riders that leave soon: the reminders of the Cron job (G10).
 export const tripsDeparting = async (env: Bindings, from: number, to: number) =>

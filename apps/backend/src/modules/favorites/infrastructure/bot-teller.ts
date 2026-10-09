@@ -1,31 +1,39 @@
-import { appHost, type BrandConfig } from '@platform/brands';
-import type { Trip } from '@platform/contracts';
+import type { BrandConfig } from '@platform/brands';
+import { FIND_LINK, requestsLinkValue, tashkentDate, tashkentTime, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import type { NotificationJob } from '../../notifications';
+import type { News } from '../../notifications';
+import { appButton } from '../../../shared/telegram/open-button';
+import { newsFoot, newsHead, newsRoute, tripLine } from '../../../shared/telegram/route-news';
 
-const { t, formatMoney, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
+const { t } = createI18n(DEFAULT_LOCALE);
 
 type Wiring = {
   readonly brand: BrandConfig;
   readonly placeName: (id: string) => Promise<string>;
-  readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
+  readonly show: (news: News) => Promise<void>;
+  readonly now: () => number;
 };
 
-// The passenger bot tells about a new trip of a saved driver; the button opens the trip (docs/18).
+// A new trip of a saved driver comes with ♥ in the news card of its route in the passenger bot
+// (docs/18, docs/122 rule 4, mockup g68/1); «Hammasini koʻrish» opens the search of its day.
 export const favoriteTeller =
-  ({ brand, placeName, send }: Wiring) =>
+  ({ brand, placeName, show, now }: Wiring) =>
   async (passengerIds: readonly number[], trip: Trip) => {
-    const day = new Date(trip.departAt);
-    const text = t('bot.favorite.trip', {
-      name: trip.driver.firstName,
-      from: await placeName(trip.from),
-      to: await placeName(trip.to),
-      date: formatDate(day),
-      time: formatTime(day),
-      seats: String(trip.seatsLeft),
-      price: formatMoney(trip.price),
-    });
-    const url = `https://${appHost(brand, 'passenger')}/?trip=${trip.id}`;
-    const markup = { inline_keyboard: [[{ text: t('bot.subscription.open'), web_app: { url } }]] };
-    await send(passengerIds.map((chatId) => ({ bot: 'passenger' as const, chatId, text, markup })));
+    const [from, to] = await Promise.all([placeName(trip.from), placeName(trip.to)]);
+    const find = { name: FIND_LINK, id: requestsLinkValue(trip.from, trip.to, tashkentDate(trip.departAt)) };
+    const line = tripLine(
+      { ...trip, name: trip.driver.firstName, time: tashkentTime(trip.departAt), seats: trip.seatsLeft },
+      { favorite: true },
+      now(),
+    );
+    for (const chatId of passengerIds)
+      await show({
+        bot: 'passenger',
+        chatId,
+        route: newsRoute(trip.from, trip.to),
+        head: newsHead('trips', from, to),
+        foot: newsFoot('trips'),
+        line,
+        markup: { inline_keyboard: [[appButton(brand, 'passenger', t('bot.news.all'), find)]] },
+      });
   };

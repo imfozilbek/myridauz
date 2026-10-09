@@ -1,4 +1,4 @@
-import { MY_CHANNELS_PATH } from '@platform/contracts';
+import { CHATS_UNREAD_PATH, MY_CHANNELS_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
 import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
@@ -65,6 +65,9 @@ export const app = new Hono<AppEnv>()
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
   .use('/chats/:key/about', allowMiniApps, auth, blockedGuard)
+  // The sheet «Yangi xabar» (G68): the unread chats and a ready answer without the socket.
+  .use(CHATS_UNREAD_PATH, allowMiniApps, auth, blockedGuard)
+  .use('/chats/:key/messages', allowMiniApps, auth, blockedGuard)
   .use('/calls/*', allowMiniApps, auth, blockedGuard)
   // The personal channel: the same ticket way as the chat (docs/64).
   .use('/feed/ticket', allowMiniApps, auth, blockedGuard)
@@ -80,6 +83,7 @@ export const app = new Hono<AppEnv>()
   .use('/trips/:id/bookings', rateLimit('ACTIONS_LIMIT', 'action', true))
   .use('/driver/requests/:id/offers', rateLimit('ACTIONS_LIMIT', 'action', true))
   .use('/chats/:key/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
+  .use('/chats/:key/messages', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/feed/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/passenger/map/search', rateLimit('SEARCH_LIMIT', 'search'))
   // «Kanallar» asks Telegram once a channel (G65).

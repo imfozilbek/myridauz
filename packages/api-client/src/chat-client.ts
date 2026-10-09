@@ -6,6 +6,8 @@ import {
   bookingSharePath,
   chatAboutPath,
   chatAboutSchema,
+  chatMessagesPath,
+  CHATS_UNREAD_PATH,
   bookingShareStopPath,
   chatTicketPath,
   chatTicketSchema,
@@ -17,11 +19,13 @@ import {
   sharedTripSchema,
   shareSchema,
   storySchema,
+  unreadChatsSchema,
   type Booking,
   type ChatAbout,
   type Share,
   type SharedTrip,
   type Story,
+  type UnreadChat,
 } from '@platform/contracts';
 import { signedRequest, type SignedOptions } from './signed-request';
 
@@ -36,6 +40,12 @@ export function createChatClient(options: SignedOptions) {
     // The booking of the chat for the call screen: who and which trip (G54).
     about: async (key: string): Promise<ChatAbout> =>
       chatAboutSchema.parse(await (await request(chatAboutPath(key))).json()),
+    // The sheet «Yangi xabar» (G68, docs/122): the last words of the unread chats of this Mini App and
+    // a ready answer that goes without opening the chat.
+    unread: async (): Promise<UnreadChat[]> =>
+      unreadChatsSchema.parse(await (await request(CHATS_UNREAD_PATH)).json()).chats,
+    answer: async (key: string, text: string): Promise<void> =>
+      void (await post(chatMessagesPath(key), { text })),
     share: async (bookingId: string): Promise<Share> =>
       shareSchema.parse(await (await post(bookingSharePath(bookingId), {})).json()),
     stopSharing: async (bookingId: string): Promise<void> =>

@@ -1,6 +1,7 @@
 import { expect, test } from '../crash-guard';
+import { showChat } from './bot-chat';
 import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
-import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
+import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, tailOf, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';
 import type { Person } from './stand-kit';
 import { botMessages, runCron, standRows } from './stand-tools';
@@ -41,8 +42,8 @@ test('S06. 2 stars by the button: thanks, a review and a complaint are offered',
 test('S05. the offer comes with a button that opens this offer', async () => {
   const request = await askRide(AZIZA);
   const offer = await offerOn(GAYRAT, request.id);
-  await toldBy('passenger', AZIZA, wordsOf('bot.offer.new'));
-  const message = await told('passenger', AZIZA.id, wordsOf('bot.offer.new'));
+  await toldBy('passenger', AZIZA, wordsOf('bot.ring.offer'));
+  const message = await told('passenger', AZIZA.id, wordsOf('bot.ring.offer'));
   expect(message?.buttons[0]?.url).toContain(offer.id);
 });
 
@@ -88,7 +89,7 @@ test('G31. /team add makes a moderator; the new questions go to whom has less wo
   expect(await told('admin', OWNER.id, 'Hamyon haqida savol')).toBeUndefined();
 });
 
-test('G32. a photo in support; the next question comes with «Tarix» of the whole talk', async () => {
+test('G32. a photo in support; the next question comes with «Tarix» of the whole talk', async ({ page }) => {
   await sayByPhoto('support', LAZIZA, 'Chek shu');
   const { member } = assigned(LAZIZA);
   const photoTo = async () =>
@@ -105,11 +106,25 @@ test('G32. a photo in support; the next question comes with «Tarix» of the who
   await say('support', LAZIZA, 'Pulim hali kelmadi');
   await expect.poll(() => told('admin', member.id, 'Pulim hali kelmadi')).toBeTruthy();
   const copy = await told('admin', member.id, 'Pulim hali kelmadi');
+  // The card of a question (G68, mockup g68/4): who writes and the text, never the Telegram ID.
+  expect(copy?.text).toContain(wordsOf('bot.supportCard.title'));
+  expect(copy?.text).not.toContain(String(LAZIZA.id));
   expect(copy?.buttons.map((b) => b.text)).toEqual([
-    wordsOf('bot.support.reply'),
-    wordsOf('bot.support.history'),
+    wordsOf('bot.supportCard.reply'),
+    wordsOf('bot.supportCard.history'),
   ]);
   await press('admin', member, 'support:history', Number(copyOf(LAZIZA, member)));
-  await expect.poll(() => told('admin', member.id, 'Chek shu')).toBeTruthy();
-  expect((await told('admin', member.id, 'Chek shu'))?.text).toContain(`(ID ${LAZIZA.id})`);
+  // The card quotes the words of the photo too (G68): «Tarix» is the message with its title.
+  const title = `${LAZIZA.name}${tailOf('bot.support.historyTitle')}`;
+  await expect.poll(() => told('admin', member.id, title)).toBeTruthy();
+  const talk = (await told('admin', member.id, title))?.text;
+  expect(talk).toContain('Chek shu');
+  expect(talk).not.toContain(String(LAZIZA.id));
+  // The chat of the team member as it looks, next to the mockup g68/4 for the owner.
+  await showChat(
+    page,
+    'admin',
+    (await botMessages()).filter((m) => m.bot === 'admin' && m.chatId === member.id),
+  );
+  await page.screenshot({ path: 'screenshots/stand/g68/8-admin-support.png', fullPage: true });
 });

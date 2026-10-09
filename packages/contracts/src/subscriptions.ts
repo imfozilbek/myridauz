@@ -11,8 +11,6 @@ export const subscriptionRenewPath = (base: string, id: string) => `${base}/${id
 export const MAX_SUBSCRIPTIONS = 5;
 // "Any date" lives this long, then the bot offers to renew it (docs/24).
 export const ANY_DATE_DAYS = 30;
-// One message per subscription at most this often; the rest come together (docs/24).
-export const SUBSCRIPTION_PAUSE_MINUTES = 10;
 
 export const SUBSCRIPTION_KINDS = ['trips', 'requests'] as const;
 export type SubscriptionKind = (typeof SUBSCRIPTION_KINDS)[number];

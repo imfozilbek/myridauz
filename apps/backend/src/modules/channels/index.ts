@@ -8,36 +8,23 @@ import { claimZoneInvite } from '../users';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
 import type { MyChannelsDeps } from './application/my-channels';
-import { allChannels, type TeamChannelsDeps } from './application/team';
+import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
 import { myChannelsRoutes } from './http/my-channels-routes';
 import { publicityRoutes } from './http/publicity-routes';
-import { botIsAdmin, inChannel, membership } from './infrastructure/bot-admin';
+import { inChannel, membership } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
 import type { PublicityDeps, TripFacts } from './application/publicity';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
 import { channelPost } from './infrastructure/post-text';
-import { createMemoryTeamChannels, d1TeamChannels } from './infrastructure/team-channels';
 import { createMemoryTripViews, d1TripViews } from './infrastructure/trip-views';
 import { zoneMessage } from './infrastructure/zone-message';
+import { teamDeps } from './team-deps';
 
 const localPosts = createMemoryChannelPosts();
-const localTeam = createMemoryTeamChannels();
 const localViews = createMemoryTripViews();
 const postsOf = (env: Bindings) => (env.DB ? d1ChannelPosts(env.DB) : localPosts);
 const viewsOf = (env: Bindings) => (env.DB ? d1TripViews(env.DB) : localViews);
-
-// The region channels of the brand and the channels the team added in the admin (docs/63).
-async function teamDeps(env: Bindings): Promise<TeamChannelsDeps> {
-  const places = await placesOf(env);
-  return {
-    fixed: loadBrand(env.BRAND).channels,
-    titleOf: (id) => places.get(id)?.name,
-    store: env.DB ? d1TeamChannels(env.DB) : localTeam,
-    botIsAdmin: botIsAdmin((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
-    now: () => Date.now(),
-  };
-}
 
 // The trip as the search shows it: set by the app, so channels does not depend on trips (app.ts).
 type TripOf = (env: Bindings, id: string) => Promise<Trip | undefined>;
@@ -56,6 +43,8 @@ const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
     now: () => Date.now(),
   };
 };
+
+export { channelBoards } from './boards';
 
 // Channel posts of trips (docs/15): a new trip is posted, a changed trip edits its posts.
 export const channels = (tripOf: TripOf) => ({

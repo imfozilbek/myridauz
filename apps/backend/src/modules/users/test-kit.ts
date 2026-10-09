@@ -15,7 +15,7 @@ export const jpeg = (size: number) => ({ body: new ArrayBuffer(size), type: 'ima
 // For tests that do not look at the face check (G51).
 export const noFaces = {
   faceLog: { add: async () => undefined },
-  faces: { uploaded: async () => undefined, rejected: async () => undefined },
+  faces: { uploaded: async () => undefined, rejected: async () => undefined, decided: async () => undefined },
 };
 
 export function setup(relation: Awaited<ReturnType<TripRelations['relation']>> = 'none') {
@@ -31,6 +31,7 @@ export function setup(relation: Awaited<ReturnType<TripRelations['relation']>> =
     faces: {
       uploaded: async (user) => void told.push(`card:${user.id}`),
       rejected: async (user, reason) => void told.push(`rejected:${user.id}:${reason}`),
+      decided: async () => void told.push('queue'),
     },
     now: () => NOW,
     newId: () => `id${(id += 1)}`,

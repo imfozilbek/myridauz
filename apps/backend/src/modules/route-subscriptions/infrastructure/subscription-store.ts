@@ -12,8 +12,6 @@ type Row = {
   woman: number;
   expires_at: number;
   expired: number;
-  last_sent_at: number | null;
-  pending: number;
   created_at: number;
 };
 const toRecord = (row: Row): SubscriptionRecord => ({
@@ -26,8 +24,6 @@ const toRecord = (row: Row): SubscriptionRecord => ({
   woman: row.woman === 1,
   expiresAt: row.expires_at,
   expired: row.expired === 1,
-  lastSentAt: row.last_sent_at,
-  pending: row.pending,
   createdAt: row.created_at,
 });
 
@@ -45,7 +41,7 @@ export const d1Subscriptions = (db: D1Database): SubscriptionRepository => {
       await db
         .prepare(
           `INSERT OR REPLACE INTO route_subscriptions (id, user_id, kind, from_id, to_id, date, woman,
-            expires_at, expired, last_sent_at, pending, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            expires_at, expired, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           s.id,
@@ -57,8 +53,6 @@ export const d1Subscriptions = (db: D1Database): SubscriptionRepository => {
           s.woman ? 1 : 0,
           s.expiresAt,
           s.expired ? 1 : 0,
-          s.lastSentAt,
-          s.pending,
           s.createdAt,
         )
         .run();
@@ -74,7 +68,6 @@ export const d1Subscriptions = (db: D1Database): SubscriptionRepository => {
       many('SELECT * FROM route_subscriptions WHERE user_id = ? AND kind = ?', userId, kind),
     live: (kind, now) =>
       many('SELECT * FROM route_subscriptions WHERE kind = ? AND expired = 0 AND expires_at > ?', kind, now),
-    waiting: () => many('SELECT * FROM route_subscriptions WHERE pending > 0'),
     overdue: (now) => many('SELECT * FROM route_subscriptions WHERE expired = 0 AND expires_at <= ?', now),
   };
 };
@@ -89,7 +82,6 @@ export function createMemorySubscriptions(): SubscriptionRepository {
     remove: async (id) => void all.delete(id),
     byUser: async (userId, kind) => list().filter((s) => s.userId === userId && s.kind === kind),
     live: async (kind, now) => list().filter((s) => s.kind === kind && !s.expired && s.expiresAt > now),
-    waiting: async () => list().filter((s) => s.pending > 0),
     overdue: async (now) => list().filter((s) => !s.expired && s.expiresAt <= now),
   };
 }

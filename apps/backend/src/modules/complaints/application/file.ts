@@ -1,6 +1,6 @@
 import { COMPLAIN_DAYS, complaintInputSchema, COMPLAINT_WINDOW_DAYS, DAY_MS } from '@platform/contracts';
 import type { z } from 'zod';
-import { hiddenPeople, isHigh } from '../domain/complaint';
+import { hiddenPeople } from '../domain/complaint';
 import type { ComplaintsDeps } from './ports';
 
 type Input = z.output<typeof complaintInputSchema>;
@@ -30,7 +30,6 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     refund: null,
   };
   await deps.store.save(complaint);
-  if (!isHigh(complaint.reason)) return { id: complaint.id };
   const against = await deps.people.find(againstId);
   await deps.tell.team(complaint, { firstName: against?.firstName ?? '', publicId: against?.publicId ?? '' });
   return { id: complaint.id };

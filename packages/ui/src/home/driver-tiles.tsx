@@ -1,3 +1,4 @@
+import { FEW_SEATS, WALLET_SECTION } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -6,8 +7,6 @@ import { HomeTile } from '../flow/home-tile';
 import type { HomeGo } from '../flow/start-action';
 import { useLoad } from '../market/use-list';
 import { openInTelegram } from '../telegram/feedback';
-import { FEW_SEATS } from '../wallet/wallet-card';
-import { WALLET_SECTION } from '../wallet/wallet-flow';
 import { useHomeTap } from './use-home-tap';
 
 type Props = { readonly go: HomeGo; readonly openProfile: () => void };

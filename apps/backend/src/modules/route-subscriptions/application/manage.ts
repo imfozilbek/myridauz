@@ -45,8 +45,6 @@ export async function subscribe(
     kind,
     expiresAt: expiresAtOf(input.date, now),
     expired: false,
-    lastSentAt: null,
-    pending: 0,
     createdAt: now,
   };
   await deps.subscriptions.save(subscription);

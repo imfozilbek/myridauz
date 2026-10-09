@@ -20,7 +20,8 @@
       "1703236",
       "1703401",
       "1703408"
-    ]
+    ],
+    "page": "/yonalish/toshkent-andijon/"
   },
   {
     "username": "rida_namangan",
@@ -39,7 +40,8 @@
       "1714237",
       "1714242",
       "1714401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-namangan/"
   },
   {
     "username": "rida_fargona",
@@ -58,31 +60,36 @@
       "1730401",
       "1730408",
       "1730412"
-    ]
+    ],
+    "page": "/yonalish/toshkent-fargona/"
   },
   {
     "username": "rida_qoqon",
     "title": "Qoʻqon",
     "code": "40",
-    "places": ["1730212", "1730215", "1730221", "1730230", "1730236", "1730238", "1730405"]
+    "places": ["1730212", "1730215", "1730221", "1730230", "1730236", "1730238", "1730405"],
+    "page": "/yonalish/toshkent-fargona/"
   },
   {
     "username": "rida_chirchiq",
     "title": "Chirchiq, Boʻstonliq",
     "code": "10",
-    "places": ["1727224", "1727239", "1727248", "1727249", "1727265", "1727419"]
+    "places": ["1727224", "1727239", "1727248", "1727249", "1727265", "1727419"],
+    "page": "/yonalish/toshkent-nurafshon/"
   },
   {
     "username": "rida_angren",
     "title": "Angren, Olmaliq, Bekobod",
     "code": "10",
-    "places": ["1727212", "1727220", "1727228", "1727250", "1727404", "1727407", "1727413", "1727415"]
+    "places": ["1727212", "1727220", "1727228", "1727250", "1727404", "1727407", "1727413", "1727415"],
+    "page": "/yonalish/toshkent-nurafshon/"
   },
   {
     "username": "rida_yangiyol",
     "title": "Yangiyoʻl, Chinoz, Nurafshon",
     "code": "10",
-    "places": ["1727206", "1727233", "1727237", "1727253", "1727256", "1727259", "1727401", "1727424"]
+    "places": ["1727206", "1727233", "1727237", "1727253", "1727256", "1727259", "1727401", "1727424"],
+    "page": "/yonalish/toshkent-nurafshon/"
   },
   {
     "username": "rida_sirdaryo",
@@ -100,7 +107,8 @@
       "1724401",
       "1724410",
       "1724413"
-    ]
+    ],
+    "page": "/yonalish/toshkent-guliston/"
   },
   {
     "username": "rida_jizzax",
@@ -120,7 +128,8 @@
       "1708235",
       "1708237",
       "1708401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-jizzax/"
   },
   {
     "username": "rida_samarqand",
@@ -136,13 +145,15 @@
       "1718236",
       "1718238",
       "1718401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-samarqand/"
   },
   {
     "username": "rida_kattaqorgon",
     "title": "Kattaqoʻrgʻon",
     "code": "30",
-    "places": ["1718212", "1718215", "1718216", "1718218", "1718230", "1718235", "1718406"]
+    "places": ["1718212", "1718215", "1718216", "1718218", "1718230", "1718235", "1718406"],
+    "page": "/yonalish/toshkent-samarqand/"
   },
   {
     "username": "rida_navoiy",
@@ -160,7 +171,8 @@
       "1712401",
       "1712408",
       "1712412"
-    ]
+    ],
+    "page": "/yonalish/toshkent-navoiy/"
   },
   {
     "username": "rida_buxoro",
@@ -180,7 +192,8 @@
       "1706258",
       "1706401",
       "1706403"
-    ]
+    ],
+    "page": "/yonalish/toshkent-buxoro/"
   },
   {
     "username": "rida_qarshi",
@@ -197,13 +210,15 @@
       "1710235",
       "1710237",
       "1710401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-qarshi/"
   },
   {
     "username": "rida_shahrisabz",
     "title": "Shahrisabz, Kitob, Yakkabogʻ",
     "code": "70",
-    "places": ["1710232", "1710240", "1710242", "1710245", "1710250", "1710405"]
+    "places": ["1710232", "1710240", "1710242", "1710245", "1710250", "1710405"],
+    "page": "/yonalish/toshkent-qarshi/"
   },
   {
     "username": "rida_termiz",
@@ -219,13 +234,15 @@
       "1722220",
       "1722223",
       "1722401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-termiz/"
   },
   {
     "username": "rida_denov",
     "title": "Denov",
     "code": "75",
-    "places": ["1722201", "1722204", "1722210", "1722217", "1722221", "1722226"]
+    "places": ["1722201", "1722204", "1722210", "1722217", "1722221", "1722226"],
+    "page": "/yonalish/toshkent-termiz/"
   },
   {
     "username": "rida_xorazm",
@@ -245,7 +262,8 @@
       "1733236",
       "1733401",
       "1733406"
-    ]
+    ],
+    "page": "/yonalish/toshkent-urganch/"
   },
   {
     "username": "rida_nukus",
@@ -265,12 +283,14 @@
       "1735240",
       "1735243",
       "1735401"
-    ]
+    ],
+    "page": "/yonalish/toshkent-nukus/"
   },
   {
     "username": "rida_beruniy",
     "title": "Beruniy, Toʻrtkoʻl",
     "code": "95",
-    "places": ["1735204", "1735207", "1735233", "1735250"]
+    "places": ["1735204", "1735207", "1735233", "1735250"],
+    "page": "/yonalish/toshkent-nukus/"
   }
 ]

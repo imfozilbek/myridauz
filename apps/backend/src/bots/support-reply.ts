@@ -6,15 +6,6 @@ import { talkParts } from './support-talk';
 import type { BotCallback } from './telegram-update';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-// The buttons under a copy for the team (G31, G32).
-export const REPLY_DATA = 'support:reply';
-export const HISTORY_DATA = 'support:history';
-const reply = { text: t('bot.support.reply'), callback_data: REPLY_DATA };
-const history = { text: t('bot.support.history'), callback_data: HISTORY_DATA };
-// «Tarix» only for a person who wrote before: the next team member learns the earlier questions.
-export const copyButtons = (wroteBefore: boolean) => ({
-  inline_keyboard: [wroteBefore ? [reply, history] : [reply]],
-});
 
 // The person of the copy under the pressed button, and what the admin bot needs to answer.
 async function writerOfButton(context: BotContext, query: BotCallback) {
@@ -43,7 +34,7 @@ export async function onHistoryButton(context: BotContext, query: BotCallback) {
   const found = await writerOfButton(context, query);
   if (!found) return answerQuery(query);
   const { token, chatId, writer } = found;
-  for (const part of talkParts(writer.chatId, await supportTalk(context.env, writer.chatId)))
+  for (const part of talkParts(await supportTalk(context.env, writer.chatId)))
     await sendText(context.fetch, token, chatId, part);
   return answerQuery(query);
 }

@@ -65,7 +65,7 @@ test('D66, D74. a subscription to requests brings a new one; the family follows 
   const route = { from: CHILONZOR, to: SAMARQAND, woman: false, date: tomorrow() };
   await createSubscriptionsClient(await signedAs('driver', ELYOR)).subscribe(route);
   await askRide(ROZA);
-  await toldBy('driver', ELYOR, wordsOf('bot.subscription.request'));
+  await toldBy('driver', ELYOR, wordsOf('bot.news.requests'));
   const trip = await publishTrip(ELYOR, CHILONZOR, SAMARQAND, 'door');
   const share = await createChatClient(await signedAs('driver', ELYOR)).shareTrip(trip.id);
   const card = await createChatClient(await signedAs('passenger', ROZA)).sharedTrip(share.link.slice(-43));

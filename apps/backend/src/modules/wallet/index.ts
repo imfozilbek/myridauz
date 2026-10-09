@@ -1,16 +1,20 @@
 import { commissionFor, loadBrand } from '@platform/brands';
-import type { Booking } from '@platform/contracts';
+import { isQuietTime, type Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals } from '../feed';
+import { showCards } from '../notifications';
+import { tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
 import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { refundNoShow as refundOnce } from './application/no-show-refund';
 import { burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { warnBonusEnds } from './application/wallet-news';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
+import { moneySign, walletCard, walletRing } from './infrastructure/wallet-card';
 
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
@@ -39,6 +43,16 @@ const walletDeps = (env: Bindings): WalletDeps => {
     booking: (id) => links.booking(env, id),
     lastPrice: (id) => links.lastPrice(env, id),
     perSeat: (price) => commissionFor(brand.commission, price, 1),
+    // A driver may have never opened the bot: the news must not stop the commission.
+    tell: async (driverId, view, news) => {
+      const now = Date.now();
+      const ring = walletRing(driverId, view, news, isQuietTime(now));
+      await showCards(env, [walletCard(brand, driverId, view, now)], [ring]).catch((error: unknown) =>
+        console.warn(JSON.stringify({ event: 'wallet_news_failed', message: String(error) })),
+      );
+      const person = news === 'fewSeats' ? await peopleOf(env).find(driverId) : undefined;
+      if (person) await tellOwners(env, moneySign(person, view));
+    },
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };
@@ -56,6 +70,8 @@ export const refundCommission = (env: Bindings, driverId: number, bookingId: str
 // For drivers: bonus 1 at the approval. For the Cron job: burning bonuses that are over.
 export const welcomeBonus = (env: Bindings, driverId: number) => grantWelcome(walletDeps(env), driverId);
 export const burnBonuses = (env: Bindings) => burnExpired(walletDeps(env));
+// For the daily Cron job: the bonus ends in 3 days (G68, docs/122).
+export const warnBonusEnd = (env: Bindings) => warnBonusEnds(walletDeps(env));
 export const missedWelcome = (env: Bindings, approved: readonly number[]) =>
   grantMissedWelcome(walletDeps(env), approved);
 

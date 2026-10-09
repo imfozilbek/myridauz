@@ -1,114 +1,84 @@
-import { arrivalAt, channelVia, tashkentDate, tripBookLink, withVia, type Trip } from '@platform/contracts';
-import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
+import { channelVia, routeFindLink, tripBookLink, type Trip } from '@platform/contracts';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { endNames, type Places } from '../../../shared/places/end-names';
+import { bold, escapeHtml as escape, quote } from '../../../shared/telegram/html';
 import { postState, regionOf } from '../domain/route-channels';
-import { bold, escapeHtml as escape } from '../../../shared/telegram/html';
+import { lifePost, type Post } from './post-life';
+import { hashtagOf, whenLine } from './post-parts';
 
-const { t, formatMoney, formatDate, formatWeekday, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
-
-type Place = { readonly name: string; readonly parentId: string | null };
-type Places = ReadonlyMap<string, Place>;
-type Post = { readonly text: string; readonly markup: object };
-
-// The post is HTML (bold lines); names come from the directory and the driver, so they are escaped.
-const nameOf = (id: string, places: Places) => escape(places.get(id)?.name ?? id);
-
-// "Toshkent shahri → Samarqand viloyati" in bold, then the places: the reader sees the way at once.
-function route(trip: Trip, places: Places): string[] {
-  const [from, to] = [regionOf(trip.from, places), regionOf(trip.to, places)];
-  return [
-    bold(`${nameOf(from, places)} → ${nameOf(to, places)}`),
-    t('bot.channel.places', { from: nameOf(trip.from, places), to: nameOf(trip.to, places) }),
-  ];
-}
-
-const dayOf = (departAt: Date) => `${formatDate(departAt)}, ${formatWeekday(departAt)}`;
-
-function details(trip: Trip): string[] {
-  const departAt = new Date(trip.departAt);
-  const { make, model, color } = trip.driver.car;
-  const paint = t(`drivers.color.${color}`).toLocaleLowerCase();
-  return [
-    t('bot.channel.date', { date: bold(dayOf(departAt)) }),
-    t('bot.channel.time', {
-      depart: bold(formatTime(departAt)),
-      arrive: formatTime(new Date(arrivalAt(trip.departAt, trip.km))),
-    }),
-    t(trip.seatsLeft === 1 ? 'bot.channel.lastSeat' : 'bot.channel.seats', {
-      seats: bold(String(trip.seatsLeft)),
-    }),
-    t('bot.channel.price', { price: bold(formatMoney(trip.price)) }),
-    t('bot.channel.car', { car: escape(`${make} ${model}, ${paint}`) }),
-    // Every driver who posts has passed the check of the team (docs/04).
-    t('bot.channel.verified'),
-    trip.driver.rating.average === null
-      ? t('bot.channel.newDriver')
-      : t('bot.channel.rating', {
-          average: formatNumber(trip.driver.rating.average),
-          count: trip.driver.rating.count,
-        }),
-    ...(trip.woman ? [t('bot.channel.woman')] : []),
-    wayLine(trip),
-  ];
-}
+const { t, formatDate, formatWeekday, formatNumber } = createI18n(DEFAULT_LOCALE);
+const FREE = '🟩';
+const TAKEN = '⬜';
 
 // How the driver picks people up (docs/70): at the door, at the pitak of the direction, or both.
-function wayLine(trip: Trip): string {
+function pickupLine(trip: Trip): string {
   const pitak = trip.pitak ? escape(trip.pitak.name) : null;
-  if (trip.pickupMode === 'door' || !pitak) return t('bot.channel.door');
-  return t(trip.pickupMode === 'pitak' ? 'bot.channel.pitak' : 'bot.channel.doorOrPitak', { pitak });
+  if (trip.pickupMode === 'door' || !pitak) return t('bot.channel.pickupDoor');
+  return t(trip.pickupMode === 'pitak' ? 'bot.channel.pickupPitak' : 'bot.channel.pickupBoth', { pitak });
 }
 
-// #Samarqand: a tap shows every trip of the region in the channel.
-export const tagOf = (region: string) => `#${t(`bot.channel.tag.${region}` as TranslationKey)}`;
-
-function tags(trip: Trip, places: Places): string {
-  return [...new Set([regionOf(trip.from, places), regionOf(trip.to, places)])].map(tagOf).join(' ');
+// «🟩🟩⬜⬜ 2 ta boʻsh joy»: the free seats green, the taken ones white.
+function seatsLine(trip: Trip): string {
+  const free = Math.max(trip.seatsLeft, 0);
+  const bar = FREE.repeat(free) + TAKEN.repeat(Math.max(trip.seats - free, 0));
+  return t('bot.channel.seats', { bar, seats: String(free), price: bold(formatNumber(trip.price)) });
 }
 
-// "Shu yoʻnalishga obuna": the route of the regions and the day, into the passenger Mini App (docs/24).
-function subscribeUrl(bot: string, trip: Trip, places: Places, via: string): string {
-  const route = `${regionOf(trip.from, places)}_${regionOf(trip.to, places)}`;
-  return `https://t.me/${bot}?startapp=${withVia(`sub_${route}_${tashkentDate(trip.departAt)}`, via)}`;
+function carLine(trip: Trip): string {
+  const { model, color } = trip.driver.car;
+  const { average } = trip.driver.rating;
+  const car = escape(`${model}, ${t(`drivers.color.${color}`).toLocaleLowerCase()}`);
+  // Every driver who posts has passed the check of the team (docs/04).
+  const rating =
+    average === null
+      ? t('bot.channel.newDriver')
+      : t('bot.channel.rating', { average: formatNumber(average) });
+  return t('bot.channel.car', { car, rating });
 }
 
-// "Doʻstga yuborish": Telegram's own share window with the link of the trip.
+// «Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.» under the shared link.
 function shareUrl(bookUrl: string, trip: Trip, places: Places): string {
+  const departAt = new Date(trip.departAt);
   const text = t('bot.channel.shareText', {
     from: places.get(regionOf(trip.from, places))?.name ?? trip.from,
     to: places.get(regionOf(trip.to, places))?.name ?? trip.to,
-    date: dayOf(new Date(trip.departAt)),
+    date: `${formatDate(departAt)}, ${formatWeekday(departAt)}`,
   });
   return `https://t.me/share/url?url=${encodeURIComponent(bookUrl)}&text=${encodeURIComponent(text)}`;
 }
 
-const HEADER = {
-  full: 'bot.channel.full',
-  started: 'bot.channel.started',
-  cancelled: 'bot.channel.cancelled',
-} as const;
+// A trip with seats, as the bot shows it (G68, docs/122, mockup g68/5 «Safar posti»): 🟢 and 🔴 in
+// quotes with the district, the region and how the driver takes and brings people; the seats, the
+// car, the check, the rating; hashtags of the places. No address, no plate, no name (docs/15).
+function openPost(trip: Trip, places: Places, now: number, book: string): Post {
+  const names = endNames(trip.from, trip.to, places);
+  const head = trip.seatsLeft === 1 ? 'bot.channel.lastSeat' : 'bot.channel.new';
+  const tags = [trip.to, trip.from].map((id) => hashtagOf(places.get(id)?.name ?? '')).filter(Boolean);
+  const text = [
+    bold(t(head)),
+    bold(whenLine(trip, now)),
+    quote([`🟢 ${names.from}`, pickupLine(trip)]),
+    quote([`🔴 ${names.to}`, t('bot.channel.dropoff')]),
+    seatsLine(trip),
+    carLine(trip),
+    ...(trip.woman ? [t('bot.channel.woman')] : []),
+    ...(tags.length > 0 ? [tags.join(' ')] : []),
+  ].join('\n');
+  const buttons = [
+    { text: t('bot.channel.book'), url: book },
+    { text: t('bot.channel.share'), url: shareUrl(book, trip, places) },
+  ];
+  return { text, markup: { inline_keyboard: [buttons] } };
+}
 
-// The channel post of a trip (docs/15): no contacts, no name, no plate; url buttons only,
-// web_app buttons do not work in channels. A full, departed or cancelled trip keeps the route and
-// the day and still offers the subscription: the post brings people to the route even then (docs/18).
-// Every link of the post carries the mark of its channel (G55, docs/116).
+// The channel post of a trip (docs/15, G68): url buttons only, web_app buttons do not work in
+// channels. Every link carries the mark of its channel (G55, docs/116).
 export const channelPost =
   (passengerBot: string) =>
   (trip: Trip, places: Places, now: number, channel: string): Post => {
     const state = postState(trip, now);
     const via = channelVia(channel);
-    const subscribe = {
-      text: t('bot.channel.subscribe'),
-      url: subscribeUrl(passengerBot, trip, places, via),
-    };
-    if (state !== 'open') {
-      const departAt = new Date(trip.departAt);
-      const when = t('bot.channel.date', { date: `${dayOf(departAt)}, ${formatTime(departAt)}` });
-      const text = [bold(t(HEADER[state])), ...route(trip, places), when].join('\n');
-      return { text, markup: { inline_keyboard: [[subscribe]] } };
-    }
-    const text = [...route(trip, places), '', ...details(trip), '', tags(trip, places)].join('\n');
-    const bookUrl = tripBookLink(passengerBot, trip.id, via);
-    const book = { text: t('bot.channel.book'), url: bookUrl };
-    const share = { text: t('bot.channel.share'), url: shareUrl(bookUrl, trip, places) };
-    return { text, markup: { inline_keyboard: [[book], [share], [subscribe]] } };
+    if (state === 'open' || state === 'lastSeat')
+      return openPost(trip, places, now, tripBookLink(passengerBot, trip.id, via));
+    return lifePost(state, trip, places, now, routeFindLink(passengerBot, trip.from, trip.to, via));
   };

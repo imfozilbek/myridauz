@@ -1,90 +1,106 @@
 import { describe, expect, it } from 'vitest';
-import places from '../../../seed/locations.json' with { type: 'json' };
 import { PLACES, TRIP } from './channels-fixtures';
-import { channelPost, tagOf } from './infrastructure/post-text';
+import { channelPost } from './infrastructure/post-text';
+import { hashtagOf } from './infrastructure/post-parts';
 
-const REGIONS = (places as readonly { id: string; parentId: string | null }[])
-  .filter((place) => place.parentId === null)
-  .map((place) => place.id);
-
-// Telegram's share window: the link of the trip and a short line about it.
-const SHARE =
-  'https://t.me/share/url?url=' +
-  encodeURIComponent('https://t.me/test_bot?startapp=trip_trip-1__ch-yol-samarqand') +
-  '&text=' +
-  encodeURIComponent('Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.');
+// 1.10.2026 05:00 in Tashkent: the trip (2.10 08:30) is tomorrow.
 const BEFORE = Date.parse('2026-10-01T00:00:00Z');
 const render = channelPost('test_bot');
 // A post of the Samarqand channel: its links carry the channel's mark (G55, docs/116).
 type Args = Parameters<typeof render>;
-const post = (trip: Args[0], places: Args[1], now: number) => render(trip, places, now, 'yol_samarqand');
+const post = (trip: Args[0], now: number) => render(trip, PLACES, now, 'yol_samarqand');
+const lines = (text: string) => text.split('\n').map((line) => line.replace(/\s/gu, ' '));
+const BOOK = 'https://t.me/test_bot?startapp=trip_trip-1__ch-yol-samarqand';
+const SHARE =
+  'https://t.me/share/url?url=' +
+  encodeURIComponent(BOOK) +
+  '&text=' +
+  encodeURIComponent('Toshkent shahri → Samarqand viloyati, 2-oktabr, juma: boʻsh joy bor.');
+const FIND = 'https://t.me/test_bot?startapp=find_1726269_1718401__ch-yol-samarqand';
 
-describe('the channel post (docs/15)', () => {
-  it('writes the post without contacts, with "Joy band qilish" and the route subscription', () => {
-    const { text, markup } = post(TRIP, PLACES, BEFORE);
-    expect(text.split('\n').map((line) => line.replace(/\s/gu, ' '))).toEqual([
-      '<b>Toshkent shahri → Samarqand viloyati</b>',
-      '📍 Chilonzor → Samarqand shahri',
-      '',
-      '📅 <b>2-oktabr, juma</b>',
-      '🕗 Joʻnash: <b>08:30</b>, yetib borish: ≈ 13:30',
-      '💺 <b>3</b> ta boʻsh joy',
-      '💰 Bir joy: <b>85 000 soʻm</b>',
-      '🚘 Chevrolet Cobalt, oq',
-      '✅ Tekshirilgan haydovchi',
-      '🆕 Yangi haydovchi',
+// The post of a trip as in the bot (G68, docs/122, mockup g68/5): no address, plate, name.
+describe('the channel post of a trip (G68, mockup g68/5)', () => {
+  it('a new trip: the day and the time, both ends in quotes, the seats, the car', () => {
+    const { text, markup } = post(TRIP, BEFORE);
+    expect(lines(text)).toEqual([
+      '<b>🆕 Yangi safar</b>',
+      '<b>Ertaga, 2-oktabr · 08:30 → ≈ 13:30</b>',
+      '<blockquote>🟢 <b>Chilonzor</b>, Toshkent shahri',
+      '🚏 Toshkent avtovokzalidan yoki 🏠 uyingizdan</blockquote>',
+      '<blockquote>🔴 <b>Samarqand shahri</b>, Samarqand viloyati',
+      '🏠 Uyingizgacha</blockquote>',
+      '💺 🟩🟩🟩⬜ 3 ta boʻsh joy · 💰 <b>85 000</b>',
+      '🚘 Cobalt, oq · ✅ Tekshirilgan · 🆕 Yangi haydovchi',
       '👩 Mashinada ayol bor',
-      '🏠 Uyingizdan yoki 🚏 Toshkent avtovokzalidan olib ketadi',
-      '',
-      '#Toshkent #Samarqand',
+      '#SamarqandShahri #Chilonzor',
     ]);
     expect(text).not.toMatch(/Jasur|01A|\+998/u);
-    const subscribe = {
-      text: '🔔 Shu yoʻnalishga obuna',
-      url: 'https://t.me/test_bot?startapp=sub_1726_1718_2026-10-02__ch-yol-samarqand',
-    };
     expect(markup).toEqual({
       inline_keyboard: [
-        [{ text: 'Joy band qilish', url: 'https://t.me/test_bot?startapp=trip_trip-1__ch-yol-samarqand' }],
-        [{ text: '📤 Doʻstga yuborish', url: SHARE }],
-        [subscribe],
+        [
+          { text: 'Joy band qilish', url: BOOK },
+          { text: '📤 Doʻstga', url: SHARE },
+        ],
       ],
     });
-    const full = post({ ...TRIP, seatsLeft: 0, status: 'full' }, PLACES, BEFORE);
-    expect(full.text.split('\n')).toEqual([
-      '<b>⛔ Joy qolmagan</b>',
-      '<b>Toshkent shahri → Samarqand viloyati</b>',
-      '📍 Chilonzor → Samarqand shahri',
-      '📅 2-oktabr, juma, 08:30',
+  });
+
+  it('the last seat says so on top; the rating of a rated driver', () => {
+    const rated = { ...TRIP, seatsLeft: 1, driver: { ...TRIP.driver, rating: { average: 4.9, count: 12 } } };
+    const text = lines(post(rated, BEFORE).text);
+    expect(text[0]).toBe('<b>🔥 1 ta joy qoldi</b>');
+    expect(text).toContain('💺 🟩⬜⬜⬜ 1 ta boʻsh joy · 💰 <b>85 000</b>');
+    expect(text).toContain('🚘 Cobalt, oq · ✅ Tekshirilgan · ⭐ 4,9');
+  });
+
+  it('no seats: a short post and «Shunga oʻxshash safarlar»', () => {
+    const { text, markup } = post({ ...TRIP, seatsLeft: 0, status: 'full' }, BEFORE);
+    expect(lines(text)).toEqual([
+      '<b>⛔ Joy qolmadi</b>',
+      '<b>Ertaga, 2-oktabr · 08:30</b>',
+      'Chilonzor → Samarqand shahri · 5 kishi ketmoqda',
     ]);
-    expect(full.markup).toEqual({ inline_keyboard: [[subscribe]] });
-    const cancelled = post({ ...TRIP, status: 'cancelled' }, PLACES, BEFORE);
-    expect(cancelled.text.startsWith('<b>❌ Safar bekor qilindi</b>')).toBe(true);
+    expect(markup).toEqual({ inline_keyboard: [[{ text: '🔎 Shunga oʻxshash safarlar', url: FIND }]] });
   });
 
-  it('shows the rating of a driver with 3 and more ratings', () => {
-    const rated = { ...TRIP, driver: { ...TRIP.driver, rating: { average: 4.8, count: 37 } } };
-    expect(post(rated, PLACES, BEFORE).text.replace(/\s/gu, ' ')).toContain('⭐ 4,8 (37 ta baho)');
+  it('on the road and arrived: how many people share the way; no buttons on the road', () => {
+    const road = post({ ...TRIP, departedAt: TRIP.departAt }, TRIP.departAt);
+    expect(lines(road.text)).toEqual([
+      '<b>🚗 Yoʻlga chiqdi</b>',
+      '<b>Bugun · 08:30 → ≈ 13:30</b>',
+      'Chilonzor → Samarqand shahri · 2 kishi bir mashinada',
+    ]);
+    expect(road.markup).toEqual({ inline_keyboard: [] });
+    const arrivedAt = Date.parse('2026-10-02T08:05:00Z');
+    const arrived = post({ ...TRIP, status: 'completed', arrivedAt }, arrivedAt);
+    expect(lines(arrived.text)).toEqual([
+      '<b>🏁 Yetib bordi</b>',
+      'Chilonzor → Samarqand shahri · 2 kishi · 13:05 da',
+      'Yoʻl xarajati 2 ga boʻlindi',
+    ]);
+    expect(arrived.markup).toEqual({ inline_keyboard: [[{ text: '🔎 Keyingi safarni topish', url: FIND }]] });
   });
 
-  it('warns about the last seat and says when the trip has left', () => {
-    expect(post({ ...TRIP, seatsLeft: 1 }, PLACES, BEFORE).text).toContain('🔥 Faqat <b>1</b> ta joy qoldi');
-    const left = post(TRIP, PLACES, TRIP.departAt);
-    expect(left.text.startsWith('<b>🚗 Safar boshlandi</b>\n')).toBe(true);
-    expect(JSON.stringify(left.markup)).not.toMatch(/startapp=trip_|share/u);
-    expect(post({ ...TRIP, status: 'completed' }, PLACES, BEFORE).text).toContain('Safar boshlandi');
-    // «Yoʻlga chiqdim» before the time (G63).
-    expect(post({ ...TRIP, departedAt: BEFORE }, PLACES, BEFORE).text).toContain('Safar boshlandi');
+  it('a driver alone: the route without people and without the split', () => {
+    const alone = { ...TRIP, seatsLeft: 4, status: 'completed' as const, arrivedAt: TRIP.departAt };
+    expect(lines(post(alone, TRIP.departAt).text)).toEqual([
+      '<b>🏁 Yetib bordi</b>',
+      'Chilonzor → Samarqand shahri · 08:30 da',
+    ]);
   });
 
-  it('escapes names for HTML and tags a region once', () => {
+  it('a cancelled trip: the post goes away; an old one Telegram keeps says it', () => {
+    const cancelled = post({ ...TRIP, status: 'cancelled' }, BEFORE);
+    expect(cancelled.remove).toBe(true);
+    expect(lines(cancelled.text)[0]).toBe('<b>❌ Safar bekor qilindi</b>');
+  });
+
+  it('escapes names for HTML; a hashtag keeps only Latin letters and digits', () => {
     const places = new Map([...PLACES, ['1718402', { name: 'A<b>&', parentId: '1718' }]]);
-    const { text } = post({ ...TRIP, from: '1718401', to: '1718402' }, places, BEFORE);
-    expect(text).toContain('📍 Samarqand shahri → A&lt;b&gt;&amp;');
-    expect(text.endsWith('\n#Samarqand')).toBe(true);
-  });
-
-  it('has a hashtag for each of the 14 regions', () => {
-    for (const region of REGIONS) expect(tagOf(region)).toMatch(/^#[A-Za-z]+$/u);
+    const { text } = render({ ...TRIP, from: '1718401', to: '1718402' }, places, BEFORE, 'yol_samarqand');
+    expect(text).toContain('🔴 <b>A&lt;b&gt;&amp;</b>');
+    expect(hashtagOf('Kattaqoʻrgʻon')).toBe('#Kattaqorgon');
+    expect(hashtagOf('Samarqand shahri')).toBe('#SamarqandShahri');
+    expect(hashtagOf('<>')).toBe('');
   });
 });

@@ -27,15 +27,20 @@ test('T20, T22. a fake profile is urgent: the team hears at once and may read th
   expect(await team.chat(complaint?.id ?? '')).toEqual(expect.any(Array));
 });
 
-test('S63, S64. a channel post books this trip and subscribes to its route', async () => {
+test('S63, S64. a channel post books this trip and is shared; the board of the day subscribes', async () => {
   await clearBotMessages();
   const trip = await publishTrip(KOMIL, CHILONZOR, SAMARQAND, 'door');
+  // The post of the trip, not the board of the day (G68): its own «Joy band qilish».
   const post = async () =>
-    (await botMessages()).find((m) => m.chat.startsWith('@') && m.method === 'sendMessage');
+    (await botMessages()).find(
+      (m) =>
+        m.chat.startsWith('@') &&
+        m.method === 'sendMessage' &&
+        m.buttons.some((b) => (b.url ?? '').includes(`trip_${trip.id}`)),
+    );
   await expect.poll(post).toBeTruthy();
   const urls = (await post())?.buttons.map((b) => b.url ?? '') ?? [];
-  expect(urls.some((url) => url.includes(`trip_${trip.id}`))).toBe(true);
-  expect(urls.length).toBeGreaterThanOrEqual(2);
+  expect(urls.some((url) => url.startsWith('https://t.me/share/url'))).toBe(true);
 });
 
 test('V01. a trip at 23:50 in Tashkent is found on its Tashkent day, not the next one', async () => {

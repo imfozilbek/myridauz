@@ -1,5 +1,6 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
+import { unreadOf } from '../chat';
 import { placesOf } from '../locations';
 import { showCards } from '../notifications';
 import { peopleOf } from '../users';
@@ -12,5 +13,6 @@ export const passengerNewsOf = (env: Bindings) =>
     places: () => placesOf(env),
     show: (cards, rings) => showCards(env, cards, rings),
     telegramId: (publicId) => peopleOf(env).idOf(publicId),
+    unread: async (userId, chatKey) => (await unreadOf(env, userId)).get(chatKey) ?? 0,
     now: Date.now,
   });

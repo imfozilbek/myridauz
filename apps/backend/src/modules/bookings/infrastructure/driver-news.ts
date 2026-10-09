@@ -5,6 +5,7 @@ import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { escapeHtml } from '../../../shared/telegram/html';
 import { askCard, askCardKey } from './ask-card';
+import { chatRingButton, isChatRing, type ChatRing } from './chat-ring-button';
 import { driverTripCard } from '../../../shared/telegram/card-keys';
 import { driverCard } from './driver-card';
 import { firstPickup } from './road-order';
@@ -13,11 +14,12 @@ const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // The news of a trip in the driver bot (G68, docs/122): a new request rings as its own card, the
 // rest are short rings under the trip card.
-export type DriverRing = 'asked' | 'askAgain' | 'cancelled' | 'offerAccepted' | 'came' | 'soon';
+export type DriverRing = 'asked' | 'askAgain' | 'cancelled' | 'offerAccepted' | 'came' | 'soon' | ChatRing;
 
-// «2 soat qoldi» wakes the driver at night; on the road only a cancel rings (docs/122).
-const ANY_HOUR: ReadonlySet<DriverRing> = new Set(['soon']);
-const ON_THE_ROAD: ReadonlySet<DriverRing> = new Set(['cancelled']);
+// «2 soat qoldi» and a call wake the driver at night; on the road only a call and a cancel ring
+// (docs/122).
+const ANY_HOUR: ReadonlySet<DriverRing> = new Set(['soon', 'call']);
+const ON_THE_ROAD: ReadonlySet<DriverRing> = new Set(['cancelled', 'call']);
 // The passengers are at the pitak 10 minutes before the time (mockup g68/1, g68/3).
 const AT_PITAK_EARLY_MINUTES = 10;
 
@@ -53,7 +55,7 @@ function ringText(trip: Trip, bookings: readonly Booking[], ring: DriverRing, ab
         ? t('bot.dring.askAgain', { name, time: formatTime(new Date(about.expiresAt)) })
         : null;
     default:
-      return t(`bot.dring.${ring}`, { name });
+      return isChatRing(ring) ? t(`bot.ring.${ring}`, { name }) : t(`bot.dring.${ring}`, { name });
   }
 }
 
@@ -93,6 +95,7 @@ export const driverNews =
     const text = ring ? ringText(trip, bookings, ring, booking) : null;
     // «Still waits» answers the request itself, where its buttons are; the rest the trip card.
     const under = ring === 'askAgain' && booking ? askCardKey(booking.id) : driverTripCard(trip.id);
-    const rings: Ring[] = text ? [{ bot: 'driver', chatId, text, card: under, quiet }] : [];
+    const button = booking ? chatRingButton(brand, 'driver', booking, ring) : {};
+    const rings: Ring[] = text ? [{ bot: 'driver', chatId, text, card: under, quiet, ...button }] : [];
     await show([card, ...asks], rings);
   };

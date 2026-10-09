@@ -8,15 +8,14 @@ export type SubscriptionRepository = {
   byUser(userId: number, kind: SubscriptionKind): Promise<SubscriptionRecord[]>;
   // Not expired yet: the ones a new trip or request is matched against.
   live(kind: SubscriptionKind, now: number): Promise<SubscriptionRecord[]>;
-  // The Cron job: matches waiting, and "any date" ones over but not offered to renew yet.
-  waiting(): Promise<SubscriptionRecord[]>;
+  // The Cron job: the ones whose time is over, "any date" ones not offered to renew yet.
   overdue(now: number): Promise<SubscriptionRecord[]>;
 };
 
-// What the bots say (docs/24): one match, several at once, the offer to renew, a cheaper trip (G39).
+// What the bots say in the news card of the route (docs/24, docs/122 rule 4): a new trip or
+// request, a cheaper trip (G39), the offer to renew.
 export type SubscriptionTeller = {
   one(subscription: SubscriptionRecord, match: Match): Promise<void>;
-  many(subscription: SubscriptionRecord, count: number): Promise<void>;
   renew(subscription: SubscriptionRecord): Promise<void>;
   cheaper(subscription: SubscriptionRecord, match: Match): Promise<void>;
 };

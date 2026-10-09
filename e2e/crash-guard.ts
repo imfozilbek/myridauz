@@ -28,7 +28,34 @@ const pictureAfterSplash = (page: Page) => {
     return shoot(options);
   };
 };
-export const test = base.extend<{ crashGuard: undefined; pictures: undefined }>({
+// The sheet of the open Mini App (G68, docs/155) rises over the main screen when something waits for
+// an answer. A test of another step answers «later» the way a person may: a tap beside each sheet.
+// A test of the sheets themselves keeps them: test.use({ actionSheets: 'keep' }).
+const SHEET = '.action-sheet';
+const MOST_SHEETS = 10;
+const laterOnSheets = (page: Page) =>
+  page.addLocatorHandler(page.locator(SHEET).first(), async () => {
+    for (let left = MOST_SHEETS; left > 0 && (await page.locator(SHEET).count()) > 0; left -= 1)
+      await page.keyboard.press('Escape');
+  });
+
+export const test = base.extend<{
+  crashGuard: undefined;
+  pictures: undefined;
+  actionSheets: 'later' | 'keep';
+  sheetsLater: undefined;
+}>({
+  actionSheets: ['later', { option: true }],
+  sheetsLater: [
+    async ({ context, actionSheets }, use) => {
+      if (actionSheets === 'later') {
+        await Promise.all(context.pages().map(laterOnSheets));
+        context.on('page', (page) => void laterOnSheets(page));
+      }
+      await use(undefined);
+    },
+    { auto: true },
+  ],
   pictures: [
     async ({ context }, use) => {
       const prepare = process.env['STAND_SHOTS'] === 'off' ? noPicture : pictureAfterSplash;

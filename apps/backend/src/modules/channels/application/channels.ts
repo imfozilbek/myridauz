@@ -10,29 +10,36 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
   if (!trip || trip.status !== 'active') return;
   const shown = shownOf(trip);
   const channels = channelsOf(trip.from, trip.to, places, list);
+  // A post comes without sound: the board of the day is the one sound of a channel (docs/122).
   await deps.send(
-    channels.map((channel) => ({
-      bot: 'passenger' as const,
-      chatId: `@${channel}`,
-      html: true,
-      ...deps.render(trip, places, deps.now(), channel),
-      after: { type: 'channelPost' as const, tripId, channel, shown },
-    })),
+    channels.map((channel) => {
+      const { text, markup } = deps.render(trip, places, deps.now(), channel);
+      const after = { type: 'channelPost' as const, tripId, channel, shown };
+      return {
+        bot: 'passenger' as const,
+        chatId: `@${channel}`,
+        html: true,
+        silent: true,
+        text,
+        markup,
+        after,
+      };
+    }),
   );
 }
 
+// Each post shows the trip now; a cancelled trip says so, then its post is deleted (docs/122):
+// Telegram keeps a post older than 48 hours, it stays with «Safar bekor qilindi».
 async function edit(deps: ChannelsDeps, trip: Trip, posts: readonly ChannelPost[]) {
   if (posts.length === 0) return;
   const places = await deps.places();
-  await deps.send(
-    posts.map((post) => ({
-      bot: 'passenger' as const,
-      chatId: `@${post.channel}`,
-      html: true,
-      edit: post.messageId,
-      ...deps.render(trip, places, deps.now(), post.channel),
-    })),
-  );
+  const jobs = posts.flatMap((post) => {
+    const { text, markup, remove } = deps.render(trip, places, deps.now(), post.channel);
+    const chatId = `@${post.channel}`;
+    const shown = { bot: 'passenger' as const, chatId, html: true, edit: post.messageId, text, markup };
+    return remove ? [shown, { ...shown, remove: true }] : [shown];
+  });
+  await deps.send(jobs);
 }
 
 // Seats taken, the trip full or cancelled: every post of it is edited (docs/15).

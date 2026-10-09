@@ -34,12 +34,12 @@ const broadcast = (deps: RoomDeps, message: StoredMessage) => {
 
 // A person opened the chat: the latest messages, the oldest first; nothing is unread any more.
 export async function joined(deps: RoomDeps, socket: ChatSocket): Promise<void> {
-  const { userId, canCall, canWrite } = socket.member;
+  const { userId, role, otherId, canCall, canWrite } = socket.member;
   const messages = deps.store.recent(HISTORY).map((message) => view(message, userId));
   send(socket, { type: 'history', messages, canCall, canWrite });
   const call = callView(deps.store.call(), userId);
   if (call) send(socket, { type: 'call', call });
-  await deps.unread.clear(userId);
+  if (await deps.unread.clear(userId)) await deps.signals.read({ userId, role, from: otherId }, deps.key);
 }
 
 // A message from a person: contacts hidden, everyone in the chat sees it, the other one hears of it.
@@ -54,7 +54,7 @@ export async function sendText(deps: RoomDeps, from: ChatSocket, raw: string): P
   const message = deps.store.add({ author: member.userId, text, event: null, masked, at: deps.now() });
   broadcast(deps, message);
   if (masked) await hidden(deps, from);
-  await tellOther(deps, member);
+  await tellOther(deps, member, message);
 }
 
 async function hidden(deps: RoomDeps, from: ChatSocket) {
@@ -63,15 +63,16 @@ async function hidden(deps: RoomDeps, from: ChatSocket) {
   if (count % ATTEMPTS_STEP === 0) await deps.signals.contactAttempts(from.member.userId, deps.key, count);
 }
 
-async function tellOther(deps: RoomDeps, member: Member) {
+async function tellOther(deps: RoomDeps, member: Member, message: StoredMessage) {
   const there = deps.sockets().some((socket) => socket.member.userId === member.otherId);
   if (there) return;
   // Every message counts for the plate, the bot speaks only once in a while.
-  await deps.unread.add({ userId: member.otherId, role: otherRole(member.role) });
+  const to = { userId: member.otherId, role: otherRole(member.role), from: member.userId };
+  await deps.unread.add(to, { text: message.text, at: message.at });
   const last = deps.store.lastNotified(member.otherId);
   if (last !== null && deps.now() - last < NOTIFY_PAUSE_MS) return;
   deps.store.notified(member.otherId, deps.now());
-  await deps.signals.newMessage({ userId: member.otherId, role: otherRole(member.role) }, deps.key);
+  await deps.signals.newMessage(to, deps.key);
 }
 
 // A line about the booking: requested, confirmed, declined, cancelled (docs/35).

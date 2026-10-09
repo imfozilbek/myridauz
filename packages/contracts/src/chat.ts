@@ -34,6 +34,20 @@ export type ChatAbout = z.infer<typeof chatAboutSchema>;
 export const chatTicketSchema = z.object({ url: z.string() });
 
 export const MAX_CHAT_TEXT = 1000;
+
+// The newest unread chats of the person in this Mini App with their last message (G68, docs/122):
+// the sheet «Yangi xabar» shows the words and a ready answer goes in one tap, the chat stays closed.
+export const CHATS_UNREAD_PATH = '/chats/unread';
+export const unreadChatSchema = z.object({
+  key: chatKeySchema,
+  count: z.number().int(),
+  text: z.string(),
+  at: z.number().int(),
+});
+export type UnreadChat = z.infer<typeof unreadChatSchema>;
+export const unreadChatsSchema = z.object({ chats: z.array(unreadChatSchema) });
+export const chatMessagesPath = (key: string) => `/chats/${key}/messages`;
+export const chatTextSchema = z.object({ text: z.string().trim().min(1).max(MAX_CHAT_TEXT) });
 // After the trip the chat and the call stay this many hours from the arrival, then the chat is read
 // only (docs/129): a forgotten thing and «rahmat», not a deal past Rida.
 export const AFTER_TRIP_TALK_HOURS = 24;
@@ -76,7 +90,7 @@ export type ChatServerEvent = z.infer<typeof chatServerEventSchema>;
 
 // What the Mini App sends: a text, or a step of a call (docs/07, docs/08). The voice never goes here.
 export const chatClientEventSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('send'), text: z.string().trim().min(1).max(MAX_CHAT_TEXT) }),
+  z.object({ type: z.literal('send'), text: chatTextSchema.shape.text }),
   ...callClientEvents,
 ]);
 export type ChatClientEvent = z.infer<typeof chatClientEventSchema>;

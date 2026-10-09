@@ -5,7 +5,6 @@ import type { Match } from './domain/subscription';
 import { createMemorySubscriptions } from './infrastructure/subscription-store';
 
 // Test helper of the route subscriptions: places, a route, a trip and deps that write what they tell.
-export const MINUTE = 60 * 1000;
 // 2026-10-01 06:00 in Tashkent.
 const NOW = Date.parse('2026-10-01T01:00:00Z');
 const PLACES = new Map(
@@ -26,9 +25,11 @@ export const TRIP: Match = {
   to: '1718401',
   date: '2026-10-02',
   woman: false,
+  name: 'Jasur',
   time: '08:30',
   seats: 3,
   price: 85000,
+  wholeCar: false,
 };
 
 export function setup() {
@@ -40,7 +41,6 @@ export function setup() {
     placeMatches: async () => (placeId, searchId) => placeMatches(placeId, searchId, PLACES),
     tell: {
       one: async (s, match) => void told.push(`one ${s.userId} ${match.id}`),
-      many: async (s, count) => void told.push(`many ${s.userId} ${count}`),
       renew: async (s) => void told.push(`renew ${s.userId}`),
       cheaper: async (s, match) => void told.push(`cheaper ${s.userId} ${match.id}`),
     },

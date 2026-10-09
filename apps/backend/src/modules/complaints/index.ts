@@ -1,7 +1,8 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { chatHistory, forgetChat } from '../chat';
-import { notify, notifyTeam } from '../notifications';
+import { notify } from '../notifications';
+import { showQueue } from '../team-queue';
 import { teamRole } from '../team';
 import { peopleOf } from '../users';
 import { hiddenFromSearch } from './application/file';
@@ -44,12 +45,23 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
     tell: botTeller({
       brand: loadBrand(env.BRAND),
       send: (jobs) => notify(env, jobs),
-      team: (text, markup) => notifyTeam(env, text, markup),
+      queue: (news) => showQueue(env, news),
     }),
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };
 };
+
+// The open complaints for «Navbat» of the team (G68): whose and since when.
+export async function waitingComplaints(env: Bindings) {
+  const deps = complaintsDeps(env);
+  return Promise.all(
+    (await deps.store.open()).map(async (complaint) => ({
+      name: (await deps.people.find(complaint.authorId))?.firstName ?? '',
+      since: complaint.createdAt,
+    })),
+  );
+}
 
 export const complaintsModule = complaintRoutes(complaintsDeps)
   .route('/', blockRoutes(complaintsDeps))

@@ -20,7 +20,7 @@ export async function checkAlerts(deps: StatsDeps): Promise<number> {
   for (const alert of alertsOf(rules, { hourErrors, dayErrors, day, week })) {
     const key = `alert:${alert.key}`;
     if ((await cache.get(key, now)) !== undefined) continue;
-    await deps.tellTeam(alert);
+    await deps.tellOwners(alert);
     await cache.put(key, '1', now + rules.repeatHours * HOUR);
     sent += 1;
   }

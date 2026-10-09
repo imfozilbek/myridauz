@@ -4,14 +4,16 @@ import {
   tashkentDate,
   tashkentTime,
   type RideRequest,
+  type SubscriptionKind,
   type Trip,
 } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placeMatches } from '../../shared/places/place-match';
 import { placesOf } from '../locations';
-import { notify } from '../notifications';
+import { showNews } from '../notifications';
 import { peopleOf } from '../users';
-import { matchCheaper, matchNew, sendWaiting } from './application/notify';
+import { unsubscribe } from './application/manage';
+import { endOverdue, matchCheaper, matchNew } from './application/notify';
 import type { SubscriptionsDeps } from './application/ports';
 import { subscriptionRoutes } from './http/subscription-routes';
 import { botTeller } from './infrastructure/bot-teller';
@@ -28,7 +30,8 @@ const subscriptionsDeps = (env: Bindings): SubscriptionsDeps => ({
   tell: botTeller({
     brand: loadBrand(env.BRAND),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-    send: (jobs) => notify(env, jobs),
+    show: (news) => showNews(env, news),
+    now: Date.now,
   }),
   newId: () => crypto.randomUUID(),
   now: Date.now,
@@ -47,9 +50,11 @@ const tripMatch = async (env: Bindings, trip: Trip) => ({
   to: trip.to,
   date: tashkentDate(trip.departAt),
   woman: trip.woman,
+  name: trip.driver.firstName,
   time: tashkentTime(trip.departAt),
   seats: trip.seatsLeft,
   price: trip.price,
+  wholeCar: false,
 });
 
 export const tripPublished = async (env: Bindings, trip: Trip) =>
@@ -68,9 +73,11 @@ export const requestPublished = async (env: Bindings, request: RideRequest) =>
     to: request.to,
     date: request.date,
     woman: false,
+    name: request.passenger.firstName,
     time: null,
     seats: request.seats,
     price: request.price,
+    wholeCar: request.wholeCar,
   });
 
 // The routes a driver follows for requests (G64): the board of the driver shows their requests.
@@ -80,8 +87,13 @@ export const requestRoutesOf = async (env: Bindings, userId: number) =>
     to,
   }));
 
-// The Cron job: waiting matches together, renewal offers, dated subscriptions that are over.
-export const sendWaitingSubscriptions = (env: Bindings) => sendWaiting(subscriptionsDeps(env));
+// The Cron job: renewal offers, dated subscriptions that are over.
+export const endSubscriptions = (env: Bindings) => endOverdue(subscriptionsDeps(env));
+
+// «Bu yoʻnalish kerak emas» under the news card: only its owner ends it (docs/122 rule 4).
+export const stopFromBot = (env: Bindings, userId: number, kind: SubscriptionKind, id: string) =>
+  unsubscribe(subscriptionsDeps(env), userId, kind, id);
+export { NEWS_OFF_PREFIX } from './infrastructure/bot-teller';
 
 // A deleted account (docs/30): its subscriptions go.
 export const forgetSubscriptions = async (env: Bindings, userId: number) => {

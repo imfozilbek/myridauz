@@ -3,7 +3,7 @@ import { ME_PATH, type FaceDecision } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { checkAccess } from './application/check-access';
-import { decideFace } from './application/faces';
+import { decideFace, pendingFaces } from './application/faces';
 import { people } from './application/people';
 import type { UsersDeps } from './application/ports';
 import { accessGuard } from './http/access-guard';
@@ -14,6 +14,7 @@ import { d1FaceLog } from './infrastructure/d1-face-log';
 import { d1Users } from './infrastructure/d1-users';
 import { telegramFaces } from './infrastructure/telegram-faces';
 import { notify } from '../notifications';
+import { showQueue } from '../team-queue';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { createMemoryUsers } from './infrastructure/memory-stores';
@@ -48,6 +49,7 @@ const usersDeps = (env: Bindings): UsersDeps => ({
     recipients: (userId) => faceTeam(env, userId),
     avatars: avatarsOf(env),
     send: (jobs) => notify(env, jobs),
+    queue: (news) => showQueue(env, news),
   }),
   now: Date.now,
   newId: () => crypto.randomUUID(),
@@ -83,12 +85,18 @@ export const isBlocked = async (env: Bindings, telegramId: number) =>
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));
 export const blockedGuard = guard;
-// The buttons of the face card in the admin bot (G51).
+// Since when a person is with the brand: the card of a support question (G68).
+export const joinedAtOf = async (env: Bindings, id: number) =>
+  (await usersDeps(env).users.find(id))?.createdAt;
+// The new face photos for «Navbat» of the team (G68): whose and since when.
+export const waitingFaces = async (env: Bindings) =>
+  (await pendingFaces(usersDeps(env))).map((face) => ({ name: face.firstName, since: face.uploadedAt }));
 export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number, decision: FaceDecision) =>
   decideFace(usersDeps(env), moderatorId, userId, decision);
 // The invite to the channel of the zone goes once per person (docs/119).
 export const claimZoneInvite = (env: Bindings, userId: number) =>
   usersDeps(env).users.claimZoneInvite(userId, Date.now());
+// The buttons of the face card in the admin bot (G51).
 export {
   faceCardText,
   faceDecisionLine,

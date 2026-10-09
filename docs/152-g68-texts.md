@@ -55,6 +55,22 @@
 | 8 | Карточка попутчика: водитель отметил неявку | «❌ Haydovchi sizni uchrashuv joyida topmadi» |
 | 9 | Звонок попутчику о неявке (ответ на карточку) | «❌ {имя} sizni uchrashuv joyida topmadi. Boshqa safar bor.» |
 
+## Часть B: новые тексты (по тому же согласию и правилу понятности)
+
+| Где | Текст |
+|---|---|
+| Чат и звонок под карточкой поездки | «💬 {имя} sizga xabar yozdi», «📞 {имя} sizga qoʻngʻiroq qilyapti», «📞 {имя} qoʻngʻiroq qildi, lekin gaplasha olmadingiz»; в карточке «💬 {n} ta yangi xabar» |
+| Карточка заявки попутчика | «⏳ Soʻrovingizni haydovchilar koʻrmoqda», «📨 Soʻrovingizga {n} ta taklif keldi», «✅ Taklifni qabul qildingiz», «⌛ Soʻrov muddati tugadi», «🚘 Boʻsh salon kerak», кнопка «📨 Takliflarni koʻrish» |
+| Звонок о первом предложении | «📨 Soʻrovingizga taklif keldi: {имя}, {время}, {цена}» |
+| Карточка заявки водителя (макет g68/3) | «🪪 Haydovchi arizangiz», «✅ Yuborildi · ⏳ Tekshirilmoqda · Javob», «✅ Yuborildi · ✅ Tekshirildi · {ответ}», ответ «✅ Tasdiqlandi», «❌ Rad etildi», «✏️ Tuzatish kerak» |
+| Звонок о решении | «✅ Haydovchi arizangiz tasdiqlandi», «❌ Haydovchi arizangiz rad etildi», «✏️ Haydovchi arizangizda tuzatish kerak» |
+| Карточка кошелька | «💳 Hamyoningiz», «🎁 Bonus: {сумма} · {дата}gacha», «💰 Asosiy hisob: {сумма}», «🪑 Bu pul ≈ {n} ta joyga yetadi», кнопка «💳 Hamyonni ochish» |
+| Звонки кошелька (один раз) | «💳 Hamyoningizdagi pul faqat {n} ta joyga yetadi», «💳 Hamyoningizda komissiya uchun pul qolmadi», «🎁 Bonusingiz {дата} kuni tugaydi: {сумма} qoldi» |
+| Карточка новостей направления (макеты g68/1, g68/3) | «🔔 Bugungi yangi safarlar», «🙋 Yoʻnalishingizda soʻrovlar», «Kuniga bitta xabar · yangi safar (soʻrov) chiqsa, shu xabar yangilanadi», «… va yana {n} ta» |
+| Строки новостей | «{имя} · {день} {время} · {n} joy · {цена}», «♥ …» (любимый водитель), «… ↓ arzonlashdi», «{имя} · {n} kishi · {день} · {откуда} → {куда} · {цена}», «🚐 {имя} · butun salon · …» |
+| Кнопки новостей | «Hammasini koʻrish», «🔕 Bu yoʻnalish kerak emas», «Taklif qilish», «🔕 Kerak emas»; после нажатия плашка «Bu yoʻnalish boʻyicha xabar endi kelmaydi» |
+| Подписка кончилась | «⌛ Obunangiz muddati tugadi», «Xabar olishni davom ettirish uchun obunani uzaytiring», кнопка «🔔 Obunani uzaytirish» |
+
 ## Убраны (их заменили карточки)
 
 | Ключ | Почему |
@@ -64,6 +80,8 @@
 | `bot.trip.published` | карточка поездки водителя |
 | `bot.booking.requested`, `expiredDriver`, `cancelledByPassenger`, `came` | заявка в боте водителя и звонки под карточкой |
 | `bot.offer.accepted` | звонок «taklifingizni qabul qildi» под карточкой |
+| `bot.offer.new` | карточка заявки попутчика и звонок о первом предложении |
+| `bot.subscription.*`, `bot.favorite.trip` | карточка новостей направления: 1 в день, дальше правка без звука |
 
 ## Правки ради понятности (пожелание владельца 09.10.2026)
 

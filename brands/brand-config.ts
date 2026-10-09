@@ -72,6 +72,8 @@ export type BrandChannel = {
   readonly title: string;
   readonly code: string;
   readonly places: readonly string[];
+  // The page of the direction on the site: its picture shows above the board of the day (G68).
+  readonly page?: string;
 };
 
 export type BrandConfig = {

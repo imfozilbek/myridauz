@@ -6,14 +6,8 @@ import { requestBooking } from './application/request';
 import { askCard } from './infrastructure/ask-card';
 import { driverCard } from './infrastructure/driver-card';
 import { ALI, DILNOZA, seats, setup } from './test-kit';
+import { PITAK, PLACES } from './card-places';
 
-const PLACES = new Map([
-  ['1726273', { name: 'Chilonzor', parentId: '1726' }],
-  ['1726', { name: 'Toshkent shahri', parentId: null }],
-  ['1718401', { name: 'Samarqand shahri', parentId: '1718' }],
-  ['1718', { name: 'Samarqand viloyati', parentId: null }],
-]);
-const PITAK = { id: 'p1', name: 'Chilonzor pitagi', point: { lat: 41.28, lng: 69.2 } };
 const named = (name: string) => ({
   point: { lat: 41.3, lng: 69.3 },
   name: { step: 'landmark' as const, name },
@@ -91,6 +85,8 @@ describe('a request in the driver bot, answered right there (docs/122, mockup g6
     expect(buttons(shown)).toContain(`ask:${madina.id}:yes`);
     expect(buttons(shown)).toContain(`ask:${madina.id}:no`);
     expect(buttons(shown)).toContain('💬 Chat');
+    // «Ilovada ochish» opens the main screen with the sheet of this request (G68, mockup g68/7).
+    expect(buttons(shown)).toContain(`?sheet=${madina.id}`);
     // A request refreshes the open app of the driver, at night too, when it comes quietly (docs/64).
     expect({ loud: shown.loud, answers: shown.answers, refresh: shown.refresh }).toEqual({
       loud: true,

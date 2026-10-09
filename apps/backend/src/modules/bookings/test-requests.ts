@@ -20,6 +20,7 @@ export const fakeRequest = (id: string): RequestFacts => ({
   pickup: HOME,
   dropoff: AWAY,
   open: true,
+  status: 'open',
   callsOff: false,
 });
 

@@ -5,6 +5,7 @@ import type { Card, Ring } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
 import { passengerTripCard } from '../../../shared/telegram/card-keys';
+import { chatRingButton, type ChatRing } from './chat-ring-button';
 import { passengerCard } from './passenger-card';
 
 const { t, formatTime } = createI18n(DEFAULT_LOCALE);
@@ -19,10 +20,11 @@ type PassengerRing =
   | 'soon'
   | 'departed'
   | 'driverCame'
-  | 'noShow';
+  | 'noShow'
+  | ChatRing;
 
-// The trip starts now: these ring at night too (docs/122 rule 3, «2 soat qoldi»).
-const ANY_HOUR: ReadonlySet<PassengerRing> = new Set(['soon', 'driverCame']);
+// The trip starts now or a call rings: these ring at night too (docs/122 rule 3).
+const ANY_HOUR: ReadonlySet<PassengerRing> = new Set(['soon', 'driverCame', 'call']);
 // Mockup g68/1: «Safarga 2 soat qoldi: 08:20 da pitakda boʻling» for a trip at 08:30.
 const AT_PITAK_EARLY_MINUTES = 10;
 
@@ -51,6 +53,8 @@ export type PassengerNewsWiring = {
   readonly show: (cards: readonly Card[], rings: readonly Ring[]) => Promise<void>;
   // A view carries public ids; the bot writes to the Telegram ID behind one (docs/65 A3).
   readonly telegramId: (publicId: string) => Promise<number | undefined>;
+  // The unread messages of this person in the chat of the seat: «💬 N ta yangi xabar» (rule 5).
+  readonly unread: (userId: number, chatKey: string) => Promise<number>;
   readonly now: () => number;
 };
 
@@ -58,12 +62,19 @@ export type PassengerNews = (booking: Booking, ring?: PassengerRing) => Promise<
 
 // The seat changed: its card shows it without sound; a ring under it when the person has to act.
 export const passengerNews =
-  ({ brand, places, show, telegramId, now }: PassengerNewsWiring): PassengerNews =>
+  ({ brand, places, show, telegramId, unread, now }: PassengerNewsWiring): PassengerNews =>
   async (booking, ring) => {
     const chatId = await telegramId(booking.passenger.id);
     if (chatId === undefined) return;
     const time = now();
-    const card = passengerCard({ brand, chatId, booking, places: await places(), now: time });
+    const card = passengerCard({
+      brand,
+      chatId,
+      booking,
+      places: await places(),
+      unread: await unread(chatId, booking.chatKey),
+      now: time,
+    });
     const quiet = ring !== undefined && !ANY_HOUR.has(ring) && isQuietTime(time);
     const rings: Ring[] = ring
       ? [
@@ -73,6 +84,7 @@ export const passengerNews =
             text: ringText(booking, ring),
             card: passengerTripCard(booking.id),
             quiet,
+            ...chatRingButton(brand, 'passenger', booking, ring),
           },
         ]
       : [];

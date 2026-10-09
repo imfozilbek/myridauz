@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { createBookingsClient, createChatClient } from '@platform/api-client';
-import { confirmedSeat, toldBy, wordsOf } from './g27-kit';
+import { confirmedSeat, tailOf, toldBy, wordsOf } from './g27-kit';
 import { FERUZA, KOMIL, OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
 
@@ -32,8 +32,8 @@ test('S40, A01, F04. a phone is masked with a warning; the driver away hears «Y
   await expect.poll(() => phone.frames.some((f) => f.type === 'warning'), { timeout: SETTLE_MS }).toBe(true);
   await expect.poll(() => texts(secondPhone.frames).length, { timeout: SETTLE_MS }).toBeGreaterThan(0);
   expect(texts(secondPhone.frames).join(' ')).not.toMatch(/123\s?45\s?67/u);
-  // The driver is not in the chat: the driver bot tells about the message.
-  await toldBy('driver', KOMIL, wordsOf('bot.chat.newMessage'));
+  // The driver is not in the chat: the driver bot rings under the trip card (G68).
+  await toldBy('driver', KOMIL, tailOf('bot.ring.message'));
   phone.socket.close();
   secondPhone.socket.close();
 });

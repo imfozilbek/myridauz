@@ -1,12 +1,13 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { localAnalyticsRows } from '../analytics';
-import { notifyTeam } from '../notifications';
+import { tellOwners } from '../team-queue';
 import { checkAlerts } from './application/check-alerts';
 import type { EventSource, StatsDeps } from './application/ports';
 import { statsRoutes } from './http/stats-routes';
 import { analyticsSql } from './infrastructure/analytics-sql';
-import { alertMessage } from './infrastructure/bot-alert';
+import { CHANNEL_MARK } from './domain/arrivals';
+import { alertSign } from './infrastructure/bot-alert';
 import { createMemoryCache, d1Cache } from './infrastructure/d1-cache';
 import { d1Numbers } from './infrastructure/d1-numbers';
 import { memoryEvents } from './infrastructure/memory-events';
@@ -37,10 +38,7 @@ const statsDeps = (env: Bindings): StatsDeps => {
     numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers, arrivals: async () => [] },
     cache: env.DB ? d1Cache(env.DB) : localCache,
     rules: brand.alerts,
-    tellTeam: async (alert) => {
-      const { text, markup } = alertMessage(brand, alert);
-      await notifyTeam(env, text, markup);
-    },
+    tellOwners: (alert) => tellOwners(env, alertSign(alert)),
     now: Date.now,
   };
 };
@@ -49,3 +47,14 @@ export const statsModule = statsRoutes(statsDeps);
 
 // The Cron job: the signals of the dashboard, once an hour (src/cron.ts).
 export const checkStatsAlerts = (env: Bindings) => checkAlerts(statsDeps(env));
+
+// The numbers of a day for the summary of the owner at 21:00 (G68, docs/122): new people, trips,
+// bookings, and the people who came from a channel.
+export async function dayNumbers(env: Bindings, since: number) {
+  const { numbers } = statsDeps(env);
+  const [main, arrivals] = await Promise.all([numbers.numbers(since), numbers.arrivals(since)]);
+  const fromChannels = arrivals
+    .filter((row) => row.via?.startsWith(CHANNEL_MARK) === true)
+    .reduce((sum, row) => sum + row.count, 0);
+  return { newUsers: main.newUsers, trips: main.trips, bookings: main.bookings, fromChannels };
+}

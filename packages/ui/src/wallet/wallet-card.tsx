@@ -1,8 +1,5 @@
-import type { Wallet } from '@platform/contracts';
+import { FEW_SEATS, type Wallet } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-
-// Fewer seats than this: the card turns red and asks to top up (mockup g65/1 phone 2).
-export const FEW_SEATS = 5;
 
 // The money of the driver on top of «Hamyon» (G65, mockup g65/1): the whole sum, how many seats it
 // still confirms at the price of the last trip, then the bonus with its end and the main balance.

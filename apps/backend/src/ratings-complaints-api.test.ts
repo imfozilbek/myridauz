@@ -99,8 +99,14 @@ describe('ratings and complaints through the API (docs/17, docs/24)', () => {
     );
     expect(filed.status).toBe(201);
     expect((await call('/complaints', PASSENGER, json({ bookingId, reason: 'other' }))).status).toBe(409);
-    // The team sees the public id, never the Telegram ID (docs/65 A3).
-    const urgent = String(telegram.find((item) => item.body.chat_id === OWNER)?.body.text);
+    // The urgent complaint rings under «Navbat» of the team (G68); the team sees the public id,
+    // never the Telegram ID (docs/65 A3).
+    const ring = telegram.find(
+      (item) => item.body.chat_id === OWNER && String(item.body.text).includes('Muhim shikoyat'),
+    );
+    expect(ring?.body.reply_parameters).toBeDefined();
+    expect(ring?.body).not.toHaveProperty('disable_notification');
+    const urgent = String(ring?.body.text);
     expect(urgent).toContain(`ID ${await pid(DRIVER)})`);
     expect(urgent).not.toContain(`ID ${DRIVER})`);
     expect((await call('/admin/complaints', PASSENGER, { app: 'admin' })).status).toBe(403);

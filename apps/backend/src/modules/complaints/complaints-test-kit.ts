@@ -53,6 +53,7 @@ export function setup() {
     },
     tell: {
       team: async (complaint) => void log.push(`team ${complaint.reason}`),
+      queueChanged: async () => void log.push('queue changed'),
       warning: async (id, side) => void log.push(`warning ${id} ${side}`),
       blocked: async (id, side, until) => void log.push(`blocked ${id} ${side} ${until}`),
       resolved: async (id) => void log.push(`resolved ${id}`),

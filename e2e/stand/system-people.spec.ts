@@ -46,7 +46,7 @@ test('P70, P72. a subscription brings the new trip of the route; the sixth is re
   const route = { from: CHILONZOR, to: SAMARQAND, woman: false };
   await subscriptions.subscribe({ ...route, date: tomorrow() });
   await publishTrip(BOBUR, CHILONZOR, SAMARQAND, 'door');
-  await toldBy('passenger', SEVARA, wordsOf('bot.subscription.trip'));
+  await toldBy('passenger', SEVARA, wordsOf('bot.news.trips'));
   const others = [CHILONZOR, '1703401', '1710401', '1714401', '1735401'].slice(0, MAX_SUBSCRIPTIONS);
   const answers = [];
   for (const from of others.slice(1))

@@ -18,7 +18,8 @@ INSERT INTO users (id, first_name, gender, phone, consent_at, created_at, update
 INSERT INTO driver_applications (user_id, status, submitted_at, updated_at)
   VALUES (1, 'approved', 0, 0), (2, 'approved', 0, 0), (3, 'pending', ${ago(1)}, ${ago(1)});
 INSERT INTO wallet_operations (id, driver_id, kind, balance, amount, expires_at, created_at)
-  VALUES ('w1', 1, 'bonus_grant', 'bonus', 1000, ${ago(1)}, ${ago(900)});
+  VALUES ('w1', 1, 'bonus_grant', 'bonus', 1000, ${ago(1)}, ${ago(900)}),
+  ('w2', 2, 'bonus_grant', 'bonus', 1000, ${ago(-60)}, ${ago(600)});
 INSERT INTO trips (id, driver_id, from_id, to_id, depart_at, ends_at, km, seats, price, status, created_at)
   VALUES ('t1', 1, '1726', '1718', ${ago(6)}, ${ago(1)}, 300, 4, 100000, 'active', 0),
   ('t2', 1, '1726', '1718', ${ago(40)}, ${ago(35)}, 300, 4, 100000, 'completed', 0),
@@ -54,18 +55,23 @@ describe('the reads of the Cron', () => {
     await db.exec(SEED);
     const env = { ...testEnv, DB: db } as unknown as Bindings;
     const jobs = cronJobs(env, NOW);
-    expect(jobs).toHaveLength(16);
+    expect(jobs).toHaveLength(20);
     expect(await runJobs(jobs)).toEqual([]);
     expect(fullScans(db)).toEqual([]);
   });
 
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
-    expect(names(NOW + 15 * 60_000)).toHaveLength(8);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(8, 13)]);
-    expect(names(NOW).slice(13)).toEqual(['grantMissedBonuses', 'purgeSupport', 'forgetOldCards']);
+    expect(names(NOW + 15 * 60_000)).toHaveLength(9);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(9, 16)]);
+    expect(names(NOW).slice(16)).toEqual([
+      'grantMissedBonuses',
+      'warnBonusEnd',
+      'purgeSupport',
+      'forgetOldCards',
+    ]);
     // The stand runs the Cron by hand at any minute: every job runs.
     const stand = { ...testEnv, CRON_TIERS: 'off' } as unknown as Bindings;
-    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(16);
+    expect(cronJobs(stand, NOW + 15 * 60_000)).toHaveLength(20);
   });
 });

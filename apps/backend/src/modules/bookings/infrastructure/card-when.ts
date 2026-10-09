@@ -5,7 +5,7 @@ import { bold, italic } from '../../../shared/telegram/html';
 const { t, formatDate, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // «Ertaga, 7-oktabr»: today and tomorrow by name, a later day by its date.
-function dayOf(at: number, now: number): string {
+export function dayOf(at: number, now: number): string {
   const date = formatDate(new Date(at));
   const day = tashkentDate(at);
   if (day === tashkentDate(now)) return t('bot.card.day', { day: t('market.day.today'), date });

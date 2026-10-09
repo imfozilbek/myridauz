@@ -1,23 +1,29 @@
 import { appHost, channelOfPlate, type BrandConfig } from '@platform/brands';
-import { formatPlate, hourLabel, isTeamTime, NEW_TRIP_SECTION, OPEN_LINK } from '@platform/contracts';
+import {
+  formatPlate,
+  hourLabel,
+  isQuietTime,
+  isTeamTime,
+  NEW_TRIP_SECTION,
+  OPEN_LINK,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { callTelegram, sendAlbum, type Fetch } from '../../../shared/telegram/telegram-api';
+import type { Card, Ring } from '../../notifications';
+import type { QueueNews } from '../../team-queue';
 import type { Application } from '../domain/application';
-import type { Bonus, ModerationNotifier, PeoplePort } from '../application/ports';
-import type { ImageStore } from '../../../shared/storage/image-store';
-import { cardMenu, cardText, reasonList } from './moderation-card';
+import type { Bonus, ModerationNotifier } from '../application/ports';
+import { applicationCard, decisionRing } from './application-card';
 
 const { t, formatDate, formatMoney } = createI18n(DEFAULT_LOCALE);
 
 type Wiring = {
-  readonly fetch: Fetch;
   readonly brand: BrandConfig;
-  readonly adminToken: string | undefined;
-  readonly driverToken: string | undefined;
-  // Who of the team gets the card of this applicant: the one assigned member (docs/92).
-  readonly recipients: (userId: number) => Promise<number[]>;
-  readonly photos: ImageStore;
-  readonly people: PeoplePort;
+  // The application lives in one card of the driver bot; the answer rings under it (G68, docs/122).
+  readonly show: (cards: readonly Card[], rings: readonly Ring[]) => Promise<void>;
+  // The member of the team who answers for this applicant (docs/92): the reminders go to them.
+  readonly assign: (userId: number) => Promise<unknown>;
+  // «Navbat» of the team: the application is a case there, decided in the admin app (docs/122).
+  readonly queue: (news?: QueueNews) => Promise<void>;
 };
 
 const RESULT_TEXT = {
@@ -61,57 +67,35 @@ function approvedParts(brand: BrandConfig, application: Application, fixedPlate:
 }
 
 export function telegramNotifier(wiring: Wiring): ModerationNotifier {
-  const { fetch, brand, adminToken, driverToken } = wiring;
+  const { brand, show } = wiring;
   return {
-    submitted: async (application: Application, person) => {
-      if (driverToken) {
-        const text = receivedText(brand, application.submittedAt ?? application.updatedAt);
-        await quietly(callTelegram(fetch, driverToken, 'sendMessage', { chat_id: application.userId, text }));
-      }
-      if (!adminToken) return;
-      const keys = [
-        person.avatarKey,
-        application.photos.front,
-        application.photos.side,
-        application.photos.interior,
-      ];
-      const loaded = await Promise.all(
-        keys.map((key, index) =>
-          key === null ? undefined : index === 0 ? wiring.people.avatar(key) : wiring.photos.get(key),
-        ),
-      );
-      const photos = loaded.filter((photo) => photo !== undefined);
-      const card = {
-        text: cardText(application, person.firstName),
-        reply_markup: cardMenu(application.userId),
-      };
-      for (const chatId of await wiring.recipients(application.userId)) {
-        // An album needs at least two photos; an application always has four (face and car).
-        const album = photos.length >= 2 ? sendAlbum(fetch, adminToken, chatId, photos) : Promise.resolve();
-        await quietly(
-          album.then(() => callTelegram(fetch, adminToken, 'sendMessage', { chat_id: chatId, ...card })),
-        );
-      }
+    submitted: async (application: Application) => {
+      const details = [receivedText(brand, application.submittedAt ?? application.updatedAt)];
+      await quietly(show([applicationCard({ brand, application, fixedPlate: null, details })], []));
+      await wiring.assign(application.userId);
+      await wiring.queue({ kind: 'new' });
     },
     decided: async (application, fixedPlate, bonus) => {
-      if (!driverToken || application.status === 'draft' || application.status === 'pending') return;
+      if (application.status === 'draft' || application.status === 'pending') return;
       // One reason per line: the driver finds each one marked in the Mini App.
-      const reasons = reasonList(application.reasons, '\n').replace(/^/gm, '• ');
+      const reasons = application.reasons.map((reason) => `• ${t(`drivers.reason.${reason}`)}`).join('\n');
       const approved =
         application.status === 'approved' ? approvedParts(brand, application, fixedPlate) : null;
-      const open = { text: t('bot.open'), web_app: { url: `https://${appHost(brand, 'driver')}` } };
-      await quietly(
-        callTelegram(fetch, driverToken, 'sendMessage', {
-          chat_id: application.userId,
-          text: [
-            t(RESULT_TEXT[application.status], { reasons }),
-            ...(fixedPlate ? [t('bot.driver.plateFixed', { plate: formatPlate(fixedPlate) })] : []),
-            ...(bonus ? [bonusLine(bonus)] : []),
-            ...(approved?.channel ? [approved.channel] : []),
-          ].join('\n\n'),
-          reply_markup: { inline_keyboard: approved?.buttons ?? [[open]] },
-        }),
-      );
+      const details = [
+        t(RESULT_TEXT[application.status], { reasons }),
+        ...(fixedPlate ? [t('bot.driver.plateFixed', { plate: formatPlate(fixedPlate) })] : []),
+        ...(bonus ? [bonusLine(bonus)] : []),
+        ...(approved?.channel ? [approved.channel] : []),
+      ].join('\n\n');
+      const card = applicationCard({
+        brand,
+        application,
+        fixedPlate,
+        details: [details],
+        ...(approved ? { buttons: approved.buttons } : {}),
+      });
+      await quietly(show([card], decisionRing(application, isQuietTime(Date.now()))));
+      await wiring.queue();
     },
   };
 }

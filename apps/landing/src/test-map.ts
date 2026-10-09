@@ -9,8 +9,8 @@ export const MAP: MapData = {
     { iso: 'UZ-SA', soato: '1718', d: 'M60 40L66 40L66 46Z' },
   ],
   cities: [
-    { id: 'toshkent', name: 'Toshkent', soato: '1726', place: '1726273', x: 71, y: 31 },
-    { id: 'samarqand', name: 'Samarqand', soato: '1718', place: '1718401', x: 63, y: 44 },
+    { id: 'toshkent', name: 'Toshkent', code: null, soato: '1726', place: '1726273', x: 71, y: 31 },
+    { id: 'samarqand', name: 'Samarqand', code: '30', soato: '1718', place: '1718401', x: 63, y: 44 },
   ],
 };
 

@@ -31,6 +31,7 @@ export type StatsDeps = {
   readonly numbers: NumbersSource;
   readonly cache: StatsCache;
   readonly rules: AlertRules;
-  readonly tellTeam: (alert: Alert) => Promise<void>;
+  // A sign in «Diqqat» of the owner (G68, docs/122).
+  readonly tellOwners: (alert: Alert) => Promise<void>;
   readonly now: () => number;
 };

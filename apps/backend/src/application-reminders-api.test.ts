@@ -3,7 +3,7 @@ import { fakeTelegram } from './bots/test-bot';
 import { sendApplicationReminders } from './modules/assignments';
 import { waitingApplications } from './modules/drivers';
 import { changeModerator } from './modules/team';
-import { call, pid, registerUser, testEnv } from './test-api';
+import { call, registerUser, testEnv } from './test-api';
 
 const telegram = fakeTelegram();
 vi.stubGlobal('fetch', telegram.fetch);
@@ -42,28 +42,26 @@ const adminTexts = () =>
     .filter((item) => item.token === testEnv.ADMIN_BOT_TOKEN && item.method === 'sendMessage')
     .map((item) => ({ chat: item.body.chat_id, text: String(item.body.text) }));
 
-describe('the team answers a driver application within the hour (G34)', () => {
-  it('tells the driver, reminds the moderator at 30 minutes and the owner at 50, once each', async () => {
+// G34, G68 (docs/122): the moderator hears at 25 minutes under «Navbat», the owner at 30.
+describe('the team answers a driver application within the hour (G34, G68)', () => {
+  it('tells the driver, rings its moderator at 25 minutes and the owner at 30, once each', async () => {
     await changeModerator(testEnv, OWNER, MODERATOR, true);
     expect((await apply(APPLICANT)).status).toBe(200);
     const received = telegram.calls.find((item) => item.token === testEnv.DRIVER_BOT_TOKEN);
     expect(received?.body).toMatchObject({ chat_id: APPLICANT, text: expect.stringContaining('1 soat') });
-    const assignee = adminTexts()[0]?.chat;
-    expect([OWNER, MODERATOR]).toContain(assignee);
     telegram.calls.length = 0;
-    for (const minutes of [20, 30, 40, 50, 60]) await remindAt(minutes);
-    expect(adminTexts()).toEqual([
-      { chat: assignee, text: '⏰ Ariza 30 daqiqadan beri kutmoqda: Ali.' },
-      {
-        chat: OWNER,
-        text: expect.stringMatching(/^⚠️ Ariza 50 daqiqadan beri tekshirilmadi: Ali\. Moderator: /u),
-      },
+    for (const minutes of [20, 25, 30, 40, 60]) await remindAt(minutes);
+    const late = adminTexts().find((sent) => sent.text.startsWith('⏱'));
+    expect([OWNER, MODERATOR]).toContain(late?.chat);
+    expect(late?.text).toBe('⏱ Ali arizasi 25 daqiqa kutmoqda: 5 daqiqa qoldi');
+    // The owner: a line of «Diqqat» and a ring under it (G68).
+    const owner = adminTexts().filter((sent) => sent.chat === OWNER && !sent.text.startsWith('⏱'));
+    expect(owner.map((sent) => sent.text)).toEqual([
+      expect.stringContaining('Diqqat · bugun'),
+      expect.stringMatching(/^⚠️ Ariza 30 daqiqadan beri tekshirilmadi: Ali\. Moderator: /u),
     ]);
-    const button = telegram.calls[0]?.body.reply_markup as {
-      inline_keyboard: { web_app: { url: string } }[][];
-    };
-    expect(button.inline_keyboard[0]?.[0]?.web_app.url).toMatch(
-      new RegExp(`^https://admin\\..+/\\?application=${await pid(APPLICANT)}$`, 'u'),
-    );
+    // The ring answers the «Navbat» card of its moderator.
+    const ring = telegram.calls.find((item) => item.body.text === late?.text);
+    expect(ring?.body.reply_parameters).toBeDefined();
   });
 });

@@ -9,14 +9,15 @@ const MORNING = tashkentDayStart(DAY) + 9 * 60 * 60 * 1000;
 
 function setup(team: number[]) {
   let now = MORNING;
-  const sent: { day: string; rows: readonly DigestRow[] }[] = [];
+  const sent: { day: string; rows: readonly DigestRow[]; people: number }[] = [];
   const deps: DigestDeps = {
     store: createMemoryAssignments(),
     teamIds: async () => team,
     now: () => (now += 1000),
     random: () => 0.5,
     decisions: async () => new Map([[2, 4]]),
-    send: async (day, rows) => void sent.push({ day, rows }),
+    numbers: async () => ({ newUsers: 24, trips: 17, bookings: 41, fromChannels: 31 }),
+    send: async (day, rows, numbers) => void sent.push({ day, rows, people: numbers.newUsers }),
   };
   return { deps, team, sent, at: (ms: number) => void (now = ms) };
 }
@@ -55,19 +56,21 @@ describe('assignments (docs/92)', () => {
   });
 });
 
-describe('the daily digest (docs/92)', () => {
-  it('after midnight sends the day before once: answered questions, decisions, members who left', async () => {
+// The summary of the day to the owner at 21:00 (G68, docs/122), instead of the digest after midnight.
+describe('the summary of the day (docs/92, docs/122)', () => {
+  it('at 21:00 sends the day once: numbers, answered questions, decisions, members who left', async () => {
     const { deps, team, sent, at } = setup([1, 2]);
     await assign(deps, 'support', 101);
     await assign(deps, 'support', 102);
     await deps.store.answered('support', 101, MORNING);
     team.splice(1, 1, 3);
-    at(tashkentDayStart(DAY) + DAY_MS + 60 * 1000);
+    at(tashkentDayStart(DAY) + 21 * 60 * 60 * 1000 + 60 * 1000);
     await sendDigest(deps);
     await sendDigest(deps);
     expect(sent).toEqual([
       {
         day: DAY,
+        people: 24,
         rows: [
           { memberId: 1, total: 1, answered: 1, applications: 0 },
           { memberId: 3, total: 0, answered: 0, applications: 0 },
@@ -77,7 +80,7 @@ describe('the daily digest (docs/92)', () => {
     ]);
   });
 
-  it('waits for the night: in the daytime nothing is sent', async () => {
+  it('waits for 21:00: in the daytime nothing is sent', async () => {
     const { deps, sent } = setup([1]);
     await sendDigest(deps);
     expect(sent).toEqual([]);

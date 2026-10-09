@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { hourLabel } from '@platform/contracts';
+import { hourLabel, isTeamTime } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { assignTo } from '../modules/assignments';
 import { forwardToTeam, recordSupport, supportDeps, supportTalk } from '../modules/support';
@@ -8,8 +8,8 @@ import { sendMessage } from './bot-context';
 import { isStartCommand, type BotMessage } from './telegram-update';
 import { mediaOf } from './media';
 import { welcomePicture } from './start-reply';
-import { copyButtons } from './support-reply';
-import { withLabel } from './support-talk';
+import { askerOf } from './support-asker';
+import { supportButtons, supportCard } from './support-card';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 export const SUPPORT_BOT = 'support';
@@ -24,7 +24,8 @@ export const toSupportBot = (brand: BrandConfig, chatId: number) =>
   });
 
 // A question to the team (docs/50): a text, a photo or a voice message. The one assigned member gets
-// a copy in the admin bot (docs/92) with the talk kept (G32); the writer hears «qabul qilindi».
+// its card in the admin bot (docs/92, G68), quiet at night; the talk is kept (G32); the writer hears
+// «qabul qilindi».
 async function toSupport(context: BotContext, message: BotMessage) {
   const chatId = message.chat.id;
   const media = await mediaOf(context, SUPPORT_BOT, message);
@@ -32,11 +33,6 @@ async function toSupport(context: BotContext, message: BotMessage) {
   if (said === undefined && !media) return sendMessage(chatId, t('bot.support.textOnly'));
   const kind = media?.kind ?? 'text';
   const name = message.from?.first_name ?? '';
-  const text = t('bot.support.incoming', {
-    name,
-    id: String(message.from?.id ?? chatId),
-    text: withLabel(kind, said),
-  });
   const talk = await supportTalk(context.env, chatId);
   const wroteBefore = talk.length > 0;
   const now = Date.now();
@@ -54,7 +50,16 @@ async function toSupport(context: BotContext, message: BotMessage) {
     ...supportDeps(context.env, context.fetch),
     teamIds: () => assignTo(context.env, 'support', chatId),
   };
-  await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, { text, media, markup: copyButtons(wroteBefore) });
+  const { brand } = context;
+  const asker = await askerOf(context.env, chatId, name);
+  const card = {
+    text: supportCard(brand, asker, { kind, text: said }, now),
+    media,
+    markup: supportButtons(brand, asker, wroteBefore),
+    html: true,
+    quiet: !isTeamTime(now, brand.moderation.hours),
+  };
+  await forwardToTeam(deps, { chatId, bot: SUPPORT_BOT }, card);
   return sendMessage(chatId, t('bot.support.received'));
 }
 

@@ -1,5 +1,5 @@
 import type { PromoRule } from '@platform/brands';
-import type { Booking } from '@platform/contracts';
+import type { Booking, Wallet } from '@platform/contracts';
 import type { Operation } from '../domain/ledger';
 
 // Ports of the wallet: D1 in production, memory in tests.
@@ -15,7 +15,12 @@ export type WalletRepository = {
   // The Cron job: every bonus whose time is over burns in one step for all drivers (G42). Only the
   // drivers whose bonus time ended after `since` are read, through the index (G56).
   burnExpired(now: number, since: number, newId: () => string): Promise<void>;
+  // The drivers with a bonus whose time ends in (from, to], through the index (G56, G68).
+  bonusEndsBetween(from: number, to: number): Promise<number[]>;
 };
+
+// What the wallet says in the driver bot (G68, docs/122): money for fewer than 5 seats, the bonus ends.
+export type WalletNews = 'fewSeats' | 'bonusEnds';
 
 export type WalletBooking = { readonly passenger: string; readonly seats: number };
 
@@ -35,6 +40,8 @@ export type WalletDeps = {
   readonly lastPrice: (driverId: number) => Promise<number | null>;
   // The commission of one seat at a price, by the rule of the brand (docs/12).
   readonly perSeat: (price: number) => number;
+  // The wallet card of the driver bot with its news under it (G68).
+  readonly tell: (driverId: number, view: Wallet, news: WalletNews) => Promise<void>;
   readonly now: () => number;
   readonly newId: () => string;
 };

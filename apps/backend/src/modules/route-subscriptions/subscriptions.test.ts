@@ -1,8 +1,8 @@
 import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { mySubscriptions, renew, subscribe, unsubscribe } from './application/manage';
-import { matchNew, sendWaiting } from './application/notify';
-import { MINUTE, ROUTE, setup, TRIP } from './test-kit';
+import { endOverdue, matchNew } from './application/notify';
+import { ROUTE, setup, TRIP } from './test-kit';
 
 describe('subscribing to a route (docs/24)', () => {
   it('keeps at most 5 live subscriptions, the same route once', async () => {
@@ -43,19 +43,12 @@ describe('telling about new trips and requests (docs/24)', () => {
     expect(told).toEqual(['one 1 t1']);
   });
 
-  it('sends one message per 10 minutes, the rest together after the pause', async () => {
-    const { deps, told, pass } = setup();
+  it('tells every match at once: the news card of the day takes them all (docs/122 rule 4)', async () => {
+    const { deps, told } = setup();
     await subscribe(deps, 1, 'trips', { ...ROUTE, date: null });
     await matchNew(deps, 'trips', TRIP);
     await matchNew(deps, 'trips', { ...TRIP, id: 't2' });
-    await matchNew(deps, 'trips', { ...TRIP, id: 't3' });
-    await sendWaiting(deps);
-    expect(told).toEqual(['one 1 t1']);
-    pass(10 * MINUTE);
-    await sendWaiting(deps);
-    expect(told).toEqual(['one 1 t1', 'many 1 2']);
-    await sendWaiting(deps);
-    expect(told).toHaveLength(2);
+    expect(told).toEqual(['one 1 t1', 'one 1 t2']);
   });
 
   it('drops a dated subscription after its day and offers to renew "any date" after 30 days', async () => {
@@ -63,12 +56,12 @@ describe('telling about new trips and requests (docs/24)', () => {
     await subscribe(deps, 1, 'trips', ROUTE);
     await subscribe(deps, 2, 'trips', { ...ROUTE, date: null });
     pass(2 * DAY_MS);
-    await sendWaiting(deps);
+    await endOverdue(deps);
     expect(await mySubscriptions(deps, 1, 'trips')).toEqual([]);
     expect(told).toEqual([]);
     pass(29 * DAY_MS);
-    await sendWaiting(deps);
-    await sendWaiting(deps);
+    await endOverdue(deps);
+    await endOverdue(deps);
     expect(told).toEqual(['renew 2']);
     const [over] = await mySubscriptions(deps, 2, 'trips');
     expect(over?.expired).toBe(true);

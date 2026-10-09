@@ -40,10 +40,12 @@ describe('support: photos and the talk', () => {
   it('a person who wrote before comes with «Tarix»: the whole talk, the team as «Operator N»', async () => {
     await send('support', textMessage(PERSON, 'Pulim hali kelmadi'));
     const copy = copyOf('Pulim hali kelmadi');
-    expect(buttonsOf(copy?.body.reply_markup)).toEqual(['Javob berish', 'Tarix']);
+    expect(buttonsOf(copy?.body.reply_markup)).toEqual(['✍️ Javob berish', '📜 Tarix']);
     await send('admin', press('support:history', copy?.id));
     const talk = String(telegram.sentTo(OWNER).at(-1)?.body.text);
-    expect(talk).toContain('Ali (ID 61)');
+    // The name only, never the Telegram ID (lesson №136).
+    expect(talk).toContain('Ali: murojaatlar tarixi');
+    expect(talk).not.toMatch(/\b61\b/u);
     expect(talk).toMatch(/Ali: 🖼 Rasm\nChek shu/u);
     expect(talk).toMatch(/Operator \d{1,3}: 🖼 Rasm\nMana skrinshot/u);
     expect(talk).toContain('Ali: Pulim hali kelmadi');
@@ -51,7 +53,7 @@ describe('support: photos and the talk', () => {
 
   it('a first question has no «Tarix»', async () => {
     await send('support', textMessage(62, 'Birinchi savol'));
-    expect(buttonsOf(copyOf('Birinchi savol')?.body.reply_markup)).toEqual(['Javob berish']);
+    expect(buttonsOf(copyOf('Birinchi savol')?.body.reply_markup)).toEqual(['✍️ Javob berish']);
   });
 
   it('asks for a text, a photo or a voice when a person sends something else', async () => {

@@ -18,6 +18,10 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   await page.waitForLoadState('networkidle');
   // A screen still loading shows its skeleton: the shot waits for the content.
   await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
+  // A thing waiting for an answer rises as a sheet over the main screen (G68): the walk answers
+  // «later», as a person may (e2e/crash-guard.ts), and the shot waits until its shade is gone.
+  await expect(page.locator('.action-sheet')).toHaveCount(0);
+  await expect(page.locator('[vaul-overlay]')).toHaveCount(0);
   // A map on the screen is drawn before the shot, its tiles too.
   await expect(page.locator('[data-state="loading"]')).toHaveCount(0);
   await page.waitForLoadState('networkidle');

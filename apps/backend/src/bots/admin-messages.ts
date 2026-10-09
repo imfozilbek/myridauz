@@ -1,7 +1,7 @@
 import type { TeamRole } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { markAnswered, operatorOf } from '../modules/assignments';
-import { answerPerson, recordSupport, supportDeps } from '../modules/support';
+import { answerPerson, recordSupport, supportDeps, tellAnswered } from '../modules/support';
 import type { BotContext } from './bot-context';
 import { sendMessage } from './bot-context';
 import { toSupportBot } from './support-bot';
@@ -38,5 +38,6 @@ export async function onAdminMessage(context: BotContext, message: BotMessage, r
   await recordSupport(context.env, { ...entry, kind: media?.kind ?? 'text', text: said ?? '' });
   // The question is answered: it counts in the digest of the team (docs/92).
   await markAnswered(context.env, writer.chatId);
+  await tellAnswered(context.env, writer.chatId, chatId, message.from?.first_name ?? '');
   return sendMessage(chatId, t('bot.support.sent'));
 }

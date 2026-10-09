@@ -4,6 +4,7 @@ import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import botChannel from '../locales/uz-Latn/bot-channel.json' with { type: 'json' };
 import botCard from '../locales/uz-Latn/bot-card.json' with { type: 'json' };
 import botDriver from '../locales/uz-Latn/bot-driver.json' with { type: 'json' };
+import botTeam from '../locales/uz-Latn/bot-team.json' with { type: 'json' };
 import calls from '../locales/uz-Latn/calls.json' with { type: 'json' };
 import comfort from '../locales/uz-Latn/comfort.json' with { type: 'json' };
 import channels from '../locales/uz-Latn/channels.json' with { type: 'json' };
@@ -25,6 +26,7 @@ import pricing from '../locales/uz-Latn/pricing.json' with { type: 'json' };
 import requests from '../locales/uz-Latn/requests.json' with { type: 'json' };
 import reviews from '../locales/uz-Latn/reviews.json' with { type: 'json' };
 import share from '../locales/uz-Latn/share.json' with { type: 'json' };
+import sheet from '../locales/uz-Latn/sheet.json' with { type: 'json' };
 import stats from '../locales/uz-Latn/stats.json' with { type: 'json' };
 import subscriptions from '../locales/uz-Latn/subscriptions.json' with { type: 'json' };
 import wallet from '../locales/uz-Latn/wallet.json' with { type: 'json' };
@@ -38,7 +40,7 @@ const REFERENCE = {
   account,
   bookings,
   // One namespace in files of at most 150 lines (docs/11): the channel posts and the cards apart.
-  bot: { ...bot, ...botChannel, ...botCard, ...botDriver },
+  bot: { ...bot, ...botChannel, ...botCard, ...botDriver, ...botTeam },
   calls,
   comfort,
   channels,
@@ -61,6 +63,8 @@ const REFERENCE = {
   requests,
   reviews,
   share,
+  // The sheet of the open Mini App: the bot calls, the app answers (G68, docs/122).
+  sheet,
   stats,
   subscriptions,
   wallet,
