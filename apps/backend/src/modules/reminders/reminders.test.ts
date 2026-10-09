@@ -36,15 +36,15 @@ describe('sending reminders once (G10)', () => {
       first: createMemoryFirst(),
       tell: {
         passenger: async (item, kind) => void told.push(`${item.id} ${kind}`),
-        driver: async (item, riders, kind) => void told.push(`${item.id} ${riders} ${kind}`),
+        driver: async (item, kind) => void told.push(`${item.id} ${kind}`),
       },
       now: () => now,
     };
     await remindTrips(deps);
     await remindTrips(deps);
-    expect(told).toEqual(['b1 day', 'b2 day', 't1 3 day']);
+    expect(told).toEqual(['b1 day', 'b2 day', 't1 day']);
     now = MORNING + 22 * HOUR;
     await remindTrips(deps);
-    expect(told.slice(3)).toEqual(['b1 soon', 'b2 soon', 't1 3 soon']);
+    expect(told.slice(3)).toEqual(['b1 soon', 'b2 soon', 't1 soon']);
   });
 });

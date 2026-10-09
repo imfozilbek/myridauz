@@ -76,7 +76,6 @@ export function setup() {
     roadKm: async (from, to) => (from === to ? 0 : TRIP_KM),
     schedule: loadBrand().schedule,
     places: async () => PLACES,
-    announce: async () => undefined,
     // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.
     pitakOf: async (from, to) =>
       from === '1726' && to === '1718'

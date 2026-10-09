@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
+import { driverNewsOf } from './driver-news-of';
 import { passengerNewsOf } from './passenger-news-of';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
@@ -81,8 +82,13 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
   return bookingViews(deps, confirmed, 'passenger');
 };
 
-// The live trip card of the passenger bot (G68, docs/122): the reminders refresh it and ring under it.
+// The live trip cards (G68, docs/122): the reminders and the trip events refresh them and ring under
+// them; a request card is answered right in the driver bot.
 export { passengerNewsOf };
+export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon') =>
+  driverNewsOf(env, bookingsDeps(env))(tripId, undefined, ring);
+export { answerFromBot } from './bot-answer';
+export { ASK_PREFIX } from './infrastructure/ask-card';
 
 // «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1).
 export async function tellTripDeparted(env: Bindings, tripId: string): Promise<void> {

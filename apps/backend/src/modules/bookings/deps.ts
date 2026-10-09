@@ -27,6 +27,7 @@ import {
   tripViewsOf,
 } from '../trips';
 import { tellCloseOnes } from '../shares';
+import { driverNewsOf } from './driver-news-of';
 import { passengerNewsOf } from './passenger-news-of';
 import { ratingsOfPeople, starsOf } from '../ratings';
 import { peopleOf } from '../users';
@@ -58,57 +59,60 @@ const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsD
   },
 });
 
-export const bookingsDeps = (env: Bindings): BookingsDeps => ({
-  bookings: bookingStore(env),
-  offers: env.DB ? d1Offers(env.DB) : localOffers,
-  talks: env.DB ? d1Talks(env.DB) : localTalks,
-  requestRings: loadBrand(env.BRAND).calls.requestRings,
-  trips: {
-    find: (id) => tripFacts(env, id),
-    ofDriver: (driverId) => driverTripIds(env, driverId),
-    scheduleError: (driverId, trip) => scheduleErrorFor(env, driverId, trip),
-    views: (ids) => tripViewsOf(env, ids),
-    publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
-    publishPrivate: (driverId, input, requestId) => publishPrivateTripFor(env, driverId, input, requestId),
-    open: (driverId, tripId) => openTripFor(env, driverId, tripId),
-    release: (tripId) => releaseTripFor(env, tripId),
-    cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
-  },
-  requests: {
-    find: (id) => requestFacts(env, id),
-    view: (id) => requestViewOf(env, id),
-    ofPassenger: (passengerId) => passengerRequestFacts(env, passengerId),
-    matched: (id) => markMatched(env, id),
-    cancel: async (passengerId, id) => void (await cancelRequestOf(env, passengerId, id)),
-  },
-  wallet: {
-    commission: bookingCommission(env),
-    canAfford: (driverId, amount) => walletCanAfford(env, driverId, amount),
-    charge: (driverId, bookingId, amount) => chargeCommission(env, driverId, bookingId, amount),
-    refund: (driverId, bookingId) => refundCommission(env, driverId, bookingId),
-  },
-  people: peopleOf(env),
-  ratings: (ids) => ratingsOfPeople(env, ids),
-  rated: async (userId) => new Set((await starsOf(env, userId)).given.keys()),
-  approvedCar: (driverId) => approvedCar(env, driverId),
-  recommend: (from, to) => recommendationFor(env, from, to),
-  track: (step) => recordServerEvent(env, { name: 'booking_step', code: step }),
-  notify: seatsFollow(
-    env,
-    telegramNotifier({
-      brand: loadBrand(env.BRAND),
-      notify: (jobs) => notify(env, jobs),
-      system: (key, event) => postSystemEvent(env, key, event),
-      placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-      closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
-      telegramId: (publicId) => peopleOf(env).idOf(publicId),
-      passenger: passengerNewsOf(env),
-    }),
-  ),
-  places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
-  pitak: (id) => pitakById(env, id),
-  meeting: meetingPorts(env),
-  mask: (text) => maskContacts(text).text,
-  now: Date.now,
-  newId: () => crypto.randomUUID(),
-});
+export const bookingsDeps = (env: Bindings): BookingsDeps => {
+  const deps: BookingsDeps = {
+    bookings: bookingStore(env),
+    offers: env.DB ? d1Offers(env.DB) : localOffers,
+    talks: env.DB ? d1Talks(env.DB) : localTalks,
+    requestRings: loadBrand(env.BRAND).calls.requestRings,
+    trips: {
+      find: (id) => tripFacts(env, id),
+      ofDriver: (driverId) => driverTripIds(env, driverId),
+      scheduleError: (driverId, trip) => scheduleErrorFor(env, driverId, trip),
+      views: (ids) => tripViewsOf(env, ids),
+      publish: (driverId, input) => publishOfferTripFor(env, driverId, input),
+      publishPrivate: (driverId, input, requestId) => publishPrivateTripFor(env, driverId, input, requestId),
+      open: (driverId, tripId) => openTripFor(env, driverId, tripId),
+      release: (tripId) => releaseTripFor(env, tripId),
+      cancel: (driverId, tripId) => cancelFor(env, driverId, tripId),
+    },
+    requests: {
+      find: (id) => requestFacts(env, id),
+      view: (id) => requestViewOf(env, id),
+      ofPassenger: (passengerId) => passengerRequestFacts(env, passengerId),
+      matched: (id) => markMatched(env, id),
+      cancel: async (passengerId, id) => void (await cancelRequestOf(env, passengerId, id)),
+    },
+    wallet: {
+      commission: bookingCommission(env),
+      canAfford: (driverId, amount) => walletCanAfford(env, driverId, amount),
+      charge: (driverId, bookingId, amount) => chargeCommission(env, driverId, bookingId, amount),
+      refund: (driverId, bookingId) => refundCommission(env, driverId, bookingId),
+    },
+    people: peopleOf(env),
+    ratings: (ids) => ratingsOfPeople(env, ids),
+    rated: async (userId) => new Set((await starsOf(env, userId)).given.keys()),
+    approvedCar: (driverId) => approvedCar(env, driverId),
+    recommend: (from, to) => recommendationFor(env, from, to),
+    track: (step) => recordServerEvent(env, { name: 'booking_step', code: step }),
+    notify: seatsFollow(
+      env,
+      telegramNotifier({
+        brand: loadBrand(env.BRAND),
+        notify: (jobs) => notify(env, jobs),
+        system: (key, event) => postSystemEvent(env, key, event),
+        placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
+        closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
+        passenger: passengerNewsOf(env),
+        driver: (tripId, about, ring) => driverNewsOf(env, deps)(tripId, about, ring),
+      }),
+    ),
+    places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
+    pitak: (id) => pitakById(env, id),
+    meeting: meetingPorts(env),
+    mask: (text) => maskContacts(text).text,
+    now: Date.now,
+    newId: () => crypto.randomUUID(),
+  };
+  return deps;
+};

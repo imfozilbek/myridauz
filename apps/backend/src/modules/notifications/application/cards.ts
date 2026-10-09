@@ -15,6 +15,14 @@ export type Card = {
   readonly markup?: object;
   // On top of the chat (📌) while the trip is ahead; false: taken off the top (rule 6).
   readonly pin?: boolean;
+  // Its first message rings: a request the driver answers right in the bot (docs/122).
+  readonly loud?: boolean;
+  // The card its first message answers: a request under its trip.
+  readonly answers?: string;
+  // Only an edit of the message sent before: an old thing never comes as a new message.
+  readonly editOnly?: boolean;
+  // Another person or the clock changed it: the open Mini App refreshes too (docs/64).
+  readonly refresh?: boolean;
 };
 
 // A short news under its card, with sound when the person has something to do (rule 2).
@@ -54,6 +62,7 @@ function hashOf(card: Card): string {
 export async function cardJob(store: CardStore, card: Card): Promise<NotificationJob | null> {
   const hash = hashOf(card);
   const row = await store.find(card.bot, card.chatId, card.key);
+  if (card.editOnly && !row) return null;
   const pinned = card.pin === undefined || card.pin === row?.pinned;
   if (row && row.hash === hash && pinned) return null;
   return {
@@ -61,10 +70,17 @@ export async function cardJob(store: CardStore, card: Card): Promise<Notificatio
     chatId: card.chatId,
     text: card.footer ? `${card.text}\n${card.footer}` : card.text,
     html: true,
-    silent: true,
+    ...(row || !card.loud ? { silent: true } : {}),
     ...(card.markup ? { markup: card.markup } : {}),
     ...(row ? { edit: row.messageId } : {}),
-    after: { type: 'card', key: card.key, hash, ...(card.pin === undefined ? {} : { pin: card.pin }) },
+    ...(!row && card.answers ? { replyCard: card.answers } : {}),
+    after: {
+      type: 'card',
+      key: card.key,
+      hash,
+      ...(card.pin === undefined ? {} : { pin: card.pin }),
+      ...(card.editOnly ? { editOnly: true } : {}),
+    },
   };
 }
 

@@ -19,6 +19,8 @@ export type CardSent = {
   readonly hash: string;
   // On top of the chat (📌) while the trip is ahead; false: taken off the top (rule 6).
   readonly pin?: boolean;
+  // A message the person deleted stays gone: an answered request does not come back.
+  readonly editOnly?: boolean;
 };
 
 export type NotificationJob = {

@@ -68,7 +68,6 @@ export async function publishTrip(
   };
   await deps.trips.save(trip);
   if (forRequest === null) {
-    await deps.announce(trip);
     await deps.changed(trip.id, 'published');
   }
   const [view] = await views(deps, [trip]);

@@ -1,21 +1,14 @@
 import type { BrandConfig } from '@platform/brands';
-import {
-  arrivalAt,
-  BOOKING_LINK,
-  DAY_MS,
-  formatPlate,
-  tashkentDate,
-  type Booking,
-  type BookingStatus,
-} from '@platform/contracts';
+import { BOOKING_LINK, formatPlate, type Booking, type BookingStatus } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic, mono, quote } from '../../../shared/telegram/html';
 import { appButton } from '../../../shared/telegram/open-button';
+import { whenLines } from './card-when';
 import { findOtherButton } from './find-other';
 
-const { t, formatDate, formatMoney, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
+const { t, formatMoney, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
 
 // The live card of a seat in the passenger bot: one per booking (G68, docs/122, mockup g68/2).
 export const passengerCardKey = (bookingId: string) => `trip:${bookingId}`;
@@ -46,28 +39,6 @@ function statusLine(booking: Booking, stage: Stage): string {
   const ended = ENDED[booking.status];
   if (ended || stage === 'ended') return bold(t(`bot.card.${ended ?? 'cancelled'}`));
   return bold(t(STAGE_KEYS[stage]));
-}
-
-// «Ertaga, 7-oktabr»: today and tomorrow by name, a later day by its date.
-function dayOf(at: number, now: number): string {
-  const date = formatDate(new Date(at));
-  const day = tashkentDate(at);
-  if (day === tashkentDate(now)) return t('bot.card.day', { day: t('market.day.today'), date });
-  if (day === tashkentDate(now + DAY_MS)) return t('bot.card.day', { day: t('market.day.tomorrow'), date });
-  return date;
-}
-
-function whenLines(booking: Booking, stage: Stage, now: number): string[] {
-  const { trip } = booking;
-  const time = formatTime(new Date(trip.departAt));
-  if (stage === 'onWay') {
-    const arrival = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
-    return [bold(t('bot.card.arrival', { day: t('market.day.today'), time, arrival }))];
-  }
-  const when = bold(t('bot.card.when', { day: dayOf(trip.departAt, now), time }));
-  // The driver moved the time: the old one stays under it (mockup g68/2 «08:00 edi»).
-  if (trip.departAt === trip.firstDepartAt) return [when];
-  return [when, italic(t('bot.card.wasTime', { time: formatTime(new Date(trip.firstDepartAt)) }))];
 }
 
 // 🟢 where from and 🔴 where to, the full ladder for the person's own seat (docs/121).
@@ -125,7 +96,7 @@ export function passengerCard({ brand, chatId, booking, places, now }: Facts): C
   const unread = booking.unread ? [t('bot.card.unread', { count: String(booking.unread) })] : [];
   const text = [
     statusLine(booking, stage),
-    ...whenLines(booking, stage, now),
+    ...whenLines(booking.trip, stage === 'onWay', now),
     ...endBlocks(booking, places),
     driverBlock(booking),
     t('bot.card.seats', { seats: String(booking.seats), price }),

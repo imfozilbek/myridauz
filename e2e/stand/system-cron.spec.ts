@@ -40,7 +40,7 @@ test('S27. 2 hours before: the passenger and the driver are reminded once', asyn
   await clearBotMessages();
   await runCron();
   await toldBy('passenger', MALIKA, wordsOf('bot.ring.soonDoor'));
-  await toldBy('driver', BOBUR, wordsOf('bot.reminder.driverSoon'));
+  await toldBy('driver', BOBUR, wordsOf('bot.dring.soon'));
   await runCron();
   const soon = wordsOf('bot.ring.soonDoor');
   const reminders = (await botMessages()).filter((m) => m.chatId === MALIKA.id && m.text.includes(soon));

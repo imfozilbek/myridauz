@@ -54,7 +54,7 @@ async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery
   let delivery = await deliver(send, tokensOf(env), sent);
   const card = sent.after?.type === 'card' ? sent.after : null;
   // The person deleted the card, or it is too old to edit: a new card takes its place.
-  if (delivery.outcome === 'gone' && card) {
+  if (delivery.outcome === 'gone' && card && !card.editOnly) {
     sent = withoutEdit(sent);
     delivery = await deliver(send, tokensOf(env), sent);
   }
@@ -101,10 +101,11 @@ export async function notify(
 // comes after its card, so it can answer it.
 export async function showCards(env: Bindings, cards: readonly Card[], rings: readonly Ring[] = []) {
   const store = cardsOf(env);
-  const changed = await Promise.all(cards.map((card) => cardJob(store, card)));
-  const jobs = changed.filter((job): job is NotificationJob => job !== null);
+  const changed = await Promise.all(cards.map(async (card) => ({ card, job: await cardJob(store, card) })));
+  const jobs = changed.flatMap(({ job }) => (job ? [job] : []));
+  const news = changed.flatMap(({ card, job }) => (job && (card.loud || card.refresh) ? [job] : []));
   const ringing = rings.map(ringJob);
-  await notify(env, [...jobs, ...ringing], ringing);
+  await notify(env, [...jobs, ...ringing], [...news, ...ringing]);
 }
 
 // A message for every team member through the admin bot (docs/02).

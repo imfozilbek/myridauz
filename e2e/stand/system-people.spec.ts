@@ -7,6 +7,7 @@ import {
   driverSeatOf,
   outcome,
   SAMARQAND,
+  tailOf,
   toldBy,
   tomorrow,
   walletOf,
@@ -24,7 +25,7 @@ test('P09, F07. a deleted account with a seat: the seat is cancelled, the driver
   const before = await walletOf(NIGORA);
   const { seat } = await confirmedSeat(NIGORA, LAZIZA);
   await createUsersClient(await signedAs('passenger', LAZIZA)).deleteMe();
-  await toldBy('driver', NIGORA, wordsOf('bot.booking.cancelledByPassenger'));
+  await toldBy('driver', NIGORA, tailOf('bot.dring.cancelled'));
   // The data of a deleted person goes (docs/30): the seat is no longer a confirmed one.
   expect((await driverSeatOf(NIGORA, seat.id))?.status).not.toBe('confirmed');
   expect((await walletOf(NIGORA)).bonus).toBe(before.bonus);
@@ -36,7 +37,7 @@ test('F08, T24. a block in the middle: the seat is cancelled, the driver hears, 
   const moderation = createModerationClient(await signedAs('admin', OWNER));
   await moderation.block(seat.passenger.id, 7);
   expect((await driverSeatOf(NIGORA, seat.id))?.status).toBe('cancelled_by_passenger');
-  await toldBy('driver', NIGORA, wordsOf('bot.booking.cancelledByPassenger'));
+  await toldBy('driver', NIGORA, tailOf('bot.dring.cancelled'));
   expect((await walletOf(NIGORA)).bonus).toBe(before.bonus);
 });
 

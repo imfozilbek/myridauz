@@ -91,7 +91,8 @@ export async function acceptedWith(
   const accepted: OfferRecord = { ...offer, status: 'accepted', bookingId: booking.id };
   await deps.offers.save(accepted);
   await deps.requests.matched(request.id);
-  await deps.notify.offerAnswered(offer.driverId, true, { id: offer.id, chatKey: offerChatKey(offer) });
+  const answered = { id: offer.id, chatKey: offerChatKey(offer) };
+  await deps.notify.offerAnswered(offer.driverId, true, answered, { id: booking.id, tripId: booking.tripId });
   const [forPassenger] = await bookingViews(deps, [booking], 'passenger');
   if (forPassenger) await deps.notify.confirmed(forPassenger);
   return offerView(deps, accepted, { ...request, open: false });

@@ -2,74 +2,36 @@ import { NO_RATING } from '@platform/contracts';
 import {
   cancelAllOf,
   driverBookingOf,
-  expireBookingsOfTrip,
   passengerRideCount,
   filedRideOfBooking,
   ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
-  tellBookedOfRetime,
-  tellTripDeparted,
   walletBookingsOf,
 } from './modules/bookings';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
 import { assignTo } from './modules/assignments';
-import { channels, inviteFromMark } from './modules/channels';
+import { inviteFromMark } from './modules/channels';
 import { approvedCar } from './modules/drivers';
-import { tellFavoriteFans, wireFavorites } from './modules/favorites';
-import { handleAfterSent } from './modules/notifications';
+import { wireFavorites } from './modules/favorites';
 import { handleRequestPublished, requestViewOf, wireHiddenRequesters } from './modules/ride-requests';
 import { wireRealPrices } from './modules/pricing';
-import { requestPublished, tripCheaper, tripPublished } from './modules/route-subscriptions';
+import { requestPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
-import { tellTripFamily } from './modules/shares';
 import {
   driverTripIds,
-  handleTripChange,
   lastTripPrice,
-  tripForFamily,
   tripsEnded,
   realPricesSince,
-  tripViewsOf,
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
 import { peopleOf, wireFaceTeam, wireRegistered } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
-import type { Bindings } from './env';
 
 // What one module does after another: set here, the one place that knows every module, so the
-// modules do not depend on each other in circles.
-const tripOf = async (env: Bindings, id: string) => (await tripViewsOf(env, [id]))[0];
-const tripChannels = channels(tripOf);
-
-// A published trip goes to the channels and to subscribed passengers; a changed one edits its
-// channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18). A new time
-// or a lower price reaches the booked passengers, a lower price the subscribed ones too (G39, docs/104).
-// «Yoʻlga chiqdim» closes the posts and the unanswered requests (G63); passengers hear it (G68).
-handleTripChange(async (env, tripId, event) => {
-  if (event === 'departed') {
-    await expireBookingsOfTrip(env, tripId);
-    await tellTripDeparted(env, tripId);
-    return tripChannels.left(env, tripId);
-  }
-  if (event === 'published') {
-    await tripChannels.posted(env, tripId);
-    const trip = await tripOf(env, tripId);
-    if (trip) await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));
-    return;
-  }
-  await tripChannels.changed(env, tripId);
-  const trip = await tripOf(env, tripId);
-  if (event === 'updated') {
-    if (trip?.status === 'cancelled') await tellTripFamily(env, tripId, tripForFamily);
-    return;
-  }
-  // A lower price reaches the subscribers and the channel, never the booked passengers: their
-  // booking keeps its price (owner decision 04.10.2026).
-  if (event === 'retimed') await tellBookedOfRetime(env, tripId);
-  if (event === 'cheaper' && trip) await tripCheaper(env, trip);
-});
+// modules do not depend on each other in circles. The trips and their channel posts: trip-events.ts.
+export { closeDepartedPosts } from './trip-events';
 
 // A new face goes to the member who gets the person's application that day (docs/92, G51); a new
 // person who came by a channel post hears of the channel of that zone (docs/119).
@@ -101,17 +63,11 @@ wireFavorites({
   upcoming: upcomingTripsOf,
 });
 
-// The Cron job: channel posts of trips that left say so (docs/15).
-export const closeDepartedPosts = (env: Bindings) => tripChannels.departed(env);
-
 // A published request reaches subscribed drivers (docs/24).
 handleRequestPublished(async (env, requestId) => {
   const request = await requestViewOf(env, requestId);
   if (request) await requestPublished(env, request);
 });
-
-// Once Telegram gave a message its id: a channel post is remembered to be edited later (docs/15).
-handleAfterSent((env, after, messageId) => tripChannels.remember(env, after, messageId));
 
 // The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
 // who did not come is neither rated nor rates (docs/129, G63).

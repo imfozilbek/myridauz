@@ -42,7 +42,7 @@ export type TripRepository = {
 
 // retimed and cheaper: the driver moved the time or lowered the price (G39, docs/104); departed:
 // «Yoʻlga chiqdim» (G63).
-export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper' | 'departed';
+export type TripEvent = 'published' | 'updated' | 'retimed' | 'cheaper' | 'departed' | 'arrived';
 
 // Someone whose open Mini App refreshes its screens (docs/64).
 type Watcher = { readonly userId: number; readonly app: 'driver' | 'passenger' };
@@ -79,8 +79,6 @@ export type TripsDeps = {
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>
   >;
-  // The driver bot tells about the new trip.
-  readonly announce: (trip: TripRecord) => Promise<void>;
   // The main pitak of the direction «region A → region B», when people may see it (docs/72).
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
   // A trip was published or changed: channel posts and route subscriptions follow (docs/15, docs/24).

@@ -48,10 +48,13 @@ export async function departTrip(deps: TripsDeps, driverId: number, id: string) 
   return shown(deps, moved.value);
 }
 
-// «Yetib keldik»: the deadlines after the trip stay as they were (docs/129).
+// «Yetib keldik»: the deadlines after the trip stay as they were (docs/129); the trip card of the
+// driver bot leaves the top of the chat (G68).
 export async function arriveTrip(deps: TripsDeps, driverId: number, id: string) {
   const moved = await move<ArriveError>(deps, driverId, id, arrive, (tripId, at) =>
     deps.trips.arrive(tripId, at),
   );
-  return moved.ok ? shown(deps, moved.value) : moved;
+  if (!moved.ok) return moved;
+  await deps.changed(id, 'arrived');
+  return shown(deps, moved.value);
 }

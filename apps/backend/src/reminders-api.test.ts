@@ -25,7 +25,7 @@ const DRIVER = 81;
 const PASSENGER = 82;
 
 describe('trip reminders (G10, G68)', () => {
-  it('the day before the passenger card says «Ertaga» quietly, the driver hears it once', async () => {
+  it('the day before both trip cards say «Ertaga» quietly; 2 hours before both ring', async () => {
     await approvedDriver(DRIVER);
     await registerUser(PASSENGER);
     const departAt = START + 47 * HOUR;
@@ -52,16 +52,18 @@ describe('trip reminders (G10, G68)', () => {
     await sendReminders(testEnv, Date.now());
     expect(telegram.map((item) => `${String(item.chat)} ${item.method}`)).toEqual([
       `${PASSENGER} editMessageText`,
-      `${DRIVER} sendMessage`,
+      `${DRIVER} editMessageText`,
     ]);
     expect(telegram[0]?.text).toContain('Ertaga');
     expect(telegram[0]?.text).toContain('01 A 123 BC');
-    expect(telegram[1]?.text).toContain('Yoʻlovchilar: 2 kishi');
+    expect(telegram[1]?.text).toContain('Ertaga');
     // Two hours before: a ring under the card (docs/122).
     telegram.length = 0;
     vi.setSystemTime(departAt - 90 * 60_000);
     await sendReminders(testEnv, Date.now());
     const ring = telegram.find((item) => item.chat === PASSENGER && item.method === 'sendMessage');
     expect(ring?.text).toContain('2 soat qoldi');
+    const driverRing = telegram.find((item) => item.chat === DRIVER && item.method === 'sendMessage');
+    expect(driverRing?.text).toMatch(/^🚏 2 soat qoldi: 2 yoʻlovchi, birinchisi \d\d:\d\d da · /u);
   });
 });

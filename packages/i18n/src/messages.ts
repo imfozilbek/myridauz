@@ -3,6 +3,7 @@ import bookings from '../locales/uz-Latn/bookings.json' with { type: 'json' };
 import bot from '../locales/uz-Latn/bot.json' with { type: 'json' };
 import botChannel from '../locales/uz-Latn/bot-channel.json' with { type: 'json' };
 import botCard from '../locales/uz-Latn/bot-card.json' with { type: 'json' };
+import botDriver from '../locales/uz-Latn/bot-driver.json' with { type: 'json' };
 import calls from '../locales/uz-Latn/calls.json' with { type: 'json' };
 import comfort from '../locales/uz-Latn/comfort.json' with { type: 'json' };
 import channels from '../locales/uz-Latn/channels.json' with { type: 'json' };
@@ -36,8 +37,8 @@ import type { Locale } from './config';
 const REFERENCE = {
   account,
   bookings,
-  // One namespace in two files of at most 150 lines (docs/11): the channel posts apart.
-  bot: { ...bot, ...botChannel, ...botCard },
+  // One namespace in files of at most 150 lines (docs/11): the channel posts and the cards apart.
+  bot: { ...bot, ...botChannel, ...botCard, ...botDriver },
   calls,
   comfort,
   channels,

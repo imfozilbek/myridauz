@@ -1,16 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { answer, book, cancelMine, CHILONZOR, publishTrip } from './market-kit';
-import {
-  bookingOf,
-  MINUTE,
-  outcome,
-  SAMARQAND,
-  tailOf,
-  toldBy,
-  TO_SAMARQAND,
-  walletOf,
-  wordsOf,
-} from './g27-kit';
+import { bookingOf, MINUTE, outcome, SAMARQAND, tailOf, toldBy, TO_SAMARQAND, walletOf } from './g27-kit';
 import { AZIZA, BOBUR, FERUZA, MALIKA, NIGORA, OYBEK, RUSTAM, SEVARA, ULUGBEK } from './people';
 import type { Person } from './stand-kit';
 import { clearBotMessages, standSql } from './stand-tools';
@@ -69,7 +59,7 @@ test('P44, C07. a seat cancelled before the departure: the driver hears it, the 
   await clearBotMessages();
   await cancelMine(FERUZA, booking.id);
   expect((await bookingOf(FERUZA, booking.id))?.status).toBe('cancelled_by_passenger');
-  await toldBy('driver', ULUGBEK, wordsOf('bot.booking.cancelledByPassenger'));
+  await toldBy('driver', ULUGBEK, tailOf('bot.dring.cancelled'));
   expect((await walletOf(ULUGBEK)).bonus).toBe(before.bonus);
 });
 

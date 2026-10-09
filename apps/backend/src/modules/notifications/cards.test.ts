@@ -76,6 +76,22 @@ describe('live cards of the bots (G68, docs/122 rule 1)', () => {
     expect(calls[0]?.body).toMatchObject({ message_id: 70 });
   });
 
+  it('a request card rings once under its trip card; its answer edits it, never comes anew', async () => {
+    const calls = telegram();
+    const bindings = env();
+    const ask: Card = { ...CARD, key: 'ask:b2', text: '🙋 Sardor', loud: true, answers: CARD.key };
+    await showCards(bindings, [CARD, ask]);
+    await showCards(bindings, [{ ...ask, text: '✅ Qabul qilindi', editOnly: true }]);
+    await showCards(bindings, [{ ...ask, key: 'ask:b3', editOnly: true }]);
+    expect(calls.map((call) => call.method)).toEqual(['sendMessage', 'sendMessage', 'editMessageText']);
+    expect(calls[1]?.body).toMatchObject({ reply_parameters: { message_id: 70 } });
+    expect(calls[1]?.body).not.toHaveProperty('disable_notification');
+    expect(calls[2]?.body).toMatchObject({ message_id: 71, text: '✅ Qabul qilindi' });
+    const gone = telegram('Bad Request: message to edit not found');
+    await showCards(bindings, [{ ...ask, text: '❌ Rad etildi', editOnly: true }]);
+    expect(gone.map((call) => call.method)).toEqual(['editMessageText']);
+  });
+
   it('a deleted account takes its cards with it (docs/30)', async () => {
     const calls = telegram();
     const bindings = env();
