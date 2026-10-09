@@ -1,4 +1,5 @@
 import type { Fetch } from '../../../shared/telegram/telegram-api';
+import type { Membership } from '../application/my-channels';
 import { telegramUrl } from '../../../shared/telegram/api-url';
 
 type Member = {
@@ -28,11 +29,18 @@ export const botIsAdmin = (fetch: Fetch, token: string | undefined) => async (us
 
 const IN_CHANNEL = ['creator', 'administrator', 'member'];
 
-// Whether a person is in a channel already (docs/119): one call, the bot is an admin there. An error
-// or an unknown answer counts as not in: the invite goes.
-export const inChannel =
-  (fetch: Fetch, token: string | undefined) => async (username: string, userId: number) => {
-    if (!token) return false;
+// Whether a person is in a channel (docs/119): one call, the bot is an admin there.
+export const membership =
+  (fetch: Fetch, token: string | undefined) =>
+  async (username: string, userId: number): Promise<Membership> => {
+    if (!token) return 'missing';
     const result = await memberOf(fetch, token, username, userId).catch(() => undefined);
-    return IN_CHANNEL.includes(result?.status ?? '') || result?.is_member === true;
+    if (!result) return 'missing';
+    return IN_CHANNEL.includes(result.status ?? '') || result.is_member === true ? 'in' : 'out';
   };
+
+// An error or an unknown answer counts as not in: the invite goes.
+export const inChannel = (fetch: Fetch, token: string | undefined) => {
+  const of = membership(fetch, token);
+  return async (username: string, userId: number) => (await of(username, userId)) === 'in';
+};
