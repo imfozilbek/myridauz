@@ -34,7 +34,7 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
   it('shows the sum, «≈ N joyga yetadi», the bonus and its end, the history', async () => {
     const { tracked } = renderMarket(profile(), testClients({ wallet: { mine: async () => wallet } }));
     expect(await screen.findByText(/^481\s000\ssoʻm$/u)).toBeTruthy();
-    expect(screen.getByText('≈ 53 joyga yetadi')).toBeTruthy();
+    expect(screen.getByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
     expect(screen.getByText(/gacha$/)).toBeTruthy();
     expect(screen.getByText('Boshlash bonusi')).toBeTruthy();
     expect(
@@ -50,7 +50,7 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
 
   it('turns red below 5 seats and asks to top up', async () => {
     renderMarket(profile(), testClients({ wallet: { mine: async () => ({ ...wallet, seatsLeft: 4 }) } }));
-    expect(await screen.findByText('≈ 4 joyga yetadi · toʻldiring')).toBeTruthy();
+    expect(await screen.findByText(/^≈.4 joyga yetadi · toʻldiring$/u)).toBeTruthy();
     expect(document.querySelector('.wallet-card-low')).toBeTruthy();
   });
 

@@ -120,6 +120,8 @@ describe('delete my data and the documents (docs/30)', () => {
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Oferta, maxfiylik')).toBeTruthy();
     fireEvent.click(screen.getByText('Hujjatlar'));
+    // A title on top, as «Safarlar tarixi»: the list paints no gray over the gradient (docs/121 §5).
+    expect(screen.getByText('Hujjatlar').className).toContain('market-title');
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
     expect(await screen.findByText(/Tahrir 1\.3/)).toBeTruthy();
