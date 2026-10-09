@@ -1,5 +1,6 @@
 import './square-tiles.css';
 import type { ReactNode } from 'react';
+import { useAccount } from '../account/account-context';
 import { useScreenView } from '../context/analytics-context';
 import { usePending } from '../driver/driver-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
@@ -33,7 +34,8 @@ export function HomeScreen(props: HomeScreenProps) {
   const { actions, notice, after, top, tiles, square = false, onOpen, onProfile } = props;
   useScreenView('home');
   useScreenBackground();
-  useSettingsButton(onProfile);
+  // The team of the admin app has no profile of its own: no «Sozlamalar» there (G75).
+  useSettingsButton(useAccount() ? onProfile : null);
   const pending = usePending();
   return (
     <div className="home">
