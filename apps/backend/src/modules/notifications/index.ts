@@ -4,6 +4,7 @@ import { sendSignals, signalsOf } from '../feed';
 import { teamMembers } from '../team';
 import { deliver, type Delivery } from './application/deliver';
 import { keepDead } from './application/dead-letter';
+import { deadPostsByChannel } from './infrastructure/dead-posts';
 import type { AfterSentHandler, NotificationJob } from './application/job';
 import { cardJob, ringJob, type Card, type Ring } from './application/cards';
 import { cardSent } from './application/card-sent';
@@ -135,3 +136,7 @@ export async function consumeNotifications(
     }
   }
 }
+
+// The channel posts Telegram never took since a moment, by channel («Kanallar» of the owner, G75).
+export const deadChannelPosts = async (env: Bindings, since: number) =>
+  env.DB ? deadPostsByChannel(env.DB, since) : new Map<string, number>();

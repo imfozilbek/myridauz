@@ -19,6 +19,7 @@ import { r2Images } from '../../shared/storage/r2-images';
 import { createMemoryUsers } from './infrastructure/memory-stores';
 import { bookingStore, rideTogether } from '../bookings/infrastructure/store';
 import { brandOf } from '../../shared/brand/brand-of';
+import { arrivalsByChannelVia } from './infrastructure/channel-arrivals';
 
 // Without D1 and R2 (local runs, tests) the module keeps its data in memory.
 export const localUsers = createMemoryUsers();
@@ -103,6 +104,10 @@ export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number,
 export const claimZoneInvite = (env: Bindings, userId: number) =>
   usersDeps(env).users.claimZoneInvite(userId, Date.now());
 // The buttons of the face card in the admin bot (G51).
+// The people who came by the posts of each channel since a moment («Kanallar» of the owner, G75).
+export const channelArrivals = async (env: Bindings, since: number) =>
+  env.DB ? arrivalsByChannelVia(env.DB, since) : new Map<string, number>();
+
 export {
   faceCardText,
   faceDecisionLine,

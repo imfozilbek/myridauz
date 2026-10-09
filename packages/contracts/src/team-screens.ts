@@ -5,3 +5,4 @@ export * from './journal';
 export * from './team';
 export * from './people';
 export * from './limits';
+export * from './channel-health';

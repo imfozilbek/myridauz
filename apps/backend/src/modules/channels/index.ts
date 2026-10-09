@@ -10,6 +10,9 @@ import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone
 import type { MyChannelsDeps } from './application/my-channels';
 import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
+import { healthRoutes } from './http/health-routes';
+import { checkChannels } from './application/health';
+import { healthDeps } from './health-deps';
 import { myChannelsRoutes } from './http/my-channels-routes';
 import { publicityRoutes } from './http/publicity-routes';
 import { inChannel, membership } from './infrastructure/bot-admin';
@@ -67,8 +70,12 @@ const myChannelsDeps = (env: Bindings): MyChannelsDeps => ({
 
 // The team's channels in the admin Mini App (docs/63) and «Kanallar» of a person (G65, docs/119).
 export const channelsModule = new Hono<AppEnv>()
+  .route('/', healthRoutes(healthDeps))
   .route('/', channelRoutes(teamDeps))
   .route('/', myChannelsRoutes(myChannelsDeps));
+
+// The hourly Cron: a few channels read again from Telegram for «Kanallar» of the owner (G75).
+export const checkChannelHealth = async (env: Bindings) => checkChannels(await healthDeps(env));
 
 const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
   enabled: env.CHANNEL_POSTS === 'on',
