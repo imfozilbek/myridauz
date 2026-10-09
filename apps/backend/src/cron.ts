@@ -4,14 +4,14 @@ import { closeDepartedPosts } from './module-events';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
-import { sendApplicationReminders, sendTeamDigest } from './modules/assignments';
+import { sendApplicationReminders, sendDaySummary } from './modules/assignments';
 import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
 import { sendReminders, watchLateDepartures } from './modules/reminders';
 import { showQueue } from './modules/team-queue';
 import { expireRequests } from './modules/ride-requests';
 import { endSubscriptions } from './modules/route-subscriptions';
-import { checkStatsAlerts } from './modules/stats';
+import { checkStatsAlerts, dayNumbers } from './modules/stats';
 import { purgeSupport } from './modules/support';
 import { completeTrips } from './modules/trips';
 import { burnBonuses, warnBonusEnd } from './modules/wallet';
@@ -39,15 +39,22 @@ const everyTick = (env: Bindings, now: number): Job[] => [
 
 // Burns bonuses that are over, ends subscriptions whose time is over, asks both sides of ended rides
 // for a rating, checks the signals of the dashboard, erases the points of rides 30 days after the
-// trip, sends the team digest after midnight (docs/12, docs/24, docs/29, docs/69, docs/92, G11, G12,
-// G24).
+// trip, sends the summary of the day to the owner at 21:00 (docs/12, docs/24, docs/29, docs/69,
+// docs/92, docs/122, G11, G12, G24, G68).
 const everyHour = (env: Bindings, now: number): Job[] => [
   ['endSubscriptions', () => endSubscriptions(env)],
   ['burnBonuses', () => burnBonuses(env)],
   ['askForRatings', () => askForRatings(env)],
   ['checkStatsAlerts', () => checkStatsAlerts(env)],
   ['erasePastPoints', async () => erasePastPoints(env, now, await bookingsUnderComplaint(env))],
-  ['sendTeamDigest', () => sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to))],
+  [
+    'sendDaySummary',
+    () =>
+      sendDaySummary(env, {
+        decisions: (from, to) => decisionsBetween(env, from, to),
+        numbers: (since) => dayNumbers(env, since),
+      }),
+  ],
 ];
 
 // Gives bonus 1 to approved drivers without it, tells the drivers whose bonus ends in 3 days,

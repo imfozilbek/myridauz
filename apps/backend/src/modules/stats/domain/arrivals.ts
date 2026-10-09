@@ -14,8 +14,10 @@ export type ArrivalCount = {
   readonly count: number;
 };
 
+// «ch-rida-samarqand»: the mark of a person who came from a channel (G55).
+export const CHANNEL_MARK = 'ch-';
 const MARKED: readonly [string, ArrivalKind][] = [
-  ['ch-', 'channel'],
+  [CHANNEL_MARK, 'channel'],
   ['ad-', 'ad'],
 ];
 const PLAIN: Readonly<Record<string, ArrivalKind>> = {

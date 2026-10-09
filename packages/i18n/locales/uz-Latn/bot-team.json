@@ -16,5 +16,10 @@
   "diqqat.hint": "Kuniga bitta karta: yangi belgi chiqsa, shu karta yangilanadi",
   "diqqat.stats": "📊 Statistika",
   "diqqat.people": "👥 Odamlar",
-  "diqqat.money": "💳 {name} (ID {id}): hamyondagi pul {count} ta joyga yetadi"
+  "diqqat.money": "💳 {name} (ID {id}): hamyondagi pul {count} ta joyga yetadi",
+  "summary.title": "📊 Kun yakuni · {date}",
+  "summary.numbers": "{people} yangi odam · {trips} safar · {bookings} bron",
+  "summary.team": "👥 Jamoa",
+  "summary.channels": "📣 Kanaldan keldi: {count} kishi",
+  "summary.open": "Batafsil: Statistika"
 }

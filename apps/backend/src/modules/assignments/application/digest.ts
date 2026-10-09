@@ -1,8 +1,9 @@
 import { DAY_MS, tashkentDate, tashkentDayStart, tashkentTime } from '@platform/contracts';
 import type { AssignDeps } from './ports';
 
-// The digest waits for the new day in Tashkent and catches up a missed Cron tick until morning.
-const DIGEST_UNTIL = '06:00';
+// The summary of the day goes to the owner at 21:00 Tashkent (owner decision 06.10.2026, docs/122),
+// instead of the digest after midnight; a missed Cron tick is caught up until midnight.
+const SUMMARY_FROM = '21:00';
 
 // What one team member did on one day (docs/92).
 export type DigestRow = {
@@ -12,10 +13,19 @@ export type DigestRow = {
   readonly applications: number;
 };
 
+// The numbers of the day from the dashboard (docs/29): new people, trips, bookings, from channels.
+export type DayNumbers = {
+  readonly newUsers: number;
+  readonly trips: number;
+  readonly bookings: number;
+  readonly fromChannels: number;
+};
+
 export type DigestDeps = AssignDeps & {
   // Decisions on driver applications of each member in [from, to).
   readonly decisions: (from: number, to: number) => Promise<Map<number, number>>;
-  readonly send: (day: string, rows: readonly DigestRow[]) => Promise<void>;
+  readonly numbers: (since: number) => Promise<DayNumbers>;
+  readonly send: (day: string, rows: readonly DigestRow[], numbers: DayNumbers) => Promise<void>;
 };
 
 // Every member of the team, and anyone who worked that day and left since.
@@ -39,11 +49,12 @@ async function digestOf(deps: DigestDeps, day: string): Promise<DigestRow[]> {
   });
 }
 
-// The Cron job: after midnight in Tashkent the whole team gets the digest of the day before, once.
+// The Cron job: at 21:00 in Tashkent the owner gets the summary of the day, once.
 export async function sendDigest(deps: DigestDeps): Promise<void> {
   const now = deps.now();
-  if (tashkentTime(now) >= DIGEST_UNTIL) return;
-  const day = tashkentDate(now - DAY_MS);
+  if (tashkentTime(now) < SUMMARY_FROM) return;
+  const day = tashkentDate(now);
   if (!(await deps.store.markDigest(day, now))) return;
-  await deps.send(day, await digestOf(deps, day));
+  const [rows, numbers] = await Promise.all([digestOf(deps, day), deps.numbers(tashkentDayStart(day))]);
+  await deps.send(day, rows, numbers);
 }

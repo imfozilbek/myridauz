@@ -1,8 +1,9 @@
-import { loadBrand } from '@platform/brands';
+import { appHost, loadBrand } from '@platform/brands';
 import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
-import { notifyTeam } from '../notifications';
+import { adminIds } from '../../shared/telegram/bot-config';
+import { notify } from '../notifications';
 import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
@@ -17,26 +18,39 @@ import { createMemoryAssignments } from './infrastructure/memory-assignments';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const localAssignments = createMemoryAssignments();
-type Decisions = DigestDeps['decisions'];
+type Sources = Pick<DigestDeps, 'decisions' | 'numbers'>;
+const NO_SOURCES: Sources = {
+  decisions: async () => new Map(),
+  numbers: async () => ({ newUsers: 0, trips: 0, bookings: 0, fromChannels: 0 }),
+};
 const storeOf = (env: Bindings) => (env.DB ? d1Assignments(env.DB) : localAssignments);
 
-const deps = (env: Bindings, decisions: Decisions = async () => new Map()): DigestDeps => ({
+const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
   store: storeOf(env),
   teamIds: async () => (await teamMembers(env)).map((member) => member.id),
   now: Date.now,
   random: Math.random,
-  decisions,
-  send: async (day, rows) => {
+  ...sources,
+  // The owner hears the summary without sound, with the dashboard a tap away (docs/122).
+  send: async (day, rows, numbers) => {
     const people = peopleOf(env);
     const names = new Map(
       await Promise.all(
         rows.map(async (row) => [row.memberId, (await people.find(row.memberId))?.firstName] as const),
       ),
     );
-    await notifyTeam(
-      env,
-      digestText(day, rows, (id) => names.get(id) ?? String(id)),
-    );
+    const text = digestText(day, rows, numbers, (id) => names.get(id) ?? String(id));
+    const url = `https://${appHost(loadBrand(env.BRAND), 'admin')}/?stats=day`;
+    const markup = { inline_keyboard: [[{ text: t('bot.summary.open'), web_app: { url } }]] };
+    const job = (chatId: number) => ({
+      bot: 'admin' as const,
+      chatId,
+      text,
+      html: true,
+      silent: true,
+      markup,
+    });
+    await notify(env, [...adminIds(env)].map(job));
   },
 });
 
@@ -51,8 +65,8 @@ export const markAnswered = (env: Bindings, subjectId: number) =>
 // «Operator N» for the answers to this person (docs/92): the number of the latest question.
 export const operatorOf = async (env: Bindings, subjectId: number): Promise<number> =>
   (await deps(env).store.operatorOf('support', subjectId)) ?? steadyOperator(subjectId);
-// The Cron job: the digest of the day before, once, after midnight in Tashkent.
-export const sendTeamDigest = (env: Bindings, decisions: Decisions) => sendDigest(deps(env, decisions));
+// The Cron job: the summary of the day to the owner at 21:00 in Tashkent, once (G68, docs/122).
+export const sendDaySummary = (env: Bindings, sources: Sources) => sendDigest(deps(env, sources));
 
 // The Cron job (G34): a waiting application reminds its moderator, then the owners, in team hours.
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
