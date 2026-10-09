@@ -2,7 +2,8 @@ import { teamRole } from '../modules/team';
 import { isFaceButton } from '../modules/users';
 import { answerQuery as answer, type BotContext } from './bot-context';
 import { onFaceButton } from './face-callbacks';
-import { HISTORY_DATA, onHistoryButton, onReplyButton, REPLY_DATA } from './support-reply';
+import { HISTORY_DATA, REPLY_DATA } from './support-card';
+import { onHistoryButton, onReplyButton } from './support-reply';
 import { onTeamButton } from './team-bot';
 import type { BotCallback } from './telegram-update';
 

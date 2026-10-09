@@ -10,6 +10,7 @@ import { expireRequests, expireTripRequests } from './application/expire';
 import { chatAbout } from './application/chat-about';
 import { chatMember } from './application/chat-member';
 import { chatKeysOf } from './application/chat-keys';
+import { liveBookingOf } from './application/live-booking';
 import { meetingBegun } from './application/meeting';
 import { pastRides } from './application/past';
 import { passengerView } from './application/progress';
@@ -119,6 +120,10 @@ export const driverBookingOf = async (env: Bindings, bookingId: string) => {
   const record = await deps.bookings.find(bookingId);
   return record ? (await bookingViews(deps, [record], 'driver'))[0] : undefined;
 };
+
+// The card of a support question shows the booking a passenger lives with now (G68).
+export const liveBookingFor = (env: Bindings, passengerId: number) =>
+  liveBookingOf(bookingsDeps(env), passengerId);
 
 // "Safarlar tarixi" (G18): the rides of a person that are over.
 export const pastRidesOf = (env: Bindings, userId: number, side: 'passenger' | 'driver') =>

@@ -33,9 +33,9 @@ describe('the support bot', () => {
     );
     const copy = telegram.sentTo(OWNER).find((sent) => String(sent.body.text).includes('Pulim qaytmadi'));
     expect(copy?.token).toBe(ADMIN_TOKEN);
-    // Under a copy only «Javob berish»: the team is changed in /team, not under a question (G30, G31).
+    // Under a card only «Javob berish»: the team is changed in /team, not under a question (G30, G31).
     expect(JSON.stringify(copy?.body.reply_markup)).toBe(
-      JSON.stringify({ inline_keyboard: [[{ text: 'Javob berish', callback_data: 'support:reply' }]] }),
+      JSON.stringify({ inline_keyboard: [[{ text: '✍️ Javob berish', callback_data: 'support:reply' }]] }),
     );
     // Only the assigned member gets it (docs/92): the second owner has nothing of this person.
     expect(telegram.sentTo(8).some((sent) => String(sent.body.text).includes('Pulim qaytmadi'))).toBe(false);

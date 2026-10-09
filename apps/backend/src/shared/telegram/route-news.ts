@@ -10,7 +10,7 @@ const { t, formatMoney, formatShortDate } = createI18n(DEFAULT_LOCALE);
 export const newsRoute = (from: string, to: string) => `${from}>${to}`;
 
 // «bugun», «ertaga», later «9-okt»: a short day for a line.
-function shortDay(at: number, now: number): string {
+export function shortDay(at: number, now: number): string {
   const day = tashkentDate(at);
   if (day === tashkentDate(now)) return t('requests.day.today');
   if (day === tashkentDate(now + DAY_MS)) return t('requests.day.tomorrow');

@@ -85,7 +85,9 @@ export const isBlocked = async (env: Bindings, telegramId: number) =>
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));
 export const blockedGuard = guard;
-// The buttons of the face card in the admin bot (G51).
+// Since when a person is with the brand: the card of a support question (G68).
+export const joinedAtOf = async (env: Bindings, id: number) =>
+  (await usersDeps(env).users.find(id))?.createdAt;
 // The new face photos for «Navbat» of the team (G68): whose and since when.
 export const waitingFaces = async (env: Bindings) =>
   (await pendingFaces(usersDeps(env))).map((face) => ({ name: face.firstName, since: face.uploadedAt }));
@@ -94,6 +96,7 @@ export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number,
 // The invite to the channel of the zone goes once per person (docs/119).
 export const claimZoneInvite = (env: Bindings, userId: number) =>
   usersDeps(env).users.claimZoneInvite(userId, Date.now());
+// The buttons of the face card in the admin bot (G51).
 export {
   faceCardText,
   faceDecisionLine,

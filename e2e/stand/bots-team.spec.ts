@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
-import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, toldBy, wordsOf } from './g27-kit';
+import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, tailOf, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';
 import type { Person } from './stand-kit';
 import { botMessages, runCron, standRows } from './stand-tools';
@@ -105,11 +105,16 @@ test('G32. a photo in support; the next question comes with «Tarix» of the who
   await say('support', LAZIZA, 'Pulim hali kelmadi');
   await expect.poll(() => told('admin', member.id, 'Pulim hali kelmadi')).toBeTruthy();
   const copy = await told('admin', member.id, 'Pulim hali kelmadi');
+  // The card of a question (G68, mockup g68/4): who writes and the text, never the Telegram ID.
+  expect(copy?.text).toContain(wordsOf('bot.supportCard.title'));
+  expect(copy?.text).not.toContain(String(LAZIZA.id));
   expect(copy?.buttons.map((b) => b.text)).toEqual([
-    wordsOf('bot.support.reply'),
-    wordsOf('bot.support.history'),
+    wordsOf('bot.supportCard.reply'),
+    wordsOf('bot.supportCard.history'),
   ]);
   await press('admin', member, 'support:history', Number(copyOf(LAZIZA, member)));
   await expect.poll(() => told('admin', member.id, 'Chek shu')).toBeTruthy();
-  expect((await told('admin', member.id, 'Chek shu'))?.text).toContain(`(ID ${LAZIZA.id})`);
+  const talk = (await told('admin', member.id, 'Chek shu'))?.text;
+  expect(talk).toContain(`${LAZIZA.name}${tailOf('bot.support.historyTitle')}`);
+  expect(talk).not.toContain(String(LAZIZA.id));
 });

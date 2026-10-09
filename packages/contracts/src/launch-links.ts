@@ -31,3 +31,6 @@ export const OPEN_LINK_VALUE = /^[a-z_]{1,32}$/u;
 export const NEW_TRIP_SECTION = 'new_trip';
 // «Hamyon» of the driver: its tiles and the wallet messages of the driver bot open it (G65, G68).
 export const WALLET_SECTION = 'wallet';
+// The trips of the team in the admin app: «Bronni ochish» under a support question opens one of
+// them, ?open=trips&trip=<id> (G68, mockup g68/4).
+export const TEAM_TRIPS_SECTION = 'trips';

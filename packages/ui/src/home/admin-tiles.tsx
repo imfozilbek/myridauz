@@ -1,3 +1,4 @@
+import { TEAM_TRIPS_SECTION } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -8,7 +9,7 @@ import { HomeRowCard } from './home-card';
 
 // The sections the number tiles open (G53).
 export const STATS_SECTION = 'statistics';
-export const TRIPS_SECTION = 'trips';
+export const TRIPS_SECTION = TEAM_TRIPS_SECTION;
 export const MANAGEMENT_SECTION = 'management';
 
 // A number of work for the team: how many wait, red while any waits (owner decision 04.10.2026, G53).

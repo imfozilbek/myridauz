@@ -40,6 +40,13 @@ export async function sendPhoto(
   if (!response.ok) throw new Error(`telegram.sendPhoto_${response.status}`);
 }
 
+// A message in HTML (the card of a question, G68) and without sound at night (docs/122).
+export type SendOptions = { readonly html?: boolean; readonly quiet?: boolean };
+export const sendFlags = (options: SendOptions = {}) => ({
+  ...(options.html ? { parse_mode: 'HTML' } : {}),
+  ...(options.quiet ? { disable_notification: true } : {}),
+});
+
 // sendMessage that returns the id of the message: support links a copy to the person (docs/02).
 export async function sendText(
   fetch: Fetch,
@@ -47,11 +54,18 @@ export async function sendText(
   chatId: number,
   text: string,
   markup?: object,
+  options?: SendOptions,
 ): Promise<number | undefined> {
+  const params = {
+    chat_id: chatId,
+    text,
+    ...(markup ? { reply_markup: markup } : {}),
+    ...sendFlags(options),
+  };
   const response = await fetch(telegramUrl(token, 'sendMessage'), {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text, ...(markup ? { reply_markup: markup } : {}) }),
+    body: JSON.stringify(params),
   });
   if (!response.ok) throw new Error(`telegram.sendMessage_${response.status}`);
   const body = (await response.json()) as { result?: { message_id?: number } };

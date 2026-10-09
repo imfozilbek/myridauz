@@ -18,3 +18,5 @@ CREATE INDEX bot_news_old ON bot_news (created_at);
 -- The pause of 10 minutes between subscription messages is gone: the card of the day takes its
 -- place. Nothing reads pending now; its columns stay, the worker before this deploy still writes them.
 DROP INDEX route_subscriptions_pending;
+-- After an answer, the other copies of the same person get «✅ Operator … javob berdi» (G68).
+CREATE INDEX support_links_person ON support_links (person_chat_id, created_at);

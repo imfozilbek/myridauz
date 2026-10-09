@@ -1,21 +1,26 @@
-import type { Trip } from '@platform/contracts';
+import { LINK_ID, TRIP_LINK, type Trip } from '@platform/contracts';
 import { Section, Title } from '@telegram-apps/telegram-ui';
 import { Fragment, useState } from 'react';
 import { TeamTripBookings } from '../bookings/trip-bookings';
 import { Button, List } from '../components';
+import { useApiClients } from '../context/api-clients';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
+import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { useScreenBackground } from '../telegram/screen-background';
 import { PlacesGate } from './places-gate';
 import { TripCard } from './trip-card';
 import { TripScreen } from './trip-screen';
 import { useTeamDays } from './team-days';
+import { useLoad } from './use-list';
 import { useDayLabel } from './when';
 import './market.css';
+
+const LINK = [TRIP_LINK];
 
 // The admin Mini App: trips go out without approval, the team only looks at them (owner decision 29.09.2026).
 // Day by day from yesterday on, each day under its name (docs/90 F-A6).
@@ -34,6 +39,10 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   const dayLabel = useDayLabel();
   const { now, days, failed, reload, refresh, more } = useTeamDays();
   const [open, setOpen] = useState<Trip | null>(null);
+  // «Bronni ochish» under a support question: ?open=trips&trip=<id> (G68, mockup g68/4).
+  const [linked, setLinked] = useState(() => launchParam(TRIP_LINK, LINK_ID));
+  useLinkOpened(linked !== null, LINK);
+  if (linked) return <LinkedTrip id={linked} onBack={() => setLinked(null)} />;
   if (open) {
     return (
       <TripScreen trip={open} readOnly onBack={() => setOpen(null)}>
@@ -76,5 +85,18 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
         </div>
       ) : null}
     </div>
+  );
+}
+
+// One trip by its id with its bookings; back goes to the trips of the days.
+function LinkedTrip({ id, onBack }: { readonly id: string; readonly onBack: () => void }) {
+  const { market } = useApiClients();
+  const { value, failed, reload } = useLoad(() => market.trip(id));
+  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
+  if (!value) return <ScreenSkeleton onBack={onBack} />;
+  return (
+    <TripScreen trip={value} readOnly onBack={onBack}>
+      <TeamTripBookings tripId={value.id} />
+    </TripScreen>
   );
 }
