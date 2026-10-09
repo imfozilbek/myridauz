@@ -6,6 +6,7 @@ import { HomeNote } from '../home/home-note';
 import { MainTile } from '../flow/main-tile';
 import { useDriver } from './driver-context';
 import { approvalSeen, markApprovalSeen } from './approval-seen';
+import { PendingNote } from './pending-note';
 
 // On the main screen of a driver: before sending, the big tile of the application (G62); while it is
 // checked, why some things wait (docs/86 V7); a fix asked, the note that opens it.
@@ -22,7 +23,7 @@ export function DriverNotice() {
         onClick={driver.editCar}
       />
     );
-  if (status === 'pending') return <PendingNotice />;
+  if (status === 'pending') return <PendingNote />;
   if (driver && status === 'changes_requested') return <FixNotice onOpen={driver.editCar} />;
   return status === 'approved' ? <ApprovedNotice /> : null;
 }
@@ -47,23 +48,7 @@ function FixNotice({ onOpen }: { readonly onOpen: () => void }) {
   );
 }
 
-// In the colors of the driver app, with a clock, as long as the check lasts: no «Yopish» (G53).
-function PendingNotice() {
-  const { t } = useI18n();
-  const { colors } = useBrand().theme;
-  return (
-    <HomeNote
-      icon="waiting"
-      ink={colors.brandDeep}
-      soft={colors.brandSoft}
-      mark={colors.brandStrong}
-      title={t('home.check.title')}
-      text={t('home.check.text')}
-    />
-  );
-}
-
-// «Siz haydovchisiz!» on the first visit after the approval, above the big tile (G62, mockup g62/1
+// «Siz haydovchisiz!» with a tick on the first visit after the approval (G62, G66, mockup g62/1
 // screen 6); it stays until the driver leaves the screen. The bonus comes from the wallet: a driver
 // approved again has none (docs/89 D4). It comes whole with the bonus, never grows (G41).
 function ApprovedNotice() {
@@ -85,7 +70,7 @@ function ApprovedNotice() {
   if (!shown || bonus === null) return null;
   return (
     <HomeNote
-      icon="approved"
+      icon="selected"
       ink={colors.success}
       soft={colors.successSoft}
       mark={colors.success}

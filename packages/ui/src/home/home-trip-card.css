@@ -3,7 +3,7 @@
 .home-trip {
   position: relative;
   box-sizing: border-box;
-  border: 2px solid var(--reg-line);
+  border: 2px solid var(--reg-card-line);
   border-radius: 16px;
   background: var(--reg-card);
   font-family: var(--tgui--font-family);

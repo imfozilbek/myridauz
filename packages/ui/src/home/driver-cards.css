@@ -1,0 +1,111 @@
+/* The trip of a driver on the main screen (G66, mockup g66/2 at 360 px): a white card in an amber
+   line; the next trip with its plate of the day, the day of the trip with the time big. */
+.driver-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 14px 11.33px;
+  border: 2px solid var(--reg-card-line);
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-family: var(--tgui--font-family);
+  text-align: start;
+  cursor: pointer;
+}
+
+.driver-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.driver-card-top svg {
+  flex: none;
+  margin-right: -5px;
+}
+
+.driver-card-pill {
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--reg-attention-soft);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--reg-attention);
+}
+
+.driver-card-route {
+  margin-top: 8.33px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.driver-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.driver-card-foot .driver-card-note {
+  line-height: 14.67px;
+}
+
+.driver-card-note {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+/* «2 yangi soʻrov»: the requests waiting for the driver, a full amber plate. */
+.driver-card-new {
+  flex: none;
+  padding: 0.67px 8px;
+  border-radius: 8px;
+  background: var(--reg-strong);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  color: var(--reg-card);
+}
+
+.driver-day {
+  padding: 13.67px 14px 12.67px;
+}
+
+.driver-day-time {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.driver-day-time + .driver-card-note {
+  margin-top: 3.33px;
+  line-height: 15.33px;
+}
+
+.driver-day-faces {
+  display: flex;
+  gap: 6px;
+  margin: 9px 0 6px;
+}
+
+.driver-day-face {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--reg-attention-soft);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--reg-deep);
+}

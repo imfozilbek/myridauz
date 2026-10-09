@@ -1,3 +1,4 @@
+import { formatPlate } from '@platform/contracts';
 import type { CSSProperties } from 'react';
 import { useAccount } from '../account/account-context';
 import { ProfilePhoto } from '../account/profile/profile-photo';
@@ -44,15 +45,16 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
   );
 }
 
-// «Yoʻlovchi», or «Haydovchi · Cobalt, oq» with the car of the application.
+// «Yoʻlovchi», or «Haydovchi · Cobalt, oq · 01 A 123 BC» with the car of the application (mockup
+// g66/2); «Haydovchi» alone before the application is sent (mockup g62/1 screen 1).
 function useRole(): string {
   const { t } = useI18n();
   const driver = useDriver();
   if (!driver) return t('home.role.passenger');
-  const { car } = driver.application;
-  if (!car) return t('home.role.driverNew');
+  const { car, status } = driver.application;
+  if (!car || status === 'draft') return t('home.role.driverNew');
   const color = t(`drivers.color.${car.color}`).toLocaleLowerCase('uz');
-  return t('home.role.driver', { model: car.model, color });
+  return t('home.role.driver', { model: car.model, color, plate: formatPlate(car.plate) });
 }
 
 function TeamCard() {

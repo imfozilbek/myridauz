@@ -31,7 +31,7 @@ export function RouteDock({ from, to, onSwap }: Props) {
         <End end={from} label={t('places.from')} ring="home-dock-from" />
         <div className="home-dock-line">
           <button type="button" className="home-dock-swap" aria-label={t('home.dock.swap')} onClick={onSwap}>
-            <Icon name="swap" size={SWAP} color={colors.brandText} />
+            <Icon name="swap" size={SWAP} color={colors.routeSwap} />
           </button>
         </div>
         <End end={to} label={t('places.to')} ring="home-dock-to" />

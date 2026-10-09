@@ -41,6 +41,17 @@
   line-height: 18px;
 }
 
+/* «Hamyon» below 5 seats: light red in a red line, the hint red and bold (mockup g66/2 phone 3). */
+.home-tile-alarm {
+  border: 1px solid var(--tile-alarm-line);
+  background: var(--tile-alarm);
+}
+
+.home-tile-alarm .home-tile-hint {
+  font-weight: 700;
+  color: var(--tile-alarm-ink);
+}
+
 /* The profile on top: the face 44 px, the name a bit larger (mockups g66/1, g66/2). */
 .home:has(.home-tiles-square) .home-profile {
   gap: 12.67px;

@@ -35,6 +35,27 @@ function PickFrom({ onBack }: Props) {
   );
 }
 
+// «Qayerga» of a driver (G66, mockup g66/2): the list of places, the trip is published from the block.
+function PickPlaceTo({ onBack }: Props) {
+  const { t } = useI18n();
+  const { choose } = useHomeRoute();
+  const [places, retry] = useDirectory();
+  if (places.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
+  if (places.status === 'error') return <ErrorScreen onRetry={retry} onBack={onBack} />;
+  return (
+    <PlacePicker
+      title={t('home.dock.toDriver')}
+      directory={places.directory}
+      allowWholeRegion
+      onPick={(to) => {
+        choose({ to });
+        onBack();
+      }}
+      onBack={onBack}
+    />
+  );
+}
+
 // «Qayerga» opens the directions with their drawings and trips (G59, docs/118); the pick comes back
 // to the main screen, «Safar topish» then opens its days and trips (mockup g66/1 phone 2).
 function PickTo({ onBack }: Props) {
@@ -58,4 +79,9 @@ export const PASSENGER_SECTIONS: readonly StartAction[] = [
   { id: DOCK_FROM, icon: 'origin', tone: 'brand', labelKey: 'places.from', hintKey: 'places.fromTitle', Screen: PickFrom },
   { id: DOCK_TO, icon: 'destination', tone: 'brand', labelKey: 'places.to', hintKey: 'places.toTitle', Screen: PickTo },
   { id: TRIP_TALK, icon: 'chat', tone: 'brand', labelKey: 'chat.open', hintKey: 'chat.open', Screen: TripTalk },
+];
+
+export const DRIVER_DOCK_SECTIONS: readonly StartAction[] = [
+  { id: DOCK_FROM, icon: 'origin', tone: 'brand', labelKey: 'places.from', hintKey: 'places.fromTitle', Screen: PickFrom },
+  { id: DOCK_TO, icon: 'destination', tone: 'brand', labelKey: 'places.to', hintKey: 'home.dock.toDriver', Screen: PickPlaceTo },
 ];

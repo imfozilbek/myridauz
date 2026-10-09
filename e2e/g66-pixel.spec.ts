@@ -1,5 +1,6 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test, type Page } from './crash-guard';
+import { openDriverHome } from './g66-driver-mock';
 import { openPassengerHome } from './g66-home-mock';
 
 // Pixel Perfect of the main screens (G66, lessons 141, 147, 167): the phones of g66/1 and g66/2 at
@@ -31,3 +32,16 @@ test('1-passenger-3: a seat tomorrow and a request with offers', async ({ page }
   await expect(page.getByText('Jasur', { exact: false }).first()).toBeVisible();
   await shot(page, '1-passenger-3');
 });
+
+for (const [n, state] of [
+  ['1', 'pending'],
+  ['2', 'free'],
+  ['3', 'tomorrow'],
+  ['4', 'today'],
+] as const) {
+  test(`2-driver-${n}: ${state}`, async ({ page }) => {
+    await openDriverHome(page, state);
+    await page.waitForLoadState('networkidle');
+    await shot(page, `2-driver-${n}`);
+  });
+}
