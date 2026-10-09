@@ -49,7 +49,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 
 ## Причины и следствия (решение владельца)
 
-- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`): что случилось,
+- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`, `docs/147`): что случилось,
   причина, следствие, урок. Урок становится правилом.
 - **Перед каждым решением** проверять журнал уроков. Если предложение
   повторяет старую ошибку, сразу сказать: «Это похоже на урок №N».
@@ -154,7 +154,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/41-promo-video.md` | Рекламное видео: музыка и лицензия, логика, сценарий, нарезки |
 | `docs/42-promo-prompts.md` | Промпты: задача владельца для Claude и промпт для ИИ-видео |
 | `docs/43-share-trip.md` | «Поделиться поездкой с близкими»: карточка, статусы, приватность |
-| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162 и дальше) |
+| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md`, `docs/147-lessons-learned-11.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162, №183 и дальше) |
 | `docs/45-dev-commands.md` | Команды разработки, барьеры качества, как устроен CI |
 | `docs/46-infrastructure.md` | Адреса, ресурсы Cloudflare, боты, где лежат секреты, деплой |
 | `docs/47-users-and-registration.md` | Вход по подписи Telegram, регистрация, блокировка, фото |
