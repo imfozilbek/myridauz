@@ -32,13 +32,14 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
   return {
     requested: async (booking) => {
       await system(booking.chatKey, 'requested');
-      await tripOf(booking, 'asked');
       // The passenger asked: the card comes quietly, nobody rings about one's own step (docs/122).
+      // It goes first: a quick «Qabul qilish» then edits it instead of sending a second one.
       await passenger(booking);
+      await tripOf(booking, 'asked');
     },
-    confirmed: async (booking) => {
+    confirmed: async (booking, own) => {
       await system(booking.chatKey, 'confirmed');
-      await passenger(booking, 'confirmed');
+      await passenger(booking, own ? undefined : 'confirmed');
       await tripOf(booking);
     },
     declined: async (booking) => {
@@ -91,6 +92,7 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     },
     came: (booking) => tripOf(booking, 'came'),
     driverCame: (booking) => passenger(booking, 'driverCame'),
+    noShow: (booking) => passenger(booking, 'noShow'),
     tripRetimed: (booking) => passenger(booking, 'retimed'),
   };
 }

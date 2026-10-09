@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { testD1 } from '../../test-d1';
-import { forgetCards, showCards, type Card } from '.';
+import { forgetCards, forgetOldCards, showCards, type Card } from '.';
 
 type Call = { method: string; body: Record<string, unknown> };
 
 // Telegram for one test: every call recorded, message ids from 70; an edit can be refused.
-function telegram(refuseEdit?: string) {
+function telegram(refuseEdit?: string, first = 70) {
   const calls: Call[] = [];
-  let next = 70;
+  let next = first;
   vi.stubGlobal('fetch', async (input: string, init?: RequestInit) => {
     const method = input.split('/').pop() ?? '';
     calls.push({ method, body: JSON.parse(String(init?.body)) as Record<string, unknown> });
@@ -100,6 +100,41 @@ describe('live cards of the bots (G68, docs/122 rule 1)', () => {
     const gone = telegram('Bad Request: message to edit not found');
     await showCards(bindings, [{ ...ask, text: '❌ Rad etildi', editOnly: true }]);
     expect(gone.map((call) => call.method)).toEqual(['editMessageText']);
+  });
+
+  it('two news at once about a new card leave one message: the late copy is deleted', async () => {
+    const calls = telegram();
+    const bindings = env();
+    await Promise.all([
+      showCards(bindings, [CARD]),
+      showCards(bindings, [{ ...CARD, text: '<b>Yangi</b>' }]),
+    ]);
+    expect(calls.map((call) => call.method)).toEqual(['sendMessage', 'sendMessage', 'deleteMessage']);
+    expect(calls[2]?.body).toEqual({ chat_id: 5, message_id: 71 });
+  });
+
+  it('a card Telegram cannot edit comes anew, and the old one leaves the top', async () => {
+    const bindings = env();
+    telegram();
+    await showCards(bindings, [{ ...CARD, pin: true }]);
+    const calls = telegram("Bad Request: message can't be edited", 80);
+    await showCards(bindings, [{ ...CARD, text: '<b>Yoʻldasiz</b>', pin: true }]);
+    expect(calls.map((call) => call.method)).toEqual([
+      'editMessageText',
+      'sendMessage',
+      'unpinChatMessage',
+      'pinChatMessage',
+    ]);
+    expect(calls[2]?.body).toEqual({ chat_id: 5, message_id: 70 });
+  });
+
+  it('a card nobody changed for a month is forgotten: a later news comes as a new message', async () => {
+    const calls = telegram();
+    const bindings = env();
+    await showCards(bindings, [CARD]);
+    await forgetOldCards(bindings, Date.now() + 31 * 24 * 3_600_000);
+    await showCards(bindings, [{ ...CARD, text: '<b>Yangi</b>' }]);
+    expect(calls.map((call) => call.method)).toEqual(['sendMessage', 'sendMessage']);
   });
 
   it('a deleted account takes its cards with it (docs/30)', async () => {

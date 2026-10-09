@@ -76,7 +76,12 @@ describe('a driver offers on a request (docs/35)', () => {
     });
     expect(balanceOf(await wallet(), 'bonus')).toBe(481_000);
     expect(notes).toEqual(
-      expect.arrayContaining(['offer to 10', 'offer accepted', 'passenger: confirmed 01A123BC']),
+      // The passenger accepted: their card changes quietly, no ring about their own step (docs/122).
+      expect.arrayContaining([
+        'offer to 10',
+        'offer accepted',
+        'passenger: confirmed 01A123BC by the passenger',
+      ]),
     );
     expect(await acceptOffer(deps, DILNOZA, sent.ok ? sent.value.id : '')).toEqual({
       ok: false,

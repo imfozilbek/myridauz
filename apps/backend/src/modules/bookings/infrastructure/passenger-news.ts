@@ -11,7 +11,15 @@ const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 
 // The short news under the trip card of a passenger (G68, docs/122: 8 rings, the trip ones here).
 type PassengerRing =
-  'confirmed' | 'declined' | 'expired' | 'cancelledByDriver' | 'retimed' | 'soon' | 'departed' | 'driverCame';
+  | 'confirmed'
+  | 'declined'
+  | 'expired'
+  | 'cancelledByDriver'
+  | 'retimed'
+  | 'soon'
+  | 'departed'
+  | 'driverCame'
+  | 'noShow';
 
 // The trip starts now: these ring at night too (docs/122 rule 3, «2 soat qoldi»).
 const ANY_HOUR: ReadonlySet<PassengerRing> = new Set(['soon', 'driverCame']);

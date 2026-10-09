@@ -2,34 +2,40 @@ import type { CardStore } from './cards';
 import type { CardSent, NotificationJob } from './job';
 
 type BotName = NotificationJob['bot'];
+type Act = (bot: BotName, chatId: number, messageId: number) => Promise<void>;
 
-// Pins of a private chat with a bot (docs/122 rule 6); a pin that failed leaves the card unpinned.
-export type Pins = {
-  readonly pin: (bot: BotName, chatId: number, messageId: number) => Promise<void>;
-  readonly unpin: (bot: BotName, chatId: number, messageId: number) => Promise<void>;
-};
+// What a card does in the private chat with a bot (docs/122 rule 6): on top of it or off it, and
+// a copy that came late goes away.
+export type ChatOps = { readonly pin: Act; readonly unpin: Act; readonly remove: Act };
 
-// A card reached Telegram: its id is kept, and it goes on top of the chat or off it.
+const tried = (work: Promise<void>, done: boolean, failed: boolean) =>
+  work.then(
+    () => done,
+    () => failed,
+  );
+
+// A card reached Telegram: its id is kept, and it goes on top of the chat or off it. A new card
+// claims its place first: of two news at once only one message stays (the other is deleted). A card
+// sent anew after its old message could not be edited takes the old one off the top.
 export async function cardSent(
   store: CardStore,
-  pins: Pins,
+  ops: ChatOps,
   job: NotificationJob,
-  after: CardSent,
-  messageId: number,
+  sent: { readonly after: CardSent; readonly messageId: number; readonly replaced: number | null },
   now: number,
 ): Promise<void> {
+  const { after, messageId, replaced } = sent;
   const chatId = Number(job.chatId);
   const before = await store.find(job.bot, chatId, after.key);
-  let pinned = before?.messageId === messageId && before.pinned;
-  if (after.pin === true && !pinned)
-    pinned = await pins.pin(job.bot, chatId, messageId).then(
-      () => true,
-      () => false,
-    );
-  if (after.pin === false && pinned)
-    pinned = await pins.unpin(job.bot, chatId, messageId).then(
-      () => false,
-      () => true,
-    );
+  const fresh = job.edit === undefined && replaced === null;
+  if (
+    fresh &&
+    !(await store.claim(job.bot, chatId, after.key, { messageId, hash: after.hash, pinned: false }, now))
+  )
+    return ops.remove(job.bot, chatId, messageId).catch(() => undefined);
+  if (replaced !== null && before?.pinned) await tried(ops.unpin(job.bot, chatId, replaced), false, false);
+  let pinned = !fresh && before?.messageId === messageId && before.pinned;
+  if (after.pin === true && !pinned) pinned = await tried(ops.pin(job.bot, chatId, messageId), true, false);
+  if (after.pin === false && pinned) pinned = await tried(ops.unpin(job.bot, chatId, messageId), false, true);
   await store.save(job.bot, chatId, after.key, { messageId, hash: after.hash, pinned }, now);
 }

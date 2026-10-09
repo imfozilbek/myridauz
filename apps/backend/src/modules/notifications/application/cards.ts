@@ -42,6 +42,8 @@ export type CardRow = { readonly messageId: number; readonly hash: string; reado
 export type CardStore = {
   readonly find: (bot: BotName, chatId: number, key: string) => Promise<CardRow | null>;
   readonly save: (bot: BotName, chatId: number, key: string, row: CardRow, now: number) => Promise<void>;
+  // The first message of a card takes its place; false: another one took it a moment before.
+  readonly claim: (bot: BotName, chatId: number, key: string, row: CardRow, now: number) => Promise<boolean>;
 };
 
 const FNV_OFFSET = 0x811c9dc5;

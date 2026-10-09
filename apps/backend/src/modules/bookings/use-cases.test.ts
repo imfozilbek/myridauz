@@ -25,7 +25,8 @@ describe('a booking of seats (docs/35)', () => {
     expect(asked.confirmedAt).toBeNull();
     // The passenger sees the own points and their names at once (docs/70).
     expect(asked.pickup).toEqual({ point: HOME, name: NAMED_NAME, area: AREA });
-    expect(notes).toContain('driver: request Dilnoza');
+    // The notifier gets the passenger's own view: the waiting card shows their points (G68).
+    expect(notes).toContain('driver: request Dilnoza (commission 0)');
     const [waiting] = await driverBookings(deps, DRIVER);
     // 10% of 90 000 per seat, 2 seats; the driver never sees a passenger's photo (docs/05).
     expect(waiting).toMatchObject({

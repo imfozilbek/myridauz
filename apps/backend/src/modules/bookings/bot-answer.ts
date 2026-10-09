@@ -1,4 +1,5 @@
 import type { Bindings } from '../../env';
+import { sendSignals } from '../feed';
 import { answer, confirm, mine } from './application/answer';
 import { bookingsDeps } from './deps';
 import { driverNewsOf } from './driver-news-of';
@@ -10,7 +11,8 @@ export async function answerFromBot(env: Bindings, driverId: number, bookingId: 
   const result = yes
     ? await confirm(deps, driverId, bookingId)
     : await answer(deps, driverId, bookingId, 'decline');
-  if (result.ok) return 'ok';
+  // The open app of the driver shows the answer given in the bot (docs/64).
+  if (result.ok) return sendSignals(env, [{ userId: driverId, app: 'driver' }]).then(() => 'ok' as const);
   const found = await mine(deps, driverId, bookingId);
   if (found) await driverNewsOf(env, deps)(found.record.tripId, bookingId);
   return result.error;

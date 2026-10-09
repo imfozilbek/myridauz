@@ -29,8 +29,8 @@ const CONFIRM_WITHIN = `UPDATE bookings SET status = 'confirmed', confirmed_at =
 const EXPIRE = `UPDATE bookings SET status = 'expired', ${NO_POINTS}, updated_at = ?1
   WHERE status = 'requested' AND expires_at <= ?1 RETURNING *`;
 // Through the index bookings_status: only the requests still waiting (docs/117).
-const PAST_HALF = `SELECT * FROM bookings
-  WHERE status = 'requested' AND expires_at > ?1 AND created_at + expires_at <= 2 * ?1`;
+const PAST_HALF = `SELECT * FROM bookings WHERE status = 'requested' AND expires_at > ?1
+  AND created_at + expires_at <= 2 * ?1 AND created_at + expires_at > 2 * ?2`;
 const WITH_POINTS = `SELECT id, trip_id FROM bookings
   WHERE (pickup_lat IS NOT NULL OR dropoff_lat IS NOT NULL) AND created_at < ?`;
 
@@ -72,7 +72,7 @@ export const d1Bookings = (db: D1Database): BookingRepository => ({
   byPassenger: async (passengerId) =>
     all(db.prepare('SELECT * FROM bookings WHERE passenger_id = ?').bind(passengerId)),
   expireOver: (now) => all(db.prepare(EXPIRE).bind(now)),
-  waitingPastHalf: (now) => all(db.prepare(PAST_HALF).bind(now)),
+  waitingPastHalf: (now, since) => all(db.prepare(PAST_HALF).bind(now, since)),
   keepingPoints: async (before) =>
     (await db.prepare(WITH_POINTS).bind(before).all<{ id: string; trip_id: string }>()).results.map(
       (row) => ({

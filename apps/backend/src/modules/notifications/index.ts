@@ -5,14 +5,14 @@ import { deliver, type Delivery, type Tokens } from './application/deliver';
 import { keepDead } from './application/dead-letter';
 import type { AfterSentHandler, NotificationJob } from './application/job';
 import { cardJob, ringJob, type Card, type CardStore, type Ring } from './application/cards';
-import { cardSent, type Pins } from './application/card-sent';
+import { cardSent, type ChatOps } from './application/card-sent';
 import { createMemoryCards, d1Cards } from './infrastructure/d1-cards';
 import { recordServerEvent } from '../analytics';
 import { callTelegram } from '../../shared/telegram/telegram-api';
 
 export type { NotificationJob } from './application/job';
 export type { Card, Ring } from './application/cards';
-export { forgetCards } from './infrastructure/d1-cards';
+export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
 
 const tokensOf = (env: Bindings): Tokens => ({
   passenger: env.PASSENGER_BOT_TOKEN,
@@ -28,7 +28,7 @@ export const handleAfterSent = (handler: AfterSentHandler<Bindings>) => void (af
 // The live cards (G68, docs/122): D1, or memory where there is none (tests, local runs).
 const memoryCards = createMemoryCards();
 const cardsOf = (env: Bindings): CardStore => (env.DB ? d1Cards(env.DB) : memoryCards);
-const pinsOf = (env: Bindings): Pins => {
+const opsOf = (env: Bindings): ChatOps => {
   const call = (method: string, params: object, bot: NotificationJob['bot']) =>
     callTelegram(send, tokensOf(env)[bot] ?? '', method, params);
   return {
@@ -36,6 +36,8 @@ const pinsOf = (env: Bindings): Pins => {
       call('pinChatMessage', { chat_id: chatId, message_id: messageId, disable_notification: true }, bot),
     unpin: (bot, chatId, messageId) =>
       call('unpinChatMessage', { chat_id: chatId, message_id: messageId }, bot),
+    remove: (bot, chatId, messageId) =>
+      call('deleteMessage', { chat_id: chatId, message_id: messageId }, bot),
   };
 };
 
@@ -53,16 +55,21 @@ async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery
   let sent = await withReply(env, job);
   let delivery = await deliver(send, tokensOf(env), sent);
   const card = sent.after?.type === 'card' ? sent.after : null;
+  let replaced: number | null = null;
   // The person deleted the card, or it is too old to edit: a new card takes its place.
   if (delivery.outcome === 'gone' && card && !card.editOnly) {
+    replaced = sent.edit ?? null;
     sent = withoutEdit(sent);
     delivery = await deliver(send, tokensOf(env), sent);
   }
   if (delivery.outcome !== 'sent') return delivery;
   // An edit keeps the id of the message it changed.
   const messageId = sent.edit ?? delivery.messageId;
+  // The message is in Telegram already: a failed bookkeeping must not send it once more.
   if (card && messageId !== null)
-    await cardSent(cardsOf(env), pinsOf(env), sent, card, messageId, Date.now());
+    await cardSent(cardsOf(env), opsOf(env), sent, { after: card, messageId, replaced }, Date.now()).catch(
+      (error: unknown) => console.warn(JSON.stringify({ event: 'card_sent_failed', message: String(error) })),
+    );
   else if (sent.after?.type === 'channelPost' && delivery.messageId !== null)
     await afterSent(env, sent.after, delivery.messageId);
   return delivery;
@@ -103,7 +110,10 @@ export async function showCards(env: Bindings, cards: readonly Card[], rings: re
   const store = cardsOf(env);
   const changed = await Promise.all(cards.map(async (card) => ({ card, job: await cardJob(store, card) })));
   const jobs = changed.flatMap(({ job }) => (job ? [job] : []));
-  const news = changed.flatMap(({ card, job }) => (job && (card.loud || card.refresh) ? [job] : []));
+  // A news card refreshes the open Mini App even when its message did not change or is not there.
+  const news = changed.flatMap(({ card, job }) =>
+    card.loud || card.refresh ? [job ?? { bot: card.bot, chatId: card.chatId, text: '' }] : [],
+  );
   const ringing = rings.map(ringJob);
   await notify(env, [...jobs, ...ringing], [...news, ...ringing]);
 }

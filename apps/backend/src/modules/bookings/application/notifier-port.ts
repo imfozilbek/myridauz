@@ -3,8 +3,9 @@ import type { Booking, Offer } from '@platform/contracts';
 // Bot messages to the other side (docs/07): a new request, an answer, a cancel, an offer.
 export type BookingNotifier = {
   requested(booking: Booking): Promise<void>;
-  // The passenger answers this message with the pickup point (docs/14).
-  confirmed(booking: Booking): Promise<void>;
+  // The passenger answers this message with the pickup point (docs/14). own: the passenger accepted
+  // an offer, nobody rings them about their own step (docs/122 rule 2).
+  confirmed(booking: Booking, own?: 'passenger'): Promise<void>;
   declined(booking: Booking): Promise<void>;
   expired(booking: Booking): Promise<void>;
   cancelled(booking: Booking, by: 'passenger' | 'driver'): Promise<void>;
@@ -23,6 +24,8 @@ export type BookingNotifier = {
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;
   came(booking: Booking): Promise<void>;
   driverCame(booking: Booking): Promise<void>;
+  // «Kelmadi» of the driver: the trip card of the passenger says it (G68).
+  noShow(booking: Booking): Promise<void>;
   // The driver moved the time or lowered the price (G39, docs/104).
   tripRetimed(booking: Booking): Promise<void>;
 };

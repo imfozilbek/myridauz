@@ -78,6 +78,14 @@ describe('the trip card of the passenger bot (G68, docs/122, mockup g68/2 varian
     expect(arrived.pin).toBe(false);
   });
 
+  it('«Kelmadi» of the driver ends the seat: it says so, offers other trips, leaves the top', async () => {
+    const booking = await asked();
+    const missed = card({ ...booking, status: 'confirmed', noShowAt: 1 });
+    expect(missed.text.split('\n')[0]).toBe('<b>❌ Haydovchi sizni uchrashuv joyida topmadi</b>');
+    expect(buttons(missed)).toContain('Boshqa safar topish');
+    expect(missed.pin).toBe(false);
+  });
+
   it('rings quietly at night, but «2 soat qoldi» wakes the person (docs/122 rule 3)', async () => {
     const booking = await asked();
     const night = tashkentDayStart(tashkentDate(booking.trip.departAt)) + 23 * HOUR_MS;

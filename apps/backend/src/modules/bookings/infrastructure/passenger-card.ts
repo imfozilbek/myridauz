@@ -22,7 +22,8 @@ const ENDED: Partial<Record<BookingStatus, 'declined' | 'expired' | 'cancelledBy
 };
 
 function stageOf(booking: Booking): Stage {
-  if (ENDED[booking.status]) return 'ended';
+  // «Kelmadi» of the driver ends the seat too, though the booking stays confirmed (G63).
+  if (ENDED[booking.status] || booking.noShowAt !== null) return 'ended';
   // The passenger said «Yetib keldim», or the driver «Yetib keldik», or the trip is over.
   const { trip } = booking;
   if (booking.status === 'completed' || booking.arrivedAt !== null) return 'arrived';
@@ -39,6 +40,7 @@ const STAGE_KEYS = {
 } as const;
 
 function statusLine(booking: Booking, stage: Stage): string {
+  if (booking.noShowAt !== null) return bold(t('bot.card.noShow'));
   const ended = ENDED[booking.status];
   if (ended || stage === 'ended') return bold(t(`bot.card.${ended ?? 'cancelled'}`));
   return bold(t(STAGE_KEYS[stage]));
@@ -97,14 +99,12 @@ type Facts = {
 export function passengerCard({ brand, chatId, booking, places, now }: Facts): Card {
   const stage = stageOf(booking);
   const price = bold(formatMoney(booking.price * booking.seats));
-  const unread = booking.unread ? [t('bot.card.unread', { count: String(booking.unread) })] : [];
   const text = [
     statusLine(booking, stage),
     ...whenLines(booking.trip, stage === 'onWay', now),
     ...endBlocks(booking, places),
     driverBlock(booking),
     t('bot.card.seats', { seats: String(booking.seats), price }),
-    ...unread,
   ].join('\n');
   return {
     bot: 'passenger',

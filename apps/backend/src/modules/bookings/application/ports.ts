@@ -31,8 +31,9 @@ export type BookingRepository = MarkStore & {
   // The Cron job: requests without an answer in time become expired (docs/35), without points.
   // The requests that were still waiting and are expired now: each passenger is told (docs/83 N03).
   expireOver(now: number): Promise<BookingRecord[]>;
-  // Requests still waiting past half of their time to answer: the driver is asked once more (G68).
-  waitingPastHalf(now: number): Promise<BookingRecord[]>;
+  // Requests still waiting that passed half of their time to answer since `since`: the driver is
+  // asked once more (G68). The window keeps the Cron from reading the same requests every tick.
+  waitingPastHalf(now: number, since: number): Promise<BookingRecord[]>;
   // The erasure of points (docs/69): which bookings made before this time still keep points.
   keepingPoints(before: number): Promise<{ readonly id: string; readonly tripId: string }[]>;
   erasePoints(ids: readonly string[]): Promise<void>;

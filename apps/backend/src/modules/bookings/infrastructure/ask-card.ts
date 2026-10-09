@@ -82,6 +82,7 @@ export function askCard({ brand, chatId, booking, quiet }: Facts): Card {
     text: [...lines, deadline].join('\n'),
     markup: { inline_keyboard: buttons(brand, booking) },
     loud: !quiet,
+    refresh: true,
     answers: driverTripCard(booking.trip.id),
   };
 }

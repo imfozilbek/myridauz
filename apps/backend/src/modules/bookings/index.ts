@@ -3,8 +3,6 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
-import { driverNewsOf } from './driver-news-of';
-import { passengerNewsOf } from './passenger-news-of';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
@@ -73,31 +71,16 @@ export const chatAboutOf = (env: Bindings, key: string, userId: number) =>
   chatAbout(bookingsDeps(env), key, userId);
 export const bookingForShare = (env: Bindings, id: string) => passengerView(bookingsDeps(env), id);
 
-// Confirmed bookings of these trips as their passengers see them: the reminders (G10).
-export const confirmedBookings = async (env: Bindings, tripIds: readonly string[]) => {
-  const deps = bookingsDeps(env);
-  const confirmed = (await deps.bookings.byTrips(tripIds)).filter(
-    (booking) => booking.status === 'confirmed',
-  );
-  return bookingViews(deps, confirmed, 'passenger');
-};
-
-// The live trip cards (G68, docs/122): the reminders and the trip events refresh them and ring under
-// them; a request card is answered right in the driver bot.
-export { passengerNewsOf };
-export const tellDriver = (env: Bindings, tripId: string, ring?: 'soon' | 'askAgain', about?: string) =>
-  driverNewsOf(env, bookingsDeps(env))(tripId, about, ring);
-// The requests the driver did not answer in half of the time (G68, docs/122).
-export const requestsPastHalf = (env: Bindings, now: number) => bookingStore(env).waitingPastHalf(now);
-export { answerFromBot } from './bot-answer';
-export { ASK_PREFIX } from './infrastructure/ask-card';
-
-// «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1); the
-// end of the trip only edits the cards: «Yetib keldingiz», off the top of the chat.
-export async function tellTripPassengers(env: Bindings, tripId: string, ring?: 'departed'): Promise<void> {
-  const news = passengerNewsOf(env);
-  for (const booking of await confirmedBookings(env, [tripId])) await news(booking, ring);
-}
+// The live trip cards (G68, docs/122) and the confirmed bookings the reminders tell (G10).
+export {
+  answerFromBot,
+  ASK_PREFIX,
+  confirmedBookings,
+  passengerNewsOf,
+  requestsPastHalf,
+  tellDriver,
+  tellTripPassengers,
+} from './live-cards';
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);

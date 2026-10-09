@@ -65,6 +65,8 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
       `complaint no_show ${DRIVER} ${id}`,
     ]);
     expect(notes).toContain(`signal ${DILNOZA} passenger`);
+    // The trip card of the passenger says it at once (G68).
+    expect(notes).toContain('passenger: no show Dilnoza');
   });
 
   it('the driver sees the marks, the refund and whether the passenger is rated', async () => {

@@ -49,8 +49,8 @@ const localTalks = createMemoryTalks();
 // A confirmed or cancelled booking changes the seats left: the channel posts follow (docs/15).
 const seatsFollow = (env: Bindings, notifier: BookingsDeps['notify']): BookingsDeps['notify'] => ({
   ...notifier,
-  confirmed: async (booking) => {
-    await notifier.confirmed(booking);
+  confirmed: async (booking, own) => {
+    await notifier.confirmed(booking, own);
     await tripChanged(env, booking.trip.id);
   },
   cancelled: async (booking, by) => {

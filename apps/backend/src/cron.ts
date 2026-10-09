@@ -5,6 +5,7 @@ import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
 import { sendApplicationReminders, sendTeamDigest } from './modules/assignments';
+import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
 import { sendReminders, watchLateDepartures } from './modules/reminders';
 import { expireRequests } from './modules/ride-requests';
@@ -46,10 +47,12 @@ const everyHour = (env: Bindings, now: number): Job[] => [
   ['sendTeamDigest', () => sendTeamDigest(env, (from, to) => decisionsBetween(env, from, to))],
 ];
 
-// Gives bonus 1 to approved drivers without it, deletes old support messages (docs/12, G32).
+// Gives bonus 1 to approved drivers without it, deletes old support messages and forgets the live
+// cards of the bots nobody changed for a month (docs/12, G32, G68).
 const everyDay = (env: Bindings, now: number): Job[] => [
   ['grantMissedBonuses', () => grantMissedBonuses(env)],
   ['purgeSupport', () => purgeSupport(env, now)],
+  ['forgetOldCards', () => forgetOldCards(env, now)],
 ];
 
 // The jobs of the tick at `now`.

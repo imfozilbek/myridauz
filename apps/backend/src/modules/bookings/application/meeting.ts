@@ -64,9 +64,12 @@ async function write(
 
 // The bot message refreshes the screen of the passenger by itself (docs/64).
 async function tellPassenger(deps: BookingsDeps, record: BookingRecord, step: DriverMeetStep) {
-  if (step !== 'came') return deps.meeting.refreshPassenger(record.passengerId);
+  if (step === 'met') return deps.meeting.refreshPassenger(record.passengerId);
   const [view] = await bookingViews(deps, [record], 'passenger');
-  if (view) await deps.notify.driverCame(view);
+  if (!view) return;
+  if (step === 'came') return deps.notify.driverCame(view);
+  await deps.meeting.refreshPassenger(record.passengerId);
+  await deps.notify.noShow(view);
 }
 
 // The driver marked «Keldi» or «Kelmadi» at a point of this trip: the ride has begun (G63).
