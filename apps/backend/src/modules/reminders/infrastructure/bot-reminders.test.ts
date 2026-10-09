@@ -15,7 +15,7 @@ describe('reminders (docs/125 №11)', () => {
       send,
       telegramId: async (publicId) => Number(publicId),
     });
-    await tell.driver(trip('10'), 2, 'day');
+    await tell(trip('10'), 2, 'day');
     expect(send).toHaveBeenCalledOnce();
   });
 });

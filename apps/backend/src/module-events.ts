@@ -9,6 +9,7 @@ import {
   rideOfBooking,
   ridesOfTrips,
   tellBookedOfRetime,
+  tellTripDeparted,
   walletBookingsOf,
 } from './modules/bookings';
 import { hiddenByComplaints, wireComplaints } from './modules/complaints';
@@ -45,18 +46,17 @@ const tripChannels = channels(tripOf);
 // A published trip goes to the channels and to subscribed passengers; a changed one edits its
 // channel posts (docs/15, docs/24); a cancelled one is told to the driver's family (G18). A new time
 // or a lower price reaches the booked passengers, a lower price the subscribed ones too (G39, docs/104).
-// «Yoʻlga chiqdim» closes the channel posts and the requests without an answer at once (G63).
+// «Yoʻlga chiqdim» closes the posts and the unanswered requests (G63); passengers hear it (G68).
 handleTripChange(async (env, tripId, event) => {
   if (event === 'departed') {
     await expireBookingsOfTrip(env, tripId);
+    await tellTripDeparted(env, tripId);
     return tripChannels.left(env, tripId);
   }
   if (event === 'published') {
     await tripChannels.posted(env, tripId);
     const trip = await tripOf(env, tripId);
-    if (!trip) return;
-    await tripPublished(env, trip);
-    await tellFavoriteFans(env, trip);
+    if (trip) await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));
     return;
   }
   await tripChannels.changed(env, tripId);

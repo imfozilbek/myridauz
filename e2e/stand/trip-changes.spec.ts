@@ -51,7 +51,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
   expect((await market.retimeTrip(trip.id, trip.departAt + 30 * MINUTE)).departAt).toBe(
     trip.departAt + 30 * MINUTE,
   );
-  await toldBy('passenger', BOOKED, wordsOf('bot.booking.retimed'));
+  await toldBy('passenger', BOOKED, wordsOf('bot.ring.retimed'));
   expect(await outcome(market.retimeTrip(trip.id, trip.departAt))).toBe('trips.invalid_input');
   expect(await outcome(market.retimeTrip(trip.id, trip.departAt + 90 * MINUTE))).toBe('trips.invalid_input');
   // Lower by a step: the booking keeps its price; below the bound: no.
@@ -67,7 +67,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
   // new time after it shows the queue went on past it.
   await market.lowerTripPrice(trip.id, cheaper.price - roundStep);
   await market.retimeTrip(trip.id, trip.departAt + 60 * MINUTE);
-  await expect.poll(() => toldCount(BOOKED, wordsOf('bot.booking.retimed'))).toBe(2);
+  await expect.poll(() => toldCount(BOOKED, wordsOf('bot.ring.retimed'))).toBe(2);
   // The booking keeps its price: its passenger never hears of a lower one (owner decision 04.10.2026).
   expect(await toldCount(BOOKED, 'narxni tushirdi')).toBe(0);
   expect(await toldCount(SUBSCRIBED, wordsOf('bot.subscription.cheaper'))).toBe(1);

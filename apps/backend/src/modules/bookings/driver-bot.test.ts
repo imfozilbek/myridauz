@@ -23,6 +23,7 @@ describe('the driver bot about a request', () => {
       placeName: async (id) => id,
       closeOnes: async () => undefined,
       telegramId: async (id) => (id === booking.trip.driver.id ? DRIVER_CHAT : PASSENGER_CHAT),
+      passenger: async () => undefined,
     });
     await notifier.requested(booking);
     expect(jobs[0]?.chatId).toBe(DRIVER_CHAT);

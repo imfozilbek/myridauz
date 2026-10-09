@@ -58,7 +58,10 @@ describe('live cards of the bots (G68, docs/122 rule 1)', () => {
     await showCards(bindings, [], [{ ...ring, quiet: true }]);
     expect(calls[1]?.body).toMatchObject({ reply_parameters: { message_id: 70 } });
     expect(calls[1]?.body).not.toHaveProperty('disable_notification');
-    expect(calls[2]?.body).toMatchObject({ reply_parameters: { message_id: 70 }, disable_notification: true });
+    expect(calls[2]?.body).toMatchObject({
+      reply_parameters: { message_id: 70 },
+      disable_notification: true,
+    });
   });
 
   it('a card the person deleted comes anew, and the next change edits the new one', async () => {

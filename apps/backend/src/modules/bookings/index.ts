@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
 import { bookingsDeps } from './deps';
+import { passengerNewsOf } from './passenger-news-of';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
 import { eraseOldPoints } from './application/erase';
@@ -79,6 +80,15 @@ export const confirmedBookings = async (env: Bindings, tripIds: readonly string[
   );
   return bookingViews(deps, confirmed, 'passenger');
 };
+
+// The live trip card of the passenger bot (G68, docs/122): the reminders refresh it and ring under it.
+export { passengerNewsOf };
+
+// «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1).
+export async function tellTripDeparted(env: Bindings, tripId: string): Promise<void> {
+  const news = passengerNewsOf(env);
+  for (const booking of await confirmedBookings(env, [tripId])) await news(booking, 'departed');
+}
 
 // Rides for the ratings and the complaints (G11): one booking, or the rides of ended trips.
 export const rideOfBooking = (env: Bindings, bookingId: string) => rideOf(bookingsDeps(env), bookingId);

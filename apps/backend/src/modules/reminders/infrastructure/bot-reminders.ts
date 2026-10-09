@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { BOOKING_LINK, formatPlate, MY_TRIP_LINK, type AppLink, type Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { NotificationJob } from '../../notifications';
 import { openButton } from '../../../shared/telegram/open-button';
@@ -15,37 +15,26 @@ type Wiring = {
   readonly telegramId: (publicId: string) => Promise<number | undefined>;
 };
 
-const KEYS = {
-  passenger: { day: 'bot.reminder.passengerDay', soon: 'bot.reminder.passengerSoon' },
-  driver: { day: 'bot.reminder.driverDay', soon: 'bot.reminder.driverSoon' },
-} as const;
+const KEYS = { day: 'bot.reminder.driverDay', soon: 'bot.reminder.driverSoon' } as const;
 
-// The passenger bot reminds a passenger, the driver bot a driver (docs/02); "Ochish" opens the app.
-export function botReminders({ brand, placeName, send, telegramId }: Wiring): RemindersDeps['tell'] {
-  const to = async (bot: 'passenger' | 'driver', publicId: string, text: string, link: AppLink) => {
-    const chatId = await telegramId(publicId);
-    const markup = openButton(brand, bot, t('bot.open'), link);
-    if (chatId !== undefined) await send([{ bot, chatId, text, markup }]);
-  };
+// The driver bot reminds a driver (docs/02); "Ochish" opens the trip. The passenger's reminders
+// are the trip card of the passenger bot (G68).
+export function botReminders({
+  brand,
+  placeName,
+  send,
+  telegramId,
+}: Wiring): RemindersDeps['tell']['driver'] {
   const about = async (trip: Trip) => ({
     from: await placeName(trip.from),
     to: await placeName(trip.to),
     date: formatDate(new Date(trip.departAt)),
     time: formatTime(new Date(trip.departAt)),
   });
-  return {
-    passenger: async (booking, kind) => {
-      const { car } = booking.trip.driver;
-      const text = t(KEYS.passenger[kind], {
-        ...(await about(booking.trip)),
-        car: `${car.make} ${car.model}`,
-        plate: booking.plate ? formatPlate(booking.plate) : '',
-      });
-      await to('passenger', booking.passenger.id, text, { name: BOOKING_LINK, id: booking.id });
-    },
-    driver: async (trip, riders, kind) => {
-      const text = t(KEYS.driver[kind], { ...(await about(trip)), count: String(riders) });
-      await to('driver', trip.driver.id, text, { name: MY_TRIP_LINK, id: trip.id });
-    },
+  return async (trip, riders, kind) => {
+    const chatId = await telegramId(trip.driver.id);
+    const text = t(KEYS[kind], { ...(await about(trip)), count: String(riders) });
+    const markup = openButton(brand, 'driver', t('bot.open'), { name: MY_TRIP_LINK, id: trip.id });
+    if (chatId !== undefined) await send([{ bot: 'driver', chatId, text, markup }]);
   };
 }

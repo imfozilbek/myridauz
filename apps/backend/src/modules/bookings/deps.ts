@@ -27,6 +27,7 @@ import {
   tripViewsOf,
 } from '../trips';
 import { tellCloseOnes } from '../shares';
+import { passengerNewsOf } from './passenger-news-of';
 import { ratingsOfPeople, starsOf } from '../ratings';
 import { peopleOf } from '../users';
 import { describePoint, pointFitsPlace } from '../map';
@@ -101,6 +102,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => ({
       placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
       closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
       telegramId: (publicId) => peopleOf(env).idOf(publicId),
+      passenger: passengerNewsOf(env),
     }),
   ),
   places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },

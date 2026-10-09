@@ -1,6 +1,16 @@
 import { expect, test } from '../crash-guard';
 import { answer, book, cancelMine, CHILONZOR, publishTrip } from './market-kit';
-import { bookingOf, MINUTE, wordsOf, outcome, SAMARQAND, toldBy, TO_SAMARQAND, walletOf } from './g27-kit';
+import {
+  bookingOf,
+  MINUTE,
+  outcome,
+  SAMARQAND,
+  tailOf,
+  toldBy,
+  TO_SAMARQAND,
+  walletOf,
+  wordsOf,
+} from './g27-kit';
 import { AZIZA, BOBUR, FERUZA, MALIKA, NIGORA, OYBEK, RUSTAM, SEVARA, ULUGBEK } from './people';
 import type { Person } from './stand-kit';
 import { clearBotMessages, standSql } from './stand-tools';
@@ -45,7 +55,7 @@ test('P29, C04. a declined seat: the passenger hears it from the passenger bot',
   await clearBotMessages();
   await answer(ULUGBEK, booking.id, 'decline');
   expect((await bookingOf(AZIZA, booking.id))?.status).toBe('declined');
-  await toldBy('passenger', AZIZA, wordsOf('bot.booking.declined'));
+  await toldBy('passenger', AZIZA, tailOf('bot.ring.declined'));
 });
 
 test('P44, C07. a seat cancelled before the departure: the driver hears it, the commission is back', async () => {

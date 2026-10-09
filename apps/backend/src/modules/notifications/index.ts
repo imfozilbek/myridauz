@@ -34,7 +34,8 @@ const pinsOf = (env: Bindings): Pins => {
   return {
     pin: (bot, chatId, messageId) =>
       call('pinChatMessage', { chat_id: chatId, message_id: messageId, disable_notification: true }, bot),
-    unpin: (bot, chatId, messageId) => call('unpinChatMessage', { chat_id: chatId, message_id: messageId }, bot),
+    unpin: (bot, chatId, messageId) =>
+      call('unpinChatMessage', { chat_id: chatId, message_id: messageId }, bot),
   };
 };
 
@@ -60,7 +61,8 @@ async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery
   if (delivery.outcome !== 'sent') return delivery;
   // An edit keeps the id of the message it changed.
   const messageId = sent.edit ?? delivery.messageId;
-  if (card && messageId !== null) await cardSent(cardsOf(env), pinsOf(env), sent, card, messageId, Date.now());
+  if (card && messageId !== null)
+    await cardSent(cardsOf(env), pinsOf(env), sent, card, messageId, Date.now());
   else if (sent.after?.type === 'channelPost' && delivery.messageId !== null)
     await afterSent(env, sent.after, delivery.messageId);
   return delivery;
@@ -74,9 +76,14 @@ async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery
 const DIRECT_LIMIT = 5;
 const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
 
-export async function notify(env: Bindings, jobs: readonly NotificationJob[]): Promise<void> {
+// signalled: whose open Mini App refreshes; a quiet card alone (one's own step) refreshes nobody.
+export async function notify(
+  env: Bindings,
+  jobs: readonly NotificationJob[],
+  signalled: readonly NotificationJob[] = jobs,
+): Promise<void> {
   if (jobs.length === 0) return;
-  await sendSignals(env, signalsOf(jobs));
+  await sendSignals(env, signalsOf(signalled));
   const queue = env.NOTIFICATIONS;
   if (queue && jobs.length > DIRECT_LIMIT) {
     await queue.sendBatch(jobs.map((body) => ({ body })));
@@ -96,7 +103,8 @@ export async function showCards(env: Bindings, cards: readonly Card[], rings: re
   const store = cardsOf(env);
   const changed = await Promise.all(cards.map((card) => cardJob(store, card)));
   const jobs = changed.filter((job): job is NotificationJob => job !== null);
-  await notify(env, [...jobs, ...rings.map(ringJob)]);
+  const ringing = rings.map(ringJob);
+  await notify(env, [...jobs, ...ringing], ringing);
 }
 
 // A message for every team member through the admin bot (docs/02).

@@ -3,7 +3,7 @@ type BotName = 'passenger' | 'driver' | 'admin';
 
 // Something to remember once Telegram gave the message its id: a channel post is edited later
 // (docs/15).
-export type ChannelPostSent = {
+type ChannelPostSent = {
   readonly type: 'channelPost';
   readonly tripId: string;
   readonly channel: string;

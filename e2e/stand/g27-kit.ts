@@ -67,6 +67,9 @@ const MARK = '\u0000';
 const anyValue = new Proxy({}, { has: () => true, get: () => MARK });
 export const wordsOf = (key: Parameters<typeof t>[0]): string =>
   (t(key, anyValue).split(MARK)[0] ?? '').trim();
+// The words after the last value: a ring that starts with a name («❌ {name} joyni …», G68).
+export const tailOf = (key: Parameters<typeof t>[0]): string =>
+  (t(key, anyValue).split(MARK).at(-1) ?? '').trim();
 
 // Requests and offers (docs/35): a passenger asks for a day, a driver offers a time and a price.
 const HOUR = 60 * MINUTE;

@@ -1,7 +1,8 @@
 import type { NotificationJob } from './job';
 
 // The Bot API call of a job: a new message, or an edit of the one it names (docs/15, G68).
-export const methodOf = (job: NotificationJob) => (job.edit === undefined ? 'sendMessage' : 'editMessageText');
+export const methodOf = (job: NotificationJob) =>
+  job.edit === undefined ? 'sendMessage' : 'editMessageText';
 
 const newOnly = (job: NotificationJob) => ({
   ...(job.silent ? { disable_notification: true } : {}),

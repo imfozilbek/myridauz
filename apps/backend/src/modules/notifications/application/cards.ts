@@ -10,6 +10,8 @@ export type Card = {
   // What the card is about: «trip:<booking id>», «request:<id>», «news:<route>:<day>».
   readonly key: string;
   readonly text: string;
+  // «✏️ 18:40 da yangilandi»: shown under the text, but a new time alone does not edit the card.
+  readonly footer?: string;
   readonly markup?: object;
   // On top of the chat (📌) while the trip is ahead; false: taken off the top (rule 6).
   readonly pin?: boolean;
@@ -39,7 +41,7 @@ const FNV_PRIME = 0x01000193;
 const HEX = 16;
 
 // A short mark of what the card shows (FNV-1a): the same card is not sent to Telegram again.
-export function hashOf(card: Card): string {
+function hashOf(card: Card): string {
   let hash = FNV_OFFSET;
   for (const char of `${card.text}\n${JSON.stringify(card.markup ?? null)}`) {
     hash ^= char.codePointAt(0) ?? 0;
@@ -57,7 +59,7 @@ export async function cardJob(store: CardStore, card: Card): Promise<Notificatio
   return {
     bot: card.bot,
     chatId: card.chatId,
-    text: card.text,
+    text: card.footer ? `${card.text}\n${card.footer}` : card.text,
     html: true,
     silent: true,
     ...(card.markup ? { markup: card.markup } : {}),

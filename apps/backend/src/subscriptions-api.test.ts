@@ -62,7 +62,9 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(2))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
-    const edit = telegram.find((item) => item.method === 'editMessageText');
+    const edit = telegram.find(
+      (item) => item.method === 'editMessageText' && item.body.chat_id === SAMARQAND,
+    );
     expect(edit?.body.chat_id).toBe(SAMARQAND);
     expect(String(edit?.body.text)).toContain('Joy qolmagan');
   });

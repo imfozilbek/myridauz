@@ -42,5 +42,5 @@ test('N03. a seat the driver never answered: the passenger hears it expired', as
   await runCron();
   await expect.poll(() => statusOf(booking.id)).toBe('expired');
   // The bot message goes through the queue: it comes a moment later.
-  await toldBy('passenger', ZARINA, wordsOf('bot.booking.expired'));
+  await toldBy('passenger', ZARINA, wordsOf('bot.ring.expired'));
 });

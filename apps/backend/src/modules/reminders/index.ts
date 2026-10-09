@@ -1,7 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { peopleOf } from '../users';
-import { confirmedBookings } from '../bookings';
+import { confirmedBookings, passengerNewsOf } from '../bookings';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
 import { departByCron, tripsDeparting, tripsNotDeparted } from '../trips';
@@ -19,12 +19,16 @@ export const sendReminders = (env: Bindings, now: number) =>
     trips: (from, to) => tripsDeparting(env, from, to),
     bookings: (tripIds) => confirmedBookings(env, tripIds),
     first: env.DB ? d1First(env.DB) : localFirst,
-    tell: botReminders({
-      brand: loadBrand(env.BRAND),
-      placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-      send: (jobs) => notify(env, jobs),
-      telegramId: (publicId) => peopleOf(env).idOf(publicId),
-    }),
+    tell: {
+      // The day before: the trip card shows it without sound; 2 hours before: a ring (G68, docs/122).
+      passenger: (booking, kind) => passengerNewsOf(env)(booking, kind === 'soon' ? 'soon' : undefined),
+      driver: botReminders({
+        brand: loadBrand(env.BRAND),
+        placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
+        send: (jobs) => notify(env, jobs),
+        telegramId: (publicId) => peopleOf(env).idOf(publicId),
+      }),
+    },
     now: () => now,
   });
 
