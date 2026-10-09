@@ -33,7 +33,7 @@ test('P51. a saved driver: the new trip comes by the bot', async () => {
   const first = await publishTrip(JAHONGIR, CHILONZOR, SAMARQAND, 'door');
   await createComfortClient(await signedAs('passenger', NARGIZA)).save(first.driver.id);
   await publishTrip(JAHONGIR, CHILONZOR, SAMARQAND, 'door');
-  await toldBy('passenger', NARGIZA, wordsOf('bot.favorite.trip'));
+  await toldBy('passenger', NARGIZA, wordsOf('bot.news.favorite'));
 });
 
 test('P52. the history keeps a ride that ended, with whom', async () => {

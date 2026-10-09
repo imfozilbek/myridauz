@@ -10,7 +10,7 @@ import {
 } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
-import { bookingOf, MINUTE, outcome, toldBy, wordsOf } from './g27-kit';
+import { bookingOf, MINUTE, outcome, tailOf, toldBy, wordsOf } from './g27-kit';
 import { ANVAR } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, type Platform } from './screen-tour';
 import { register } from './seed';
@@ -57,7 +57,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
   // Lower by a step: the booking keeps its price; below the bound: no.
   const { minPrice, roundStep } = await market.recommend(CHILONZOR, ANDIJON);
   const cheaper = await market.lowerTripPrice(trip.id, trip.price - roundStep);
-  await toldBy('passenger', SUBSCRIBED, wordsOf('bot.subscription.cheaper'));
+  await toldBy('passenger', SUBSCRIBED, tailOf('bot.news.cheaper'));
   expect((await bookingOf(BOOKED, seat.id))?.price).toBe(trip.price);
   expect(await outcome(market.lowerTripPrice(trip.id, minPrice - roundStep))).toBe(
     'trips.price_out_of_bounds',
@@ -70,7 +70,7 @@ test('8, 9. the booked passenger hears the new time, never a lower price; the su
   await expect.poll(() => toldCount(BOOKED, wordsOf('bot.ring.retimed'))).toBe(2);
   // The booking keeps its price: its passenger never hears of a lower one (owner decision 04.10.2026).
   expect(await toldCount(BOOKED, 'narxni tushirdi')).toBe(0);
-  expect(await toldCount(SUBSCRIBED, wordsOf('bot.subscription.cheaper'))).toBe(1);
+  expect(await toldCount(SUBSCRIBED, tailOf('bot.news.cheaper'))).toBe(1);
 });
 
 const findLink = (trip: Trip) =>

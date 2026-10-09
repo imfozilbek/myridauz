@@ -1,7 +1,6 @@
 import {
   ANY_DATE_DAYS,
   DAY_MS,
-  SUBSCRIPTION_PAUSE_MINUTES,
   tashkentDayStart,
   type SubscriptionInput,
   type SubscriptionKind,
@@ -15,9 +14,6 @@ export type SubscriptionRecord = SubscriptionInput & {
   readonly expiresAt: number;
   // "Any date" that is over: the renewal was offered, it waits to be renewed or deleted.
   readonly expired: boolean;
-  readonly lastSentAt: number | null;
-  // Matches that came during the pause: they go together in one message (docs/24).
-  readonly pending: number;
   readonly createdAt: number;
 };
 
@@ -30,13 +26,14 @@ export type Match = {
   // The day in Tashkent.
   readonly date: string;
   readonly woman: boolean;
-  // For the message: the time of a trip (a request has only a day), seats and the price of one.
+  // For the news card: who, the time of a trip (a request has only a day), seats and the price of
+  // one; a request may want the whole car (G68, mockup g68/3).
+  readonly name: string;
   readonly time: string | null;
   readonly seats: number;
   readonly price: number;
+  readonly wholeCar: boolean;
 };
-
-const PAUSE_MS = SUBSCRIPTION_PAUSE_MINUTES * 60 * 1000;
 
 // A dated subscription lives to the end of its day, "any date" ANY_DATE_DAYS days (docs/24).
 export const expiresAtOf = (date: string | null, now: number) =>
@@ -55,7 +52,3 @@ export function fits(subscription: SubscriptionRecord, match: Match, placeMatche
   if (subscription.date !== null && subscription.date !== match.date) return false;
   return !subscription.woman || match.woman;
 }
-
-// Now or later: one message per subscription at most every PAUSE_MS, the rest wait (docs/24).
-export const canSendNow = (subscription: SubscriptionRecord, now: number) =>
-  subscription.lastSentAt === null || now - subscription.lastSentAt >= PAUSE_MS;

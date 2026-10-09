@@ -62,8 +62,8 @@ describe('the reads of the Cron', () => {
 
   it('runs the rare jobs once an hour and once a day', () => {
     const names = (at: number) => cronJobs({ ...testEnv } as unknown as Bindings, at).map(([name]) => name);
-    expect(names(NOW + 15 * 60_000)).toHaveLength(8);
-    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(8, 13)]);
+    expect(names(NOW + 15 * 60_000)).toHaveLength(7);
+    expect(names(NOW + 5 * HOUR)).toEqual([...names(NOW + 15 * 60_000), ...names(NOW).slice(7, 13)]);
     expect(names(NOW).slice(13)).toEqual([
       'grantMissedBonuses',
       'warnBonusEnd',

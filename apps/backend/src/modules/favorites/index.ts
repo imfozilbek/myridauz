@@ -2,7 +2,7 @@ import { loadBrand } from '@platform/brands';
 import type { Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
-import { notify } from '../notifications';
+import { showNews } from '../notifications';
 import { peopleOf } from '../users';
 import { tellFans } from './application/favorites';
 import type { FavoritesDeps } from './application/ports';
@@ -27,7 +27,8 @@ const favoritesDeps = (env: Bindings): FavoritesDeps => ({
   tell: favoriteTeller({
     brand: loadBrand(env.BRAND),
     placeName: async (id) => (await placesOf(env)).get(id)?.name ?? id,
-    send: (jobs) => notify(env, jobs),
+    show: (news) => showNews(env, news),
+    now: Date.now,
   }),
   idOf: (publicId) => peopleOf(env).idOf(publicId),
   now: Date.now,

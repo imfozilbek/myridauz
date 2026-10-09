@@ -1,45 +1,24 @@
+import { isQuietTime } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals, signalsOf } from '../feed';
 import { teamMembers } from '../team';
-import { deliver, type Delivery, type Tokens } from './application/deliver';
+import { deliver, type Delivery } from './application/deliver';
 import { keepDead } from './application/dead-letter';
 import type { AfterSentHandler, NotificationJob } from './application/job';
-import { cardJob, ringJob, type Card, type CardStore, type Ring } from './application/cards';
-import { cardSent, type ChatOps } from './application/card-sent';
-import { createMemoryCards, d1Cards } from './infrastructure/d1-cards';
+import { cardJob, ringJob, type Card, type Ring } from './application/cards';
+import { cardSent } from './application/card-sent';
+import { newsCard, type News } from './application/news';
+import { cardsOf, newsOf, opsOf, send, tokensOf } from './infrastructure/wiring';
 import { recordServerEvent } from '../analytics';
-import { callTelegram } from '../../shared/telegram/telegram-api';
 
 export type { NotificationJob } from './application/job';
 export type { Card, Ring } from './application/cards';
+export type { News, NewsLine } from './application/news';
 export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
-
-const tokensOf = (env: Bindings): Tokens => ({
-  passenger: env.PASSENGER_BOT_TOKEN,
-  driver: env.DRIVER_BOT_TOKEN,
-  admin: env.ADMIN_BOT_TOKEN,
-});
-const send = (input: string, init?: RequestInit) => fetch(input, init);
 
 // What to do once a message has its id; set by the app, which knows every module (app.ts).
 let afterSent: AfterSentHandler<Bindings> = async () => undefined;
 export const handleAfterSent = (handler: AfterSentHandler<Bindings>) => void (afterSent = handler);
-
-// The live cards (G68, docs/122): D1, or memory where there is none (tests, local runs).
-const memoryCards = createMemoryCards();
-const cardsOf = (env: Bindings): CardStore => (env.DB ? d1Cards(env.DB) : memoryCards);
-const opsOf = (env: Bindings): ChatOps => {
-  const call = (method: string, params: object, bot: NotificationJob['bot']) =>
-    callTelegram(send, tokensOf(env)[bot] ?? '', method, params);
-  return {
-    pin: (bot, chatId, messageId) =>
-      call('pinChatMessage', { chat_id: chatId, message_id: messageId, disable_notification: true }, bot),
-    unpin: (bot, chatId, messageId) =>
-      call('unpinChatMessage', { chat_id: chatId, message_id: messageId }, bot),
-    remove: (bot, chatId, messageId) =>
-      call('deleteMessage', { chat_id: chatId, message_id: messageId }, bot),
-  };
-};
 
 // A ring answers its card: the card's id is found now, when the card is surely sent before it.
 async function withReply(env: Bindings, job: NotificationJob): Promise<NotificationJob> {
@@ -116,6 +95,13 @@ export async function showCards(env: Bindings, cards: readonly Card[], rings: re
   );
   const ringing = rings.map(ringJob);
   await notify(env, [...jobs, ...ringing], [...news, ...ringing]);
+}
+
+// The news of a route in its card of the day (docs/122 rule 4): the first one rings, unless it is
+// night; the next ones of the day edit it without sound.
+export async function showNews(env: Bindings, news: News): Promise<void> {
+  const now = Date.now();
+  await showCards(env, [await newsCard(newsOf(env), news, now, isQuietTime(now))]);
 }
 
 // A message for every team member through the admin bot (docs/02).

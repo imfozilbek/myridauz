@@ -9,7 +9,7 @@ import { forgetOldCards } from './modules/notifications';
 import { askForRatings } from './modules/ratings';
 import { sendReminders, watchLateDepartures } from './modules/reminders';
 import { expireRequests } from './modules/ride-requests';
-import { sendWaitingSubscriptions } from './modules/route-subscriptions';
+import { endSubscriptions } from './modules/route-subscriptions';
 import { checkStatsAlerts } from './modules/stats';
 import { purgeSupport } from './modules/support';
 import { completeTrips } from './modules/trips';
@@ -21,25 +21,25 @@ import { TICK_MINUTES } from './shared/cron/tick';
 // a rare job does not read D1 96 times a day (G56, docs/117).
 const DAILY_HOUR_UTC = 0;
 
-// Closes trips, requests and bookings whose time is over, sends waiting subscription messages and
-// trip reminders, asks a driver who forgot «Yoʻlga chiqdim» and departs the trip later, edits channel
-// posts of trips that left, reminds the team of waiting driver applications (docs/15, docs/24,
-// docs/35, G10, G34, G63).
+// Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
+// forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left,
+// reminds the team of waiting driver applications (docs/15, docs/35, G10, G34, G63).
 const everyTick = (env: Bindings, now: number): Job[] => [
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
   ['expireBookings', () => expireBookings(env, now)],
-  ['sendWaitingSubscriptions', () => sendWaitingSubscriptions(env)],
   ['sendReminders', () => sendReminders(env, now)],
   ['watchLateDepartures', () => watchLateDepartures(env, now)],
   ['closeDepartedPosts', () => closeDepartedPosts(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
 ];
 
-// Burns bonuses that are over, asks both sides of ended rides for a rating, checks the signals of
-// the dashboard, erases the points of rides 30 days after the trip, sends the team digest after
-// midnight (docs/12, docs/24, docs/29, docs/69, docs/92, G11, G12, G24).
+// Burns bonuses that are over, ends subscriptions whose time is over, asks both sides of ended rides
+// for a rating, checks the signals of the dashboard, erases the points of rides 30 days after the
+// trip, sends the team digest after midnight (docs/12, docs/24, docs/29, docs/69, docs/92, G11, G12,
+// G24).
 const everyHour = (env: Bindings, now: number): Job[] => [
+  ['endSubscriptions', () => endSubscriptions(env)],
   ['burnBonuses', () => burnBonuses(env)],
   ['askForRatings', () => askForRatings(env)],
   ['checkStatsAlerts', () => checkStatsAlerts(env)],

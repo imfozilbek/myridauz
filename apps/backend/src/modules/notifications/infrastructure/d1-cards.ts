@@ -9,11 +9,14 @@ const SAVE =
   'INSERT OR REPLACE INTO bot_cards (bot, chat_id, card, message_id, hash, pinned, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)';
 const CLAIM =
   'INSERT INTO bot_cards (bot, chat_id, card, message_id, hash, pinned, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7) ON CONFLICT (bot, chat_id, card) DO NOTHING';
-const FORGET = 'DELETE FROM bot_cards WHERE chat_id = ?1';
-// Through the index bot_cards_old (docs/117).
+const FORGET = ['DELETE FROM bot_cards WHERE chat_id = ?1', 'DELETE FROM bot_news WHERE chat_id = ?1'];
+// Through the indexes bot_cards_old and bot_news_old (docs/117).
 const FORGET_OLD = 'DELETE FROM bot_cards WHERE updated_at < ?1';
-// A card of a trip or a request is done in days: a month without a change, it is forgotten.
+const FORGET_OLD_NEWS = 'DELETE FROM bot_news WHERE created_at < ?1';
+// A card of a trip or a request is done in days: a month without a change, it is forgotten. The
+// news of a day are not edited the day after (docs/122 rule 4).
 const OLD_CARD_DAYS = 30;
+const OLD_NEWS_DAYS = 2;
 
 // Table bot_cards (migration 0052).
 export const d1Cards = (db: D1Database): CardStore => ({
@@ -51,14 +54,18 @@ export function createMemoryCards(): CardStore {
   };
 }
 
-// A deleted account takes its cards with it (docs/30).
+// A deleted account takes its cards and news with it (docs/30).
 export async function forgetCards(env: Bindings, userId: number): Promise<void> {
-  await env.DB?.prepare(FORGET).bind(userId).run();
+  const db = env.DB;
+  if (db) await db.batch(FORGET.map((sql) => db.prepare(sql).bind(userId)));
 }
 
-// The daily Cron: the table keeps only the cards that may still change (G68).
+// The daily Cron: the tables keep only the cards and news that may still change (G68).
 export async function forgetOldCards(env: Bindings, now: number): Promise<void> {
-  await env.DB?.prepare(FORGET_OLD)
-    .bind(now - OLD_CARD_DAYS * DAY_MS)
-    .run();
+  const db = env.DB;
+  if (!db) return;
+  await db.batch([
+    db.prepare(FORGET_OLD).bind(now - OLD_CARD_DAYS * DAY_MS),
+    db.prepare(FORGET_OLD_NEWS).bind(now - OLD_NEWS_DAYS * DAY_MS),
+  ]);
 }
