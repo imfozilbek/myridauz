@@ -30,7 +30,14 @@ export const navbatItemSchema = z.discriminatedUnion('kind', [
     ...base,
     car: z.object({ make: name, model: name, plate: z.string().max(16) }),
   }),
-  z.object({ kind: z.literal('complaint'), ...base, against: name, reason: z.enum(COMPLAINT_REASONS) }),
+  // refund: decided, the refund of a no-show waits for the owner; only the owner has it (docs/35).
+  z.object({
+    kind: z.literal('complaint'),
+    ...base,
+    against: name,
+    reason: z.enum(COMPLAINT_REASONS),
+    refund: z.boolean(),
+  }),
   z.object({ kind: z.literal('face'), ...base }),
   // appeal: the person is blocked now and writes about the block (gap К of docs/158).
   z.object({ kind: z.literal('support'), ...base, appeal: z.boolean() }),

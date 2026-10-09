@@ -6,6 +6,8 @@ import {
   ADMIN_TEAM_PATH,
   ADMIN_WORK_PATH,
   adminPersonPath,
+  adminSupportAnswerPath,
+  adminSupportPath,
   adminTeamMemberPath,
   attentionSchema,
   channelHealthSchema,
@@ -13,6 +15,7 @@ import {
   navbatSchema,
   navbatTakePath,
   personCardSchema,
+  supportCaseSchema,
   teamListSchema,
   userAvatarPath,
   workSchema,
@@ -23,6 +26,7 @@ import {
   type NavbatKind,
   type PersonCard,
   type PersonId,
+  type SupportCase,
   type TeamList,
   type Work,
 } from '@platform/contracts';
@@ -51,6 +55,10 @@ export function createTeamClient(options: SignedOptions) {
       channelHealthSchema.parse(await json(ADMIN_CHANNEL_HEALTH_PATH)),
     // The photo of a member on the main screen: the admin app has no account of its own (G75).
     avatar: async (person: PersonId): Promise<Blob> => (await request(userAvatarPath(person))).blob(),
+    support: async (person: PersonId): Promise<SupportCase> =>
+      supportCaseSchema.parse(await json(adminSupportPath(person))),
+    answer: async (person: PersonId, text: string): Promise<void> =>
+      void (await post(adminSupportAnswerPath(person), { text })),
     remove: async (person: PersonId): Promise<void> =>
       void (await request(adminTeamMemberPath(person), { method: 'DELETE' })),
   };

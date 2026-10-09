@@ -16,6 +16,10 @@ export type Queue = {
   readonly oldest: { readonly item: Case; readonly minutes: number } | null;
 };
 
+// A refund of a no-show waits for the owner (docs/35, G75): it is not the work of the whole team.
+const ownersOnly = (item: Case) => item.kind === 'complaint' && item.refund;
+export const teamWork = (cases: readonly Case[]): Case[] => cases.filter((item) => !ownersOnly(item));
+
 export const waitedMinutes = (item: Case, now: number, hours: TeamHours) =>
   Math.floor(teamWaitMs(item.since, now, hours) / MINUTE_MS);
 

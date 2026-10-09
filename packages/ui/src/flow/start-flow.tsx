@@ -15,8 +15,9 @@ import { useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
   readonly actions: readonly StartAction[];
-  // The section to open at once, for a link from a bot (docs/50).
+  // The section to open at once, for a link from a bot (docs/50), maybe at one case (G75).
   readonly opened?: string;
+  readonly launch?: Launch;
   // A note above the actions, like the application being checked.
   readonly notice?: ReactNode;
   // A late offer under the actions: when it comes, nothing above it moves (G41, docs/108).
@@ -52,7 +53,7 @@ export function StartFlow(props: StartFlowProps) {
     // A bot button opens its section at once: ?open=<section> (G62, docs/119).
     const linked = opened ?? launchParam(OPEN_LINK, OPEN_LINK_VALUE);
     const action = [...actions, ...sections].find((item) => item.id === linked);
-    if (action) return { action };
+    if (action) return props.launch ? { action, launch: props.launch } : { action };
     return photoLinked() ? 'profile' : 'home';
   });
   useLinkOpened(screen === 'profile', PROFILE_LINK);

@@ -11,7 +11,7 @@ import { navbatRoutes } from './http/navbat-routes';
 import { workRoutes } from './http/work-routes';
 import { diqqatNews, type Signal } from './infrastructure/diqqat-card';
 import { attentionRoutes } from './http/attention-routes';
-import { queueOf, type Case } from './domain/queue';
+import { queueOf, teamWork, type Case } from './domain/queue';
 import { navbatCard, navbatRing, newCaseRing } from './infrastructure/navbat-card';
 import { brandOf } from '../../shared/brand/brand-of';
 
@@ -42,7 +42,7 @@ export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> 
     const brand = brandOf(env);
     const now = Date.now();
     const [cases, members] = await Promise.all([casesOf(env), teamMembers(env)]);
-    const queue = queueOf(cases, now, brand.moderation.hours);
+    const queue = queueOf(teamWork(cases), now, brand.moderation.hours);
     const ids = members.map((member) => member.id);
     const rings = ringsOf(news, queue.total, ids, isTeamTime(now, brand.moderation.hours));
     await showCards(
@@ -63,7 +63,7 @@ const memoryTakes = createMemoryTakes();
 export const attentionModule = attentionRoutes(signsOf)
   .route(
     '/',
-    workRoutes((env) => casesOf(env)),
+    workRoutes(async (env) => teamWork(await casesOf(env))),
   )
   .route(
     '/',

@@ -1,7 +1,4 @@
 {
-  "queue.empty": "Yangi ariza yoʻq",
-  "queue.emptyHint": "Yangi ariza kelganda bot sizga xabar beradi.",
-  "photo.avatar": "Yuz rasmi",
   "approve": "Tasdiqlash",
   "reject": "Rad etish",
   "requestChanges": "Tuzatish",
@@ -26,7 +23,6 @@
   "history.approved": "Tasdiqlangan",
   "history.rejected": "Rad etilgan",
   "history.changes_requested": "Tuzatish soʻralgan",
-  "samePlate": "Bu davlat raqami yana {count} kishining arizasida bor. Tekshiring.",
   "blocks.title": "Bloklar tarixi",
   "blocks.none": "Hech qachon bloklanmagan",
   "blocks.notNow": "Hozir bloklanmagan",
@@ -39,8 +35,6 @@
   "blocks.until": "{date}gacha",
   "unblock": "Blokdan chiqarish",
   "unblockAsk": "Blokdan chiqarasizmi? U yana safar qila oladi.",
-  "queue.count": "Navbatda: {count}",
-  "queue.waiting": "{minutes} daqiqadan beri kutmoqda",
   "faceReason.face_not_visible": "Yuz aniq koʻrinmaydi",
   "faceReason.not_one_person": "Rasmda bitta odam emas",
   "faceReason.not_real_photo": "Haqiqiy rasm emas"

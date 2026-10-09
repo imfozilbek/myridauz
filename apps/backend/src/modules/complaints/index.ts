@@ -53,17 +53,29 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
   };
 };
 
-// The open complaints for «Navbat» of the team (G68): whose and since when.
+// The open complaints for «Navbat» of the team (G68): whose and since when; the refunds of no-shows
+// that wait for the owner too (G75).
 export async function waitingComplaints(env: Bindings) {
   const deps = complaintsDeps(env);
   const name = async (id: number) => (await deps.people.find(id))?.firstName ?? '';
+  const [open, refunds] = await Promise.all([deps.store.open(), deps.store.refundsProposed()]);
+  // A refund waits since the moderator proposed it (docs/35, G63).
+  const cases = [
+    ...open.map((complaint) => ({ complaint, refund: false, since: complaint.createdAt })),
+    ...refunds.map((complaint) => ({
+      complaint,
+      refund: true,
+      since: complaint.refund?.proposedAt ?? complaint.createdAt,
+    })),
+  ];
   return Promise.all(
-    (await deps.store.open()).map(async (complaint) => ({
+    cases.map(async ({ complaint, refund, since }) => ({
       id: complaint.id,
       name: await name(complaint.authorId),
       against: await name(complaint.againstId),
       reason: complaint.reason,
-      since: complaint.createdAt,
+      refund,
+      since,
     })),
   );
 }

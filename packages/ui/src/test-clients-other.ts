@@ -85,6 +85,8 @@ export const otherClients = (overrides: Overrides) => ({
     person: NOT_USED,
     channelHealth: NOT_USED,
     avatar: NOT_USED,
+    support: NOT_USED,
+    answer: NOT_USED,
     remove: NOT_USED,
     ...overrides.team,
   },

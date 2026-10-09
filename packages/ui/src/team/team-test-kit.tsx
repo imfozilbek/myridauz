@@ -18,6 +18,7 @@ export const NAVBAT: Navbat = {
       name: 'Madina',
       against: 'Jasur',
       reason: 'no_show',
+      refund: false,
       since: NOW - 120 * MINUTE,
       minutes: 120,
       late: true,

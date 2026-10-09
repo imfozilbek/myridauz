@@ -1,4 +1,4 @@
-import type { Car } from '@platform/contracts';
+import type { Car, Gender } from '@platform/contracts';
 import type { ImageStore, StoredImage } from '../../../shared/storage/image-store';
 import type { Application } from '../domain/application';
 
@@ -31,12 +31,14 @@ export type DecisionLog = {
   countsBetween(from: number, to: number): Promise<Map<number, number>>;
 };
 
-// The users module, seen from here: a name and a face, never a phone (docs/07).
+// The users module, seen from here: a name and a face, never a phone (docs/07); the gender only
+// for the team on the application (G75).
 export type Person = {
   readonly id: number;
   readonly publicId: string;
   readonly firstName: string;
   readonly avatarKey: string | null;
+  readonly gender: Gender;
 };
 type PeoplePort = {
   find(id: number): Promise<Person | undefined>;

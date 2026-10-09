@@ -1,0 +1,143 @@
+/* The parts of the cases (G75, mockup g67/2): the car photos, the face check, the complaint. */
+.case-photos {
+  display: grid;
+  grid-template-columns: 216.67fr 108.67fr;
+  grid-template-rows: 61.33px 61.33px;
+  gap: 6.67px;
+}
+
+.case-photo {
+  padding: 0;
+  border: 0;
+  border-radius: 9.33px;
+  background: var(--reg-face-pale);
+  color: var(--reg-secondary);
+  font: inherit;
+  font-size: 11px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.case-photo-front {
+  grid-row: 1 / 3;
+}
+
+.case-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.case-photo-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.face-case-photo {
+  align-self: center;
+  width: 149.33px;
+  height: 149.33px;
+  border-radius: 50%;
+  background: var(--reg-face-pale);
+  overflow: hidden;
+}
+
+.face-case-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.face-case-who,
+.face-case-wait {
+  margin: 0;
+  text-align: center;
+}
+
+.face-case-who {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.face-case-wait {
+  margin-top: -8px;
+  font-size: 12.5px;
+  color: var(--reg-muted);
+}
+
+.face-check {
+  display: flex;
+  align-items: center;
+  gap: 10.67px;
+  min-height: 38.67px;
+  padding: 0 13.33px;
+  border: 0;
+  background: none;
+  color: var(--reg-success-deep);
+  font: inherit;
+  font-size: 13.5px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.face-check + .face-check {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.face-check-box {
+  display: grid;
+  place-items: center;
+  width: 18.67px;
+  height: 18.67px;
+  border-radius: 5.33px;
+  background: var(--reg-neutral-pale);
+  color: var(--reg-control);
+}
+
+.face-check-on .face-check-box {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+.case-words p {
+  margin: 0;
+  padding: 0 13.33px 10px;
+  font-size: 14px;
+}
+
+.case-small {
+  min-height: 26px;
+  font-size: 12px;
+  color: var(--reg-muted);
+}
+
+.case-trip {
+  gap: 8px;
+  padding: 12px 13.33px;
+  border: 1.33px solid var(--reg-card-line);
+}
+
+.case-trip-pill {
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.case-trip-who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.case-trip-name {
+  font-size: 16px;
+}

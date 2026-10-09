@@ -18,7 +18,7 @@ const jpeg = { body: new ArrayBuffer(10), type: 'image/jpeg' };
 
 function setup(avatarKey: string | null = 'avatars/1/a') {
   const persons = new Map<number, Person>([
-    [1, { id: 1, publicId: publicIdOf(1), firstName: 'Ali', avatarKey }],
+    [1, { id: 1, publicId: publicIdOf(1), firstName: 'Ali', avatarKey, gender: 'male' }],
   ]);
   const drivers = new Set<number>();
   const log: string[] = [];

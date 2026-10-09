@@ -1,0 +1,124 @@
+/* A case of «Navbat» as the mockups g67/2 screens 3 … 5 (G75): white cards on the gray background,
+   14 px from the edges at 360 px; the sizes of the mockup (at 1.5). */
+.case {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  box-sizing: border-box;
+  padding: 12.5px 14px 64px;
+  color: var(--reg-ink);
+  font-family: var(--tgui--font-family);
+}
+
+.case-title {
+  margin: 0 0 0 7.33px;
+  font-size: 21.5px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.case-progress {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 1.5px 0 0;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.case-progress span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The share of the cases done: dark, the rest light (mockup g67/2 screen 3). */
+.case-bar {
+  flex: none;
+  width: 54.33px;
+  height: 5.33px;
+  border-radius: 2.67px;
+  background: linear-gradient(
+    to right,
+    var(--reg-strong) var(--case-done),
+    var(--reg-face-pale) var(--case-done)
+  );
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  overflow: hidden;
+}
+
+.case-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 32.67px;
+  padding: 0 13.33px;
+  font-size: 13.5px;
+}
+
+.case-row + .case-row {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.case-muted {
+  color: var(--reg-muted);
+}
+
+.case-warning {
+  display: flex;
+  align-items: center;
+  gap: 9.33px;
+  min-height: 36.67px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 12.67px;
+  border: 1px solid var(--reg-warning-line);
+  border-radius: 12px;
+  background: var(--reg-warning-soft);
+  font-size: 12.5px;
+  color: var(--reg-warning-text);
+}
+
+.case-warning svg {
+  flex: none;
+  color: var(--reg-warning);
+}
+
+/* The other decisions stand at the bottom over the button of Telegram, all of one size. */
+.case-buttons {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: calc(100vh - var(--tg-viewport-stable-height, 100vh) + 13.33px);
+  display: flex;
+  gap: 6.67px;
+}
+
+.case-button {
+  flex: 1;
+  height: 34px;
+  border: 1px solid var(--reg-off);
+  border-radius: 10.67px;
+  background: var(--reg-card);
+  color: var(--reg-strong);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.case-danger {
+  color: var(--reg-danger);
+}

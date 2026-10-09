@@ -50,4 +50,9 @@ export const brandVars = (colors: BrandColors) =>
     // The numbers of the chips of «Navbat» and their gray icon tiles (G75, mockup g67/1).
     '--reg-danger-line': colors.dangerLine,
     '--reg-neutral-soft': colors.neutralSoft,
+    // The warning of a case and the photo places of an application (G75, mockup g67/2).
+    '--reg-warning': colors.warning,
+    '--reg-warning-text': colors.warningText,
+    '--reg-warning-soft': colors.warningSoft,
+    '--reg-warning-line': colors.warningLine,
   }) as CSSProperties;

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { ADMIN_APPLICATIONS, appUrl, MINI_APPS, TEXT } from './apps';
+import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
 import { fromIfAsked, openOwnTrip, searchRoute } from './market';
@@ -103,12 +103,33 @@ test('moderation: after a decision the next application opens at once (S9)', asy
     decided = true;
     return route.fulfill({ json: { ...summary, status: 'approved' } });
   });
+  // «Navbat» has both; after the decision only Vali, whose case opens by itself (G75).
+  const item = (id: string, name: string) => ({
+    kind: 'application',
+    id,
+    name,
+    since: 1,
+    minutes: 5,
+    late: false,
+    takenBy: null,
+    car: { make: 'Chevrolet', model: 'Cobalt', plate: '01A123BC' },
+  });
+  await page.route('**/api/admin/navbat', (route) => {
+    const items = decided
+      ? [item(next.userId, 'Vali')]
+      : [item(summary.userId, 'Jasur'), item(next.userId, 'Vali')];
+    return route.fulfill({
+      json: { items, counts: { application: items.length, complaint: 0, face: 0, support: 0 } },
+    });
+  });
+  await page.route(`**/api/admin/applications/${next.userId}`, (route) =>
+    route.fulfill({ json: { ...next, history: [], samePlate: 0, was: null, gender: 'male' } }),
+  );
   await mockTelegram(page);
-  await page.goto(telegramUrl(ADMIN_APPLICATIONS));
-  await page.getByText('Jasur').click();
+  await page.goto(telegramUrl(adminCase(`application=${summary.userId}`)));
   await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   await page.locator('#tg-main-button', { hasText: TEXT.plateMatches }).click();
-  await expect(page.getByText('Vali').first()).toBeVisible();
+  await expect(page.getByText('Vali · ariza')).toBeVisible();
   await expect(page.getByText(t('moderation.decided'))).toBeVisible();
   await shot(page, 's9-next');
 });

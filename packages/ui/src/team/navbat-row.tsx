@@ -23,7 +23,8 @@ function words(item: NavbatItem, t: Translate): { readonly title: string; readon
     case 'complaint':
       return {
         title: t('team.case.complaint', { name: item.name, against: item.against }),
-        hint: t(`complaints.reason.${item.reason}`),
+        // A decided no-show whose refund waits for the owner (docs/35).
+        hint: t(item.refund ? 'complaints.refundTag' : `complaints.reason.${item.reason}`),
       };
     case 'face':
       return { title: t('team.case.face', { name: item.name }), hint: t('team.case.passenger') };

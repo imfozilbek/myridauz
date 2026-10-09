@@ -60,6 +60,8 @@ const EXPLAINED: readonly string[] = [
   'trips.not_departed',
   'trips.already_arrived',
   'trips.no_pitak',
+  // The answer of the team from the admin app did not reach the person (G75).
+  'support.not_sent',
 ];
 
 // Codes that mean the same for a person as an explained one.

@@ -6,3 +6,4 @@ export * from './team';
 export * from './people';
 export * from './limits';
 export * from './channel-health';
+export * from './support-case';

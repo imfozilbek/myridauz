@@ -9,7 +9,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { teamOnly } from '../../../shared/auth/team-only';
 import type { TakeStore } from '../application/takes';
-import { queueOf, waitedMinutes, type Case } from '../domain/queue';
+import { queueOf, teamWork, waitedMinutes, type Case } from '../domain/queue';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 type NavbatDeps = {
@@ -31,7 +31,11 @@ export const navbatRoutes = ({ cases, takes, name }: NavbatDeps) =>
       const { hours, ownerMinutes } = brandOf(env).moderation;
       const now = Date.now();
       const viewer = context.get('session').user.id;
-      const [all, opened] = await Promise.all([cases(env), takes(env).fresh(now - TAKE_MINUTES * MINUTE_MS)]);
+      const [every, opened] = await Promise.all([
+        cases(env),
+        takes(env).fresh(now - TAKE_MINUTES * MINUTE_MS),
+      ]);
+      const all = context.get('session').teamRole === 'owner' ? every : teamWork(every);
       const others = opened.filter((take) => take.memberId !== viewer);
       const names = new Map(
         await Promise.all(

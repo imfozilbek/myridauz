@@ -89,8 +89,8 @@ export const TEXT = {
   decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;
-// The applications of drivers, as a button of the admin bot opens them (docs/50).
-export const ADMIN_APPLICATIONS = `${appUrl(MINI_APPS[2].port)}?open=applications`;
+// A case of «Navbat», as a button of the admin bot opens it (docs/50, G75): «application=<id>».
+export const adminCase = (query: string) => `${appUrl(MINI_APPS[2].port)}?${query}`;
 
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;

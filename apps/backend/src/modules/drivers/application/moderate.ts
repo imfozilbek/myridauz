@@ -7,13 +7,12 @@ import type {
 } from '@platform/contracts';
 import type { StoredImage } from '../../../shared/storage/image-store';
 import { afterAvatarChange, decide, type Application } from '../domain/application';
-import type { Decided, DriversDeps, Result } from './ports';
+import type { Decided, DriversDeps, Person, Result } from './ports';
 
 type ModerationError = 'drivers.not_found' | 'drivers.wrong_status';
 
-async function summary(deps: DriversDeps, application: Application): Promise<ApplicationSummary | undefined> {
-  const person = await deps.people.find(application.userId);
-  if (!person || !application.car || application.submittedAt === null) return undefined;
+function viewOf(person: Person, application: Application): ApplicationSummary | undefined {
+  if (!application.car || application.submittedAt === null) return undefined;
   return {
     userId: person.publicId,
     firstName: person.firstName,
@@ -22,6 +21,11 @@ async function summary(deps: DriversDeps, application: Application): Promise<App
     reasons: [...application.reasons],
     submittedAt: application.submittedAt,
   };
+}
+
+async function summary(deps: DriversDeps, application: Application): Promise<ApplicationSummary | undefined> {
+  const person = await deps.people.find(application.userId);
+  return person ? viewOf(person, application) : undefined;
 }
 
 export async function queue(deps: DriversDeps): Promise<ApplicationSummary[]> {
@@ -41,9 +45,9 @@ export async function applicationFor(
   deps: DriversDeps,
   userId: number,
 ): Promise<ApplicationDetail | undefined> {
-  const application = await deps.applications.find(userId);
-  const view = application ? await summary(deps, application) : undefined;
-  if (!view) return undefined;
+  const [application, person] = await Promise.all([deps.applications.find(userId), deps.people.find(userId)]);
+  const view = application && person ? viewOf(person, application) : undefined;
+  if (!view || !person) return undefined;
   const [decided, samePlate] = await Promise.all([
     deps.decisions.of(userId),
     deps.applications.samePlate(view.car.plate, userId),
@@ -53,7 +57,7 @@ export async function applicationFor(
     reasons: reasons as ApplicationSummary['reasons'],
     at,
   }));
-  return { ...view, history, samePlate, was: replaced(decided, view.car) };
+  return { ...view, history, samePlate, was: replaced(decided, view.car), gender: person.gender };
 }
 
 // The team sees the face and the car of an applicant (docs/05: moderators see photos always).

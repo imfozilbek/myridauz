@@ -48,6 +48,6 @@ export type Launch = {
 };
 // «Hammasi» or one kind of cases (docs/120).
 export type NavbatFilter = 'all' | NavbatKind;
-type NavbatOpen = { readonly filter: NavbatFilter; readonly kind: NavbatKind; readonly id: string };
+export type NavbatOpen = { readonly filter: NavbatFilter; readonly kind: NavbatKind; readonly id: string };
 // The block of the main screen opens the section of an action with what to show first.
 export type HomeGo = (actionId: string, launch?: Launch) => void;

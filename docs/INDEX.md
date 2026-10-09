@@ -147,4 +147,5 @@
 | 155, 156 | [155-g68-action-sheet.md](155-g68-action-sheet.md), [156-g68-pixel-perfect.md](156-g68-pixel-perfect.md) | G68 часть D: шторка действия в Mini App (виды, очередь, ссылки ботов, отступления). Сверка Pixel Perfect шторки с макетами g68/7 и g68/8, спорные места |
 | 158, 159 | [158-redesign-gaps-check.md](158-redesign-gaps-check.md), [159-screens-without-redesign.md](159-screens-without-redesign.md) | Дыры редизайна `124`: проверка по коду 10.10.2026, что сделано и что ушло в G75. Экраны трёх Mini App без редизайна: 67 из 120, вся админка; основа G75 |
 | 160 | [160-g75-texts.md](160-g75-texts.md) | G75: новые тексты на согласие владельца (боты команды, потом экраны по макетам `goals/g75`) |
+| 161 | [161-g75-admin-texts.md](161-g75-admin-texts.md) | G75: тексты админки (главный экран команды и дела «Navbat») на согласие владельца |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
