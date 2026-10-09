@@ -1,10 +1,12 @@
-/* The sheet of the open Mini App (G68, mockups g68/7, g68/8): the values of the mockups at 360 px. */
+/* The sheet of the open Mini App (G68, mockups g68/7, g68/8): the values of the mockups at 360 px.
+   The mockups are drawn for a 330 px phone and shown at 360 px: a font is its mockup size × 12/11
+   (docs/156). */
 .action-sheet {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 11px 17px 18px;
+  padding: 13.18px 17px 17.27px;
   text-align: center;
 }
 
@@ -15,21 +17,21 @@
 }
 
 .action-sheet .sheet-face {
-  margin-top: 12px;
+  margin-top: 12.73px;
 }
 
 /* «1 / 3» at the top right while more things wait (mockup g68/7 screen 5). */
 .action-count {
   position: absolute;
-  top: 10px;
-  right: 14px;
+  top: 16.54px;
+  right: 16.18px;
   padding: 2px 8px;
   border-radius: 10px;
   background: var(--tgui--secondary_bg_color);
-  font-size: 12px;
+  font-size: 13.09px;
   font-weight: 700;
   line-height: 16px;
-  color: var(--reg-ink);
+  color: var(--reg-muted);
 }
 
 /* A ringing call: two soft rings around the face (mockup g68/8 «Qoʻngʻiroq»). */
@@ -42,18 +44,18 @@
 }
 
 .action-kicker {
-  margin-top: 7.1px;
-  font-size: 13.2px;
+  margin-top: 6.37px;
+  font-size: 13.55px;
   font-weight: 700;
-  line-height: 15px;
-  letter-spacing: 0.04em;
+  line-height: 15.73px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   color: var(--reg-text);
 }
 
 .action-title {
-  margin-top: 3.2px;
-  font-size: 22px;
+  margin-top: 2.47px;
+  font-size: 21.82px;
   line-height: 26px;
 }
 
@@ -61,15 +63,15 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 0.5px;
-  font-size: 14.8px;
-  line-height: 18px;
+  margin-top: -0.23px;
+  font-size: 14.73px;
+  line-height: 17.27px;
   color: var(--reg-secondary);
 }
 
 .action-alert {
-  margin-top: 7.3px;
-  font-size: 13.5px;
+  margin-top: 6.57px;
+  font-size: 13.64px;
   font-weight: 700;
   line-height: 17px;
   color: var(--reg-text);
@@ -79,7 +81,7 @@
   display: flex;
   gap: 9px;
   align-self: stretch;
-  margin-top: 10.5px;
+  margin-top: 9.77px;
 }
 
 /* The words stay whole in a half-width button: the gap of the mockup, the content in the middle,
@@ -90,7 +92,7 @@
   min-height: 55px;
   padding-inline: 4px;
   border-radius: 14px;
-  font-size: clamp(13px, calc(7.5vw - 10px), 17px);
+  font-size: clamp(13px, calc(7.5vw - 10px), 16.91px);
 }
 
 .action-buttons button span {
@@ -114,8 +116,8 @@
 
 .action-foot,
 .action-note {
-  margin-top: 10px;
-  font-size: 15px;
+  margin-top: 12.17px;
+  font-size: 14.73px;
   font-weight: 700;
   line-height: 18px;
   color: var(--reg-muted);

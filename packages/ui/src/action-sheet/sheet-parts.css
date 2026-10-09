@@ -4,19 +4,19 @@
   flex-direction: column;
   gap: 1px;
   align-self: stretch;
-  margin-top: 13.5px;
-  padding: 10px 15px;
+  margin-top: 14.23px;
+  padding: 10px 13.55px 9.27px;
   border-radius: 12px;
   background: var(--tgui--secondary_bg_color);
   text-align: left;
-  font-size: 14px;
+  font-size: 14.18px;
   line-height: 18px;
-  color: var(--reg-muted);
+  color: var(--reg-secondary);
 }
 
 /* The buttons right under a trip card stand lower, under the car of a meeting higher (g68/7, g68/8). */
 .action-block + .action-buttons {
-  margin-top: 15px;
+  margin-top: 13.55px;
 }
 
 .action-car + .action-buttons {
@@ -24,8 +24,8 @@
 }
 
 .action-block-head {
-  margin-bottom: 1px;
-  font-size: 15px;
+  margin-bottom: 1.73px;
+  font-size: 15.27px;
   line-height: 17px;
   color: var(--reg-ink);
 }
@@ -38,12 +38,14 @@
 }
 
 .action-row b {
-  font-size: 15px;
-  color: var(--reg-ink);
+  font-size: 15.27px;
 }
 
+/* The words of a message stand 1 px higher in their card (g68/8 «Xabar»). */
 .action-quote {
-  font-size: 15.7px;
+  padding-top: 8.54px;
+  padding-bottom: 10.73px;
+  font-size: 15.82px;
   line-height: 17.5px;
   color: var(--reg-ink);
 }
@@ -52,7 +54,7 @@
   flex-direction: row;
   align-items: center;
   gap: 11px;
-  padding: 11px 13px 12px;
+  padding: 10.28px 13px 12px;
 }
 
 .action-car-icon {
@@ -75,7 +77,7 @@
 }
 
 .action-car-text b {
-  font-size: 15.3px;
+  font-size: 15.27px;
   line-height: 19px;
 }
 
@@ -94,7 +96,7 @@
   border-radius: 16px;
   background: var(--reg-card);
   font: inherit;
-  font-size: 14.2px;
+  font-size: 14.18px;
   font-weight: 700;
   line-height: 18px;
   color: var(--reg-ink);
