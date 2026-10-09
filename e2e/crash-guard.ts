@@ -1,4 +1,5 @@
 import { test as base, expect, type Page } from '@playwright/test';
+import { testClock } from './test-clock';
 
 export { expect, type Locator, type Page } from '@playwright/test';
 
@@ -44,8 +45,16 @@ export const test = base.extend<{
   pictures: undefined;
   actionSheets: 'later' | 'keep';
   sheetsLater: undefined;
+  clock: undefined;
 }>({
   actionSheets: ['later', { option: true }],
+  clock: [
+    async ({ context }, use) => {
+      await testClock(context);
+      await use(undefined);
+    },
+    { auto: true },
+  ],
   sheetsLater: [
     async ({ context, actionSheets }, use) => {
       if (actionSheets === 'later') {
