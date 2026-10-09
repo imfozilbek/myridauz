@@ -42,8 +42,23 @@ describe('what the stand reuses (G71)', () => {
     utimesSync(build, past, past);
     markBuilt(stamp, Date.now() + 1000);
     expect(buildIsFresh(stamp, [code], [build])).toBe(false);
-    writeFileSync(build, 'new build');
-    utimesSync(code, past, past);
+    const older = new Date(Date.now() - 90_000);
+    utimesSync(code, older, older);
     expect(buildIsFresh(stamp, [code], [build])).toBe(true);
+  });
+
+  it('builds again when another build wrote over the one of the stand (lesson 202)', () => {
+    const root = folder();
+    const [code, build, stamp] = ['code.ts', 'index.html', 'built-at'].map((name) => join(root, name));
+    const past = new Date(Date.now() - 60_000);
+    writeFileSync(code, 'code');
+    utimesSync(code, past, past);
+    writeFileSync(build, 'the build of the stand: the API on its own origin');
+    markBuilt(stamp, Date.now() - 1000);
+    expect(buildIsFresh(stamp, [code], [build])).toBe(true);
+    // The e2e servers build the same folder with their own API address, later (playwright.config.ts).
+    const later = new Date(Date.now() + 5000);
+    utimesSync(build, later, later);
+    expect(buildIsFresh(stamp, [code], [build])).toBe(false);
   });
 });
