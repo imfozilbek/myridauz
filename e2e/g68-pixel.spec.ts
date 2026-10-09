@@ -6,12 +6,12 @@ import { openPassengerHome } from './g66-home-mock';
 import { ask, asked, DEPART, NOW, offers, seat, taken, trip, withLists } from './g68-sheet-mock';
 
 // Pixel Perfect of the sheet of the open Mini App (G68, lessons 141, 147, 151): the phones of the
-// mockups g68/7 and g68/8 at 360 × 807 and their scale 1.375 (495 px wide), with their data; the diff
+// mockups g68/7 and g68/8 at 360 × 808 and their scale 1.375 (495 px wide), with their data; the diff
 // is read by scripts/pixel-diff.py.
 const { t } = createI18n(DEFAULT_LOCALE);
 const OUT = 'screenshots/pixel-g68';
 const WORDS = 'Uydan olib ketaman, 07:50 da Grand oldida boʻlaman.';
-test.use({ viewport: { width: 360, height: 807 }, deviceScaleFactor: 1.375, actionSheets: 'keep' });
+test.use({ viewport: { width: 360, height: 808 }, deviceScaleFactor: 1.375, actionSheets: 'keep' });
 
 // Nothing is cut (docs/121): every word of a button fits its button.
 async function wholeWords(page: Page) {
@@ -27,6 +27,11 @@ async function shot(page: Page, name: string) {
   // The sheet rises in 0.3 s: the picture waits until it stands.
   await page.waitForTimeout(600);
   await wholeWords(page);
+  // The letters of the mockup have coloured edges: Chromium draws them so only on an opaque layer. The
+  // sheet gets the white it already stands on, with the corners of the drawer (docs/156).
+  await page.addStyleTag({
+    content: '.action-sheet{background:var(--reg-card);border-radius:16px 16px 0 0}',
+  });
   await page.screenshot({ path: `${OUT}/${name}-code.png`, animations: 'disabled' });
 }
 
