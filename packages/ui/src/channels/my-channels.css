@@ -1,0 +1,98 @@
+/* «Kanallar» of a person (docs/119, mockups 7-channels-2 and 7-channels-3): the values at 360 px. */
+.my-channels {
+  --my-channel-join: var(--reg-soft);
+  --my-channel-join-text: var(--reg-text);
+
+  padding: 16.67px 0 24px;
+  color: var(--reg-ink);
+}
+
+/* The amber app draws «Qoʻshilish» darker on a stronger amber (mockup 7-channels-3). */
+.my-channels-driver {
+  --my-channel-join: var(--reg-mint);
+  --my-channel-join-text: var(--reg-deep);
+}
+
+.my-channels-title {
+  margin: 0;
+  padding: 0 22px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.my-channels-hint {
+  margin: 0.67px 0 0;
+  padding: 0 22px;
+  color: var(--reg-muted);
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.my-channels-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin: 8.67px 15.33px 0;
+  padding: 0 12.67px;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-control);
+}
+
+.my-channels-search input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.my-channels-search input::placeholder {
+  color: var(--reg-control);
+}
+
+.my-channels-head,
+.my-channels-all {
+  margin: 0;
+  padding: 12.33px 28px 6px;
+  color: var(--reg-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 17px;
+  text-transform: uppercase;
+}
+
+.my-channels-all {
+  padding-top: 17px;
+  padding-bottom: 0;
+  color: var(--reg-ink);
+  font-weight: 700;
+}
+
+.my-channels-all + section > .my-channels-head {
+  padding-top: 7px;
+}
+
+/* «Siz uchun» under the search sits a little lower, its card stays (mockup 7-channels-2). */
+.my-channels-search + .my-channels-head {
+  padding: 13.67px 28px 4.67px;
+}
+
+.my-channels-group {
+  overflow: hidden;
+  margin: 0 15.33px;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.my-channels-nothing {
+  margin: 12px 28px 0;
+  color: var(--reg-muted);
+  font-size: 14px;
+}

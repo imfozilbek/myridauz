@@ -91,6 +91,8 @@ describe('the face check (G51)', () => {
 describe('profiles', () => {
   it('gives the phone only to the owner', () => {
     expect(toMyProfile(sampleUser, false)).toMatchObject({ phone: '+998901234567', rating: null });
+    // «Rida bilan 2 oy» on top of «Profil» (G65).
+    expect(toMyProfile(sampleUser, false).joinedAt).toBe(sampleUser.createdAt);
     const waiting = {
       ...sampleUser,
       face: { status: 'rejected', reason: 'not_one_person', at: NOW } as const,

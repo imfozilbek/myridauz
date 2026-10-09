@@ -92,6 +92,7 @@ const account = (gender: 'male' | 'female'): Account => ({
     roles: ['passenger', 'driver'],
     hasAvatar: false,
     writeAccess: true,
+    joinedAt: Date.parse('2026-08-09T00:00:00Z'),
     rating: null,
     avatarStatus: null,
     avatarReason: null,

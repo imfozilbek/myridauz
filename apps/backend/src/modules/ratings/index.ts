@@ -7,7 +7,7 @@ import { peopleOf } from '../users';
 import { askRatings } from './application/ask';
 import type { RatingsDeps, Ride } from './application/ports';
 import { rate } from './application/rate';
-import { ratingsOf, starsOfRides } from './application/read';
+import { ratingsOf, standingOf, starsOfRides } from './application/read';
 import { reviewRoutes } from './http/review-routes';
 import { botAsker } from './infrastructure/bot-asker';
 import { d1Ratings } from './infrastructure/d1-ratings';
@@ -67,6 +67,9 @@ export { COMPLAIN_PARAM, RATE_PREFIX, REVIEW_PARAM } from './infrastructure/bot-
 
 // "Safarlar tarixi" (G18): the stars given and the published stars got, per booking.
 export const starsOf = (env: Bindings, userId: number) => starsOfRides(ratingsDeps(env), userId);
+
+// The rating and «vaqtida» on top of «Profil» (G65).
+export const reviewStandingOf = (env: Bindings, userId: number) => standingOf(ratingsDeps(env), userId);
 
 // "Maʼlumotlarimni oʻchirish": a new account of the same person starts without old reviews (docs/65 A5).
 export const forgetRatings = (env: Bindings, userId: number) => ratingsDeps(env).store.forget(userId);

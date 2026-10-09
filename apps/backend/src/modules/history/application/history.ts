@@ -1,4 +1,4 @@
-import { HISTORY_LIMIT, type HistoryItem } from '@platform/contracts';
+import { HISTORY_LIMIT, type HistoryItem, type Standing } from '@platform/contracts';
 
 export type Side = 'passenger' | 'driver';
 
@@ -24,6 +24,8 @@ export type HistoryDeps = {
     readonly received: ReadonlyMap<string, number>;
   }>;
   readonly names: (ids: readonly number[]) => Promise<ReadonlyMap<number, string>>;
+  // The rating and «vaqtida» from the published reviews (G65).
+  readonly standing: (userId: number) => Promise<Omit<Standing, 'trips'>>;
 };
 
 const TENTHS = 10;

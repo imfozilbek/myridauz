@@ -7,10 +7,12 @@ import { notify } from '../notifications';
 import { claimZoneInvite } from '../users';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
+import type { MyChannelsDeps } from './application/my-channels';
 import { allChannels, type TeamChannelsDeps } from './application/team';
 import { channelRoutes } from './http/channel-routes';
+import { myChannelsRoutes } from './http/my-channels-routes';
 import { publicityRoutes } from './http/publicity-routes';
-import { botIsAdmin, inChannel } from './infrastructure/bot-admin';
+import { botIsAdmin, inChannel, membership } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
 import type { PublicityDeps, TripFacts } from './application/publicity';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
@@ -67,8 +69,16 @@ export const channels = (tripOf: TripOf) => ({
   left: (env: Bindings, tripId: string) => closePosts(channelsDeps(env, tripOf), tripId),
 });
 
-// The team's channels in the admin Mini App (docs/63).
-export const channelsModule = channelRoutes(teamDeps);
+// One call a channel: the bot of the posts is its admin (docs/63).
+const myChannelsDeps = (env: Bindings): MyChannelsDeps => ({
+  zones: loadBrand(env.BRAND).channels,
+  membership: membership((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
+});
+
+// The team's channels in the admin Mini App (docs/63) and «Kanallar» of a person (G65, docs/119).
+export const channelsModule = new Hono<AppEnv>()
+  .route('/', channelRoutes(teamDeps))
+  .route('/', myChannelsRoutes(myChannelsDeps));
 
 const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
   enabled: env.CHANNEL_POSTS === 'on',

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { askRatings } from './application/ask';
 import type { Ask, RatingsDeps, Ride } from './application/ports';
 import { rate } from './application/rate';
-import { ratingsOf, reviewsOf } from './application/read';
+import { ratingsOf, reviewsOf, standingOf } from './application/read';
 import { ratingOf } from './domain/rating';
 import { createMemoryRatings } from './infrastructure/memory-ratings';
 import { idOfPublic, publicIdOf } from '../../test-people';
@@ -86,6 +86,17 @@ describe('the rating of a person (docs/24)', () => {
     expect(await deps.store.review('b1', 101)).toMatchObject({ stars: 5, text: 'Yaxshi', tags: ['on_time'] });
     later(8 * DAY_MS);
     expect(await rate(deps, 101, review('b1', 3))).toBe('reviews.too_late');
+  });
+
+  it('«vaqtida» of «Profil» is the share of published reviews marked on time (G65)', async () => {
+    const { deps, later } = setup([ride(1), ride(2), ride(3)]);
+    const onTime = (n: number) => ({ ...review(`b${n}`, 5), tags: ['on_time'] });
+    await rate(deps, 101, onTime(1));
+    await rate(deps, 102, onTime(2));
+    await rate(deps, 103, review('b3', 4));
+    expect(await standingOf(deps, DRIVER)).toEqual({ rating: { average: null, count: 0 }, onTime: null });
+    later(7 * DAY_MS);
+    expect(await standingOf(deps, DRIVER)).toEqual({ rating: { average: 4.7, count: 3 }, onTime: 67 });
   });
 
   it('sends a low average to a moderator once and lets the team hide a review', async () => {

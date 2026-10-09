@@ -63,6 +63,9 @@ export const driverDirections = async (env: Bindings, driverId: number) => {
     { from: to, to: from },
   ]);
 };
+// «≈ N joyga yetadi» of «Hamyon» counts at the seat price of the driver's last trip (G65).
+export const lastTripPrice = async (env: Bindings, driverId: number) =>
+  (await tripsDeps(env).trips.latestOf(driverId, 1))[0]?.price ?? null;
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
 // An offer becomes a trip when it is accepted: the driver hears the schedule now (docs/103).

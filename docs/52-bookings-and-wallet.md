@@ -92,10 +92,10 @@
 | Mini App | Где |
 |---|---|
 | Пассажир | карточка поездки → «Joy band qilish»; «Mening safarlarim»: «Band qilingan joylar» и заявки с предложениями водителей |
-| Водитель | «Mening safarim» (G63): «Joy soʻraganlar» с «Tasdiqlash» и «Rad etish» в карточке, комиссия видна в карточке; «Uchrashuv» с «Keldi» и «Kelmadi»; «Mening safarlarim»: отправленные предложения; заявка → «Taklif yuborish»; профиль → «Hamyon» |
+| Водитель | «Mening safarim» (G63): «Joy soʻraganlar» с «Tasdiqlash» и «Rad etish» в карточке, комиссия видна в карточке; «Uchrashuv» с «Keldi» и «Kelmadi»; «Mening safarlarim»: отправленные предложения; заявка → «Taklif yuborish»; плитка «Hamyon» на главном экране (G65) |
 | Админ | «Boshqaruv» → «Hamyonlar» (балансы, журнал, правка владельцем); «Safarlar» → поездка показывает брони; «Shikoyatlar»: возврат за неявку с меткой «Qaytarish» ждёт владельца |
 
-«Hamyon» открывается из профиля водителя: на главном экране остаются 3 действия (`19`).
+«Hamyon» открывается плиткой на главном экране одобренного водителя (G65, `118` путь 9); в «Tarix» имя попутчика и места, касание комиссии или возврата открывает подробности: поездка, попутчик, расчёт, счёт, правило возврата, «Safarni ochish» (`149`).
 
 ## События аналитики (`29`)
 

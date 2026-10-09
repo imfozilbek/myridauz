@@ -77,7 +77,9 @@ export async function openDriver(page: Page, now: string, { trips, bookings, bon
   await mockMap(page, mapState());
   await page.route('**/api/driver/bookings', (route) => route.fulfill({ json: { bookings } }));
   await page.route('**/api/driver/wallet', (route) =>
-    route.fulfill({ json: { bonus, main: 0, bonusExpiresAt: null, operations: [] } }),
+    route.fulfill({
+      json: { bonus, main: 0, bonusExpiresAt: null, seatsLeft: Math.floor(bonus / 9000), operations: [] },
+    }),
   );
   // Four passengers ask the way back on the next day (mockup g63/4 screen 16).
   await page.route('**/api/driver/requests?*', (route) =>

@@ -13,6 +13,7 @@ const profile = {
   avatarStatus: null,
   avatarReason: null,
   writeAccess: false,
+  joinedAt: Date.parse('2026-08-09T00:00:00Z'),
   rating: null,
 };
 

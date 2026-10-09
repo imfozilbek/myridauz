@@ -1,61 +1,50 @@
-import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, List, Section } from '../../components';
+import { MyChannelsScreen } from '../../channels/my-channels-screen';
+import { HistoryScreen } from '../../comfort/history-screen';
 import { useScreenView } from '../../context/analytics-context';
-import { useI18n } from '../../context/i18n-context';
+import { useApiClients } from '../../context/api-clients';
+import { useBrand } from '../../context/brand-context';
+import { useLoad } from '../../market/use-list';
 import { Screen } from '../../screen/screen';
 import { useScreenBackground } from '../../telegram/screen-background';
+import { brandVars } from '../../theme/brand-vars';
 import { useAccount } from '../account-context';
-import { CellValue, formatPhone } from '../cell-value';
-import { HistoryEntry } from '../../comfort/comfort-entries';
-import { HistoryScreen } from '../../comfort/history-screen';
-import { LegalLinks } from '../../legal/legal-links';
-import { LegalScreen } from '../../legal/legal-screen';
-import type { LegalDocument } from '@platform/contracts';
-import { CarCell, WalletCell } from '../../driver/car-cell';
-import { WalletScreen } from '../../wallet/wallet-screen';
-import { AvatarPicker } from './avatar-picker';
-import { DeleteAccountCell, DeleteAccountScreen } from './delete-account';
-import { FaceStatus } from './face-status';
-import { ProfilePhoto } from './profile-photo';
+import { DeleteAccountScreen } from './delete-account';
+import { DocumentsScreen } from './documents-screen';
+import { LookScreen } from './look-screen';
+import { MyReviewsScreen } from './my-reviews-screen';
+import { ProfileRows, type ProfileOpen } from './profile-rows';
+import { ProfileStats } from './profile-stats';
+import { ProfileTop } from './profile-top';
+import './profile.css';
+import './profile-parts.css';
 
-// Own profile: photo, name, rating; a driver's car and "Hamyon". The phone is shown only here, to its owner (docs/07).
+// «Profil» of a passenger and of a driver (G65, mockup g65/3): the face and how the other side sees
+// the person, three numbers, the rows. The phone is shown only here, to its owner (docs/07).
 export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('profile');
   useScreenBackground();
   const account = useAccount();
-  const { t } = useI18n();
-  const [open, setOpen] = useState<'wallet' | 'history' | 'delete' | LegalDocument | null>(null);
+  const { comfort } = useApiClients();
+  const { colors } = useBrand().theme;
+  const { value: standing } = useLoad(() => comfort.standing(), 'profile.standing');
+  const [open, setOpen] = useState<ProfileOpen | 'look' | null>(null);
   if (!account) return null;
-  if (open === 'wallet') return <WalletScreen onBack={() => setOpen(null)} />;
-  if (open === 'history') return <HistoryScreen onBack={() => setOpen(null)} />;
-  if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={() => setOpen(null)} />;
-  if (open) return <LegalScreen document={open} onBack={() => setOpen(null)} />;
+  const back = () => setOpen(null);
   const { profile } = account;
-  const rating = profile.rating === null ? t('account.profile.newRating') : String(profile.rating);
+  if (open === 'look')
+    return <LookScreen rating={standing?.rating ?? { average: profile.rating, count: 0 }} onBack={back} />;
+  if (open === 'history') return <HistoryScreen onBack={back} />;
+  if (open === 'reviews') return <MyReviewsScreen userId={profile.id} onBack={back} />;
+  if (open === 'channels') return <MyChannelsScreen onBack={back} />;
+  if (open === 'documents') return <DocumentsScreen onBack={back} />;
+  if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={back} />;
   return (
-    <div className="profile">
+    <div className="profile profile-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
-      <div className="profile-photo">
-        <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} />
-        <Title weight="1">{profile.firstName}</Title>
-        <AvatarPicker />
-        <FaceStatus profile={profile} />
-        <Text className="step-hint">{t('account.avatar.rules')}</Text>
-      </div>
-      <List>
-        <Section footer={t('account.profile.phoneHint')}>
-          <Cell after={<CellValue>{rating}</CellValue>}>{t('account.profile.rating')}</Cell>
-          <Cell after={<CellValue>{formatPhone(profile.phone)}</CellValue>}>
-            {t('account.profile.phone')}
-          </Cell>
-        </Section>
-        <HistoryEntry onOpen={() => setOpen('history')} />
-        <CarCell />
-        <WalletCell onOpen={() => setOpen('wallet')} />
-        <LegalLinks header={t('account.profile.documents')} onOpen={setOpen} />
-        <DeleteAccountCell onOpen={() => setOpen('delete')} />
-      </List>
+      <ProfileTop onLook={() => setOpen('look')} />
+      <ProfileStats standing={standing} />
+      <ProfileRows standing={standing} onOpen={setOpen} />
     </div>
   );
 }

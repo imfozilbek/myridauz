@@ -1,88 +1,75 @@
-import { ApiError, type UsersClient } from '@platform/api-client';
+import { ApiError } from '@platform/api-client';
+import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { StartFlow } from '../../flow/start-flow';
-import { renderInShell } from '../../test-shell';
-import { AccountContext, type Account } from '../account-context';
+import { NOW, profile, renderProfile } from './profile-test-kit';
 
 const compress = vi.hoisted(() => ({ compressImage: vi.fn(async (file: Blob) => file) }));
 vi.mock('./compress-image', () => compress);
 
-const profile = {
-  id: '00000000000000000000000000000007',
-  firstName: 'Dilnoza',
-  gender: 'female' as const,
-  phone: '+998901234567',
-  roles: ['passenger' as const],
-  hasAvatar: true,
-  writeAccess: true,
-  rating: null,
-  avatarStatus: null,
-  avatarReason: null,
-};
-
-function renderProfile(overrides: Partial<Account> = {}, hasCamera = true) {
-  const client = {
-    getMe: vi.fn(),
-    register: vi.fn(),
-    uploadAvatar: vi.fn(async () => undefined),
-    setWriteAccess: vi.fn(),
-    deleteMe: vi.fn(async () => undefined),
-    getAvatar: vi.fn(async () => new Blob(['x'], { type: 'image/jpeg' })),
-  } satisfies UsersClient;
-  const account: Account = {
-    app: 'passenger',
-    client,
-    profile,
-    avatarVersion: 0,
-    onAvatarChanged: vi.fn(),
-    onProfileChanged: vi.fn(),
-    ...overrides,
-  };
-  const actions = [
-    {
-      id: 'my_trips',
-      icon: 'myTrips',
-      tone: 'deep',
-      labelKey: 'common.myTrips',
-      hintKey: 'common.passenger.myTripsHint',
-      Screen: () => null,
-    },
-  ] as const;
-  renderInShell(
-    <AccountContext.Provider value={account}>
-      <StartFlow actions={actions} />
-    </AccountContext.Provider>,
-    false,
-    hasCamera,
-  );
-  return { client, account };
-}
-
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
   URL.createObjectURL = vi.fn(() => 'blob:photo');
   URL.revokeObjectURL = vi.fn();
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
-describe('profile', () => {
-  it('starts from the own account on the main screen and shows the profile', async () => {
+describe('«Profil» (G65, mockup g65/3)', () => {
+  it('shows who the person is, the three numbers and the phone only to its owner', async () => {
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Yangi')).toBeTruthy();
-    expect(screen.getByText('+998 90 123 45 67')).toBeTruthy();
-    expect(screen.getByText('Raqamingizni faqat siz koʻrasiz.')).toBeTruthy();
+    expect(screen.getByText(`Yoʻlovchi · ${loadBrand().name} bilan 2 oy`)).toBeTruthy();
+    expect(screen.getByText('Haydovchilar meni qanday koʻradi ›')).toBeTruthy();
+    expect(await screen.findByText('★ 4,9')).toBeTruthy();
+    expect(screen.getByText('8 baho')).toBeTruthy();
+    expect(screen.getByText('12')).toBeTruthy();
+    expect(screen.getByText('100%')).toBeTruthy();
+    expect(screen.getByText('vaqtida')).toBeTruthy();
+    expect(screen.getByText('8 izoh')).toBeTruthy();
+    expect(screen.getByText('+998 90 123 45 67 · faqat siz koʻrasiz')).toBeTruthy();
+    // A passenger has no car and no wallet here.
+    expect(screen.queryByText('Mashinam')).toBeNull();
+    expect(screen.queryByText('Hamyon')).toBeNull();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
-    expect(client.getAvatar).toHaveBeenCalledWith('00000000000000000000000000000007');
+    expect(client.getAvatar).toHaveBeenCalledWith(profile.id);
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByLabelText('Profil va rasm')).toBeTruthy();
+  });
+
+  it('says «Yangi» while nobody rated the person', async () => {
+    const fresh = { rating: { average: null, count: 0 }, onTime: null, trips: 0 };
+    renderProfile({}, { clients: { comfort: { standing: async () => fresh } } });
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(await screen.findAllByText('Yangi')).toHaveLength(2);
+    expect(screen.getByText('0 baho')).toBeTruthy();
+  });
+
+  it('keeps «Bot xabarlari» always on: it shows and never switches off', () => {
+    renderProfile();
+    fireEvent.click(screen.getByText('Dilnoza'));
+    const bot = screen.getByLabelText('Bot xabarlari') as HTMLInputElement;
+    expect(bot.checked).toBe(true);
+    expect(bot.disabled).toBe(true);
+    expect(screen.getByText('Doim yoqilgan: bron, chat, safar xabarlari')).toBeTruthy();
+  });
+
+  it('opens «Yordam», the support bot, from the profile', () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    renderProfile();
+    fireEvent.click(screen.getByText('Dilnoza'));
+    fireEvent.click(screen.getByRole('button', { name: 'Yordam' }));
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
+    open.mockRestore();
   });
 
   it('uploads a new photo and reports a failure in simple words', async () => {
     const { client, account } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Rasmni almashtirish')).toBeTruthy();
     const input = document.querySelector('input[type=file]') as HTMLInputElement;
     // The camera or the gallery, as on screen 2 of the registration (G58).
     expect(input.hasAttribute('capture')).toBe(false);
@@ -100,21 +87,21 @@ describe('profile', () => {
   });
 
   it('works on Telegram Desktop too: a file instead of the camera (G58)', () => {
-    renderProfile({ app: 'driver', profile: { ...profile, hasAvatar: false } }, false);
+    renderProfile({ app: 'driver', profile: { ...profile, hasAvatar: false } }, { hasCamera: false });
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasm qoʻshish')).toBeTruthy();
     expect(document.querySelector('input[type=file]')?.hasAttribute('capture')).toBe(false);
   });
 });
 
-describe('delete my data (docs/30)', () => {
+describe('delete my data and the documents (docs/30)', () => {
   it('explains what is removed, removes it and starts again', async () => {
     const reload = vi.fn();
     Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
     const { client } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    // The dangerous row and button are red, like in Telegram (docs/86 V12).
-    expect(screen.getByText('Maʼlumotlarimni oʻchirish').closest('.danger-text')).not.toBeNull();
+    // The last line of the mockup: red words, no card (g65/3).
+    expect(screen.getByText('Maʼlumotlarimni oʻchirish').className).toBe('profile-delete');
     fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
     expect(screen.getByText(/Buni qaytarib boʻlmaydi/)).toBeTruthy();
     expect(screen.getByText('Oʻchirish').closest('.danger-button')).not.toBeNull();
@@ -128,10 +115,13 @@ describe('delete my data (docs/30)', () => {
     expect(reload).toHaveBeenCalled();
   });
 
-  it('opens a legal document from the profile', async () => {
+  it('opens a legal document from «Hujjatlar»', async () => {
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
-    expect(screen.getByText('Hujjatlar')).toBeTruthy();
+    expect(screen.getByText('Oferta, maxfiylik')).toBeTruthy();
+    fireEvent.click(screen.getByText('Hujjatlar'));
+    // A title on top, as «Safarlar tarixi»: the list paints no gray over the gradient (docs/121 §5).
+    expect(screen.getByText('Hujjatlar').className).toContain('market-title');
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
     expect(await screen.findByText(/Tahrir 1\.3/)).toBeTruthy();

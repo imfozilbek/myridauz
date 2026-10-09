@@ -2,11 +2,12 @@ import { ApiError, type WalletClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProfileScreen } from '../account/profile/profile-screen';
-import { wallet } from '../bookings/booking-test-kit';
+import { confirmed, wallet } from '../bookings/booking-test-kit';
 import { DriverContext, type Driver } from '../driver/driver-context';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { ManagementScreen } from '../pricing/management-screen';
 import { testClients } from '../test-shell';
+import { WALLET_ACTION } from './wallet-flow';
 
 afterEach(cleanup);
 
@@ -20,32 +21,65 @@ const approved: Driver = {
   editCar: () => undefined,
 };
 
-describe('"Hamyon" of a driver (docs/12)', () => {
-  it('opens from the profile: the bonus, its end, the history', async () => {
-    const { tracked } = renderMarket(
-      <DriverContext.Provider value={approved}>
-        <ProfileScreen onBack={() => undefined} />
-      </DriverContext.Provider>,
-      testClients({ wallet: { mine: async () => wallet } }),
-    );
-    await tap('Hamyon');
-    expect(await screen.findByText(/481\s000/)).toBeTruthy();
+// «Hamyon» opens from its tile on the main screen of an approved driver (docs/118 path 9).
+const { Screen: WalletFlow } = WALLET_ACTION;
+
+describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
+  const profile = () => (
+    <DriverContext.Provider value={approved}>
+      <WalletFlow onBack={() => undefined} />
+    </DriverContext.Provider>
+  );
+
+  it('shows the sum, «≈ N joyga yetadi», the bonus and its end, the history', async () => {
+    const { tracked } = renderMarket(profile(), testClients({ wallet: { mine: async () => wallet } }));
+    expect(await screen.findByText(/^481\s000\ssoʻm$/u)).toBeTruthy();
+    expect(screen.getByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
     expect(screen.getByText(/gacha$/)).toBeTruthy();
-    expect(screen.getByText('Bonus berildi')).toBeTruthy();
-    // The rule of the commission in one line (docs/86 V8).
+    expect(screen.getByText('Boshlash bonusi')).toBeTruthy();
     expect(
-      screen.getByText(
-        'Komissiya yoʻlovchi joyini tasdiqlaganingizda olinadi: avval bonusdan, keyin asosiy hisobdan.',
-      ),
+      screen.getByText('Har tasdiqlangan joy uchun komissiya: joy narxining 10%. Avval bonusdan olinadi.'),
     ).toBeTruthy();
-    expect(screen.getByText(/-19\s000/)).toBeTruthy();
+    expect(screen.getByText('Komissiya · Sardor, 2 joy')).toBeTruthy();
+    expect(screen.getByText(/^\u221219\s000$/u)).toBeTruthy();
+    expect(screen.getByText(/^\+500\s000$/u)).toBeTruthy();
     expect(tracked.some((event) => event.name === 'wallet_open')).toBe(true);
     await tap('Hisobni toʻldirish');
     expect(screen.getByText(/qoʻllab-quvvatlash/)).toBeTruthy();
   });
 
-  it('is not in the profile of a passenger', () => {
-    renderMarket(<ProfileScreen onBack={() => undefined} />, testClients({}));
+  it('turns red below 5 seats and asks to top up', async () => {
+    renderMarket(profile(), testClients({ wallet: { mine: async () => ({ ...wallet, seatsLeft: 4 }) } }));
+    expect(await screen.findByText(/^≈.4 joyga yetadi · toʻldiring$/u)).toBeTruthy();
+    expect(document.querySelector('.wallet-card-low')).toBeTruthy();
+  });
+
+  it('a commission opens its details: the trip, the passenger, the count, the balance', async () => {
+    const detail = vi.fn(async () => ({
+      kind: 'commission' as const,
+      amount: -19_000,
+      balances: ['bonus' as const],
+      createdAt: Date.parse('2026-10-01T04:00:00Z'),
+      booking: { ...confirmed, seats: 2, price: 95_000, commission: 19_000 },
+    }));
+    renderMarket(profile(), testClients({ wallet: { mine: async () => wallet, detail } }));
+    await tap('Komissiya · Sardor, 2 joy');
+    expect(await screen.findByText(/^\u221219\s000\ssoʻm$/u)).toBeTruthy();
+    expect(detail).toHaveBeenCalledWith('w2');
+    expect(screen.getByText('Komissiya 10%')).toBeTruthy();
+    expect(screen.getByText('Yoʻlovchi toʻlaydi')).toBeTruthy();
+    expect(screen.getByText(/^190\s000$/u)).toBeTruthy();
+    expect(screen.getByText('Qaysi hisobdan')).toBeTruthy();
+    expect(screen.getByText('Safarni ochish')).toBeTruthy();
+  });
+
+  it('is not in the profile, not even of a driver (mockup g65/3)', () => {
+    renderMarket(
+      <DriverContext.Provider value={approved}>
+        <ProfileScreen onBack={() => undefined} />
+      </DriverContext.Provider>,
+      testClients({}),
+    );
     expect(screen.queryByText('Hamyon')).toBeNull();
   });
 });

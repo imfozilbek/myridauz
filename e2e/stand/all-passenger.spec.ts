@@ -46,7 +46,9 @@ for (const platform of PLATFORMS)
     await shot(page, platform, 'pa11-profile');
     await visit(page, platform, t('comfort.history.title'), 'pa12-history');
     await visit(page, platform, t('account.delete.open'), 'pa13-delete');
-    await visit(page, platform, t('legal.offer.title'), 'pa14-document');
+    // The documents and the channels are rows of «Profil» (G65, mockup g65/3, docs/119).
+    await visit(page, platform, t('account.profile.documents'), 'pa14-documents');
+    await visit(page, platform, t('channels.title'), 'pa15-channels', t('channels.mine.all'));
   });
 
 test('android: every screen a bot button opens', async ({ page }) => {

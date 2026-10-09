@@ -79,12 +79,25 @@ const driver = (status: 'approved' | 'pending' = 'approved') =>
   );
 
 describe('the tiles of a driver (G53, G62)', { timeout: 20_000 }, () => {
-  it('counts the new requests and publishes from the big tile, «Hamyon» lives in the profile', async () => {
+  it('counts the new requests and publishes from the big tile, «Hamyon» is the last tile', async () => {
     driver();
-    expect(await screen.findByText('Yordam')).toBeTruthy();
+    expect(await screen.findByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
     expect(tileOf('Mening safarlarim')?.querySelector('.home-tile-badge')?.textContent).toBe('2');
     expect(tileOf('Safar eʼlon qilish')?.className).toBe('main-tile');
-    expect(screen.queryByText('Hamyon')).toBeNull();
+    // «Yordam» of an approved driver lives in «Profil» (docs/118 path 9, mockup g65/3).
+    expect(screen.queryByText('Yordam')).toBeNull();
+    await tap('Hamyon');
+    expect(await screen.findByText('Hisobni toʻldirish')).toBeTruthy();
+  });
+
+  it('turns «Hamyon» red below 5 seats', async () => {
+    renderHome((go) => <DriverHome go={go} />, DRIVER_ACTIONS, {
+      trips: async () => [],
+      requests: async () => [],
+      wallet: async () => ({ ...wallet, seatsLeft: 4 }),
+      covered: 'new_trip',
+    });
+    expect(await screen.findByText(/^≈.4 joyga yetadi · toʻldiring$/u)).toBeTruthy();
   });
 
   it('opens the support bot while the application is checked', async () => {

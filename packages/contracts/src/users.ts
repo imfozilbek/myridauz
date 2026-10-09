@@ -62,6 +62,8 @@ export const myProfileSchema = z.object({
   avatarStatus: z.enum(AVATAR_STATUSES).nullable(),
   avatarReason: z.enum(FACE_REASONS).nullable(),
   writeAccess: z.boolean(),
+  // «Rida bilan 2 oy» on top of «Profil» (G65): when the person registered.
+  joinedAt: z.number().int(),
   // null: no ratings yet, shown as "Yangi" (new).
   rating: z.number().nullable(),
 });

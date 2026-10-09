@@ -6,10 +6,10 @@ import { UzPlate } from '../plate/uz-plate';
 const PHOTO = 60;
 
 // The driver on top of «Safar» (docs/118 path 2, A): the face, the rating, the car and its plate.
-// The plate shows before a booking (owner decision 07.10.2026).
-export function DriverCard({ trip }: { readonly trip: Trip }) {
+// The plate shows before a booking (owner decision 07.10.2026). The driver's own «Profil» shows it
+// too: «Yoʻlovchilar meni qanday koʻradi» (G65).
+export function DriverCard({ driver }: { readonly driver: Trip['driver'] }) {
   const { t, formatRating } = useI18n();
-  const { driver } = trip;
   return (
     <div className="safar-card driver-card">
       <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={PHOTO} />

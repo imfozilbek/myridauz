@@ -1,3 +1,4 @@
+import { MY_CHANNELS_PATH } from '@platform/contracts';
 import { Hono } from 'hono';
 import { setupRoutes } from './bots/setup-routes';
 import { webhookRoutes } from './bots/webhook-routes';
@@ -81,6 +82,8 @@ export const app = new Hono<AppEnv>()
   .use('/chats/:key/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/feed/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/passenger/map/search', rateLimit('SEARCH_LIMIT', 'search'))
+  // «Kanallar» asks Telegram once a channel (G65).
+  .use(MY_CHANNELS_PATH, rateLimit('ACTIONS_LIMIT', 'action'))
   .route('/', healthModule)
   .route('/', analyticsModule)
   // The avatar watch goes before users: it wraps the avatar route of the users module.

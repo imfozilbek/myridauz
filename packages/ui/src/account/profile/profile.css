@@ -1,0 +1,149 @@
+/* «Profil» of both roles (G65, mockup g65/3): the values of the mockup at 360 px. */
+.profile-page {
+  padding-top: 16px;
+  color: var(--reg-ink);
+}
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  min-height: 115.33px;
+  margin: 0 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--reg-card);
+}
+
+.profile-top-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-self: flex-start;
+  align-items: flex-start;
+  min-width: 0;
+  padding-top: 2.67px;
+}
+
+.profile-name {
+  font-size: 19px;
+  line-height: 21.33px;
+}
+
+.profile-since {
+  color: var(--reg-muted);
+  font-size: 12.5px;
+  line-height: 16.65px;
+}
+
+.profile-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 17px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.profile-look {
+  margin-top: 0.67px;
+  line-height: 16.4px;
+}
+
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9.33px;
+  margin: 10px 13px 0 12.67px;
+}
+
+.profile-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 54.67px;
+  padding-top: 11.27px;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-muted);
+  font-size: 12px;
+  line-height: 14.17px;
+}
+
+.profile-stat b {
+  color: var(--reg-ink);
+  font-size: 18px;
+  line-height: 19.33px;
+}
+
+.profile-head {
+  margin: 0;
+  padding: 9px 24px 4.33px;
+  color: var(--reg-muted);
+  font-size: 11.5px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+
+.profile-group {
+  overflow: hidden;
+  margin: 10px 12px 0;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.profile-head + .profile-group {
+  margin-top: 0;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 48px;
+  padding: 8.77px 10.25px 8.77px 12px;
+  border: 0;
+  background: none;
+  color: var(--reg-ink);
+  font: inherit;
+  text-align: start;
+}
+
+.profile-row + .profile-row {
+  min-height: 49px;
+  border-top: 1px solid var(--reg-divider);
+}
+
+button.profile-row {
+  cursor: pointer;
+}
+
+.profile-row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.profile-row-title {
+  /* The title sits a pixel lower than its line, the line under it stays (mockup g65/3). */
+  margin-bottom: -1px;
+  padding-top: 1px;
+  font-size: 14px;
+  line-height: 15.8px;
+}
+
+.profile-row-hint {
+  color: var(--reg-muted);
+  font-size: 11.5px;
+  line-height: 14px;
+}

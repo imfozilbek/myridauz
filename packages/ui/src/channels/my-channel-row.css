@@ -1,0 +1,59 @@
+/* One channel of «Kanallar» (docs/119, mockups 7-channels-2 and 7-channels-3): values at 360 px. */
+.my-channel {
+  display: flex;
+  align-items: center;
+  gap: 11.33px;
+  min-height: 62px;
+  padding: 0 10.67px 0 12.67px;
+}
+
+.my-channel + .my-channel {
+  border-top: 0.67px solid var(--reg-divider);
+}
+
+.my-channel-art {
+  flex: none;
+  width: 44.67px;
+  height: 44.67px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.my-channel-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 4px;
+}
+
+.my-channel-name {
+  /* Narrower phones make the words smaller, never cut them (docs/121). */
+  font-size: clamp(14px, 4.445vw, 16px);
+  line-height: 16px;
+}
+
+.my-channel-line {
+  color: var(--reg-muted);
+  font-size: clamp(11.5px, 3.612vw, 13px);
+  line-height: 17.67px;
+}
+
+.my-channel-pill {
+  flex: none;
+  height: 27.33px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--my-channel-join);
+  color: var(--my-channel-join-text);
+  font: inherit;
+  font-size: clamp(11px, 3.473vw, 12.5px);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.my-channel-in {
+  background: var(--reg-neutral-pale);
+  color: var(--reg-muted);
+}

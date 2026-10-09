@@ -1,4 +1,5 @@
 import type { PromoRule } from '@platform/brands';
+import type { Booking } from '@platform/contracts';
 import type { Operation } from '../domain/ledger';
 
 // Ports of the wallet: D1 in production, memory in tests.
@@ -16,6 +17,8 @@ export type WalletRepository = {
   burnExpired(now: number, since: number, newId: () => string): Promise<void>;
 };
 
+export type WalletBooking = { readonly passenger: string; readonly seats: number };
+
 export type WalletDeps = {
   readonly wallet: WalletRepository;
   readonly promo: PromoRule;
@@ -24,8 +27,14 @@ export type WalletDeps = {
     // The Telegram ID behind a public id from an admin path (docs/65 A3).
     idOf(publicId: string): Promise<number | undefined>;
   };
-  // The first names of the passengers of bookings: a no-show refund names one (G63).
-  readonly passengers: (bookingIds: readonly string[]) => Promise<ReadonlyMap<string, string>>;
+  // The passenger and the seats of each booking: «Komissiya · Sardor, 2 joy» (G63, G65).
+  readonly bookings: (bookingIds: readonly string[]) => Promise<ReadonlyMap<string, WalletBooking>>;
+  // The booking as its driver sees it, for the details of a commission (G65, mockup g65/2).
+  readonly booking: (bookingId: string) => Promise<Booking | undefined>;
+  // The seat price of the driver's last trip, null before the first (G65 «≈ N joyga yetadi»).
+  readonly lastPrice: (driverId: number) => Promise<number | null>;
+  // The commission of one seat at a price, by the rule of the brand (docs/12).
+  readonly perSeat: (price: number) => number;
   readonly now: () => number;
   readonly newId: () => string;
 };

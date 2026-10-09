@@ -1,0 +1,76 @@
+/* «Tarix» and the white boxes of the details (G65, mockups g65/1 and g65/2) at 360 px. */
+.wallet-rows,
+.wallet-box {
+  margin: 0 12px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--reg-card);
+}
+
+.wallet-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 10.25px 0 13.33px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+.wallet-row + .wallet-row {
+  min-height: 51.33px;
+  border-top: 1px solid var(--reg-divider);
+}
+
+/* A row that does not open keeps the sum where the mockup has it (g65/1). */
+div.wallet-row {
+  padding-right: 13.33px;
+}
+
+button.wallet-row {
+  cursor: pointer;
+}
+
+.wallet-row-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.wallet-row-title {
+  font-size: 14px;
+  line-height: 15.73px;
+  overflow-wrap: anywhere;
+}
+
+.wallet-row-line {
+  color: var(--reg-muted);
+  font-size: 12px;
+  line-height: 13.34px;
+}
+
+.wallet-row-sum {
+  flex: none;
+  font-size: 14px;
+}
+
+button.wallet-row .wallet-row-sum {
+  margin-right: 3.7px;
+}
+
+/* Money in: the bonus, a refund (mockups g65/1, g63/5 phone 6). */
+.wallet-row-in {
+  color: var(--reg-success);
+}
+
+.wallet-row-chevron {
+  display: flex;
+  flex: none;
+  color: var(--reg-muted);
+}

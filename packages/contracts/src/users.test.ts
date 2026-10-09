@@ -67,6 +67,8 @@ describe('the face photo check (docs/118, G51)', () => {
     avatarReason: 'not_one_person',
     writeAccess: false,
     rating: null,
+    // The day of the registration: «Rida bilan N oy» of «Profil» (G65, g65/3).
+    joinedAt: Date.UTC(2026, 7, 1),
   };
 
   it('tells the owner the state of the photo, and no settings any more', () => {

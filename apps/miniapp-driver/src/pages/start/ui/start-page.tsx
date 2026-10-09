@@ -12,6 +12,7 @@ import {
   StartFlow,
   useDriverTripsLive,
   usePending,
+  WALLET_ACTION,
   type StartAction,
 } from '@platform/ui';
 
@@ -69,7 +70,8 @@ function DriverStart() {
         notice={<DriverNotice />}
         after={<HomeScreenOffer />}
         home={(go) => <DriverHome go={go} />}
-        tiles={() => <DriverTiles />}
+        tiles={(go) => <DriverTiles go={go} />}
+        sections={[WALLET_ACTION]}
         {...(pending ? {} : { mainTile: NEW_TRIP_SECTION })}
       />
     </DriverData>

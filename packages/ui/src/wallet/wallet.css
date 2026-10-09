@@ -1,0 +1,142 @@
+/* «Hamyon» and its details (G65, mockups g65/1 and g65/2): the values of the mockups at 360 px. */
+.wallet {
+  padding-bottom: 16px;
+  color: var(--reg-ink);
+}
+
+.wallet-title {
+  margin: 0;
+  padding: 17px 20px 0;
+  font-size: clamp(18px, 5.834vw, 21px);
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.wallet-card {
+  display: flex;
+  flex-direction: column;
+  margin: 9px 12px 0;
+  padding: 16px;
+  border-radius: 18px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+/* Fewer than 5 seats left: red, «toʻldiring» (mockup g65/1 phone 2). */
+.wallet-card-low {
+  background: var(--reg-danger-text);
+}
+
+.wallet-card-label {
+  font-size: 12.5px;
+  line-height: 16px;
+  opacity: 0.9;
+}
+
+.wallet-card-sum {
+  margin-top: 2.67px;
+  font-size: clamp(26px, 8.334vw, 30px);
+  line-height: 36px;
+}
+
+.wallet-card-seats {
+  margin-top: 0.6px;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.wallet-card-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14.83px;
+}
+
+.wallet-card-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 4.6px 10px 7.3px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 18%);
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.wallet-card-tile > span:first-child {
+  line-height: 14.3px;
+}
+
+.wallet-card-tile b {
+  font-size: 15px;
+  line-height: 16.8px;
+}
+
+.wallet-note {
+  margin: 10px 12px 0;
+  padding: 11.07px 14px 12.93px;
+  border-radius: 14px;
+  background: var(--reg-card);
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.wallet-top-up,
+.wallet-open {
+  display: flex;
+  align-items: center;
+  gap: 10.67px;
+  width: calc(100% - 24px);
+  margin: 10px 12px 0;
+  padding: 0 10.25px 0 13.33px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.wallet-top-up {
+  min-height: 48px;
+}
+
+.wallet-top-up b,
+.wallet-open b {
+  flex: 1;
+  min-width: 0;
+}
+
+.wallet-top-up > svg,
+.wallet-open > svg {
+  color: var(--reg-muted);
+}
+
+.wallet-top-up-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.wallet-head {
+  margin: 0;
+  padding: 19px 24px 3.4px;
+  color: var(--reg-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  text-transform: uppercase;
+}
+
+.wallet-empty {
+  margin: 0 24px;
+  color: var(--reg-muted);
+  font-size: 14px;
+}

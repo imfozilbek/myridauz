@@ -3,6 +3,7 @@ import { testD1 } from '../../test-d1';
 import { adminWallets, WALLETS_PAGE } from './application/admin-wallets';
 import type { WalletDeps } from './application/ports';
 import { d1Wallet } from './infrastructure/d1-wallet';
+import { NO_LINKS } from './test-links';
 
 const DRIVERS = 5000;
 
@@ -30,7 +31,7 @@ describe('the wallets of the team by pages', () => {
         find: async (id) => ({ firstName: `D${id}`, publicId: `p${id}` }),
         idOf: async () => undefined,
       },
-      passengers: async () => new Map(),
+      ...NO_LINKS,
       now: () => 0,
       newId: () => 'id',
     };

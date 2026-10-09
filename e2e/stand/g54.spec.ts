@@ -2,7 +2,9 @@ import { expect, test } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { confirmedSeat, toldBy, wordsOf } from './g27-kit';
 import { openSocket, shot } from './g33-kit';
-import { ANVAR, DIYORA, HUMOYUN, LOLA } from './people';
+import { person } from './g64-kit';
+import { ANVAR, DIYORA, LOLA } from './people';
+import { approvedDriver } from './seed';
 import { openAs } from './stand-kit';
 import { botMessages } from './stand-tools';
 
@@ -12,14 +14,18 @@ const { t } = createI18n(DEFAULT_LOCALE);
 // Longer than the 5 seconds the call waits for the Mini App before the bot (brand.config.ts).
 const AFTER_INVITE_MS = 7_000;
 const ring = { type: 'call', action: 'ring' };
+// The own driver of G54 (lesson 187): a trip of another goal's driver changes the screens of that goal.
+const CALLER = person(900654, 'Sarvar');
+
+test.beforeAll(() => approvedDriver(CALLER, '01T654UV'));
 
 test('G54. the open Mini App opens the chat and rings by itself; no bot message', async ({ page }) => {
-  const { seat } = await confirmedSeat(HUMOYUN, LOLA);
+  const { seat } = await confirmedSeat(CALLER, LOLA);
   await openAs(page, 'passenger', LOLA);
   await expect(page.getByText(t('common.myTrips'))).toBeVisible();
   // The personal channel opens with the main screen.
   await page.waitForTimeout(1_000);
-  const driver = await openSocket(HUMOYUN, seat.chatKey);
+  const driver = await openSocket(CALLER, seat.chatKey);
   driver.send(JSON.stringify(ring));
   await expect(page.getByText(t('calls.incoming'))).toBeVisible();
   await shot(page, 'g54-incoming-from-home');

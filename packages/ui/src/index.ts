@@ -37,7 +37,7 @@ export { DriverData, useDriverTripsLive } from './home/driver-data';
 export { DriverTiles } from './home/driver-tiles';
 // The section a bot button opens in the driver app (G62): the apps take it from here.
 export { NEW_TRIP_SECTION } from '@platform/contracts';
-export { WalletScreen } from './wallet/wallet-screen';
+export { WALLET_ACTION } from './wallet/wallet-flow';
 export { StartFlow } from './flow/start-flow';
 export { Icon, type IconName } from './icons';
 export { mountApp } from './mount-app';

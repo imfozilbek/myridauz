@@ -15,6 +15,7 @@ import { fakeTrips } from './test-trips';
 import { DRIVER, fakeNotifier, fakePeople, fakePlaces, fakeRecommend, NOW, PITAK } from './test-fakes';
 import { idOfPublic } from '../../test-people';
 import { fakeMeeting } from './test-meeting';
+import { NO_LINKS } from '../wallet/test-links';
 
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
@@ -36,7 +37,7 @@ export function setup() {
     wallet: createMemoryWallet(),
     promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
     people: { find: async (userId) => people.get(userId), idOf: idOfPublic },
-    passengers: async () => new Map(),
+    ...NO_LINKS,
     now: () => now,
     newId,
   };

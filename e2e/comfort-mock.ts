@@ -53,6 +53,10 @@ export async function mockComfort(page: Page) {
   await page.route('**/api/driver/history', (route) =>
     json(route, { trips: [past('3', 2, ['Madina', 'Aziz'], null, 4.5)] }),
   );
+  // A new person (G65): «Yangi» on top of «Profil», no channel yet.
+  const fresh = { rating: { average: null, count: 0 }, onTime: null, trips: 0 };
+  await page.route('**/api/*/standing', (route) => json(route, fresh));
+  await page.route('**/api/me/channels', (route) => json(route, { channels: [] }));
   await page.route('**/api/driver/trips/*/share', (route) =>
     json(route, { preparedMessageId: null, link: 'https://t.me/test_bot?start=follow_x' }, 201),
   );

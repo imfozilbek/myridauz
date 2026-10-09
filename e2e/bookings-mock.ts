@@ -93,6 +93,8 @@ const wallet = (bonus: number) => ({
   bonus,
   main: 0,
   bonusExpiresAt: Date.now() + 29 * 24 * HOUR,
+  // 9 000 a seat of the last trip (G65).
+  seatsLeft: Math.floor(bonus / 9000),
   operations:
     bonus === 0 ? [] : [operation('w2', 'commission', -18000, 1), operation('w1', 'bonus_grant', 500000, 30)],
 });

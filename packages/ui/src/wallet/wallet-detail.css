@@ -1,0 +1,118 @@
+/* The details of a commission (G65, mockup g65/2 phone 2): the values of the mockup at 360 px. */
+.wallet-when {
+  margin: 0;
+  padding: 1.33px 20px 0;
+  color: var(--reg-muted);
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.wallet-detail-sum {
+  display: block;
+  padding: 14.67px 12px 11px;
+  font-size: clamp(26px, 8.334vw, 30px);
+  line-height: 36px;
+  text-align: center;
+}
+
+.wallet-detail .wallet-head {
+  padding: 9.03px 24px 3.27px;
+}
+
+.wallet-way {
+  gap: 7.2px;
+  padding: 8.5px 14px 8.1px 12.7px;
+}
+
+.wallet-way .trip-card-point {
+  gap: 11.3px;
+}
+
+.wallet-way .trip-card-dot {
+  margin-top: 4.2px;
+}
+
+/* The line from the start down to the end, as on the mockup g65/2. */
+.wallet-way .trip-card-from .trip-card-dot::after {
+  top: 13.3px;
+  width: 1.5px;
+  height: 21.4px;
+  background: var(--reg-route-line);
+}
+
+.wallet-way .trip-card-name {
+  font-size: 14px;
+  line-height: 15.8px;
+}
+
+.wallet-way .trip-card-note {
+  font-size: 11.5px;
+  line-height: 15px;
+}
+
+.wallet-rider {
+  display: flex;
+  align-items: center;
+  gap: 11.33px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 51.33px;
+  padding: 0 10.25px 0 13.3px;
+  border: 0;
+  border-top: 1px solid var(--reg-divider);
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: start;
+}
+
+.wallet-rider .person-badge-plain {
+  background: var(--reg-face-pale);
+  font-weight: 700;
+}
+
+.wallet-rider-name {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2.8px;
+}
+
+.wallet-rider > svg {
+  color: var(--reg-muted);
+}
+
+.wallet-count-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  min-height: 34.8px;
+  padding: 8.34px 13.33px 0;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.wallet-count-row + .wallet-count-row {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.wallet-count-row > span:first-child {
+  color: var(--reg-muted);
+}
+
+.wallet-detail .wallet-note {
+  margin-top: 10.5px;
+  padding: 11.2px 14px 12.8px;
+  font-size: 12.5px;
+  line-height: 18px;
+}
+
+.wallet-open {
+  min-height: 34px;
+}
+
+.wallet-open b {
+  padding-bottom: 2.8px;
+}

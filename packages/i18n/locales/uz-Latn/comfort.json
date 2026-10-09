@@ -10,7 +10,6 @@
   "favorites.trips": "Ularning safarlari",
   "favorites.noTrips": "Hozircha yangi safar yoʻq. Chiqishi bilan xabar beramiz.",
   "history.title": "Safarlar tarixi",
-  "history.hint": "Oʻtgan safarlar va baholar",
   "history.empty": "Hali oʻtgan safar yoʻq",
   "history.emptyHint": "Safar tugagach, u shu yerda koʻrinadi.",
   "history.given": "Bahongiz: ⭐ {stars}",

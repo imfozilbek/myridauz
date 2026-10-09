@@ -116,6 +116,7 @@ export * from './trip-counts';
 export * from './trip-changes';
 export * from './trip-progress';
 export * from './wallet';
+export * from './wallet-detail';
 export * from './chat';
 export * from './feed';
 export * from './shares';

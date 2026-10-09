@@ -211,4 +211,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/143-driver-trip-path.md` | Путь 6 водителя (G63): публикация на одном экране, «Mening safarim», встреча, «Safar tugadi», «Qaytish», прошлая поездка |
 | `docs/144-g64-texts.md`, `docs/145-g64-pixel-perfect.md` | G64: новые тексты на согласие владельца; сверка Pixel Perfect, спорные места макета |
 | `docs/146-requests-and-trips-path.md` | Путь 7 (G64): «Yoʻlovchilar soʻrovlari», чат и звонок до брони, одна логика предложения, поездка для всего салона, «Mening safarlarim» водителя |
+| `docs/148-g65-texts.md`, `docs/149-g65-pixel-perfect.md` | G65: новые тексты на согласие владельца; сверка Pixel Perfect «Hamyon», «Profil», «Kanallar», спорные места макетов |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |
