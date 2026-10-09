@@ -98,10 +98,12 @@ export async function showCards(env: Bindings, cards: readonly Card[], rings: re
 }
 
 // The news of a route in its card of the day (docs/122 rule 4): the first one rings, unless it is
-// night; the next ones of the day edit it without sound.
-export async function showNews(env: Bindings, news: News): Promise<void> {
+// night; the next ones of the day edit it without sound. A ring, when given, answers the card.
+export async function showNews(env: Bindings, news: News, ring?: Pick<Ring, 'text' | 'quiet'>) {
   const now = Date.now();
-  await showCards(env, [await newsCard(newsOf(env), news, now, isQuietTime(now))]);
+  const card = await newsCard(newsOf(env), news, now, news.quiet === true || isQuietTime(now));
+  const rings = ring ? [{ ...ring, bot: news.bot, chatId: news.chatId, card: card.key }] : [];
+  await showCards(env, [card], rings);
 }
 
 // A message for every team member through the admin bot (docs/02).

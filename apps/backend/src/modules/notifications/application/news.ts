@@ -25,6 +25,8 @@ export type News = {
   readonly foot: string;
   readonly line?: NewsLine;
   readonly markup: object;
+  // A card that never rings by itself: its news ring under it when they must (owner «Diqqat»).
+  readonly quiet?: boolean;
 };
 
 export type NewsStore = {

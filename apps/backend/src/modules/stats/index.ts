@@ -1,12 +1,12 @@
 import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { localAnalyticsRows } from '../analytics';
-import { notifyTeam } from '../notifications';
+import { tellOwners } from '../team-queue';
 import { checkAlerts } from './application/check-alerts';
 import type { EventSource, StatsDeps } from './application/ports';
 import { statsRoutes } from './http/stats-routes';
 import { analyticsSql } from './infrastructure/analytics-sql';
-import { alertMessage } from './infrastructure/bot-alert';
+import { alertSign } from './infrastructure/bot-alert';
 import { createMemoryCache, d1Cache } from './infrastructure/d1-cache';
 import { d1Numbers } from './infrastructure/d1-numbers';
 import { memoryEvents } from './infrastructure/memory-events';
@@ -37,10 +37,7 @@ const statsDeps = (env: Bindings): StatsDeps => {
     numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers, arrivals: async () => [] },
     cache: env.DB ? d1Cache(env.DB) : localCache,
     rules: brand.alerts,
-    tellTeam: async (alert) => {
-      const { text, markup } = alertMessage(brand, alert);
-      await notifyTeam(env, text, markup);
-    },
+    tellOwners: (alert) => tellOwners(env, alertSign(alert)),
     now: Date.now,
   };
 };

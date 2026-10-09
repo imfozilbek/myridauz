@@ -1,8 +1,10 @@
 import { loadBrand } from '@platform/brands';
 import { isTeamTime } from '@platform/contracts';
 import type { Bindings } from '../../env';
-import { showCards, type Ring } from '../notifications';
+import { adminIds } from '../../shared/telegram/bot-config';
+import { showCards, showNews, type Ring } from '../notifications';
 import { teamMembers } from '../team';
+import { diqqatNews, type Signal } from './infrastructure/diqqat-card';
 import { queueOf, type Case } from './domain/queue';
 import { navbatCard, navbatRing, newCaseRing } from './infrastructure/navbat-card';
 
@@ -43,6 +45,21 @@ export async function showQueue(env: Bindings, news?: QueueNews): Promise<void> 
     );
   } catch (error) {
     console.warn(JSON.stringify({ event: 'team_queue_failed', message: String(error) }));
+  }
+}
+
+// A sign of the day for every owner in «Diqqat» (G68, docs/122); errors and a late case ring in team
+// hours only. A sign must not stop the step that found it.
+export async function tellOwners(env: Bindings, signal: Signal): Promise<void> {
+  try {
+    const brand = loadBrand(env.BRAND);
+    const now = Date.now();
+    const ring = signal.ring
+      ? { text: signal.text, quiet: !isTeamTime(now, brand.moderation.hours) }
+      : undefined;
+    for (const ownerId of adminIds(env)) await showNews(env, diqqatNews(brand, ownerId, signal, now), ring);
+  } catch (error) {
+    console.warn(JSON.stringify({ event: 'owner_sign_failed', message: String(error) }));
   }
 }
 

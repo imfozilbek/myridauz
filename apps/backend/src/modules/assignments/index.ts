@@ -2,10 +2,9 @@ import { loadBrand } from '@platform/brands';
 import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
-import { adminIds } from '../../shared/telegram/bot-config';
-import { notify, notifyTeam } from '../notifications';
+import { notifyTeam } from '../notifications';
 import { teamMembers } from '../team';
-import { caseName, showQueue } from '../team-queue';
+import { caseName, showQueue, tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
@@ -59,7 +58,6 @@ export const sendTeamDigest = (env: Bindings, decisions: Decisions) => sendDiges
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
   const brand = loadBrand(env.BRAND);
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
-  const admin = (chatId: number, text: string) => ({ bot: 'admin' as const, chatId, text });
   return remindWaiting({
     store: storeOf(env),
     rules: { hours, remindMinutes, ownerMinutes },
@@ -75,13 +73,11 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
       });
       await showQueue(env, { kind: 'late', memberId: moderatorId, text });
     },
-    toOwners: async ({ name }, moderatorId) => {
+    // A case over the limit rings under «Diqqat» of the owners (G68, docs/122).
+    toOwners: async ({ name, publicId }, moderatorId) => {
       const moderator = (await peopleOf(env).find(moderatorId))?.firstName ?? String(moderatorId);
       const text = t('bot.moderation.ownerWaiting', { minutes: String(ownerMinutes), name, moderator });
-      await notify(
-        env,
-        [...adminIds(env)].map((ownerId) => admin(ownerId, text)),
-      );
+      await tellOwners(env, { id: `late:${publicId}`, text, ring: true });
     },
   });
 }

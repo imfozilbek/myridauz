@@ -11,5 +11,10 @@
   "navbat.case.complaint": "{name} shikoyati",
   "navbat.case.face": "{name} rasmi",
   "navbat.ringNew": "📋 Yangi ish keldi: navbat boʻsh edi",
-  "navbat.ringLate": "⏱ {case} {minutes} daqiqa kutmoqda: {left} daqiqa qoldi"
+  "navbat.ringLate": "⏱ {case} {minutes} daqiqa kutmoqda: {left} daqiqa qoldi",
+  "diqqat.title": "⚠️ Diqqat · bugun",
+  "diqqat.hint": "Kuniga bitta karta: yangi belgi chiqsa, shu karta yangilanadi",
+  "diqqat.stats": "📊 Statistika",
+  "diqqat.people": "👥 Odamlar",
+  "diqqat.money": "💳 {name} (ID {id}): hamyondagi pul {count} ta joyga yetadi"
 }

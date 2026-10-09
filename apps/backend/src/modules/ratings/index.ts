@@ -2,7 +2,8 @@ import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { maskContacts } from '../chat';
-import { notify, notifyTeam } from '../notifications';
+import { notify } from '../notifications';
+import { tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
 import { askRatings } from './application/ask';
 import type { RatingsDeps, Ride } from './application/ports';
@@ -44,7 +45,7 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
         average: formatNumber(rating.average ?? 0),
         count: rating.count,
       };
-      await notifyTeam(env, t('bot.rating.team', values));
+      await tellOwners(env, { id: `rating:${publicId}`, text: t('bot.rating.team', values), ring: false });
     },
     mask: (text) => maskContacts(text).text,
     now: Date.now,

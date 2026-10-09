@@ -2,7 +2,8 @@ import { appHost, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
 import { sendEvent } from '../../feed';
-import { notify, notifyTeam } from '../../notifications';
+import { notify } from '../../notifications';
+import { tellOwners } from '../../team-queue';
 import { peopleOf } from '../../users';
 import type { Addressee, ChatSignals, Role } from '../application/ports';
 
@@ -45,10 +46,12 @@ export const botSignals = (env: Bindings): ChatSignals => ({
     ringOr(env, { to, key, kind: 'call' }, t('bot.call.incoming'), t('bot.call.answer')),
   missedCall: (to, key) => ringOr(env, { to, key, kind: 'missed' }, t('bot.call.missed'), t('bot.chat.open')),
   read: async (to, key) => void (await ringUnderSeat(env, { to, key, kind: 'read' })),
+  // A line in «Diqqat» of the owner, one per person a day (G68, docs/122). The team sees the public
+  // id, never the Telegram ID (docs/65 A3).
   contactAttempts: async (userId, key, count) => {
     const person = await peopleOf(env).find(userId);
-    // The team sees the public id, never the Telegram ID (docs/65 A3).
-    const values = { name: person?.firstName ?? '', id: person?.publicId ?? '', count: String(count), key };
-    await notifyTeam(env, t('bot.chat.contactAttempts', values));
+    const id = person?.publicId ?? '';
+    const values = { name: person?.firstName ?? '', id, count: String(count), key };
+    await tellOwners(env, { id: `contact:${id}`, text: t('bot.chat.contactAttempts', values), ring: false });
   },
 });

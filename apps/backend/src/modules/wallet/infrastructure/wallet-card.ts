@@ -2,7 +2,7 @@ import type { BrandConfig } from '@platform/brands';
 import { OPEN_LINK, WALLET_SECTION, type Wallet } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
-import { bold, italic } from '../../../shared/telegram/html';
+import { bold, escapeHtml, italic } from '../../../shared/telegram/html';
 import { appButton } from '../../../shared/telegram/open-button';
 import type { WalletNews } from '../application/ports';
 
@@ -51,4 +51,15 @@ export const walletRing = (driverId: number, wallet: Wallet, news: WalletNews, q
   text: newsText(wallet, news),
   card: walletCardKey(driverId),
   quiet,
+});
+
+// The same news as a line in «Diqqat» of the owner: whose money confirms few seats (G68, docs/122).
+export const moneySign = (person: { firstName: string; publicId: string }, wallet: Wallet) => ({
+  id: `money:${person.publicId}`,
+  text: t('bot.diqqat.money', {
+    name: escapeHtml(person.firstName),
+    id: person.publicId,
+    count: String(wallet.seatsLeft ?? 0),
+  }),
+  ring: false,
 });

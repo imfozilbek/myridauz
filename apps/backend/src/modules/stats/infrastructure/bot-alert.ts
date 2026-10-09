@@ -1,21 +1,21 @@
-import { appHost, type BrandConfig } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Alert } from '../domain/alerts';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// A signal to the admin bot with a button to the dashboard (docs/29).
-export function alertMessage(brand: BrandConfig, alert: Alert) {
-  const url = `https://${appHost(brand, 'admin')}/?stats=day`;
-  const markup = { inline_keyboard: [[{ text: t('stats.open'), web_app: { url } }]] };
-  const text =
-    alert.kind === 'errors'
-      ? t('bot.stats.errors', { hour: alert.hour, usual: alert.usual })
-      : t('bot.stats.drop', {
-          funnel: t(`stats.funnel.${alert.funnel}`),
-          step: t(`stats.step.${alert.step}`),
-          drop: alert.drop,
-          usual: alert.usual,
-        });
-  return { text, markup };
+// A sign of the dashboard for «Diqqat» of the owner (docs/29, G68): errors ring, a drop does not.
+export function alertSign(alert: Alert) {
+  if (alert.kind === 'errors')
+    return {
+      id: 'errors',
+      text: t('bot.stats.errors', { hour: alert.hour, usual: alert.usual }),
+      ring: true,
+    };
+  const text = t('bot.stats.drop', {
+    funnel: t(`stats.funnel.${alert.funnel}`),
+    step: t(`stats.step.${alert.step}`),
+    drop: alert.drop,
+    usual: alert.usual,
+  });
+  return { id: `drop:${alert.funnel}:${alert.step}`, text, ring: false };
 }

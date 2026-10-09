@@ -36,7 +36,7 @@ function setup(events: EventSource | null) {
     numbers: { numbers: async () => numbers, arrivals: async () => [] },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
-    tellTeam: async (alert) => void told.push(alert),
+    tellOwners: async (alert) => void told.push(alert),
     now: () => NOW,
   };
   return { deps, told, queries: () => queries };

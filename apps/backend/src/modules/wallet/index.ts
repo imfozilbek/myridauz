@@ -3,6 +3,7 @@ import { isQuietTime, type Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals } from '../feed';
 import { showCards } from '../notifications';
+import { tellOwners } from '../team-queue';
 import { peopleOf } from '../users';
 import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
@@ -13,7 +14,7 @@ import { warnBonusEnds } from './application/wallet-news';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
-import { walletCard, walletRing } from './infrastructure/wallet-card';
+import { moneySign, walletCard, walletRing } from './infrastructure/wallet-card';
 
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
@@ -49,6 +50,8 @@ const walletDeps = (env: Bindings): WalletDeps => {
       await showCards(env, [walletCard(brand, driverId, view, now)], [ring]).catch((error: unknown) =>
         console.warn(JSON.stringify({ event: 'wallet_news_failed', message: String(error) })),
       );
+      const person = news === 'fewSeats' ? await peopleOf(env).find(driverId) : undefined;
+      if (person) await tellOwners(env, moneySign(person, view));
     },
     now: Date.now,
     newId: () => crypto.randomUUID(),
