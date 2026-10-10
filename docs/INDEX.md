@@ -150,4 +150,5 @@
 | 161 | [161-g75-admin-texts.md](161-g75-admin-texts.md) | G75: тексты админки (главный экран команды и дела «Navbat») на согласие владельца |
 | 162 | [162-g75-admin-pixel-perfect.md](162-g75-admin-pixel-perfect.md) | G75: сверка Pixel Perfect админки (g67/1, g67/2), спорные места макетов |
 | 163 | [163-g75-pixel-perfect.md](163-g75-pixel-perfect.md) | G75: сверка Pixel Perfect экранов по листам g75 (вариант А), спорные места |
+| 164 | [164-dock-and-sheets.md](164-dock-and-sheets.md) | Док G76 и шторки главного экрана: какие шторки оставить, какие убрать |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |
