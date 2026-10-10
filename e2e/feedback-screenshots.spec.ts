@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
+import { adminCase, appUrl, MINI_APPS, openFindTrip } from './apps';
 import { mockFeedback } from './feedback-mock';
 import { searchRoute } from './market';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
@@ -47,7 +47,7 @@ test('passenger: the rating on the trip and the reviews', async ({ page }) => {
   await mockFeedback(page);
   const shot = shooter(page, 'rating');
   await open(page, telegramUrl(appUrl(PASSENGER.port)));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await searchRoute(page);
   await expect(page.getByText('Jasur').first()).toBeVisible();
   await shot('1-results');

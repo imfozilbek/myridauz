@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT, publishButton } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
 import { mapDrawn, TILES_MS } from './map-wait';
@@ -31,7 +31,7 @@ test('passenger: «Qayerga borasiz?», the trips, «Safar», the door in Toshken
   page,
 }) => {
   await open(page, PASSENGER.port);
-  await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await fromIfAsked(page);
   await shot(page, '1-route');
   await searchRoute(page);

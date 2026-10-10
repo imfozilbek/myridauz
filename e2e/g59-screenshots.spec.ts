@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
 import { mapDrawn, TILES_MS } from './map-wait';
@@ -32,7 +32,7 @@ for (const platform of PLATFORMS)
         await page.mouse.move(0, 0);
         await page.screenshot({ path: `screenshots/g59/${platform}-${width}-${name}.png`, fullPage: true });
       };
-      await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+      await openFindTrip(page);
       await fromIfAsked(page);
       await expect(page.locator('.direction-card').first()).toBeVisible();
       await oneSize(page, '.direction-card');

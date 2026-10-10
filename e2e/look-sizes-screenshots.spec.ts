@@ -42,6 +42,8 @@ for (const app of MINI_APPS)
       await expect(page.locator('.top-loader')).toHaveCount(0, { timeout: 5_000 });
       await nothingCut(page);
       expect(await page.evaluate(() => document.body.style.background)).toContain('linear-gradient');
+      // The arrow «Hozir» swings 3 times and the block rises once (G76): the screen stands after.
+      await page.waitForFunction(() => document.getAnimations().length === 0);
       const before = await layout(page);
       await page.waitForTimeout(1_000);
       expect(await layout(page)).toBe(before);

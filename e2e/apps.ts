@@ -10,9 +10,9 @@ export const MINI_APPS = [
     name: 'passenger',
     port: 4101,
     welcome: t('common.welcome.verified'),
-    action: t('common.passenger.findTrip'),
-    // G25: the main screen keeps the main action on the Telegram button.
-    mainButton: t('common.passenger.findTrip'),
+    action: t('common.myTrips'),
+    // G76: the main button is the step of the block; the lists of the tests hold an offer.
+    mainButton: t('home.dock.offersOpen'),
   },
   {
     name: 'driver',
@@ -46,7 +46,7 @@ export const TEXT = {
   search: t('places.search'),
   insideCity: t('errors.locations.inside_city'),
   // G62: the main screen of a new driver opens the application from this big tile.
-  becomeDriver: t('drivers.become.title'),
+  becomeDriver: t('home.dock.fill'),
   carTitle: t('drivers.car.title'),
   plateField: t('drivers.plate.title'),
   shutter: t('common.camera.shoot'),
@@ -55,13 +55,13 @@ export const TEXT = {
   carChange: t('drivers.car.change'),
   pending: t('drivers.status.pending.title'),
   // The note on the main screen while the application is checked (G53).
-  check: t('home.check.title'),
+  check: t('home.dock.afterCheckLong'),
   photoFront: t('drivers.tile.front'),
   photoSide: t('drivers.photo.side'),
   photoInside: t('drivers.photo.interior'),
   photos: t('drivers.photos.title'),
   approved: t('drivers.approved.title'),
-  changes: t('drivers.status.changes_requested.title'),
+  changes: t('home.dock.fixTitle'),
   requestChanges: t('moderation.requestChanges'),
   reasonFront: t('drivers.reason.front_unclear'),
   reasonPlate: t('drivers.reason.plate_not_readable'),
@@ -79,7 +79,7 @@ export const TEXT = {
   book: t('find.book', { count: '1' }),
   management: t('common.admin.management'),
   teamTrips: t('common.admin.trips'),
-  passengerRequests: t('common.driver.passengerRequests'),
+  requestsSee: t('home.dock.requestsSee'),
   pendingRequests: t('drivers.status.pending.requests'),
   pricing: t('pricing.title'),
   editFormula: t('pricing.edit'),
@@ -96,3 +96,15 @@ export const LANDING_PORT = 4104;
 
 // «Safar eʼlon qilish» of an approved driver: the main button under «Qayerdan / Qayerga» (G66).
 export const publishButton = (page: Page) => page.locator('#tg-main-button', { hasText: TEXT.newTrip });
+
+// The buttons of the block at the bottom stand only while it is free and the driver approved (G76,
+// docs/165): else a test opens the section the way a bot button does, ?open=<section> (docs/119).
+export async function openSection(page: Page, section: string, label: string) {
+  await page.waitForLoadState('networkidle');
+  const button = page.locator('#tg-main-button, #tg-secondary-button', { hasText: label });
+  if ((await button.isVisible()) && (await button.isEnabled())) return button.click();
+  const [base = '', hash = ''] = page.url().split('#');
+  await page.goto(`${base.split('?')[0]}?open=${section}#${hash}`);
+}
+
+export const openFindTrip = (page: Page) => openSection(page, 'find_trip', TEXT.findTrip);

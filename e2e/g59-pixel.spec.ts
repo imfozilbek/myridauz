@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { mapState, mockMap } from './map-mock';
 import { mapDrawn, TILES_MS } from './map-wait';
@@ -50,7 +50,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await expect(page.locator('.direction-card').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
   await shot(page, '03');

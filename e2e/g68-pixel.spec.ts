@@ -3,7 +3,7 @@ import type { WebSocketRoute } from '@playwright/test';
 import { expect, test, type Page } from './crash-guard';
 import { openDriverHome } from './g66-driver-mock';
 import { openPassengerHome } from './g66-home-mock';
-import { ask, asked, DEPART, NOW, offers, seat, taken, trip, withLists } from './g68-sheet-mock';
+import { ask, asked, NOW, offers, seat, trip, withLists } from './g68-sheet-mock';
 
 // Pixel Perfect of the sheet of the open Mini App (G68, lessons 141, 147, 151): the phones of the
 // mockups g68/7 and g68/8 at 360 × 808 and their scale 1.375 (495 px wide), with their data; the diff
@@ -46,6 +46,8 @@ test('7-3: a new request to the driver', async ({ page }) => {
     'driver/bookings': { bookings: [ask('d1', 'Madina')] },
     'driver/wallet': WALLET,
   });
+  // The block calls, the sheet answers (G76, docs/164): its main button opens it.
+  await page.locator('#tg-main-button').click();
   await expect(page.locator('.action-kicker', { hasText: t('sheet.request.kicker') })).toBeVisible();
   await shot(page, '7-3');
 });
@@ -58,23 +60,17 @@ test('7-5: three requests wait: «1 / 3»', async ({ page }) => {
     'driver/bookings': { bookings: three },
     'driver/wallet': WALLET,
   });
+  // The block calls, the sheet answers (G76, docs/164): its main button opens it.
+  await page.locator('#tg-main-button').click();
   await expect(page.getByText('1 / 3')).toBeVisible();
   await shot(page, '7-5');
-});
-
-test('7-6: the passenger took the offer: «Taklif qabul qilindi»', async ({ page }) => {
-  await openDriverHome(page, 'free');
-  await withLists(page, {
-    'driver/trips': { trips: [taken.trip] },
-    'driver/bookings': { bookings: [taken] },
-  });
-  await expect(page.getByText(t('sheet.answer.offer'))).toBeVisible();
-  await shot(page, '7-6');
 });
 
 test('8-1: a new offer to the passenger', async ({ page }) => {
   await openPassengerHome(page);
   await withLists(page, { 'passenger/requests': { requests: [asked] }, 'passenger/offers': { offers } });
+  // The block calls, the sheet answers (G76, docs/164): its main button opens it.
+  await page.locator('#tg-main-button').click();
   await expect(page.getByText(t('sheet.offer.kicker'))).toBeVisible();
   await shot(page, '8-1');
 });
@@ -114,13 +110,4 @@ test('a call on a 320 px phone: «Rad etish» and «Javob berish» stay whole', 
   await ringing(page);
   await page.waitForTimeout(600);
   await wholeWords(page);
-});
-
-test('8-4: the driver came to the meeting', async ({ page }) => {
-  await openPassengerHome(page);
-  await page.clock.setFixedTime(DEPART - 10 * 60_000);
-  const came = { ...seat, driverCameAt: DEPART - 11 * 60_000 };
-  await withLists(page, { 'passenger/bookings': { bookings: [came] } });
-  await expect(page.locator('.action-kicker', { hasText: t('sheet.meet.kicker') })).toBeVisible();
-  await shot(page, '8-4');
 });

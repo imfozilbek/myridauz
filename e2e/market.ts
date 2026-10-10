@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT, publishButton } from './apps';
+import { openFindTrip, publishButton, TEXT } from './apps';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
@@ -58,7 +58,7 @@ export async function searchRoute(page: Page) {
 // A passenger finds trips to Samarqand shahri: «Qayerga borasiz?», the trips of the nearest day; the
 // filter "ayol bor"; «Safar» of a trip and its «1 ta joy band qilish» on the main button.
 export async function findTrips(page: Page, shot: Shot = none) {
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await fromIfAsked(page);
   await shot('1-route');
   await searchRoute(page);

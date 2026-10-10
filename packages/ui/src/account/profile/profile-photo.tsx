@@ -8,13 +8,15 @@ type ProfilePhotoProps = {
   readonly name: string;
   readonly hasAvatar: boolean;
   readonly size?: number;
+  // The size comes from the style of the place: the head of the main screen (G76, docs/121).
+  readonly fluid?: boolean;
 };
 
 // A round photo, or a person icon while there is none.
-export function ProfilePhoto({ userId, name, hasAvatar, size = 112 }: ProfilePhotoProps) {
+export function ProfilePhoto({ userId, name, hasAvatar, size = 112, fluid = false }: ProfilePhotoProps) {
   const url = useAvatarUrl(userId, hasAvatar);
   const { colors } = useBrand().theme;
-  const style = { width: size, height: size };
+  const style = fluid ? undefined : { width: size, height: size };
   if (url) return <img src={url} alt={name} style={style} className="profile-round" />;
   return (
     <span style={style} className="profile-round profile-empty">

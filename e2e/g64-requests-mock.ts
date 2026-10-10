@@ -1,7 +1,7 @@
 import type { Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS } from './apps';
+import { appUrl, MINI_APPS, openSection } from './apps';
 import { tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -81,6 +81,6 @@ export async function openBoard(page: Page, board: Board) {
   await page.clock.setFixedTime(tashkent(`${TODAY}T12:20`));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await page.getByText(t('common.driver.passengerRequests')).first().click();
+  await openSection(page, 'passenger_requests', t('home.dock.requestsSee'));
   await page.locator('.request-row').first().waitFor();
 }

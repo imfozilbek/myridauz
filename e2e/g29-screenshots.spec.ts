@@ -2,7 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { summary } from './drivers-mock';
-import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
+import { adminCase, appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { searchRoute } from './market';
 import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
@@ -24,7 +24,7 @@ test('passenger: a search emptied by a filter says so (P6)', async ({ page }) =>
   });
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await searchRoute(page);
   await expect(page.getByText('Jasur', { exact: false })).toBeVisible();
   await page.getByText(TEXT.womanFilter).first().click();

@@ -97,16 +97,26 @@
 }
 
 .home-head .home-profile {
+  /* On a phone under 360 px the face, the gaps and the name are a little smaller: nothing is cut
+     (docs/121); from 360 px exactly as on the mockup. */
+  --face: clamp(34px, calc(25vw - 46px), 44px);
+
   flex: 1;
   min-width: 0;
   height: 60px;
-  gap: 12px;
-  padding: 0 14px;
+  gap: clamp(8px, calc(10vw - 24px), 12px);
+  padding: 0 clamp(10px, calc(10vw - 22px), 14px);
   border-radius: 16px;
 }
 
+.home-head .home-profile .profile-round {
+  flex: none;
+  width: var(--face);
+  height: var(--face);
+}
+
 .home-head .home-profile .home-card-title {
-  font-size: 18px;
+  font-size: clamp(16px, 5vw, 18px);
   font-weight: 700;
   line-height: normal;
 }
