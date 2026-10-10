@@ -55,6 +55,23 @@ describe('«Safar» that cannot be booked', () => {
     expect(document.querySelector('.outcome-plate.outcome-plate-off')?.textContent).toContain('bekor qildi');
   });
 
+  // The limit before the tap, not after it (G75, docs/158 А): 3 requests wait for an answer.
+  it('says the limit of the waiting requests instead of the button', async () => {
+    const waiting = [1, 2, 3].map((n) => ({
+      ...booking,
+      id: `w${n}`,
+      status: 'requested' as const,
+      trip: { ...booking.trip, id: `other${n}` },
+    }));
+    open(trip, testClients({ bookings: { myBookings: async () => waiting } }));
+    expect(
+      await screen.findByText(
+        'Javob kutayotgan soʻrovlar soni chegaraga yetdi. Haydovchilar javobini kuting.',
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText(BOOK)).toBeNull();
+  });
+
   it('books the trip of another driver', async () => {
     open(trip);
     expect(await screen.findByText(BOOK)).toBeTruthy();

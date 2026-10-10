@@ -81,7 +81,11 @@ export function SafarScreen({ trip, onBack, onBook, onOthers }: Props) {
           <ClosedTrip trip={trip} reason={closed} onOthers={onOthers} />
         </div>
       ) : mine || asked ? (
-        <p className="safar-note">{t(mine ? 'market.trip.yours' : 'market.trip.asked')}</p>
+        <p className="safar-note">
+          {t(
+            mine ? 'market.trip.yours' : asked === 'limit' ? 'errors.bookings.too_many' : 'market.trip.asked',
+          )}
+        </p>
       ) : (
         <>
           <p className="find-head safar-head">{t('find.seatsTitle')}</p>

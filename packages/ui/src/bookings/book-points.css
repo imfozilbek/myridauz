@@ -130,3 +130,16 @@
   font-size: 14px;
   color: var(--reg-to);
 }
+
+/* «Oʻxshash safarlar» under the refusal of the last seat (G75, docs/158 А). */
+.points-others {
+  align-self: center;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}

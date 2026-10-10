@@ -75,6 +75,7 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
         flow={flow}
         route={t('common.route', { from: region(trip.from), to: region(trip.to) })}
         onBack={onBack}
+        onOthers={onClose}
         onSent={(booking) => {
           flow.clear();
           setSent(booking);

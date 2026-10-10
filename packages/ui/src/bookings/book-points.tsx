@@ -18,12 +18,14 @@ type Props = {
   readonly flow: ReturnType<typeof useBooking>;
   readonly route: string;
   readonly onBack: () => void;
+  // The last seat went while the points were chosen: the trips of the same route (G75, docs/158 А).
+  readonly onOthers: () => void;
   readonly onSent: (booking: Booking) => void;
 };
 
 // «Qayerdan, qayerga?» (owner decision 06.10.2026, docs/118 path 2, B): one screen instead of the way,
 // two maps and the check. A row opens its map; «Soʻrov yuborish» works when both are chosen.
-export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props) {
+export function BookPoints({ trip, choice, flow, route, onBack, onOthers, onSent }: Props) {
   useScreenView('bookings.points');
   const { t, formatMoney, formatNumber, formatDate, formatTime } = useI18n();
   const words = usePassengerWords();
@@ -93,6 +95,11 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
         </span>
         <b>{formatMoney(trip.price * choice.seats)}</b>
       </div>
+      {error === 'errors.bookings.no_seats' ? (
+        <button type="button" className="points-others" onClick={onOthers}>
+          {t('bookings.others')}
+        </button>
+      ) : null}
     </PointsScreen>
   );
 }
