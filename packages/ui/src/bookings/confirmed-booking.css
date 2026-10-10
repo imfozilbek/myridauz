@@ -9,35 +9,6 @@
   box-sizing: border-box;
 }
 
-.booking-banner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 14px;
-  border: 1px solid var(--reg-mint);
-  border-radius: 14px;
-  background: var(--reg-soft);
-  font-size: 16px;
-  line-height: 1.2;
-}
-
-.booking-banner-tile {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: var(--reg-strong);
-  color: var(--reg-card);
-}
-
-.booking-banner-text {
-  display: flex;
-  flex-direction: column;
-}
-
 .booking-card {
   border-radius: 14px;
   background: var(--reg-card);
@@ -105,15 +76,6 @@
   justify-content: center;
   gap: 4px 8px;
   text-align: center;
-}
-
-.booking-banner-off {
-  border-color: var(--reg-divider);
-  background: var(--reg-bg);
-}
-
-.booking-banner-off .booking-banner-tile {
-  background: var(--reg-control);
 }
 
 /* A tile with its deadline under the word is taller (mockup g60/7). */

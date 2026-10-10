@@ -20,15 +20,6 @@ export async function confirm(message: string, confirmText: string): Promise<boo
   return shown?.[0] === true ? (await shown[1]) === CONFIRM_ID : window.confirm(message);
 }
 
-// A choice of up to 3 answers in the native Telegram window (docs/21). The id of the chosen one,
-// null when closed; undefined outside Telegram: the screen shows the choice itself.
-export async function choose(message: string, options: readonly { id: string; text: string }[]) {
-  const buttons = options.map(({ id, text }) => ({ id, type: 'default' as const, text }));
-  const shown = popup.show.ifAvailable({ message, buttons });
-  if (shown?.[0] !== true) return undefined;
-  return (await shown[1]) || null;
-}
-
 // A map or another site opens in Telegram's own browser; outside Telegram, in a new tab (docs/21).
 export function openExternal(url: string): void {
   if (openLink.ifAvailable(url)?.[0] !== true) window.open(url, '_blank', 'noopener');

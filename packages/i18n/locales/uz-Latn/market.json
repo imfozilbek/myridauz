@@ -59,6 +59,8 @@
   "status.open": "Faol",
   "status.matched": "Haydovchi topildi",
   "status.expired": "Muddati oʻtgan",
+  "request.why.expired": "Shu kunga haydovchi topilmadi.",
+  "request.why.cancelled": "Siz soʻrovni bekor qildingiz.",
   "mine.empty": "Hali safarlaringiz yoʻq",
   "mine.emptyHint": "Yangi safar eʼlon qiling: yoʻlovchilar sizni topadi.",
   "mine.requestsEmptyHint": "Safar toping yoki soʻrov qoldiring.",

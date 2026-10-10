@@ -1,12 +1,13 @@
 import { tashkentDate, type Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
 import { useDayLabel } from '../market/when';
+import { OutcomePlate } from '../states/outcome-plate';
 import { useBookingEnds } from '../trip/booking-ends';
 import { useDoneLine } from '../trip/done-line';
 
 // The plate on top of a booking page (docs/118 path 3, docs/124 A): what happened and when.
-// «Joy tasdiqlandi» and «Safar tugadi» in the colour of the app, an end without a trip in grey.
+// «Joy tasdiqlandi» and «Safar tugadi» in the colour of the app, an end without a trip in grey; a
+// month after the trip grey with its tick (g60/6).
 export function BookingBanner({ booking }: { readonly booking: Booking }) {
   const { t, formatTime } = useI18n();
   const dayLabel = useDayLabel();
@@ -24,25 +25,14 @@ export function BookingBanner({ booking }: { readonly booking: Booking }) {
       : status === 'completed'
         ? t('bookings.done.title')
         : t(`bookings.status.${status}`);
-  return (
-    <div className={good ? 'booking-banner' : 'booking-banner booking-banner-off'}>
-      <span className="booking-banner-tile">
-        <Icon name={good || old ? 'selected' : 'close'} size={22} />
-      </span>
-      <span className="booking-banner-text">
-        <b>{title}</b>
-        <span>
-          {status === 'completed'
-            ? done.line
-            : t('bookings.confirmed.when', {
-                day: dayLabel(tashkentDate(departAt), Date.now()),
-                time: formatTime(new Date(departAt)),
-              })}
-        </span>
-        {why ? <span>{why}</span> : null}
-      </span>
-    </div>
-  );
+  const when =
+    status === 'completed'
+      ? done.line
+      : t('bookings.confirmed.when', {
+          day: dayLabel(tashkentDate(departAt), Date.now()),
+          time: formatTime(new Date(departAt)),
+        });
+  return <OutcomePlate tick={good || old} off={!good} title={title} lines={why ? [when, why] : [when]} />;
 }
 
 const ENDED = ['declined', 'expired', 'cancelled_by_driver', 'cancelled_by_passenger'] as const;

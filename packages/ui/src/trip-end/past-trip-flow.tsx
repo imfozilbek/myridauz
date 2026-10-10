@@ -10,7 +10,6 @@ import { openInTelegram } from '../telegram/feedback';
 import { WalletScreen } from '../wallet/wallet-screen';
 import type { AfterRow } from './after-rows';
 import { PastTripPage } from './past-trip-page';
-import { pickRider } from './pick-rider';
 import type { ReturnTrip } from './return-plan';
 import { RiderPick } from './rider-pick';
 import { TripEndFlow } from './trip-end-flow';
@@ -19,7 +18,6 @@ import { taken } from './trip-sums';
 type About = 'talk' | 'complain';
 type Opened =
   | { readonly screen: 'chat' | 'call' | 'complain'; readonly booking: Booking }
-  | { readonly screen: 'pick'; readonly about: About }
   | { readonly screen: 'rate' | 'wallet' };
 
 type Props = {
@@ -38,6 +36,8 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
   const { t } = useI18n();
   const { bots } = useBrand();
   const [opened, setOpened] = useState<Opened | null>(null);
+  // The row whose passenger the sheet «Qaysi yoʻlovchi?» asks for (G75).
+  const [asking, setAsking] = useState<About | null>(null);
   const back = () => setOpened(null);
   const riders = bookings.filter(taken);
   const meet = useMeetMark(() => onChanged());
@@ -54,27 +54,18 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
       />
     );
   if (opened?.screen === 'complain') return <ComplaintScreen bookingId={opened.booking.id} onBack={back} />;
-  if (opened?.screen === 'pick')
-    return (
-      <RiderPick
-        riders={riders}
-        question={question}
-        onPick={(booking) => about(opened.about, booking)}
-        onBack={back}
-      />
-    );
   if (opened?.screen === 'rate')
     return (
       <TripEndFlow trip={trip} bookings={bookings} onPublish={onPublish} onClose={back} onRated={onChanged} />
     );
   if (opened?.screen === 'wallet') return <WalletScreen onBack={back} />;
-  const row = async (picked: AfterRow) => {
+  const row = (picked: AfterRow) => {
     if (picked === 'rate' || picked === 'commission')
       return setOpened({ screen: picked === 'rate' ? 'rate' : 'wallet' });
     if (picked === 'support') return openInTelegram(`https://t.me/${bots.support}`);
-    const booking = await pickRider(riders, question);
-    if (booking === 'list') return setOpened({ screen: 'pick', about: picked });
-    return booking ? about(picked, booking) : undefined;
+    if (riders.length > 1) return setAsking(picked);
+    const [only] = riders;
+    return only ? about(picked, only) : undefined;
   };
   return (
     <PastTripPage
@@ -84,10 +75,16 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
       onChat={(booking) => setOpened({ screen: 'chat', booking })}
       onCall={(booking) => setOpened({ screen: 'call', booking })}
       onMark={(booking) => void meet.mark(booking, 'no_show')}
-      onRow={(picked) => void row(picked)}
+      onRow={row}
       onPublish={onPublish}
     >
       <ActionFailure error={meet.failure} />
+      <RiderPick
+        riders={asking ? riders : null}
+        question={question}
+        onPick={(booking) => (setAsking(null), asking ? about(asking, booking) : undefined)}
+        onClose={() => setAsking(null)}
+      />
     </PastTripPage>
   );
 }

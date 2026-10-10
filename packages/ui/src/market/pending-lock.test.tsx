@@ -33,5 +33,7 @@ describe("passengers' requests before the approval (G34)", () => {
   it('tells a driver who has sent it that it is checked', () => {
     render(withStatus('pending'));
     expect(screen.getByText('Ariza tekshirilmoqda')).toBeTruthy();
+    // The look of a state of the mockup g75/1 A, as a limit or a block.
+    expect(document.querySelector('.center-screen .empty-state')).toBeTruthy();
   });
 });

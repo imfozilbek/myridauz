@@ -38,6 +38,9 @@ describe('«Safar» of a passenger (G59, docs/118 path 2)', { timeout: 20_000 },
     expect(await screen.findByText('«Yaxshi haydaydi»')).toBeTruthy();
     await tap('Barcha izohlar (37) ›');
     expect(await screen.findByText(/Dilnoza/u)).toBeTruthy();
+    // The look of the lists of the mockup g75/2 A: a title on top, each review on its own card.
+    expect(screen.getByText('Izohlar').className).toContain('market-title');
+    expect(document.querySelectorAll('.row-card').length).toBeGreaterThan(0);
   });
 
   it('tells once and quietly that a person opened the trip: «N koʻrdi» of the driver (G63)', async () => {

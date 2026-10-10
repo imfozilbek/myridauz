@@ -56,6 +56,7 @@
 | `places.which`, `places.trips` | «Samarqandning qaysi joyi?» (макет g75/6 А): заголовок списка мест области и строка под местом | «{region}ning qaysi joyi?»; «{count} ta safar» | ждёт |
 | `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | ждёт |
 | `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | ждёт |
+| `market.request.why.expired`, `market.request.why.cancelled` | общая плашка исхода на «Mening soʻrovim» (`158` А) | «Shu kunga haydovchi topilmadi.»; «Siz soʻrovni bekor qildingiz.» | ждёт |
 
 ## Как читать
 

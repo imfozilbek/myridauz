@@ -143,8 +143,7 @@ test('the driver sees the requests near the way first and opens the route', asyn
   await expect(page.getByText('Sardor')).toBeHidden();
   await shot(page, '7-trip-map');
   await page.locator('#tg-main-button', { hasText: t('way.map.go') }).click();
-  // The first time the sheet of the app asks which navigator (G75, mockup g75/6 A).
-  await page.getByRole('dialog').getByText(t('way.navigator.yandex')).click();
+  await page.getByRole('dialog').getByText(t('way.navigator.yandex')).click(); // the sheet of G75
   await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
   const [opened] = await telegramEvents(page, 'web_app_open_link');
   expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);
