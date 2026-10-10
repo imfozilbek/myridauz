@@ -1,4 +1,4 @@
-import { DAY_MS } from '@platform/contracts';
+import { complaintInputSchema, DAY_MS } from '@platform/contracts';
 import { publicIdOf } from '../../test-people';
 import { describe, expect, it } from 'vitest';
 import { fileComplaint, hiddenFromSearch } from './application/file';
@@ -12,9 +12,25 @@ describe('complaints (docs/17)', () => {
     expect(await fileComplaint(deps, 999, input('b1'))).toBe('complaints.not_found');
     expect(await fileComplaint(deps, 101, input('b1'))).toHaveProperty('id');
     expect(await fileComplaint(deps, 101, input('b1'))).toBe('complaints.already');
-    expect(await fileComplaint(deps, DRIVER, { ...input('b1'), reason: 'harassment' })).toHaveProperty('id');
+    expect(
+      await fileComplaint(deps, DRIVER, { ...input('b1'), reasons: ['harassment' as const] }),
+    ).toHaveProperty('id');
     // Every complaint reaches «Navbat» of the team; the urgent one rings day and night (G68).
     expect(log).toEqual(['team no_show', 'team harassment']);
+  });
+
+  // Several reasons as ticks (owner decision 10.10.2026): kept once, the gravest first, and any grave one
+  // makes the complaint urgent.
+  it('keeps several reasons, the gravest first, and rings the team for any grave one', async () => {
+    const { deps, log } = setup();
+    const picked = ['price_changed', 'harassment', 'price_changed'] as const;
+    const parsed = complaintInputSchema.parse({ bookingId: 'b1', reasons: picked });
+    expect(parsed.reasons).toEqual(['harassment', 'price_changed']);
+    await fileComplaint(deps, 101, parsed);
+    expect(log).toEqual(['team harassment+price_changed']);
+    const [view] = await complaintQueue(deps);
+    expect(view).toMatchObject({ reasons: ['harassment', 'price_changed'], high: true });
+    expect(complaintInputSchema.safeParse({ bookingId: 'b1', reasons: [] }).success).toBe(false);
   });
 
   it('hides a person from search after 3 different people complain, until the decision', async () => {

@@ -9,7 +9,7 @@ const complaint: ComplaintRecord = {
   authorId: 1,
   againstId: 10,
   bookingId: 'b1',
-  reason: 'no_show',
+  reasons: ['no_show'],
   comment: '',
   status: 'new',
   decision: null,

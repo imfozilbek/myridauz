@@ -22,7 +22,8 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
   it('«Назад» from a screen of its own and from the trip shows each answer as it was', async () => {
     openNewTrip();
     fireEvent.change(await toComment(), { target: { value: COMMENT } });
-    await tap('Orqaga');
+    // «Izoh» is a sheet (G75, mockup g75/3 A): closed, the trip shows what was typed.
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
     expect(await screen.findByText(COMMENT)).toBeTruthy();
     expect(screen.getByText('Siz bilan ketayotgan odam ayolmi?')).toBeTruthy();
     // The route was chosen here: «Назад» goes back to it with both ends, then on to the same trip.

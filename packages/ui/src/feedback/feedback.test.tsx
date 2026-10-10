@@ -70,11 +70,19 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
     const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
     open('review', { target: async () => TARGET, complain });
     await tap('Shikoyat');
+    // Several reasons as ticks (owner decision 10.10.2026): a second tap takes one back.
     await tap('Kelmadi');
+    await tap('Boshqa');
+    await tap('Kelishilgandan koʻp pul soʻradi');
+    await tap('Boshqa');
     expect(screen.getByPlaceholderText(/Nima boʻlganini/u).tagName).toBe('TEXTAREA');
     await tap('Yuborish');
     await waitFor(() =>
-      expect(complain).toHaveBeenCalledWith({ bookingId: 'b1', reason: 'no_show', comment: '' }),
+      expect(complain).toHaveBeenCalledWith({
+        bookingId: 'b1',
+        reasons: ['no_show', 'price_changed'],
+        comment: '',
+      }),
     );
     expect(await screen.findByText(/Moderator koʻrib chiqadi/u)).toBeTruthy();
     cleanup();

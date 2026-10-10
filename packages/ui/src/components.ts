@@ -11,7 +11,6 @@ export {
   Modal,
   Multiselectable,
   Radio,
-  Select,
   SegmentedControl,
   Snackbar,
   Spinner,

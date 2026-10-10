@@ -35,7 +35,7 @@ export const navbatItemSchema = z.discriminatedUnion('kind', [
     kind: z.literal('complaint'),
     ...base,
     against: name,
-    reason: z.enum(COMPLAINT_REASONS),
+    reasons: z.array(z.enum(COMPLAINT_REASONS)).min(1),
     refund: z.boolean(),
   }),
   z.object({ kind: z.literal('face'), ...base }),

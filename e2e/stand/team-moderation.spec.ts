@@ -59,7 +59,7 @@ test('T21, T23, T25. a no-show complaint: a warning and the commission back to t
   await runCron();
   await (
     await createFeedbackClient(await signedAs('driver', JAHONGIR))
-  ).complain({ bookingId: seat.id, reason: 'no_show' });
+  ).complain({ bookingId: seat.id, reasons: ['no_show'] });
   const team = createFeedbackClient(await signedAs('admin', OWNER));
   const complaint = (await team.queue()).find((c) => c.tripId === trip.id);
   // The team proposes the refund, the owner confirms it; it goes back to the balances the commission

@@ -73,7 +73,7 @@ export async function waitingComplaints(env: Bindings) {
       id: complaint.id,
       name: await name(complaint.authorId),
       against: await name(complaint.againstId),
-      reason: complaint.reason,
+      reasons: [...complaint.reasons],
       refund,
       since,
     })),

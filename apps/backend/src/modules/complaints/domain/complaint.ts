@@ -22,7 +22,8 @@ export type ComplaintRecord = {
   readonly authorId: number;
   readonly againstId: number;
   readonly bookingId: string;
-  readonly reason: ComplaintReason;
+  // One or more, the gravest first (owner decision 10.10.2026).
+  readonly reasons: readonly ComplaintReason[];
   readonly comment: string;
   readonly status: ComplaintStatus;
   // "none", "warning", "block:7", "block:forever", with ":refund" when a refund was proposed.
@@ -33,11 +34,12 @@ export type ComplaintRecord = {
   readonly refund: RefundMark | null;
 };
 
-export const isHigh = (reason: ComplaintReason) => HIGH_PRIORITY.includes(reason);
+export const isHigh = (reasons: readonly ComplaintReason[]) =>
+  reasons.some((reason) => HIGH_PRIORITY.includes(reason));
 
 // The queue of the team: high priority first, then the oldest (docs/17).
 export const queueOrder = (a: ComplaintRecord, b: ComplaintRecord) =>
-  Number(isHigh(b.reason)) - Number(isHigh(a.reason)) || a.createdAt - b.createdAt;
+  Number(isHigh(b.reasons)) - Number(isHigh(a.reasons)) || a.createdAt - b.createdAt;
 
 // Complaints from hideAfter different people in windowDays hide a person from the search until the
 // moderator decides (docs/17); the brand gives both, the owner changes them (docs/128 §4).

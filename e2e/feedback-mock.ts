@@ -12,7 +12,7 @@ const party = (n: number, firstName: string, role: 'driver' | 'passenger', trips
 });
 const complaint = (id: string, reason: string, high: boolean, hours: number) => ({
   id,
-  reason,
+  reasons: [reason],
   high,
   comment: high ? 'Yoʻlda qoʻpol gapirdi va tezlikni oshirdi.' : '',
   status: 'new',

@@ -1,4 +1,4 @@
-import type { ComplaintReason, ComplaintStatus, RefundState } from '@platform/contracts';
+import { COMPLAINT_REASONS, type ComplaintStatus, type RefundState } from '@platform/contracts';
 import type { ComplaintRecord } from '../domain/complaint';
 
 // A row of the table complaints (migrations/0012, 0048) and back.
@@ -32,12 +32,20 @@ const refundOf = (row: Row): ComplaintRecord['refund'] =>
         decidedAt: row.refund_decided_at,
       };
 
+// The reasons in the one column reason, joined by a comma: an old row holds one (G75).
+const REASON_SEPARATOR = ',';
+export const reasonsText = (reasons: ComplaintRecord['reasons']) => reasons.join(REASON_SEPARATOR);
+const reasonsOf = (text: string) => {
+  const kept = text.split(REASON_SEPARATOR);
+  return COMPLAINT_REASONS.filter((reason) => kept.includes(reason));
+};
+
 export const toComplaint = (row: Row): ComplaintRecord => ({
   id: row.id,
   authorId: row.author_id,
   againstId: row.against_id,
   bookingId: row.booking_id,
-  reason: row.reason as ComplaintReason,
+  reasons: reasonsOf(row.reason),
   comment: row.comment,
   status: row.status as ComplaintStatus,
   decision: row.decision,

@@ -87,7 +87,7 @@ describe('«Kelmadi» puts the case into the queue of the team (docs/124 В)', (
     await fileNoShow(deps, DRIVER, 'b1');
     await fileNoShow(deps, DRIVER, 'b1');
     const queue = await complaintQueue(deps);
-    expect(queue.map((known) => [known.reason, known.author.role, known.against.role])).toEqual([
+    expect(queue.map((known) => [known.reasons[0], known.author.role, known.against.role])).toEqual([
       ['no_show', 'driver', 'passenger'],
     ]);
   });

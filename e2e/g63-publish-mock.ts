@@ -27,8 +27,9 @@ const MAN = {
 };
 
 // «Safar eʼlon qilish» as the mockups g63/1 and g63/2 show it (G63): a Cobalt of 4 seats, Chilonzor
-// to Samarqand shahri tomorrow at 08:00 for 90 000 a seat, seats or the whole car.
-export async function openPublish(page: Page) {
+// to Samarqand shahri tomorrow at 08:00 for 90 000 a seat, seats or the whole car. The start: the
+// route chosen, the one screen of the trip open.
+export async function startPublish(page: Page) {
   await mockApi(page, 'active');
   await mockMap(page, mapState());
   // The pitak stands on the piece of the map the tests have: its small map shows streets.
@@ -37,9 +38,13 @@ export async function openPublish(page: Page) {
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  const main = page.locator('#tg-main-button');
   await publishButton(page).click();
   await chooseRoute(page);
+}
+
+export async function openPublish(page: Page) {
+  await startPublish(page);
+  const main = page.locator('#tg-main-button');
   await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
   await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
   await main.click();

@@ -1,6 +1,6 @@
 import type { ComplaintStore } from '../application/ports';
 import { allIn } from '../../../shared/storage/in-list';
-import { REFUND_COLUMNS, refundValues, toComplaint, type Row } from './complaint-row';
+import { REFUND_COLUMNS, reasonsText, refundValues, toComplaint, type Row } from './complaint-row';
 
 const COLUMNS = [
   'id',
@@ -28,9 +28,9 @@ const ANSWER = `UPDATE complaints SET refund_state = ?, refund_decided_by = ?, r
 // Tables complaints and complaint_chat_reads (migrations/0012_ratings_complaints.sql).
 export const d1Complaints = (db: D1Database): ComplaintStore => ({
   save: async (c) => {
-    const { id, authorId, againstId, bookingId, reason, comment, status } = c;
+    const { id, authorId, againstId, bookingId, reasons, comment, status } = c;
     const decided = [c.decision, c.decidedBy, c.createdAt, c.decidedAt] as const;
-    const values = [id, authorId, againstId, bookingId, reason, comment, status, ...decided];
+    const values = [id, authorId, againstId, bookingId, reasonsText(reasons), comment, status, ...decided];
     await db
       .prepare(SAVE)
       .bind(...values, ...refundValues(c))

@@ -66,7 +66,7 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   const days = decision.action === 'block' ? (decision.days ?? null) : null;
   const label = decision.action === 'block' ? `block:${days ?? 'forever'}` : decision.action;
   const refund =
-    decision.refund && complaint.reason === 'no_show' && side === 'passenger' && ride.commission > 0;
+    decision.refund && complaint.reasons.includes('no_show') && side === 'passenger' && ride.commission > 0;
   const proposal = { state: 'proposed', proposedBy: moderatorId, proposedAt: now } as const;
   const decided = {
     decision: refund ? `${label}:refund` : label,

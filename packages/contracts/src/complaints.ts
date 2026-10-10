@@ -33,9 +33,16 @@ export type ComplaintReason = (typeof COMPLAINT_REASONS)[number];
 export const HIGH_PRIORITY: readonly ComplaintReason[] = ['harassment', 'unsafe_driving', 'fake_profile'];
 export const COMPLAINT_COMMENT_MAX = 500;
 
+// One complaint names one or more reasons as ticks (owner decision 10.10.2026, docs/124): kept once
+// each, in the order of COMPLAINT_REASONS, so the gravest comes first and leads the case.
+export const complaintReasonsSchema = z
+  .array(z.enum(COMPLAINT_REASONS))
+  .min(1)
+  .transform((picked) => COMPLAINT_REASONS.filter((reason) => picked.includes(reason)));
+
 export const complaintInputSchema = z.object({
   bookingId: z.string().min(1).max(64),
-  reason: z.enum(COMPLAINT_REASONS),
+  reasons: complaintReasonsSchema,
   comment: z.string().trim().max(COMPLAINT_COMMENT_MAX).default(''),
 });
 export type ComplaintInput = z.input<typeof complaintInputSchema>;
@@ -56,7 +63,7 @@ export type Party = z.infer<typeof partySchema>;
 
 export const complaintSchema = z.object({
   id: z.string(),
-  reason: z.enum(COMPLAINT_REASONS),
+  reasons: z.array(z.enum(COMPLAINT_REASONS)).min(1),
   high: z.boolean(),
   comment: z.string(),
   status: z.enum(COMPLAINT_STATUSES),

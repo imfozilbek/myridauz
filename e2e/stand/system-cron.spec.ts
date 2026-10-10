@@ -29,7 +29,7 @@ test('S20, S29, P48, P50. a ride that ended: completed, both asked for stars, re
   await (await feedbackOf('driver', BOBUR)).review({ bookingId: seat.id, stars: 5 });
   await expect.poll(async () => (await passenger.reviewsOf(driverId)).reviews.length).toBe(1);
   // One complaint per booking (docs/17).
-  const complaint = { bookingId: seat.id, reason: 'unsafe_driving' as const };
+  const complaint = { bookingId: seat.id, reasons: ['unsafe_driving' as const] };
   expect(await outcome(passenger.complain(complaint))).toBe('ok');
   expect(await outcome(passenger.complain(complaint))).toBe('complaints.already');
 });

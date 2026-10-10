@@ -12,6 +12,12 @@ const lines = [
 
 // A complaint in «Navbat» (docs/17, docs/07, G43).
 describe('a complaint in «Navbat»', () => {
+  it('names every reason the person ticked, the gravest first (owner decision 10.10.2026)', async () => {
+    const both = { ...COMPLAINT_DETAIL, reasons: ['harassment' as const, 'no_show' as const] };
+    renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => both } });
+    expect(await screen.findByText('Haqorat, tahdid yoki bezovta qilish, Kelmadi')).toBeTruthy();
+  });
+
   it('reads the chat only on demand, then comes back', async () => {
     const chat = vi.fn(async () => lines);
     renderNavbat(open, [COMPLAINT], { feedback: { complaint: async () => COMPLAINT_DETAIL, chat } });

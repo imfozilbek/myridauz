@@ -19,7 +19,7 @@ test.beforeAll(async () => {
   const { seat } = await confirmedSeat(SHERZOD, NARGIZA);
   await createFeedbackClient(await signedAs('passenger', NARGIZA)).complain({
     bookingId: seat.id,
-    reason: 'price_changed',
+    reasons: ['price_changed'],
   });
 });
 

@@ -43,14 +43,14 @@
 | «Tuman tanlash» | `place-picker.tsx` в `market/find-results.tsx` | нет |
 | «Safar» закрыта или уехала | `market/closed-trip.tsx` | частично |
 | «Barcha izohlar» | `find/reviews-screen.tsx` | нет |
-| «Izoh» к брони | `market/trip-steps.tsx` | нет |
+| «Izoh» к брони | `market/trip-steps.tsx` | **G75 лист 3А**: шторка |
 | Жалоба и «yuborildi» | `feedback/complaint-screen.tsx` | нет |
 | Маршрут заявки (форма) | `places/route-screen.tsx` | нет |
 | День заявки | `market/date-step.tsx` | нет |
 | **Одно предложение** | `bookings/offer-list.tsx` (OfferScreen) | нет: прячется за новой карточкой |
 | «Mening safarlarim»: «Faol», пусто | `market/my-requests-list.tsx` | частично |
 | «Obunalar» | `subscriptions/subscriptions-screen.tsx` | нет |
-| «Xabar bering» с канала | `subscriptions/subscribe-link.tsx` | нет |
+| «Xabar bering» с канала | `subscriptions/notify-me.tsx` | **G75 лист 3А**: шторка |
 | «Sevimli haydovchilar» | `comfort/favorites-screen.tsx` | нет |
 | «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | частично (без макета) |
 | «Baholarim» | `find/reviews-screen.tsx` | нет |
@@ -67,14 +67,14 @@
 | Заявка отклонена | `driver/status-screen.tsx` | нет |
 | Списки мест | `places/place-picker.tsx` | частично |
 | Маршрут новой поездки (форма) | `places/route-screen.tsx` | нет |
-| День и время | `market/when-step.tsx` | нет |
-| «Izoh» поездки | `market/trip-steps.tsx` | нет |
+| День и время | `market/when-sheet.tsx` | **G75 лист 3А**: шторка, плитки дня и сетка времени |
+| «Izoh» поездки | `market/trip-steps.tsx` | **G75 лист 3А**: шторка |
 | Пятак на карте | `market/pitak-screen.tsx` | частично |
 | Лимит поездок | `market/trip-limit.tsx` | нет |
 | **Одна бронь** | `bookings/driver-booking.tsx`, `booking-screen.tsx` | нет: открывается из «Mening safarlarim» |
 | «Hamyonda … yetmaydi» | `bookings/wallet-steps.tsx` (NotEnoughScreen) | нет |
 | «Hisobni toʻldirish» | `bookings/wallet-steps.tsx` (TopUpScreen) | нет |
-| «Vaqt yoki narx», новое время или цена | `own-trip/change-choice.tsx`, `market/trip-change.tsx` | нет |
+| «Vaqt yoki narx», новое время или цена | `market/trip-change.tsx` | **G75 лист 3А**: одна шторка |
 | Выбор навигатора | `bookings/navigator-sheet.tsx` | нет |
 | «Qaysi yoʻlovchi?» | `trip-end/rider-pick.tsx` | нет |
 | «Soʻrovlar tekshiruvdan keyin» | `market/pending-lock.tsx` | нет |

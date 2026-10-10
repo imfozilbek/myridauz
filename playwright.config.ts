@@ -90,6 +90,7 @@ export default defineConfig({
         'g67-pixel.spec.ts',
         'g67-sizes-screenshots.spec.ts',
         'g75-pixel.spec.ts',
+        'g75-forms-pixel.spec.ts',
         'g66-sizes-screenshots.spec.ts',
         'g68-pixel.spec.ts',
       ],

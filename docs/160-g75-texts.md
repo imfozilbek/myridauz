@@ -41,6 +41,10 @@
 | `market.mine.noPast` | пустая вкладка «Oʻtgan» попутчика, над «Obunalar» и «Sevimli haydovchilar» (`158` Е) | «Oʻtgan safar yoʻq» | ждёт |
 | `legal.offer.9.text` | оферта, раздел 9: срок, после которого видна оценка (`158` З) | «… yoki 14 kundan keyin koʻrinadi» стало «… yoki {rateDays} kundan keyin koʻrinadi» (7 из конфига бренда), редакция 1.4 | да, 10.10.2026 (решение владельца) |
 | `account.blocked.riding` | плашка над Mini App: человека заблокировали в пути, поездка идёт до конца (`158` Ж, `17`) | «Hisobingiz bloklangan. Joriy safarni yakunlang.» | ждёт |
+| `market.when.done` | кнопка шторки «Qachon joʻnaysiz?» (макет g75/3 А, телефон 1) | «Tayyor» | ждёт |
+| `market.day.other`, `market.day.otherHint` | третья плитка дня в шторке времени | «Boshqa»; под ней «kun» | ждёт |
+| `subscriptions.when.dayHint`, `subscriptions.when.hint` | шторка «Xabar bering»: строка под «Faqat {day}» и подсказка с маршрутом | «Shu kungi safarlar»; «{way}. {question}» | ждёт |
+| `common.counter` | счётчик знаков под «Izoh» | «{count} / {max}» | ждёт |
 
 ## Как читать
 

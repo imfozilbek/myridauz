@@ -3,6 +3,7 @@ import { mainButton, secondaryButton } from '@telegram-apps/sdk-react';
 import { useEffect } from 'react';
 import { Button } from '../components';
 import { useBrand } from '../context/brand-context';
+import { useCoveredBySheet } from '../sheet/form-sheet-cover';
 import { onSplashLeft, splashStands } from './chrome';
 import { useInTelegram } from './in-telegram-context';
 import { useOneAtATime } from './one-at-a-time';
@@ -114,5 +115,12 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
   };
 }
 
-export const MainButton = createBottomButton(MAIN, 'filled');
-export const SecondaryButton = createBottomButton(SECONDARY, 'bezeled');
+// A form sheet over the screen takes the button for its own step (G75, mockup g75/3 A).
+function besideSheets(Button: ReturnType<typeof createBottomButton>) {
+  return function SheetAwareButton(props: BottomButtonProps) {
+    return useCoveredBySheet() ? null : <Button {...props} />;
+  };
+}
+
+export const MainButton = besideSheets(createBottomButton(MAIN, 'filled'));
+export const SecondaryButton = besideSheets(createBottomButton(SECONDARY, 'bezeled'));

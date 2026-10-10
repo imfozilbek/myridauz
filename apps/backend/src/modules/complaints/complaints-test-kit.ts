@@ -53,7 +53,7 @@ export function setup() {
       return 'ok';
     },
     tell: {
-      team: async (complaint) => void log.push(`team ${complaint.reason}`),
+      team: async (complaint) => void log.push(`team ${complaint.reasons.join('+')}`),
       queueChanged: async () => void log.push('queue changed'),
       warning: async (id, side) => void log.push(`warning ${id} ${side}`),
       hidden: async (id, side) => void log.push(`hidden ${id} ${side}`),
@@ -66,4 +66,8 @@ export function setup() {
   };
   return { deps, store, log };
 }
-export const input = (bookingId: string, reason = 'no_show' as const) => ({ bookingId, reason, comment: '' });
+export const input = (bookingId: string, reason = 'no_show' as const) => ({
+  bookingId,
+  reasons: [reason],
+  comment: '',
+});

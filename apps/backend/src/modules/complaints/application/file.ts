@@ -20,7 +20,7 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     authorId,
     againstId,
     bookingId: input.bookingId,
-    reason: input.reason,
+    reasons: input.reasons,
     comment: input.comment,
     status: 'new' as const,
     decision: null,

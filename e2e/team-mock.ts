@@ -21,7 +21,7 @@ const support = (n: number, name: string, minutes: number) => ({
 
 const TEAM_NAVBAT = {
   items: [
-    { kind: 'complaint', ...base(1, 'Madina', 120), against: 'Jasur', reason: 'no_show', refund: false },
+    { kind: 'complaint', ...base(1, 'Madina', 120), against: 'Jasur', reasons: ['no_show'], refund: false },
     { kind: 'application', ...base(2, 'Jasur', 25), ...car('Cobalt', '01A123BC') },
     { kind: 'application', ...base(3, 'Bobur', 12), ...car('Nexia', '30B456CA') },
     { kind: 'face', ...base(4, 'Madina', 10) },

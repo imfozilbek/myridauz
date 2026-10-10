@@ -24,12 +24,12 @@ export async function complaintView(
 ): Promise<Complaint | null> {
   const ride = await deps.filedRide(complaint.bookingId);
   if (!ride) return null;
-  const { id, reason, comment, status, createdAt, authorId, againstId } = complaint;
+  const { id, reasons, comment, status, createdAt, authorId, againstId } = complaint;
   const [author, against] = await Promise.all([
     party(deps, authorId, sideOf(ride, authorId)),
     party(deps, againstId, sideOf(ride, againstId)),
   ]);
-  const base = { id, reason, high: isHigh(reason), comment, status, createdAt };
+  const base = { id, reasons: [...reasons], high: isHigh(reasons), comment, status, createdAt };
   const refund = complaint.refund && { state: complaint.refund.state, amount: ride.commission };
   return { ...base, tripId: ride.tripId, departAt: ride.departAt, author, against, refund };
 }

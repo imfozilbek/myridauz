@@ -21,7 +21,7 @@ describe('the queue of the team', () => {
           name: 'Madina',
           since: NOW - 10 * MINUTE,
           against: 'Jasur',
-          reason: 'no_show',
+          reasons: ['no_show'],
           refund: false,
         },
         { kind: 'face', id: 'p3', name: 'Laylo', since: NOW - MINUTE },
