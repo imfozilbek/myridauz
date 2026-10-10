@@ -29,14 +29,21 @@ describe('the parts of a new trip', { timeout: 20_000 }, () => {
     await tap('Ikkalasi');
     expect(smallMap()).toBeTruthy();
     await tap('Xaritada');
+    // The pitak on the big map with a sheet (G75, mockup g75/6 A): this one, or the doors only.
     expect(document.querySelector('.pitak-map')).toBeTruthy();
+    expect(screen.getByText('Qayerdan olasiz?')).toBeTruthy();
     expect(screen.getByText(PITAK)).toBeTruthy();
-    await tap('Orqaga');
+    expect(screen.getByText('Yoʻlovchilar shu pitakni koʻradi.')).toBeTruthy();
+    await tap('Pitaksiz: faqat uyidan');
     expect(await screen.findByText('Eʼlon qilish')).toBeTruthy();
-    expect(screen.getByRole('radio', { name: 'Ikkalasi' }).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('radio', { name: 'Uydan' }).getAttribute('aria-checked')).toBe('true');
+    await tap('Pitakdan');
     // A tap on the small map opens the same big one.
     fireEvent.click(screen.getByRole('button', { name: 'Xaritada ochish' }));
     expect(document.querySelector('.pitak-map')).toBeTruthy();
+    await tap('Shu pitakdan');
+    expect(await screen.findByText('Eʼlon qilish')).toBeTruthy();
+    expect(screen.getByRole('radio', { name: 'Pitakdan' }).getAttribute('aria-checked')).toBe('true');
   });
 
   it('offers only the doors where the direction has no pitak', async () => {

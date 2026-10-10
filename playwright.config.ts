@@ -92,6 +92,7 @@ export default defineConfig({
         'g75-pixel.spec.ts',
         'g75-forms-pixel.spec.ts',
         'g75-profile-pixel.spec.ts',
+        'g75-places-pixel.spec.ts',
         'g66-sizes-screenshots.spec.ts',
         'g68-pixel.spec.ts',
       ],

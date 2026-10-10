@@ -46,6 +46,9 @@ export const brandVars = (colors: BrandColors) =>
     // What a deletion removes and the wallet it takes (G75, mockup g75/5 A).
     '--reg-attention-ink': colors.attentionInk,
     '--reg-danger-tile': colors.dangerTile,
+    '--reg-night': colors.neutralNight,
+    // The icon tile of a row of the mockups g75/6 A: the strong light color of each app.
+    '--reg-tile': colors.stateTile,
     // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
     '--reg-danger-text': colors.dangerText,
     // «Rad etish» of a call in the sheet of the open Mini App (G68, mockup g68/8).

@@ -76,6 +76,7 @@ export async function openPassengerHome(page: Page, state: PassengerState = 'qui
         date: `2026-10-${String(7 + index).padStart(2, '0')}`,
         trips,
       })),
+      places: [],
     }),
   );
   await page.addInitScript(

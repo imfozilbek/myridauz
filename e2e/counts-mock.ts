@@ -13,7 +13,7 @@ export async function mockCounts(page: Page, found: readonly { departAt: number 
     date: day(index),
     trips: found.filter((trip) => tashkentDate(trip.departAt) === day(index)).length,
   }));
-  await page.route('**/api/trips/days?*', (route) => json(route, { km: KM, days }));
+  await page.route('**/api/trips/days?*', (route) => json(route, { km: KM, days, places: [] }));
   await page.route('**/api/trips/directions?*', (route) =>
     json(route, {
       directions: [

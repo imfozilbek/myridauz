@@ -57,7 +57,16 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
       />
     );
   if (screen === 'pitak' && pitak)
-    return <PitakScreen pitak={pitak} hint={t('way.trip.pitak', { direction })} onBack={() => back()} />;
+    return (
+      <PitakScreen
+        pitak={pitak}
+        hint={t('way.trip.pitak', { direction })}
+        onBack={() => back()}
+        // «Shu pitakdan» keeps «Ikkalasi»; the doors alone become the pitak (G75, mockup g75/6 A).
+        onPitak={() => back({ pickupMode: values.pickupMode === 'door' ? 'pitak' : values.pickupMode })}
+        onDoor={() => back({ pickupMode: 'door' })}
+      />
+    );
   return (
     <>
       <TripForm

@@ -1,0 +1,29 @@
+/* The pitak of a new trip on the big map (mockup g75/6 A): the title over the map, the sheet below. */
+.pitak-page {
+  display: flex;
+  flex-direction: column;
+  height: var(--tg-viewport-stable-height, 100vh);
+  color: var(--reg-ink);
+}
+
+.pitak-page-title {
+  margin: 0;
+  padding: 22px 20px 8px;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.pitak-page .pitak-map {
+  flex: 1;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+}
+
+.pitak-page-note {
+  margin: 0;
+  padding: 0 16px 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}

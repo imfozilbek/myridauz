@@ -55,6 +55,8 @@ export type BrandColors = {
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;
+  // The dark of our camera around its frame (G75, mockup g75/6 A).
+  readonly neutralNight: HexColor;
   readonly neutralFace: HexColor;
   // A face without a photo among the passengers of the own trip (mockup g63/3).
   readonly neutralFacePale: HexColor;

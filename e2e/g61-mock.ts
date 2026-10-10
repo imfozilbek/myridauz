@@ -45,7 +45,7 @@ async function mockRequestData(page: Page) {
     date: tashkentDate(Date.now() + index * DAY_MS),
     trips: 0,
   }));
-  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 1000, days } }));
+  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 1000, days, places: [] } }));
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips: [] } }));
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
 }

@@ -11,6 +11,9 @@ export const weekOf = (counts: readonly number[]): TripDays => ({
     date: tashkentDate(Date.now() + index * DAY_MS),
     trips: counts[index] ?? 0,
   })),
+  places: [{ to: '1730401', trips: counts.reduce((sum, count) => sum + count, 0) }].filter(
+    (place) => place.trips > 0,
+  ),
 });
 
 export const searchMarket = (

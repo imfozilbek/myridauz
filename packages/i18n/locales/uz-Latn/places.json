@@ -8,6 +8,8 @@
   "search": "Viloyat, tuman yoki shahar",
   "wholeRegion": "Butun viloyat",
   "wholeCity": "Butun shahar",
+  "which": "{region}ning qaysi joyi?",
+  "trips": "{count} ta safar",
   "nothingFound": "Hech narsa topilmadi",
   "nothingFoundHint": "Nomini boshqacha yozib koʻring",
   "short.1703": "Andijon",

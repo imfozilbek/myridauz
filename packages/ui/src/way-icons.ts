@@ -4,6 +4,7 @@ import {
   ChevronDown,
   ChevronUp,
   CircleDot,
+  Compass,
   House,
   LocateFixed,
   MapPin,
@@ -27,6 +28,8 @@ export const WAY_ICONS = {
   up: ChevronUp,
   down: ChevronDown,
   navigate: Navigation,
+  // The three navigators of the sheet (G75, mockup g75/6 A): Yandex, Google, Apple.
+  compass: Compass,
   // How a passenger is picked up and which day (G35, docs/97 PS11): every choice has its icon. The
   // day is the plain calendar of the approved mockup g63/1.
   door: House,

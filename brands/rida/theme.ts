@@ -42,6 +42,7 @@ export const theme: BrandTheme = {
     routeSwap: '#0F766E',
     neutralSoft: '#EEF2F6',
     neutralText: '#334155',
+    neutralNight: '#111827',
     neutralFace: '#CBD5E1',
     neutralFacePale: '#E2E8F0',
     neutralPale: '#F3F4F6',

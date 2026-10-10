@@ -53,6 +53,9 @@
 | `account.delete.bonus`, `account.delete.money` | там же: деньги водителя уходят вместе с аккаунтом (`158` Ж, `58`) | «Hamyonda {sum} bonus bor. U ham oʻchadi va qaytmaydi.»; если есть и свои деньги: «Hamyonda {sum} bor. U ham oʻchadi va qaytmaydi.» | ждёт |
 | `complaints.reasonTitle` | «Shikoyat»: строка под заголовком (макет g75/5 А) | «Nima boʻldi?» стало «Nima boʻldi? Bir nechtasini tanlash mumkin.»; «Batafsil» убран | ждёт |
 | `account.profile.lookPhone`, `account.profile.stats.rated` | «Meni qanday koʻradi» (макет g75/5 А) | «Telefon raqamingiz hech kimga koʻrinmaydi.»; под числом оценок «baho» | ждёт |
+| `places.which`, `places.trips` | «Samarqandning qaysi joyi?» (макет g75/6 А): заголовок списка мест области и строка под местом | «{region}ning qaysi joyi?»; «{count} ta safar» | ждёт |
+| `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | ждёт |
+| `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | ждёт |
 
 ## Как читать
 

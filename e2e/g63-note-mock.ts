@@ -27,7 +27,7 @@ async function mockupTrip(page: Page) {
     route.fulfill({ json: { directions: [{ to: '1718', today: 0, tomorrow: 1, price: 100000 }] } }),
   );
   const days = [0, 1].map((trips, index) => ({ date: tashkentDate(NOW + index * DAY_MS), trips }));
-  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days } }));
+  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days, places: [] } }));
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips: [nodira] } }));
   await page.route('**/api/users/*/reviews', (route) =>
     route.fulfill({ json: { rating: { average: 4.8, count: 23 }, reviews: [] } }),
