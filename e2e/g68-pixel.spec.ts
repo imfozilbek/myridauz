@@ -36,12 +36,15 @@ async function shot(page: Page, name: string) {
 }
 
 const about = { booking: seat, role: 'passenger', request: null, offer: null, driver: null };
+// The wallet holds the commission: the sheet offers «Tasdiqlash» as on the mockup (G75 checks it).
+const WALLET = { bonus: 482000, main: 0, bonusExpiresAt: null, seatsLeft: 24, operations: [] };
 
 test('7-3: a new request to the driver', async ({ page }) => {
   await openDriverHome(page, 'free');
   await withLists(page, {
     'driver/trips': { trips: [trip] },
     'driver/bookings': { bookings: [ask('d1', 'Madina')] },
+    'driver/wallet': WALLET,
   });
   await expect(page.locator('.action-kicker', { hasText: t('sheet.request.kicker') })).toBeVisible();
   await shot(page, '7-3');
@@ -50,7 +53,11 @@ test('7-3: a new request to the driver', async ({ page }) => {
 test('7-5: three requests wait: «1 / 3»', async ({ page }) => {
   await openDriverHome(page, 'free');
   const three = [ask('d1', 'Madina'), ask('d2', 'Olim'), ask('d3', 'Sardor')];
-  await withLists(page, { 'driver/trips': { trips: [trip] }, 'driver/bookings': { bookings: three } });
+  await withLists(page, {
+    'driver/trips': { trips: [trip] },
+    'driver/bookings': { bookings: three },
+    'driver/wallet': WALLET,
+  });
   await expect(page.getByText('1 / 3')).toBeVisible();
   await shot(page, '7-5');
 });

@@ -97,12 +97,12 @@ test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fai
   // The commission is on the booking; its main button leads to the top up at once (G27, G63).
   await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await mainButton(page).click();
+  // A sheet with only the sum short over the booking (G75, mockup g75/4 B); its button opens the
+  // support chat with the message ready.
   await expect(page.getByText(t('wallet.notEnough.title'))).toBeInViewport();
+  await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
   await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
   await shot(page, 'android', 'da51-not-enough');
-  await mainButton(page).click();
-  await expect(mainButton(page)).toHaveText(t('account.support'));
-  await shot(page, 'android', 'da52-top-up');
   // The walks of passengers use Murod after this one: his bonus comes back.
   await setBonus(MUROD, WELCOME_BONUS);
 });

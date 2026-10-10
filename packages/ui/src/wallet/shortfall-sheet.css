@@ -1,0 +1,35 @@
+/* «Hamyonda mablagʻ yetarli emas» (mockup g75/4 B phone 3): three rows on a pale card, the sum
+   short in red; a note on the ready message; «Keyinroq» in the color of the brand. */
+.shortfall-rows {
+  margin: 0 14px;
+  border-radius: 14px;
+  background: var(--reg-neutral-pale);
+}
+
+.shortfall-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 16px;
+}
+
+.shortfall-row:last-child {
+  border-bottom: none;
+}
+
+.shortfall-missing {
+  color: var(--reg-danger);
+  font-weight: 700;
+}
+
+.shortfall-note {
+  padding-top: 10px;
+  font-size: 13px;
+}
+
+.shortfall-later {
+  color: var(--reg-strong);
+}

@@ -1,7 +1,7 @@
 import { MINUTE_MS } from '@platform/contracts';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { booking } from '../bookings/booking-test-kit';
+import { booking, wallet } from '../bookings/booking-test-kit';
 import { DriverHome } from '../home/driver-home';
 import { DRIVER_ACTIONS } from '../home/home-test-actions';
 import { renderHome } from '../home/home-test-kit';
@@ -18,13 +18,14 @@ const asked = {
   expiresAt: NOW + 29.5 * MINUTE_MS,
 };
 
-function driver(requests = [asked], answer = vi.fn(async () => asked)) {
+function driver(requests = [asked], answer = vi.fn(async () => asked), money = 100_000) {
   vi.setSystemTime(NOW);
   const shown = renderHome((go) => <DriverHome go={go} />, DRIVER_ACTIONS, {
     trips: async () => [trip],
     requests: async () => requests,
     sheet: true,
     answers: { answer },
+    wallet: async () => ({ ...wallet, bonus: money, main: 0 }),
   });
   return { ...shown, answer };
 }
@@ -67,5 +68,20 @@ describe('the sheet of a new request (G68)', () => {
     expect(screen.getByText('2 / 2')).toBeTruthy();
     await tap('Keyinroq');
     await sheetClosed();
+  });
+
+  // The wallet is checked in the sheet (G75, docs/158 Г): the sum short and the ready message, not a
+  // «Tasdiqlash» that fails.
+  it('without money for the commission says the sum short and opens the ready message', async () => {
+    const { answer } = driver([{ ...asked, id: 'b6' }], undefined, 5000);
+    expect(await screen.findByText('Yetmaydi')).toBeTruthy();
+    expect(screen.getByText(/^14.000$/u)).toBeTruthy();
+    const sent = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByRole('button', { name: 'Hisobni toʻldirish' }));
+    expect(decodeURIComponent(String(sent.mock.calls[0]?.[0]))).toMatch(
+      /Madinaning joyini tasdiqlash uchun 14.000.soʻm yetmayapti/u,
+    );
+    expect(answer).not.toHaveBeenCalled();
+    sent.mockRestore();
   });
 });

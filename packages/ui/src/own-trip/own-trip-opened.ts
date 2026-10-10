@@ -5,5 +5,5 @@ export type RiderScreen = 'booking' | 'chat' | 'call' | 'not_enough';
 
 // The screen open over «Mening safarim», by what it needs (G63).
 export type Opened =
-  | { readonly screen: Exclude<RiderScreen, 'booking'> | 'top_up'; readonly booking: Booking }
+  | { readonly screen: Exclude<RiderScreen, 'booking'>; readonly booking: Booking }
   | { readonly screen: 'map' | 'change' };

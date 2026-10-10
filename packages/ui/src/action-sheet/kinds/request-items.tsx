@@ -5,7 +5,9 @@ import { useI18n } from '../../context/i18n-context';
 import { useDriverData } from '../../home/driver-data';
 import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
+import { useBalance } from '../../bookings/use-balance';
 import { haptic } from '../../telegram/feedback';
+import { useTopUp } from '../../wallet/top-up-link';
 import { itemKey, type ActionItem } from '../action-item';
 import { TripBlock } from '../sheet-parts';
 import { useSheetWords } from '../trip-line';
@@ -34,9 +36,14 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
     refresh();
   };
   const requests = (value?.[1] ?? []).filter((one) => one.status === 'requested' && one.expiresAt > now);
+  // The wallet is checked here too (G75, docs/158 Г): short of the commission, the sum short and the
+  // ready message to the support instead of a «Tasdiqlash» that fails.
+  const { balance } = useBalance(requests.length > 0);
+  const topUp = useTopUp();
   return requests.map((booking) => {
     const { passenger, seats, price, commission } = booking;
     const name = passenger.firstName;
+    const missing = balance === null ? 0 : Math.max(0, commission - balance);
     const rating = passenger.rating?.average;
     return {
       key: itemKey('request', booking.id),
@@ -63,17 +70,23 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
               strong: true,
             },
             { label: t('bookings.offer.commission'), value: formatNumber(commission) },
+            ...(missing > 0
+              ? [{ label: t('wallet.short.missing'), value: formatNumber(missing), strong: true }]
+              : []),
           ]}
         />
       ),
       alert: left(booking.expiresAt),
-      main: {
-        label: t('sheet.request.confirm'),
-        run: async () => {
-          await answer(booking, 'confirm');
-          return t('sheet.request.confirmed', { name, commission: formatNumber(commission) });
-        },
-      },
+      main:
+        missing > 0
+          ? { label: t('wallet.topUp'), run: async () => void topUp(name, missing) }
+          : {
+              label: t('sheet.request.confirm'),
+              run: async () => {
+                await answer(booking, 'confirm');
+                return t('sheet.request.confirmed', { name, commission: formatNumber(commission) });
+              },
+            },
       second: {
         label: t('sheet.request.decline'),
         run: async () => {

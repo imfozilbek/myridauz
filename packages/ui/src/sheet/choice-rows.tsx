@@ -18,7 +18,7 @@ export function ChoiceRows<K extends string>({ name, choices, value, onPick }: P
       {choices.map((choice) => (
         <label key={choice.key} className="choice-row">
           <span className="choice-words">
-            {choice.title}
+            <span>{choice.title}</span>
             {choice.hint ? <span className="choice-hint">{choice.hint}</span> : null}
           </span>
           <input

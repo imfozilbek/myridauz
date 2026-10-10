@@ -1,3 +1,4 @@
+import { ShortfallSheet, type Shortfall } from '../wallet/shortfall-sheet';
 import { ApiError } from '@platform/api-client';
 import { commissionFor } from '@platform/brands';
 import type { RequestBoardQuery, RideRequest } from '@platform/contracts';
@@ -32,7 +33,6 @@ type Props = {
   // No direction yet (no trips, no subscriptions): the route is asked first.
   readonly onRoute: (route: Route) => void;
   readonly onTalk: (chatKey: string, ring: boolean) => void;
-  readonly onShort: (commission: number) => void;
   readonly onTrip: (tripId: string) => void;
   readonly onPublish: (date: string) => void;
   readonly onBack: () => void;
@@ -41,7 +41,7 @@ type Props = {
 // «Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7, mockups g64/1 … g64/3): the requests on the
 // driver's directions by day; with a live trip, the ones that fit it on top. One logic everywhere:
 // the driver offers, the passenger answers (docs/35).
-export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, onPublish, onBack }: Props) {
+export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, onBack }: Props) {
   useScreenView('requests.board');
   useScreenBackground();
   const { t } = useI18n();
@@ -52,6 +52,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, on
   const { value, failed, reload, refresh } = useBoard(query);
   const [offer, setOffer] = useState<RideRequest | null>(null);
   const [salon, setSalon] = useState<RideRequest | null>(null);
+  const [shortfall, setShortfall] = useState<Shortfall | null>(null);
   const { failure, fail, clear } = useFailure();
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
@@ -69,7 +70,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, on
       void refresh();
     } catch (caught) {
       if (caught instanceof ApiError && caught.code === 'wallet.not_enough')
-        onShort(commissionFor(commission, trip.price, request.seats));
+        short(commissionFor(commission, trip.price, request.seats), request);
       else fail(caught);
     }
   };
@@ -86,11 +87,12 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, on
       fail(caught);
     }
   };
-  const short = (fee: number) => {
+  // No money for the commission: the sheet of the sum short over the board (G75, mockup g75/4 B).
+  function short(need: number, request: RideRequest | null) {
     setOffer(null);
     setSalon(null);
-    onShort(fee);
-  };
+    setShortfall({ need, seats: request?.seats ?? 1, name: request?.passenger.firstName ?? '' });
+  }
   const empty = board.fits.length + board.others.length === 0;
   return (
     <div className="board" style={brandVars(colors)}>
@@ -125,15 +127,16 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onShort, onTrip, on
           setOffer(null);
           void refresh();
         }}
-        onShort={short}
+        onShort={(need) => short(need, offer)}
       />
       <SalonSheet
         request={salon}
         seats={board.carSeats}
         onClose={() => setSalon(null)}
         onOpened={onTrip}
-        onShort={short}
+        onShort={(need) => short(need, salon)}
       />
+      <ShortfallSheet shortfall={shortfall} onClose={() => setShortfall(null)} />
     </div>
   );
 }

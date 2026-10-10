@@ -54,9 +54,18 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     const answer = vi.fn<BookingsClient['answer']>();
     await open(() => [booking], { answer, mine: async () => ({ ...wallet, bonus: 0, main: 0 }) });
     await tap('Hisobni toʻldirish');
+    // A sheet over the trip (G75, mockup g75/4 B): only the sum short, then the ready message.
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
-    expect(screen.getByText(/19\s000/u)).toBeTruthy();
+    expect(screen.getByText('Komissiya · 2 joy')).toBeTruthy();
+    expect(screen.getAllByText(/19\s000/u).length).toBeGreaterThan(0);
+    expect(screen.getByText('Dilnozaning joyini tasdiqlash uchun')).toBeTruthy();
     expect(answer).not.toHaveBeenCalled();
+    const sent = vi.spyOn(window, 'open').mockReturnValue(null);
+    const buttons = screen.getAllByRole('button', { name: 'Hisobni toʻldirish' });
+    fireEvent.click(buttons.at(-1) as HTMLElement);
+    const url = decodeURIComponent(String(sent.mock.calls[0]?.[0]));
+    expect(url).toMatch(/\?text=Salom! Hamyonimni toʻldirmoqchiman\. Dilnozaning joyini tasdiqlash/u);
+    sent.mockRestore();
   });
 
   it('goes to the top up when the server says the money is short', async () => {
