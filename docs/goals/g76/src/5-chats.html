@@ -1,0 +1,59 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+:root{--grp:#F1F2F4;--text:#1F2937;--muted:#6B7280;--line:#EEF0F2;--red:#DC2626;--redSoft:#FEE2E2;--green:#16A34A;
+--brand:#14B8A6;--strong:#0D9488;--btext:#0F766E;--mint:#CCFBF1;--soft:#F0FDFA}
+.drv{--brand:#F59E0B;--strong:#D97706;--btext:#B45309;--mint:#FDE68A;--soft:#FFFBEB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"DejaVu Sans",sans-serif;background:#E5E7EB;color:var(--text);padding:28px;width:max-content}
+h1{font-size:30px;margin-bottom:6px}
+.sub{font-size:18px;color:#374151;margin-bottom:18px;max-width:1150px}
+.var{font-size:24px;font-weight:800;margin:18px 0 4px}
+.var small{display:block;font-size:16px;font-weight:400;color:#374151;margin-top:2px}
+.row{display:flex;gap:24px;align-items:flex-start}
+.col{width:360px}
+.lab{font-size:18px;font-weight:700;margin:8px 0 6px}
+.lab small{display:block;font-size:14px;font-weight:400;color:#4B5563;margin-top:2px;min-height:34px}
+.ph{width:360px;height:760px;background:var(--grp);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-direction:column}
+.ttl{font-size:26px;font-weight:800;padding:22px 20px 12px}
+.ttl small{display:block;font-size:14px;font-weight:400;color:var(--muted);margin-top:4px;line-height:1.35}
+.card{background:#fff;border-radius:16px;margin:0 14px 12px;overflow:hidden}
+.pad{padding:14px 16px}
+.cell{display:flex;align-items:center;gap:12px;padding:12px 16px;font-size:16px;border-bottom:1px solid var(--line)}
+.cell:last-child{border-bottom:none}
+.cell .w{flex:1;min-width:0}
+.cell .h{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.3}
+.chev{color:#9CA3AF}
+.tile{width:36px;height:36px;border-radius:10px;background:var(--mint);color:var(--btext);display:flex;align-items:center;justify-content:center;flex:none}
+.tile.red{background:var(--redSoft);color:var(--red)}
+.tile.grey{background:#E5E7EB;color:#4B5563}
+.big{width:76px;height:76px;border-radius:22px}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 28px;gap:12px}
+.center h2{font-size:22px;font-weight:800}
+.center p{font-size:15px;color:var(--muted);line-height:1.45}
+.foot{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.btn{height:50px;border-radius:12px;background:var(--strong);color:#fff;font-weight:700;font-size:17px;display:flex;align-items:center;justify-content:center}
+.btn.ghost{background:#fff;color:var(--btext)}
+.link{text-align:center;font-size:15px;color:var(--btext)}
+.head{font-size:13px;color:var(--muted);text-transform:uppercase;padding:6px 30px 7px}
+.note{font-size:13px;color:var(--muted);padding:0 28px 12px;line-height:1.4}
+.star{color:#C2410C;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 10px;font-size:13px;font-weight:700;background:#E5E7EB;color:#374151}
+.chip.b{background:var(--strong);color:#fff}
+.chip.g{background:#DCFCE7;color:#166534}
+.seg{display:flex;background:#E5E7EB;border-radius:10px;padding:3px;margin:0 14px 12px}
+.seg div{flex:1;text-align:center;padding:9px;font-size:15px;border-radius:8px}
+.seg .on{background:#fff;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.bar{height:4px;background:var(--strong);width:38%;}
+.sheetback{position:absolute;inset:0;background:rgba(17,24,39,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;padding:10px 0 0;display:flex;flex-direction:column}
+.grab{width:40px;height:5px;border-radius:3px;background:#D1D5DB;margin:0 auto 10px}
+.route{display:flex;gap:10px}
+.dots{display:flex;flex-direction:column;align-items:center;padding-top:5px}
+.dot{width:10px;height:10px;border-radius:50%;border:2.5px solid var(--green)}
+.dot.to{border-color:var(--red)}
+.vline{width:2px;height:24px;background:#D1D5DB;margin:3px 0}
+.field{background:#fff;border-radius:14px;margin:0 14px 12px;padding:14px 16px;font-size:16px;min-height:110px;color:#9CA3AF}
+.sk{background:#E5E7EB;border-radius:8px}
+</style><style>.ch{display:flex;gap:12px;padding:14px 16px;align-items:flex-start}.ch .f{width:44px;height:44px;border-radius:50%;background:#CBD5E1;color:#334155;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;font-size:17px}
+.ch .w{flex:1;min-width:0}.ch .top{display:flex;justify-content:space-between;gap:8px}.ch b{font-size:16px}.ch time{font-size:13px;color:var(--muted);white-space:nowrap}
+.ch .t{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.3}.ch .m{font-size:15px;margin-top:6px;display:flex;justify-content:space-between;gap:8px;line-height:1.35}
+.ch .m.new{font-weight:700}.ch .n{min-width:22px;height:22px;border-radius:11px;background:#F59E0B;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;padding:0 6px}</style></head><body><h1>«Suhbatlar»: plitkadan ochiladigan roʻyxat</h1><div class="sub">2A uslubida (alohida kartalar). Har bir suhbat: rasm, ism, vaqt, qaysi safar, oxirgi xabar; oʻqilmagan boʻlsa qalin va raqam. Yangisi tepada. Bosilsa, chat ochiladi.</div><div class="row"><div class="col"><div class="lab">Yoʻlovchi<small>Faol va oxirgi 7 kun</small></div><div class="ph "><div class="ttl">Suhbatlar<small>Faol safarlar va oxirgi 7 kun.</small></div><div class="card"><div class="ch"><div class="f">J</div><div class="w"><div class="top"><b>Jasur</b><time>07:52</time></div><div class="t">Bugun 08:00 · Toshkent shahri → Samarqand viloyati</div><div class="m new"><span>Qayerdasiz? Men pitakdaman</span><span class="n">2</span></div></div></div></div><div class="card"><div class="ch"><div class="f">A</div><div class="w"><div class="top"><b>Akmal</b><time>Kecha</time></div><div class="t">Ertaga 10:30 · Toshkent shahri → Fargʻona viloyati</div><div class="m "><span>Yaxshi, kutaman</span></div></div></div></div><div class="card"><div class="ch"><div class="f">D</div><div class="w"><div class="top"><b>Dilshod</b><time>8-okt</time></div><div class="t">8-okt · Toshkent shahri → Samarqand viloyati</div><div class="m "><span>Rahmat, yaxshi yetib oldik</span></div></div></div></div></div></div><div class="col"><div class="lab">Yoʻlovchi: boʻsh<small>Bitta harakat</small></div><div class="ph "><div class="ttl">Suhbatlar</div><div class="center"><div class="tile big"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 1-2 2H6.8a2 2 0 0 0-1.4.6l-2.2 2.2A.7.7 0 0 1 2 21.3V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg></div><h2>Hali suhbat yoʻq</h2><p>Joy band qilsangiz, haydovchi bilan shu yerda yozishasiz.</p></div><div class="foot"><div class="btn">Safar topish</div></div></div></div><div class="col"><div class="lab">Haydovchi<small>Joy soʻragan yoki taklif olgan yoʻlovchi ham</small></div><div class="ph drv"><div class="ttl">Suhbatlar<small>Faol safarlar va oxirgi 7 kun.</small></div><div class="card"><div class="ch"><div class="f">M</div><div class="w"><div class="top"><b>Madina</b><time>15:41</time></div><div class="t">Bugun 16:00 · Toshkent shahri → Samarqand viloyati</div><div class="m new"><span>5 daqiqada chiqaman</span><span class="n">1</span></div></div></div></div><div class="card"><div class="ch"><div class="f">A</div><div class="w"><div class="top"><b>Akmal</b><time>Kecha</time></div><div class="t">Bugun 16:00 · Toshkent shahri → Samarqand viloyati</div><div class="m "><span>Sergelida tushaman</span></div></div></div></div><div class="card"><div class="ch"><div class="f">S</div><div class="w"><div class="top"><b>Soʻrov: Nodira</b><time>Kecha</time></div><div class="t">12-okt · Toshkent shahri → Buxoro viloyati</div><div class="m "><span>Narx qancha boʻladi?</span></div></div></div></div></div></div><div class="col"><div class="lab">Haydovchi: boʻsh<small>Bitta harakat</small></div><div class="ph drv"><div class="ttl">Suhbatlar</div><div class="center"><div class="tile big"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 17a2 2 0 0 1-2 2H6.8a2 2 0 0 0-1.4.6l-2.2 2.2A.7.7 0 0 1 2 21.3V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/></svg></div><h2>Hali suhbat yoʻq</h2><p>Yoʻlovchi joy soʻrasa yoki siz taklif yuborsangiz, suhbat shu yerda boʻladi.</p></div><div class="foot"><div class="btn">Soʻrovlarni koʻrish</div></div></div></div></div></body></html>
