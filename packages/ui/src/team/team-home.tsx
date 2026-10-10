@@ -11,7 +11,8 @@ import { brandVars } from '../theme/brand-vars';
 import { DiqqatSection } from './diqqat-section';
 import { NavbatSection } from './navbat-section';
 import { TeamProfile } from './team-profile';
-import { MANAGEMENT_SECTION } from './team-sections';
+import { ManageGroup, ManageRow } from '../manage/manage-page';
+import { CHANNELS_SECTION, MANAGEMENT_SECTION, STATS_SECTION } from './team-sections';
 import { WorkNumbers } from './work-numbers';
 
 const ICON = 20;
@@ -37,7 +38,7 @@ export function TeamHome({ go }: GoProps) {
       {navbat ? (
         <NavbatSection navbat={navbat} shown={owner ? OWNER_SHOWN : MODERATOR_SHOWN} go={go} />
       ) : null}
-      {owner ? <ManagementRow go={go} /> : <ModeratorNumbers />}
+      {owner ? <ManagementRow go={go} /> : <ModeratorNumbers go={go} />}
     </div>
   );
 }
@@ -49,10 +50,27 @@ function OwnerDiqqat({ go }: GoProps) {
   return attention ? <DiqqatSection attention={attention} go={go} /> : null;
 }
 
-function ModeratorNumbers() {
+// The own numbers of the day, then «Statistika» and «Kanallar» to read only (owner decision
+// 06.10.2026, docs/120): a moderator changes nothing there, the server refuses it too.
+function ModeratorNumbers({ go }: GoProps) {
+  const { t } = useI18n();
+  const brand = useBrand();
   const { team } = useApiClients();
   const work = useLoad(() => team.work(), 'team.work').value;
-  return work ? <WorkNumbers work={work} /> : null;
+  return (
+    <>
+      {work ? <WorkNumbers work={work} /> : null}
+      <ManageGroup title={brand.name}>
+        <ManageRow
+          icon="statistics"
+          title={t('common.admin.statistics')}
+          hint={t('manage.statisticsHint')}
+          onClick={() => go(STATS_SECTION)}
+        />
+        <ManageRow icon="channel" title={t('channels.title')} onClick={() => go(CHANNELS_SECTION)} />
+      </ManageGroup>
+    </>
+  );
 }
 
 // «Boshqaruv»: prices, wallets, people, the team and the rest of the owner (docs/120).

@@ -27,6 +27,14 @@ describe('the main screen of the team', () => {
     expect(screen.queryByText('Boshqaruv')).toBeNull();
   });
 
+  it('lets a moderator read «Statistika» and «Kanallar» (owner decision 06.10.2026)', async () => {
+    const { go } = renderTeamHome('moderator');
+    fireEvent.click(await screen.findByText('Statistika'));
+    expect(go).toHaveBeenCalledWith('statistics');
+    fireEvent.click(screen.getByText('Kanallar'));
+    expect(go).toHaveBeenCalledWith('channels');
+  });
+
   it('lists every case the oldest first, a late one red, who opened it', async () => {
     renderTeamHome('moderator');
     const late = await screen.findByText('2 soat');

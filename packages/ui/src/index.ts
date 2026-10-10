@@ -13,8 +13,10 @@ export { NewRequestFlow } from './market/new-request-flow';
 export { NewTripFlow } from './market/new-trip-flow';
 export { ManagementScreen } from './manage/management-screen';
 export { StatsScreen } from './stats/stats-screen';
+export { ReadChannelsScreen } from './channels/channels-screen';
 export { TeamTripsScreen } from './market/team-trips-screen';
 export {
+  CHANNELS_SECTION,
   MANAGEMENT_SECTION,
   NAVBAT_SECTION,
   PEOPLE_SECTION,

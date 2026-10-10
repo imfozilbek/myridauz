@@ -1,4 +1,5 @@
 import {
+  CHANNELS_SECTION,
   linkedCase,
   linkedStats,
   MANAGEMENT_SECTION,
@@ -7,6 +8,7 @@ import {
   NavbatScreen,
   PEOPLE_SECTION,
   PeopleScreen,
+  ReadChannelsScreen,
   STATS_SECTION,
   StartFlow,
   StatsScreen,
@@ -43,6 +45,14 @@ const SECTIONS: readonly StartAction[] = [
     labelKey: 'common.admin.statistics',
     hintKey: 'common.admin.statisticsHint',
     Screen: StatsScreen,
+  },
+  {
+    id: CHANNELS_SECTION,
+    icon: 'channel',
+    tone: 'brand',
+    labelKey: 'channels.title',
+    hintKey: 'channels.title',
+    Screen: ReadChannelsScreen,
   },
   {
     id: TRIPS_SECTION,

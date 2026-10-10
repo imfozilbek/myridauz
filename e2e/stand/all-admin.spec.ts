@@ -1,10 +1,11 @@
-import { test } from '../crash-guard';
+import { expect, test } from '../crash-guard';
 import { createFeedbackClient } from '@platform/api-client';
 import { confirmedSeat } from './g27-kit';
-import { MUROD, NARGIZA, OWNER, SHERZOD } from './people';
+import { KAMRON, MUROD, NARGIZA, OWNER, SHERZOD } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, visit, type Platform } from './screen-tour';
 import { apply } from './seed';
 import { signedAs, type Person } from './stand-kit';
+import { standSql } from './stand-tools';
 import type { Page } from '@playwright/test';
 
 // Every screen of the team (docs/79, docs/83): an application waits, a complaint waits, and every
@@ -55,7 +56,8 @@ for (const platform of PLATFORMS)
   test(`${platform}: «Boshqaruv», trips, numbers and prices`, async ({ page }) => {
     await management(page, platform);
     await shot(page, platform, 'ta30-management');
-    await visit(page, platform, t('common.admin.trips'), 'ta31-trips');
+    // Exactly «Safarlar»: the group «Odamlar va safarlar» has the word too.
+    await visit(page, platform, new RegExp(`^${t('common.admin.trips')}$`, 'u'), 'ta31-trips');
     await visit(page, platform, t('common.admin.statistics'), 'ta32-stats');
     await open(page, platform, t('pricing.title'), 'ta33-pricing');
     await open(page, platform, t('pricing.edit'), 'ta34-pricing-edit');
@@ -101,4 +103,18 @@ test('android: the history of pitaks', async ({ page }) => {
   await management(page, 'android');
   await page.getByText(t('pitaks.title')).first().click();
   await visit(page, 'android', t('pitaks.history'), 'ta42-pitak-history');
+});
+
+// A moderator reads «Statistika» and «Kanallar» and changes nothing (owner decision 06.10.2026,
+// docs/120): no «Kanal qoʻshish» on the list.
+test('android: a moderator reads the channels', async ({ page }) => {
+  standSql(
+    `INSERT OR IGNORE INTO team_members (user_id, role, added_by, added_at) VALUES (${KAMRON.id}, 'moderator', ${OWNER.id}, ${Date.now()})`,
+  );
+  await openHome(page, 'admin', KAMRON, 'android');
+  await visit(page, 'android', t('common.admin.statistics'), 'ta54-moderator-stats');
+  await page.getByText(t('channels.title'), { exact: true }).first().click();
+  await expect(page.getByText(t('channels.fixed')).first()).toBeVisible();
+  await expect(page.getByText(t('channels.add'))).toHaveCount(0);
+  await shot(page, 'android', 'ta55-moderator-channels');
 });

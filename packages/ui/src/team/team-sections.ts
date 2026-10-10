@@ -6,3 +6,4 @@ export const STATS_SECTION = 'statistics';
 export const TRIPS_SECTION = TEAM_TRIPS_SECTION;
 export const MANAGEMENT_SECTION = 'management';
 export const PEOPLE_SECTION = 'people';
+export const CHANNELS_SECTION = 'channels';
