@@ -78,3 +78,13 @@
 - Попутчик: «Mening safarlarim», «Suhbatlar», «Yordam», «Kanallar» (канал своего направления; полезен с первого дня, растит Rida).
 - Водитель: «Mening safarlarim», «Suhbatlar», «Hamyon», «Yordam» (споры о деньгах и поездках).
 - «Sevimli haydovchilar» остаются в «Mening safarlarim» и в доке (состояние 3); «Haydovchi boʻling» и «Kanallar» водителя: в «Profil».
+
+## Шапка из двух частей (лист `goals/g76/4-header.png`)
+
+| Роль | Левая часть (открывает «Profil») | Правая часть |
+|---|---|---|
+| Водитель | фото, имя, «Haydovchi», «›» | машина и номер (`UzPlate` размера s); открывает машину. Нет машины: жёлтая «Mashina · Qoʻshing», открывает заявку |
+| Попутчик | фото, имя, «Yoʻlovchi», «›» | «Bahoyim ★ 4,8 · 12» (водитель видит оценку до «Tasdiqlash»); открывает «Baholarim». Нет оценок: «Yangi», открывает «как меня видят». Нет фото: жёлтая «Rasm qoʻshing · Tezroq tasdiq» |
+
+- На 320 px всё уменьшается (фото, шрифт, номер), ничего не обрезается (`121`).
+- Новые тексты («Bahoyim», «Rasm qoʻshing», «Tezroq tasdiq», «Mashina», «Qoʻshing»): на согласие владельца и проверку носителем (`25`).
