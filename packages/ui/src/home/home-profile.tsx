@@ -32,7 +32,13 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
       label={t('account.profile.open')}
       onClick={onOpen}
     >
-      <ProfilePhoto userId={profile.id} name={profile.firstName} hasAvatar={profile.hasAvatar} size={FACE} fluid />
+      <ProfilePhoto
+        userId={profile.id}
+        name={profile.firstName}
+        hasAvatar={profile.hasAvatar}
+        size={FACE}
+        fluid
+      />
       <span className="home-card-words">
         <span className="home-card-title">{profile.firstName}</span>
         <span className="home-card-hint">{role}</span>
