@@ -73,7 +73,10 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
   await shot('2-booking');
   await pressBack(page);
   // The own request card shows no own name (G37, docs/101 R6): «… · Soʻrov» opens it (mockup g75/2 A).
-  await page.getByText(/ · Soʻrov$/u).first().click();
+  await page
+    .getByText(/ · Soʻrov$/u)
+    .first()
+    .click();
   await expect(page.getByText(B.offers)).toBeVisible();
   await shot('3-request');
   await page.getByRole('button', { name: B.accept }).click();
