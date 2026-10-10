@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 // The work of the team as on the mockup g67/1 (G75, docs/120): nine cases, the oldest a late
 // complaint; two errors and three drivers with little money in «Diqqat»; the numbers of Aziz.
 const MINUTE = 60_000;
-const id = (n: number) => String(n).repeat(32);
+export const id = (n: number) => String(n).repeat(32);
 const base = (n: number, name: string, minutes: number) => ({
   id: id(n),
   name,

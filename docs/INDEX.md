@@ -148,4 +148,5 @@
 | 158, 159 | [158-redesign-gaps-check.md](158-redesign-gaps-check.md), [159-screens-without-redesign.md](159-screens-without-redesign.md) | Дыры редизайна `124`: проверка по коду 10.10.2026, что сделано и что ушло в G75. Экраны трёх Mini App без редизайна: 67 из 120, вся админка; основа G75 |
 | 160 | [160-g75-texts.md](160-g75-texts.md) | G75: новые тексты на согласие владельца (боты команды, потом экраны по макетам `goals/g75`) |
 | 161 | [161-g75-admin-texts.md](161-g75-admin-texts.md) | G75: тексты админки (главный экран команды и дела «Navbat») на согласие владельца |
+| 162 | [162-g75-admin-pixel-perfect.md](162-g75-admin-pixel-perfect.md) | G75: сверка Pixel Perfect админки (g67/1, g67/2), спорные места макетов |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

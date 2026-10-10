@@ -34,7 +34,7 @@ const SCREENS = {
 type Open = 'menu' | 'statistics' | keyof typeof SCREENS;
 
 // «Boshqaruv» of the owner in 4 groups (G75, docs/120, mockup g67/2 screen 6): people and trips,
-// money, places, and Rida itself. A moderator never opens it: the server refuses the changes too.
+// money, places, and Rida itself; «Cheklovlar» and «Jurnal» go last, after the rows of the mockup. A moderator never opens it: the server refuses the changes too.
 export function ManagementScreen({ onBack }: Back) {
   useScreenView('management');
   const { t } = useI18n();
@@ -58,7 +58,7 @@ export function ManagementScreen({ onBack }: Back) {
           onClick={() => setOpen('people')}
         />
         <ManageRow
-          icon="car"
+          icon="carSide"
           title={t('common.admin.trips')}
           hint={hints.trips}
           onClick={() => setOpen('trips')}
@@ -105,6 +105,8 @@ export function ManagementScreen({ onBack }: Back) {
           hint={hints.team}
           onClick={() => setOpen('team')}
         />
+        <ManageRow icon="file" title={t('manage.company')} onClick={() => setOpen('company')} />
+        <ManageRow icon="sounds" title={t('common.admin.sounds')} onClick={() => setOpen('sounds')} />
         <ManageRow
           icon="locked"
           title={t('manage.limits')}
@@ -117,8 +119,6 @@ export function ManagementScreen({ onBack }: Back) {
           hint={t('manage.journalHint')}
           onClick={() => setOpen('journal')}
         />
-        <ManageRow icon="file" title={t('manage.company')} onClick={() => setOpen('company')} />
-        <ManageRow icon="sounds" title={t('common.admin.sounds')} onClick={() => setOpen('sounds')} />
       </ManageGroup>
     </ManagePage>
   );

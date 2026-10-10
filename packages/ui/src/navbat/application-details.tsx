@@ -19,9 +19,9 @@ export function ApplicationDetails({ detail }: { readonly detail: ApplicationDet
           <b>{t('navbat.application.car', { car: `${car.make} ${car.model}`, color: color(car) })}</b>
           <span className="case-muted">{t('navbat.application.seats', { count: car.seats })}</span>
         </div>
-        <div className="case-row">
+        <div className="case-row case-row-plate">
           <span className="case-muted">{t('drivers.review.plate')}</span>
-          <UzPlate plate={car.plate} size="s" />
+          <UzPlate plate={car.plate} size="m" />
         </div>
         <div className="case-row">
           <span className="case-muted">{t('navbat.application.driver')}</span>

@@ -141,3 +141,7 @@
 .case-trip-name {
   font-size: 16px;
 }
+
+.case-trip .case-muted {
+  font-size: 12.5px;
+}

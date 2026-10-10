@@ -3,36 +3,45 @@
 .manage {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   min-height: var(--tg-viewport-stable-height, 100vh);
   box-sizing: border-box;
-  padding: 12.5px 14px 24px;
+  padding: 12.5px 14.67px 24px 13.33px;
   color: var(--reg-ink);
   font-family: var(--tgui--font-family);
 }
 
 .manage-title {
   margin: 0 0 0 8px;
-  font-size: 21.5px;
+  font-size: 21px;
   font-weight: 700;
   line-height: 26px;
 }
 
 .manage-hint {
-  margin: -10px 0 0 8px;
+  margin: -8px 0 0 8px;
   font-size: 12.5px;
   line-height: 16px;
   color: var(--reg-muted);
 }
 
 .manage-row {
+  gap: 12.67px;
   min-height: 51.33px;
-  color: var(--reg-muted);
+  padding-left: 14.67px;
+  color: var(--reg-route-line);
 }
 
-/* The place of a live line is kept while it loads. */
-.manage-row-hint:empty {
-  min-height: 21px;
+/* The line under a title sits close to it, as on the mockup; its place is kept while it loads. */
+.manage-row .manage-row-hint {
+  margin-top: 0;
+  font-size: 13px;
+  line-height: 14px;
+  min-height: 14px;
+}
+
+.manage-row .navbat-title {
+  color: var(--reg-ink);
 }
 
 .manage-danger {

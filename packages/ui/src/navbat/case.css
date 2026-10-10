@@ -28,9 +28,13 @@
   color: var(--reg-muted);
 }
 
+/* One line always: on a narrow phone the words get smaller, never cut (docs/121). */
 .case-progress span:first-child {
   flex: 1;
+  /* 12.5 px at 360 px: the words take the width left of the bar and the edges (91 px). */
+  font-size: min(12.5px, calc((100vw - 91px) * 0.0465));
   min-width: 0;
+  white-space: nowrap;
 }
 
 /* The share of the cases done: dark, the rest light (mockup g67/2 screen 3). */
@@ -121,4 +125,13 @@
 
 .case-danger {
   color: var(--reg-danger);
+}
+
+/* The plate of an application between the small and the middle size (mockup g67/2 screen 3). */
+.case-row .uz-plate {
+  --plate-h: 27.33px;
+}
+
+.case-row-plate {
+  min-height: 44px;
 }
