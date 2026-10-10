@@ -13,6 +13,8 @@ import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
 export type ProfileOpen = 'reviews' | 'channels' | 'documents' | 'delete';
+// What the head of the main screen opens straight away (G76): the ratings, how the drivers see one.
+export type ProfilePart = 'reviews' | 'look';
 
 type Props = {
   readonly standing: Standing | null;

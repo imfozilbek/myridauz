@@ -22,8 +22,12 @@ describe('pitaks in D1', () => {
     const store = d1Pitaks(testD1());
     const pitak = await store.find('qoyliq');
     if (!pitak) throw new Error('no qoyliq');
-    await store.save({ ...pitak, point: { lat: 41.244, lng: 69.34 }, updatedAt: 5 });
-    expect((await store.find('qoyliq'))?.point).toEqual({ lat: 41.244, lng: 69.34 });
+    expect(pitak.hint).toBeNull();
+    await store.save({ ...pitak, hint: 'Metro yonida', point: { lat: 41.244, lng: 69.34 }, updatedAt: 5 });
+    expect(await store.find('qoyliq')).toMatchObject({
+      hint: 'Metro yonida',
+      point: { lat: 41.244, lng: 69.34 },
+    });
     await store.saveDirection({ from: '1726', to: '1718', pitakId: 'sobir-rahimov', updatedAt: 5 });
     expect((await store.direction('1726', '1718'))?.pitakId).toBe('sobir-rahimov');
     expect(await store.removeDirection('1726', '1718')).toBe(true);

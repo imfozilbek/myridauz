@@ -217,4 +217,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/155-g68-action-sheet.md`, `docs/156-g68-pixel-perfect.md` | G68: шторка действия в Mini App (виды, очередь, ссылки ботов); сверка Pixel Perfect шторки |
 | `docs/158-redesign-gaps-check.md`, `docs/159-screens-without-redesign.md` | Дыры редизайна по коду (10.10.2026): что сделано, что в G75; экраны без редизайна (67 из 120, вся админка) |
 | `docs/160-g75-texts.md`, `docs/161-g75-admin-texts.md`, `docs/162-g75-admin-pixel-perfect.md`, `docs/163-g75-pixel-perfect.md` | G75: новые тексты на согласие владельца; тексты админки (главный экран, дела «Navbat»); сверка Pixel Perfect админки и экранов по листам g75 |
+| `docs/164-dock-and-sheets.md`, `docs/165-g76-home.md`, `docs/166-g76-texts.md` | G76: шторки главного экрана; главный экран (финальные макеты); новые тексты |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

@@ -1,4 +1,4 @@
-import { PITAK_STATUSES, type AdminPitak, type Point } from '@platform/contracts';
+import { PITAK_HINT_MAX, PITAK_STATUSES, type AdminPitak, type Point } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
@@ -26,7 +26,8 @@ type Props = {
   readonly onBack: (changed: boolean) => void;
 };
 
-// One pitak of the team (docs/72): its name, its point on the map and its status. The region
+// One pitak of the team (docs/72): its name, where exactly to stand (G76), its point on the map and
+// its status. The region
 // comes from the point on the server, nobody types it.
 export function PitakEdit({ pitak, start, directory, onBack }: Props) {
   useScreenView('pitaks.edit');
@@ -34,6 +35,7 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
   const { pitaks } = useApiClients();
   const nameText = useNameText();
   const [name, setName] = useState(pitak?.name ?? '');
+  const [hint, setHint] = useState(pitak?.hint ?? '');
   const [point, setPoint] = useState<Point | null>(pitak?.point ?? null);
   const [where, setWhere] = useState<string | null>(null);
   const [status, setStatus] = useState(pitak?.status ?? 'candidate');
@@ -41,6 +43,7 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
   const [error, setError] = useState<unknown>(null);
   const guard = useUnsavedGuard(
     name !== (pitak?.name ?? '') ||
+      hint !== (pitak?.hint ?? '') ||
       point !== (pitak?.point ?? null) ||
       status !== (pitak?.status ?? 'candidate'),
   );
@@ -60,7 +63,7 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
     );
   const save = () => {
     if (!point) return;
-    const input = { name, point, status };
+    const input = { name, hint, point, status };
     void (pitak ? pitaks.change(pitak.id, input) : pitaks.add(input)).then(
       () => onBack(true),
       (failure: unknown) => setError(failure),
@@ -72,6 +75,12 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
       <Screen onBack={guard(() => onBack(false))} />
       <List>
         <Field label={t('pitaks.name')} value={name} onChange={(e) => setName(e.target.value)} />
+        <Field
+          label={t('pitaks.hint')}
+          value={hint}
+          maxLength={PITAK_HINT_MAX}
+          onChange={(e) => setHint(e.target.value)}
+        />
         <Section>
           <Cell
             before={<Icon name="pickup" />}

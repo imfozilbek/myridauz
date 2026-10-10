@@ -16,7 +16,7 @@ import {
 import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
 import { assignTo, waitingSupport } from './modules/assignments';
-import { inviteFromMark } from './modules/channels';
+import { inviteFromMark, tripViewCounts } from './modules/channels';
 import { approvedCar, waitingApplications, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
@@ -102,15 +102,15 @@ wireRatings({
   },
 });
 
-// Trips show the driver's rating; complaints hide a person from the search (docs/17, docs/24).
+// Trips show the driver's rating and their views (G76); complaints hide a person (docs/17, docs/24).
 wireTripStanding((env) => ({
   ratings: (ids) => ratingsOfPeople(env, ids),
   hidden: (ids) => hiddenByComplaints(env, ids),
+  viewsOf: (ids) => tripViewCounts(env, ids),
 }));
 wireHiddenRequesters(hiddenByComplaints);
 
-// «Hamyon» names the passenger and seats of its rows, opens the booking behind a commission and
-// counts the seats left at the price of the last trip (G63, G65).
+// «Hamyon»: the passenger and seats of its rows, the booking, the seats at the last price (G63, G65).
 wireWalletLinks({ bookings: walletBookingsOf, booking: driverBookingOf, lastPrice: lastTripPrice });
 
 // Complaints are about rides; a block cancels live trips; a no-show refund (docs/17, docs/35).

@@ -20,7 +20,7 @@ const asked = {
 
 function driver(requests = [asked], answer = vi.fn(async () => asked), money = 100_000) {
   vi.setSystemTime(NOW);
-  const shown = renderHome((go) => <DriverHome go={go} />, DRIVER_ACTIONS, {
+  const shown = renderHome(() => <DriverHome />, DRIVER_ACTIONS, {
     trips: async () => [trip],
     requests: async () => requests,
     sheet: true,
@@ -34,6 +34,8 @@ function driver(requests = [asked], answer = vi.fn(async () => asked), money = 1
 describe('the sheet of a new request (G68)', () => {
   it('says who, how many seats, when and where, the sum, the commission and the time to answer', async () => {
     driver();
+    // The block at the bottom calls, the sheet answers (G76, docs/164).
+    await tap('Javob berish');
     expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
     expect(screen.getByText('Madina · 2 joy')).toBeTruthy();
     expect(screen.getByText('★ 4,8 · 12 safar')).toBeTruthy();
@@ -52,6 +54,7 @@ describe('the sheet of a new request (G68)', () => {
   // «Keyinroq» lasts the session of the Mini App: each test has its own requests.
   it('«Tasdiqlash» answers in one tap; the plaque on top says the commission', async () => {
     const { answer } = driver([{ ...asked, id: 'b3' }]);
+    await tap('Javob berish');
     await tap('Tasdiqlash');
     expect(answer).toHaveBeenCalledWith('b3', 'confirm');
     expect(await screen.findByText(/^Madina tasdiqlandi · 19.000 komissiya$/u)).toBeTruthy();
@@ -61,6 +64,7 @@ describe('the sheet of a new request (G68)', () => {
   it('«Rad etish» declines; two requests show «1 / 2», then the next one', async () => {
     const olim = { ...asked, id: 'b5', passenger: { ...asked.passenger, firstName: 'Olim' } };
     const { answer } = driver([{ ...asked, id: 'b4' }, olim]);
+    await tap('Javob berish');
     expect(await screen.findByText('1 / 2')).toBeTruthy();
     await tap('Rad etish');
     expect(answer).toHaveBeenCalledWith('b4', 'decline');
@@ -74,10 +78,15 @@ describe('the sheet of a new request (G68)', () => {
   // «Tasdiqlash» that fails.
   it('without money for the commission says the sum short and opens the ready message', async () => {
     const { answer } = driver([{ ...asked, id: 'b6' }], undefined, 5000);
+    // Short of money the block says so first; «Soʻrovlar» opens the sheet (mockup g76/3 state 8).
+    await tap('Soʻrovlar');
     expect(await screen.findByText('Yetmaydi')).toBeTruthy();
     expect(screen.getByText(/^14.000$/u)).toBeTruthy();
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByRole('button', { name: 'Hisobni toʻldirish' }));
+    const inSheet = screen
+      .getAllByRole('button', { name: 'Hisobni toʻldirish' })
+      .find((button) => button.closest('[vaul-drawer]'));
+    fireEvent.click(inSheet as HTMLElement);
     expect(decodeURIComponent(String(sent.mock.calls[0]?.[0]))).toMatch(
       /Madinaning joyini tasdiqlash uchun 14.000.soʻm yetmayapti/u,
     );

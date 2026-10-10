@@ -1,4 +1,4 @@
-import type { AppLink, Location, NavbatKind, PersonId } from '@platform/contracts';
+import type { AppLink, Location, NavbatKind, PersonId, RequestBoardQuery } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
@@ -41,6 +41,11 @@ export type Launch = {
   readonly link?: AppLink;
   readonly pick?: 'from' | 'to';
   readonly route?: { readonly from: Location; readonly to: Location };
+  // One end of the block at the bottom (G76, docs/165): the other one is asked first.
+  readonly from?: Location;
+  readonly to?: Location;
+  // The requests of passengers from the «Qayerdan» of the block (G76).
+  readonly board?: RequestBoardQuery;
   // «Oxirgi yoʻnalish»: the answers of the last trip, only the day is asked (G40, docs/106 K3).
   readonly again?: TripAgain;
   // A case of «Navbat» opened from the main screen of the team, in the filter it was seen (G75).

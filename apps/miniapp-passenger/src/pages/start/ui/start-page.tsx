@@ -5,13 +5,13 @@ import {
   MyRequestsScreen,
   NewRequestFlow,
   PASSENGER_SECTIONS,
+  PASSENGER_TILE_SECTIONS,
+  PassengerSide,
   PassengerData,
   PassengerDock,
   PassengerHome,
   PassengerTiles,
   StartFlow,
-  useBookingsLive,
-  useRequestLive,
   type StartAction,
 } from '@platform/ui';
 
@@ -31,8 +31,6 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.passenger.leaveRequest',
     hintKey: 'common.passenger.leaveRequestHint',
-    // «Soʻrovim» while a request is open: where, when and the offers waiting (G53, G66).
-    useLive: useRequestLive,
     Screen: NewRequestFlow,
   },
   {
@@ -41,7 +39,6 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.passenger.myTripsHint',
-    useLive: useBookingsLive,
     Screen: MyRequestsScreen,
   },
 ];
@@ -58,10 +55,11 @@ export function StartPage() {
           actions={ACTIONS}
           covered="find_trip"
           home={(go) => <PassengerHome go={go} />}
-          tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+          tiles={(go) => <PassengerTiles go={go} />}
+          side={(openProfile) => <PassengerSide openProfile={openProfile} />}
           after={<BecomeDriver />}
           dock={(go) => <PassengerDock go={go} />}
-          sections={PASSENGER_SECTIONS}
+          sections={[...PASSENGER_SECTIONS, ...PASSENGER_TILE_SECTIONS]}
         />
       </HomeRouteProvider>
     </PassengerData>

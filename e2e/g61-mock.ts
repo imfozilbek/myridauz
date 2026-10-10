@@ -4,7 +4,7 @@ import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { MAN } from './g59-pixel-mock';
 import { mapState, mockMap } from './map-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -106,7 +106,7 @@ export async function openRequestScreen(page: Page) {
   await page.addInitScript((way) => localStorage.setItem('book_points', way), JSON.stringify(WAY));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Urg');
   await page.getByRole('dialog').getByText('Urganch', { exact: true }).click();

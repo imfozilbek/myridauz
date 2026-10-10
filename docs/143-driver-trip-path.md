@@ -45,7 +45,7 @@
 - Сверху «Madina keldi: uchrashuv joyida», если попутчик нажал «Men keldim».
 - Шаги: «Men keldim» (попутчик получает сообщение бота), потом «Keldi» или «Kelmadi».
 - Встреча открыта с 30 минут до выезда (`MEET_BEFORE_MINUTES`) до закрытия поездки.
-- «Kelmadi»: только после «Men keldim» водителя и с вопросом. Нельзя, если попутчик сам нажал «Mashinaga chiqdim» или «Yetib keldim».
+- «Kelmadi»: только после «Men keldim» водителя и с вопросом. Нельзя после посадки («Keldi», G76) или «Yetib keldim» попутчика.
 - «Kelmadi» есть и в строке попутчика на «Mening safarim», и на странице прошлой поездки после «Yetib keldik», пока поездка не закрыта.
 - После отметки в пути строка остаётся «Kelmadi · safar tugaguncha belgilash mumkin» (уже не кнопка), про возврат говорит плашка сверху (макет g63/5 телефон 1). После поездки в строке возврат: «Kelmadi · qaytarish 9 000 kutilmoqda» (телефон 5).
 - Что делает «Kelmadi» на сервере (жалоба, возврат): `52`.

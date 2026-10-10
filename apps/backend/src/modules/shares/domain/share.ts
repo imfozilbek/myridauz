@@ -59,7 +59,7 @@ export function shareStatus(trip: Progress, now: number): ShareStatus {
 
 type DriverProgress = Pick<Trip, 'status' | 'departAt' | 'departedAt' | 'arrivedAt' | 'km'>;
 
-// The driver has no "Mashinaga chiqdim" buttons: the family reads «Yoʻlga chiqdim» and «Yetib keldik»
+// The driver has no boarding step: the family reads «Yoʻlga chiqdim» and «Yetib keldik»
 // (G63), the clock and the trip status.
 export function driverShareStatus(trip: DriverProgress, now: number): ShareStatus {
   if (trip.status === 'cancelled') return 'cancelled';

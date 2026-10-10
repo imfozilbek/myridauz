@@ -12,7 +12,9 @@ type Board = { readonly board: RequestBoard; readonly offered: ReadonlySet<strin
 export function useBoard(query: RequestBoardQuery) {
   const { market, bookings } = useApiClients();
   return useLoad(async (): Promise<Board> => {
-    const [board, offers] = await Promise.all([market.requestBoard(query), bookings.driverOffers()]);
+    // The screen itself: the requests on it count as seen by the driver (G76, «N haydovchi koʻrdi»).
+    const seen = market.requestBoard({ ...query, seen: '1' });
+    const [board, offers] = await Promise.all([seen, bookings.driverOffers()]);
     const offered = new Set(
       offers.filter((offer) => offer.status === 'sent').map((offer) => offer.requestId),
     );

@@ -33,7 +33,7 @@
 
 ## «Yaqinlarimga yuborish» (`43`)
 
-1. Бронь подтверждена → в брони кнопки «Yaqinlarimga yuborish», «Mashinaga chiqdim», «Yetib keldim», «Ulashishni toʻxtatish».
+1. Бронь подтверждена → в брони кнопки «Yaqinlarimga yuborish», «Ulashishni toʻxtatish»; после «Keldi» водителя (посадка, G76) «Yetib keldim».
 2. Карточка уходит через родное окно Telegram (`savePreparedInlineMessage` + `shareMessage`), запасной путь: `t.me/share/url`.
 3. Кнопка карточки: `t.me/<бот попутчиков>?start=follow_<токен>`. Бот отвечает кнопкой, которая открывает Mini App в режиме «только смотреть». Так работает без настройки BotFather.
 4. Близкий видит: имя попутчика, маршрут, время, имя водителя, машину, госномер, место посадки попутчика на карте (пятак или его точка, `111` Q1), статус. Телефонов и переписки не видит.

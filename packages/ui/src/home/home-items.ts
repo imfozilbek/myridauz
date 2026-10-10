@@ -1,5 +1,4 @@
 import type { Booking, BookingStatus, Offer, RideRequest, Trip } from '@platform/contracts';
-import { endedBadly } from '../bookings/booking-banner';
 import type { TripAgain } from '../market/trip-draft';
 
 // What the main screen shows (G25): the nearest live bookings and trips, at most two; all of them
@@ -14,15 +13,6 @@ export function nextBookings(bookings: readonly Booking[], most = SHOWN): readon
     .filter((booking) => LIVE_BOOKINGS.includes(booking.status))
     .sort((a, b) => byDeparture(a.trip, b.trip))
     .slice(0, most);
-}
-
-// A seat that ended without a trip stays on the main screen until its trip leaves (G75, docs/158 А):
-// the person sees how it ended, not only in the bot. A seat the person cancelled needs no word.
-export function endedSeat(bookings: readonly Booking[], now: number): Booking | null {
-  const ended = bookings.filter(
-    ({ status, trip }) => endedBadly(status) && status !== 'cancelled_by_passenger' && trip.departAt > now,
-  );
-  return [...ended].sort((a, b) => byDeparture(a.trip, b.trip))[0] ?? null;
 }
 
 // The offers of drivers waiting for the answer of the passenger, on the requests still open (G53).

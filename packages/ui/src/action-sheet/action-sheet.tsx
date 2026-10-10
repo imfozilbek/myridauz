@@ -8,14 +8,14 @@ import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { useSheetShown } from '../telegram/sheet-shown';
 import { ActionCard } from './action-card';
 import type { ActionItem } from './action-item';
-import { pinFirst, putAside, useActionQueue } from './action-queue';
+import { answeredSheet, closeSheet, pinFirst, useActionQueue } from './action-queue';
 
 // Long enough to read «Madina tasdiqlandi · 20 000 komissiya» once.
 const PLAQUE_MS = 4000;
 
-// The sheet of the open Mini App (docs/122, mockups g68/7, g68/8): the bot calls, the app answers.
-// One thing at a time in its order, «1 / 3» while more wait, the next one right after an answer.
-// After an answer the sheet closes and a short plaque on top says what happened.
+// The sheet of the open Mini App (docs/122, docs/164, mockups g68/7, g68/8): a call rises by itself,
+// the rest open from the block at the bottom or a bot link. One thing at a time, «1 / 3» while more
+// of its kind wait, the next one right after an answer; a short plaque on top says what happened.
 export function ActionSheet() {
   const { t } = useI18n();
   const queue = useActionQueue();
@@ -30,15 +30,21 @@ export function ActionSheet() {
     forgetLaunchParam(SHEET_LINK);
     pinFirst(named);
   }, []);
+  // The last one answered: the sheet closes, a new thing waits in the block (docs/164).
   useEffect(() => {
-    if (!item) setDone(0);
+    if (item) return;
+    setDone(0);
+    closeSheet();
   }, [item]);
   const total = done + queue.length;
-  const leave = (gone: ActionItem) => {
+  // An answer takes the thing away and brings the next one; «Keyinroq» closes the sheet.
+  const answer = (gone: ActionItem) => {
     setDone((count) => count + 1);
     gone.onAside?.();
-    putAside(gone.key);
+    answeredSheet(gone.key);
   };
+  // A call put aside is declined (G68): it never comes back.
+  const leave = (gone: ActionItem) => (gone.kind === 'call' ? answer(gone) : closeSheet());
   return (
     <>
       <Modal
@@ -53,7 +59,7 @@ export function ActionSheet() {
             counter={total > 1 ? t('sheet.counter', { index: String(done + 1), total: String(total) }) : null}
             laterLabel={t('sheet.later')}
             onDone={(words) => {
-              leave(item);
+              answer(item);
               if (words) setPlaque(words);
             }}
             onLater={() => leave(item)}

@@ -1,37 +1,40 @@
-/* The white panel at the bottom of the main screen (G66, mockups g66/1, g66/2 at 360 px): it stands
-   right above the Telegram button. In Telegram the view ends there already; elsewhere the view is
-   taller than its stable height by the space of the button. */
+/* The white block at the bottom of the main screen (G76, mockup g76/1 at 360 px): it stands right
+   above the buttons of Telegram, 8 px over them. In Telegram the view ends there already; elsewhere
+   the view is taller than its stable height by the space of the buttons. */
 .home-dock {
   position: fixed;
   left: 0;
   right: 0;
   bottom: calc(100vh - var(--tg-viewport-stable-height, 100vh));
-  z-index: 5;
+  /* Under the sheets of the library (z-index 3): a sheet rises over the block (lesson 199, G76). */
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   box-sizing: border-box;
-  padding: 12px var(--home-gutter, 14px) 10.67px;
-  border-radius: 20px 20px 0 0;
+  padding: 18px var(--home-gutter, 14px) 8px;
+  border-radius: 22px 22px 0 0;
   background: var(--reg-card);
-  box-shadow: 0 -6px 18px rgb(15 23 42 / 6%);
+  box-shadow: 0 -4px 18px rgb(0 0 0 / 10%);
   font-family: var(--tgui--font-family);
 }
 
-/* The two ends in one gray block, a line between them and ⇅ on the line. */
+/* The two ends in one gray block, a line between them and ⇅ in the middle (mockup g76/1). */
 .home-dock-route {
   position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 14px;
-  background: var(--reg-bg);
+  background: var(--reg-neutral-pale);
 }
 
 .home-dock-end {
   display: flex;
-  align-items: center;
-  gap: 11.33px;
+  align-items: flex-start;
+  gap: 10px;
   width: 100%;
   box-sizing: border-box;
-  min-height: 52px;
-  padding: 9.67px 56px 8.33px 14px;
+  padding: 10px 56px 10px 14px;
   border: 0;
   background: transparent;
   color: var(--reg-ink);
@@ -40,9 +43,7 @@
   cursor: pointer;
 }
 
-/* The line between the ends carries ⇅ in a white round. */
 .home-dock-line {
-  position: relative;
   height: 1px;
   background: var(--reg-off);
 }
@@ -51,17 +52,15 @@
 .home-dock-ring {
   flex: none;
   box-sizing: border-box;
-  width: 12.67px;
-  height: 12.67px;
+  width: 12px;
+  height: 12px;
+  margin-top: 6px;
+  border: 3px solid var(--reg-from);
   border-radius: 50%;
 }
 
-.home-dock-from {
-  box-shadow: inset 0 0 0 2.67px var(--reg-from);
-}
-
 .home-dock-to {
-  box-shadow: inset 0 0 0 2.67px var(--reg-to);
+  border-color: var(--reg-to);
 }
 
 .home-dock-words {
@@ -72,47 +71,38 @@
 
 .home-dock-label {
   font-size: 12px;
-  line-height: 14px;
   color: var(--reg-muted);
 }
 
 .home-dock-value {
   font-size: 16px;
   font-weight: 700;
-  line-height: 20px;
 }
 
 .home-dock-empty {
   font-size: 16px;
-  line-height: 20px;
   color: var(--reg-control);
 }
 
-/* An end with a line under its place: a little more room above, as on the mockups. */
-.home-dock-end:has(.home-dock-hint) {
-  padding-top: 9.67px;
-  padding-bottom: 10.67px;
-}
-
 .home-dock-hint {
-  margin-top: -1.67px;
-  font-size: 11.5px;
-  line-height: 14px;
+  font-size: 12px;
   color: var(--reg-text);
 }
 
 .home-dock-swap {
   position: absolute;
-  top: -23px;
+  top: 50%;
   right: 12px;
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
   padding: 0;
-  border: 1px solid var(--reg-off);
+  border: 0;
   border-radius: 50%;
   background: var(--reg-card);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
+  transform: translateY(-50%);
   cursor: pointer;
 }
 
@@ -122,5 +112,13 @@
   left: var(--home-gutter, 14px);
   right: var(--home-gutter, 14px);
   bottom: calc(100vh - var(--tg-viewport-stable-height, 100vh) + 10px);
-  z-index: 5;
+  z-index: 2;
+}
+
+/* While the application is checked (G76, mockup g76/3 state 2): why both buttons wait. */
+.home-dock-note {
+  margin: 0;
+  font-size: 12px;
+  text-align: center;
+  color: var(--reg-muted);
 }

@@ -2,16 +2,17 @@ import './flow.css';
 import { OPEN_LINK, OPEN_LINK_VALUE, PROFILE_PHOTO_LINK } from '@platform/contracts';
 import { useCallback, useState, type ReactNode } from 'react';
 import { ProfileScreen } from '../account/profile/profile-screen';
+import type { ProfilePart } from '../account/profile/profile-rows';
 import { useI18n } from '../context/i18n-context';
 import { useHomeTap } from '../home/use-home-tap';
 import { ErrorBoundary } from '../states/error-boundary';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { launchParam, useLinkOpened } from '../telegram/launch-param';
-import { HomeProvider } from './home-context';
+import { HomeGoProvider, HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
 import type { HomeGo, Launch, StartAction, TileLive } from './start-action';
-import { useAnySheet } from '../telegram/sheet-shown';
+import { UnderSheets, useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
   readonly actions: readonly StartAction[];
@@ -28,15 +29,22 @@ type StartFlowProps = {
   // block loads or fails, so the main action is always one tap away.
   readonly covered?: string;
   // The block «Qayerdan / Qayerga» at the bottom with the main button of its own (G66, docs/118): it
-  // decides the button, like «Mashinaga chiqdim» on the day of a trip. The tiles are square then.
+  // decides the button, like «Men keldim» on the day of a trip. The tiles are square then.
   readonly dock?: (go: HomeGo) => ReactNode;
   // Tiles of the app after its actions (G53): they open a section or the profile.
-  readonly tiles?: (go: HomeGo, openProfile: () => void) => ReactNode;
+  readonly tiles?: (go: HomeGo, openProfile: OpenProfile) => ReactNode;
+  // The right part of the head of the main screen (G76, mockup g76/1): the car or the rating.
+  readonly side?: (openProfile: OpenProfile) => ReactNode;
   // Sections opened only by those tiles, not drawn as action tiles (G53).
   readonly sections?: readonly StartAction[];
 };
 const NO_SECTIONS: readonly StartAction[] = [];
-type Screen = 'home' | 'profile' | { readonly action: StartAction; readonly launch?: Launch };
+type OpenProfile = (part?: ProfilePart) => void;
+type Screen =
+  | 'home'
+  | { readonly profile: ProfilePart | null }
+  | { readonly action: StartAction; readonly launch?: Launch };
+const PROFILE: Screen = { profile: null };
 const PROFILE_LINK = [PROFILE_PHOTO_LINK.name];
 // «Rasmni almashtirish» under a refused face photo opens the profile (G58, docs/118).
 const photoLinked = () =>
@@ -45,7 +53,7 @@ const photoLinked = () =>
 // Main screen with at most 3 actions (docs/19) → a section or the own profile.
 // The welcome screen opens the registration (account gate), so a registered person lands here.
 export function StartFlow(props: StartFlowProps) {
-  const { actions, opened, notice, after, home, covered, dock, tiles, sections = NO_SECTIONS } = props;
+  const { actions, opened, notice, after, home, covered, dock, tiles, side, sections = NO_SECTIONS } = props;
   const { t } = useI18n();
   const tap = useHomeTap();
   const sheet = useAnySheet();
@@ -54,13 +62,13 @@ export function StartFlow(props: StartFlowProps) {
     const linked = opened ?? launchParam(OPEN_LINK, OPEN_LINK_VALUE);
     const action = [...actions, ...sections].find((item) => item.id === linked);
     if (action) return props.launch ? { action, launch: props.launch } : { action };
-    return photoLinked() ? 'profile' : 'home';
+    return photoLinked() ? PROFILE : 'home';
   });
-  useLinkOpened(screen === 'profile', PROFILE_LINK);
+  useLinkOpened(screen !== 'home' && 'profile' in screen, PROFILE_LINK);
   const openHome = useCallback(() => setScreen('home'), []);
-  const openProfile = useCallback(() => {
+  const openProfile = useCallback<OpenProfile>((part) => {
     haptic.tap();
-    setScreen('profile');
+    setScreen({ profile: part ?? null });
   }, []);
   const go = useCallback<HomeGo>(
     (id, launch) => {
@@ -88,12 +96,13 @@ export function StartFlow(props: StartFlowProps) {
           after={after}
           top={home ? <ErrorBoundary>{home(go)}</ErrorBoundary> : undefined}
           tiles={tiles?.(go, openProfile)}
+          side={side?.(openProfile)}
           onOpen={openAction}
-          onProfile={openProfile}
+          onProfile={() => openProfile()}
         />
         {/* After the main screen: the block paints the bottom bar after the screen does (G66). It
-            stands above the sheets of the screen, so it leaves while one is open (G68, lesson 199). */}
-        {sheet ? null : dock?.(go)}
+            stays under the sheets, its buttons step aside while one is open (G76, lesson 199). */}
+        <UnderSheets.Provider value>{dock?.(go)}</UnderSheets.Provider>
         {/* Under a sheet the native button would cover its buttons (mockups g60/6, g60/7). */}
         {main && !dock && !sheet ? (
           <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} />
@@ -102,17 +111,19 @@ export function StartFlow(props: StartFlowProps) {
     );
   }
   // A broken section shows the error with «Orqaga» to the main screen: the app goes on (G52).
-  if (screen === 'profile')
+  if ('profile' in screen)
     return (
       <ErrorBoundary onBack={openHome}>
-        <ProfileScreen onBack={openHome} />
+        <ProfileScreen onBack={openHome} {...(screen.profile ? { part: screen.profile } : {})} />
       </ErrorBoundary>
     );
   const { action, launch } = screen;
   return (
     <ErrorBoundary onBack={openHome}>
       <HomeProvider value={openHome}>
-        <action.Screen onBack={openHome} {...launch} />
+        <HomeGoProvider value={go}>
+          <action.Screen onBack={openHome} {...launch} />
+        </HomeGoProvider>
       </HomeProvider>
     </ErrorBoundary>
   );

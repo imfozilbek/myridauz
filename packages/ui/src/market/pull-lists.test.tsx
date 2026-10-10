@@ -37,7 +37,7 @@ const CASES: readonly Case[] = [
   [
     'driver home',
     <DriverData>
-      <DriverHome go={go} />
+      <DriverHome />
     </DriverData>,
     (load) => ({ market: { myTrips: load }, bookings: { driverBookings: empty } }),
   ],

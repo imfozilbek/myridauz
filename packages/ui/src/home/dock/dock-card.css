@@ -1,0 +1,77 @@
+/* The card of the block (G76, mockups g76/2, g76/3): amber soon, red now, grey when it ended badly. */
+.dock-card {
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 2px solid var(--reg-line);
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+}
+
+.dock-card-soon {
+  border-color: var(--reg-soon-line);
+}
+
+.dock-card-now {
+  border-color: var(--reg-danger-line);
+}
+
+.dock-card-off {
+  border-color: var(--reg-off);
+  background: var(--reg-ended-pale);
+}
+
+.dock-chip,
+.dock-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dock-chip-brand {
+  background: var(--reg-tile);
+  color: var(--reg-text);
+}
+
+.dock-chip-green {
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+}
+
+.dock-chip-red {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger-text);
+}
+
+.dock-chip-gray {
+  background: var(--reg-off);
+  color: var(--reg-neutral-pale-text);
+}
+
+.dock-timer {
+  margin-left: 6px;
+  background: var(--reg-attention-soft);
+  color: var(--reg-soon-ink);
+}
+
+.dock-timer-now {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger-text);
+}
+
+.dock-card-title {
+  margin: 8px 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dock-card-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--reg-secondary);
+}

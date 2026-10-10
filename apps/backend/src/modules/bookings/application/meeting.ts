@@ -34,7 +34,7 @@ export async function markMeeting(
   if (typeof written === 'string') return { ok: false, error: written };
   // Only the tap that wrote the mark tells the passenger and files the complaint (docs/65 A4).
   if (written.fresh) {
-    await tellPassenger(deps, written.record, step);
+    await tellPassenger(deps, written.record, step, record.boardedAt !== null);
     if (step === 'no_show') await deps.meeting.fileNoShow(driverId, id);
   }
   const [view] = await withDriverExtras(deps, driverId, await bookingViews(deps, [written.record], 'driver'));
@@ -63,11 +63,21 @@ async function write(
   return typeof again === 'string' ? again : 'bookings.wrong_status';
 }
 
-// The bot message refreshes the screen of the passenger by itself (docs/64).
-async function tellPassenger(deps: BookingsDeps, record: BookingRecord, step: DriverMeetStep) {
-  if (step === 'met') return deps.meeting.refreshPassenger(record.passengerId);
+// The bot message refreshes the screen of the passenger by itself (docs/64). «Keldi» puts the
+// passenger in the car: the close people hear it (G76, owner decision 10.10.2026, docs/43).
+// A passenger already in the car (an older «Mashinaga chiqdim», «Yetib keldim») is not told twice.
+async function tellPassenger(
+  deps: BookingsDeps,
+  record: BookingRecord,
+  step: DriverMeetStep,
+  inCar: boolean,
+) {
   const [view] = await bookingViews(deps, [record], 'passenger');
   if (!view) return;
+  if (step === 'met') {
+    await deps.meeting.refreshPassenger(record.passengerId);
+    return inCar ? undefined : deps.notify.progress(view, 'boarded');
+  }
   if (step === 'came') return deps.notify.driverCame(view);
   await deps.meeting.refreshPassenger(record.passengerId);
   await deps.notify.noShow(view);

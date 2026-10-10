@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CLIENT_PATTERN, VIA_PATTERN } from './arrival';
+import { DOCK_STATES } from './dock-states';
 import { HOME_TARGETS } from './home-targets';
 import { NAVIGATORS } from './navigator';
 
@@ -135,5 +136,7 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('route_opened'), navigator: z.enum(NAVIGATORS), ...context }),
   // G25: what the person tapped on the main screen.
   z.object({ name: z.literal('home_tap'), target: z.enum(HOME_TARGETS), ...context }),
+  // G76: the state the block at the bottom came to.
+  z.object({ name: z.literal('dock_state'), state: z.enum(DOCK_STATES), ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;

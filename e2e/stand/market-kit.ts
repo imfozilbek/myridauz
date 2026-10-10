@@ -46,5 +46,9 @@ export const book = async (passenger: Person, trip: Trip, input: BookingInput) =
 export const answer = async (driver: Person, bookingId: string, action: DriverBookingAction) =>
   (await bookingsOf('driver', driver)).answer(bookingId, action);
 
+// «Keldi» of the driver at the point: the passenger is in the car (G76, docs/43).
+export const markMet = async (driver: Person, bookingId: string) =>
+  (await bookingsOf('driver', driver)).meet(bookingId, 'met');
+
 export const cancelMine = async (passenger: Person, bookingId: string) =>
   (await bookingsOf('passenger', passenger)).cancelMine(bookingId);

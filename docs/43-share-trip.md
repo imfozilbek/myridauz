@@ -43,13 +43,13 @@
 | Статус | Когда | Кто ставит |
 |---|---|---|
 | Kutilmoqda (ждёт выезда) | До посадки | Сам |
-| Mashinaga chiqdi (сел в машину) | Попутчик нажал «Mashinaga chiqdim» | Попутчик |
+| Mashinaga chiqdi (сел в машину) | Водитель отметил «Keldi» на точке (решение владельца 10.10.2026, G76) | Водитель |
 | Yoʻlda (в пути) | После посадки или после времени выезда | Сам |
 | Yetib keldi (доехал) | Попутчик нажал «Yetib keldim» | Попутчик |
 | Safar tugadi (поездка завершена) | Поездка `completed` без «Yetib keldim» (`35`) | Сам |
 | Bekor qilindi (отменено) | Бронь отменена | Сам |
 
-- Кнопки «Mashinaga chiqdim» и «Yetib keldim» у попутчика в день поездки.
+- Своей кнопки посадки у попутчика нет (G76): посадку ставит «Keldi» водителя. После неё у попутчика в день поездки кнопка «Yetib keldim». Водитель забыл «Keldi»: «Yetib keldim» появляется, когда с времени выезда прошли минуты встречи бренда (`ui/bookings/in-car.ts`); близкие тогда слышат только прибытие.
 - Через 1 час после расчётного прибытия без «Yetib keldim» бот спрашивает
   попутчика: «Yetib keldingizmi?». Близким тревожных сообщений не шлём.
 
@@ -72,7 +72,7 @@
 | Карточка | {ism} Rida bilan yoʻlga chiqadi: {qayerdan} → {qayerga}, {sana} {vaqt}. Mashina: {mashina}, {raqam}. Haydovchi: {haydovchi}. |
 | Кнопка карточки | Safarni kuzatish |
 | Экран близкого | Safar holati · Xabar olish |
-| Кнопки попутчика | Mashinaga chiqdim · Yetib keldim · Ulashishni toʻxtatish |
+| Кнопки попутчика | Yetib keldim · Ulashishni toʻxtatish |
 | Сообщения близким | {ism} mashinaga chiqdi: {mashina}, {raqam}. · {ism} yetib keldi. · Safar bekor qilindi. |
 | Вопрос попутчику | Yetib keldingizmi? |
 

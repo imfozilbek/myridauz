@@ -21,6 +21,8 @@ const OTHER = 93;
 const CLOSE = [101, 102, 103, 104, 105, 106];
 const DAY = 24 * 3_600_000;
 const DRIVER_STEP = 1000;
+// Inside the meeting window of the brand: the driver marks the passenger (docs/126).
+const MEETING_BEFORE = 10 * 60_000;
 
 // A driver of their own for each booking: the trips of one driver cannot overlap (docs/103).
 let drivers = 0;
@@ -51,7 +53,7 @@ async function confirmedBooking() {
   // The driver moves the time later (G39, docs/104).
   const retime = (departAt: number) =>
     call(`/driver/trips/${published.id}/time`, driver, { app: 'driver', ...json({ departAt }) });
-  return { booking, share, retime, departAt: trip.departAt };
+  return { booking, share, retime, driver, departAt: trip.departAt };
 }
 const tokenOf = (link: string) => link.split('follow_')[1] ?? '';
 const shared = async (token: string) => app.request(`/shared/${token}`, {}, testEnv);
@@ -81,23 +83,26 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     for (const text of seen) expect(text).not.toMatch(/99890\d+|"(phone|username)"/u);
   });
 
-  it('tells close people when the passenger gets in and arrives, then stops by the button', async () => {
-    const { booking, share } = await confirmedBooking();
+  // «Keldi» of the driver puts the passenger in the car (G76, owner decision 10.10.2026): the
+  // passenger has no own step for it.
+  it('tells close people when the driver marks the passenger in and when they arrive, then stops', async () => {
+    const { booking, share, driver, departAt } = await confirmedBooking();
     const token = tokenOf((await read<{ link: string }>(share())).link);
     await call(`/shared/${token}/follow`, CLOSE[0] ?? 0, { method: 'POST' });
     telegram.length = 0;
-    const boarded = await read<{ boardedAt: number }>(
-      call(`/passenger/bookings/${booking.id}/boarded`, PASSENGER, { method: 'POST' }),
-    );
-    expect(boarded.boardedAt).toBeGreaterThan(0);
-    await call(`/passenger/bookings/${booking.id}/boarded`, PASSENGER, { method: 'POST' });
+    expect(
+      (await call(`/passenger/bookings/${booking.id}/boarded`, PASSENGER, { method: 'POST' })).status,
+    ).toBe(404);
+    vi.useFakeTimers({ toFake: ['Date'], now: departAt - MEETING_BEFORE });
+    const met = (by: number) =>
+      call(`/driver/bookings/${booking.id}/met`, by, { method: 'POST', app: 'driver' });
+    expect((await read<{ boardedAt: number }>(met(driver))).boardedAt).toBeGreaterThan(0);
+    expect((await met(driver)).status).toBe(409);
     await call(`/passenger/bookings/${booking.id}/arrived`, PASSENGER, { method: 'POST' });
+    vi.useRealTimers();
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE[0]).map((item) => item.body.text);
     expect(toClose).toEqual(['Ali mashinaga chiqdi: Chevrolet Cobalt, 01 A 123 BC.', 'Ali yetib keldi.']);
     expect((await read<{ status: string }>(shared(token))).status).toBe('arrived');
-    expect((await call(`/passenger/bookings/${booking.id}/boarded`, OTHER, { method: 'POST' })).status).toBe(
-      404,
-    );
     expect(
       (await call(`/passenger/bookings/${booking.id}/share/stop`, OTHER, { method: 'POST' })).status,
     ).toBe(404);

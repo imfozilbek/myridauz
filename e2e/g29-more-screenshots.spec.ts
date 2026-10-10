@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
+import { adminCase, appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
 import { fromIfAsked, openOwnTrip, searchRoute } from './market';
@@ -25,7 +25,7 @@ test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» f
 }) => {
   await mockApi(page, 'active');
   await open(page, PASSENGER.port);
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await fromIfAsked(page);
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Samarkand');
@@ -45,7 +45,7 @@ test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» f
   await shot(page, 'fp1-filters-kept');
 });
 
-test('passenger: «Mashinaga chiqdim» only on the day of the trip (P7)', async ({ page }) => {
+test('passenger: the steps of the way only on the day of the trip (P7)', async ({ page }) => {
   await mockApi(page, 'active');
   const tomorrow = { ...confirmed, trip: { ...confirmed.trip, departAt: Date.now() + DAY } };
   await page.route('**/api/passenger/bookings', (route) => route.fulfill({ json: { bookings: [tomorrow] } }));

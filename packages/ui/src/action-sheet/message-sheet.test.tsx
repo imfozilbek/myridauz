@@ -1,4 +1,4 @@
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { confirmed } from '../bookings/booking-test-kit';
 import { PASSENGER_ACTIONS } from '../home/home-test-actions';
@@ -12,7 +12,7 @@ afterEach(cleanup);
 const NOW = Date.parse('2026-10-01T05:00:00Z');
 const WORDS = 'Uydan olib ketaman, 07:50 da Grand oldida boʻlaman.';
 // Confirmed long ago: no «Joyingiz tasdiqlandi» before the message.
-const seat = { ...confirmed, confirmedAt: NOW - 3 * 24 * 3_600_000 };
+const seat = { ...confirmed, confirmedAt: NOW - 3 * 24 * 3_600_000, unread: 1 };
 
 function passenger(key: string) {
   vi.setSystemTime(NOW);
@@ -41,6 +41,8 @@ function passenger(key: string) {
 describe('the sheet of a new message (G68)', () => {
   it('shows who wrote, about which trip and the words', async () => {
     passenger('b00000000-0000-4000-8000-000000000a01');
+    // The red dot on the chat of the block opens the sheet (G76, docs/164).
+    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
     expect(await screen.findByText('Yangi xabar')).toBeTruthy();
     expect(screen.getAllByText('Jasur').length).toBeGreaterThan(0);
     expect(screen.getByText('Ertaga 08:00 · Fargʻonaga')).toBeTruthy();
@@ -52,6 +54,7 @@ describe('the sheet of a new message (G68)', () => {
   it('a ready answer goes in one tap without opening the chat', async () => {
     const key = 'b00000000-0000-4000-8000-000000000a02';
     const { answer } = passenger(key);
+    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
     await tap('Kutaman');
     expect(answer).toHaveBeenCalledWith(key, 'Kutaman');
     expect(await screen.findByText('Javob yuborildi')).toBeTruthy();
@@ -61,6 +64,7 @@ describe('the sheet of a new message (G68)', () => {
   it('«Javob yozish» opens the chat', async () => {
     const key = 'b00000000-0000-4000-8000-000000000a03';
     const { openChat } = passenger(key);
+    fireEvent.click(await screen.findByRole('button', { name: 'Xabar yozish' }));
     await tap('Javob yozish');
     expect(openChat).toHaveBeenCalledWith(key);
     await sheetClosed();

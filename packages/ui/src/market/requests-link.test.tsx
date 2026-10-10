@@ -39,7 +39,12 @@ describe('a new request on a followed route (docs/83 N08, G64)', { timeout: 20_0
     const requestBoard = open('1726_1730_2026-10-02');
     // The first screen of a file loads TelegramUI: under load it takes more than the default 1 s.
     await vi.waitFor(() => expect(requestBoard).toHaveBeenCalled(), { timeout: 5000 });
-    expect(requestBoard.mock.calls[0]?.[0]).toEqual({ from: '1726', to: '1730', date: '2026-10-02' });
+    expect(requestBoard.mock.calls[0]?.[0]).toEqual({
+      from: '1726',
+      to: '1730',
+      date: '2026-10-02',
+      seen: '1',
+    });
     // The board is drawn first: «Orqaga» of the loading screen goes away with it, a tap there is lost.
     await screen.findByText('Bu kunga soʻrov yoʻq');
     await tap('Orqaga');
@@ -48,7 +53,7 @@ describe('a new request on a followed route (docs/83 N08, G64)', { timeout: 20_0
 
   it('opens the day on the own directions when a place is unknown; the passenger app ignores the link', async () => {
     const requestBoard = open('9999_1730_2026-10-02');
-    await vi.waitFor(() => expect(requestBoard).toHaveBeenCalledWith({ date: '2026-10-02' }), {
+    await vi.waitFor(() => expect(requestBoard).toHaveBeenCalledWith({ date: '2026-10-02', seen: '1' }), {
       timeout: 5000,
     });
     cleanup();

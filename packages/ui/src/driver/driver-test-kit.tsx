@@ -6,7 +6,9 @@ import { vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { renderInShell, testClients } from '../test-shell';
 import { DriverGate } from './driver-gate';
-import { DriverNotice } from './driver-notice';
+import { DriverData } from '../home/driver-data';
+import { DriverDock } from '../home/dock/driver-dock';
+import { HomeRouteProvider } from '../home/home-route';
 
 // Test helper for the driver application: a registered person and a fake server.
 export const car = {
@@ -89,7 +91,12 @@ export function renderGate(initial: DriverApplication | null, face = true) {
   const result = renderInShell(
     <TestAccount face={face}>
       <DriverGate>
-        <DriverNotice />
+        {/* The block at the bottom leads through the application (G76, mockup g76/3 states 1 … 3). */}
+        <DriverData>
+          <HomeRouteProvider>
+            <DriverDock go={() => undefined} />
+          </HomeRouteProvider>
+        </DriverData>
         <p data-testid="driver-home" />
       </DriverGate>
     </TestAccount>,

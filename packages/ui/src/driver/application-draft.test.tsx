@@ -14,19 +14,19 @@ const pressed = (name: string) => screen.getByRole('button', { name }).getAttrib
 describe('the application not sent yet: the tile of the main screen and the draft (G62, docs/94 F3)', () => {
   it('invites to become a driver in 2 steps', async () => {
     renderGate(null);
-    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
-    expect(screen.getByText('2 qadam: mashina va uning rasmlari')).toBeTruthy();
+    expect(await screen.findByText('Arizani toʻldirish')).toBeTruthy();
+    expect(screen.getByText('Mashina, raqam va 3 ta rasm · 3 daqiqa')).toBeTruthy();
   });
 
   it('keeps the answers after the app is closed and clears them once the application is sent', async () => {
     renderGate(null);
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     await tap('Damas');
     fireEvent.click(screen.getByRole('button', { name: 'Oq' }));
     // Telegram closes the Mini App on the plate.
     cleanup();
     renderGate(application({ photos: allPhotos }));
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     expect(await screen.findByText('Oldingi yozganingiz tiklandi.')).toBeTruthy();
     expect(pressed('Damas')).toBe('true');
     expect(pressed('Oq')).toBe('true');
@@ -34,7 +34,7 @@ describe('the application not sent yet: the tile of the main screen and the draf
     fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01A123BC' } });
     await tap('Davom etish');
     await tap('Arizani yuborish');
-    expect(await screen.findByText('Arizangiz tekshirilmoqda')).toBeTruthy();
+    expect(await screen.findByText('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')).toBeTruthy();
     await waitFor(() => expect(localStorage.getItem('draft:application')).toBeNull());
   });
 });

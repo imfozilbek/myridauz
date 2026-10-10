@@ -28,6 +28,13 @@ function scenarios(platform: 'android' | 'ios') {
 
   async function open(page: Page, port: number) {
     const api = await mockApi(page, 'active');
+    // No request or offer of a passenger: the block shows the seat of the test (G76, docs/165).
+    await json(page, '**/api/passenger/offers', () => ({ offers: [] }));
+    await page.route('**/api/passenger/requests', (route) =>
+      route.request().method() === 'GET' ? route.fulfill({ json: { requests: [] } }) : route.fallback(),
+    );
+    // «Siz haydovchisiz!» was told on an earlier visit (G62).
+    await page.addInitScript(() => localStorage.setItem('driver_approval_seen', '1'));
     await mockTelegram(page);
     return { ...api, go: () => page.goto(telegramUrl(appUrl(port), platform)) };
   }
@@ -36,8 +43,6 @@ function scenarios(platform: 'android' | 'ios') {
   test('a passenger without bookings starts the search from the main screen', async ({ page }) => {
     const { go } = await open(page, PASSENGER.port);
     await json(page, '**/api/passenger/bookings', () => ({ bookings: [] }));
-    // No offers either: requests with offers stand on top since G53.
-    await json(page, '**/api/passenger/offers', () => ({ offers: [] }));
     await go();
     await expect(page.getByText(t('way.toEmpty'))).toBeVisible();
     // «Qayerdan» where the person stands, at the bottom (G66, mockup g66/1).
@@ -62,7 +67,9 @@ function scenarios(platform: 'android' | 'ios') {
     feed.changed();
     await expect(page.getByText(new RegExp(t('bookings.confirmed.title'), 'u'))).toBeVisible();
     await shot(page, '2-passenger-booking');
-    await page.getByText(t('bookings.confirmed.title')).first().click();
+    await mainButton(page)
+      .filter({ hasText: t('home.dock.openTrip') })
+      .click();
     await expect(page.locator('.uz-plate').first()).toBeVisible();
   });
 
@@ -74,11 +81,12 @@ function scenarios(platform: 'android' | 'ios') {
     let requests = [request('r1'), request('r2')];
     await json(page, '**/api/driver/bookings', () => ({ bookings: requests }));
     await go();
-    await expect(page.getByText(t('home.newRequests', { count: '2' }), { exact: false })).toBeVisible();
+    const dock = page.getByTestId('home-dock');
+    await expect(dock.getByText(t('home.newRequests', { count: '2' }), { exact: false })).toBeVisible();
     await expect.poll(() => feed.sockets.length).toBeGreaterThan(0);
     requests = [...requests, request('r3')];
     feed.changed();
-    await expect(page.getByText(t('home.newRequests', { count: '3' }), { exact: false })).toBeVisible();
+    await expect(dock.getByText(t('home.newRequests', { count: '3' }), { exact: false })).toBeVisible();
     await shot(page, '3-driver-trip');
   });
 
@@ -88,9 +96,12 @@ function scenarios(platform: 'android' | 'ios') {
     await go();
     await expect(publishButton(page)).toBeVisible();
     await expect(page.getByText(t('home.dock.toDriver'))).toBeVisible();
+    // «Qayerdan» comes from where the driver stands: the new trip asks «Qayerga» first (docs/165).
+    await expect(page.getByText(t('home.dock.here'))).toBeVisible();
     await shot(page, '4-driver-empty');
     await publishButton(page).click();
-    await expect(page.getByText(t('places.from'))).toBeVisible();
+    await expect(page.getByText(t('places.to')).first()).toBeVisible();
+    await expect(page.getByText(t('home.dock.here'))).toBeHidden();
   });
 
   // «Qayerga» at the bottom, then the one screen of a new trip opens with the route and the answers

@@ -56,6 +56,11 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
       views: 2,
       link: `https://t.me/${BRAND.bots.passenger}?startapp=trip_${id}__driver`,
     });
+    // The same count on «Mening safarlarim» of the driver: «2 kishi koʻrdi» in the block (G76).
+    const mine = await read<{ trips: { id: string; views: number }[] }>(
+      call('/driver/trips', DRIVER, { app: 'driver' }),
+    );
+    expect(mine.trips.find((trip) => trip.id === id)?.views).toBe(2);
   });
 
   it('shows the post once Telegram gave it an id, never a post that is not there (docs/15)', async () => {

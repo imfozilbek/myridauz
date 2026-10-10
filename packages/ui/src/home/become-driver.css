@@ -1,15 +1,15 @@
-/* «Haydovchi boʻling» under the tiles of a passenger (G66, mockup g66/1 at 360 px): a soft amber row
-   in its amber line, the car on a light amber square, an arrow at the end. */
+/* «Haydovchi boʻling» under the tiles of a passenger (G76, mockup g76/1): a white row, the car on a
+   light amber square, the words in one line each, an arrow at the end. */
 .become-driver {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
   box-sizing: border-box;
-  padding: 10.67px 14px;
-  border: 1px solid var(--reg-attention-line);
+  padding: 10px 12px;
+  border: 0;
   border-radius: 16px;
-  background: var(--reg-accent-soft);
+  background: var(--reg-card);
   color: var(--reg-ink);
   font-family: var(--tgui--font-family);
   text-align: start;
@@ -20,8 +20,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
   background: var(--reg-attention-soft);
 }
@@ -36,16 +36,18 @@
 .become-driver-title {
   font-size: 15px;
   font-weight: 700;
-  line-height: 20px;
+  line-height: normal;
 }
 
 .become-driver-hint {
-  font-size: 12.5px;
-  line-height: 19.33px;
-  color: var(--reg-accent-deep);
+  font-size: 12px;
+  /* The line of the 16 px words around it, the words on its baseline, as on the mockup. */
+  position: relative;
+  top: 2px;
+  line-height: 1.55;
+  color: var(--reg-secondary);
 }
 
 .become-driver > svg {
   flex: none;
-  margin-right: -4.33px;
 }

@@ -1,7 +1,7 @@
 import { brandForApp, loadBrand } from '@platform/brands';
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { fromIfAsked } from './market';
 import { register } from './registration';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
@@ -64,7 +64,7 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await mockApi(page, 'active');
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(MINI_APPS[0].port)));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   // «Qayerdan» by its list and search, «Qayerga» by «Boshqa joy» (G59, docs/118 path 2).
   await fromIfAsked(page);
   await page.getByText(TEXT.change).click();

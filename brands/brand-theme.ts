@@ -52,6 +52,13 @@ export type BrandColors = {
   // The number on a tile and ⇅ of «Qayerdan / Qayerga»: the same in every app (mockups g66/1, g66/2).
   readonly badge: HexColor;
   readonly routeSwap: HexColor;
+  // The amber of a thing coming soon in both apps: «Hozir: …» over the block (G76, mockup g76).
+  readonly soon: HexColor;
+  // Words on the light amber of the main screen: the head, a tile, a timer (G76, mockup g76).
+  readonly soonInk: HexColor;
+  readonly soonLine: HexColor;
+  // The card of a trip that ended badly in the block (G76, mockup g76/2 states 11, 15).
+  readonly endedPale: HexColor;
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;

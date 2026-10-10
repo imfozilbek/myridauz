@@ -23,18 +23,18 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
   it('a new application starts on the car, and «Назад» returns to the main screen', async () => {
     renderGate(null);
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
     expect(screen.queryByTestId('driver-home')).toBeNull();
     await tap('Orqaga');
-    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
+    expect(await screen.findByText('Arizani toʻldirish')).toBeTruthy();
     expect(screen.getByTestId('driver-home')).toBeTruthy();
     expect(asked).not.toHaveBeenCalled();
   });
 
   it('«Oʻzgartirish» and «Назад» of the photos go to the car with its answers', async () => {
     renderGate(null);
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     await tap('Cobalt');
     fireEvent.click(screen.getByRole('button', { name: 'Oq' }));
     fireEvent.change(screen.getByLabelText('Davlat raqami'), { target: { value: '01A123BC' } });
@@ -52,9 +52,11 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
     toFix();
     await screen.findByText('Mashinangiz');
     await tap('Orqaga');
-    expect(await screen.findByText('Arizada tuzatish kerak')).toBeTruthy();
+    expect(await screen.findByText('Tuzatish kerak')).toBeTruthy();
     expect(screen.getByTestId('driver-home')).toBeTruthy();
-    await tap('Arizada tuzatish kerak');
+    // Not a photo: the block asks to fix the marked places (G62).
+    expect(screen.getByText('Qizil bilan belgilangan joylarni tuzating va qayta yuboring.')).toBeTruthy();
+    await tap('Tuzatish');
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
   });
 
@@ -69,7 +71,10 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
     );
     expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
     await tap('Orqaga');
-    expect(await screen.findByText('Arizada tuzatish kerak')).toBeTruthy();
+    expect(await screen.findByText('Tuzatish kerak')).toBeTruthy();
+    // The block says the reason and how many photos to take again (G76, mockup g76/3 state 3).
+    expect(screen.getByText('Yon tomondan olingan rasm tiniq emas')).toBeTruthy();
+    expect(screen.getByText('Bitta rasmni qayta oling')).toBeTruthy();
     expect(screen.queryByText('Mashinangiz')).toBeNull();
   });
 

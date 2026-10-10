@@ -1,7 +1,7 @@
 import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { expect, test, type Page } from './crash-guard';
 import { fillCar } from './driver-application';
@@ -47,7 +47,7 @@ test('6-1: «Samarqandning qaysi joyi?» with the trips of each place', async ({
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await page.locator('.direction-card').first().click();
   await page.getByText(t('find.district', { region: 'Samarqand' })).click();
   await expect(page.locator('.district-whole')).toContainText('14');

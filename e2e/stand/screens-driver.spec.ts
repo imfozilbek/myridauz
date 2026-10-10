@@ -34,5 +34,7 @@ for (const platform of PLATFORMS)
     await shot(page, platform, 'd10-home');
     await visit(page, platform, OYBEK.name, 'd11-profile');
     await visit(page, platform, t('common.myTrips'), 'd12-my-trips');
-    await visit(page, platform, t('common.driver.passengerRequests'), 'd13-requests');
+    // G76: the tiles of the main screen (mockup g76/3); the requests open from the block or a bot link.
+    await visit(page, platform, t('home.chats.title'), 'd13-chats');
+    await visit(page, platform, t('wallet.title'), 'd14-wallet');
   });

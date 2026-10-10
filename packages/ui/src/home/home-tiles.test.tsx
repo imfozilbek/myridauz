@@ -1,13 +1,12 @@
-import { REQUEST_LINK, DAY_MS } from '@platform/contracts';
 import { loadBrand } from '@platform/brands';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { AccountContext, useAccount } from '../account/account-context';
 import { booking, offer, request } from '../bookings/booking-test-kit';
 import { tap, trip } from '../market/market-test-kit';
 import { BecomeDriver } from './become-driver';
-import { linkOf, PASSENGER_ACTIONS } from './home-test-actions';
+import { PASSENGER_ACTIONS } from './home-test-actions';
 import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
@@ -16,9 +15,9 @@ afterEach(() => {
   localStorage.clear();
 });
 
-// The tile of an action with its badge: the badge is a number inside the tile (G53).
 const tileOf = (title: string) => screen.getByText(title).closest('button');
 const badgeOf = (title: string) => tileOf(title)?.querySelector('.home-tile-badge')?.textContent;
+const hintOf = (title: string) => tileOf(title)?.querySelector('.home-tile-hint')?.textContent;
 type Data = Parameters<typeof renderHome>[2];
 const home = (data: Data, more: ReactNode = null) =>
   renderHome(
@@ -32,66 +31,71 @@ const home = (data: Data, more: ReactNode = null) =>
     data,
   );
 
-describe('the tiles of a passenger (G53, G66 mockup g66/1)', { timeout: 20_000 }, () => {
-  it('turns «Soʻrov qoldirish» into «Soʻrovim»: where, when, the offers; a tap opens the request', async () => {
+describe('the four tiles of a passenger (G76, mockup g76/2)', { timeout: 20_000 }, () => {
+  it('has the same four tiles always, in their order, and says what comes to a new person', async () => {
+    home({ bookings: async () => [] });
+    await screen.findByText('Hali safar yoʻq');
+    const titles = [...document.querySelectorAll('.home-tiles-square .home-tile-title')].map(
+      (one) => one.textContent,
+    );
+    expect(titles).toEqual(['Mening safarlarim', 'Suhbatlar', 'Sevimli haydovchilar', 'Yordam']);
+    expect(hintOf('Suhbatlar')).toBe('Haydovchilar bilan');
+    expect(hintOf('Sevimli haydovchilar')).toBe('Safardan keyin qoʻshasiz');
+    expect(hintOf('Yordam')).toBe('Savol boʻlsa');
+    for (const gone of ['Profil', 'Qaytish', 'Oxirgi yoʻnalish', 'Soʻrov qoldirish', 'Safar topish'])
+      expect(document.querySelector('.home-tiles-square')?.textContent).not.toContain(gone);
+  });
+
+  it('counts the seats and puts a number on the ones not in the block', async () => {
+    const seat = { ...booking, status: 'confirmed' as const };
+    home({
+      bookings: async () => [seat, { ...seat, id: 'b2' }, { ...booking, id: 'b3', status: 'declined' }],
+    });
+    expect(await screen.findByText('2 ta joy')).toBeTruthy();
+    expect(badgeOf('Mening safarlarim')).toBe('1');
+  });
+
+  it('says the offers of an open request, then the request alone', async () => {
     home({
       bookings: async () => [],
       asked: async () => [request],
-      offers: async () => [offer, { ...offer, id: 'o2' }, { ...offer, id: 'o3', status: 'declined' }],
+      offers: async () => [offer, { ...offer, id: 'o2' }],
     });
-    expect(await screen.findByText(/^Fargʻona, .+ · 2 ta taklif$/u)).toBeTruthy();
-    expect(screen.queryByText('Soʻrov qoldirish')).toBeNull();
-    expect(badgeOf('Soʻrovim')).toBe('2');
-    await tap('Soʻrovim');
-    expect(screen.getByText(linkOf({ name: REQUEST_LINK, id: request.id }))).toBeTruthy();
-  });
-
-  it('counts all the open requests, up to 3: «Soʻrovlarim» opens the list (G75, docs/158 Е)', async () => {
-    const later = { ...request, id: 'r2', date: '2099-01-01' };
-    home({ bookings: async () => [], asked: async () => [later, request], offers: async () => [offer] });
-    expect(await screen.findByText(/^Fargʻona, .+ · 2 ta soʻrov$/u)).toBeTruthy();
-    expect(badgeOf('Soʻrovlarim')).toBe('1');
-    await tap('Soʻrovlarim');
-    expect(screen.getByText('opened empty')).toBeTruthy();
-  });
-
-  it('keeps «Soʻrov qoldirish» while no request is open', async () => {
-    home({ bookings: async () => [], asked: async () => [{ ...request, status: 'expired' as const }] });
-    expect(await screen.findByText('Soʻrov qoldirish')).toBeTruthy();
-    expect(screen.queryByText('Soʻrovim')).toBeNull();
-  });
-
-  it('counts on «Mening safarlarim» the live seats but the one of the card, and opens the profile', async () => {
-    const { tracked } = home({
-      bookings: async () => [booking, { ...booking, id: 'b2' }, { ...booking, id: 'b3', status: 'declined' }],
-    });
-    await screen.findByText('Rasm va sozlamalar');
-    expect(badgeOf('Mening safarlarim')).toBe('1');
-    await tap('Rasm va sozlamalar');
-    expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
-  });
-
-  it('offers «Qaytish» with a seat booked: the way back of its trip (docs/118)', async () => {
-    const { tracked } = home({ bookings: async () => [booking] });
-    expect(await screen.findByText('Qaytish')).toBeTruthy();
-    expect(screen.getByText('Fargʻona → Chilonzor')).toBeTruthy();
-    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
-    await tap('Qaytish');
-    expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'come_back' }));
-  });
-
-  it('keeps «Qaytish» a week after the trip, then no more', async () => {
-    const done = (days: number) => ({
-      ...booking,
-      status: 'completed' as const,
-      trip: { ...trip, departAt: Date.now() - days * DAY_MS },
-    });
-    home({ bookings: async () => [done(6)] });
-    expect(await screen.findByText('Qaytish')).toBeTruthy();
+    await waitFor(() => expect(hintOf('Mening safarlarim')).toBe('2 ta taklif'));
     cleanup();
-    home({ bookings: async () => [done(8)] });
-    expect(await screen.findByText('Rasm va sozlamalar')).toBeTruthy();
-    expect(screen.queryByText('Qaytish')).toBeNull();
+    home({ bookings: async () => [], asked: async () => [request] });
+    await waitFor(() => expect(hintOf('Mening safarlarim')).toBe('1 ta soʻrov'));
+  });
+
+  it('shows the unread words on «Suhbatlar» and opens the chats with them on top', async () => {
+    const about = { role: 'passenger' as const, booking, request: null, offer: null, driver: null };
+    const chat = {
+      unread: async () => [{ key: booking.chatKey, count: 3, text: 'Qayerdasiz?', at: Date.now() }],
+      about: async () => about,
+    };
+    const { tracked } = home({ bookings: async () => [booking], chat });
+    expect(await screen.findByText('3 ta yangi xabar')).toBeTruthy();
+    expect(badgeOf('Suhbatlar')).toBe('3');
+    await tap('Suhbatlar');
+    expect(await screen.findByText('Qayerdasiz?')).toBeTruthy();
+    expect(screen.getByText('Jasur')).toBeTruthy();
+    expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'chats' }));
+  });
+
+  it('names the trip of a saved driver, else how many are saved', async () => {
+    const later = { ...trip, id: 't9', departAt: Date.now() + 86_400_000 };
+    home({ bookings: async () => [], favorites: async () => ({ drivers: [trip.driver], trips: [later] }) });
+    expect(await screen.findByText(/^Jasur ertaga \d\d:\d\d$/u)).toBeTruthy();
+    cleanup();
+    home({ bookings: async () => [], favorites: async () => ({ drivers: [trip.driver], trips: [] }) });
+    expect(await screen.findByText('1 ta haydovchi')).toBeTruthy();
+  });
+
+  it('asks for a photo on the right of the head and opens «Profil» there', async () => {
+    const { tracked } = home({ bookings: async () => [] });
+    expect(await screen.findByText('Tezroq tasdiq')).toBeTruthy();
+    await tap('Rasm qoʻshing');
+    expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
   });
 });
 
@@ -108,7 +112,7 @@ function Passenger({ children }: { readonly children: ReactNode }) {
   );
 }
 
-describe('«Haydovchi boʻling» under the tiles (G66, docs/118)', { timeout: 20_000 }, () => {
+describe('«Haydovchi boʻling» under the tiles (G66, G76)', { timeout: 20_000 }, () => {
   it('opens the app of drivers for a passenger without a seat', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     home(
@@ -129,11 +133,11 @@ describe('«Haydovchi boʻling» under the tiles (G66, docs/118)', { timeout: 20
         <BecomeDriver />
       </Passenger>,
     );
-    expect(await screen.findByText('Qaytish')).toBeTruthy();
+    expect(await screen.findByText('Savol boʻlsa')).toBeTruthy();
     expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
     cleanup();
     home({ bookings: async () => [] }, <BecomeDriver />);
-    expect(await screen.findByText('Rasm va sozlamalar')).toBeTruthy();
+    expect(await screen.findByText('Hali safar yoʻq')).toBeTruthy();
     expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '../crash-guard';
-import { TEXT } from '../apps';
+import { openFindTrip, TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { DOSTON, GAYRAT } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
@@ -46,7 +46,12 @@ function counter() {
     count += 1;
     await target.click();
   };
-  return { tap, taps: () => count };
+  // One step that is not a tap on a locator: the search opened like a bot button (G76).
+  const step = async (act: () => Promise<unknown>) => {
+    count += 1;
+    await act();
+  };
+  return { tap, step, taps: () => count };
 }
 
 const card = (page: Page, driver: string) => page.locator('.search-trip').filter({ hasText: driver }).first();
@@ -86,13 +91,14 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
     await shot('10-sent');
     expect(first.taps()).toBeLessThanOrEqual(10);
-    // Again: the last route on the main screen, the points of the last trip (K4, K5).
+    // Again (K4, K5): the seat waits in the block at the bottom, the search opens like a bot button
+    // (G76, docs/165) with the trips of the last route at once, the points of the last trip kept.
     const again = counter();
     // «Назад» up to the main screen: the app keeps its screen while it stays open.
-    const recent = page.getByText(t('home.driver.last'));
-    await backUntil(page, recent);
+    await backUntil(page, page.getByTestId('home-dock'));
     await shot('11-home-again');
-    await again.tap(page.getByText(/→ Jizzax$/u).last());
+    await again.step(() => openFindTrip(page));
+    await expect(page.getByRole('heading', { name: /→ Jizzax$/u })).toBeVisible();
     await again.tap(card(page, DOSTON.name));
     await again.tap(mainButton(page));
     await expect(page.getByText(t('way.change')).first()).toBeVisible();
@@ -107,7 +113,7 @@ for (const platform of PLATFORMS)
     const shot = shooter(page, platform);
     const person = counter();
     await openHome(page, 'passenger', SEEKERS[platform], platform);
-    await person.tap(mainButton(page).filter({ hasText: TEXT.findTrip }));
+    await person.step(() => openFindTrip(page));
     await person.tap(page.getByText(t('find.other')));
     await page.getByPlaceholder(t('find.other')).fill('Urga');
     await person.tap(page.getByRole('dialog').getByText('Urganch shahri', { exact: true }));

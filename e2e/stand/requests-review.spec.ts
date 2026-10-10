@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '../crash-guard';
-import { TEXT } from '../apps';
+import { openRequests, TEXT } from '../apps';
 import { HUMOYUN } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { fillEnds } from './request-kit';
@@ -77,7 +77,7 @@ for (const platform of PLATFORMS)
     // The driver: the request of today on «Yoʻlovchilar soʻrovlari», then tomorrow and its empty day
     // (R2, R4, G64).
     await openHome(page, 'driver', HUMOYUN, platform);
-    await page.getByText(t('common.driver.passengerRequests')).first().click();
+    await openRequests(page);
     await page.getByText(TEXT.from).click();
     await page.getByAltText('Toshkent shahri').click();
     await page.getByText('Yunusobod').click();

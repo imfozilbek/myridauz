@@ -1,0 +1,82 @@
+/* «Suhbatlar» (G76, mockup g76/5, list 2A of G75): one white card per chat, 14 px from the edges
+   and 12 px apart. */
+.chats-hint {
+  margin: -6px 20px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--tgui--hint_color);
+}
+
+.chat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: calc(100% - 28px);
+  box-sizing: border-box;
+  margin: 0 14px 12px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--tgui--bg_color);
+  color: var(--tgui--text_color);
+  font: inherit;
+  font-family: var(--tgui--font-family);
+  text-align: start;
+  cursor: pointer;
+}
+
+.chat-card:active {
+  opacity: 0.7;
+}
+
+.chat-card-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.chat-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.chat-card-top time {
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--tgui--hint_color);
+}
+
+.chat-card-trip {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--tgui--hint_color);
+}
+
+.chat-card-last {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.chat-card-count {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--reg-badge);
+  color: var(--tgui--bg_color);
+  font-size: 12px;
+  font-weight: 800;
+}

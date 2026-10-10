@@ -57,7 +57,7 @@ test('admin: Hamyonlar', async ({ page }) => {
   await teamWallets(page, shooter(page, 'team-wallets'));
 });
 
-test('passenger: chat, hidden phone, Mashinaga chiqdim', async ({ page }) => {
+test('passenger: chat and hidden phone', async ({ page }) => {
   await mockApi(page, 'active');
   await open(page, PASSENGER.port);
   await passengerChat(page, shooter(page, 'chat'));

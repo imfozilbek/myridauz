@@ -63,12 +63,13 @@ export const trip: Trip = {
   woman: true,
   pickupMode: 'both',
   bookingRule: 'seats',
-  pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } },
+  pitak: { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null },
   comment: 'Katta yuk olmayman',
   status: 'active',
   departedAt: null,
   arrivedAt: null,
   private: false,
+  views: 0,
 };
 
 const unused = async (): Promise<never> => {

@@ -22,6 +22,10 @@ const open = async (page: Page, url: string) => {
 // More screens of G09 for the owner review (docs/33): both sides of the chat and the edge cases.
 test('passenger: Yetib keldim and stop sharing', async ({ page }) => {
   await mockApi(page, 'active');
+  // The driver marked «Keldi»: the passenger is in the car (G76, docs/43).
+  await page.route('**/api/passenger/bookings', (route) =>
+    route.fulfill({ json: { bookings: [{ ...confirmed, boardedAt: Date.now() }] } }),
+  );
   await page.route('**/api/passenger/bookings/*/arrived', (route) =>
     route.fulfill({ json: { ...confirmed, boardedAt: Date.now(), arrivedAt: Date.now() } }),
   );
@@ -29,7 +33,6 @@ test('passenger: Yetib keldim and stop sharing', async ({ page }) => {
   await open(page, appUrl(PASSENGER.port));
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
-  await page.getByText(t('share.boarded')).click();
   await expect(page.getByText(t('share.arrived'))).toBeVisible();
   await shot('1-on-the-way');
   await page.getByText(t('share.arrived')).click();

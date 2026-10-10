@@ -3,7 +3,7 @@ import { DAY_MS, tashkentDate } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { MAN } from './g59-pixel-mock';
 import { mapState, mockMap } from './map-mock';
@@ -49,7 +49,7 @@ export async function openBookingPoints(page: Page) {
   await page.route('**/api/me', (route) => route.fulfill({ json: { state: 'active', profile: MAN } }));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await page.locator('.direction-card').first().click();
   await page.getByRole('tab').nth(1).click();
   await page.locator('.search-trip').first().click();

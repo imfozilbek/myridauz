@@ -2,22 +2,22 @@ import { tashkentDate, tashkentDayStart, type Booking } from '@platform/contract
 import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
+import { inCar } from './in-car';
 import { useShareTrip } from './use-share-trip';
 
-// «Mashinaga chiqdim» the day before the trip is a mistake (docs/89 P7): from its day on, by Toshkent.
-// The same step stands on the booking and as the main button of the main screen (G66).
-export function passengerStep(booking: Booking, now: number): 'boarded' | 'arrived' | null {
+// «Yetib keldim» once the passenger is in the car (in-car.ts, G76, docs/43); only from the day of the
+// trip on, by Toshkent (docs/89 P7).
+function passengerStep(booking: Booking, now: number, meetMinutes: number): 'arrived' | null {
   const onTheDay =
     booking.status === 'confirmed' && now >= tashkentDayStart(tashkentDate(booking.trip.departAt));
-  if (!onTheDay) return null;
-  if (booking.boardedAt === null) return 'boarded';
-  return booking.arrivedAt === null ? 'arrived' : null;
+  return onTheDay && inCar(booking, now, meetMinutes) && booking.arrivedAt === null ? 'arrived' : null;
 }
 
 // The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
-// has just told («Mashinaga chiqdim», «Yetib keldim») shows before the screen has it.
+// has just told («Men keldim», «Yetib keldim») shows before the screen has it.
 export function withTold(booking: Booking, told: Booking | null): Booking {
   if (told?.id !== booking.id) return booking;
   return {
@@ -29,10 +29,11 @@ export function withTold(booking: Booking, told: Booking | null): Booking {
 }
 
 // The steps of a passenger on the way (docs/43, docs/118 path 3): the card for the close people,
-// then one main step at a time, «Mashinaga chiqdim» and «Yetib keldim», only on the day of the trip.
+// then «Yetib keldim» on the day of the trip once the driver marked the passenger in the car.
 export function useTripSteps(booking: Booking, onTold: (booking: Booking) => void) {
   const { track } = useAnalytics();
   const { chat } = useApiClients();
+  const { meetMinutes } = useBrand().schedule;
   const shareTrip = useShareTrip();
   const { failure, fail, clear } = useFailure();
   // What the close people were just told: the note and «Ulashishni toʻxtatish» under the buttons.
@@ -47,17 +48,17 @@ export function useTripSteps(booking: Booking, onTold: (booking: Booking) => voi
       fail(caught);
     }
   };
-  const step = (name: 'boarded' | 'arrived') =>
+  const step = () =>
     run(async () => {
-      onTold(await chat[name](booking.id));
-      track({ name, screen: 'bookings.passenger' });
+      onTold(await chat.arrived(booking.id));
+      track({ name: 'arrived', screen: 'bookings.passenger' });
     }, 'told');
-  const next = passengerStep(booking, Date.now());
+  const next = passengerStep(booking, Date.now(), meetMinutes);
   return {
     failure,
     note,
     next,
-    step: () => (next ? void step(next) : undefined),
+    step: () => (next ? void step() : undefined),
     share: () => void run(() => shareTrip(booking.id), 'told'),
     stop: () => void run(() => chat.stopSharing(booking.id), 'stopped'),
   };

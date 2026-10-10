@@ -6,7 +6,7 @@ import { booking, wallet } from '../bookings/booking-test-kit';
 import type { Driver } from '../driver/driver-context';
 import { tap, trip } from '../market/market-test-kit';
 import { DriverHome } from './driver-home';
-import { DRAFT_ACTIONS, DRIVER_ACTIONS } from './home-test-actions';
+import { DRIVER_ACTIONS } from './home-test-actions';
 import { approved, renderHome } from './home-test-kit';
 
 afterEach(cleanup);
@@ -36,71 +36,77 @@ const TRIPS = [
   later,
   { ...trip, id: 't3', departAt: trip.departAt - 3 * DAY_MS, status: 'completed' as const },
 ];
-const driver = (who: Driver, seatsLeft = 53) =>
+const driver = (who: Driver, seatsLeft = 53, money = wallet) =>
   renderHome(
-    (go) => <DriverHome go={go} />,
-    who.application.status === 'draft' ? DRAFT_ACTIONS : DRIVER_ACTIONS,
+    () => <DriverHome />,
+    DRIVER_ACTIONS,
     {
       trips: async () => TRIPS,
       requests: async () => [booking, { ...booking, id: 'b2', trip: later }],
-      wallet: async () => ({ ...wallet, seatsLeft }),
+      wallet: async () => ({ ...money, seatsLeft }),
       board: async () => board,
     },
     who,
   );
 
-describe('the tiles of a driver (G66, mockup g66/2)', { timeout: 20_000 }, () => {
-  it('counts the requests on the directions of the driver and the trips of the week', async () => {
+const hintOf = (title: string) => tileOf(title)?.querySelector('.home-tile-hint')?.textContent;
+
+describe('the four tiles of a driver (G76, mockup g76/3)', { timeout: 20_000 }, () => {
+  it('has the same four tiles in their order, the car and its plate on the right of the head', async () => {
     driver(approved);
-    expect(await screen.findByText('Yoʻnalishingizda 5 ta')).toBeTruthy();
-    expect(badgeOf('Yoʻlovchilar soʻrovlari')).toBe('5');
-    expect(await screen.findByText('Bu hafta 3 ta safar')).toBeTruthy();
-    // The requests of the trip on the card stay on the card (mockup g66/2 phone 3).
+    await screen.findByText('Yordam');
+    const titles = [...document.querySelectorAll('.home-tiles-square .home-tile-title')].map(
+      (one) => one.textContent,
+    );
+    expect(titles).toEqual(['Mening safarlarim', 'Suhbatlar', 'Hamyon', 'Yordam']);
+    expect(screen.getByText('Cobalt, oq')).toBeTruthy();
+    expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
+    expect(hintOf('Suhbatlar')).toBe('Yoʻlovchilar bilan');
+  });
+
+  it('counts the waiting requests, the ones of other trips as a number', async () => {
+    driver(approved);
+    expect(await screen.findByText('2 yangi soʻrov')).toBeTruthy();
+    // The request of the nearest trip is in the block at the bottom (docs/165).
     expect(badgeOf('Mening safarlarim')).toBe('1');
   });
 
   it('says how many seats «Hamyon» covers and opens it', async () => {
     driver(approved);
     expect(await screen.findByText(/^≈.53 joyga yetadi$/u)).toBeTruthy();
-    expect(tileOf('Hamyon')?.className).not.toContain('home-tile-alarm');
+    expect(tileOf('Hamyon')?.className).not.toContain('home-tile-soon');
     await tap('Hamyon');
     expect(await screen.findByText('Hisobni toʻldirish')).toBeTruthy();
   });
 
-  it('turns «Hamyon» red below 5 seats', async () => {
+  it('turns «Hamyon» amber below 5 seats and red with «!» when a request cannot be confirmed', async () => {
     driver(approved, 4);
     expect(await screen.findByText(/^≈.4 joyga.· toʻldiring$/u)).toBeTruthy();
+    expect(tileOf('Hamyon')?.className).toContain('home-tile-soon');
+    cleanup();
+    driver(approved, 0, { ...wallet, bonus: 0, main: 1000 });
+    expect(await screen.findByText(/soʻm yetmaydi$/u)).toBeTruthy();
     expect(tileOf('Hamyon')?.className).toContain('home-tile-alarm');
+    expect(badgeOf('Hamyon')).toBe('!');
   });
 
-  it('opens the profile from «Profil», «Yordam» lives there (mockup g65/3)', async () => {
-    const { tracked } = driver(approved);
-    expect(await screen.findByText('Mashina va sozlamalar')).toBeTruthy();
-    expect(screen.queryByText('Yordam')).toBeNull();
-    await tap('Mashina va sozlamalar');
-    expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
-  });
-
-  it('while the application is checked: the bonus waiting, «Mening safarlarim» after the check', async () => {
+  it('while the application is checked: the bonus after the approval', async () => {
     driver(as('pending'));
-    // 3 bonuses of 500 000 soʻm (docs/12).
-    expect(await screen.findByText(/^Bonus 1.500.000.soʻm$/u)).toBeTruthy();
-    expect(screen.getByText('Tekshiruvdan keyin')).toBeTruthy();
+    expect(await screen.findByText('Tasdiqdan keyin bonus')).toBeTruthy();
   });
 });
 
 describe(
-  'the main screen of a driver before the application (mockup g62/1 screen 1)',
+  'the main screen of a driver before the application (G76, mockup g76/3 state 1)',
   { timeout: 20_000 },
   () => {
-    it('says «Haydovchi», keeps publishing pale, «Yordam» opens the support bot, no block at the bottom', async () => {
+    it('asks to fill the application in the block, «Mashina · Qoʻshing» on the head, «Yordam» opens the bot', async () => {
       const open = vi.spyOn(window, 'open').mockReturnValue(null);
       driver(as('draft'));
-      expect(await screen.findByText('Haydovchi')).toBeTruthy();
-      expect(tileOf('Safar eʼlon qilish')?.className).toContain('home-tile-pale');
-      expect(screen.getByText('Eʼlonlar')).toBeTruthy();
+      expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
+      expect(screen.getByText('Qoʻshing')).toBeTruthy();
       expect(screen.queryByText('Qayerdan')).toBeNull();
-      await tap('Savol boʻlsa');
+      await tap('Yordam');
       expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
       open.mockRestore();
     });

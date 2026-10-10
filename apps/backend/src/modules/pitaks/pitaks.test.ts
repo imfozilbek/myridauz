@@ -59,7 +59,13 @@ describe('pitaks and live directions (G24, docs/72)', () => {
       id: 'p1',
       name: 'Toshkent avtovokzali',
       point: AVTOVOKZAL,
+      hint: null,
     });
+    // Where exactly to stand, written by the team (G76); an empty one is none.
+    await savePitak(deps, MODERATOR, 'p1', { ...input('checked'), hint: ' Metro 2-chiqish yonida ' });
+    expect((await pitakOfDirection(deps, TOSHKENT, SAMARQAND))?.hint).toBe('Metro 2-chiqish yonida');
+    await savePitak(deps, MODERATOR, 'p1', { ...input('checked'), hint: '' });
+    expect((await pitakOfDirection(deps, TOSHKENT, SAMARQAND))?.hint).toBeNull();
     expect(await pitakOfDirection(deps, SAMARQAND, TOSHKENT)).toBeNull();
   });
 

@@ -21,10 +21,15 @@ type ChangeHandler = (env: Bindings, tripId: string, event: TripEvent) => Promis
 let onChange: ChangeHandler = async () => undefined;
 export const handleTripChange = (handler: ChangeHandler) => void (onChange = handler);
 
-// Ratings and complaints come from their modules, set by the app (module-events.ts), G11.
-type Standing = Pick<TripsDeps, 'ratings' | 'hidden'>;
+// Ratings, complaints and the views of the trip page come from their modules, set by the app
+// (module-events.ts), G11, G76.
+type Standing = Pick<TripsDeps, 'ratings' | 'hidden' | 'viewsOf'>;
 type StandingOf = (env: Bindings) => Standing;
-let standingOf: StandingOf = () => ({ ratings: async () => new Map(), hidden: async () => new Set() });
+let standingOf: StandingOf = () => ({
+  ratings: async () => new Map(),
+  hidden: async () => new Set(),
+  viewsOf: async () => new Map(),
+});
 export const wireTripStanding = (next: StandingOf) => void (standingOf = next);
 
 export const tripsDeps = (env: Bindings): TripsDeps => ({

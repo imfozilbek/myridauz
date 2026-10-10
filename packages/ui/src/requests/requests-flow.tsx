@@ -13,6 +13,8 @@ type Props = {
   readonly onBack: () => void;
   // A bot link names the route and the day: the requests open at once (docs/83 N08).
   readonly initial?: RequestBoardQuery;
+  // «Qayerdan» of the block at the bottom of the main screen (G76): its requests to every side.
+  readonly board?: RequestBoardQuery;
 };
 
 type Over =
@@ -27,8 +29,8 @@ const tripRoute = (route: Route | null) =>
 // «Yoʻlovchilar soʻrovlari» of a driver (G64, docs/118 path 7): the board, and from it the talk
 // before a booking (numbers hidden, docs/07), the wallet when it holds too little, the trip opened
 // for a whole car, a new trip on an empty day. «Назад» comes back to the board.
-export function RequestsFlow({ onBack, initial }: Props) {
-  const [query, setQuery] = useState<RequestBoardQuery>(initial ?? {});
+export function RequestsFlow({ onBack, initial, board }: Props) {
+  const [query, setQuery] = useState<RequestBoardQuery>(initial ?? board ?? {});
   const [over, setOver] = useState<Over | null>(null);
   // The route chosen for the board: an empty day publishes a trip on it.
   const [route, setRoute] = useState<Route | null>(null);

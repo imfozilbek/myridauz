@@ -2,6 +2,7 @@ import { loadBrand } from '@platform/brands';
 import type { Car } from '@platform/contracts';
 import type { RequestsDeps } from './application/ports';
 import { createMemoryRequests } from './infrastructure/memory-requests';
+import { createMemoryRequestViews } from './infrastructure/request-views';
 import { publicIdOf } from '../../test-people';
 
 // The ride requests of the tests: a driver (id 9) with a car of 4 seats, two regions and a pitak.
@@ -17,6 +18,7 @@ const PITAK = {
   id: 'toshkent-avtovokzal',
   name: 'Toshkent avtovokzali',
   point: { lat: 41.2569, lng: 69.1925 },
+  hint: null,
 };
 const PLACES = new Map(
   [
@@ -37,6 +39,7 @@ export function setup() {
   let nearest: BoardTrip = null;
   const deps: RequestsDeps = {
     requests: createMemoryRequests(),
+    seen: createMemoryRequestViews(),
     people: {
       find: async (userId) => ({
         id: userId,

@@ -11,6 +11,8 @@ export const haptic = {
   select: () => void hapticFeedback.selectionChanged.ifAvailable(),
   // An incoming call shakes the phone with each ring (docs/08).
   ring: () => void hapticFeedback.notificationOccurred.ifAvailable('warning'),
+  // A new or more urgent thing in the block of the main screen: one shake (G76, docs/165).
+  attention: () => void hapticFeedback.notificationOccurred.ifAvailable('warning'),
 };
 
 // "Are you sure?" in the native Telegram window (docs/19, principle 9); outside Telegram, the browser's.

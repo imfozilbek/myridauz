@@ -122,5 +122,5 @@ export async function openTripAt(page: Page, now: string, full: boolean, moment:
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await page.getByText(t('common.myTrips')).click();
   await openOwnTrip(page);
-  await page.getByText(t('driverTrip.tile.map')).waitFor();
+  await page.getByText(t('driverTrip.tile.map')).first().waitFor();
 }

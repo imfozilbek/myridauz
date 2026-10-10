@@ -27,4 +27,22 @@ describe('the own trips of a driver', () => {
     expect(mine.some((trip) => trip.id === 't999')).toBe(true);
     expect(mine.some((trip) => trip.id === `t${MY_TRIPS_LIMIT + 19}`)).toBe(false);
   });
+
+  it('says how many people opened a live trip, «23 kishi koʻrdi» (G76); never on a past one', async () => {
+    const { deps, trip, views } = setup();
+    const published = await publishTrip(deps, 1, trip);
+    const id = published.ok ? published.value.id : '';
+    views.set(id, 23);
+    views.set('old', 5);
+    const base = await deps.trips.find(id);
+    await deps.trips.save({
+      ...(base as TripRecord),
+      id: 'old',
+      departAt: NOW - 48 * HOUR,
+      endsAt: NOW - 40 * HOUR,
+    });
+    const mine = await myTrips(deps, 1);
+    expect(mine.find((one) => one.id === id)?.views).toBe(23);
+    expect(mine.find((one) => one.id === 'old')?.views).toBe(0);
+  });
 });

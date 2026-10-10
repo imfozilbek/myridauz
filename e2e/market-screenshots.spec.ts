@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT, publishButton } from './apps';
+import { appUrl, MINI_APPS, openRequests, publishButton, TEXT } from './apps';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -26,7 +26,7 @@ test('passenger: main screen and the search', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page, 'trip-search');
-  await expect(page.getByText(TEXT.findTrip).first()).toBeVisible();
+  await expect(page.getByTestId('home-dock')).toBeVisible();
   await shot('1-home');
   await findTrips(page, shot);
 });
@@ -58,7 +58,7 @@ test('driver: looks around while the application is checked', async ({ page }) =
   const shot = shooter(page, 'driver-pending');
   await expect(page.getByText(TEXT.check)).toBeVisible();
   await shot('1-home');
-  await page.getByText(TEXT.passengerRequests, { exact: true }).click();
+  await openRequests(page);
   await expect(page.getByText(TEXT.pendingRequests)).toBeVisible();
   await shot('2-requests');
 });

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT, publishButton } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
 import { noSeatYet } from './bookings-mock';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
@@ -36,7 +36,7 @@ async function openBooking(page: Page) {
   await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
-  await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await searchRoute(page);
   await page.getByText('Jasur', { exact: false }).first().click();
   await mainButton(page).filter({ hasText: TEXT.book }).click();

@@ -120,7 +120,15 @@ export async function searchRequests(
 export async function myRequests(deps: RequestsDeps, passengerId: number): Promise<RideRequest[]> {
   // The requests ahead first, then the past ones; a request lasts until the end of its day (docs/65 B6).
   const endOfDay = (request: RequestRecord) => tashkentDayStart(request.date) + DAY_MS - 1;
-  return views(deps, upcomingFirst(await deps.requests.byPassenger(passengerId), endOfDay, deps.now()));
+  const mine = await views(
+    deps,
+    upcomingFirst(await deps.requests.byPassenger(passengerId), endOfDay, deps.now()),
+  );
+  // «14 haydovchi koʻrdi» on the open ones only (G76): a few, one read.
+  const seen = await deps.seen.counts(
+    mine.filter((request) => request.status === 'open').map(({ id }) => id),
+  );
+  return mine.map((request) => ({ ...request, views: seen.get(request.id) ?? 0 }));
 }
 
 export async function cancelRequest(

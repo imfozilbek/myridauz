@@ -6,6 +6,8 @@ import { useBrand } from '../context/brand-context';
 import { useCoveredBySheet } from '../sheet/form-sheet-cover';
 import { onSplashLeft, splashStands } from './chrome';
 import { useInTelegram } from './in-telegram-context';
+import { useUnderSheet } from './sheet-shown';
+import { ownLook } from './own-look';
 import { useOneAtATime } from './one-at-a-time';
 
 type NativeParams = {
@@ -15,6 +17,9 @@ type NativeParams = {
   isEnabled: boolean;
   backgroundColor?: HexColor;
   textColor?: HexColor;
+  hasShineEffect?: boolean;
+  // The secondary button: on the left of the main one in the block at the bottom (G76).
+  position?: ReturnType<typeof secondaryButton.position>;
 };
 type NativeButton = {
   readonly setParams: (params: Partial<NativeParams>) => void;
@@ -29,6 +34,9 @@ type BottomButtonProps = {
   readonly destructive?: boolean;
   // Gray and inert until the step is ready, like the consent of the registration (G58).
   readonly disabled?: boolean;
+  // The pair of the block at the bottom of the main screen (G76): the secondary on the left in the
+  // light color of the app, the main one on the right, as on the mockups g76.
+  readonly beside?: boolean;
 };
 
 const noop = () => undefined;
@@ -72,7 +80,13 @@ function hideLater(native: NativeButton) {
 // The main action is the native Telegram button at the bottom (docs/19, docs/21).
 // Outside Telegram a TelegramUI button stands in for it, so the app also works in a browser.
 function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
-  return function BottomButton({ text, onClick, destructive = false, disabled = false }: BottomButtonProps) {
+  return function BottomButton({
+    text,
+    onClick,
+    destructive = false,
+    disabled = false,
+    beside = false,
+  }: BottomButtonProps) {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
     const { busy, run } = useOneAtATime(onClick);
@@ -91,10 +105,14 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
       const look = disabled
         ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
         : { backgroundColor: background, textColor: colors.bg };
-      const color = native.colored ? look : {};
+      // The secondary pair of the block is soft in the color of the app, gray while inert (G76).
+      const soft = { backgroundColor: colors.brandSoft, textColor: colors.brandText };
+      const telegram = ownLook();
+      const pair = beside ? { ...(disabled ? look : soft), position: 'left' as const } : telegram;
+      const color = native.colored ? look : pair;
       keepShown(native);
       native.setParams({ text, isVisible: true, ...color });
-    }, [inTelegram, text, colors, destructive, disabled]);
+    }, [inTelegram, text, colors, destructive, disabled, beside]);
     useEffect(() => {
       if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy && !disabled });
     }, [inTelegram, busy, disabled]);
@@ -107,7 +125,7 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
         loading={busy}
         disabled={busy || disabled}
         onClick={run}
-        className={destructive ? 'danger-button' : undefined}
+        className={[destructive ? 'danger-button' : '', native.colored ? 'bottom-main' : ''].join(' ')}
       >
         {text}
       </Button>
@@ -118,9 +136,13 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
 // A form sheet over the screen takes the button for its own step (G75, mockup g75/3 A).
 function besideSheets(Button: ReturnType<typeof createBottomButton>) {
   return function SheetAwareButton(props: BottomButtonProps) {
-    return useCoveredBySheet() ? null : <Button {...props} />;
+    const covered = useCoveredBySheet();
+    const under = useUnderSheet();
+    return covered || under ? null : <Button {...props} />;
   };
 }
 
 export const MainButton = besideSheets(createBottomButton(MAIN, 'filled'));
+// The main button shines while the block of the main screen calls the eye (G76, docs/165).
+export const shineMain = (on: boolean) => MAIN.setParams({ hasShineEffect: on });
 export const SecondaryButton = besideSheets(createBottomButton(SECONDARY, 'bezeled'));

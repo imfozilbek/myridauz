@@ -6,8 +6,7 @@ import { request, tripOf } from './market-mock';
 // The data of the mockups g68/7 and g68/8, one to one (lesson 151): Jasur drives from Chilonzor to
 // Samarqand tomorrow at 08:00, Madina asks for 2 seats, 100 000 a seat; 7 October, 15:00.
 export const NOW = tashkent('2026-10-07T15:00');
-export const DEPART = tashkent('2026-10-08T08:00');
-const YUNUSOBOD = '1726266';
+const DEPART = tashkent('2026-10-08T08:00');
 const MINUTE = 60_000;
 const id = (n: string) => `00000000-0000-4000-8000-0000000000${n}`;
 const person = (n: string, firstName: string) => ({
@@ -46,17 +45,6 @@ export const ask = (n: string, firstName: string) => ({
   confirmedAt: null,
   plate: null,
 });
-
-// The offer of the driver taken by Aziz for the whole car, 09:00 from Yunusobod (screen 6).
-export const taken = {
-  ...ask('a1', 'Aziz'),
-  trip: { ...trip, from: YUNUSOBOD, departAt: tashkent('2026-10-08T09:00') },
-  status: 'confirmed',
-  seats: 3,
-  wholeCar: true,
-  confirmedAt: NOW - MINUTE,
-  chatKey: `o${id('a1')}`,
-};
 
 // The seat of Madina with Jasur, confirmed long ago, at «Grand» (g68/8 «Xabar», «Uchrashuv»).
 export const seat = {

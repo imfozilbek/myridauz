@@ -52,5 +52,6 @@ export function tripView(
     departedAt: trip.departedAt,
     arrivedAt: trip.arrivedAt,
     private: trip.forRequest !== null,
+    views: 0,
   };
 }

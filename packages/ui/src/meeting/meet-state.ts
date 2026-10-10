@@ -4,8 +4,8 @@ import { stopsInOrder } from '../bookings/driver-stops';
 export type MeetStep = 'come' | 'answer' | 'met' | 'no_show';
 
 // Where the driver is with one passenger at the point (docs/126): «Men keldim», then «Keldi» or
-// «Kelmadi». A passenger in the car by the own «Mashinaga chiqdim» or «Yetib keldim» is met: the
-// server refuses «Kelmadi» then (G63 B2).
+// «Kelmadi». A passenger in the car («Keldi», G76) or who said «Yetib keldim» is met: the server
+// refuses «Kelmadi» then (G63 B2).
 export function meetStep(booking: Booking): MeetStep {
   if (booking.noShowAt !== null) return 'no_show';
   if (booking.metAt !== null || booking.boardedAt !== null || booking.arrivedAt !== null) return 'met';

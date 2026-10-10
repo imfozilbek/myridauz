@@ -32,6 +32,9 @@ function passenger(
 describe('the sheet of a new offer (G68)', () => {
   it('says the driver, the car with its plate, the trip, how the driver picks up and the sum', async () => {
     passenger([{ ...offer, id: 'o11' }]);
+    // The block says the sum without «soʻm», as on the mockup g76/2 state 5.
+    expect(await screen.findByText(/^Jasur · 95.000$/u)).toBeTruthy();
+    await tap('Takliflarni koʻrish');
     expect(await screen.findByText('Yangi taklif')).toBeTruthy();
     expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();
     expect(screen.getByText('Oq Chevrolet Cobalt')).toBeTruthy();
@@ -41,15 +44,17 @@ describe('the sheet of a new offer (G68)', () => {
     expect(screen.getByText('2 joy')).toBeTruthy();
     expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
-    // The bottom panel of the main screen stands above any sheet: it leaves while one is open.
-    expect(document.querySelector('.home-dock')).toBeNull();
+    // The block at the bottom stays under the sheet (G76, lesson 199); its buttons step aside.
+    expect(document.querySelector('.home-dock')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Takliflarni koʻrish' })).toBeNull();
     await tap('Keyinroq');
     await sheetClosed();
-    expect(document.querySelector('.home-dock')).not.toBeNull();
+    expect(await screen.findByRole('button', { name: 'Takliflarni koʻrish' })).toBeTruthy();
   });
 
   it('«Qabul qilish» books the seat in one tap and says so on top', async () => {
     const { answerOffer } = passenger([{ ...offer, id: 'o12' }]);
+    await tap('Takliflarni koʻrish');
     await tap('Qabul qilish');
     expect(answerOffer).toHaveBeenCalledWith('o12', 'accept');
     expect(await screen.findByText('Taklif qabul qilindi. Joyingiz band.')).toBeTruthy();
@@ -61,6 +66,7 @@ describe('the sheet of a new offer (G68)', () => {
       { ...offer, id: 'o13' },
       { ...offer, id: 'o14' },
     ]);
+    await tap('Takliflarni koʻrish');
     // One request is one thing to answer: no «1 / 2» (mockup g68/8 «Taklif»).
     expect(await screen.findByText('Barcha takliflar (2)')).toBeTruthy();
     expect(screen.queryByText('1 / 2')).toBeNull();

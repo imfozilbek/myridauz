@@ -19,7 +19,7 @@ export async function views(deps: RequestsDeps, requests: readonly RequestRecord
       const { id, from, to, date, km, seats, price, pickupMode, wholeCar, withWoman, callsOff } = request;
       const status = statusAt(request, now);
       const marks = { pickupMode, wholeCar, withWoman, callsOff };
-      return { id, passenger, from, to, date, km, seats, price, ...marks, status };
+      return { id, passenger, from, to, date, km, seats, price, ...marks, status, views: 0 };
     }),
   );
   return found.filter((request) => request !== null);

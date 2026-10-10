@@ -47,7 +47,7 @@ describe('an application in «Navbat»', () => {
     await act(async () => fireEvent.click(screen.getByText('Orqaga')));
     expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
     asked.mockRestore();
-    fireEvent.click(screen.getByText('Rasmda davlat raqami oʻqilmaydi'));
+    fireEvent.click(screen.getByText('Raqam rasmi aniq emas'));
     fireEvent.click(screen.getByText('Yuborish'));
     await screen.findByText('Javob yuborildi');
     expect(decide).toHaveBeenCalledWith(JASUR.id, {

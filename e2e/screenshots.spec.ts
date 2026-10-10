@@ -1,6 +1,6 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
 import { fromIfAsked } from './market';
 import { register } from './registration';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -41,7 +41,7 @@ test('places: screenshots', async ({ page }) => {
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
   // «Qayerdan» is changed by its list (G59): the regions, the search, the districts.
-  await page.locator('#tg-main-button', { hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await fromIfAsked(page);
   await page.getByText(TEXT.change).click();
   await expect(page.getByAltText('Xorazm viloyati')).toBeVisible();

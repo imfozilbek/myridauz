@@ -35,11 +35,17 @@ export const TRIP: Trip = {
   recommendedPrice: null,
   woman: true,
   pickupMode: 'both',
-  pitak: { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } },
+  pitak: {
+    id: 'toshkent-avtovokzal',
+    name: 'Toshkent avtovokzali',
+    point: { lat: 41.2569, lng: 69.1925 },
+    hint: null,
+  },
   comment: '',
   bookingRule: 'seats',
   status: 'active',
   departedAt: null,
   arrivedAt: null,
   private: false,
+  views: 0,
 };

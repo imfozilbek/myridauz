@@ -22,6 +22,7 @@ const request: RideRequest = {
   wholeCar: false,
   withWoman: false,
   callsOff: false,
+  views: 0,
 };
 
 describe('Mening safarlarim (docs/35)', () => {

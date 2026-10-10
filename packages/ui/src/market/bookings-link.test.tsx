@@ -49,6 +49,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
       wholeCar: false,
       withWoman: false,
       callsOff: false,
+      views: 0,
     };
     renderMarket(
       <BookingsLink app="passenger">

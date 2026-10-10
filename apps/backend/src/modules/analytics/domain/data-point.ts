@@ -26,7 +26,9 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
                   ? event.navigator
                   : 'target' in event
                     ? event.target
-                    : '';
+                    : 'state' in event
+                      ? event.state
+                      : '';
   // What broke a screen follows its code (G52, docs/112). The first screen of a session keeps the
   // platform in the same place and the mark of the source after it (G55, docs/116); so does the ready app.
   const crash =

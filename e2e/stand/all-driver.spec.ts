@@ -1,5 +1,5 @@
 import { expect, test } from '../crash-guard';
-import { TEXT, publishButton } from '../apps';
+import { openNewTrip, openRequests, TEXT } from '../apps';
 import { openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
@@ -53,7 +53,7 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
 // on top and the requests of its day under it; the chat of a request carries the same offer.
 test('android: the requests of passengers and an offer', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
-  await page.getByText(t('common.driver.passengerRequests')).first().click();
+  await openRequests(page);
   const row = page.locator('.request-row', { hasText: WAITING.name });
   await expect(row).toBeVisible();
   await shot(page, 'android', 'da30-requests');
@@ -66,7 +66,7 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
 // bor» when fewer, the rule and the comment on their own screens and back.
 test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
-  await publishButton(page).click();
+  await openNewTrip(page);
   await page.getByText(TEXT.from).click();
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();

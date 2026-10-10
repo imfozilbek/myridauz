@@ -19,9 +19,18 @@ export type PitakStatus = (typeof PITAK_STATUSES)[number];
 // People see only these; a candidate and a closed pitak stay in the admin.
 export const SHOWN_PITAK_STATUSES: readonly PitakStatus[] = ['claude', 'checked'];
 export const PITAK_NAME_MAX = 80;
+export const PITAK_HINT_MAX = 60;
 
 export const pitakInputSchema = z.object({
   name: z.string().trim().min(2).max(PITAK_NAME_MAX),
+  // Empty: no hint; the block at the bottom shows the region then (G76).
+  hint: z
+    .string()
+    .trim()
+    .max(PITAK_HINT_MAX)
+    .transform((value) => (value === '' ? null : value))
+    .nullable()
+    .default(null),
   point: pointInputSchema,
   status: z.enum(PITAK_STATUSES),
 });

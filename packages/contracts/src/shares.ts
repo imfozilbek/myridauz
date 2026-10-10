@@ -6,7 +6,6 @@ import { DRIVER_BOOKINGS_PATH, PASSENGER_BOOKINGS_PATH } from './bookings';
 // "Yaqinlarimga yuborish" (docs/43): close people follow the trip by a link, without registration.
 export const bookingSharePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/share`;
 export const bookingShareStopPath = (id: string) => `${bookingSharePath(id)}/stop`;
-export const bookingBoardedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/boarded`;
 export const bookingArrivedPath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/arrived`;
 // «Men keldim» at the meeting point (docs/126).
 export const bookingCamePath = (id: string) => `${PASSENGER_BOOKINGS_PATH}/${id}/came`;

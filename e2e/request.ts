@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
-import { TEXT } from './apps';
+import { openFindTrip } from './apps';
 import { takeEnd } from './bookings';
 import { MAN } from './g59-pixel-mock';
 import { tripOf } from './market-mock';
@@ -28,7 +28,7 @@ export async function leaveRequest(page: Page, open: () => Promise<unknown>) {
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips: [] } }));
   const bodies = sentTo(page, '/passenger/requests');
   await open();
-  await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await searchRoute(page);
   await page.getByRole('button', { name: t('market.request.publish') }).click();
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
@@ -50,7 +50,7 @@ export async function bookWholeCar(page: Page, open: () => Promise<unknown>) {
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips: [trip] } }));
   const bodies = sentTo(page, '/bookings');
   await open();
-  await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+  await openFindTrip(page);
   await fromIfAsked(page);
   await searchRoute(page);
   await page.getByText('Jasur', { exact: false }).first().click();

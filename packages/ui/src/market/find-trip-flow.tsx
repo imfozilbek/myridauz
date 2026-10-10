@@ -1,4 +1,4 @@
-import { TRIP_LINK, type AppLink, type Trip } from '@platform/contracts';
+import { TRIP_LINK, type AppLink, type Location, type Trip } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { FindStart } from '../find/find-start';
@@ -35,6 +35,8 @@ type Props = {
   readonly day?: string | undefined;
   // From the main screen: the list of one end opens at once (G25).
   readonly pick?: 'from' | 'to';
+  // «Qayerdan» of the block at the bottom (G76, docs/165): the directions from it at once.
+  readonly from?: Location;
   // A new trip of a saved driver from the main screen (G60): that trip, ready to book.
   readonly link?: AppLink;
 };
@@ -50,7 +52,7 @@ export function FindTripFlow({ link, ...props }: Props) {
   );
 }
 
-function FindTrip({ onBack, initial, route: recent, day, pick }: Omit<Props, 'link'>) {
+function FindTrip({ onBack, initial, route: recent, day, pick, from }: Omit<Props, 'link'>) {
   const { track } = useAnalytics();
   const known = initial ?? recent;
   const [screen, setScreen] = useState<FindScreen>(
@@ -72,7 +74,7 @@ function FindTrip({ onBack, initial, route: recent, day, pick }: Omit<Props, 'li
   if (screen.step === 'route')
     return (
       <FindStart
-        {...(screen.route ? { from: screen.route.from } : pick ? { pick } : {})}
+        {...(screen.route ? { from: screen.route.from } : from ? { from } : pick ? { pick } : {})}
         onBack={onBack}
         onDone={(route) => {
           step('done');

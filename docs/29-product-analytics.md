@@ -22,9 +22,10 @@
 | Шаги | `registration_step` (consent, about, phone, done; G34), `driver_application_step`, `trip_step` (route, published; G63), `booking_step`, `way_step` (поиск списками: opened, from, to, done; G26) |
 | Действия | `trip_search`, `trip_open`, `chat_open`, `chat_first_message`, `wallet_open`, `route_subscribed`, `subscriptions_open`, `review_sent`, `complaint_sent`, `complaint_decided`, `favorite_driver`, `return_trip_created` (обратная поездка опубликована после «Qaytish», G63), `driver_trip_shared`, `driver_trip_story` |
 | Ошибки | `client_error` (экран упал: код `render`, `uncaught` или `rejection`, класс ошибки, текст без цифр и знаков, экран, приложение Telegram и его версия, движок WebView и его главная версия, место в сборке `where`, G52 `112`), `api_error` (код ответа API и последний открытый экран, G12) |
+| Главный экран (G25, G76) | `home_tap` (место нажатия: плитка, шапка, кнопка блока, чат и звонок поездки), `dock_state` (состояние нижнего блока, когда оно сменилось: 1 или 2 за открытие, `165`) |
 | Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id) |
 | Сервер | `driver_approved` |
-| Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded`, `arrived` |
+| Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
 
 - Каждое событие: время, Mini App, экран, версия, ID сессии (одно открытие Mini App).
 - **Без личных данных:** без имени, телефона, текста чата, точных координат.

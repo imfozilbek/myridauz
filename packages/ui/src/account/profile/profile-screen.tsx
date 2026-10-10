@@ -13,7 +13,7 @@ import { DocumentsScreen } from './documents-screen';
 import { LookScreen } from './look-screen';
 import { MyReviewsScreen } from './my-reviews-screen';
 import { ProfileNotes } from './profile-notes';
-import { ProfileRows, type ProfileOpen } from './profile-rows';
+import { ProfileRows, type ProfileOpen, type ProfilePart } from './profile-rows';
 import { ProfileStats } from './profile-stats';
 import { ProfileTop } from './profile-top';
 import './profile.css';
@@ -21,18 +21,21 @@ import './profile-parts.css';
 
 // «Profil» of a passenger and of a driver (G65, mockup g65/3): the face and how the other side sees
 // the person, three numbers, the rows. The phone is shown only here, to its owner (docs/07).
-export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
+// The head of the main screen opens a part of it straight away: «Назад» goes back home then (G76).
+type Props = { readonly onBack: () => void; readonly part?: ProfilePart };
+
+export function ProfileScreen({ onBack, part }: Props) {
   useScreenView('profile');
   useScreenBackground();
   const account = useAccount();
   const { comfort } = useApiClients();
   const { colors } = useBrand().theme;
   const { value: standing } = useLoad(() => comfort.standing(), 'profile.standing');
-  const [open, setOpen] = useState<ProfileOpen | 'look' | null>(null);
+  const [open, setOpen] = useState<ProfileOpen | 'look' | null>(part ?? null);
   // «Baholarim» opened from «Meni qanday koʻradi» goes back there (G75, mockup g75/5 A).
   const [fromLook, setFromLook] = useState(false);
   if (!account) return null;
-  const back = () => setOpen(null);
+  const back = () => (part ? onBack() : setOpen(null));
   const { profile } = account;
   if (open === 'look')
     return (
@@ -46,7 +49,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
     return (
       <MyReviewsScreen
         userId={profile.id}
-        onBack={() => (setOpen(fromLook ? 'look' : null), setFromLook(false))}
+        onBack={() => (fromLook ? (setOpen('look'), setFromLook(false)) : back())}
       />
     );
   if (open === 'channels') return <MyChannelsScreen onBack={back} />;

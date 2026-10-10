@@ -19,12 +19,13 @@ export const markValues = (b: BookingRecord) => [b.driverCameAt, b.metAt, b.noSh
 
 // The rules of domain/meeting.ts mark() in one statement (docs/65 A4): «Keldi» and «Kelmadi» once
 // and never both, «Men keldim» once before them, «Kelmadi» never after the passenger got in.
+// «Keldi» puts the passenger in the car (G76, docs/43).
 const OPEN = 'met_at IS NULL AND no_show_at IS NULL';
 const MARK = {
-  came: { column: 'driver_came_at', guard: `driver_came_at IS NULL AND ${OPEN}` },
-  met: { column: 'met_at', guard: OPEN },
-  no_show: { column: 'no_show_at', guard: `${OPEN} AND boarded_at IS NULL AND arrived_at IS NULL` },
+  came: { set: 'driver_came_at = ?1', guard: `driver_came_at IS NULL AND ${OPEN}` },
+  met: { set: 'met_at = ?1, boarded_at = COALESCE(boarded_at, ?1)', guard: OPEN },
+  no_show: { set: 'no_show_at = ?1', guard: `${OPEN} AND boarded_at IS NULL AND arrived_at IS NULL` },
 } as const;
 export const markOnceSql = (step: DriverMeetStep) =>
-  `UPDATE bookings SET ${MARK[step].column} = ?1, updated_at = ?1
+  `UPDATE bookings SET ${MARK[step].set}, updated_at = ?1
   WHERE id = ?2 AND status = 'confirmed' AND ${MARK[step].guard}`;

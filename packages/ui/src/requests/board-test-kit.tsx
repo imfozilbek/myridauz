@@ -52,7 +52,12 @@ export function openBoard(fakes: Fakes = {}) {
       market: { requestBoard, recommend: async () => recommendation, ...fakes.market },
       bookings: { ...fakes.bookings },
       map: {
-        pitakOf: async () => ({ id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.24, lng: 69.34 } }),
+        pitakOf: async () => ({
+          id: 'qoyliq',
+          name: 'Qoʻyliq pitagi',
+          point: { lat: 41.24, lng: 69.34 },
+          hint: null,
+        }),
       },
     }),
   );
