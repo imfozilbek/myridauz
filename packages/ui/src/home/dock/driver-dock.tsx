@@ -7,16 +7,19 @@ import type { HomeGo } from '../../flow/start-action';
 import { PlacesKnown } from '../../market/places-gate';
 import { useLoad } from '../../market/use-list';
 import { useNow } from '../../own-trip/use-now';
+import type { PlaceDirectory } from '../../places/directory';
 import { useDirectory } from '../../places/use-directory';
 import { useDriverData } from '../driver-data';
+import { driverCue } from './cues';
 import { DockFailed } from './dock-failed';
 import { DockPanel } from './dock-panel';
 import { DriverAppCard } from './driver-app-cards';
 import { DriverIdle } from './driver-idle';
-import { driverStates, type DriverState } from './driver-state';
+import { DRIVER_LEVEL, driverStates, type DriverState } from './driver-state';
 import { DriverStateCard } from './driver-state-card';
 import { unseenOffers } from './offer-seen';
 import { useTripActions } from './trip-actions';
+import { useAttention } from './use-attention';
 
 // The block at the bottom of a driver (G76, docs/165, mockup g76/3): the application, the money, the
 // trip of now with its buttons, else «Qayerdan / Qayerga». The clock moves it on an open screen.
@@ -25,25 +28,34 @@ export function DriverDock({ go }: { readonly go: HomeGo }) {
   const load = useDriverData();
   const [places, retryPlaces] = useDirectory();
   const directory = places.status === 'ready' ? places.directory : null;
-  // The application needs no places: it shows at once (G62, mockup g76/3 states 1 and 3).
-  if (state.kind === 'draft' || state.kind === 'fix')
-    return (
-      <DockPanel>
-        <ApplicationCard kind={state.kind} go={go} />
-      </DockPanel>
-    );
-  if (state.kind === 'idle' || state.kind === 'pending' || !directory)
-    return (
-      <DockPanel>
+  const cue = driverCue(state.kind);
+  const target = 'booking' in state ? state.booking : 'trip' in state ? state.trip : null;
+  const id = `${state.kind}:${target?.id ?? ''}`;
+  const calls = useAttention({ id, level: DRIVER_LEVEL[state.kind], loud: cue !== null });
+  return (
+    <DockPanel cue={cue} calls={calls}>
+      {state.kind === 'idle' || state.kind === 'pending' || !directory ? (
         <DockFailed load={load} places={places} retryPlaces={retryPlaces} />
-        <DriverIdle go={go} directory={directory} />
-      </DockPanel>
-    );
+      ) : null}
+      <DriverBody state={state} go={go} directory={directory} />
+    </DockPanel>
+  );
+}
+
+type BodyProps = {
+  readonly state: DriverState;
+  readonly go: HomeGo;
+  readonly directory: PlaceDirectory | null;
+};
+
+function DriverBody({ state, go, directory }: BodyProps) {
+  // The application needs no places: it shows at once (G62, mockup g76/3 states 1 and 3).
+  if (state.kind === 'draft' || state.kind === 'fix') return <ApplicationCard kind={state.kind} go={go} />;
+  if (state.kind === 'idle' || state.kind === 'pending' || !directory)
+    return <DriverIdle go={go} directory={directory} />;
   return (
     <PlacesKnown directory={directory}>
-      <DockPanel>
-        <DriverStateCard state={state} go={go} directory={directory} />
-      </DockPanel>
+      <DriverStateCard state={state} go={go} directory={directory} />
     </PlacesKnown>
   );
 }

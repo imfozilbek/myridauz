@@ -16,6 +16,7 @@ type NativeParams = {
   isEnabled: boolean;
   backgroundColor?: HexColor;
   textColor?: HexColor;
+  hasShineEffect?: boolean;
   // The secondary button: on the left of the main one in the block at the bottom (G76).
   position?: ReturnType<typeof secondaryButton.position>;
 };
@@ -123,7 +124,7 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
         loading={busy}
         disabled={busy || disabled}
         onClick={run}
-        className={destructive ? 'danger-button' : undefined}
+        className={[destructive ? 'danger-button' : '', native.colored ? 'bottom-main' : ''].join(' ')}
       >
         {text}
       </Button>
@@ -139,4 +140,6 @@ function besideSheets(Button: ReturnType<typeof createBottomButton>) {
 }
 
 export const MainButton = besideSheets(createBottomButton(MAIN, 'filled'));
+// The main button shines while the block of the main screen calls the eye (G76, docs/165).
+export const shineMain = (on: boolean) => MAIN.setParams({ hasShineEffect: on });
 export const SecondaryButton = besideSheets(createBottomButton(SECONDARY, 'bezeled'));

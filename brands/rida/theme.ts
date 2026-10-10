@@ -39,6 +39,7 @@ export const theme: BrandTheme = {
     accentDeep: '#92400E',
     cardLine: '#99F6E4',
     badge: '#F59E0B',
+    soon: '#D97706',
     routeSwap: '#0F766E',
     neutralSoft: '#EEF2F6',
     neutralText: '#334155',

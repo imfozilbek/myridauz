@@ -23,7 +23,7 @@ export type DriverState =
     }
   | { readonly kind: 'depart' | 'departAsk' | 'onRoad' | 'published' | 'ended'; readonly trip: Trip };
 
-const DRIVER_LEVEL: Record<DriverState['kind'], number> = {
+export const DRIVER_LEVEL: Record<DriverState['kind'], number> = {
   draft: 2,
   fix: 2,
   pending: 7,

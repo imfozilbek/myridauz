@@ -46,6 +46,7 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     const departAt = Date.now() + 20 * MINUTE_MS;
     passenger(async () => [{ ...confirmed, trip: at(departAt) }]);
     expect(await screen.findByRole('button', { name: 'Men keldim' })).toBeTruthy();
+    expect(screen.getByText('Hozir: joyga boring')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Safar topish' })).toBeNull();
   });
 
@@ -67,6 +68,8 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     expect(screen.getByText('Qayerdan ketasiz?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Safar topish' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Soʻrov qoldirish' })).toBeTruthy();
+    // A new person with nothing yet is shown where to start (mockup g76/2 state 1).
+    expect(await screen.findByText('Bu yerdan boshlang')).toBeTruthy();
     expect(container.querySelector('nav, [role="tablist"]')).toBeNull();
   });
 

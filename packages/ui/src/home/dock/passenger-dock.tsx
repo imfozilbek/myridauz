@@ -9,6 +9,7 @@ import type { PlaceDirectory } from '../../places/directory';
 import { useDirectory } from '../../places/use-directory';
 import { ActionFailure } from '../../states/action-failure';
 import { usePassengerData } from '../passenger-data';
+import { passengerCue } from './cues';
 import { DockFailed } from './dock-failed';
 import { DockPanel } from './dock-panel';
 import { useDockWords } from './dock-words';
@@ -17,8 +18,9 @@ import { PassengerIdle } from './passenger-idle';
 import { usePassengerMarks } from './passenger-marks';
 import { PassengerPlanCard } from './passenger-plan-cards';
 import { PassengerSeatCard } from './passenger-seat-cards';
-import { passengerState, passengerStates, type PassengerState } from './passenger-state';
+import { PASSENGER_LEVEL, passengerState, passengerStates, type PassengerState } from './passenger-state';
 import { useSeatActions } from './seat-actions';
+import { useAttention } from './use-attention';
 
 // The block at the bottom of a passenger (G76, docs/165, mockup g76/2): the most important thing
 // of now with its buttons, else «Qayerdan / Qayerga». The clock moves it on an open screen.
@@ -27,19 +29,25 @@ export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
   const [places, retryPlaces] = useDirectory();
   const directory = places.status === 'ready' ? places.directory : null;
-  if (state.kind === 'idle' || !directory)
-    return (
-      <DockPanel>
-        <DockFailed load={load} places={places} retryPlaces={retryPlaces} />
-        <PassengerIdle go={go} directory={directory} />
-      </DockPanel>
-    );
+  // Nothing at all yet: a new person, shown where to start.
+  const fresh = load.value?.every((list) => list.length === 0) === true;
+  const cue = passengerCue(state.kind, fresh);
+  const target = 'booking' in state ? state.booking : 'request' in state ? state.request : null;
+  const id = `${state.kind}:${target?.id ?? ('trip' in state ? state.trip.id : '')}:${cue?.key ?? ''}`;
+  const calls = useAttention({ id, level: PASSENGER_LEVEL[state.kind], loud: cue !== null });
   return (
-    <PlacesKnown directory={directory}>
-      <DockPanel>
-        <Card state={state} go={go} directory={directory} />
-      </DockPanel>
-    </PlacesKnown>
+    <DockPanel cue={cue} calls={calls}>
+      {state.kind === 'idle' || !directory ? (
+        <>
+          <DockFailed load={load} places={places} retryPlaces={retryPlaces} />
+          <PassengerIdle go={go} directory={directory} />
+        </>
+      ) : (
+        <PlacesKnown directory={directory}>
+          <Card state={state} go={go} directory={directory} />
+        </PlacesKnown>
+      )}
+    </DockPanel>
   );
 }
 

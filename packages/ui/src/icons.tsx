@@ -10,6 +10,7 @@ import {
   CarFront,
   ChartColumn,
   Check,
+  ChevronDown,
   ChevronRight,
   CircleAlert,
   CircleFadingPlus,
@@ -126,6 +127,7 @@ const ICONS = {
   offline: WifiOff,
   close: X, // a channel offered once closes for good (docs/119)
   work: BriefcaseBusiness, // «Ishxonam», a place kept once (docs/126)
+  cue: ChevronDown, // «Hozir: …» points down at the block of the main screen (G76)
   locked: Lock, // numbers and links are hidden in a chat (docs/07, mockup g60/2)
 } satisfies Record<string, LucideIcon>;
 

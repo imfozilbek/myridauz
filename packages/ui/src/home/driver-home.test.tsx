@@ -52,6 +52,7 @@ describe(
       driver([trip], [booking, { ...booking, id: 'b2' }]);
       expect(await screen.findByRole('button', { name: 'Javob berish' })).toBeTruthy();
       expect((await dock()).getByText('2 yangi soʻrov')).toBeTruthy();
+      expect(screen.getByText('Hozir: javob bering')).toBeTruthy();
     });
 
     it('on the hour of the trip: the minutes, the people, and «Yoʻlga chiqdim» as the main button', async () => {
