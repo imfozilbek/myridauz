@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { addAppToHomeScreen } from '../../telegram/home-screen';
 import { renderProfile } from './profile-test-kit';
 
@@ -9,6 +9,11 @@ vi.mock('../../telegram/home-screen', () => ({
   addAppToHomeScreen: vi.fn(),
 }));
 
+// The photo of the profile shows from a blob, as in profile.test.tsx.
+beforeEach(() => {
+  URL.createObjectURL = vi.fn(() => 'blob:photo');
+  URL.revokeObjectURL = vi.fn();
+});
 afterEach(cleanup);
 
 // «Bosh ekranga qoʻshish» is a row of «Sozlamalar», not a block of the main screen (owner decision
