@@ -3,7 +3,8 @@ import { haptic } from '../telegram/feedback';
 import { noonOf, today, tomorrow } from './when';
 
 type Props = {
-  readonly date: string;
+  // null: no day chosen yet (the day of a request), no tile pressed.
+  readonly date: string | null;
   readonly now: number;
   readonly onDay: (date: string) => void;
   readonly onOther: () => void;
@@ -14,7 +15,7 @@ type Props = {
 export function WhenDays({ date, now, onDay, onOther }: Props) {
   const { t, formatShortDate } = useI18n();
   const short = (day: string) => formatShortDate(noonOf(day));
-  const known = date === today(now) || date === tomorrow(now);
+  const known = date === null || date === today(now) || date === tomorrow(now);
   const tile = (selected: boolean, title: string, small: string, onClick: () => void) => (
     <button
       type="button"
@@ -35,7 +36,12 @@ export function WhenDays({ date, now, onDay, onOther }: Props) {
       {tile(date === tomorrow(now), t('market.day.tomorrow'), short(tomorrow(now)), () =>
         onDay(tomorrow(now)),
       )}
-      {tile(!known, t('market.day.other'), known ? t('market.day.otherHint') : short(date), onOther)}
+      {tile(
+        !known,
+        t('market.day.other'),
+        date === null || known ? t('market.day.otherHint') : short(date),
+        onOther,
+      )}
     </div>
   );
 }

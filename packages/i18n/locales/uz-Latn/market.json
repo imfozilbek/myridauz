@@ -5,7 +5,6 @@
   "date.today": "Bugun, {date}",
   "date.tomorrow": "Ertaga, {date}",
   "date.other": "{date}, {weekday}",
-  "date.otherDay": "Boshqa kun",
   "day.today": "Bugun",
   "day.tomorrow": "Ertaga",
   "day.other": "Boshqa",

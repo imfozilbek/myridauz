@@ -31,7 +31,7 @@ export function DistrictList({ region, directory, allowWholeRegion, trips, onPic
     <>
       {allowWholeRegion ? (
         <div className="district-card">
-          <DistrictRow
+          <PlaceRow
             icon="map"
             className="district-whole"
             title={t(region.oneCity ? 'places.wholeCity' : 'places.wholeRegion')}
@@ -42,7 +42,7 @@ export function DistrictList({ region, directory, allowWholeRegion, trips, onPic
       ) : null}
       <div className="district-card">
         {places.map((place) => (
-          <DistrictRow
+          <PlaceRow
             key={place.id}
             icon="place"
             className="district-row"
@@ -64,7 +64,9 @@ type RowProps = {
   readonly onClick: () => void;
 };
 
-function DistrictRow({ icon, className, title, hint, onClick }: RowProps) {
+// One row of a place (G75, mockup g75/6 A): a tile, the name and a line under it, «›». The ends of a
+// route are rows of it too.
+export function PlaceRow({ icon, className, title, hint, onClick }: RowProps) {
   return (
     <button type="button" className={`district ${className}`} onClick={onClick}>
       <span className="district-tile">

@@ -1,19 +1,19 @@
 import './places.css';
 import { checkRoute, type Location, type RouteError } from '@platform/contracts';
-import { Text, Title } from '@telegram-apps/telegram-ui';
+import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
-import { CellValue } from '../account/cell-value';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
 import type { PlaceDirectory } from './directory';
+import { PlaceRow } from './district-list';
 import { PlacePicker } from './place-picker';
 import { useHere } from './use-here';
 import { useOpenAtTop } from '../telegram/screen-top';
@@ -112,27 +112,29 @@ function RouteView({ from, to, error, onPick, onBack, onSubmit }: RouteViewProps
   useScreenView('places.route');
   useScreenBackground();
   const { t } = useI18n();
-  const value = (place: Location | null) => <CellValue>{place ? place.name : t('places.choose')}</CellValue>;
+  const { colors } = useBrand().theme;
+  const value = (place: Location | null) => (place ? place.name : t('places.choose'));
+  // The ends in the look of the places of the mockup g75/6 A: one white card, a row for each end.
   return (
-    <div className="places">
+    <div className="places" style={brandVars(colors)}>
       <Screen onBack={onBack} />
-      <Title weight="1" className="places-title">
-        {t('places.route')}
-      </Title>
-      <List>
-        <Section>
-          <Cell before={<IconTile name="origin" />} after={value(from)} onClick={() => onPick('from')}>
-            {t('places.from')}
-          </Cell>
-          <Cell
-            before={<IconTile name="destination" tone="accent" />}
-            after={value(to)}
-            onClick={() => onPick('to')}
-          >
-            {t('places.to')}
-          </Cell>
-        </Section>
-      </List>
+      <h1 className="places-title">{t('places.route')}</h1>
+      <div className="district-card">
+        <PlaceRow
+          icon="origin"
+          className="route-from"
+          title={t('places.from')}
+          hint={value(from)}
+          onClick={() => onPick('from')}
+        />
+        <PlaceRow
+          icon="destination"
+          className="route-to"
+          title={t('places.to')}
+          hint={value(to)}
+          onClick={() => onPick('to')}
+        />
+      </div>
       {error ? <Text className="places-error">{t(`errors.${error}`)}</Text> : null}
       <MainButton text={t('common.continue')} onClick={onSubmit} />
     </div>
