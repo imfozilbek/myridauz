@@ -12,6 +12,7 @@ import { DeleteAccountScreen } from './delete-account';
 import { DocumentsScreen } from './documents-screen';
 import { LookScreen } from './look-screen';
 import { MyReviewsScreen } from './my-reviews-screen';
+import { ProfileNotes } from './profile-notes';
 import { ProfileRows, type ProfileOpen } from './profile-rows';
 import { ProfileStats } from './profile-stats';
 import { ProfileTop } from './profile-top';
@@ -56,6 +57,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
       <Screen onBack={onBack} />
       <ProfileTop onLook={() => setOpen('look')} />
       <ProfileStats standing={standing} />
+      <ProfileNotes standing={standing} />
       <ProfileRows standing={standing} onOpen={setOpen} />
     </div>
   );

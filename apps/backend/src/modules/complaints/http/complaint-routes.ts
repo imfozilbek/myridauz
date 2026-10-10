@@ -1,6 +1,7 @@
 import {
   ADMIN_COMPLAINTS_PATH,
   blockSchema,
+  COMPLAINT_NOTES_PATH,
   COMPLAINTS_PATH,
   complaintDecisionSchema,
   complaintInputSchema,
@@ -9,6 +10,7 @@ import {
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { fileComplaint } from '../application/file';
+import { myNotes } from '../application/my-notes';
 import { blockPerson } from '../application/block';
 import { complaintChat, complaintQueue, decide, openComplaint } from '../application/moderate';
 import type { ComplaintsDeps } from '../application/ports';
@@ -41,6 +43,9 @@ export const complaintRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
       const result = await fileComplaint(deps(context.env), context.get('session').user.id, input.data);
       return typeof result === 'string' ? fail(result) : context.json(result, 201);
     })
+    .get(COMPLAINT_NOTES_PATH, async (context) =>
+      context.json(await myNotes(deps(context.env), context.get('session').user.id)),
+    )
     .use(`${ADMIN_COMPLAINTS_PATH}/*`, async (context, next) =>
       context.get('session').isAdmin ? next() : fail('auth.not_admin'),
     )

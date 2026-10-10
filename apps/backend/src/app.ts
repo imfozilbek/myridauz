@@ -66,6 +66,7 @@ export const app = new Hono<AppEnv>()
   .use('/reviews/*', allowMiniApps, auth, blockedGuard)
   .use('/reviews', allowMiniApps, auth, blockedGuard)
   .use('/complaints', allowMiniApps, auth, blockedGuard)
+  .use('/complaints/*', allowMiniApps, auth, blockedGuard)
   // The chat ticket needs the signature; the socket itself shows the ticket instead (docs/07).
   .use('/chats/:key/ticket', allowMiniApps, auth, blockedGuard)
   .use('/chats/:key/about', allowMiniApps, auth, blockedGuard)

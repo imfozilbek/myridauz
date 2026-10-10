@@ -57,6 +57,9 @@
 | `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | ждёт |
 | `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | ждёт |
 | `market.request.why.expired`, `market.request.why.cancelled` | общая плашка исхода на «Mening soʻrovim» (`158` А) | «Shu kunga haydovchi topilmadi.»; «Siz soʻrovni bekor qildingiz.» | ждёт |
+| `requests.salon.commission` | шторка «Butun salon»: комиссия до отправки (`158` Г) | «Komissiya · {sum}» в строке «Hamyon» | ждёт |
+| `account.avatar.rejectedTitle` | плашка на главном: фото не прошло проверку (`158` Ж) | «Rasmingiz qabul qilinmadi»; под ним прежний текст с причиной | ждёт |
+| `account.notes.warned`, `account.notes.warnedHint`, `account.notes.hidden`, `account.notes.low` | плашки в «Profil» (`158` З) | «Ogohlantirish · {date}» «Jamoa shikoyat boʻyicha ogohlantirdi. Yana takrorlansa, hisob bloklanadi.»; «Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.»; «Reytingingiz {average}: {line} dan past. Vaqtida keling va xushmuomala boʻling.» | ждёт |
 
 ## Как читать
 

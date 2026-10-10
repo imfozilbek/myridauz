@@ -5,6 +5,13 @@ import { BLOCK_DAYS } from './moderation';
 // Complaints and the moderator's decisions (docs/17). G11.
 export const COMPLAINTS_PATH = '/complaints';
 export const ADMIN_COMPLAINTS_PATH = '/admin/complaints';
+// What a person sees of the complaints about them (G75, docs/158 З): out of the search, a warning.
+export const COMPLAINT_NOTES_PATH = '/complaints/mine';
+export const complaintNotesSchema = z.object({
+  hidden: z.boolean(),
+  warnedAt: z.number().int().nullable(),
+});
+export type ComplaintNotes = z.infer<typeof complaintNotesSchema>;
 export const adminComplaintPath = (id: string) => `${ADMIN_COMPLAINTS_PATH}/${id}`;
 export const adminComplaintChatPath = (id: string) => `${adminComplaintPath(id)}/chat`;
 export const adminComplaintDecisionPath = (id: string) => `${adminComplaintPath(id)}/decision`;
