@@ -5,6 +5,8 @@ import { SHOWN_PITAK_STATUSES, type PitakStatus, type Point } from '@platform/co
 export type PitakRecord = {
   readonly id: string;
   readonly name: string;
+  // Where exactly to stand, «Metro 2-chiqish yonida» (G76); null until the team writes it.
+  readonly hint: string | null;
   readonly point: Point;
   readonly regionId: string;
   readonly status: PitakStatus;

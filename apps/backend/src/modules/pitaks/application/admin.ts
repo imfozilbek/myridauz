@@ -18,6 +18,7 @@ const HISTORY_LIMIT = 100;
 const adminView = (pitak: PitakRecord): AdminPitak => ({
   id: pitak.id,
   name: pitak.name,
+  hint: pitak.hint,
   point: pitak.point,
   regionId: pitak.regionId,
   status: pitak.status,
@@ -48,10 +49,11 @@ export async function savePitak(
   const before = id ? await deps.store.find(id) : undefined;
   if (id && !before) return { ok: false, error: 'pitaks.not_found' };
   const now = deps.now();
-  const { name, point, status } = parsed.data;
+  const { name, hint, point, status } = parsed.data;
   const pitak: PitakRecord = {
     id: before?.id ?? deps.newId(),
     name,
+    hint,
     point: { lat: point.lat, lng: point.lng },
     regionId,
     status,

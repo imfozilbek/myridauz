@@ -17,6 +17,7 @@ const PITAK = {
   id: 'toshkent-avtovokzal',
   name: 'Toshkent avtovokzali',
   point: { lat: 41.2569, lng: 69.1925 },
+  hint: null,
 };
 const PLACES = new Map(
   [

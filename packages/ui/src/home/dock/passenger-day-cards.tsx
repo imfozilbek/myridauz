@@ -36,6 +36,11 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
     },
   ];
   const to = ends.regionName(trip.to);
+  // Where exactly to stand at the pitak (the team writes it), else the region; the driver on the way
+  // after «Yoʻlga chiqdim», without minutes (owner decision 10.10.2026: no live car, lesson 2).
+  const where = booking.pitak?.hint ?? ends.regionName(trip.from);
+  const onWay = t('home.dock.onWay', { name: driver.firstName });
+  const meetText = trip.departedAt === null ? where : t('home.meta', { when: where, more: onWay });
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
   // «Men keldim» at the point, red while the driver waits there (mockup g76/2 state 10). After it the
   // driver's «Keldi» puts the passenger in the car (G76, docs/43): until then the map stays.
@@ -55,7 +60,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             tone="soon"
             timer={{ text: words.minutesTo(trip.departAt), now: false }}
             title={ends.start}
-            text={ends.regionName(trip.from)}
+            text={meetText}
             who={{ person: driver, sub: car, tools }}
           />
           {came ? null : <SecondaryButton beside text={t('bookings.openMap')} onClick={act.map(booking)} />}

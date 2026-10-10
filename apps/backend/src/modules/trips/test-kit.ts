@@ -79,7 +79,12 @@ export function setup() {
     // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.
     pitakOf: async (from, to) =>
       from === '1726' && to === '1718'
-        ? { id: 'toshkent-avtovokzal', name: 'Toshkent avtovokzali', point: { lat: 41.2569, lng: 69.1925 } }
+        ? {
+            id: 'toshkent-avtovokzal',
+            name: 'Toshkent avtovokzali',
+            point: { lat: 41.2569, lng: 69.1925 },
+            hint: null,
+          }
         : null,
     changed: async (tripId, event) => void events.push(`${event} ${tripId}`),
     signal: async (people) => void signals.push(...people.map(({ userId, app }) => `${app} ${userId}`)),

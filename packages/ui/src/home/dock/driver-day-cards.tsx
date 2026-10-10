@@ -42,7 +42,7 @@ export function DepartCard({
           title={t('home.dock.wasAt', { when: words.when(trip.departAt) })}
           text={t('home.dock.departAskHint')}
         />
-        <SecondaryButton beside text={t('home.dock.late')} onClick={act.open(trip)} />
+        <SecondaryButton beside text={t('home.dock.late')} onClick={act.late(people)} />
         {go}
       </>
     );
@@ -93,7 +93,7 @@ export function PointCard({
           tone="now"
           timer={{ text: words.waits(booking.cameAt ?? Date.now()), now: true }}
           title={ends.start}
-          text={booking.note ?? words.route(booking.trip)}
+          text={booking.pitak?.hint ?? booking.note ?? words.route(booking.trip)}
           who={{ person, sub, tools: [phone, chat] }}
           quick={[
             { label: t('sheet.meet.five'), onClick: act.say(booking, 'five') },

@@ -49,6 +49,16 @@ export function useTripActions(go: HomeGo, directory: PlaceDirectory | null, ref
     missed: (booking: Booking) => () => void meet.mark(booking, 'no_show'),
     say: (booking: Booking, key: 'five' | 'ten') =>
       run(() => chat.answer(booking.chatKey, t(`sheet.meet.${key}Say.driver`))),
+    // «Kechikyapman» an hour after the time: the word goes into the chat of every confirmed seat, the
+    // trip stays as it is (owner decision 10.10.2026, docs/165).
+    late: (people: readonly Booking[]) =>
+      run(() =>
+        Promise.all(
+          people
+            .filter((booking) => booking.status === 'confirmed')
+            .map((booking) => chat.answer(booking.chatKey, t('home.dock.late'))),
+        ),
+      ),
     topUp: (booking: Booking | undefined, missing: number) => () =>
       topUp(booking?.passenger.firstName ?? '', missing),
     // «Qaytish safari»: the same road back, the day and the time asked (docs/124 В).

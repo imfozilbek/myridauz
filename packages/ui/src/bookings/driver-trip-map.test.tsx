@@ -36,7 +36,7 @@ const passenger = (id: string, name: string, pickup: [number, number], place: st
 });
 const FAR = passenger('b1', 'Dilnoza', [41.36, 69.3], 'Yunusobod');
 const NEAR = passenger('b2', 'Aziz', [41.29, 69.21], 'Grand');
-const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: at(41.2438, 69.3394) };
+const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: at(41.2438, 69.3394), hint: null };
 const HERE = at(41.285, 69.2);
 // The day of the tests (1 October, dom-test-setup) at 08:00 in Tashkent: «Bugun 08:00».
 const today: Trip = { ...trip, departAt: tashkentDayStart('2026-10-01') + 8 * HOUR };

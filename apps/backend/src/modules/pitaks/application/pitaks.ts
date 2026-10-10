@@ -6,6 +6,7 @@ export const pitakView = (pitak: PitakRecord): Pitak => ({
   id: pitak.id,
   name: pitak.name,
   point: pitak.point,
+  hint: pitak.hint,
 });
 
 // The pitak of a direction as people see it (docs/70): the main one, only when shown; otherwise

@@ -10,6 +10,7 @@ afterEach(cleanup);
 const QOYLIQ: AdminPitak = {
   id: 'qoyliq',
   name: 'Qoʻyliq pitagi',
+  hint: null,
   point: { lat: 41.2438, lng: 69.3394 },
   regionId: '1726',
   status: 'claude',
@@ -66,7 +67,8 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     const pitaks = open();
     await tap('Pitaklar');
     await tap('Pitak qoʻshish');
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Chorsu pitagi' } });
+    fireEvent.change(screen.getByLabelText('Pitak nomi'), { target: { value: 'Chorsu pitagi' } });
+    fireEvent.change(screen.getByLabelText('Moʻljal'), { target: { value: 'Metro yonida' } });
     await tap('Joyi xaritada');
     await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
     await tap('Shu yerda');
@@ -75,6 +77,7 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     await tap('Saqlash');
     expect(pitaks.add).toHaveBeenCalledWith({
       name: 'Chorsu pitagi',
+      hint: 'Metro yonida',
       point: QOYLIQ.point,
       status: 'checked',
     });

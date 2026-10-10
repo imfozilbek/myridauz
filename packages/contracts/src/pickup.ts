@@ -20,7 +20,14 @@ export const commonModes = (trip: PickupMode, passenger: PickupMode): BookingMod
   BOOKING_MODES.filter((way) => allows(trip, way) && allows(passenger, way));
 
 // A pitak as people see it: the system takes the main pitak of the direction by itself.
-export const pitakSchema = z.object({ id: z.string(), name: z.string(), point: pointSchema });
+// hint: where exactly to stand at the pitak, «Metro 2-chiqish yonida» (G76, mockup g76/2 state 9);
+// the team writes it, null until then and from an older server.
+export const pitakSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  point: pointSchema,
+  hint: z.string().nullable().default(null),
+});
 export type Pitak = z.infer<typeof pitakSchema>;
 
 // A point of a booking with its names (docs/69). The driver sees only the area until the

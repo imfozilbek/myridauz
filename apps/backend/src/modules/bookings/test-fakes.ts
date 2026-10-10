@@ -68,6 +68,7 @@ export const PITAK = {
   id: 'toshkent-avtovokzal',
   name: 'Toshkent avtovokzali',
   point: { lat: 41.2569, lng: 69.1925 },
+  hint: null,
 };
 // A booking from the door of HOME to AWAY: the way most tests take.
 export const seats = (count: number, over: Partial<BookingInput> = {}): BookingInput => ({

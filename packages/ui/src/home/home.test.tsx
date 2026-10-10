@@ -56,6 +56,19 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     expect(screen.queryByRole('button', { name: 'Mashinaga chiqdim' })).toBeNull();
   });
 
+  it('says where exactly to stand at the pitak and that the driver is on the way, without minutes', async () => {
+    const departAt = Date.now() + 20 * MINUTE_MS;
+    const pitak = {
+      id: 'p1',
+      name: 'Chilonzor pitagi',
+      point: { lat: 41.28, lng: 69.2 },
+      hint: 'Metro yonida',
+    };
+    const onWay = { ...at(departAt), departedAt: Date.now() };
+    passenger(async () => [{ ...confirmed, mode: 'pitak', pitak, pickup: null, trip: onWay }]);
+    expect(await screen.findByText('Metro yonida · Jasur yoʻlda')).toBeTruthy();
+  });
+
   it('keeps the search before the meeting, the step of the trip after it', async () => {
     // The morning of the trip day, 2 hours before: the seat is confirmed, the search is a tap away.
     vi.setSystemTime(TRIP_DAY);

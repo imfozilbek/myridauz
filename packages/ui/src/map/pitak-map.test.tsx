@@ -8,7 +8,7 @@ import { PitakMap } from './pitak-map';
 
 afterEach(cleanup);
 
-const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 } };
+const PITAK = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null };
 
 describe('the small map of a pitak (G43, docs/65 B3)', () => {
   it('says the map did not load and draws it again', async () => {
