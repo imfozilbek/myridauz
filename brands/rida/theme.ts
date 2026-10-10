@@ -26,6 +26,7 @@ export const theme: BrandTheme = {
     attention: '#B45309',
     attentionSoft: '#FEF3C7',
     attentionLine: '#FDE68A',
+    attentionInk: '#78350F',
     warning: '#EA580C',
     warningText: '#9A3412',
     warningSoft: '#FFF7ED',

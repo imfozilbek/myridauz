@@ -1,21 +1,31 @@
+import type { UsersClient } from '@platform/api-client';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { useScreenView } from '../../context/analytics-context';
+import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Screen } from '../../screen/screen';
 import { MainButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
-import type { UsersClient } from '@platform/api-client';
+import { useScreenBackground } from '../../telegram/screen-background';
+import { brandVars } from '../../theme/brand-vars';
+import { useAccount } from '../account-context';
 import { StepLayout } from '../step-layout';
+import './delete-account.css';
+import { DeleteWallet, DeleteWhat } from './delete-what';
 
 type Stage = 'confirm' | 'failed' | 'done';
 
-// One screen explains what is removed, one button removes it; then the app starts from the beginning.
 type ScreenProps = { readonly client: UsersClient; readonly onBack: () => void };
 
+// «Maʼlumotlaringiz oʻchirilsinmi?» (G75, mockup g75/5 A): what goes, the money of a driver that goes
+// with it, one red button; then the app starts from the beginning.
 export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
   useScreenView('profile.delete');
+  useScreenBackground();
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
+  const driver = useAccount()?.app === 'driver';
   const [stage, setStage] = useState<Stage>('confirm');
   if (stage === 'done') {
     return (
@@ -37,10 +47,19 @@ export function DeleteAccountScreen({ client, onBack }: ScreenProps) {
     );
   };
   return (
-    <StepLayout icon="erase" title={t('account.delete.title')} hint={t('account.delete.hint')}>
+    <div className="delete-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
+      <h1 className="delete-title">
+        {t('account.delete.title')}
+        <small>{t('account.delete.hint')}</small>
+      </h1>
+      <DeleteWhat />
+      {driver ? <DeleteWallet /> : null}
       {stage === 'failed' ? <Text className="step-error">{t('errors.generic.description')}</Text> : null}
+      <button type="button" className="delete-cancel" onClick={onBack}>
+        {t('account.delete.cancel')}
+      </button>
       <MainButton text={t('account.delete.confirm')} onClick={erase} destructive />
-    </StepLayout>
+    </div>
   );
 }

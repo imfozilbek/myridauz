@@ -43,6 +43,9 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-attention': colors.attention,
     '--reg-attention-soft': colors.attentionSoft,
     '--reg-attention-line': colors.attentionLine,
+    // What a deletion removes and the wallet it takes (G75, mockup g75/5 A).
+    '--reg-attention-ink': colors.attentionInk,
+    '--reg-danger-tile': colors.dangerTile,
     // «Kelmadi» of a passenger on the screens of the driver (G63, mockup g63/5).
     '--reg-danger-text': colors.dangerText,
     // «Rad etish» of a call in the sheet of the open Mini App (G68, mockup g68/8).

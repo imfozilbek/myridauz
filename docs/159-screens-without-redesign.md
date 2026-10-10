@@ -44,19 +44,19 @@
 | «Safar» закрыта или уехала | `market/closed-trip.tsx` | частично |
 | «Barcha izohlar» | `find/reviews-screen.tsx` | нет |
 | «Izoh» к брони | `market/trip-steps.tsx` | **G75 лист 3А**: шторка |
-| Жалоба и «yuborildi» | `feedback/complaint-screen.tsx` | нет |
+| Жалоба и «yuborildi» | `feedback/complaint-screen.tsx` | **G75 лист 5А**: галочки в одной карточке (`sheet/tick-rows.tsx`) |
 | Маршрут заявки (форма) | `places/route-screen.tsx` | нет |
 | День заявки | `market/date-step.tsx` | нет |
-| **Одно предложение** | `bookings/offer-list.tsx` (OfferScreen) | нет: прячется за новой карточкой |
-| «Mening safarlarim»: «Faol», пусто | `market/my-requests-list.tsx` | частично |
-| «Obunalar» | `subscriptions/subscriptions-screen.tsx` | нет |
+| **Одно предложение** | `bookings/passenger-offer-sheet.tsx` | **G75 лист 4Б**: шторка поверх «Mening soʻrovim»; `offer-list.tsx` удалён |
+| «Mening safarlarim»: «Faol», пусто | `mine/mine-card.tsx` | **G75 лист 2А** |
+| «Obunalar» | `subscriptions/subscriptions-screen.tsx` | **G75 лист 2А** |
 | «Xabar bering» с канала | `subscriptions/notify-me.tsx` | **G75 лист 3А**: шторка |
 | «Sevimli haydovchilar» | `comfort/favorites-screen.tsx` | нет |
-| «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | частично (без макета) |
+| «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | **G75 лист 5А**: карточка с тремя числами, «Baholarim» |
 | «Baholarim» | `find/reviews-screen.tsx` | нет |
 | «Safarlar tarixi» | `comfort/history-screen.tsx` | ~~нет~~ **убран в G75** (решение владельца 10.10.2026): прошлые поездки во вкладке «Oʻtgan» |
-| «Hujjatlar» | `account/profile/documents-screen.tsx` | частично (без макета) |
-| Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | нет |
+| «Hujjatlar» и документ | `legal/legal-screen.tsx` | **G75 лист 5А**: документ одной открытой карточкой |
+| Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | **G75 лист 5А**: три строки, кошелёк водителя |
 
 ## Водитель (16 нет, 3 частично)
 

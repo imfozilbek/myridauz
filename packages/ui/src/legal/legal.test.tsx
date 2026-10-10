@@ -17,11 +17,10 @@ describe('legal documents (docs/30)', () => {
     expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
     // Without an answer of the API: the base edition and the brand name, never a placeholder (G34).
     expect(await screen.findByText(/Tahrir 1\.4/)).toBeTruthy();
-    // Each section opens by its title: the needed point is found faster (docs/88 L18).
-    const first = screen.getByText('1. Umumiy qoidalar').closest('[aria-expanded]');
-    expect(first?.getAttribute('aria-expanded')).toBe('false');
-    fireEvent.click(screen.getByText('1. Umumiy qoidalar'));
-    expect(first?.getAttribute('aria-expanded')).toBe('true');
+    // All the sections open in one white card, read from top to bottom (G75, mockup g75/5 A).
+    const card = document.querySelector('.legal-card');
+    expect(card?.querySelector('h3')?.textContent).toBe('1. Umumiy qoidalar');
+    expect(card?.querySelectorAll('h3').length).toBeGreaterThan(3);
     expect(screen.getByText(new RegExp(`${brand.commission.percent} foizi`))).toBeTruthy();
     expect(document.body.textContent).not.toMatch(/\{/u);
   });
@@ -43,7 +42,6 @@ describe('legal documents (docs/30)', () => {
       testClients({ company: { current } }),
     );
     expect(await screen.findByText(/Tahrir 1\.2/)).toBeTruthy();
-    fireEvent.click(screen.getByText(/^1\. /u));
     expect(
       screen.getByText(/Yoʻldosh Servis \(MChJ, STIR 123456789, manzil: Toshkent shahri\)/u),
     ).toBeTruthy();

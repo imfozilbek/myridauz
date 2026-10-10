@@ -30,6 +30,8 @@ export type BrandColors = {
   readonly attentionSoft: HexColor;
   // The frame of an offer inside a talk, on both sides (G64, mockups g64/4, g64/5).
   readonly attentionLine: HexColor;
+  // The words of the wallet warning before a deletion (G75, mockup g75/5 A).
+  readonly attentionInk: HexColor;
   // «Bu raqam yana 1 arizada bor» on the application of a case (G75, mockup g67/2 screen 3).
   readonly warning: HexColor;
   readonly warningText: HexColor;
