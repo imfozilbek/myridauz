@@ -23,6 +23,7 @@
 | Ключ | Где | Текст | Согласие |
 |---|---|---|---|
 | `bot.offer.expired` | бот водителя: попутчик выбрал другого водителя, отменил заявку или её день прошёл (`158` Й), кнопка «Ochish» | «Yoʻlovchi soʻrovi yopildi, taklifingiz endi amal qilmaydi.» | ждёт |
+| `bot.share.retimed` | бот близким попутчика и водителя: водитель сдвинул время (`158` И) | «Vaqt oʻzgardi: {name} {date}, {time} da yoʻlga chiqadi.» | ждёт |
 
 ## Как читать
 

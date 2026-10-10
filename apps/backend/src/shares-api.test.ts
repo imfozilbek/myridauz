@@ -48,7 +48,10 @@ async function confirmedBooking() {
   const share = () => call(`/passenger/bookings/${booking.id}/share`, PASSENGER, { method: 'POST' });
   expect((await share()).status).toBe(409);
   await call(`/driver/bookings/${booking.id}/confirm`, driver, { method: 'POST', app: 'driver' });
-  return { booking, share };
+  // The driver moves the time later (G39, docs/104).
+  const retime = (departAt: number) =>
+    call(`/driver/trips/${published.id}/time`, driver, { app: 'driver', ...json({ departAt }) });
+  return { booking, share, retime, departAt: trip.departAt };
 }
 const tokenOf = (link: string) => link.split('follow_')[1] ?? '';
 const shared = async (token: string) => app.request(`/shared/${token}`, {}, testEnv);
@@ -102,6 +105,16 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
       (await call(`/passenger/bookings/${booking.id}/share/stop`, PASSENGER, { method: 'POST' })).status,
     ).toBe(204);
     expect((await shared(token)).status).toBe(404);
+  });
+
+  it('tells close people the new time when the driver moves it (G75, docs/158 И)', async () => {
+    const { share, retime, departAt } = await confirmedBooking();
+    const token = tokenOf((await read<{ link: string }>(share())).link);
+    await call(`/shared/${token}/follow`, CLOSE[2] ?? 0, { method: 'POST' });
+    // A second later: the time is real, a later minute could fall on the next day.
+    expect((await retime(departAt + 1000)).status).toBe(200);
+    const toClose = telegram.filter((item) => item.body.chat_id === CLOSE[2]).map((item) => item.body.text);
+    expect(toClose.some((text) => String(text).startsWith('Vaqt oʻzgardi'))).toBe(true);
   });
 
   it('closes the link by itself a day after the arrival', async () => {

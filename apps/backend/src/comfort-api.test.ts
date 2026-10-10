@@ -23,7 +23,7 @@ const HOUR = 3_600_000;
 const DAY = 24 * HOUR;
 
 const publish = (departAt = Date.now() + 5 * HOUR) =>
-  read<{ id: string; recommendedPrice: number | null }>(
+  read<{ id: string; departAt: number; recommendedPrice: number | null }>(
     call('/driver/trips', DRIVER, {
       app: 'driver',
       ...json({
@@ -98,9 +98,17 @@ describe('the driver shares a trip with the family (docs/43, G18)', () => {
     });
     expect((await call(`/shared/${token}/follow`, CLOSE, { method: 'POST' })).status).toBe(204);
     telegram.length = 0;
+    // The new time reaches the family too (G75, docs/158 И); a second later stays on the same day.
+    const retimed = await call(`/driver/trips/${trip.id}/time`, DRIVER, {
+      app: 'driver',
+      ...json({ departAt: trip.departAt + 1000 }),
+    });
+    expect(retimed.status).toBe(200);
     await call(`/driver/trips/${trip.id}/cancel`, DRIVER, { method: 'POST', app: 'driver' });
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE).map((item) => item.body.text);
-    expect(toClose).toEqual(['Safar bekor qilindi.']);
+    expect(toClose).toHaveLength(2);
+    expect(String(toClose[0])).toMatch(/^Vaqt oʻzgardi: Ali /u);
+    expect(toClose[1]).toBe('Safar bekor qilindi.');
     expect((await shared()).status).toBe(404);
     for (const text of seen) expect(text).not.toMatch(/99890\d+|"(phone|username)"/u);
   });

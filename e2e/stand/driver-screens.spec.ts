@@ -23,7 +23,9 @@ test('D01, D03, D05, D06. the application screen by screen, then «on the check�
 
 test('T15, T11, D07. the team approves in the admin Mini App; the driver can publish', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
-  // The application waits in «Navbat» of the main screen (G75, mockup g67/1).
+  // The application waits in «Navbat» of the main screen (G75, mockup g67/1); the owner sees 4 cases
+  // there, the filter «Arizalar» shows the applications.
+  await page.getByRole('radio', { name: new RegExp(t('team.filter.application'), 'u') }).click();
   await page
     .getByText(t('team.case.application', { name: NEWCOMER.name }))
     .first()

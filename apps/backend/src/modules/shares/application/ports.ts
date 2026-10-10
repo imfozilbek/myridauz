@@ -14,7 +14,7 @@ export type ShareRepository = {
   unfollowAll(telegramId: number): Promise<void>;
 };
 
-export type ShareUpdate = 'boarded' | 'arrived' | 'cancelled';
+export type ShareUpdate = 'boarded' | 'arrived' | 'cancelled' | 'retimed';
 
 // The driver's own trip as the family sees it (G18): the name, the car and the plate, never a phone.
 export type DriverTrip = {
@@ -39,6 +39,8 @@ export type ShareTexts = {
   driverCard(trip: DriverTrip): Promise<string>;
   update(booking: Booking, update: ShareUpdate): string;
   cancelled(): string;
+  // The driver moved the time (G75): who goes and when now.
+  retimed(name: string, departAt: number): string;
 };
 
 // The view has the public id only; the owner check needs the Telegram ID (docs/65 A3).

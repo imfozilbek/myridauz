@@ -8,7 +8,13 @@ const UPDATE_TEXT = {
   boarded: 'bot.share.boarded',
   arrived: 'bot.share.arrived',
   cancelled: 'bot.share.cancelled',
-} as const satisfies Record<ShareUpdate, string>;
+} as const satisfies Record<Exclude<ShareUpdate, 'retimed'>, string>;
+const retimed = (name: string, departAt: number) =>
+  t('bot.share.retimed', {
+    name,
+    date: formatDate(new Date(departAt)),
+    time: formatTime(new Date(departAt)),
+  });
 
 const carOf = (booking: Booking) => {
   const { car } = booking.trip.driver;
@@ -42,10 +48,13 @@ export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promis
       plate: formatPlate(trip.plate),
     }),
   cancelled: () => t('bot.share.cancelled'),
+  retimed,
   update: (booking, update) =>
-    t(UPDATE_TEXT[update], {
-      name: booking.passenger.firstName,
-      car: carOf(booking),
-      plate: plateOf(booking),
-    }),
+    update === 'retimed'
+      ? retimed(booking.passenger.firstName, booking.trip.departAt)
+      : t(UPDATE_TEXT[update], {
+          name: booking.passenger.firstName,
+          car: carOf(booking),
+          plate: plateOf(booking),
+        }),
 });

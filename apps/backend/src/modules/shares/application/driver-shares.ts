@@ -51,3 +51,10 @@ export async function tellTripCancelled(deps: SharesDeps, tripId: string) {
   await tellAll(deps, subject, deps.texts.cancelled());
   await deps.shares.revoke(subject, deps.now());
 }
+
+// The driver moved the time (G75, docs/158 И): the family hears the new one.
+export async function tellTripRetimed(deps: SharesDeps, tripId: string) {
+  const trip = await deps.driverTrip(tripId);
+  if (trip)
+    await tellAll(deps, { kind: 'trip', id: tripId }, deps.texts.retimed(trip.driverName, trip.departAt));
+}

@@ -19,7 +19,10 @@ type Wiring = {
   readonly brand: BrandConfig;
   readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
   readonly system: (key: string, event: ChatSystemEvent) => Promise<void>;
-  readonly closeOnes: (booking: Booking, update: 'boarded' | 'arrived' | 'cancelled') => Promise<void>;
+  readonly closeOnes: (
+    booking: Booking,
+    update: 'boarded' | 'arrived' | 'cancelled' | 'retimed',
+  ) => Promise<void>;
   // The passenger's seat lives in one card of the passenger bot (G68, docs/122).
   readonly passenger: PassengerNews;
   // The driver's trip lives in one card of the driver bot, a request in its own card under it (G68).
@@ -95,6 +98,10 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
     came: (booking) => tripOf(booking, 'came'),
     driverCame: (booking) => passenger(booking, 'driverCame'),
     noShow: (booking) => passenger(booking, 'noShow'),
-    tripRetimed: (booking) => passenger(booking, 'retimed'),
+    // The close people of the passenger hear the new time too (G75, docs/158 И).
+    tripRetimed: async (booking) => {
+      await passenger(booking, 'retimed');
+      await closeOnes(booking, 'retimed');
+    },
   };
 }

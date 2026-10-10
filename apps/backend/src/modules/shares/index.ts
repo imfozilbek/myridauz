@@ -6,7 +6,7 @@ import { r2Images } from '../../shared/storage/r2-images';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
 import type { DriverTrip, SharedBooking, SharesDeps, ShareUpdate } from './application/ports';
-import { tellTripCancelled } from './application/driver-shares';
+import { tellTripCancelled, tellTripRetimed } from './application/driver-shares';
 import { tellFollowers } from './application/shares';
 import { shareRoutes } from './http/share-routes';
 import { storyRoutes } from './http/story-routes';
@@ -72,6 +72,13 @@ export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =
 // A driver cancelled a shared trip: the family hears it once and the links close (G18).
 export const tellTripFamily = (env: Bindings, tripId: string, driverTripOf: DriverTripOf) =>
   tellTripCancelled(
+    sharesDeps(env, async () => undefined, driverTripOf),
+    tripId,
+  );
+
+// A driver moved the time of a shared trip: the family hears the new one (G75, docs/158 И).
+export const tellTripFamilyRetimed = (env: Bindings, tripId: string, driverTripOf: DriverTripOf) =>
+  tellTripRetimed(
     sharesDeps(env, async () => undefined, driverTripOf),
     tripId,
   );
