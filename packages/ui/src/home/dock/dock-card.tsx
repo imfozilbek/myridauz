@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { ProfilePhoto } from '../../account/profile/profile-photo';
 import { Icon } from '../../icons';
 import './dock-card.css';
+import './dock-who.css';
 
 const FACE = 34;
 const TOOL = 18;
@@ -57,12 +58,13 @@ export function DockCard({
         <p className="dock-card-text">{text}</p>
         {who ? (
           <div className="dock-who">
-            <ProfilePhoto
-              userId={who.person.id}
-              name={who.person.firstName}
-              hasAvatar={who.person.hasAvatar}
-              size={FACE}
-            />
+            {who.person.hasAvatar ? (
+              <ProfilePhoto userId={who.person.id} name={who.person.firstName} hasAvatar size={FACE} />
+            ) : (
+              <span className="dock-face" aria-hidden>
+                {who.person.firstName.slice(0, 1)}
+              </span>
+            )}
             <span className="dock-who-words">
               <b>{who.person.firstName}</b>
               <span>{who.sub}</span>

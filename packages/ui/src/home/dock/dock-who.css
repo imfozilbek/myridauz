@@ -1,0 +1,85 @@
+/* The person of the card with the chat and the call, and the ready words under it (G76, mockups
+   g76/2, g76/3). */
+.dock-who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dock-who-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dock-who-words b {
+  font-size: 15px;
+}
+
+.dock-who-words span {
+  font-size: 12px;
+  color: var(--reg-muted);
+}
+
+/* A person without a photo: the first letter on grey, as on the mockups. */
+.dock-face {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--reg-face);
+  color: var(--reg-face-text);
+  font-weight: 800;
+}
+
+.dock-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.dock-tool {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+/* An unread message in the chat of the trip: the red dot opens the sheet with ready answers (docs/164). */
+.dock-tool-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--reg-card);
+  border-radius: 50%;
+  background: var(--reg-danger);
+}
+
+.dock-quick {
+  display: flex;
+  gap: 8px;
+}
+
+.dock-quick button {
+  flex: 1;
+  padding: 9px 6px;
+  border: 1px solid var(--reg-line);
+  border-radius: 12px;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}

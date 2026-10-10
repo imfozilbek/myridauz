@@ -101,7 +101,7 @@ export function PointCard({
           ]}
         />
         <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
-        <MainButton text={t('bookings.meeting.came')} onClick={act.came(booking)} />
+        <MainButton text={t('bookings.meeting.came')} destructive onClick={act.came(booking)} />
       </>
     );
   return (

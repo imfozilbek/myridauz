@@ -77,7 +77,7 @@ type SideProps = {
 
 function Side({ label, warn = false, onClick, children }: SideProps) {
   const { colors } = useBrand().theme;
-  const style = warn ? { background: colors.attentionSoft, color: colors.attentionInk } : undefined;
+  const style = warn ? { background: colors.attentionSoft, color: colors.soonInk } : undefined;
   return (
     <button
       type="button"

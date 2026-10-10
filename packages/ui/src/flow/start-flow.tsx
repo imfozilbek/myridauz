@@ -12,7 +12,7 @@ import { launchParam, useLinkOpened } from '../telegram/launch-param';
 import { HomeGoProvider, HomeProvider } from './home-context';
 import { HomeScreen } from './home-screen';
 import type { HomeGo, Launch, StartAction, TileLive } from './start-action';
-import { useAnySheet } from '../telegram/sheet-shown';
+import { UnderSheets, useAnySheet } from '../telegram/sheet-shown';
 
 type StartFlowProps = {
   readonly actions: readonly StartAction[];
@@ -101,8 +101,8 @@ export function StartFlow(props: StartFlowProps) {
           onProfile={() => openProfile()}
         />
         {/* After the main screen: the block paints the bottom bar after the screen does (G66). It
-            stands above the sheets of the screen, so it leaves while one is open (G68, lesson 199). */}
-        {sheet ? null : dock?.(go)}
+            stays under the sheets, its buttons step aside while one is open (G76, lesson 199). */}
+        <UnderSheets.Provider value>{dock?.(go)}</UnderSheets.Provider>
         {/* Under a sheet the native button would cover its buttons (mockups g60/6, g60/7). */}
         {main && !dock && !sheet ? (
           <MainButton text={t(main.labelKey)} onClick={tap('main_button', () => go(main.id))} />

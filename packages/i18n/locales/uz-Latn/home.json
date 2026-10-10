@@ -113,5 +113,7 @@
   "dock.openRequest": "Soʻrovni ochish",
   "dock.seatsOf": "{count} joy",
   "dock.personSeats": "{name} {count} joy",
-  "dock.wasAt": "{when} edi"
+  "dock.wasAt": "{when} edi",
+  "dock.carToFind": "{color} {model}",
+  "dock.near": "Yoʻnalishingizda {count} ta"
 }

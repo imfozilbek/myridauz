@@ -7,6 +7,8 @@ import { useWhen } from '../home-when';
 
 type Car = Trip['driver']['car'];
 const RATE_DAYS = 7;
+const withPlate = (words: string, plate: string | null) =>
+  plate ? `${words} · ${formatPlate(plate)}` : words;
 
 // The words every card of the block says the same way (G76, mockups g76/2, g76/3): when, the
 // direction by regions (docs/121), the car with its plate, the minutes and hours left.
@@ -26,14 +28,20 @@ export function useDockWords(directory: PlaceDirectory, now: number) {
         count: String(Math.max(1, Math.ceil((at + RATE_DAYS * DAY_MS - now) / DAY_MS))),
       }),
     route: (trip: Pick<Trip, 'from' | 'to'>) => regions(trip.from, trip.to),
-    car: (car: Car, plate: string | null) => {
-      const words = t('home.trip.car', {
-        model: car.model,
-        color: t(`drivers.color.${car.color}`).toLocaleLowerCase('uz'),
-      });
-      const number = plate ?? car.plate;
-      return number ? `${words} · ${formatPlate(number)}` : words;
-    },
+    car: (car: Car, plate: string | null) =>
+      withPlate(
+        t('home.trip.car', {
+          model: car.model,
+          color: t(`drivers.color.${car.color}`).toLocaleLowerCase('uz'),
+        }),
+        plate ?? car.plate,
+      ),
+    // «Oq Cobalt · 01 A 123 BC»: the car to find at the point, its colour first (mockup g76/2 state 10).
+    carToFind: (car: Car, plate: string | null) =>
+      withPlate(
+        t('home.dock.carToFind', { color: t(`drivers.color.${car.color}`), model: car.model }),
+        plate ?? car.plate,
+      ),
     // «25 daq» to a moment ahead.
     minutesTo: (at: number) => t('home.dock.minutes', { minutes: String(minutes(at - now)) }),
     // «3 daq kutmoqda» since a moment.

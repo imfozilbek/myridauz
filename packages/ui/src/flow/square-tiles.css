@@ -22,18 +22,22 @@
     calc((var(--tg-viewport-stable-height, 100vh) - 94px - var(--dock-reserve, 300px)) / 2)
   );
 
+  /* A tile under 130 px of a low window is small (mockup g76/1 phone 7): 10 px inside, a 28 px
+     icon, 13.5 px words; the words never smaller (docs/121). */
+  --tile-big: calc((var(--tile) - 129px) * 1000);
+  --tile-icon: clamp(28px, var(--tile-big), 34px);
+
   grid-template-columns: repeat(2, var(--tile));
   justify-content: center;
   gap: var(--home-gap);
 }
 
 .home-tiles-square .home-tile {
-  container-type: inline-size;
   width: var(--tile);
   height: var(--tile);
   min-height: 0;
   gap: 0;
-  padding: 12px;
+  padding: clamp(10px, var(--tile-big), 12px);
   overflow: hidden;
 }
 
@@ -45,9 +49,9 @@
 
 .home-tiles-square .home-tile-title {
   margin-top: 8px;
-  font-size: 16px;
+  font-size: clamp(13.5px, var(--tile-big), 16px);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: normal;
 }
 
 .home-tiles-square .home-tile-hint {
@@ -64,13 +68,6 @@
   padding: 0 6px;
   border-radius: 10px;
   font-weight: 800;
-}
-
-/* A low window: the tile is smaller, the words are not (12 and 13.5 px at least, docs/121). */
-@container (max-width: 129px) {
-  .home-tile-title {
-    font-size: 13.5px;
-  }
 }
 
 /* «Hamyon» short of a request: light red, the hint red and bold (mockup g76/3, state 8). */
@@ -111,10 +108,14 @@
 .home-head .home-profile .home-card-title {
   font-size: 18px;
   font-weight: 700;
-  line-height: 1.2;
+  line-height: normal;
 }
 
 .home-head .home-profile .home-card-hint {
   font-size: 13px;
+  /* The line of the 16 px name above it, the words on its baseline, as on the mockup. */
+  position: relative;
+  top: 1.3px;
+  line-height: 1.43;
   color: var(--reg-secondary, var(--tgui--hint_color));
 }

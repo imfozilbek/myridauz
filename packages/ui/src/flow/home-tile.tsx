@@ -69,5 +69,5 @@ const alarmColors = (colors: BrandColors) =>
     '--tile-alarm': colors.dangerTile,
     '--tile-alarm-ink': colors.dangerText,
     '--tile-soon': colors.attentionSoft,
-    '--tile-soon-ink': colors.attentionInk,
+    '--tile-soon-ink': colors.soonInk,
   }) as CSSProperties;

@@ -88,9 +88,10 @@ export function HomeScreen(props: HomeScreenProps) {
 }
 
 // The tallest block at the bottom with its arrow (G76, docs/165): the tiles leave it room. In
-// Telegram the two buttons are the native bar under the view, 58 px less.
+// Telegram the two buttons are the native bar under the view: 64 px less (50 px buttons and 14 px
+// under them, as on the mockups).
 const DOCK_IN_BROWSER = 300;
-const DOCK_IN_TELEGRAM = 242;
+const DOCK_IN_TELEGRAM = 236;
 
 type ActionTileProps = {
   readonly action: StartAction;

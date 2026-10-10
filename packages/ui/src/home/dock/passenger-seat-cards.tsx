@@ -2,6 +2,7 @@ import type { Booking } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import type { PlaceDirectory } from '../../places/directory';
+import { useBookingEnds } from '../../trip/booking-ends';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
@@ -34,6 +35,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
   ];
   const who = { person: driver, sub: words.car(driver.car, booking.plate), tools };
   const route = words.route(trip);
+  const start = useBookingEnds(booking).start;
   const ends = { from: directory.find(trip.from), to: directory.find(trip.to) };
   const again = (back: boolean) => () => {
     const { from, to } = ends;
@@ -62,7 +64,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             chip={t('bookings.confirmed.title')}
             chipTone="green"
             title={words.when(trip.departAt)}
-            text={route}
+            text={`${start}, ${route}`}
             who={who}
           />
           <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
@@ -78,7 +80,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             tone="soon"
             title={times}
             text={t('home.dock.movedHint', { when: words.day(trip.departAt), route })}
-            who={who}
+            who={{ ...who, tools: [] }}
           />
           <SecondaryButton beside text={t('bookings.disagree')} onClick={act.cancel(booking)} />
           <MainButton text={t('home.dock.agree')} onClick={() => markAgreed(booking.id)} />

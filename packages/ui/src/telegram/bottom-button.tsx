@@ -6,6 +6,7 @@ import { useBrand } from '../context/brand-context';
 import { useCoveredBySheet } from '../sheet/form-sheet-cover';
 import { onSplashLeft, splashStands } from './chrome';
 import { useInTelegram } from './in-telegram-context';
+import { useUnderSheet } from './sheet-shown';
 import { ownLook } from './own-look';
 import { useOneAtATime } from './one-at-a-time';
 
@@ -135,7 +136,9 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
 // A form sheet over the screen takes the button for its own step (G75, mockup g75/3 A).
 function besideSheets(Button: ReturnType<typeof createBottomButton>) {
   return function SheetAwareButton(props: BottomButtonProps) {
-    return useCoveredBySheet() ? null : <Button {...props} />;
+    const covered = useCoveredBySheet();
+    const under = useUnderSheet();
+    return covered || under ? null : <Button {...props} />;
   };
 }
 

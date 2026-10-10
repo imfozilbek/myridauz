@@ -88,7 +88,7 @@ describe(
       await tap('Qayerga ketyapsiz?');
       await tap('Fargʻona viloyati');
       await tap('Fargʻona shahri');
-      expect(await screen.findByText('Fargʻona')).toBeTruthy();
+      expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
       fireEvent.click(screen.getByRole('button', { name: 'Safar eʼlon qilish' }));
       expect(screen.getByText('opened Chilonzor>Fargʻona shahri')).toBeTruthy();
       expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'main_button' }));

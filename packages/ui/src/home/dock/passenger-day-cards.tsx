@@ -1,7 +1,6 @@
 import { arrivalAt, type Booking } from '@platform/contracts';
 import { useTripSteps } from '../../bookings/use-trip-steps';
 import { useI18n } from '../../context/i18n-context';
-import { usePlaces } from '../../market/places-gate';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { useBookingEnds } from '../../trip/booking-ends';
 import { DockCard } from './dock-card';
@@ -23,7 +22,6 @@ type Props = {
 export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   const { t, formatTime } = useI18n();
   const ends = useBookingEnds(booking);
-  const directory = usePlaces();
   const steps = useTripSteps(booking, onTold);
   const { trip } = booking;
   const driver = trip.driver;
@@ -37,14 +35,15 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
       onClick: act.talk(booking),
     },
   ];
-  const to = directory.find(trip.to)?.name ?? '';
+  const to = ends.regionName(trip.to);
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
   // After «Men keldim» the next step is «Mashinaga chiqdim»: it tells the close people (docs/43).
-  const main =
+  // Red while the driver waits at the point (mockup g76/2 state 10).
+  const main = (waits: boolean) =>
     booking.cameAt === null ? (
-      <MainButton text={t('bookings.meeting.came')} onClick={act.came(booking)} />
+      <MainButton text={t('bookings.meeting.came')} destructive={waits} onClick={act.came(booking)} />
     ) : (
-      <MainButton text={t('share.boarded')} onClick={steps.step} />
+      <MainButton text={t('share.boarded')} destructive={waits} onClick={steps.step} />
     );
   switch (kind) {
     case 'meeting':
@@ -55,11 +54,11 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             tone="soon"
             timer={{ text: words.minutesTo(trip.departAt), now: false }}
             title={ends.start}
-            text={car}
+            text={ends.regionName(trip.from)}
             who={{ person: driver, sub: car, tools }}
           />
           <SecondaryButton beside text={t('bookings.openMap')} onClick={act.map(booking)} />
-          {main}
+          {main(false)}
         </>
       );
     case 'driverWaits':
@@ -71,7 +70,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             tone="now"
             timer={{ text: words.waits(booking.driverCameAt ?? Date.now()), now: true }}
             title={ends.start}
-            text={car}
+            text={words.carToFind(driver.car, booking.plate)}
             who={{ person: driver, sub: car, tools }}
             quick={[
               { label: t('sheet.meet.five'), onClick: act.say(booking, 'five') },
@@ -79,7 +78,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             ]}
           />
           <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
-          {main}
+          {main(true)}
         </>
       );
     case 'onRoad':

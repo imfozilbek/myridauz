@@ -42,11 +42,12 @@ describe('the sheet of a new offer (G68)', () => {
     expect(screen.getByText('2 joy')).toBeTruthy();
     expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
     expect(screen.getByText(/^190.000$/u)).toBeTruthy();
-    // The bottom panel of the main screen stands above any sheet: it leaves while one is open.
-    expect(document.querySelector('.home-dock')).toBeNull();
+    // The block at the bottom stays under the sheet (G76, lesson 199); its buttons step aside.
+    expect(document.querySelector('.home-dock')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Takliflarni koʻrish' })).toBeNull();
     await tap('Keyinroq');
     await sheetClosed();
-    expect(document.querySelector('.home-dock')).not.toBeNull();
+    expect(await screen.findByRole('button', { name: 'Takliflarni koʻrish' })).toBeTruthy();
   });
 
   it('«Qabul qilish» books the seat in one tap and says so on top', async () => {

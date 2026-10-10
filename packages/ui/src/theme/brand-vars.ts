@@ -30,6 +30,9 @@ export const brandVars = (colors: BrandColors) =>
     // The number of unread words on a chat of «Suhbatlar» (G76, mockup g76/5).
     '--reg-badge': colors.badge,
     '--reg-soon': colors.soon,
+    '--reg-soon-ink': colors.soonInk,
+    '--reg-soon-line': colors.soonLine,
+    '--reg-ended-pale': colors.endedPale,
     '--reg-face': colors.neutralFace,
     '--reg-face-pale': colors.neutralFacePale,
     '--reg-neutral-pale': colors.neutralPale,

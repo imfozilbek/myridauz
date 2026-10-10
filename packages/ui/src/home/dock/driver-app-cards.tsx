@@ -51,7 +51,7 @@ export function DriverAppCard({ kind, wallet, missing, requests, act, go }: Prop
             title={reason ? t(`drivers.reason.${reason}`) : t('home.dock.fixTitle')}
             text={t('drivers.status.fixHint')}
           />
-          <MainButton text={t('home.dock.fix')} onClick={editCar} />
+          <MainButton text={t('home.dock.fix')} destructive onClick={editCar} />
         </>
       );
     }
@@ -95,7 +95,7 @@ export function DriverAppCard({ kind, wallet, missing, requests, act, go }: Prop
             text={t('home.dock.shortHint', { amount: formatMoney(missing) })}
           />
           <SecondaryButton beside text={t('home.dock.requests')} onClick={() => openSheet('request')} />
-          <MainButton text={t('wallet.topUp')} onClick={act.topUp(requests[0], missing)} />
+          <MainButton text={t('wallet.topUp')} destructive onClick={act.topUp(requests[0], missing)} />
         </>
       );
   }

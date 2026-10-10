@@ -54,6 +54,11 @@ export type BrandColors = {
   readonly routeSwap: HexColor;
   // The amber of a thing coming soon in both apps: «Hozir: …» over the block (G76, mockup g76).
   readonly soon: HexColor;
+  // Words on the light amber of the main screen: the head, a tile, a timer (G76, mockup g76).
+  readonly soonInk: HexColor;
+  readonly soonLine: HexColor;
+  // The card of a trip that ended badly in the block (G76, mockup g76/2 states 11, 15).
+  readonly endedPale: HexColor;
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;

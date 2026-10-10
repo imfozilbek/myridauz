@@ -34,13 +34,13 @@ export function PassengerIdle({ go, directory }: Props) {
     <>
       <RouteDock
         from={{
-          value: from ? names.from(from) : null,
+          value: from ? names.end(from) : null,
           placeholder: t('way.fromEmpty'),
           ...(ends.detected ? { hint: t('home.dock.here') } : {}),
           onTap: tap('dock_from', () => go(DOCK_FROM)),
         }}
         to={{
-          value: to ? names.toward(to) : null,
+          value: to ? names.end(to) : null,
           placeholder: t('way.toEmpty'),
           ...(from && to ? { hint: <TripCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),

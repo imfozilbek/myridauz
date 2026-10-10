@@ -93,3 +93,16 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     expect(await screen.findByText('Javob kutilmoqda')).toBeTruthy();
   });
 });
+
+describe('a trip of a saved driver (G76, mockup g76/2 state 3)', { timeout: 20_000 }, () => {
+  it('offers it in the block once, «Boshqa safar» puts it aside', async () => {
+    const later = at(Date.now() + DAY_MS);
+    renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
+      bookings: async () => [],
+      favorites: async () => ({ drivers: [later.driver], trips: [later] }),
+    });
+    expect(await screen.findByText('Siz uchun safar')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Boshqa safar' }));
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+  });
+});

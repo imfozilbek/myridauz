@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { createContext, useContext, useEffect, useSyncExternalStore } from 'react';
 
 // How many sheets stand over the screen now: the main button hides under them, else the native
 // button of Telegram covers the buttons of the sheet (mockups g60/6, g60/7).
@@ -24,3 +24,13 @@ export function useSheetShown(open: boolean): void {
 }
 
 export const useAnySheet = (): boolean => useSyncExternalStore(subscribe, () => shown > 0);
+
+// The block at the bottom of the main screen stays under a sheet, dimmed with the screen (G76,
+// mockup g76/4, lesson 199); only its buttons of Telegram step aside, else they cover the sheet.
+export const UnderSheets = createContext(false);
+
+export function useUnderSheet(): boolean {
+  const under = useContext(UnderSheets);
+  const any = useAnySheet();
+  return under && any;
+}
