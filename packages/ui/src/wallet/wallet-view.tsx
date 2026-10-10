@@ -5,6 +5,7 @@ import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { useOperationName } from './operation-name';
 import { useRefundText } from './refund-text';
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 export function WalletView({ wallet, children }: Props) {
   const { t, formatMoney, formatDate } = useI18n();
   const refundText = useRefundText();
+  const nameOf = useOperationName(wallet.operations);
   // The money that came back is green and bold (mockup g63/5 phone 6).
   const { success } = useBrand().theme.colors;
   const signed = (amount: number) => (amount > 0 ? `+${formatMoney(amount)}` : formatMoney(amount));
@@ -61,7 +63,7 @@ export function WalletView({ wallet, children }: Props) {
                 )
               }
             >
-              {refund?.title ?? t(`wallet.kind.${operation.kind}`)}
+              {refund?.title ?? nameOf(operation)}
             </Cell>
           );
         })}

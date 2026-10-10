@@ -30,6 +30,7 @@
 | `account.profile.navigator` | «Profil» водителя, группа «Sozlamalar»: новая строка (`158` Ё); вид экрана тоже на согласие | «Navigator», под ним выбранный («Yandex», «Google», «Apple») или «Tanlang» | ждёт |
 | `home.request.titleMany`, `home.request.count` | плитка попутчика при 2 или 3 открытых заявках (`158` Е) | «Soʻrovlarim»; под ней ближайшая и «{count} ta soʻrov» | ждёт |
 | `bot.ask.noMoneyLeft` | бот водителя: «Qabul qilish» без денег на комиссию (`158` Г), кнопка «💳 Hamyonni ochish» | «Komissiya uchun hamyonda {amount} yetmaydi: hamyonni toʻldiring, keyin soʻrovni qabul qiling.» | ждёт |
+| `wallet.kind.bonusMonth` | «Tarix» в «Hamyon» и кошелёк для команды: второй и третий бонус акции (`158` Г) | «{month}-oy bonusi»; первый остаётся «Boshlash bonusi» | ждёт |
 
 ## Как читать
 

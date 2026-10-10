@@ -29,6 +29,7 @@
   "detail.open": "Safarni ochish",
   "empty": "Hali operatsiya yoʻq",
   "kind.bonus_grant": "Boshlash bonusi",
+  "kind.bonusMonth": "{month}-oy bonusi",
   "kind.bonus_expired": "Bonus muddati tugadi",
   "kind.commission": "Komissiya",
   "kind.refund": "Komissiya qaytarildi",

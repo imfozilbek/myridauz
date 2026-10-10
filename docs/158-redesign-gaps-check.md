@@ -41,7 +41,7 @@
 - Показана вся комиссия, а не сумма нехватки (`wallet.json:40`).
 - «Hisobni toʻldirish» открывает поддержку без готового текста (`account/support-button.tsx:12`).
 - В шторке «Butun salon» нет комиссии (`requests/salon-sheet.tsx:64`).
-- Три бонуса в «Hamyon» называются одинаково «Boshlash bonusi».
+- ~~Три бонуса в «Hamyon» называются одинаково~~: сделано в G75: «Boshlash bonusi», «2-oy bonusi», «3-oy bonusi».
 
 **Д. Точки и ссылки**
 - ~~У поездки «только пятак» строка посадки даёт выбрать дом~~: сделано в G75: строка посадки показывает пятак без стрелки и «Oʻzgartirish», карта не открывается (`points-screen.tsx`, `fixedStart`).
