@@ -20,6 +20,8 @@ describe('the connection of the whole app (G43)', () => {
     expect(screen.queryByText('Internet yoʻq')).toBeNull();
     goOffline(false);
     expect(screen.getByText('Internet yoʻq')).toBeTruthy();
+    // A plate of the states of the mockup g75/1 A: the red tile, the words beside it (G75).
+    expect(document.querySelector('.offline-banner .offline-plate .offline-tile')).toBeTruthy();
     expect(screen.getByText('my trips')).toBeTruthy();
     goOffline(true);
     expect(screen.queryByText('Internet yoʻq')).toBeNull();

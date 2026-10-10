@@ -28,3 +28,14 @@
 .keep-place {
   visibility: hidden;
 }
+
+/* A card of a list while it loads (mockup g75/2 A): the place and the round corners of a card. */
+.skeleton-card {
+  margin: 0 14px 12px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.skeleton-card:first-child {
+  margin-top: 22px;
+}
