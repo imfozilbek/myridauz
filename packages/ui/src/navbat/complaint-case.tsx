@@ -95,7 +95,7 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
         </div>
         <div className="case-row">
           <span className="case-muted">{t('navbat.complaint.reason')}</span>
-          <b>{t(`complaints.reason.${complaint.reason}`)}</b>
+          <b>{complaint.reasons.map((reason) => t(`complaints.reason.${reason}`)).join(', ')}</b>
         </div>
       </div>
       <ComplaintWords complaint={complaint} />
@@ -107,7 +107,7 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
         <b className="case-link-title">{t('navbat.complaint.chat')}</b>
         <Icon name="next" size={ARROW} />
       </button>
-      {open && complaint.reason === 'no_show' ? (
+      {open && complaint.reasons.includes('no_show') ? (
         <label className="case-card case-row">
           <span>{t('complaints.refund')}</span>
           <Switch checked={refund} onChange={() => setRefund(!refund)} />

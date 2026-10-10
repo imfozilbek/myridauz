@@ -51,7 +51,11 @@ describe('deleting the account during a complaint (docs/17, docs/65 A5)', () => 
       call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
     );
     await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
-    const filed = await call('/complaints', PASSENGER, json({ bookingId: booking.id, reason: 'harassment' }));
+    const filed = await call(
+      '/complaints',
+      PASSENGER,
+      json({ bookingId: booking.id, reasons: ['harassment'] }),
+    );
     expect(filed.status).toBe(201);
     expect((await deleteDriver(DRIVER)).status).toBe(204);
     expect(forgotten).not.toContain(booking.chatKey);

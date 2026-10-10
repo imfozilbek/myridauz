@@ -18,7 +18,7 @@ test('T20, T22. a fake profile is urgent: the team hears at once and may read th
     await createFeedbackClient(await signedAs('passenger', SEVARA))
   ).complain({
     bookingId: seat.id,
-    reason: 'fake_profile',
+    reasons: ['fake_profile'],
   });
   await toldBy('admin', OWNER, wordsOf('bot.complaint.urgent'));
   const team = createFeedbackClient(await signedAs('admin', OWNER));

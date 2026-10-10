@@ -16,7 +16,7 @@ export const COMPLAINT: NavbatItem = {
   id: 'c1',
   name: 'Madina',
   against: 'Jasur',
-  reason: 'no_show',
+  reasons: ['no_show'],
   refund: false,
   ...base,
 };
@@ -55,7 +55,7 @@ const party = (id: string, firstName: string, role: 'driver' | 'passenger') => (
 });
 export const COMPLAINT_DETAIL: Complaint = {
   id: 'c1',
-  reason: 'no_show',
+  reasons: ['no_show'],
   high: false,
   comment: 'Haydovchi kelmadi, telefonni olmadi.',
   status: 'new',

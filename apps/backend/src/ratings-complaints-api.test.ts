@@ -95,10 +95,10 @@ describe('ratings and complaints through the API (docs/17, docs/24)', () => {
     const filed = await call(
       '/complaints',
       PASSENGER,
-      json({ bookingId, reason: 'harassment', comment: 'Qoʻpol' }),
+      json({ bookingId, reasons: ['harassment'], comment: 'Qoʻpol' }),
     );
     expect(filed.status).toBe(201);
-    expect((await call('/complaints', PASSENGER, json({ bookingId, reason: 'other' }))).status).toBe(409);
+    expect((await call('/complaints', PASSENGER, json({ bookingId, reasons: ['other'] }))).status).toBe(409);
     // The urgent complaint rings under «Navbat» of the team (G68); the team sees the public id,
     // never the Telegram ID (docs/65 A3).
     const ring = telegram.find(

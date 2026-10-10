@@ -73,7 +73,7 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     await waitFor(() =>
       expect(complain).toHaveBeenCalledWith({
         bookingId: 'b1',
-        reason: 'no_show',
+        reasons: ['no_show'],
         comment: 'Bir soat kutdim',
       }),
     );

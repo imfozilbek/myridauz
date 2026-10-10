@@ -20,9 +20,9 @@ export const botTeller = ({ brand, send, queue }: Wiring): ComplaintTeller => {
     send([{ bot: side, chatId: userId, text }]);
   return {
     team: async (complaint, against) => {
-      if (!isHigh(complaint.reason)) return queue({ kind: 'new' });
+      if (!isHigh(complaint.reasons)) return queue({ kind: 'new' });
       const url = `https://${appHost(brand, 'admin')}/?complaint=${complaint.id}`;
-      const reason = t(`complaints.reason.${complaint.reason}`);
+      const reason = complaint.reasons.map((code) => t(`complaints.reason.${code}`)).join(', ');
       const markup = { inline_keyboard: [[{ text: t('bot.complaint.open'), web_app: { url } }]] };
       const text = t('bot.complaint.urgent', { reason, name: against.firstName, id: against.publicId });
       return queue({ kind: 'urgent', text, markup });

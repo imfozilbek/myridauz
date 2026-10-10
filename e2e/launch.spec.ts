@@ -55,5 +55,5 @@ test('passenger: rates the driver, then complains about the trip', async ({ page
   await page.getByText(t('complaints.reason.no_show')).click();
   await page.locator('#tg-main-button').click();
   await expect(page.getByText(t('complaints.sent'))).toBeVisible();
-  expect(complaints[0]).toMatchObject({ reason: 'no_show' });
+  expect(complaints[0]).toMatchObject({ reasons: ['no_show'] });
 });

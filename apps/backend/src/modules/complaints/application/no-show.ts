@@ -6,7 +6,7 @@ import type { ComplaintsDeps } from './ports';
 // «Kelmadi» of the driver at the point (docs/124 В, G63): one no_show complaint about the
 // passenger, by the rules of every complaint; a complaint about this ride already there stays alone.
 export async function fileNoShow(deps: ComplaintsDeps, driverId: number, bookingId: string) {
-  await fileComplaint(deps, driverId, { bookingId, reason: 'no_show', comment: '' });
+  await fileComplaint(deps, driverId, { bookingId, reasons: ['no_show'], comment: '' });
 }
 
 // The refunds of no-shows on these rides of the driver, by booking: the driver sees each (docs/129).

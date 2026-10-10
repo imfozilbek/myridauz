@@ -36,7 +36,7 @@ export async function mockCases(page: Page) {
   // «Kech qoldi» of the mockup is no reason of the app (docs/17): «Boshqa» stands for it.
   await json(page, '**/api/admin/complaints/c1', {
     id: 'c1',
-    reason: 'other',
+    reasons: ['other'],
     high: false,
     comment: 'Haydovchi 40 daqiqa kech keldi, telefonni olmadi.',
     status: 'new',
