@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { quickRoute, takePoint, tap } from './market-test-kit';
+import { quickRoute, ROUTE, takePoint, tap } from './market-test-kit';
 import { openRequest } from './request-test-kit';
 
 const RESTORED = 'Oldingi yozganingiz tiklandi.';
@@ -45,6 +45,14 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
     openRequest();
     await quickRoute();
     expect(screen.queryByText(RESTORED)).toBeNull();
+  });
+
+  it('both ends of the block: the day is asked at once, the route is not asked again (G76)', async () => {
+    openRequest({ ends: ROUTE });
+    expect(await screen.findByText(/^Ertaga/)).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Davom etish' })).toBeNull();
+    await tap('Orqaga');
+    expect(await screen.findByText('Chilonzor')).toBeTruthy();
   });
 
   it('F9: the sent request has «Назад» to the main screen', async () => {

@@ -1,4 +1,4 @@
-import { DAY_MS, HOUR_MS, MINUTE_MS } from '@platform/contracts';
+import { DAY_MS, HOUR_MS, MINUTE_MS, tripEndsAt } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { booking, wallet } from '../../bookings/booking-test-kit';
 import { trip } from '../../market/market-test-kit';
@@ -15,6 +15,7 @@ const base: Lists = {
   bookings: [],
   wallet,
   fewSeats: 5,
+  rateDays: 7,
   unseen: new Set(),
 };
 const kinds = (lists: Partial<Lists>, now: number) =>
@@ -38,6 +39,9 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     expect(kinds({ trips: [trip], bookings: [booking] }, at(-DAY_MS))[0]).toBe('requests');
     const poor = { ...wallet, bonus: 0, main: 1000 };
     expect(kinds({ trips: [trip], bookings: [booking], wallet: poor }, at(-DAY_MS))[0]).toBe('short');
+    // A request whose time to answer is over waits for nothing: no «Javob berish», no money short.
+    const over = { ...booking, expiresAt: at(-DAY_MS) - MINUTE_MS };
+    expect(kinds({ trips: [trip], bookings: [over], wallet: poor }, at(-DAY_MS))).toEqual(['published']);
   });
 
   it('says an offer taken once, until it is seen', () => {
@@ -62,5 +66,9 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     const rider = { ...seat, status: 'completed' as const };
     expect(kinds({ trips: [done], bookings: [rider] }, at(DAY_MS))).toEqual(['ended']);
     expect(kinds({ trips: [done], bookings: [{ ...rider, rated: true }] }, at(DAY_MS))).toEqual(['idle']);
+    // The days of the brand count from the end of the trip, as on the page of the trip (docs/129).
+    const end = tripEndsAt(trip.departAt, trip.km);
+    expect(kinds({ trips: [done], bookings: [rider] }, end + 7 * DAY_MS - MINUTE_MS)).toEqual(['ended']);
+    expect(kinds({ trips: [done], bookings: [rider], rateDays: 3 }, end + 3 * DAY_MS)).toEqual(['idle']);
   });
 });

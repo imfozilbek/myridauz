@@ -96,6 +96,7 @@ export function useOfferItems(directory: PlaceDirectory, go: HomeGo): ActionItem
                 go('my_trips', { link: { name: REQUEST_LINK, id: offer.requestId } });
                 return undefined;
               },
+              aside: true,
             },
           }
         : {}),

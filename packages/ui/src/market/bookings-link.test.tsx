@@ -12,6 +12,22 @@ afterEach(() => {
 
 const BOOKING_ID = '0000000b-0000-4000-8000-000000000001';
 const booked = { ...confirmed, id: BOOKING_ID };
+const REQUEST = {
+  id: '0000000d-0000-4000-8000-000000000001',
+  passenger: booked.passenger,
+  from: '1726269',
+  to: '1730401',
+  date: '2026-10-02',
+  km: 320,
+  seats: 2,
+  price: 95000,
+  status: 'open' as const,
+  pickupMode: 'both' as const,
+  wholeCar: false,
+  withWoman: false,
+  callsOff: false,
+  views: 0,
+};
 
 describe('a bot button opens its booking (docs/65 B5)', () => {
   it('opens the passenger booking from "?booking=", back goes to the main screen', async () => {
@@ -35,22 +51,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
   it('opens a new offer itself from "?offer=" (G40, docs/106 K6)', async () => {
     const OFFER_ID = '0000000c-0000-4000-8000-000000000001';
     window.history.replaceState(null, '', `/?offer=${OFFER_ID}`);
-    const request = {
-      id: offer.requestId,
-      passenger: booked.passenger,
-      from: '1726269',
-      to: '1730401',
-      date: '2026-10-02',
-      km: 320,
-      seats: 2,
-      price: 95000,
-      status: 'open' as const,
-      pickupMode: 'both' as const,
-      wholeCar: false,
-      withWoman: false,
-      callsOff: false,
-      views: 0,
-    };
+    const request = { ...REQUEST, id: offer.requestId };
     renderMarket(
       <BookingsLink app="passenger">
         <p>main screen</p>
@@ -61,5 +62,20 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
       }),
     );
     expect(await screen.findByText('Qabul qilish')).toBeTruthy();
+  });
+
+  it('opens «Mening soʻrovim» from "?request=" under the card of a request (G61)', async () => {
+    window.history.replaceState(null, '', `/?request=${REQUEST.id}`);
+    renderMarket(
+      <BookingsLink app="passenger">
+        <p>main screen</p>
+      </BookingsLink>,
+      testClients({
+        market: { myRequests: async () => [REQUEST] },
+        bookings: { myBookings: async () => [], myOffers: async () => [] },
+      }),
+    );
+    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
+    expect(screen.queryByText('main screen')).toBeNull();
   });
 });

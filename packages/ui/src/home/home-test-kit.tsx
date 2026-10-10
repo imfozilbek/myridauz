@@ -1,4 +1,4 @@
-import type { BookingsClient, ChatClient } from '@platform/api-client';
+import type { BookingsClient, ChatClient, MarketClient } from '@platform/api-client';
 import type { Booking, Favorites, Offer, RequestBoard, RideRequest, Trip, Wallet } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { ActionSheet } from '../action-sheet/action-sheet';
@@ -57,6 +57,8 @@ type Data = {
   // The answers of the sheet: «Tasdiqlash», «Qabul qilish»; the unread chats and «Javob yozish».
   readonly answers?: Partial<BookingsClient>;
   readonly chat?: Partial<ChatClient>;
+  // The steps of a trip: «Yetib keldik» (G76).
+  readonly market?: Partial<MarketClient>;
   readonly openChat?: OpenChat;
 };
 
@@ -89,6 +91,7 @@ export function renderHome(
       myRequests: data.asked ?? none,
       ...(data.trips ? { myTrips: data.trips } : {}),
       ...(data.board ? { requestBoard: data.board } : {}),
+      ...data.market,
     },
     map: data.where ? testMap() : { where: async () => Promise.reject(new Error('none')) },
     ...(data.chat ? { chat: data.chat } : {}),

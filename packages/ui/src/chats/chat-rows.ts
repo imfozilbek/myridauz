@@ -43,15 +43,12 @@ export function chatRows({ bookings, offers, unread, driver, now }: Sources): re
     const person = driver ? booking.passenger : trip.driver;
     add({ key: booking.chatKey, person, at: trip.departAt, from: trip.from, to: trip.to, day: false });
   }
-  for (const offer of offers.filter((one) => one.status === 'sent'))
-    add({
-      key: offer.chatKey,
-      person: offer.driver,
-      at: offer.departAt,
-      from: offer.from,
-      to: offer.to,
-      day: false,
-    });
+  // A driver talks with the passenger who got the offer, a passenger with the driver (mockup g76/5).
+  for (const offer of offers.filter((one) => one.status === 'sent')) {
+    const person = driver ? offer.passenger : offer.driver;
+    if (person)
+      add({ key: offer.chatKey, person, at: offer.departAt, from: offer.from, to: offer.to, day: false });
+  }
   for (const one of unread) {
     const person = otherSide(one.about);
     const way = wayOf(one.about);

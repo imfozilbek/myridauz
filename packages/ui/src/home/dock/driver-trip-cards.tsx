@@ -109,12 +109,12 @@ export function EndedCard({ trip, people, words, act }: Props) {
       <DockCard
         chip={t('bookings.done.title')}
         chipTone="green"
-        timer={{ text: words.daysLeft(trip.departAt), now: false }}
+        timer={{ text: words.daysLeft(trip), now: false }}
         title={t('home.dock.rateRiders')}
         text={t('home.dock.riders', { count: String(riders.length), amount: formatNumber(commission) })}
       />
       <SecondaryButton beside text={t('driverTrip.row.back')} onClick={act.back(trip)} />
-      <MainButton text={t('bookings.done.rate')} onClick={act.open(trip)} />
+      <MainButton text={t('bookings.done.rate')} onClick={act.open(trip, 'end')} />
     </>
   );
 }

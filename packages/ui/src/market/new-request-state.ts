@@ -49,13 +49,16 @@ export const keptWay = (last: RememberedWay | null): RequestAnswer =>
 // The answers of a request and its step, kept as a draft after every step (docs/94 F3, F8). From
 // an empty day of the search (G35, docs/97 K6) the route and the day come with it, and the way
 // of the last trip on the route too: only the people and the price are left.
+// known: both ends of the block of the main screen (G76): the route is answered, the day is asked.
 export function useNewRequest(
   search: { route: Route; date: string } | undefined,
   last: RememberedWay | null,
+  known?: Route,
 ) {
-  const answer: RequestAnswer = search ? { ...search, ...keptWay(last) } : {};
+  const given = search ?? (known ? { route: known } : undefined);
+  const answer: RequestAnswer = given ? { ...given, ...keptWay(last) } : {};
   const start: Saved = { step: nextStep(answer), answer };
-  const { value, setValue, restored, clear } = useFlowDraft(DRAFT_KEY, checkSaved, start, Boolean(search));
+  const { value, setValue, restored, clear } = useFlowDraft(DRAFT_KEY, checkSaved, start, Boolean(given));
   const [sent, setSent] = useState(false);
   const go = (step: RequestStepName) => setValue((saved) => ({ ...saved, step }));
   const next = (patch: RequestAnswer) =>

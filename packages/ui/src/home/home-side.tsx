@@ -42,13 +42,21 @@ export function PassengerSide({ openProfile }: Props) {
 }
 
 // The right part of the head of a driver: the car and its plate open «Profil» with the car; before
-// the car is told, «Mashina · Qoʻshing» in yellow opens the application.
+// the car is told, «Mashina · Qoʻshing» in yellow opens the application; a refused photo, «Rasm
+// qoʻshing» in yellow as for a passenger (G76).
 export function DriverSide({ openProfile }: Props) {
   const { t } = useI18n();
   const tap = useHomeTap();
   const driver = useDriver();
+  const refused = useAccount()?.profile.avatarStatus === 'rejected';
   if (!driver) return null;
   const { car } = driver.application;
+  if (car && refused)
+    return (
+      <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile())}>
+        {t('home.side.photoHint')}
+      </Side>
+    );
   if (!car)
     return (
       <Side warn label={t('home.side.car')} onClick={tap('side_car', driver.editCar)}>

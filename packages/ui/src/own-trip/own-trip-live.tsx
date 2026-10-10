@@ -1,4 +1,3 @@
-import type { Booking, Offer, Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { DriverTripMap } from '../bookings/driver-trip-map';
 import { ChatScreen } from '../chat/chat-screen';
@@ -11,27 +10,13 @@ import { DriverMeeting } from '../meeting/driver-meeting';
 import { meetingOpen } from '../meeting/meet-state';
 import { useMeetMark } from '../meeting/use-meet-mark';
 import { ActionFailure } from '../states/action-failure';
-import type { Opened } from './own-trip-opened';
+import type { Opened, OwnTripProps } from './own-trip-opened';
 import { OwnTripPage } from './own-trip-page';
 import { tripStage } from './trip-stage';
 import { useNow } from './use-now';
 import { useOwnTripActions } from './use-own-trip-actions';
 import { useTripSteps } from './use-trip-steps';
 import { useBrand } from '../context/brand-context';
-
-export type OwnTripProps = {
-  readonly trip: Trip;
-  // The bookings of this trip, fresh on each signal (docs/64).
-  readonly bookings: readonly Booking[];
-  readonly onBack: () => void;
-  // One booking with its deadline, points, cancel and complaint (DriverBooking, by its id).
-  readonly onBooking: (booking: Booking) => void;
-  readonly onChanged: () => void;
-  // The trip was cancelled: back to the list.
-  readonly onClosed: () => void;
-  // The offer on a private trip of a «Boʻsh salon kerak» request (G64).
-  readonly offer?: Offer | null;
-};
 
 type Props = OwnTripProps & {
   // «Yetib keldik» went through: the end of the trip (OwnTripFlow).
@@ -44,7 +29,7 @@ type Props = OwnTripProps & {
 export function OwnTripLive(props: Props) {
   const { trip, bookings, onBack, onBooking, onChanged, onClosed, onArrived, offer = null } = props;
   const { t } = useI18n();
-  const [opened, setOpened] = useState<Opened | null>(null);
+  const [opened, setOpened] = useState<Opened | null>(props.start === 'map' ? { screen: 'map' } : null);
   // The passengers of the point whose meeting is open.
   const [meeting, setMeeting] = useState<readonly string[] | null>(null);
   const now = useNow();

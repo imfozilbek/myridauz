@@ -46,8 +46,9 @@ describe('the chats of «Suhbatlar» (G76, mockup g76/5)', () => {
     expect(rows[0]?.unread?.text).toBe('Salom');
   });
 
-  it('shows the passenger to a driver', () => {
-    const rows = chatRows({ bookings: [seat], offers: [], unread: [], driver: true, now });
-    expect(rows[0]?.person.firstName).toBe('Dilnoza');
+  it('shows the passenger to a driver, the one who got an offer too, read or not', () => {
+    const sent = { ...offer, chatKey: 'o1', passenger: { ...seat.passenger, firstName: 'Sardor' } };
+    const rows = chatRows({ bookings: [seat], offers: [sent], unread: [], driver: true, now });
+    expect(rows.map((row) => row.person.firstName)).toEqual(['Dilnoza', 'Sardor']);
   });
 });

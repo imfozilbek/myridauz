@@ -37,6 +37,7 @@
   "topUp": "Hisobni toʻldirish",
   "topUp.title": "Hisobni toʻldirish",
   "topUp.hint": "Hozircha toʻldirib boʻlmaydi. Bonus tugasa, qoʻllab-quvvatlashga yozing.",
+  "topUp.message": "Salom! Hamyonimni toʻldirmoqchiman.",
   "notEnough.title": "Hamyonda mablagʻ yetarli emas",
   "short.for": "{name}ning joyini tasdiqlash uchun",
   "short.commission": "Komissiya · {count} joy",

@@ -1,6 +1,7 @@
 import { arrivalAt, type Booking } from '@platform/contracts';
 import { useTripSteps } from '../../bookings/use-trip-steps';
 import { useI18n } from '../../context/i18n-context';
+import { ActionFailure } from '../../states/action-failure';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { useBookingEnds } from '../../trip/booking-ends';
 import { DockCard } from './dock-card';
@@ -100,6 +101,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
           />
           <SecondaryButton beside text={t('bookings.toClose')} onClick={act.share(booking)} />
           <MainButton text={t('share.arrived')} onClick={steps.step} />
+          <ActionFailure error={steps.failure} />
         </>
       );
     case 'arrivedAsk':
@@ -116,6 +118,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             onClick={() => markStillOnWay(booking.id)}
           />
           <MainButton text={t('bookings.arrivedAsk.yes')} onClick={steps.step} />
+          <ActionFailure error={steps.failure} />
         </>
       );
   }

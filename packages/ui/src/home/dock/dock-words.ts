@@ -1,4 +1,6 @@
-import { DAY_MS, formatPlate, HOUR_MS, MINUTE_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { afterTrip, formatPlate, HOUR_MS, MINUTE_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { daysLeft as wholeDays } from '../../bookings/done-tools';
+import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import type { PlaceDirectory } from '../../places/directory';
 import { useRegionRoute } from '../../places/region-route';
@@ -6,7 +8,6 @@ import { useCardDay } from '../../market/when';
 import { useWhen } from '../home-when';
 
 type Car = Trip['driver']['car'];
-const RATE_DAYS = 7;
 const withPlate = (words: string, plate: string | null) =>
   plate ? `${words} · ${formatPlate(plate)}` : words;
 
@@ -14,6 +15,7 @@ const withPlate = (words: string, plate: string | null) =>
 // direction by regions (docs/121), the car with its plate, the minutes and hours left.
 export function useDockWords(directory: PlaceDirectory, now: number) {
   const { t } = useI18n();
+  const brand = useBrand();
   const when = useWhen(now);
   const cardDay = useCardDay();
   const regions = useRegionRoute(directory);
@@ -22,11 +24,9 @@ export function useDockWords(directory: PlaceDirectory, now: number) {
     when,
     // «Ertaga», «Bugun», «12-okt».
     day: (at: number) => cardDay(tashkentDate(at), now),
-    // «6 kun» left of the week after a trip for the stars (docs/129).
-    daysLeft: (at: number) =>
-      t('home.dock.days', {
-        count: String(Math.max(1, Math.ceil((at + RATE_DAYS * DAY_MS - now) / DAY_MS))),
-      }),
+    // «6 kun» left for the stars, as the page of the trip counts them (docs/129).
+    daysLeft: (trip: Pick<Trip, 'departAt' | 'km'>) =>
+      t('home.dock.days', { count: wholeDays(afterTrip(brand, trip.departAt, trip.km).rateUntil, now) }),
     route: (trip: Pick<Trip, 'from' | 'to'>) => regions(trip.from, trip.to),
     car: (car: Car, plate: string | null) =>
       withPlate(

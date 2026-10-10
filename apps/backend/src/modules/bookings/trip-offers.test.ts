@@ -63,7 +63,7 @@ describe('a salon trip from a request (G64)', () => {
       tripId: opened.value.trip.id,
       seats: 4,
       wholeCar: true,
-      passengerName: 'Dilnoza',
+      passenger: { firstName: 'Dilnoza', hasAvatar: true },
     });
     expect(await offerSalonTrip(deps, DRIVER, requestId, ON_THE_DAY)).toEqual({
       ok: false,

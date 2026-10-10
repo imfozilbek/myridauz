@@ -3,6 +3,7 @@ import type { TranslationKey } from '@platform/i18n';
 import type { ComponentType } from 'react';
 import type { IconName } from '../icons';
 import type { TripAgain } from '../market/trip-draft';
+import type { TripScreen } from '../own-trip/own-trip-opened';
 import type { Tone } from '../icon-tile';
 
 // One action of the main screen: a title and a short hint, so anyone understands what is inside (docs/21).
@@ -39,6 +40,8 @@ export type TileLive = {
 // a point of the way, a new trip with a known route or the whole last trip.
 export type Launch = {
   readonly link?: AppLink;
+  // The trip of the link opens right on «Safar tugadi» or its map (G76).
+  readonly tripScreen?: TripScreen;
   readonly pick?: 'from' | 'to';
   readonly route?: { readonly from: Location; readonly to: Location };
   // One end of the block at the bottom (G76, docs/165): the other one is asked first.
@@ -48,6 +51,8 @@ export type Launch = {
   readonly board?: RequestBoardQuery;
   // «Oxirgi yoʻnalish»: the answers of the last trip, only the day is asked (G40, docs/106 K3).
   readonly again?: TripAgain;
+  // The new trip is out: «Qaytish safari» of the block counts its way back (G76, docs/29).
+  readonly onPublished?: () => void;
   // A case of «Navbat» opened from the main screen of the team, in the filter it was seen (G75).
   readonly navbat?: NavbatOpen;
   // A person of a sign of «Diqqat» opened in «Odamlar» (G75).

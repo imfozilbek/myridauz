@@ -13,6 +13,7 @@ import { DriverBooking } from '../bookings/driver-booking';
 import { ChatScreen } from '../chat/chat-screen';
 import { useApiClients } from '../context/api-clients';
 import { OwnTripFlow } from '../own-trip/own-trip-flow';
+import type { TripScreen } from '../own-trip/own-trip-opened';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -29,7 +30,7 @@ import './market.css';
 import { waitingRequests } from '../home/home-items';
 
 // "Mening safarlarim" of a driver: the sent offers, every trip with its bookings (docs/35).
-type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
+type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink; readonly tripScreen?: TripScreen };
 
 export function MyTripsScreen(props: ScreenProps) {
   useForgetOnLeave(MY_TRIPS);
@@ -41,9 +42,9 @@ export function MyTripsScreen(props: ScreenProps) {
 }
 
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
-type Opened = { readonly tripId: string; readonly bookingId?: string };
+type Opened = { readonly tripId: string; readonly bookingId?: string; readonly start?: TripScreen };
 
-function MyTrips({ onBack, link }: ScreenProps) {
+function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
   const { market, bookings } = useApiClients();
@@ -60,7 +61,8 @@ function MyTrips({ onBack, link }: ScreenProps) {
       open.name === OFFER_LINK ? offers.find((item) => item.id === open.id)?.bookingId : open.id;
     const found = booked.find((item) => item.id === bookingId && open.name !== MY_TRIP_LINK);
     if (found) setOpened({ tripId: found.trip.id, bookingId: found.id });
-    else if (open.name === MY_TRIP_LINK) setOpened({ tripId: open.id });
+    else if (open.name === MY_TRIP_LINK)
+      setOpened({ tripId: open.id, ...(tripScreen ? { start: tripScreen } : {}) });
   });
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
@@ -87,6 +89,7 @@ function MyTrips({ onBack, link }: ScreenProps) {
         onChanged={reload}
         onClosed={() => (setOpened(null), reload())}
         offer={trip.private ? (value[2].find((item) => item.tripId === trip.id) ?? null) : null}
+        {...(opened?.start ? { start: opened.start } : {})}
       />
     );
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;

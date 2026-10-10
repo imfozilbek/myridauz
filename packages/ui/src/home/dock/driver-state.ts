@@ -2,12 +2,14 @@ import {
   DAY_MS,
   DEPART_REMIND_MS,
   meetingStartsAt,
+  tripEndsAt,
   type Booking,
   type DriverApplication,
   type Trip,
   type Wallet,
 } from '@platform/contracts';
 import { tripPast, tripStep } from '../../own-trip/trip-stage';
+import { answerable } from '../home-items';
 
 // What the block at the bottom of a driver shows (G76, docs/165, mockup g76/3), by the levels of
 // docs/165: 1 a passenger waits at the point, 2 money or a fix, 3 the departure or the point, 4 the
@@ -51,11 +53,12 @@ type Lists = {
   readonly wallet: Wallet | null;
   // Fewer seats than this: «Hamyon kam» (the brand, docs/12).
   readonly fewSeats: number;
+  // The days to rate after the end of a trip (the brand, docs/129), as the page of the trip counts.
+  readonly rateDays: number;
   // The bookings of accepted offers not seen yet on this phone.
   readonly unseen: ReadonlySet<string>;
 };
 
-const RATE_DAYS = 7;
 const own = (trip: Trip, bookings: readonly Booking[]) =>
   bookings.filter((booking) => booking.trip.id === trip.id);
 const atPoint = (booking: Booking) =>
@@ -68,7 +71,7 @@ const atPoint = (booking: Booking) =>
 function tripStates(trip: Trip, lists: Lists, now: number, meet: number): DriverState[] {
   const people = own(trip, lists.bookings);
   if (tripPast(trip)) {
-    const fresh = now - trip.departAt < RATE_DAYS * DAY_MS;
+    const fresh = now < tripEndsAt(trip.departAt, trip.km) + lists.rateDays * DAY_MS;
     const unrated = people.some(
       (one) => one.status === 'completed' && one.rated !== true && one.noShowAt === null,
     );
@@ -85,7 +88,7 @@ function tripStates(trip: Trip, lists: Lists, now: number, meet: number): Driver
   }
   if (tripStep(trip, now) === 'departed')
     states.push({ kind: now >= trip.departAt + DEPART_REMIND_MS ? 'departAsk' : 'depart', trip });
-  const requests = people.filter((one) => one.status === 'requested');
+  const requests = people.filter((one) => answerable(one, now));
   if (requests.length > 0) states.push({ kind: 'requests', trip, requests });
   for (const booking of people.filter((one) => lists.unseen.has(one.id)))
     states.push({ kind: 'accepted', trip, booking });

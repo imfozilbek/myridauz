@@ -74,7 +74,7 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
           />
         );
       case 'onRoad':
-        return <RoadCard trip={state.trip} people={people} onChanged={changed} />;
+        return <RoadCard trip={state.trip} people={people} act={act} onChanged={changed} />;
       case 'idle':
       case 'pending':
       case 'draft':

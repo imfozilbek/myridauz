@@ -4,7 +4,8 @@ import { NewTripFlow } from '../market/new-trip-flow';
 import { PastTripFlow } from '../trip-end/past-trip-flow';
 import type { ReturnTrip } from '../trip-end/return-plan';
 import { TripEndFlow } from '../trip-end/trip-end-flow';
-import { OwnTripLive, type OwnTripProps } from './own-trip-live';
+import { OwnTripLive } from './own-trip-live';
+import type { OwnTripProps } from './own-trip-opened';
 import { tripPast } from './trip-stage';
 
 // After the trip: «Safar tugadi» once after «Yetib keldik», or the publishing of the way back.
@@ -18,8 +19,8 @@ type After = { readonly screen: 'end' } | { readonly screen: 'return'; readonly 
 export function OwnTripFlow(props: OwnTripProps) {
   const { trip, bookings, onBack, onChanged } = props;
   const { track } = useAnalytics();
-  const [after, setAfter] = useState<After | null>(null);
-  const [arrived, setArrived] = useState(false);
+  const [after, setAfter] = useState<After | null>(props.start === 'end' ? { screen: 'end' } : null);
+  const [arrived, setArrived] = useState(props.start === 'end');
   const close = () => setAfter(null);
   const publish = (back: ReturnTrip) => setAfter({ screen: 'return', back });
   if (after?.screen === 'return')

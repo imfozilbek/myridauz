@@ -4,18 +4,20 @@ import { ActionSheet } from '../action-sheet/action-sheet';
 import { CallSource } from '../action-sheet/kinds/call-source';
 import { callIsLive } from '../call/live-call';
 import { useFeedCall } from '../feed/feed-context';
+import { Behind } from '../telegram/behind';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { ChatScreen } from './chat-screen';
 import { OpenChatContext, type OpenChat } from './open-chat';
+import './chat-link.css';
 
 const PARAM = 'chat';
 
 type Open = { readonly key: string; readonly mode?: 'ring' | 'answer' };
 
-// "Yangi xabar" from the bot opens its chat at once (docs/07); back goes to the main screen.
-// A call that rings for this person while the app is open comes as a sheet over the screen, unless
-// a call is live (docs/122): «Javob berish» opens its chat. The sheet of the app lives here, over
-// every screen.
+// "Yangi xabar" from the bot opens its chat at once (docs/07). The app stays under the chat as it
+// was: back comes to the very screen that opened it, «Suhbatlar» or a section (G76). A call that
+// rings for this person while the app is open comes as a sheet over the screen, unless a call is
+// live (docs/122): «Javob berish» opens its chat. The sheet of the app lives here, over every screen.
 export function ChatLink({ children }: { readonly children: ReactNode }) {
   const [open, setOpen] = useState<Open | null>(() => {
     const key = launchParam(PARAM, CHAT_KEY);
@@ -32,6 +34,9 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
   };
   return (
     <OpenChatContext.Provider value={openChat}>
+      <Behind.Provider value={open !== null}>
+        <div className={open ? 'chat-link-behind' : 'chat-link-app'}>{children}</div>
+      </Behind.Provider>
       {open ? (
         <ChatScreen
           key={open.key}
@@ -40,9 +45,7 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
           answer={open.mode === 'answer'}
           onBack={close}
         />
-      ) : (
-        children
-      )}
+      ) : null}
       {ringing ? (
         <CallSource
           key={ringing}

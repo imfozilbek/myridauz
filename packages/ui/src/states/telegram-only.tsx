@@ -2,7 +2,7 @@ import type { MiniApp } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { openInTelegram } from '../telegram/feedback';
+import { openApp } from '../telegram/open-app';
 import { useInTelegram } from '../telegram/in-telegram-context';
 import { MainButton } from '../telegram/bottom-button';
 import { StateScreen } from './state-screen';
@@ -21,7 +21,7 @@ export function TelegramOnly({ app, required, children }: Props) {
   const { t } = useI18n();
   const { bots } = useBrand();
   if (inTelegram || !required) return children;
-  const open = () => openInTelegram(`https://t.me/${bots[app]}?startapp`);
+  const open = () => openApp(bots[app]);
   return (
     <StateScreen
       icon="send"

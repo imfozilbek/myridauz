@@ -16,7 +16,13 @@ vi.mock('@telegram-apps/sdk-react', async (original) => ({
 const account = {
   app: 'driver',
   client: { getAvatar: () => Promise.reject(new Error('test.none')) },
-  profile: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: true, rating: null },
+  profile: {
+    id: '00000000000000000000000000000001',
+    firstName: 'Ali',
+    hasAvatar: true,
+    rating: null,
+    roles: ['passenger', 'driver'],
+  },
   avatarVersion: 0,
   onAvatarChanged: () => undefined,
   onProfileChanged: () => undefined,

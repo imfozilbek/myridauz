@@ -26,6 +26,13 @@ describe('when the block calls the eye (G76, docs/165)', () => {
     expect(shake).toHaveBeenCalledTimes(2);
   });
 
+  it('does not call again for the same thing when the block comes back after a section', () => {
+    follow(thing('request:r1', 7)).unmount();
+    const { result } = follow(thing('request:r1', 7));
+    expect(result.current).toBe(0);
+    expect(shake).toHaveBeenCalledOnce();
+  });
+
   it('lets a less important thing or one without «Hozir» come quietly', () => {
     const { result, rerender } = follow(thing('driverWaits:b1', 1));
     rerender({ now: thing('offers:r1', 4) });

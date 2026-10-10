@@ -8,7 +8,7 @@ import type { HomeGo } from '../../flow/start-action';
 import { mapUrl } from '../../bookings/map-link';
 import { useShareTrip } from '../../bookings/use-share-trip';
 import { useFailure } from '../../states/use-failure';
-import { haptic, openExternal, openInTelegram } from '../../telegram/feedback';
+import { confirm, haptic, openExternal, openInTelegram } from '../../telegram/feedback';
 import { TALK_CALL, TRIP_TALK } from '../trip-talk';
 import { useHomeTap } from '../use-home-tap';
 
@@ -46,7 +46,14 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
       ),
     call: (booking: Booking) => tap('trip_call', () => go(TRIP_TALK, link(booking, TALK_CALL))),
     open: (booking: Booking) => tap('item', () => go('my_trips', link(booking, BOOKING_LINK))),
-    cancel: (booking: Booking) => run(() => bookings.cancelMine(booking.id)),
+    // Asked first, as on the page of the seat: one tap never loses a seat (docs/65 B4).
+    cancel: (booking: Booking) => async () => {
+      if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
+      await run(async () => {
+        await bookings.cancelMine(booking.id);
+        track({ name: 'booking_step', screen: 'home', step: 'cancelled' });
+      })();
+    },
     came: (booking: Booking) =>
       run(async () => {
         await chat.came(booking.id);

@@ -69,6 +69,19 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     open.mockRestore();
   });
 
+  it('always has «Haydovchi boʻling» for a passenger; a driver has the app already (G76)', () => {
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    renderProfile();
+    fireEvent.click(screen.getByText('Dilnoza'));
+    fireEvent.click(screen.getByText('Haydovchi boʻling'));
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.driver}?startapp`);
+    open.mockRestore();
+    cleanup();
+    renderProfile({ profile: { ...profile, roles: ['passenger', 'driver'] } });
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(screen.queryByText('Haydovchi boʻling')).toBeNull();
+  });
+
   it('uploads a new photo and reports a failure in simple words', async () => {
     const { client, account } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
