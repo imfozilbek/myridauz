@@ -82,6 +82,7 @@ export {
   requestsPastHalf,
   tellDriver,
   tellRequest,
+  tellRequestClosed,
   tellTripPassengers,
 } from './live-cards';
 

@@ -9,6 +9,7 @@ import {
   rideOfBooking,
   ridesOfTrips,
   tellRequest,
+  tellRequestClosed,
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
@@ -82,8 +83,8 @@ handleRequestPublished(async (env, requestId) => {
   const request = await requestViewOf(env, requestId);
   if (request) await requestPublished(env, request);
 });
-// A request cancelled or burned: its card says so (G68).
-handleRequestChanged(tellRequest);
+// A request cancelled or burned: its card says so (G68), the drivers who offered hear it (G75).
+handleRequestChanged(tellRequestClosed);
 
 // The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
 // who did not come is neither rated nor rates (docs/129, G63).

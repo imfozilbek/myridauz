@@ -4,6 +4,7 @@ import { showChat } from './bot-chat';
 import { buttons, press, say, sayByPhoto, sayByVoice } from './bot-kit';
 import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, tailOf, toldBy, wordsOf } from './g27-kit';
 import { AZIZA, GAYRAT, KAMRON, LAZIZA, OWNER, SEVARA } from './people';
+import { register } from './seed';
 import { signedAs, type Person } from './stand-kit';
 import { botMessages, runCron, standRows } from './stand-tools';
 
@@ -81,6 +82,8 @@ test('a voice to the support bot and the voice answer of the team (G30)', async 
 });
 
 test('G31, G75. «Jamoa» makes a moderator; the new questions go to whom has less work today', async () => {
+  // Kamron is a person of Rida first: the test does not wait for another file to register him.
+  await register('passenger', KAMRON, 'male');
   const [kamron] = standRows(`SELECT public_id FROM users WHERE id = ${KAMRON.id}`);
   await createTeamClient(await signedAs('admin', OWNER)).add(String(kamron?.public_id));
   // The owner already has the applications of the stand today; the new moderator has none (docs/92).

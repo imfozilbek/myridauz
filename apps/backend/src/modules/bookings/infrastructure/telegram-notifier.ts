@@ -82,6 +82,11 @@ export function telegramNotifier(wiring: Wiring): BookingNotifier {
       const markup = open('driver', { name: OFFER_LINK, id: offer.id });
       await notify([{ bot: 'driver', chatId: driverId, text: t('bot.offer.declined'), markup }]);
     },
+    // The request closed before the answer: the driver hears the offer is over (G75, docs/158 Й).
+    offerExpired: async (driverId, offer) => {
+      const markup = open('driver', { name: OFFER_LINK, id: offer.id });
+      await notify([{ bot: 'driver', chatId: driverId, text: t('bot.offer.expired'), markup }]);
+    },
     progress: async (booking, step) => {
       await closeOnes(booking, step);
       await passenger(booking);

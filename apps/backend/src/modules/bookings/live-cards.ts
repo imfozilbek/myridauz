@@ -1,6 +1,7 @@
 import { MINUTE_MS } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { TICK_MINUTES } from '../../shared/cron/tick';
+import { endOffers } from './application/offers-ended';
 import { bookingViews } from './application/views';
 import { bookingsDeps } from './deps';
 import { driverNewsOf } from './driver-news-of';
@@ -32,6 +33,11 @@ export { chatRing } from './chat-news';
 // The request card of the passenger bot: published, cancelled or burned (G68).
 export const tellRequest = (env: Bindings, requestId: string) =>
   requestNewsOf(env, bookingsDeps(env))(requestId);
+// A request cancelled or burned: its card says so and the drivers who offered hear it (G75).
+export async function tellRequestClosed(env: Bindings, requestId: string): Promise<void> {
+  await tellRequest(env, requestId);
+  await endOffers(bookingsDeps(env), requestId);
+}
 export { ASK_PREFIX } from './infrastructure/ask-card';
 
 // «Yoʻlga chiqdim»: every confirmed passenger hears it under the trip card (G68, mockup g68/1); the

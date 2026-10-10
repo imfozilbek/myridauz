@@ -18,6 +18,12 @@
 | `bot.driver.rejected` | бот водителя: «Rad etish» теперь окончательный | было «…Ilovada belgilangan joylarni tuzatib, qayta yuborishingiz mumkin.», стало «Arizangiz rad etildi.\n{reasons}\nSavolingiz boʻlsa, yordam xizmatiga yozing.» | ждёт |
 | `drivers.status.rejected.hint` | экран «Ariza rad etildi» водителя, кнопка «Qoʻllab-quvvatlashga yozish» вместо «Tuzatish» | «Savolingiz boʻlsa, yordam xizmatiga yozing.» | ждёт |
 
+## Дыры `158` (поведение)
+
+| Ключ | Где | Текст | Согласие |
+|---|---|---|---|
+| `bot.offer.expired` | бот водителя: попутчик выбрал другого водителя, отменил заявку или её день прошёл (`158` Й), кнопка «Ochish» | «Yoʻlovchi soʻrovi yopildi, taklifingiz endi amal qilmaydi.» | ждёт |
+
 ## Как читать
 
 - `{driver}`, `{passenger}`: имена людей; `ID`: публичный номер, Telegram ID команда не видит (`65` A3).

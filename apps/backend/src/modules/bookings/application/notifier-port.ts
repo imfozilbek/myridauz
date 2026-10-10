@@ -19,6 +19,8 @@ export type BookingNotifier = {
     offer: Pick<Offer, 'id' | 'chatKey' | 'requestId'>,
     booking?: { readonly id: string; readonly tripId: string },
   ): Promise<void>;
+  // A request closed before the passenger answered this driver (G75, docs/158 Й).
+  offerExpired(driverId: number, offer: Pick<Offer, 'id' | 'chatKey' | 'requestId'>): Promise<void>;
   // "Mashinaga chiqdi" and "Yetib keldi" for close people (docs/43); "Men keldim" for the driver (docs/126)
   // and of the driver for the passenger (G63).
   progress(booking: Booking, step: 'boarded' | 'arrived'): Promise<void>;

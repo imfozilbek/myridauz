@@ -40,6 +40,7 @@
   "support.textOnly": "Hozircha faqat matn, rasm yoki ovozli xabar qabul qilinadi.",
   "trip.departReminder": "Yoʻlga chiqdingizmi? Safar boshlansa, «Yoʻlga chiqdim» tugmasini bosing.",
   "offer.declined": "Yoʻlovchi taklifingizni rad etdi.",
+  "offer.expired": "Yoʻlovchi soʻrovi yopildi, taklifingiz endi amal qilmaydi.",
   "chat.newMessage": "Sizga yangi xabar keldi. Javob berish uchun chatni oching.",
   "chat.open": "Chatni ochish",
   "chat.contactAttempts": "{name} (ID {id}) chatda kontakt yuborishga {count} marta urindi.\nChat: {key}",
