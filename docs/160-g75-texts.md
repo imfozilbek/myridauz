@@ -38,28 +38,28 @@
 | `market.mine.expired`, `market.mine.again` | заявка с прошедшим днём в «Faol» (`158` Е) | «Muddati oʻtdi»; «Qayta yuborish» | да, 10.10.2026 |
 | `market.mine.noLive`, `bookings.tab.liveNone` | пустая вкладка «Faol» попутчика, кнопка «Safar topish» | «Faol safar yoʻq»; вкладка «Faol» без числа | да, 10.10.2026 |
 | `subscriptions.hint`, `subscriptions.withWoman` | «Obunalar»: строка под заголовком и пометка подписки | «Yangi safar chiqsa, botda xabar beramiz.»; « · ayol bilan» | да, 10.10.2026 |
-| `market.mine.noPast` | пустая вкладка «Oʻtgan» попутчика, над «Obunalar» и «Sevimli haydovchilar» (`158` Е) | «Oʻtgan safar yoʻq» | ждёт |
+| `market.mine.noPast` | пустая вкладка «Oʻtgan» попутчика, над «Obunalar» и «Sevimli haydovchilar» (`158` Е) | «Oʻtgan safar yoʻq» | да, 10.10.2026 |
 | `legal.offer.9.text` | оферта, раздел 9: срок, после которого видна оценка (`158` З) | «… yoki 14 kundan keyin koʻrinadi» стало «… yoki {rateDays} kundan keyin koʻrinadi» (7 из конфига бренда), редакция 1.4 | да, 10.10.2026 (решение владельца) |
-| `account.blocked.riding` | плашка над Mini App: человека заблокировали в пути, поездка идёт до конца (`158` Ж, `17`) | «Hisobingiz bloklangan. Joriy safarni yakunlang.» | ждёт |
-| `market.when.done` | кнопка шторки «Qachon joʻnaysiz?» (макет g75/3 А, телефон 1) | «Tayyor» | ждёт |
-| `market.day.other`, `market.day.otherHint` | третья плитка дня в шторке времени | «Boshqa»; под ней «kun» | ждёт |
-| `subscriptions.when.dayHint`, `subscriptions.when.hint` | шторка «Xabar bering»: строка под «Faqat {day}» и подсказка с маршрутом | «Shu kungi safarlar»; «{way}. {question}» | ждёт |
-| `common.counter` | счётчик знаков под «Izoh» | «{count} / {max}» | ждёт |
-| `wallet.short.for`, `wallet.short.commission`, `wallet.short.missing`, `wallet.short.note` | шторка «Hamyonda mablagʻ yetarli emas» (макет g75/4 Б, `158` Г) | «{name}ning joyini tasdiqlash uchun»; «Komissiya · {count} joy»; «Yetmaydi»; «Yordamga tayyor xabar boradi: faqat yuboring.» | ждёт |
-| `wallet.short.message` | готовый текст в чат поддержки по «Hisobni toʻldirish» | «Salom! Hamyonimni toʻldirmoqchiman. {name}ning joyini tasdiqlash uchun {amount} yetmayapti.» | ждёт |
-| `driverTrip.request.until`, `driverTrip.request.when`, `driverTrip.request.pickup`, `driverTrip.request.dropoff` | шторка «Yangi soʻrov» поверх «Mening safarim» (макет g75/4 Б, телефон 1) | «Javob berish muddati · {when}»; «{seats} joy · {day}, {time}»; «{time} · olib ketish joyi»; «tushirish joyi» | ждёт |
-| `bookings.offer.sent`, `bookings.offer.when` | шторка предложения водителя поверх «Mening soʻrovim» (макет g75/4 Б, телефон 2) | «{name} taklif yubordi»; «Joʻnash vaqti» | ждёт |
-| `account.delete.hint`, `account.delete.what.profile`, `account.delete.what.data`, `account.delete.what.trips`, `account.delete.cancel` | «Maʼlumotlaringiz oʻchirilsinmi?» (макет g75/5 А): строка под заголовком и три строки «что удалится» | «Buni qaytarib boʻlmaydi.»; «Ism, telefon va rasm»; «Chatlar va mashina maʼlumotlari»; «Faol safarlar va band qilingan joylar bekor boʻladi»; «Bekor qilish» | ждёт |
-| `account.delete.bonus`, `account.delete.money` | там же: деньги водителя уходят вместе с аккаунтом (`158` Ж, `58`) | «Hamyonda {sum} bonus bor. U ham oʻchadi va qaytmaydi.»; если есть и свои деньги: «Hamyonda {sum} bor. U ham oʻchadi va qaytmaydi.» | ждёт |
-| `complaints.reasonTitle` | «Shikoyat»: строка под заголовком (макет g75/5 А) | «Nima boʻldi?» стало «Nima boʻldi? Bir nechtasini tanlash mumkin.»; «Batafsil» убран | ждёт |
-| `account.profile.lookPhone`, `account.profile.stats.rated` | «Meni qanday koʻradi» (макет g75/5 А) | «Telefon raqamingiz hech kimga koʻrinmaydi.»; под числом оценок «baho» | ждёт |
-| `places.which`, `places.trips` | «Samarqandning qaysi joyi?» (макет g75/6 А): заголовок списка мест области и строка под местом | «{region}ning qaysi joyi?»; «{count} ta safar» | ждёт |
-| `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | ждёт |
-| `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | ждёт |
-| `market.request.why.expired`, `market.request.why.cancelled` | общая плашка исхода на «Mening soʻrovim» (`158` А) | «Shu kunga haydovchi topilmadi.»; «Siz soʻrovni bekor qildingiz.» | ждёт |
-| `requests.salon.commission` | шторка «Butun salon»: комиссия до отправки (`158` Г) | «Komissiya · {sum}» в строке «Hamyon» | ждёт |
-| `account.avatar.rejectedTitle` | плашка на главном: фото не прошло проверку (`158` Ж) | «Rasmingiz qabul qilinmadi»; под ним прежний текст с причиной | ждёт |
-| `account.notes.warned`, `account.notes.warnedHint`, `account.notes.hidden`, `account.notes.low` | плашки в «Profil» (`158` З) | «Ogohlantirish · {date}» «Jamoa shikoyat boʻyicha ogohlantirdi. Yana takrorlansa, hisob bloklanadi.»; «Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.»; «Reytingingiz {average}: {line} dan past. Vaqtida keling va xushmuomala boʻling.» | ждёт |
+| `account.blocked.riding` | плашка над Mini App: человека заблокировали в пути, поездка идёт до конца (`158` Ж, `17`) | «Hisobingiz bloklangan. Joriy safarni yakunlang.» | да, 10.10.2026 |
+| `market.when.done` | кнопка шторки «Qachon joʻnaysiz?» (макет g75/3 А, телефон 1) | «Tayyor» | да, 10.10.2026 |
+| `market.day.other`, `market.day.otherHint` | третья плитка дня в шторке времени | «Boshqa»; под ней «kun» | да, 10.10.2026 |
+| `subscriptions.when.dayHint`, `subscriptions.when.hint` | шторка «Xabar bering»: строка под «Faqat {day}» и подсказка с маршрутом | «Shu kungi safarlar»; «{way}. {question}» | да, 10.10.2026 |
+| `common.counter` | счётчик знаков под «Izoh» | «{count} / {max}» | да, 10.10.2026 |
+| `wallet.short.for`, `wallet.short.commission`, `wallet.short.missing`, `wallet.short.note` | шторка «Hamyonda mablagʻ yetarli emas» (макет g75/4 Б, `158` Г) | «{name}ning joyini tasdiqlash uchun»; «Komissiya · {count} joy»; «Yetmaydi»; «Yordamga tayyor xabar boradi: faqat yuboring.» | да, 10.10.2026 |
+| `wallet.short.message` | готовый текст в чат поддержки по «Hisobni toʻldirish» | «Salom! Hamyonimni toʻldirmoqchiman. {name}ning joyini tasdiqlash uchun {amount} yetmayapti.» | да, 10.10.2026 |
+| `driverTrip.request.until`, `driverTrip.request.when`, `driverTrip.request.pickup`, `driverTrip.request.dropoff` | шторка «Yangi soʻrov» поверх «Mening safarim» (макет g75/4 Б, телефон 1) | «Javob berish muddati · {when}»; «{seats} joy · {day}, {time}»; «{time} · olib ketish joyi»; «tushirish joyi» | да, 10.10.2026 |
+| `bookings.offer.sent`, `bookings.offer.when` | шторка предложения водителя поверх «Mening soʻrovim» (макет g75/4 Б, телефон 2) | «{name} taklif yubordi»; «Joʻnash vaqti» | да, 10.10.2026 |
+| `account.delete.hint`, `account.delete.what.profile`, `account.delete.what.data`, `account.delete.what.trips`, `account.delete.cancel` | «Maʼlumotlaringiz oʻchirilsinmi?» (макет g75/5 А): строка под заголовком и три строки «что удалится» | «Buni qaytarib boʻlmaydi.»; «Ism, telefon va rasm»; «Chatlar va mashina maʼlumotlari»; «Faol safarlar va band qilingan joylar bekor boʻladi»; «Bekor qilish» | да, 10.10.2026 |
+| `account.delete.bonus`, `account.delete.money` | там же: деньги водителя уходят вместе с аккаунтом (`158` Ж, `58`) | «Hamyonda {sum} bonus bor. U ham oʻchadi va qaytmaydi.»; если есть и свои деньги: «Hamyonda {sum} bor. U ham oʻchadi va qaytmaydi.» | да, 10.10.2026 |
+| `complaints.reasonTitle` | «Shikoyat»: строка под заголовком (макет g75/5 А) | «Nima boʻldi?» стало «Nima boʻldi? Bir nechtasini tanlash mumkin.»; «Batafsil» убран | да, 10.10.2026 |
+| `account.profile.lookPhone`, `account.profile.stats.rated` | «Meni qanday koʻradi» (макет g75/5 А) | «Telefon raqamingiz hech kimga koʻrinmaydi.»; под числом оценок «baho» | да, 10.10.2026 |
+| `places.which`, `places.trips` | «Samarqandning qaysi joyi?» (макет g75/6 А): заголовок списка мест области и строка под местом | «{region}ning qaysi joyi?»; «{count} ta safar» | да, 10.10.2026 |
+| `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | да, 10.10.2026 |
+| `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | да, 10.10.2026 |
+| `market.request.why.expired`, `market.request.why.cancelled` | общая плашка исхода на «Mening soʻrovim» (`158` А) | «Shu kunga haydovchi topilmadi.»; «Siz soʻrovni bekor qildingiz.» | да, 10.10.2026 |
+| `requests.salon.commission` | шторка «Butun salon»: комиссия до отправки (`158` Г) | «Komissiya · {sum}» в строке «Hamyon» | да, 10.10.2026 |
+| `account.avatar.rejectedTitle` | плашка на главном: фото не прошло проверку (`158` Ж) | «Rasmingiz qabul qilinmadi»; под ним прежний текст с причиной | да, 10.10.2026 |
+| `account.notes.warned`, `account.notes.warnedHint`, `account.notes.hidden`, `account.notes.low` | плашки в «Profil» (`158` З) | «Ogohlantirish · {date}» «Jamoa shikoyat boʻyicha ogohlantirdi. Yana takrorlansa, hisob bloklanadi.»; «Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.»; «Reytingingiz {average}: {line} dan past. Vaqtida keling va xushmuomala boʻling.» | да, 10.10.2026 |
 
 ## Как читать
 

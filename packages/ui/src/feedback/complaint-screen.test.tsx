@@ -22,6 +22,9 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
     const card = document.querySelector('.complaint-card');
     expect(card?.textContent).toContain('Xavfli haydash');
     expect(card?.textContent).toContain('Kelmadi');
+    // All 8 reasons (owner decision 10.10.2026, docs/163 dispute 9).
+    expect(card?.querySelectorAll('.tick-row')).toHaveLength(8);
+    expect(card?.textContent).toContain('Spam yoki firibgarlik');
     expect(screen.getByText('Kim shikoyat qilganini u koʻrmaydi.').className).toBe('complaint-note');
     expect(screen.queryByText('Yuborish')).toBeNull();
     await tap('Kelishilgandan koʻp pul soʻradi');
