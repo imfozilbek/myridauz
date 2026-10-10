@@ -39,6 +39,8 @@ export function setup() {
   const riders: Rider[] = [];
   const events: string[] = [];
   const signals: string[] = [];
+  // The people who opened each trip page (trip_views, G76).
+  const views = new Map<string, number>();
   const cars = new Map<number, Car>([
     [1, CAR],
     [2, CAR],
@@ -55,6 +57,7 @@ export function setup() {
     approvedCar: async (userId) => cars.get(userId) ?? null,
     ratings: async () => new Map(),
     hidden: async () => new Set(),
+    viewsOf: async (tripIds) => new Map(tripIds.map((id) => [id, views.get(id) ?? 0])),
     recommend: async (from, to) => {
       if (from.startsWith('1726') && to.startsWith('1726'))
         return { ok: false, error: 'locations.inside_city' };
@@ -111,5 +114,6 @@ export function setup() {
     ride: (rider: Rider) => void riders.push(rider),
     events,
     signals,
+    views,
   };
 }

@@ -62,7 +62,7 @@
 - `POST /driver/bookings/:id/came`, `/met`, `/no_show`: «Men keldim», «Keldi», «Kelmadi». Отметки `driver_came_at`, `met_at`, `no_show_at` (миграция `0047`), статус брони не меняется.
 - Только подтверждённая бронь, с 30 минут до выезда до закрытия поездки (`bookings.not_meeting_time`).
 - «Men keldim»: попутчик получает сообщение бота; второе нажатие ничего не меняет.
-- «Keldi» и «Kelmadi» ставятся один раз и исключают друг друга (`bookings.already_met`, `bookings.already_no_show`). «Kelmadi» нельзя после «Mashinaga chiqdim» или «Yetib keldim» попутчика.
+- «Keldi» и «Kelmadi» ставятся один раз и исключают друг друга (`bookings.already_met`, `bookings.already_no_show`). «Keldi» сажает попутчика в машину: `boarded_at`, близкие получают «mashinaga chiqdi» (G76). «Kelmadi» нельзя после посадки или «Yetib keldim» попутчика.
 - «Kelmadi» подаёт жалобу водителя `no_show` по обычным правилам (`17`).
 - Неявка не поездка: нет оценки в обе стороны, нет строки в истории, не считается в числе поездок (`129`).
 - После «Keldi» или «Kelmadi» поездку отменить нельзя (`35`).

@@ -101,6 +101,9 @@ export const tripSchema = z.object({
   arrivedAt: z.number().int().nullable().default(null),
   // Opened from a «Boʻsh salon kerak» request (G64): only that passenger sees it until the answer.
   private: z.boolean().default(false),
+  // The different people who opened it in the app (trip_views, G63), only on the driver's own trips:
+  // «23 kishi koʻrdi» (G76, mockup g76/3 state 6); 0 elsewhere and from an older server.
+  views: z.number().int().nonnegative().default(0),
 });
 export type Trip = z.infer<typeof tripSchema>;
 export const tripsSchema = z.object({ trips: z.array(tripSchema) });

@@ -35,4 +35,5 @@ export const fakeRequestView = (facts: RequestFacts | undefined): RideRequest | 
       rating: NO_RATING,
     },
     status: facts.open ? 'open' : 'matched',
+    views: 0,
   };

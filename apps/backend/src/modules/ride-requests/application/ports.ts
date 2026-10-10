@@ -19,8 +19,17 @@ export type RequestRepository = {
   erasePointsOf(passengerId: number): Promise<void>;
 };
 
+// The different drivers who saw a request on their board: one row per driver and request (G76).
+export type RequestViewStore = {
+  record(requestIds: readonly string[], userId: number, at: number): Promise<void>;
+  counts(requestIds: readonly string[]): Promise<ReadonlyMap<string, number>>;
+  // A deleted account (docs/30).
+  forget(userId: number): Promise<void>;
+};
+
 export type RequestsDeps = {
   readonly requests: RequestRepository;
+  readonly seen: RequestViewStore;
   readonly people: { find(id: number): Promise<Person | undefined> };
   readonly approvedCar: (driverId: number) => Promise<Car | null>;
   readonly recommend: (

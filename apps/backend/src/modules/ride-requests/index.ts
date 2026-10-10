@@ -12,11 +12,14 @@ import { views } from './application/views';
 import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
+import { createMemoryRequestViews, d1RequestViews } from './infrastructure/request-views';
 import { isOpen, statusAt, withoutPoints, type RequestRecord } from './domain/ride-request';
 import { brandOf } from '../../shared/brand/brand-of';
 
-// Without D1 (tests) requests live in memory.
+// Without D1 (tests) requests and who saw them live in memory.
 const localRequests = createMemoryRequests();
+const localSeen = createMemoryRequestViews();
+const seenOf = (env: Bindings) => (env.DB ? d1RequestViews(env.DB) : localSeen);
 
 // Drivers subscribed to a route hear about a new request (docs/24): set by the app (module-events.ts).
 type Published = (env: Bindings, requestId: string) => Promise<void>;
@@ -41,6 +44,7 @@ export const wireRequestBoard = (board: Board) => void (boardOf = board);
 
 const requestsDeps = (env: Bindings): RequestsDeps => ({
   requests: env.DB ? d1Requests(env.DB) : localRequests,
+  seen: seenOf(env),
   people: peopleOf(env),
   approvedCar: (driverId) => approvedCar(env, driverId),
   recommend: (from, to) => recommendationFor(env, from, to),
@@ -61,6 +65,8 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
 });
 
 export const requestsModule = requestRoutes(requestsDeps);
+// The requests a deleted person saw forget them: «N haydovchi koʻrdi» counts people with an account.
+export const forgetRequestViews = (env: Bindings, userId: number) => seenOf(env).forget(userId);
 
 // The Cron job (docs/35): requests of a day that is over become expired.
 export async function expireRequests(env: Bindings, now: number): Promise<void> {

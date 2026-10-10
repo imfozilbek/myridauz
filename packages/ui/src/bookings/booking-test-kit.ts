@@ -119,4 +119,5 @@ export const request = {
   wholeCar: false,
   withWoman: false,
   callsOff: false,
+  views: 0,
 };

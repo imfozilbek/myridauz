@@ -73,7 +73,7 @@
 | P3 | Joy band qilish: qayerdan olib ketadi, qayerga |
 | P4 | Haydovchi bilan chat va qoʻngʻiroq |
 | P5 | Yaqinlarimga yuborish: safarni kuzatish |
-| P6 | Safar kuni: «Mashinaga chiqdim», «Yetib keldim» |
+| P6 | Safar kuni: «Men keldim», «Yetib keldim» |
 | P7 | Soʻrov qoldirish va takliflar |
 | P8 | Butun salon |
 | P9 | Xabar bering va kanallar |

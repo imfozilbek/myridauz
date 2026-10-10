@@ -30,7 +30,18 @@ export function PublishedCard({ trip, words, act, go }: Props) {
   const board = () => go(PASSENGER_REQUESTS);
   return (
     <>
-      <DockCard chip={words.when(trip.departAt)} title={seats} text={words.route(trip)} />
+      <DockCard
+        chip={words.when(trip.departAt)}
+        title={seats}
+        text={
+          trip.views > 0
+            ? t('home.meta', {
+                when: words.route(trip),
+                more: t('home.dock.peopleSaw', { count: String(trip.views) }),
+              })
+            : words.route(trip)
+        }
+      />
       <SecondaryButton beside text={t('home.dock.requestsSee')} onClick={board} />
       <MainButton text={t('home.dock.openTrip')} onClick={act.open(trip)} />
     </>

@@ -34,6 +34,7 @@ export function openRequest({
       wholeCar: input.wholeCar ?? false,
       withWoman: input.withWoman ?? false,
       callsOff: false,
+      views: 0,
       id: 'r1',
       passenger: { id: '00000000000000000000000000000001', firstName: 'Ali', hasAvatar: false },
       km: 320,

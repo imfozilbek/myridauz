@@ -59,6 +59,9 @@ export const rideRequestSchema = z.object({
   status: z.enum(REQUEST_STATUSES),
   // Drivers may call about the request before a booking unless the passenger turned it off (G64).
   callsOff: z.boolean().default(false),
+  // The different drivers who saw it on «Yoʻlovchilar soʻrovlari», only on the passenger's own
+  // request: «14 haydovchi koʻrdi» (G76, mockup g76/2 state 4); 0 elsewhere and from an older server.
+  views: z.number().int().nonnegative().default(0),
 });
 export type RideRequest = z.infer<typeof rideRequestSchema>;
 export const rideRequestsSchema = z.object({ requests: z.array(rideRequestSchema) });

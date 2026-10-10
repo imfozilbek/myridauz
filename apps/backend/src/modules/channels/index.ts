@@ -120,5 +120,8 @@ const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
 
 // What the driver sees after the publishing, and the views of the trip page (G63, docs/119).
 export const publicityModule = (tripOf: TripFactsOf) => publicityRoutes((env) => publicityDeps(env, tripOf));
+// «23 kishi koʻrdi» of the driver's live trips (G76): one count by the key per trip.
+export const tripViewCounts = async (env: Bindings, tripIds: readonly string[]) =>
+  new Map(await Promise.all(tripIds.map(async (id) => [id, await viewsOf(env).count(id)] as const)));
 // A deleted account (docs/30): the trips it opened forget it.
 export const forgetTripViews = (env: Bindings, userId: number) => viewsOf(env).forget(userId);

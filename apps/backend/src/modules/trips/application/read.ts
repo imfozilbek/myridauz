@@ -53,10 +53,14 @@ export async function myTrips(deps: TripsDeps, driverId: number): Promise<Trip[]
   const now = deps.now();
   // A live trip on the road stays on top until it arrives (docs/90 F-D3).
   const until = (trip: (typeof trips)[number]) => (isLive(trip, now) ? trip.endsAt : trip.departAt);
-  return views(
+  const mine = await views(
     deps,
     upcomingFirst(trips, (trip) => trip.departAt, now, until),
   );
+  // «23 kishi koʻrdi» on the live ones only (G76): at most the brand's few live trips.
+  const live = new Set(trips.filter((trip) => isLive(trip, now)).map((trip) => trip.id));
+  const seen = await deps.viewsOf(mine.filter((trip) => live.has(trip.id)).map((trip) => trip.id));
+  return mine.map((trip) => ({ ...trip, views: seen.get(trip.id) ?? 0 }));
 }
 
 export async function cancelTrip(

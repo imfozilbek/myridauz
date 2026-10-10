@@ -47,4 +47,5 @@ export const TRIP: Trip = {
   departedAt: null,
   arrivedAt: null,
   private: false,
+  views: 0,
 };

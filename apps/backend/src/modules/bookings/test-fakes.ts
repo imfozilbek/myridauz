@@ -120,6 +120,7 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
     departedAt: facts.departedAt,
     arrivedAt: null,
     private: false,
+    views: 0,
   };
 };
 

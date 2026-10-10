@@ -13,7 +13,7 @@ const STRANGER = 83;
 const PRICE = 90_000;
 const asDriver = { app: 'driver' } as const;
 
-type Request = { id: string; callsOff: boolean };
+type Request = { id: string; callsOff: boolean; views: number };
 type Board = { known: boolean; others: { id: string }[]; days: { count: number }[] };
 
 // Path 7 of the driver without mocks (G64, docs/118, lesson 162): the talk, the board, the salon trip.
@@ -61,6 +61,9 @@ describe('talks, board and salon trips API (G64)', () => {
       call(`/driver/requests/board?from=1726&to=1718&date=${date}`, DRIVER, asDriver),
     );
     expect(board.others.map((item) => item.id)).toContain(request.id);
+    // The board wrote the look of the driver: «1 haydovchi koʻrdi» of the passenger (G76).
+    const mine = await read<{ requests: Request[] }>(call('/passenger/requests', PASSENGER));
+    expect(mine.requests.find((item) => item.id === request.id)?.views).toBe(1);
     const opened = await call(`/driver/requests/${request.id}/trip`, DRIVER, {
       ...asDriver,
       ...json({ departAt: Date.parse(`${date}T04:00:00Z`) }),

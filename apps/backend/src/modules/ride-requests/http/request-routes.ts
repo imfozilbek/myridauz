@@ -11,7 +11,9 @@ import {
 import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { ONE } from '../../../shared/routes/one-id';
+import { afterResponse } from '../../../shared/worker/after-response';
 import { requestBoard } from '../application/board';
+import { boardSeen } from '../application/board-seen';
 import { setRequestCalls } from '../application/calls';
 import type { RequestsDeps } from '../application/ports';
 import { cancelRequest, myRequests, publishRequest, searchRequests } from '../application/use-cases';
@@ -66,8 +68,12 @@ export function requestRoutes(deps: (env: Bindings) => RequestsDeps) {
     .get(DRIVER_REQUESTS_BOARD_PATH, async (context) => {
       const query = requestBoardQuerySchema.safeParse(context.req.query());
       if (!query.success) return fail(context, 'trips.invalid_input');
-      const result = await requestBoard(deps(context.env), context.get('session').user.id, query.data);
-      return result.ok ? context.json(result.value) : fail(context, result.error);
+      const driverId = context.get('session').user.id;
+      const result = await requestBoard(deps(context.env), driverId, query.data);
+      if (!result.ok) return fail(context, result.error);
+      const board = result.value;
+      await afterResponse(context, () => boardSeen(deps(context.env), driverId, board));
+      return context.json(board);
     })
     .get(DRIVER_REQUESTS_PATH, async (context) => {
       const search = requestSearchSchema.safeParse(context.req.query());

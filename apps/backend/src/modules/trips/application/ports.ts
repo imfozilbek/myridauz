@@ -68,6 +68,8 @@ export type TripsDeps = {
   // "⭐ 4,8 (37)" of drivers and the people hidden from search by complaints (docs/17, docs/24).
   readonly ratings: (driverIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
   readonly hidden: (driverIds: readonly number[]) => Promise<ReadonlySet<number>>;
+  // The different people who opened each trip in the app (trip_views, G63): «23 kishi koʻrdi» (G76).
+  readonly viewsOf: (tripIds: readonly string[]) => Promise<ReadonlyMap<string, number>>;
   readonly recommend: (
     from: string,
     to: string,

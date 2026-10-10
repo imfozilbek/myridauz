@@ -9,7 +9,7 @@
 | Сверху | Профиль «Yoʻlovchi»; карточка ближайшей поездки, за 30 минут до отъезда карточка встречи | Профиль «Haydovchi · Cobalt, oq · 01 A 123 BC»; плашка проверки; карточка «Ertaga …» или большая «Bugun …» |
 | Плитки | «Soʻrov qoldirish» / «Soʻrovim», «Mening safarlarim», «Oxirgi yoʻnalish» / «Qaytish», «Profil» | «Yoʻlovchilar soʻrovlari», «Mening safarlarim», «Hamyon», «Profil» |
 | Под плитками | «Haydovchi boʻling», если человек не водитель и нет брони | ничего |
-| Внизу | «Qayerdan / Qayerga» и «Safar topish»; с встречи «Mashinaga chiqdim», «Yetib keldim» | «Qayerdan / Qayerga» и «Safar eʼlon qilish»; на проверке неактивна; за час до отъезда «Yoʻlga chiqdim» |
+| Внизу | «Qayerdan / Qayerga» и «Safar topish»; с встречи «Men keldim», после «Keldi» водителя «Yetib keldim» | «Qayerdan / Qayerga» и «Safar eʼlon qilish»; на проверке неактивна; за час до отъезда «Yoʻlga chiqdim» |
 
 - До отправки заявки водитель видит экран g62/1: большая плитка «Haydovchi boʻlish», бледные плитки, без блока внизу.
 - Счётчик «Yoʻlovchilar soʻrovlari»: заявки на направлениях водителя с доски заявок (G64), пока сервер её открыл.

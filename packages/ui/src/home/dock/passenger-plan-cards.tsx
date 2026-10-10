@@ -86,7 +86,14 @@ export function PassengerPlanCard({ plan, words, go, now }: Props) {
         chip={t('home.request.title')}
         {...(ends - now < DAY_MS ? { timer: { text: words.left(ends), now: false } } : {})}
         title={t('home.dock.people', { when: words.day(ends - DAY_MS / 2), count: String(request.seats) })}
-        text={words.route(request)}
+        text={
+          request.views > 0
+            ? t('home.meta', {
+                when: words.route(request),
+                more: t('home.dock.driversSaw', { count: String(request.views) }),
+              })
+            : words.route(request)
+        }
       />
       <SecondaryButton beside text={t('home.dock.openRequest')} onClick={open} />
       <MainButton text={t('common.passenger.findTrip')} onClick={findTrip} />

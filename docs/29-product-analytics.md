@@ -25,7 +25,7 @@
 | Главный экран (G25, G76) | `home_tap` (место нажатия: плитка, шапка, кнопка блока, чат и звонок поездки), `dock_state` (состояние нижнего блока, когда оно сменилось: 1 или 2 за открытие, `165`) |
 | Бот (G12) | `bot_command` (id команды), `bot_button` (вид кнопки, без id) |
 | Сервер | `driver_approved` |
-| Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded`, `arrived` |
+| Близкие (`43`) | `trip_shared`, `share_opened`, `share_follow`, `share_join`, `boarded` («Keldi» водителя, G76), `arrived` |
 
 - Каждое событие: время, Mini App, экран, версия, ID сессии (одно открытие Mini App).
 - **Без личных данных:** без имени, телефона, текста чата, точных координат.

@@ -30,7 +30,7 @@
 | 4, 5 | «{qachon} · {n} kishi», «{n} haydovchi koʻrdi», «{vaqt1} va {vaqt2}», «Takliflarni koʻrish» |
 | 6, 7 | «Javob kutilmoqda», «Bekor qilish», «Joy tasdiqlandi» |
 | 8 | «Vaqt oʻzgardi», «Rozi boʻlmasangiz, joy bekor qilinadi», «Rozi emasman», «Roziman» |
-| 9, 10 | «{ism} yoʻlda, {n} daqiqa», «{ism} joyida», «5 daqiqada», «10 daqiqada» (как в шторке встречи) |
+| 9, 10 | «{ism} yoʻlda» (без минут, решение владельца 10.10.2026), «{moʻljal}» пятака, «{ism} joyida», «5 daqiqada», «10 daqiqada» (как в шторке встречи) |
 | 11 | «Kelmadi deb belgilandi», «Xato boʻlsa, yordamga yozing» |
 | 12, 13 | «Yoʻldasiz», «{ism} bilan · {n} yoʻlovchi», «Yetib keldim», «Yetib keldingizmi?», «{joy} · {vaqt} edi», «Javobingiz safarni yopadi», «Hali yoʻldaman», «Ha, yetib keldim» |
 | 14, 15 | «Safar tugadi», «{ism}ni baholang», «Baho 7 kundan keyin koʻrinadi», «Baho berish», «Rad etildi», «Haydovchi joy bera olmadi», «Oʻxshash safarlar» |
@@ -44,7 +44,11 @@
 | 6, 7, 8 | «{n} kishi koʻrdi», «Hamyonda yetmaydi», «Tasdiqlash uchun {summa} soʻm yetmaydi», «Hisobni toʻldirish», «Soʻrovlar» |
 | 9, 10 | «{ism} rozi boʻldi», «Hamyon», «Bonus {sana} tugaydi. Toʻldirsangiz, soʻrovlarni darhol tasdiqlaysiz» |
 | 11, 12, 13 | «Yoʻl xaritasi», «Yoʻlga chiqdim», «Uchrashuv», «{ism} keldimi? Belgilang», «Kelmadi», «Keldi» |
-| 14, 15, 16 | «Yoʻldasiz · {i} / {n}», «Keyingi: {joy}», «Navigator», «Yetib keldik», «Yoʻlga chiqdingizmi?», «2 soatdan keyin oʻzi yoʻlga chiqqan deb belgilanadi», «Kechikyapman», «Yoʻlovchilarni baholang», «{n} yoʻlovchi · komissiya {summa}», «Qaytish safari» |
+| 14, 15, 16 | «Yoʻldasiz · {i} / {n}», «Keyingi: {joy}», «Navigator», «Yetib keldik», «Yoʻlga chiqdingizmi?», «2 soatdan keyin oʻzi yoʻlga chiqqan deb belgilanadi», «Kechikyapman» (то же слово уходит в чат попутчикам), «Yoʻlovchilarni baholang», «{n} yoʻlovchi · komissiya {summa}», «Qaytish safari» |
+
+## Админка
+
+- «Moʻljal»: поле пятака, где именно стоять (G76, `72`).
 
 ## Для носителя
 

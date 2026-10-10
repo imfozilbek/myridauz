@@ -57,6 +57,8 @@
   "dock.otherTrip": "Boshqa safar",
   "dock.late": "Kechikyapman",
   "dock.onWay": "{name} yoʻlda",
+  "dock.driversSaw": "{count} haydovchi koʻrdi",
+  "dock.peopleSaw": "{count} kishi koʻrdi",
   "dock.requests": "Soʻrovlar",
   "dock.fill": "Arizani toʻldirish",
   "dock.fix": "Tuzatish",
