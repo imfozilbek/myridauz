@@ -66,14 +66,14 @@ export async function bookSeats(page: Page, shot: Shot = none) {
 // right in its card and the page of the seat opens (G61, mockup 3-offers A).
 export async function passengerTrips(page: Page, shot: Shot = none) {
   await page.getByText(B.myTrips).click();
-  await expect(page.getByText(t('bookings.mine'))).toBeVisible();
+  await expect(page.locator('.mine-card').first()).toBeVisible();
   await shot('1-list');
   await page.getByText('Jasur').first().click();
   await expect(page.locator('.uz-plate').first()).toBeVisible();
   await shot('2-booking');
   await pressBack(page);
-  // The own request card shows no own name (G37, docs/101 R6): the price of one seat opens it.
-  await page.getByText(t('market.request.perSeat')).first().click();
+  // The own request card shows no own name (G37, docs/101 R6): «… · Soʻrov» opens it (mockup g75/2 A).
+  await page.getByText(/ · Soʻrov$/u).first().click();
   await expect(page.getByText(B.offers)).toBeVisible();
   await shot('3-request');
   await page.getByRole('button', { name: B.accept }).click();

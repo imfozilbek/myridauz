@@ -51,4 +51,11 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
     await tap('Safar topish');
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
+
+  it('«Oʻtgan» without past trips says so, the routes and the drivers stay under it', async () => {
+    open([request]);
+    await tap('Oʻtgan');
+    expect(screen.getByText('Oʻtgan safar yoʻq')).toBeTruthy();
+    expect(screen.getByText('Obunalar')).toBeTruthy();
+  });
 });

@@ -48,6 +48,7 @@ export function MyRequestsList(props: Props) {
   useKeepPlace(lists);
   const [all, requests, offers] = lists;
   const booked = all.filter(isLive);
+  const past = all.filter((booking) => !isLive(booking));
   const asked = requests.filter(shownRequest);
   const sent = (request: RideRequest) =>
     offers.filter((item) => item.requestId === request.id && item.status === 'sent').length;
@@ -61,9 +62,10 @@ export function MyRequestsList(props: Props) {
       <MineTabs tab={tab} live={live} onTab={onTab} />
       {tab === 'past' ? (
         <List>
+          {past.length === 0 && <EmptyState top icon="myTrips" title={t('market.mine.noPast')} />}
           <Paged
             memory={`${MY_REQUESTS}:past`}
-            items={all.filter((booking) => !isLive(booking))}
+            items={past}
             render={(booking) => (
               <div key={booking.id} data-row={`booking:${booking.id}`}>
                 <PastBookingRow booking={booking} onOpen={() => onBooking(booking)} />

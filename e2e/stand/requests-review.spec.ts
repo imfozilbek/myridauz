@@ -72,7 +72,7 @@ for (const platform of PLATFORMS)
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await toHome(page);
     await page.getByText(t('common.myTrips')).first().click();
-    await expect(page.locator('.trip-card')).toHaveCount(1);
+    await expect(page.locator('.mine-card')).toHaveCount(1);
     await shot('03-p-mine');
     // The driver: the request of today on «Yoʻlovchilar soʻrovlari», then tomorrow and its empty day
     // (R2, R4, G64).

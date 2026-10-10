@@ -17,6 +17,8 @@ export async function passengerSubscribes(page: Page, shot: Shot = none) {
 
 export async function passengerList(page: Page, shot: Shot = none) {
   await page.getByText(t('common.myTrips')).click();
+  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
+  await page.getByText(t('bookings.tab.past')).click();
   await page.getByText(t('subscriptions.title')).click();
   await expect(page.getByText(t('subscriptions.expired'))).toBeVisible();
   await shot('4-list');

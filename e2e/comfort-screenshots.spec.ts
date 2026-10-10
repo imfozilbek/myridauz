@@ -30,6 +30,8 @@ test('passenger: the trip of a driver', async ({ page }) => {
 test('passenger: "Sevimli haydovchilar"', async ({ page }) => {
   const shot = await open(page, PASSENGER.port);
   await page.getByText(t('common.myTrips')).click();
+  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
+  await page.getByText(t('bookings.tab.past')).click();
   await page.getByText(t('comfort.favorites.title')).click();
   await expect(page.getByText(t('comfort.favorites.drivers'), { exact: true })).toBeVisible();
   await shot('3-favorites');

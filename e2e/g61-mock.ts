@@ -133,7 +133,7 @@ export async function openMyRequest(page: Page, channel = false) {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await page.getByText(t('common.myTrips')).click();
-  await page.locator('.trip-card').first().click();
+  await page.locator('.mine-card').first().click();
   await expect(page.getByText(t('bookings.request.offers', { count: '2' }))).toBeVisible();
   await page.waitForLoadState('networkidle');
 }

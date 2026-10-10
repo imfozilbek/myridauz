@@ -29,7 +29,7 @@ test.beforeAll(async () => {
 async function openBooking(page: Page) {
   await page.getByText(t('common.myTrips')).click();
   // The Android ripple covers the text of a card: the card itself is tapped.
-  await page.locator('.trip-card').filter({ hasText: BEKZOD.name }).first().click();
+  await page.locator('.mine-card').filter({ hasText: BEKZOD.name }).first().click();
   await expect(page.getByText(t('chat.open'))).toBeVisible();
 }
 

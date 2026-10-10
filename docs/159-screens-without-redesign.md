@@ -54,7 +54,7 @@
 | «Sevimli haydovchilar» | `comfort/favorites-screen.tsx` | нет |
 | «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | частично (без макета) |
 | «Baholarim» | `find/reviews-screen.tsx` | нет |
-| «Safarlar tarixi» | `comfort/history-screen.tsx` | нет (повторяет «Oʻtgan») |
+| «Safarlar tarixi» | `comfort/history-screen.tsx` | нет (повторяет «Oʻtgan»); **решение владельца 10.10.2026: убрать** |
 | «Hujjatlar» | `account/profile/documents-screen.tsx` | частично (без макета) |
 | Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | нет |
 
@@ -62,7 +62,7 @@
 
 | Экран | Компонент | Итог |
 |---|---|---|
-| «Bosh ekranga qoʻshish» | `home/home-screen-offer.tsx` | нет: старый блок на новом главном |
+| «Bosh ekranga qoʻshish» | `home/home-screen-offer.tsx` | нет: старый блок на новом главном; **решение владельца 10.10.2026: строкой в «Sozlamalar»** |
 | Камера с рамкой | `media/camera-screen.tsx` | нет |
 | Заявка отклонена | `driver/status-screen.tsx` | нет |
 | Списки мест | `places/place-picker.tsx` | частично |

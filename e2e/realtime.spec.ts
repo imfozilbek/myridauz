@@ -23,7 +23,7 @@ test('a confirmed booking shows on the open screen without a reload', async ({ p
   // The driver confirmed in another phone: the server says "something changed".
   status = 'confirmed';
   feed.changed();
-  await expect(page.getByText(t('bookings.status.confirmed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.confirmed.title'))).toBeVisible();
   await expect(page.getByText(t('bookings.status.requested'))).toHaveCount(0);
   await page.screenshot({ path: 'screenshots/realtime-2-confirmed.png' });
 });
@@ -41,5 +41,5 @@ test('coming back to the app refreshes the screen when a signal was missed', asy
   await page.screenshot({ path: 'screenshots/realtime-1-requested.png' });
   status = 'confirmed';
   await page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-  await expect(page.getByText(t('bookings.status.confirmed'))).toBeVisible();
+  await expect(page.getByText(t('bookings.confirmed.title'))).toBeVisible();
 });

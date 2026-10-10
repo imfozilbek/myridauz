@@ -66,5 +66,7 @@ test('android: «Mening safarlarim» and the saved drivers', async ({ page }) =>
   await openHome(page, 'passenger', ZEBO, 'android');
   await page.getByText(t('common.myTrips')).first().click();
   await shot(page, 'android', 'pa30-my-trips');
+  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
+  await page.getByText(t('bookings.tab.past')).click();
   await visit(page, 'android', t('comfort.favorites.title'), 'pa31-favorites');
 });
