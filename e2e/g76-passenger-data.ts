@@ -31,8 +31,8 @@ export const madina = (face: boolean) => ({
 // 210 km: on the road 3,5 hours, at Samarqand ≈ 11:30 as on the mockup.
 export const trip = tripOf('1', 'Jasur', false, 0, { departAt: DEPART, seatsLeft: 0, km: 210 });
 // Madina waits at Chilonzor pitagi (mockup g76/2 phones 7 … 10).
-// Where to stand, as the team writes it in the admin (G76, docs/72).
-const pitak = {
+// Where to stand at Chilonzor pitagi, as the team writes it in the admin (G76, docs/72); both roles.
+export const pitak = {
   id: 'chilonzor',
   name: 'Chilonzor pitagi',
   point: { lat: 41.2856, lng: 69.2034 },

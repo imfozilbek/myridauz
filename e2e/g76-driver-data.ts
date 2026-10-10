@@ -1,5 +1,6 @@
 import { confirmed } from './bookings-mock';
 import { tashkent } from './g63-after-mock';
+import { pitak } from './g76-passenger-data';
 import { tripOf } from './market-mock';
 
 // The 16 phones of the driver on the mockup g76/3, one to one (lesson 151): Dilnoza with her Cobalt
@@ -10,14 +11,6 @@ export const SAMARQAND = '1718';
 const FARGONA = '1730401';
 export const DAY = '2026-10-07T15:00';
 export const at = (time: string) => tashkent(`2026-10-${time}`);
-
-// Where to stand, as the team writes it in the admin (G76, docs/72).
-const pitak = {
-  id: 'chilonzor',
-  name: 'Chilonzor pitagi',
-  point: { lat: 41.2856, lng: 69.2034 },
-  hint: 'Metro 2-chiqish yonida',
-};
 
 // The trips made this week: «Bu hafta 3 ta safar».
 const done = (id: string, day: string) =>
