@@ -1,3 +1,4 @@
+import { TOP_UP_START } from '@platform/contracts';
 import { StepLayout } from '../account/step-layout';
 import { SupportButton } from '../account/support-button';
 import { useScreenView } from '../context/analytics-context';
@@ -31,7 +32,7 @@ export function TopUpScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <StepLayout icon="wallet" title={t('wallet.topUp.title')} hint={t('wallet.topUp.hint')}>
       <Screen onBack={onBack} />
-      <SupportButton />
+      <SupportButton start={TOP_UP_START} />
     </StepLayout>
   );
 }

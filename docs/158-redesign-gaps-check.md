@@ -39,7 +39,7 @@
 - Шторка «Yangi soʻrov» всегда показывает «Tasdiqlash», кошелёк не проверяет (`action-sheet/kinds/request-items.tsx:71`).
 - ~~Бот: отказ только всплывающим текстом, без суммы и кнопки пополнения~~: сделано в G75: сообщение с суммой нехватки и «Hamyonni ochish» (`bookings/no-money.ts`).
 - Показана вся комиссия, а не сумма нехватки (`wallet.json:40`).
-- «Hisobni toʻldirish» открывает поддержку без готового текста (`account/support-button.tsx:12`).
+- ~~«Hisobni toʻldirish» открывает поддержку без готового текста~~: сделано в G75: бот поддержки по `start=topup` сам отправляет команде «Hamyonimni toʻldirmoqchiman.».
 - В шторке «Butun salon» нет комиссии (`requests/salon-sheet.tsx:64`).
 - ~~Три бонуса в «Hamyon» называются одинаково~~: сделано в G75: «Boshlash bonusi», «2-oy bonusi», «3-oy bonusi».
 

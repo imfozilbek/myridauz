@@ -5,10 +5,10 @@ import { openInTelegram } from '../telegram/feedback';
 
 // "Write to support": the support bot of the brand opens in Telegram (docs/50); the team answers there.
 // Its name comes from the brand config (docs/22).
-export function SupportButton() {
+// start: a ready question the bot sends the team (G75: «Hisobni toʻldirish»).
+export function SupportButton({ start }: { readonly start?: string }) {
   const { t } = useI18n();
   const { bots } = useBrand();
-  return (
-    <MainButton text={t('account.support')} onClick={() => openInTelegram(`https://t.me/${bots.support}`)} />
-  );
+  const url = `https://t.me/${bots.support}${start ? `?start=${start}` : ''}`;
+  return <MainButton text={t('account.support')} onClick={() => openInTelegram(url)} />;
 }

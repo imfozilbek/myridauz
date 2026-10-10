@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { ApiError, type WalletClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -46,6 +47,11 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
     expect(tracked.some((event) => event.name === 'wallet_open')).toBe(true);
     await tap('Hisobni toʻldirish');
     expect(screen.getByText(/qoʻllab-quvvatlash/)).toBeTruthy();
+    // The support bot gets the ready question «Hamyonimni toʻldirmoqchiman.» (G75, docs/124 Г).
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}?start=topup`);
+    open.mockRestore();
   });
 
   it('turns red below 5 seats and asks to top up', async () => {

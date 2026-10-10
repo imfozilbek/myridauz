@@ -26,6 +26,7 @@
   "driver.receivedNight": "Arizangiz qabul qilindi. Arizalarni har kuni soat {from} dan {to} gacha tekshiramiz, shuning uchun ertalab javob beramiz.",
   "support.welcome": "Assalomu alaykum! Bu {brand} yordam xizmati.\n\nBu yerga yozing:\n💬 Safar, bron, hamyon yoki hisob boʻyicha savolingiz.\n🎤 Ovozli xabar yoki 🖼 rasm ham yuborsa boʻladi.\n🕖 Jamoamiz har kuni soat {from} dan {to} gacha javob beradi.\n\nSavolingizni shu yerga yozing.",
   "support.received": "Xabaringiz qabul qilindi. Tez orada javob beramiz.",
+  "support.topUp": "Hamyonimni toʻldirmoqchiman.",
   "support.reply": "Javob berish",
   "support.replyPrompt": "Javobingizni yozing: matn, rasm yoki ovozli xabar.",
   "support.historyTitle": "{name}: murojaatlar tarixi",

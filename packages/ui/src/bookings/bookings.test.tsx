@@ -90,10 +90,10 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     await tap('Hisobni toʻldirish');
     expect(screen.getByText(/qoʻllab-quvvatlash/)).toBeTruthy();
-    // The way out is one tap: the support chat of the brand opens (docs/86 V3).
+    // The way out is one tap: the support chat of the brand opens with the ready question (docs/86 V3, G75).
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     await tap('Qoʻllab-quvvatlashga yozish');
-    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}?start=topup`);
     open.mockRestore();
   });
 

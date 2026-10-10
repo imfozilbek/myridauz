@@ -24,6 +24,10 @@ export const FIND_LINK = 'find';
 // (docs/118).
 export const PROFILE_PHOTO_LINK: AppLink = { name: 'profile', id: 'photo' };
 
+// «Hisobni toʻldirish» before the payments (G75, docs/124 Г): the support bot opens with
+// start=topup and sends the team the ready question.
+export const TOP_UP_START = 'topup';
+
 // A bot button opens a section of the main screen at once: ?open=<section> (G62, docs/119).
 export const OPEN_LINK = 'open';
 export const OPEN_LINK_VALUE = /^[a-z_]{1,32}$/u;
