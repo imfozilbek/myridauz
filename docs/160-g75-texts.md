@@ -47,6 +47,8 @@
 | `common.counter` | счётчик знаков под «Izoh» | «{count} / {max}» | ждёт |
 | `wallet.short.for`, `wallet.short.commission`, `wallet.short.missing`, `wallet.short.note` | шторка «Hamyonda mablagʻ yetarli emas» (макет g75/4 Б, `158` Г) | «{name}ning joyini tasdiqlash uchun»; «Komissiya · {count} joy»; «Yetmaydi»; «Yordamga tayyor xabar boradi: faqat yuboring.» | ждёт |
 | `wallet.short.message` | готовый текст в чат поддержки по «Hisobni toʻldirish» | «Salom! Hamyonimni toʻldirmoqchiman. {name}ning joyini tasdiqlash uchun {amount} yetmayapti.» | ждёт |
+| `driverTrip.request.until`, `driverTrip.request.when`, `driverTrip.request.pickup`, `driverTrip.request.dropoff` | шторка «Yangi soʻrov» поверх «Mening safarim» (макет g75/4 Б, телефон 1) | «Javob berish muddati · {when}»; «{seats} joy · {day}, {time}»; «{time} · olib ketish joyi»; «tushirish joyi» | ждёт |
+| `bookings.offer.sent`, `bookings.offer.when` | шторка предложения водителя поверх «Mening soʻrovim» (макет g75/4 Б, телефон 2) | «{name} taklif yubordi»; «Joʻnash vaqti» | ждёт |
 
 ## Как читать
 

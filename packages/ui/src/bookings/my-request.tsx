@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Offer, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
@@ -23,11 +24,13 @@ type Props = {
   readonly onCancel: () => void;
   readonly onAnswer: (offer: Offer, action: 'accept' | 'decline') => Promise<unknown>;
   readonly onOpen: (offer: Offer) => void;
+  // A sheet over the request: one offer opened (G75).
+  readonly children?: ReactNode;
 };
 
 // «Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A): the request on one line, the offers
 // of the drivers with «Rad etish» and «Qabul qilish», the channel while waiting, the cancel below.
-export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer, onOpen }: Props) {
+export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer, onOpen, children }: Props) {
   useScreenView('market.request');
   useScreenBackground();
   const { t, formatNumber } = useI18n();
@@ -80,6 +83,7 @@ export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer
           {t('market.request.cancel')}
         </button>
       ) : null}
+      {children}
     </div>
   );
 }

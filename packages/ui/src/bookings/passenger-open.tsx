@@ -6,11 +6,10 @@ import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { haptic } from '../telegram/feedback';
 import { errorKey } from '../market/error-text';
-import { ActionFailure } from '../states/action-failure';
 import { ChatScreen } from '../chat/chat-screen';
 import { AcceptedBooking } from './accepted-booking';
 import { MyRequest } from './my-request';
-import { OfferScreen } from './offer-list';
+import { PassengerOfferSheet } from './passenger-offer-sheet';
 import { PassengerBooking } from './passenger-booking';
 
 const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
@@ -67,18 +66,6 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
     );
   if (accepted) return <AcceptedBooking bookingId={accepted} onClose={onClose} onHome={onHome} />;
   if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
-  if (offer)
-    return (
-      <OfferScreen
-        offer={offer}
-        onBack={() => open(null)}
-        onAccept={() => answer(offer, 'accept')}
-        onDecline={() => answer(offer, 'decline')}
-        onChat={() => setTalk({ chatKey: offer.chatKey, title: offer.driver.firstName })}
-      >
-        <ActionFailure error={failure} />
-      </OfferScreen>
-    );
   if (opened.kind === 'request')
     return (
       <MyRequest
@@ -94,7 +81,17 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
         }
         onAnswer={answer}
         onOpen={open}
-      />
+      >
+        {/* One offer opens in a sheet over the request (G75, mockup g75/4 B phone 2). */}
+        <PassengerOfferSheet
+          offer={offer}
+          failure={failure}
+          onAccept={(chosen) => answer(chosen, 'accept')}
+          onDecline={(chosen) => answer(chosen, 'decline')}
+          onChat={(chosen) => setTalk({ chatKey: chosen.chatKey, title: chosen.driver.firstName })}
+          onClose={() => open(null)}
+        />
+      </MyRequest>
     );
   return <PassengerBooking booking={opened.booking} onClose={onClose} onStale={onStale} onHome={onHome} />;
 }

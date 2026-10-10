@@ -1,0 +1,53 @@
+/* One offer over «Mening soʻrovim» (mockup g75/4 B phone 2): a pale card with the driver, the car
+   and its plate, then the time and the sum; «Rad etish» in red. */
+.offer-sheet-card {
+  margin: 0 14px;
+  border-radius: 14px;
+  background: var(--reg-neutral-pale);
+}
+
+.offer-sheet-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+}
+
+.offer-sheet-who {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  font-size: 18px;
+}
+
+.offer-sheet-rating {
+  margin-left: 6px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--reg-muted);
+}
+
+.offer-sheet-car {
+  font-size: 14px;
+  color: var(--reg-muted);
+}
+
+.offer-sheet-row {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 16px;
+}
+
+.offer-sheet-row:last-child {
+  border-bottom: none;
+}
+
+.offer-sheet-decline {
+  color: var(--reg-danger);
+}

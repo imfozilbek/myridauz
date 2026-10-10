@@ -92,7 +92,7 @@ export function OwnTripPage(props: Props) {
               short={short(balance, booking.commission)}
               onAnswer={(action) => onAnswer(booking, action)}
               onTopUp={() => onOpen(booking, 'not_enough')}
-              onOpen={() => onOpen(booking, 'booking')}
+              onOpen={() => onOpen(booking, 'request')}
             />
           ))}
         </>
