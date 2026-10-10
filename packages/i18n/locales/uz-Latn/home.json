@@ -22,6 +22,8 @@
   "dock.toDriver": "Qayerga ketyapsiz?",
   "dock.swap": "Joylarni almashtirish",
   "request.title": "Soʻrovim",
+  "request.titleMany": "Soʻrovlarim",
+  "request.count": "{count} ta soʻrov",
   "request.when": "{to}, {date}",
   "comeBack": "Qaytish",
   "becomeDriver.title": "Haydovchi boʻling",

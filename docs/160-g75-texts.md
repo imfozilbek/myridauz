@@ -28,6 +28,7 @@
 | `bot.rating.low` | бот роли человека: средняя оценка ниже порога, один раз (`158` З) | «Reytingingiz pasaydi: ⭐ {average}. Safarlarni qoidalarga koʻra oʻtkazing, shunda sizni koʻproq tanlashadi.» | ждёт |
 | `bot.complaint.hidden` | бот роли человека: жалобы от {count} разных людей скрыли его из поиска (`158` З) | «Sizga {count} kishi shikoyat qildi. Jamoa koʻrib chiqquncha sizni qidiruvda koʻrsatmaymiz.» | ждёт |
 | `account.profile.navigator` | «Profil» водителя, группа «Sozlamalar»: новая строка (`158` Ё); вид экрана тоже на согласие | «Navigator», под ним выбранный («Yandex», «Google», «Apple») или «Tanlang» | ждёт |
+| `home.request.titleMany`, `home.request.count` | плитка попутчика при 2 или 3 открытых заявках (`158` Е) | «Soʻrovlarim»; под ней ближайшая и «{count} ta soʻrov» | ждёт |
 
 ## Как читать
 
