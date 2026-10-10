@@ -54,6 +54,8 @@ export const endedBadly = (status: Booking['status']): status is Ended =>
 // Why it ended, or how the driver moved the time of a seat that stays (docs/124 А, Б).
 function useWhy({ status, trip }: Booking): string | null {
   const { t, formatTime } = useI18n();
+  // The driver cancelled one seat, not the trip: said so (G75, docs/158 А).
+  if (status === 'cancelled_by_driver' && trip.status !== 'cancelled') return t('bookings.why.seatCancelled');
   if (endedBadly(status)) return t(`bookings.why.${status}`);
   if (status !== 'confirmed' || trip.firstDepartAt === trip.departAt) return null;
   const time = (ms: number) => formatTime(new Date(ms));

@@ -1,4 +1,4 @@
-import { tashkentDate, type Booking } from '@platform/contracts';
+import { onTheWay, tashkentDate, type Booking } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
@@ -93,8 +93,9 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
         <ActionFailure error={failure} />
       </PendingBooking>
     );
-  // In the car or arrived: the seat is used, nothing to cancel (docs/35).
-  const inCar = booking.boardedAt !== null || booking.arrivedAt !== null;
+  // In the car, arrived or the driver left: nothing to cancel, the server refuses it (docs/35, G75).
+  const inCar =
+    booking.boardedAt !== null || booking.arrivedAt !== null || onTheWay(booking.trip, Date.now());
   return (
     <ConfirmedBooking
       booking={booking}
