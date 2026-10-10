@@ -18,7 +18,7 @@ const START = /^trip_([A-Za-z0-9-]{1,64})$/u;
 
 // A trip the link names: "Band qilish" in a channel (startapp=trip_<id>, docs/15) or a bot message
 // about a subscription (?trip=<id>, docs/24).
-function linkedTrip(): string | null {
+export function linkedTrip(): string | null {
   const fromBot = launchParam(PARAM, TRIP_ID);
   if (fromBot) return fromBot;
   return START.exec(freshStartParam() ?? '')?.[1] ?? null;
