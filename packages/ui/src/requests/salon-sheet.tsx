@@ -45,7 +45,7 @@ function SalonForm({
   onOpened,
   onShort,
 }: Omit<Props, 'request'> & { readonly request: RideRequest }) {
-  const { t, formatNumber } = useI18n();
+  const { t, formatNumber, formatMoney } = useI18n();
   const { track } = useAnalytics();
   const { map, bookings } = useApiClients();
   const { commission } = useBrand();
@@ -61,6 +61,7 @@ function SalonForm({
     return pitak?.name ?? t('way.trip.mode.pitak');
   };
   const dayName = day(request.date);
+  const fee = commissionFor(commission, request.price, seats);
   const rows = [
     [t('places.route'), t('requests.card.route', ends), null],
     [t('market.when.day'), dayName.charAt(0).toUpperCase() + dayName.slice(1), null],
@@ -74,6 +75,8 @@ function SalonForm({
         sum: formatNumber(seats * request.price),
       }),
     ],
+    // What the whole car costs the driver before the offer goes (G75, docs/158 Г).
+    [t('wallet.title'), t('requests.salon.commission', { sum: formatMoney(fee) }), null],
   ] as const;
   const open = async () => {
     if (!when?.departAt) return;
@@ -84,8 +87,7 @@ function SalonForm({
       haptic.success();
       onOpened(trip.id);
     } catch (caught) {
-      if (caught instanceof ApiError && caught.code === 'wallet.not_enough')
-        onShort(commissionFor(commission, request.price, seats));
+      if (caught instanceof ApiError && caught.code === 'wallet.not_enough') onShort(fee);
       else fail(caught);
     }
   };

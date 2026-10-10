@@ -39,7 +39,7 @@ export async function mockupData(page: Page) {
   );
   const counts = [3, 8, 5, 0, 0, 0, 0];
   const days = counts.map((trips, index) => ({ date: tashkentDate(Date.now() + index * DAY_MS), trips }));
-  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days } }));
+  await page.route('**/api/trips/days?*', (route) => route.fulfill({ json: { km: 300, days, places: [] } }));
   // «Ertaga» of the mockup: 08:00 and 13:00, two trips of one seat hidden by «2» people.
   const tomorrow = tashkentDate(Date.now() + DAY_MS);
   const at = (time: string) => ({ departAt: Date.parse(`${tomorrow}T${time}:00+05:00`) });

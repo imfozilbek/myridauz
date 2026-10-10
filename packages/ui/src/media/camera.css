@@ -4,7 +4,7 @@
   z-index: 100;
   inset: 0;
   overflow: hidden;
-  background: rgb(0 0 0);
+  background: var(--reg-night);
   color: rgb(255 255 255);
 }
 
@@ -21,13 +21,13 @@
   transform: scaleX(-1);
 }
 
-/* The frame; the shadow darkens everything around it. */
+/* The frame of the mockup g75/6 A: a dashed white line on the picture, nothing darkened around it. */
 .camera-guide {
   position: absolute;
   top: 46%;
   left: 50%;
-  border: 3px dashed rgb(255 255 255);
-  box-shadow: 0 0 0 200vmax rgb(0 0 0 / 45%);
+  box-sizing: border-box;
+  border: 3px dashed rgb(255 255 255 / 85%);
   transform: translate(-50%, -50%);
 }
 
@@ -37,29 +37,38 @@
   border-radius: 50%;
 }
 
-.camera-guide-front,
 .camera-guide-interior {
   width: 86vw;
   height: 64vw;
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 .camera-guide-side {
   width: 92vw;
   height: 46vw;
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
-/* The plate place on the front photo. */
-.camera-guide-front::after {
+/* The front photo: 26px from the sides, 150px from the top, the car line in it. */
+.camera-guide-front {
+  top: 150px;
+  right: 26px;
+  left: 26px;
+  height: 260px;
+  border-radius: 22px;
+  transform: none;
+}
+
+.camera-car {
   position: absolute;
-  bottom: 12%;
+  top: 67px;
   left: 50%;
-  width: 34%;
-  height: 12%;
-  border: 2px solid rgb(255 255 255);
-  border-radius: 6px;
-  content: '';
+  width: 230px;
+  height: 110px;
+  fill: none;
+  stroke: rgb(255 255 255);
+  stroke-width: 3;
+  opacity: 0.55;
   transform: translateX(-50%);
 }
 
@@ -70,9 +79,20 @@
   left: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 24px 24px 0;
+  align-items: center;
+  padding: 28px 24px 0;
   text-align: center;
+}
+
+.camera-top b {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.camera-top span {
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.85;
 }
 
 .camera-failed {
@@ -80,10 +100,6 @@
   top: 46%;
   right: 24px;
   left: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
   text-align: center;
   transform: translateY(-50%);
 }
@@ -93,27 +109,41 @@
   right: 0;
   bottom: 0;
   left: 0;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  padding: 24px 24px 40px;
+  padding-bottom: 22px;
 }
 
 .camera-close {
-  justify-self: start;
+  position: absolute;
+  bottom: 60px;
+  left: 24px;
   color: rgb(255 255 255);
 }
 
 .camera-shutter {
-  width: 76px;
-  height: 76px;
-  border: 6px solid rgb(255 255 255 / 60%);
+  box-sizing: border-box;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 26px;
+  border: 5px solid rgb(255 255 255);
   border-radius: 50%;
-  background: rgb(255 255 255);
-  background-clip: padding-box;
+  background: rgb(255 255 255 / 25%);
   cursor: pointer;
 }
 
 .camera-shutter:disabled {
   opacity: 0.4;
+}
+
+.camera-native {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(255 255 255);
+  font: inherit;
+  font-size: 14px;
+  opacity: 0.85;
+  cursor: pointer;
 }

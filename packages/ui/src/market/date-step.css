@@ -1,0 +1,13 @@
+/* The phone calendar of «Boshqa» under the day tiles: a white field as the search of g75/6 A. */
+.date-step-field {
+  box-sizing: border-box;
+  width: calc(100% - 28px);
+  margin: 0 14px 12px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 16px;
+}

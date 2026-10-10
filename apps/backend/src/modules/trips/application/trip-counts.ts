@@ -48,7 +48,10 @@ export async function tripDays(
     const date = tashkentDate(tashkentDayStart(today) + index * DAY_MS);
     return { date, trips: fits.filter((item) => item.date === date).length };
   });
-  return { ok: true, value: { km: way.value.km, days } };
+  const byPlace = new Map<string, number>();
+  for (const { trip } of fits) byPlace.set(trip.to, (byPlace.get(trip.to) ?? 0) + 1);
+  const inside = [...byPlace].map(([place, trips]) => ({ to: place, trips }));
+  return { ok: true, value: { km: way.value.km, days, places: inside.sort((a, b) => b.trips - a.trips) } };
 }
 
 // «Qayerga borasiz?»: the directions with the most trips today and tomorrow, then the popular ones;

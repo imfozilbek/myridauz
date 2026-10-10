@@ -39,43 +39,43 @@
 | Документ (оферта, политика) | `legal/legal-screen.tsx` | нет |
 | Блок «Hisobingiz toʻxtatilgan» | `account/blocked-screen.tsx` | нет (содержание есть, вид старый) |
 | «Rasm qoʻshing» (фото не ушло) | `account/avatar-required-screen.tsx` | нет |
-| Список мест: районы, поиск | `places/place-picker.tsx` | частично (новые только рисунки областей) |
-| «Tuman tanlash» | `place-picker.tsx` в `market/find-results.tsx` | нет |
+| Список мест: районы, поиск | `places/place-picker.tsx` | **G75 лист 6А** |
+| «Tuman tanlash» | `places/district-list.tsx` | **G75 лист 6А**: «Butun viloyat» отдельно, у каждого места «N ta safar» за неделю |
 | «Safar» закрыта или уехала | `market/closed-trip.tsx` | частично |
 | «Barcha izohlar» | `find/reviews-screen.tsx` | нет |
 | «Izoh» к брони | `market/trip-steps.tsx` | **G75 лист 3А**: шторка |
-| Жалоба и «yuborildi» | `feedback/complaint-screen.tsx` | нет |
+| Жалоба и «yuborildi» | `feedback/complaint-screen.tsx` | **G75 лист 5А**: галочки в одной карточке (`sheet/tick-rows.tsx`) |
 | Маршрут заявки (форма) | `places/route-screen.tsx` | нет |
 | День заявки | `market/date-step.tsx` | нет |
-| **Одно предложение** | `bookings/offer-list.tsx` (OfferScreen) | нет: прячется за новой карточкой |
-| «Mening safarlarim»: «Faol», пусто | `market/my-requests-list.tsx` | частично |
-| «Obunalar» | `subscriptions/subscriptions-screen.tsx` | нет |
+| **Одно предложение** | `bookings/passenger-offer-sheet.tsx` | **G75 лист 4Б**: шторка поверх «Mening soʻrovim»; `offer-list.tsx` удалён |
+| «Mening safarlarim»: «Faol», пусто | `mine/mine-card.tsx` | **G75 лист 2А** |
+| «Obunalar» | `subscriptions/subscriptions-screen.tsx` | **G75 лист 2А** |
 | «Xabar bering» с канала | `subscriptions/notify-me.tsx` | **G75 лист 3А**: шторка |
 | «Sevimli haydovchilar» | `comfort/favorites-screen.tsx` | нет |
-| «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | частично (без макета) |
+| «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | **G75 лист 5А**: карточка с тремя числами, «Baholarim» |
 | «Baholarim» | `find/reviews-screen.tsx` | нет |
 | «Safarlar tarixi» | `comfort/history-screen.tsx` | ~~нет~~ **убран в G75** (решение владельца 10.10.2026): прошлые поездки во вкладке «Oʻtgan» |
-| «Hujjatlar» | `account/profile/documents-screen.tsx` | частично (без макета) |
-| Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | нет |
+| «Hujjatlar» и документ | `legal/legal-screen.tsx` | **G75 лист 5А**: документ одной открытой карточкой |
+| Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | **G75 лист 5А**: три строки, кошелёк водителя |
 
 ## Водитель (16 нет, 3 частично)
 
 | Экран | Компонент | Итог |
 |---|---|---|
 | «Bosh ekranga qoʻshish» | `home/home-screen-offer.tsx` | ~~нет~~ **в G75 строка «Sozlamalar»** у обеих ролей, пока Telegram может добавить значок (решение владельца 10.10.2026) |
-| Камера с рамкой | `media/camera-screen.tsx` | нет |
+| Камера с рамкой | `media/camera-screen.tsx` | **G75 лист 6А**: контур машины в рамке, «Telefon kamerasini ochish» всегда |
 | Заявка отклонена | `driver/status-screen.tsx` | нет |
-| Списки мест | `places/place-picker.tsx` | частично |
+| Списки мест | `places/place-picker.tsx` | **G75 лист 6А**: тот же вид, что «Tuman tanlash» |
 | Маршрут новой поездки (форма) | `places/route-screen.tsx` | нет |
 | День и время | `market/when-sheet.tsx` | **G75 лист 3А**: шторка, плитки дня и сетка времени |
 | «Izoh» поездки | `market/trip-steps.tsx` | **G75 лист 3А**: шторка |
-| Пятак на карте | `market/pitak-screen.tsx` | частично |
+| Пятак на карте | `market/pitak-screen.tsx` | **G75 лист 6А**: шторка «Shu pitakdan» и «Pitaksiz: faqat uyidan» |
 | Лимит поездок | `market/trip-limit.tsx` | нет |
 | **Одна бронь** | `bookings/driver-booking.tsx`, `booking-screen.tsx` | нет: открывается из «Mening safarlarim» |
 | «Hamyonda … yetmaydi» | `bookings/wallet-steps.tsx` (NotEnoughScreen) | нет |
 | «Hisobni toʻldirish» | `bookings/wallet-steps.tsx` (TopUpScreen) | нет |
 | «Vaqt yoki narx», новое время или цена | `market/trip-change.tsx` | **G75 лист 3А**: одна шторка |
-| Выбор навигатора | `bookings/navigator-sheet.tsx` | нет |
+| Выбор навигатора | `bookings/navigator-sheet.tsx` | **G75 лист 6А**: шторка и в Telegram, плитки, «Tanlov eslab qolinadi» |
 | «Qaysi yoʻlovchi?» | `trip-end/rider-pick.tsx` | нет |
 | «Soʻrovlar tekshiruvdan keyin» | `market/pending-lock.tsx` | нет |
 | «Mening safarlarim»: «Oʻtgan», пусто | `market/my-trips-list.tsx`, `market/trip-card.tsx` | частично |

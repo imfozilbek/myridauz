@@ -45,6 +45,19 @@ describe('the trips of each direction (G59, docs/118)', () => {
     expect(days.ok && days.value.days[0]?.date).toBe('2026-10-01');
   });
 
+  // «Samarqandning qaysi joyi?» (G75, mockup g75/6 A): the trips of the week by the place they go to.
+  it('«Safarlar» counts the week by the place inside the region the trips go to', async () => {
+    const { deps } = await market();
+    const { trip } = setup();
+    const third = await publishTrip(deps, 1, { ...trip, to: '1718233', departAt: TOMORROW + 6 * HOUR });
+    expect(third).toMatchObject({ ok: true });
+    const days = await tripDays(deps, '1726', '1718');
+    expect(days.ok && days.value.places).toEqual([
+      { to: '1718401', trips: 2 },
+      { to: '1718233', trips: 1 },
+    ]);
+  });
+
   it('a route inside one city has no days', async () => {
     const { deps } = await market();
     expect(await tripDays(deps, '1726273', '1726294')).toEqual({ ok: false, error: 'locations.inside_city' });

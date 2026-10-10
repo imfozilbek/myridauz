@@ -52,6 +52,14 @@ describe('RouteScreen (docs/14)', () => {
     expect(screen.getByText('Fargʻona viloyati')).toBeTruthy();
   });
 
+  // The form in the look of the places of the mockup g75/6 A: two rows with a tile and the place.
+  it('shows «Qayerdan» and «Qayerga» as rows of one white card', async () => {
+    renderRoute(ready, true);
+    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    const rows = [...document.querySelectorAll('.district-card .district')].map((row) => row.textContent);
+    expect(rows).toEqual(['QayerdanTanlang', 'QayergaTanlang']);
+  });
+
   it('picks a region by photo, then a district', async () => {
     const { onDone } = renderRoute(ready);
     await choose('Qayerdan', 'Toshkent shahri', 'Chilonzor');

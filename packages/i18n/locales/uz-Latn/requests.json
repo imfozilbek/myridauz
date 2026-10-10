@@ -15,6 +15,7 @@
   "salon.title": "{name} uchun safar",
   "salon.sub": "Soʻrovdan toʻldirildi. Faqat vaqtni tanlang.",
   "salon.sum": "{seats} joy × {price} = {sum}",
+  "salon.commission": "Komissiya · {sum}",
   "salon.hint": "{name} rozi boʻlsa, safar unga band boʻladi.",
   "day.today": "bugun",
   "day.tomorrow": "ertaga",

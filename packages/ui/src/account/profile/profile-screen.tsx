@@ -12,6 +12,7 @@ import { DeleteAccountScreen } from './delete-account';
 import { DocumentsScreen } from './documents-screen';
 import { LookScreen } from './look-screen';
 import { MyReviewsScreen } from './my-reviews-screen';
+import { ProfileNotes } from './profile-notes';
 import { ProfileRows, type ProfileOpen } from './profile-rows';
 import { ProfileStats } from './profile-stats';
 import { ProfileTop } from './profile-top';
@@ -28,12 +29,26 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   const { colors } = useBrand().theme;
   const { value: standing } = useLoad(() => comfort.standing(), 'profile.standing');
   const [open, setOpen] = useState<ProfileOpen | 'look' | null>(null);
+  // «Baholarim» opened from «Meni qanday koʻradi» goes back there (G75, mockup g75/5 A).
+  const [fromLook, setFromLook] = useState(false);
   if (!account) return null;
   const back = () => setOpen(null);
   const { profile } = account;
   if (open === 'look')
-    return <LookScreen rating={standing?.rating ?? { average: profile.rating, count: 0 }} onBack={back} />;
-  if (open === 'reviews') return <MyReviewsScreen userId={profile.id} onBack={back} />;
+    return (
+      <LookScreen
+        standing={standing}
+        onReviews={() => (setFromLook(true), setOpen('reviews'))}
+        onBack={back}
+      />
+    );
+  if (open === 'reviews')
+    return (
+      <MyReviewsScreen
+        userId={profile.id}
+        onBack={() => (setOpen(fromLook ? 'look' : null), setFromLook(false))}
+      />
+    );
   if (open === 'channels') return <MyChannelsScreen onBack={back} />;
   if (open === 'documents') return <DocumentsScreen onBack={back} />;
   if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={back} />;
@@ -42,6 +57,7 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
       <Screen onBack={onBack} />
       <ProfileTop onLook={() => setOpen('look')} />
       <ProfileStats standing={standing} />
+      <ProfileNotes standing={standing} />
       <ProfileRows standing={standing} onOpen={setOpen} />
     </div>
   );

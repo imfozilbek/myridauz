@@ -51,6 +51,8 @@ describe('«Safar» that cannot be booked', () => {
     cleanup();
     open({ ...trip, status: 'cancelled' });
     expect(await screen.findByText('Haydovchi bu safarni bekor qildi. Boshqa safarni tanlang.')).toBeTruthy();
+    // One plate of how it ended for a seat, «Safar» and a request (G75, docs/158 А).
+    expect(document.querySelector('.outcome-plate.outcome-plate-off')?.textContent).toContain('bekor qildi');
   });
 
   it('books the trip of another driver', async () => {

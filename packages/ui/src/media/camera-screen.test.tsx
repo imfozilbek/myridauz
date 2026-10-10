@@ -10,11 +10,12 @@ afterEach(() => {
 });
 
 const stop = vi.fn();
-function camera(getUserMedia: () => Promise<unknown>) {
+function camera(getUserMedia: () => Promise<unknown>, guide: 'face' | 'front' = 'face', telegram = false) {
   vi.stubGlobal('navigator', { ...navigator, mediaDevices: { getUserMedia } });
   const done = { onPhoto: vi.fn(), onNative: vi.fn(), onClose: vi.fn() };
   const view = renderInShell(
-    <CameraScreen facing="user" guide="face" title="Yuzingiz rasmi" hint="Ramkaga" {...done} />,
+    <CameraScreen facing="user" guide={guide} title="Yuzingiz rasmi" hint="Ramkaga" {...done} />,
+    telegram,
   );
   return { ...done, ...view };
 }
@@ -50,5 +51,15 @@ describe('CameraScreen (docs/47)', () => {
     expect(onNative).toHaveBeenCalled();
     fireEvent.click(screen.getByText('Orqaga'));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  // The car of the mockup g75/6 A: its line in the frame, the phone camera always one tap away; in
+  // Telegram its «Назад» closes the camera, no button of our own.
+  it('draws the car in the frame of the front photo and always offers the phone camera', async () => {
+    const { onNative, container } = camera(async () => ({ getTracks: () => [{ stop }] }), 'front', true);
+    expect(container.querySelector('.camera-guide-front .camera-car')).toBeTruthy();
+    expect(screen.queryByText('Orqaga')).toBeNull();
+    fireEvent.click(screen.getByText('Telefon kamerasini ochish'));
+    expect(onNative).toHaveBeenCalled();
   });
 });

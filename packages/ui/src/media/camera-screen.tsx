@@ -1,9 +1,12 @@
 import { Button, Text } from '@telegram-apps/telegram-ui';
 import { useEffect, useRef, useState } from 'react';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { BackButton } from '../telegram/back-button';
 import { haptic } from '../telegram/feedback';
 import { useInTelegram } from '../telegram/in-telegram-context';
+import { brandVars } from '../theme/brand-vars';
+import { CameraCar } from './camera-car';
 import './camera.css';
 
 // The frame drawn over the camera: where the face or the car should be.
@@ -28,6 +31,7 @@ const JPEG_QUALITY = 0.92;
 // In Telegram its «Назад» closes the camera first and the step under it stays (docs/94 F6, F7).
 export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, onClose }: CameraScreenProps) {
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const inTelegram = useInTelegram();
   const video = useRef<HTMLVideoElement>(null);
   const [state, setState] = useState<State>('starting');
@@ -62,7 +66,7 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
   };
 
   return (
-    <div className="camera" role="dialog" aria-label={title}>
+    <div className="camera" role="dialog" aria-label={title} style={brandVars(colors)}>
       {inTelegram ? <BackButton overlay onClick={onClose} /> : null}
       <video
         ref={video}
@@ -72,23 +76,19 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
         muted
         onLoadedData={() => setState('live')}
       />
-      <span className={`camera-guide camera-guide-${guide}`} />
+      <span className={`camera-guide camera-guide-${guide}`}>{guide === 'front' ? <CameraCar /> : null}</span>
       <div className="camera-top">
-        <Text weight="2">{title}</Text>
-        <Text>{hint}</Text>
+        <b>{title}</b>
+        <span>{hint}</span>
       </div>
-      {state === 'failed' ? (
-        <div className="camera-failed">
-          <Text>{t('common.camera.denied')}</Text>
-          <Button size="m" onClick={onNative}>
-            {t('common.camera.native')}
-          </Button>
-        </div>
-      ) : null}
+      {state === 'failed' ? <Text className="camera-failed">{t('common.camera.denied')}</Text> : null}
       <div className="camera-bottom">
-        <Button mode="plain" size="m" className="camera-close" onClick={onClose}>
-          {t('common.back')}
-        </Button>
+        {/* In Telegram its «Назад» closes the camera (docs/94 F6); outside it, our own. */}
+        {inTelegram ? null : (
+          <Button mode="plain" size="m" className="camera-close" onClick={onClose}>
+            {t('common.back')}
+          </Button>
+        )}
         <button
           type="button"
           className="camera-shutter"
@@ -96,6 +96,10 @@ export function CameraScreen({ facing, guide, title, hint, onPhoto, onNative, on
           disabled={state !== 'live'}
           onClick={shoot}
         />
+        {/* The phone camera is always one tap away (G75, mockup g75/6 A). */}
+        <button type="button" className="camera-native" onClick={onNative}>
+          {t('common.camera.native')}
+        </button>
       </div>
     </div>
   );

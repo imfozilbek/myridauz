@@ -101,6 +101,10 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
     await tap('Yoʻl koʻrsatish');
     // The choice opens as a sheet over the map: the points stay in their place (docs/88 L13).
     expect(await screen.findByRole('dialog')).toBeTruthy();
+    // Always the sheet of the app, the choice is kept (G75, mockup g75/6 A).
+    expect(screen.getByText('Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.')).toBeTruthy();
+    // Apple Maps only on an iPhone: Yandex and Google here, each with its tile.
+    expect(document.querySelectorAll('.navigator-row .navigator-tile')).toHaveLength(2);
     await tap('Yandex');
     expect(openExternal).toHaveBeenCalledWith(
       'https://yandex.uz/maps/?rtext=~41.36,69.3~41.29,69.21&rtt=auto',

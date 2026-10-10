@@ -1,13 +1,8 @@
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
 import { gone, openPast, rode } from './past-trip-kit';
 
-const choose = vi.hoisted(() => vi.fn());
-vi.mock('../telegram/feedback', async (original) => ({
-  ...(await original<typeof import('../telegram/feedback')>()),
-  choose,
-}));
 vi.mock('../chat/chat-screen', () => ({
   ChatScreen: ({ title, ring }: { readonly title: string; readonly ring?: boolean }) => (
     <p>{`chat ${title}${ring ? ' ring' : ''}`}</p>
@@ -18,6 +13,8 @@ vi.mock('../feedback/complaint-screen', () => ({
 }));
 
 afterEach(cleanup);
+
+const sheet = () => document.querySelector('.form-sheet .rider-pick') as HTMLElement;
 
 const named = (n: number, firstName: string) => ({
   ...rode,
@@ -30,29 +27,24 @@ describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup
     openPast([rode]);
     await tap('Suhbatlar');
     expect(await screen.findByText('chat Madina')).toBeTruthy();
-    expect(choose).not.toHaveBeenCalled();
   });
 
-  it('«Shikoyat» asks which passenger in the window of Telegram', async () => {
-    choose.mockResolvedValueOnce(gone.id);
+  // A sheet over the past trip, as the forms of the mockup g75/3 A: every passenger, one tap each.
+  it('«Shikoyat» asks which passenger in a sheet over the trip', async () => {
     openPast([rode, gone]);
     await tap('Shikoyat');
+    expect((await screen.findAllByText('Qaysi yoʻlovchi?')).length).toBeGreaterThan(0);
+    fireEvent.click(within(sheet()).getByText('Akmal'));
     expect(await screen.findByText(`complaint ${gone.id}`)).toBeTruthy();
-    expect(choose).toHaveBeenCalledWith('Qaysi yoʻlovchi?', [
-      { id: rode.id, text: 'Madina' },
-      { id: gone.id, text: 'Akmal' },
-    ]);
   });
 
-  it('a fourth passenger is chosen on the list, never left out', async () => {
-    choose.mockClear();
+  it('a fourth passenger is in the same sheet, never left out', async () => {
     const four = [named(1, 'Madina'), named(2, 'Akmal'), named(3, 'Sardor'), named(4, 'Bobur')];
     openPast(four);
     await tap('Shikoyat');
-    expect(await screen.findByText('Qaysi yoʻlovchi?')).toBeTruthy();
-    await tap('Bobur');
+    await screen.findAllByText('Qaysi yoʻlovchi?');
+    fireEvent.click(within(sheet()).getByText('Bobur'));
     expect(await screen.findByText('complaint r4')).toBeTruthy();
-    expect(choose).not.toHaveBeenCalled();
   });
 
   it('the chat and the call of a passenger row: the call rings', async () => {

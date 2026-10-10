@@ -77,6 +77,8 @@ describe(
       expect(form.getByText('Faqat butun salon')).toBeTruthy();
       // Every seat of the car at the price of the request (G61).
       expect(form.getByText('6 joy × 95 000 = 570 000')).toBeTruthy();
+      // The commission of the whole car before the offer goes (G75, docs/158 Г).
+      expect(form.getByText(/^Komissiya · 57.000 soʻm$/u)).toBeTruthy();
       expect(form.getByText('Dilnoza rozi boʻlsa, safar unga band boʻladi.')).toBeTruthy();
       fireEvent.click(await form.findByRole('button', { name: 'Safar ochib taklif qilish' }));
       await waitFor(() => expect(offerSalonTrip).toHaveBeenCalledWith('r2', EIGHT));

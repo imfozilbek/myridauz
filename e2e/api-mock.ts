@@ -59,6 +59,10 @@ export async function mockApi(
   });
   // A test person has no real photo: the profile shows the empty circle.
   await page.route('**/api/users/*/avatar', (route) => route.fulfill({ status: 404, json: {} }));
+  // Nothing said about complaints by default (G75): no warning, in the search.
+  await page.route('**/api/complaints/mine', (route) =>
+    route.fulfill({ json: { hidden: false, warnedAt: null } }),
+  );
   // The real directory of the seed (docs/48) in the order of the backend: regions as in docs/14,
   // places inside a region by name.
   const directory = [...locations]

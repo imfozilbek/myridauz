@@ -9,6 +9,7 @@ import { usePlaces } from '../market/places-gate';
 import { useShortDay } from '../market/when';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
+import { OutcomePlate } from '../states/outcome-plate';
 import { CallsSwitch } from '../talk/calls-switch';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
@@ -56,10 +57,10 @@ export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer
             day: shortDay(request.date, now),
           })}
         </span>
-        <span className="my-request-facts">
-          {open ? facts.join(' · ') : t(`market.status.${request.status}`)}
-        </span>
+        {open ? <span className="my-request-facts">{facts.join(' · ')}</span> : null}
       </div>
+      {/* How it ended, on the plate of a seat and «Safar» too (G75, docs/158 А). */}
+      {request.status === 'open' ? null : <RequestEnd status={request.status} />}
       <ActionFailure error={failure} />
       {open && waiting.length > 0 ? (
         <>
@@ -85,5 +86,18 @@ export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer
       ) : null}
       {children}
     </div>
+  );
+}
+
+function RequestEnd({ status }: { readonly status: Exclude<RideRequest['status'], 'open'> }) {
+  const { t } = useI18n();
+  const matched = status === 'matched';
+  return (
+    <OutcomePlate
+      tick={matched}
+      off={!matched}
+      title={t(`market.status.${status}`)}
+      lines={status === 'matched' ? [] : [t(`market.request.why.${status}`)]}
+    />
   );
 }

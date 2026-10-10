@@ -1,0 +1,59 @@
+/* «Shikoyat» by the values of the mockup g75/5 A (Pixel Perfect, lesson 141). */
+.complaint {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+  color: var(--reg-ink);
+}
+
+.complaint-title {
+  margin: 0;
+  padding: 22px 20px 12px;
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.complaint-title small {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--reg-muted);
+}
+
+.complaint-card {
+  margin: 0 14px 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--reg-card);
+}
+
+.complaint .complaint-field {
+  margin: 0 14px 12px;
+  padding: 0;
+  border-radius: 14px;
+  background: var(--reg-card);
+  box-shadow: none;
+}
+
+.complaint .complaint-field textarea {
+  box-sizing: border-box;
+  height: 64px;
+  min-height: 64px;
+  padding: 14px 16px;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.complaint .complaint-field textarea::placeholder {
+  color: var(--reg-control);
+}
+
+.complaint-note {
+  margin: 0;
+  padding: 0 28px 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}

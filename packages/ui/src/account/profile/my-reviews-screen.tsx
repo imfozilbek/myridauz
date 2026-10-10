@@ -1,5 +1,4 @@
 import type { PersonId } from '@platform/contracts';
-import { List } from '../../components';
 import { useApiClients } from '../../context/api-clients';
 import { useI18n } from '../../context/i18n-context';
 import { ReviewsScreen } from '../../find/reviews-screen';
@@ -24,9 +23,9 @@ export function MyReviewsScreen({
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   if (value.reviews.length > 0) return <ReviewsScreen reviews={value} onBack={onBack} />;
   return (
-    <List>
+    <div className="market">
       <Screen onBack={onBack} />
       <EmptyState icon="star" title={t('reviews.empty')} />
-    </List>
+    </div>
   );
 }

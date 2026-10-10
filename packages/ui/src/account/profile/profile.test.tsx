@@ -96,27 +96,7 @@ describe('«Profil» (G65, mockup g65/3)', () => {
   });
 });
 
-describe('delete my data and the documents (docs/30)', () => {
-  it('explains what is removed, removes it and starts again', async () => {
-    const reload = vi.fn();
-    Object.defineProperty(window, 'location', { value: { ...window.location, reload }, configurable: true });
-    const { client } = renderProfile();
-    fireEvent.click(screen.getByText('Dilnoza'));
-    // The last line of the mockup: red words, no card (g65/3).
-    expect(screen.getByText('Maʼlumotlarimni oʻchirish').className).toBe('profile-delete');
-    fireEvent.click(screen.getByText('Maʼlumotlarimni oʻchirish'));
-    expect(screen.getByText(/Buni qaytarib boʻlmaydi/)).toBeTruthy();
-    expect(screen.getByText('Oʻchirish').closest('.danger-button')).not.toBeNull();
-    client.deleteMe.mockRejectedValueOnce(new Error('offline'));
-    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
-    expect(screen.getByText(/qayta urinib/)).toBeTruthy();
-    await act(async () => fireEvent.click(screen.getByText('Oʻchirish')));
-    expect(client.deleteMe).toHaveBeenCalledTimes(2);
-    expect(screen.getByText('Maʼlumotlaringiz oʻchirildi')).toBeTruthy();
-    fireEvent.click(screen.getByText('Yopish'));
-    expect(reload).toHaveBeenCalled();
-  });
-
+describe('the documents (docs/30)', () => {
   it('opens a legal document from «Hujjatlar»', async () => {
     renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));

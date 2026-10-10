@@ -35,6 +35,7 @@ export const otherClients = (overrides: Overrides) => ({
     review: NOT_USED,
     reviewsOf: NOT_USED,
     complain: NOT_USED,
+    notes: NOT_USED,
     queue: NOT_USED,
     complaint: NOT_USED,
     chat: NOT_USED,

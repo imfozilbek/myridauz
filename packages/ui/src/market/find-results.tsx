@@ -47,6 +47,7 @@ function Results({ screen, now, filters, onFilters, onBack, onHome, onScreen }: 
         directory={directory}
         allowWholeRegion
         region={route.to}
+        trips={{ total: days.days.reduce((sum, day) => sum + day.trips, 0), places: days.places }}
         onBack={results}
         onPick={(to) => onScreen({ step: 'results', route: { from: route.from, to } })}
       />

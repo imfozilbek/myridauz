@@ -1,5 +1,5 @@
 import { loadBrand } from '@platform/brands';
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { approved, NOW, renderProfile, standing } from './profile-test-kit';
 
@@ -28,14 +28,18 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     expect(approved.editCar).toHaveBeenCalled();
   });
 
-  it('opens what passengers see: the car, the plate, the newest review and all of them', async () => {
+  // The card of «Safar» with its three numbers, «Baholarim» under it (G75, mockup g75/5 A).
+  it('opens what passengers see: the car, the plate, the numbers, then «Baholarim»', async () => {
     renderProfile({}, { driver: approved, clients: { feedback: { reviewsOf: async () => reviews } } });
     fireEvent.click(screen.getByText('Dilnoza'));
     fireEvent.click(screen.getByText('Yoʻlovchilar meni qanday koʻradi ›'));
     expect(screen.getByText('Yoʻlovchilar sizni shunday koʻradi')).toBeTruthy();
     expect(screen.getByText('Chevrolet Cobalt, Oq')).toBeTruthy();
-    expect(await screen.findByText('«Juda yaxshi»')).toBeTruthy();
-    fireEvent.click(screen.getByText(/Barcha izohlar/u));
+    await waitFor(() =>
+      expect(document.querySelector('.look-stats')?.textContent).toBe('8baho12safar100%vaqtida'),
+    );
+    expect(screen.getByText('Telefon raqamingiz hech kimga koʻrinmaydi.')).toBeTruthy();
+    fireEvent.click(screen.getByText('Baholarim'));
     expect(await screen.findByText('Madina')).toBeTruthy();
   });
 

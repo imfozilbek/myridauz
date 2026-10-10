@@ -4,6 +4,8 @@ import {
   adminComplaintDecisionPath,
   adminComplaintPath,
   adminComplaintRefundPath,
+  COMPLAINT_NOTES_PATH,
+  complaintNotesSchema,
   COMPLAINTS_PATH,
   complaintChatSchema,
   complaintQueueSchema,
@@ -17,6 +19,7 @@ import {
   type Complaint,
   type ComplaintDecision,
   type ComplaintInput,
+  type ComplaintNotes,
   type RefundAnswer,
   type ReviewInput,
   type ReviewTarget,
@@ -35,6 +38,9 @@ export function createFeedbackClient(options: SignedOptions) {
     reviewsOf: async (userId: PersonId): Promise<UserReviews> =>
       userReviewsSchema.parse(await (await request(userReviewsPath(userId))).json()),
     complain: async (input: ComplaintInput): Promise<void> => void (await post(COMPLAINTS_PATH, input)),
+    // Out of the search, a warning of the team: said in the Mini App too (G75, docs/158 З).
+    notes: async (): Promise<ComplaintNotes> =>
+      complaintNotesSchema.parse(await (await request(COMPLAINT_NOTES_PATH)).json()),
     queue: async (): Promise<Complaint[]> =>
       complaintQueueSchema.parse(await (await request(ADMIN_COMPLAINTS_PATH)).json()).complaints,
     complaint: async (id: string): Promise<Complaint> =>

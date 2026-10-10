@@ -28,5 +28,13 @@ export const directionCardsSchema = z.object({ directions: z.array(directionCard
 // The days of «Safarlar» with their trips, and the way: «≈ 300 km · ≈ 5 soat».
 export const tripDaySchema = z.object({ date: dateSchema, trips: z.number().int().nonnegative() });
 export type TripDay = z.infer<typeof tripDaySchema>;
-export const tripDaysSchema = z.object({ km: z.number().int().nonnegative(), days: z.array(tripDaySchema) });
+// «Samarqandning qaysi joyi?» (G75, mockup g75/6 A): the trips of the week by the place they go to,
+// the busiest first; a place without trips is not listed.
+export const placeTripsSchema = z.object({ to: locationIdSchema, trips: z.number().int().positive() });
+export type PlaceTrips = z.infer<typeof placeTripsSchema>;
+export const tripDaysSchema = z.object({
+  km: z.number().int().nonnegative(),
+  days: z.array(tripDaySchema),
+  places: z.array(placeTripsSchema),
+});
 export type TripDays = z.infer<typeof tripDaysSchema>;

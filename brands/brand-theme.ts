@@ -30,6 +30,8 @@ export type BrandColors = {
   readonly attentionSoft: HexColor;
   // The frame of an offer inside a talk, on both sides (G64, mockups g64/4, g64/5).
   readonly attentionLine: HexColor;
+  // The words of the wallet warning before a deletion (G75, mockup g75/5 A).
+  readonly attentionInk: HexColor;
   // «Bu raqam yana 1 arizada bor» on the application of a case (G75, mockup g67/2 screen 3).
   readonly warning: HexColor;
   readonly warningText: HexColor;
@@ -53,6 +55,8 @@ export type BrandColors = {
   // A gray tile («Profil», G53): light background, dark icon; a face without a photo (G60).
   readonly neutralSoft: HexColor;
   readonly neutralText: HexColor;
+  // The dark of our camera around its frame (G75, mockup g75/6 A).
+  readonly neutralNight: HexColor;
   readonly neutralFace: HexColor;
   // A face without a photo among the passengers of the own trip (mockup g63/3).
   readonly neutralFacePale: HexColor;

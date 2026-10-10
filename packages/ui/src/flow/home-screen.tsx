@@ -1,3 +1,4 @@
+import { FaceNotice } from '../account/face-notice';
 import './square-tiles.css';
 import type { ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
@@ -43,6 +44,7 @@ export function HomeScreen(props: HomeScreenProps) {
       <Screen />
       <div className="home-stack">
         <HomeProfile onOpen={onProfile} />
+        <FaceNotice onOpen={onProfile} />
         {notice}
         <HomeTop>{top}</HomeTop>
         <div className={square ? 'home-tiles home-tiles-square' : 'home-tiles'}>

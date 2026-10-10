@@ -1,0 +1,38 @@
+/* The plate of how a thing ended (mockups g60/6, g60/7): the colour of the app or grey. */
+.outcome-plate {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid var(--reg-mint);
+  border-radius: 14px;
+  background: var(--reg-soft);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.outcome-plate-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.outcome-plate-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.outcome-plate-off {
+  border-color: var(--reg-divider);
+  background: var(--reg-bg);
+}
+
+.outcome-plate-off .outcome-plate-tile {
+  background: var(--reg-control);
+}

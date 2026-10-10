@@ -73,6 +73,8 @@ test('4. the map of the trip opens the stops in the navigator; a cancelled seat 
   await mainButton(page)
     .filter({ hasText: t('way.map.go') })
     .click();
+  // The first time the sheet of the app asks which navigator (G75, mockup g75/6 A).
+  await page.getByRole('dialog').getByText(t('way.navigator.yandex')).click();
   await expect.poll(async () => (await telegramEvents(page, 'web_app_open_link')).length).toBe(1);
   const [opened] = await telegramEvents(page, 'web_app_open_link');
   expect(String(opened?.url)).toMatch(/^https:\/\/yandex\.uz\/maps\/\?rtext=~/u);

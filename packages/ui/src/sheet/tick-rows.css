@@ -1,0 +1,39 @@
+/* The rows of several choices (mockup g75/5 A): 15px words, a square mark of 22px with a 2px frame. */
+.tick-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.tick-row:last-child {
+  border-bottom: none;
+}
+
+.tick-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.tick-box {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--reg-route-line);
+  border-radius: 6px;
+}
+
+.tick-box-on {
+  border-color: var(--reg-strong);
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}

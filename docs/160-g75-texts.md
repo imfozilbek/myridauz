@@ -49,6 +49,17 @@
 | `wallet.short.message` | готовый текст в чат поддержки по «Hisobni toʻldirish» | «Salom! Hamyonimni toʻldirmoqchiman. {name}ning joyini tasdiqlash uchun {amount} yetmayapti.» | ждёт |
 | `driverTrip.request.until`, `driverTrip.request.when`, `driverTrip.request.pickup`, `driverTrip.request.dropoff` | шторка «Yangi soʻrov» поверх «Mening safarim» (макет g75/4 Б, телефон 1) | «Javob berish muddati · {when}»; «{seats} joy · {day}, {time}»; «{time} · olib ketish joyi»; «tushirish joyi» | ждёт |
 | `bookings.offer.sent`, `bookings.offer.when` | шторка предложения водителя поверх «Mening soʻrovim» (макет g75/4 Б, телефон 2) | «{name} taklif yubordi»; «Joʻnash vaqti» | ждёт |
+| `account.delete.hint`, `account.delete.what.profile`, `account.delete.what.data`, `account.delete.what.trips`, `account.delete.cancel` | «Maʼlumotlaringiz oʻchirilsinmi?» (макет g75/5 А): строка под заголовком и три строки «что удалится» | «Buni qaytarib boʻlmaydi.»; «Ism, telefon va rasm»; «Chatlar va mashina maʼlumotlari»; «Faol safarlar va band qilingan joylar bekor boʻladi»; «Bekor qilish» | ждёт |
+| `account.delete.bonus`, `account.delete.money` | там же: деньги водителя уходят вместе с аккаунтом (`158` Ж, `58`) | «Hamyonda {sum} bonus bor. U ham oʻchadi va qaytmaydi.»; если есть и свои деньги: «Hamyonda {sum} bor. U ham oʻchadi va qaytmaydi.» | ждёт |
+| `complaints.reasonTitle` | «Shikoyat»: строка под заголовком (макет g75/5 А) | «Nima boʻldi?» стало «Nima boʻldi? Bir nechtasini tanlash mumkin.»; «Batafsil» убран | ждёт |
+| `account.profile.lookPhone`, `account.profile.stats.rated` | «Meni qanday koʻradi» (макет g75/5 А) | «Telefon raqamingiz hech kimga koʻrinmaydi.»; под числом оценок «baho» | ждёт |
+| `places.which`, `places.trips` | «Samarqandning qaysi joyi?» (макет g75/6 А): заголовок списка мест области и строка под местом | «{region}ning qaysi joyi?»; «{count} ta safar» | ждёт |
+| `way.trip.pitakSeen`, `way.trip.pitakNone`, `way.trip.pitakThis` | шторка пятака над картой при публикации (макет g75/6 А) | «Yoʻlovchilar shu pitakni koʻradi.»; «Pitaksiz: faqat uyidan»; «Shu pitakdan» | ждёт |
+| `way.map.navigatorKept` | шторка «Qaysi navigatorda ochamiz?» (макет g75/6 А) | «Tanlov eslab qolinadi. «Sozlamalar»da oʻzgartirasiz.» | ждёт |
+| `market.request.why.expired`, `market.request.why.cancelled` | общая плашка исхода на «Mening soʻrovim» (`158` А) | «Shu kunga haydovchi topilmadi.»; «Siz soʻrovni bekor qildingiz.» | ждёт |
+| `requests.salon.commission` | шторка «Butun salon»: комиссия до отправки (`158` Г) | «Komissiya · {sum}» в строке «Hamyon» | ждёт |
+| `account.avatar.rejectedTitle` | плашка на главном: фото не прошло проверку (`158` Ж) | «Rasmingiz qabul qilinmadi»; под ним прежний текст с причиной | ждёт |
+| `account.notes.warned`, `account.notes.warnedHint`, `account.notes.hidden`, `account.notes.low` | плашки в «Profil» (`158` З) | «Ogohlantirish · {date}» «Jamoa shikoyat boʻyicha ogohlantirdi. Yana takrorlansa, hisob bloklanadi.»; «Hozir qidiruvda koʻrinmaysiz: shikoyatlar tekshirilmoqda.»; «Reytingingiz {average}: {line} dan past. Vaqtida keling va xushmuomala boʻling.» | ждёт |
 
 ## Как читать
 
