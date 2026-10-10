@@ -1,49 +1,80 @@
-/* The main screens of people (G66, docs/121, mockups g66/1 … g66/3): square tiles, as drawn a little
-   lower than wide (160.67 × 154.67 at 360 px), the words right under the icon as on g66/1; the edges
-   and the gaps follow the width of the phone (14 and 10.67 px at 360 px). */
+/* The main screens of people (G76, docs/165, mockup g76/1): the head, four square tiles, maybe
+   «Haydovchi boʻling»; the block at the bottom stands over the screen, nothing scrolls. 14 px from
+   the edges and 10 px apart at every width, as on the mockup. */
 .home:has(.home-tiles-square),
 .home-dock {
-  --home-gutter: clamp(10.67px, 3.889vw, 14.67px);
-  --home-gap: clamp(8px, 2.963vw, 12px);
+  --home-gutter: 14px;
+  --home-gap: 10px;
 }
 
-/* The cards stand 10 px apart and 14.67 px under the header at 360 px, as on g66/1. */
 .home:has(.home-tiles-square) .home-stack {
-  gap: clamp(7.5px, 2.778vw, 11.25px);
-  padding-top: clamp(11.11px, 4.074vw, 15.28px);
+  gap: var(--home-gap);
+  padding-top: var(--home-gutter);
 }
 
+/* The side of a tile: the width decides, half of the row less the gap, at most 168 px in the middle
+   on a big phone. Only a window too low for the tallest block at the bottom makes them smaller
+   (owner decision 10.10.2026): 94 px are the top edge, the head and the gaps. */
 .home-tiles-square {
+  --tile: min(
+    calc((100vw - 2 * var(--home-gutter) - var(--home-gap)) / 2),
+    168px,
+    calc((var(--tg-viewport-stable-height, 100vh) - 94px - var(--dock-reserve, 300px)) / 2)
+  );
+
+  grid-template-columns: repeat(2, var(--tile));
+  justify-content: center;
   gap: var(--home-gap);
 }
 
 .home-tiles-square .home-tile {
-  aspect-ratio: 241 / 232;
+  container-type: inline-size;
+  width: var(--tile);
+  height: var(--tile);
   min-height: 0;
   gap: 0;
+  padding: 12px;
+  overflow: hidden;
 }
 
-/* Long words may pass the bottom padding; the icon never shrinks for them. */
-.home-tiles-square .home-tile > * {
+/* The icon on top, the words at the bottom, as on the mockup. */
+.home-tiles-square .home-tile > :first-child {
   flex-shrink: 0;
+  margin-bottom: auto;
 }
 
 .home-tiles-square .home-tile-title {
-  margin-top: 12px;
+  margin-top: 8px;
   font-size: 16px;
   font-weight: 700;
-  line-height: 19.2px;
+  line-height: 1.15;
 }
 
 .home-tiles-square .home-tile-hint {
-  margin-top: 1px;
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--reg-secondary, var(--tgui--hint_color));
 }
 
-/* «Hamyon» below 5 seats: light red in a red line, the hint red and bold (mockup g66/2 phone 3). */
+.home-tiles-square .home-tile-badge {
+  top: 10px;
+  inset-inline-end: 10px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+/* A low window: the tile is smaller, the words are not (12 and 13.5 px at least, docs/121). */
+@container (max-width: 129px) {
+  .home-tile-title {
+    font-size: 13.5px;
+  }
+}
+
+/* «Hamyon» short of a request: light red, the hint red and bold (mockup g76/3, state 8). */
 .home-tile-alarm {
-  border: 1px solid var(--tile-alarm-line);
   background: var(--tile-alarm);
 }
 
@@ -52,22 +83,38 @@
   color: var(--tile-alarm-ink);
 }
 
-/* The profile on top: the face 44 px, the name a bit larger (mockups g66/1, g66/2). */
-.home:has(.home-tiles-square) .home-profile {
-  gap: 12.67px;
-  padding: 12.33px 13.33px 11px;
+/* «Hamyon» low: light amber, the hint amber and bold (mockup g76/3, state 10). */
+.home-tile-soon {
+  background: var(--tile-soon);
 }
 
-.home:has(.home-tiles-square) .home-profile .home-card-title {
-  font-size: 17px;
-  line-height: 20.74px;
+.home-tile-soon .home-tile-hint {
+  font-weight: 700;
+  color: var(--tile-soon-ink);
 }
 
-.home:has(.home-tiles-square) .home-profile .home-card-hint {
-  line-height: 12.9px;
+/* The head: who on the left, the car or the rating on the right, both 60 px high. */
+.home-head {
+  display: flex;
+  gap: var(--home-gap);
 }
 
-/* Under the white block at the bottom the last tiles still scroll into sight. */
-.home:has(~ .home-dock) .home-stack {
-  padding-bottom: 168px;
+.home-head .home-profile {
+  flex: 1;
+  min-width: 0;
+  height: 60px;
+  gap: 12px;
+  padding: 0 14px;
+  border-radius: 16px;
+}
+
+.home-head .home-profile .home-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.home-head .home-profile .home-card-hint {
+  font-size: 13px;
+  color: var(--reg-secondary, var(--tgui--hint_color));
 }

@@ -1,4 +1,4 @@
-import { MINUTE_MS, tashkentDate, type Booking, type Location, type Trip } from '@platform/contracts';
+import { MINUTE_MS, tashkentDate, type Booking, type Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -6,7 +6,7 @@ import { useNow } from '../own-trip/use-now';
 import { Icon } from '../icons';
 import { useShortDay } from '../market/when';
 import type { PlaceDirectory } from '../places/directory';
-import { usePlaceNames } from '../places/place-names';
+import { useRegionRoute } from '../places/region-route';
 import { brandVars } from '../theme/brand-vars';
 import { tripPeople } from './driver-day';
 import './driver-cards.css';
@@ -21,25 +21,14 @@ type Props = {
   readonly onOpen: () => void;
 };
 
-// «Toshkent → Samarqand»: the regions of the ends by their short names (mockup g66/2).
-function useRegions(directory: PlaceDirectory) {
-  const { t } = useI18n();
-  const { short } = usePlaceNames(directory);
-  const region = (id: string) => {
-    const place = directory.find(id);
-    const top: Location | undefined = place?.parentId ? directory.find(place.parentId) : place;
-    return top ? short(top) : '';
-  };
-  return (trip: Trip) => t('common.route', { from: region(trip.from), to: region(trip.to) });
-}
-
 // The next trip of a driver on a later day (G66, mockup g66/2 phone 3): when and the seats taken, the
 // route, where it starts and the price; the new requests as an amber plate.
 export function DriverNextCard({ trip, bookings, directory, onOpen }: Props) {
   const { t, formatTime, formatMoney } = useI18n();
   const { colors } = useBrand().theme;
   const shortDay = useShortDay();
-  const route = useRegions(directory);
+  const regions = useRegionRoute(directory);
+  const route = (trip: Trip) => regions(trip.from, trip.to);
   const [now] = useState(Date.now);
   const day = shortDay(tashkentDate(trip.departAt), now);
   const when = t('home.trip.when', { day, time: formatTime(new Date(trip.departAt)) });
@@ -73,7 +62,8 @@ export function DriverNextCard({ trip, bookings, directory, onOpen }: Props) {
 export function DriverDayCard({ trip, bookings, directory, onOpen }: Props) {
   const { t, formatTime } = useI18n();
   const { colors } = useBrand().theme;
-  const route = useRegions(directory);
+  const regions = useRegionRoute(directory);
+  const route = (trip: Trip) => regions(trip.from, trip.to);
   // «N daqiqadan keyin» counts down on an open screen.
   const now = useNow();
   const minutes = Math.max(0, Math.ceil((trip.departAt - now) / MINUTE_MS));

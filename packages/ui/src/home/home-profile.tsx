@@ -1,17 +1,18 @@
-import { formatPlate } from '@platform/contracts';
 import type { CSSProperties } from 'react';
 import { useAccount } from '../account/account-context';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { Icon } from '../icons';
 import { useDriver } from '../driver/driver-context';
 import { HomeCard } from './home-card';
 
 // The face of a person on the main screens of G66 (mockups g66/1, g66/2).
 const FACE = 44;
+const ARROW = 18;
 
-// The first card of the main screen: who the person is here, like the mockup of G53. The
-// passenger and the driver open their profile from it; the team has its own card (G75, team-home).
+// The left part of the head of the main screen (G76, mockup g76/1): who the person is here and «›»,
+// a tap opens «Profil»; the team has its own card (G75, team-home).
 export function HomeProfile({ onOpen }: { readonly onOpen: () => void }) {
   const account = useAccount();
   return account ? <PersonCard onOpen={onOpen} /> : null;
@@ -36,20 +37,15 @@ function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
         <span className="home-card-title">{profile.firstName}</span>
         <span className="home-card-hint">{role}</span>
       </span>
+      <Icon name="next" size={ARROW} color={colors.textMuted} />
     </HomeCard>
   );
 }
 
-// «Yoʻlovchi», or «Haydovchi · Cobalt, oq · 01 A 123 BC» with the car of the application (mockup
-// g66/2); «Haydovchi» alone before the application is sent (mockup g62/1 screen 1).
+// «Yoʻlovchi» or «Haydovchi» with «›»: the car stands on the right of the head (G76, mockup g76/1).
 function useRole(): string {
   const { t } = useI18n();
-  const driver = useDriver();
-  if (!driver) return t('home.role.passenger');
-  const { car, status } = driver.application;
-  if (!car || status === 'draft') return t('home.role.driverNew');
-  const color = t(`drivers.color.${car.color}`).toLocaleLowerCase('uz');
-  return t('home.role.driver', { model: car.model, color, plate: formatPlate(car.plate) });
+  return t(useDriver() ? 'home.role.driverNew' : 'home.role.passenger');
 }
 
 // The empty photo is the light color of the app, like the mockup.

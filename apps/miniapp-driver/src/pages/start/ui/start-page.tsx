@@ -1,5 +1,7 @@
 import {
   DRIVER_DOCK_SECTIONS,
+  DRIVER_TILE_SECTIONS,
+  DriverSide,
   DriverData,
   DriverDock,
   DriverGate,
@@ -55,7 +57,12 @@ const ACTIONS: readonly StartAction[] = [
   { ...REQUESTS, icon: 'passengers', tone: 'mint', useLive: useRequestsNearLive },
   { ...MY_TRIPS, icon: 'myTrips', tone: 'mint', useLive: useDriverTripsLive },
 ];
-const SECTIONS: readonly StartAction[] = [NEW_TRIP, WALLET_ACTION, ...DRIVER_DOCK_SECTIONS];
+const SECTIONS: readonly StartAction[] = [
+  NEW_TRIP,
+  WALLET_ACTION,
+  ...DRIVER_DOCK_SECTIONS,
+  ...DRIVER_TILE_SECTIONS,
+];
 
 // The main screen right after the registration: before sending, the big tile «Haydovchi boʻlish»;
 // while it is checked, a note says what waits (G62, docs/118 path 5).
@@ -78,7 +85,8 @@ function DriverStart() {
           actions={draft ? DRAFT_ACTIONS : ACTIONS}
           notice={<DriverNotice />}
           home={(go) => <DriverHome go={go} />}
-          tiles={(go, openProfile) => <DriverTiles go={go} openProfile={openProfile} />}
+          tiles={(go) => <DriverTiles go={go} />}
+          side={(openProfile) => <DriverSide openProfile={openProfile} />}
           sections={SECTIONS}
           {...(draft ? {} : { dock: (go: HomeGo) => <DriverDock go={go} /> })}
         />

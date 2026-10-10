@@ -1,7 +1,6 @@
 import type { Location } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { tap } from '../market/market-test-kit';
 import { rememberRoute } from '../market/recent-routes';
 import { PASSENGER_ACTIONS } from './home-test-actions';
 import { renderHome } from './home-test-kit';
@@ -26,28 +25,23 @@ const open = () =>
     bookings: async () => [],
   });
 
-describe('«Oxirgi yoʻnalish» tile on the main screen (G35 K5, G53)', { timeout: 20_000 }, () => {
-  it('opens the trips of a searched route in one tap', async () => {
+describe('the last searched route in the block at the bottom (G35 K5, G76)', { timeout: 20_000 }, () => {
+  it('fills «Qayerdan» and «Qayerga» with it: no tile repeats it (docs/165)', async () => {
     rememberRoute({
       from: place('1726269', '1726', 'Chilonzor'),
       to: place('1730401', '1730', 'Fargʻona shahri'),
     });
     open();
-    expect(await screen.findByText('Oxirgi yoʻnalish')).toBeTruthy();
-    await tap('Chilonzor → Fargʻona');
-    // The trips of the route with their days, no route screen on the way.
-    expect(await screen.findByRole('tab', { name: /Bugun/u, selected: true })).toBeTruthy();
-    expect(screen.queryByText('Davom etish')).toBeNull();
+    expect(await screen.findByText(/Fargʻona/u, { selector: '.home-dock-value' })).toBeTruthy();
+    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
   });
 
-  it('shows nothing before the first search, or for a place the directory no longer has', async () => {
+  it('asks «Qayerga» before the first search, or for a place the directory no longer has', async () => {
     open();
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
     cleanup();
     rememberRoute({ from: place('9999', '1726', 'Yoʻq'), to: place('1730401', '1730', 'Fargʻona shahri') });
     open();
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.queryByText('Oxirgi yoʻnalish')).toBeNull();
   });
 });

@@ -17,4 +17,12 @@ export const HOME_TARGETS = [
   'trip_call',
   'come_back',
   'become_driver',
+  // G76: the four tiles and the right part of the head (docs/165).
+  'my_trips',
+  'chats',
+  'favorites',
+  'side_photo',
+  'side_look',
+  'side_rating',
+  'side_car',
 ] as const;

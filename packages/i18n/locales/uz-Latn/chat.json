@@ -21,5 +21,11 @@
   "reply.where": "Qayerdasiz?",
   "closed": "Suhbat yopildi",
   "closedHint": "Safardan 24 soat oʻtdi. Xabarlar saqlanadi.",
-  "newTripsOf": "{name}ning yangi safarlari"
+  "newTripsOf": "{name}ning yangi safarlari",
+  "list.hint": "Faol safarlar va oxirgi 7 kun.",
+  "list.empty": "Hali suhbat yoʻq",
+  "list.emptyPassenger": "Joy band qilsangiz, haydovchi bilan shu yerda yozishasiz.",
+  "list.emptyDriver": "Yoʻlovchi joy soʻrasa yoki siz taklif yuborsangiz, suhbat shu yerda boʻladi.",
+  "list.request": "soʻrov",
+  "list.yesterday": "Kecha"
 }

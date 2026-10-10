@@ -35,6 +35,8 @@ export { PassengerHome } from './home/passenger-home';
 export { PassengerData, useBookingsLive } from './home/passenger-data';
 export { useRequestLive } from './home/request-live';
 export { PassengerTiles } from './home/passenger-tiles';
+export { DRIVER_TILE_SECTIONS, PASSENGER_TILE_SECTIONS } from './home/home-sections';
+export { DriverSide, PassengerSide } from './home/home-side';
 export { PassengerDock } from './home/passenger-dock';
 export { BecomeDriver } from './home/become-driver';
 export { DRIVER_DOCK_SECTIONS, PASSENGER_SECTIONS } from './home/dock-sections';

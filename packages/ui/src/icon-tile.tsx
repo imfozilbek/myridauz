@@ -9,6 +9,8 @@ const SIZES = {
   row: { tile: 30, icon: 17, radius: 8 },
   // A tile of the main screen (G53).
   tile: { tile: 40, icon: 22, radius: 11 },
+  // A square tile of the main screens of people (G76, mockup g76/1).
+  home: { tile: 34, icon: 20, radius: 10 },
   // A big choice tile, the gender of the registration (G58).
   large: { tile: 52, icon: 28, radius: 14 },
   hero: { tile: 96, icon: 52, radius: 26 },

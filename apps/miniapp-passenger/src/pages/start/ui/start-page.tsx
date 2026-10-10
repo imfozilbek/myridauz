@@ -5,6 +5,8 @@ import {
   MyRequestsScreen,
   NewRequestFlow,
   PASSENGER_SECTIONS,
+  PASSENGER_TILE_SECTIONS,
+  PassengerSide,
   PassengerData,
   PassengerDock,
   PassengerHome,
@@ -58,10 +60,11 @@ export function StartPage() {
           actions={ACTIONS}
           covered="find_trip"
           home={(go) => <PassengerHome go={go} />}
-          tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+          tiles={(go) => <PassengerTiles go={go} />}
+          side={(openProfile) => <PassengerSide openProfile={openProfile} />}
           after={<BecomeDriver />}
           dock={(go) => <PassengerDock go={go} />}
-          sections={PASSENGER_SECTIONS}
+          sections={[...PASSENGER_SECTIONS, ...PASSENGER_TILE_SECTIONS]}
         />
       </HomeRouteProvider>
     </PassengerData>

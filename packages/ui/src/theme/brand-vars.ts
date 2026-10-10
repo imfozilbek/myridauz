@@ -27,6 +27,8 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-accent-deep': colors.accentDeep,
     '--reg-card-line': colors.cardLine,
     '--reg-star': colors.accent,
+    // The number of unread words on a chat of «Suhbatlar» (G76, mockup g76/5).
+    '--reg-badge': colors.badge,
     '--reg-face': colors.neutralFace,
     '--reg-face-pale': colors.neutralFacePale,
     '--reg-neutral-pale': colors.neutralPale,

@@ -17,6 +17,8 @@ import { DRIVER_DOCK_SECTIONS, PASSENGER_SECTIONS } from './dock-sections';
 import { DriverData } from './driver-data';
 import { DriverDock } from './driver-dock';
 import { DriverTiles } from './driver-tiles';
+import { DRIVER_TILE_SECTIONS, PASSENGER_TILE_SECTIONS } from './home-sections';
+import { DriverSide, PassengerSide } from './home-side';
 import { NEW_TRIP } from './home-test-actions';
 import { HomeRouteProvider } from './home-route';
 import { PassengerData } from './passenger-data';
@@ -106,8 +108,9 @@ export function renderHome(
         <StartFlow
           actions={actions}
           home={home}
-          tiles={(go, openProfile) => <DriverTiles go={go} openProfile={openProfile} />}
-          sections={[NEW_TRIP, WALLET_ACTION, ...DRIVER_DOCK_SECTIONS]}
+          tiles={(go) => <DriverTiles go={go} />}
+          side={(openProfile) => <DriverSide openProfile={openProfile} />}
+          sections={[NEW_TRIP, WALLET_ACTION, ...DRIVER_DOCK_SECTIONS, ...DRIVER_TILE_SECTIONS]}
           {...(sent ? { dock: (go: HomeGo) => <DriverDock go={go} /> } : {})}
         />
       </HomeRouteProvider>
@@ -120,9 +123,10 @@ export function renderHome(
         <StartFlow
           actions={actions}
           home={home}
-          tiles={(go, openProfile) => <PassengerTiles go={go} openProfile={openProfile} />}
+          tiles={(go) => <PassengerTiles go={go} />}
+          side={(openProfile) => <PassengerSide openProfile={openProfile} />}
           dock={(go) => <PassengerDock go={go} />}
-          sections={PASSENGER_SECTIONS}
+          sections={[...PASSENGER_SECTIONS, ...PASSENGER_TILE_SECTIONS]}
           covered="find_trip"
         />
       </HomeRouteProvider>

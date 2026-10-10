@@ -1,12 +1,15 @@
 import { FaceNotice } from '../account/face-notice';
 import './square-tiles.css';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
 import { useScreenView } from '../context/analytics-context';
 import { usePending } from '../driver/driver-context';
 import { LanguageSwitcher, useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
+import { useInTelegram } from '../telegram/in-telegram-context';
+import { brandVars } from '../theme/brand-vars';
+import { useBrand } from '../context/brand-context';
 import { useSettingsButton } from '../telegram/settings-button';
 import { HomeProfile } from '../home/home-profile';
 import { HomeTile } from './home-tile';
@@ -22,6 +25,8 @@ type HomeScreenProps = {
   readonly tiles?: ReactNode;
   // Square tiles under the white block at the bottom (G66, docs/121): the main screens of people.
   readonly square?: boolean;
+  // The right part of the head on the main screens of people (G76, mockup g76/1).
+  readonly side?: ReactNode;
   // A smart tile may open another section, like «Soʻrovim» its request (G66).
   readonly onOpen: (action: StartAction, opens?: TileLive['opens']) => void;
   readonly onProfile: () => void;
@@ -32,39 +37,60 @@ type HomeScreenProps = {
 // «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
 // (owner decision 02.10.2026, docs/94 F4).
 export function HomeScreen(props: HomeScreenProps) {
-  const { actions, notice, after, top, tiles, square = false, onOpen, onProfile } = props;
+  const { actions, notice, after, top, tiles, square = false, side, onOpen, onProfile } = props;
   useScreenView('home');
   useScreenBackground();
   // The team of the admin app has no profile of its own: no «Sozlamalar» there (G75).
   useSettingsButton(useAccount() ? onProfile : null);
   const pending = usePending();
+  const { colors } = useBrand().theme;
+  const reserve = useInTelegram() ? DOCK_IN_TELEGRAM : DOCK_IN_BROWSER;
+  const style = { ...brandVars(colors), '--dock-reserve': `${reserve}px` } as CSSProperties;
   return (
-    <div className="home">
+    <div className="home" style={square ? style : undefined}>
       {/* No «Назад» on the main screen: Android «Назад» closes the app, as in Telegram. */}
       <Screen />
-      <div className="home-stack">
-        <HomeProfile onOpen={onProfile} />
-        <FaceNotice onOpen={onProfile} />
-        {notice}
-        <HomeTop>{top}</HomeTop>
-        <div className={square ? 'home-tiles home-tiles-square' : 'home-tiles'}>
-          {actions.map((action) => (
-            <ActionTile
-              key={action.id}
-              action={action}
-              waiting={pending && Boolean(action.waitsApproval)}
-              pale={pending && Boolean(action.waitsApproval || action.paleUntilApproval)}
-              onOpen={(opens) => onOpen(action, opens)}
-            />
-          ))}
-          {tiles}
+      {square ? (
+        <div className="home-stack">
+          <div className="home-head">
+            <HomeProfile onOpen={onProfile} />
+            {side}
+          </div>
+          <div className="home-tiles home-tiles-square">{tiles}</div>
+          {after}
+          {top}
+          <LanguageSwitcher />
         </div>
-        {after}
-        <LanguageSwitcher />
-      </div>
+      ) : (
+        <div className="home-stack">
+          <HomeProfile onOpen={onProfile} />
+          <FaceNotice onOpen={onProfile} />
+          {notice}
+          <HomeTop>{top}</HomeTop>
+          <div className="home-tiles">
+            {actions.map((action) => (
+              <ActionTile
+                key={action.id}
+                action={action}
+                waiting={pending && Boolean(action.waitsApproval)}
+                pale={pending && Boolean(action.waitsApproval || action.paleUntilApproval)}
+                onOpen={(opens) => onOpen(action, opens)}
+              />
+            ))}
+            {tiles}
+          </div>
+          {after}
+          <LanguageSwitcher />
+        </div>
+      )}
     </div>
   );
 }
+
+// The tallest block at the bottom with its arrow (G76, docs/165): the tiles leave it room. In
+// Telegram the two buttons are the native bar under the view, 58 px less.
+const DOCK_IN_BROWSER = 300;
+const DOCK_IN_TELEGRAM = 242;
 
 type ActionTileProps = {
   readonly action: StartAction;
