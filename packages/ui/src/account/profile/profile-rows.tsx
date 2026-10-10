@@ -8,6 +8,7 @@ import { openInTelegram } from '../../telegram/feedback';
 import { useAccount } from '../account-context';
 import { formatPhone } from '../cell-value';
 import { ChannelsRow } from './channels-row';
+import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
 export type ProfileOpen = 'history' | 'reviews' | 'channels' | 'documents' | 'delete';
@@ -61,6 +62,7 @@ export function ProfileRows({ standing, onOpen }: Props) {
           title={t('account.profile.phone')}
           hint={t('account.profile.phoneLine', { phone: formatPhone(account.profile.phone) })}
         />
+        {driver ? <NavigatorRow /> : null}
       </ProfileGroup>
       <ProfileGroup header={t('home.support')}>
         <ProfileRow
