@@ -16,7 +16,7 @@ import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
 import { assignTo, waitingSupport } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
-import { approvedCar, waitingApplications } from './modules/drivers';
+import { approvedCar, waitingApplications, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -29,6 +29,7 @@ import { requestPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
 import {
   driverTripIds,
+  hasLiveTrips,
   lastTripPrice,
   tripsEnded,
   realPricesSince,
@@ -143,3 +144,6 @@ wireTeamQueue(async (env) => {
     ...support.map((item) => ({ kind: 'support' as const, ...item })),
   ];
 });
+
+// One car at the launch: an approved driver changes it only without live trips (G75, docs/124 Ё).
+wireLiveTrips(hasLiveTrips);

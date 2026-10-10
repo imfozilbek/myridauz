@@ -39,6 +39,8 @@ const EXPLAINED: readonly string[] = [
   'shares.wrong_status',
   'users.avatar_too_large',
   'drivers.incomplete',
+  // G75, docs/124 Ё: one car, changed only without live trips.
+  'drivers.live_trips',
   'trips.wrong_status',
   'calls.unavailable',
   // G43, docs/111: codes that had no text.

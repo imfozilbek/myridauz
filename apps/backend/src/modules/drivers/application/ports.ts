@@ -69,6 +69,8 @@ export type DriversDeps = {
   // driver_approved: the bonus of month 1 starts from it in G08 (docs/12).
   // The approval event and bonus 1 of the welcome promo (docs/12).
   readonly driverApproved: (userId: number) => Promise<Bonus | null>;
+  // A trip of the driver not over yet (G75): set by the app from the trips module.
+  readonly liveTrips: (userId: number) => Promise<boolean>;
   readonly now: () => number;
   readonly newId: () => string;
 };

@@ -11,7 +11,16 @@ import { emptyApplication, submit, withPhoto, type Application } from '../domain
 import type { DriversDeps, Result } from './ports';
 
 type ApplyError =
-  'drivers.not_found' | 'drivers.invalid_input' | 'drivers.photo_too_large' | 'drivers.wrong_status';
+  | 'drivers.not_found'
+  | 'drivers.invalid_input'
+  | 'drivers.photo_too_large'
+  | 'drivers.wrong_status'
+  | 'drivers.live_trips';
+
+// One car at the launch (G75, docs/124 Ё): an approved driver changes it only without live trips,
+// the passengers of a trip wait for the car they booked.
+const carLocked = async (deps: DriversDeps, application: Application | undefined) =>
+  application?.status === 'approved' && (await deps.liveTrips(application.userId));
 
 const toView = (application: Application): DriverApplication => ({
   status: application.status,
@@ -41,7 +50,9 @@ export async function uploadCarPhoto(
     return { ok: false, error: 'drivers.invalid_input' };
   }
   if (image.body.byteLength > MAX_AVATAR_BYTES) return { ok: false, error: 'drivers.photo_too_large' };
-  const current = (await deps.applications.find(userId)) ?? emptyApplication(userId, deps.now());
+  const found = await deps.applications.find(userId);
+  if (await carLocked(deps, found)) return { ok: false, error: 'drivers.live_trips' };
+  const current = found ?? emptyApplication(userId, deps.now());
   const key = `cars/${userId}/${kind}/${deps.newId()}`;
   const next = withPhoto(current, kind, key, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
@@ -68,6 +79,7 @@ export async function submitApplication(
   const person = await deps.people.find(userId);
   const current = await deps.applications.find(userId);
   if (!person || !current) return { ok: false, error: person ? 'drivers.incomplete' : 'drivers.not_found' };
+  if (await carLocked(deps, current)) return { ok: false, error: 'drivers.live_trips' };
   const next = submit(current, withCatalogSeats(car), person.avatarKey !== null, deps.now());
   if (typeof next === 'string') return { ok: false, error: next };
   await deps.applications.save(next);

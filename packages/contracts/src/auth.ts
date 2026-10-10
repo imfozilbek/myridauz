@@ -33,6 +33,7 @@ export const API_ERRORS = [
   'drivers.invalid_input',
   'drivers.wrong_status',
   'drivers.photo_too_large',
+  'drivers.live_trips',
   'pricing.not_found',
   'pricing.invalid_input',
   'pricing.out_of_bounds',

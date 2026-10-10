@@ -27,6 +27,10 @@ const localApplications = createMemoryApplications();
 const localDecisions = createMemoryDecisions();
 const localPhotos = createMemoryImages();
 const NO_CONTENT = 204;
+// A trip of the driver not over yet (G75): set by the app (module-events.ts), the trips module knows.
+type LiveTrips = (env: Bindings, userId: number) => Promise<boolean>;
+let liveTripsOf: LiveTrips = async () => false;
+export const wireLiveTrips = (live: LiveTrips) => void (liveTripsOf = live);
 
 const driversDeps = (env: Bindings): DriversDeps => {
   const people = peopleOf(env);
@@ -51,6 +55,7 @@ const driversDeps = (env: Bindings): DriversDeps => {
       recordServerEvent(env, { name: 'driver_approved' });
       return welcomeBonus(env, userId);
     },
+    liveTrips: (userId) => liveTripsOf(env, userId),
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };
