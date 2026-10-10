@@ -33,6 +33,7 @@
 | `wallet.kind.bonusMonth` | «Tarix» в «Hamyon» и кошелёк для команды: второй и третий бонус акции (`158` Г) | «{month}-oy bonusi»; первый остаётся «Boshlash bonusi» | ждёт |
 | `bookings.why.seatCancelled` | плашка брони: водитель отменил одно место, поездка идёт (`158` А) | «Haydovchi joyingizni bekor qildi.» | ждёт |
 | `bot.support.topUp` | бот поддержки: «Hisobni toʻldirish» водителя отправляет команде готовое обращение (`158` Г) | «Hamyonimni toʻldirmoqchiman.» | ждёт |
+| `market.limit.title`, `market.limit.hint` | экран лимита поездок водителя (макет g75/1 А, телефон 3) | «Faol safarlar {count} ta»; «Yangi safar eʼlon qilish uchun bittasini bekor qiling yoki yakunlang.» | ждёт |
 
 ## Как читать
 

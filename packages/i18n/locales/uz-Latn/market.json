@@ -1,4 +1,6 @@
 {
+  "limit.title": "Faol safarlar {count} ta",
+  "limit.hint": "Yangi safar eʼlon qilish uchun bittasini bekor qiling yoki yakunlang.",
   "date.title": "Qaysi kuni?",
   "date.today": "Bugun, {date}",
   "date.tomorrow": "Ertaga, {date}",

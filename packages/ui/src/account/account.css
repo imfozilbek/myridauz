@@ -89,9 +89,9 @@
 
 /* A lone message stands in the optical center of the screen. */
 .center-screen {
-  display: grid;
-  min-height: 80vh;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--tg-viewport-stable-height, 100vh);
 }
 
 .step-note {

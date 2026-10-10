@@ -9,8 +9,8 @@ import type { Person } from './stand-kit';
 // A new person from «Band qilish» of a channel post (G75, docs/124 Д): the trip first, the
 // registration after its «Band qilish». The people of this file only.
 test.use({ viewport: NARROW });
-const DRIVER: Person = { id: 900795, name: 'Sanjar', phone: '998901110795' };
-const NEWCOMER: Person = { id: 900796, name: 'Muslima', phone: '998901110796' };
+const DRIVER: Person = { id: 900861, name: 'Sanjar', phone: '998901110861' };
+const NEWCOMER: Person = { id: 900862, name: 'Muslima', phone: '998901110862' };
 
 test('a new person sees the trip of a link before the registration', async ({ page }) => {
   await approvedDriver(DRIVER, '01S795TU');

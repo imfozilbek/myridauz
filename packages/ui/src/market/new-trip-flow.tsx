@@ -29,8 +29,11 @@ export function NewTripFlow(props: NewTripFlowProps) {
   const limitReached = useTripLimitReached();
   const home = useGoHome(props.onBack);
   const [published, setPublished] = useState<string | null>(null);
+  const [mine, setMine] = useState(false);
   if (published) return <MyTripsScreen onBack={home} link={{ name: MY_TRIP_LINK, id: published }} />;
-  if (limitReached) return <TripLimitScreen onBack={props.onBack} />;
+  if (mine) return <MyTripsScreen onBack={home} />;
+  if (limitReached !== null)
+    return <TripLimitScreen count={limitReached} onBack={props.onBack} onMyTrips={() => setMine(true)} />;
   const done = (trip: Trip) => {
     flow.clear();
     props.onPublished?.();

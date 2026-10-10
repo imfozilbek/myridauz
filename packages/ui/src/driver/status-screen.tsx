@@ -1,36 +1,26 @@
 import type { DriverApplication } from '@platform/contracts';
-import { StepLayout } from '../account/step-layout';
 import { SupportButton } from '../account/support-button';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
-import './driver.css';
+import { StateScreen } from '../states/state-screen';
 
 type StatusScreenProps = { readonly application: DriverApplication };
 
-// A rejected application (docs/04): every reason on its own line. «Rad etish» is the last word of the
-// team (G75, docs/120): no «Tuzatish», a question goes to the support. Waiting and «fix» applications
-// look around the app instead (G34, G62, DriverGate). The answer also comes from the driver bot.
+// A rejected application (docs/04): the reasons, then a question goes to the support. «Rad etish» is the
+// last word of the team (G75, docs/120): no «Tuzatish». Waiting and «fix» applications look around the
+// app instead (G34, G62, DriverGate). The answer also comes from the driver bot. As every state: the red
+// tile in the middle and one button (G75, mockup g75/1 A).
 export function StatusScreen({ application }: StatusScreenProps) {
   useScreenView(`driver.status.${application.status}`);
   const { t } = useI18n();
   return (
-    <StepLayout
+    <StateScreen
       icon="error"
+      tone="danger"
       title={t('drivers.status.rejected.title')}
-      hint={t('drivers.status.rejected.hint')}
-    >
-      <List>
-        <Section>
-          {application.reasons.map((reason) => (
-            <Cell key={reason} className="cell-problem" before={<IconTile name="error" tone="danger" />}>
-              {t(`drivers.reason.${reason}`)}
-            </Cell>
-          ))}
-        </Section>
-      </List>
-      <SupportButton />
-    </StepLayout>
+      description={application.reasons.map((reason) => t(`drivers.reason.${reason}`)).join(' ')}
+      note={t('drivers.status.rejected.hint')}
+      button={<SupportButton />}
+    />
   );
 }

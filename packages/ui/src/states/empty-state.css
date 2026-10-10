@@ -1,0 +1,41 @@
+/* A state in the middle of the screen (G75, mockup g75/1 A, g75/2 A): the big tile, the title, the words,
+   one action; like an empty state of Telegram. */
+.empty-state {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  box-sizing: border-box;
+  padding: 0 28px;
+  text-align: center;
+  font-family: var(--tgui--font-family);
+}
+
+.empty-state-tile {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+}
+
+.empty-state h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* The place of the main button: the button of Telegram is under the page, the one of a browser here. */
+.state-foot {
+  padding: 6px 14px;
+}

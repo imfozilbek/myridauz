@@ -10,7 +10,7 @@ import { outsideCalls, type Person } from './stand-kit';
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
-const SEEKER: Person = { id: 900795, name: 'Mohira', phone: '998901110795' };
+const SEEKER: Person = { id: 900863, name: 'Mohira', phone: '998901110863' };
 
 test.beforeAll(() => register('passenger', SEEKER, 'female'));
 

@@ -7,7 +7,7 @@ import * as g33 from './g33-kit';
 import { publishTrip, CHILONZOR } from './market-kit';
 import { GULNORA, MUROD, SEVARA, SHERZOD, ZEBO } from './people';
 import { NARROW, PLATFORMS } from './screen-tour';
-import { register } from './seed';
+import { approvedDriver, register } from './seed';
 import { searchTo } from './search-kit';
 import { openAs, outsideCalls, type Person } from './stand-kit';
 
@@ -56,11 +56,17 @@ test('F1, F2. a long list → a trip opens at the top; «Назад» → the sa
   }
 });
 
-const DRAFT_DRIVERS = { android: MUROD, ios: SHERZOD } as const;
+// Drivers of this test only: in the whole stand other files publish trips of Murod and Sherzod, and
+// three active trips close «Safar eʼlon qilish» (lesson 211).
+const DRAFT_DRIVERS = {
+  android: { id: 900635, name: 'Doniyor', phone: '998901110635' },
+  ios: { id: 900636, name: 'Ravshan', phone: '998901110636' },
+} as const satisfies Record<string, Person>;
 
 test('F3. a new trip half done → the app closes → the draft comes back', async ({ browser }) => {
   for (const platform of PLATFORMS) {
     const page = await g33.phone(browser);
+    await approvedDriver(DRAFT_DRIVERS[platform], platform === 'android' ? '01D635EF' : '01R636ST');
     await openAs(page, 'driver', DRAFT_DRIVERS[platform], { platform });
     await publishButton(page).click();
     await g33.chooseRoute(page);

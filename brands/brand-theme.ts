@@ -10,6 +10,9 @@ export type BrandColors = {
   readonly brandSoft: HexColor;
   readonly brandDeep: HexColor;
   readonly brandMint: HexColor;
+  // The big tile of a state screen: a block, an empty list, an error (G75, mockup g75/1 A).
+  readonly stateTile: HexColor;
+  readonly dangerTile: HexColor;
   // The frame of a light plate of the main color («Safar eʼlon qilindi», mockup g63/3).
   readonly brandLine: HexColor;
   readonly accent: HexColor;

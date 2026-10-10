@@ -149,4 +149,5 @@
 | 160 | [160-g75-texts.md](160-g75-texts.md) | G75: новые тексты на согласие владельца (боты команды, потом экраны по макетам `goals/g75`) |
 | 161 | [161-g75-admin-texts.md](161-g75-admin-texts.md) | G75: тексты админки (главный экран команды и дела «Navbat») на согласие владельца |
 | 162 | [162-g75-admin-pixel-perfect.md](162-g75-admin-pixel-perfect.md) | G75: сверка Pixel Perfect админки (g67/1, g67/2), спорные места макетов |
+| 163 | [163-g75-pixel-perfect.md](163-g75-pixel-perfect.md) | G75: сверка Pixel Perfect экранов по листам g75 (вариант А), спорные места |
 | goals | [goals/INDEX.md](goals/INDEX.md) | Цели по порядку: путь к запуску (G01 … G22, OPS) |

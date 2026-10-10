@@ -1,6 +1,7 @@
 import {
   Armchair,
   Ban,
+  RefreshCw,
   Banknote,
   Bell,
   BriefcaseBusiness,
@@ -82,6 +83,7 @@ const ICONS = {
   // «Mening safarlarim» of a driver before the application is sent (mockup g62/1 screen 1).
   adverts: Newspaper,
   blocked: Ban,
+  reopen: RefreshCw, // «Ilovani qayta oching» of an old launch (mockup g75/1 A)
   ...WAY_ICONS,
   ...PROFILE_ICONS,
   ...TALK_ICONS,
