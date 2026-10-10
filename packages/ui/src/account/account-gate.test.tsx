@@ -89,6 +89,12 @@ describe('AccountGate', () => {
     open.mockRestore();
   });
 
+  it('blocked on the road: the app stays open to finish the trip, a line says why (docs/158 Ж)', async () => {
+    gate(fakeClient({ state: 'active', profile, block: { until: Date.UTC(2026, 9, 27, 12) } }));
+    expect(await screen.findByText('inside')).toBeTruthy();
+    expect(screen.getByText('Hisobingiz bloklangan. Joriy safarni yakunlang.')).toBeTruthy();
+  });
+
   it('turns a blocked phone during registration into the block screen', async () => {
     const client = fakeClient({ state: 'unregistered', suggestedName: 'Ali' });
     client.register.mockRejectedValueOnce(new ApiError(403, 'users.blocked'));

@@ -5,6 +5,7 @@ import { cronJobs } from './cron';
 import type { Bindings } from './env';
 import { consumeNotifications, type NotificationJob } from './modules/notifications';
 import { useTelegramApi } from './shared/telegram/api-url';
+import { refreshLimits } from './modules/limits';
 
 // The chat of a booking is a Durable Object class of this Worker (docs/07).
 export { ChatRoom } from './modules/chat/infrastructure/chat-room';
@@ -18,14 +19,17 @@ export default {
     return app.fetch(request, env, context);
   },
   // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56).
-  queue: (batch, env) => {
+  queue: async (batch, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
+    await refreshLimits(env);
     return consumeNotifications(batch, env);
   },
   scheduled: async (_controller, env, context) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     const now = Date.now();
     const run = async () => {
+      // The limits the owner set reach the Cron jobs too (G75, docs/128 §4).
+      await refreshLimits(env);
       const failed = await runJobs(cronJobs(env, now));
       // A broken job is counted on the dashboard like any server error (G42).
       for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });

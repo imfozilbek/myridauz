@@ -1,0 +1,82 @@
+/* A card of «Mening safarlarim» (G75, mockup g75/2 A): the head, the way, a gray line, the tags; each
+   card on its own, as the trips of a driver (g64/6). */
+.mine-card {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 28px);
+  margin: 0 14px 12px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mine-card-top {
+  display: flex;
+  gap: 8px;
+}
+
+.mine-card-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.mine-card-route {
+  display: block;
+  margin-top: 2px;
+}
+
+.mine-card-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--reg-muted);
+}
+
+.mine-card-chevron {
+  color: var(--reg-control);
+}
+
+.mine-card-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mine-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--reg-off);
+  color: var(--reg-neutral-pale-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mine-chip-good {
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+}
+
+.mine-chip-brand {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.mine-card-link {
+  display: block;
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}

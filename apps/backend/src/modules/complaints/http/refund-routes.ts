@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { ComplaintsDeps } from '../application/ports';
 import { answerRefund } from '../application/refund';
+import { recordAction } from '../../journal';
 
 const STATUS = {
   'complaints.not_found': 404,
@@ -16,6 +17,15 @@ export const refundRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
     const session = context.get('session');
     const owner = { id: session.user.id, owner: session.teamRole === 'owner' };
     const answer = REFUND_ANSWERS.find((each) => each === context.req.param('answer')) ?? 'reject';
-    const result = await answerRefund(deps(context.env), owner, context.req.param('id'), answer);
-    return result === 'ok' ? context.body(null, 204) : context.json({ error: result }, STATUS[result]);
+    const id = context.req.param('id');
+    const result = await answerRefund(deps(context.env), owner, id, answer);
+    if (result !== 'ok') return context.json({ error: result }, STATUS[result]);
+    await recordAction(context.env, {
+      memberId: owner.id,
+      kind: 'refund',
+      subject: id,
+      action: answer,
+      since: null,
+    });
+    return context.body(null, 204);
   });

@@ -8,17 +8,13 @@ export const DRIVER_SUBSCRIPTIONS_PATH = '/driver/subscriptions';
 export const subscriptionPath = (base: string, id: string) => `${base}/${id}`;
 export const subscriptionRenewPath = (base: string, id: string) => `${base}/${id}/renew`;
 
-export const MAX_SUBSCRIPTIONS = 5;
-// "Any date" lives this long, then the bot offers to renew it (docs/24).
-export const ANY_DATE_DAYS = 30;
-
 export const SUBSCRIPTION_KINDS = ['trips', 'requests'] as const;
 export type SubscriptionKind = (typeof SUBSCRIPTION_KINDS)[number];
 
 export const subscriptionInputSchema = z.object({
   from: locationIdSchema,
   to: locationIdSchema,
-  // null: any date for ANY_DATE_DAYS days.
+  // null: any date for the brand's days, then the bot offers to renew it (docs/24).
   date: dateSchema.nullable(),
   // Only trips with "Mashinada ayol bor" (docs/06): passengers only.
   woman: z.boolean(),

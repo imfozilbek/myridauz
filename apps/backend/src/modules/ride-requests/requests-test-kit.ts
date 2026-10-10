@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import type { Car } from '@platform/contracts';
 import type { RequestsDeps } from './application/ports';
 import { createMemoryRequests } from './infrastructure/memory-requests';
@@ -72,6 +73,7 @@ export function setup() {
     hidden: async () => new Set(),
     board: { directions: async () => routes, trip: async () => nearest },
     ratings: async (ids) => new Map(ids.map((userId) => [userId, { average: 4.8, count: 12 }])),
+    limits: loadBrand(),
     newId: () => `request-${(id += 1)}`,
     now: () => now,
   };

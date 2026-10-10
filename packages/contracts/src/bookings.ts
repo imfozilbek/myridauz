@@ -29,10 +29,9 @@ export const BOOKING_STATUSES = [
   'cancelled_by_driver',
 ] as const;
 export type BookingStatus = (typeof BOOKING_STATUSES)[number];
-// A passenger waits for at most this many answers at once (docs/35).
-export const MAX_REQUESTED_BOOKINGS = 3;
-// A request without an answer expires after this time or at the departure (docs/35).
-export const BOOKING_ANSWER_HOURS = 24;
+// A time to answer that ends at night, Tashkent time, moves to the morning: from 22:00 the bot is
+// silent and the driver sleeps (docs/127, docs/124).
+export const ANSWER_NIGHT = { from: 22, morning: 8 } as const;
 
 // A booking fixes how the passenger is picked up and where they go (docs/70): from the pitak of
 // the direction, or from the door with a point; the drop-off is always a point at the door.
@@ -56,10 +55,9 @@ export type BookingInput = z.input<typeof bookingInputSchema>;
 
 // The other side sees the name and the photo by docs/05, never a phone or a username.
 // The places open only after the confirmation (docs/07, docs/14).
-// The meeting card and «Men keldim» open this long before the departure (docs/126).
-export const MEET_BEFORE_MINUTES = 30;
-// The meeting at the point opens then, for both sides: the passenger, the driver and the server.
-export const meetingStartsAt = (departAt: number) => departAt - MEET_BEFORE_MINUTES * MINUTE_MS;
+// The meeting card and «Men keldim» open the brand's minutes before the departure (docs/126), for both
+// sides: the passenger, the driver and the server.
+export const meetingStartsAt = (departAt: number, minutes: number) => departAt - minutes * MINUTE_MS;
 
 export const bookingSchema = z.object({
   id: z.string(),

@@ -41,7 +41,7 @@ describe('company requisites (G34, docs/30)', () => {
     expect((await ask('https://evil.example')).headers.get('access-control-allow-origin')).toBeNull();
   });
 
-  it('lets only the owner save; a moderator reads; each save is the next edition', async () => {
+  it('lets only the owner read and save; each save is the next edition', async () => {
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
     const refused = await save(MODERATOR, company);
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
@@ -52,9 +52,11 @@ describe('company requisites (G34, docs/30)', () => {
     const second = (await (await save(OWNER, { ...company, form: 'AJ' })).json()) as CompanyState;
     expect(second.history.map((item) => item.version)).toEqual([2, 1]);
     expect(second.current).toMatchObject({ company: { form: 'AJ' }, changedBy: OWNER });
-    const read = (await (await call(ADMIN_COMPANY_PATH, MODERATOR, { app: 'admin' })).json()) as CompanyState;
-    expect([read.canEdit, read.history.length]).toEqual([false, 2]);
+    // «Hujjatlar va kompaniya» is in «Boshqaruv»: the owner's only, reading too (docs/120, G75).
+    expect((await call(ADMIN_COMPANY_PATH, MODERATOR, { app: 'admin' })).status).toBe(403);
+    const read = (await (await call(ADMIN_COMPANY_PATH, OWNER, { app: 'admin' })).json()) as CompanyState;
+    expect(read.history.length).toBe(2);
     const answer = await (await ask(`https://${loadBrand().domain}`)).json();
-    expect(answer).toMatchObject({ company: { ...company, form: 'AJ' }, edition: { version: '1.5' } });
+    expect(answer).toMatchObject({ company: { ...company, form: 'AJ' }, edition: { version: '1.6' } });
   });
 });

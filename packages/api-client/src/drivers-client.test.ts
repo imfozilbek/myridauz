@@ -49,7 +49,7 @@ describe('createDriversClient', () => {
 
 describe('createModerationClient', () => {
   it('lists, decides, blocks and unblocks for the team', async () => {
-    const detail = { ...summary, history: [], samePlate: 1 };
+    const detail = { ...summary, history: [], samePlate: 1, was: null, gender: 'male' };
     const journal = { active: null, entries: [] };
     const fetch = vi
       .fn<Fetch>()

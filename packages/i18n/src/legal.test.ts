@@ -10,6 +10,7 @@ const brand = {
   company: { email: 'brand@example.uz' },
   commission: { percent: 7, minPerSeat: 2000 },
   promo: { amount: 100_000, grants: 2, days: 10, windowDays: 60 },
+  ratings: { blindDays: 5 },
 };
 const requisites = {
   legalName: 'Yoʻl Servis',
@@ -46,6 +47,8 @@ describe('legal texts (docs/30)', () => {
     const text = i18n.t('legal.offer.7.text', values);
     expect(text).toContain('7 foizi');
     expect(text).not.toMatch(/\{\w+\}/u);
+    // A rating shows after the days of the brand config, as the code reveals it (owner decision 10.10.2026).
+    expect(i18n.t('legal.offer.9.text', values)).toContain('yoki 5 kundan keyin koʻrinadi');
     expect(i18n.t('legal.offer.12.text', values)).toContain('yol@example.uz manziliga');
     expect(i18n.t('legal.privacy.7.text', values)).toContain('yol@example.uz manziliga');
   });

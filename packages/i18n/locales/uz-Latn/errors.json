@@ -38,6 +38,7 @@
   "shares.wrong_status": "Bu safarni endi ulashib boʻlmaydi.",
   "users.avatar_too_large": "Rasm juda katta. Boshqa rasmni tanlang.",
   "drivers.incomplete": "Arizada hamma rasmlar boʻlishi kerak. Yetishmayotganini qoʻshing.",
+  "drivers.live_trips": "Mashinani faol safarlar tugagach almashtirasiz.",
   "trips.wrong_status": "Bu safar allaqachon oʻzgargan. Roʻyxatni yangilang.",
   "calls.unavailable": "Qoʻngʻiroq hozir ishlamayapti. Chatda yozing.",
   "company.invalid_input": "Kompaniya rekvizitlarini tekshiring.",
@@ -58,5 +59,6 @@
   "trips.already_departed": "Yoʻlga chiqqaningiz allaqachon belgilangan.",
   "trips.not_departed": "Avval «Yoʻlga chiqdim» tugmasini bosing.",
   "trips.already_arrived": "Yetib kelganingiz allaqachon belgilangan.",
-  "trips.no_pitak": "Bu yoʻnalishda pitak yoʻq. «Uydan» usulini tanlang."
+  "trips.no_pitak": "Bu yoʻnalishda pitak yoʻq. «Uydan» usulini tanlang.",
+  "support.not_sent": "Javob odamga yetib bormadi. Birozdan keyin qayta yuboring."
 }

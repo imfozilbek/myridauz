@@ -39,6 +39,11 @@ const hasAllPhotos = (photos: CarPhotos) => Object.values(photos).every((key) =>
 const fixed = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
   reasons.filter((reason) => REASON_PLACE[reason] !== place);
 
+// While the team checks an application it does not change under their eyes; «Rad etish» is the last
+// word of the team (docs/120): a rejected application is never sent again.
+const closed = (application: Application) =>
+  application.status === 'pending' || application.status === 'rejected';
+
 // A new photo of an approved car is a change of the car: it goes back to the check (docs/04).
 // While the team checks the application, it does not change under their eyes.
 export function withPhoto(
@@ -47,7 +52,7 @@ export function withPhoto(
   key: string,
   now: number,
 ): Application | 'drivers.wrong_status' {
-  if (application.status === 'pending') return 'drivers.wrong_status';
+  if (closed(application)) return 'drivers.wrong_status';
   const status = application.status === 'approved' ? 'draft' : application.status;
   const photos = { ...application.photos, [kind]: key };
   return { ...application, status, photos, reasons: fixed(application.reasons, kind), updatedAt: now };
@@ -62,7 +67,7 @@ export function submit(
   hasAvatar: boolean,
   now: number,
 ): Application | SubmitError {
-  if (application.status === 'pending') return 'drivers.wrong_status';
+  if (closed(application)) return 'drivers.wrong_status';
   if (!hasAvatar || !hasAllPhotos(application.photos)) return 'drivers.incomplete';
   return { ...application, status: 'pending', car, reasons: [], submittedAt: now, updatedAt: now };
 }

@@ -1,3 +1,4 @@
+import type { BrandConfig } from '@platform/brands';
 import type { Car, Pitak, Point, Rating, Recommendation, RouteError, Stops, Trip } from '@platform/contracts';
 import type { Person } from '../../users';
 import type { RequestRecord } from '../domain/ride-request';
@@ -46,6 +47,8 @@ export type RequestsDeps = {
   };
   // The ratings of passengers on the cards of drivers (G64, docs/24).
   readonly ratings: (userIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
+  // The open requests and their seats, the days ahead (brand with the owner's values, docs/128 §4).
+  readonly limits: Pick<BrandConfig, 'requests' | 'schedule'>;
   readonly newId: () => string;
   readonly now: () => number;
 };

@@ -16,7 +16,6 @@ export const soundsStateSchema = z.object({
   // Who picked the set and when; null while the default of the brand plays.
   changedBy: z.number().int().nullable(),
   changedAt: z.number().int().nullable(),
-  canEdit: z.boolean(),
 });
 export type SoundsState = z.infer<typeof soundsStateSchema>;
 

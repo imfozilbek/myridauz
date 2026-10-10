@@ -3,6 +3,7 @@ import { NO_MARKS, type BookingRecord, type Named } from '../domain/booking';
 import { offerSeats, type OfferRecord } from '../domain/offer';
 import { offerChatKey } from '../domain/talk';
 import { offerViews } from './offer-views';
+import { endOffers } from './offers-ended';
 import type { BookingsDeps, Result } from './ports';
 import type { RequestFacts } from './request-facts';
 import { bookingViews } from './views';
@@ -91,6 +92,7 @@ export async function acceptedWith(
   const accepted: OfferRecord = { ...offer, status: 'accepted', bookingId: booking.id };
   await deps.offers.save(accepted);
   await deps.requests.matched(request.id);
+  await endOffers(deps, request.id);
   const answered = { id: offer.id, chatKey: offerChatKey(offer), requestId: offer.requestId };
   await deps.notify.offerAnswered(offer.driverId, true, answered, { id: booking.id, tripId: booking.tripId });
   const [forPassenger] = await bookingViews(deps, [booking], 'passenger');

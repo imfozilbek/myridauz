@@ -70,7 +70,7 @@ test('admin: the three sets, the owner picks the first', async ({ page }) => {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(ADMIN.port)));
   await page.getByText(t('common.admin.management'), { exact: true }).click();
-  await expect(page.getByText(t('common.admin.soundsHint'))).toBeVisible();
+  await expect(page.getByText(t('common.admin.sounds'), { exact: true })).toBeVisible();
   await take('2-management');
   await page.getByText(t('common.admin.sounds'), { exact: true }).click();
   await expect(page.getByText(t('common.admin.soundSet', { n: '3' }))).toBeVisible();

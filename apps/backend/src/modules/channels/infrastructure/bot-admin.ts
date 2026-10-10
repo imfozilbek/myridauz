@@ -44,3 +44,16 @@ export const inChannel = (fetch: Fetch, token: string | undefined) => {
   const of = membership(fetch, token);
   return async (username: string, userId: number) => (await of(username, userId)) === 'in';
 };
+
+// How many people are in a channel (G75): one call; null when Telegram does not answer.
+export const memberCount = (fetch: Fetch, token: string | undefined) => async (username: string) => {
+  if (!token) return null;
+  const response = await fetch(telegramUrl(token, 'getChatMemberCount'), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ chat_id: `@${username}` }),
+  }).catch(() => undefined);
+  if (!response?.ok) return null;
+  const { result } = (await response.json()) as { readonly result?: number };
+  return typeof result === 'number' ? result : null;
+};

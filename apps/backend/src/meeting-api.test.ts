@@ -1,10 +1,12 @@
 import {
+  ADMIN_NAVBAT_PATH,
   adminComplaintRefundPath,
   driverMeetPath,
   NO_SHOW_REASON,
   type Booking,
   type Complaint,
   type Wallet,
+  type Navbat,
 } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
@@ -95,9 +97,16 @@ describe('the meeting of the driver and a no-show through the API (docs/126, doc
     expect([refused.status, await refused.json()]).toEqual([403, { error: 'auth.not_owner' }]);
     const commission = came.commission;
     expect((await driverBooking(missed))?.refund).toEqual({ state: 'proposed', amount: commission });
+    // The refund waits in «Navbat» of the owner only (G75, docs/120): a moderator cannot answer it.
+    const refundIn = async (member: number) =>
+      (await read<Navbat>(call(ADMIN_NAVBAT_PATH, member, { app: 'admin' }))).items.some(
+        (item) => item.kind === 'complaint' && item.id === id && item.refund,
+      );
+    expect([await refundIn(OWNER), await refundIn(MODERATOR)]).toEqual([true, false]);
 
     expect((await call(adminComplaintRefundPath(id, 'confirm'), OWNER, asAdmin)).status).toBe(204);
     expect((await call(adminComplaintRefundPath(id, 'confirm'), OWNER, asAdmin)).status).toBe(409);
+    expect(await refundIn(OWNER)).toBe(false);
     expect(await driverBooking(missed)).toMatchObject({
       noShowAt: came.driverCameAt,
       refund: { state: 'confirmed', amount: commission },

@@ -1,4 +1,4 @@
-import { commissionFor, loadBrand } from '@platform/brands';
+import { commissionFor } from '@platform/brands';
 import { isQuietTime, type Booking } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { sendSignals } from '../feed';
@@ -9,12 +9,13 @@ import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { refundNoShow as refundOnce } from './application/no-show-refund';
-import { burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { burnExpired, canAfford, charge, grantWelcome, refund, shortage } from './application/wallet';
 import { warnBonusEnds } from './application/wallet-news';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
 import { createMemoryWallet } from './infrastructure/memory-wallet';
 import { moneySign, walletCard, walletRing } from './infrastructure/wallet-card';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 (tests) the journal lives in memory.
 const localWallet = createMemoryWallet();
@@ -34,7 +35,7 @@ let links: Links = {
 export const wireWalletLinks = (wired: Links) => void (links = wired);
 
 const walletDeps = (env: Bindings): WalletDeps => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     wallet: env.DB ? d1Wallet(env.DB) : localWallet,
     promo: brand.promo,
@@ -43,6 +44,7 @@ const walletDeps = (env: Bindings): WalletDeps => {
     booking: (id) => links.booking(env, id),
     lastPrice: (id) => links.lastPrice(env, id),
     perSeat: (price) => commissionFor(brand.commission, price, 1),
+    fewSeats: brand.wallet.fewSeats,
     // A driver may have never opened the bot: the news must not stop the commission.
     tell: async (driverId, view, news) => {
       const now = Date.now();
@@ -63,6 +65,9 @@ export const walletModule = walletRoutes(walletDeps);
 // For bookings: the commission at the confirmation and its refund (docs/12).
 export const walletCanAfford = (env: Bindings, driverId: number, amount: number) =>
   canAfford(walletDeps(env), driverId, amount);
+// For the driver bot: how much is missing for a commission (G75, docs/158 Г).
+export const walletShortage = (env: Bindings, driverId: number, amount: number) =>
+  shortage(walletDeps(env), driverId, amount);
 export const chargeCommission = (env: Bindings, driverId: number, bookingId: string, amount: number) =>
   charge(walletDeps(env), driverId, bookingId, amount);
 export const refundCommission = (env: Bindings, driverId: number, bookingId: string) =>

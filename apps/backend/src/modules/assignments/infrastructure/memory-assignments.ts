@@ -48,6 +48,10 @@ export function createMemoryAssignments(): AssignmentStore {
       }
       return [...done].map(([assigneeId, counts]) => ({ assigneeId, ...counts }));
     },
+    openSupport: async (fromDay) =>
+      rows
+        .filter((row) => row.kind === 'support' && row.day >= fromDay && row.answeredAt === null)
+        .map((row) => ({ subjectId: row.subjectId, at: row.at })),
     markDigest: async (day) => {
       if (digests.has(day)) return false;
       digests.add(day);

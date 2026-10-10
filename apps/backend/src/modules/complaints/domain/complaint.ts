@@ -1,7 +1,5 @@
 import {
-  COMPLAINT_WINDOW_DAYS,
   DAY_MS,
-  HIDE_AFTER_COMPLAINTS,
   HIGH_PRIORITY,
   type ComplaintReason,
   type ComplaintStatus,
@@ -41,15 +39,21 @@ export const isHigh = (reason: ComplaintReason) => HIGH_PRIORITY.includes(reason
 export const queueOrder = (a: ComplaintRecord, b: ComplaintRecord) =>
   Number(isHigh(b.reason)) - Number(isHigh(a.reason)) || a.createdAt - b.createdAt;
 
-// Complaints from HIDE_AFTER_COMPLAINTS different people in COMPLAINT_WINDOW_DAYS hide a person from
-// the search until the moderator decides (docs/17).
-export function hiddenPeople(complaints: readonly ComplaintRecord[], now: number): Set<number> {
-  const since = now - COMPLAINT_WINDOW_DAYS * DAY_MS;
+// Complaints from hideAfter different people in windowDays hide a person from the search until the
+// moderator decides (docs/17); the brand gives both, the owner changes them (docs/128 §4).
+type HideRule = { readonly hideAfter: number; readonly windowDays: number };
+
+export function hiddenPeople(
+  complaints: readonly ComplaintRecord[],
+  now: number,
+  rule: HideRule,
+): Set<number> {
+  const since = now - rule.windowDays * DAY_MS;
   const authors = new Map<number, Set<number>>();
   for (const complaint of complaints) {
     if (complaint.status === 'resolved' || complaint.createdAt < since) continue;
     const known = authors.get(complaint.againstId) ?? new Set<number>();
     authors.set(complaint.againstId, known.add(complaint.authorId));
   }
-  return new Set([...authors].filter(([, who]) => who.size >= HIDE_AFTER_COMPLAINTS).map(([id]) => id));
+  return new Set([...authors].filter(([, who]) => who.size >= rule.hideAfter).map(([id]) => id));
 }

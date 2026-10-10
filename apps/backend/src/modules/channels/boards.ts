@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { tashkentDate, type Trip } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { placesOf } from '../locations';
@@ -10,6 +9,7 @@ import { channelsOf } from './domain/route-channels';
 import { boardCard } from './infrastructure/board-text';
 import { dayCard, weekCard } from './infrastructure/summary-text';
 import { teamDeps } from './team-deps';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // The trips the boards show: set by the app, so channels does not depend on trips (app.ts).
 type TripOf = (env: Bindings, id: string) => Promise<Trip | undefined>;
@@ -17,7 +17,7 @@ type TripsOfDate = (env: Bindings, date: string) => Promise<readonly Trip[]>;
 
 // The parts of the boards and the summaries: the channels, the trips, the site of the brand.
 function common(env: Bindings, tripsOf: TripsOfDate) {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   const pageOf = (username: string) => brand.channels.find((zone) => zone.username === username)?.page;
   return {
     site: { bot: brand.bots.passenger, domain: brand.domain, pageOf },

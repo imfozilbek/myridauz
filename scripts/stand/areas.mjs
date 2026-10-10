@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process';
 
 const DIR = 'e2e/stand';
 export const AREAS = {
-  registration: ['first-contact', 'forms', 'screens-passenger', 'all-passenger-flows'],
+  registration: ['first-contact', 'forms', 'screens-passenger', 'all-passenger-flows', 'trip-preview'],
   search: ['passenger-search', 'passenger-directions', 'g24', 'combos', 'g33'],
   map: ['g26', 'dropoff-screen'],
   booking: [

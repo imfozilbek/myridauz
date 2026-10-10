@@ -20,23 +20,22 @@ const json = (method: string, body: unknown) => ({
 });
 
 describe('the pitaks of the admin (G24, docs/72)', () => {
-  it('lets the team add a pitak and make it the main one of a direction', async () => {
+  it('lets the owner add a pitak and make it the main one of a direction', async () => {
     expect(await changeModerator(testEnv, OWNER, MODERATOR, true)).toBe('ok');
     const point = { lat: 41.2438, lng: 69.3394 };
-    const created = await call(
-      ADMIN_PITAKS_PATH,
-      MODERATOR,
-      json('POST', { name: 'Qoʻyliq', point, status: 'claude' }),
-    );
+    const pitak = json('POST', { name: 'Qoʻyliq', point, status: 'claude' });
+    // «Pitaklar» is in «Boshqaruv»: the owner's only (docs/120, G75).
+    expect((await call(ADMIN_PITAKS_PATH, MODERATOR, pitak)).status).toBe(403);
+    const created = await call(ADMIN_PITAKS_PATH, OWNER, pitak);
     expect(created.status).toBe(200);
     const { id } = (await created.json()) as { id: string };
     const direction = { from: '1726', to: '1730', pitakId: id };
-    expect((await call(ADMIN_PITAK_DIRECTIONS_PATH, MODERATOR, json('PUT', direction))).status).toBe(200);
+    expect((await call(ADMIN_PITAK_DIRECTIONS_PATH, OWNER, json('PUT', direction))).status).toBe(200);
     const list = adminPitaksSchema.parse(
-      await (await call(ADMIN_PITAKS_PATH, MODERATOR, { app: 'admin' })).json(),
+      await (await call(ADMIN_PITAKS_PATH, OWNER, { app: 'admin' })).json(),
     );
     expect(list.directions).toContainEqual(direction);
-    const removed = await call(`${ADMIN_PITAK_DIRECTIONS_PATH}/1726/1730`, MODERATOR, json('DELETE', {}));
+    const removed = await call(`${ADMIN_PITAK_DIRECTIONS_PATH}/1726/1730`, OWNER, json('DELETE', {}));
     expect(removed.status).toBe(204);
   });
 

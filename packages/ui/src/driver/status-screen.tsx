@@ -1,40 +1,26 @@
 import type { DriverApplication } from '@platform/contracts';
-import { StepLayout } from '../account/step-layout';
-import { Cell, List, Section } from '../components';
+import { SupportButton } from '../account/support-button';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
-import { MainButton } from '../telegram/bottom-button';
-import './driver.css';
+import { StateScreen } from '../states/state-screen';
 
-type StatusScreenProps = { readonly application: DriverApplication; readonly onFix: () => void };
+type StatusScreenProps = { readonly application: DriverApplication };
 
-// What to fix (docs/04); a waiting application looks around the app instead (G34): every reason on its own line, the same places are red
-// in the application. The answer also comes from the driver bot.
-export function StatusScreen({ application, onFix }: StatusScreenProps) {
+// A rejected application (docs/04): the reasons, then a question goes to the support. «Rad etish» is the
+// last word of the team (G75, docs/120): no «Tuzatish». Waiting and «fix» applications look around the
+// app instead (G34, G62, DriverGate). The answer also comes from the driver bot. As every state: the red
+// tile in the middle and one button (G75, mockup g75/1 A).
+export function StatusScreen({ application }: StatusScreenProps) {
   useScreenView(`driver.status.${application.status}`);
   const { t } = useI18n();
-  const title =
-    application.status === 'rejected'
-      ? 'drivers.status.rejected.title'
-      : 'drivers.status.changes_requested.title';
   return (
-    <StepLayout icon="error" title={t(title)} hint={t('drivers.status.fixHint')}>
-      <List>
-        <Section>
-          {application.reasons.map((reason) => (
-            <Cell
-              key={reason}
-              className="cell-problem"
-              before={<IconTile name="error" tone="danger" />}
-              onClick={onFix}
-            >
-              {t(`drivers.reason.${reason}`)}
-            </Cell>
-          ))}
-        </Section>
-      </List>
-      <MainButton text={t('drivers.status.fix')} onClick={onFix} />
-    </StepLayout>
+    <StateScreen
+      icon="error"
+      tone="danger"
+      title={t('drivers.status.rejected.title')}
+      description={application.reasons.map((reason) => t(`drivers.reason.${reason}`)).join(' ')}
+      note={t('drivers.status.rejected.hint')}
+      button={<SupportButton />}
+    />
   );
 }

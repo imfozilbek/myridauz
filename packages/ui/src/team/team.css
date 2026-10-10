@@ -1,0 +1,135 @@
+/* The main screen of the team as the mockup g67/1 the owner chose (G75, docs/120): white cards on
+   the gray background, 14 px from the edges at 360 px; the sizes are the mockup ones (at 1.5). */
+.home:has(.team-home) .home-stack {
+  padding: 14px 14px 0;
+}
+
+.team-home {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: var(--reg-ink);
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  overflow: hidden;
+}
+
+button.team-card,
+.navbat-row {
+  cursor: pointer;
+}
+
+button.team-card:active,
+.navbat-row:active {
+  opacity: 0.7;
+}
+
+.team-profile {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  min-height: 68px;
+  margin-bottom: 2px;
+  padding: 0 14px;
+}
+
+.team-profile .profile-empty {
+  background: var(--reg-mint);
+  color: var(--reg-text);
+}
+
+.team-profile-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 21.33px;
+}
+
+.team-profile-role {
+  font-size: 13px;
+  line-height: 14.67px;
+  color: var(--reg-muted);
+}
+
+.team-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.team-section-title {
+  margin: 4px 0 0;
+  padding: 2px 14px 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 12px;
+  text-transform: uppercase;
+  color: var(--reg-muted);
+}
+
+.navbat-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.diqqat-card {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-height: 50.67px;
+  padding: 9px 12px 10.67px;
+}
+
+.diqqat-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.diqqat-hint {
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--reg-success-deep);
+}
+
+/* The own numbers of a moderator: four squares in a row (mockup g67/1). */
+.work-numbers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.work-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 85.33px;
+  box-sizing: border-box;
+  padding: 9px 4px 9.67px;
+  border-radius: 16px;
+  background: var(--reg-card);
+  text-align: center;
+}
+
+.work-number b {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.work-number span {
+  font-size: 11.5px;
+  line-height: 14px;
+  color: var(--reg-muted);
+}

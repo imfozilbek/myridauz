@@ -120,6 +120,11 @@ export const tripsEnded = async (env: Bindings, from: number, to: number) =>
   }));
 
 // The driver's trip as the family sees it when the driver shares it (G18, docs/43).
+// A trip of the driver not over yet: the car does not change under it (G75, docs/124 Ё).
+export const hasLiveTrips = async (env: Bindings, driverId: number) => {
+  const now = Date.now();
+  return (await tripsDeps(env).trips.byDriver(driverId)).some((trip) => isLive(trip, now));
+};
 export const tripForFamily = (env: Bindings, id: string) => familyView(tripsDeps(env), id);
 // Trips of saved drivers that still take passengers (G18, docs/18).
 export const upcomingTripsOf = (env: Bindings, driverIds: readonly number[]) =>

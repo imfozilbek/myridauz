@@ -1,12 +1,12 @@
-import { appHost, loadBrand } from '@platform/brands';
-import { MINUTE_MS, teamWaitMs } from '@platform/contracts';
+import { appHost } from '@platform/brands';
+import { DAY_MS, MINUTE_MS, tashkentDate, teamWaitMs } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { adminIds } from '../../shared/telegram/bot-config';
 import { notify } from '../notifications';
 import { teamMembers } from '../team';
 import { caseName, showQueue, tellOwners } from '../team-queue';
-import { peopleOf } from '../users';
+import { blockOf, peopleOf } from '../users';
 import { assign } from './application/assign';
 import { steadyOperator } from './domain/operator';
 import { sendDigest, type DigestDeps } from './application/digest';
@@ -15,6 +15,7 @@ import { remindWaiting, type Waiting } from './application/remind';
 import { d1Assignments } from './infrastructure/d1-assignments';
 import { digestText } from './infrastructure/digest-text';
 import { createMemoryAssignments } from './infrastructure/memory-assignments';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const localAssignments = createMemoryAssignments();
@@ -40,7 +41,7 @@ const deps = (env: Bindings, sources: Sources = NO_SOURCES): DigestDeps => ({
       ),
     );
     const text = digestText(day, rows, numbers, (id) => names.get(id) ?? String(id));
-    const url = `https://${appHost(loadBrand(env.BRAND), 'admin')}/?stats=day`;
+    const url = `https://${appHost(brandOf(env), 'admin')}/?stats=day`;
     const markup = { inline_keyboard: [[{ text: t('bot.summary.open'), web_app: { url } }]] };
     const job = (chatId: number) => ({
       bot: 'admin' as const,
@@ -68,9 +69,26 @@ export const operatorOf = async (env: Bindings, subjectId: number): Promise<numb
 // The Cron job: the summary of the day to the owner at 21:00 in Tashkent, once (G68, docs/122).
 export const sendDaySummary = (env: Bindings, sources: Sources) => sendDigest(deps(env, sources));
 
+// The support questions not answered for two days: cases of «Navbat» in the app (G75, docs/158 К).
+// A person who never registered has no public id: that question stays in the bot (docs/65 A3).
+const SUPPORT_DAYS = 2;
+export async function waitingSupport(env: Bindings) {
+  const people = peopleOf(env);
+  const open = await storeOf(env).openSupport(tashkentDate(Date.now() - SUPPORT_DAYS * DAY_MS));
+  const cases = await Promise.all(
+    open.map(async ({ subjectId, at }) => {
+      const person = await people.find(subjectId);
+      // A blocked person writes about the block: an appeal for the team (gap К of docs/158).
+      const appeal = person ? (await blockOf(env, subjectId)) !== null : false;
+      return person ? [{ id: person.publicId, name: person.firstName, since: at, appeal }] : [];
+    }),
+  );
+  return cases.flat();
+}
+
 // The Cron job (G34): a waiting application reminds its moderator, then the owners, in team hours.
 export function sendApplicationReminders(env: Bindings, waiting: () => Promise<Waiting[]>) {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   const { hours, remindMinutes, ownerMinutes } = brand.moderation;
   return remindWaiting({
     store: storeOf(env),
@@ -81,7 +99,7 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
     toModerator: async (moderatorId, { name, submittedAt }) => {
       const minutes = Math.floor(teamWaitMs(submittedAt, Date.now(), hours) / MINUTE_MS);
       const text = t('bot.navbat.ringLate', {
-        case: caseName({ kind: 'application', name, since: submittedAt }),
+        case: caseName({ kind: 'application', name }),
         minutes: String(minutes),
         left: String(Math.max(0, ownerMinutes - minutes)),
       });
@@ -91,7 +109,8 @@ export function sendApplicationReminders(env: Bindings, waiting: () => Promise<W
     toOwners: async ({ name, publicId }, moderatorId) => {
       const moderator = (await peopleOf(env).find(moderatorId))?.firstName ?? String(moderatorId);
       const text = t('bot.moderation.ownerWaiting', { minutes: String(ownerMinutes), name, moderator });
-      await tellOwners(env, { id: `late:${publicId}`, text, ring: true });
+      const sign = { kind: 'late' as const, name, moderator, minutes: ownerMinutes };
+      await tellOwners(env, { id: `late:${publicId}`, text, ring: true, sign });
     },
   });
 }

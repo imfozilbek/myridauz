@@ -1,5 +1,6 @@
 // Everything that differs between brands (docs/22). Code reads brands only through these types.
 import type { AppName, BrandTheme } from './brand-theme';
+import type { PeopleRules } from './people-rules';
 
 export type { AppName, BrandColors, BrandTheme, HexColor } from './brand-theme';
 
@@ -52,14 +53,19 @@ type ModerationRules = {
   readonly ownerMinutes: number;
 };
 
-// When a driver may leave (G38, docs/103): at least leadMinutes after making the trip; another day opens
-// at defaultTime; at most maxActiveTrips; the time to gather people is the road time × factor, within
-// the bounds.
+// When a driver may leave (G38, docs/103): at least leadMinutes after making the trip and at most
+// daysAhead; another day opens at defaultTime; at most maxActiveTrips; the time to gather people is the
+// road time × factor, within the bounds. A trip moves at most shiftMinutes later (G39); the meeting opens
+// meetMinutes before the departure (docs/126); the Cron departs a trip autoDepartHours after its time.
 type ScheduleRules = {
   readonly leadMinutes: number;
+  readonly daysAhead: number;
   readonly defaultTime: string;
   readonly maxActiveTrips: number;
   readonly gather: { readonly factor: number; readonly minMinutes: number; readonly maxMinutes: number };
+  readonly shiftMinutes: number;
+  readonly meetMinutes: number;
+  readonly autoDepartHours: number;
 };
 
 // The party of the legal documents (docs/30): requisites from the admin Mini App (G34).
@@ -76,7 +82,7 @@ export type BrandChannel = {
   readonly page?: string;
 };
 
-export type BrandConfig = {
+export type BrandConfig = PeopleRules & {
   readonly id: string;
   readonly name: string;
   readonly domain: string;

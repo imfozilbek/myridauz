@@ -1,4 +1,4 @@
-import { MAX_FAVORITES, type Favorites, type Trip } from '@platform/contracts';
+import type { Favorites, Trip } from '@platform/contracts';
 import type { FavoritesDeps, Result } from './ports';
 
 type AddError = 'favorites.not_found' | 'favorites.too_many';
@@ -13,7 +13,7 @@ export async function addFavorite(
     return { ok: false, error: 'favorites.not_found' };
   const saved = await deps.store.driversOf(passengerId);
   if (saved.includes(driverId)) return { ok: true, value: true };
-  if (saved.length >= MAX_FAVORITES) return { ok: false, error: 'favorites.too_many' };
+  if (saved.length >= deps.max) return { ok: false, error: 'favorites.too_many' };
   await deps.store.add(passengerId, driverId, deps.now());
   return { ok: true, value: true };
 }

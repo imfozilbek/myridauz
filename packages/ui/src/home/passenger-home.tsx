@@ -15,6 +15,7 @@ import { nextBookings } from './home-items';
 import { usePassengerData, type PassengerLoad } from './passenger-data';
 import { TALK_CALL, TRIP_TALK } from './trip-talk';
 import { useHomeTap } from './use-home-tap';
+import { useBrand } from '../context/brand-context';
 
 // The main screen of a passenger (G25, G66, docs/118): the nearest seat as one card under the profile,
 // the meeting instead of it 30 minutes before the departure (docs/126). Search lives at the bottom.
@@ -42,6 +43,7 @@ function Seat({ go, load: { value, failed, reload, refresh } }: SeatProps) {
   const [places, retryPlaces] = useDirectory();
   const tap = useHomeTap();
   const [now] = useState(Date.now);
+  const { meetMinutes } = useBrand().schedule;
   const retry = () => {
     if (failed) reload();
     if (places.status === 'error') retryPlaces();
@@ -50,7 +52,7 @@ function Seat({ go, load: { value, failed, reload, refresh } }: SeatProps) {
   const booking = value ? nextBookings(value[0])[0] : undefined;
   if (!booking || places.status !== 'ready') return null;
   const { directory } = places;
-  if (meetingTime(booking, now))
+  if (meetingTime(booking, now, meetMinutes))
     return (
       <PlacesKnown directory={directory}>
         <MeetingCard booking={booking} onTold={refresh} />

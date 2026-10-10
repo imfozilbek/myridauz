@@ -12,6 +12,7 @@ import { fileComplaint } from '../application/file';
 import { blockPerson } from '../application/block';
 import { complaintChat, complaintQueue, decide, openComplaint } from '../application/moderate';
 import type { ComplaintsDeps } from '../application/ports';
+import { recordAction } from '../../journal';
 
 const STATUS = {
   'complaints.not_found': 404,
@@ -62,13 +63,21 @@ export const complaintRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
     .post(`${ADMIN_COMPLAINTS_PATH}/:id/decision`, async (context) => {
       const input = complaintDecisionSchema.safeParse(await context.req.json().catch(() => null));
       if (!input.success) return fail('complaints.invalid_input');
-      const result = await decide(
-        deps(context.env),
-        moderatorOf(context),
-        context.req.param('id'),
-        input.data,
-      );
-      return result === 'ok' ? context.body(null, 204) : fail(result);
+      const id = context.req.param('id');
+      const moderator = moderatorOf(context);
+      const result = await decide(deps(context.env), moderator, id, input.data);
+      if (result !== 'ok') return fail(result);
+      const decided = await deps(context.env).store.find(id);
+      const action = decided?.decision ?? input.data.action;
+      const since = decided?.createdAt ?? null;
+      await recordAction(context.env, {
+        memberId: moderator.id,
+        kind: 'complaint',
+        subject: id,
+        action,
+        since,
+      });
+      return context.body(null, 204);
     })
     // A block from the admin app goes the same way as one from a complaint (docs/65 A5).
     .use('/admin/users/*', async (context, next) =>
@@ -90,5 +99,8 @@ export const complaintRoutes = (deps: (env: Bindings) => ComplaintsDeps) =>
         side: 'driver' as const,
       };
       const result = await blockPerson(deps(context.env), order);
-      return result === 'ok' ? context.body(null, 204) : fail(result);
+      if (result !== 'ok') return fail(result);
+      const block = { memberId: id, kind: 'block' as const, subject: context.req.param('id'), since: null };
+      await recordAction(context.env, { ...block, action: `block:${input.data.days ?? 'forever'}` });
+      return context.body(null, 204);
     });

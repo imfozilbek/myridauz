@@ -5,6 +5,7 @@ import { Icon } from '../icons';
 import { useUntilText } from '../trip/until-text';
 import { tripSums } from './trip-sums';
 import './after-rows.css';
+import { useBrand } from '../context/brand-context';
 
 // The chevron of a row that opens something (mockup g63/5 phone 5).
 const CHEVRON = 9.6;
@@ -27,7 +28,8 @@ type Row = readonly [AfterRow | null, string, string];
 export function AfterRows({ trip, bookings, now, onRow }: Props) {
   const { t, formatNumber } = useI18n();
   const untilText = useUntilText();
-  const { rateUntil, talkUntil, complainUntil } = afterTrip(trip.departAt, trip.km, trip.arrivedAt);
+  const brand = useBrand();
+  const { rateUntil, talkUntil, complainUntil } = afterTrip(brand, trip.departAt, trip.km, trip.arrivedAt);
   const sums = tripSums(bookings);
   const left = (until: number) => t('bookings.done.daysLeft', { days: daysLeft(until, now) });
   const over = t('bookings.done.over');

@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { afterTrip, arrivalAt, HOUR_MS, MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -19,7 +20,7 @@ vi.mock('../chat/chat-screen', () => ({
 
 afterEach(cleanup);
 
-const { talkUntil, complainUntil } = afterTrip(trip.departAt, trip.km);
+const { talkUntil, complainUntil } = afterTrip(loadBrand(), trip.departAt, trip.km);
 
 describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
   it('shows when it ended, the passengers with their stars or the refund, the deadlines', async () => {

@@ -1,0 +1,61 @@
+/* A row on its own white card (G75, mockup g75/2 A «Obunalar»): the tile, the title, a gray line,
+   one action on the right. */
+.row-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 14px 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font-size: 16px;
+}
+
+.row-card-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--reg-mint);
+  color: var(--reg-text);
+}
+
+.row-card-words {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-card-hint {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--reg-muted);
+}
+
+.row-card-action {
+  display: grid;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-danger);
+  cursor: pointer;
+}
+
+.row-card-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.row-card-open {
+  cursor: pointer;
+}

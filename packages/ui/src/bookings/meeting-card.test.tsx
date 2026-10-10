@@ -1,11 +1,13 @@
+import { loadBrand } from '@platform/brands';
 import type { ChatClient } from '@platform/api-client';
-import { MEET_BEFORE_MINUTES } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { testClients } from '../test-shell';
 import { confirmed } from './booking-test-kit';
+
+const MEET_BEFORE_MINUTES = loadBrand().schedule.meetMinutes;
 
 afterEach(cleanup);
 

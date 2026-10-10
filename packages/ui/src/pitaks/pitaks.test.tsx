@@ -2,7 +2,7 @@ import type { AdminPitak, PitakChange, Where } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { locations, tap } from '../market/market-test-kit';
-import { ManagementScreen } from '../pricing/management-screen';
+import { ManagementScreen } from '../manage/management-screen';
 import { renderInShell, testClients } from '../test-shell';
 
 afterEach(cleanup);
@@ -58,7 +58,8 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     await tap('Qoʻyliq pitagi');
     expect(pitaks.direction).toHaveBeenCalledWith({ ...DIRECTION, pitakId: 'qoyliq' });
     expect(await screen.findByText('Barcha pitaklar')).toBeTruthy();
-    expect(pitaks.all).toHaveBeenCalledTimes(2);
+    // «Boshqaruv» reads them once for «64 ta», the screen once and once more after the choice.
+    expect(pitaks.all).toHaveBeenCalledTimes(3);
   });
 
   it('adds a pitak with its point on the map and its status', async () => {

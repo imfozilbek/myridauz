@@ -3,7 +3,7 @@ import type { Channel, Location } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
-import { ManagementScreen } from '../pricing/management-screen';
+import { ManagementScreen } from '../manage/management-screen';
 import { renderInShell, testClients } from '../test-shell';
 import { kmBetween, withNear } from './near';
 
@@ -33,20 +33,40 @@ const fixed: Channel = {
 };
 const kitob: Channel = { username: 'ch_kitob', title: 'Kanal | Kitob', places: ['1710224'], fixed: false };
 
+const health = (username: string, subscribers: number | null, canPost: boolean | null, failed: number) => ({
+  username,
+  title: username,
+  subscribers,
+  canPost,
+  checkedAt: 1,
+  failed,
+  arrivals: 12,
+});
+// The health of the channels from the Cron check (G75, docs/120).
+const HEALTH = { channels: [health('ch_qashqadaryo', 1200, true, 0), health('ch_kitob', null, false, 2)] };
+
 function setup(list: Channel[], save = vi.fn(async () => kitob)) {
   const channels = { list: vi.fn(async () => list), save, remove: vi.fn(async () => undefined) };
+  const team = { channelHealth: async () => HEALTH };
   const locations = { getLocations: async () => ({ version: '1', locations: LOCATIONS }) };
   renderInShell(
     <ManagementScreen onBack={() => undefined} />,
     false,
     true,
     locations,
-    testClients({ channels }),
+    testClients({ channels, team }),
   );
   return channels;
 }
 
 describe('Kanallar: the channels of the team (docs/63)', () => {
+  it('shows how many are in each channel, who came by it, and in red when the bot may not post', async () => {
+    setup([fixed, kitob]);
+    await tap('Kanallar');
+    expect(await screen.findByText(/1\s200 obunachi · oyda 12 kishi keldi/u)).toBeTruthy();
+    expect(screen.getByText('Bot yoza olmaydi').className).toContain('danger-text');
+  });
+
   it('counts neighbours in a straight line and adds only the close districts', () => {
     expect(kmBetween(KITOB, SHAHRISABZ)).toBeLessThan(10);
     expect(withNear([KITOB], LOCATIONS)).toEqual(['1710224', '1710245']);

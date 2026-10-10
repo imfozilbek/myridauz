@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { MyChannelsScreen } from '../../channels/my-channels-screen';
-import { HistoryScreen } from '../../comfort/history-screen';
 import { useScreenView } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
 import { useBrand } from '../../context/brand-context';
@@ -34,7 +33,6 @@ export function ProfileScreen({ onBack }: { readonly onBack: () => void }) {
   const { profile } = account;
   if (open === 'look')
     return <LookScreen rating={standing?.rating ?? { average: profile.rating, count: 0 }} onBack={back} />;
-  if (open === 'history') return <HistoryScreen onBack={back} />;
   if (open === 'reviews') return <MyReviewsScreen userId={profile.id} onBack={back} />;
   if (open === 'channels') return <MyChannelsScreen onBack={back} />;
   if (open === 'documents') return <DocumentsScreen onBack={back} />;

@@ -1,11 +1,16 @@
+import { loadBrand } from '@platform/brands';
 import { expect, test } from '../crash-guard';
 import { createBookingsClient, createMarketClient } from '@platform/api-client';
-import { BOOKING_ANSWER_HOURS, MAX_OPEN_REQUESTS, tashkentDate } from '@platform/contracts';
+import { tashkentDate } from '@platform/contracts';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { askRide, MINUTE, outcome, SAMARQAND, TO_SAMARQAND } from './g27-kit';
 import { JAHONGIR, NARGIZA } from './people';
 import { signedAs, staleSignedAs } from './stand-kit';
 import { standSql } from './stand-tools';
+
+// The brand defaults (docs/127): the owner changed nothing on the stand.
+const { maxOpen: MAX_OPEN_REQUESTS } = loadBrand().requests;
+const BOOKING_ANSWER_HOURS = loadBrand().bookings.answerHours;
 
 // The edges of time, limits and the way in (docs/81 A11, A13, V02, V03, docs/77 P11): each one ends
 // with a clear refusal, never a half state.

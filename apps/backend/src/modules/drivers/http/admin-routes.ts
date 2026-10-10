@@ -10,6 +10,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { applicantPhoto, applicationFor, decideApplication, queue } from '../application/moderate';
 import type { DriversDeps } from '../application/ports';
 import { fail, image } from './respond';
+import { recordAction } from '../../journal';
 
 const ONE = `${ADMIN_APPLICATIONS_PATH}/:id{[0-9a-f]+}`;
 const isPhoto = (value: string): value is CarPhotoKind | 'avatar' =>
@@ -26,11 +27,18 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin'),
       )
       // The name and the role of the team member on the main screen (G53).
-      .get(ADMIN_ME_PATH, (context) => {
+      .get(ADMIN_ME_PATH, async (context) => {
         const { user, teamRole } = context.get('session');
-        return teamRole
-          ? context.json({ firstName: user.firstName, role: teamRole })
-          : fail(context, 'auth.not_admin');
+        if (!teamRole) return fail(context, 'auth.not_admin');
+        const person = await deps(context.env).people.find(user.id);
+        const id = person?.publicId ?? null;
+        const hasAvatar = Boolean(person?.avatarKey);
+        return context.json({
+          id,
+          firstName: person?.firstName ?? user.firstName,
+          hasAvatar,
+          role: teamRole,
+        });
       })
       .get(ADMIN_APPLICATIONS_PATH, async (context) =>
         context.json({ applications: await queue(deps(context.env)) }),
@@ -50,7 +58,12 @@ export function adminRoutes(deps: (env: Bindings) => DriversDeps) {
         const moderator = context.get('session').user.id;
         const userId = await userOf(context);
         const result = await decideApplication(deps(context.env), moderator, userId, decision.data);
-        return result.ok ? context.json(result.value) : fail(context, result.error);
+        if (!result.ok) return fail(context, result.error);
+        const { submittedAt } = result.value;
+        const subject = context.req.param('id') ?? '';
+        const action = { memberId: moderator, kind: 'application' as const, subject, since: submittedAt };
+        await recordAction(context.env, { ...action, action: decision.data.action });
+        return context.json(result.value);
       })
   );
 }

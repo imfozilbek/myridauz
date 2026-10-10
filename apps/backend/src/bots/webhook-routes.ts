@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { recordServerEvent } from '../modules/analytics';
@@ -20,6 +19,7 @@ import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
+import { brandOf } from '../shared/brand/brand-of';
 
 const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const UNAUTHORIZED = 401;
@@ -38,7 +38,7 @@ export function webhookRoutes(fetch: Fetch) {
     if (!update.success) return context.json({});
     const event = botEventOf(role, update.data);
     if (event) recordServerEvent(context.env, event);
-    const bot: BotContext = { env: context.env, brand: loadBrand(context.env.BRAND), fetch };
+    const bot: BotContext = { env: context.env, brand: brandOf(context.env), fetch };
     try {
       return context.json(await answer(bot, role, update.data));
     } catch (error) {

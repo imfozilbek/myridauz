@@ -1,6 +1,7 @@
 import {
   Armchair,
   Ban,
+  RefreshCw,
   Banknote,
   Bell,
   BriefcaseBusiness,
@@ -56,6 +57,7 @@ import {
 import { PLACE_ICONS } from './place-icons';
 import { PROFILE_ICONS } from './profile-icons';
 import { TALK_ICONS } from './talk-icons';
+import { TEAM_ICONS } from './team-icons';
 import { WAY_ICONS } from './way-icons';
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
@@ -81,10 +83,12 @@ const ICONS = {
   // «Mening safarlarim» of a driver before the application is sent (mockup g62/1 screen 1).
   adverts: Newspaper,
   blocked: Ban,
+  reopen: RefreshCw, // «Ilovani qayta oching» of an old launch (mockup g75/1 A)
   ...WAY_ICONS,
   ...PROFILE_ICONS,
   ...TALK_ICONS,
   ...PLACE_ICONS,
+  ...TEAM_ICONS,
   car: CarFront,
   carSide: Car,
   carInterior: Armchair,

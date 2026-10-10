@@ -1,4 +1,4 @@
-import { DAY_MS, RATING_DAYS, RATING_REMIND_HOURS } from '@platform/contracts';
+import { DAY_MS } from '@platform/contracts';
 import type { Ask, AskedAt, RatingsDeps, Ride } from './ports';
 
 const HOUR_MS = 60 * 60 * 1000;
@@ -9,7 +9,7 @@ const raterRole = (ride: Ride, raterId: number): AskedAt['rater'] =>
   raterId === ride.driverId ? 'driver' : 'passenger';
 
 // The Cron job (docs/24): after a ride both sides get "Safar qanday oʻtdi?" once, with 1 … 5;
-// who has not answered in RATING_REMIND_HOURS gets one reminder; after RATING_DAYS nothing more.
+// who has not answered in the brand's hours gets one reminder; after its days nothing more.
 export async function askRatings(deps: RatingsDeps): Promise<void> {
   const now = deps.now();
   const rides = await deps.rides.ended(now - ASK_WINDOW_MS, now);
@@ -22,7 +22,8 @@ export async function askRatings(deps: RatingsDeps): Promise<void> {
   if (asks.length > 0) await deps.store.saveAsks(asks);
   const byBooking = new Map(fresh.map((ride) => [ride.bookingId, ride]));
   await send(deps, asks, (ask) => byBooking.get(ask.bookingId), false);
-  const due = await deps.store.toRemind(now - RATING_REMIND_HOURS * HOUR_MS, now - RATING_DAYS * DAY_MS);
+  const { remindHours, days } = deps.limits;
+  const due = await deps.store.toRemind(now - remindHours * HOUR_MS, now - days * DAY_MS);
   for (const ask of due) await deps.store.markReminded(ask);
   const remindRides = new Map<string, Ride | undefined>();
   for (const ask of due) remindRides.set(ask.bookingId, await deps.rides.find(ask.bookingId));

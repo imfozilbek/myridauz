@@ -22,6 +22,8 @@ export type FavoritesDeps = {
   readonly tell: (passengerIds: readonly number[], trip: Trip) => Promise<void>;
   // The Telegram ID behind a public id from a path or a view (docs/65 A3).
   readonly idOf: (publicId: string) => Promise<number | undefined>;
+  // The favorite drivers of one passenger at most (brand, docs/128 §4).
+  readonly max: number;
   readonly now: () => number;
 };
 

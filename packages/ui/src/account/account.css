@@ -89,9 +89,9 @@
 
 /* A lone message stands in the optical center of the screen. */
 .center-screen {
-  display: grid;
-  min-height: 80vh;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--tg-viewport-stable-height, 100vh);
 }
 
 .step-note {
@@ -113,4 +113,15 @@
 
 .step-head.step-head-plain {
   grid-template-columns: 1fr;
+}
+
+/* Blocked on the road: one warning line over the app while the trip on the way ends (docs/158 Ж). */
+.riding-block {
+  margin: 0;
+  padding: 10px 16px;
+  background: var(--reg-warning-soft);
+  color: var(--reg-warning-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
 }

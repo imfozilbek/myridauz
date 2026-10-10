@@ -14,7 +14,8 @@ describe('booking steps the server records (docs/29)', () => {
     const waiting = await requestBooking(deps, DILNOZA, addTrip(), seats(1));
     if (!refused.ok || !waiting.ok) throw new Error('no booking');
     await answer(deps, DRIVER, refused.value.id, 'decline');
-    await expireRequests(deps, NOW + 25 * HOUR);
+    // Asked at 06:00: the answer waits till 08:00 of the next day (docs/127).
+    await expireRequests(deps, NOW + 27 * HOUR);
     expect(notes.filter((note) => note.startsWith('step:'))).toEqual(['step: declined', 'step: expired']);
   });
 });

@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { confirmedBookings, passengerNewsOf, requestsPastHalf, tellDriver } from '../bookings';
 import { notify } from '../notifications';
@@ -7,6 +6,7 @@ import { watchDepartures } from './application/departures';
 import { remindTrips } from './application/remind';
 import { departReminder } from './infrastructure/depart-reminder';
 import { createMemoryFirst, d1First } from './infrastructure/reminder-store';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localFirst = createMemoryFirst();
 
@@ -36,6 +36,7 @@ export const watchLateDepartures = (env: Bindings, now: number) =>
     late: (from, to) => tripsNotDeparted(env, from, to),
     depart: (tripId, at) => departByCron(env, tripId, at),
     first: env.DB ? d1First(env.DB) : localFirst,
-    remind: departReminder(loadBrand(env.BRAND), (jobs) => notify(env, jobs)),
+    remind: departReminder(brandOf(env), (jobs) => notify(env, jobs)),
+    autoDepartHours: brandOf(env).schedule.autoDepartHours,
     now: () => now,
   });

@@ -1,4 +1,4 @@
-import { apiHost, loadBrand } from '@platform/brands';
+import { apiHost } from '@platform/brands';
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { safeEqual } from '../shared/http/safe-equal';
@@ -10,6 +10,7 @@ import { BOT_ROLES, isBotRole } from './bot-roles';
 import { botCommands } from './documents-reply';
 import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
+import { brandOf } from '../shared/brand/brand-of';
 
 const SETUP_HEADER = 'x-setup-secret';
 const UNAUTHORIZED = 401;
@@ -22,7 +23,7 @@ export function setupRoutes(fetch: Fetch) {
     const secret = context.env.TELEGRAM_WEBHOOK_SECRET;
     if (!secret || !safeEqual(context.req.header(SETUP_HEADER) ?? '', secret))
       return context.body(null, UNAUTHORIZED);
-    const brand = loadBrand(context.env.BRAND);
+    const brand = brandOf(context.env);
     const configured: string[] = [];
     for (const role of BOTS) {
       const token = botToken(context.env, role);

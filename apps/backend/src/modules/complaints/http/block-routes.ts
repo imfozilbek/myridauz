@@ -3,6 +3,7 @@ import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { blockJournal } from '../application/block-journal';
 import type { ComplaintsDeps } from '../application/ports';
+import { recordAction } from '../../journal';
 
 const STATUS = {
   'auth.not_admin': 403,
@@ -28,6 +29,14 @@ export function blockRoutes(deps: (env: Bindings) => ComplaintsDeps) {
       const userId = await userOf(context);
       if (userId === undefined) return fail('users.not_found');
       await deps(context.env).people.unblock(userId, { by: session.user.id, reason: 'unblock' });
+      const subject = context.req.param('id') ?? '';
+      await recordAction(context.env, {
+        memberId: session.user.id,
+        kind: 'unblock',
+        subject,
+        action: 'unblock',
+        since: null,
+      });
       return context.body(null, 204);
     });
 }

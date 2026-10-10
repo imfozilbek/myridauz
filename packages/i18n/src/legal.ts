@@ -15,6 +15,8 @@ export type LegalBrand = {
     readonly days: number;
     readonly windowDays: number;
   };
+  // A rating shows after these days, when the other side did not rate (docs/24).
+  readonly ratings: { readonly blindDays: number };
 };
 
 // The requisites the owner enters in the admin Mini App (G34): the same fields as Company of contracts.
@@ -68,6 +70,7 @@ export function legalValues(i18n: I18n, brand: LegalBrand, requisites: LegalRequ
     grants: String(promo.grants),
     days: String(promo.days),
     windowDays: String(promo.windowDays),
+    rateDays: String(brand.ratings.blindDays),
   };
 }
 

@@ -1,6 +1,4 @@
 import {
-  BOOKING_ANSWER_HOURS,
-  HOUR_MS,
   onTheWay,
   type BookingMode,
   type BookingStatus,
@@ -52,10 +50,6 @@ export type BookingRecord = {
 
 // A new booking: the driver has marked nothing at the point yet (G63).
 export const NO_MARKS = { driverCameAt: null, metAt: null, noShowAt: null } as const;
-
-// An answer is waited for 24 hours, but never after the departure (docs/35).
-export const answerDeadline = (departAt: number, now: number) =>
-  Math.min(now + BOOKING_ANSWER_HOURS * HOUR_MS, departAt);
 
 // A request whose time is over reads as expired even before the Cron job writes it.
 export const statusAt = (booking: BookingRecord, now: number, tripOver: boolean): BookingStatus => {

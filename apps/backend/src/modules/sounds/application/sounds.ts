@@ -11,15 +11,14 @@ export async function publicSounds(deps: SoundsDeps): Promise<SoundChoice> {
   return { set: (await current(deps))?.set ?? deps.defaultSet };
 }
 
-// The admin screen: every member of the team listens, only the owner picks (docs/02).
-export async function soundsState(deps: SoundsDeps, canEdit: boolean): Promise<SoundsState> {
+// The admin screen of the owner: the set in use and the others to listen to (docs/02, G75).
+export async function soundsState(deps: SoundsDeps): Promise<SoundsState> {
   const pick = await current(deps);
   return {
     set: pick?.set ?? deps.defaultSet,
     sets: [...deps.sets],
     changedBy: pick?.changedBy ?? null,
     changedAt: pick?.changedAt ?? null,
-    canEdit,
   };
 }
 
@@ -27,5 +26,5 @@ export async function soundsState(deps: SoundsDeps, canEdit: boolean): Promise<S
 export async function pickSounds(deps: SoundsDeps, set: string, by: number): Promise<SoundsState | null> {
   if (!deps.sets.includes(set)) return null;
   await deps.sounds.add(set, by, deps.now());
-  return soundsState(deps, true);
+  return soundsState(deps);
 }

@@ -35,7 +35,7 @@ test('passenger: cancels a confirmed seat', async ({ page }) => {
   await page.getByText(t('bookings.cancel')).click();
   await expect.poll(() => cancelled).toHaveLength(1);
   expect(cancelled[0]).toBe(`/api/passenger/bookings/${confirmed.id}/cancel`);
-  await expect(page.getByText(t('bookings.mine'))).toBeVisible();
+  await expect(page.locator('.market-tabs')).toBeVisible();
   await expect(page.getByText(t('errors.generic.title'))).toHaveCount(0);
 });
 

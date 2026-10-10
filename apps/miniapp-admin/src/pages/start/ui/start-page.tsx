@@ -1,46 +1,43 @@
 import {
-  AdminTiles,
-  ApplicationsScreen,
-  ComplaintsScreen,
-  linkedApplication,
-  linkedComplaint,
+  CHANNELS_SECTION,
+  linkedCase,
   linkedStats,
   MANAGEMENT_SECTION,
   ManagementScreen,
+  NAVBAT_SECTION,
+  NavbatScreen,
+  PEOPLE_SECTION,
+  PeopleScreen,
+  ReadChannelsScreen,
   STATS_SECTION,
   StartFlow,
   StatsScreen,
+  TeamHome,
   TeamTripsScreen,
   TRIPS_SECTION,
-  useApplicationsLive,
-  useComplaintsLive,
   type StartAction,
 } from '@platform/ui';
 
-// The work of the team as number tiles: how many applications and complaints wait (G53).
-const ACTIONS: readonly StartAction[] = [
+const NO_ACTIONS: readonly StartAction[] = [];
+
+// What the main screen of the team and the links of the admin bot open (G53, G75, docs/120).
+const SECTIONS: readonly StartAction[] = [
   {
-    id: 'applications',
+    id: NAVBAT_SECTION,
     icon: 'applications',
     tone: 'brand',
-    labelKey: 'common.admin.applications',
-    hintKey: 'common.admin.applicationsHint',
-    useLive: useApplicationsLive,
-    Screen: ApplicationsScreen,
+    labelKey: 'team.section.navbat',
+    hintKey: 'team.empty',
+    Screen: NavbatScreen,
   },
   {
-    id: 'complaints',
-    icon: 'complaints',
+    id: PEOPLE_SECTION,
+    icon: 'passengers',
     tone: 'brand',
-    labelKey: 'common.admin.complaints',
-    hintKey: 'common.admin.complaintsHint',
-    useLive: useComplaintsLive,
-    Screen: ComplaintsScreen,
+    labelKey: 'manage.people',
+    hintKey: 'manage.peopleHint',
+    Screen: PeopleScreen,
   },
-];
-
-// The numbers of the day open their screens; «Boshqaruv» keeps prices, wallets and the rest (G53).
-const SECTIONS: readonly StartAction[] = [
   {
     id: STATS_SECTION,
     icon: 'statistics',
@@ -48,6 +45,14 @@ const SECTIONS: readonly StartAction[] = [
     labelKey: 'common.admin.statistics',
     hintKey: 'common.admin.statisticsHint',
     Screen: StatsScreen,
+  },
+  {
+    id: CHANNELS_SECTION,
+    icon: 'channel',
+    tone: 'brand',
+    labelKey: 'channels.title',
+    hintKey: 'channels.title',
+    Screen: ReadChannelsScreen,
   },
   {
     id: TRIPS_SECTION,
@@ -67,22 +72,18 @@ const SECTIONS: readonly StartAction[] = [
   },
 ];
 
-// A link from the admin bot opens the applications, a complaint or the dashboard at once
-// (docs/17, docs/29, docs/50).
-const opened = () => {
-  if (linkedComplaint()) return 'complaints';
-  if (linkedStats()) return MANAGEMENT_SECTION;
-  return linkedApplication() === null ? null : 'applications';
+// A link from the admin bot opens a case in «Navbat» or the dashboard at once (docs/17, docs/29,
+// docs/50, G75).
+const linked = () => {
+  const open = linkedCase();
+  if (open) return { opened: NAVBAT_SECTION, launch: { navbat: open } };
+  return linkedStats() ? { opened: MANAGEMENT_SECTION } : {};
 };
 
+// The main screen of the team: «Diqqat», «Navbat» and «Boshqaruv» of the owner, «Navbat» and the
+// own numbers of a moderator (mockup g67/1).
 export function StartPage() {
-  const open = opened();
   return (
-    <StartFlow
-      actions={ACTIONS}
-      sections={SECTIONS}
-      tiles={(go) => <AdminTiles go={go} />}
-      {...(open === null ? {} : { opened: open })}
-    />
+    <StartFlow actions={NO_ACTIONS} sections={SECTIONS} home={(go) => <TeamHome go={go} />} {...linked()} />
   );
 }

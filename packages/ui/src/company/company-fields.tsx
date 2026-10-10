@@ -17,19 +17,17 @@ export function invalidFields(draft: CompanyDraft): readonly (keyof Company)[] {
 type Props = {
   readonly draft: CompanyDraft;
   readonly invalid: readonly (keyof Company)[];
-  readonly disabled: boolean;
   readonly onChange: (field: keyof Company, value: string) => void;
 };
 
-// The five requisites of the documents (G34, docs/96 T23); a moderator only reads them.
-export function CompanyFields({ draft, invalid, disabled, onChange }: Props) {
+// The five requisites of the documents (G34, docs/96 T23): the owner changes them (G75).
+export function CompanyFields({ draft, invalid, onChange }: Props) {
   const { t } = useI18n();
   return COMPANY_FIELDS.map((field) => (
     <Field
       key={field}
       label={t(`legal.admin.${field}`)}
       value={draft[field]}
-      disabled={disabled}
       status={invalid.includes(field) ? 'error' : 'default'}
       {...(field === 'stir' ? { inputMode: 'numeric' as const, maxLength: 9 } : {})}
       {...(field === 'email' ? { type: 'email', inputMode: 'email' as const } : {})}

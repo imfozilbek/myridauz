@@ -1,12 +1,14 @@
-import { FEW_SEATS, type Wallet } from '@platform/contracts';
+import type { Wallet } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
+import { useBrand } from '../context/brand-context';
 
 // The money of the driver on top of «Hamyon» (G65, mockup g65/1): the whole sum, how many seats it
 // still confirms at the price of the last trip, then the bonus with its end and the main balance.
 export function WalletCard({ wallet }: { readonly wallet: Wallet }) {
   const { t, formatMoney, formatNumber, formatDate } = useI18n();
   const { seatsLeft } = wallet;
-  const low = seatsLeft !== null && seatsLeft < FEW_SEATS;
+  const { fewSeats } = useBrand().wallet;
+  const low = seatsLeft !== null && seatsLeft < fewSeats;
   const until = wallet.bonusExpiresAt
     ? t('wallet.bonusUntil', { date: formatDate(new Date(wallet.bonusExpiresAt)) })
     : t('wallet.card.unit');

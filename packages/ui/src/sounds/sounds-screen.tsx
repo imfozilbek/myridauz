@@ -52,7 +52,7 @@ function SoundSets({ loaded, onBack }: { readonly loaded: SoundsState; readonly 
       <List>
         {state.sets.map((set) => {
           const chosen = set === state.set;
-          const canPick = state.canEdit && !chosen && !busy;
+          const canPick = !chosen && !busy;
           return (
             <Section key={set}>
               <Cell

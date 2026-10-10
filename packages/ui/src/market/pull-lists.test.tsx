@@ -4,7 +4,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
 import { ChannelsScreen } from '../channels/channels-screen';
 import { FavoritesScreen } from '../comfort/favorites-screen';
-import { HistoryScreen } from '../comfort/history-screen';
 import { DriverData } from '../home/driver-data';
 import { DriverHome } from '../home/driver-home';
 import { PassengerData } from '../home/passenger-data';
@@ -43,7 +42,6 @@ const CASES: readonly Case[] = [
     (load) => ({ market: { myTrips: load }, bookings: { driverBookings: empty } }),
   ],
   ['favorites', <FavoritesScreen onBack={back} />, (load) => ({ comfort: { favorites: load } })],
-  ['history', <HistoryScreen onBack={back} />, (load) => ({ comfort: { history: load } })],
   ['wallet', <WalletScreen onBack={back} />, (load) => ({ wallet: { mine: load } })],
   ['team wallets', <TeamWalletsScreen onBack={back} />, (load) => ({ wallet: { all: load } })],
   ['channels', <ChannelsScreen onBack={back} />, (load) => ({ channels: { list: load } })],

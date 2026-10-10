@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { Hono } from 'hono';
 import { tripBookLink, VIA_STORY, type Booking } from '@platform/contracts';
 import type { AppEnv, Bindings } from '../../env';
@@ -7,7 +6,7 @@ import { r2Images } from '../../shared/storage/r2-images';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
 import type { DriverTrip, SharedBooking, SharesDeps, ShareUpdate } from './application/ports';
-import { tellTripCancelled } from './application/driver-shares';
+import { tellTripCancelled, tellTripRetimed } from './application/driver-shares';
 import { tellFollowers } from './application/shares';
 import { shareRoutes } from './http/share-routes';
 import { storyRoutes } from './http/story-routes';
@@ -15,6 +14,7 @@ import { d1Shares } from './infrastructure/d1-shares';
 import { createMemoryShares } from './infrastructure/memory-shares';
 import { prepareCard } from './infrastructure/prepared-card';
 import { shareTexts } from './infrastructure/share-texts';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localShares = createMemoryShares();
 const localStories = createMemoryImages();
@@ -22,7 +22,7 @@ const localStories = createMemoryImages();
 const FOLLOW_START = 'follow_';
 
 const base = (env: Bindings) => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     shares: env.DB ? d1Shares(env.DB) : localShares,
     texts: shareTexts(brand, async (id) => (await placesOf(env)).get(id)?.name ?? id),
@@ -47,6 +47,7 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
       text,
       link,
     ),
+  followers: brandOf(env).shares.followers,
   now: Date.now,
 });
 
@@ -54,7 +55,7 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
   stories: env.MEDIA ? r2Images(env.MEDIA) : localStories,
-  bookLink: (tripId: string) => tripBookLink(loadBrand(env.BRAND).bots.passenger, tripId, VIA_STORY),
+  bookLink: (tripId: string) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_STORY),
 });
 
 export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =>
@@ -71,6 +72,13 @@ export const sharesModule = (bookingOf: BookingOf, driverTripOf: DriverTripOf) =
 // A driver cancelled a shared trip: the family hears it once and the links close (G18).
 export const tellTripFamily = (env: Bindings, tripId: string, driverTripOf: DriverTripOf) =>
   tellTripCancelled(
+    sharesDeps(env, async () => undefined, driverTripOf),
+    tripId,
+  );
+
+// A driver moved the time of a shared trip: the family hears the new one (G75, docs/158 И).
+export const tellTripFamilyRetimed = (env: Bindings, tripId: string, driverTripOf: DriverTripOf) =>
+  tellTripRetimed(
     sharesDeps(env, async () => undefined, driverTripOf),
     tripId,
   );

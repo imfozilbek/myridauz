@@ -1,13 +1,13 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, TEXT } from './apps';
+import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
 import { mockFeedback } from './feedback-mock';
 import { searchRoute } from './market';
-import { mockTelegram, telegramUrl } from './telegram-mock';
+import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-const [PASSENGER, , ADMIN] = MINI_APPS;
+const [PASSENGER] = MINI_APPS;
 const shooter = (page: Page, prefix: string) => async (name: string) => {
   await page.mouse.move(0, 0);
   await page.screenshot({ path: `screenshots/${prefix}-${name}.png`, fullPage: true });
@@ -56,21 +56,20 @@ test('passenger: the rating on the trip and the reviews', async ({ page }) => {
   await shot('2-trip');
 });
 
-test('admin: the complaints queue, the chat and the decision', async ({ page }) => {
+test('admin: a complaint in «Navbat», the chat and the decision (G75)', async ({ page }) => {
   await mockApi(page, 'active');
   await mockFeedback(page);
   const shot = shooter(page, 'complaints');
-  await open(page, telegramUrl(appUrl(ADMIN.port)));
-  await page.getByText(t('common.admin.complaints'), { exact: true }).click();
-  await expect(page.getByText(t('complaints.high'))).toBeVisible();
-  await shot('1-queue');
-  await page.getByText(t('complaints.reason.harassment')).click();
-  await expect(page.getByText(t('complaints.decision'))).toBeVisible();
+  // A button of the admin bot opens the urgent complaint as a case of «Navbat» (docs/17, G75).
+  await open(page, telegramUrl(adminCase('complaint=c1')));
+  await expect(page.getByText(t('complaints.reason.harassment'))).toBeVisible();
   await shot('2-complaint');
-  await page.getByText(t('complaints.chat'), { exact: true }).click();
+  await page.getByText(t('navbat.complaint.chat'), { exact: true }).click();
   await expect(page.getByText('Ha, tezroq boʻling, kutib oʻtirmayman.')).toBeVisible();
   await shot('3-chat');
-  await page.getByText(t('complaints.block7')).click();
-  await expect(page.getByText(t('complaints.decided'))).toBeVisible();
+  await pressBack(page);
+  await page.getByText(t('moderation.block'), { exact: true }).click();
+  await page.getByText(t('moderation.block.days', { days: '7' })).click();
+  await expect(page.getByText(t('moderation.blocked'))).toBeVisible();
   await shot('4-decided');
 });

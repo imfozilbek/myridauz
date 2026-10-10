@@ -8,14 +8,16 @@ import {
   ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
+  ridingOf,
   tellRequest,
+  tellRequestClosed,
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
 import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
-import { assignTo } from './modules/assignments';
+import { assignTo, waitingSupport } from './modules/assignments';
 import { inviteFromMark } from './modules/channels';
-import { approvedCar, waitingApplications } from './modules/drivers';
+import { approvedCar, waitingApplications, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -28,6 +30,7 @@ import { requestPublished } from './modules/route-subscriptions';
 import { ratingsOfPeople, wireRatings } from './modules/ratings';
 import {
   driverTripIds,
+  hasLiveTrips,
   lastTripPrice,
   tripsEnded,
   realPricesSince,
@@ -35,7 +38,7 @@ import {
   wireTripStanding,
 } from './modules/trips';
 import { wireTeamQueue } from './modules/team-queue';
-import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered } from './modules/users';
+import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -82,8 +85,8 @@ handleRequestPublished(async (env, requestId) => {
   const request = await requestViewOf(env, requestId);
   if (request) await requestPublished(env, request);
 });
-// A request cancelled or burned: its card says so (G68).
-handleRequestChanged(tellRequest);
+// A request cancelled or burned: its card says so (G68), the drivers who offered hear it (G75).
+handleRequestChanged(tellRequestClosed);
 
 // The ratings ask about rides of ended trips and show first names only (docs/24); a passenger
 // who did not come is neither rated nor rates (docs/129, G63).
@@ -110,8 +113,7 @@ wireHiddenRequesters(hiddenByComplaints);
 // counts the seats left at the price of the last trip (G63, G65).
 wireWalletLinks({ bookings: walletBookingsOf, booking: driverBookingOf, lastPrice: lastTripPrice });
 
-// Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
-// commission back once the owner confirms (docs/17, docs/35).
+// Complaints are about rides; a block cancels live trips; a no-show refund (docs/17, docs/35).
 wireComplaints({
   ride: rideOfBooking,
   filedRide: filedRideOfBooking,
@@ -123,18 +125,26 @@ wireComplaints({
 
 // «Navbat» of the team reads its cases from the modules that hold them (G68, docs/122).
 wireTeamQueue(async (env) => {
-  const [applications, complaints, faces] = await Promise.all([
+  const [applications, complaints, faces, support] = await Promise.all([
     waitingApplications(env),
     waitingComplaints(env),
     waitingFaces(env),
+    waitingSupport(env),
   ]);
   return [
-    ...applications.map(({ name, submittedAt }) => ({
+    ...applications.map(({ publicId, name, submittedAt, car }) => ({
       kind: 'application' as const,
+      id: publicId,
       name,
       since: submittedAt,
+      car,
     })),
     ...complaints.map((item) => ({ kind: 'complaint' as const, ...item })),
     ...faces.map((item) => ({ kind: 'face' as const, ...item })),
+    ...support.map((item) => ({ kind: 'support' as const, ...item })),
   ];
 });
+
+// A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
+wireLiveTrips(hasLiveTrips);
+wireRiding(ridingOf);

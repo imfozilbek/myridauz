@@ -2,6 +2,7 @@ import { detailKindOf, tashkentDate, type WalletOperation } from '@platform/cont
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useShortDay } from '../market/when';
+import { useOperationName } from './operation-name';
 import { useRefundText } from './refund-text';
 import { useSigned } from './signed';
 import './wallet-rows.css';
@@ -21,6 +22,7 @@ export function WalletRows({ operations, onOpen }: Props) {
   const shortDay = useShortDay();
   const refundText = useRefundText();
   const signed = useSigned();
+  const nameOf = useOperationName(operations);
   if (operations.length === 0) return <p className="wallet-empty">{t('wallet.empty')}</p>;
   return (
     <div className="wallet-rows">
@@ -32,7 +34,7 @@ export function WalletRows({ operations, onOpen }: Props) {
         const title =
           refund?.title ??
           (operation.passenger === undefined
-            ? t(`wallet.kind.${operation.kind}`)
+            ? nameOf(operation)
             : kind === 'commission'
               ? t('wallet.row.commission', who)
               : t('wallet.row.refund', who));

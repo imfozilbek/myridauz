@@ -6,6 +6,7 @@ import { useBookingEnds } from '../trip/booking-ends';
 import { daysLeft } from './done-tools';
 import { today, tomorrow } from '../market/when';
 import './past-booking-row.css';
+import { useBrand } from '../context/brand-context';
 
 type Props = { readonly booking: Booking; readonly onOpen: () => void };
 type Chip = readonly [tone: 'due' | 'done' | 'plain' | 'gone', text: string];
@@ -59,9 +60,11 @@ export function PastBookingRow({ booking, onOpen }: Props) {
 // What is left after the trip (docs/129): the rating, the chat, else the points that went.
 function useChips(booking: Booking): readonly Chip[] {
   const { t } = useI18n();
+  const brand = useBrand();
   if (booking.status !== 'completed') return [['plain', t(`bookings.status.${booking.status}`)]];
   const now = Date.now();
   const { talkUntil, rateUntil, pointsUntil } = afterTrip(
+    brand,
     booking.trip.departAt,
     booking.trip.km,
     booking.trip.arrivedAt,

@@ -1,4 +1,4 @@
-import { DAY_MS, MAX_TRIP_SHIFT_MS, onTheWay, tashkentDate } from '@platform/contracts';
+import { DAY_MS, MINUTE_MS, onTheWay, tashkentDate } from '@platform/contracts';
 import { endsAt, isLive, type TripRecord } from './trip';
 
 export type ChangeError = 'trips.not_found' | 'trips.wrong_status' | 'trips.invalid_input';
@@ -9,17 +9,18 @@ function blocked(trip: TripRecord, driverId: number, now: number): ChangeError |
   return isLive(trip, now) && !onTheWay(trip, now) ? null : 'trips.wrong_status';
 }
 
-// Later only, at most +1 hour from the first time in all, the same day; the end moves along
-// (docs/104, 8, owner decision 04.10.2026).
+// Later only, at most the brand's minutes (+1 hour) from the first time in all, the same day; the end
+// moves along (docs/104, 8, owner decision 04.10.2026).
 export function retime(
   trip: TripRecord,
   driverId: number,
   departAt: number,
   now: number,
+  shiftMinutes: number,
 ): TripRecord | ChangeError {
   const error = blocked(trip, driverId, now);
   if (error) return error;
-  const later = departAt > trip.departAt && departAt <= trip.firstDepartAt + MAX_TRIP_SHIFT_MS;
+  const later = departAt > trip.departAt && departAt <= trip.firstDepartAt + shiftMinutes * MINUTE_MS;
   if (!later || tashkentDate(departAt) !== tashkentDate(trip.firstDepartAt)) return 'trips.invalid_input';
   return { ...trip, departAt, endsAt: endsAt(departAt, trip.km) };
 }

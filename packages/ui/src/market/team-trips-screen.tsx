@@ -45,7 +45,7 @@ function TeamTrips({ onBack }: { readonly onBack: () => void }) {
   if (linked) return <LinkedTrip id={linked} onBack={() => setLinked(null)} />;
   if (open) {
     return (
-      <TripScreen trip={open} readOnly onBack={() => setOpen(null)}>
+      <TripScreen trip={open} onBack={() => setOpen(null)}>
         <TeamTripBookings tripId={open.id} />
       </TripScreen>
     );
@@ -95,7 +95,7 @@ function LinkedTrip({ id, onBack }: { readonly id: string; readonly onBack: () =
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   return (
-    <TripScreen trip={value} readOnly onBack={onBack}>
+    <TripScreen trip={value} onBack={onBack}>
       <TeamTripBookings tripId={value.id} />
     </TripScreen>
   );

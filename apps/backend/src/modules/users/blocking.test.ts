@@ -26,6 +26,7 @@ function setup() {
     avatars: createMemoryImages(),
     trips: { relation: async () => 'none' },
     ...noFaces,
+    riding: async () => false,
     now: () => NOW,
     newId: () => 'id',
   };

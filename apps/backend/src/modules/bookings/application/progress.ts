@@ -5,7 +5,7 @@ import { bookingViews } from './views';
 
 export type Progress = 'came' | 'boarded' | 'arrived';
 
-// "Men keldim" at the meeting point tells the driver (docs/126), from MEET_BEFORE_MINUTES before the
+// "Men keldim" at the meeting point tells the driver (docs/126), from the brand's minutes before the
 // departure until the passenger is in the car.
 // "Mashinaga chiqdim" and "Yetib keldim" of the passenger (docs/43): only on a confirmed booking,
 // once each; close people hear of it. "Yetib keldim" also means the passenger got in the car.
@@ -39,7 +39,11 @@ const moved = (record: BookingRecord, step: Progress, now: number): BookingRecor
 
 async function canMeet(deps: BookingsDeps, record: BookingRecord, now: number) {
   const trip = await deps.trips.find(record.tripId);
-  return trip !== undefined && record.boardedAt === null && now >= meetingStartsAt(trip.departAt);
+  return (
+    trip !== undefined &&
+    record.boardedAt === null &&
+    now >= meetingStartsAt(trip.departAt, deps.limits.schedule.meetMinutes)
+  );
 }
 
 // The booking as its passenger sees it, for sharing the trip with close people (docs/43).

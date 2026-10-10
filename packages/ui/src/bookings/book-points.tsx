@@ -63,6 +63,7 @@ export function BookPoints({ trip, choice, flow, route, onBack, onSent }: Props)
       })}
       start={start}
       end={end}
+      fixedStart={trip.pickupMode === 'pitak'}
       onEnd={(screen) => patch({ screen })}
       hint={t('bookings.points.hint')}
       error={error ? t(error) : null}

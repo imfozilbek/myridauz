@@ -39,6 +39,8 @@ const EXPLAINED: readonly string[] = [
   'shares.wrong_status',
   'users.avatar_too_large',
   'drivers.incomplete',
+  // G75, docs/124 Ё: one car, changed only without live trips.
+  'drivers.live_trips',
   'trips.wrong_status',
   'calls.unavailable',
   // G43, docs/111: codes that had no text.
@@ -60,6 +62,8 @@ const EXPLAINED: readonly string[] = [
   'trips.not_departed',
   'trips.already_arrived',
   'trips.no_pitak',
+  // The answer of the team from the admin app did not reach the person (G75).
+  'support.not_sent',
 ];
 
 // Codes that mean the same for a person as an explained one.

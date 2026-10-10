@@ -35,7 +35,6 @@ for (const platform of PLATFORMS)
     await visit(page, platform, new RegExp(`^${t('wallet.title')}$`), 'da12-wallet', t('wallet.history'));
     await page.getByLabel(t('account.profile.open')).click();
     await shot(page, platform, 'da11-profile');
-    await visit(page, platform, t('comfort.history.title'), 'da13-history');
     await visit(page, platform, t('channels.title'), 'da14-channels', t('channels.mine.all'));
   });
 

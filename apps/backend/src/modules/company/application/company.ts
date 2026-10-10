@@ -10,14 +10,14 @@ export async function publicCompany(deps: CompanyDeps): Promise<PublicCompany> {
   };
 }
 
-// The admin screen: every member of the team reads, only the owner changes (docs/02).
-export async function companyState(deps: CompanyDeps, canEdit: boolean): Promise<CompanyState> {
+// The admin screen of the owner: the requisites now and every change before (docs/02, G75).
+export async function companyState(deps: CompanyDeps): Promise<CompanyState> {
   const history = await deps.company.versions();
-  return { current: history[0] ?? null, history, canEdit };
+  return { current: history[0] ?? null, history };
 }
 
 // Every save is a new version: the history keeps who and when (G34).
 export async function saveCompany(deps: CompanyDeps, company: Company, by: number) {
   await deps.company.addVersion(company, by, deps.now());
-  return companyState(deps, true);
+  return companyState(deps);
 }

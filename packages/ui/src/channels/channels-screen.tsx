@@ -14,17 +14,28 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { ChannelEdit } from './channel-edit';
+import { ChannelHealthLine } from './channel-health-line';
 import '../market/market.css';
 
+type Props = { readonly onBack: () => void; readonly readOnly?: boolean };
+const NO_HEALTH = Promise.resolve(null);
+
 // "Kanallar" for the team (docs/63): the region channels and the district channels the team added.
-// "No channels yet" only when there is none at all, never above a filled list (docs/86 V14).
-export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
+// "No channels yet" only when there is none at all, never above a filled list (docs/86 V14). A
+// moderator only reads the list: no adding, no editing, no health of the owner (docs/120).
+export function ChannelsScreen({ onBack, readOnly = false }: Props) {
   useScreenView('channels');
   useScreenBackground();
   const { t } = useI18n();
-  const { channels } = useApiClients();
+  const clients = useApiClients();
+  const { channels } = clients;
   const { value, failed, reload, refresh } = useLoad(() => channels.list(), 'channels');
   const [directory, retry] = useDirectory();
+  // The health comes from the Cron check; the list never waits for it (G75).
+  const health = useLoad(
+    () => (readOnly ? NO_HEALTH : clients.team.channelHealth()),
+    'manage.channels',
+  ).value;
   const [open, setOpen] = useState<Channel | 'new' | null>(null);
   if (failed || directory.status === 'error')
     return <ErrorScreen onRetry={() => (reload(), retry())} onBack={onBack} />;
@@ -45,7 +56,10 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
       key={channel.username}
       before={<IconTile name="channel" tone={channel.fixed ? 'deep' : 'brand'} />}
       subtitle={`@${channel.username} · ${channel.fixed ? t('channels.fixed') : t('channels.places', { count: String(channel.places.length) })}`}
-      {...(channel.fixed ? {} : { onClick: () => setOpen(channel) })}
+      description={
+        <ChannelHealthLine health={health?.channels.find((one) => one.username === channel.username)} />
+      }
+      {...(channel.fixed || readOnly ? {} : { onClick: () => setOpen(channel) })}
     >
       {channel.title}
     </Cell>
@@ -60,11 +74,13 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
       <List>
         {value.length === 0 ? <EmptyState icon="channel" title={t('channels.empty')} /> : null}
         {team.length > 0 ? <Section>{team.map(row)}</Section> : null}
-        <div className="step-note">
-          <Button size="l" stretched onClick={() => setOpen('new')}>
-            {t('channels.add')}
-          </Button>
-        </div>
+        {readOnly ? null : (
+          <div className="step-note">
+            <Button size="l" stretched onClick={() => setOpen('new')}>
+              {t('channels.add')}
+            </Button>
+          </div>
+        )}
         {value.length > team.length ? (
           <Section>{value.filter((channel) => channel.fixed).map(row)}</Section>
         ) : null}
@@ -72,3 +88,8 @@ export function ChannelsScreen({ onBack }: { readonly onBack: () => void }) {
     </div>
   );
 }
+
+// «Kanallar» on the main screen of a moderator (owner decision 06.10.2026, docs/120).
+export const ReadChannelsScreen = ({ onBack }: { readonly onBack: () => void }) => (
+  <ChannelsScreen onBack={onBack} readOnly />
+);

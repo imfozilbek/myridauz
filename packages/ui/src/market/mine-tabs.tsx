@@ -23,7 +23,7 @@ export function MineTabs({ tab, live, onTab }: Props) {
           className={tab === 'live' ? 'market-tab-on' : undefined}
           onClick={() => onTab('live')}
         >
-          {t('bookings.tab.live', { count: live })}
+          {live > 0 ? t('bookings.tab.live', { count: live }) : t('bookings.tab.liveNone')}
         </SegmentedControl.Item>
         <SegmentedControl.Item
           selected={tab === 'past'}

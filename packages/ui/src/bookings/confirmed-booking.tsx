@@ -44,7 +44,8 @@ export function ConfirmedBooking(props: Props) {
   useScreenBackground();
   const { t, formatRating } = useI18n();
   const { driver } = booking.trip;
-  const { colors } = useBrand().theme;
+  const brand = useBrand();
+  const { colors } = brand.theme;
   const steps = useTripSteps(booking, onTold);
   const button = (icon: IconName, label: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
@@ -56,7 +57,9 @@ export function ConfirmedBooking(props: Props) {
     <div className="booking-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
       <BookingBanner booking={booking} />
-      {meetingTime(booking, Date.now()) ? <MeetingCard booking={booking} onTold={onTold} /> : null}
+      {meetingTime(booking, Date.now(), brand.schedule.meetMinutes) ? (
+        <MeetingCard booking={booking} onTold={onTold} />
+      ) : null}
       <div className="booking-card">
         <DriverRow
           driver={driver}

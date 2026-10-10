@@ -1,6 +1,6 @@
 import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import { tashkentDate, type Subscription } from '@platform/contracts';
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
@@ -73,20 +73,20 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       testClients({ subscriptions: { mine, renew, remove, subscribe } }),
     );
     expect(await screen.findByText('Obunalar')).toBeTruthy();
-    expect(screen.getByText('Muddati tugagan')).toBeTruthy();
-    expect(screen.getByText('Mashinada ayol bor')).toBeTruthy();
+    // A card of its own with «Muddati tugagan · Uzaytirish» (G75, mockup g75/2 A).
+    expect(screen.getByText(/^Muddati tugagan · ayol bilan/u)).toBeTruthy();
     await tap('Uzaytirish');
     expect(renew).toHaveBeenCalledWith('s1');
     // The list comes again after a change.
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
     // A removal is red, like in Telegram (docs/86 V12).
-    expect(screen.getByText('Oʻchirish').closest('.danger-text')).not.toBeNull();
+    expect(screen.getByRole('button', { name: 'Oʻchirish' }).className).toBe('row-card-action');
     // Asked first in the native window; a «no» keeps it (docs/88 L8).
     vi.stubGlobal('confirm', () => false);
-    await tap('Oʻchirish');
+    fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
     expect(remove).not.toHaveBeenCalled();
     vi.stubGlobal('confirm', () => true);
-    await tap('Oʻchirish');
+    fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
     vi.unstubAllGlobals();
     // A short line says it is gone and brings it back by one tap (docs/88 L7).

@@ -14,7 +14,6 @@ const company = {
 const state = {
   current: { version: 1, company, changedBy: 900, changedAt: 1 },
   history: [{ version: 1, company, changedBy: 900, changedAt: 1 }],
-  canEdit: true,
 };
 
 describe('createCompanyClient (G34)', () => {

@@ -11,6 +11,7 @@ const STATUS = {
   'drivers.wrong_status': 409,
   'drivers.invalid_input': 400,
   'drivers.photo_too_large': 413,
+  'drivers.live_trips': 409,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 
 export type DriversError = keyof typeof STATUS;

@@ -3,7 +3,7 @@ import { channelBoards, channels } from './modules/channels';
 import { tellFavoriteFans } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
 import { tripCheaper, tripPublished } from './modules/route-subscriptions';
-import { tellTripFamily } from './modules/shares';
+import { tellTripFamily, tellTripFamilyRetimed } from './modules/shares';
 import { handleTripChange, tripForFamily, tripsOfDate, tripViewsOf } from './modules/trips';
 import type { Bindings } from './env';
 
@@ -45,7 +45,10 @@ handleTripChange(async (env, tripId, event) => {
   }
   // A lower price reaches the subscribers and the channel, never the booked passengers: their
   // booking keeps its price (owner decision 04.10.2026).
-  if (event === 'retimed') await tellBookedOfRetime(env, tripId);
+  if (event === 'retimed') {
+    await tellBookedOfRetime(env, tripId);
+    await tellTripFamilyRetimed(env, tripId, tripForFamily);
+  }
   if (event === 'cheaper' && trip) await tripCheaper(env, trip);
 });
 

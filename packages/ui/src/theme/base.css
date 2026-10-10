@@ -54,6 +54,11 @@ textarea {
   color: var(--tgui--destructive_text_color);
 }
 
+/* A red line of its own under the words of a cell: a channel the bot may not post to (G75). */
+.danger-line {
+  display: block;
+}
+
 .danger-button {
   --tgui--button_color: var(--tgui--destructive_text_color);
 }

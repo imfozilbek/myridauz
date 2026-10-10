@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { DRIVER_TRIPS_PATH, type Trip } from './trips';
 
-// A driver changes a published trip (G39, docs/104): the time only later, at most +1 hour from the
-// first time, the same day; the price only lower, not below the bound. A booking keeps its price.
-export const MAX_TRIP_SHIFT_MS = 60 * 60 * 1000;
+// A driver changes a published trip (G39, docs/104): the time only later, at most the brand's minutes
+// (+1 hour) from the first time, the same day; the price only lower, not below the bound. A booking
+// keeps its price.
 // «Tez orada joʻnaydi»: trips leaving within this time are on top of the search (docs/104, 10).
 export const SOON_MS = 60 * 60 * 1000;
 

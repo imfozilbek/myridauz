@@ -1,3 +1,4 @@
+import './moderation.css';
 import type { ApplicationSummary, PersonId } from '@platform/contracts';
 import { Button, Caption } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';

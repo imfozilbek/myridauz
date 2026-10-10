@@ -1,3 +1,4 @@
+import type { Car } from '@platform/contracts';
 import type { Decided, DecisionLog } from '../application/ports';
 
 type Row = {
@@ -6,6 +7,7 @@ type Row = {
   reasons: string;
   decided_by: number;
   decided_at: number;
+  car: string | null;
 };
 
 // Table application_log (migrations/0021): every decision of the team, oldest first.
@@ -13,9 +15,16 @@ export const d1Decisions = (db: D1Database): DecisionLog => ({
   add: async (entry) => {
     await db
       .prepare(
-        'INSERT INTO application_log (user_id, status, reasons, decided_by, decided_at) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO application_log (user_id, status, reasons, decided_by, decided_at, car) VALUES (?, ?, ?, ?, ?, ?)',
       )
-      .bind(entry.userId, entry.status, JSON.stringify(entry.reasons), entry.by, entry.at)
+      .bind(
+        entry.userId,
+        entry.status,
+        JSON.stringify(entry.reasons),
+        entry.by,
+        entry.at,
+        entry.car ? JSON.stringify(entry.car) : null,
+      )
       .run();
   },
   of: async (userId) =>
@@ -27,6 +36,7 @@ export const d1Decisions = (db: D1Database): DecisionLog => ({
       reasons: JSON.parse(row.reasons) as string[],
       by: row.decided_by,
       at: row.decided_at,
+      car: row.car ? (JSON.parse(row.car) as Car) : null,
     })),
   countsBetween: async (from, to) => {
     const { results } = await db

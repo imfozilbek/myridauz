@@ -23,12 +23,12 @@ describe('company requisites (docs/30, G34)', () => {
 
   it('keeps the base edition until the first save, then each save is the next edition', () => {
     expect(companyEdition(null, 0)).toEqual(LEGAL_EDITION);
-    expect(companyEdition(1, at('2026-10-09'))).toEqual({ version: '1.4', date: '2026-10-09' });
-    expect(companyEdition(2, at('2026-11-01'))).toEqual({ version: '1.5', date: '2026-11-01' });
+    expect(companyEdition(1, at('2026-10-11'))).toEqual({ version: '1.5', date: '2026-10-11' });
+    expect(companyEdition(2, at('2026-11-01'))).toEqual({ version: '1.6', date: '2026-11-01' });
   });
 
   it('takes the date of the save in Tashkent, never earlier than the base edition', () => {
-    expect(companyEdition(1, Date.parse('2026-10-08T20:00:00Z')).date).toBe('2026-10-09');
+    expect(companyEdition(1, Date.parse('2026-10-10T20:00:00Z')).date).toBe('2026-10-11');
     expect(companyEdition(1, 0).date).toBe(LEGAL_EDITION.date);
   });
 });

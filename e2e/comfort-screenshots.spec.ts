@@ -30,17 +30,11 @@ test('passenger: the trip of a driver', async ({ page }) => {
 test('passenger: "Sevimli haydovchilar"', async ({ page }) => {
   const shot = await open(page, PASSENGER.port);
   await page.getByText(t('common.myTrips')).click();
+  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
+  await page.getByText(t('bookings.tab.past')).click();
   await page.getByText(t('comfort.favorites.title')).click();
   await expect(page.getByText(t('comfort.favorites.drivers'), { exact: true })).toBeVisible();
   await shot('3-favorites');
-});
-
-test('passenger: "Safarlar tarixi" in the profile', async ({ page }) => {
-  const shot = await open(page, PASSENGER.port);
-  await page.getByLabel(TEXT.profile).click();
-  await page.getByText(t('comfort.history.title')).click();
-  await expect(page.getByText('Nodira')).toBeVisible();
-  await shot('4-history');
 });
 
 // Published, «Mening safarim» of the new trip opens at once (G63): the family gets it from there.

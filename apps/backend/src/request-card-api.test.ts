@@ -35,6 +35,9 @@ const offer = (driver: number, requestId: string, departAt: number) =>
     }),
   );
 const toPassenger = () => telegram.sentTo(PASSENGER);
+// «Yoʻlovchi soʻrovi yopildi» of a driver whose offer waited (G75).
+const over = (driver: number) =>
+  telegram.sentTo(driver).filter((sent) => String(sent.body.text).includes('soʻrovi yopildi'));
 // The last form of a card: its last edit (an unpin after it carries no text).
 const lastText = () =>
   String(
@@ -70,12 +73,17 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
       ),
     ).toBe(true);
     expect(toPassenger().some((sent) => sent.method === 'unpinChatMessage')).toBe(true);
+    // The other driver waits no more: the offer is over (G75, docs/158 Й).
+    expect(over(SECOND_DRIVER)).toHaveLength(1);
+    expect(over(DRIVER)).toHaveLength(0);
   });
 
   it('says so when the passenger cancels it and when its day is over', async () => {
     const cancelled = await asked(PASSENGER, 2);
+    await offer(DRIVER, cancelled.request.id, cancelled.departAt);
     await call(`/passenger/requests/${cancelled.request.id}/cancel`, PASSENGER, { method: 'POST' });
     expect(lastText()).toContain('Bekor qilindi');
+    expect(over(DRIVER)).toHaveLength(1);
     await asked(PASSENGER, 3);
     await expireRequests(testEnv, Date.now() + 5 * DAY_MS);
     expect(lastText()).toContain('Soʻrov muddati tugadi');

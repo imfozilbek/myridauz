@@ -1,0 +1,33 @@
+/* The talk of a case (G75): «Suhbatni koʻrish», the lines of a chat or of support, the answer. */
+.case-link {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 12px;
+  color: var(--reg-muted);
+  cursor: pointer;
+}
+
+.case-link-title {
+  flex: 1;
+  font-size: 15px;
+  color: var(--reg-ink);
+}
+
+.case-line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 9px 13.33px;
+  font-size: 14px;
+}
+
+.case-line + .case-line {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.case-answer textarea {
+  min-height: 96px;
+}

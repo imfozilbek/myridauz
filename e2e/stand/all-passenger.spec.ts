@@ -44,7 +44,6 @@ for (const platform of PLATFORMS)
     await shot(page, platform, 'pa10-home');
     await page.getByLabel(t('account.profile.open')).click();
     await shot(page, platform, 'pa11-profile');
-    await visit(page, platform, t('comfort.history.title'), 'pa12-history');
     await visit(page, platform, t('account.delete.open'), 'pa13-delete');
     // The documents and the channels are rows of «Profil» (G65, mockup g65/3, docs/119).
     await visit(page, platform, t('account.profile.documents'), 'pa14-documents');
@@ -66,5 +65,7 @@ test('android: «Mening safarlarim» and the saved drivers', async ({ page }) =>
   await openHome(page, 'passenger', ZEBO, 'android');
   await page.getByText(t('common.myTrips')).first().click();
   await shot(page, 'android', 'pa30-my-trips');
+  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
+  await page.getByText(t('bookings.tab.past')).click();
   await visit(page, 'android', t('comfort.favorites.title'), 'pa31-favorites');
 });

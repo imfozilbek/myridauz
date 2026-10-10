@@ -4,6 +4,7 @@ import { useI18n } from '../context/i18n-context';
 import { meetingOpen, meetOpen } from './meet-state';
 import { refundWaits, useNoShowText } from './no-show-text';
 import './no-show.css';
+import { useBrand } from '../context/brand-context';
 
 type Props = {
   readonly booking: Booking;
@@ -24,13 +25,17 @@ type Props = {
 export function NoShowLine({ booking, now, onMark, children, ended = false }: Props) {
   const { t } = useI18n();
   const text = useNoShowText()(booking);
-  const onWay = !ended && booking.trip.arrivedAt === null && meetingOpen(booking.trip, now);
+  const { meetMinutes } = useBrand().schedule;
+  const onWay = !ended && booking.trip.arrivedAt === null && meetingOpen(booking.trip, now, meetMinutes);
   if (onWay && refundWaits(booking))
     return <span className="no-show-line">{t('driverAfter.noShow.until')}</span>;
   if (text) return <span className="no-show-line">{text}</span>;
   const there = booking.driverCameAt !== null;
   const possible =
-    booking.status === 'confirmed' && there && meetOpen(booking) && meetingOpen(booking.trip, now);
+    booking.status === 'confirmed' &&
+    there &&
+    meetOpen(booking) &&
+    meetingOpen(booking.trip, now, meetMinutes);
   if (!possible) return <>{children}</>;
   return (
     <button

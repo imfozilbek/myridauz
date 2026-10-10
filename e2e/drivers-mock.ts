@@ -58,9 +58,13 @@ export async function mockDrivers(page: Page, start: DriverStart) {
         : { status: 'draft', car: null, photos: { ...photos }, reasons: [] };
     await route.fulfill({ json: { application } });
   });
+  // «Navbat» of the team (G75): the case of a bot link opens by itself, then nothing waits.
+  await page.route('**/api/admin/navbat', (route) =>
+    route.fulfill({ json: { items: [], counts: { application: 0, complaint: 0, face: 0, support: 0 } } }),
+  );
   // The team member on the main screen of the admin Mini App (G53).
   await page.route('**/api/admin/me', (route) =>
-    route.fulfill({ json: { firstName: 'Fozil', role: 'owner' } }),
+    route.fulfill({ json: { id: 'f'.repeat(32), firstName: 'Fozil', hasAvatar: false, role: 'owner' } }),
   );
   await page.route('**/api/admin/applications', (route) =>
     route.fulfill({ json: { applications: [summary] } }),
@@ -71,6 +75,8 @@ export async function mockDrivers(page: Page, start: DriverStart) {
       json: {
         ...summary,
         samePlate: 1,
+        was: null,
+        gender: 'male',
         history: [{ status: 'changes_requested', reasons: ['face_not_visible'], at: Date.now() - DAY }],
       },
     }),

@@ -21,7 +21,6 @@ export const SHARED_TRIPS_PATH = '/shared';
 export const sharedTripPath = (token: string) => `${SHARED_TRIPS_PATH}/${token}`;
 export const sharedTripFollowPath = (token: string) => `${sharedTripPath(token)}/follow`;
 
-export const MAX_FOLLOWERS = 5;
 export const SHARE_TOKEN = /^[A-Za-z0-9_-]{43}$/u;
 export const shareTokenSchema = z.string().regex(SHARE_TOKEN);
 

@@ -1,9 +1,12 @@
+import { loadBrand } from '@platform/brands';
 import { expect, test } from '../crash-guard';
 import { createChatClient } from '@platform/api-client';
-import { MAX_FOLLOWERS } from '@platform/contracts';
 import { confirmedSeat, MINUTE, moveTrip, outcome, toldBy, wordsOf } from './g27-kit';
 import { MALIKA, OYBEK } from './people';
 import { signedAs, type Person } from './stand-kit';
+
+// The brand defaults (docs/127): the owner changed nothing on the stand.
+const MAX_FOLLOWERS = loadBrand().shares.followers;
 
 // The close ones of a passenger (docs/43, docs/80 S70 … S74): a link without Rida, up to 5 close
 // ones who hear the boarding and the arrival, and a link that stops.

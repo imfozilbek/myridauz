@@ -33,6 +33,7 @@ import { ratingsModule } from './modules/ratings';
 import { requestsModule } from './modules/ride-requests';
 import { subscriptionsModule } from './modules/route-subscriptions';
 import { statsModule } from './modules/stats';
+import { freshLimits } from './modules/limits';
 import { sharesModule } from './modules/shares';
 import { teamRole } from './modules/team';
 import { tripFacts, tripForFamily, tripsModule } from './modules/trips';
@@ -42,11 +43,14 @@ import { telegramAuth } from './shared/auth/telegram-auth';
 import { allowMap, allowMiniApps, allowPublic } from './shared/http/cors';
 import { notFound, onServerError } from './shared/http/errors';
 import { rateLimit } from './shared/http/rate-limit';
+import { teamScreens } from './team-screens';
 
 // The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
 const auth = telegramAuth(() => Date.now(), teamRole);
 
 export const app = new Hono<AppEnv>()
+  // The limits the owner set reach every rule of this request (G75, docs/128 §4).
+  .use('*', freshLimits)
   .use('/analytics', allowMiniApps, rateLimit('ANALYTICS_LIMIT', 'analytics'))
   // CORS goes first: a browser preflight carries no Telegram signature.
   // "/me/*" also matches "/me".
@@ -113,6 +117,7 @@ export const app = new Hono<AppEnv>()
   .route('/', ratingsModule)
   .route('/', complaintsModule)
   .route('/', statsModule)
+  .route('/', teamScreens)
   .route('/', bookingsModule)
   .route('/', walletModule)
   .route(

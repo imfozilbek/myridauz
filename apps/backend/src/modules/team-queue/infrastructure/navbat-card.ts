@@ -10,7 +10,8 @@ const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 // cases wait, the oldest one and the minutes left until the limit; the work itself is in the app.
 const NAVBAT_KEY = 'navbat';
 
-export const caseName = (item: Case) => t(`bot.navbat.case.${item.kind}`, { name: escapeHtml(item.name) });
+export const caseName = (item: Pick<Case, 'kind' | 'name'>) =>
+  t(`bot.navbat.case.${item.kind}`, { name: escapeHtml(item.name) });
 
 function waitLine(minutes: number, limit: number): string {
   if (minutes >= limit) return t('bot.navbat.late', { minutes: String(minutes), limit: String(limit) });
@@ -23,6 +24,7 @@ export function navbatCard(brand: BrandConfig, memberId: number, queue: Queue, n
     applications: String(counts.application),
     complaints: String(counts.complaint),
     faces: String(counts.face),
+    supports: counts.support,
   };
   const lines = oldest
     ? [

@@ -7,18 +7,8 @@ export const userReviewsPath = (userId: PersonId) => `/users/${userId}/reviews`;
 export const adminReviewHidePath = (reviewId: string) => `/admin/reviews/${reviewId}/hide`;
 
 export const STARS = [1, 2, 3, 4, 5] as const;
-// Fewer published ratings than this: "Yangi" instead of the number.
-export const MIN_SHOWN_RATINGS = 3;
-// A review stays hidden until the other side reviews too, or this many days pass (docs/129, G60).
-export const BLIND_DAYS = 7;
-// The bot asks once, reminds once after this many hours, and takes answers this many days.
-export const RATING_REMIND_HOURS = 24;
-export const RATING_DAYS = 7;
 // 1 or 2 stars: the person is offered to complain (docs/17).
 export const COMPLAIN_BELOW_STARS = 3;
-// An average below this with at least this many ratings goes to a moderator (docs/24).
-export const REVIEW_AVERAGE = 3.5;
-export const REVIEW_MIN_COUNT = 10;
 export const REVIEW_TEXT_MAX = 300;
 
 // Quick tags: a passenger rates the driver, a driver rates a passenger (docs/24).
@@ -46,7 +36,7 @@ export const reviewSchema = z.object({
 });
 export type Review = z.infer<typeof reviewSchema>;
 
-// "⭐ 4,8 (37)"; average is null while there are fewer than MIN_SHOWN_RATINGS.
+// "⭐ 4,8 (37)"; average is null while there are fewer ratings than the brand shows (docs/24).
 export const ratingSchema = z.object({ average: z.number().nullable(), count: z.number().int() });
 export type Rating = z.infer<typeof ratingSchema>;
 export const NO_RATING: Rating = { average: null, count: 0 };

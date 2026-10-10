@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { DurableObject } from 'cloudflare:workers';
 import { CHAT_SYSTEM_EVENTS } from '@platform/contracts';
 import type { Bindings } from '../../../env';
@@ -10,6 +9,7 @@ import { botSignals } from './bot-signals';
 import { d1Unread } from './d1-unread';
 import { sqlMessages } from './sql-messages';
 import { closeCodeFor } from '../../../shared/sockets/close-code';
+import { brandOf } from '../../../shared/brand/brand-of';
 
 const HISTORY_LIMIT = 100;
 const SECOND = 1000;
@@ -21,7 +21,7 @@ export class ChatRoom extends DurableObject<Bindings> {
   private readonly store = sqlMessages(this.ctx.storage.sql);
 
   private deps(key: string): RoomDeps {
-    const { calls } = loadBrand(this.env.BRAND);
+    const { calls } = brandOf(this.env);
     return {
       key,
       store: this.store,

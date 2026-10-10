@@ -100,18 +100,21 @@ describe('a booking of seats (docs/35)', () => {
     });
   });
 
-  it('expires a request without an answer after 24 hours or at the departure', async () => {
+  it('expires a request without an answer after 24 hours (a night end at 08:00) or at the departure', async () => {
     const { deps, addTrip, bonus, setNow, notes } = setup();
     await bonus();
     const asked = value(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
     const soon = value(await requestBooking(deps, ALI, addTrip({ departAt: NOW + 3 * HOUR }), seats(1)));
     setNow(NOW + 4 * HOUR);
     expect(await confirm(deps, DRIVER, soon.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
-    setNow(NOW + 25 * HOUR);
+    // Asked at 06:00: 24 hours end at night, so the answer waits till 08:00 (docs/127).
+    setNow(NOW + 26 * HOUR - 1);
+    expect((await passengerBookings(deps, DILNOZA))[0]?.status).toBe('requested');
+    setNow(NOW + 27 * HOUR);
     expect((await passengerBookings(deps, DILNOZA))[0]?.status).toBe('expired');
     // The Cron ends both: each passenger hears it once, nobody is left waiting (docs/83 N03).
-    await expireRequests(deps, NOW + 25 * HOUR);
-    await expireRequests(deps, NOW + 26 * HOUR);
+    await expireRequests(deps, NOW + 27 * HOUR);
+    await expireRequests(deps, NOW + 28 * HOUR);
     expect(notes.filter((note) => note === 'passenger: expired')).toHaveLength(2);
     expect(await confirm(deps, DRIVER, asked.id)).toEqual({ ok: false, error: 'bookings.wrong_status' });
     expect(await answer(deps, DRIVER, asked.id, 'decline')).toEqual({

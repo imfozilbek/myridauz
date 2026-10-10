@@ -5,26 +5,27 @@ export { useBrand } from './context/brand-context';
 export { DriverGate } from './driver/driver-gate';
 export { useNotSent } from './driver/driver-context';
 export { DriverNotice } from './driver/driver-notice';
-export { HomeScreenOffer } from './home/home-screen-offer';
-export { ApplicationsScreen } from './moderation/applications-screen';
-export { linkedApplication } from './moderation/linked-application';
-export { ComplaintsScreen, linkedComplaint } from './complaints/complaints-screen';
 export { FindTripFlow } from './market/find-trip-flow';
 export { MyRequestsScreen } from './market/my-requests-screen';
 export { MyTripsScreen } from './market/my-trips-screen';
 export { NewRequestFlow } from './market/new-request-flow';
 export { NewTripFlow } from './market/new-trip-flow';
-export { ManagementScreen } from './pricing/management-screen';
+export { ManagementScreen } from './manage/management-screen';
 export { StatsScreen } from './stats/stats-screen';
+export { ReadChannelsScreen } from './channels/channels-screen';
 export { TeamTripsScreen } from './market/team-trips-screen';
 export {
-  AdminTiles,
+  CHANNELS_SECTION,
   MANAGEMENT_SECTION,
+  NAVBAT_SECTION,
+  PEOPLE_SECTION,
   STATS_SECTION,
   TRIPS_SECTION,
-  useApplicationsLive,
-  useComplaintsLive,
-} from './home/admin-tiles';
+} from './team/team-sections';
+export { PeopleScreen } from './manage/people-screen';
+export { NavbatScreen } from './navbat/navbat-screen';
+export { linkedCase } from './navbat/linked-case';
+export { TeamHome } from './team/team-home';
 export { linkedStats } from './stats/stats-screen';
 export { RequestsFlow } from './requests/requests-flow';
 export { LanguageSwitcher, useI18n } from './context/i18n-context';

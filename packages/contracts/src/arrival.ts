@@ -48,5 +48,8 @@ export function splitStart(param: string): { readonly start: string | null; read
 }
 
 // The mark of a channel post: «ch-» and the channel's name, short enough for Telegram's 64 signs.
+export const CHANNEL_VIA_PREFIX = 'ch-';
 export const channelVia = (username: string) =>
-  `ch-${username.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`.slice(0, VIA_MAX).replace(/-+$/, '');
+  `${CHANNEL_VIA_PREFIX}${username.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+    .slice(0, VIA_MAX)
+    .replace(/-+$/, '');

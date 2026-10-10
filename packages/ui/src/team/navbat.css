@@ -1,0 +1,122 @@
+/* «Navbat» of the main screen of the team (G75, mockup g67/1): the chips, the cases, «Boshqaruv». */
+/* The chips scroll sideways in one row; the chosen one is dark, the numbers are red. */
+.navbat-chips {
+  display: flex;
+  gap: 5.33px;
+  margin-bottom: 2.67px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.navbat-chip {
+  flex: none;
+  height: 26.67px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 13.33px;
+  background: var(--reg-card);
+  color: var(--reg-strong);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.navbat-chip b {
+  color: var(--reg-danger);
+}
+
+.navbat-chip-on {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.navbat-chip-on b {
+  color: var(--reg-danger-line);
+}
+
+.navbat-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  min-height: 55px;
+  /* The line between the cases is over the 55 px of a case, as on the mockup. */
+  box-sizing: content-box;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+.navbat-row + .navbat-row {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.navbat-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--reg-neutral-soft);
+  color: var(--reg-strong);
+}
+
+.navbat-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 17px;
+}
+
+.navbat-hint {
+  margin-top: 1px;
+  font-size: 12px;
+  line-height: 21px;
+  color: var(--reg-muted);
+}
+
+/* Another member opened the case: the others see it at once. */
+.navbat-taken {
+  color: var(--reg-attention);
+}
+
+.navbat-wait {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--reg-muted);
+}
+
+.navbat-late {
+  color: var(--reg-danger);
+}
+
+.navbat-empty {
+  margin: 0;
+  padding: 20px 14px;
+  border-radius: 16px;
+  background: var(--reg-card);
+  font-size: 15px;
+  text-align: center;
+  color: var(--reg-muted);
+}
+
+.team-management {
+  flex-direction: row;
+  align-items: center;
+  min-height: 54px;
+  padding: 0 12px 0 14px;
+  gap: 12.67px;
+  color: var(--reg-muted);
+}
+
+.team-management-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--reg-ink);
+}

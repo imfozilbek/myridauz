@@ -4,7 +4,7 @@ import type { Fetch } from './fetch';
 import { createSoundsClient } from './sounds-client';
 
 const options = { baseUrl: 'https://api.test/', app: 'admin', initData: 'a=1' } as const;
-const state = { set: '1', sets: ['1', '2', '3'], changedBy: 900, changedAt: 1, canEdit: true };
+const state = { set: '1', sets: ['1', '2', '3'], changedBy: 900, changedAt: 1 };
 
 describe('createSoundsClient (G54)', () => {
   it('reads the set in use without a signature, and fails with the status', async () => {

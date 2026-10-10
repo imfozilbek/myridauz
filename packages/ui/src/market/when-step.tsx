@@ -1,4 +1,4 @@
-import { DAY_MS, TRIP_DAYS_AHEAD, defaultSlot, tashkentDate, type Schedule } from '@platform/contracts';
+import { DAY_MS, defaultSlot, tashkentDate, type Schedule } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
@@ -11,13 +11,11 @@ import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { DayChips } from './day-chips';
 import { departAtOf, firstDayOf, slotsOn } from './first-when';
-import { today, useDayLabel } from './when';
+import { today } from './when';
 
 type WhenStepProps = {
   readonly now: number;
   readonly schedule: Schedule;
-  // The day of a request: the driver chooses only the time (docs/35).
-  readonly fixedDate?: string;
   readonly initial?: { readonly date: string; readonly time?: string };
   readonly onBack: () => void;
   readonly onDone: (when: { date: string; time: string; departAt: number }) => void;
@@ -25,14 +23,13 @@ type WhenStepProps = {
 
 // The day and the time on one screen (G38, docs/103): only the times the driver may leave at, the
 // morning time on another day, the first free time today.
-export function WhenStep({ now, schedule, fixedDate, initial, onBack, onDone }: WhenStepProps) {
+export function WhenStep({ now, schedule, initial, onBack, onDone }: WhenStepProps) {
   useScreenView('market.when');
   const { t } = useI18n();
   const rules = useBrand().schedule;
-  const dayLabel = useDayLabel();
   const first = today(now);
-  const last = tashkentDate(now + TRIP_DAYS_AHEAD * DAY_MS);
-  const [date, setDate] = useState(fixedDate ?? initial?.date ?? firstDayOf(now, schedule, rules));
+  const last = tashkentDate(now + rules.daysAhead * DAY_MS);
+  const [date, setDate] = useState(initial?.date ?? firstDayOf(now, schedule, rules));
   const [calendar, setCalendar] = useState(false);
   const slots = slotsOn(date, now, schedule, rules);
   const kept = initial?.time && initial.date === date && slots.includes(initial.time) ? initial.time : null;
@@ -43,17 +40,13 @@ export function WhenStep({ now, schedule, fixedDate, initial, onBack, onDone }: 
     setDate(day);
     setPicked(null);
   };
-  const back = calendar && !fixedDate ? () => setCalendar(false) : onBack;
+  const back = calendar ? () => setCalendar(false) : onBack;
   return (
-    <StepLayout
-      icon="trip"
-      title={t(fixedDate ? 'market.time.title' : 'market.when.title')}
-      hint={fixedDate ? t('market.when.dayHint', { day: dayLabel(fixedDate, now) }) : t('market.time.hint')}
-    >
+    <StepLayout icon="trip" title={t('market.when.title')} hint={t('market.time.hint')}>
       <Screen onBack={back} />
-      {fixedDate ? null : <DayChips date={date} now={now} onDay={pick} onOther={() => setCalendar(true)} />}
+      <DayChips date={date} now={now} onDay={pick} onOther={() => setCalendar(true)} />
       <List>
-        {calendar && !fixedDate ? (
+        {calendar ? (
           <Section header={t('market.when.day')}>
             <Input
               type="date"

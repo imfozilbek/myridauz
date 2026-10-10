@@ -2,7 +2,6 @@ import {
   DAY_MS,
   tashkentDate,
   tashkentDayStart,
-  TRIP_DAYS_AHEAD,
   type PickupMode,
   type Point,
   type RideRequest,
@@ -40,10 +39,14 @@ export const withoutPoints = (request: RequestRecord): RequestRecord => ({
 
 export const expiresAt = (date: string) => tashkentDayStart(date) + DAY_MS;
 
-// Today or a later day, not too far (the same window as trips).
-export function dateError(date: string, now: number): 'trips.in_past' | 'trips.invalid_input' | null {
+// Today or a later day, not further than the brand's days (the same window as trips).
+export function dateError(
+  date: string,
+  now: number,
+  daysAhead: number,
+): 'trips.in_past' | 'trips.invalid_input' | null {
   if (date < tashkentDate(now)) return 'trips.in_past';
-  return tashkentDayStart(date) > now + TRIP_DAYS_AHEAD * DAY_MS ? 'trips.invalid_input' : null;
+  return tashkentDayStart(date) > now + daysAhead * DAY_MS ? 'trips.invalid_input' : null;
 }
 
 export const isOpen = (request: RequestRecord, now: number) =>

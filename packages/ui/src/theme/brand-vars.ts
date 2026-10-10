@@ -47,4 +47,12 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-danger-text': colors.dangerText,
     // «Rad etish» of a call in the sheet of the open Mini App (G68, mockup g68/8).
     '--reg-danger': colors.danger,
+    // The numbers of the chips of «Navbat» and their gray icon tiles (G75, mockup g67/1).
+    '--reg-danger-line': colors.dangerLine,
+    '--reg-neutral-soft': colors.neutralSoft,
+    // The warning of a case and the photo places of an application (G75, mockup g67/2).
+    '--reg-warning': colors.warning,
+    '--reg-warning-text': colors.warningText,
+    '--reg-warning-soft': colors.warningSoft,
+    '--reg-warning-line': colors.warningLine,
   }) as CSSProperties;

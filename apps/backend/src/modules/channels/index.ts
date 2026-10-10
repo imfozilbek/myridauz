@@ -1,4 +1,4 @@
-import { channelOf, loadBrand, type BrandConfig } from '@platform/brands';
+import { channelOf, type BrandConfig } from '@platform/brands';
 import { channelVia, tripBookLink, TRIPS_PATH, VIA_DRIVER, type Trip } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
@@ -10,6 +10,9 @@ import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone
 import type { MyChannelsDeps } from './application/my-channels';
 import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
+import { healthRoutes } from './http/health-routes';
+import { checkChannels } from './application/health';
+import { healthDeps } from './health-deps';
 import { myChannelsRoutes } from './http/my-channels-routes';
 import { publicityRoutes } from './http/publicity-routes';
 import { inChannel, membership } from './infrastructure/bot-admin';
@@ -20,6 +23,7 @@ import { channelPost } from './infrastructure/post-text';
 import { createMemoryTripViews, d1TripViews } from './infrastructure/trip-views';
 import { zoneMessage } from './infrastructure/zone-message';
 import { teamDeps } from './team-deps';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localPosts = createMemoryChannelPosts();
 const localViews = createMemoryTripViews();
@@ -30,7 +34,7 @@ const viewsOf = (env: Bindings) => (env.DB ? d1TripViews(env.DB) : localViews);
 type TripOf = (env: Bindings, id: string) => Promise<Trip | undefined>;
 
 const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   return {
     // Off until the owner approves the post (docs/33): "on" in brands/<brand>/wrangler.toml.
     enabled: env.CHANNEL_POSTS === 'on',
@@ -60,14 +64,18 @@ export const channels = (tripOf: TripOf) => ({
 
 // One call a channel: the bot of the posts is its admin (docs/63).
 const myChannelsDeps = (env: Bindings): MyChannelsDeps => ({
-  zones: loadBrand(env.BRAND).channels,
+  zones: brandOf(env).channels,
   membership: membership((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
 });
 
 // The team's channels in the admin Mini App (docs/63) and «Kanallar» of a person (G65, docs/119).
 export const channelsModule = new Hono<AppEnv>()
+  .route('/', healthRoutes(healthDeps))
   .route('/', channelRoutes(teamDeps))
   .route('/', myChannelsRoutes(myChannelsDeps));
+
+// The hourly Cron: a few channels read again from Telegram for «Kanallar» of the owner (G75).
+export const checkChannelHealth = async (env: Bindings) => checkChannels(await healthDeps(env));
 
 const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
   enabled: env.CHANNEL_POSTS === 'on',
@@ -79,7 +87,7 @@ const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
 
 // The registration knows the zone only from the mark of a channel post the person came by (docs/116).
 export const inviteFromMark = async (env: Bindings, userId: number, via: string | undefined) => {
-  const brand = loadBrand(env.BRAND);
+  const brand = brandOf(env);
   const zone = brand.channels.find((channel) => channelVia(channel.username) === via);
   if (zone) await inviteToZone(zoneDeps(env, brand), userId, zone);
 };
@@ -92,7 +100,7 @@ export const zoneWatch = new Hono<AppEnv>().use(TRIPS_PATH, async (context, next
   const { app, user } = context.get('session');
   if (context.req.method !== 'GET' || context.res.status !== 200 || !from || app !== 'passenger') return;
   if (!tellsHome((await placesOf(context.env)).get(from))) return;
-  const brand = loadBrand(context.env.BRAND);
+  const brand = brandOf(context.env);
   await inviteToZone(zoneDeps(context.env, brand), user.id, channelOf(brand, from));
 });
 
@@ -106,7 +114,7 @@ const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
   channels: async () => allChannels(await teamDeps(env)),
   posts: postsOf(env),
   views: viewsOf(env),
-  link: (tripId) => tripBookLink(loadBrand(env.BRAND).bots.passenger, tripId, VIA_DRIVER),
+  link: (tripId) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_DRIVER),
   now: () => Date.now(),
 });
 

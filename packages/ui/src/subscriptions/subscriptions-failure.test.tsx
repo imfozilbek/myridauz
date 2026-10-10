@@ -1,6 +1,6 @@
 import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import type { Subscription } from '@platform/contracts';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, fireEvent } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
@@ -50,7 +50,7 @@ describe('"Obunalar" says why a change did not work (G43, docs/65 B3)', () => {
       </SubscriptionsLink>,
       testClients({ subscriptions: { mine: async () => list, remove, subscribe: offline } }),
     );
-    await tap('Oʻchirish');
+    fireEvent.click(await screen.findByRole('button', { name: 'Oʻchirish' }));
     await tap('Qaytarish');
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });

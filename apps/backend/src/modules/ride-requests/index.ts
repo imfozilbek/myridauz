@@ -13,6 +13,7 @@ import { requestRoutes } from './http/request-routes';
 import { d1Requests } from './infrastructure/d1-requests';
 import { createMemoryRequests } from './infrastructure/memory-requests';
 import { isOpen, statusAt, withoutPoints, type RequestRecord } from './domain/ride-request';
+import { brandOf } from '../../shared/brand/brand-of';
 
 // Without D1 (tests) requests live in memory.
 const localRequests = createMemoryRequests();
@@ -54,6 +55,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
     trip: (driverId) => boardOf.trip(env, driverId),
   },
   ratings: (userIds) => ratingsOfPeople(env, userIds),
+  limits: brandOf(env),
   newId: () => crypto.randomUUID(),
   now: Date.now,
 });

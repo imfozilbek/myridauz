@@ -1,4 +1,4 @@
-import { appHost, loadBrand } from '@platform/brands';
+import { appHost } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
 import { sendEvent } from '../../feed';
@@ -6,6 +6,7 @@ import { notify } from '../../notifications';
 import { tellOwners } from '../../team-queue';
 import { peopleOf } from '../../users';
 import type { Addressee, ChatSignals, Role } from '../application/ports';
+import { brandOf } from '../../../shared/brand/brand-of';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 // The Mini App opens this chat at once (docs/07).
@@ -15,7 +16,7 @@ const CHAT_PARAM = 'chat';
 type To = { readonly userId: number; readonly role: Role };
 // A message of the bot of this person with one button that opens the chat.
 const toChat = async (env: Bindings, to: To, key: string, text: string, button: string) => {
-  const url = `https://${appHost(loadBrand(env.BRAND), to.role)}/?${CHAT_PARAM}=${key}`;
+  const url = `https://${appHost(brandOf(env), to.role)}/?${CHAT_PARAM}=${key}`;
   const markup = { inline_keyboard: [[{ text: button, web_app: { url } }]] };
   await notify(env, [{ bot: to.role, chatId: to.userId, text, markup }]);
 };
@@ -52,6 +53,12 @@ export const botSignals = (env: Bindings): ChatSignals => ({
     const person = await peopleOf(env).find(userId);
     const id = person?.publicId ?? '';
     const values = { name: person?.firstName ?? '', id, count: String(count), key };
-    await tellOwners(env, { id: `contact:${id}`, text: t('bot.chat.contactAttempts', values), ring: false });
+    const sign = { kind: 'contact' as const, name: values.name, person: id, count, chat: key };
+    await tellOwners(env, {
+      id: `contact:${id}`,
+      text: t('bot.chat.contactAttempts', values),
+      ring: false,
+      sign,
+    });
   },
 });

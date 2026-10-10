@@ -61,6 +61,8 @@ export type UsersDeps = {
   readonly trips: TripRelations;
   readonly faceLog: { add(entry: FaceDecided): Promise<void> };
   readonly faces: FaceNotifier;
+  // In a trip on the way now: a blocked person finishes it (owner decision 10.10.2026).
+  readonly riding: (userId: number) => Promise<boolean>;
   readonly now: () => number;
   readonly newId: () => string;
 };

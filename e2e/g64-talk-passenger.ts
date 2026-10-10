@@ -47,7 +47,7 @@ export async function openPassengerTalk(page: Page, fresh = false) {
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await page.getByText(t('common.myTrips')).click();
-  await page.locator('.trip-card').first().click();
+  await page.locator('.mine-card').first().click();
   await page.locator('.offer-card').first().click();
   await page.getByText(t('chat.open')).click();
   await page.getByText(HISTORY[1]?.text ?? '').waitFor();

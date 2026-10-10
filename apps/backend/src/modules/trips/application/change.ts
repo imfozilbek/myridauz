@@ -19,7 +19,7 @@ async function saved(deps: TripsDeps, next: TripRecord, event: TripEvent): Chang
 export async function retimeTrip(deps: TripsDeps, driverId: number, id: string, departAt: number): Changed {
   const trip = await deps.trips.find(id);
   if (!trip) return { ok: false, error: 'trips.not_found' };
-  const next = retime(trip, driverId, departAt, deps.now());
+  const next = retime(trip, driverId, departAt, deps.now(), deps.schedule.shiftMinutes);
   if (typeof next === 'string') return { ok: false, error: next };
   if (await movedBusy(deps, next)) return { ok: false, error: 'trips.busy' };
   return saved(deps, next, 'retimed');

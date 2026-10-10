@@ -84,21 +84,18 @@ export function CompanyEditor({ loaded, onBack }: Props) {
         />
       ) : null}
       <List>
-        <CompanyFields draft={draft} invalid={invalid} disabled={!state.canEdit} onChange={change} />
+        <CompanyFields draft={draft} invalid={invalid} onChange={change} />
         {invalid.includes('stir') ? <Text className="step-error">{t('legal.admin.stirInvalid')}</Text> : null}
         {invalid.length > 0 && !invalid.includes('stir') ? (
           <Text className="step-error">{t('errors.company.invalid_input')}</Text>
         ) : null}
         {failure ? <Text className="step-error">{t(failure)}</Text> : null}
-        <Section
-          header={t('legal.admin.preview')}
-          footer={state.canEdit ? undefined : t('errors.auth.not_owner')}
-        >
+        <Section header={t('legal.admin.preview')}>
           <Cell before={<IconTile name="document" />}>{line}</Cell>
         </Section>
         <CompanyHistory history={state.history} />
       </List>
-      {state.canEdit && dirty ? <MainButton text={t('legal.admin.save')} onClick={save} /> : null}
+      {dirty ? <MainButton text={t('legal.admin.save')} onClick={save} /> : null}
     </StepLayout>
   );
 }

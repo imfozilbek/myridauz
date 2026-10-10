@@ -1,7 +1,7 @@
 import type { Page, Route } from '@playwright/test';
 import { tripOf } from './market-mock';
 
-// "Sevimli haydovchilar", "Safarlar tarixi" and the driver's shared trip (G18) as the Mini Apps see them.
+// "Sevimli haydovchilar" and the driver's shared trip (G18) as the Mini Apps see them.
 const CHILONZOR = '1726294';
 const SAMARQAND = '1718401';
 const DAY = 86_400_000;

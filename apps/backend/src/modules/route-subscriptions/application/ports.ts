@@ -24,6 +24,8 @@ export type SubscriptionsDeps = {
   readonly subscriptions: SubscriptionRepository;
   readonly placeMatches: () => Promise<(placeId: string, searchId: string) => boolean>;
   readonly tell: SubscriptionTeller;
+  // At most max live ones; one for any date lives anyDateDays (brand, docs/128 §4).
+  readonly limits: { readonly max: number; readonly anyDateDays: number };
   readonly newId: () => string;
   readonly now: () => number;
 };

@@ -2,24 +2,19 @@ import { formatPlate } from '@platform/contracts';
 import type { CSSProperties } from 'react';
 import { useAccount } from '../account/account-context';
 import { ProfilePhoto } from '../account/profile/profile-photo';
-import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useDriver } from '../driver/driver-context';
-import { Icon } from '../icons';
-import { useLoad } from '../market/use-list';
 import { HomeCard } from './home-card';
 
-const PHOTO = 42;
 // The face of a person on the main screens of G66 (mockups g66/1, g66/2).
 const FACE = 44;
-const ICON = 22;
 
 // The first card of the main screen: who the person is here, like the mockup of G53. The
-// passenger and the driver open their profile from it; the team sees its name and role.
+// passenger and the driver open their profile from it; the team has its own card (G75, team-home).
 export function HomeProfile({ onOpen }: { readonly onOpen: () => void }) {
   const account = useAccount();
-  return account ? <PersonCard onOpen={onOpen} /> : <TeamCard />;
+  return account ? <PersonCard onOpen={onOpen} /> : null;
 }
 
 function PersonCard({ onOpen }: { readonly onOpen: () => void }) {
@@ -55,25 +50,6 @@ function useRole(): string {
   if (!car || status === 'draft') return t('home.role.driverNew');
   const color = t(`drivers.color.${car.color}`).toLocaleLowerCase('uz');
   return t('home.role.driver', { model: car.model, color, plate: formatPlate(car.plate) });
-}
-
-function TeamCard() {
-  const { t } = useI18n();
-  const { moderation } = useApiClients();
-  const { colors } = useBrand().theme;
-  const { value } = useLoad(() => moderation.me(), 'home.me');
-  if (!value) return null;
-  return (
-    <HomeCard className="home-card-row home-profile" style={mint(colors.brandMint, colors.brandText)}>
-      <span className="profile-round profile-empty" style={{ width: PHOTO, height: PHOTO }}>
-        <Icon name="profile" size={ICON} color={colors.brandText} />
-      </span>
-      <span className="home-card-words">
-        <span className="home-card-title">{value.firstName}</span>
-        <span className="home-card-hint">{t(`home.role.${value.role}`)}</span>
-      </span>
-    </HomeCard>
-  );
 }
 
 // The empty photo is the light color of the app, like the mockup.

@@ -18,15 +18,25 @@ export function useRequestLive(): TileLive {
   if (!value) return {};
   const [, requests, offers] = value;
   const waiting = waitingOffers(requests, offers);
-  const open = [...requests]
+  const opened = [...requests]
     .sort((a, b) => a.date.localeCompare(b.date))
-    .find((request) => request.status === 'open');
+    .filter((request) => request.status === 'open');
+  const [open] = opened;
   if (!open || places.status !== 'ready') return { badge: waiting.length };
   const to = places.directory.find(open.to);
   const when = t('home.request.when', {
     to: to ? names.toward(to) : '',
     date: day(open.date),
   });
+  // Up to 3 requests at once (docs/127): «Soʻrovlarim» with how many, the nearest first, a tap opens
+  // the list of them (G75, docs/158 Е).
+  if (opened.length > 1)
+    return {
+      title: t('home.request.titleMany'),
+      hint: t('home.meta', { when, more: t('home.request.count', { count: String(opened.length) }) }),
+      badge: waiting.length,
+      opens: { id: 'my_trips' },
+    };
   const count = waiting.filter((offer) => offer.requestId === open.id).length;
   return {
     title: t('home.request.title'),

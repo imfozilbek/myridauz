@@ -25,7 +25,8 @@ export function useNavigator() {
     saveNavigator(chosen);
     setNavigator(chosen);
     setAsking(null);
-    if (stops) open(chosen, stops);
+    // «Sozlamalar» chooses with no stops: nothing opens (G75).
+    if (stops && stops.length > 0) open(chosen, stops);
   };
   // Asks which navigator, then opens the stops in the chosen one.
   const ask = async (stops: readonly Point[]) => {
@@ -36,5 +37,7 @@ export function useNavigator() {
     if (chosen) pick(chosen, stops);
   };
   const go = (stops: readonly Point[]) => (navigator ? open(navigator, stops) : void ask(stops));
-  return { navigators, asking, go, pick, cancel: () => setAsking(null) };
+  // «Navigator» in «Sozlamalar» (G75, docs/124 Ё): only the choice, nothing opens.
+  const change = () => void ask([]);
+  return { navigator, navigators, asking, go, pick, change, cancel: () => setAsking(null) };
 }

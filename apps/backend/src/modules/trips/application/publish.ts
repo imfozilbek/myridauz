@@ -35,7 +35,7 @@ export async function publishTrip(
   const [car, driver] = await Promise.all([deps.approvedCar(driverId), deps.people.find(driverId)]);
   if (!car || !driver) return { ok: false, error: 'trips.not_driver' };
   if (input.seats > car.seats) return { ok: false, error: 'trips.too_many_seats' };
-  const timeError = departError(input.departAt, now);
+  const timeError = departError(input.departAt, now, deps.schedule.daysAhead);
   if (timeError) return { ok: false, error: timeError };
   const recommendation = await deps.recommend(input.from, input.to);
   if (!recommendation.ok) return recommendation;

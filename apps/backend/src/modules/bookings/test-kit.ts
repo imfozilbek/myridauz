@@ -47,7 +47,7 @@ export function setup() {
     bookings,
     offers: createMemoryOffers(),
     talks: createMemoryTalks(),
-    requestRings: loadBrand().calls.requestRings,
+    limits: loadBrand(),
     trips: port,
     requests: {
       find: async (requestId) => requests.get(requestId),
@@ -68,6 +68,8 @@ export function setup() {
     rated: async () => new Set(),
     recommend: fakeRecommend,
     notify: fakeNotifier(notes),
+    pairTalked: async (driverId, passengerId, talks) =>
+      void notes.push(`pair: ${driverId} ${passengerId} ${talks}`),
     track: (step) => void notes.push(`step: ${step}`),
     places: fakePlaces,
     pitak: async (pitakId) => (pitakId === PITAK.id ? PITAK : null),

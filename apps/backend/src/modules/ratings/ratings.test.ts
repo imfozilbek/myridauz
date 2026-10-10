@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { askRatings } from './application/ask';
@@ -10,6 +11,7 @@ import { idOfPublic, publicIdOf } from '../../test-people';
 
 const NOW = Date.parse('2026-10-05T12:00:00Z');
 const HOUR = 3_600_000;
+const RULES = loadBrand().ratings;
 const DRIVER = 1;
 const ride = (n: number, over = true): Ride => ({
   bookingId: `b${n}`,
@@ -24,6 +26,7 @@ function setup(rides: Ride[] = [ride(1)]) {
   let clock = NOW;
   const asked: { ask: Ask; name: string; rater: string; reminder: boolean }[] = [];
   const alerts: { name: string; publicId: string }[] = [];
+  const told: (readonly [number, string])[] = [];
   const deps: RatingsDeps = {
     store: createMemoryRatings(),
     rides: {
@@ -34,18 +37,20 @@ function setup(rides: Ride[] = [ride(1)]) {
     people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
     ask: async (ask, name, { rater }, reminder) => void asked.push({ ask, name, rater, reminder }),
     alertTeam: async (person) => void alerts.push(person),
+    tellLow: async (userId, role) => void told.push([userId, role]),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
+    limits: RULES,
     now: () => clock,
     newId: () => `r${Math.random()}`,
   };
-  return { deps, asked, alerts, later: (ms: number) => void (clock += ms) };
+  return { deps, asked, alerts, told, later: (ms: number) => void (clock += ms) };
 }
 const review = (bookingId: string, stars: number, text = '') => ({ bookingId, stars, tags: [], text });
 
 describe('the rating of a person (docs/24)', () => {
   it('shows "Yangi" below 3 ratings and the average with one decimal after', () => {
-    expect(ratingOf([5, 4])).toEqual({ average: null, count: 2 });
-    expect(ratingOf([5, 5, 4])).toEqual({ average: 4.7, count: 3 });
+    expect(ratingOf([5, 4], RULES)).toEqual({ average: null, count: 2 });
+    expect(ratingOf([5, 5, 4], RULES)).toEqual({ average: 4.7, count: 3 });
   });
 
   it('asks both sides once after the ride and reminds once after 24 hours', async () => {
@@ -102,11 +107,13 @@ describe('the rating of a person (docs/24)', () => {
 
   it('sends a low average to a moderator once and lets the team hide a review', async () => {
     const rides = Array.from({ length: 11 }, (_, index) => ride(index + 1));
-    const { deps, alerts } = setup(rides);
+    const { deps, alerts, told } = setup(rides);
     for (const known of rides.slice(0, 10)) await rate(deps, known.passengerId, review(known.bookingId, 3));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     await rate(deps, 111, review('b11', 1));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
+    // The driver hears it once too, in the driver bot (G75, docs/158 З).
+    expect(told).toEqual([[DRIVER, 'driver']]);
     for (const known of rides) await rate(deps, DRIVER, review(known.bookingId, 5));
     const before = await reviewsOf(deps, DRIVER);
     expect(before.rating.count).toBe(11);

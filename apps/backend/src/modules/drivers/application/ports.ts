@@ -1,3 +1,4 @@
+import type { Car, Gender } from '@platform/contracts';
 import type { ImageStore, StoredImage } from '../../../shared/storage/image-store';
 import type { Application } from '../domain/application';
 
@@ -20,6 +21,8 @@ export type Decided = {
   readonly reasons: readonly string[];
   readonly by: number;
   readonly at: number;
+  // The car the team approved; null for the other decisions (G75, «было → стало»).
+  readonly car: Car | null;
 };
 export type DecisionLog = {
   add(entry: Decided): Promise<void>;
@@ -28,12 +31,14 @@ export type DecisionLog = {
   countsBetween(from: number, to: number): Promise<Map<number, number>>;
 };
 
-// The users module, seen from here: a name and a face, never a phone (docs/07).
+// The users module, seen from here: a name and a face, never a phone (docs/07); the gender only
+// for the team on the application (G75).
 export type Person = {
   readonly id: number;
   readonly publicId: string;
   readonly firstName: string;
   readonly avatarKey: string | null;
+  readonly gender: Gender;
 };
 type PeoplePort = {
   find(id: number): Promise<Person | undefined>;
@@ -64,6 +69,8 @@ export type DriversDeps = {
   // driver_approved: the bonus of month 1 starts from it in G08 (docs/12).
   // The approval event and bonus 1 of the welcome promo (docs/12).
   readonly driverApproved: (userId: number) => Promise<Bonus | null>;
+  // A trip of the driver not over yet (G75): set by the app from the trips module.
+  readonly liveTrips: (userId: number) => Promise<boolean>;
   readonly now: () => number;
   readonly newId: () => string;
 };

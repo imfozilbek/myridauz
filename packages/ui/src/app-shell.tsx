@@ -7,6 +7,7 @@ import { Suspense, useCallback, type ReactNode } from 'react';
 import { AnalyticsContext } from './context/analytics-context';
 import { ApiClientsContext, type ApiClients } from './context/api-clients';
 import { BrandContext } from './context/brand-context';
+import { useOwnerLimits } from './context/owner-limits';
 import { I18nProvider } from './context/i18n-context';
 import { ConnectionGate } from './network/connection-gate';
 import { LocationsClientContext } from './places/directory';
@@ -42,8 +43,9 @@ export function AppShell({
     [analytics, session.client],
   );
   useSplash(brand.theme.colors.brandStrong, ready);
+  const limited = useOwnerLimits(brand, clients.limits);
   return (
-    <BrandContext.Provider value={brand}>
+    <BrandContext.Provider value={limited}>
       <TelegramContext.Provider value={session}>
         <AnalyticsContext.Provider value={analytics}>
           <I18nProvider>

@@ -10,6 +10,9 @@ export type BrandColors = {
   readonly brandSoft: HexColor;
   readonly brandDeep: HexColor;
   readonly brandMint: HexColor;
+  // The big tile of a state screen: a block, an empty list, an error (G75, mockup g75/1 A).
+  readonly stateTile: HexColor;
+  readonly dangerTile: HexColor;
   // The frame of a light plate of the main color («Safar eʼlon qilindi», mockup g63/3).
   readonly brandLine: HexColor;
   readonly accent: HexColor;
@@ -27,6 +30,11 @@ export type BrandColors = {
   readonly attentionSoft: HexColor;
   // The frame of an offer inside a talk, on both sides (G64, mockups g64/4, g64/5).
   readonly attentionLine: HexColor;
+  // «Bu raqam yana 1 arizada bor» on the application of a case (G75, mockup g67/2 screen 3).
+  readonly warning: HexColor;
+  readonly warningText: HexColor;
+  readonly warningSoft: HexColor;
+  readonly warningLine: HexColor;
   // The green plate of a trip on its way: background, frame and second line (mockup g63/3).
   readonly successPale: HexColor;
   readonly successLine: HexColor;

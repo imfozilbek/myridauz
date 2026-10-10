@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import { ME_PATH, type FaceDecision } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
@@ -19,6 +18,8 @@ import { createMemoryImages } from '../../shared/storage/memory-images';
 import { r2Images } from '../../shared/storage/r2-images';
 import { createMemoryUsers } from './infrastructure/memory-stores';
 import { bookingStore, rideTogether } from '../bookings/infrastructure/store';
+import { brandOf } from '../../shared/brand/brand-of';
+import { arrivalsByChannelVia } from './infrastructure/channel-arrivals';
 
 // Without D1 and R2 (local runs, tests) the module keeps its data in memory.
 export const localUsers = createMemoryUsers();
@@ -30,6 +31,9 @@ let faceTeam: FaceTeam = async () => [];
 export const wireFaceTeam = (next: FaceTeam) => void (faceTeam = next);
 let registeredOf: (env: Bindings) => Registered = () => async () => undefined;
 export const wireRegistered = (next: (env: Bindings) => Registered) => void (registeredOf = next);
+type RidingOf = (env: Bindings, userId: number) => Promise<boolean>;
+let ridingOf: RidingOf = async () => false;
+export const wireRiding = (next: RidingOf) => void (ridingOf = next);
 
 const avatarsOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localAvatars);
 const usersDeps = (env: Bindings): UsersDeps => ({
@@ -44,13 +48,14 @@ const usersDeps = (env: Bindings): UsersDeps => ({
   faceLog: env.DB ? d1FaceLog(env.DB) : { add: async () => undefined },
   faces: telegramFaces({
     fetch: (input, init) => fetch(input, init),
-    brand: loadBrand(env.BRAND),
+    brand: brandOf(env),
     adminToken: env.ADMIN_BOT_TOKEN,
     recipients: (userId) => faceTeam(env, userId),
     avatars: avatarsOf(env),
     send: (jobs) => notify(env, jobs),
     queue: (news) => showQueue(env, news),
   }),
+  riding: (userId) => ridingOf(env, userId),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });
@@ -81,6 +86,8 @@ export const usersModule = new Hono<AppEnv>()
 // For the bots: a blocked person gets "account blocked" in every bot too (docs/17).
 export const isBlocked = async (env: Bindings, telegramId: number) =>
   (await checkAccess(usersDeps(env), telegramId)) !== null;
+// The block in force, for «Odamlar» of the owner (G75): until when, or null for good.
+export const blockOf = (env: Bindings, userId: number) => checkAccess(usersDeps(env), userId);
 
 // Other modules reach people only through this (drivers, moderation).
 export const peopleOf = (env: Bindings) => people(usersDeps(env));
@@ -90,13 +97,21 @@ export const joinedAtOf = async (env: Bindings, id: number) =>
   (await usersDeps(env).users.find(id))?.createdAt;
 // The new face photos for «Navbat» of the team (G68): whose and since when.
 export const waitingFaces = async (env: Bindings) =>
-  (await pendingFaces(usersDeps(env))).map((face) => ({ name: face.firstName, since: face.uploadedAt }));
+  (await pendingFaces(usersDeps(env))).map((face) => ({
+    id: face.userId,
+    name: face.firstName,
+    since: face.uploadedAt,
+  }));
 export const decideFaceOf = (env: Bindings, moderatorId: number, userId: number, decision: FaceDecision) =>
   decideFace(usersDeps(env), moderatorId, userId, decision);
 // The invite to the channel of the zone goes once per person (docs/119).
 export const claimZoneInvite = (env: Bindings, userId: number) =>
   usersDeps(env).users.claimZoneInvite(userId, Date.now());
 // The buttons of the face card in the admin bot (G51).
+// The people who came by the posts of each channel since a moment («Kanallar» of the owner, G75).
+export const channelArrivals = async (env: Bindings, since: number) =>
+  env.DB ? arrivalsByChannelVia(env.DB, since) : new Map<string, number>();
+
 export {
   faceCardText,
   faceDecisionLine,

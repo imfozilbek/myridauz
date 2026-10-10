@@ -3,7 +3,7 @@ import type { Company, CompanyState } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
-import { ManagementScreen } from '../pricing/management-screen';
+import { ManagementScreen } from '../manage/management-screen';
 import { renderInShell, testClients } from '../test-shell';
 
 afterEach(cleanup);
@@ -15,13 +15,12 @@ const company: Company = {
   address: 'Toshkent shahri',
   email: 'info@example.uz',
 };
-// 12:00 in Tashkent on 9 October 2026, after the base edition.
-const AT = Date.parse('2026-10-09T07:00:00Z');
-const empty: CompanyState = { current: null, history: [], canEdit: true };
+// 12:00 in Tashkent on 11 October 2026, after the base edition.
+const AT = Date.parse('2026-10-11T07:00:00Z');
+const empty: CompanyState = { current: null, history: [] };
 const savedOnce: CompanyState = {
   current: { version: 1, company, changedBy: 900, changedAt: AT },
   history: [{ version: 1, company, changedBy: 900, changedAt: AT }],
-  canEdit: true,
 };
 
 function open(
@@ -43,7 +42,7 @@ const type = (label: string, value: string) =>
 describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
   it('saves the five fields after the STIR check and shows the new edition and the history', async () => {
     const save = open(empty);
-    await tap('Kompaniya rekvizitlari');
+    await tap('Hujjatlar va kompaniya');
     // Nothing entered yet: the offer names the brand.
     expect(await screen.findByText('Ofertada shunday koʻrinadi')).toBeTruthy();
     type('Kompaniya nomi', 'Yoʻldosh');
@@ -58,9 +57,9 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
     type('STIR', '123456789');
     await tap('Saqlash');
     expect(save).toHaveBeenCalledWith(company);
-    expect(await screen.findByText('Saqlandi. Hujjatlar 1.4 tahririga oʻtdi.')).toBeTruthy();
+    expect(await screen.findByText('Saqlandi. Hujjatlar 1.5 tahririga oʻtdi.')).toBeTruthy();
     expect(screen.getByText('Oʻzgarishlar tarixi')).toBeTruthy();
-    expect(screen.getByText('Tahrir 1.4, 9-oktabr 2026')).toBeTruthy();
+    expect(screen.getByText('Tahrir 1.5, 11-oktabr 2026')).toBeTruthy();
   });
 
   it('shows the reason when the API refuses', async () => {
@@ -68,19 +67,10 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
       savedOnce,
       vi.fn(async () => Promise.reject(new ApiError(403, 'auth.not_owner'))),
     );
-    await tap('Kompaniya rekvizitlari');
+    await tap('Hujjatlar va kompaniya');
     await screen.findByLabelText('Manzil');
     type('Manzil', 'Samarqand shahri');
     await tap('Saqlash');
     expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
-  });
-
-  it('lets a moderator read the requisites without changing them', async () => {
-    open({ ...savedOnce, canEdit: false });
-    await tap('Kompaniya rekvizitlari');
-    const name = await screen.findByLabelText('Kompaniya nomi');
-    expect(name).toHaveProperty('disabled', true);
-    expect(screen.getByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();
-    expect(screen.queryByText('Saqlash')).toBeNull();
   });
 });

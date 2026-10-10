@@ -1,3 +1,4 @@
+import type { BrandConfig } from '@platform/brands';
 import type { Rating } from '@platform/contracts';
 import type { StoredReview } from '../domain/rating';
 
@@ -58,8 +59,12 @@ export type RatingsDeps = {
   readonly ask: (ask: Ask, rateeName: string, at: AskedAt, reminder: boolean) => Promise<void>;
   // The team sees the public id, never the Telegram ID (docs/65 A3).
   readonly alertTeam: (person: { name: string; publicId: string }, rating: Rating) => Promise<void>;
+  // The person hears it too, in the bot of the role they were rated in (G75, docs/158 З).
+  readonly tellLow: (userId: number, role: 'driver' | 'passenger', rating: Rating) => Promise<void>;
   // Contacts in the text become "***", as in the chat (docs/07).
   readonly mask: (text: string) => string;
+  // The days, the reminder and the rules of ratings (brand with the owner's values, docs/128 §4).
+  readonly limits: BrandConfig['ratings'];
   readonly now: () => number;
   readonly newId: () => string;
 };

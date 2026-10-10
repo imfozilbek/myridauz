@@ -1,11 +1,6 @@
-import {
-  arrivalAt,
-  MAX_REQUESTED_BOOKINGS,
-  onTheWay,
-  type Booking,
-  type BookingInput,
-} from '@platform/contracts';
-import { answerDeadline, move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
+import { arrivalAt, onTheWay, type Booking, type BookingInput } from '@platform/contracts';
+import { answerDeadline } from '../domain/answer-deadline';
+import { move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
@@ -49,7 +44,7 @@ export async function requestBooking(
   const mine = await deps.bookings.byPassenger(passengerId);
   if (mine.some((booking) => booking.tripId === tripId && isHolding(booking, now)))
     return { ok: false, error: 'bookings.wrong_status' };
-  if (mine.filter((booking) => isWaiting(booking, now)).length >= MAX_REQUESTED_BOOKINGS)
+  if (mine.filter((booking) => isWaiting(booking, now)).length >= deps.limits.bookings.maxPending)
     return { ok: false, error: 'bookings.too_many' };
   const points = await chosenPoints(deps, trip, input);
   if (!points.ok) return points;
@@ -64,7 +59,7 @@ export async function requestBooking(
     price: facts.price,
     commission: deps.wallet.commission(facts.price, seats),
     status: 'requested',
-    expiresAt: answerDeadline(facts.departAt, now),
+    expiresAt: answerDeadline(facts.departAt, now, deps.limits.bookings.answerHours),
     ...points.value,
     note: input.note ? deps.mask(input.note) : null,
     offerId: null,

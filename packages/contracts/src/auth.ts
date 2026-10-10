@@ -33,6 +33,7 @@ export const API_ERRORS = [
   'drivers.invalid_input',
   'drivers.wrong_status',
   'drivers.photo_too_large',
+  'drivers.live_trips',
   'pricing.not_found',
   'pricing.invalid_input',
   'pricing.out_of_bounds',
@@ -110,6 +111,8 @@ export const API_ERRORS = [
   'channels.not_found',
   'channels.invalid_input',
   'channels.bot_not_admin',
+  'team.invalid_input',
+  'team.not_found',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

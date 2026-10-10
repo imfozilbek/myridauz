@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { bookingCommission } from '../billing';
 import { maskContacts, postSystemEvent } from '../chat';
@@ -42,6 +41,8 @@ import { bookingStore } from './infrastructure/store';
 import { meetingPorts } from './infrastructure/meeting-ports';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 import { requestNewsOf } from './request-news';
+import { tellPairTalked } from './infrastructure/pair-sign';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localOffers = createMemoryOffers();
 const localTalks = createMemoryTalks();
@@ -64,7 +65,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
     bookings: bookingStore(env),
     offers: env.DB ? d1Offers(env.DB) : localOffers,
     talks: env.DB ? d1Talks(env.DB) : localTalks,
-    requestRings: loadBrand(env.BRAND).calls.requestRings,
+    limits: brandOf(env),
     trips: {
       find: (id) => tripFacts(env, id),
       ofDriver: (driverId) => driverTripIds(env, driverId),
@@ -98,7 +99,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
     notify: seatsFollow(
       env,
       telegramNotifier({
-        brand: loadBrand(env.BRAND),
+        brand: brandOf(env),
         notify: (jobs) => notify(env, jobs),
         system: (key, event) => postSystemEvent(env, key, event),
         closeOnes: (booking, update) => tellCloseOnes(env, booking, update),
@@ -107,6 +108,7 @@ export const bookingsDeps = (env: Bindings): BookingsDeps => {
         request: (id, offer) => requestNewsOf(env, deps)(id, offer),
       }),
     ),
+    pairTalked: (driverId, passengerId, talks) => tellPairTalked(env, driverId, passengerId, talks),
     places: { describe: (point) => describePoint(env, point), fits: pointFitsPlace },
     pitak: (id) => pitakById(env, id),
     meeting: meetingPorts(env),

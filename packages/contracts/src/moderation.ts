@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { personIdSchema, type PersonId } from './person-id';
 import { APPLICATION_STATUSES, carSchema, reasonsSchema, type CarPhotoKind } from './drivers';
 import { plateSchema } from './plate';
-import { FACE_REASONS } from './users';
+import { FACE_REASONS, GENDERS } from './users';
 
 // The team checks driver applications and blocks people (docs/04, docs/17). G06.
 export const ADMIN_APPLICATIONS_PATH = '/admin/applications';
@@ -34,7 +34,14 @@ export type TeamRole = (typeof TEAM_ROLES)[number];
 
 // Who opened the admin Mini App: the name and the role on its main screen (G53).
 export const ADMIN_ME_PATH = '/admin/me';
-export const teamMeSchema = z.object({ firstName: z.string(), role: z.enum(TEAM_ROLES) });
+// The card shows the own photo (mockup g67/1): the public id, never the Telegram ID (docs/65 A3);
+// null for an owner who never registered in the apps of people.
+export const teamMeSchema = z.object({
+  id: personIdSchema.nullable(),
+  firstName: z.string(),
+  hasAvatar: z.boolean(),
+  role: z.enum(TEAM_ROLES),
+});
 export type TeamMe = z.infer<typeof teamMeSchema>;
 
 export const applicationSummarySchema = z.object({
@@ -59,6 +66,10 @@ export const applicationDetailSchema = applicationSummarySchema.extend({
     }),
   ),
   samePlate: z.number().int(),
+  // The car the team approved before, when the driver sent another one (G75, «было → стало»).
+  was: carSchema.nullable(),
+  // «Haydovchi: Jasur, erkak» for the team (G75, mockup g67/2 screen 3); never for other people.
+  gender: z.enum(GENDERS),
 });
 export type ApplicationDetail = z.infer<typeof applicationDetailSchema>;
 

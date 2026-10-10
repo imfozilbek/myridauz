@@ -1,7 +1,10 @@
-import { COMPLAIN_DAYS, DAY_MS } from '@platform/contracts';
+import { loadBrand } from '@platform/brands';
+import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { fileComplaint } from './application/file';
 import { input, NOW, setup } from './complaints-test-kit';
+
+const COMPLAIN_DAYS = loadBrand().complaints.days;
 
 describe('a complaint within 7 days of the trip (docs/129, G60)', () => {
   it('takes a complaint on the last day and refuses the day after: then only «Yordam»', async () => {

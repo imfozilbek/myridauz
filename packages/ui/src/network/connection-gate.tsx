@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { Button } from '../components';
 import { useI18n } from '../context/i18n-context';
-import { EmptyState } from '../states/empty-state';
+import { StateScreen } from '../states/state-screen';
+import { MainButton } from '../telegram/bottom-button';
 import { closeApp } from '../telegram/feedback';
 import { OfflineBanner } from './offline-banner';
 import { useExpired } from './session-expired';
@@ -11,21 +11,15 @@ import { useExpired } from './session-expired';
 export function ConnectionGate({ children }: { readonly children: ReactNode }) {
   const expired = useExpired();
   const { t } = useI18n();
-  if (expired) {
-    const close = (
-      <Button size="m" onClick={closeApp}>
-        {t('common.close')}
-      </Button>
-    );
+  if (expired)
     return (
-      <EmptyState
-        icon="waiting"
+      <StateScreen
+        icon="reopen"
         title={t('errors.expired.title')}
         description={t('errors.expired.description')}
-        action={close}
+        button={<MainButton text={t('common.close')} onClick={closeApp} />}
       />
     );
-  }
   return (
     <>
       <OfflineBanner />

@@ -1,7 +1,10 @@
+import { loadBrand } from '@platform/brands';
 import { meetingStartsAt, tripEndsAt } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { akmal, madina } from './meet-test-kit';
 import { meetingOpen, meetingPoints, meetStep } from './meet-state';
+
+const MEET = loadBrand().schedule.meetMinutes;
 
 const { trip } = madina;
 
@@ -18,13 +21,13 @@ describe('the driver at the points (docs/126, G63)', () => {
   });
 
   it('opens before the departure and closes with the trip, as on the server', () => {
-    const opens = meetingStartsAt(trip.departAt);
-    expect(meetingOpen(trip, opens - 1)).toBe(false);
-    expect(meetingOpen(trip, opens)).toBe(true);
-    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km) - 1)).toBe(true);
-    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km))).toBe(false);
-    expect(meetingOpen({ ...trip, status: 'completed' }, opens)).toBe(false);
-    expect(meetingOpen({ ...trip, status: 'full' }, opens)).toBe(true);
+    const opens = meetingStartsAt(trip.departAt, MEET);
+    expect(meetingOpen(trip, opens - 1, MEET)).toBe(false);
+    expect(meetingOpen(trip, opens, MEET)).toBe(true);
+    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km) - 1, MEET)).toBe(true);
+    expect(meetingOpen(trip, tripEndsAt(trip.departAt, trip.km), MEET)).toBe(false);
+    expect(meetingOpen({ ...trip, status: 'completed' }, opens, MEET)).toBe(false);
+    expect(meetingOpen({ ...trip, status: 'full' }, opens, MEET)).toBe(true);
   });
 
   it('numbers the points in the order of the way, confirmed seats only', () => {

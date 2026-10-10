@@ -62,4 +62,10 @@ export const moneySign = (person: { firstName: string; publicId: string }, walle
     count: String(wallet.seatsLeft ?? 0),
   }),
   ring: false,
+  sign: {
+    kind: 'money' as const,
+    name: person.firstName,
+    person: person.publicId,
+    seats: wallet.seatsLeft ?? 0,
+  },
 });

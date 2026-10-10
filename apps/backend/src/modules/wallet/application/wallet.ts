@@ -43,6 +43,13 @@ export async function canAfford(deps: WalletDeps, driverId: number, amount: numb
   return splitCharge(usable(await deps.wallet.operations(driverId), deps.now()), amount) !== null;
 }
 
+// How much is missing for this commission: 0 when the money is there (G75, docs/158 Г).
+export async function shortage(deps: WalletDeps, driverId: number, amount: number) {
+  const held = usable(await deps.wallet.operations(driverId), deps.now());
+  const money = Math.max(0, balanceOf(held, 'bonus')) + Math.max(0, balanceOf(held, 'main'));
+  return Math.max(0, amount - money);
+}
+
 // The commission at the confirmation (docs/12): the bonus first. 'duplicate': it is already taken.
 export async function charge(
   deps: WalletDeps,

@@ -82,6 +82,15 @@ describe('«Qayerdan, qayerga?» (G59, docs/118 path 2, B)', { timeout: 20_000 }
     expect(screen.getAllByText('Oʻzgartirish')).toHaveLength(2);
   });
 
+  it('keeps the pitak of a pitak-only trip: the start opens no map (G75, docs/158 Д)', async () => {
+    open('pitak');
+    expect(await screen.findByText('Qoʻyliq pitagi')).toBeTruthy();
+    expect(row('Olib ketish joyi')).toBeNull();
+    fireEvent.click(screen.getByText('Qoʻyliq pitagi'));
+    expect(screen.queryByText('Qayerdan olib ketsin?')).toBeNull();
+    expect(screen.getByText('Qayerdan, qayerga?')).toBeTruthy();
+  });
+
   it('opens the map of the start at a door trip: «Uyim» and «Yaqin joylar» under it', async () => {
     open('door');
     expect(await screen.findByText('Olib ketish joyi')).toBeTruthy();

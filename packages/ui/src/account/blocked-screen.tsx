@@ -1,23 +1,22 @@
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { EmptyState } from '../states/empty-state';
-import { useScreenBackground } from '../telegram/screen-background';
+import { StateScreen } from '../states/state-screen';
 import { SupportButton } from './support-button';
 
 // Everything is closed for a blocked person; they learn until when and can write to the team (docs/17).
 // No reason here: a block keeps only who blocked (the team or a complaint), no text for the person.
 export function BlockedScreen({ until }: { readonly until: number | null }) {
   useScreenView('blocked');
-  useScreenBackground();
   const { t, formatDate } = useI18n();
-  const description =
-    until === null
-      ? t('account.blocked.forever')
-      : t('account.blocked.until', { date: formatDate(new Date(until)) });
+  const ask = t('account.blocked.forever');
   return (
-    <div className="center-screen">
-      <EmptyState icon="blocked" title={t('account.blocked.title')} description={description} />
-      <SupportButton />
-    </div>
+    <StateScreen
+      button={<SupportButton />}
+      icon="blocked"
+      tone="danger"
+      title={t('account.blocked.title')}
+      description={until === null ? ask : t('account.blocked.until', { date: formatDate(new Date(until)) })}
+      {...(until === null ? {} : { note: ask })}
+    />
   );
 }

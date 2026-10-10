@@ -1,4 +1,3 @@
-import { loadBrand } from '@platform/brands';
 import type { Bindings } from '../../env';
 import { chatHistory, forgetChat } from '../chat';
 import { notify } from '../notifications';
@@ -14,6 +13,7 @@ import { refundRoutes } from './http/refund-routes';
 import { botTeller } from './infrastructure/bot-teller';
 import { d1Complaints } from './infrastructure/d1-complaints';
 import { createMemoryComplaints } from './infrastructure/memory-complaints';
+import { brandOf } from '../../shared/brand/brand-of';
 
 const localComplaints = createMemoryComplaints();
 
@@ -43,25 +43,46 @@ const complaintsDeps = (env: Bindings): ComplaintsDeps => {
     cancelAll: (userId) => cancelAll(env, userId),
     refund: (ownerId, driverId, bookingId) => refund(env, ownerId, driverId, bookingId),
     tell: botTeller({
-      brand: loadBrand(env.BRAND),
+      brand: brandOf(env),
       send: (jobs) => notify(env, jobs),
       queue: (news) => showQueue(env, news),
     }),
+    limits: brandOf(env).complaints,
     now: Date.now,
     newId: () => crypto.randomUUID(),
   };
 };
 
-// The open complaints for «Navbat» of the team (G68): whose and since when.
+// The open complaints for «Navbat» of the team (G68): whose and since when; the refunds of no-shows
+// that wait for the owner too (G75).
 export async function waitingComplaints(env: Bindings) {
   const deps = complaintsDeps(env);
+  const name = async (id: number) => (await deps.people.find(id))?.firstName ?? '';
+  const [open, refunds] = await Promise.all([deps.store.open(), deps.store.refundsProposed()]);
+  // A refund waits since the moderator proposed it (docs/35, G63).
+  const cases = [
+    ...open.map((complaint) => ({ complaint, refund: false, since: complaint.createdAt })),
+    ...refunds.map((complaint) => ({
+      complaint,
+      refund: true,
+      since: complaint.refund?.proposedAt ?? complaint.createdAt,
+    })),
+  ];
   return Promise.all(
-    (await deps.store.open()).map(async (complaint) => ({
-      name: (await deps.people.find(complaint.authorId))?.firstName ?? '',
-      since: complaint.createdAt,
+    cases.map(async ({ complaint, refund, since }) => ({
+      id: complaint.id,
+      name: await name(complaint.authorId),
+      against: await name(complaint.againstId),
+      reason: complaint.reason,
+      refund,
+      since,
     })),
   );
 }
+
+// The complaints against a person, for «Odamlar» of the owner (G75).
+export const complaintsAgainst = (env: Bindings, userId: number) =>
+  complaintsDeps(env).store.countAgainst(userId);
 
 export const complaintsModule = complaintRoutes(complaintsDeps)
   .route('/', blockRoutes(complaintsDeps))

@@ -46,6 +46,15 @@ describe('the tiles of a passenger (G53, G66 mockup g66/1)', { timeout: 20_000 }
     expect(screen.getByText(linkOf({ name: REQUEST_LINK, id: request.id }))).toBeTruthy();
   });
 
+  it('counts all the open requests, up to 3: «Soʻrovlarim» opens the list (G75, docs/158 Е)', async () => {
+    const later = { ...request, id: 'r2', date: '2099-01-01' };
+    home({ bookings: async () => [], asked: async () => [later, request], offers: async () => [offer] });
+    expect(await screen.findByText(/^Fargʻona, .+ · 2 ta soʻrov$/u)).toBeTruthy();
+    expect(badgeOf('Soʻrovlarim')).toBe('1');
+    await tap('Soʻrovlarim');
+    expect(screen.getByText('opened empty')).toBeTruthy();
+  });
+
   it('keeps «Soʻrov qoldirish» while no request is open', async () => {
     home({ bookings: async () => [], asked: async () => [{ ...request, status: 'expired' as const }] });
     expect(await screen.findByText('Soʻrov qoldirish')).toBeTruthy();

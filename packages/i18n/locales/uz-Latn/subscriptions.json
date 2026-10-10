@@ -6,6 +6,8 @@
   "when.anyHint": "30 kun davomida",
   "done": "Obuna boʻldingiz. Mos eʼlon chiqsa, bot xabar beradi.",
   "title": "Obunalar",
+  "hint": "Yangi safar chiqsa, botda xabar beramiz.",
+  "withWoman": " · ayol bilan",
   "entryHint": "Yoʻnalish boʻyicha xabarlar",
   "empty": "Hali obunalar yoʻq",
   "emptyHint": "Qidiruvda hech narsa topilmasa, «Xabar bering» tugmasini bosing.",

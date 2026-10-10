@@ -1,0 +1,94 @@
+/* The screens of «Boshqaruv» (G75, mockup g67/2 screen 6): the rows of «Navbat» on white cards,
+   14 px from the edges at 360 px. */
+.manage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  box-sizing: border-box;
+  padding: 12.5px 14.67px 24px 13.33px;
+  color: var(--reg-ink);
+  font-family: var(--tgui--font-family);
+}
+
+.manage-title {
+  margin: 0 0 0 8px;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.manage-hint {
+  margin: -8px 0 0 8px;
+  font-size: 12.5px;
+  line-height: 16px;
+  color: var(--reg-muted);
+}
+
+.manage-row {
+  gap: 12.67px;
+  min-height: 51.33px;
+  padding-left: 14.67px;
+  color: var(--reg-route-line);
+}
+
+/* The line under a title sits close to it, as on the mockup; its place is kept while it loads. */
+.manage-row .manage-row-hint {
+  margin-top: 0;
+  font-size: 13px;
+  line-height: 14px;
+  min-height: 14px;
+}
+
+.manage-row .navbat-title {
+  color: var(--reg-ink);
+}
+
+.manage-danger {
+  color: var(--reg-danger);
+}
+
+.manage-field {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.manage-field input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--reg-off);
+  border-radius: 10px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 15px;
+}
+
+.manage-field button {
+  flex: none;
+  height: 36px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manage-field button:disabled {
+  opacity: 0.4;
+}
+
+.manage-value {
+  flex: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--reg-ink);
+}

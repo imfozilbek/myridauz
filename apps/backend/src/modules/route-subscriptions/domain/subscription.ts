@@ -1,10 +1,4 @@
-import {
-  ANY_DATE_DAYS,
-  DAY_MS,
-  tashkentDayStart,
-  type SubscriptionInput,
-  type SubscriptionKind,
-} from '@platform/contracts';
+import { DAY_MS, tashkentDayStart, type SubscriptionInput, type SubscriptionKind } from '@platform/contracts';
 
 // A route subscription (docs/24): a passenger waits for trips, a driver for requests.
 export type SubscriptionRecord = SubscriptionInput & {
@@ -35,9 +29,9 @@ export type Match = {
   readonly wholeCar: boolean;
 };
 
-// A dated subscription lives to the end of its day, "any date" ANY_DATE_DAYS days (docs/24).
-export const expiresAtOf = (date: string | null, now: number) =>
-  date === null ? now + ANY_DATE_DAYS * DAY_MS : tashkentDayStart(date) + DAY_MS;
+// A dated subscription lives to the end of its day, "any date" the brand's days (docs/24).
+export const expiresAtOf = (date: string | null, now: number, anyDateDays: number) =>
+  date === null ? now + anyDateDays * DAY_MS : tashkentDayStart(date) + DAY_MS;
 
 export const isActive = (subscription: SubscriptionRecord, now: number) =>
   !subscription.expired && subscription.expiresAt > now;

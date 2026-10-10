@@ -1,4 +1,4 @@
-import { DAY_MS, FEW_SEATS } from '@platform/contracts';
+import { DAY_MS } from '@platform/contracts';
 import { balanceOf, type Operation } from '../domain/ledger';
 import type { WalletDeps } from './ports';
 import { walletView } from './wallet-view';
@@ -22,7 +22,8 @@ export async function tellFewSeats(
   const price = await deps.lastPrice(driverId);
   if (price === null) return;
   const seats = (operations: readonly Operation[]) => Math.floor(money(operations) / deps.perSeat(price));
-  if (seats(before) < FEW_SEATS || seats(after) >= FEW_SEATS) return;
+  const few = deps.fewSeats;
+  if (seats(before) < few || seats(after) >= few) return;
   await deps.tell(driverId, await walletView(deps, driverId), 'fewSeats');
 }
 
