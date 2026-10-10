@@ -72,7 +72,7 @@ export function DriverBooking({ booking, onClose }: Props) {
         ? [{ label: t('bookings.cancel'), onClick: () => void cancel() }]
         : [];
   return (
-    <BookingScreen booking={booking} side="driver" onBack={() => onClose(false)} actions={actions}>
+    <BookingScreen booking={booking} onBack={() => onClose(false)} actions={actions}>
       <ActionFailure error={failure} />
       <AnswerDeadline booking={booking} />
       <Section>

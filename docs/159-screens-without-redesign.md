@@ -87,13 +87,13 @@
 
 **Похоже на ошибку:** в админке ⋮ «Sozlamalar» открывает `ProfileScreen`, а он без аккаунта пустой (`account/profile/profile-screen.tsx:32`; у админки `TeamGate`, не `AccountGate`). Проверить на стенде.
 
-## Похоже на мёртвый код
+## Похоже на мёртвый код (разобрано в G75, 10.10.2026)
 
-| Что | Почему |
+| Что | Итог |
 |---|---|
-| Ветки брони попутчика в `market/trip-screen.tsx` | в проде экран видит только админка |
-| `booking-screen.tsx` с `side="passenger"` | нигде не вызывается |
-| Ветка `changes_requested` в `driver/status-screen.tsx` | DriverGate сразу открывает исправление |
-| Пропы `calendar` (`date-step.tsx`), `fixedDate` (`when-step.tsx`) | в проде не передаются |
-| `feedback/driver-reviews.tsx` | только в админском экране поездки |
-| Тест `market/trip-departed.test.tsx` | проверяет старый экран, а не «Safar» |
+| Ветки брони попутчика в `market/trip-screen.tsx` | удалены: экран только команды; проверки «своя», «уже есть запрос», «уехала», «закрыта» перенесены на «Safar» (`find/safar-states.test.tsx`) |
+| `booking-screen.tsx` с `side="passenger"` | удалено: экран брони только водителя |
+| Ветка `changes_requested` в `driver/status-screen.tsx` | уже удалена в G75 («Rad etish» окончательный) |
+| Пропы `calendar` (`date-step.tsx`), `fixedDate` (`when-step.tsx`) | уже удалены раньше; `calendar` теперь только состояние экрана |
+| `feedback/driver-reviews.tsx` | нужен: отзывы о водителе в экране поездки команды |
+| Тест `market/trip-departed.test.tsx` | удалён вместе с `own-trip-book.test.tsx`: их проверки теперь у «Safar» |
