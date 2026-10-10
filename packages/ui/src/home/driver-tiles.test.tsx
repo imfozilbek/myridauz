@@ -6,7 +6,7 @@ import { booking, wallet } from '../bookings/booking-test-kit';
 import type { Driver } from '../driver/driver-context';
 import { tap, trip } from '../market/market-test-kit';
 import { DriverHome } from './driver-home';
-import { DRAFT_ACTIONS, DRIVER_ACTIONS } from './home-test-actions';
+import { DRIVER_ACTIONS } from './home-test-actions';
 import { approved, renderHome } from './home-test-kit';
 
 afterEach(cleanup);
@@ -38,8 +38,8 @@ const TRIPS = [
 ];
 const driver = (who: Driver, seatsLeft = 53, money = wallet) =>
   renderHome(
-    (go) => <DriverHome go={go} />,
-    who.application.status === 'draft' ? DRAFT_ACTIONS : DRIVER_ACTIONS,
+    () => <DriverHome />,
+    DRIVER_ACTIONS,
     {
       trips: async () => TRIPS,
       requests: async () => [booking, { ...booking, id: 'b2', trip: later }],
@@ -97,17 +97,16 @@ describe('the four tiles of a driver (G76, mockup g76/3)', { timeout: 20_000 }, 
 });
 
 describe(
-  'the main screen of a driver before the application (mockup g62/1 screen 1)',
+  'the main screen of a driver before the application (G76, mockup g76/3 state 1)',
   { timeout: 20_000 },
   () => {
-    it('says «Haydovchi», keeps publishing pale, «Yordam» opens the support bot, no block at the bottom', async () => {
+    it('asks to fill the application in the block, «Mashina · Qoʻshing» on the head, «Yordam» opens the bot', async () => {
       const open = vi.spyOn(window, 'open').mockReturnValue(null);
       driver(as('draft'));
-      expect(await screen.findByText('Haydovchi')).toBeTruthy();
-      expect(tileOf('Safar eʼlon qilish')?.className).toContain('home-tile-pale');
-      expect(screen.getByText('Eʼlonlar')).toBeTruthy();
+      expect(await screen.findByText('Arizani toʻldiring')).toBeTruthy();
+      expect(screen.getByText('Qoʻshing')).toBeTruthy();
       expect(screen.queryByText('Qayerdan')).toBeNull();
-      await tap('Savol boʻlsa');
+      await tap('Yordam');
       expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}`);
       open.mockRestore();
     });

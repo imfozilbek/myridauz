@@ -29,6 +29,8 @@ type RouteScreenProps = {
   readonly pick?: 'from' | 'to';
   // Back from the next step, the route chosen before (docs/90 F-P2).
   readonly initial?: Route;
+  // «Qayerdan» of the block at the bottom of the main screen, «Qayerga» still open (G76, docs/165).
+  readonly from?: Location;
   // Each end chosen, for the funnel of the search (G26).
   readonly onEnd?: (end: 'from' | 'to') => void;
   // The search (G35, docs/97 K1): the missing end opens by itself, both ends go on at once.
@@ -50,13 +52,14 @@ function RouteForm({
   onDone,
   pick,
   initial,
+  from: known,
   onEnd,
   quick,
 }: RouteScreenProps & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
   const here = useHere(directory);
-  const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? null);
+  const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? known ?? null);
   const from = chosenFrom ?? here;
   const [to, setTo] = useState<Location | null>(initial?.to ?? null);
   const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);

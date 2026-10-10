@@ -32,6 +32,7 @@ function passenger(
 describe('the sheet of a new offer (G68)', () => {
   it('says the driver, the car with its plate, the trip, how the driver picks up and the sum', async () => {
     passenger([{ ...offer, id: 'o11' }]);
+    await tap('Takliflarni koʻrish');
     expect(await screen.findByText('Yangi taklif')).toBeTruthy();
     expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();
     expect(screen.getByText('Oq Chevrolet Cobalt')).toBeTruthy();
@@ -50,6 +51,7 @@ describe('the sheet of a new offer (G68)', () => {
 
   it('«Qabul qilish» books the seat in one tap and says so on top', async () => {
     const { answerOffer } = passenger([{ ...offer, id: 'o12' }]);
+    await tap('Takliflarni koʻrish');
     await tap('Qabul qilish');
     expect(answerOffer).toHaveBeenCalledWith('o12', 'accept');
     expect(await screen.findByText('Taklif qabul qilindi. Joyingiz band.')).toBeTruthy();
@@ -61,6 +63,7 @@ describe('the sheet of a new offer (G68)', () => {
       { ...offer, id: 'o13' },
       { ...offer, id: 'o14' },
     ]);
+    await tap('Takliflarni koʻrish');
     // One request is one thing to answer: no «1 / 2» (mockup g68/8 «Taklif»).
     expect(await screen.findByText('Barcha takliflar (2)')).toBeTruthy();
     expect(screen.queryByText('1 / 2')).toBeNull();

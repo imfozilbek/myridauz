@@ -1,4 +1,4 @@
-import { MY_TRIP_LINK, type Trip } from '@platform/contracts';
+import { MY_TRIP_LINK, type Location, type Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { DraftRestored } from '../flow/draft-restored';
 import { useGoHome } from '../flow/home-context';
@@ -13,6 +13,8 @@ import { TripOnRoute } from './trip-on-route';
 type NewTripFlowProps = {
   readonly onBack: () => void;
   readonly route?: Route;
+  // «Qayerdan» of the block at the bottom of the main screen (G76): the first answer is «Qayerga».
+  readonly from?: Location;
   // The day of the requests the driver looked at: the trip opens on it (G37, docs/101 R4).
   readonly date?: string;
   // «Oxirgi yoʻnalish»: the answers of the last trip, the day is the first free one (G40, docs/106 K3).
@@ -41,7 +43,13 @@ export function NewTripFlow(props: NewTripFlowProps) {
   };
   return (
     <>
-      <TripRoute flow={flow} known={props.route !== undefined} onBack={props.onBack} onPublished={done} />
+      <TripRoute
+        flow={flow}
+        known={props.route !== undefined}
+        {...(props.from ? { from: props.from } : {})}
+        onBack={props.onBack}
+        onPublished={done}
+      />
       <DraftRestored shown={flow.restored} />
     </>
   );
@@ -51,12 +59,13 @@ type RouteProps = {
   readonly flow: ReturnType<typeof useNewTrip>;
   // The route came with the flow: «Назад» from the trip leaves, else it goes back to the route.
   readonly known: boolean;
+  readonly from?: Location;
   readonly onBack: () => void;
   readonly onPublished: (trip: Trip) => void;
 };
 
 // The route by lists, all of it or one end from «Oʻzgartirish» (G26, docs/74), then the trip on it.
-function TripRoute({ flow, known, onBack, onPublished }: RouteProps) {
+function TripRoute({ flow, known, from, onBack, onPublished }: RouteProps) {
   const { screen, answer, open, back, reroute } = flow;
   const { route } = answer;
   const end = screen === 'from' || screen === 'to' ? screen : null;
@@ -65,7 +74,7 @@ function TripRoute({ flow, known, onBack, onPublished }: RouteProps) {
       <RouteScreen
         allowWholeRegion={false}
         quick
-        {...(route ? { initial: route } : {})}
+        {...(route ? { initial: route } : from ? { from, pick: 'to' as const } : {})}
         {...(route && end ? { pick: end } : {})}
         onBack={route && end ? () => back() : onBack}
         onDone={reroute}

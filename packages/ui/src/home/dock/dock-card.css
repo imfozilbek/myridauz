@@ -1,0 +1,151 @@
+/* The card of the block at the bottom (G76, mockups g76/2, g76/3 at 360 px): white, 2 px line of
+   the app, amber when soon, red when now, grey when it ended badly. */
+.dock-card {
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 2px solid var(--reg-line);
+  border-radius: 16px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+}
+
+.dock-card-soon {
+  border-color: var(--reg-attention-line);
+}
+
+.dock-card-now {
+  border-color: var(--reg-danger-line);
+}
+
+.dock-card-off {
+  border-color: var(--reg-off);
+  background: var(--reg-neutral-pale);
+}
+
+.dock-chip,
+.dock-timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.dock-chip-brand {
+  background: var(--reg-mint);
+  color: var(--reg-text);
+}
+
+.dock-chip-green {
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+}
+
+.dock-chip-red {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger-text);
+}
+
+.dock-chip-gray {
+  background: var(--reg-off);
+  color: var(--reg-neutral-pale-text);
+}
+
+.dock-timer {
+  margin-left: 6px;
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention-ink);
+}
+
+.dock-timer-now {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger-text);
+}
+
+.dock-card-title {
+  margin: 8px 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.dock-card-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--reg-secondary);
+}
+
+.dock-who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dock-who-words {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dock-who-words b {
+  font-size: 15px;
+}
+
+.dock-who-words span {
+  font-size: 12px;
+  color: var(--reg-muted);
+}
+
+.dock-tools {
+  display: flex;
+  gap: 6px;
+}
+
+.dock-tool {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+/* An unread message in the chat of the trip: the red dot opens the sheet with ready answers (docs/164). */
+.dock-tool-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--reg-card);
+  border-radius: 50%;
+  background: var(--reg-danger);
+}
+
+.dock-quick {
+  display: flex;
+  gap: 8px;
+}
+
+.dock-quick button {
+  flex: 1;
+  padding: 9px 6px;
+  border: 1px solid var(--reg-line);
+  border-radius: 12px;
+  background: var(--reg-soft);
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}

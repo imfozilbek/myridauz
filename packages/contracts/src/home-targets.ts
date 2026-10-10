@@ -25,4 +25,6 @@ export const HOME_TARGETS = [
   'side_look',
   'side_rating',
   'side_car',
+  'dock_request',
+  'dock_requests',
 ] as const;

@@ -4,25 +4,24 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { openInTelegram } from '../telegram/feedback';
 import { brandVars } from '../theme/brand-vars';
-import { nextBookings } from './home-items';
-import { usePassengerData } from './passenger-data';
+import { usePassengerState } from './dock/passenger-dock';
 import { useHomeTap } from './use-home-tap';
 import './become-driver.css';
 
-const ICON = 22;
-const ARROW = 16;
+const ICON = 20;
+const ARROW = 18;
 
-// «Haydovchi boʻling» under the tiles of a passenger (G66, docs/118, mockup g66/1): it opens the app
-// of drivers. Not for a driver, and not while a seat is booked: the trip comes first then.
+// «Haydovchi boʻling» under the tiles of a passenger (G66, G76, mockup g76/1): it opens the app of
+// drivers. Not for a driver, and only while the block at the bottom is free (docs/165).
 export function BecomeDriver() {
   const { t } = useI18n();
   const account = useAccount();
   const { bots, theme } = useBrand();
   const { colors } = theme;
-  const { value } = usePassengerData();
+  const free = usePassengerState().kind === 'idle';
   const tap = useHomeTap();
   const driver = account?.profile.roles.includes('driver') ?? true;
-  if (driver || !value || nextBookings(value[0]).length > 0) return null;
+  if (driver || !free) return null;
   return (
     <button
       type="button"
@@ -37,7 +36,7 @@ export function BecomeDriver() {
         <span className="become-driver-title">{t('home.becomeDriver.title')}</span>
         <span className="become-driver-hint">{t('home.becomeDriver.hint')}</span>
       </span>
-      <Icon name="next" size={ARROW} color={colors.attention} />
+      <Icon name="next" size={ARROW} color={colors.control} />
     </button>
   );
 }

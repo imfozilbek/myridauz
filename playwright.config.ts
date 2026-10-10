@@ -95,6 +95,7 @@ export default defineConfig({
         'g75-places-pixel.spec.ts',
         'g66-sizes-screenshots.spec.ts',
         'g68-pixel.spec.ts',
+        'g76-pixel.spec.ts',
       ],
     },
   ],

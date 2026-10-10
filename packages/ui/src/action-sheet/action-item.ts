@@ -2,9 +2,9 @@ import type { PersonId } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import type { IconName } from '../icons';
 
-// What a sheet asks for, in the order the sheets come (docs/122): a call first, then the meeting,
-// a request or an offer, an answer of the other side, a message last.
-export const ACTION_ORDER = ['call', 'meeting', 'request', 'offer', 'answer', 'message'] as const;
+// What a sheet asks for, in the order the sheets come (docs/122, docs/164): a call first, then a
+// request or an offer, a message last. The meeting and the answers live in the block (G76).
+export const ACTION_ORDER = ['call', 'request', 'offer', 'message'] as const;
 export type ActionKind = (typeof ACTION_ORDER)[number];
 
 // One tap of a sheet. run gives the words of the plaque on top after it («Madina tasdiqlandi»), or
@@ -42,7 +42,7 @@ export type ActionItem = {
   readonly later?: string | null;
   // Grey words under the buttons: «Raqamlar yashirin».
   readonly note?: string;
-  // Put aside in any way (an answer, «Keyinroq», a tap beside): an answer once seen stays away.
+  // A call answered or put aside: a call put aside is declined (G68).
   readonly onAside?: () => void;
 };
 

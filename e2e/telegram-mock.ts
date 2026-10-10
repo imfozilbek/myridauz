@@ -115,6 +115,12 @@ const MOCK = String((signedContact: string | null) => {
           if (data.color) second.style.background = data.color;
           if (data.text_color) second.style.color = data.text_color;
           second.style.display = data.is_visible ? 'block' : 'none';
+          // On the left of the main button, half of the bar each, as in Telegram (G76).
+          const beside = data.is_visible && data.position === 'left';
+          second.style.bottom = beside ? '14px' : '74px';
+          second.style.right = beside ? 'calc(50% + 4px)' : '16px';
+          second.style.left = beside ? '14px' : '16px';
+          button.style.left = beside ? 'calc(50% + 4px)' : '14px';
         }
       },
     },

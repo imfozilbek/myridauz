@@ -15,6 +15,8 @@ type NativeParams = {
   isEnabled: boolean;
   backgroundColor?: HexColor;
   textColor?: HexColor;
+  // The secondary button: on the left of the main one in the block at the bottom (G76), else above.
+  position?: 'left' | 'top';
 };
 type NativeButton = {
   readonly setParams: (params: Partial<NativeParams>) => void;
@@ -29,6 +31,9 @@ type BottomButtonProps = {
   readonly destructive?: boolean;
   // Gray and inert until the step is ready, like the consent of the registration (G58).
   readonly disabled?: boolean;
+  // The pair of the block at the bottom of the main screen (G76): the secondary on the left in the
+  // light color of the app, the main one on the right, as on the mockups g76.
+  readonly beside?: boolean;
 };
 
 const noop = () => undefined;
@@ -72,7 +77,13 @@ function hideLater(native: NativeButton) {
 // The main action is the native Telegram button at the bottom (docs/19, docs/21).
 // Outside Telegram a TelegramUI button stands in for it, so the app also works in a browser.
 function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
-  return function BottomButton({ text, onClick, destructive = false, disabled = false }: BottomButtonProps) {
+  return function BottomButton({
+    text,
+    onClick,
+    destructive = false,
+    disabled = false,
+    beside = false,
+  }: BottomButtonProps) {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
     const { busy, run } = useOneAtATime(onClick);
@@ -91,10 +102,16 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
       const look = disabled
         ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
         : { backgroundColor: background, textColor: colors.bg };
-      const color = native.colored ? look : {};
+      const soft = { backgroundColor: colors.brandSoft, textColor: colors.brandText };
+      const color =
+        native.colored || (beside && disabled)
+          ? { ...look, ...(beside ? { position: 'left' as const } : {}) }
+          : beside
+            ? { ...soft, position: 'left' as const }
+            : { position: 'top' as const };
       keepShown(native);
       native.setParams({ text, isVisible: true, ...color });
-    }, [inTelegram, text, colors, destructive, disabled]);
+    }, [inTelegram, text, colors, destructive, disabled, beside]);
     useEffect(() => {
       if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy && !disabled });
     }, [inTelegram, busy, disabled]);

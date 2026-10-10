@@ -12,8 +12,6 @@ import {
   PassengerHome,
   PassengerTiles,
   StartFlow,
-  useBookingsLive,
-  useRequestLive,
   type StartAction,
 } from '@platform/ui';
 
@@ -33,8 +31,6 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'accent',
     labelKey: 'common.passenger.leaveRequest',
     hintKey: 'common.passenger.leaveRequestHint',
-    // «Soʻrovim» while a request is open: where, when and the offers waiting (G53, G66).
-    useLive: useRequestLive,
     Screen: NewRequestFlow,
   },
   {
@@ -43,7 +39,6 @@ const ACTIONS: readonly StartAction[] = [
     tone: 'deep',
     labelKey: 'common.myTrips',
     hintKey: 'common.passenger.myTripsHint',
-    useLive: useBookingsLive,
     Screen: MyRequestsScreen,
   },
 ];

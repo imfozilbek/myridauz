@@ -20,7 +20,7 @@ afterEach(() => {
 const pending: Driver = { ...approved, application: { ...approved.application, status: 'pending' } };
 const driver = (trips: (typeof trip)[], requests: (typeof booking)[] = [], who: Driver = approved) =>
   renderHome(
-    (go) => <DriverHome go={go} />,
+    () => <DriverHome />,
     DRIVER_ACTIONS,
     { trips: async () => trips, requests: async () => requests, where: true },
     who,

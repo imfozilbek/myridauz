@@ -15,14 +15,14 @@ import { testClients } from '../test-shell';
 import { WALLET_ACTION } from '../wallet/wallet-flow';
 import { DRIVER_DOCK_SECTIONS, PASSENGER_SECTIONS } from './dock-sections';
 import { DriverData } from './driver-data';
-import { DriverDock } from './driver-dock';
+import { DriverDock } from './dock/driver-dock';
 import { DriverTiles } from './driver-tiles';
 import { DRIVER_TILE_SECTIONS, PASSENGER_TILE_SECTIONS } from './home-sections';
 import { DriverSide, PassengerSide } from './home-side';
 import { NEW_TRIP } from './home-test-actions';
 import { HomeRouteProvider } from './home-route';
 import { PassengerData } from './passenger-data';
-import { PassengerDock } from './passenger-dock';
+import { PassengerDock } from './dock/passenger-dock';
 import { PassengerTiles } from './passenger-tiles';
 
 // Test helper for the main screen (G25, G66): the lists of an app, the feed signal by hand.
@@ -100,8 +100,6 @@ export function renderHome(
       return locations.getLocations();
     },
   };
-  // The block at the bottom as in the apps (G66): none before the application is sent.
-  const sent = driver.application.status !== 'draft';
   const flow = (
     <DriverData>
       <HomeRouteProvider>
@@ -111,7 +109,7 @@ export function renderHome(
           tiles={(go) => <DriverTiles go={go} />}
           side={(openProfile) => <DriverSide openProfile={openProfile} />}
           sections={[NEW_TRIP, WALLET_ACTION, ...DRIVER_DOCK_SECTIONS, ...DRIVER_TILE_SECTIONS]}
-          {...(sent ? { dock: (go: HomeGo) => <DriverDock go={go} /> } : {})}
+          dock={(go: HomeGo) => <DriverDock go={go} />}
         />
       </HomeRouteProvider>
     </DriverData>

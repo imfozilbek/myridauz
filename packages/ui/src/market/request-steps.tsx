@@ -19,13 +19,16 @@ type StepProps = {
   readonly flow: ReturnType<typeof useNewRequest>;
   readonly find: Find;
   readonly search: Search | undefined;
+  // The ends of the main screen (G76): the route starts from them.
+  readonly from?: Location | undefined;
+  readonly to?: Location | undefined;
   readonly onBack: () => void;
   readonly onClose: () => void;
 };
 
 // One step of a request (G61, docs/118 path 4): the route, the day, then one screen with the maps
 // of its ends. Each shows the answer chosen before (docs/94 F8).
-export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) {
+export function RequestStep({ flow, find, search, from, to, onBack, onClose }: StepProps) {
   const home = useGoHome(onClose);
   const { step, answer, recommendation, pitak, go, next } = flow;
   const [now] = useState(Date.now);
@@ -42,7 +45,11 @@ export function RequestStep({ flow, find, search, onBack, onClose }: StepProps) 
       <RouteScreen
         allowWholeRegion={false}
         quick
-        {...(route ? { initial: route } : { pick: 'to' as const })}
+        {...(route
+          ? { initial: route }
+          : from && to
+            ? { initial: { from, to } }
+            : { pick: 'to' as const, ...(from ? { from } : {}) })}
         onBack={onBack}
         onDone={(chosen) => {
           // The route of a request is one tap away on the main screen next time (G40, docs/106 K9).

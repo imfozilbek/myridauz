@@ -10,6 +10,8 @@ const KEYS = [
   'route_recent',
   'book_points',
   'way_saved',
+  // «… rozi boʻldi» told once in the block of a driver (G76).
+  'offers_accepted_seen',
 ] as const;
 export type StoredKey = (typeof KEYS)[number];
 

@@ -1,78 +1,17 @@
-import { BOOKING_LINK } from '@platform/contracts';
-import { useState } from 'react';
-import { useActionsWaiting } from '../action-sheet/action-queue';
 import { PassengerActions } from '../action-sheet/passenger-actions';
-import { MeetingCard, meetingTime } from '../bookings/meeting-card';
 import type { HomeGo } from '../flow/start-action';
-import { PlacesKnown } from '../market/places-gate';
-import { useDirectory } from '../places/use-directory';
 import { Screen } from '../screen/screen';
-import { ArrivedSheet, asksArrival } from './arrived-sheet';
-import { FavoriteSheet } from './favorite-sheet';
-import { HomeFailed } from './home-state';
-import { HomeTripCard } from './home-trip-card';
-import { EndedSeat } from './ended-seat';
-import { endedSeat, nextBookings } from './home-items';
-import { usePassengerData, type PassengerLoad } from './passenger-data';
-import { TALK_CALL, TRIP_TALK } from './trip-talk';
-import { useHomeTap } from './use-home-tap';
-import { useBrand } from '../context/brand-context';
+import { usePassengerData } from './passenger-data';
 
-// The main screen of a passenger (G25, G66, docs/118): the nearest seat as one card under the profile,
-// the meeting instead of it 30 minutes before the departure (docs/126). Search lives at the bottom.
+// The main screen of a passenger under the head and the tiles (G76, docs/165): the seat, the
+// request and the meeting live in the block at the bottom; here the sheets of the open Mini App
+// and a pull down that refreshes the lists (docs/94 W1).
 export function PassengerHome({ go }: { readonly go: HomeGo }) {
   const load = usePassengerData();
-  // One sheet at a time (docs/122): «Yetib keldingizmi?» and a saved driver wait for the answers.
-  const free = !useActionsWaiting();
-  // A pull down at the top of the main screen refreshes the bookings (docs/94 W1).
   return (
     <>
       <Screen onRefresh={load.refresh} />
-      <Seat go={go} load={load} />
       <PassengerActions go={go} />
-      {free ? <ArrivedSheet bookings={load.value?.[0] ?? []} onTold={load.refresh} /> : null}
-      {free && load.value && !load.value[0].some((booking) => asksArrival(booking, Date.now())) ? (
-        <FavoriteSheet go={go} bookings={load.value[0]} />
-      ) : null}
     </>
-  );
-}
-
-type SeatProps = { readonly go: HomeGo; readonly load: PassengerLoad };
-
-function Seat({ go, load: { value, failed, reload, refresh } }: SeatProps) {
-  const [places, retryPlaces] = useDirectory();
-  const tap = useHomeTap();
-  const [now] = useState(Date.now);
-  const { meetMinutes } = useBrand().schedule;
-  const retry = () => {
-    if (failed) reload();
-    if (places.status === 'error') retryPlaces();
-  };
-  if (failed || places.status === 'error') return <HomeFailed onRetry={retry} />;
-  const booking = value ? nextBookings(value[0])[0] : undefined;
-  const ended = value && !booking ? endedSeat(value[0], now) : null;
-  const open = (id: string) => tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id } }));
-  if (ended) return <EndedSeat booking={ended} onOpen={open(ended.id)} />;
-  if (!booking || places.status !== 'ready') return null;
-  const { directory } = places;
-  if (meetingTime(booking, now, meetMinutes))
-    return (
-      <PlacesKnown directory={directory}>
-        <MeetingCard booking={booking} onTold={refresh} />
-      </PlacesKnown>
-    );
-  const link = (name: string) => ({ link: { name, id: booking.id } });
-  return (
-    <HomeTripCard
-      booking={booking}
-      directory={directory}
-      onOpen={tap('item', () => go('my_trips', link(BOOKING_LINK)))}
-      onTalk={(screen) =>
-        tap(screen === 'call' ? 'trip_call' : 'trip_chat', () =>
-          go(TRIP_TALK, link(screen === 'call' ? TALK_CALL : 'chat')),
-        )()
-      }
-    />
   );
 }
