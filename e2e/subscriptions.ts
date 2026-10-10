@@ -10,7 +10,9 @@ const none: Shot = async () => undefined;
 export async function passengerSubscribes(page: Page, shot: Shot = none) {
   await expect(page.getByText(t('subscriptions.when.any'))).toBeVisible();
   await shot('2-when');
+  // «Istalgan kun» is chosen in the sheet; its button subscribes (G75, mockup g75/3 A).
   await page.getByText(t('subscriptions.when.any')).click();
+  await page.locator('#tg-main-button').click();
   await expect(page.getByText(t('subscriptions.done'))).toBeVisible();
   await shot('3-done');
 }

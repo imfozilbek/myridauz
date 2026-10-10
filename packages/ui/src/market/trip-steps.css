@@ -1,0 +1,32 @@
+/* The text of «Izoh» in its sheet (mockup g75/3 A phone 3): a pale gray field without a frame, the
+   count under it. The field of the library keeps its frame and its padding for the forms of the app. */
+.comment-field {
+  padding: 0 16px 12px;
+}
+
+.comment-field > * {
+  padding: 0;
+}
+
+.comment-field .comment-area.comment-area {
+  border-radius: 12px;
+  background: var(--reg-neutral-pale);
+  box-shadow: none;
+}
+
+.comment-field textarea {
+  box-sizing: border-box;
+  height: 96px;
+  min-height: 96px;
+  padding: 12px 14px;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.comment-count {
+  margin-top: -6px;
+  padding: 0 18px 8px;
+  font-size: 12px;
+  text-align: right;
+  color: var(--reg-muted);
+}

@@ -15,9 +15,9 @@ import { usePlaces } from './places-gate';
 import { tripValues } from './trip-draft';
 import { TripForm } from './trip-form';
 import { TripRuleStep } from './trip-rule-step';
-import { CommentStep } from './trip-steps';
+import { CommentSheet } from './trip-steps';
 import { useSchedule } from './use-schedule';
-import { WhenStep } from './when-step';
+import { WhenSheet } from './when-sheet';
 
 type Props = {
   readonly flow: ReturnType<typeof useNewTrip>;
@@ -45,16 +45,6 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const values = tripValues({ ...answer, route }, known);
   const region = places.find(regionOf(route.to)) ?? route.to;
   const direction = names.short(region);
-  if (screen === 'when')
-    return (
-      <WhenStep
-        now={now}
-        schedule={schedule}
-        initial={{ date: values.date, ...(values.time ? { time: values.time } : {}) }}
-        onBack={() => back()}
-        onDone={({ date, time }) => back({ date, time })}
-      />
-    );
   if (screen === 'rule')
     return (
       <TripRuleStep
@@ -66,31 +56,40 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
         onDone={(bookingRule) => back({ bookingRule })}
       />
     );
-  if (screen === 'comment')
-    return (
-      <CommentStep
-        initial={values.comment}
-        onType={(comment) => change({ comment })}
-        onBack={() => back()}
-        onDone={(comment) => back({ comment })}
-      />
-    );
   if (screen === 'pitak' && pitak)
     return <PitakScreen pitak={pitak} hint={t('way.trip.pitak', { direction })} onBack={() => back()} />;
   return (
-    <TripForm
-      route={route}
-      values={values}
-      car={car}
-      carSeats={carSeats}
-      recommendation={recommendation}
-      pitak={pitak}
-      direction={direction}
-      now={now}
-      onChange={change}
-      onOpen={open}
-      onBack={onBack}
-      onPublished={onPublished}
-    />
+    <>
+      <TripForm
+        route={route}
+        values={values}
+        car={car}
+        carSeats={carSeats}
+        recommendation={recommendation}
+        pitak={pitak}
+        direction={direction}
+        now={now}
+        onChange={change}
+        onOpen={open}
+        onBack={onBack}
+        onPublished={onPublished}
+      />
+      {/* The day and time and «Izoh» are sheets over the form (G75, mockup g75/3 A). */}
+      <WhenSheet
+        open={screen === 'when'}
+        now={now}
+        schedule={schedule}
+        initial={{ date: values.date, ...(values.time ? { time: values.time } : {}) }}
+        onClose={() => back()}
+        onDone={({ date, time }) => back({ date, time })}
+      />
+      <CommentSheet
+        open={screen === 'comment'}
+        initial={values.comment}
+        onType={(comment) => change({ comment })}
+        onClose={() => back()}
+        onDone={(comment) => back({ comment })}
+      />
+    </>
   );
 }

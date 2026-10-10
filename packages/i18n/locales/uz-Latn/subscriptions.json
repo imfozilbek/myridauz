@@ -2,6 +2,8 @@
   "notify": "Xabar bering",
   "when.title": "Qaysi kunga?",
   "when.day": "Faqat {day}",
+  "when.dayHint": "Shu kungi safarlar",
+  "when.hint": "{way}. {question}",
   "when.any": "Istalgan kun",
   "when.anyHint": "30 kun davomida",
   "done": "Obuna boʻldingiz. Mos eʼlon chiqsa, bot xabar beradi.",

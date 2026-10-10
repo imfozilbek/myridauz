@@ -35,9 +35,13 @@ describe('the note of a booking on «Qayerdan, qayerga?»', { timeout: 20_000 },
       testClients({ bookings: { book }, map: testMap() }),
     );
     await tap('Izoh (ixtiyoriy)');
+    // A sheet over the booking (mockup g75/3 A): the screen stays under it, the letters are counted.
+    expect(screen.getByText('Tushirish joyi')).toBeTruthy();
+    expect(screen.getByText('0 / 60')).toBeTruthy();
     fireEvent.change(await screen.findByPlaceholderText('Izoh yozing'), {
       target: { value: 'Qizil kurtka, sumka bilan' },
     });
+    expect(screen.getByText('25 / 60')).toBeTruthy();
     await tap('Davom etish');
     expect(await screen.findByText('Qizil kurtka, sumka bilan')).toBeTruthy();
     fireEvent.click(screen.getByText('Tushirish joyi').closest('button') as HTMLElement);

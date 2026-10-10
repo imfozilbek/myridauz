@@ -101,7 +101,7 @@ describe('«Vaqt yoki narx» and «Yoʻl xaritasi» (mockup g63/3)', () => {
     await tap('Vaqt yoki narx');
     expect(await screen.findByText('Vaqtni surish')).toBeTruthy();
     await tap('Narxni tushirish');
-    expect(await screen.findByText('Yangi narx')).toBeTruthy();
+    expect(await screen.findByText(/^Faqat pastga\./u)).toBeTruthy();
   });
 
   it('a trip on the road keeps its time and price, and says so', async () => {

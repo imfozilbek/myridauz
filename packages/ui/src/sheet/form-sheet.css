@@ -1,0 +1,55 @@
+/* The form sheets of the mockup g75/3 A at 360 px: white, round on top, a gray grab, a big title,
+   a gray hint; the native main button of Telegram stands under it. */
+.form-sheet-modal {
+  border-radius: 22px 22px 0 0;
+  background: transparent;
+}
+
+.form-sheet {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  /* Where Telegram draws its main button inside the window, the sheet ends above it. */
+  padding: 10px 0 calc(16px + 100vh - var(--tg-viewport-stable-height, 100vh));
+  border-radius: 22px 22px 0 0;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+}
+
+.form-sheet-grab {
+  align-self: center;
+  width: 40px;
+  height: 5px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  background: var(--reg-route-line);
+}
+
+.form-sheet-title {
+  margin: 0;
+  padding: 2px 16px 4px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.form-sheet-hint {
+  margin: 0;
+  padding: 0 16px 12px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}
+
+/* «Izohsiz davom etish» and the like: a link in the color of the brand over the main button. */
+.form-sheet-link {
+  align-self: center;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border: 0;
+  background: none;
+  color: var(--reg-text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}

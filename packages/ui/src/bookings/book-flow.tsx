@@ -5,7 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { DraftRestored } from '../flow/draft-restored';
 import { usePlaces } from '../market/places-gate';
-import { CommentStep } from '../market/trip-steps';
+import { CommentSheet } from '../market/trip-steps';
 import { confirm, haptic } from '../telegram/feedback';
 import { rememberedWay } from '../way/remembered-way';
 import { BookPoint } from './book-point';
@@ -44,17 +44,6 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
     const place = directory.find(id);
     return (place?.parentId ? directory.find(place.parentId) : place)?.name ?? id;
   };
-  if (flow.screen === 'note')
-    return (
-      <CommentStep
-        initial={flow.note}
-        hint={t('bookings.note.hint')}
-        max={BOOKING_NOTE_MAX}
-        onType={(note) => flow.patch({ note })}
-        onBack={() => flow.patch({ screen: 'points' })}
-        onDone={(note) => flow.patch({ note, screen: 'points' })}
-      />
-    );
   if (flow.screen === 'pickup' || flow.screen === 'dropoff') {
     const pickup = flow.screen === 'pickup';
     return (
@@ -90,6 +79,16 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
           flow.clear();
           setSent(booking);
         }}
+      />
+      {/* «Izoh» is a sheet over the booking (G75, mockup g75/3 A phone 3). */}
+      <CommentSheet
+        open={flow.screen === 'note'}
+        initial={flow.note}
+        hint={t('bookings.note.hint')}
+        max={BOOKING_NOTE_MAX}
+        onType={(note) => flow.patch({ note })}
+        onClose={() => flow.patch({ screen: 'points' })}
+        onDone={(note) => flow.patch({ note, screen: 'points' })}
       />
       <DraftRestored shown={flow.restored} />
     </>

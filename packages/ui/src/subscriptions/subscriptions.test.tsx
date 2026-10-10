@@ -35,7 +35,10 @@ describe('"Xabar bering" (docs/24)', () => {
       testClients({ subscriptions: { subscribe } }),
     );
     await tap('Xabar bering');
-    await tap('Istalgan kun');
+    // A sheet (G75, mockup g75/3 A phone 4): «Istalgan kun» is chosen, the button subscribes.
+    expect(screen.getByText('Shu kungi safarlar')).toBeTruthy();
+    expect(screen.getByRole('radio', { name: /Istalgan kun/u })).toHaveProperty('checked', true);
+    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
     expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730401', date: null, woman: false });
     expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
@@ -51,7 +54,9 @@ describe('"Xabar bering" (docs/24)', () => {
     );
     await tap('Xabar bering');
     await tap(/^Faqat/);
+    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
     expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();
+    expect(subscribe).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-10-02' }));
   });
 });
 
@@ -126,7 +131,10 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
       </SubscribeLink>,
       testClients({ subscriptions: { subscribe } }),
     );
+    // The sheet names the route of the post over the question (mockup g75/3 A phone 4).
+    expect(await screen.findByText(/\. Qaysi kunga\?$/u)).toBeTruthy();
     await tap(/^Faqat/);
+    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
     expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith({
       from: '1726',

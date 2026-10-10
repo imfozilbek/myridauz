@@ -1,0 +1,28 @@
+/* The two changes of «Vaqt yoki narx» on top of their sheet (mockup g75/3 A phone 2): a gray
+   segmented control, the chosen one white and bold. */
+.change-tabs {
+  margin: 0 16px 10px;
+}
+
+.change-tabs > div {
+  height: 42px;
+  border-radius: 10px;
+  background: var(--reg-off);
+}
+
+.change-tabs button {
+  padding-inline: 4px;
+}
+
+.change-tabs button > * {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.change-tab-on {
+  color: var(--reg-ink);
+}
+
+.change-tab-on > * {
+  font-weight: 700;
+}

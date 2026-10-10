@@ -4,12 +4,11 @@ import { DriverTripMap } from '../bookings/driver-trip-map';
 import { NotEnoughScreen, TopUpScreen } from '../bookings/wallet-steps';
 import { ChatScreen } from '../chat/chat-screen';
 import { useI18n } from '../context/i18n-context';
-import { TripChangeScreen } from '../market/trip-change';
+import { TripChangeSheet } from '../market/trip-change';
 import { DriverMeeting } from '../meeting/driver-meeting';
 import { meetingOpen } from '../meeting/meet-state';
 import { useMeetMark } from '../meeting/use-meet-mark';
 import { ActionFailure } from '../states/action-failure';
-import { ChangeChoice } from './change-choice';
 import type { Opened } from './own-trip-opened';
 import { OwnTripPage } from './own-trip-page';
 import { tripStage } from './trip-stage';
@@ -95,16 +94,6 @@ export function OwnTripLive(props: Props) {
         onBack={back}
       />
     );
-  if (opened?.screen === 'choice')
-    return (
-      <ChangeChoice
-        trip={trip}
-        onChange={(change) => setOpened({ screen: 'change', change })}
-        onBack={back}
-      />
-    );
-  if (opened?.screen === 'change')
-    return <TripChangeScreen trip={trip} change={opened.change} onDone={() => (back(), onChanged())} />;
   return (
     <OwnTripPage
       trip={trip}
@@ -135,6 +124,10 @@ export function OwnTripLive(props: Props) {
             </button>
           ) : null}
         </p>
+      ) : null}
+      {/* «Vaqt yoki narx» is a sheet over the trip (G75, mockup g75/3 A phone 2). */}
+      {opened?.screen === 'change' ? (
+        <TripChangeSheet trip={trip} open onClose={back} onDone={() => (back(), onChanged())} />
       ) : null}
     </OwnTripPage>
   );

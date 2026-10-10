@@ -6,7 +6,6 @@ import { useBalance } from '../bookings/use-balance';
 import { useTripStory } from '../comfort/use-trip-story';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { laterTimes } from '../market/trip-change-options';
 import { useFailure } from '../states/use-failure';
 import { confirm, haptic } from '../telegram/feedback';
 import { canShareStory } from '../telegram/story';
@@ -15,7 +14,6 @@ import type { Opened } from './own-trip-opened';
 import { tileBlock } from './tile-block';
 import type { TripStage } from './trip-stage';
 import { useCloseShare } from './use-close-share';
-import { useBrand } from '../context/brand-context';
 
 type Options = {
   readonly trip: Trip;
@@ -32,7 +30,6 @@ type Options = {
 export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onClosed }: Options) {
   const { t } = useI18n();
   const { market } = useApiClients();
-  const { shiftMinutes } = useBrand().schedule;
   const balance = useBalance(bookings.some((booking) => booking.status === 'requested'));
   const { failure, fail, clear } = useFailure();
   // Why a tile cannot work now: it stays on the page and says so (docs/121).
@@ -67,13 +64,7 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
     if (block) return;
     if (which === 'share') void share.share();
     else if (which === 'story') void postStory();
-    // Only the price is left once the time moved the whole hour (docs/104).
-    else if (which === 'change')
-      open(
-        laterTimes(trip, shiftMinutes).length > 0
-          ? { screen: 'choice' }
-          : { screen: 'change', change: 'price' },
-      );
+    else if (which === 'change') open({ screen: 'change' });
     else open({ screen: 'map' });
   };
   // A cancel is asked first; the passengers hear about it (docs/65 B4). A second tap while it is

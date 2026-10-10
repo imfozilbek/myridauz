@@ -1,48 +1,64 @@
 import { COMMENT_MAX } from '@platform/contracts';
 import { useState } from 'react';
-import { StepLayout } from '../account/step-layout';
-import { Button, List, Section, Textarea } from '../components';
+import { Textarea } from '../components';
 import { useI18n } from '../context/i18n-context';
-import { Screen } from '../screen/screen';
+import { FormSheet } from '../sheet/form-sheet';
 import { MainButton } from '../telegram/bottom-button';
+import './trip-steps.css';
 
-type Step<T> = { readonly onBack: () => void; readonly onDone: (value: T) => void };
-
-type CommentProps = Step<string> & {
+type CommentProps = {
+  readonly open: boolean;
   readonly initial: string;
   // Each letter goes to the draft: a closed app gives the comment back (docs/94 F3).
   readonly onType: (text: string) => void;
+  readonly onClose: () => void;
+  readonly onDone: (text: string) => void;
   // The note of a booking has its own hint and limit (G63); a trip keeps its own.
   readonly hint?: string;
   readonly max?: number;
 };
 
-// The only text of a trip, and it may stay empty (docs/19: typing only when it is needed).
-export function CommentStep({ initial, onType, onBack, onDone, hint, max = COMMENT_MAX }: CommentProps) {
-  const { t } = useI18n();
+// The only text of a trip or a booking, and it may stay empty (docs/19: typing only when it is
+// needed): a sheet over the form (G75, mockup g75/3 A phone 3), the letters counted to the limit.
+export function CommentSheet({
+  open,
+  initial,
+  onType,
+  onClose,
+  onDone,
+  hint,
+  max = COMMENT_MAX,
+}: CommentProps) {
+  const { t, formatNumber } = useI18n();
   const [text, setText] = useState(initial);
   return (
-    <StepLayout icon="request" title={t('market.comment.title')} hint={hint ?? t('market.comment.hint')}>
-      <Screen onBack={onBack} />
-      <List>
-        <Section>
-          <Textarea
-            placeholder={t('market.comment.placeholder')}
-            value={text}
-            maxLength={max}
-            onChange={(event) => {
-              setText(event.target.value);
-              onType(event.target.value);
-            }}
-          />
-        </Section>
-      </List>
-      <div className="step-note">
-        <Button mode="plain" size="m" stretched onClick={() => onDone('')}>
-          {t('market.comment.skip')}
-        </Button>
+    <FormSheet
+      open={open}
+      title={t('market.comment.title')}
+      hint={hint ?? t('market.comment.hint')}
+      onClose={onClose}
+    >
+      <div className="comment-field">
+        <Textarea
+          className="comment-area"
+          placeholder={t('market.comment.placeholder')}
+          value={text}
+          maxLength={max}
+          onChange={(event) => {
+            setText(event.target.value);
+            onType(event.target.value);
+          }}
+        />
       </div>
-      {text.trim() ? <MainButton text={t('common.continue')} onClick={() => onDone(text.trim())} /> : null}
-    </StepLayout>
+      <span className="comment-count">
+        {t('common.counter', { count: formatNumber(text.length), max: formatNumber(max) })}
+      </span>
+      <button type="button" className="form-sheet-link" onClick={() => onDone('')}>
+        {t('market.comment.skip')}
+      </button>
+      {open && text.trim() ? (
+        <MainButton text={t('common.continue')} onClick={() => onDone(text.trim())} />
+      ) : null}
+    </FormSheet>
   );
 }

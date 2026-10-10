@@ -8,6 +8,7 @@ import { RouteView } from '../market/route-view';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { freshStartParam, useLinkOpened } from '../telegram/launch-param';
+import { useWay } from '../mine/use-way';
 import { NotifyMe } from './notify-me';
 import '../market/market.css';
 
@@ -44,6 +45,7 @@ export function SubscribeLink({
 
 function SubscribeScreen({ route, onBack }: { readonly route: Route; readonly onBack: () => void }) {
   const { t } = useI18n();
+  const way = useWay();
   useScreenBackground();
   return (
     <div className="market">
@@ -56,7 +58,7 @@ function SubscribeScreen({ route, onBack }: { readonly route: Route; readonly on
           <RouteView from={route.from} to={route.to} />
         </div>
       </Section>
-      <NotifyMe from={route.from} to={route.to} date={route.date} open />
+      <NotifyMe from={route.from} to={route.to} date={route.date} way={way(route.from, route.to)} open />
     </div>
   );
 }
