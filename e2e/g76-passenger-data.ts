@@ -31,7 +31,13 @@ export const madina = (face: boolean) => ({
 // 210 km: on the road 3,5 hours, at Samarqand ≈ 11:30 as on the mockup.
 export const trip = tripOf('1', 'Jasur', false, 0, { departAt: DEPART, seatsLeft: 0, km: 210 });
 // Madina waits at Chilonzor pitagi (mockup g76/2 phones 7 … 10).
-const pitak = { id: 'chilonzor', name: 'Chilonzor pitagi', point: { lat: 41.2856, lng: 69.2034 } };
+// Where to stand, as the team writes it in the admin (G76, docs/72).
+const pitak = {
+  id: 'chilonzor',
+  name: 'Chilonzor pitagi',
+  point: { lat: 41.2856, lng: 69.2034 },
+  hint: 'Metro 2-chiqish yonida',
+};
 const seat = (extra: object = {}) => ({
   ...confirmed,
   trip,
@@ -84,7 +90,8 @@ export const PASSENGER_SHOTS: Record<number, Lists> = {
   1: { now: DAY, face: false },
   2: { now: DAY, recent: true },
   3: { now: DAY, favorite: true },
-  4: { now: DAY, requests: [asked], unrated: true },
+  // «14 haydovchi koʻrdi»: the drivers who saw it on their board (G76).
+  4: { now: DAY, requests: [{ ...asked, views: 14 }], unrated: true },
   5: { now: DAY, requests: [asked], offers },
   6: {
     now: DAY,
@@ -108,7 +115,12 @@ export const PASSENGER_SHOTS: Record<number, Lists> = {
     ],
   },
   8: { now: DAY, bookings: [seat({ trip: { ...trip, departAt: tashkent('2026-10-08T09:30') } })] },
-  9: { now: TRIP_DAY, bookings: [seat({ unread: 1 })], unread: true },
+  // Jasur left for the pitak: «Jasur yoʻlda» without minutes (owner decision 10.10.2026).
+  9: {
+    now: TRIP_DAY,
+    bookings: [seat({ unread: 1, trip: { ...trip, departedAt: tashkent(TRIP_DAY) - 4 * MINUTE } })],
+    unread: true,
+  },
   10: { now: TRIP_DAY, bookings: [seat({ driverCameAt: tashkent(TRIP_DAY) - 3 * MINUTE })] },
   11: { now: TRIP_DAY, bookings: [seat({ noShowAt: tashkent(TRIP_DAY) })] },
   12: { now: '2026-10-08T09:00', bookings: [seat({ boardedAt: DEPART })] },

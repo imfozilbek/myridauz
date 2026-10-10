@@ -11,7 +11,13 @@ const FARGONA = '1730401';
 export const DAY = '2026-10-07T15:00';
 export const at = (time: string) => tashkent(`2026-10-${time}`);
 
-const pitak = { id: 'chilonzor', name: 'Chilonzor pitagi', point: { lat: 41.2856, lng: 69.2034 } };
+// Where to stand, as the team writes it in the admin (G76, docs/72).
+const pitak = {
+  id: 'chilonzor',
+  name: 'Chilonzor pitagi',
+  point: { lat: 41.2856, lng: 69.2034 },
+  hint: 'Metro 2-chiqish yonida',
+};
 
 // The trips made this week: «Bu hafta 3 ta safar».
 const done = (id: string, day: string) =>
@@ -80,7 +86,8 @@ export const DRIVER_SHOTS: Record<number, Shot> = {
   3: { now: DAY, status: 'changes_requested' },
   4: { now: DAY, welcome: true, wallet: { bonus: 1_500_000, main: 0, seatsLeft: 166 } },
   5: { now: DAY, trips: week, recent: true },
-  6: { now: DAY, trips: [...week, tomorrow], bookings: [seat('c1', 'Sardor', tomorrow)] },
+  // «23 kishi koʻrdi»: the people who opened the trip (trip_views, G76).
+  6: { now: DAY, trips: [...week, { ...tomorrow, views: 23 }], bookings: [seat('c1', 'Sardor', tomorrow)] },
   7: { now: DAY, trips: [...week, tomorrow], bookings: asked(tomorrow, at('07T18:10')) },
   8: {
     now: DAY,
