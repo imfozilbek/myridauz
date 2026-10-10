@@ -39,7 +39,7 @@
 
 | Состояние | Текст |
 |---|---|
-| 1, 2, 3 | «Haydovchi boʻlish», «Arizani toʻldiring», «Mashina, raqam va 3 ta rasm · 3 daqiqa», «Arizani toʻldirish», «Tuzatish kerak», «Raqam rasmi aniq emas», «Bitta rasmni qayta oling», «Tuzatish» |
+| 1, 2, 3 | «Haydovchi boʻlish», «Arizani toʻldiring», «Mashina, raqam va 3 ta rasm · 3 daqiqa», «Arizani toʻldirish», «Tuzatish kerak», «Raqam rasmi aniq emas», «Bitta rasmni qayta oling» (два фото и больше: «{n} ta rasmni qayta oling»), «Tuzatish»; «Raqam rasmi aniq emas» заменил причину G62 «Rasmda davlat raqami oʻqilmaydi» везде (решение владельца 10.10.2026: макеты G76 главнее) |
 | 4 | «Siz haydovchisiz!», «Bonus {summa} soʻm», «≈ {n} joyga yetadi» |
 | 6, 7, 8 | «{n} kishi koʻrdi», «Hamyonda yetmaydi», «Tasdiqlash uchun {summa} soʻm yetmaydi», «Hisobni toʻldirish», «Soʻrovlar» |
 | 9, 10 | «{ism} rozi boʻldi», «Hamyon», «Bonus {sana} tugaydi. Toʻldirsangiz, soʻrovlarni darhol tasdiqlaysiz» |

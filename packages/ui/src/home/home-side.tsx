@@ -4,12 +4,9 @@ import type { ProfilePart } from '../account/profile/profile-rows';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useDriver } from '../driver/driver-context';
-import { Icon } from '../icons';
 import { UzPlate } from '../plate/uz-plate';
 import { useHomeTap } from './use-home-tap';
 import './home-side.css';
-
-const STAR = 16;
 
 type Props = { readonly openProfile: (part?: ProfilePart) => void };
 
@@ -37,7 +34,8 @@ export function PassengerSide({ openProfile }: Props) {
     );
   return (
     <Side label={t('home.side.rating')} onClick={tap('side_rating', () => openProfile('reviews'))}>
-      <Icon name="star" size={STAR} color={colors.accent} filled />
+      {/* The star is the sign «★» in amber, as on the mockup g76/1 (decision of the owner 10.10.2026). */}
+      <span style={{ color: colors.accent }}>{t('find.star')}</span>
       {formatRating(rating)}
     </Side>
   );

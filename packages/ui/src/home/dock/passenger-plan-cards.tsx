@@ -27,7 +27,7 @@ const requestEnds = (request: RideRequest) => tashkentDayStart(request.date) + D
 // What a passenger plans (G76, mockup g76/2 states 3, 4, 5): the trip of a saved driver once, the
 // open request, the offers of drivers on it.
 export function PassengerPlanCard({ plan, words, go, now }: Props) {
-  const { t, formatTime, formatMoney } = useI18n();
+  const { t, formatTime, formatNumber } = useI18n();
   const findTrip = () => go('find_trip');
   if (plan.kind === 'favorite') {
     const { trip } = plan;
@@ -36,7 +36,8 @@ export function PassengerPlanCard({ plan, words, go, now }: Props) {
       name: driver.firstName,
       when: words.when(trip.departAt).toLocaleLowerCase('uz'),
     });
-    const price = t('bookings.request.perSeat', { price: formatMoney(trip.price) });
+    // The sums of the block go without «soʻm», as on the mockup g76/2 (decision of the owner 10.10.2026).
+    const price = t('bookings.request.perSeat', { price: formatNumber(trip.price) });
     return (
       <>
         <DockCard
@@ -65,7 +66,7 @@ export function PassengerPlanCard({ plan, words, go, now }: Props) {
           ? time(first)
           : '';
     const who = plan.offers
-      .map((offer) => `${offer.driver.firstName} · ${formatMoney(offer.price)}`)
+      .map((offer) => `${offer.driver.firstName} · ${formatNumber(offer.price)}`)
       .join(', ');
     return (
       <>

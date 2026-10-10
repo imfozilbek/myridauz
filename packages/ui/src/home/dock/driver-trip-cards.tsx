@@ -91,7 +91,7 @@ export function AcceptedCard({ booking, words, act }: Omit<Props, 'people'> & { 
 
 // After the trip (state 16): the stars of the week and the way back.
 export function EndedCard({ trip, people, words, act }: Props) {
-  const { t, formatMoney } = useI18n();
+  const { t, formatNumber } = useI18n();
   const riders = people.filter((booking) => booking.status === 'completed');
   const commission = riders.reduce((sum, booking) => sum + booking.commission, 0);
   return (
@@ -101,7 +101,7 @@ export function EndedCard({ trip, people, words, act }: Props) {
         chipTone="green"
         timer={{ text: words.daysLeft(trip.departAt), now: false }}
         title={t('home.dock.rateRiders')}
-        text={t('home.dock.riders', { count: String(riders.length), amount: formatMoney(commission) })}
+        text={t('home.dock.riders', { count: String(riders.length), amount: formatNumber(commission) })}
       />
       <SecondaryButton beside text={t('driverTrip.row.back')} onClick={act.back(trip)} />
       <MainButton text={t('bookings.done.rate')} onClick={act.open(trip)} />

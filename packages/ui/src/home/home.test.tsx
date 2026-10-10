@@ -37,7 +37,7 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
   it('calls the driver from the card; an unread message puts a dot on the chat', async () => {
     const { tracked } = passenger(async () => [tomorrow({ ...confirmed, plate: '01A123BC', unread: 2 })]);
     expect(await screen.findByText('Cobalt, oq · 01 A 123 BC')).toBeTruthy();
-    expect(screen.getByTestId('home-dock').querySelector('.dock-tool-dot')).toBeTruthy();
+    expect(screen.getByTestId('home-dock').querySelector('.dock-tool-unread .dock-tool-dot')).toBeTruthy();
     fireEvent.click(dock().getAllByRole('button', { name: 'Qoʻngʻiroq' })[0] as HTMLElement);
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'trip_call' }));
   });

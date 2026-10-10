@@ -54,6 +54,13 @@
   cursor: pointer;
 }
 
+/* The chat with an unread message: a green ring 6 px lower, as on the mockup g76/2 state 9 (decision of
+   the owner 10.10.2026: the mockups of G76 win). */
+.dock-tool-unread {
+  margin-top: 6px;
+  border: 3px solid var(--reg-from);
+}
+
 /* An unread message in the chat of the trip: the red dot opens the sheet with ready answers (docs/164). */
 .dock-tool-dot {
   position: absolute;

@@ -1,4 +1,11 @@
-import { NEW_TRIP_SECTION, type Booking, type Wallet } from '@platform/contracts';
+import {
+  CAR_PHOTO_KINDS,
+  NEW_TRIP_SECTION,
+  REASON_PLACE,
+  type Booking,
+  type ModerationReason,
+  type Wallet,
+} from '@platform/contracts';
 import { useEffect } from 'react';
 import { useI18n } from '../../context/i18n-context';
 import { markApprovalSeen } from '../../driver/approval-seen';
@@ -9,6 +16,11 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
 import { PASSENGER_REQUESTS } from './driver-idle';
 import type { TripActions } from './trip-actions';
+
+// The photos a driver takes again: one per place, the plate and the car data are typed (mockup g76/3, 3).
+const PHOTO_PLACES: readonly string[] = ['avatar', ...CAR_PHOTO_KINDS];
+const retakes = (reasons: readonly ModerationReason[]) =>
+  new Set(reasons.map((reason) => REASON_PLACE[reason]).filter((place) => PHOTO_PLACES.includes(place))).size;
 
 type Kind = 'draft' | 'fix' | 'welcome' | 'low' | 'short';
 type Props = {
@@ -41,7 +53,9 @@ export function DriverAppCard({ kind, wallet, missing, requests, act, go }: Prop
         </>
       );
     case 'fix': {
-      const [reason] = driver?.application.reasons ?? [];
+      const reasons = driver?.application.reasons ?? [];
+      const [reason] = reasons;
+      const photos = retakes(reasons);
       return (
         <>
           <DockCard
@@ -49,7 +63,13 @@ export function DriverAppCard({ kind, wallet, missing, requests, act, go }: Prop
             chipTone="red"
             tone="now"
             title={reason ? t(`drivers.reason.${reason}`) : t('home.dock.fixTitle')}
-            text={t('drivers.status.fixHint')}
+            text={
+              photos === 0
+                ? t('drivers.status.fixHint')
+                : photos === 1
+                  ? t('home.dock.fixPhoto')
+                  : t('home.dock.fixPhotos', { count: String(photos) })
+            }
           />
           <MainButton text={t('home.dock.fix')} destructive onClick={editCar} />
         </>

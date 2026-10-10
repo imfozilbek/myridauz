@@ -32,6 +32,8 @@ function passenger(
 describe('the sheet of a new offer (G68)', () => {
   it('says the driver, the car with its plate, the trip, how the driver picks up and the sum', async () => {
     passenger([{ ...offer, id: 'o11' }]);
+    // The block says the sum without «soʻm», as on the mockup g76/2 state 5.
+    expect(await screen.findByText(/^Jasur · 95.000$/u)).toBeTruthy();
     await tap('Takliflarni koʻrish');
     expect(await screen.findByText('Yangi taklif')).toBeTruthy();
     expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();

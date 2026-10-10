@@ -66,6 +66,8 @@
   "dock.departAsk": "Yoʻlga chiqdingizmi?",
   "dock.departAskHint": "2 soatdan keyin oʻzi yoʻlga chiqqan deb belgilanadi",
   "dock.fixTitle": "Tuzatish kerak",
+  "dock.fixPhoto": "Bitta rasmni qayta oling",
+  "dock.fixPhotos": "{count} ta rasmni qayta oling",
   "dock.short": "Hamyonda yetmaydi",
   "dock.shortHint": "Tasdiqlash uchun {amount} yetmaydi",
   "dock.shortWaiting": "{count} soʻrov kutmoqda",

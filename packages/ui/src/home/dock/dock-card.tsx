@@ -74,7 +74,7 @@ export function DockCard({
                 <button
                   key={tool.icon}
                   type="button"
-                  className="dock-tool"
+                  className={tool.dot ? 'dock-tool dock-tool-unread' : 'dock-tool'}
                   aria-label={tool.label}
                   onClick={tool.onClick}
                 >
