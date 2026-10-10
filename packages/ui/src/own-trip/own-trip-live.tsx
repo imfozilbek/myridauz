@@ -5,6 +5,8 @@ import { ChatScreen } from '../chat/chat-screen';
 import { useI18n } from '../context/i18n-context';
 import { TripChangeSheet } from '../market/trip-change';
 import { ShortfallSheet } from '../wallet/shortfall-sheet';
+import { short } from '../bookings/use-balance';
+import { RequestSheet } from './request-sheet';
 import { DriverMeeting } from '../meeting/driver-meeting';
 import { meetingOpen } from '../meeting/meet-state';
 import { useMeetMark } from '../meeting/use-meet-mark';
@@ -115,6 +117,15 @@ export function OwnTripLive(props: Props) {
           ) : null}
         </p>
       ) : null}
+      {/* A request opened from its name: a sheet over the trip (G75, mockup g75/4 B phone 1). */}
+      <RequestSheet
+        booking={opened?.screen === 'request' ? opened.booking : null}
+        short={opened?.screen === 'request' && short(actions.balance, opened.booking.commission)}
+        onAnswer={(booking, action) => (back(), actions.answer(booking, action))}
+        onTopUp={(booking) => setOpened({ screen: 'not_enough', booking })}
+        onChat={(booking) => setOpened({ screen: 'chat', booking })}
+        onClose={back}
+      />
       {/* No money for a seat: only the sum short, over the trip (G75, mockup g75/4 B). */}
       <ShortfallSheet
         shortfall={

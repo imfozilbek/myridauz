@@ -1,6 +1,6 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -56,6 +56,10 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
   });
 });
 
+// The buttons of the sheet come after the ones of the card under it.
+const inSheet = (name: string) =>
+  fireEvent.click(screen.getAllByRole('button', { name }).at(-1) as HTMLElement);
+
 describe('a driver answers a booking (docs/35, docs/12)', () => {
   const driverClients = (answer: BookingsClient['answer']) =>
     testClients({
@@ -69,12 +73,12 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     expect(await screen.findByText('Yuborilgan takliflar')).toBeTruthy();
     await openOwnTrip();
     await tap('Dilnoza');
-    // The driver never sees a passenger's contacts, only the name.
+    // The request opens in a sheet over the trip (G75, mockup g75/4 B); never the contacts.
     expect(screen.queryByText(/\+998/)).toBeNull();
     expect(screen.getByText('Komissiya')).toBeTruthy();
-    expect(screen.getByText(/19\s000/)).toBeTruthy();
-    await tap('Tasdiqlash');
-    expect(answer).toHaveBeenCalledWith('b1', 'confirm');
+    expect(screen.getAllByText(/19\s000/u).length).toBeGreaterThan(0);
+    inSheet('Tasdiqlash');
+    await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
     // Back on «Mening safarim»: no «Joy tasdiqlandi» screen in between (owner decision 06.10.2026).
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     expect(screen.queryByText('Joy tasdiqlandi')).toBeNull();
@@ -87,7 +91,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     await openOwnTrip();
     await tap('Dilnoza');
-    await tap('Tasdiqlash');
+    inSheet('Tasdiqlash');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     expect(screen.getByText(/Yordamga tayyor xabar boradi/u)).toBeTruthy();
     // The way out is one tap: the support chat of the brand opens with the message ready (G75).
@@ -104,8 +108,8 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     renderMarket(<MyTripsScreen onBack={() => undefined} />, driverClients(answer));
     await openOwnTrip();
     await tap('Dilnoza');
-    await tap('Rad etish');
-    expect(answer).toHaveBeenCalledWith('b1', 'decline');
+    inSheet('Rad etish');
+    await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'decline'));
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
   });
 });

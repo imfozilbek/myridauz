@@ -53,7 +53,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     await openOwnTrip();
     expect(await screen.findByText(/komissiya 19\s000$/u)).toBeTruthy();
     await tap('Dilnoza');
-    expect(screen.getByText('Javob berish muddati')).toBeTruthy();
+    expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
     // The rule about changing seats is the passenger's, not the driver's (G27).
     expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
   });

@@ -87,10 +87,18 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
   });
 
-  it('opens the booking with its deadline from the name', async () => {
-    await open(() => [booking]);
+  // A sheet over the trip (G75, mockup g75/4 B phone 1): the deadline, the points, the commission.
+  it('opens the request in a sheet from the name and answers there', async () => {
+    const answer = vi.fn<BookingsClient['answer']>(async () => booking);
+    await open(() => [booking], { answer });
     await tap('Dilnoza');
-    expect(await screen.findByText('Javob berish muddati')).toBeTruthy();
+    expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
+    expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
+    expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
+    // The chat before the answer stays in the sheet (docs/07).
+    expect(screen.getAllByText('Xabar yozish').length).toBeGreaterThan(0);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Tasdiqlash' }).at(-1) as HTMLElement);
+    await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
   });
 });
 

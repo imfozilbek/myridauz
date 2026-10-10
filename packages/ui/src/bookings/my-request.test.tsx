@@ -105,4 +105,18 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
     await waitFor(() => expect(calls.checked).toBe(true));
     expect(screen.getByRole('alert')).toBeTruthy();
   });
+
+  // The offer opens in a sheet over «Mening soʻrovim» (G75, mockup g75/4 B phone 2): the driver, the
+  // car, the time, the sum; «Qabul qilish» answers there.
+  it('the card opens the offer in a sheet and accepts it there', async () => {
+    const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'declined' }));
+    open({ answerOffer });
+    await tap(/· Soʻrov$/u);
+    await tap('Jasur');
+    expect(await screen.findByText('Jasur taklif yubordi')).toBeTruthy();
+    expect(screen.getByText('Takliflar (1)')).toBeTruthy();
+    expect(screen.getByText(/^2 joy × 95.000$/u)).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Qabul qilish' }).at(-1) as HTMLElement);
+    await waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'accept'));
+  });
 });

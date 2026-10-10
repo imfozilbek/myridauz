@@ -1,7 +1,6 @@
 {
   "review.seats": "Joylar",
   "review.total": "Jami",
-  "review.payHint": "Pulni haydovchiga safarda oʻzingiz berasiz. {brand} yoʻlovchidan pul olmaydi.",
   "send": "Soʻrov yuborish",
   "status.requested": "Javob kutilmoqda",
   "status.confirmed": "Tasdiqlangan",
@@ -23,6 +22,8 @@
   "offer.time.title": "Soat nechada olib ketasiz?",
   "offer.commission": "Komissiya",
   "offer.sent.title": "Taklif yuborildi",
+  "offer.sent": "{name} taklif yubordi",
+  "offer.when": "Joʻnash vaqti",
   "offer.mine": "Yuborilgan takliflar",
   "offer.accept": "Qabul qilish",
   "offer.decline": "Rad etish",
