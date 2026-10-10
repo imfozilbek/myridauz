@@ -8,7 +8,7 @@ import { useShareTrip } from './use-share-trip';
 
 // «Mashinaga chiqdim» the day before the trip is a mistake (docs/89 P7): from its day on, by Toshkent.
 // The same step stands on the booking and as the main button of the main screen (G66).
-export function passengerStep(booking: Booking, now: number): 'boarded' | 'arrived' | null {
+function passengerStep(booking: Booking, now: number): 'boarded' | 'arrived' | null {
   const onTheDay =
     booking.status === 'confirmed' && now >= tashkentDayStart(tashkentDate(booking.trip.departAt));
   if (!onTheDay) return null;

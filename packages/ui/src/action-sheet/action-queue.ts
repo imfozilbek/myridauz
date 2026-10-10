@@ -51,8 +51,6 @@ export function useActionItems(source: string, items: readonly ActionItem[]): vo
 }
 
 export const useActionQueue = (): readonly ActionItem[] => useSyncExternalStore(subscribe, () => queue);
-// Another sheet waits while the action sheet is busy: one sheet at a time (docs/122).
-export const useActionsWaiting = (): boolean => useSyncExternalStore(subscribe, () => queue.length > 0);
 
 // The block at the bottom opens the sheet of its kind: «Javob berish», «Takliflarni koʻrish», the
 // red dot of the chat (docs/164); first: the thing it names comes first.

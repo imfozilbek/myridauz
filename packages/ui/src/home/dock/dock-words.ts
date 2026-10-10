@@ -1,8 +1,7 @@
-import { DAY_MS, HOUR_MS, MINUTE_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { DAY_MS, formatPlate, HOUR_MS, MINUTE_MS, tashkentDate, type Trip } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { PlaceDirectory } from '../../places/directory';
 import { useRegionRoute } from '../../places/region-route';
-import { formatPlate } from '@platform/contracts';
 import { useCardDay } from '../../market/when';
 import { useWhen } from '../home-when';
 

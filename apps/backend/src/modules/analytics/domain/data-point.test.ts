@@ -79,7 +79,7 @@ describe('toDataPoint', () => {
     expect(detail({ name: 'place_point_saved', method: 'search', ...base })).toBe('search');
     expect(detail({ name: 'place_search_empty', length: 7, ...base })).toBe('7');
     expect(detail({ name: 'route_opened', navigator: 'yandex', ...base })).toBe('yandex');
-    expect(detail({ name: 'home_tap', target: 'card', ...base })).toBe('card');
+    expect(detail({ name: 'home_tap', target: 'item', ...base })).toBe('item');
   });
 
   it('writes a bot event of the backend with its bot and id (G12)', () => {

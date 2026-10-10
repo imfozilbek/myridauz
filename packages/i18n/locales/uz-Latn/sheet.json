@@ -50,9 +50,5 @@
   "meet.tenSay.driver": "10 daqiqada yetib boraman",
   "meet.told.passenger": "Haydovchiga aytildi",
   "meet.told.driver": "Yoʻlovchiga aytildi",
-  "answer.offer": "Taklif qabul qilindi",
-  "answer.offerSub": "Taklifingizga rozi boʻldi",
-  "answer.seat": "Joyingiz tasdiqlandi",
-  "answer.open": "Safarni ochish",
-  "answer.ok": "Yaxshi"
+  "answer.offer": "Taklif qabul qilindi"
 }

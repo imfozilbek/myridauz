@@ -1,5 +1,4 @@
 import type { Booking, Trip } from '@platform/contracts';
-import { useEffect } from 'react';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import { usePlaces } from '../../market/places-gate';
@@ -63,11 +62,16 @@ export function RequestsCard({ trip, people, words }: Props) {
   );
 }
 
-// A passenger took the offer of the driver (state 9): told once, until the card leaves.
+// A passenger took the offer of the driver (state 9): told until the driver opens the chat or the
+// trip, a day at most (offer-seen).
 export function AcceptedCard({ booking, words, act }: Omit<Props, 'people'> & { readonly booking: Booking }) {
   const { t } = useI18n();
   const ends = useBookingEnds(booking);
-  useEffect(() => () => markOfferSeen(booking.id), [booking.id]);
+  const seen = (then: () => void) => () => {
+    markOfferSeen(booking.id);
+    then();
+  };
+  const chat = seen(act.chat(booking));
   const person = booking.passenger;
   const sub = t('home.dock.seatsOf', { count: String(booking.seats) });
   return (
@@ -77,10 +81,10 @@ export function AcceptedCard({ booking, words, act }: Omit<Props, 'people'> & { 
         chipTone="green"
         title={words.when(booking.trip.departAt)}
         text={`${ends.start}, ${words.route(booking.trip)}`}
-        who={{ person, sub, tools: [{ icon: 'chat', label: t('chat.open'), onClick: act.chat(booking) }] }}
+        who={{ person, sub, tools: [{ icon: 'chat', label: t('chat.open'), onClick: chat }] }}
       />
-      <SecondaryButton beside text={t('chat.open')} onClick={act.chat(booking)} />
-      <MainButton text={t('home.dock.openTrip')} onClick={act.open(booking.trip)} />
+      <SecondaryButton beside text={t('chat.open')} onClick={chat} />
+      <MainButton text={t('home.dock.openTrip')} onClick={seen(act.open(booking.trip))} />
     </>
   );
 }

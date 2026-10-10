@@ -10,6 +10,7 @@ import { useShareTrip } from '../../bookings/use-share-trip';
 import { useFailure } from '../../states/use-failure';
 import { haptic, openExternal, openInTelegram } from '../../telegram/feedback';
 import { TALK_CALL, TRIP_TALK } from '../trip-talk';
+import { useHomeTap } from '../use-home-tap';
 
 // What the cards of a seat do (G76, docs/165): the chat and the call of the trip (numbers hidden,
 // docs/07), the seat itself, a cancel, «Men keldim», the ready words of the meeting, the close
@@ -20,6 +21,7 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
   const { track } = useAnalytics();
   const { bots } = useBrand();
   const share = useShareTrip();
+  const tap = useHomeTap();
   const { failure, fail, clear } = useFailure();
   const run = (action: () => Promise<unknown>) => async () => {
     clear();
@@ -34,14 +36,16 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
   const link = (booking: Booking, name: string) => ({ link: { name, id: booking.id } });
   return {
     failure,
-    chat: (booking: Booking) => () => go(TRIP_TALK, link(booking, 'chat')),
+    chat: (booking: Booking) => tap('trip_chat', () => go(TRIP_TALK, link(booking, 'chat'))),
     // An unread message: its sheet with ready answers, the chat stays closed (docs/164).
-    talk: (booking: Booking) => () =>
-      (booking.unread ?? 0) > 0
-        ? openSheet('message', booking.chatKey)
-        : go(TRIP_TALK, link(booking, 'chat')),
-    call: (booking: Booking) => () => go(TRIP_TALK, link(booking, TALK_CALL)),
-    open: (booking: Booking) => () => go('my_trips', link(booking, BOOKING_LINK)),
+    talk: (booking: Booking) =>
+      tap('trip_chat', () =>
+        (booking.unread ?? 0) > 0
+          ? openSheet('message', booking.chatKey)
+          : go(TRIP_TALK, link(booking, 'chat')),
+      ),
+    call: (booking: Booking) => tap('trip_call', () => go(TRIP_TALK, link(booking, TALK_CALL))),
+    open: (booking: Booking) => tap('item', () => go('my_trips', link(booking, BOOKING_LINK))),
     cancel: (booking: Booking) => run(() => bookings.cancelMine(booking.id)),
     came: (booking: Booking) =>
       run(async () => {

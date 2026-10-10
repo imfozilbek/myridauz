@@ -26,14 +26,12 @@ const driver = testClients({
 const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
 
 describe('StartPage', () => {
-  it('opens the main screen with the big tile and the other actions for an approved driver', async () => {
+  it('opens the main screen of an approved driver: four tiles and the block with two buttons (G76)', async () => {
     const { tracked } = renderApp();
-    // «Safar eʼlon qilish» is the big tile on top, not repeated in the grid (G62, mockup g62/1).
-    expect(await screen.findByRole('button', { name: /^Safar eʼlon qilish/u })).toBeTruthy();
-    expect(screen.getAllByText('Safar eʼlon qilish')).toHaveLength(1);
-    expect(screen.queryByText('Yangi safar')).toBeNull();
-    for (const action of ['Yoʻlovchilar soʻrovlari', 'Mening safarlarim'])
-      expect(screen.getByText(action)).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'Safar eʼlon qilish' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Soʻrovlarni koʻrish' })).toBeTruthy();
+    for (const tile of ['Mening safarlarim', 'Suhbatlar', 'Hamyon', 'Yordam'])
+      expect(screen.getByText(tile)).toBeTruthy();
     // The screen view is sent by an effect after the screen is drawn.
     await waitFor(() => expect(tracked.map((event) => event.screen)).toEqual(['home']));
   });
@@ -43,11 +41,11 @@ describe('StartPage', () => {
     fireEvent.click(await screen.findByText('Mening safarlarim'));
     expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
-    fireEvent.click(await screen.findByRole('button', { name: /^Safar eʼlon qilish/u }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Safar eʼlon qilish' }));
     expect(await screen.findByText('Qayerdan')).toBeTruthy();
   });
 
-  it('shows a new driver the big tile «Haydovchi boʻlish» (G62)', async () => {
+  it('asks a new driver to fill the application in the block (G62, G76)', async () => {
     renderInShell(
       <StartPage />,
       false,
@@ -59,10 +57,7 @@ describe('StartPage', () => {
         bookings: { driverBookings: async () => [], driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Haydovchi boʻlish')).toBeTruthy();
-    // Publishing waits for the approval; the requests tile keeps its hint, pale (mockup g62/1).
-    expect(screen.getAllByText('Tekshiruvdan keyin')).toHaveLength(1);
-    fireEvent.click(screen.getByText('Haydovchi boʻlish'));
+    fireEvent.click(await screen.findByRole('button', { name: 'Arizani toʻldirish' }));
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
   });
 });

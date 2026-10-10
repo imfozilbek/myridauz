@@ -7,8 +7,8 @@ const FACE = 34;
 const TOOL = 18;
 const CLOCK = 12;
 
-export type CardTone = 'brand' | 'soon' | 'now' | 'off';
-export type ChipTone = 'brand' | 'green' | 'red' | 'gray';
+type CardTone = 'brand' | 'soon' | 'now' | 'off';
+type ChipTone = 'brand' | 'green' | 'red' | 'gray';
 type Tool = {
   readonly icon: 'phone' | 'chat';
   readonly label: string;

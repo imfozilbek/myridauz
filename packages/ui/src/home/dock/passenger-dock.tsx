@@ -9,6 +9,7 @@ import type { PlaceDirectory } from '../../places/directory';
 import { useDirectory } from '../../places/use-directory';
 import { ActionFailure } from '../../states/action-failure';
 import { usePassengerData } from '../passenger-data';
+import { DockFailed } from './dock-failed';
 import { DockPanel } from './dock-panel';
 import { useDockWords } from './dock-words';
 import { PassengerDayCard } from './passenger-day-cards';
@@ -23,11 +24,13 @@ import { useSeatActions } from './seat-actions';
 // of now with its buttons, else «Qayerdan / Qayerga». The clock moves it on an open screen.
 export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const state = usePassengerState();
-  const [places] = useDirectory();
+  const load = usePassengerData();
+  const [places, retryPlaces] = useDirectory();
   const directory = places.status === 'ready' ? places.directory : null;
   if (state.kind === 'idle' || !directory)
     return (
       <DockPanel>
+        <DockFailed load={load} places={places} retryPlaces={retryPlaces} />
         <PassengerIdle go={go} directory={directory} />
       </DockPanel>
     );

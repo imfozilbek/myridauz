@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { buildDirectory, useLocationsClient, type PlaceDirectory } from './directory';
 
-type DirectoryState =
+export type DirectoryState =
   | { readonly status: 'loading' }
   | { readonly status: 'error' }
   | { readonly status: 'ready'; readonly directory: PlaceDirectory };

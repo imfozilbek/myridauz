@@ -6,6 +6,7 @@ import { useBrand } from '../context/brand-context';
 import { useCoveredBySheet } from '../sheet/form-sheet-cover';
 import { onSplashLeft, splashStands } from './chrome';
 import { useInTelegram } from './in-telegram-context';
+import { ownLook } from './own-look';
 import { useOneAtATime } from './one-at-a-time';
 
 type NativeParams = {
@@ -15,8 +16,8 @@ type NativeParams = {
   isEnabled: boolean;
   backgroundColor?: HexColor;
   textColor?: HexColor;
-  // The secondary button: on the left of the main one in the block at the bottom (G76), else above.
-  position?: 'left' | 'top';
+  // The secondary button: on the left of the main one in the block at the bottom (G76).
+  position?: ReturnType<typeof secondaryButton.position>;
 };
 type NativeButton = {
   readonly setParams: (params: Partial<NativeParams>) => void;
@@ -102,13 +103,11 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
       const look = disabled
         ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
         : { backgroundColor: background, textColor: colors.bg };
+      // The secondary pair of the block is soft in the color of the app, gray while inert (G76).
       const soft = { backgroundColor: colors.brandSoft, textColor: colors.brandText };
-      const color =
-        native.colored || (beside && disabled)
-          ? { ...look, ...(beside ? { position: 'left' as const } : {}) }
-          : beside
-            ? { ...soft, position: 'left' as const }
-            : { position: 'top' as const };
+      const telegram = ownLook();
+      const pair = beside ? { ...(disabled ? look : soft), position: 'left' as const } : telegram;
+      const color = native.colored ? look : pair;
       keepShown(native);
       native.setParams({ text, isVisible: true, ...color });
     }, [inTelegram, text, colors, destructive, disabled, beside]);

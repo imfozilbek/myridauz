@@ -14,13 +14,9 @@
   color: var(--reg-secondary);
 }
 
-/* The buttons right under a trip card stand lower, under the car of a meeting higher (g68/7, g68/8). */
+/* The buttons right under a trip card stand lower (g68/7). */
 .action-block + .action-buttons {
   margin-top: 13.55px;
-}
-
-.action-car + .action-buttons {
-  margin-top: 10px;
 }
 
 .action-block-head {
@@ -48,37 +44,6 @@
   font-size: 15.82px;
   line-height: 17.5px;
   color: var(--reg-ink);
-}
-
-.action-car {
-  flex-direction: row;
-  align-items: center;
-  gap: 11px;
-  padding: 8.83px 13px 12px;
-}
-
-.action-car-icon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 70px;
-  height: 47px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--reg-off), var(--reg-bg));
-  color: var(--reg-muted);
-}
-
-.action-car-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  color: var(--reg-ink);
-}
-
-.action-car-text b {
-  font-size: 15.27px;
-  line-height: 19px;
 }
 
 /* The ready answers of a message and a meeting (mockup g68/8 «Xabar», «Uchrashuv»). */

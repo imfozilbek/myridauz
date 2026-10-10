@@ -9,7 +9,7 @@ export function DockPanel({ cue, children }: { readonly cue?: ReactNode; readonl
   const { colors } = useBrand().theme;
   useWhiteBottomBar();
   return (
-    <div className="home-dock" style={brandVars(colors)}>
+    <div className="home-dock" data-testid="home-dock" style={brandVars(colors)}>
       {cue}
       {children}
     </div>

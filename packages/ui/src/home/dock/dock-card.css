@@ -1,5 +1,4 @@
-/* The card of the block at the bottom (G76, mockups g76/2, g76/3 at 360 px): white, 2 px line of
-   the app, amber when soon, red when now, grey when it ended badly. */
+/* The card of the block (G76, mockups g76/2, g76/3): amber soon, red now, grey when it ended badly. */
 .dock-card {
   box-sizing: border-box;
   padding: 12px 14px;

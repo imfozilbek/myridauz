@@ -27,7 +27,7 @@ export type PassengerState =
   | { readonly kind: 'favorite'; readonly trip: Trip }
   | { readonly kind: 'idle' };
 
-export const PASSENGER_LEVEL: Record<PassengerState['kind'], number> = {
+const PASSENGER_LEVEL: Record<PassengerState['kind'], number> = {
   driverWaits: 1,
   meeting: 3,
   offers: 4,

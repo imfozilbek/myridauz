@@ -2,7 +2,7 @@ import { chatKeyOfOffer, DAY_MS, type Booking } from '@platform/contracts';
 import { readStored, writeStored } from '../../telegram/device-storage';
 
 // «Madina rozi boʻldi» (G76, mockup g76/3 state 9): a booking made from an offer of the driver is
-// told once in the block, on any phone of the person (docs/164: the answer sheet is gone).
+// told in the block until the driver acts on it, on any phone of the person (docs/164).
 const KEY = 'offers_accepted_seen';
 const KEPT = 50;
 

@@ -1,5 +1,5 @@
 import { loadBrand } from '@platform/brands';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { AccountContext, useAccount } from '../account/account-context';
@@ -61,10 +61,10 @@ describe('the four tiles of a passenger (G76, mockup g76/2)', { timeout: 20_000 
       asked: async () => [request],
       offers: async () => [offer, { ...offer, id: 'o2' }],
     });
-    expect(await screen.findByText('2 ta taklif')).toBeTruthy();
+    await waitFor(() => expect(hintOf('Mening safarlarim')).toBe('2 ta taklif'));
     cleanup();
     home({ bookings: async () => [], asked: async () => [request] });
-    expect(await screen.findByText('1 ta soʻrov')).toBeTruthy();
+    await waitFor(() => expect(hintOf('Mening safarlarim')).toBe('1 ta soʻrov'));
   });
 
   it('shows the unread words on «Suhbatlar» and opens the chats with them on top', async () => {

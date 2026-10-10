@@ -18,7 +18,7 @@ const taken = (tile: string) =>
 describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 path 5)', () => {
   it('asks the car on one screen, the 3 car photos on the next and sends from there', async () => {
     const { submit, tracked, container } = renderGate(null);
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
     expect(screen.getByText('1 / 2')).toBeTruthy();
     // Nothing is chosen yet: «Davom etish» waits for the whole car.
@@ -52,7 +52,7 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
     expect(await screen.findByText(/^Arizada hamma rasmlar/)).toBeTruthy();
     await tap('Arizani yuborish');
     // No «Ariza yuborildi»: the main screen says it is checked (G62).
-    expect(await screen.findByText('Arizangiz tekshirilmoqda')).toBeTruthy();
+    expect(await screen.findByText('Tekshiruvdan keyin ochiladi. Odatda 30 daqiqagacha.')).toBeTruthy();
     expect(screen.queryByText('Ariza yuborildi')).toBeNull();
     expect(screen.getByTestId('driver-home')).toBeTruthy();
     expect(submit).toHaveBeenCalledWith({ ...car, seats: 3 });
@@ -62,7 +62,7 @@ describe('DriverGate: the application of a driver in 2 screens (G62, docs/118 pa
 
   it('finds another car in «Boshqa ›» and takes a typed one with its seats up to the limit', async () => {
     const { submit, container } = renderGate(null);
-    await tap('Haydovchi boʻlish');
+    await tap('Arizani toʻldirish');
     await tap('Boshqa ›');
     const sheet = within(await screen.findByRole('dialog'));
     fireEvent.change(sheet.getByPlaceholderText('Marka yoki model'), { target: { value: 'sor' } });
