@@ -8,6 +8,7 @@ import {
   ratableRideOfBooking,
   rideOfBooking,
   ridesOfTrips,
+  ridingOf,
   tellRequest,
   tellRequestClosed,
   walletBookingsOf,
@@ -37,7 +38,7 @@ import {
   wireTripStanding,
 } from './modules/trips';
 import { wireTeamQueue } from './modules/team-queue';
-import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered } from './modules/users';
+import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -112,8 +113,7 @@ wireHiddenRequesters(hiddenByComplaints);
 // counts the seats left at the price of the last trip (G63, G65).
 wireWalletLinks({ bookings: walletBookingsOf, booking: driverBookingOf, lastPrice: lastTripPrice });
 
-// Complaints are about rides; a block cancels live trips and bookings; a no-show may give the
-// commission back once the owner confirms (docs/17, docs/35).
+// Complaints are about rides; a block cancels live trips; a no-show refund (docs/17, docs/35).
 wireComplaints({
   ride: rideOfBooking,
   filedRide: filedRideOfBooking,
@@ -145,5 +145,6 @@ wireTeamQueue(async (env) => {
   ];
 });
 
-// One car at the launch: an approved driver changes it only without live trips (G75, docs/124 Ё).
+// A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
 wireLiveTrips(hasLiveTrips);
+wireRiding(ridingOf);

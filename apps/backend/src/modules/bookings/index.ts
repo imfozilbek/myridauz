@@ -2,6 +2,7 @@ import { driverTripCancelPath, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { answer } from './application/answer';
+import { ridingNow } from './application/riding';
 import { bookingsDeps } from './deps';
 import { boardTrip } from './application/board-trip';
 import { cancelEverything } from './application/cancel-all';
@@ -97,6 +98,8 @@ export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]
 
 // A blocked person: live trips and open bookings are cancelled (docs/17, G11).
 export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(bookingsDeps(env), userId);
+// A blocked person finishes the trip on the way (owner decision 10.10.2026, docs/158 Ж).
+export const ridingOf = (env: Bindings, userId: number) => ridingNow(bookingsDeps(env), userId);
 
 // The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
 export const passengerRideCount = async (env: Bindings, passengerId: number) =>

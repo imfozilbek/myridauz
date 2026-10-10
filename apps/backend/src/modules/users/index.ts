@@ -31,6 +31,9 @@ let faceTeam: FaceTeam = async () => [];
 export const wireFaceTeam = (next: FaceTeam) => void (faceTeam = next);
 let registeredOf: (env: Bindings) => Registered = () => async () => undefined;
 export const wireRegistered = (next: (env: Bindings) => Registered) => void (registeredOf = next);
+type RidingOf = (env: Bindings, userId: number) => Promise<boolean>;
+let ridingOf: RidingOf = async () => false;
+export const wireRiding = (next: RidingOf) => void (ridingOf = next);
 
 const avatarsOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localAvatars);
 const usersDeps = (env: Bindings): UsersDeps => ({
@@ -52,6 +55,7 @@ const usersDeps = (env: Bindings): UsersDeps => ({
     send: (jobs) => notify(env, jobs),
     queue: (news) => showQueue(env, news),
   }),
+  riding: (userId) => ridingOf(env, userId),
   now: Date.now,
   newId: () => crypto.randomUUID(),
 });

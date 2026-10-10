@@ -10,6 +10,7 @@ import { AvatarRequiredScreen } from './avatar-required-screen';
 import { BlockedScreen } from './blocked-screen';
 import { linkedTrip } from '../market/trip-link';
 import { RegistrationFlow, type Welcome } from './registration/registration-flow';
+import { RidingBlockLine } from './riding-block-line';
 import { TripPreview } from './trip-preview';
 import { useBotMessages } from './use-bot-messages';
 
@@ -64,7 +65,15 @@ export function AccountGate({ app, client, welcome, children }: AccountGateProps
     if (me.state === 'unregistered')
       return <RegistrationFlow welcome={welcome} suggestedName={me.suggestedName} onFinished={setMe} />;
     // The face is required for both roles (G58, docs/128 §1): a failed upload is asked again here.
-    return me.profile.hasAvatar ? children : <AvatarRequiredScreen />;
+    if (!me.profile.hasAvatar) return <AvatarRequiredScreen />;
+    return me.block ? (
+      <>
+        <RidingBlockLine />
+        {children}
+      </>
+    ) : (
+      children
+    );
   })();
 
   return (

@@ -33,6 +33,7 @@ export function setup(relation: Awaited<ReturnType<TripRelations['relation']>> =
       rejected: async (user, reason) => void told.push(`rejected:${user.id}:${reason}`),
       decided: async () => void told.push('queue'),
     },
+    riding: async () => false,
     now: () => NOW,
     newId: () => `id${(id += 1)}`,
   };

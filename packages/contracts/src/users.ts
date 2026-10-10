@@ -73,7 +73,13 @@ export const meResponseSchema = z.discriminatedUnion('state', [
   z.object({ state: z.literal('unregistered'), suggestedName: z.string() }),
   // until: epoch ms, null: blocked for good.
   z.object({ state: z.literal('blocked'), until: z.number().nullable() }),
-  z.object({ state: z.literal('active'), profile: myProfileSchema }),
+  // block: blocked during a trip on the way (owner decision 10.10.2026): the app stays open to finish
+  // that trip only; until: epoch ms, null: for good.
+  z.object({
+    state: z.literal('active'),
+    profile: myProfileSchema,
+    block: z.object({ until: z.number().nullable() }).optional(),
+  }),
 ]);
 export type MeResponse = z.infer<typeof meResponseSchema>;
 
