@@ -33,7 +33,11 @@ describe('StartPage', () => {
     for (const tile of ['Mening safarlarim', 'Suhbatlar', 'Hamyon', 'Yordam'])
       expect(screen.getByText(tile)).toBeTruthy();
     // The screen view is sent by an effect after the screen is drawn.
-    await waitFor(() => expect(tracked.map((event) => event.screen)).toEqual(['home']));
+    await waitFor(() =>
+      expect(tracked.filter((event) => event.name === 'screen_open').map((event) => event.screen)).toEqual([
+        'home',
+      ]),
+    );
   });
 
   it('opens a section and comes back', async () => {

@@ -12,7 +12,9 @@ describe('StartPage', () => {
       expect(screen.getByText(action)).toBeTruthy();
     // «Safar topish» is the main button now, the list does not repeat it (G25).
     expect(screen.getAllByText('Safar topish')).toHaveLength(1);
-    expect(tracked.map((event) => event.screen)).toEqual(['home']);
+    expect(tracked.filter((event) => event.name === 'screen_open').map((event) => event.screen)).toEqual([
+      'home',
+    ]);
   });
 
   it('opens a section and comes back', async () => {

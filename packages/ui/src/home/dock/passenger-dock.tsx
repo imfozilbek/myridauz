@@ -21,6 +21,7 @@ import { PassengerSeatCard } from './passenger-seat-cards';
 import { PASSENGER_LEVEL, passengerState, passengerStates, type PassengerState } from './passenger-state';
 import { useSeatActions } from './seat-actions';
 import { useAttention } from './use-attention';
+import { useDockSeen } from './use-dock-seen';
 
 // The block at the bottom of a passenger (G76, docs/165, mockup g76/2): the most important thing
 // of now with its buttons, else «Qayerdan / Qayerga». The clock moves it on an open screen.
@@ -34,6 +35,7 @@ export function PassengerDock({ go }: { readonly go: HomeGo }) {
   const cue = passengerCue(state.kind, fresh);
   const target = 'booking' in state ? state.booking : 'request' in state ? state.request : null;
   const id = `${state.kind}:${target?.id ?? ('trip' in state ? state.trip.id : '')}:${cue?.key ?? ''}`;
+  useDockSeen(state.kind);
   const calls = useAttention({ id, level: PASSENGER_LEVEL[state.kind], loud: cue !== null });
   return (
     <DockPanel cue={cue} calls={calls}>

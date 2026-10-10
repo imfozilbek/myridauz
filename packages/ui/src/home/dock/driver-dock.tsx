@@ -20,6 +20,7 @@ import { DriverStateCard } from './driver-state-card';
 import { unseenOffers } from './offer-seen';
 import { useTripActions } from './trip-actions';
 import { useAttention } from './use-attention';
+import { useDockSeen } from './use-dock-seen';
 
 // The block at the bottom of a driver (G76, docs/165, mockup g76/3): the application, the money, the
 // trip of now with its buttons, else «Qayerdan / Qayerga». The clock moves it on an open screen.
@@ -31,6 +32,7 @@ export function DriverDock({ go }: { readonly go: HomeGo }) {
   const cue = driverCue(state.kind);
   const target = 'booking' in state ? state.booking : 'trip' in state ? state.trip : null;
   const id = `${state.kind}:${target?.id ?? ''}`;
+  useDockSeen(state.kind);
   const calls = useAttention({ id, level: DRIVER_LEVEL[state.kind], loud: cue !== null });
   return (
     <DockPanel cue={cue} calls={calls}>
