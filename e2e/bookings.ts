@@ -87,7 +87,6 @@ export async function passengerTrips(page: Page, shot: Shot = none) {
 // The driver opens the own trip and answers the request of Madina right in its card: the commission
 // is there, no window in between (G63, docs/122); without money the card leads to the top up.
 export async function confirmBooking(page: Page, shot: Shot = none, money = true) {
-  const mainButton = page.locator('#tg-main-button');
   await page.getByText(B.myTrips).click();
   await openOwnTrip(page);
   await expect(page.getByText('Madina')).toBeVisible();
@@ -103,11 +102,10 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
   }
   // Without money for the commission the way to top up comes instead, no «Tasdiqlash» (docs/83 N20).
   await page.getByRole('button', { name: B.topUp, exact: true }).click();
+  // A sheet with only the sum short; its button opens the support chat with the message ready (G75).
   await expect(page.getByText(B.notEnough)).toBeVisible();
+  await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
   await shot('3-not-enough');
-  await mainButton.click();
-  await expect(page.getByRole('heading', { name: t('wallet.topUp.title') })).toBeVisible();
-  await shot('4-top-up');
 }
 
 // "Hamyon" from its tile on the main screen of an approved driver (docs/118 path 9, G65): the bonus,

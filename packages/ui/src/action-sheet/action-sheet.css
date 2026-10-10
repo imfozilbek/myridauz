@@ -97,6 +97,10 @@
 
 .action-buttons button span {
   font-size: inherit;
+  /* A long word pair («Hisobni toʻldirish») goes to a second line, never cut (docs/121). */
+  white-space: normal;
+  line-height: 1.15;
+  text-align: center;
 }
 
 .action-second {

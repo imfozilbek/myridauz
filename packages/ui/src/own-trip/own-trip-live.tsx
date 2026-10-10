@@ -1,10 +1,10 @@
 import type { Booking, Offer, Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { DriverTripMap } from '../bookings/driver-trip-map';
-import { NotEnoughScreen, TopUpScreen } from '../bookings/wallet-steps';
 import { ChatScreen } from '../chat/chat-screen';
 import { useI18n } from '../context/i18n-context';
 import { TripChangeSheet } from '../market/trip-change';
+import { ShortfallSheet } from '../wallet/shortfall-sheet';
 import { DriverMeeting } from '../meeting/driver-meeting';
 import { meetingOpen } from '../meeting/meet-state';
 import { useMeetMark } from '../meeting/use-meet-mark';
@@ -72,16 +72,6 @@ export function OwnTripLive(props: Props) {
         onCall={(booking) => setOpened({ screen: 'call', booking })}
       />
     );
-  if (opened?.screen === 'not_enough')
-    return (
-      <NotEnoughScreen
-        amount={opened.booking.commission}
-        onBack={back}
-        onTopUp={() => setOpened({ ...opened, screen: 'top_up' })}
-      />
-    );
-  if (opened?.screen === 'top_up')
-    return <TopUpScreen onBack={() => setOpened({ ...opened, screen: 'not_enough' })} />;
   if (opened?.screen === 'map')
     return (
       <DriverTripMap
@@ -125,6 +115,19 @@ export function OwnTripLive(props: Props) {
           ) : null}
         </p>
       ) : null}
+      {/* No money for a seat: only the sum short, over the trip (G75, mockup g75/4 B). */}
+      <ShortfallSheet
+        shortfall={
+          opened?.screen === 'not_enough'
+            ? {
+                need: opened.booking.commission,
+                seats: opened.booking.seats,
+                name: opened.booking.passenger.firstName,
+              }
+            : null
+        }
+        onClose={back}
+      />
       {/* «Vaqt yoki narx» is a sheet over the trip (G75, mockup g75/3 A phone 2). */}
       {opened?.screen === 'change' ? (
         <TripChangeSheet trip={trip} open onClose={back} onDone={() => (back(), onChanged())} />

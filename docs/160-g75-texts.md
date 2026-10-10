@@ -45,6 +45,8 @@
 | `market.day.other`, `market.day.otherHint` | третья плитка дня в шторке времени | «Boshqa»; под ней «kun» | ждёт |
 | `subscriptions.when.dayHint`, `subscriptions.when.hint` | шторка «Xabar bering»: строка под «Faqat {day}» и подсказка с маршрутом | «Shu kungi safarlar»; «{way}. {question}» | ждёт |
 | `common.counter` | счётчик знаков под «Izoh» | «{count} / {max}» | ждёт |
+| `wallet.short.for`, `wallet.short.commission`, `wallet.short.missing`, `wallet.short.note` | шторка «Hamyonda mablagʻ yetarli emas» (макет g75/4 Б, `158` Г) | «{name}ning joyini tasdiqlash uchun»; «Komissiya · {count} joy»; «Yetmaydi»; «Yordamga tayyor xabar boradi: faqat yuboring.» | ждёт |
+| `wallet.short.message` | готовый текст в чат поддержки по «Hisobni toʻldirish» | «Salom! Hamyonimni toʻldirmoqchiman. {name}ning joyini tasdiqlash uchun {amount} yetmayapti.» | ждёт |
 
 ## Как читать
 

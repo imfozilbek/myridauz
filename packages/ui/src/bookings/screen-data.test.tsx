@@ -73,7 +73,8 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     await tap('Hisobni toʻldirish');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     expect(answer).not.toHaveBeenCalled();
-    await tap('Orqaga');
+    // The sheet over the trip closes by «Keyinroq» (G75, mockup g75/4 B).
+    await tap('Keyinroq');
     await tap('Dilnoza');
     await tap('Hisobni toʻldirish');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
