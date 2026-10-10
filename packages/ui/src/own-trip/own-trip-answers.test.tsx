@@ -95,6 +95,8 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
     expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
     expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
+    // The chat before the answer stays in the sheet (docs/07).
+    expect(screen.getAllByText('Xabar yozish').length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole('button', { name: 'Tasdiqlash' }).at(-1) as HTMLElement);
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
   });

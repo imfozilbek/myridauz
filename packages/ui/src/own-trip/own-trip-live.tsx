@@ -123,6 +123,7 @@ export function OwnTripLive(props: Props) {
         short={opened?.screen === 'request' && short(actions.balance, opened.booking.commission)}
         onAnswer={(booking, action) => (back(), actions.answer(booking, action))}
         onTopUp={(booking) => setOpened({ screen: 'not_enough', booking })}
+        onChat={(booking) => setOpened({ screen: 'chat', booking })}
         onClose={back}
       />
       {/* No money for a seat: only the sum short, over the trip (G75, mockup g75/4 B). */}

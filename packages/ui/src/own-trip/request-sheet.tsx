@@ -18,12 +18,14 @@ type Props = {
   readonly short: boolean;
   readonly onAnswer: (booking: Booking, action: 'confirm' | 'decline') => unknown;
   readonly onTopUp: (booking: Booking) => void;
+  // The chat before the answer stays one tap away (docs/07).
+  readonly onChat: (booking: Booking) => void;
   readonly onClose: () => void;
 };
 
 // «Yangi soʻrov» over «Mening safarim» (G75, mockup g75/4 B phone 1): the deadline, who and when,
 // the two points, the commission; «Rad etish» and «Tasdiqlash», the trip stays seen under it.
-export function RequestSheet({ booking, short, onAnswer, onTopUp, onClose }: Props) {
+export function RequestSheet({ booking, short, onAnswer, onTopUp, onChat, onClose }: Props) {
   const { t, formatTime } = useI18n();
   const day = useCardDay();
   const when = (at: number) => `${day(tashkentDate(at), Date.now())} ${formatTime(new Date(at))}`;
@@ -37,6 +39,9 @@ export function RequestSheet({ booking, short, onAnswer, onTopUp, onClose }: Pro
       {booking ? (
         <>
           <RequestCard booking={booking} />
+          <button type="button" className="form-sheet-link" onClick={() => onChat(booking)}>
+            {t('chat.open')}
+          </button>
           <button
             type="button"
             className="form-sheet-link request-decline"
