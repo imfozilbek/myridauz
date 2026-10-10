@@ -23,6 +23,8 @@ describe('complaints (docs/17)', () => {
     expect(await hiddenFromSearch(deps, [DRIVER])).toEqual(new Set());
     await fileComplaint(deps, 103, input('b3'));
     expect(await hiddenFromSearch(deps, [DRIVER, 55])).toEqual(new Set([DRIVER]));
+    // The person hears it once, from the bot of their side (G75, docs/158 З).
+    expect(log.filter((line) => line.startsWith('hidden'))).toEqual([`hidden ${DRIVER} driver`]);
     const [first] = await complaintQueue(deps);
     await decide(deps, BY_MODERATOR, first?.id ?? '', { action: 'none', refund: false });
     expect(await hiddenFromSearch(deps, [DRIVER])).toEqual(new Set());

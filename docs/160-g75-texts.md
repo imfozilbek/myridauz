@@ -25,6 +25,8 @@
 | `bot.offer.expired` | бот водителя: попутчик выбрал другого водителя, отменил заявку или её день прошёл (`158` Й), кнопка «Ochish» | «Yoʻlovchi soʻrovi yopildi, taklifingiz endi amal qilmaydi.» | ждёт |
 | `bot.share.retimed` | бот близким попутчика и водителя: водитель сдвинул время (`158` И) | «Vaqt oʻzgardi: {name} {date}, {time} da yoʻlga chiqadi.» | ждёт |
 | `errors.drivers.live_trips` | водитель меняет машину, пока есть поездка (`158` Ё, `124` Ё) | «Mashinani faol safarlar tugagach almashtirasiz.» | ждёт |
+| `bot.rating.low` | бот роли человека: средняя оценка ниже порога, один раз (`158` З) | «Reytingingiz pasaydi: ⭐ {average}. Safarlarni qoidalarga koʻra oʻtkazing, shunda sizni koʻproq tanlashadi.» | ждёт |
+| `bot.complaint.hidden` | бот роли человека: жалобы от {count} разных людей скрыли его из поиска (`158` З) | «Sizga {count} kishi shikoyat qildi. Jamoa koʻrib chiqquncha sizni qidiruvda koʻrsatmaymiz.» | ждёт |
 
 ## Как читать
 

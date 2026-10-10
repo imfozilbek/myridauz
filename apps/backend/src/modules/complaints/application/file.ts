@@ -29,9 +29,13 @@ export async function fileComplaint(deps: ComplaintsDeps, authorId: number, inpu
     decidedAt: null,
     refund: null,
   };
+  const hiddenBefore = (await hiddenFromSearch(deps, [againstId])).has(againstId);
   await deps.store.save(complaint);
   const against = await deps.people.find(againstId);
   await deps.tell.team(complaint, { firstName: against?.firstName ?? '', publicId: against?.publicId ?? '' });
+  // This complaint hid the person from search: they hear it once (G75, docs/158 З).
+  if (!hiddenBefore && (await hiddenFromSearch(deps, [againstId])).has(againstId))
+    await deps.tell.hidden(againstId, againstId === ride.driverId ? 'driver' : 'passenger');
   return { id: complaint.id };
 }
 

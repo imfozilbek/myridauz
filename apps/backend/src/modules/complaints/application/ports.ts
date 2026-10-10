@@ -42,6 +42,8 @@ export type ComplaintTeller = {
   // A decided complaint leaves «Navbat».
   queueChanged(): Promise<void>;
   warning(userId: number, side: Side): Promise<void>;
+  // Out of the search until the team decides (G75, docs/158 З).
+  hidden(userId: number, side: Side): Promise<void>;
   blocked(userId: number, side: Side, until: number | null): Promise<void>;
   resolved(userId: number, side: Side): Promise<void>;
 };

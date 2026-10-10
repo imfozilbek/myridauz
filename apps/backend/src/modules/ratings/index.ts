@@ -59,6 +59,14 @@ const ratingsDeps = (env: Bindings): RatingsDeps => {
         sign,
       });
     },
+    tellLow: (userId, role, rating) =>
+      notify(env, [
+        {
+          bot: role,
+          chatId: userId,
+          text: t('bot.rating.low', { average: formatNumber(rating.average ?? 0) }),
+        },
+      ]),
     mask: (text) => maskContacts(text).text,
     limits: brandOf(env).ratings,
     now: Date.now,

@@ -29,6 +29,8 @@ export const botTeller = ({ brand, send, queue }: Wiring): ComplaintTeller => {
     },
     queueChanged: () => queue(),
     warning: (userId, side) => tell(userId, side, t('bot.complaint.warning')),
+    hidden: (userId, side) =>
+      tell(userId, side, t('bot.complaint.hidden', { count: String(brand.complaints.hideAfter) })),
     blocked: (userId, side, until) =>
       tell(
         userId,

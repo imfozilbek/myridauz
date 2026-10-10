@@ -26,6 +26,7 @@ function setup(rides: Ride[] = [ride(1)]) {
   let clock = NOW;
   const asked: { ask: Ask; name: string; rater: string; reminder: boolean }[] = [];
   const alerts: { name: string; publicId: string }[] = [];
+  const told: (readonly [number, string])[] = [];
   const deps: RatingsDeps = {
     store: createMemoryRatings(),
     rides: {
@@ -36,12 +37,13 @@ function setup(rides: Ride[] = [ride(1)]) {
     people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
     ask: async (ask, name, { rater }, reminder) => void asked.push({ ask, name, rater, reminder }),
     alertTeam: async (person) => void alerts.push(person),
+    tellLow: async (userId, role) => void told.push([userId, role]),
     mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
     limits: RULES,
     now: () => clock,
     newId: () => `r${Math.random()}`,
   };
-  return { deps, asked, alerts, later: (ms: number) => void (clock += ms) };
+  return { deps, asked, alerts, told, later: (ms: number) => void (clock += ms) };
 }
 const review = (bookingId: string, stars: number, text = '') => ({ bookingId, stars, tags: [], text });
 
@@ -105,11 +107,13 @@ describe('the rating of a person (docs/24)', () => {
 
   it('sends a low average to a moderator once and lets the team hide a review', async () => {
     const rides = Array.from({ length: 11 }, (_, index) => ride(index + 1));
-    const { deps, alerts } = setup(rides);
+    const { deps, alerts, told } = setup(rides);
     for (const known of rides.slice(0, 10)) await rate(deps, known.passengerId, review(known.bookingId, 3));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
     await rate(deps, 111, review('b11', 1));
     expect(alerts).toEqual([{ name: 'Jasur', publicId: publicIdOf(DRIVER) }]);
+    // The driver hears it once too, in the driver bot (G75, docs/158 З).
+    expect(told).toEqual([[DRIVER, 'driver']]);
     for (const known of rides) await rate(deps, DRIVER, review(known.bookingId, 5));
     const before = await reviewsOf(deps, DRIVER);
     expect(before.rating.count).toBe(11);

@@ -43,21 +43,20 @@ export async function rate(deps: RatingsDeps, raterId: number, input: Input, fro
     createdAt: old?.createdAt ?? now,
     updatedAt: now,
   });
-  await watch(deps, rateeId, now);
+  await watch(deps, rateeId, rateeId === ride.driverId ? 'driver' : 'passenger', now);
   return 'ok' as const;
 }
 
-// A low average goes to a moderator once (docs/24).
-async function watch(deps: RatingsDeps, userId: number, now: number) {
+// A low average goes to a moderator once (docs/24), and to the person (G75).
+async function watch(deps: RatingsDeps, userId: number, role: 'driver' | 'passenger', now: number) {
   const stars = (await deps.store.about([userId]))
     .filter((review) => !review.hidden)
     .map((review) => review.stars);
   if (!needsModerator(stars, deps.limits) || !(await deps.store.flag(userId, now))) return;
   const name = (await deps.names([userId])).get(userId) ?? '';
-  await deps.alertTeam(
-    { name, publicId: (await deps.people.publicId(userId)) ?? '' },
-    ratingOf(stars, deps.limits),
-  );
+  const rating = ratingOf(stars, deps.limits);
+  await deps.alertTeam({ name, publicId: (await deps.people.publicId(userId)) ?? '' }, rating);
+  await deps.tellLow(userId, role, rating);
 }
 
 // The review screen: whom the person rates and their own review of this ride.
