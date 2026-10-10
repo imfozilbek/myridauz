@@ -24,7 +24,7 @@ describe('what close people read (docs/43)', () => {
     expect(shareStatus({ ...trip, departedAt: DEPART - 9 }, DEPART - 1)).toBe('on_the_way');
   });
 
-  it('reads the clock for a driver, who has no "Mashinaga chiqdim" button (G18)', () => {
+  it('reads the clock for a driver, who has no boarding step (G18)', () => {
     const own = { status: 'active' as const, departAt: DEPART, departedAt: null, arrivedAt: null, km: 300 };
     expect(driverShareStatus(own, DEPART - 1)).toBe('waiting');
     expect(driverShareStatus({ ...own, departedAt: DEPART - 9 }, DEPART - 1)).toBe('on_the_way');

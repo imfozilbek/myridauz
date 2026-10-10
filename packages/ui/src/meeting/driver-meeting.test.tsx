@@ -75,7 +75,7 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
       .fn<BookingsClient['meet']>()
       .mockImplementationOnce(marked(madina, { driverCameAt: MEETING_NOW }))
       .mockImplementationOnce(marked(madina, { driverCameAt: MEETING_NOW, metAt: MEETING_NOW }));
-    open([madina], meet);
+    const { tracked } = open([madina], meet);
     await tap('Men keldim');
     expect(meet).toHaveBeenLastCalledWith('m1', 'came');
     // The refusal on the left, the main action on the right (docs/121).
@@ -86,6 +86,8 @@ describe('«Uchrashuv» of the driver (docs/126, mockup g63/4 screen 13)', () =>
     expect(meet).toHaveBeenLastCalledWith('m1', 'met');
     expect(await screen.findByText('Keldi')).toBeTruthy();
     expect(screen.queryByText('Kelmadi')).toBeNull();
+    // «Keldi» is the passenger in the car: the step «boarded» of the funnel (G76, docs/29).
+    expect(tracked.filter((event) => event.name === 'boarded')).toHaveLength(1);
   });
 
   it('«Kelmadi» is asked first, then sends the refund to the team', async () => {

@@ -48,6 +48,12 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     expect(await screen.findByRole('button', { name: 'Men keldim' })).toBeTruthy();
     expect(screen.getByText('Hozir: joyga boring')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Safar topish' })).toBeNull();
+    // After «Men keldim» the driver's «Keldi» puts the passenger in the car: the map until then (G76).
+    cleanup();
+    passenger(async () => [{ ...confirmed, trip: at(departAt), cameAt: Date.now() }]);
+    expect(await screen.findByRole('button', { name: 'Xaritada ochish' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Men keldim' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Mashinaga chiqdim' })).toBeNull();
   });
 
   it('keeps the search before the meeting, the step of the trip after it', async () => {

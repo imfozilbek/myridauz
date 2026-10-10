@@ -58,8 +58,8 @@ export async function mockChat(page: Page) {
     json(route, { preparedMessageId: null, link: `https://t.me/test_bot?start=follow_${SHARE_TOKEN}` }, 201),
   );
   await page.route('**/api/passenger/bookings/*/share/stop', (route) => route.fulfill({ status: 204 }));
-  await page.route('**/api/passenger/bookings/*/boarded', (route) =>
-    json(route, { ...confirmed, boardedAt: Date.now() }),
+  await page.route('**/api/passenger/bookings/*/arrived', (route) =>
+    json(route, { ...confirmed, boardedAt: Date.now(), arrivedAt: Date.now() }),
   );
   await page.route('**/api/shared/*/follow', (route) => route.fulfill({ status: 204 }));
   await page.route(`**/api/shared/${SHARE_TOKEN}`, (route) =>

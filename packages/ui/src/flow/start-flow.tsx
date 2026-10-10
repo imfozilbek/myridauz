@@ -29,7 +29,7 @@ type StartFlowProps = {
   // block loads or fails, so the main action is always one tap away.
   readonly covered?: string;
   // The block «Qayerdan / Qayerga» at the bottom with the main button of its own (G66, docs/118): it
-  // decides the button, like «Mashinaga chiqdim» on the day of a trip. The tiles are square then.
+  // decides the button, like «Men keldim» on the day of a trip. The tiles are square then.
   readonly dock?: (go: HomeGo) => ReactNode;
   // Tiles of the app after its actions (G53): they open a section or the profile.
   readonly tiles?: (go: HomeGo, openProfile: OpenProfile) => ReactNode;

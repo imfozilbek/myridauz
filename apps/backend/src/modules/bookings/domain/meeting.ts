@@ -12,7 +12,8 @@ type MarkError = 'bookings.already_met' | 'bookings.already_no_show' | 'bookings
 
 // The driver at the point of the passenger (docs/126, G63): «Men keldim», then «Keldi» or «Kelmadi».
 // «Keldi» and «Kelmadi» exclude each other and are set once; «Men keldim» again changes nothing.
-// «Kelmadi» never after the passenger said «Mashinaga chiqdim» or «Yetib keldim» (docs/43).
+// «Keldi» is the passenger in the car (G76, owner decision 10.10.2026, docs/43): the close people
+// hear it. «Kelmadi» never after the passenger got in or said «Yetib keldim».
 // null: nothing to change.
 export function mark(
   booking: BookingRecord,
@@ -32,6 +33,7 @@ const COLUMN = { came: 'driverCameAt', met: 'metAt', no_show: 'noShowAt' } as co
 const stamp = (booking: BookingRecord, step: DriverMeetStep, now: number): BookingRecord => ({
   ...booking,
   [COLUMN[step]]: now,
+  ...(step === 'met' ? { boardedAt: booking.boardedAt ?? now } : {}),
   updatedAt: now,
 });
 

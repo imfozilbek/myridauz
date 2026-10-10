@@ -96,7 +96,8 @@ export const bookingSchema = z.object({
   unread: z.number().int().nonnegative().optional(),
   // For the passenger, after the trip: the rating is given already (docs/129, «Oʻtgan»).
   rated: z.boolean().optional(),
-  // When the driver confirmed it (docs/88 L6), "Mashinaga chiqdim" and "Yetib keldim" (docs/43).
+  // When the driver confirmed it (docs/88 L6), in the car by the driver's «Keldi» (G76) and «Yetib
+  // keldim» (docs/43).
   confirmedAt: z.number().int().nullable(),
   boardedAt: z.number().int().nullable(),
   arrivedAt: z.number().int().nullable(),

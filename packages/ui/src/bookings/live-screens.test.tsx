@@ -47,7 +47,8 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
   it('hides the tools of a confirmed seat once the driver cancels it', async () => {
     vi.setSystemTime(TRIP_DAY);
     const channel = feed();
-    let mine: Booking[] = [confirmed];
+    // In the car by the driver's «Keldi» (G76): «Yetib keldim» stands.
+    let mine: Booking[] = [{ ...confirmed, boardedAt: TRIP_DAY }];
     renderMarket(
       <FeedContext.Provider value={channel.subscribe}>
         <MyRequestsScreen onBack={() => undefined} />
@@ -58,12 +59,11 @@ describe('an open booking stays fresh and clear (docs/65 B2, B3, B4)', () => {
       }),
     );
     await tap('Jasur');
-    expect(screen.getByText('Mashinaga chiqdim')).toBeTruthy();
+    expect(screen.getByText('Yetib keldim')).toBeTruthy();
     mine = [{ ...confirmed, status: 'cancelled_by_driver' }];
     channel.fire();
     await screen.findByText('Haydovchi bekor qildi');
-    // «Mashinaga chiqdim» and «Yetib keldim» are only for a seat that still goes (docs/65 B2).
-    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    // «Yetib keldim» is only for a seat that still goes (docs/65 B2).
     expect(screen.queryByText('Yetib keldim')).toBeNull();
   });
 

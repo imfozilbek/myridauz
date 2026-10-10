@@ -2,6 +2,7 @@ import { loadBrand } from '@platform/brands';
 import { expect, test } from '../crash-guard';
 import { createChatClient } from '@platform/api-client';
 import { confirmedSeat, MINUTE, moveTrip, outcome, toldBy, wordsOf } from './g27-kit';
+import { markMet } from './market-kit';
 import { MALIKA, OYBEK } from './people';
 import { signedAs, type Person } from './stand-kit';
 
@@ -34,9 +35,9 @@ test('S70, S71, S72, P43, S74. close ones follow the ride, the sixth has no plac
   for (const person of closeOnes) answers.push(await outcome((await chatOf(person)).follow(token)));
   expect(answers.slice(0, MAX_FOLLOWERS).every((answer) => answer === 'ok')).toBe(true);
   expect(answers.at(-1)).toBe('shares.too_many');
-  // The trip leaves: «Mashinaga chiqdim», then «Yetib keldim».
+  // The trip leaves: the driver's «Keldi» puts her in the car (G76), then «Yetib keldim».
   moveTrip(trip.id, Date.now() - 5 * MINUTE, Date.now() + 6 * HOUR);
-  await passenger.boarded(seat.id);
+  await markMet(OYBEK, seat.id);
   await passenger.arrived(seat.id);
   for (const person of closeOnes.slice(0, MAX_FOLLOWERS)) {
     await toldBy('passenger', person, wordsOf('bot.share.boarded'));

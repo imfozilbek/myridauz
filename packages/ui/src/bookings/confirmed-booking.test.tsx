@@ -33,16 +33,26 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
       expect(screen.getByText(button)).toBeTruthy();
   });
 
-  it('has one main button on the way: «Mashinaga chiqdim», then «Yetib keldim»', async () => {
+  // The driver's «Keldi» puts the passenger in the car (G76, owner decision 10.10.2026, docs/43).
+  it('has no step before the driver marks the passenger in, then «Yetib keldim»', async () => {
     vi.setSystemTime(TRIP_DAY);
-    const boarded = vi.fn<ChatClient['boarded']>(async () => ({ ...confirmed, boardedAt: BOARDED_AT }));
-    open(confirmed, { boarded });
+    open();
     await tap('Jasur');
-    await tap('Mashinaga chiqdim');
-    expect(await screen.findByText('Yetib keldim')).toBeTruthy();
-    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    expect(screen.queryByText('Yetib keldim')).toBeNull();
+    cleanup();
+    const arrived = vi.fn<ChatClient['arrived']>(async () => ({
+      ...confirmed,
+      boardedAt: BOARDED_AT,
+      arrivedAt: BOARDED_AT,
+    }));
+    open({ ...confirmed, boardedAt: BOARDED_AT }, { arrived });
+    await tap('Jasur');
     // A used seat is not cancelled (docs/35).
     expect(screen.queryByText('Joyni bekor qilish')).toBeNull();
+    await tap('Yetib keldim');
+    expect(arrived).toHaveBeenCalledWith(confirmed.id);
+    expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
+    expect(screen.queryByText('Yetib keldim')).toBeNull();
   });
 
   it('keeps the steps for the day of the trip (docs/89 P7)', async () => {
@@ -50,6 +60,6 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     open(later);
     await tap('Jasur');
     expect(screen.getByText('Yaqinlarimga')).toBeTruthy();
-    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    expect(screen.queryByText('Yetib keldim')).toBeNull();
   });
 });

@@ -37,13 +37,14 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   ];
   const to = ends.regionName(trip.to);
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
-  // After «Men keldim» the next step is «Mashinaga chiqdim»: it tells the close people (docs/43).
-  // Red while the driver waits at the point (mockup g76/2 state 10).
+  // «Men keldim» at the point, red while the driver waits there (mockup g76/2 state 10). After it the
+  // driver's «Keldi» puts the passenger in the car (G76, docs/43): until then the map stays.
+  const came = booking.cameAt !== null;
   const main = (waits: boolean) =>
-    booking.cameAt === null ? (
-      <MainButton text={t('bookings.meeting.came')} destructive={waits} onClick={act.came(booking)} />
+    came ? (
+      <MainButton text={t('bookings.openMap')} onClick={act.map(booking)} />
     ) : (
-      <MainButton text={t('share.boarded')} destructive={waits} onClick={steps.step} />
+      <MainButton text={t('bookings.meeting.came')} destructive={waits} onClick={act.came(booking)} />
     );
   switch (kind) {
     case 'meeting':
@@ -57,7 +58,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
             text={ends.regionName(trip.from)}
             who={{ person: driver, sub: car, tools }}
           />
-          <SecondaryButton beside text={t('bookings.openMap')} onClick={act.map(booking)} />
+          {came ? null : <SecondaryButton beside text={t('bookings.openMap')} onClick={act.map(booking)} />}
           {main(false)}
         </>
       );

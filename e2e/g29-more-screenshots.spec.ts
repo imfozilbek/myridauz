@@ -45,7 +45,7 @@ test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» f
   await shot(page, 'fp1-filters-kept');
 });
 
-test('passenger: «Mashinaga chiqdim» only on the day of the trip (P7)', async ({ page }) => {
+test('passenger: the steps of the way only on the day of the trip (P7)', async ({ page }) => {
   await mockApi(page, 'active');
   const tomorrow = { ...confirmed, trip: { ...confirmed.trip, departAt: Date.now() + DAY } };
   await page.route('**/api/passenger/bookings', (route) => route.fulfill({ json: { bookings: [tomorrow] } }));

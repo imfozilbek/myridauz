@@ -6,7 +6,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 
-// A passenger opens the booking: the chat, a hidden phone, "Mashinaga chiqdim" (G09).
+// A passenger opens the booking: the chat, a hidden phone (G09).
 export async function passengerChat(page: Page, shot: Shot = none) {
   await page.getByText(t('common.myTrips')).click();
   await page.getByText('Jasur').first().click();
@@ -20,10 +20,9 @@ export async function passengerChat(page: Page, shot: Shot = none) {
   await expect(page.locator('.chat-lock-warned')).toBeVisible();
   await expect(page.getByText('Raqamim ***')).toBeVisible();
   await shot('3-masked');
+  // Before the driver's «Keldi» the passenger has no step of the way (G76, docs/43).
   await pressBack(page);
-  await page.getByText(t('share.boarded')).click();
-  await expect(page.getByText(t('share.told'))).toBeVisible();
-  await shot('4-boarded');
+  await expect(page.getByText(t('share.arrived'))).toHaveCount(0);
 }
 
 // A close person opens the card link: the trip without registration, "Xabar olish" (docs/43).

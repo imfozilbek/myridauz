@@ -10,7 +10,7 @@ const FORBIDDEN = 403;
 const FINISH_TRIP = [
   /^\/driver\/trips\/[^/]+\/(depart|arrive)$/u,
   /^\/driver\/bookings\/[^/]+\/(came|met|no_show)$/u,
-  /^\/passenger\/bookings\/[^/]+\/(came|boarded|arrived)$/u,
+  /^\/passenger\/bookings\/[^/]+\/(came|arrived)$/u,
   /^\/chats\/[^/]+\/(ticket|messages)$/u,
   /^\/calls\//u,
   /^\/feed\/ticket$/u,

@@ -5,8 +5,8 @@ import { TEST_NOW } from './test-clock';
 // Bookings, offers and the wallet as the Mini Apps see them (G08).
 const HOUR = 3_600_000;
 const trip = tripOf('1', 'Jasur', false, 26);
-// The confirmed seat leaves in an hour, later today in Toshkent: «Mashinaga chiqdim» is there only on
-// the day of the trip (docs/89 P7), and the meeting opens only 30 minutes before (test-clock.ts).
+// The confirmed seat leaves in an hour, later today in Toshkent: «Yetib keldim» is there only on the
+// day of the trip (docs/89 P7), and the meeting opens only 30 minutes before (test-clock.ts).
 const today = tripOf('1', 'Jasur', false, 0, { departAt: TEST_NOW + HOUR });
 const passenger = { id: '0000000000000000000000000000001f', firstName: 'Madina', hasAvatar: false };
 const booking = (id: string, status: string, extra: object = {}) => ({

@@ -1,7 +1,6 @@
 import {
   bookingArrivedPath,
   bookingCamePath,
-  bookingBoardedPath,
   bookingSchema,
   bookingSharePath,
   chatAboutPath,
@@ -59,8 +58,6 @@ export function createChatClient(options: SignedOptions) {
     putTripStory: async (tripId: string, image: Blob): Promise<Story> =>
       storySchema.parse(await (await put(driverTripStoryPath(tripId), image)).json()),
     came: async (bookingId: string): Promise<Booking> => booking(await post(bookingCamePath(bookingId), {})),
-    boarded: async (bookingId: string): Promise<Booking> =>
-      booking(await post(bookingBoardedPath(bookingId), {})),
     arrived: async (bookingId: string): Promise<Booking> =>
       booking(await post(bookingArrivedPath(bookingId), {})),
     sharedTrip: async (token: string): Promise<SharedTrip> =>

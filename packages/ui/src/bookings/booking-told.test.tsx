@@ -11,19 +11,22 @@ afterEach(cleanup);
 describe('«Yaqinlarim» says why a step did not work (G43, docs/65 B3)', () => {
   it('shows the reason under the tools', async () => {
     vi.setSystemTime(TRIP_DAY);
-    const boarded = vi.fn<ChatClient['boarded']>(async () => {
+    const arrived = vi.fn<ChatClient['arrived']>(async () => {
       throw new ApiError(409, 'shares.wrong_status');
     });
     renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,
       testClients({
         market: { myRequests: async () => [] },
-        bookings: { myBookings: async () => [confirmed], myOffers: async () => [] },
-        chat: { boarded },
+        bookings: {
+          myBookings: async () => [{ ...confirmed, boardedAt: TRIP_DAY }],
+          myOffers: async () => [],
+        },
+        chat: { arrived },
       }),
     );
     await tap('Jasur');
-    await tap('Mashinaga chiqdim');
+    await tap('Yetib keldim');
     expect((await screen.findByRole('alert')).textContent).not.toBe('');
   });
 });

@@ -13,7 +13,7 @@ describe('the driver at the points (docs/126, G63)', () => {
     expect(meetStep(madina)).toBe('come');
     expect(meetStep({ ...madina, driverCameAt: 1 })).toBe('answer');
     expect(meetStep({ ...madina, driverCameAt: 1, metAt: 2 })).toBe('met');
-    // In the car by the passenger's own «Mashinaga chiqdim» is met too.
+    // In the car by the driver's «Keldi» or by «Yetib keldim» is met too.
     expect(meetStep({ ...madina, boardedAt: 2 })).toBe('met');
     // «Yetib keldim» of the passenger too: the server refuses «Kelmadi» after it (G63 B2).
     expect(meetStep({ ...madina, driverCameAt: 1, arrivedAt: 2 })).toBe('met');

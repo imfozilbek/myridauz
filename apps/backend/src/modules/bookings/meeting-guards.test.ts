@@ -22,10 +22,10 @@ describe('the marks of the meeting hold (docs/35, docs/65 A4, G63)', () => {
     }
   });
 
-  it('«Kelmadi» is refused once the passenger got in the car; the ride stays to rate', async () => {
+  it('«Kelmadi» is refused once the passenger said «Yetib keldim»; the ride stays to rate', async () => {
     const { deps, id, notes, setNow } = await booked();
     setNow(MEETING);
-    await markProgress(deps, DILNOZA, id, 'boarded');
+    await markProgress(deps, DILNOZA, id, 'arrived');
     expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(REFUSED);
     expect(notes.some((note) => note.startsWith('complaint'))).toBe(false);
     expect((await ratableRideOf(deps, id))?.bookingId).toBe(id);

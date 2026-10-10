@@ -114,31 +114,32 @@ describe('a close person becomes a passenger (docs/18)', () => {
   });
 });
 
-describe('the passenger shares the trip (docs/43)', () => {
-  it('sends the card, tells about getting in and stops sharing', async () => {
+describe('the passenger shares the trip; in the car by the driver «Keldi» (docs/43, G76)', () => {
+  it('sends the card, tells about the arrival and stops sharing', async () => {
     vi.setSystemTime(TRIP_DAY);
     const share = vi.fn<ChatClient['share']>(async () => ({
       preparedMessageId: null,
       link: 'https://t.me/x',
     }));
-    const boarded = vi.fn<ChatClient['boarded']>(async () => ({ ...confirmed, boardedAt: 5 }));
+    const inCar = { ...confirmed, boardedAt: TRIP_DAY };
+    const arrived = vi.fn<ChatClient['arrived']>(async () => ({ ...inCar, arrivedAt: TRIP_DAY }));
     const stopSharing = vi.fn<ChatClient['stopSharing']>(async () => undefined);
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,
       testClients({
         market: { myRequests: async () => [] },
-        bookings: { myBookings: async () => [confirmed], myOffers: async () => [] },
-        chat: { share, boarded, stopSharing },
+        bookings: { myBookings: async () => [inCar], myOffers: async () => [] },
+        chat: { share, arrived, stopSharing },
       }),
     );
     await tap('Jasur');
     await tap('Yaqinlarimga');
     expect(share).toHaveBeenCalledWith(confirmed.id);
     await vi.waitFor(() => expect(open.mock.calls[0]?.[0]).toContain('t.me/share/url'));
-    await tap('Mashinaga chiqdim');
+    await tap('Yetib keldim');
     expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
-    expect(screen.queryByText('Mashinaga chiqdim')).toBeNull();
+    expect(screen.queryByText('Yetib keldim')).toBeNull();
     await tap('Ulashishni toʻxtatish');
     expect(await screen.findByText('Ulashish toʻxtatildi')).toBeTruthy();
     expect(stopSharing).toHaveBeenCalledWith(confirmed.id);

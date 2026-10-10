@@ -99,7 +99,14 @@ describe('bookings in D1 (G24)', () => {
     expect(await bookings.markOnce('b1', 'met', NOW + 3)).toBe(true);
     expect(await bookings.markOnce('b1', 'no_show', NOW + 4)).toBe(false);
     expect(await bookings.find('b1')).toEqual(
-      record({ status: 'confirmed', driverCameAt: NOW + 1, metAt: NOW + 3, updatedAt: NOW + 3 }),
+      // «Keldi» puts the passenger in the car (G76, docs/43).
+      record({
+        status: 'confirmed',
+        driverCameAt: NOW + 1,
+        metAt: NOW + 3,
+        boardedAt: NOW + 3,
+        updatedAt: NOW + 3,
+      }),
     );
     // «Kelmadi» never after the passenger got in; no mark on a booking that is not confirmed.
     await bookings.save(record({ id: 'b2', status: 'confirmed', boardedAt: NOW }));
@@ -107,6 +114,8 @@ describe('bookings in D1 (G24)', () => {
     await bookings.save(record({ id: 'b3', status: 'cancelled_by_passenger' }));
     expect(await bookings.markOnce('b3', 'came', NOW + 5)).toBe(false);
     expect(await bookings.markOnce('b2', 'met', NOW + 6)).toBe(true);
+    // A passenger already in the car keeps the first moment.
+    expect((await bookings.find('b2'))?.boardedAt).toBe(NOW);
   });
 
   it('erases the points with the status in one step, and by id, person and age', async () => {

@@ -88,6 +88,6 @@ test('2. the driver cancels: the open screen of the passenger changes by itself'
   // No reload: the signal of the backend refreshes the screen (docs/64).
   await expect(page.getByText(t('bookings.status.cancelled_by_driver')).first()).toBeVisible();
   // The tools of a confirmed seat go away with it (docs/65 B2).
-  await expect(page.getByText(t('share.boarded'))).toHaveCount(0);
+  await expect(page.getByText(t('share.arrived'))).toHaveCount(0);
   await shot(page, '2-cancelled');
 });

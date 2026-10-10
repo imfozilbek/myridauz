@@ -47,6 +47,9 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
     const met = await markMeeting(deps, DRIVER, id, 'met');
     expect(met.ok && met.value.metAt).toBe(MEETING);
     expect(notes).toContain(`signal ${DILNOZA} passenger`);
+    // «Keldi» is the passenger in the car: the close people hear it once (G76, docs/43).
+    expect(met.ok && met.value.boardedAt).toBe(MEETING);
+    expect(notes.filter((note) => note === 'close ones: Dilnoza boarded')).toHaveLength(1);
     const again = { ok: false, error: 'bookings.already_met' };
     expect(await markMeeting(deps, DRIVER, id, 'met')).toEqual(again);
     expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(again);
