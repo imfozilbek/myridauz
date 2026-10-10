@@ -17,13 +17,14 @@ afterEach(() => {
 const own = { bookings: { myBookings: async () => [], myOffers: async () => [] } };
 
 describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () => {
-  it('shows the own request without the own face, with the price of one seat and a waiting mark', async () => {
+  it('shows the own request without the own face, with its day and its way (mockup g75/2 A)', async () => {
     const myRequests = vi.fn(async (): Promise<RideRequest[]> => [request]);
     renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,
       testClients({ market: { myRequests }, ...own }),
     );
-    expect(await screen.findByText('bir joy uchun')).toBeTruthy();
+    // The card of mockup g75/2 A: the day, the way, how many people (G75).
+    expect(await screen.findByText(/· Soʻrov$/u)).toBeTruthy();
     expect(screen.queryByText('Dilnoza')).toBeNull();
     expect(statusIcon('open')).toBe('waiting');
   });

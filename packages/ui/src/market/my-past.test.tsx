@@ -24,7 +24,7 @@ describe('«Oʻtgan» in «Mening safarlarim» (G60, mockup g60/6)', () => {
   it('keeps a past trip apart from the live ones, with what is still to do', async () => {
     vi.setSystemTime(arrival + HOUR);
     open(false);
-    expect(await screen.findByText('Faol (0)')).toBeTruthy();
+    expect(await screen.findByText('Faol')).toBeTruthy();
     await tap('Oʻtgan');
     expect(screen.getByText('Baho bering · 7 kun')).toBeTruthy();
     expect(screen.getByText(/^Xabar · /u)).toBeTruthy();

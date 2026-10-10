@@ -29,3 +29,14 @@ export function useShortDay() {
         ? t('market.day.tomorrow')
         : formatDate(noonOf(date));
 }
+
+// "Bugun", "Ertaga", else "12-okt": the day on a card of «Mening safarlarim» (mockup g75/2 A).
+export function useCardDay() {
+  const { t, formatShortDate } = useI18n();
+  return (date: string, now: number) =>
+    date === today(now)
+      ? t('market.day.today')
+      : date === tomorrow(now)
+        ? t('market.day.tomorrow')
+        : formatShortDate(noonOf(date));
+}

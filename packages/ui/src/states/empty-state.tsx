@@ -14,16 +14,18 @@ export type EmptyStateProps = {
   // A second line under the words: «Savollar boʻlsa, …» of a block (mockup g75/1 A).
   readonly note?: string;
   readonly action?: ReactNode;
+  // Under the tabs of a list: high on the screen, not in its middle (mockup g75/2 A «Boʻsh»).
+  readonly top?: boolean;
 };
 
 // An empty screen always explains what to do (docs/19, principle 8): the big tile, the title, the words
 // and one action in the middle of the screen (G75, mockups g75/1 A and g75/2 A).
 export function EmptyState(props: EmptyStateProps) {
-  const { icon = 'empty', tone = 'brand', title, description, note, action } = props;
+  const { icon = 'empty', tone = 'brand', title, description, note, action, top = false } = props;
   const { colors } = useBrand().theme;
   const danger = tone === 'danger';
   return (
-    <div className="empty-state" style={{ color: colors.text }}>
+    <div className={top ? 'empty-state empty-state-top' : 'empty-state'} style={{ color: colors.text }}>
       <span
         className="empty-state-tile"
         style={{ background: danger ? colors.dangerTile : colors.stateTile }}

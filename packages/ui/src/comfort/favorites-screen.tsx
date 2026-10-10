@@ -1,7 +1,8 @@
-import { Title } from '@telegram-apps/telegram-ui';
+import { Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { ProfilePhoto } from '../account/profile/profile-photo';
 import { Cell, List, Section } from '../components';
+import { RowCard } from '../mine/row-card';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -17,7 +18,8 @@ import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import '../market/market.css';
 
-const PHOTO_SIZE = 40;
+// The face takes the place of the tile of a card (mockup g75/2 A).
+const PHOTO_SIZE = 36;
 
 // "Sevimli haydovchilar" (docs/18): the saved drivers and their trips; a trip opens ready to book.
 export function FavoritesScreen({ onBack }: { readonly onBack: () => void }) {
@@ -57,25 +59,25 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
         {t('comfort.favorites.title')}
       </Title>
       <List>
-        <Section header={t('comfort.favorites.drivers')}>
-          {value.drivers.map((driver) => (
-            <Cell
-              key={driver.id}
-              before={
-                <ProfilePhoto
-                  userId={driver.id}
-                  name={driver.firstName}
-                  hasAvatar={driver.hasAvatar}
-                  size={PHOTO_SIZE}
-                />
-              }
-              subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
-              after={<RatingBadge rating={driver.rating} />}
-            >
-              {driver.firstName}
-            </Cell>
-          ))}
-        </Section>
+        <Caption className="market-group">{t('comfort.favorites.drivers')}</Caption>
+        {/* A card for each saved driver, as «Obunalar» (G75, mockup g75/2 A). */}
+        {value.drivers.map((driver) => (
+          <RowCard
+            key={driver.id}
+            icon="favorite"
+            before={
+              <ProfilePhoto
+                userId={driver.id}
+                name={driver.firstName}
+                hasAvatar={driver.hasAvatar}
+                size={PHOTO_SIZE}
+              />
+            }
+            title={driver.firstName}
+            hint={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}
+            after={<RatingBadge rating={driver.rating} />}
+          />
+        ))}
         {value.trips.length === 0 ? (
           <Section header={t('comfort.favorites.trips')}>
             <Cell>{t('comfort.favorites.noTrips')}</Cell>

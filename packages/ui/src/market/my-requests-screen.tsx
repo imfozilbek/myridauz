@@ -2,6 +2,7 @@ import {
   BOOKING_LINK,
   OFFER_LINK,
   REQUEST_LINK,
+  tashkentDate,
   type AppLink,
   type Booking,
   type RideRequest,
@@ -18,7 +19,9 @@ import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
 import type { MineTab } from './mine-tabs';
 import { MY_REQUESTS, MyRequestsList } from './my-requests-list';
-import { PlacesGate } from './places-gate';
+import { FindTripFlow } from './find-trip-flow';
+import { NewRequestFlow } from './new-request-flow';
+import { PlacesGate, usePlaces } from './places-gate';
 import { useLinkOpen } from './use-link-open';
 import { useLoad } from './use-list';
 import './market.css';
@@ -71,6 +74,17 @@ function MyRequests({ onBack, link }: ScreenProps) {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   // The tab stays while a booking is open: «Назад» comes to the same list.
   const [tab, setTab] = useState<MineTab>('live');
+  // «Safar topish» of an empty «Faol» and «Qayta yuborish» of an old request (G75, mockup g75/2 A).
+  const [finding, setFinding] = useState(false);
+  const [again, setAgain] = useState<RideRequest | null>(null);
+  const places = usePlaces();
+  if (finding) return <FindTripFlow onBack={() => setFinding(false)} />;
+  const route = again && { from: places.find(again.from), to: places.find(again.to) };
+  if (route?.from && route.to) {
+    const close = () => (setAgain(null), reload());
+    const search = { route: { from: route.from, to: route.to }, date: tashkentDate(Date.now()) };
+    return <NewRequestFlow onBack={() => setAgain(null)} onClose={close} search={search} />;
+  }
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (favoritesOpen) return <FavoritesScreen onBack={() => setFavoritesOpen(false)} />;
   if (opened && value) {
@@ -97,6 +111,8 @@ function MyRequests({ onBack, link }: ScreenProps) {
       onRefresh={refresh}
       onBooking={(booking) => setOpened({ kind: 'booking', id: booking.id })}
       onRequest={(request) => setOpened({ kind: 'request', id: request.id })}
+      onAgain={setAgain}
+      onFind={() => setFinding(true)}
       onSubscriptions={() => setSubscriptionsOpen(true)}
       onFavorites={() => setFavoritesOpen(true)}
       tab={tab}

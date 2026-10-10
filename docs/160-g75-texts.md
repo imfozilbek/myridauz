@@ -34,6 +34,10 @@
 | `bookings.why.seatCancelled` | плашка брони: водитель отменил одно место, поездка идёт (`158` А) | «Haydovchi joyingizni bekor qildi.» | ждёт |
 | `bot.support.topUp` | бот поддержки: «Hisobni toʻldirish» водителя отправляет команде готовое обращение (`158` Г) | «Hamyonimni toʻldirmoqchiman.» | ждёт |
 | `market.limit.title`, `market.limit.hint` | экран лимита поездок водителя (макет g75/1 А, телефон 3) | «Faol safarlar {count} ta»; «Yangi safar eʼlon qilish uchun bittasini bekor qiling yoki yakunlang.» | ждёт |
+| `market.mine.when`, `market.mine.car`, `market.mine.requestDay` | карточки «Mening safarlarim» попутчика (макет g75/2 А) | «{day} · {time}»; « · {model}, {color}»; «{day} · Soʻrov» | ждёт |
+| `market.mine.expired`, `market.mine.again` | заявка с прошедшим днём в «Faol» (`158` Е) | «Muddati oʻtdi»; «Qayta yuborish» | ждёт |
+| `market.mine.noLive`, `bookings.tab.liveNone` | пустая вкладка «Faol» попутчика, кнопка «Safar topish» | «Faol safar yoʻq»; вкладка «Faol» без числа | ждёт |
+| `subscriptions.hint`, `subscriptions.withWoman` | «Obunalar»: строка под заголовком и пометка подписки | «Yangi safar chiqsa, botda xabar beramiz.»; « · ayol bilan» | ждёт |
 
 ## Как читать
 

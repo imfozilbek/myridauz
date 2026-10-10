@@ -20,7 +20,8 @@ describe('a passenger in "Mening safarlarim" (docs/35)', () => {
         bookings: { myBookings: async () => [confirmed], myOffers: async () => [], cancelMine },
       }),
     );
-    expect(await screen.findByText('Band qilingan joylar')).toBeTruthy();
+    // A card of its own, as on the mockup g75/2 A (G75).
+    expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
     await tap('Jasur');
     expect(screen.getByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
     // The plate of the page says the seat is confirmed (G60, mockup g60/1).

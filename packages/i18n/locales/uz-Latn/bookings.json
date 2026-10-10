@@ -90,6 +90,7 @@
   "past.talkTomorrow": "Xabar · ertaga",
   "past.erased": "Aniq joylar oʻchirildi",
   "tab.live": "Faol ({count})",
+  "tab.liveNone": "Faol",
   "tab.past": "Oʻtgan",
   "arrivedAsk.kicker": "Safar · {name}",
   "arrivedAsk.title": "Yetib keldingizmi?",

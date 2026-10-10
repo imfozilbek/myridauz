@@ -1,0 +1,36 @@
+/* The page of the lists of the mockup g75/2 A: the big title, the gray line under it, the tabs. */
+.market.mine-page .market-title {
+  padding: 22px 20px 12px;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.market.mine-page .market-title + .market-subtitle {
+  margin-top: -8px;
+  padding: 0 20px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--reg-muted);
+}
+
+.market.mine-page .market-tabs {
+  padding: 0 14px 12px;
+}
+
+.market.mine-page .market-tabs > div {
+  height: 40px;
+}
+
+/* The words of the tabs 15px, the chosen one bold in the ink of the text. */
+.market.mine-page .market-tabs button > * {
+  font-size: 15px;
+}
+
+.market.mine-page .market-tab-on {
+  color: var(--reg-ink);
+}
+
+.market.mine-page .market-tab-on > * {
+  font-weight: 700;
+}

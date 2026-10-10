@@ -48,7 +48,7 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       bookingId: 'b1',
     }));
     open({ answerOffer, myBookings });
-    await tap('bir joy uchun');
+    await tap(/· Soʻrov$/u);
     fireEvent.click(await screen.findByRole('button', { name: 'Qabul qilish' }));
     expect(await screen.findByText('Joy tasdiqlandi')).toBeTruthy();
     expect(answerOffer).toHaveBeenCalledWith('o1', 'accept');
@@ -57,7 +57,7 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
   it('«Rad etish» in the card answers no', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'declined' }));
     open({ answerOffer });
-    await tap('bir joy uchun');
+    await tap(/· Soʻrov$/u);
     fireEvent.click(await screen.findByRole('button', { name: 'Rad etish' }));
     await vi.waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'decline'));
   });
@@ -68,7 +68,7 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       status: 'cancelled',
     }));
     open({ myOffers: async () => [] }, { cancelRequest });
-    await tap('bir joy uchun');
+    await tap(/· Soʻrov$/u);
     expect(await screen.findByText('Kutayotganda')).toBeTruthy();
     expect(screen.getByText('Kanalga qoʻshilish')).toBeTruthy();
     await tap('Soʻrovni bekor qilish');
@@ -81,7 +81,7 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       callsOff: true,
     }));
     open({}, { setRequestCalls });
-    await tap('bir joy uchun');
+    await tap(/· Soʻrov$/u);
     const calls = (await screen.findByLabelText(
       'Haydovchilar qoʻngʻiroq qilishi mumkin',
     )) as HTMLInputElement;
@@ -97,7 +97,7 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
       throw new ApiError(409, 'trips.wrong_status');
     });
     open({}, { setRequestCalls });
-    await tap('bir joy uchun');
+    await tap(/· Soʻrov$/u);
     const calls = (await screen.findByLabelText(
       'Haydovchilar qoʻngʻiroq qilishi mumkin',
     )) as HTMLInputElement;

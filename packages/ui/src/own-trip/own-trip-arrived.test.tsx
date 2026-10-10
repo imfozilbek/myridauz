@@ -61,7 +61,8 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     open({ ...left, arrivedAt: NOW - 30 * MINUTE }, true);
     await tap('Oʻtgan');
     expect(await screen.findByText('Yakunlangan')).toBeTruthy();
-    expect(screen.queryByText('Faol')).toBeNull();
+    // «Faol» is only the tab now, no chip of a live trip (mockup g75/2 A).
+    expect(screen.getAllByText('Faol')).toHaveLength(1);
     expect(screen.getByText(/^Baho bering · \d kun$/u)).toBeTruthy();
   });
 

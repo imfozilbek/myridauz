@@ -22,7 +22,7 @@ describe('StartPage', () => {
     });
     renderInShell(<StartPage />, false, true, undefined, clients);
     fireEvent.click(screen.getByText('Mening safarlarim'));
-    expect(await screen.findByText('Hali soʻrovlaringiz yoʻq')).toBeTruthy();
+    expect(await screen.findByText('Faol safar yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     // No bookings: the main screen asks where to go (G25).
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
