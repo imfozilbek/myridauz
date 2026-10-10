@@ -90,7 +90,7 @@ describe('AccountGate', () => {
   });
 
   it('blocked on the road: the app stays open to finish the trip, a line says why (docs/158 Ж)', async () => {
-    gate(fakeClient({ ...active, block: { until: Date.UTC(2026, 9, 27, 12) } }));
+    gate(fakeClient({ state: 'active', profile, block: { until: Date.UTC(2026, 9, 27, 12) } }));
     expect(await screen.findByText('inside')).toBeTruthy();
     expect(screen.getByText('Hisobingiz bloklangan. Joriy safarni yakunlang.')).toBeTruthy();
   });
