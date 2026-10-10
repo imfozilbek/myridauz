@@ -18,6 +18,8 @@ type Props = {
   readonly start: string | null;
   readonly end: string | null;
   readonly onEnd: (end: End) => void;
+  // The start cannot change: a trip only from its pitak (G75, docs/158 Д).
+  readonly fixedStart?: boolean;
   // The head of the card under the ends: «Hammasi» of a booking and a request, «Safar» of a trip.
   readonly head: string;
   // What goes: the seats and the sum of a booking, the people of a request, the trip of a driver.
@@ -54,8 +56,8 @@ export function PointsScreen(props: Props) {
   useScreenBackground();
   const { t } = useI18n();
   const { colors } = useBrand().theme;
-  const row = (kind: End, value: string | null) => (
-    <button type="button" className="points-row" onClick={() => onEnd(kind)}>
+  const words = (kind: End, value: string | null) => (
+    <>
       <span className={`points-tile points-${kind}`}>
         <Icon name="destination" size={props.look ? 18 : 20} />
       </span>
@@ -65,9 +67,17 @@ export function PointsScreen(props: Props) {
           {value ?? t('places.choose')}
         </span>
       </span>
-      {value ? <span className="points-change">{t('way.change')}</span> : <Icon name="next" size={18} />}
-    </button>
+    </>
   );
+  const row = (kind: End, value: string | null) =>
+    kind === 'pickup' && props.fixedStart ? (
+      <div className="points-row">{words(kind, value)}</div>
+    ) : (
+      <button type="button" className="points-row" onClick={() => onEnd(kind)}>
+        {words(kind, value)}
+        {value ? <span className="points-change">{t('way.change')}</span> : <Icon name="next" size={18} />}
+      </button>
+    );
   return (
     <div className={props.look ? 'find points points-trip' : 'find points'} style={brandVars(colors)}>
       <Screen onBack={onBack} />
