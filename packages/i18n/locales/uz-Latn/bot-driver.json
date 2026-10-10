@@ -27,6 +27,7 @@
   "ask.expired": "⌛ Javob muddati tugadi",
   "ask.withdrawn": "❌ Yoʻlovchi bekor qildi",
   "ask.noMoney": "Hamyonda komissiya uchun pul yetmaydi. Hisobni toʻldiring.",
+  "ask.noMoneyLeft": "Komissiya uchun hamyonda {amount} yetmaydi: hamyonni toʻldiring, keyin soʻrovni qabul qiling.",
   "ask.noSeats": "Safarda boʻsh joy qolmadi.",
   "ask.changed": "Bu soʻrov allaqachon oʻzgargan.",
   "dring.askAgain": "⏳ {name} hali javobingizni kutyapti: {time} gacha javob bering",

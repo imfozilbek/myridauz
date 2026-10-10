@@ -29,6 +29,7 @@
 | `bot.complaint.hidden` | бот роли человека: жалобы от {count} разных людей скрыли его из поиска (`158` З) | «Sizga {count} kishi shikoyat qildi. Jamoa koʻrib chiqquncha sizni qidiruvda koʻrsatmaymiz.» | ждёт |
 | `account.profile.navigator` | «Profil» водителя, группа «Sozlamalar»: новая строка (`158` Ё); вид экрана тоже на согласие | «Navigator», под ним выбранный («Yandex», «Google», «Apple») или «Tanlang» | ждёт |
 | `home.request.titleMany`, `home.request.count` | плитка попутчика при 2 или 3 открытых заявках (`158` Е) | «Soʻrovlarim»; под ней ближайшая и «{count} ta soʻrov» | ждёт |
+| `bot.ask.noMoneyLeft` | бот водителя: «Qabul qilish» без денег на комиссию (`158` Г), кнопка «💳 Hamyonni ochish» | «Komissiya uchun hamyonda {amount} yetmaydi: hamyonni toʻldiring, keyin soʻrovni qabul qiling.» | ждёт |
 
 ## Как читать
 

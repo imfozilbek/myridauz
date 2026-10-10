@@ -9,7 +9,7 @@ import type { WalletBooking, WalletDeps } from './application/ports';
 import { closeWallet } from './application/close';
 import { grantMissedWelcome } from './application/missed';
 import { refundNoShow as refundOnce } from './application/no-show-refund';
-import { burnExpired, canAfford, charge, grantWelcome, refund } from './application/wallet';
+import { burnExpired, canAfford, charge, grantWelcome, refund, shortage } from './application/wallet';
 import { warnBonusEnds } from './application/wallet-news';
 import { walletRoutes } from './http/wallet-routes';
 import { d1Wallet } from './infrastructure/d1-wallet';
@@ -65,6 +65,9 @@ export const walletModule = walletRoutes(walletDeps);
 // For bookings: the commission at the confirmation and its refund (docs/12).
 export const walletCanAfford = (env: Bindings, driverId: number, amount: number) =>
   canAfford(walletDeps(env), driverId, amount);
+// For the driver bot: how much is missing for a commission (G75, docs/158 Г).
+export const walletShortage = (env: Bindings, driverId: number, amount: number) =>
+  shortage(walletDeps(env), driverId, amount);
 export const chargeCommission = (env: Bindings, driverId: number, bookingId: string, amount: number) =>
   charge(walletDeps(env), driverId, bookingId, amount);
 export const refundCommission = (env: Bindings, driverId: number, bookingId: string) =>
