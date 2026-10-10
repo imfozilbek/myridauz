@@ -1,6 +1,6 @@
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, openSection, publishButton, TEXT } from './apps';
+import { appUrl, MINI_APPS, openRequests, publishButton, TEXT } from './apps';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -58,7 +58,7 @@ test('driver: looks around while the application is checked', async ({ page }) =
   const shot = shooter(page, 'driver-pending');
   await expect(page.getByText(TEXT.check)).toBeVisible();
   await shot('1-home');
-  await openSection(page, 'passenger_requests', TEXT.requestsSee);
+  await openRequests(page);
   await expect(page.getByText(TEXT.pendingRequests)).toBeVisible();
   await shot('2-requests');
 });

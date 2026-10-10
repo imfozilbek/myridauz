@@ -48,6 +48,13 @@ describe(
       expect(screen.getByText(linkOf({ name: MY_TRIP_LINK, id: trip.id }))).toBeTruthy();
     });
 
+    it('opens the requests without a route: the board shows the day of the trip and what fits it', async () => {
+      driver([trip]);
+      expect(await screen.findByText('0 / 3 joy band')).toBeTruthy();
+      await tap('Soʻrovlarni koʻrish');
+      expect(await screen.findByText('opened empty')).toBeTruthy();
+    });
+
     it('puts the new requests of a trip first with «Javob berish»', async () => {
       driver([trip], [booking, { ...booking, id: 'b2' }]);
       expect(await screen.findByRole('button', { name: 'Javob berish' })).toBeTruthy();

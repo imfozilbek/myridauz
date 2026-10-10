@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '../crash-guard';
-import { TEXT } from '../apps';
+import { openFindTrip, TEXT } from '../apps';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
 import { searchTo } from './search-kit';
@@ -73,13 +73,11 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await mainButton(page).click();
     await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
-    // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map.
-    const recent = page.getByText(t('home.driver.last'));
-    await backUntil(page, recent);
-    await page
-      .getByText(/→ Guliston shahri$/u)
-      .last()
-      .click();
+    // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map. The
+    // seat waits in the block at the bottom: the search opens like a bot button (G76, docs/165).
+    await backUntil(page, page.getByTestId('home-dock'));
+    await openFindTrip(page);
+    await searchTo(page, 'Guliston shahri');
     await card(page, FARRUX.name).click();
     await mainButton(page).click();
     await page.getByText(t('way.change')).last().click();

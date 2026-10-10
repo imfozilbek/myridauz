@@ -1,6 +1,7 @@
 import type { BrowserContext } from '@playwright/test';
 import { tashkentDate, type RideRequest, type Trip } from '@platform/contracts';
 import { expect, test, type Page } from '../crash-guard';
+import { openRequests } from '../apps';
 import { pressBack } from '../telegram-mock';
 import { seen } from './g63-kit';
 import {
@@ -56,7 +57,7 @@ test.beforeAll(async () => {
 // takes it from the bot button.
 async function fromList(context: BrowserContext, page: Page, walk: Offers, trip: Trip, request: RideRequest) {
   await openAs(page, 'driver', walk.driver, { platform: walk.platform });
-  await page.getByText(t('common.driver.passengerRequests')).first().click();
+  await openRequests(page);
   await expect(rowOf(page, walk.list)).toBeVisible();
   await shoot(page, walk, '01-board');
   await rowOf(page, walk.list)

@@ -96,9 +96,12 @@ function scenarios(platform: 'android' | 'ios') {
     await go();
     await expect(publishButton(page)).toBeVisible();
     await expect(page.getByText(t('home.dock.toDriver'))).toBeVisible();
+    // «Qayerdan» comes from where the driver stands: the new trip asks «Qayerga» first (docs/165).
+    await expect(page.getByText(t('home.dock.here'))).toBeVisible();
     await shot(page, '4-driver-empty');
     await publishButton(page).click();
-    await expect(page.getByText(t('places.from'))).toBeVisible();
+    await expect(page.getByText(t('places.to')).first()).toBeVisible();
+    await expect(page.getByText(t('home.dock.here'))).toBeHidden();
   });
 
   // «Qayerga» at the bottom, then the one screen of a new trip opens with the route and the answers

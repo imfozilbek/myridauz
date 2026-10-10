@@ -1,13 +1,11 @@
 import type { Page } from '@playwright/test';
-import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS, openSection } from './apps';
+import { appUrl, MINI_APPS, openRequests } from './apps';
 import { tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // The data of the mockups g64/1 … g64/3, one to one (lesson 151): today is 6 October, Sardor asks
 // the whole car Chilonzor → Samarqand, Dilnoza with a woman from Sergeli, Nilufar Yunusobod → Termiz.
-const { t } = createI18n(DEFAULT_LOCALE);
 const [, DRIVER] = MINI_APPS;
 export const tashkent = (time: string) => Date.parse(`${time}+05:00`);
 const TODAY = '2026-10-06';
@@ -81,6 +79,6 @@ export async function openBoard(page: Page, board: Board) {
   await page.clock.setFixedTime(tashkent(`${TODAY}T12:20`));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
-  await openSection(page, 'passenger_requests', t('home.dock.requestsSee'));
+  await openRequests(page);
   await page.locator('.request-row').first().waitFor();
 }

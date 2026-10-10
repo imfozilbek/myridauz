@@ -1,7 +1,6 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
-import { usePlaces } from '../../market/places-gate';
 import { openSheet } from '../../action-sheet/action-queue';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { useBookingEnds } from '../../trip/booking-ends';
@@ -22,17 +21,17 @@ type Props = {
 // A published trip (G76, mockup g76/3 state 6): the seats taken, the requests of its direction.
 export function PublishedCard({ trip, words, act, go }: Props) {
   const { t } = useI18n();
-  const directory = usePlaces();
   const seats = t('home.trip.seats', {
     taken: String(trip.seats - trip.seatsLeft),
     seats: String(trip.seats),
   });
-  const board = () => go(PASSENGER_REQUESTS, { board: { from: trip.from, to: trip.to } });
-  const known = directory.find(trip.from) !== undefined;
+  // No route: the board takes the nearest trip of the driver, its day and «Safaringizga mos» on top
+  // (G64, docs/146); a route would show the requests of today on it only.
+  const board = () => go(PASSENGER_REQUESTS);
   return (
     <>
       <DockCard chip={words.when(trip.departAt)} title={seats} text={words.route(trip)} />
-      {known ? <SecondaryButton beside text={t('home.dock.requestsSee')} onClick={board} /> : null}
+      <SecondaryButton beside text={t('home.dock.requestsSee')} onClick={board} />
       <MainButton text={t('home.dock.openTrip')} onClick={act.open(trip)} />
     </>
   );

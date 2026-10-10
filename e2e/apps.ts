@@ -97,14 +97,23 @@ export const LANDING_PORT = 4104;
 // «Safar eʼlon qilish» of an approved driver: the main button under «Qayerdan / Qayerga» (G66).
 export const publishButton = (page: Page) => page.locator('#tg-main-button', { hasText: TEXT.newTrip });
 
+const SETTLE_MS = 3_000;
+
 // The buttons of the block at the bottom stand only while it is free and the driver approved (G76,
 // docs/165): else a test opens the section the way a bot button does, ?open=<section> (docs/119).
-export async function openSection(page: Page, section: string, label: string) {
+async function openSection(page: Page, section: string, label: string) {
   await page.waitForLoadState('networkidle');
   const button = page.locator('#tg-main-button, #tg-secondary-button', { hasText: label });
-  if ((await button.isVisible()) && (await button.isEnabled())) return button.click();
+  // The block settles once its lists and the places came: its button may come a moment later.
+  const shown = await button.waitFor({ timeout: SETTLE_MS }).then(
+    () => true,
+    () => false,
+  );
+  if (shown && (await button.isEnabled())) return button.click();
   const [base = '', hash = ''] = page.url().split('#');
   await page.goto(`${base.split('?')[0]}?open=${section}#${hash}`);
 }
 
 export const openFindTrip = (page: Page) => openSection(page, 'find_trip', TEXT.findTrip);
+export const openRequests = (page: Page) => openSection(page, 'passenger_requests', TEXT.requestsSee);
+export const openNewTrip = (page: Page) => openSection(page, 'new_trip', TEXT.newTrip);

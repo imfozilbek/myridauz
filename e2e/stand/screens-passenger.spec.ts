@@ -38,5 +38,7 @@ for (const platform of PLATFORMS)
     await shot(page, platform, 'p10-home');
     await visit(page, platform, FERUZA.name, 'p11-profile');
     await visit(page, platform, t('common.myTrips'), 'p12-my-trips');
-    await visit(page, platform, t('common.passenger.leaveRequest'), 'p13-request', t('places.toTitle'));
+    // G76: the tiles of the main screen (mockup g76/2); the request starts from a free block only.
+    await visit(page, platform, t('home.chats.title'), 'p13-chats');
+    await visit(page, platform, t('comfort.favorites.title'), 'p14-favorites');
   });

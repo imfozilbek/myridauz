@@ -5,14 +5,16 @@ import { FindTripFlow } from '../market/find-trip-flow';
 // The actions of the main screens in tests, as the apps have them (G25, G66).
 type Opened = { readonly onBack: () => void } & Launch;
 // A section shows what the main screen gave it: the link, the route, the end to choose.
-function Shown({ link, route, from, pick }: Opened) {
+function Shown({ link, route, from, pick, board }: Opened) {
   const what = link
     ? `${link.name}:${link.id}`
     : route
       ? `${route.from.name}>${route.to.name}`
       : from
         ? `from ${from.name}`
-        : (pick ?? 'empty');
+        : board
+          ? `board ${board.from}>${board.to ?? 'all'}`
+          : (pick ?? 'empty');
   return <p>{`opened ${what}`}</p>;
 }
 const action = (
