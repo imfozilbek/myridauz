@@ -1,5 +1,5 @@
 import type { ChatClient } from '@platform/api-client';
-import { DAY_MS } from '@platform/contracts';
+import { DAY_MS, MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -53,6 +53,13 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     expect(arrived).toHaveBeenCalledWith(confirmed.id);
     expect(await screen.findByText('Yaqinlaringizga xabar berildi')).toBeTruthy();
     expect(screen.queryByText('Yetib keldim')).toBeNull();
+  });
+
+  it('gives «Yetib keldim» when the driver forgot «Keldi»: the meeting minutes after the time (G76)', async () => {
+    vi.setSystemTime(confirmed.trip.departAt + 31 * MINUTE_MS);
+    open();
+    await tap('Jasur');
+    expect(screen.getByText('Yetib keldim')).toBeTruthy();
   });
 
   it('keeps the steps for the day of the trip (docs/89 P7)', async () => {

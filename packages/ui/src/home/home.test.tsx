@@ -67,6 +67,11 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
     const onWay = { ...at(departAt), departedAt: Date.now() };
     passenger(async () => [{ ...confirmed, mode: 'pitak', pitak, pickup: null, trip: onWay }]);
     expect(await screen.findByText('Metro yonida · Jasur yoʻlda')).toBeTruthy();
+    // At the point the driver is no longer on the way: the hint alone.
+    cleanup();
+    const there = { ...confirmed, mode: 'pitak' as const, pitak, pickup: null, trip: onWay };
+    passenger(async () => [{ ...there, driverCameAt: Date.now(), cameAt: Date.now() }]);
+    expect(await screen.findByText('Metro yonida')).toBeTruthy();
   });
 
   it('keeps the search before the meeting, the step of the trip after it', async () => {

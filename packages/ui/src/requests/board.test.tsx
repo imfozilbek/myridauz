@@ -29,7 +29,7 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     expect(screen.getByLabelText('Xabar yozish')).toBeTruthy();
     expect(screen.getByLabelText('Qoʻngʻiroq')).toBeTruthy();
     await tap('Ertaga');
-    await waitFor(() => expect(requestBoard).toHaveBeenLastCalledWith({ date: '2026-10-03' }));
+    await waitFor(() => expect(requestBoard).toHaveBeenLastCalledWith({ date: '2026-10-03', seen: '1' }));
   });
 
   it('with a live trip: the banner, the requests that fit it and one tap offers the trip', async () => {
@@ -84,7 +84,9 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     });
     for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
-    await waitFor(() => expect(requestBoard).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401' }));
+    await waitFor(() =>
+      expect(requestBoard).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', seen: '1' }),
+    );
     expect(await screen.findByText('Dilnoza')).toBeTruthy();
   });
 

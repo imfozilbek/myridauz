@@ -2,6 +2,7 @@ import { MINUTE_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { driverBookings } from './application/answer';
 import { markMeeting } from './application/meeting';
+import { markProgress } from './application/progress';
 import { requestBooking } from './application/request';
 import { booked, DEPART, ENDS, MEET_MINUTES, MEETING } from './test-booked';
 import { ALI, DILNOZA, DRIVER, HOUR, OLIM, seats, setup } from './test-kit';
@@ -53,6 +54,16 @@ describe('the driver at the point of the passenger (docs/126, G63)', () => {
     const again = { ok: false, error: 'bookings.already_met' };
     expect(await markMeeting(deps, DRIVER, id, 'met')).toEqual(again);
     expect(await markMeeting(deps, DRIVER, id, 'no_show')).toEqual(again);
+  });
+
+  it('«Keldi» after the passenger already said «Yetib keldim» does not tell the close people again', async () => {
+    const { deps, id, notes, setNow } = await booked();
+    setNow(MEETING);
+    await markProgress(deps, DILNOZA, id, 'arrived');
+    await markMeeting(deps, DRIVER, id, 'met');
+    expect(notes.filter((note) => note.startsWith('close ones: Dilnoza'))).toEqual([
+      'close ones: Dilnoza arrived',
+    ]);
   });
 
   it('«Kelmadi» once files one complaint of the driver and never turns into «Keldi»', async () => {

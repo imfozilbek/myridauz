@@ -11,7 +11,7 @@ import { confirm, haptic } from '../telegram/feedback';
 // the car (G76, docs/43). A failed mark says why.
 // Each mark goes once (docs/65 A4): a second tap while it is asked or sent, or before the fresh list
 // comes, sends nothing. After «Men keldim» only «Keldi» or «Kelmadi» may follow; they are final.
-export function useMeetMark(onChanged: (booking: Booking) => void) {
+export function useMeetMark(onChanged: (booking: Booking) => void, screen = 'bookings.meeting') {
   const { t } = useI18n();
   const { bookings } = useApiClients();
   const { track } = useAnalytics();
@@ -29,7 +29,7 @@ export function useMeetMark(onChanged: (booking: Booking) => void) {
     try {
       onChanged(await bookings.meet(booking.id, step));
       // «Keldi» is the passenger in the car: the step «boarded» of the funnel (G76, docs/29).
-      if (step === 'met') track({ name: 'boarded', screen: 'bookings.meeting' });
+      if (step === 'met') track({ name: 'boarded', screen });
       haptic.success();
     } catch (caught) {
       undo();

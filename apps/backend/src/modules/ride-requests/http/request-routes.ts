@@ -72,7 +72,7 @@ export function requestRoutes(deps: (env: Bindings) => RequestsDeps) {
       const result = await requestBoard(deps(context.env), driverId, query.data);
       if (!result.ok) return fail(context, result.error);
       const board = result.value;
-      await afterResponse(context, () => boardSeen(deps(context.env), driverId, board));
+      if (query.data.seen) await afterResponse(context, () => boardSeen(deps(context.env), driverId, board));
       return context.json(board);
     })
     .get(DRIVER_REQUESTS_PATH, async (context) => {

@@ -47,6 +47,10 @@ describe('the block of a passenger: one state by its level (G76, docs/165)', () 
     const late = arrivalAt(trip.departAt, trip.km) + 2 * HOUR_MS;
     expect(kind({ bookings: [boarded] }, late)).toBe('arrivedAsk');
     expect(kind({ bookings: [boarded] }, late, { ...none, stillOnWay: new Set([seat.id]) })).toBe('onRoad');
+    // The driver forgot «Keldi»: the minutes of the meeting after the time, the passenger is on the way
+    // (G76, in-car.ts); a no-show never is.
+    expect(kind({ bookings: [seat] }, at((MEET + 1) * MINUTE_MS))).toBe('onRoad');
+    expect(kind({ bookings: [{ ...seat, noShowAt: at(0) }] }, at((MEET + 1) * MINUTE_MS))).toBe('noShow');
   });
 
   it('ends: rate a week, a refused seat until the trip leaves, a no-show', () => {

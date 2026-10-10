@@ -16,7 +16,7 @@ afterEach(cleanup);
 const LATE_MS = 61 * MINUTE_MS;
 
 describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', { timeout: 20_000 }, () => {
-  it('«Kechikyapman» tells every confirmed passenger in the chat, the trip stays', async () => {
+  it('«Kechikyapman» tells once every passenger who waits, the trip stays', async () => {
     const late = { ...trip, departAt: Date.now() - LATE_MS, firstDepartAt: Date.now() - LATE_MS };
     const seat = (id: string, status: typeof confirmed.status) => ({
       ...confirmed,
@@ -31,7 +31,14 @@ describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', {
       DRIVER_ACTIONS,
       {
         trips: async () => [late],
-        requests: async () => [seat('s1', 'confirmed'), seat('s2', 'confirmed'), seat('s3', 'requested')],
+        requests: async () => [
+          seat('s1', 'confirmed'),
+          seat('s2', 'confirmed'),
+          seat('s3', 'requested'),
+          // Marked «Kelmadi» and already in the car: they wait for nobody.
+          { ...seat('s4', 'confirmed'), noShowAt: Date.now() },
+          { ...seat('s5', 'confirmed'), boardedAt: Date.now() },
+        ],
         chat: { answer },
       },
       approved,
@@ -39,6 +46,8 @@ describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', {
     expect(await screen.findByText('Yoʻlga chiqdingizmi?')).toBeTruthy();
     await tap('Kechikyapman');
     await vi.waitFor(() => expect(answer).toHaveBeenCalledTimes(2));
+    // A second tap tells nobody twice.
+    await tap('Kechikyapman');
     expect(answer.mock.calls).toEqual([
       ['chat-s1', 'Kechikyapman'],
       ['chat-s2', 'Kechikyapman'],

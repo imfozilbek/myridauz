@@ -2,16 +2,18 @@ import { tashkentDate, tashkentDayStart, type Booking } from '@platform/contract
 import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
+import { inCar } from './in-car';
 import { useShareTrip } from './use-share-trip';
 
-// «Yetib keldim» once the passenger is in the car: the driver's «Keldi» says so (G76, owner decision
-// 10.10.2026, docs/43); only from the day of the trip on, by Toshkent (docs/89 P7).
-function passengerStep(booking: Booking, now: number): 'arrived' | null {
+// «Yetib keldim» once the passenger is in the car (in-car.ts, G76, docs/43); only from the day of the
+// trip on, by Toshkent (docs/89 P7).
+function passengerStep(booking: Booking, now: number, meetMinutes: number): 'arrived' | null {
   const onTheDay =
     booking.status === 'confirmed' && now >= tashkentDayStart(tashkentDate(booking.trip.departAt));
-  return onTheDay && booking.boardedAt !== null && booking.arrivedAt === null ? 'arrived' : null;
+  return onTheDay && inCar(booking, now, meetMinutes) && booking.arrivedAt === null ? 'arrived' : null;
 }
 
 // The booking of the screen wins: it follows the live signal (docs/65 B2). Only what the person
@@ -31,6 +33,7 @@ export function withTold(booking: Booking, told: Booking | null): Booking {
 export function useTripSteps(booking: Booking, onTold: (booking: Booking) => void) {
   const { track } = useAnalytics();
   const { chat } = useApiClients();
+  const { meetMinutes } = useBrand().schedule;
   const shareTrip = useShareTrip();
   const { failure, fail, clear } = useFailure();
   // What the close people were just told: the note and «Ulashishni toʻxtatish» under the buttons.
@@ -50,7 +53,7 @@ export function useTripSteps(booking: Booking, onTold: (booking: Booking) => voi
       onTold(await chat.arrived(booking.id));
       track({ name: 'arrived', screen: 'bookings.passenger' });
     }, 'told');
-  const next = passengerStep(booking, Date.now());
+  const next = passengerStep(booking, Date.now(), meetMinutes);
   return {
     failure,
     note,

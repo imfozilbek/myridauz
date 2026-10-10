@@ -108,6 +108,9 @@ describe('bookings in D1 (G24)', () => {
         updatedAt: NOW + 3,
       }),
     );
+    // «Men keldim» of the passenger saved from a copy read before «Keldi» keeps the boarding (G76).
+    await bookings.save(record({ status: 'confirmed', cameAt: NOW + 4 }));
+    expect((await bookings.find('b1'))?.boardedAt).toBe(NOW + 3);
     // «Kelmadi» never after the passenger got in; no mark on a booking that is not confirmed.
     await bookings.save(record({ id: 'b2', status: 'confirmed', boardedAt: NOW }));
     expect(await bookings.markOnce('b2', 'no_show', NOW + 5)).toBe(false);

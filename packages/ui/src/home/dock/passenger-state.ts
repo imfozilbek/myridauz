@@ -11,6 +11,7 @@ import {
 } from '@platform/contracts';
 import { endedBadly } from '../../bookings/booking-banner';
 import { waitingOffers } from '../home-items';
+import { inCar } from '../../bookings/in-car';
 
 // What the block at the bottom of a passenger shows (G76, docs/165, mockup g76/2): one thing, the
 // most important by its level (1 the most). Levels as in docs/165: 1 someone waits at the point,
@@ -81,7 +82,7 @@ function seatState(
   if (booking.noShowAt !== null) return now < tripEndsAt(trip.departAt, trip.km) ? of('noShow') : null;
   if (booking.status === 'requested') return of('asked');
   if (booking.arrivedAt !== null) return null;
-  if (booking.boardedAt !== null) {
+  if (inCar(booking, now, meet)) {
     const late = now >= arrivalAt(trip.departAt, trip.km) + ASK_ARRIVED_AFTER_MS;
     return late && !marks.stillOnWay.has(booking.id) ? of('arrivedAsk') : of('onRoad');
   }

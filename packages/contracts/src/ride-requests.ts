@@ -82,6 +82,9 @@ export const requestBoardQuerySchema = z.object({
   date: dateSchema.optional(),
   from: locationIdSchema.optional(),
   to: locationIdSchema.optional(),
+  // Only the screen «Yoʻlovchilar soʻrovlari» itself: the driver saw these requests (G76); the
+  // counts of other screens read the board without it.
+  seen: z.enum(['1']).optional(),
 });
 export type RequestBoardQuery = z.infer<typeof requestBoardQuerySchema>;
 export const requestBoardSchema = z.object({

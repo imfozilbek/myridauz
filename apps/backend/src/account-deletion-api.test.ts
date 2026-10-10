@@ -1,9 +1,10 @@
+import { tashkentDate } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { approvedDriver, json, read } from './bookings-test-api';
 import { recordSupport, supportTalk } from './modules/support';
 import { localUsers } from './modules/users';
-import { call, initData, pid, registerUser, testEnv, doorBooking } from './test-api';
+import { call, initData, pid, registerUser, testEnv, doorBooking, REQUEST_WAY } from './test-api';
 
 vi.stubGlobal('fetch', async () => Response.json({ ok: true, result: { message_id: 1 } }));
 afterAll(() => vi.unstubAllGlobals());
@@ -87,7 +88,20 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
     const published = await read<{ id: string }>(
       call('/driver/trips', DRIVER, { app: 'driver', ...json(later) }),
     );
+    // The driver saw a request on «Yoʻlovchilar soʻrovlari»: the look goes with the account (G76).
+    await registerUser(PASSENGER);
+    // The board opens on the day of the nearest trip of the driver: the trip of the test before.
+    const date = tashkentDate(trip.departAt);
+    const asked = { from: '1726273', to: '1718401', date, seats: 1, price: 90_000, ...REQUEST_WAY };
+    const request = await read<{ id: string }>(call('/passenger/requests', PASSENGER, json(asked)));
+    await call(`/driver/requests/board?date=${date}&seen=1`, DRIVER, { app: 'driver' });
+    const views = async () =>
+      (
+        await read<{ requests: { id: string; views: number }[] }>(call('/passenger/requests', PASSENGER))
+      ).requests.find((one) => one.id === request.id)?.views;
+    expect(await views()).toBe(1);
     expect((await deleteMe(DRIVER, fakeChats().chats, 'driver')).status).toBe(204);
+    expect(await views()).toBe(0);
     expect(await read(call(`/trips/${published.id}`, PASSENGER))).toEqual({ error: 'trips.not_found' });
     await registerUser(DRIVER);
     const me = await read<{ profile: { roles: string[] } }>(call('/me', DRIVER, { app: 'driver' }));

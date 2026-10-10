@@ -57,13 +57,19 @@ describe('talks, board and salon trips API (G64)', () => {
     const request = await read<Request>(call('/passenger/requests', PASSENGER, json(body)));
     const unknown = await read<Board>(call('/driver/requests/board', DRIVER, asDriver));
     expect(unknown.known).toBe(false);
-    const board = await read<Board>(
-      call(`/driver/requests/board?from=1726&to=1718&date=${date}`, DRIVER, asDriver),
-    );
+    const route = `/driver/requests/board?from=1726&to=1718&date=${date}`;
+    const board = await read<Board>(call(route, DRIVER, asDriver));
     expect(board.others.map((item) => item.id)).toContain(request.id);
-    // The board wrote the look of the driver: «1 haydovchi koʻrdi» of the passenger (G76).
-    const mine = await read<{ requests: Request[] }>(call('/passenger/requests', PASSENGER));
-    expect(mine.requests.find((item) => item.id === request.id)?.views).toBe(1);
+    // Counts of other screens read the board without «seen»: nobody saw anything yet (G76).
+    const views = async () =>
+      (await read<{ requests: Request[] }>(call('/passenger/requests', PASSENGER))).requests.find(
+        (item) => item.id === request.id,
+      )?.views;
+    expect(await views()).toBe(0);
+    // The screen «Yoʻlovchilar soʻrovlari» writes the look: «1 haydovchi koʻrdi», once.
+    await call(`${route}&seen=1`, DRIVER, asDriver);
+    await call(`${route}&seen=1`, DRIVER, asDriver);
+    expect(await views()).toBe(1);
     const opened = await call(`/driver/requests/${request.id}/trip`, DRIVER, {
       ...asDriver,
       ...json({ departAt: Date.parse(`${date}T04:00:00Z`) }),

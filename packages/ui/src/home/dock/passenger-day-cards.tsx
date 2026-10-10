@@ -40,7 +40,9 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   // after «Yoʻlga chiqdim», without minutes (owner decision 10.10.2026: no live car, lesson 2).
   const where = booking.pitak?.hint ?? ends.regionName(trip.from);
   const onWay = t('home.dock.onWay', { name: driver.firstName });
-  const meetText = trip.departedAt === null ? where : t('home.meta', { when: where, more: onWay });
+  // On the way between «Yoʻlga chiqdim» and the driver's «Men keldim» at the point.
+  const coming = trip.departedAt !== null && booking.driverCameAt === null;
+  const meetText = coming ? t('home.meta', { when: where, more: onWay }) : where;
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
   // «Men keldim» at the point, red while the driver waits there (mockup g76/2 state 10). After it the
   // driver's «Keldi» puts the passenger in the car (G76, docs/43): until then the map stays.
