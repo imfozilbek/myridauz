@@ -7,7 +7,6 @@ import {
   DriverNotice,
   DriverTiles,
   HomeRouteProvider,
-  HomeScreenOffer,
   MyTripsScreen,
   NEW_TRIP_SECTION,
   NewTripFlow,
@@ -78,7 +77,6 @@ function DriverStart() {
         <StartFlow
           actions={draft ? DRAFT_ACTIONS : ACTIONS}
           notice={<DriverNotice />}
-          after={<HomeScreenOffer />}
           home={(go) => <DriverHome go={go} />}
           tiles={(go, openProfile) => <DriverTiles go={go} openProfile={openProfile} />}
           sections={SECTIONS}

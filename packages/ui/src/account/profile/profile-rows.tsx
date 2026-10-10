@@ -8,10 +8,11 @@ import { openInTelegram } from '../../telegram/feedback';
 import { useAccount } from '../account-context';
 import { formatPhone } from '../cell-value';
 import { ChannelsRow } from './channels-row';
+import { HomeScreenRow } from './home-screen-row';
 import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
-export type ProfileOpen = 'history' | 'reviews' | 'channels' | 'documents' | 'delete';
+export type ProfileOpen = 'reviews' | 'channels' | 'documents' | 'delete';
 
 type Props = {
   readonly standing: Standing | null;
@@ -46,7 +47,6 @@ export function ProfileRows({ standing, onOpen }: Props) {
           hint={t('account.profile.reviewsCount', { count: String(standing?.rating.count ?? 0) })}
           onClick={() => onOpen('reviews')}
         />
-        <ProfileRow icon="history" title={t('comfort.history.title')} onClick={() => onOpen('history')} />
         <ChannelsRow onOpen={() => onOpen('channels')} />
       </ProfileGroup>
       <ProfileGroup header={t('account.profile.settings')}>
@@ -63,6 +63,7 @@ export function ProfileRows({ standing, onOpen }: Props) {
           hint={t('account.profile.phoneLine', { phone: formatPhone(account.profile.phone) })}
         />
         {driver ? <NavigatorRow /> : null}
+        <HomeScreenRow />
       </ProfileGroup>
       <ProfileGroup header={t('home.support')}>
         <ProfileRow

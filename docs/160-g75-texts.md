@@ -39,6 +39,7 @@
 | `market.mine.noLive`, `bookings.tab.liveNone` | пустая вкладка «Faol» попутчика, кнопка «Safar topish» | «Faol safar yoʻq»; вкладка «Faol» без числа | да, 10.10.2026 |
 | `subscriptions.hint`, `subscriptions.withWoman` | «Obunalar»: строка под заголовком и пометка подписки | «Yangi safar chiqsa, botda xabar beramiz.»; « · ayol bilan» | да, 10.10.2026 |
 | `market.mine.noPast` | пустая вкладка «Oʻtgan» попутчика, над «Obunalar» и «Sevimli haydovchilar» (`158` Е) | «Oʻtgan safar yoʻq» | ждёт |
+| `legal.offer.9.text` | оферта, раздел 9: срок, после которого видна оценка (`158` З) | «… yoki 14 kundan keyin koʻrinadi» стало «… yoki {rateDays} kundan keyin koʻrinadi» (7 из конфига бренда), редакция 1.4 | да, 10.10.2026 (решение владельца) |
 
 ## Как читать
 

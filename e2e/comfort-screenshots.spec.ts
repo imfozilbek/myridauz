@@ -37,14 +37,6 @@ test('passenger: "Sevimli haydovchilar"', async ({ page }) => {
   await shot('3-favorites');
 });
 
-test('passenger: "Safarlar tarixi" in the profile', async ({ page }) => {
-  const shot = await open(page, PASSENGER.port);
-  await page.getByLabel(TEXT.profile).click();
-  await page.getByText(t('comfort.history.title')).click();
-  await expect(page.getByText('Nodira')).toBeVisible();
-  await shot('4-history');
-});
-
 // Published, «Mening safarim» of the new trip opens at once (G63): the family gets it from there.
 test('driver: the trip just published, shared with the family', async ({ page }) => {
   const shot = await open(page, DRIVER.port);

@@ -35,6 +35,8 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     // A passenger has no car and no wallet here.
     expect(screen.queryByText('Mashinam')).toBeNull();
     expect(screen.queryByText('Hamyon')).toBeNull();
+    // The past trips live in «Oʻtgan» only (owner decision 10.10.2026): no «Safarlar tarixi».
+    expect(screen.queryByText('Safarlar tarixi')).toBeNull();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
     expect(client.getAvatar).toHaveBeenCalledWith(profile.id);
     fireEvent.click(screen.getByText('Orqaga'));
@@ -124,6 +126,6 @@ describe('delete my data and the documents (docs/30)', () => {
     expect(screen.getByText('Hujjatlar').className).toContain('market-title');
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
-    expect(await screen.findByText(/Tahrir 1\.3/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.4/)).toBeTruthy();
   });
 });

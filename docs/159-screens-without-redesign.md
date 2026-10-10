@@ -54,7 +54,7 @@
 | «Sevimli haydovchilar» | `comfort/favorites-screen.tsx` | нет |
 | «Meni qanday koʻradi» | `account/profile/look-screen.tsx` | частично (без макета) |
 | «Baholarim» | `find/reviews-screen.tsx` | нет |
-| «Safarlar tarixi» | `comfort/history-screen.tsx` | нет (повторяет «Oʻtgan»); **решение владельца 10.10.2026: убрать** |
+| «Safarlar tarixi» | `comfort/history-screen.tsx` | ~~нет~~ **убран в G75** (решение владельца 10.10.2026): прошлые поездки во вкладке «Oʻtgan» |
 | «Hujjatlar» | `account/profile/documents-screen.tsx` | частично (без макета) |
 | Удаление и «Oʻchirildi» | `account/profile/delete-account.tsx` | нет |
 
@@ -62,7 +62,7 @@
 
 | Экран | Компонент | Итог |
 |---|---|---|
-| «Bosh ekranga qoʻshish» | `home/home-screen-offer.tsx` | нет: старый блок на новом главном; **решение владельца 10.10.2026: строкой в «Sozlamalar»** |
+| «Bosh ekranga qoʻshish» | `home/home-screen-offer.tsx` | ~~нет~~ **в G75 строка «Sozlamalar»** у обеих ролей, пока Telegram может добавить значок (решение владельца 10.10.2026) |
 | Камера с рамкой | `media/camera-screen.tsx` | нет |
 | Заявка отклонена | `driver/status-screen.tsx` | нет |
 | Списки мест | `places/place-picker.tsx` | частично |

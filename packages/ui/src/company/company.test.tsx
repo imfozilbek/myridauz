@@ -15,8 +15,8 @@ const company: Company = {
   address: 'Toshkent shahri',
   email: 'info@example.uz',
 };
-// 12:00 in Tashkent on 9 October 2026, after the base edition.
-const AT = Date.parse('2026-10-09T07:00:00Z');
+// 12:00 in Tashkent on 11 October 2026, after the base edition.
+const AT = Date.parse('2026-10-11T07:00:00Z');
 const empty: CompanyState = { current: null, history: [] };
 const savedOnce: CompanyState = {
   current: { version: 1, company, changedBy: 900, changedAt: AT },
@@ -57,9 +57,9 @@ describe('Kompaniya rekvizitlari (G34, docs/96 T22 … T27)', () => {
     type('STIR', '123456789');
     await tap('Saqlash');
     expect(save).toHaveBeenCalledWith(company);
-    expect(await screen.findByText('Saqlandi. Hujjatlar 1.4 tahririga oʻtdi.')).toBeTruthy();
+    expect(await screen.findByText('Saqlandi. Hujjatlar 1.5 tahririga oʻtdi.')).toBeTruthy();
     expect(screen.getByText('Oʻzgarishlar tarixi')).toBeTruthy();
-    expect(screen.getByText('Tahrir 1.4, 9-oktabr 2026')).toBeTruthy();
+    expect(screen.getByText('Tahrir 1.5, 11-oktabr 2026')).toBeTruthy();
   });
 
   it('shows the reason when the API refuses', async () => {

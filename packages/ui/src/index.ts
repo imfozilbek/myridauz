@@ -5,7 +5,6 @@ export { useBrand } from './context/brand-context';
 export { DriverGate } from './driver/driver-gate';
 export { useNotSent } from './driver/driver-context';
 export { DriverNotice } from './driver/driver-notice';
-export { HomeScreenOffer } from './home/home-screen-offer';
 export { FindTripFlow } from './market/find-trip-flow';
 export { MyRequestsScreen } from './market/my-requests-screen';
 export { MyTripsScreen } from './market/my-trips-screen';
