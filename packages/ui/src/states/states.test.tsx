@@ -56,6 +56,8 @@ describe('screen states', () => {
   it('shows skeletons while loading', () => {
     const { container } = renderInShell(<ScreenSkeleton />);
     expect(container.querySelector('[aria-busy="true"]')?.children).toHaveLength(4);
+    // The cards of the lists of the mockup g75/2 A, grey while they load (G75).
+    expect(container.querySelectorAll('.skeleton-card')).toHaveLength(4);
   });
 
   it('keeps the place of a skeleton at once and shows it only after a noticeable wait (G41)', () => {

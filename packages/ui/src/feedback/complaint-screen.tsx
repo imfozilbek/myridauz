@@ -24,17 +24,6 @@ type Props = {
   readonly onBack: () => void;
   readonly onClose?: (() => void) | undefined;
 };
-// The reasons of the mockup g75/5 A in its order; a false profile or a fraud goes as «Boshqa» with
-// the comment (G75, docs/163 dispute 9).
-const SHOWN: readonly ComplaintReason[] = [
-  'harassment',
-  'unsafe_driving',
-  'price_changed',
-  'car_mismatch',
-  'no_show',
-  'other',
-];
-
 type Step = 'edit' | 'sent' | { readonly failed: unknown };
 
 // A complaint about the other side of a ride (docs/17, mockup g75/5 A): one or more reasons as ticks
@@ -96,7 +85,7 @@ export function ComplaintScreen({ bookingId, onBack, onClose }: Props) {
       <DraftNote shown={draft.restored !== null} />
       <div className="complaint-card">
         <TickRows
-          ticks={SHOWN.map((known) => ({ key: known, title: t(`complaints.reason.${known}`) }))}
+          ticks={COMPLAINT_REASONS.map((known) => ({ key: known, title: t(`complaints.reason.${known}`) }))}
           chosen={reasons}
           onToggle={toggle}
         />

@@ -7,9 +7,10 @@ import { lateProps, useLateShow } from './late-show';
 import './states.css';
 
 const ROWS = 4;
-const ROW_HEIGHT = 56;
+const ROW_HEIGHT = 64;
 
-// Gray placeholders while a screen loads, not a spinner over the whole screen (docs/21).
+// Gray placeholders while a screen loads, not a spinner over the whole screen (docs/21): the white
+// cards of the lists of the mockup g75/2 A, grey while they load (G75).
 // "Back" works while it loads: a slow network never locks the person in (docs/65 B1).
 // A fast answer never shows them, and the screen color is the one of the screens it stands for (G41).
 // While it stands, the top loader counts it: the server or the code of the screen is on its way
@@ -26,7 +27,7 @@ export function ScreenSkeleton({ onBack }: { readonly onBack?: () => void }) {
     <div {...lateProps(shown)}>
       {onBack ? <Screen onBack={onBack} /> : null}
       {Array.from({ length: ROWS }, (_, row) => (
-        <Skeleton key={row} visible>
+        <Skeleton key={row} visible className="skeleton-card">
           <div style={{ height: ROW_HEIGHT }} />
         </Skeleton>
       ))}

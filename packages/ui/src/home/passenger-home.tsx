@@ -11,7 +11,8 @@ import { ArrivedSheet, asksArrival } from './arrived-sheet';
 import { FavoriteSheet } from './favorite-sheet';
 import { HomeFailed } from './home-state';
 import { HomeTripCard } from './home-trip-card';
-import { nextBookings } from './home-items';
+import { EndedSeat } from './ended-seat';
+import { endedSeat, nextBookings } from './home-items';
 import { usePassengerData, type PassengerLoad } from './passenger-data';
 import { TALK_CALL, TRIP_TALK } from './trip-talk';
 import { useHomeTap } from './use-home-tap';
@@ -50,6 +51,9 @@ function Seat({ go, load: { value, failed, reload, refresh } }: SeatProps) {
   };
   if (failed || places.status === 'error') return <HomeFailed onRetry={retry} />;
   const booking = value ? nextBookings(value[0])[0] : undefined;
+  const ended = value && !booking ? endedSeat(value[0], now) : null;
+  const open = (id: string) => tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id } }));
+  if (ended) return <EndedSeat booking={ended} onOpen={open(ended.id)} />;
   if (!booking || places.status !== 'ready') return null;
   const { directory } = places;
   if (meetingTime(booking, now, meetMinutes))

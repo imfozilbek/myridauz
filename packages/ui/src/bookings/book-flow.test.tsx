@@ -1,4 +1,4 @@
-import type { BookingsClient } from '@platform/api-client';
+import { ApiError, type BookingsClient } from '@platform/api-client';
 import type { Border } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -27,6 +27,7 @@ const open = (
 ) => {
   const map = fakeMap();
   const onHome = vi.fn();
+  const onClose = vi.fn();
   renderMarket(
     <MapEngineContext.Provider value={async () => map.engine}>
       <PlacesGate>
@@ -34,14 +35,14 @@ const open = (
           trip={{ ...trip, pickupMode }}
           choice={TWO}
           onBack={() => undefined}
-          onClose={() => undefined}
+          onClose={onClose}
           onHome={onHome}
         />
       </PlacesGate>
     </MapEngineContext.Provider>,
     testClients({ bookings: { book }, map: testMap(calls) }),
   );
-  return { book, map, onHome };
+  return { book, map, onHome, onClose };
 };
 const row = (label: string) => screen.getByText(label).closest('button') as HTMLElement;
 
@@ -67,6 +68,21 @@ describe('«Qayerdan, qayerga?» (G59, docs/118 path 2, B)', { timeout: 20_000 }
     );
     await tap('Bosh sahifa');
     expect(onHome).toHaveBeenCalled();
+  });
+
+  // The last seat went while the person chose the points (G75, docs/158 А): the same route on.
+  it('offers «Oʻxshash safarlar» when the last seat was taken', async () => {
+    const book = vi.fn<BookingsClient['book']>(async () => {
+      throw new ApiError(409, 'bookings.no_seats');
+    });
+    const { onClose } = open('both', {}, book);
+    fireEvent.click(row('Tushirish joyi'));
+    await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
+    await tap('Shu yerda tushaman');
+    await tap('Soʻrov yuborish');
+    expect(await screen.findByText('Boʻsh joy qolmagan. Boshqa safarni tanlang.')).toBeTruthy();
+    await tap('Oʻxshash safarlar');
+    expect(onClose).toHaveBeenCalled();
   });
 
   it('keeps the chosen points after a closed app (docs/94 F3, S1)', async () => {
