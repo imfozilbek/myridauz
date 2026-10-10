@@ -12,10 +12,13 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, tailOf, toldBy, wordsOf } from './g27-kit';
 import { ANVAR } from './people';
-import { mainButton, NARROW, openHome, PLATFORMS, shot, t, type Platform } from './screen-tour';
+import { NARROW, openHome, PLATFORMS, shot, t, type Platform } from './screen-tour';
 import { register } from './seed';
 import { outsideCalls, signedAs, type Person } from './stand-kit';
 import { botMessages, clearBotMessages, standSql } from './stand-tools';
+
+// The walk opens the app twice in one page: the native button of the last start is the one seen.
+const visibleMain = (page: Page) => page.locator('#tg-main-button:visible');
 
 // The driver moves the time and lowers the price of a published trip (G39, docs/104) on the whole
 // local Rida, Toshkent → Andijon: the booked passenger and the subscriber hear it, the search shows
@@ -97,14 +100,14 @@ for (const platform of PLATFORMS)
     await page.getByText(t('market.change.time')).click();
     await shot(page, platform, name('3-time'));
     await page.getByText(t('market.change.at', { time: tashkentTime(trip.departAt + 30 * MINUTE) })).click();
-    await mainButton(page).click();
+    await visibleMain(page).click();
     await expect(page.getByText(t('driverTrip.tile.change'))).toBeVisible();
     await page.getByText(t('driverTrip.tile.change')).click();
     await page.getByText(t('market.change.price')).click();
     await shot(page, platform, name('4-price'));
     const { roundStep } = await (await driverMarket()).recommend(CHILONZOR, ANDIJON);
     await page.getByText(formatMoney(trip.price - roundStep), { exact: true }).click();
-    await mainButton(page).click();
+    await visibleMain(page).click();
     await expect(page.getByText(t('driverTrip.tile.change'))).toBeVisible();
     await shot(page, platform, name('5-trip-after'));
     // Leaving within an hour: «Tez orada joʻnaydi» too (the time of the stand is moved by hand).

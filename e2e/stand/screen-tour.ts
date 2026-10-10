@@ -21,7 +21,9 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
   // A thing waiting for an answer rises as a sheet over the main screen (G68): the walk answers
   // «later», as a person may (e2e/crash-guard.ts), and the shot waits until its shade is gone.
   await expect(page.locator('.action-sheet')).toHaveCount(0);
-  await expect(page.locator('[vaul-overlay]')).toHaveCount(0);
+  // A form sheet the walk opened itself (G75, mockup g75/3 A) is shot with its shade over the top.
+  const formSheet = (await page.locator('.form-sheet').count()) > 0;
+  if (!formSheet) await expect(page.locator('[vaul-overlay]')).toHaveCount(0);
   // A map on the screen is drawn before the shot, its tiles too.
   await expect(page.locator('[data-state="loading"]')).toHaveCount(0);
   await page.waitForLoadState('networkidle');
@@ -55,7 +57,7 @@ export const shot = async (page: Page, platform: Platform, name: string) => {
       .filter(Boolean),
   );
   if (cut.length > 0) appendFileSync(CUT, cut.map((text) => `${platform}/${name}: ${text}\n`).join(''));
-  await expectGradient(page, `${platform}/${name}`);
+  if (!formSheet) await expectGradient(page, `${platform}/${name}`);
   await page.screenshot({ path: `screenshots/stand/g27/${platform}/${name}.png`, animations: 'disabled' });
   // Every blink and jump since the last shot is written down under this name (G41, docs/108).
   await readStability(page, `${platform}/${name}`);
