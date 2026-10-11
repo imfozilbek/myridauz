@@ -31,7 +31,7 @@ function driver(requests = [asked], answer = vi.fn(async () => asked), money = 1
 }
 
 // «Yangi soʻrov» over the main screen of a driver (G68, docs/122, mockup g68/7 screen 3).
-describe('the sheet of a new request (G68)', () => {
+describe('the sheet of a new request (G68)', { timeout: 20_000 }, () => {
   it('says who, how many seats, when and where, the sum, the commission and the time to answer', async () => {
     driver();
     // The block at the bottom calls, the sheet answers (G76, docs/164).

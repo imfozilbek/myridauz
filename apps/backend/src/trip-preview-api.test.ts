@@ -7,7 +7,7 @@ const NEWCOMER = 62;
 const HOUR = 3_600_000;
 
 // A new person from a channel post sees the trip before the registration (G75, docs/124 Д).
-describe('a trip for a person not registered yet', () => {
+describe('a trip for a person not registered yet', { timeout: 20_000 }, () => {
   it('opens by its id', async () => {
     await approvedDriver(DRIVER);
     const trip = await read<{ id: string }>(

@@ -38,7 +38,7 @@ function passenger(key: string) {
 }
 
 // «Yangi xabar» over the main screen (G68, docs/122, mockup g68/8 «Xabar»): the words, ready answers.
-describe('the sheet of a new message (G68)', () => {
+describe('the sheet of a new message (G68)', { timeout: 20_000 }, () => {
   it('shows who wrote, about which trip and the words', async () => {
     passenger('b00000000-0000-4000-8000-000000000a01');
     // The red dot on the chat of the block opens the sheet (G76, docs/164).

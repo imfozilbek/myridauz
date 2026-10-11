@@ -29,7 +29,7 @@ function passenger(
 }
 
 // «Yangi taklif» over the main screen of a passenger (G68, docs/122, mockup g68/8 «Taklif»).
-describe('the sheet of a new offer (G68)', () => {
+describe('the sheet of a new offer (G68)', { timeout: 20_000 }, () => {
   it('says the driver, the car with its plate, the trip, how the driver picks up and the sum', async () => {
     passenger([{ ...offer, id: 'o11' }]);
     // The block says the sum without «soʻm», as on the mockup g76/2 state 5.

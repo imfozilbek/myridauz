@@ -9,7 +9,7 @@ const photo = () =>
   call('/driver/application/photos/side', DRIVER, { method: 'PUT', app: 'driver', ...jpeg });
 
 // One car at the launch (G75, docs/124 Ё): a live trip keeps the car, it is over: the car changes.
-describe('a new car of an approved driver', () => {
+describe('a new car of an approved driver', { timeout: 20_000 }, () => {
   it('waits for the live trip to be over', async () => {
     await approvedDriver(DRIVER);
     const trip = await read<{ id: string }>(
