@@ -65,7 +65,8 @@ for (const platform of PLATFORMS)
     await toHome(page);
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
     await searchTo(page, 'Termiz shahri');
-    await page.getByText(t('common.passenger.leaveRequest')).first().click();
+    // The row of the empty day: the main screen kept under the search has the words too, hidden.
+    await page.getByText(t('common.passenger.leaveRequest')).locator('visible=true').first().click();
     await expect(page.getByText(t('market.request.cancel'))).toBeVisible();
     await shot('02-p-second');
     await openHome(page, 'passenger', SEEKERS[platform], platform);
