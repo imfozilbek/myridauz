@@ -67,6 +67,18 @@ const atPoint = (booking: Booking) =>
   booking.metAt === null &&
   booking.noShowAt === null;
 
+// A passenger at the point: waiting for the driver («Men keldim»), then «Keldi» or «Kelmadi».
+const pointStates = (trip: Trip, people: readonly Booking[]): DriverState[] =>
+  people
+    .filter(atPoint)
+    .flatMap((booking): DriverState[] =>
+      booking.driverCameAt !== null
+        ? [{ kind: 'atPoint', trip, booking }]
+        : booking.cameAt !== null
+          ? [{ kind: 'passengerWaits', trip, booking }]
+          : [],
+    );
+
 // The states of one trip of the driver, the most important first.
 function tripStates(trip: Trip, lists: Lists, now: number, meet: number): DriverState[] {
   const people = own(trip, lists.bookings);
@@ -78,14 +90,11 @@ function tripStates(trip: Trip, lists: Lists, now: number, meet: number): Driver
     return fresh && unrated ? [{ kind: 'ended', trip }] : [];
   }
   if (trip.status === 'cancelled') return [];
-  if (trip.departedAt !== null) return [{ kind: 'onRoad', trip }];
+  // On the way the points still lead (mockup g76/3 states 12 and 13): a passenger who waits or the
+  // driver at the point, then the road with the next point (state 14; G77, docs/170 О1).
+  if (trip.departedAt !== null) return [...pointStates(trip, people), { kind: 'onRoad', trip }];
   const states: DriverState[] = [];
-  const meeting = now >= meetingStartsAt(trip.departAt, meet);
-  for (const booking of people.filter(atPoint)) {
-    if (meeting && booking.cameAt !== null && booking.driverCameAt === null)
-      states.push({ kind: 'passengerWaits', trip, booking });
-    else if (meeting && booking.driverCameAt !== null) states.push({ kind: 'atPoint', trip, booking });
-  }
+  if (now >= meetingStartsAt(trip.departAt, meet)) states.push(...pointStates(trip, people));
   if (tripStep(trip, now) === 'departed')
     states.push({ kind: now >= trip.departAt + DEPART_REMIND_MS ? 'departAsk' : 'depart', trip });
   const requests = people.filter((one) => answerable(one, now));

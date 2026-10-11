@@ -1,4 +1,4 @@
-import type { MarketClient } from '@platform/api-client';
+import type { BookingsClient, MarketClient } from '@platform/api-client';
 import { DAY_MS, HOUR_MS, MINUTE_MS, MY_TRIP_LINK } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -30,10 +30,26 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
     expect(screen.getByText(opened('map'))).toBeTruthy();
   });
 
+  it('on the way the next point to pick up comes first, with «Men keldim» (G77, docs/170 О1)', async () => {
+    const road = { ...trip, departAt: Date.now() + 10 * MINUTE_MS, departedAt: Date.now() - MINUTE_MS };
+    const meet = vi.fn<BookingsClient['meet']>(async () => ({ ...confirmed, driverCameAt: Date.now() }));
+    renderHome(
+      () => <DriverHome />,
+      DRIVER_ACTIONS,
+      { trips: async () => [road], requests: async () => [{ ...confirmed, trip: road }], answers: { meet } },
+      approved,
+    );
+    expect(await screen.findByText('Keyingi: Chilonzor bozori yaqinida')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Yetib keldik' })).toBeNull();
+    await tap('Men keldim');
+    await vi.waitFor(() => expect(meet).toHaveBeenCalledWith(confirmed.id, 'came'));
+  });
+
   it('«Yetib keldik» marks the arrival, then «Safar tugadi» with its stars and «Qaytish»', async () => {
     const road = { ...trip, departAt: Date.now() - HOUR_MS, departedAt: Date.now() - HOUR_MS };
     const arriveTrip = vi.fn<MarketClient['arriveTrip']>(async () => ({ ...road, arrivedAt: Date.now() }));
-    home(road, [{ ...confirmed, trip: road }], { arriveTrip });
+    // Everybody is in the car: the dropoffs lead.
+    home(road, [{ ...confirmed, trip: road, boardedAt: road.departAt }], { arriveTrip });
     await tap('Yetib keldik');
     expect(await screen.findByText(opened('end'))).toBeTruthy();
     expect(arriveTrip).toHaveBeenCalledWith(trip.id);

@@ -71,8 +71,17 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
     await tap(/· Soʻrov$/u);
     expect(await screen.findByText('Kutayotganda')).toBeTruthy();
     expect(screen.getByText('Kanalga qoʻshilish')).toBeTruthy();
+    // Asked first (docs/65 B4): «No» keeps the request with its offers, «Yes» cancels it (G77).
+    const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
+    await tap('Soʻrovni bekor qilish');
+    await vi.waitFor(() => expect(asked).toHaveBeenCalledOnce());
+    expect(asked).toHaveBeenCalledWith(
+      'Soʻrovni bekor qilasizmi? Haydovchilar uni endi koʻrmaydi, kelgan takliflar yopiladi.',
+    );
+    expect(cancelRequest).not.toHaveBeenCalled();
     await tap('Soʻrovni bekor qilish');
     await vi.waitFor(() => expect(cancelRequest).toHaveBeenCalledWith('r1'));
+    asked.mockRestore();
   });
 
   it('lets the drivers call about the request; the passenger turns it off in one tap (G64, docs/127)', async () => {

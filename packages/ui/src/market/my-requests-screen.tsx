@@ -2,7 +2,6 @@ import {
   BOOKING_LINK,
   OFFER_LINK,
   REQUEST_LINK,
-  tashkentDate,
   type AppLink,
   type Booking,
   type RideRequest,
@@ -78,10 +77,11 @@ function MyRequests({ onBack, link }: ScreenProps) {
   const places = usePlaces();
   if (finding) return <FindTripFlow onBack={() => setFinding(false)} />;
   const route = again && { from: places.find(again.from), to: places.find(again.to) };
+  // «Qayta yuborish»: the same route, the day is asked again; «Назад» from the points comes to the
+  // day (G77, docs/170 О2).
   if (route?.from && route.to) {
     const close = () => (setAgain(null), reload());
-    const search = { route: { from: route.from, to: route.to }, date: tashkentDate(Date.now()) };
-    return <NewRequestFlow onBack={() => setAgain(null)} onClose={close} search={search} />;
+    return <NewRequestFlow onBack={() => setAgain(null)} onClose={close} from={route.from} to={route.to} />;
   }
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (opened && value) {

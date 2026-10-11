@@ -1,5 +1,5 @@
 import type { RideRequest } from '@platform/contracts';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed, request } from '../bookings/booking-test-kit';
 import { searchMarket } from '../find/search-test-kit';
@@ -34,8 +34,13 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
     expect(screen.getByText('Muddati oʻtdi')).toBeTruthy();
     expect(screen.getAllByText('2 kishi')).toHaveLength(2);
     await tap('Qayta yuborish');
-    // The same way again: the request opens with its route, the day is today.
+    // The same way again: the request opens with its route and asks the day, never «today» by
+    // itself (G77, docs/170 О2); «Назад» from the points comes back to the day.
     expect(recommend).toHaveBeenCalledWith(request.from, request.to);
+    await tap(/^Ertaga/u);
+    await waitFor(() => expect(screen.queryByText(/^Ertaga/u)).toBeNull());
+    await tap('Orqaga');
+    expect(await screen.findByText(/^Ertaga/u)).toBeTruthy();
   });
 
   it('says there is nothing live and offers «Safar topish»', async () => {

@@ -4,7 +4,8 @@ import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
-import { haptic } from '../telegram/feedback';
+import { confirm, haptic } from '../telegram/feedback';
+import { useI18n } from '../context/i18n-context';
 import { errorKey } from '../market/error-text';
 import { ChatScreen } from '../chat/chat-screen';
 import { AcceptedBooking } from './accepted-booking';
@@ -32,6 +33,7 @@ type Props = {
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
 export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Props) {
+  const { t } = useI18n();
   const { track } = useAnalytics();
   const { bookings, market } = useApiClients();
   const [offerId, setOfferId] = useState<string | null>(null);
@@ -54,6 +56,14 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
     }
   };
   const open = (next: Offer | null) => (setFailure(null), setOfferId(next?.id ?? null));
+  // Asked first, as a seat is: one tap never loses a request with its offers (docs/65 B4).
+  const cancelRequest = async (request: RideRequest) => {
+    if (!(await confirm(t('market.request.cancelAsk'), t('market.request.cancel')))) return;
+    await run(
+      () => market.cancelRequest(request.id),
+      () => onClose(true),
+    );
+  };
   // An answer from the card of the request or from the screen of the offer (G61, mockup 3-offers A).
   const answer = (answered: Offer, action: 'accept' | 'decline') =>
     run(
@@ -73,12 +83,7 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
         offers={offers}
         failure={failure}
         onBack={() => onClose(false)}
-        onCancel={() =>
-          void run(
-            () => market.cancelRequest(opened.request.id),
-            () => onClose(true),
-          )
-        }
+        onCancel={() => void cancelRequest(opened.request)}
         onAnswer={answer}
         onOpen={open}
       >
