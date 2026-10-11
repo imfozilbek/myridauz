@@ -43,8 +43,11 @@ function Flow({
   onBack,
   onClose,
 }: Props & { readonly find: Find; readonly onClose: () => void }) {
-  const last = search ? rememberedWay(search.route.from.id, search.route.to.id, find) : null;
-  const flow = useNewRequest(search, last);
+  // Both ends of the block: the route is not asked again, the day is (G76).
+  const known = from && to ? { from, to } : undefined;
+  const route = search?.route ?? known;
+  const last = route ? rememberedWay(route.from.id, route.to.id, find) : null;
+  const flow = useNewRequest(search, last, known);
   const props = { flow, find, search, from, to, onBack, onClose };
   return (
     <>

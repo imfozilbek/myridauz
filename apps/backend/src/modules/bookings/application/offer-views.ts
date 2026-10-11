@@ -48,7 +48,9 @@ export async function offerViews(
         tripId: offer.tripId,
         pitak: byPitak ? (trip?.pitak?.name ?? null) : null,
         createdAt: offer.createdAt,
-        passengerName: passenger?.firstName ?? '',
+        passenger: passenger
+          ? { id: passenger.publicId, firstName: passenger.firstName, hasAvatar: passenger.avatarShown }
+          : null,
       };
     }),
   );

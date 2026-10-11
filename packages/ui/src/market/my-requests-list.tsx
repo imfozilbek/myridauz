@@ -1,7 +1,6 @@
 import type { Booking, Offer, RideRequest } from '@platform/contracts';
 import { Title } from '@telegram-apps/telegram-ui';
 import { PastBookingRow } from '../bookings/past-booking-row';
-import { FavoritesEntry } from '../comfort/comfort-entries';
 import { List } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -32,7 +31,6 @@ type Props = {
   readonly onAgain: (request: RideRequest) => void;
   readonly onFind: () => void;
   readonly onSubscriptions: () => void;
-  readonly onFavorites: () => void;
   readonly tab: MineTab;
   readonly onTab: (tab: MineTab) => void;
 };
@@ -72,10 +70,9 @@ export function MyRequestsList(props: Props) {
               </div>
             )}
           />
-          {/* As on «Mening safarlarim» of a driver (g64/6): the followed routes and the saved drivers
-              under the past trips; «Faol» keeps only what goes (mockup g75/2 A). */}
+          {/* As on «Mening safarlarim» of a driver (g64/6): the followed routes under the past trips;
+              «Faol» keeps only what goes (mockup g75/2 A). The saved drivers are a tile (G76). */}
           <SubscriptionsEntry onOpen={props.onSubscriptions} />
-          <FavoritesEntry onOpen={props.onFavorites} />
         </List>
       ) : live === 0 ? (
         <>

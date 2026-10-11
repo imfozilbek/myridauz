@@ -1,16 +1,30 @@
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { BackButton } from '../telegram/back-button';
+import { pressBack } from '../test-native';
 import { renderInShell } from '../test-shell';
 import { ChatLink } from './chat-link';
 import { useOpenChat } from './open-chat';
 
-// The chat screen itself is tested apart: here only which chat opens and how. A ringing call comes
-// as a sheet now (G68): action-sheet/call-sheet.test.tsx.
-vi.mock('./chat-screen', () => ({
-  ChatScreen: ({ chatKey, ring }: { readonly chatKey: string; readonly ring?: boolean }) => (
-    <p>{`chat ${chatKey}${ring ? ' ring' : ''}`}</p>
-  ),
+vi.mock('@telegram-apps/sdk-react', async (original) => ({
+  ...(await original<object>()),
+  ...(await import('../test-native')).nativeButtons,
 }));
+// The chat screen itself is tested apart: here only which chat opens and how, and its «Назад». A
+// ringing call comes as a sheet now (G68): action-sheet/call-sheet.test.tsx.
+vi.mock('./chat-screen', async () => {
+  const { BackButton: Back } = await import('../telegram/back-button');
+  type Props = { readonly chatKey: string; readonly ring?: boolean; readonly onBack: () => void };
+  return {
+    ChatScreen: ({ chatKey, ring, onBack }: Props) => (
+      <>
+        <p>{`chat ${chatKey}${ring ? ' ring' : ''}`}</p>
+        <Back onClick={onBack} />
+      </>
+    ),
+  };
+});
 afterEach(() => {
   cleanup();
   window.history.replaceState(null, '', '/');
@@ -46,5 +60,39 @@ describe('the chat over any screen (docs/07, G68)', () => {
     );
     act(() => void fireEvent.click(screen.getByText('call')));
     expect(screen.getByText(`chat ${KEY} ring`)).toBeTruthy();
+  });
+});
+
+describe('back from a chat opened over the app (G76)', () => {
+  it('comes to the very screen that opened it, as it was; the screen gives «Назад» to the chat', () => {
+    const left = vi.fn();
+    function Counted() {
+      const open = useOpenChat();
+      const [count, setCount] = useState(0);
+      return (
+        <>
+          <button type="button" onClick={() => setCount(count + 1)}>{`seen ${count}`}</button>
+          <button type="button" onClick={() => open(KEY)}>
+            write
+          </button>
+          <BackButton onClick={left} />
+        </>
+      );
+    }
+    renderInShell(
+      <ChatLink>
+        <Counted />
+      </ChatLink>,
+      true,
+    );
+    fireEvent.click(screen.getByText('seen 0'));
+    act(() => void fireEvent.click(screen.getByText('write')));
+    expect(screen.getByText(`chat ${KEY}`)).toBeTruthy();
+    act(() => pressBack());
+    expect(screen.queryByText(`chat ${KEY}`)).toBeNull();
+    expect(screen.getByText('seen 1')).toBeTruthy();
+    expect(left).not.toHaveBeenCalled();
+    act(() => pressBack());
+    expect(left).toHaveBeenCalledOnce();
   });
 });

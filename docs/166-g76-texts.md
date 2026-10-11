@@ -46,6 +46,10 @@
 | 11, 12, 13 | «Yoʻl xaritasi», «Yoʻlga chiqdim», «Uchrashuv», «{ism} keldimi? Belgilang», «Kelmadi», «Keldi» |
 | 14, 15, 16 | «Yoʻldasiz · {i} / {n}», «Keyingi: {joy}», «Navigator», «Yetib keldik», «Yoʻlga chiqdingizmi?», «2 soatdan keyin oʻzi yoʻlga chiqqan deb belgilanadi», «Kechikyapman» (то же слово уходит в чат попутчикам), «Yoʻlovchilarni baholang», «{n} yoʻlovchi · komissiya {summa}», «Qaytish safari» |
 
+## Исправления G76 (`168`, ждёт согласия владельца)
+
+- Готовый текст в поддержку, когда кошелёк просто мал и никто не ждёт: «Salom! Hamyonimni toʻldirmoqchiman.» (первая фраза утверждённого `wallet.short.message`).
+
 ## Админка
 
 - «Moʻljal»: поле пятака, где именно стоять (G76, `72`).

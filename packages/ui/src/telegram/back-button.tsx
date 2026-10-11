@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Button } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { claimBack, type NativeBack } from '../screen/back-stack';
+import { useBehind } from './behind';
 import { useInTelegram } from './in-telegram-context';
 
 const NATIVE: NativeBack = {
@@ -21,14 +22,15 @@ type Props = { readonly onClick: () => void; readonly overlay?: boolean };
 // overlay: a camera or a window over the screen, it takes «Назад» first (docs/94 F6, F7).
 export function BackButton({ onClick, overlay = false }: Props) {
   const inTelegram = useInTelegram();
+  const behind = useBehind();
   const { t } = useI18n();
   const press = useRef(onClick);
   useLayoutEffect(() => {
     press.current = onClick;
   });
   useEffect(() => {
-    return inTelegram ? claimBack({ overlay, press }, NATIVE) : undefined;
-  }, [inTelegram, overlay]);
+    return inTelegram && !behind ? claimBack({ overlay, press }, NATIVE) : undefined;
+  }, [inTelegram, behind, overlay]);
   if (inTelegram) return null;
   return (
     <Button mode="plain" size="s" onClick={onClick}>

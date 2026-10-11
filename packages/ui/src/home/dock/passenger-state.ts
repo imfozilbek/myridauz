@@ -57,9 +57,10 @@ type Lists = {
   readonly offers: readonly Offer[];
   // A trip of a saved driver not shown yet (docs/129), null when none.
   readonly favorite: Trip | null;
+  // The days to rate after the end of a trip (the brand, docs/129), as the page of the seat counts.
+  readonly rateDays: number;
 };
 
-const RATE_DAYS = 7;
 const ASK_ARRIVED_AFTER_MS = HOUR_MS;
 const atPoint = (booking: Booking) =>
   booking.boardedAt === null && booking.metAt === null && booking.noShowAt === null;
@@ -70,11 +71,12 @@ function seatState(
   now: number,
   meet: number,
   marks: PassengerMarks,
+  rateDays: number,
 ): PassengerState | null {
   const { trip } = booking;
   const of = <K extends PassengerState['kind']>(kind: K) => ({ kind, booking }) as PassengerState;
   if (booking.status === 'completed') {
-    const fresh = now - trip.departAt < RATE_DAYS * DAY_MS;
+    const fresh = now < tripEndsAt(trip.departAt, trip.km) + rateDays * DAY_MS;
     return fresh && booking.rated !== true && booking.noShowAt === null ? of('ended') : null;
   }
   if (endedBadly(booking.status))
@@ -104,7 +106,9 @@ export function passengerStates(
   meet: number,
   marks: PassengerMarks,
 ): PassengerState[] {
-  const seats = lists.bookings.flatMap((booking) => seatState(booking, now, meet, marks) ?? []);
+  const seats = lists.bookings.flatMap(
+    (booking) => seatState(booking, now, meet, marks, lists.rateDays) ?? [],
+  );
   const waiting = waitingOffers(lists.requests, lists.offers);
   const open = lists.requests.filter((request) => request.status === 'open');
   const requests = open.map((request): PassengerState => {

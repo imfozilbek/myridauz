@@ -23,6 +23,11 @@ export function waitingOffers(requests: readonly RideRequest[], offers: readonly
 
 export type DriverItem = { readonly trip: Trip; readonly requests: number };
 
+// A request the driver can still answer: its time to answer is not over (docs/35). The block, the
+// wallet and the sheet count only these, so «Javob berish» never opens an empty sheet (G76).
+export const answerable = (booking: Booking, now: number) =>
+  booking.status === 'requested' && booking.expiresAt > now;
+
 // The new requests of a trip the driver has not answered yet: on the main screen and on the card in
 // «Mening safarlarim» (G41, docs/90 F-D4).
 export const waitingRequests = (trip: Trip, bookings: readonly Booking[]) =>

@@ -31,7 +31,9 @@ export function ActionCard({ item, counter, laterLabel, onDone, onLater }: Props
   const act = (action: SheetAction) => async () => {
     clear();
     try {
-      onDone(await action.run());
+      const words = await action.run();
+      if (action.aside) onLater();
+      else onDone(words);
     } catch (caught) {
       fail(caught);
     }

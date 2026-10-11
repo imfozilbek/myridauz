@@ -63,9 +63,7 @@ test('android: every screen a bot button opens', async ({ page }) => {
 
 test('android: «Mening safarlarim» and the saved drivers', async ({ page }) => {
   await openHome(page, 'passenger', ZEBO, 'android');
-  await page.getByText(t('common.myTrips')).first().click();
-  await shot(page, 'android', 'pa30-my-trips');
-  // «Obunalar» and «Sevimli haydovchilar» open from «Oʻtgan» (mockup g75/2 A).
-  await page.getByText(t('bookings.tab.past')).click();
+  await visit(page, 'android', t('common.myTrips'), 'pa30-my-trips');
+  // «Sevimli haydovchilar» is a tile of the main screen, its only way in (G76, docs/165).
   await visit(page, 'android', t('comfort.favorites.title'), 'pa31-favorites');
 });

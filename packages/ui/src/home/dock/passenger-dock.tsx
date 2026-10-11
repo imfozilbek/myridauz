@@ -58,7 +58,7 @@ export function usePassengerState(): PassengerState {
   const { value } = usePassengerData();
   const now = useNow();
   const marks = usePassengerMarks();
-  const { meetMinutes } = useBrand().schedule;
+  const { schedule, ratings } = useBrand();
   const favorite = useFavoriteTrip(now, marks.seen);
   if (!value) return { kind: 'idle' };
   const [bookings, requests, offers] = value;
@@ -68,8 +68,9 @@ export function usePassengerState(): PassengerState {
     requests,
     offers,
     favorite: favorite && !booked.has(favorite.id) ? favorite : null,
+    rateDays: ratings.days,
   };
-  return passengerState(passengerStates(lists, now, meetMinutes, marks));
+  return passengerState(passengerStates(lists, now, schedule.meetMinutes, marks));
 }
 
 // The first trip of a saved driver with seats, not shown on this phone yet (docs/129).

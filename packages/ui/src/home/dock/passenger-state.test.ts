@@ -10,7 +10,12 @@ const seat = { ...booking, status: 'confirmed' as const };
 const at = (ms: number) => trip.departAt + ms;
 const kind = (lists: Partial<Parameters<typeof passengerStates>[0]>, now: number, marks = none) =>
   passengerState(
-    passengerStates({ bookings: [], requests: [], offers: [], favorite: null, ...lists }, now, MEET, marks),
+    passengerStates(
+      { bookings: [], requests: [], offers: [], favorite: null, rateDays: 7, ...lists },
+      now,
+      MEET,
+      marks,
+    ),
   ).kind;
 
 describe('the block of a passenger: one state by its level (G76, docs/165)', () => {
@@ -64,7 +69,7 @@ describe('the block of a passenger: one state by its level (G76, docs/165)', () 
 
   it('puts the most important first: a driver waiting beats offers', () => {
     const came = { ...seat, driverCameAt: at(-5 * MINUTE_MS) };
-    const lists = { bookings: [came], requests: [request], offers: [offer], favorite: trip };
+    const lists = { bookings: [came], requests: [request], offers: [offer], favorite: trip, rateDays: 7 };
     const states = passengerStates(lists, at(-3 * MINUTE_MS), MEET, none);
     expect(states.map((state) => state.kind)).toEqual(['driverWaits', 'offers', 'favorite']);
   });

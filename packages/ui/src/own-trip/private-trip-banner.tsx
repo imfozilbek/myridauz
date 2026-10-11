@@ -35,7 +35,7 @@ export function PrivateTripBanner({ trip, offer, onOpened }: Props) {
       fail(caught);
     }
   });
-  const name = offer?.passengerName ?? '';
+  const name = offer?.passenger?.firstName ?? '';
   const waiting = offer?.status === 'sent';
   const title = waiting
     ? t('driverTrip.private.waiting.title', { name })

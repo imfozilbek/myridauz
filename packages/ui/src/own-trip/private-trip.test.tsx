@@ -14,7 +14,7 @@ const asked = (status: Offer['status']): Offer => ({
   ...offer,
   tripId: trip.id,
   status,
-  passengerName: 'Sardor',
+  passenger: { id: '00000000000000000000000000000008', firstName: 'Sardor', hasAvatar: false },
 });
 
 beforeEach(() => void vi.useFakeTimers({ toFake: ['Date'], now: NOW }));

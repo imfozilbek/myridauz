@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Cell, Input, Modal, Section } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { SheetOverlay } from '../../home/sheet-overlay';
+import { useBehind } from '../../telegram/behind';
 import { useSheetShown } from '../../telegram/sheet-shown';
 import { findCars, typedCar, type CarName } from '../car-choices';
 
@@ -13,7 +14,9 @@ type Props = {
 
 // «Boshqa ›» (G62, docs/118 path 5): the whole list with a search; a car not in it is typed with its
 // make and model.
-export function OtherCarSheet({ open, onClose, onPick }: Props) {
+export function OtherCarSheet({ open: asked, onClose, onPick }: Props) {
+  const behind = useBehind();
+  const open = asked && !behind;
   useSheetShown(open);
   return (
     <Modal

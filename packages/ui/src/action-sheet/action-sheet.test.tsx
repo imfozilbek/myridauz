@@ -90,4 +90,14 @@ describe('the action sheet (G68, G76)', () => {
     expect(await screen.findByRole('alert')).toBeTruthy();
     expect(screen.getByText('Olim · 1 joy')).toBeTruthy();
   });
+
+  it('a step aside closes the sheet and keeps the thing: its button opens it again (G76)', async () => {
+    const wallet = { label: 'Hisobni toʻldirish', run: () => undefined, aside: true as const };
+    show([{ ...item('request:b', 'request', 'Madina · 2 joy'), main: wallet }]);
+    open('request');
+    await tap('Hisobni toʻldirish');
+    await sheetClosed();
+    open('request');
+    expect(await screen.findByText('Madina · 2 joy')).toBeTruthy();
+  });
 });

@@ -5,6 +5,7 @@ import { useDriver } from '../../driver/driver-context';
 import { UzPlate } from '../../plate/uz-plate';
 import { Switch } from '../../switch';
 import { openInTelegram } from '../../telegram/feedback';
+import { openApp } from '../../telegram/open-app';
 import { useAccount } from '../account-context';
 import { formatPhone } from '../cell-value';
 import { ChannelsRow } from './channels-row';
@@ -50,6 +51,16 @@ export function ProfileRows({ standing, onOpen }: Props) {
           onClick={() => onOpen('reviews')}
         />
         <ChannelsRow onOpen={() => onOpen('channels')} />
+        {/* «Haydovchi boʻling» is here always for a passenger, the strip of the main screen only while
+            its block is free (G76, docs/165). */}
+        {account.profile.roles.includes('driver') ? null : (
+          <ProfileRow
+            icon="carSide"
+            title={t('home.becomeDriver.title')}
+            hint={t('home.becomeDriver.hint')}
+            onClick={() => openApp(bots.driver)}
+          />
+        )}
       </ProfileGroup>
       <ProfileGroup header={t('account.profile.settings')}>
         {/* The bot always writes about bookings, chats and trips: shown, never switched off (G65). */}

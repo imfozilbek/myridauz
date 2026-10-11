@@ -70,7 +70,7 @@ export async function openPrivateTrip(page: Page) {
     requestId: request.id,
     tripId: hidden.id,
     status: 'sent',
-    passengerName: 'Sardor',
+    passenger: { id: '00000000000000000000000000000008', firstName: 'Sardor', hasAvatar: false },
   };
   await openTrips(
     page,

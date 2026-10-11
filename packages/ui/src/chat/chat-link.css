@@ -1,0 +1,9 @@
+/* The app under a chat opened over it (ChatLink): laid out as if the wrapper were not there, and
+   not seen while the chat stands. */
+.chat-link-app {
+  display: contents;
+}
+
+.chat-link-behind {
+  display: none;
+}

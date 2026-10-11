@@ -68,7 +68,7 @@ function useDriverState(): DriverState {
   const status = useDriver()?.application.status ?? 'draft';
   const money = useLoad(() => wallet.mine(), 'wallet').value;
   const now = useNow();
-  const { schedule, wallet: rules } = useBrand();
+  const { schedule, wallet: rules, ratings } = useBrand();
   // «Siz haydovchisiz!» stays for this visit, though it is marked seen at once (G62).
   const [welcome] = useState(() => !approvalSeen());
   const [trips, bookings] = value ?? [[], []];
@@ -79,6 +79,7 @@ function useDriverState(): DriverState {
     bookings,
     wallet: money ?? null,
     fewSeats: rules.fewSeats,
+    rateDays: ratings.days,
     unseen: unseenOffers(bookings, now),
   };
   const [first] = driverStates(lists, now, schedule.meetMinutes);

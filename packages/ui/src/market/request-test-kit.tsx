@@ -1,5 +1,5 @@
 import type { MapClient, MarketClient } from '@platform/api-client';
-import type { RideRequest, RideRequestInput } from '@platform/contracts';
+import type { Location, RideRequest, RideRequestInput } from '@platform/contracts';
 import { vi } from 'vitest';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
@@ -12,6 +12,8 @@ type Options = {
   // The own requests and offers, for a request already left on the same day (G37).
   readonly mine?: Partial<Pick<MarketClient, 'myRequests'>>;
   readonly search?: Parameters<typeof NewRequestFlow>[0]['search'];
+  // Both ends of the block of the main screen (G76).
+  readonly ends?: { readonly from: Location; readonly to: Location };
   readonly map?: Partial<Pick<MapClient, 'pitakOf'>>;
   // «Men bilan ayol bor» is a man's (docs/06 rule 4).
   readonly gender?: 'male' | 'female';
@@ -21,6 +23,7 @@ type Options = {
 export function openRequest({
   onBack = () => undefined,
   search,
+  ends,
   map = {},
   mine = {},
   gender = 'male',
@@ -46,7 +49,7 @@ export function openRequest({
   const engine = fakeMap().engine;
   renderMarket(
     <MapEngineContext.Provider value={async () => engine}>
-      <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} />
+      <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} {...ends} />
     </MapEngineContext.Provider>,
     testClients({
       market: {

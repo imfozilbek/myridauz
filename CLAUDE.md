@@ -49,7 +49,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 
 ## Причины и следствия (решение владельца)
 
-- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`, `docs/147`, `docs/157`): что случилось,
+- Каждая ошибка записывается в `docs/26-lessons-learned.md` (продолжение `docs/44`, `docs/49`, `docs/66`, `docs/84`, `docs/91`, `docs/99`, `docs/113`, `docs/131`, `docs/142`, `docs/147`, `docs/157`, `docs/169`): что случилось,
   причина, следствие, урок. Урок становится правилом.
 - **Перед каждым решением** проверять журнал уроков. Если предложение
   повторяет старую ошибку, сразу сказать: «Это похоже на урок №N».
@@ -154,7 +154,7 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/41-promo-video.md` | Рекламное видео: музыка и лицензия, логика, сценарий, нарезки |
 | `docs/42-promo-prompts.md` | Промпты: задача владельца для Claude и промпт для ИИ-видео |
 | `docs/43-share-trip.md` | «Поделиться поездкой с близкими»: карточка, статусы, приватность |
-| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md`, `docs/147-lessons-learned-11.md`, `docs/157-lessons-learned-12.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162, №183, №204 и дальше) |
+| `docs/44-lessons-learned-2.md`, `docs/49-lessons-learned-3.md`, `docs/66-lessons-learned-4.md`, `docs/84-lessons-learned-5.md`, `docs/91-lessons-learned-6.md`, `docs/99-lessons-learned-7.md`, `docs/113-lessons-learned-8.md`, `docs/131-lessons-learned-9.md`, `docs/142-lessons-learned-10.md`, `docs/147-lessons-learned-11.md`, `docs/157-lessons-learned-12.md`, `docs/169-lessons-learned-13.md` | Журнал уроков: продолжение (№7, №21, №39, №59, №80, №101, №122, №141, №162, №183, №204, №224 и дальше) |
 | `docs/45-dev-commands.md` | Команды разработки, барьеры качества, как устроен CI |
 | `docs/46-infrastructure.md` | Адреса, ресурсы Cloudflare, боты, где лежат секреты, деплой |
 | `docs/47-users-and-registration.md` | Вход по подписи Telegram, регистрация, блокировка, фото |
@@ -218,4 +218,5 @@ Mini App, каналах, уведомлениях и лендинге. Код: 
 | `docs/158-redesign-gaps-check.md`, `docs/159-screens-without-redesign.md` | Дыры редизайна по коду (10.10.2026): что сделано, что в G75; экраны без редизайна (67 из 120, вся админка) |
 | `docs/160-g75-texts.md`, `docs/161-g75-admin-texts.md`, `docs/162-g75-admin-pixel-perfect.md`, `docs/163-g75-pixel-perfect.md` | G75: новые тексты на согласие владельца; тексты админки (главный экран, дела «Navbat»); сверка Pixel Perfect админки и экранов по листам g75 |
 | `docs/164-dock-and-sheets.md`, `docs/165-g76-home.md`, `docs/166-g76-texts.md` | G76: шторки главного экрана; главный экран (финальные макеты); новые тексты |
+| `docs/168-global-check-10-10.md` | Глобальная проверка 10.10.2026: ошибки G76, старые ошибки логики (G77), экраны без макета (G78) |
 | `docs/goals/INDEX.md` | Цели по порядку (G01 … G20) и операционные цели владельца (OPS) |

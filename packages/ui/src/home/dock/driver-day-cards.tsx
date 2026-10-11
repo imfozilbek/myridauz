@@ -1,5 +1,6 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
+import { ActionFailure } from '../../states/action-failure';
 import { useTripSteps } from '../../own-trip/use-trip-steps';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { useBookingEnds } from '../../trip/booking-ends';
@@ -44,6 +45,7 @@ export function DepartCard({
         />
         <SecondaryButton beside text={t('home.dock.late')} onClick={act.late(people)} />
         {go}
+        <ActionFailure error={steps.failure} />
       </>
     );
   return (
@@ -55,8 +57,9 @@ export function DepartCard({
         title={words.route(trip)}
         text={together}
       />
-      <SecondaryButton beside text={t('driverTrip.tile.map')} onClick={act.open(trip)} />
+      <SecondaryButton beside text={t('driverTrip.tile.map')} onClick={act.open(trip, 'map')} />
       {go}
+      <ActionFailure error={steps.failure} />
     </>
   );
 }

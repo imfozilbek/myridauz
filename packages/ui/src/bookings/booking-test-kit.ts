@@ -72,7 +72,7 @@ export const offer: Offer = {
   tripId: null,
   pitak: null,
   createdAt: 0,
-  passengerName: 'Dilnoza',
+  passenger: { id: '00000000000000000000000000000009', firstName: 'Dilnoza', hasAvatar: false },
 };
 
 export const wallet: Wallet = {

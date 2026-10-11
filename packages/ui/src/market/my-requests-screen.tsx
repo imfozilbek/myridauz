@@ -9,7 +9,6 @@ import {
 } from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
-import { FavoritesScreen } from '../comfort/favorites-screen';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
 import { useApiClients } from '../context/api-clients';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -71,7 +70,6 @@ function MyRequests({ onBack, link }: ScreenProps) {
     if (offer) setOpened({ kind: 'request', id: offer.requestId });
   });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
-  const [favoritesOpen, setFavoritesOpen] = useState(false);
   // The tab stays while a booking is open: «Назад» comes to the same list.
   const [tab, setTab] = useState<MineTab>('live');
   // «Safar topish» of an empty «Faol» and «Qayta yuborish» of an old request (G75, mockup g75/2 A).
@@ -86,7 +84,6 @@ function MyRequests({ onBack, link }: ScreenProps) {
     return <NewRequestFlow onBack={() => setAgain(null)} onClose={close} search={search} />;
   }
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
-  if (favoritesOpen) return <FavoritesScreen onBack={() => setFavoritesOpen(false)} />;
   if (opened && value) {
     const close = (changed: boolean) => {
       setOpened(null);
@@ -114,7 +111,6 @@ function MyRequests({ onBack, link }: ScreenProps) {
       onAgain={setAgain}
       onFind={() => setFinding(true)}
       onSubscriptions={() => setSubscriptionsOpen(true)}
-      onFavorites={() => setFavoritesOpen(true)}
       tab={tab}
       onTab={setTab}
     />

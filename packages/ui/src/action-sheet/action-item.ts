@@ -13,6 +13,9 @@ export type SheetAction = {
   readonly label: string;
   readonly icon?: IconName;
   readonly run: () => Promise<string | undefined> | string | undefined;
+  // A step aside, not an answer: «Hisobni toʻldirish», «Barcha takliflar». The sheet closes and the
+  // thing still waits in the block, its button opens it again (G76).
+  readonly aside?: true;
 };
 
 // One thing to answer (mockups g68/7, g68/8): the face, who and what, a short trip card, the main

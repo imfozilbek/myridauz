@@ -2,7 +2,7 @@ import { useAccount } from '../account/account-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
-import { openInTelegram } from '../telegram/feedback';
+import { openApp } from '../telegram/open-app';
 import { brandVars } from '../theme/brand-vars';
 import { usePassengerState } from './dock/passenger-dock';
 import { useHomeTap } from './use-home-tap';
@@ -12,7 +12,8 @@ const ICON = 20;
 const ARROW = 18;
 
 // «Haydovchi boʻling» under the tiles of a passenger (G66, G76, mockup g76/1): it opens the app of
-// drivers. Not for a driver, and only while the block at the bottom is free (docs/165).
+// drivers. Not for a driver, and only while the block at the bottom is free (docs/165); «Profil» has
+// it always.
 export function BecomeDriver() {
   const { t } = useI18n();
   const account = useAccount();
@@ -27,7 +28,7 @@ export function BecomeDriver() {
       type="button"
       className="become-driver"
       style={brandVars(colors)}
-      onClick={tap('become_driver', () => openInTelegram(`https://t.me/${bots.driver}?startapp`))}
+      onClick={tap('become_driver', () => openApp(bots.driver))}
     >
       <span className="become-driver-icon">
         <Icon name="carSide" size={ICON} color={colors.attention} />

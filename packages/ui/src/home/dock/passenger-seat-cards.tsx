@@ -130,7 +130,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
           <DockCard
             chip={t('bookings.done.title')}
             chipTone="green"
-            timer={{ text: words.daysLeft(trip.departAt), now: false }}
+            timer={{ text: words.daysLeft(trip), now: false }}
             title={t('home.dock.rate', { name: driver.firstName })}
             text={t('home.dock.rateHint')}
             who={{ ...who, tools: [] }}

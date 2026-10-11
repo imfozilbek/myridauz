@@ -3,6 +3,7 @@ import { Modal } from '../components';
 import { useBrand } from '../context/brand-context';
 import { SheetOverlay } from '../home/sheet-overlay';
 import { BackButton } from '../telegram/back-button';
+import { useBehind } from '../telegram/behind';
 import { useInTelegram } from '../telegram/in-telegram-context';
 import { useSheetShown } from '../telegram/sheet-shown';
 import { brandVars } from '../theme/brand-vars';
@@ -20,9 +21,11 @@ type Props = {
 // A form over its screen (G75, mockup g75/3 A): the screen stays seen under the shade, no «Orqaga»;
 // a swipe down or a tap on the shade closes it. The native main button of Telegram does the step:
 // the screen under the sheet gives its own button away while the sheet stands (useAnySheet).
-export function FormSheet({ open, title, hint, onClose, children }: Props) {
+export function FormSheet({ open: asked, title, hint, onClose, children }: Props) {
   const { colors } = useBrand().theme;
   const inTelegram = useInTelegram();
+  const behind = useBehind();
+  const open = asked && !behind;
   useSheetShown(open);
   useFormSheetOpen(open);
   return (

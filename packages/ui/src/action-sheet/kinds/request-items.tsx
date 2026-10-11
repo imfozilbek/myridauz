@@ -3,6 +3,7 @@ import { useAnalytics } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
 import { useI18n } from '../../context/i18n-context';
 import { useDriverData } from '../../home/driver-data';
+import { answerable } from '../../home/home-items';
 import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
 import { useBalance } from '../../bookings/use-balance';
@@ -35,7 +36,7 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
     haptic.success();
     refresh();
   };
-  const requests = (value?.[1] ?? []).filter((one) => one.status === 'requested' && one.expiresAt > now);
+  const requests = (value?.[1] ?? []).filter((one) => answerable(one, now));
   // The wallet is checked here too (G75, docs/158 Г): short of the commission, the sum short and the
   // ready message to the support instead of a «Tasdiqlash» that fails.
   const { balance } = useBalance(requests.length > 0);
@@ -79,7 +80,7 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
       alert: left(booking.expiresAt),
       main:
         missing > 0
-          ? { label: t('wallet.topUp'), run: async () => void topUp(name, missing) }
+          ? { label: t('wallet.topUp'), run: async () => void topUp(name, missing), aside: true }
           : {
               label: t('sheet.request.confirm'),
               run: async () => {
