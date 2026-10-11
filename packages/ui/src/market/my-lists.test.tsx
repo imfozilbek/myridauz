@@ -81,7 +81,9 @@ describe('Mening safarlarim (docs/35)', () => {
       }),
     );
     await tap(/· Soʻrov$/u);
+    const asked = vi.spyOn(window, 'confirm').mockReturnValue(true);
     await tap('Soʻrovni bekor qilish');
-    expect(cancelRequest).toHaveBeenCalledWith('r1');
+    await vi.waitFor(() => expect(cancelRequest).toHaveBeenCalledWith('r1'));
+    asked.mockRestore();
   });
 });

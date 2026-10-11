@@ -7,6 +7,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { MapRetry } from '../map/map-retry';
+import { meetOpen } from '../meeting/meet-state';
 import { useMapView } from '../map/use-map-view';
 import { useShortDay } from '../market/when';
 import { Screen } from '../screen/screen';
@@ -42,7 +43,8 @@ export function DriverTripMap({ trip, bookings, now, onPoint, onBack }: Props) {
   const shortDay = useShortDay();
   const { map } = useApiClients();
   const { bg, brandStrong } = useBrand().theme.colors;
-  const kind = trip.departedAt === null ? 'pickups' : 'dropoffs';
+  // The points to pick up stay while one is open, also on the way (G77, docs/170 О1).
+  const kind = trip.departedAt === null || bookings.some(meetOpen) ? 'pickups' : 'dropoffs';
   const [stops, setStops] = useState(() => stopsInOrder(bookings, null));
   useEffect(() => {
     void requestPosition().then((here) => (here ? setStops(stopsInOrder(bookings, here)) : undefined));

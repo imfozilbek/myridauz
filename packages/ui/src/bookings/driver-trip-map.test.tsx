@@ -41,14 +41,15 @@ const HERE = at(41.285, 69.2);
 // The day of the tests (1 October, dom-test-setup) at 08:00 in Tashkent: «Bugun 08:00».
 const today: Trip = { ...trip, departAt: tashkentDayStart('2026-10-01') + 8 * HOUR };
 
-function open(props: { trip?: Trip; onPoint?: ((stop: Stop) => void) | null } = {}) {
+type Opened = { trip?: Trip; onPoint?: ((stop: Stop) => void) | null; bookings?: Booking[] };
+function open(props: Opened = {}) {
   const map = fakeMap();
   renderMarket(
     <MapEngineContext.Provider value={async () => map.engine}>
       <PlacesGate>
         <DriverTripMap
           trip={props.trip ?? today}
-          bookings={[FAR, NEAR]}
+          bookings={props.bookings ?? [FAR, NEAR]}
           now={Date.now()}
           onPoint={props.onPoint ?? null}
           onBack={() => undefined}
@@ -90,8 +91,16 @@ describe('«Safar xaritasi» of the driver (mockup g63/4 screen 12, docs/126)', 
     expect(onPoint).toHaveBeenCalledWith(expect.objectContaining({ who: 'Aziz' }));
   });
 
-  it('shows where the passengers get out once the car is on the way', async () => {
-    open({ trip: { ...today, departedAt: today.departAt } });
+  it('on the way keeps the points to pick up while someone waits, then where they get out', async () => {
+    const onPoint = vi.fn();
+    const left = { ...today, departedAt: today.departAt };
+    // Aziz is in the car, Dilnoza still waits: her point opens the meeting (G77, docs/170 О1).
+    open({ trip: left, onPoint, bookings: [FAR, { ...NEAR, boardedAt: today.departAt }] });
+    fireEvent.click(await screen.findByText('Dilnoza · 1 joy'));
+    expect(onPoint).toHaveBeenCalledWith(expect.objectContaining({ who: 'Dilnoza' }));
+    cleanup();
+    const inCar = (one: Booking) => ({ ...one, boardedAt: today.departAt });
+    open({ trip: left, bookings: [inCar(FAR), inCar(NEAR)] });
     // Both passengers get out at the same place in the fixture: one card each.
     expect(await screen.findAllByText('Registon mahallasi, Fargʻona shahri')).toHaveLength(2);
   });

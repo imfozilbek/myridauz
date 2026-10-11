@@ -59,6 +59,17 @@ describe('the block of a driver: one state by its level (G76, docs/165)', () => 
     expect(kinds({ trips: [trip] }, at(HOUR_MS + MINUTE_MS))[0]).toBe('departAsk');
   });
 
+  it('leads the points on the way too: a passenger who waits, the driver at the point (G77, О1)', () => {
+    const left = { ...trip, departedAt: at(-20 * MINUTE_MS) };
+    const waits = { ...seat, cameAt: at(-5 * MINUTE_MS) };
+    expect(kinds({ trips: [left], bookings: [waits] }, at(-MINUTE_MS))).toEqual(['passengerWaits', 'onRoad']);
+    const there = { ...seat, driverCameAt: at(-2 * MINUTE_MS) };
+    expect(kinds({ trips: [left], bookings: [there] }, at(-MINUTE_MS))).toEqual(['atPoint', 'onRoad']);
+    expect(kinds({ trips: [left], bookings: [{ ...there, boardedAt: at(0) }] }, at(MINUTE_MS))).toEqual([
+      'onRoad',
+    ]);
+  });
+
   it('is on the road after «Yoʻlga chiqdim», then asks for the stars a week', () => {
     const left = { ...trip, departedAt: at(0) };
     expect(kinds({ trips: [left] }, at(HOUR_MS))).toEqual(['onRoad']);
