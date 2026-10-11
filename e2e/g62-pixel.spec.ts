@@ -51,6 +51,7 @@ const STATES = [
 for (const [name, start, shown] of STATES)
   test(`${name}: the driver ${start}`, async ({ page }) => {
     await open(page, start);
-    await expect(page.getByText(shown).first()).toBeVisible();
+    // A fix asked opens the application over the main screen, which waits hidden under it (G77).
+    await expect(page.getByText(shown).locator('visible=true').first()).toBeVisible();
     await shot(page, name);
   });
