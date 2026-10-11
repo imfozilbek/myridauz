@@ -39,6 +39,7 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
   const posting = useRef(false);
   const cancelling = useRef(false);
   const answerBooking = useAnswerBooking({
+    screen: 'bookings.driver',
     onDone: () => {
       balance.reload();
       onChanged();

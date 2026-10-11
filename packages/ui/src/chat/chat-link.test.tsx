@@ -15,11 +15,17 @@ vi.mock('@telegram-apps/sdk-react', async (original) => ({
 // ringing call comes as a sheet now (G68): action-sheet/call-sheet.test.tsx.
 vi.mock('./chat-screen', async () => {
   const { BackButton: Back } = await import('../telegram/back-button');
-  type Props = { readonly chatKey: string; readonly ring?: boolean; readonly onBack: () => void };
+  type Props = {
+    readonly chatKey: string;
+    readonly ring?: boolean;
+    readonly onTrip?: (() => void) | undefined;
+    readonly onBack: () => void;
+  };
   return {
-    ChatScreen: ({ chatKey, ring, onBack }: Props) => (
+    ChatScreen: ({ chatKey, ring, onTrip, onBack }: Props) => (
       <>
         <p>{`chat ${chatKey}${ring ? ' ring' : ''}`}</p>
+        {onTrip ? <button onClick={onTrip}>the trip line</button> : null}
         <Back onClick={onBack} />
       </>
     ),
@@ -65,6 +71,28 @@ describe('the chat over any screen (docs/07, G68)', () => {
     act(() => pressBack());
     expect(screen.getByText('home')).toBeTruthy();
     expect(window.location.search).toBe('');
+  });
+
+  // The chat of a seat opened from the block (G77): its line of the trip closes it and opens the seat.
+  it('the line of the trip opens what the opener names, over the very screen', () => {
+    const seat = vi.fn();
+    function Seat() {
+      const open = useOpenChat();
+      return (
+        <button type="button" onClick={() => open(KEY, undefined, seat)}>
+          chat
+        </button>
+      );
+    }
+    renderInShell(
+      <ChatLink>
+        <Seat />
+      </ChatLink>,
+    );
+    act(() => void fireEvent.click(screen.getByText('chat')));
+    act(() => void fireEvent.click(screen.getByText('the trip line')));
+    expect(seat).toHaveBeenCalledOnce();
+    expect(screen.queryByText(`chat ${KEY}`)).toBeNull();
   });
 
   it('«Qoʻngʻiroq» of a sheet opens the chat and rings', () => {

@@ -1,12 +1,10 @@
-import { REQUEST_LINK, type Offer } from '@platform/contracts';
-import { useAnalytics } from '../../context/analytics-context';
-import { useApiClients } from '../../context/api-clients';
+import { BOOKING_LINK, REQUEST_LINK, type Offer } from '@platform/contracts';
+import { useAnswerOffer } from '../../bookings/use-answer-offer';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import { waitingOffers } from '../../home/home-items';
 import { usePassengerData } from '../../home/passenger-data';
 import type { PlaceDirectory } from '../../places/directory';
-import { haptic } from '../../telegram/feedback';
 import { itemKey, type ActionItem } from '../action-item';
 import { CarLine, TripBlock } from '../sheet-parts';
 import { useSheetWords } from '../trip-line';
@@ -15,22 +13,17 @@ import { useSheetWords } from '../trip-line';
 // plate, the trip, how the driver picks up, the sum; «Qabul qilish» books the seat in one tap.
 export function useOfferItems(directory: PlaceDirectory, go: HomeGo): ActionItem[] {
   const { t, formatNumber } = useI18n();
-  const { bookings } = useApiClients();
-  const { track } = useAnalytics();
+  const answerOffer = useAnswerOffer('sheet');
   const { value, refresh } = usePassengerData();
   const words = useSheetWords(directory);
   if (!value) return [];
   const [, requests, offers] = value;
   const waiting = waitingOffers(requests, offers);
+  // An accepted offer opens its seat, as «Mening soʻrovim» does (G77).
   const answer = async (offer: Offer, action: 'accept' | 'decline') => {
-    await bookings.answerOffer(offer.id, action);
-    track({
-      name: 'booking_step',
-      screen: 'sheet',
-      step: action === 'accept' ? 'offer_accepted' : 'offer_declined',
-    });
-    haptic.success();
+    const answered = await answerOffer(offer, action);
     refresh();
+    if (answered.bookingId) go('my_trips', { link: { name: BOOKING_LINK, id: answered.bookingId } });
   };
   // One request is one thing to answer: its first offer, the others behind «Barcha takliflar (n)»
   // (mockup g68/8 «Taklif»). The bot rings with the first offer too (docs/122): the newest come

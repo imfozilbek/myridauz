@@ -1,4 +1,3 @@
-import { ApiError } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
@@ -7,14 +6,11 @@ import { useLoad } from '../market/use-list';
 import { OfferSheet } from '../requests/offer-sheet';
 import { ACTIONS } from '../requests/request-row';
 import { SalonSheet } from '../requests/salon-sheet';
+import { useTripOffer } from '../requests/use-trip-offer';
 import { ActionFailure } from '../states/action-failure';
-import { useFailure } from '../states/use-failure';
-import { haptic } from '../telegram/feedback';
 import { useOneAtATime } from '../telegram/one-at-a-time';
+import { ShortfallSheet } from '../wallet/shortfall-sheet';
 import './talk.css';
-
-// The money of a commission the wallet lacks: the words of the error, the way to top up is the wallet.
-const NOT_ENOUGH = new ApiError(402, 'wallet.not_enough');
 
 type Props = {
   readonly request: RideRequest;
@@ -28,10 +24,11 @@ type Props = {
 // the time and the price (docs/118 path 7).
 export function TalkAction({ request, onSent, className = 'talk-action' }: Props) {
   const { t } = useI18n();
-  const { market, bookings } = useApiClients();
+  const { market } = useApiClients();
   const board = useLoad(() => market.requestBoard({ date: request.date })).value;
   const [sheet, setSheet] = useState<'offer' | 'salon' | null>(null);
-  const { failure, fail, clear } = useFailure();
+  // As on the board (G77): counted, and a wallet short of the commission opens its sheet.
+  const offering = useTripOffer('chat');
   const trip = board?.trip && board.fits.some((fit) => fit.id === request.id) ? board.trip : null;
   const action = trip ? 'onTrip' : request.wholeCar ? 'salon' : 'offer';
   const sent = async () => {
@@ -39,23 +36,17 @@ export function TalkAction({ request, onSent, className = 'talk-action' }: Props
     await onSent();
   };
   const tap = useOneAtATime(async () => {
-    clear();
+    offering.clear();
     if (!trip) return setSheet(action === 'salon' ? 'salon' : 'offer');
-    try {
-      await bookings.sendOffer(request.id, { departAt: trip.departAt, price: trip.price, tripId: trip.id });
-      haptic.success();
-      await onSent();
-    } catch (caught) {
-      fail(caught);
-    }
+    if (await offering.onTrip(request, trip)) await onSent();
   });
-  const short = () => {
+  const short = (need: number) => {
     setSheet(null);
-    fail(NOT_ENOUGH);
+    offering.short(need, request);
   };
   return (
     <>
-      <ActionFailure error={failure} />
+      <ActionFailure error={offering.failure} />
       <button type="button" className={className} disabled={!board || tap.busy} onClick={tap.run}>
         {t(ACTIONS[action])}
       </button>
@@ -74,6 +65,7 @@ export function TalkAction({ request, onSent, className = 'talk-action' }: Props
           onShort={short}
         />
       ) : null}
+      <ShortfallSheet shortfall={offering.shortfall} onClose={offering.closeShortfall} />
     </>
   );
 }

@@ -1,9 +1,6 @@
-import { ShortfallSheet, type Shortfall } from '../wallet/shortfall-sheet';
-import { ApiError } from '@platform/api-client';
-import { commissionFor } from '@platform/brands';
 import type { RequestBoardQuery, RideRequest } from '@platform/contracts';
 import { useState } from 'react';
-import { useAnalytics, useScreenView } from '../context/analytics-context';
+import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -14,9 +11,7 @@ import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
-import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
 import { BoardList } from './board-list';
@@ -25,6 +20,8 @@ import { OfferSheet } from './offer-sheet';
 import type { RowAction } from './request-row';
 import { SalonSheet } from './salon-sheet';
 import { useBoard } from './use-board';
+import { useTripOffer } from './use-trip-offer';
+import { ShortfallSheet } from '../wallet/shortfall-sheet';
 import './board.css';
 
 type Props = {
@@ -45,15 +42,13 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
   useScreenView('requests.board');
   useScreenBackground();
   const { t } = useI18n();
-  const { track } = useAnalytics();
   const { colors } = useBrand().theme;
-  const { commission } = useBrand();
   const { bookings } = useApiClients();
   const { value, failed, reload, refresh } = useBoard(query);
   const [offer, setOffer] = useState<RideRequest | null>(null);
   const [salon, setSalon] = useState<RideRequest | null>(null);
-  const [shortfall, setShortfall] = useState<Shortfall | null>(null);
-  const { failure, fail, clear } = useFailure();
+  const offering = useTripOffer('requests.board');
+  const { failure, fail, clear } = offering;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const { board, offered } = value;
@@ -61,18 +56,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
   const { trip } = board;
   // «Safarimga taklif qilish»: one tap, the time and the price are the trip's (mockup g64/2).
   const onTripOffer = async (request: RideRequest) => {
-    if (!trip) return;
-    clear();
-    try {
-      await bookings.sendOffer(request.id, { departAt: trip.departAt, price: trip.price, tripId: trip.id });
-      track({ name: 'booking_step', screen: 'requests.board', step: 'offer_sent' });
-      haptic.success();
-      void refresh();
-    } catch (caught) {
-      if (caught instanceof ApiError && caught.code === 'wallet.not_enough')
-        short(commissionFor(commission, trip.price, request.seats), request);
-      else fail(caught);
-    }
+    if (trip && (await offering.onTrip(request, trip))) void refresh();
   };
   const act = (request: RideRequest, action: RowAction) => {
     if (action === 'onTrip') return onTripOffer(request);
@@ -91,7 +75,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
   function short(need: number, request: RideRequest | null) {
     setOffer(null);
     setSalon(null);
-    setShortfall({ need, seats: request?.seats ?? 1, name: request?.passenger.firstName ?? '' });
+    if (request) offering.short(need, request);
   }
   const empty = board.fits.length + board.others.length === 0;
   return (
@@ -136,7 +120,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
         onOpened={onTrip}
         onShort={(need) => short(need, salon)}
       />
-      <ShortfallSheet shortfall={shortfall} onClose={() => setShortfall(null)} />
+      <ShortfallSheet shortfall={offering.shortfall} onClose={offering.closeShortfall} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import type { BookingsClient } from '@platform/api-client';
+import { ApiError, type BookingsClient } from '@platform/api-client';
 import { act, cleanup, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { offer } from '../bookings/booking-test-kit';
@@ -55,6 +55,27 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
     expect(screen.queryByText('Safarimga taklif qilish')).toBeNull();
   });
 
+  // One way to offer a trip, as on the board (G77): counted, and a wallet short of the commission
+  // opens the sheet of the sum short, not a line of error.
+  it('counts the offer of the chat; a wallet short of the commission opens the sheet of the sum', async () => {
+    const sendOffer = vi
+      .fn<BookingsClient['sendOffer']>()
+      .mockRejectedValueOnce(new ApiError(402, 'wallet.not_enough'))
+      .mockResolvedValue(offer);
+    const { tracked } = await openTalk({
+      about: [talk('driver')],
+      market: { requestBoard: async () => board({ trip, fits: [{ ...asked, extraKm: 2 }], others: [] }) },
+      bookings: { sendOffer },
+    });
+    await tap('Safarimga taklif qilish');
+    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    expect(tracked.some((event) => 'step' in event && event.step === 'offer_sent')).toBe(false);
+    await tap('Safarimga taklif qilish');
+    await waitFor(() =>
+      expect(tracked).toContainEqual(expect.objectContaining({ step: 'offer_sent', screen: 'chat' })),
+    );
+  });
+
   it('opens the trip from a whole car request in the chat when the driver has none', async () => {
     await openTalk({ about: [talk('driver', { request: salon })] });
     await tap('Safar ochib taklif qilish');
@@ -67,7 +88,7 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
       status: 'accepted',
       bookingId: 'b1',
     }));
-    await openTalk({
+    const { tracked } = await openTalk({
       about: [talk('passenger', { request: salon, offer: salonOffer })],
       bookings: { answerOffer },
     });
@@ -79,6 +100,8 @@ describe('the chat before a booking (G64, mockups g64/4, g64/5)', { timeout: 20_
     expect(screen.getAllByRole('img', { name: '01 A 123 BC' }).length).toBe(2);
     await tap('Qabul qilish');
     await waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'accept'));
+    // One answer everywhere (G77): the funnel counts the offer taken in the chat too.
+    expect(tracked).toContainEqual(expect.objectContaining({ step: 'offer_accepted', screen: 'chat' }));
   });
 
   it('says why a ring did not go: the passenger turned calls off', async () => {

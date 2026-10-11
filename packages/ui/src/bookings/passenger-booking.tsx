@@ -1,4 +1,4 @@
-import { onTheWay, tashkentDate, type Booking } from '@platform/contracts';
+import { onTheWay, type Booking } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { confirm, haptic } from '../telegram/feedback';
 import { cancellable } from './booking-status';
 import { ConfirmedBooking } from './confirmed-booking';
 import { PendingBooking } from './pending-booking';
+import { similarDay } from './similar-trips';
 import { withTold } from './use-trip-steps';
 
 const isStale = (caught: unknown) =>
@@ -43,8 +44,8 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
   const back = () => setOpened(null);
   // The same route: of that day after a bad end, any day for «Yana … bilan» (docs/124 А, docs/129).
   if (opened?.screen === 'others' || opened?.screen === 'again') {
-    const { from, to, departAt } = booking.trip;
-    const day = opened.screen === 'others' ? { day: tashkentDate(departAt) } : {};
+    const { from, to } = booking.trip;
+    const day = opened.screen === 'others' ? { day: similarDay(booking.trip) } : {};
     return <LinkedSearch ids={{ from, to, ...day }} onClose={back} />;
   }
   if (opened?.screen === 'complaint') return <ComplaintScreen bookingId={booking.id} onBack={back} />;

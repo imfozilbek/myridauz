@@ -56,7 +56,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
       bookingId: 'b1',
     }));
     const fresh = { ...salonOffer, createdAt: NOW + 60_000 };
-    const { socket } = await openTalk({
+    const { socket, tracked } = await openTalk({
       about: [talk('passenger', { offer: fresh })],
       bookings: { answerOffer },
     });
@@ -68,6 +68,7 @@ describe('the call before a booking (G64, mockups g64/2, g64/4)', { timeout: 20_
     expect(call.getByText('4 joy × 90 000 = 360 000 · Qoʻyliq pitagi')).toBeTruthy();
     fireEvent.click(call.getByText('Taklifni qabul qilish'));
     await waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'accept'));
+    expect(tracked).toContainEqual(expect.objectContaining({ step: 'offer_accepted', screen: 'call' }));
   });
 
   it('shows the passenger only the own request while no offer came', async () => {

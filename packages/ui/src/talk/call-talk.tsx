@@ -1,10 +1,9 @@
 import type { ChatAbout } from '@platform/contracts';
 import { useState } from 'react';
-import { useApiClients } from '../context/api-clients';
+import { useAnswerOffer } from '../bookings/use-answer-offer';
 import { useI18n } from '../context/i18n-context';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
-import { haptic } from '../telegram/feedback';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { RequestLine } from './request-line';
 import { TalkAction } from './talk-action';
@@ -21,14 +20,13 @@ export function CallTalk({ about, onChanged }: Props) {
   const { t, formatNumber } = useI18n();
   const texts = useTalkTexts();
   const [since] = useState(Date.now);
-  const { bookings } = useApiClients();
+  const answerOffer = useAnswerOffer('call');
   const { failure, fail } = useFailure();
   const { request, offer, role } = about;
   const accept = useOneAtATime(async () => {
     if (!offer) return;
     try {
-      await bookings.answerOffer(offer.id, 'accept');
-      haptic.success();
+      await answerOffer(offer, 'accept');
       await onChanged();
     } catch (caught) {
       fail(caught);

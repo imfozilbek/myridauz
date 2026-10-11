@@ -7,7 +7,6 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useDockEnds } from './dock-ends';
 import { useHomeRoute } from './home-route';
-import { TRIP_TALK, TripTalk } from './trip-talk';
 
 export const DOCK_FROM = 'dock_from';
 export const DOCK_TO = 'dock_to';
@@ -91,14 +90,6 @@ export const PASSENGER_SECTIONS: readonly StartAction[] = [
     labelKey: 'places.to',
     hintKey: 'places.toTitle',
     Screen: PickTo,
-  },
-  {
-    id: TRIP_TALK,
-    icon: 'chat',
-    tone: 'brand',
-    labelKey: 'chat.open',
-    hintKey: 'chat.open',
-    Screen: TripTalk,
   },
 ];
 

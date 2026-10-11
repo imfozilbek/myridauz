@@ -40,7 +40,7 @@ type Fakes = {
 export async function openTalk({ about, market, bookings }: Fakes) {
   const states = [...about];
   const load = vi.fn(async () => (states.length > 1 ? states.shift() : states[0]) as ChatAbout);
-  renderMarket(
+  const { tracked } = renderMarket(
     <ChatScreen chatKey={TALK} onBack={() => undefined} />,
     testClients({
       chat: { socketUrl: async () => 'wss://api.test/socket', about: load },
@@ -54,5 +54,5 @@ export async function openTalk({ about, market, bookings }: Fakes) {
     socket.open();
     socket.receive({ type: 'history', messages: [], canCall: true });
   });
-  return { socket, load };
+  return { socket, load, tracked };
 }

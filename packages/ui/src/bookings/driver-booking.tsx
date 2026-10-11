@@ -31,6 +31,7 @@ export function DriverBooking({ booking, onClose }: Props) {
   const { balance } = useBalance(booking.status === 'requested');
   const { failure, fail, clear } = useFailure();
   const answerBooking = useAnswerBooking({
+    screen: 'bookings.driver',
     onDone: () => onClose(true),
     onShort: () => setStep('not_enough'),
     fail,

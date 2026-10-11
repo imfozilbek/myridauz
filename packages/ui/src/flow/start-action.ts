@@ -44,6 +44,8 @@ export type Launch = {
   readonly tripScreen?: TripScreen;
   readonly pick?: 'from' | 'to';
   readonly route?: { readonly from: Location; readonly to: Location };
+  // The day of the trips of the route: «Oʻxshash safarlar» of a seat (G77).
+  readonly day?: string;
   // One end of the block at the bottom (G76, docs/165): the other one is asked first.
   readonly from?: Location;
   readonly to?: Location;

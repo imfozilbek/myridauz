@@ -1,4 +1,4 @@
-import { REQUEST_LINK, type RideRequest } from '@platform/contracts';
+import { BOOKING_LINK, REQUEST_LINK, type RideRequest } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { offer } from '../bookings/booking-test-kit';
@@ -52,12 +52,15 @@ describe('the sheet of a new offer (G68)', () => {
     expect(await screen.findByRole('button', { name: 'Takliflarni koʻrish' })).toBeTruthy();
   });
 
-  it('«Qabul qilish» books the seat in one tap and says so on top', async () => {
-    const { answerOffer } = passenger([{ ...offer, id: 'o12' }]);
+  it('«Qabul qilish» books the seat in one tap, says so on top and opens the seat', async () => {
+    const accepted = vi.fn(async () => ({ ...offer, status: 'accepted' as const, bookingId: 'b12' }));
+    const { answerOffer } = passenger([{ ...offer, id: 'o12' }], accepted);
     await tap('Takliflarni koʻrish');
     await tap('Qabul qilish');
     expect(answerOffer).toHaveBeenCalledWith('o12', 'accept');
     expect(await screen.findByText('Taklif qabul qilindi. Joyingiz band.')).toBeTruthy();
+    // As «Mening soʻrovim» does (G77): the seat of the accepted offer opens.
+    expect(screen.getByText(`opened ${BOOKING_LINK}:b12`)).toBeTruthy();
     await sheetClosed();
   });
 

@@ -2,6 +2,7 @@ import { BOOKING_LINK, DAY_MS, MINUTE_MS } from '@platform/contracts';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { booking, confirmed, TRIP_DAY } from '../bookings/booking-test-kit';
+import type { OpenChat } from '../chat/open-chat';
 import { tap, trip } from '../market/market-test-kit';
 import { linkOf, PASSENGER_ACTIONS } from './home-test-actions';
 import { renderHome } from './home-test-kit';
@@ -35,11 +36,19 @@ describe('the block at the bottom of a passenger (G76, mockup g76/2)', { timeout
   });
 
   it('calls the driver from the card; an unread message puts a dot on the chat', async () => {
-    const { tracked } = passenger(async () => [tomorrow({ ...confirmed, plate: '01A123BC', unread: 2 })]);
+    // The call rings in the chat over the main screen, as everywhere (G77); its line opens the seat.
+    const openChat = vi.fn<OpenChat>();
+    const { tracked } = renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
+      bookings: async () => [tomorrow({ ...confirmed, plate: '01A123BC', unread: 2 })],
+      openChat,
+    });
     expect(await screen.findByText('Cobalt, oq · 01 A 123 BC')).toBeTruthy();
     expect(screen.getByTestId('home-dock').querySelector('.dock-tool-unread .dock-tool-dot')).toBeTruthy();
     fireEvent.click(dock().getAllByRole('button', { name: 'Qoʻngʻiroq' })[0] as HTMLElement);
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'trip_call' }));
+    expect(openChat).toHaveBeenCalledWith(confirmed.chatKey, 'ring', expect.any(Function));
+    act(() => openChat.mock.calls[0]?.[2]?.());
+    expect(await screen.findByText(linkOf({ name: BOOKING_LINK, id: confirmed.id }))).toBeTruthy();
   });
 
   it('opens the meeting 30 minutes before the departure with «Men keldim» (docs/126)', async () => {

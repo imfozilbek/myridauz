@@ -1,10 +1,9 @@
 import type { Offer, OfferAction } from '@platform/contracts';
-import { useApiClients } from '../context/api-clients';
+import { useAnswerOffer } from '../bookings/use-answer-offer';
 import { useI18n } from '../context/i18n-context';
 import { UzPlate } from '../plate/uz-plate';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
-import { haptic } from '../telegram/feedback';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { useTalkTexts } from './talk-texts';
 import './talk.css';
@@ -23,14 +22,13 @@ type Props = {
 export function TalkOffer({ offer, role, other, onAnswered }: Props) {
   const { t, formatNumber, formatMoney } = useI18n();
   const texts = useTalkTexts();
-  const { bookings } = useApiClients();
+  const answerOffer = useAnswerOffer('chat');
   const { failure, fail, clear } = useFailure();
   const sum = formatNumber(offer.price * offer.seats);
   const answer = (action: OfferAction) => async () => {
     clear();
     try {
-      await bookings.answerOffer(offer.id, action);
-      haptic.success();
+      await answerOffer(offer, action);
       await onAnswered();
     } catch (caught) {
       fail(caught);
