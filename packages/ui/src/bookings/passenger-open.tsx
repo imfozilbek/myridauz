@@ -23,11 +23,12 @@ type Props = {
   // A seat or a request changed meanwhile: the parent loads it again at once (G52, docs/112).
   readonly onStale?: () => void;
   readonly onHome?: () => void; // «Bosh sahifa» of a waiting request (docs/118 path 2, C)
+  readonly stars?: boolean; // the seat on its stars at once: «Baho berish» of the block (G79 П3)
 };
 
 // What the passenger opened in "Mening safarlarim": a booking, or a request with drivers' offers.
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
-export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Props) {
+export function PassengerOpen({ opened, offers, onClose, onStale, onHome, stars = false }: Props) {
   const { t } = useI18n();
   const answerOffer = useAnswerOffer('bookings.offer');
   const { market } = useApiClients();
@@ -99,5 +100,13 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
         />
       </MyRequest>
     );
-  return <PassengerBooking booking={opened.booking} onClose={onClose} onStale={onStale} onHome={onHome} />;
+  return (
+    <PassengerBooking
+      booking={opened.booking}
+      onClose={onClose}
+      onStale={onStale}
+      onHome={onHome}
+      stars={stars}
+    />
+  );
 }

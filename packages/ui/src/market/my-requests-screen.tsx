@@ -8,6 +8,7 @@ import {
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
+import type { TripScreen } from '../own-trip/own-trip-opened';
 import { useFreshLists } from '../home/fresh-lists';
 import { PassengerData, usePassengerData, useSharedPassengerData } from '../home/passenger-data';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -24,13 +25,14 @@ import { useLinkOpen } from './use-link-open';
 import './market.css';
 
 // "Mening safarlarim" of a passenger: the booked seats, then the requests with drivers' offers.
-type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
+// tripScreen 'end': «Baho berish» of the block, the seat opens on its stars (G79 П3).
+type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink; readonly tripScreen?: TripScreen };
 
-export function MyRequestsScreen({ onBack, link }: ScreenProps) {
+export function MyRequestsScreen({ onBack, link, tripScreen }: ScreenProps) {
   useForgetOnLeave(MY_REQUESTS);
   const screen = (
     <PlacesGate onBack={onBack}>
-      <MyRequests onBack={onBack} {...(link ? { link } : {})} />
+      <MyRequests onBack={onBack} {...(link ? { link } : {})} {...(tripScreen ? { tripScreen } : {})} />
     </PlacesGate>
   );
   // The same lists as the main screen, not a second load (G77); a bot link opens it with its own.
@@ -38,7 +40,12 @@ export function MyRequestsScreen({ onBack, link }: ScreenProps) {
 }
 
 // home: opened by the block of the main screen or a bot button, «Назад» goes straight home (G77).
-type OpenedId = { readonly kind: Opened['kind']; readonly id: string; readonly home?: true };
+type OpenedId = {
+  readonly kind: Opened['kind'];
+  readonly id: string;
+  readonly home?: true;
+  readonly stars?: true;
+};
 
 // The latest copy of what is open; gone from the lists (a request that ended): nothing.
 function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly RideRequest[]): Opened | null {
@@ -50,7 +57,7 @@ function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly Ri
   return request ? { kind: 'request', request } : null;
 }
 
-function MyRequests({ onBack, link }: ScreenProps) {
+function MyRequests({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_requests');
   // The gradient of docs/121 §5, as on the mockup g60/6.
   useScreenBackground();
@@ -63,7 +70,8 @@ function MyRequests({ onBack, link }: ScreenProps) {
   // A bot button or the block of the main screen: a booking opens itself, «Soʻrovim» its request
   // with all the offers and their answers right in the cards (docs/65 B5, G61 mockup 3-offers A).
   useLinkOpen(link, upToDate ? value : null, (open) => {
-    if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id, home: true });
+    const stars = tripScreen === 'end' ? { stars: true as const } : {};
+    if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id, home: true, ...stars });
     if (open.name === REQUEST_LINK) setOpened({ kind: 'request', id: open.id, home: true });
   });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
@@ -105,6 +113,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
         onClose={close}
         onStale={() => void refresh()}
         onHome={onBack}
+        stars={openedId?.stars === true}
       />
     );
   }

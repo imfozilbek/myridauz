@@ -9,6 +9,7 @@ import {
 } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
+import type { PlaceDirectory } from '../../places/directory';
 import { openSheet } from '../../action-sheet/action-queue';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
@@ -19,16 +20,21 @@ type Plan =
   | { readonly kind: 'request'; readonly request: RideRequest }
   | { readonly kind: 'offers'; readonly request: RideRequest; readonly offers: readonly Offer[] }
   | { readonly kind: 'favorite'; readonly trip: Trip };
-type Props = { readonly plan: Plan; readonly words: DockWords; readonly go: HomeGo; readonly now: number };
+type Props = {
+  readonly plan: Plan;
+  readonly words: DockWords;
+  readonly go: HomeGo;
+  readonly now: number;
+  readonly directory: PlaceDirectory;
+};
 
 // A request stays open to the end of its day (docs/35): the time left shows its last day.
 const requestEnds = (request: RideRequest) => tashkentDayStart(request.date) + DAY_MS;
 
 // What a passenger plans (G76, mockup g76/2 states 3, 4, 5): the trip of a saved driver once, the
 // open request, the offers of drivers on it.
-export function PassengerPlanCard({ plan, words, go, now }: Props) {
+export function PassengerPlanCard({ plan, words, go, now, directory }: Props) {
   const { t, formatTime, formatNumber } = useI18n();
-  const findTrip = () => go('find_trip');
   if (plan.kind === 'favorite') {
     const { trip } = plan;
     const driver = trip.driver;
@@ -80,6 +86,11 @@ export function PassengerPlanCard({ plan, words, go, now }: Props) {
     );
   }
   const ends = requestEnds(request);
+  // «Safar topish» of the request: the trips of its route on its day at once (G79 П1).
+  const from = directory.find(request.from);
+  const to = directory.find(request.to);
+  const findTrip = () =>
+    from && to ? go('find_trip', { route: { from, to }, day: request.date }) : go('find_trip');
   return (
     <>
       <DockCard

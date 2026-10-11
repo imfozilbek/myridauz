@@ -18,14 +18,16 @@ type Props = {
   // A seat changed meanwhile: the parent loads it again at once (G52, docs/112).
   readonly onStale?: (() => void) | undefined;
   readonly onHome?: (() => void) | undefined;
+  // Opened on its stars (G79 П3): «Назад» from them leaves the seat.
+  readonly stars?: boolean;
 };
 
 type Opened = { readonly screen: 'chat' | 'call' | 'complaint' | 'review' | 'others' | 'again' } | null;
 
 // One booking of a passenger (docs/35, docs/118 path 3): waiting, confirmed or after the trip, with
 // its chat, call, complaint and review. The parent gives fresh data on each signal (docs/64).
-export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: Props) {
-  const [opened, setOpened] = useState<Opened>(null);
+export function PassengerBooking({ booking: fresh, onClose, onStale, onHome, stars = false }: Props) {
+  const [opened, setOpened] = useState<Opened>(stars ? { screen: 'review' } : null);
   const [told, setTold] = useState<Booking | null>(null);
   const booking = withTold(fresh, told);
   const { cancel, failure } = useCancelSeat(booking.id, { onDone: () => onClose(true), onStale });
@@ -41,7 +43,7 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome }: P
     return (
       <ReviewScreen
         bookingId={booking.id}
-        onBack={back}
+        onBack={stars ? () => onClose(false) : back}
         onComplain={() => setOpened({ screen: 'complaint' })}
       />
     );

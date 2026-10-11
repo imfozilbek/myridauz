@@ -142,7 +142,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             who={{ ...who, tools: [] }}
           />
           <SecondaryButton beside text={t('home.comeBack')} onClick={again(true)} />
-          <MainButton text={t('bookings.done.rate')} onClick={act.open(booking)} />
+          <MainButton text={t('bookings.done.rate')} onClick={act.rate(booking)} />
         </>
       );
   }

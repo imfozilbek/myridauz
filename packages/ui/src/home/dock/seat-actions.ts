@@ -51,6 +51,9 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
       ),
     call: (booking: Booking) => tap('trip_call', () => talkTo(booking, true)),
     open: (booking: Booking) => tap('item', seat(booking)),
+    // «Baho berish»: the seat on its stars at once, as for a driver (G79 П3).
+    rate: (booking: Booking) =>
+      tap('item', () => go('my_trips', { link: { name: BOOKING_LINK, id: booking.id }, tripScreen: 'end' })),
     // Asked first, as on the page of the seat: one tap never loses a seat (docs/65 B4).
     cancel: (booking: Booking) => async () => {
       if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
