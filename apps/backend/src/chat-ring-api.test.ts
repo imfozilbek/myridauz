@@ -74,14 +74,21 @@ describe('the chat of a seat in the bots (G68, docs/122 rule 5)', () => {
     expect(lastTo(OTHER_DRIVER)?.body).toMatchObject({ disable_notification: true });
     await signals.incomingCall(driver, seat.chatKey);
     expect(lastTo(OTHER_DRIVER)?.body.text).toMatch(/^📞 .+ sizga qoʻngʻiroq qilyapti$/u);
+    // «Javob berish» takes the call at once (G79).
+    expect(JSON.stringify(lastTo(OTHER_DRIVER)?.body.reply_markup)).toContain(`answer=${seat.chatKey}`);
     expect(lastTo(OTHER_DRIVER)?.body).not.toHaveProperty('disable_notification');
     vi.setSystemTime(START);
   });
 
   it('a chat without a seat (a talk about a request) is told as before', async () => {
     await registerUser(PASSENGER);
-    await botSignals(testEnv).newMessage({ userId: PASSENGER, role: 'passenger', from: DRIVER }, 'tnone');
+    const passenger = { userId: PASSENGER, role: 'passenger' as const, from: DRIVER };
+    await botSignals(testEnv).newMessage(passenger, 'tnone');
     expect(lastTo(PASSENGER)?.body.reply_parameters).toBeUndefined();
     expect(lastTo(PASSENGER)?.body.text).toBe('Sizga yangi xabar keldi. Javob berish uchun chatni oching.');
+    expect(JSON.stringify(lastTo(PASSENGER)?.body.reply_markup)).toContain('chat=tnone');
+    // A call takes the call at once (G79).
+    await botSignals(testEnv).incomingCall(passenger, 'tnone');
+    expect(JSON.stringify(lastTo(PASSENGER)?.body.reply_markup)).toContain('answer=tnone');
   });
 });

@@ -54,6 +54,11 @@ test('G54. a closed Mini App: the bot calls the person in after 5 seconds', asyn
   ).toEqual([]);
   await new Promise((resolve) => setTimeout(resolve, AFTER_INVITE_MS - 3_000));
   await toldBy('passenger', DIYORA, tailOf('bot.ring.call'));
+  // «Javob berish» takes the call at once in the Mini App (G79).
+  const call = (await botMessages()).find(
+    (m) => m.chatId === DIYORA.id && m.text.includes(tailOf('bot.ring.call')),
+  );
+  expect(call?.buttons[0]?.url).toContain(`answer=${seat.chatKey}`);
   driver.send(JSON.stringify({ type: 'call', action: 'end' }));
   driver.close();
 });
