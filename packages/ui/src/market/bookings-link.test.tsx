@@ -1,8 +1,11 @@
+import { BOOKING_LINK, REQUEST_LINK, type AppLink } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { confirmed, offer } from '../bookings/booking-test-kit';
 import { testClients } from '../test-shell';
 import { LaunchLinks } from '../launch-links';
+import { BookingsLink } from './bookings-link';
 import { renderMarket, tap } from './market-test-kit';
 
 afterEach(() => {
@@ -92,5 +95,36 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
     expect(screen.queryByText('main screen')).toBeNull();
     await tap('Orqaga');
     expect(await screen.findByText('main screen')).toBeTruthy();
+  });
+
+  // A chat over the app opens a seat while a link is open (G77): its own screen, not the one before.
+  it('a link over the first one opens its own screen; «Назад» forgets both', async () => {
+    window.history.replaceState(null, '', `/?request=${REQUEST.id}`);
+    function Two() {
+      const [link, setLink] = useState<AppLink | null>({ name: REQUEST_LINK, id: REQUEST.id });
+      return (
+        <>
+          <button type="button" onClick={() => setLink({ name: BOOKING_LINK, id: BOOKING_ID })}>
+            a chat opens the seat
+          </button>
+          <BookingsLink app="passenger" link={link} onClose={() => setLink(null)}>
+            <p>main screen</p>
+          </BookingsLink>
+        </>
+      );
+    }
+    renderMarket(
+      <Two />,
+      testClients({
+        market: { myRequests: async () => [REQUEST] },
+        bookings: { myBookings: async () => [booked], myOffers: async () => [] },
+      }),
+    );
+    expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
+    await tap('a chat opens the seat');
+    expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
+    await tap('Orqaga');
+    expect(await screen.findByText('main screen')).toBeTruthy();
+    expect(window.location.search).toBe('');
   });
 });

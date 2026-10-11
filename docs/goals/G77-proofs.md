@@ -47,3 +47,14 @@
 | 11 | «Внимание» блока под формой заявки | `home/dock/use-attention.ts` (`useBehind`) | `home/dock/use-attention.test.tsx` «waits while a screen stands over the block» |
 | 9 | «Javob berish» бота открывает чат, звонок отвечается вторым нажатием | оставлено: ответ по ссылке требует новой ссылки, шаг в G79 | |
 | 12 | Экраны водителя по ссылке бота без `DriverContext` (старое, вне G77) | предложено владельцу отдельным исправлением | |
+
+## Повторная проверка агентом (F2, 11.10.2026) и что сделано
+
+Старых ошибок `168` часть B агент не нашёл. Новые находки:
+
+| № | Находка | Код | Тест (падает на старом коде) |
+|---|---|---|---|
+| A | Ответ в чате или звонке поверх приложения оставлял главный экран старым | `home/fresh-lists.ts`: списки обновляются, когда экран над ними закрывается | `home/fresh-lists.test.tsx` |
+| B | Чаты внутри экранов падали на общий путь «поверх приложения»: мёртвое нажатие, «Назад» домой | общий путь только у чата поверх приложения (`market/app-link.ts`); свои пути: `bookings/passenger-open.tsx`, `requests/requests-flow.tsx`; у водителя строка поездки ведёт назад (`own-trip-live.tsx`, `driver-booking.tsx`, `past-trip-flow.tsx`); `market/bookings-link.tsx`: новая ссылка открывает свой экран, «Назад» забывает все | `bookings/offer-chat.test.tsx`, `requests/board-chat.test.tsx`, `market/bookings-link.test.tsx`, `trip-end/past-trip.test.tsx` |
+| C | Неудачная первая загрузка списков не повторялась | `home/fresh-lists.ts` | `home/fresh-lists.test.tsx` |
+| D | Карта блока → встреча → чат: «Назад» вёл на страницу поездки, не на карту | `own-trip/own-trip-live.tsx` | `own-trip/start-back.test.tsx` |

@@ -42,16 +42,19 @@ type Props = {
 // go straight to the main screen (G77).
 export function BookingsLink({ app, link, onClose, children }: Props) {
   if (!link) return <>{children}</>;
+  // Every name: a chat over the app may have opened another link over the first one (G77).
   const close = () => {
-    forgetLaunchParam(link.name);
+    for (const name of NAMES[app]) forgetLaunchParam(name);
     onClose();
   };
+  // A new link opens its own screen, never the one of the link before.
+  const key = `${link.name}:${link.id}`;
   return (
     <HomeProvider value={close}>
       {app === 'driver' ? (
-        <MyTripsScreen onBack={close} link={link} />
+        <MyTripsScreen key={key} onBack={close} link={link} />
       ) : (
-        <MyRequestsScreen onBack={close} link={link} />
+        <MyRequestsScreen key={key} onBack={close} link={link} />
       )}
     </HomeProvider>
   );

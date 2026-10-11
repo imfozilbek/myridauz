@@ -49,6 +49,8 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
         chatKey={opened.booking.chatKey}
         title={opened.booking.passenger.firstName}
         ring={opened.screen === 'call'}
+        // The line of the trip is this very trip (G77).
+        onTrip={back}
         onBack={back}
       />
     );

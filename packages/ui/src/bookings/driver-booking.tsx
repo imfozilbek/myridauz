@@ -46,6 +46,8 @@ export function DriverBooking({ booking, onClose }: Props) {
       <ChatScreen
         chatKey={booking.chatKey}
         title={booking.passenger.firstName}
+        // The line of the trip is this very booking (G77).
+        onTrip={() => setStep('view')}
         onBack={() => setStep('view')}
       />
     );

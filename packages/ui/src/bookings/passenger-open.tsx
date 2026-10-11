@@ -66,7 +66,17 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
       (result) => (result.bookingId ? setAccepted(result.bookingId) : open(null)),
     );
   if (accepted) return <AcceptedBooking bookingId={accepted} onClose={onClose} onHome={onHome} />;
-  if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
+  // An offer taken in the talk opens its seat, as one taken here (G77).
+  const seat = (bookingId: string) => (setTalk(null), setAccepted(bookingId));
+  if (talk)
+    return (
+      <ChatScreen
+        {...talk}
+        onTrip={() => setTalk(null)}
+        onLink={(link) => seat(link.id)}
+        onBack={() => setTalk(null)}
+      />
+    );
   if (opened.kind === 'request')
     return (
       <MyRequest
