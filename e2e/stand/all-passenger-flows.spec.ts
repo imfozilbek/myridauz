@@ -60,8 +60,10 @@ test('the search and the booking up to its review', async ({ page }) => {
 });
 
 test('an offer opened from the list of the request', async ({ page }) => {
-  const offer = await offerOn(MUROD, (await askRide(SEEKER)).id);
-  await openHome(page, 'passenger', SEEKER, 'android', `?offer=${offer.id}`);
+  const asked = await askRide(SEEKER);
+  await offerOn(MUROD, asked.id);
+  // «Takliflarni koʻrish» of the card of the request, the link the bot sends (G61, G77).
+  await openHome(page, 'passenger', SEEKER, 'android', `?request=${asked.id}`);
   await page.getByText(MUROD.name).first().click();
   await shot(page, 'android', 'pb20-offer');
 });

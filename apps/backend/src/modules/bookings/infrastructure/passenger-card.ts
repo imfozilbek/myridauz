@@ -1,5 +1,12 @@
 import type { BrandConfig } from '@platform/brands';
-import { BOOKING_LINK, formatPlate, type Booking, type BookingStatus } from '@platform/contracts';
+import {
+  BOOKING_LINK,
+  CALL_LINK,
+  CHAT_LINK,
+  formatPlate,
+  type Booking,
+  type BookingStatus,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { endNames, type Places } from '../../../shared/places/end-names';
@@ -75,10 +82,11 @@ function driverBlock(booking: Booking): string {
 
 function buttons(brand: BrandConfig, booking: Booking, stage: Stage, now: number) {
   const open = (text: string) => appButton(brand, 'passenger', text, { name: BOOKING_LINK, id: booking.id });
-  const chat = { name: 'chat', id: booking.chatKey };
+  const chat = { name: CHAT_LINK, id: booking.chatKey };
+  const call = { name: CALL_LINK, id: booking.chatKey };
   const talk = [
     appButton(brand, 'passenger', t('bot.card.chat'), chat),
-    appButton(brand, 'passenger', t('bot.card.call'), chat),
+    appButton(brand, 'passenger', t('bot.card.call'), call),
   ];
   if (stage === 'ended') return [[findOtherButton(brand, booking)]];
   if (stage === 'confirmed') return [talk, [open(t('bot.card.share'))]];

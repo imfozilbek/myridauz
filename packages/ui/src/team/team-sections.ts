@@ -7,3 +7,5 @@ export const TRIPS_SECTION = TEAM_TRIPS_SECTION;
 export const MANAGEMENT_SECTION = 'management';
 export const PEOPLE_SECTION = 'people';
 export const CHANNELS_SECTION = 'channels';
+// «Hamyonlar» of the owner: the money signs of «Diqqat» open it at once (G77).
+export const WALLETS_SECTION = 'wallets';

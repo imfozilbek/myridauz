@@ -1,4 +1,5 @@
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { sheetClosed } from '../home/sheet-closed';
 import { tap } from '../market/market-test-kit';
@@ -99,5 +100,31 @@ describe('the action sheet (G68, G76)', () => {
     await sheetClosed();
     open('request');
     expect(await screen.findByText('Madina · 2 joy')).toBeTruthy();
+  });
+
+  // A ring of a bot names its thing (?sheet=<id>, docs/122): the lists of the main screen come a
+  // moment later, the sheet waits for them and opens with that thing (G77).
+  it('a bot link opens the sheet of its thing once the lists came', async () => {
+    const ID = '0000000b-0000-4000-8000-000000000009';
+    window.history.replaceState(null, '', `/?sheet=${ID}`);
+    function Later() {
+      const [items, setItems] = useState<readonly ActionItem[]>([]);
+      useActionItems('test', items);
+      return (
+        <button type="button" onClick={() => setItems([item(`request:${ID}`, 'request', 'Madina · 2 joy')])}>
+          loaded
+        </button>
+      );
+    }
+    renderInShell(
+      <>
+        <Later />
+        <ActionSheet />
+      </>,
+    );
+    await act(() => Promise.resolve());
+    fireEvent.click(screen.getByText('loaded'));
+    expect(await screen.findByText('Madina · 2 joy')).toBeTruthy();
+    expect(window.location.search).toBe('');
   });
 });

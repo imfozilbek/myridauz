@@ -6,6 +6,7 @@ import { useI18n } from '../context/i18n-context';
 import type { HomeGo } from '../flow/start-action';
 import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
+import { ErrorScreen } from '../states/error-screen';
 import { haptic } from '../telegram/feedback';
 import { brandVars } from '../theme/brand-vars';
 import { DiqqatSection } from './diqqat-section';
@@ -27,8 +28,10 @@ type GoProps = { readonly go: HomeGo };
 export function TeamHome({ go }: GoProps) {
   const { moderation, team } = useApiClients();
   const { colors } = useBrand().theme;
-  const me = useLoad(() => moderation.me(), 'home.me').value;
+  const { value: me, failed, reload } = useLoad(() => moderation.me(), 'home.me');
   const navbat = useLoad(() => team.navbat(), 'team.navbat').value;
+  // Who the person is did not come: the error with «Qayta urinish», never an empty screen (G77).
+  if (failed) return <ErrorScreen onRetry={reload} />;
   if (!me) return null;
   const owner = me.role === 'owner';
   return (

@@ -1,0 +1,9 @@
+/* A screen kept under another one opened over it (KeptBehind): laid out as if the wrapper were not
+   there, and not seen while the other one stands. */
+.kept-shown {
+  display: contents;
+}
+
+.kept-behind {
+  display: none;
+}

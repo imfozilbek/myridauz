@@ -22,7 +22,7 @@ export const linkedStats = (): StatsPeriod | null => launchParam(PARAM, PERIOD) 
 // "Statistika" of the team (docs/29): the main numbers, three funnels and the top errors.
 export function StatsScreen({
   onBack,
-  period: first = 'day',
+  period: first = linkedStats() ?? 'day',
 }: {
   readonly onBack: () => void;
   readonly period?: StatsPeriod;
@@ -31,7 +31,7 @@ export function StatsScreen({
   useScreenBackground();
   const { t } = useI18n();
   const [period, setPeriod] = useState<StatsPeriod>(first);
-  // Once opened from the bot, going back shows the menu and not the dashboard again.
+  // Once opened from the bot, a gate mounted again shows the main screen, not the dashboard.
   useEffect(() => {
     forgetLaunchParam(PARAM);
   }, []);

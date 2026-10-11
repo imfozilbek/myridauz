@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Cell, Input, Modal, Section } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { SheetOverlay } from '../../home/sheet-overlay';
+import { SheetBack } from '../../sheet/sheet-back';
 import { useBehind } from '../../telegram/behind';
 import { useSheetShown } from '../../telegram/sheet-shown';
 import { findCars, typedCar, type CarName } from '../car-choices';
@@ -24,7 +25,12 @@ export function OtherCarSheet({ open: asked, onClose, onPick }: Props) {
       open={open}
       onOpenChange={(next) => (next ? undefined : onClose())}
     >
-      {open ? <Search onPick={onPick} /> : null}
+      {open ? (
+        <>
+          <SheetBack onClose={onClose} />
+          <Search onPick={onPick} />
+        </>
+      ) : null}
     </Modal>
   );
 }

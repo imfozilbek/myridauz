@@ -26,27 +26,27 @@ Definition of Done
     (docs/65 B4); текст вопроса на согласие владельца.
 
 A. «Назад» (люди)
-[ ] Поездка, бронь или заявка, открытая из нижнего блока или
+[x] Поездка, бронь или заявка, открытая из нижнего блока или
     кнопкой бота: «Назад» сразу на главный (решение владельца
     11.10.2026). Открытая из списка: назад в список, как сейчас.
-[ ] Telegram «Назад» при открытой шторке закрывает шторку, а не
+[x] Telegram «Назад» при открытой шторке закрывает шторку, а не
     Mini App: шторка действия, шторки доски заявок, «Boshqa ›»
     машины. На доске «Назад» не теряет набранное предложение.
-[ ] «Bosh sahifa» после отправленной брони ведёт на главный и из
+[x] «Bosh sahifa» после отправленной брони ведёт на главный и из
     «Safar topish» пустого списка, «Oʻxshash safarlar», «Sevimli».
-[ ] «Profil» → «Mashina» → «Назад»: снова «Profil».
-[ ] «Hamyon» → подробно → поездка → «Назад»: снова подробно.
+[x] «Profil» → «Mashina» → «Назад»: снова «Profil».
+[x] «Hamyon» → подробно → поездка → «Назад»: снова подробно.
 
 B. Ссылки ботов и админка
-[ ] ?open= забывается после открытия: чат или заявка водителя не
+[x] ?open= забывается после открытия: чат или заявка водителя не
     открывают «Hamyon» и публикацию снова.
-[ ] «📞 Qoʻngʻiroq» бота сразу начинает звонок, «💬 Chat» только чат.
-[ ] Звонок о первом предложении открывает шторку и при двух
+[x] «📞 Qoʻngʻiroq» бота сразу начинает звонок, «💬 Chat» только чат.
+[x] Звонок о первом предложении открывает шторку и при двух
     предложениях на заявку.
-[ ] Обработчик ссылки без отправителя (бот, канал, лендинг)
+[x] Обработчик ссылки без отправителя (бот, канал, лендинг)
     удалён; e2e проверяет ссылки, которые боты шлют на самом
     деле: ?mytrip=, ?request=, ?sheet=.
-[ ] Админка: ошибка загрузки команды: экран ошибки с «Qayta
+[x] Админка: ошибка загрузки команды: экран ошибки с «Qayta
     urinish», не пустой экран; фильтр «Navbat» не сбрасывается
     после дела; «Diqqat» деньги открывает «Hamyonlar»; ?stats=day
     назад в одно нажатие.
@@ -109,6 +109,16 @@ F. Проверка
 | О1 | `packages/ui/src/home/dock/driver-state.ts` (`pointStates` и после выезда), `home/dock/driver-road-card.tsx` (следующая точка посадки, «Men keldim»), `home/dock/trip-actions.ts` (`cameAll`), `bookings/driver-trip-map.tsx` (точки посадки в пути) | `home/dock/driver-state.test.ts` «leads the points on the way too»; `home/driver-dock-links.test.tsx` «on the way the next point to pick up comes first»; `bookings/driver-trip-map.test.tsx` «on the way keeps the points to pick up» |
 | О2 | `packages/ui/src/market/my-requests-screen.tsx` («Qayta yuborish» через концы, без дня) | `mine/passenger-mine.test.tsx` «counts the seat and both requests» (день, «Назад» к дню) |
 | О3 | `packages/ui/src/bookings/passenger-open.tsx` (`cancelRequest` с вопросом), ключ `market.request.cancelAsk` | `bookings/my-request.test.tsx` «while waiting: … the cancel at the bottom»; `market/my-lists.test.tsx` |
+| A1 «Назад» по ссылке | `market/my-requests-screen.tsx`, `market/my-trips-screen.tsx` (метка `home`), `market/bookings-link.tsx` | `market/bookings-link.test.tsx`: `?booking=`, `?mytrip=`, `?request=` назад одним нажатием; стенд `all-driver` «da20» |
+| A2 шторки | `sheet/sheet-back.tsx` в `ActionSheet`, `BoardSheet`, `OtherCarSheet`, `FormSheet`; `requests/offer-draft.ts` | `sheet/sheet-back.test.tsx`; `requests/board-sheets.test.tsx` «Назад closes the sheet on the board» |
+| A3 «Bosh sahifa» | `bookings/pending-booking.tsx` (`useGoHome`) | `flow/home-context.test.tsx` «Bosh sahifa of a sent seat» |
+| A4 «Profil» → «Mashina» | `driver/driver-gate.tsx` и общий `telegram/kept-behind.tsx` | `driver/car-back.test.tsx` |
+| A5 «Hamyon» | `wallet/wallet-flow.tsx` (`KeptBehind`) | `wallet/wallet-back.test.tsx` |
+| B1 `?open=` | `flow/start-flow.tsx` (`useLinkOpened`) | `flow/start-flow.test.tsx` «opens a section at once by the link» |
+| B2 звонок бота | `contracts` `CALL_LINK`, `passenger-card.ts`, `ask-card.ts`, `chat/chat-link.tsx` | `chat/chat-link.test.tsx` «📞 Qoʻngʻiroq of a bot rings at once» |
+| B3 первое предложение | `action-sheet/kinds/offer-items.tsx` (первое пришедшее), `action-sheet/action-sheet.tsx` (не закрывается до списков) | `action-sheet/passenger-offer-sheet.test.tsx` «the ring of the first offer»; `action-sheet/action-sheet.test.tsx` «a bot link opens the sheet» |
+| B4 ссылки без отправителя | `market/bookings-link.tsx`: у попутчика нет `?offer=`, у водителя нет `?booking=` | `market/bookings-link.test.tsx`; стенд: `?mytrip=` (`all-driver`, `g63`), `?request=` (`all-passenger`, `g64`), `?sheet=` (`all-driver` «da51») |
+| B5 админка | `team/team-home.tsx`, `team/navbat-section.tsx`, `team/diqqat-section.tsx` (`WALLETS_SECTION`), `apps/miniapp-admin` `start-page.tsx`, `stats/stats-screen.tsx` | `apps/miniapp-admin/.../start-page.test.tsx` (ошибка, «Hamyonlar», `?stats=`); `team/team-home.test.tsx` (фильтр) |
 
 ## Порядок и оценка
 

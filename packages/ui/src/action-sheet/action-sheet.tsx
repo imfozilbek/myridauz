@@ -1,9 +1,10 @@
 import { SHEET_LINK, SHEET_LINK_VALUE } from '@platform/contracts';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Modal, Snackbar } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { SheetOverlay } from '../home/sheet-overlay';
 import { Icon } from '../icons';
+import { SheetBack } from '../sheet/sheet-back';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { useSheetShown } from '../telegram/sheet-shown';
 import { ActionCard } from './action-card';
@@ -30,9 +31,13 @@ export function ActionSheet() {
     forgetLaunchParam(SHEET_LINK);
     pinFirst(named);
   }, []);
-  // The last one answered: the sheet closes, a new thing waits in the block (docs/164).
+  // The last one answered: the sheet closes, a new thing waits in the block (docs/164). Not before
+  // the first one came: the lists load after a bot link named its thing (G77).
+  const shown = useRef(false);
   useEffect(() => {
-    if (item) return;
+    shown.current ||= item !== undefined;
+    if (item || !shown.current) return;
+    shown.current = false;
     setDone(0);
     closeSheet();
   }, [item]);
@@ -52,6 +57,7 @@ export function ActionSheet() {
         open={item !== undefined}
         onOpenChange={(open) => (open || !item ? undefined : leave(item))}
       >
+        {item ? <SheetBack onClose={() => leave(item)} /> : null}
         {item ? (
           <ActionCard
             key={item.key}

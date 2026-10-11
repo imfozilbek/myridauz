@@ -52,6 +52,21 @@ describe('the chat over any screen (docs/07, G68)', () => {
     expect(screen.getByText(`chat ${KEY}`)).toBeTruthy();
   });
 
+  // The two buttons under a trip card of a bot (G77): «📞 Qoʻngʻiroq» starts the call at once.
+  it('«📞 Qoʻngʻiroq» of a bot rings at once; back forgets the link', () => {
+    window.history.replaceState(null, '', `/?call=${KEY}`);
+    renderInShell(
+      <ChatLink>
+        <p>home</p>
+      </ChatLink>,
+      true,
+    );
+    expect(screen.getByText(`chat ${KEY} ring`)).toBeTruthy();
+    act(() => pressBack());
+    expect(screen.getByText('home')).toBeTruthy();
+    expect(window.location.search).toBe('');
+  });
+
   it('«Qoʻngʻiroq» of a sheet opens the chat and rings', () => {
     renderInShell(
       <ChatLink>

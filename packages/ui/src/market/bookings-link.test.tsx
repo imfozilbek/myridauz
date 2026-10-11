@@ -11,7 +11,8 @@ afterEach(() => {
 });
 
 const BOOKING_ID = '0000000b-0000-4000-8000-000000000001';
-const booked = { ...confirmed, id: BOOKING_ID };
+const TRIP = { ...confirmed.trip, id: '0000000a-0000-4000-8000-000000000001' };
+const booked = { ...confirmed, id: BOOKING_ID, trip: TRIP };
 const REQUEST = {
   id: '0000000d-0000-4000-8000-000000000001',
   passenger: booked.passenger,
@@ -30,7 +31,7 @@ const REQUEST = {
 };
 
 describe('a bot button opens its booking (docs/65 B5)', () => {
-  it('opens the passenger booking from "?booking=", back goes to the main screen', async () => {
+  it('opens the passenger booking from "?booking=", back goes to the main screen in one tap', async () => {
     window.history.replaceState(null, '', `/?booking=${BOOKING_ID}`);
     renderMarket(
       <BookingsLink app="passenger">
@@ -42,26 +43,38 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
       }),
     );
     expect(await screen.findByRole('img', { name: '01 A 123 BC' })).toBeTruthy();
-    await tap('Orqaga');
+    // One tap: what a bot or the block opened goes straight home (G77, owner decision 11.10.2026).
     await tap('Orqaga');
     expect(await screen.findByText('main screen')).toBeTruthy();
     expect(window.location.search).toBe('');
   });
 
-  it('opens a new offer itself from "?offer=" (G40, docs/106 K6)', async () => {
-    const OFFER_ID = '0000000c-0000-4000-8000-000000000001';
-    window.history.replaceState(null, '', `/?offer=${OFFER_ID}`);
-    const request = { ...REQUEST, id: offer.requestId };
+  it('the passenger app has no "?offer=": a new offer rings with its sheet (G77)', async () => {
+    window.history.replaceState(null, '', '/?offer=0000000c-0000-4000-8000-000000000001');
     renderMarket(
       <BookingsLink app="passenger">
         <p>main screen</p>
       </BookingsLink>,
+      testClients({ bookings: { myOffers: async () => [offer] } }),
+    );
+    expect(await screen.findByText('main screen')).toBeTruthy();
+  });
+
+  it('opens the trip of the driver from "?mytrip=", back goes to the main screen in one tap', async () => {
+    window.history.replaceState(null, '', `/?mytrip=${TRIP.id}`);
+    renderMarket(
+      <BookingsLink app="driver">
+        <p>main screen</p>
+      </BookingsLink>,
       testClients({
-        market: { myRequests: async () => [request] },
-        bookings: { myBookings: async () => [], myOffers: async () => [{ ...offer, id: OFFER_ID }] },
+        market: { myTrips: async () => [TRIP] },
+        bookings: { driverBookings: async () => [booked], driverOffers: async () => [] },
       }),
     );
-    expect(await screen.findByText('Qabul qilish')).toBeTruthy();
+    expect(await screen.findByText(/^Yoʻlovchilar \(/u)).toBeTruthy();
+    await tap('Orqaga');
+    expect(await screen.findByText('main screen')).toBeTruthy();
+    expect(window.location.search).toBe('');
   });
 
   it('opens «Mening soʻrovim» from "?request=" under the card of a request (G61)', async () => {
@@ -77,5 +90,7 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
     );
     expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
     expect(screen.queryByText('main screen')).toBeNull();
+    await tap('Orqaga');
+    expect(await screen.findByText('main screen')).toBeTruthy();
   });
 });

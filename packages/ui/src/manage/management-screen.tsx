@@ -8,7 +8,7 @@ import { TeamTripsScreen } from '../market/team-trips-screen';
 import { PitaksScreen } from '../pitaks/pitaks-screen';
 import { PricingScreen } from '../pricing/pricing-screen';
 import { SoundsScreen } from '../sounds/sounds-screen';
-import { linkedStats, StatsScreen } from '../stats/stats-screen';
+import { StatsScreen } from '../stats/stats-screen';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
 import { JournalScreen } from './journal-screen';
 import { LimitsScreen } from './limits-screen';
@@ -39,11 +39,10 @@ export function ManagementScreen({ onBack }: Back) {
   useScreenView('management');
   const { t } = useI18n();
   const brand = useBrand();
-  const linked = linkedStats();
-  const [open, setOpen] = useState<Open>(linked ? 'statistics' : 'menu');
+  const [open, setOpen] = useState<Open>('menu');
   const hints = useManagementHints();
   const menu = () => setOpen('menu');
-  if (open === 'statistics') return <StatsScreen onBack={menu} period={linked ?? 'day'} />;
+  if (open === 'statistics') return <StatsScreen onBack={menu} />;
   if (open !== 'menu') {
     const Section = SCREENS[open];
     return <Section onBack={menu} />;

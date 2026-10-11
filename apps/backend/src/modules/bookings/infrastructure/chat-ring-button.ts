@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { SHEET_LINK, type Booking } from '@platform/contracts';
+import { CHAT_LINK, SHEET_LINK, type Booking } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { appButton } from '../../../shared/telegram/open-button';
 
@@ -20,7 +20,7 @@ export function chatRingButton(
   ring: string | undefined,
 ): { markup?: object } {
   if (!isChatRing(ring)) return {};
-  const link = { name: ring === 'message' ? SHEET_LINK : 'chat', id: booking.chatKey };
+  const link = { name: ring === 'message' ? SHEET_LINK : CHAT_LINK, id: booking.chatKey };
   const open = appButton(brand, role, t(BUTTONS[ring]), link);
   return { markup: { inline_keyboard: [[open]] } };
 }

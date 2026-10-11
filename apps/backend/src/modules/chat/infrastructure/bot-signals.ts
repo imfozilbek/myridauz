@@ -1,4 +1,5 @@
 import { appHost } from '@platform/brands';
+import { CHAT_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
 import { sendEvent } from '../../feed';
@@ -9,14 +10,12 @@ import type { Addressee, ChatSignals, Role } from '../application/ports';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 const { t } = createI18n(DEFAULT_LOCALE);
-// The Mini App opens this chat at once (docs/07).
-const CHAT_PARAM = 'chat';
 
 // The passenger hears from the passenger bot, the driver from the driver bot (docs/07).
 type To = { readonly userId: number; readonly role: Role };
-// A message of the bot of this person with one button that opens the chat.
+// A message of the bot of this person with one button that opens the chat at once (docs/07).
 const toChat = async (env: Bindings, to: To, key: string, text: string, button: string) => {
-  const url = `https://${appHost(brandOf(env), to.role)}/?${CHAT_PARAM}=${key}`;
+  const url = `https://${appHost(brandOf(env), to.role)}/?${CHAT_LINK}=${key}`;
   const markup = { inline_keyboard: [[{ text: button, web_app: { url } }]] };
   await notify(env, [{ bot: to.role, chatId: to.userId, text, markup }]);
 };

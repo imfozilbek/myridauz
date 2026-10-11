@@ -13,6 +13,7 @@ import { useFailure } from '../states/use-failure';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 import { BoardSheet } from './board-sheet';
+import { draftOf, keepDraft } from './offer-draft';
 import { useEnds } from './ends';
 import { useRequestDay } from './request-day';
 import { TimeChips, useOfferTime } from './time-chips';
@@ -45,10 +46,14 @@ function OfferForm({ request, onSent, onShort }: Omit<Props, 'request'> & { read
   const when = useOfferTime(request);
   const bounds = useLoad(() => market.recommend(request.from, request.to)).value;
   const { failure, fail, clear } = useFailure();
-  const [asked, setAsked] = useState(request.price);
+  const [asked, setAsked] = useState(() => draftOf('price', request.id) ?? request.price);
   const price = bounds ? Math.min(bounds.maxPrice, Math.max(bounds.minPrice, asked)) : asked;
   const name = request.passenger.firstName;
-  const step = (by: -1 | 1) => bounds && setAsked(price + by * bounds.roundStep);
+  const step = (by: -1 | 1) => {
+    if (!bounds) return;
+    keepDraft('price', request.id, price + by * bounds.roundStep);
+    setAsked(price + by * bounds.roundStep);
+  };
   const send = async () => {
     if (!when?.departAt) return;
     clear();

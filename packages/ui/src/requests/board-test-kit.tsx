@@ -39,6 +39,8 @@ type Fakes = {
   readonly requestBoard?: MarketClient['requestBoard'];
   readonly bookings?: Partial<BookingsClient>;
   readonly market?: Partial<MarketClient>;
+  // In Telegram: the native «Назад», pressed by pressBack of test-native.
+  readonly inTelegram?: boolean;
 };
 
 // The board of an approved driver with a car of 4 seats; every call is a spy the test reads.
@@ -60,6 +62,8 @@ export function openBoard(fakes: Fakes = {}) {
         }),
       },
     }),
+    'male',
+    fakes.inTelegram,
   );
   return requestBoard;
 }

@@ -120,7 +120,9 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('find.noTrips'))).toBeVisible();
     await shot('20-empty');
     // The route and the day of the search go into the request (K6).
-    await person.tap(page.getByText(t('common.passenger.leaveRequest')));
+    // The row of the empty day; the native button under it says the same (G77: one scenario never
+    // leans on what the one before it left).
+    await person.tap(page.getByText(t('common.passenger.leaveRequest')).first());
     // The request on one screen (G61, docs/118 path 4): the ends on their maps, then sent.
     await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
     await shot('21-request');

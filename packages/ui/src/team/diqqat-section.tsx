@@ -6,7 +6,7 @@ import type { HomeGo } from '../flow/start-action';
 import { Icon, type IconName } from '../icons';
 import { haptic } from '../telegram/feedback';
 import { TeamSection } from './team-section';
-import { MANAGEMENT_SECTION, NAVBAT_SECTION, PEOPLE_SECTION, STATS_SECTION } from './team-sections';
+import { NAVBAT_SECTION, PEOPLE_SECTION, STATS_SECTION, WALLETS_SECTION } from './team-sections';
 
 const ICON = 20;
 type Kind = AttentionSign['kind'];
@@ -47,7 +47,7 @@ const CARDS: Record<Kind, Card> = {
     fault: false,
     titleKey: 'team.diqqat.money',
     hintKey: 'team.diqqat.moneyHint',
-    opens: MANAGEMENT_SECTION,
+    opens: WALLETS_SECTION,
   },
   rating: {
     icon: 'star',

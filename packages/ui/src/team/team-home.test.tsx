@@ -61,6 +61,16 @@ describe('the main screen of the team', () => {
     expect(go).toHaveBeenCalledWith('navbat', {
       navbat: { filter: 'application', kind: 'application', id: NAVBAT.items[2]?.id },
     });
+    // Back on the main screen after the case the filter is still the one chosen (G77).
+    cleanup();
+    renderTeamHome('moderator');
+    const again = await screen.findByRole('radiogroup');
+    expect(
+      within(again)
+        .getByRole('radio', { name: /Arizalar 2/u })
+        .getAttribute('aria-checked'),
+    ).toBe('true');
+    expect(screen.queryByText('Shikoyat: Madina → Jasur')).toBeNull();
   });
 
   it('shows the oldest cases that fit one screen: 4 to the owner, 6 to a moderator', async () => {

@@ -14,7 +14,9 @@ import {
   StatsScreen,
   TeamHome,
   TeamTripsScreen,
+  TeamWalletsScreen,
   TRIPS_SECTION,
+  WALLETS_SECTION,
   type StartAction,
 } from '@platform/ui';
 
@@ -63,6 +65,14 @@ const SECTIONS: readonly StartAction[] = [
     Screen: TeamTripsScreen,
   },
   {
+    id: WALLETS_SECTION,
+    icon: 'price',
+    tone: 'accent',
+    labelKey: 'wallet.team.title',
+    hintKey: 'wallet.team.title',
+    Screen: TeamWalletsScreen,
+  },
+  {
     id: MANAGEMENT_SECTION,
     icon: 'statistics',
     tone: 'deep',
@@ -72,12 +82,12 @@ const SECTIONS: readonly StartAction[] = [
   },
 ];
 
-// A link from the admin bot opens a case in «Navbat» or the dashboard at once (docs/17, docs/29,
-// docs/50, G75).
+// A link from the admin bot opens a case in «Navbat» or «Statistika» at once (docs/17, docs/29,
+// docs/50, G75): «Назад» from it is the main screen, one tap (G77).
 const linked = () => {
   const open = linkedCase();
   if (open) return { opened: NAVBAT_SECTION, launch: { navbat: open } };
-  return linkedStats() ? { opened: MANAGEMENT_SECTION } : {};
+  return linkedStats() ? { opened: STATS_SECTION } : {};
 };
 
 // The main screen of the team: «Diqqat», «Navbat» and «Boshqaruv» of the owner, «Navbat» and the
