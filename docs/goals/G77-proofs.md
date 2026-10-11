@@ -2,6 +2,8 @@
 
 > **Кратко:** у каждого пункта цели G77 (`G77-transitions-and-one-code.md`) путь к коду и тест (урок №224). Тест исправления падает на старом коде; у чистки кода без смены поведения доказательство: кода нет, старые тесты зелёные, `knip` в CI.
 
+Проверено 11.10.2026: код каждого PR возвращён к состоянию до PR, тесты из PR оставлены, тесты из таблиц запущены. Падают на старом коде: PR #206 (О1 … О3) 6 тестов в 5 файлах; PR #207 (A, B) 22 теста, все 12 файлов; PR #208 (C, D4, E1, находки агентов, №12) 25 тестов, все 22 файла. Проходит на старом коде только `market/my-lists.test.tsx` (запасной тест О3; главный тест О3 падает) и чистка C3, C7, D1, D2: поведение не меняется.
+
 | Пункт | Код | Тест (падает на старом коде) |
 |---|---|---|
 | О1 | `packages/ui/src/home/dock/driver-state.ts` (`pointStates` и после выезда), `home/dock/driver-road-card.tsx` (следующая точка посадки, «Men keldim»), `home/dock/trip-actions.ts` (`cameAll`), `bookings/driver-trip-map.tsx` (точки посадки в пути) | `home/dock/driver-state.test.ts` «leads the points on the way too»; `home/driver-dock-links.test.tsx` «on the way the next point to pick up comes first»; `bookings/driver-trip-map.test.tsx` «on the way keeps the points to pick up» |
