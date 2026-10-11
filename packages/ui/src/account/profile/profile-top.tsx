@@ -11,7 +11,10 @@ const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
 
 // The card on top of «Profil» (G65, mockup g65/3): the face, the name, the role and how long with
 // the brand, «Rasmni almashtirish» and how the other side sees the person.
-export function ProfileTop({ onLook }: { readonly onLook: () => void }) {
+type Props = { readonly onLook: () => void; readonly pick?: boolean };
+
+// pick: the choice of a photo opens at once (G79 П18).
+export function ProfileTop({ onLook, pick = false }: Props) {
   const account = useAccount();
   const driver = useDriver();
   const { t } = useI18n();
@@ -34,7 +37,7 @@ export function ProfileTop({ onLook }: { readonly onLook: () => void }) {
           <span className="profile-since">
             {t('account.profile.since', { role, brand: name, months: String(months) })}
           </span>
-          <AvatarPicker link />
+          <AvatarPicker link pick={pick} />
           <button type="button" className="profile-link profile-look" onClick={onLook}>
             {t(driver ? 'account.profile.look.driver' : 'account.profile.look.passenger')}
           </button>

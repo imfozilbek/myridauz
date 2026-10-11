@@ -31,11 +31,13 @@ export function ProfileScreen({ onBack, part }: Props) {
   const { comfort } = useApiClients();
   const { colors } = useBrand().theme;
   const { value: standing } = useLoad(() => comfort.standing(), 'profile.standing');
-  const [open, setOpen] = useState<ProfileOpen | 'look' | null>(part ?? null);
+  // «Rasm qoʻshing» of the head: the page itself, the choice of a photo opens on it (G79 П18).
+  const shown = part === 'photo' ? undefined : part;
+  const [open, setOpen] = useState<ProfileOpen | 'look' | null>(shown ?? null);
   // «Baholarim» opened from «Meni qanday koʻradi» goes back there (G75, mockup g75/5 A).
   const [fromLook, setFromLook] = useState(false);
   if (!account) return null;
-  const back = () => (part ? onBack() : setOpen(null));
+  const back = () => (shown ? onBack() : setOpen(null));
   const { profile } = account;
   if (open === 'look')
     return (
@@ -58,7 +60,7 @@ export function ProfileScreen({ onBack, part }: Props) {
   return (
     <div className="profile profile-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
-      <ProfileTop onLook={() => setOpen('look')} />
+      <ProfileTop onLook={() => setOpen('look')} pick={part === 'photo'} />
       <ProfileStats standing={standing} />
       <ProfileNotes standing={standing} />
       <ProfileRows standing={standing} onOpen={setOpen} />

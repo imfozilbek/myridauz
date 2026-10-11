@@ -12,7 +12,7 @@ type Props = { readonly openProfile: (part?: ProfilePart) => void };
 
 // The right part of the head of a passenger (G76, mockup g76/1): the rating the drivers see before
 // «Tasdiqlash» opens «Baholarim»; no ratings yet, «Yangi» opens how the drivers see the person; no
-// photo or a refused one, «Rasm qoʻshing» in yellow opens «Profil» where the photo goes.
+// photo or a refused one, «Rasm qoʻshing» in yellow opens «Profil» with the choice of a photo (G79 П18).
 export function PassengerSide({ openProfile }: Props) {
   const { t, formatRating } = useI18n();
   const { colors } = useBrand().theme;
@@ -21,7 +21,7 @@ export function PassengerSide({ openProfile }: Props) {
   if (!profile) return null;
   if (!profile.hasAvatar || profile.avatarStatus === 'rejected')
     return (
-      <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile())}>
+      <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile('photo'))}>
         {t('home.side.photoHint')}
       </Side>
     );
@@ -53,7 +53,7 @@ export function DriverSide({ openProfile }: Props) {
   const { car } = driver.application;
   if (car && refused)
     return (
-      <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile())}>
+      <Side warn label={t('home.side.photo')} onClick={tap('side_photo', () => openProfile('photo'))}>
         {t('home.side.photoHint')}
       </Side>
     );

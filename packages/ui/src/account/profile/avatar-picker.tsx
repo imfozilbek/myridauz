@@ -1,5 +1,5 @@
 import { Text } from '@telegram-apps/telegram-ui';
-import { useRef, type ChangeEvent } from 'react';
+import { useLayoutEffect, useRef, type ChangeEvent } from 'react';
 import { Button } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { useAccount } from '../account-context';
@@ -7,12 +7,22 @@ import { useFaceUpload } from './use-face-shot';
 
 // A new face from the camera or the gallery, as on screen 2 of the registration (G58, docs/118):
 // it works on Telegram Desktop too, the team checks every photo. In the card of «Profil» it is a
-// link of the brand color (G65, mockup g65/3).
-export function AvatarPicker({ link = false }: { readonly link?: boolean }) {
+// link of the brand color (G65, mockup g65/3). pick: the camera or the gallery opens at once, still
+// in the tap that opened the page (G79 П18).
+export function AvatarPicker({
+  link = false,
+  pick = false,
+}: {
+  readonly link?: boolean;
+  readonly pick?: boolean;
+}) {
   const account = useAccount();
   const { t } = useI18n();
   const input = useRef<HTMLInputElement>(null);
   const { upload, busy, failure } = useFaceUpload();
+  useLayoutEffect(() => {
+    if (pick) input.current?.click();
+  }, [pick]);
   if (!account) return null;
   const label = t(account.profile.hasAvatar ? 'account.avatar.change' : 'account.avatar.add');
   const picked = (event: ChangeEvent<HTMLInputElement>) => {
