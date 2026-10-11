@@ -2,11 +2,17 @@ import { LIMITS, limitFits, type LimitKey, type Limits } from '@platform/contrac
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { Stepper } from '../find/stepper';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
 import { ManageGroup, ManagePage } from './manage-page';
 import { useLimitValue } from './limit-value';
+import '../find/seats.css';
+
+// A limit other than a sum goes by «−» and «+» (G79 К9): minutes by 5, stars by tenths, the rest by 1.
+const STEPS: Readonly<Record<string, number>> = { minutes: 5, stars: 0.1 };
+const TENTHS = 10;
 
 type EditProps = {
   readonly limitKey: LimitKey;
@@ -25,6 +31,11 @@ export function LimitEdit({ limitKey, value, onBack, onSaved }: EditProps) {
   const rule = LIMITS[limitKey];
   const next = Number(text.replace(',', '.'));
   const fits = text.trim() !== '' && limitFits(limitKey, next);
+  const step = STEPS[rule.unit] ?? 1;
+  const stepBy = (by: -1 | 1) => {
+    const moved = Math.round((next + by * step) * TENTHS) / TENTHS;
+    setText(String(Math.min(rule.max, Math.max(rule.min, moved))));
+  };
   const save = async () => {
     clear();
     try {
@@ -49,12 +60,21 @@ export function LimitEdit({ limitKey, value, onBack, onSaved }: EditProps) {
             if (fits) void save();
           }}
         >
-          <input
-            inputMode="decimal"
-            aria-label={t(`manage.limit.${limitKey}`)}
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-          />
+          {rule.unit === 'sum' ? (
+            <input
+              inputMode="decimal"
+              aria-label={t(`manage.limit.${limitKey}`)}
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+            />
+          ) : (
+            <Stepper
+              value={valueOf(limitKey, next)}
+              atLeast={next <= rule.min}
+              atMost={next >= rule.max}
+              onStep={stepBy}
+            />
+          )}
           <button type="submit" disabled={!fits || next === value}>
             {t('manage.limitSave')}
           </button>

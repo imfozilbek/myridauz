@@ -1,34 +1,33 @@
 import { MODERATION_REASONS, type ModerationReason } from '@platform/contracts';
-import { useState } from 'react';
 import { StepLayout } from '../account/step-layout';
 import { Cell, List, Multiselectable, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
-import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
 
 type ReasonsStepProps = {
+  // The ticks live in the case: «Назад» keeps them, so it asks nothing (G79 К10).
+  readonly picked: readonly ModerationReason[];
+  readonly onPick: (reasons: readonly ModerationReason[]) => void;
   readonly onBack: () => void;
   readonly onDone: (reasons: ModerationReason[]) => void;
 };
 
 // The moderator ticks one or more reasons (docs/04): the driver sees each one at its photo or field.
-export function ReasonsStep({ onBack, onDone }: ReasonsStepProps) {
+export function ReasonsStep({ picked, onPick, onBack, onDone }: ReasonsStepProps) {
   useScreenView('moderation.reason');
   const { t } = useI18n();
-  const [picked, setPicked] = useState<readonly ModerationReason[]>([]);
-  const guard = useUnsavedGuard(picked.length > 0);
   const toggle = (reason: ModerationReason) => {
     haptic.select();
-    setPicked((list) => (list.includes(reason) ? list.filter((item) => item !== reason) : [...list, reason]));
+    onPick(picked.includes(reason) ? picked.filter((item) => item !== reason) : [...picked, reason]);
   };
   // Sent in the order of the list, the same as in the bot.
   const send = () => onDone(MODERATION_REASONS.filter((reason) => picked.includes(reason)));
   return (
     <StepLayout icon="applications" title={t('moderation.reason.title')} hint={t('moderation.reason.hint')}>
-      <Screen onBack={guard(onBack)} />
+      <Screen onBack={onBack} />
       <List>
         <Section>
           {MODERATION_REASONS.map((reason) => (
