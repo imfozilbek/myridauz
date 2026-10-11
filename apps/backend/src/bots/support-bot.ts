@@ -10,6 +10,7 @@ import { mediaOf } from './media';
 import { welcomePicture } from './start-reply';
 import { askerOf } from './support-asker';
 import { supportButtons, supportCard } from './support-card';
+import { supportUrl } from './support-link';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 export const SUPPORT_BOT = 'support';
@@ -19,7 +20,7 @@ export const SUPPORT_PER_MINUTE = 10;
 // The admin bot is only for the team: everyone else is sent to the support bot (docs/50).
 export const toSupportBot = (brand: BrandConfig, chatId: number) =>
   sendMessage(chatId, t('bot.admin.denied', { brand: brand.name }), {
-    inline_keyboard: [[{ text: t('bot.admin.toSupport'), url: `https://t.me/${brand.bots.support}` }]],
+    inline_keyboard: [[{ text: t('bot.admin.toSupport'), url: supportUrl(brand) }]],
   });
 
 // A question to the team (docs/50): a text, a photo or a voice message. The one assigned member gets
