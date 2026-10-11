@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { cancellable } from '../bookings/booking-status';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
+import { useFreshLists } from '../home/fresh-lists';
 import { useSharedPassengerData } from '../home/passenger-data';
 
 // Why «Joy band qilish» would be refused (G52, docs/112): a seat of this trip is asked already, or
@@ -14,7 +15,7 @@ export type SeatBlock = 'asked' | 'limit' | null;
 export function useAskedSeat(tripId: string, wanted: boolean): SeatBlock {
   const { bookings } = useApiClients();
   const { maxPending } = useBrand().bookings;
-  // The seats of the main screen when «Safar» opens inside it: no second load (G77).
+  // The seats of the main screen when «Safar» opens inside it: one list, not a second one (G77).
   const shared = useSharedPassengerData();
   const [loaded, setLoaded] = useState<readonly Booking[] | null>(null);
   const alone = shared === null;
@@ -27,6 +28,8 @@ export function useAskedSeat(tripId: string, wanted: boolean): SeatBlock {
     );
     return () => void (live = false);
   }, [bookings, wanted, alone]);
+  // Refreshed as «Safar» opens: a seat asked a moment ago counts too (G77).
+  useFreshLists(shared, wanted);
   const mine = shared ? (shared.value?.[0] ?? null) : loaded;
   if (!wanted || !mine) return null;
   if (mine.some((item) => item.trip.id === tripId && cancellable(item.status))) return 'asked';

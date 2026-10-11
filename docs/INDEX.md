@@ -77,7 +77,7 @@
 | 72 | [72-pitaks-and-live-directions.md](72-pitaks-and-live-directions.md) | Пятаки и живые направления: находки, 10 решений, план; сделано в G24 (админка «Pitaklar») |
 | 73 | [73-pitak-candidates.md](73-pitak-candidates.md) | 42 кандидата в пятаки с точками и направлениями, уверенность А или Б |
 | 74 | [74-search-and-create-flow.md](74-search-and-create-flow.md) | Поиск и создание поездки: маршрут списками (область, район), точки при брони внутри района; водитель, попутчик, система; цель G26 |
-| 75 | [75-stand.md](75-stand.md) | Стенд: вся Rida локально (`pnpm stand`), сценарии целей на настоящем backend (`pnpm stand:check`), скриншоты |
+| 75, 171 | [75-stand.md](75-stand.md), [171-stand-scenarios.md](171-stand-scenarios.md) | Стенд: вся Rida локально (`pnpm stand`), сценарии целей на настоящем backend (`pnpm stand:check`), стенд в другой час (`--at`), скриншоты; сценарии старых целей |
 | 76 | [76-scenarios.md](76-scenarios.md) | Все сценарии всех людей (G27): метод шести сторон, роли и их задачи, как читать каталог |
 | 77 | [77-scenarios-passenger.md](77-scenarios-passenger.md) | Сценарии попутчика: вход, поиск, бронь, поездка, заявка, подписки |
 | 78 | [78-scenarios-driver.md](78-scenarios-driver.md) | Сценарии водителя: заявка, публикация, брони, предложения, кошелёк |

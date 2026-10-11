@@ -51,6 +51,11 @@ describe('the pieces of the stand (G71)', () => {
       asked: false,
     });
   });
+
+  it('takes the hour of --at for no file (G77)', () => {
+    expect(pickFiles(['--at', '23:30', 'e2e/stand/chat.spec.ts']).files).toEqual(['e2e/stand/chat.spec.ts']);
+    expect(pickFiles(['--at', '23:30']).files).toEqual([]);
+  });
 });
 
 describe('what a change wakes (--changed)', () => {

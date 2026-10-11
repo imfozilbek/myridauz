@@ -115,6 +115,10 @@ const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
 dev.push('--inspector-port', String(STAND_INSPECTOR_PORT));
 dev.push('--var', telegram, '--var', 'CHANNEL_POSTS:on', '--var', 'CRON_TIERS:off', '--test-scheduled');
+// The stand at another hour (pnpm stand:check --at 23:30): the Worker with its clock moved (G77).
+const shift = process.env.STAND_SHIFT_MS;
+if (shift)
+  dev.splice(1, 0, resolve('scripts/stand/shifted-worker.mjs'), '--define', `STAND_SHIFT_MS:${shift}`);
 const worker = spawn('pnpm', ['exec', 'wrangler', ...dev, '--env-file', resolve(STAND_VARS)], {
   stdio: 'inherit',
 });

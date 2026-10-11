@@ -4,8 +4,11 @@ import { STAND_API_PORT } from './scripts/stand/paths.ts';
 // pnpm stand:check: the scenarios on the whole local Rida (docs/75), no mocks of the API.
 // Android first, as most people in Uzbekistan use it (lesson 52).
 const BUILD_AND_START_MS = 10 * 60 * 1000;
+// pnpm stand:check --at: the browser runs without libfaketime, five times faster; its pages move their
+// clock themselves (e2e/test-clock.ts, G77).
+const browserEnv = Object.fromEntries(Object.entries(process.env).filter(([name]) => name !== 'LD_PRELOAD'));
 
-export default defineConfig({
+export default defineConfig<{ readonly standClock: boolean }>({
   testDir: 'e2e/stand',
   workers: 1,
   reporter: 'list',
@@ -17,7 +20,11 @@ export default defineConfig({
     ...devices['Pixel 7'],
     browserName: 'chromium',
     locale: 'uz-UZ',
-    launchOptions: { args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'] },
+    launchOptions: {
+      args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream'],
+      env: browserEnv,
+    },
+    standClock: true,
   },
   webServer: {
     // Every check starts from the clean stand: the same data each time.

@@ -1,4 +1,4 @@
-import type { Adjustment, OperationKind } from '@platform/contracts';
+import { DAY_MS, type Adjustment, type OperationKind } from '@platform/contracts';
 import { balanceOf, chargedFor, returnedFor, splitCharge, type Operation } from '../domain/ledger';
 import { appendCharge } from './append-charge';
 import { burnable, nextGrant, welcomeGrant, type Grant } from '../domain/promo';
@@ -95,7 +95,6 @@ export async function grantWelcome(deps: WalletDeps, driverId: number): Promise<
 }
 
 // The Cron job: a bonus not spent in its days burns (docs/12), all drivers in one step (G42).
-const DAY_MS = 24 * 60 * 60 * 1000;
 // The job runs every hour: a week back covers any days the Cron did not run (G56).
 const BURN_LOOKBACK_MS = 7 * DAY_MS;
 

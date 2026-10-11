@@ -1,7 +1,7 @@
+import { DAY_MS } from '@platform/contracts';
 import type { PromoRule } from '@platform/brands';
 import { balanceOf, type Operation } from './ledger';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 export type Grant = { readonly amount: number; readonly expiresAt: number };
 
 const grants = (operations: readonly Operation[]) => operations.filter((op) => op.kind === 'bonus_grant');

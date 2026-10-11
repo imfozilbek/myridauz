@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.mjs"],
+      "entry": ["scripts/*.mjs", "scripts/stand/shifted-worker.mjs"],
       "playwright": {
         "config": ["playwright.config.ts", "playwright.stand.config.ts"]
       }

@@ -1,7 +1,6 @@
-import { DAY_MS } from '@platform/contracts';
+import { DAY_MS, HOUR_MS } from '@platform/contracts';
 import type { Ask, AskedAt, RatingsDeps, Ride } from './ports';
 
-const HOUR_MS = 60 * 60 * 1000;
 // The rides that ended in the last two days get the first ask: each ride is asked once, and two
 // days cover the hours the Cron did not run, without reading two weeks of trips each time (G56).
 const ASK_WINDOW_MS = 2 * DAY_MS;

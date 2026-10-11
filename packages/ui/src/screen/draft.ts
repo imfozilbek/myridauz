@@ -1,8 +1,8 @@
+import { DAY_MS } from '@platform/contracts';
 import { useCallback, useState } from 'react';
 
 // A form kept on this phone for 24 hours (owner's decision 02.10.2026, docs/94 F3): closed by
 // Telegram or by the system, it comes back as it was; sent, it is gone.
-const DAY_MS = 24 * 60 * 60 * 1000;
 const PREFIX = 'draft:';
 
 type Stored = { readonly at: number; readonly value: unknown };

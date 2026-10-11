@@ -55,12 +55,12 @@ type Opened = {
 function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
-  const { value, failed, reload, refresh } = useMyTripsLists();
+  const { value, fresh, failed, reload, refresh } = useMyTripsLists();
   const [opened, setOpened] = useState<Opened | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
   // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5).
-  useLinkOpen(link, value ?? null, (open, [, booked, offers]) => {
+  useLinkOpen(link, fresh ? value : null, (open, [, booked, offers]) => {
     const bookingId = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
     const found = booked.find((item) => item.id === bookingId);
     if (found) setOpened({ tripId: found.trip.id, bookingId: found.id, home: 'booking' });
@@ -101,7 +101,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       />
     );
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
-  if (!value) return <ScreenSkeleton onBack={onBack} />;
+  if (!value || (link && !fresh)) return <ScreenSkeleton onBack={onBack} />;
   const [trips, booked, offers] = value;
   return (
     <MyTripsList

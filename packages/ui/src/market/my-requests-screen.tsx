@@ -8,6 +8,7 @@ import {
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
+import { useFreshLists } from '../home/fresh-lists';
 import { PassengerData, usePassengerData, useSharedPassengerData } from '../home/passenger-data';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
@@ -53,13 +54,15 @@ function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
   // The gradient of docs/121 §5, as on the mockup g60/6.
   useScreenBackground();
-  const { value, failed, reload, refresh } = usePassengerData();
+  const lists = usePassengerData();
+  const { value, failed, reload, refresh } = lists;
+  const upToDate = useFreshLists(lists);
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
   // A bot button or the block of the main screen: a booking opens itself, «Soʻrovim» its request
   // with all the offers and their answers right in the cards (docs/65 B5, G61 mockup 3-offers A).
-  useLinkOpen(link, value ?? null, (open) => {
+  useLinkOpen(link, upToDate ? value : null, (open) => {
     if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id, home: true });
     if (open.name === REQUEST_LINK) setOpened({ kind: 'request', id: open.id, home: true });
   });
@@ -96,7 +99,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
     );
   }
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
-  if (!value) return <ScreenSkeleton onBack={onBack} />;
+  if (!value || (link && !upToDate)) return <ScreenSkeleton onBack={onBack} />;
   return (
     <MyRequestsList
       lists={value}

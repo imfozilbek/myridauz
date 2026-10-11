@@ -5,11 +5,15 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { pickFiles } from './areas.mjs';
 import { balance, readTimes, writeTimes } from './balance.mjs';
+import { hourEnv } from './stand-hour.mjs';
 
 const FULL_SHARDS = 4;
 const { files: args, areas, asked } = pickFiles(process.argv.slice(2));
 // Pictures of the screens only when a goal needs them: --shots (G71).
 const pictures = process.argv.includes('--shots');
+// --at 23:30: the stands live at that hour of the Tashkent day, the scenarios too (G77, lesson 223).
+const at = process.argv[process.argv.indexOf('--at') + 1];
+const hour = process.argv.includes('--at') ? hourEnv(at) : {};
 if (asked && args.length === 0) {
   console.log('stand:check: nothing the stand walks has changed');
   process.exit(0);
@@ -48,6 +52,7 @@ const runShard = (index) =>
         stdio: 'inherit',
         env: {
           ...process.env,
+          ...hour,
           STAND_SHARD: String(shards > 1 ? index : 0),
           STAND_BUILT: '1',
           STAND_SHOTS: pictures ? 'on' : 'off',
@@ -67,5 +72,6 @@ if (full && codes.every((code) => code === 0))
   );
 const failed = codes.filter((code) => code !== 0).length;
 const seconds = Math.round((Date.now() - started) / 1000);
-console.log(`stand:check: ${shards - failed}/${shards} stands green in ${seconds} s`);
+const when = process.argv.includes('--at') ? ` at ${at} in Tashkent` : '';
+console.log(`stand:check: ${shards - failed}/${shards} stands green${when} in ${seconds} s`);
 process.exit(failed === 0 ? 0 : 1);
