@@ -16,5 +16,14 @@
 | П18 жёлтое «Rasm qoʻshing» | `home/home-side.tsx` (`openProfile('photo')`), `account/profile/avatar-picker.tsx` (`pick`) | `home/home-tiles.test.tsx` «…opens the choice of a photo in «Profil»» | 2 → 1 |
 | П20, П21 концы блока | `home/dock-ends.ts` (`startFind`), `home/find-trip-button.tsx`, `find/find-start.tsx` и `places/route-screen.tsx` (`to`) | `home/block-ends-search.test.tsx` (4 теста) | 3 → 2 |
 | «Javob berish» звонка из бота | `contracts/launch-links.ts` (`ANSWER_LINK`), `bookings/infrastructure/chat-ring-button.ts`, `chat/infrastructure/bot-signals.ts`, `ui/chat/chat-link.tsx` | `ui/chat/chat-link.test.tsx` «?answer=…», `backend/chat-ring-api.test.ts` (`answer=` у обеих ролей) | 2 → 1 |
+| В4 «Qayerga» и ответы последней поездки | `home/dock/driver-launch.ts` (`useDriverLaunch`), `home/dock-ends.ts` (маршрут последней поездки, путь назад), `trip-end/return-plan.ts` (`tomorrowTrip`, один код с «Ertaga shu safar») | `home/driver-launch.test.tsx` (первые 2 теста) | ~9 → 2 |
+| В6а «Kam» и «Siz haydovchisiz!» | `home/dock/driver-app-cards.tsx` (`launch`), `home/dock/driver-state-card.tsx` | `home/driver-launch.test.tsx` (тесты 3 и 4) | 6 → 1 … 2 |
+| В7 доска: пустой день | `requests/requests-flow.tsx` (`BoardTrip`: маршрут доски, область спрашивается) | `requests/board-route-trip.test.tsx` (оба теста) | 6 → 1 |
+| В8 экран маршрута | `places/route-screen.tsx` (`first`: первый пустой конец сразу) | `places/route-here.test.tsx` «opens «Qayerga» at once…» | +1 → 0 |
+| В13 время прошлого предложения | `requests/offer-draft.ts` (`lastOfferTime`), `requests/time-chips.tsx` | `requests/offer-time-kept.test.tsx` | +1 → 0 |
+| В15 правка без фото | `driver/application-flow.tsx` (сразу `send`), `driver/problem-note.tsx` (`photosReady`) | `driver/driver-problems.test.tsx` «…sends it at once when no photo is asked» | 2 → 1 |
+| В16 одна фотография | `driver/driver-gate.tsx` (`'tap'`), `driver/steps/photos-step.tsx` (`shoot`) | `driver/fix-camera.test.tsx` | 2 → 1 |
 
 Пути `home/…`, `market/…` и подобные: в `packages/ui/src`. Каждый тест проверен на старом коде: код без теста вернули к коммиту до пункта, тест упал.
+
+В15: экран фото пропускается только в исправлении по просьбе команды, когда фото не просили и все три есть. Водитель, который меняет машину, видит экран фото: снимки старой машины к новой не подходят, а сервер их сам не сбрасывает.
