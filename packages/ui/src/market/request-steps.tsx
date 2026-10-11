@@ -51,7 +51,9 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
           ? { initial: route }
           : from && to
             ? { initial: { from, to } }
-            : { pick: 'to' as const, ...(from ? { from } : {}) })}
+            : to
+              ? { pick: 'from' as const, to }
+              : { pick: 'to' as const, ...(from ? { from } : {}) })}
         onBack={onBack}
         onDone={(chosen) => {
           // The route of a request is one tap away on the main screen next time (G40, docs/106 K9).

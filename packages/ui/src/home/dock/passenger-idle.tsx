@@ -2,11 +2,10 @@ import { DAY_MS, tashkentDate, type Location } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import { useTripDays } from '../../find/use-trip-days';
 import type { HomeGo } from '../../flow/start-action';
-import { rememberRoute } from '../../market/recent-routes';
 import type { PlaceDirectory } from '../../places/directory';
 import { usePlaceNames } from '../../places/place-names';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
-import { useDockEnds } from '../dock-ends';
+import { startFind, useDockEnds } from '../dock-ends';
 import { DOCK_FROM, DOCK_TO } from '../dock-sections';
 import { RouteDock } from '../route-dock';
 import { useHomeTap } from '../use-home-tap';
@@ -22,13 +21,7 @@ export function PassengerIdle({ go, directory }: Props) {
   const ends = useDockEnds(directory);
   const { from, to } = ends;
   const names = usePlaceNames(directory);
-  const find = () => {
-    if (from && to) {
-      rememberRoute({ from, to });
-      return go('find_trip', { route: { from, to } });
-    }
-    return go('find_trip', from ? { from } : { pick: 'from' });
-  };
+  const find = () => go('find_trip', startFind(ends));
   const ask = () => go('leave_request', { ...(from ? { from } : {}), ...(to ? { to } : {}) });
   return (
     <>

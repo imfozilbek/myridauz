@@ -4,6 +4,8 @@ import { PastBookingRow } from '../bookings/past-booking-row';
 import { List } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import type { Launch } from '../flow/start-action';
+import { FindTripButton } from '../home/find-trip-button';
 import { BookingMineCard, RequestMineCard } from '../mine/passenger-cards';
 import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
@@ -11,9 +13,9 @@ import { brandVars } from '../theme/brand-vars';
 import { Screen } from '../screen/screen';
 import { EmptyState } from '../states/empty-state';
 import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
-import { MainButton } from '../telegram/bottom-button';
 import { MineTabs, type MineTab } from './mine-tabs';
 import { Paged } from './paged';
+import { usePlaces } from './places-gate';
 import '../mine/mine-page.css';
 
 // The memory of the passenger's «Mening safarlarim»: data, pages and place (docs/94 F2).
@@ -29,7 +31,7 @@ type Props = {
   readonly onBooking: (booking: Booking) => void;
   readonly onRequest: (request: RideRequest) => void;
   readonly onAgain: (request: RideRequest) => void;
-  readonly onFind: () => void;
+  readonly onFind: (launch: Launch) => void;
   readonly onSubscriptions: () => void;
   readonly tab: MineTab;
   readonly onTab: (tab: MineTab) => void;
@@ -42,6 +44,7 @@ export function MyRequestsList(props: Props) {
   const { lists, onBack, onRefresh, onBooking, onRequest, onAgain, tab, onTab } = props;
   const { t } = useI18n();
   const { colors } = useBrand().theme;
+  const places = usePlaces();
   useListPlace(MY_REQUESTS, true);
   useKeepPlace(lists);
   const [all, requests, offers] = lists;
@@ -82,7 +85,7 @@ export function MyRequestsList(props: Props) {
             title={t('market.mine.noLive')}
             description={t('market.mine.requestsEmptyHint')}
           />
-          <MainButton text={t('common.passenger.findTrip')} onClick={props.onFind} />
+          <FindTripButton directory={places} onFind={props.onFind} />
         </>
       ) : (
         <>

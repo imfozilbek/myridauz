@@ -8,6 +8,7 @@ import {
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
+import type { Launch } from '../flow/start-action';
 import type { TripScreen } from '../own-trip/own-trip-opened';
 import { useFreshLists } from '../home/fresh-lists';
 import { PassengerData, usePassengerData, useSharedPassengerData } from '../home/passenger-data';
@@ -78,10 +79,10 @@ function MyRequests({ onBack, link, tripScreen }: ScreenProps) {
   // The tab stays while a booking is open: «Назад» comes to the same list.
   const [tab, setTab] = useState<MineTab>('live');
   // «Safar topish» of an empty «Faol» and «Qayta yuborish» of an old request (G75, mockup g75/2 A).
-  const [finding, setFinding] = useState(false);
+  const [finding, setFinding] = useState<Launch | null>(null);
   const [again, setAgain] = useState<RideRequest | null>(null);
   const places = usePlaces();
-  if (finding) return <FindTripFlow onBack={() => setFinding(false)} />;
+  if (finding) return <FindTripFlow onBack={() => setFinding(null)} {...finding} />;
   const route = again && { from: places.find(again.from), to: places.find(again.to) };
   // «Qayta yuborish»: the same route, the day is asked again; «Назад» from the points comes to the
   // day (G77, docs/170 О2). The people, the price and the car as they were (G79 П11).
@@ -127,7 +128,7 @@ function MyRequests({ onBack, link, tripScreen }: ScreenProps) {
       onBooking={(booking) => setOpened({ kind: 'booking', id: booking.id })}
       onRequest={(request) => setOpened({ kind: 'request', id: request.id })}
       onAgain={setAgain}
-      onFind={() => setFinding(true)}
+      onFind={setFinding}
       onSubscriptions={() => setSubscriptionsOpen(true)}
       tab={tab}
       onTab={setTab}

@@ -19,6 +19,8 @@ type Props = {
   // Back from the trips: the same «Qayerdan»; from the main screen: «Qayerdan» opens at once.
   readonly from?: Location;
   readonly pick?: 'from' | 'to';
+  // Only «Qayerga» of the block (G79 П20): its trips right after «Qayerdan».
+  readonly to?: Location;
 };
 
 // The start of the search (G59, docs/118 path 2): «Qayerdan» is where the person stands or chose,
@@ -36,6 +38,7 @@ function FindStartForm({
   onDone,
   from: known,
   pick,
+  to,
 }: Props & { directory: PlaceDirectory }) {
   const { t } = useI18n();
   const here = useHereChecked(directory);
@@ -51,6 +54,12 @@ function FindStartForm({
     const timer = setTimeout(() => setPicking(true), HERE_WAIT_MS);
     return () => clearTimeout(timer);
   }, [waiting]);
+  const choose = (start: Location, end: Location) => {
+    const found = checkRoute(start, end, directory.find);
+    setError(found);
+    if (found) return haptic.error();
+    onDone({ from: start, to: end });
+  };
   if (waiting) return <ScreenSkeleton onBack={onBack} />;
   if (picking || !from)
     return (
@@ -61,16 +70,11 @@ function FindStartForm({
         onPick={(place) => {
           setChosen(place);
           setPicking(false);
+          if (to) choose(place, to);
         }}
         onBack={from ? () => setPicking(false) : onBack}
       />
     );
-  const choose = (to: Location) => {
-    const found = checkRoute(from, to, directory.find);
-    setError(found);
-    if (found) return haptic.error();
-    onDone({ from, to });
-  };
   return (
     <DirectionsScreen
       key={from.id}
@@ -79,7 +83,7 @@ function FindStartForm({
       error={error}
       onBack={onBack}
       onChangeFrom={() => setPicking(true)}
-      onPick={choose}
+      onPick={(end) => choose(from, end)}
     />
   );
 }

@@ -37,6 +37,8 @@ type Props = {
   readonly pick?: 'from' | 'to';
   // «Qayerdan» of the block at the bottom (G76, docs/165): the directions from it at once.
   readonly from?: Location;
+  // Only «Qayerga» of the block (G79 П20): «Qayerdan», then its trips.
+  readonly to?: Location;
   // A new trip of a saved driver from the main screen (G60): that trip, ready to book.
   readonly link?: AppLink;
 };
@@ -52,7 +54,7 @@ export function FindTripFlow({ link, ...props }: Props) {
   );
 }
 
-function FindTrip({ onBack, initial, route: recent, day, pick, from }: Omit<Props, 'link'>) {
+function FindTrip({ onBack, initial, route: recent, day, pick, from, to }: Omit<Props, 'link'>) {
   const { track } = useAnalytics();
   const known = initial ?? recent;
   const [screen, setScreen] = useState<FindScreen>(
@@ -75,6 +77,7 @@ function FindTrip({ onBack, initial, route: recent, day, pick, from }: Omit<Prop
     return (
       <FindStart
         {...(screen.route ? { from: screen.route.from } : from ? { from } : pick ? { pick } : {})}
+        {...(!screen.route && to ? { to } : {})}
         onBack={onBack}
         onDone={(route) => {
           step('done');
