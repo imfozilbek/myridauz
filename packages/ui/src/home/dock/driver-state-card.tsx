@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import { useApiClients } from '../../context/api-clients';
 import type { HomeGo } from '../../flow/start-action';
 import { useLoad } from '../../market/use-list';
@@ -25,7 +26,6 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
   const words = useDockWords(directory, now);
   const changed = () => void refresh();
   const act = useTripActions(go, directory, changed);
-  const launch = useDriverLaunch(go, directory);
   const bookings = value?.[1] ?? [];
   const people = 'trip' in state ? bookings.filter((booking) => booking.trip.id === state.trip.id) : [];
   const common = { words, act, go };
@@ -34,24 +34,26 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
       case 'welcome':
       case 'low':
         return (
-          <DriverAppCard
+          <LaunchAppCard
             kind={state.kind}
             wallet={money}
             missing={0}
             requests={[]}
             act={act}
-            launch={launch}
+            go={go}
+            directory={directory}
           />
         );
       case 'short':
         return (
-          <DriverAppCard
+          <LaunchAppCard
             kind="short"
             wallet={money}
             missing={state.missing}
             requests={state.requests}
             act={act}
-            launch={launch}
+            go={go}
+            directory={directory}
           />
         );
       case 'published':
@@ -99,4 +101,16 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
       <ActionFailure error={act.failure} />
     </>
   );
+}
+
+type LaunchProps = Omit<ComponentProps<typeof DriverAppCard>, 'launch'> & {
+  readonly go: HomeGo;
+  readonly directory: PlaceDirectory;
+};
+
+// The cards of the application and the money open what the free block opens (G79 В6а): the place of
+// the person is asked for them only, not for every state of the block (docs/117).
+function LaunchAppCard({ go, directory, ...card }: LaunchProps) {
+  const launch = useDriverLaunch(go, directory);
+  return <DriverAppCard {...card} launch={launch} />;
 }

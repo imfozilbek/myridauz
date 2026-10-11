@@ -67,4 +67,13 @@ describe('«Safar eʼlon qilish» of a driver from the main screen', { timeout: 
     press('Safar eʼlon qilish');
     expect(screen.getByText(/^opened from Chilonzor$/u)).toBeTruthy();
   });
+
+  // The place of the person is asked for the free block and these cards only (docs/117, review).
+  it('asks nothing about the place while a trip is published', async () => {
+    markApprovalSeen();
+    location.knownPosition.mockClear();
+    driver([trip]);
+    expect(await screen.findByText(/^0 \/ 3/u)).toBeTruthy();
+    expect(location.knownPosition).not.toHaveBeenCalled();
+  });
 });
