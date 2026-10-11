@@ -3,7 +3,8 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
 import { markApprovalSeen } from '../driver/approval-seen';
-import { trip } from '../market/market-test-kit';
+import { ROUTE, trip } from '../market/market-test-kit';
+import { rememberRoute } from '../market/recent-routes';
 import { DriverHome } from './driver-home';
 import { DRIVER_ACTIONS } from './home-test-actions';
 import { renderHome } from './home-test-kit';
@@ -75,5 +76,15 @@ describe('«Safar eʼlon qilish» of a driver from the main screen', { timeout: 
     driver([trip]);
     expect(await screen.findByText(/^0 \/ 3/u)).toBeTruthy();
     expect(location.knownPosition).not.toHaveBeenCalled();
+  });
+
+  // The last search goes before the last trip, as on the mockup g76/3 phone 5 (review).
+  it('shows «Qayerga» of the last search before the one of the last trip', async () => {
+    markApprovalSeen();
+    rememberRoute({ from: ROUTE.from, to: { ...ROUTE.to, id: '1730' } });
+    driver();
+    await screen.findByText(HERE);
+    expect(await screen.findByText(/^Fargʻona viloyati/u)).toBeTruthy();
+    expect(screen.queryByText('Fargʻona shahri')).toBeNull();
   });
 });
