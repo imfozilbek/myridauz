@@ -1,5 +1,5 @@
 import type { BookingsClient, MarketClient } from '@platform/api-client';
-import type { RequestBoard, RideRequest } from '@platform/contracts';
+import type { RequestBoard, RequestBoardQuery, RideRequest } from '@platform/contracts';
 import { vi } from 'vitest';
 import { request } from '../bookings/booking-test-kit';
 import { DriverContext } from '../driver/driver-context';
@@ -41,6 +41,8 @@ type Fakes = {
   readonly market?: Partial<MarketClient>;
   // In Telegram: the native «Назад», pressed by pressBack of test-native.
   readonly inTelegram?: boolean;
+  // The route the block of the main screen opens the board with (G76).
+  readonly board?: RequestBoardQuery;
 };
 
 // The board of an approved driver with a car of 4 seats; every call is a spy the test reads.
@@ -48,7 +50,7 @@ export function openBoard(fakes: Fakes = {}) {
   const requestBoard = vi.fn(fakes.requestBoard ?? (async () => board()));
   renderMarket(
     <DriverContext.Provider value={approved}>
-      <RequestsFlow onBack={() => undefined} />
+      <RequestsFlow onBack={() => undefined} {...(fakes.board ? { board: fakes.board } : {})} />
     </DriverContext.Provider>,
     testClients({
       market: { requestBoard, recommend: async () => recommendation, ...fakes.market },

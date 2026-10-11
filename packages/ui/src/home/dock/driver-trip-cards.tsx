@@ -6,7 +6,7 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { useBookingEnds } from '../../trip/booking-ends';
 import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
-import { PASSENGER_REQUESTS } from './driver-idle';
+import { PASSENGER_REQUESTS } from './driver-launch';
 import { markOfferSeen } from './offer-seen';
 import type { TripActions } from './trip-actions';
 

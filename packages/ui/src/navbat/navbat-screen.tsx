@@ -31,10 +31,12 @@ const CASES: Record<NavbatKind, ComponentType<CaseProps>> = {
 };
 
 const SEPARATOR = ':';
+const FINISHED_MS = 2000;
 type NavbatProps = { readonly onBack: () => void } & Launch;
 
 // The cases of «Navbat» one after another (G75, docs/120): the case tapped on the main screen, then
-// after each decision the next one of the same filter by itself; none left: «Hammasi koʻrildi».
+// after each decision the next one of the same filter by itself; none left: «Hammasi koʻrildi», then
+// the main screen.
 // The case on the screen is taken: the other members see «Aziz koʻrmoqda».
 export function NavbatScreen({ onBack, navbat: launched }: NavbatProps) {
   useScreenBackground();
@@ -52,6 +54,14 @@ export function NavbatScreen({ onBack, navbat: launched }: NavbatProps) {
   const open = chosen ?? (value ? nextCase(items, filter, done) : null);
   const openKey = open ? [open.kind, open.id].join(SEPARATOR) : null;
   useEffect(forgetLinkedCase, []);
+  // The last case decided: «Hammasi koʻrildi» with the outcome a moment, then the main screen by
+  // itself (G79 К6).
+  const finished = value !== null && !open && done.length > 0;
+  useEffect(() => {
+    if (!finished) return undefined;
+    const timer = setTimeout(onBack, FINISHED_MS);
+    return () => clearTimeout(timer);
+  }, [finished, onBack]);
   // The case is taken once when it opens, not on every new list.
   useEffect(() => {
     if (openKey === null) return;

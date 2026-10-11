@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '../crash-guard';
 import { openRequests, TEXT } from '../apps';
+import { openFromList } from '../market';
 import { HUMOYUN } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { fillEnds } from './request-kit';
@@ -65,7 +66,8 @@ for (const platform of PLATFORMS)
     await toHome(page);
     await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
     await searchTo(page, 'Termiz shahri');
-    await page.getByText(t('common.passenger.leaveRequest')).first().click();
+    // The row of the empty day: the main screen kept under the search has the words too, hidden.
+    await page.getByText(t('common.passenger.leaveRequest')).locator('visible=true').first().click();
     await expect(page.getByText(t('market.request.cancel'))).toBeVisible();
     await shot('02-p-second');
     await openHome(page, 'passenger', SEEKERS[platform], platform);
@@ -77,7 +79,7 @@ for (const platform of PLATFORMS)
     // (R2, R4, G64).
     await openHome(page, 'driver', HUMOYUN, platform);
     await openRequests(page);
-    await page.getByText(TEXT.from).click();
+    await openFromList(page);
     await page.getByAltText('Toshkent shahri').click();
     await page.getByText('Yunusobod').click();
     // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).

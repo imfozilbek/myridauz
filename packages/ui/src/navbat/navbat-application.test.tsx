@@ -39,14 +39,16 @@ describe('an application in «Navbat»', () => {
     expect(decide).toHaveBeenLastCalledWith(JASUR.id, { action: 'approve', plate: '01A124BC' });
   });
 
-  it('asks for changes with ticked reasons; Back from them asks first', async () => {
+  // «Назад» from the ticks asks nothing and keeps them (G79 К10): the next open has them ticked.
+  it('asks for changes with ticked reasons; Back from them asks nothing and keeps them', async () => {
     const { decide } = renderNavbat(open, [JASUR]);
-    const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    const asked = vi.spyOn(window, 'confirm');
     fireEvent.click(await screen.findByText('Tuzatish'));
     fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
     await act(async () => fireEvent.click(screen.getByText('Orqaga')));
-    expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
+    expect(asked).not.toHaveBeenCalled();
     asked.mockRestore();
+    fireEvent.click(await screen.findByText('Tuzatish'));
     fireEvent.click(screen.getByText('Raqam rasmi aniq emas'));
     fireEvent.click(screen.getByText('Yuborish'));
     await screen.findByText('Javob yuborildi');

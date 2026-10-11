@@ -51,6 +51,11 @@
   "adjust.amount": "Summa, soʻm",
   "adjust.newBalance": "Yangi balans",
   "adjust.reason": "Sabab",
+  "adjust.reason.bonus": "Qoʻshimcha bonus",
+  "adjust.reason.noShow": "Kelmadi: komissiya qaytarildi",
+  "adjust.reason.mistake": "Xato yechilgan komissiya",
+  "adjust.reason.payment": "Toʻlov qoʻlda kiritildi",
+  "adjust.reason.other": "Boshqa",
   "adjust.save": "Saqlash",
   "adjust.saved": "Saqlandi"
 }

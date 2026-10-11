@@ -1,6 +1,5 @@
 import {
   CAR_PHOTO_KINDS,
-  NEW_TRIP_SECTION,
   REASON_PLACE,
   type Booking,
   type ModerationReason,
@@ -10,11 +9,10 @@ import { useEffect } from 'react';
 import { useI18n } from '../../context/i18n-context';
 import { markApprovalSeen } from '../../driver/approval-seen';
 import { useDriver } from '../../driver/driver-context';
-import type { HomeGo } from '../../flow/start-action';
 import { openSheet } from '../../action-sheet/action-queue';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
-import { PASSENGER_REQUESTS } from './driver-idle';
+import type { DriverLaunch } from './driver-launch';
 import type { TripActions } from './trip-actions';
 
 // The photos a driver takes again: one per place, the plate and the car data are typed (mockup g76/3, 3).
@@ -29,17 +27,17 @@ type Props = {
   readonly missing: number;
   readonly requests: readonly Booking[];
   readonly act: TripActions;
-  readonly go: HomeGo;
+  // «Safar eʼlon qilish» and «Soʻrovlarni koʻrish» as the free block opens them (G79 В6а).
+  readonly launch: DriverLaunch;
 };
 
 // The application and the money of a driver (G76, mockup g76/3 states 1, 3, 4, 8, 10).
-export function DriverAppCard({ kind, wallet, missing, requests, act, go }: Props) {
+export function DriverAppCard({ kind, wallet, missing, requests, act, launch }: Props) {
   const { t, formatMoney, formatShortDate } = useI18n();
   const driver = useDriver();
   const editCar = driver?.editCar ?? (() => undefined);
   const seats = String(wallet?.seatsLeft ?? 0);
-  const publish = () => go(NEW_TRIP_SECTION);
-  const board = () => go(PASSENGER_REQUESTS);
+  const { publish, requests: board } = launch;
   switch (kind) {
     case 'draft':
       return (

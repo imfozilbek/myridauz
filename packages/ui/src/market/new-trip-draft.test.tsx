@@ -47,7 +47,7 @@ describe('NewTripFlow keeps its answers (docs/94 F3, F8, B3)', { timeout: 20_000
     expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ comment: COMMENT, seats: 3 }));
     cleanup();
     openNewTrip();
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
     expect(screen.queryByText(RESTORED)).toBeNull();
   });
 

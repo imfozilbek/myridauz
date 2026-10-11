@@ -1,4 +1,4 @@
-import { NEW_TRIP_SECTION, type Location } from '@platform/contracts';
+import type { Location } from '@platform/contracts';
 import { useApiClients } from '../../context/api-clients';
 import { useI18n } from '../../context/i18n-context';
 import { usePending } from '../../driver/driver-context';
@@ -7,14 +7,12 @@ import { useLoad } from '../../market/use-list';
 import type { PlaceDirectory } from '../../places/directory';
 import { usePlaceNames } from '../../places/place-names';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
-import { useDockEnds } from '../dock-ends';
 import { DOCK_FROM, DOCK_TO } from '../dock-sections';
 import { RouteDock } from '../route-dock';
+import { useDriverLaunch } from './driver-launch';
 import { useHomeTap } from '../use-home-tap';
 
 type Props = { readonly go: HomeGo; readonly directory: PlaceDirectory | null };
-
-export const PASSENGER_REQUESTS = 'passenger_requests';
 
 // The block of a free driver (G76, mockup g76/3 states 2 and 5): «Qayerdan / Qayerga», then
 // «Soʻrovlarni koʻrish» and «Safar eʼlon qilish». One end is enough (docs/165): the requests from
@@ -24,12 +22,8 @@ export function DriverIdle({ go, directory }: Props) {
   const tap = useHomeTap();
   const pending = usePending();
   const names = usePlaceNames(directory);
-  const ends = useDockEnds(directory);
+  const { ends, publish, requests } = useDriverLaunch(go, directory);
   const { from, to } = ends;
-  const publish = () =>
-    go(NEW_TRIP_SECTION, from && to ? { route: { from, to } } : from ? { from } : undefined);
-  const requests = () =>
-    go(PASSENGER_REQUESTS, from ? { board: { from: from.id, ...(to ? { to: to.id } : {}) } } : undefined);
   return (
     <>
       <RouteDock

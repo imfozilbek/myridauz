@@ -51,4 +51,20 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
     await screen.findByText('Chilonzor');
     expect(localStorage.getItem('here_district')).toBe('1726269');
   });
+
+  // G79 В8 (docs/170): the first empty end opens at once, not after a tap on its row (+1 → 0).
+  it('opens «Qayerga» at once where «Qayerdan» is known, «Qayerdan» where it is not', async () => {
+    localStorage.setItem('here_district', '1726269');
+    location.knownPosition.mockReturnValueOnce(new Promise(() => undefined));
+    const screenOf = () => (
+      <RouteScreen allowWholeRegion quick onBack={() => undefined} onDone={() => undefined} />
+    );
+    renderMarket(screenOf(), testClients({ map: testMap() }));
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    cleanup();
+    localStorage.clear();
+    location.knownPosition.mockResolvedValueOnce(null);
+    renderMarket(screenOf(), testClients({ map: testMap() }));
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
+  });
 });

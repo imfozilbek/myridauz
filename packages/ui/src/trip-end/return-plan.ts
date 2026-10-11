@@ -1,5 +1,6 @@
 import {
   arrivalAt,
+  DAY_MS,
   MINUTE_MS,
   RETURN_REST_MS,
   SLOT_MINUTES,
@@ -32,10 +33,13 @@ export function returnDepartAt(trip: Pick<Trip, 'departAt' | 'km'>, day: string)
 export const returnTrip = (trip: Trip, directory: PlaceDirectory, departAt: number) =>
   tripPlan(trip, directory, departAt, true);
 
-// «Ertaga shu safar» (G64, mockup g64/6): the same trip the same way on another day, with the same
-// answers as the way back takes them.
-export const sameTrip = (trip: Trip, directory: PlaceDirectory, departAt: number) =>
-  tripPlan(trip, directory, departAt, false);
+// «Ertaga shu safar» (G64, mockup g64/6) and «Safar eʼlon qilish» of the block on the route of the
+// last trip (G79 В4): the same trip the same way tomorrow of Tashkent at its time of the day, with the
+// same answers as the way back takes them.
+export function tomorrowTrip(trip: Trip, directory: PlaceDirectory): ReturnTrip | null {
+  const inDay = trip.departAt - tashkentDayStart(tashkentDate(trip.departAt));
+  return tripPlan(trip, directory, tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay, false);
+}
 
 function tripPlan(trip: Trip, directory: PlaceDirectory, departAt: number, back: boolean): ReturnTrip | null {
   const from = directory.find(trip.from);

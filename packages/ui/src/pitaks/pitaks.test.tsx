@@ -94,4 +94,15 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     expect(await screen.findByText('Qoʻshildi: Qoʻyliq pitagi')).toBeTruthy();
     expect(screen.getByText('Qoʻyliq · Tekshirilgan')).toBeTruthy();
   });
+
+  // G79 К8 (docs/170): an empty name takes the name of the place chosen on the map.
+  it('names a new pitak by its place on the map', async () => {
+    open();
+    await tap('Pitaklar');
+    await tap('Pitak qoʻshish');
+    await tap('Joyi xaritada');
+    await screen.findByText('Chorsu bozori yaqinida', {}, { timeout: 3000 });
+    await tap('Shu yerda');
+    expect(await screen.findByDisplayValue('Chorsu bozori')).toBeTruthy();
+  });
 });

@@ -5,6 +5,7 @@ import {
   type CarPhotoKind,
   type Decision,
   type DecisionInput,
+  type ModerationReason,
 } from '@platform/contracts';
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
@@ -47,6 +48,7 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
   const { moderation } = useApiClients();
   const [mode, setMode] = useState<Mode>('view');
   const [fixedPlate, setFixedPlate] = useState<string | null>(null);
+  const [ticked, setTicked] = useState<readonly ModerationReason[]>([]);
   const { failure, fail, clear } = useFailure();
   const { userId } = detail;
   const act = async (work: Promise<unknown>, outcome: Outcome) => {
@@ -76,7 +78,14 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
       />
     );
   if (mode === 'reject' || mode === 'request_changes')
-    return <ReasonsStep onBack={back} onDone={(reasons) => decide({ action: mode, reasons })} />;
+    return (
+      <ReasonsStep
+        picked={ticked}
+        onPick={setTicked}
+        onBack={back}
+        onDone={(reasons) => decide({ action: mode, reasons })}
+      />
+    );
   if (mode === 'block')
     return (
       <ChoiceStep

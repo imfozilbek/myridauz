@@ -82,7 +82,7 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     const requestBoard = openBoard({
       requestBoard: async (query) => (query.from ? board() : board({ known: false })),
     });
-    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
+    for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
     await waitFor(() =>
       expect(requestBoard).toHaveBeenLastCalledWith({ from: '1726269', to: '1730401', seen: '1' }),
@@ -104,7 +104,7 @@ describe('«Yoʻlovchilar soʻrovlari» (G64, docs/118 path 7)', { timeout: 20_0
     openBoard({
       requestBoard: async (query) => (query.from ? board({ others: [] }) : board({ known: false })),
     });
-    for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
+    for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati', 'Fargʻona shahri'])
       await tap(step);
     await tap('Safar eʼlon qilish');
     expect(await screen.findByText('Chilonzor, Toshkent shahri')).toBeTruthy();

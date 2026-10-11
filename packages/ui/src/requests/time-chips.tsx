@@ -8,18 +8,21 @@ import { departAtOf, slotsOn } from '../market/first-when';
 import { useSchedule } from '../market/use-schedule';
 import { useClock } from '../own-trip/use-now';
 import { haptic } from '../telegram/feedback';
-import { draftOf, keepDraft } from './offer-draft';
+import { draftOf, keepDraft, keepOfferTime, lastOfferTime } from './offer-draft';
 import { offerTimes } from './offer-times';
 import './time-chips.css';
 
 // The times a driver may leave at on the day of a request, with the driver's busy times (docs/103):
-// the first chip is chosen at once, or the one chosen before the sheet closed. null while they load.
+// the one chosen before the sheet closed, else the time of the last offer (G79 В13), else the first
+// chip. null while they load.
 // The time of the sheet moves on while it stays open; the tap takes «now» once more (G77).
 export function useOfferTime(request: RideRequest) {
   const [now, tick] = useClock();
   const rules = useBrand().schedule;
   const schedule = useSchedule(request.from, request.to);
-  const [picked, setPicked] = useState<string | null>(() => draftOf('time', request.id) ?? null);
+  const [picked, setPicked] = useState<string | null>(
+    () => draftOf('time', request.id) ?? lastOfferTime() ?? null,
+  );
   if (!schedule) return null;
   const timeAt = (at: number) => {
     const slots = slotsOn(request.date, at, schedule, rules);
@@ -36,7 +39,9 @@ export function useOfferTime(request: RideRequest) {
     sending: () => {
       tick();
       const at = timeAt(Date.now()).departAt;
-      return at === shown.departAt ? at : null;
+      if (at !== shown.departAt) return null;
+      if (shown.time) keepOfferTime(shown.time);
+      return at;
     },
     pick: (time: string) => (keepDraft('time', request.id, time), setPicked(time)),
   };

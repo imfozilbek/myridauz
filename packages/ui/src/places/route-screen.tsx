@@ -34,7 +34,8 @@ type RouteScreenProps = {
   readonly to?: Location;
   // Each end chosen, for the funnel of the search (G26).
   readonly onEnd?: (end: 'from' | 'to') => void;
-  // The search (G35, docs/97 K1): the missing end opens by itself, both ends go on at once.
+  // The search (G35, docs/97 K1): the first missing end opens at once (G79 В8), the next by itself,
+  // both ends go on at once.
   readonly quick?: boolean;
 };
 
@@ -64,7 +65,8 @@ function RouteForm({
   const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? known ?? null);
   const from = chosenFrom ?? here;
   const [to, setTo] = useState<Location | null>(initial?.to ?? knownTo ?? null);
-  const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
+  const first = quick && !initial ? (from ? 'to' : 'from') : null;
+  const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? first);
   // Back from a long list, the form shows «Qayerdan» again (docs/83 N22).
   useOpenAtTop(picking);
   const [error, setError] = useState<RouteError | null>(null);

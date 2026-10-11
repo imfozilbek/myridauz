@@ -110,4 +110,15 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     expect(await screen.findByText('Formulani oʻzgartirish')).toBeTruthy();
     asked.mockRestore();
   });
+
+  // G79 К7 (docs/170): the median of real prices is taken as the price in one tap, not typed.
+  it('takes the median of real prices as the price in one tap', async () => {
+    const pricing = setup();
+    await tap('Narxlar');
+    await tap(/^Formula: 95/);
+    fireEvent.click(await screen.findByText(/^90.000 soʻm$/u));
+    expect(screen.getByDisplayValue('90000')).toBeTruthy();
+    await tap('Narxni saqlash');
+    expect(pricing.setDirection).toHaveBeenCalledWith(expect.objectContaining({ price: 90000 }));
+  });
 });

@@ -1,12 +1,11 @@
-import type { AdminWallets, Adjustment } from '@platform/contracts';
+import type { AdminWallets } from '@platform/contracts';
 import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { CellValue } from '../account/cell-value';
-import { Cell, List, Section } from '../components';
+import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
@@ -14,13 +13,18 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
-import { AdjustForm } from './adjust-form';
-import { WalletView } from './wallet-view';
+import { DriverWallet } from './driver-wallet';
 import '../market/market.css';
 
 type Owner = AdminWallets['wallets'][number];
 
-// "Hamyonlar" for the team (docs/12): every driver's balances; an owner corrects one by hand.
+const found = (query: string) => (owner: Owner) => {
+  const words = query.trim().toLocaleLowerCase('uz');
+  return owner.firstName.toLocaleLowerCase('uz').includes(words) || owner.driverId.startsWith(words);
+};
+
+// "Hamyonlar" for the team (docs/12): every driver's balances; an owner corrects one by hand. A name
+// or the id finds a driver among the loaded ones (G79 К5).
 export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('team.wallets');
   useScreenBackground();
@@ -28,6 +32,7 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   const { wallet } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => wallet.all(0), 'team.wallets');
   const [open, setOpen] = useState<Owner | null>(null);
+  const [query, setQuery] = useState('');
   // The next pages, 30 drivers each (G42): the first one stays with the quiet refresh.
   const [added, setAdded] = useState<{ wallets: Owner[]; more: boolean; page: number } | null>(null);
   const close = () => {
@@ -57,8 +62,13 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
         <EmptyState icon="wallet" title={t('wallet.team.empty')} />
       ) : (
         <List>
+          <Field
+            label={t('manage.person.search')}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
           <Section>
-            {[...value.wallets, ...(added?.wallets ?? [])].map((owner) => (
+            {[...value.wallets, ...(added?.wallets ?? [])].filter(found(query)).map((owner) => (
               <Cell
                 key={owner.driverId}
                 onClick={() => setOpen(owner)}
@@ -78,55 +88,6 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
           ) : null}
         </List>
       )}
-    </div>
-  );
-}
-
-function DriverWallet({ owner, onBack }: { readonly owner: Owner; readonly onBack: () => void }) {
-  const { t } = useI18n();
-  const { wallet } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(() => wallet.of(owner.driverId));
-  const [adjusting, setAdjusting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const adjust = () => {
-    setError(null);
-    setAdjusting(true);
-  };
-  const save = async (adjustment: Adjustment) => {
-    try {
-      await wallet.adjust(owner.driverId, adjustment);
-      haptic.success();
-      setAdjusting(false);
-      reload();
-    } catch (caught) {
-      haptic.error();
-      setError(t(errorKey(caught)));
-    }
-  };
-  if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
-  if (!value) return <ScreenSkeleton onBack={onBack} />;
-  if (adjusting)
-    return (
-      <AdjustForm
-        current={value}
-        error={error}
-        onBack={() => setAdjusting(false)}
-        onSave={(a) => void save(a)}
-      />
-    );
-  return (
-    <div className="market">
-      <Screen onBack={onBack} onRefresh={refresh} />
-      <Title weight="1" className="market-title">
-        {owner.firstName}
-      </Title>
-      <WalletView wallet={value}>
-        <Section>
-          <Cell onClick={adjust} subtitle={t('wallet.adjust.hint')}>
-            {t('wallet.adjust.title')}
-          </Cell>
-        </Section>
-      </WalletView>
     </div>
   );
 }

@@ -36,10 +36,11 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     expect(screen.getByText('07:00')).toBeTruthy();
     await tap('Haydovchining faol safarlari');
     expect(screen.getByText('1 ta … 10 ta')).toBeTruthy();
-    const field = screen.getByLabelText('Haydovchining faol safarlari');
-    fireEvent.change(field, { target: { value: '11' } });
+    // A count goes by «−» and «+», not typed (G79 К9): one tap instead of a keyboard.
+    expect(screen.queryByLabelText('Haydovchining faol safarlari')).toBeNull();
     expect(screen.getByText('Saqlash').closest('button')?.disabled).toBe(true);
-    fireEvent.change(field, { target: { value: '2' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Kamaytirish' }));
+    expect(screen.getByText('2 ta')).toBeTruthy();
     await tap('Saqlash');
     await waitFor(() => expect(change).toHaveBeenCalledWith('schedule.maxActiveTrips', 2));
     expect(await screen.findByText('2 ta')).toBeTruthy();

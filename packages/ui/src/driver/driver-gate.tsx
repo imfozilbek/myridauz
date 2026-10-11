@@ -40,7 +40,8 @@ function Gate({ children }: { readonly children: ReactNode }) {
   const { drivers } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
-  const [editing, setEditing] = useState(false);
+  // How the application opened: by itself for a fix asked at the start, or by a tap (G79 В16).
+  const [editing, setEditing] = useState<false | 'self' | 'tap'>(false);
   // A sent application starts the app again on the main screen, which says it is checked (G62).
   const [round, setRound] = useState(0);
   const load = useCallback(() => {
@@ -48,7 +49,7 @@ function Gate({ children }: { readonly children: ReactNode }) {
     drivers.getApplication().then(
       (application) => {
         setLoaded({ application });
-        if (application?.status === 'changes_requested') setEditing(true);
+        if (application?.status === 'changes_requested') setEditing('self');
       },
       () => setFailed(true),
     );
@@ -62,7 +63,7 @@ function Gate({ children }: { readonly children: ReactNode }) {
         () => undefined,
       );
   });
-  const editCar = useCallback(() => setEditing(true), []);
+  const editCar = useCallback(() => setEditing('tap'), []);
   const close = useCallback(() => setEditing(false), []);
   const submitted = useCallback((application: DriverApplication) => {
     // No «Ariza yuborildi»: the main screen says the application is checked (G62).
@@ -80,12 +81,17 @@ function Gate({ children }: { readonly children: ReactNode }) {
   if (!loaded) return <ScreenSkeleton />;
   // «Назад» out of the application comes back where it was opened: «Profil», the main screen (G77).
   const form = editing ? (
-    <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />
+    <ApplicationFlow
+      initial={application}
+      tapped={editing === 'tap'}
+      onSubmitted={submitted}
+      onClose={close}
+    />
   ) : null;
   if (!driver) return form ?? (application ? <StatusScreen application={application} /> : null);
   return (
     <>
-      <KeptBehind key={round} under={editing}>
+      <KeptBehind key={round} under={editing !== false}>
         <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>
       </KeptBehind>
       {form}

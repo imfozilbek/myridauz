@@ -126,10 +126,10 @@ export async function openOwnTrip() {
   fireEvent.click((live ?? document.querySelector('.trip-card')) as HTMLElement);
 }
 
-// From Chilonzor (Toshkent shahri) to Fargʻona shahri, or to the whole Fargʻona region: «Qayerga»
-// opens by itself, both ends chosen go on without «Davom etish» (G40, docs/106 K1).
+// From Chilonzor (Toshkent shahri) to Fargʻona shahri or the whole Fargʻona region: «Qayerdan» opens
+// at once (G79 В8), «Qayerga» by itself, both go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(wholeRegion = false) {
-  for (const step of ['Qayerdan', 'Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(step);
+  for (const step of ['Toshkent shahri', 'Chilonzor', 'Fargʻona viloyati']) await tap(step);
   await tap(wholeRegion ? 'Butun viloyat' : 'Fargʻona shahri');
 }
 

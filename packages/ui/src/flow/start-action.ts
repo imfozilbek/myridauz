@@ -38,11 +38,15 @@ export type Launch = {
   readonly onPublished?: () => void;
   // A case of «Navbat» opened from the main screen of the team, in the filter it was seen (G75).
   readonly navbat?: NavbatOpen;
-  // A person of a sign of «Diqqat» opened in «Odamlar» (G75).
+  // A person of a sign of «Diqqat» opened in «Odamlar» (G75); the people of a sign of many, a list
+  // of them there (G79 К3).
   readonly person?: PersonId;
+  readonly people?: readonly PersonName[];
 };
 // «Hammasi» or one kind of cases (docs/120).
 export type NavbatFilter = 'all' | NavbatKind;
 export type NavbatOpen = { readonly filter: NavbatFilter; readonly kind: NavbatKind; readonly id: string };
 // The block of the main screen opens the section of an action with what to show first.
 export type HomeGo = (actionId: string, launch?: Launch) => void;
+// A person named by a sign of «Diqqat» (G79 К3).
+export type PersonName = { readonly id: PersonId; readonly name: string };

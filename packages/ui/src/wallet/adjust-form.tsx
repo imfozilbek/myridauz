@@ -12,6 +12,9 @@ import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 
 const REASON_MIN = 3;
+// The ready reasons of a correction (G79 К5): a tap fills «Sabab», «Boshqa» leaves it to be typed.
+const READY_REASONS = ['bonus', 'noShow', 'mistake', 'payment'] as const;
+const REASON_FIELD = 'adjust-reason';
 const FIRST_BALANCE: BalanceKind = 'bonus';
 const DIRECTIONS = ['add', 'take'] as const;
 type Direction = (typeof DIRECTIONS)[number];
@@ -63,10 +66,25 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
           onChange={(event) => setAmount(event.target.value)}
         />
         <Field
+          id={REASON_FIELD}
           label={t('wallet.adjust.reason')}
           value={reason}
           onChange={(event) => setReason(event.target.value)}
         />
+        <Section>
+          {READY_REASONS.map((key) => {
+            const words = t(`wallet.adjust.reason.${key}`);
+            return choice(words, reason, setReason, words);
+          })}
+          <Cell
+            onClick={() => {
+              setReason('');
+              document.getElementById(REASON_FIELD)?.focus();
+            }}
+          >
+            {t('wallet.adjust.reason.other')}
+          </Cell>
+        </Section>
         {valid ? (
           <Section>
             <Cell after={<CellValue>{formatMoney(current[balance] + signed)}</CellValue>}>

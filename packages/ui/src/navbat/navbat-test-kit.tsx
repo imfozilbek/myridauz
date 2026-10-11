@@ -69,7 +69,12 @@ export const COMPLAINT_DETAIL: Complaint = {
 };
 
 // «Navbat» opened at a case with the given queue; every client the cases use is a spy.
-export function renderNavbat(open: NavbatOpen | undefined, items: NavbatItem[], overrides: Overrides = {}) {
+export function renderNavbat(
+  open: NavbatOpen | undefined,
+  items: NavbatItem[],
+  overrides: Overrides = {},
+  onBack = () => undefined,
+) {
   const queue = { current: navbatOf(items) };
   const take = vi.fn(async () => undefined);
   const decide = vi.fn(async () => {
@@ -87,7 +92,7 @@ export function renderNavbat(open: NavbatOpen | undefined, items: NavbatItem[], 
     ...(overrides.feedback ? { feedback: overrides.feedback } : {}),
   });
   const view = renderInShell(
-    <NavbatScreen onBack={() => undefined} {...(open ? { navbat: open } : {})} />,
+    <NavbatScreen onBack={onBack} {...(open ? { navbat: open } : {})} />,
     false,
     true,
     undefined,

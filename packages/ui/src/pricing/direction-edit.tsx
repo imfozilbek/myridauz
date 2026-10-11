@@ -47,7 +47,7 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
           status={failed === null ? 'default' : 'error'}
           onChange={(event) => setValue(event.target.value)}
         />
-        <MedianHint direction={direction} />
+        <MedianHint direction={direction} onPick={(median) => setValue(String(median))} />
       </List>
       {failed === null ? null : <Text className="step-error">{t(failed)}</Text>}
       {direction.manual === null ? null : (
@@ -64,14 +64,18 @@ export function DirectionEdit({ direction, failed, onBack, onSave }: DirectionEd
   );
 }
 
-// The median of real prices: only a hint while the team edits the table (docs/09, question 39).
-function MedianHint({ direction }: { readonly direction: Direction }) {
+// The median of real prices: a hint while the team edits the table (docs/09, question 39); a tap
+// takes it as the price (G79 К7).
+type MedianProps = { readonly direction: Direction; readonly onPick: (median: number) => void };
+function MedianHint({ direction, onPick }: MedianProps) {
   const { t, formatMoney } = useI18n();
   const count = String(direction.medianTrips);
   if (direction.median === null) return <Section footer={t('pricing.medianFew', { count })} />;
   return (
     <Section header={t('pricing.median')} footer={t('pricing.medianHint', { count })}>
-      <Cell>{formatMoney(direction.median)}</Cell>
+      <Cell onClick={() => direction.median !== null && onPick(direction.median)}>
+        {formatMoney(direction.median)}
+      </Cell>
     </Section>
   );
 }

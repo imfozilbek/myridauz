@@ -5,8 +5,7 @@ import { usePending } from '../driver/driver-context';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { NewTripFlow } from '../market/new-trip-flow';
 import { PendingLock } from '../market/pending-lock';
-import { PlacesGate } from '../market/places-gate';
-import type { Route } from '../places/route-screen';
+import { PlacesGate, usePlaces } from '../market/places-gate';
 import { BoardScreen } from './board-screen';
 
 type Props = {
@@ -22,18 +21,12 @@ type Over =
   | { readonly screen: 'mine'; readonly link: AppLink }
   | { readonly screen: 'publish'; readonly date: string };
 
-// A trip goes between districts: a whole region of the board is asked again in the trip (G37 R4).
-const tripRoute = (route: Route | null) =>
-  !route || route.from.type === 'region' || route.to.type === 'region' ? {} : { route };
-
 // «Yoʻlovchilar soʻrovlari» of a driver (G64, docs/118 path 7): the board, and from it the talk
 // before a booking (numbers hidden, docs/07), the wallet when it holds too little, the trip opened
 // for a whole car, a new trip on an empty day. «Назад» comes back to the board.
 export function RequestsFlow({ onBack, initial, board }: Props) {
   const [query, setQuery] = useState<RequestBoardQuery>(initial ?? board ?? {});
   const [over, setOver] = useState<Over | null>(null);
-  // The route chosen for the board: an empty day publishes a trip on it.
-  const [route, setRoute] = useState<Route | null>(null);
   const pending = usePending();
   const close = () => setOver(null);
   if (pending) return <PendingLock onBack={onBack} />;
@@ -43,17 +36,18 @@ export function RequestsFlow({ onBack, initial, board }: Props) {
     return <ChatScreen chatKey={over.chatKey} ring={over.ring} onLink={mine} onBack={close} />;
   if (over?.screen === 'mine') return <MyTripsScreen onBack={close} link={over.link} />;
   if (over?.screen === 'publish')
-    return <NewTripFlow {...tripRoute(route)} date={over.date} onBack={close} />;
+    return (
+      <PlacesGate onBack={close}>
+        <BoardTrip query={query} date={over.date} onBack={close} />
+      </PlacesGate>
+    );
   return (
     <PlacesGate onBack={onBack}>
       <BoardScreen
         key={JSON.stringify(query)}
         query={query}
         onDay={(date) => setQuery({ ...query, date })}
-        onRoute={(chosen) => {
-          setRoute(chosen);
-          setQuery({ from: chosen.from.id, to: chosen.to.id });
-        }}
+        onRoute={(chosen) => setQuery({ from: chosen.from.id, to: chosen.to.id })}
         onTalk={(chatKey, ring) => setOver({ screen: 'chat', chatKey, ring })}
         onTrip={(tripId) => mine({ name: MY_TRIP_LINK, id: tripId })}
         onPublish={(date) => setOver({ screen: 'publish', date })}
@@ -61,4 +55,24 @@ export function RequestsFlow({ onBack, initial, board }: Props) {
       />
     </PlacesGate>
   );
+}
+
+type BoardTripProps = {
+  readonly query: RequestBoardQuery;
+  readonly date: string;
+  readonly onBack: () => void;
+};
+
+// An empty day publishes a trip on the route of the board: chosen there, from the block or from a
+// bot link (G79 В7). A trip goes between districts: a whole region is asked again (G37 R4).
+function BoardTrip({ query, date, onBack }: BoardTripProps) {
+  const places = usePlaces();
+  const district = (id: string | undefined) => {
+    const place = id ? places.find(id) : undefined;
+    return place?.type === 'region' ? undefined : place;
+  };
+  const from = district(query.from);
+  const to = district(query.to);
+  const ends = from && to ? { route: { from, to } } : from ? { from } : {};
+  return <NewTripFlow {...ends} date={date} onBack={onBack} />;
 }
