@@ -34,7 +34,9 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   await expect(page.getByText(t('driverTrip.passengers', { count: '2' }))).toBeVisible();
   // An hour before the time of the trip the driver opens it again: «Yoʻlga chiqdim».
   await page.clock.setFixedTime(own.departAt() - 59 * MINUTE);
+  // «Назад» from the trip just published is the main screen at once (G77); the trip opens from its tile.
   await pressBack(page);
+  await page.getByText(t('common.myTrips')).first().click();
   await openOwnTrip(page);
   const main = page.locator('#tg-main-button');
   await expect(main).toHaveText(t('driverTrip.main.departed'));

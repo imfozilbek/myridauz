@@ -41,8 +41,14 @@ export function MyTripsScreen(props: ScreenProps) {
   );
 }
 
-// What is open, by its ids: a signal brings fresh data to it (docs/65 B2).
-type Opened = { readonly tripId: string; readonly bookingId?: string; readonly start?: TripScreen };
+// What is open, by its ids: a signal brings fresh data to it (docs/65 B2). home: what the block of
+// the main screen or a bot button opened, its «Назад» goes straight home (G77).
+type Opened = {
+  readonly tripId: string;
+  readonly bookingId?: string;
+  readonly start?: TripScreen;
+  readonly home?: 'trip' | 'booking';
+};
 
 function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_trips');
@@ -55,15 +61,18 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   const [opened, setOpened] = useState<Opened | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
-  // A bot button opens its booking, trip or the booking of an accepted offer (docs/65 B5).
+  // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5).
   useLinkOpen(link, value ?? null, (open, [, booked, offers]) => {
-    const bookingId =
-      open.name === OFFER_LINK ? offers.find((item) => item.id === open.id)?.bookingId : open.id;
-    const found = booked.find((item) => item.id === bookingId && open.name !== MY_TRIP_LINK);
-    if (found) setOpened({ tripId: found.trip.id, bookingId: found.id });
+    const bookingId = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
+    const found = booked.find((item) => item.id === bookingId);
+    if (found) setOpened({ tripId: found.trip.id, bookingId: found.id, home: 'booking' });
     else if (open.name === MY_TRIP_LINK)
-      setOpened({ tripId: open.id, ...(tripScreen ? { start: tripScreen } : {}) });
+      setOpened({ tripId: open.id, home: 'trip', ...(tripScreen ? { start: tripScreen } : {}) });
   });
+  // Back from a booking: to its trip, or home when a link opened the booking itself.
+  const tripOf = (tripId: string): Opened =>
+    opened?.home === 'trip' ? { tripId, home: 'trip' } : { tripId };
+  const leave = () => (opened?.home === 'trip' ? onBack() : setOpened(null));
   const [chatKey, setChatKey] = useState<string | null>(null);
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [tab, setTab] = useState<MineTab>('live');
@@ -74,7 +83,8 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (trip && booking) {
     const close = (changed: boolean) => {
-      setOpened({ tripId: trip.id });
+      if (opened?.home === 'booking') return onBack();
+      setOpened(tripOf(trip.id));
       if (changed) reload();
     };
     return <DriverBooking booking={booking} onClose={close} />;
@@ -84,10 +94,10 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       <OwnTripFlow
         trip={trip}
         bookings={value[1].filter((item) => item.trip.id === trip.id)}
-        onBack={() => setOpened(null)}
-        onBooking={(item) => setOpened({ tripId: trip.id, bookingId: item.id })}
+        onBack={leave}
+        onBooking={(item) => setOpened({ ...tripOf(trip.id), bookingId: item.id })}
         onChanged={reload}
-        onClosed={() => (setOpened(null), reload())}
+        onClosed={() => (leave(), reload())}
         offer={trip.private ? (value[2].find((item) => item.tripId === trip.id) ?? null) : null}
         {...(opened?.start ? { start: opened.start } : {})}
       />

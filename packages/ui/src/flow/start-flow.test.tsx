@@ -50,6 +50,11 @@ describe('StartFlow', () => {
     renderInShell(<StartFlow actions={ACTIONS} />);
     fireEvent.click(screen.getByText('section'));
     expect(screen.getByText('Mening safarlarim')).toBeTruthy();
+    // Forgotten once opened (G77): a gate mounted again shows the main screen, not the section.
+    expect(window.location.search).toBe('');
+    cleanup();
+    renderInShell(<StartFlow actions={ACTIONS} />);
+    expect(screen.queryByText('section')).toBeNull();
     window.history.replaceState(null, '', '/');
   });
 

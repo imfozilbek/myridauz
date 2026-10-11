@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { useGoHome } from '../flow/home-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
 import { Screen } from '../screen/screen';
@@ -28,6 +29,8 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
   useScreenBackground();
   const { t, formatDate, formatTime, formatNumber, formatMoney, formatRating } = useI18n();
   const { colors } = useBrand().theme;
+  // «Bosh sahifa» is the main screen from wherever the booking was made (G77, docs/168 B).
+  const home = useGoHome(onHome);
   const { trip } = booking;
   const { driver } = trip;
   const until = new Date(booking.expiresAt);
@@ -78,7 +81,7 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
       <button type="button" className="pending-cancel" onClick={onCancel}>
         {t('market.request.cancel')}
       </button>
-      <MainButton text={t('bookings.pending.home')} onClick={onHome} />
+      <MainButton text={t('bookings.pending.home')} onClick={home} />
     </div>
   );
 }

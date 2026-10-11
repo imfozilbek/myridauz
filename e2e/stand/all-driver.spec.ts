@@ -4,6 +4,7 @@ import { openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
+import { pressBack } from '../telegram-mock';
 import { mainButton, NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
 import { register } from './seed';
 import type { Person } from './stand-kit';
@@ -17,8 +18,7 @@ const WELCOME_BONUS = 500_000;
 const WAITING: Person = { id: 900704, name: 'Robiya', phone: '998901110704' };
 
 test.beforeAll(async () => {
-  const { trip, seat } = await confirmedSeat(MUROD, ZEBO);
-  links['booking'] = seat.id;
+  const { trip } = await confirmedSeat(MUROD, ZEBO);
   links['trip'] = trip.id;
   await register('passenger', WAITING, 'female');
   const waiting = await book(WAITING, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
@@ -39,9 +39,12 @@ for (const platform of PLATFORMS)
   });
 
 test('android: a trip, its seats, its map and a waiting seat', async ({ page }) => {
-  await openHome(page, 'driver', MUROD, 'android', `?booking=${links['booking']}`);
-  await shot(page, 'android', 'da20-booking');
-  await openHome(page, 'driver', MUROD, 'android');
+  // The trip card of the driver bot opens the trip; «Назад» is the main screen at once (G77).
+  await openHome(page, 'driver', MUROD, 'android', `?mytrip=${links['trip']}`);
+  await expect(page.getByText(t('driverTrip.tile.map'))).toBeVisible();
+  await shot(page, 'android', 'da20-trip-link');
+  await pressBack(page);
+  await expect(page.getByTestId('home-dock')).toBeVisible();
   await page.getByText(t('common.myTrips')).first().click();
   await shot(page, 'android', 'da21-my-trips');
   await openOwnTrip(page);
@@ -91,18 +94,18 @@ test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ p
   await shot(page, 'android', 'da46-publish');
 });
 
-test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
-  await setBonus(MUROD, 0);
-  await openHome(page, 'driver', MUROD, 'android', `?booking=${links['waiting']}`);
-  // The commission is on the booking; its main button leads to the top up at once (G27, G63).
-  await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
-  await mainButton(page).click();
-  // A sheet with only the sum short over the booking (G75, mockup g75/4 B); its button opens the
-  // support chat with the message ready.
-  await expect(page.getByText(t('wallet.notEnough.title'))).toBeInViewport();
-  await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
-  await expect(mainButton(page)).toHaveText(t('wallet.topUp'));
-  await shot(page, 'android', 'da51-not-enough');
-  // The walks of passengers use Murod after this one: his bonus comes back.
-  await setBonus(MUROD, WELCOME_BONUS);
+test.describe(() => {
+  // The sheet of the ring stays for the check (crash-guard puts sheets aside by default).
+  test.use({ actionSheets: 'keep' });
+  test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
+    await setBonus(MUROD, 0);
+    // The ring of a new seat in the driver bot: the main screen with the sheet of this seat (G68, G77).
+    await openHome(page, 'driver', MUROD, 'android', `?sheet=${links['waiting']}`);
+    // The sum short of the commission and «Hisobni toʻldirish» in the sheet (G75, docs/158 Г).
+    await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
+    await expect(page.getByText(t('wallet.topUp')).first()).toBeVisible();
+    await shot(page, 'android', 'da51-not-enough');
+    // The walks of passengers use Murod after this one: his bonus comes back.
+    await setBonus(MUROD, WELCOME_BONUS);
+  });
 });

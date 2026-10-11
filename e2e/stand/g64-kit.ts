@@ -1,6 +1,6 @@
 import type { BrowserContext } from '@playwright/test';
 import { createBookingsClient, createMarketClient } from '@platform/api-client';
-import { OFFER_LINK, type Offer, type RideRequest } from '@platform/contracts';
+import { REQUEST_LINK, type Offer, type RideRequest } from '@platform/contracts';
 import { expect, type Page } from '../crash-guard';
 import { myBookings } from './g27-kit';
 import { shootIn } from './g63-kit';
@@ -66,7 +66,7 @@ export async function passengerPhone(context: BrowserContext, walk: Walk, who: P
   return phone;
 }
 
-// «Qabul qilish» or «Rad etish» on the offer the bot button opens.
+// «Qabul qilish» or «Rad etish» on the offer of the request the bot button opens.
 export async function answerByBot(
   context: BrowserContext,
   walk: Walk,
@@ -74,8 +74,9 @@ export async function answerByBot(
   request: RideRequest,
   action: 'accept' | 'decline',
 ) {
-  const offer = await offerOf(who, request.id);
-  const phone = await passengerPhone(context, walk, who, `?${OFFER_LINK}=${offer.id}`);
+  // The card of the request in the bot opens «Mening soʻrovim» with the offers (G61, G77).
+  await offerOf(who, request.id);
+  const phone = await passengerPhone(context, walk, who, `?${REQUEST_LINK}=${request.id}`);
   await phone
     .getByRole('button', { name: t(`bookings.offer.${action}`), exact: true })
     .first()

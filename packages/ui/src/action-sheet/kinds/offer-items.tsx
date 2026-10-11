@@ -33,9 +33,10 @@ export function useOfferItems(directory: PlaceDirectory, go: HomeGo): ActionItem
     refresh();
   };
   // One request is one thing to answer: its first offer, the others behind «Barcha takliflar (n)»
-  // (mockup g68/8 «Taklif»). The bot rings with the first offer too (docs/122).
+  // (mockup g68/8 «Taklif»). The bot rings with the first offer too (docs/122): the newest come
+  // first in the list, so the first offer is the last of its request (G77).
   const firsts = waiting.filter(
-    (offer, at) => waiting.findIndex((o) => o.requestId === offer.requestId) === at,
+    (offer, at) => waiting.findLastIndex((o) => o.requestId === offer.requestId) === at,
   );
   return firsts.map((offer) => {
     const { driver } = offer;

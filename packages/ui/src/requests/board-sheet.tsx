@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal } from '../components';
 import { useBrand } from '../context/brand-context';
 import { SheetOverlay } from '../home/sheet-overlay';
+import { SheetBack } from '../sheet/sheet-back';
 import { useBehind } from '../telegram/behind';
 import { brandVars } from '../theme/brand-vars';
 import './board-sheet.css';
@@ -29,6 +30,7 @@ export function BoardSheet({ open: asked, kind, onClose, children }: Props) {
     >
       {open ? (
         <div className="board-sheet" data-sheet={kind} style={brandVars(colors)}>
+          <SheetBack onClose={onClose} />
           <span className="board-sheet-grab" aria-hidden />
           {children}
         </div>

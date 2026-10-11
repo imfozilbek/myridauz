@@ -1,5 +1,5 @@
 import { ApiError, type BookingsClient, type MarketClient } from '@platform/api-client';
-import { OFFER_LINK } from '@platform/contracts';
+import { REQUEST_LINK } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -18,7 +18,7 @@ function open(bookings: Partial<BookingsClient> = {}, market: Partial<MarketClie
   renderMarket(
     <MyRequestsScreen
       onBack={() => undefined}
-      {...(link ? { link: { name: OFFER_LINK, id: offer.id } } : {})}
+      {...(link ? { link: { name: REQUEST_LINK, id: salon.id } } : {})}
     />,
     testClients({
       market: { myRequests: async () => [salon], ...market },

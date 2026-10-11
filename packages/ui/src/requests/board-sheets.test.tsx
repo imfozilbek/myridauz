@@ -1,9 +1,15 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
-import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { offer } from '../bookings/booking-test-kit';
 import { tap, trip } from '../market/market-test-kit';
+import { pressBack } from '../test-native';
 import { board, EIGHT, NOW, openBoard, salon, TEN } from './board-test-kit';
+
+vi.mock('@telegram-apps/sdk-react', async (original) => ({
+  ...(await original<object>()),
+  ...(await import('../test-native')).nativeButtons,
+}));
 
 beforeEach(() => void vi.useFakeTimers({ toFake: ['Date'], now: NOW }));
 afterEach(() => {
@@ -32,6 +38,22 @@ describe(
       fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
       await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 100000 }));
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    });
+
+    // Telegram «Назад» closes only the sheet: the board stays, the offer typed comes back (G77).
+    it('«Назад» closes the sheet on the board; it opens again with the time and the price typed', async () => {
+      openBoard({ inTelegram: true });
+      await tap('Taklif yuborish');
+      const form = await sheet();
+      fireEvent.click(form.getByRole('radio', { name: '10:00' }));
+      fireEvent.click(form.getByLabelText('Oshirish'));
+      act(pressBack);
+      await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+      expect(screen.getByText('Yoʻlovchilar soʻrovlari')).toBeTruthy();
+      await tap('Taklif yuborish');
+      const again = await sheet();
+      expect(again.getByRole('radio', { name: '10:00' }).getAttribute('aria-checked')).toBe('true');
+      expect(again.getByText('100 000')).toBeTruthy();
     });
 
     it('«Boshqa» takes any free time of the day from the native list', async () => {

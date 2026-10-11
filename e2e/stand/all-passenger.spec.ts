@@ -27,7 +27,10 @@ test.beforeAll(async () => {
   await createComfortClient(await signedAs('passenger', ZEBO)).save(trip.driver.id);
   const route = { from: CHILONZOR, to: SAMARQAND, woman: false, date: tomorrow() };
   await createSubscriptionsClient(await signedAs('passenger', ZEBO)).subscribe(route);
-  links['offer'] = (await offerOn(MUROD, (await askRide(ZEBO)).id)).id;
+  // «Takliflarni koʻrish» under the card of a request (G61): the bot sends ?request=, not ?offer= (G77).
+  const asked = await askRide(ZEBO);
+  await offerOn(MUROD, asked.id);
+  links['request'] = asked.id;
   links['follow'] = (await createChatClient(await signedAs('passenger', ZEBO)).share(seat.id)).link.slice(
     -43,
   );
@@ -53,7 +56,7 @@ for (const platform of PLATFORMS)
 test('android: every screen a bot button opens', async ({ page }) => {
   await byLink('android', page, `?booking=${links['booking']}`, 'pa20-booking');
   await byLink('android', page, `?chat=${links['chat']}`, 'pa21-chat');
-  await byLink('android', page, `?offer=${links['offer']}`, 'pa22-offer');
+  await byLink('android', page, `?request=${links['request']}`, 'pa22-offer');
   await byLink('android', page, `?review=${links['review']}`, 'pa23-review');
   await byLink('android', page, `?complain=${links['review']}`, 'pa24-complaint');
   await byLink('android', page, '?subscriptions=1', 'pa25-subscriptions');

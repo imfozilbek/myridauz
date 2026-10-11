@@ -74,4 +74,24 @@ describe('the sheet of a new offer (G68)', () => {
     expect(await screen.findByText(`opened ${REQUEST_LINK}:r1`)).toBeTruthy();
     await sheetClosed();
   });
+
+  // The bot rings with the first offer of a request (docs/122); the list comes newest first. Its
+  // link ?sheet=<the first offer> opens the sheet with that offer even when a second one came (G77).
+  it('the ring of the first offer opens its sheet when two offers wait', async () => {
+    window.history.replaceState(null, '', '/?sheet=0000000c-0000-4000-8000-000000000001');
+    passenger([
+      {
+        ...offer,
+        id: '0000000c-0000-4000-8000-000000000002',
+        driver: { ...offer.driver, firstName: 'Olim' },
+      },
+      { ...offer, id: '0000000c-0000-4000-8000-000000000001' },
+    ]);
+    expect(await screen.findByText('Yangi taklif')).toBeTruthy();
+    expect(screen.getByText('Jasur · ★ 4,8')).toBeTruthy();
+    expect(screen.getByText('Barcha takliflar (2)')).toBeTruthy();
+    window.history.replaceState(null, '', '/');
+    await tap('Keyinroq');
+    await sheetClosed();
+  });
 });

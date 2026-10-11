@@ -20,7 +20,9 @@ export {
   PEOPLE_SECTION,
   STATS_SECTION,
   TRIPS_SECTION,
+  WALLETS_SECTION,
 } from './team/team-sections';
+export { TeamWalletsScreen } from './wallet/team-wallets-screen';
 export { PeopleScreen } from './manage/people-screen';
 export { NavbatScreen } from './navbat/navbat-screen';
 export { linkedCase } from './navbat/linked-case';

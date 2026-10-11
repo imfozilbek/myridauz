@@ -103,14 +103,15 @@ const account = (gender: 'male' | 'female'): Account => ({
   onProfileChanged: () => undefined,
 });
 
-export function renderMarket(ui: ReactNode, clients: ApiClients, gender: 'male' | 'female' = 'male') {
-  return renderInShell(
-    <AccountContext.Provider value={account(gender)}>{ui}</AccountContext.Provider>,
-    false,
-    true,
-    locations,
-    clients,
-  );
+// inTelegram: the native «Назад» of Telegram, pressed by pressBack of test-native (lesson 225).
+export function renderMarket(
+  ui: ReactNode,
+  clients: ApiClients,
+  gender: 'male' | 'female' = 'male',
+  inTelegram = false,
+) {
+  const shown = <AccountContext.Provider value={account(gender)}>{ui}</AccountContext.Provider>;
+  return renderInShell(shown, inTelegram, true, locations, clients);
 }
 
 export const tap = async (text: string | RegExp) => fireEvent.click(await screen.findByText(text));

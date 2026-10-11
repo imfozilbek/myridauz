@@ -25,10 +25,11 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
     expect(await screen.findByTestId('driver-home')).toBeTruthy();
     await tap('Arizani toʻldirish');
     expect(await screen.findByText('Mashinangiz')).toBeTruthy();
-    expect(screen.queryByTestId('driver-home')).toBeNull();
+    // The main screen waits under the form as it was, not seen (G77).
+    expect(screen.getByTestId('driver-home').closest('.kept-behind')).not.toBeNull();
     await tap('Orqaga');
     expect(await screen.findByText('Arizani toʻldirish')).toBeTruthy();
-    expect(screen.getByTestId('driver-home')).toBeTruthy();
+    expect(screen.getByTestId('driver-home').closest('.kept-behind')).toBeNull();
     expect(asked).not.toHaveBeenCalled();
   });
 

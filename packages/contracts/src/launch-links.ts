@@ -39,6 +39,10 @@ export const WALLET_SECTION = 'wallet';
 // them, ?open=trips&trip=<id> (G68, mockup g68/4).
 export const TEAM_TRIPS_SECTION = 'trips';
 
+// «💬 Chat» and «📞 Qoʻngʻiroq» under a trip card (G77): the chat of the seat, or the call of it at once.
+export const CHAT_LINK = 'chat';
+export const CALL_LINK = 'call';
+
 // A ring of a bot that asks for an answer opens the main screen with its sheet first (docs/122,
 // G68): ?sheet=<id>, the id of the booking or the offer, or the chat key.
 export const SHEET_LINK = 'sheet';

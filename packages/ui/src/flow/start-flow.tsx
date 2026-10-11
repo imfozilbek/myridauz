@@ -46,6 +46,7 @@ type Screen =
   | { readonly action: StartAction; readonly launch?: Launch };
 const PROFILE: Screen = { profile: null };
 const PROFILE_LINK = [PROFILE_PHOTO_LINK.name];
+const SECTION_LINK = [OPEN_LINK];
 // «Rasmni almashtirish» under a refused face photo opens the profile (G58, docs/118).
 const photoLinked = () =>
   launchParam(PROFILE_PHOTO_LINK.name, new RegExp(`^${PROFILE_PHOTO_LINK.id}$`, 'u')) !== null;
@@ -57,14 +58,16 @@ export function StartFlow(props: StartFlowProps) {
   const { t } = useI18n();
   const tap = useHomeTap();
   const sheet = useAnySheet();
+  // A bot button opens its section at once: ?open=<section> (G62, docs/119).
+  const [linked] = useState(() => opened ?? launchParam(OPEN_LINK, OPEN_LINK_VALUE));
   const [screen, setScreen] = useState<Screen>(() => {
-    // A bot button opens its section at once: ?open=<section> (G62, docs/119).
-    const linked = opened ?? launchParam(OPEN_LINK, OPEN_LINK_VALUE);
     const action = [...actions, ...sections].find((item) => item.id === linked);
     if (action) return props.launch ? { action, launch: props.launch } : { action };
     return photoLinked() ? PROFILE : 'home';
   });
   useLinkOpened(screen !== 'home' && 'profile' in screen, PROFILE_LINK);
+  // A section opened by ?open= forgets it: the gates mounted again never open «Hamyon» twice (G77).
+  useLinkOpened(linked !== null && screen !== 'home', SECTION_LINK);
   const openHome = useCallback(() => setScreen('home'), []);
   const openProfile = useCallback<OpenProfile>((part) => {
     haptic.tap();

@@ -6,16 +6,17 @@ import { useI18n } from '../context/i18n-context';
 import { departAtOf, slotsOn } from '../market/first-when';
 import { useSchedule } from '../market/use-schedule';
 import { haptic } from '../telegram/feedback';
+import { draftOf, keepDraft } from './offer-draft';
 import { offerTimes } from './offer-times';
 import './time-chips.css';
 
 // The times a driver may leave at on the day of a request, with the driver's busy times (docs/103):
-// the first chip is chosen at once. null while the busy times load.
+// the first chip is chosen at once, or the one chosen before the sheet closed. null while they load.
 export function useOfferTime(request: RideRequest) {
   const [now] = useState(Date.now);
   const rules = useBrand().schedule;
   const schedule = useSchedule(request.from, request.to);
-  const [picked, setPicked] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(() => draftOf('time', request.id) ?? null);
   if (!schedule) return null;
   const slots = slotsOn(request.date, now, schedule, rules);
   const time =
@@ -25,7 +26,7 @@ export function useOfferTime(request: RideRequest) {
     full: schedule.full,
     time,
     departAt: time === null ? null : departAtOf(request.date, time),
-    pick: setPicked,
+    pick: (time: string) => (keepDraft('time', request.id, time), setPicked(time)),
   };
 }
 

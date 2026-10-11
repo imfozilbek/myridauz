@@ -1,5 +1,12 @@
 import type { BrandConfig } from '@platform/brands';
-import { SHEET_LINK, type BookedPlace, type Booking, type BookingStatus } from '@platform/contracts';
+import {
+  CALL_LINK,
+  CHAT_LINK,
+  SHEET_LINK,
+  type BookedPlace,
+  type Booking,
+  type BookingStatus,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { bold, escapeHtml } from '../../../shared/telegram/html';
@@ -45,7 +52,8 @@ function wayLine(booking: Booking): string[] {
 }
 
 function buttons(brand: BrandConfig, booking: Booking) {
-  const chat = { name: 'chat', id: booking.chatKey };
+  const chat = { name: CHAT_LINK, id: booking.chatKey };
+  const call = { name: CALL_LINK, id: booking.chatKey };
   return [
     [
       { text: t('bot.ask.accept'), callback_data: `${askCardKey(booking.id)}:yes` },
@@ -53,7 +61,7 @@ function buttons(brand: BrandConfig, booking: Booking) {
     ],
     [
       appButton(brand, 'driver', t('bot.card.chat'), chat),
-      appButton(brand, 'driver', t('bot.card.call'), chat),
+      appButton(brand, 'driver', t('bot.card.call'), call),
     ],
     // The main screen with the sheet of this request: the sum and the commission at hand (G68).
     [appButton(brand, 'driver', t('bot.ask.open'), { name: SHEET_LINK, id: booking.id })],

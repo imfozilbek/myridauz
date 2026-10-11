@@ -50,5 +50,48 @@ describe('StartPage', () => {
     expect(await screen.findByText('7 kun')).toBeTruthy();
     expect(periods).toEqual(['week']);
     expect(window.location.search).toBe('');
+    // «Назад» from the dashboard of a bot link: the main screen in one tap (G77).
+    fireEvent.click(screen.getByText('Orqaga'));
+    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
+    expect(screen.queryByText('Narxlar')).toBeNull();
+  });
+
+  // «Diqqat» of the owner (G77, docs/168 B): the money of drivers opens «Hamyonlar», not the menu.
+  it('«Diqqat» money opens «Hamyonlar» at once', async () => {
+    const money = {
+      kind: 'money' as const,
+      name: 'Jasur',
+      person: '00000000000000000000000000000007',
+      seats: 3,
+    };
+    const attention = async () => ({ signs: [{ id: 's1', at: 0, sign: money }] });
+    const all = async () => ({ wallets: [], more: false });
+    renderInShell(
+      <StartPage />,
+      false,
+      true,
+      undefined,
+      owner({
+        team: { navbat: async () => EMPTY, attention },
+        wallet: { all },
+      }),
+    );
+    fireEvent.click(await screen.findByText('1 haydovchida pul kam'));
+    expect(await screen.findByText('Hamyonlar')).toBeTruthy();
+    expect(screen.queryByText('Narxlar')).toBeNull();
+  });
+
+  // Who the member is did not load: the error with «Qayta urinish», never an empty screen (G77).
+  it('says the error when the team member does not load, and tries again', async () => {
+    let fail = true;
+    const me = async () => {
+      if (fail) throw new Error('test.network');
+      return { id: null, firstName: 'Fozil', hasAvatar: false, role: 'owner' as const };
+    };
+    renderInShell(<StartPage />, false, true, undefined, owner({ moderation: { me } }));
+    expect(await screen.findByText('Xatolik yuz berdi')).toBeTruthy();
+    fail = false;
+    fireEvent.click(screen.getByRole('button', { name: 'Qayta urinish' }));
+    expect(await screen.findByText('Boshqaruv')).toBeTruthy();
   });
 });

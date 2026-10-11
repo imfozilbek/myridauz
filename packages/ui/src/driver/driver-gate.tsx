@@ -4,6 +4,7 @@ import { useApiClients } from '../context/api-clients';
 import { useFeedChange } from '../feed/feed-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { KeptBehind } from '../telegram/kept-behind';
 import { ApplicationFlow } from './application-flow';
 import { DriverContext, type Driver } from './driver-context';
 import { StatusScreen } from './status-screen';
@@ -32,6 +33,8 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);
   const [editing, setEditing] = useState(false);
+  // A sent application starts the app again on the main screen, which says it is checked (G62).
+  const [round, setRound] = useState(0);
   const load = useCallback(() => {
     setFailed(false);
     drivers.getApplication().then(
@@ -57,6 +60,7 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
     // No «Ariza yuborildi»: the main screen says the application is checked (G62).
     setLoaded({ application });
     setEditing(false);
+    setRound((count) => count + 1);
   }, []);
   const application = loaded?.application ?? null;
   const driver = useMemo<Driver | null>(() => {
@@ -66,8 +70,17 @@ export function DriverGate({ children }: { readonly children: ReactNode }) {
 
   if (failed) return <ErrorScreen onRetry={load} />;
   if (!loaded) return <ScreenSkeleton />;
-  if (!editing && driver) return <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>;
-  if (!editing && application) return <StatusScreen application={application} />;
-  // «Назад» out of the application goes to the main screen (docs/94 B4).
-  return <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />;
+  // «Назад» out of the application comes back where it was opened: «Profil», the main screen (G77).
+  const form = editing ? (
+    <ApplicationFlow initial={application} onSubmitted={submitted} onClose={close} />
+  ) : null;
+  if (!driver) return form ?? (application ? <StatusScreen application={application} /> : null);
+  return (
+    <>
+      <KeptBehind key={round} under={editing}>
+        <DriverContext.Provider value={driver}>{children}</DriverContext.Provider>
+      </KeptBehind>
+      {form}
+    </>
+  );
 }

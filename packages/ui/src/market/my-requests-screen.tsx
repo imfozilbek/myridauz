@@ -1,6 +1,5 @@
 import {
   BOOKING_LINK,
-  OFFER_LINK,
   REQUEST_LINK,
   type AppLink,
   type Booking,
@@ -36,7 +35,8 @@ export function MyRequestsScreen({ onBack, link }: ScreenProps) {
   );
 }
 
-type OpenedId = { readonly kind: Opened['kind']; readonly id: string };
+// home: opened by the block of the main screen or a bot button, «Назад» goes straight home (G77).
+type OpenedId = { readonly kind: Opened['kind']; readonly id: string; readonly home?: true };
 
 // The latest copy of what is open; gone from the lists (a request that ended): nothing.
 function fresh(open: OpenedId, booked: readonly Booking[], requests: readonly RideRequest[]): Opened | null {
@@ -60,13 +60,11 @@ function MyRequests({ onBack, link }: ScreenProps) {
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;
-  // A bot button: a booking opens itself, a new offer opens its request with all the offers and
-  // their answers right in the cards (docs/65 B5, G61 mockup 3-offers A); «Soʻrovim» its request.
-  useLinkOpen(link, value ?? null, (open, [, , offers]) => {
-    if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id });
-    if (open.name === REQUEST_LINK) setOpened({ kind: 'request', id: open.id });
-    const offer = offers.find((item) => open.name === OFFER_LINK && item.id === open.id);
-    if (offer) setOpened({ kind: 'request', id: offer.requestId });
+  // A bot button or the block of the main screen: a booking opens itself, «Soʻrovim» its request
+  // with all the offers and their answers right in the cards (docs/65 B5, G61 mockup 3-offers A).
+  useLinkOpen(link, value ?? null, (open) => {
+    if (open.name === BOOKING_LINK) setOpened({ kind: 'booking', id: open.id, home: true });
+    if (open.name === REQUEST_LINK) setOpened({ kind: 'request', id: open.id, home: true });
   });
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   // The tab stays while a booking is open: «Назад» comes to the same list.
@@ -86,6 +84,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (opened && value) {
     const close = (changed: boolean) => {
+      if (openedId?.home) return onBack();
       setOpened(null);
       if (changed) reload();
     };
