@@ -83,10 +83,11 @@ function MyRequests({ onBack, link }: ScreenProps) {
   }
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (opened && value) {
+    // A change reloads the lists first: the main screen reads the same ones (G77, lesson 230).
     const close = (changed: boolean) => {
+      if (changed) reload();
       if (openedId?.home) return onBack();
       setOpened(null);
-      if (changed) reload();
     };
     return (
       <PassengerOpen

@@ -16,7 +16,7 @@ import { BoardSheet } from './board-sheet';
 import { draftOf, keepDraft } from './offer-draft';
 import { useEnds } from './ends';
 import { useRequestDay } from './request-day';
-import { TimeChips, useOfferTime } from './time-chips';
+import { TimeChips, TOO_SOON, useOfferTime } from './time-chips';
 
 type Props = {
   readonly request: RideRequest | null;
@@ -56,7 +56,8 @@ function OfferForm({ request, onSent, onShort }: Omit<Props, 'request'> & { read
   };
   const send = async () => {
     const departAt = when?.sending();
-    if (!departAt) return;
+    // The time on the sheet became too soon meanwhile: the sheet shows the next one and says why (G77).
+    if (!departAt) return when ? fail(TOO_SOON) : undefined;
     clear();
     try {
       await bookings.sendOffer(request.id, { departAt, price });

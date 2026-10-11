@@ -58,7 +58,7 @@ export async function mockDrivers(page: Page, start: DriverStart) {
         : { status: 'draft', car: null, photos: { ...photos }, reasons: [] };
     await route.fulfill({ json: { application } });
   });
-  // «Navbat» of the team (G75): the case of a bot link opens by itself, then nothing waits.
+  // «Navbat» of the team (G75): nothing waits.
   await page.route('**/api/admin/navbat', (route) =>
     route.fulfill({ json: { items: [], counts: { application: 0, complaint: 0, face: 0, support: 0 } } }),
   );
@@ -99,4 +99,20 @@ export async function mockDrivers(page: Page, start: DriverStart) {
     route.fulfill({ json: { ...summary, status: 'approved' } }),
   );
   return { submitted };
+}
+
+// «Navbat» with the application of Jasur waiting: the team opens it from its row (G77, e2e/apps.ts).
+export async function mockWaitingApplication(page: Page) {
+  const waiting = {
+    kind: 'application',
+    id: summary.userId,
+    name: summary.firstName,
+    since: 1,
+    minutes: 5,
+    late: false,
+    takenBy: null,
+    car: { make: 'Chevrolet', model: 'Cobalt', plate: '01A123BC' },
+  };
+  const counts = { application: 1, complaint: 0, face: 0, support: 0 };
+  await page.route('**/api/admin/navbat', (route) => route.fulfill({ json: { items: [waiting], counts } }));
 }

@@ -1,4 +1,5 @@
 import {
+  BOOKING_LINK,
   DAY_MS,
   MY_TRIP_LINK,
   OFFER_LINK,
@@ -59,9 +60,11 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   const [opened, setOpened] = useState<Opened | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
-  // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5).
+  // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5); the
+  // row of the passenger in the details of «Hamyon» opens that booking (G65).
   useLinkOpen(link, fresh ? value : null, (open, [, booked, offers]) => {
-    const bookingId = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
+    const offered = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
+    const bookingId = open.name === BOOKING_LINK ? open.id : offered;
     const found = booked.find((item) => item.id === bookingId);
     if (found) setOpened({ tripId: found.trip.id, bookingId: found.id, home: 'booking' });
     else if (open.name === MY_TRIP_LINK)
@@ -80,10 +83,11 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (trip && booking) {
+    // A change reloads the lists first: the main screen reads the same ones (G77, lesson 230).
     const close = (changed: boolean) => {
+      if (changed) reload();
       if (opened?.home === 'booking') return onBack();
       setOpened(tripOf(trip.id));
-      if (changed) reload();
     };
     return <DriverBooking booking={booking} onClose={close} />;
   }

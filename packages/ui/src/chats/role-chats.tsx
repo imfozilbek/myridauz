@@ -1,5 +1,6 @@
 import { useApiClients } from '../context/api-clients';
 import { useDriverData } from '../home/driver-data';
+import { useFreshLists } from '../home/fresh-lists';
 import { useLoad } from '../market/use-list';
 import { usePassengerData } from '../home/passenger-data';
 import { useNow } from '../own-trip/use-now';
@@ -10,8 +11,11 @@ import { useUnreadChats } from './unread-chats';
 type Props = { readonly onBack: () => void };
 
 // «Suhbatlar» of a passenger: the chats of the seats and of the offers of drivers (G76).
+// The lists of the main screen refresh as it opens, as «Mening safarlarim» (G77, lesson 230).
 export function PassengerChatsScreen({ onBack }: Props) {
-  const { value } = usePassengerData();
+  const lists = usePassengerData();
+  useFreshLists(lists);
+  const { value } = lists;
   const unread = useUnreadChats();
   const now = useNow();
   const rows = value ? chatRows({ bookings: value[0], offers: value[2], unread, driver: false, now }) : null;
@@ -21,7 +25,9 @@ export function PassengerChatsScreen({ onBack }: Props) {
 // «Suhbatlar» of a driver: the chats of the passengers of the trips and the talks about the requests
 // the driver offered a trip on, read or not (mockup g76/5).
 export function DriverChatsScreen({ onBack }: Props) {
-  const { value } = useDriverData();
+  const lists = useDriverData();
+  useFreshLists(lists);
+  const { value } = lists;
   const { bookings } = useApiClients();
   const offers = useLoad(() => bookings.driverOffers(), 'chats.offers').value;
   const unread = useUnreadChats();

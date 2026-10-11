@@ -16,13 +16,15 @@ type Props = {
   readonly request: RideRequest;
   // The offer went: the talk shows its card in place of the button (mockup g64/5 phone 3).
   readonly onSent: () => unknown;
+  // A trip for a whole car opens as from the board: «Mening safarim» (G77).
+  readonly onTrip?: ((tripId: string) => void) | undefined;
   readonly className?: string;
 };
 
 // The driver's one action in a talk (mockups g64/2 phone 2, g64/5): the same as on the card of the
 // board. A live trip that fits: one tap; a whole car without a trip: the trip from the request; else
 // the time and the price (docs/118 path 7).
-export function TalkAction({ request, onSent, className = 'talk-action' }: Props) {
+export function TalkAction({ request, onSent, onTrip, className = 'talk-action' }: Props) {
   const { t } = useI18n();
   const { market } = useApiClients();
   const board = useLoad(() => market.requestBoard({ date: request.date })).value;
@@ -61,7 +63,10 @@ export function TalkAction({ request, onSent, className = 'talk-action' }: Props
           request={sheet === 'salon' ? request : null}
           seats={board.carSeats}
           onClose={() => setSheet(null)}
-          onOpened={sent}
+          onOpened={async (tripId) => {
+            await sent();
+            onTrip?.(tripId);
+          }}
           onShort={short}
         />
       ) : null}

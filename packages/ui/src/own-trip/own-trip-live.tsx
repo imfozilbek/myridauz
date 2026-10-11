@@ -68,7 +68,8 @@ export function OwnTripLive(props: Props) {
         onPoint={
           meetingOpen(trip, now, meetMinutes) ? (stop) => setMeeting(stop.riders.map(({ id }) => id)) : null
         }
-        onBack={back}
+        // «Yoʻl xaritasi» of the block opened the map at once: «Назад» goes straight home (G77, A1).
+        onBack={props.start === 'map' ? onBack : back}
       />
     );
   return (

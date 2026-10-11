@@ -60,7 +60,7 @@ test('android: every screen a bot button opens', async ({ page }) => {
   await byLink('android', page, `?review=${links['review']}`, 'pa23-review');
   await byLink('android', page, `?complain=${links['review']}`, 'pa24-complaint');
   await byLink('android', page, '?subscriptions=1', 'pa25-subscriptions');
-  await byLink('android', page, `?trip=${links['trip']}`, 'pa26-trip');
+  await byLink('android', page, `?tgWebAppStartParam=trip_${links['trip']}`, 'pa26-trip');
   await byLink('android', page, `?follow=${links['follow']}`, 'pa27-follow');
 });
 

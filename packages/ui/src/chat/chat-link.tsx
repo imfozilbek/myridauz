@@ -1,9 +1,10 @@
 import { CALL_LINK, CHAT_KEY, CHAT_LINK } from '@platform/contracts';
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useState, type ReactNode } from 'react';
 import { ActionSheet } from '../action-sheet/action-sheet';
 import { CallSource } from '../action-sheet/kinds/call-source';
 import { callIsLive } from '../call/live-call';
 import { useFeedCall } from '../feed/feed-context';
+import { AppLinkContext } from '../market/app-link';
 import { KeptBehind } from '../telegram/kept-behind';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { ChatScreen } from './chat-screen';
@@ -24,6 +25,7 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
     return call ? { key: call, mode: 'ring' } : null;
   });
   const [ringing, setRinging] = useState<string | null>(null);
+  const openLink = useContext(AppLinkContext);
   useFeedCall((chat) => {
     if (chat !== open?.key && !callIsLive()) setRinging(chat);
   });
@@ -46,6 +48,7 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
           ring={open.mode === 'ring'}
           answer={open.mode === 'answer'}
           onTrip={open.onTrip ? () => (close(), open.onTrip?.()) : undefined}
+          onLink={openLink ? (link) => (close(), openLink(link)) : undefined}
           onBack={close}
         />
       ) : null}

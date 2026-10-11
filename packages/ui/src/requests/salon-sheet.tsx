@@ -14,7 +14,7 @@ import { haptic } from '../telegram/feedback';
 import { BoardSheet } from './board-sheet';
 import { useEnds } from './ends';
 import { useRequestDay } from './request-day';
-import { TimeChips, useOfferTime } from './time-chips';
+import { TimeChips, TOO_SOON, useOfferTime } from './time-chips';
 
 // The tick of a row filled from the request: a small mark, as on the mockup.
 const CHECK = 10;
@@ -80,7 +80,8 @@ function SalonForm({
   ] as const;
   const open = async () => {
     const departAt = when?.sending();
-    if (!departAt) return;
+    // The time on the sheet became too soon meanwhile: the sheet shows the next one and says why (G77).
+    if (!departAt) return when ? fail(TOO_SOON) : undefined;
     clear();
     try {
       const { trip } = await bookings.offerSalonTrip(request.id, departAt);

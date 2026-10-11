@@ -1,15 +1,14 @@
 import { expect, test } from '../crash-guard';
-import { createModerationClient } from '@platform/api-client';
-import { TEXT } from '../apps';
+import { openApplication, TEXT } from '../apps';
 import { passConsent } from '../registration';
 import { pressBack } from '../telegram-mock';
 import { OWNER } from './people';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
 import { apply } from './seed';
-import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
+import { outsideCalls, openAs, type Person } from './stand-kit';
 
-// The forms of the first visit and the link of the admin bot (docs/77 P02, P04, docs/79 T17):
-// a document read before the consent, a name that is not a name, one application opened by a link.
+// The forms of the first visit and a new application of the team (docs/77 P02, P04, docs/79 T17):
+// a document read before the consent, a name that is not a name, one application opened from «Navbat».
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
@@ -34,12 +33,12 @@ test('P02, P04. a document opens before the consent and comes back; a name of si
   await shot(page, 'android', 'p05-name-invalid');
 });
 
-test('T17. «?application=» from the admin bot opens that application', async ({ page }) => {
+// No bot sends «?application=» (G77, lesson 227): the team opens a new application from «Navbat».
+test('T17. a new application opens from «Navbat» of the main screen', async ({ page }) => {
   const applicant: Person = { id: 900608, name: 'Laziz', phone: '998901110608' };
   await apply(applicant, '01S678TU', 'male');
-  const queue = await createModerationClient(await signedAs('admin', OWNER)).queue();
-  const id = queue.find((a) => a.firstName === applicant.name)?.userId ?? '';
-  await openAs(page, 'admin', OWNER, { search: `?application=${id}` });
+  await openAs(page, 'admin', OWNER);
+  await openApplication(page, applicant.name);
   await expect(mainButton(page)).toHaveText(TEXT.approve);
   await expect(page.getByText(applicant.name).first()).toBeVisible();
 });

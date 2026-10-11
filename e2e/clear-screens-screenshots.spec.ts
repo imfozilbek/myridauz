@@ -33,7 +33,7 @@ test('passenger: a trip without seats says why', async ({ page }) => {
   const full = tripOf('7', 'Bekzod', false, 20, { status: 'full', seatsLeft: 0 });
   await page.route(`**/api/trips/${full.id}`, (route) => route.fulfill({ json: full }));
   await mockTelegram(page);
-  await page.goto(telegramUrl(`${appUrl(PASSENGER.port)}?trip=${full.id}`));
+  await page.goto(`${telegramUrl(appUrl(PASSENGER.port))}&tgWebAppStartParam=trip_${full.id}`);
   await expect(page.getByText(t('market.trip.closed.full'))).toBeVisible();
   await expect(page.locator('#tg-main-button', { hasText: TEXT.book })).toBeHidden();
   await shot(page, '2-full-trip');

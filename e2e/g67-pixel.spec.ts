@@ -1,9 +1,9 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { adminCase, appUrl, MINI_APPS } from './apps';
+import { adminCase, appUrl, MINI_APPS, openApplication } from './apps';
 import { expect, test } from './crash-guard';
 import { mockCases, mockManagement } from './g67-cases-mock';
-import { id, mockTeam, type TeamRole } from './team-mock';
+import { mockTeam, type TeamRole } from './team-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of the main screen of the team (G75, lessons 141, 147): the phones «Egasi» and
@@ -30,8 +30,9 @@ for (const [n, role] of [
 }
 
 // The cases and «Boshqaruv» of g67/2 (screens 3 … 6) with their data (G75).
+// The application opens the way the team opens it (G77): no bot sends «?application=».
 for (const [n, query] of [
-  ['3', `application=${id(2)}`],
+  ['3', null],
   ['4', 'complaint=c1'],
 ] as const)
   test(`2-${n}: the case of g67/2 screen ${n}`, async ({ page }) => {
@@ -39,7 +40,8 @@ for (const [n, query] of [
     await mockTelegram(page);
     await mockTeam(page, 'owner');
     await mockCases(page);
-    await page.goto(telegramUrl(adminCase(query)));
+    await page.goto(telegramUrl(query ? adminCase(query) : appUrl(ADMIN.port)));
+    if (!query) await openApplication(page, 'Jasur');
     await expect(page.locator('.case-title')).toBeVisible();
     await page.waitForLoadState('networkidle');
     await page.screenshot({ path: `${OUT}/2-${n}-code.png`, animations: 'disabled' });

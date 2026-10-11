@@ -1,8 +1,8 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { summary } from './drivers-mock';
-import { adminCase, appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
+import { mockWaitingApplication, summary } from './drivers-mock';
+import { appUrl, MINI_APPS, openApplication, openFindTrip, TEXT } from './apps';
 import { searchRoute } from './market';
 import { tripOf } from './market-mock';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
@@ -35,7 +35,9 @@ test('passenger: a search emptied by a filter says so (P6)', async ({ page }) =>
 test('moderation: a photo on the whole screen (S8)', async ({ page }) => {
   await mockApi(page, 'active');
   await mockTelegram(page);
-  await page.goto(telegramUrl(adminCase(`application=${summary.userId}`)));
+  await mockWaitingApplication(page);
+  await page.goto(telegramUrl(appUrl(MINI_APPS[2].port)));
+  await openApplication(page, summary.firstName);
   await page.getByRole('button', { name: t('drivers.photo.front') }).click();
   await expect(page.getByText(t('drivers.photo.front'))).toBeVisible();
   await shot(page, 's8-photo');

@@ -1,4 +1,4 @@
-import type { ChatMessage } from '@platform/contracts';
+import { BOOKING_LINK, type AppLink, type ChatMessage } from '@platform/contracts';
 import { Caption, Text } from '@telegram-apps/telegram-ui';
 import { Fragment } from 'react';
 import { useScreenView } from '../context/analytics-context';
@@ -11,6 +11,7 @@ import { brandVars } from '../theme/brand-vars';
 import { CallPanel } from '../call/call-panel';
 import { otherName } from '../call/other-side';
 import { useApiClients } from '../context/api-clients';
+import { useLinkOpener } from '../market/app-link';
 import { PlacesGate } from '../market/places-gate';
 import { useLoad } from '../market/use-list';
 import { useCall } from '../call/use-call';
@@ -31,8 +32,10 @@ type Props = {
   readonly ring?: boolean | undefined;
   // «Javob berish» of the sheet of a call: the ringing call is taken as soon as it shows (G68).
   readonly answer?: boolean | undefined;
-  // The line of the trip opens its booking (mockup g60/2); a chat opened by a ring has none.
+  // The line of the trip opens what the opener names (mockup g60/2), else its booking; an offer taken
+  // here opens the seat, a trip for a whole car the trip (G77): onLink, else over the app.
   readonly onTrip?: (() => void) | undefined;
+  readonly onLink?: ((link: AppLink) => void) | undefined;
   // «Jasurning yangi safarlari» under a closed chat (mockup g60/6).
   readonly onAgain?: (() => void) | undefined;
   readonly onBack: () => void;
@@ -49,7 +52,8 @@ export function ChatScreen(props: Props) {
   );
 }
 
-function ChatRoom({ chatKey, title, ring = false, answer = false, onTrip, onBack, onAgain }: Props) {
+function ChatRoom(props: Props) {
+  const { chatKey, title, ring = false, answer = false, onTrip, onBack, onAgain } = props;
   useScreenView('chat');
   useScreenBackground('white');
   const { t } = useI18n();
@@ -64,6 +68,8 @@ function ChatRoom({ chatKey, title, ring = false, answer = false, onTrip, onBack
   const aboutLoad = useLoad(() => chats.about(chatKey));
   const about = aboutLoad.value ?? null;
   const name = title ?? (about && otherName(about)) ?? t('chat.title');
+  const onLink = useLinkOpener(props.onLink);
+  const booked = about?.booking?.id;
   const { text, setText, submit } = useChatText(chatKey, send, delivered);
   const { chat, input, end } = useChatLayout(messages, state !== 'failed');
   const { endAt, placeholder } = useAfterTripChat(about, messages);
@@ -75,7 +81,7 @@ function ChatRoom({ chatKey, title, ring = false, answer = false, onTrip, onBack
         about={about}
         name={name}
         onCall={calling.canCall && !calling.call ? () => void controls.ring() : null}
-        onTrip={onTrip}
+        onTrip={onTrip ?? (booked && onLink ? () => onLink({ name: BOOKING_LINK, id: booked }) : undefined)}
       />
       {calling.call || calling.ended ? (
         <CallPanel
@@ -101,7 +107,7 @@ function ChatRoom({ chatKey, title, ring = false, answer = false, onTrip, onBack
           </Fragment>
         ))}
         {endAt === messages.length ? <TripEnded /> : null}
-        <TalkBottom about={about} onChanged={aboutLoad.refresh} />
+        <TalkBottom about={about} onChanged={aboutLoad.refresh} onLink={onLink} />
         <div ref={end} />
       </div>
       {canWrite ? null : <ChatClosed name={name} onAgain={onAgain} />}

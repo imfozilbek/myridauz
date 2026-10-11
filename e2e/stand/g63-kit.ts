@@ -92,7 +92,7 @@ export async function publishOnOneScreen(page: Page, walk: Walk): Promise<Trip> 
 // itself (docs/64): «Joy soʻraganlar» with the commission in the card, «Tasdiqlash» at once.
 export async function bookAndConfirm(context: BrowserContext, page: Page, walk: Walk, trip: Trip) {
   const second = await context.newPage();
-  const search = `?${TRIP_LINK}=${trip.id}`;
+  const search = `?tgWebAppStartParam=${TRIP_LINK}_${trip.id}`;
   await openAs(second, 'passenger', walk.passenger, { platform: walk.platform, search });
   await more(second).click();
   await press(second, t('find.book', { count: String(SEATS) }));

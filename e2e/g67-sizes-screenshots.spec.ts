@@ -1,11 +1,11 @@
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Page } from '@playwright/test';
 import { mockApi } from './api-mock';
-import { adminCase, appUrl, MINI_APPS } from './apps';
+import { adminCase, appUrl, MINI_APPS, openApplication } from './apps';
 import { expect, test } from './crash-guard';
 import { mockCases, mockManagement } from './g67-cases-mock';
 import { HEIGHT, nothingCut, oneSize, WIDTHS } from './sizes';
-import { id, mockTeam } from './team-mock';
+import { mockTeam } from './team-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -40,12 +40,14 @@ for (const width of WIDTHS) {
     await shot(page, 'boshqaruv', width);
   });
 
+  // The application opens the way the team opens it (G77): no bot sends «?application=».
   for (const [name, query] of [
-    ['application', `application=${id(2)}`],
+    ['application', null],
     ['complaint', 'complaint=c1'],
   ] as const)
     test(`${width}px: the case «${name}» fits`, async ({ page }) => {
-      await open(page, width, adminCase(query));
+      await open(page, width, query ? adminCase(query) : appUrl(ADMIN.port));
+      if (!query) await openApplication(page, 'Jasur');
       await expect(page.locator('.case-title')).toBeVisible();
       await nothingCut(page);
       await shot(page, name, width);

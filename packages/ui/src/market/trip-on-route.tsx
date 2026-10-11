@@ -7,7 +7,7 @@ import { useDriver } from '../driver/driver-context';
 import { usePlaceNames } from '../places/place-names';
 import type { Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useNow } from '../own-trip/use-now';
+import { useClock } from '../own-trip/use-now';
 import { regionOf } from '../way/way-end';
 import type { useNewTrip } from './new-trip-state';
 import { PitakScreen } from './pitak-screen';
@@ -33,7 +33,7 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const { screen, answer, recommendation, pitak, open, change, back } = flow;
   const { t } = useI18n();
   // The time of the screen moves on while it stays open: never a time that became too soon (G77).
-  const now = useNow();
+  const [now, tick] = useClock();
   const schedule = useSchedule(route.from.id, route.to.id);
   const rules = useBrand().schedule;
   const car = useDriver()?.application.car ?? null;
@@ -44,7 +44,8 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const carSeats = car?.seats ?? 1;
   const known = { now, schedule, rules, recommendation, pitak, carSeats, isMan };
   const values = tripValues({ ...answer, route }, known);
-  const sending = () => tripValues({ ...answer, route }, { ...known, now: Date.now() });
+  // At the tap the screen catches up with the clock: its time is the one that goes, or none (G77).
+  const sending = () => (tick(), tripValues({ ...answer, route }, { ...known, now: Date.now() }));
   const region = places.find(regionOf(route.to)) ?? route.to;
   const direction = names.short(region);
   if (screen === 'rule')

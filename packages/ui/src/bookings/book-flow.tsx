@@ -1,17 +1,17 @@
 import { BOOKING_NOTE_MAX, type Booking, type Trip } from '@platform/contracts';
 import { useState } from 'react';
-import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import type { SeatChoice } from '../find/seat-choice';
 import { DraftRestored } from '../flow/draft-restored';
 import { usePlaces } from '../market/places-gate';
 import { CommentSheet } from '../market/trip-steps';
-import { confirm, haptic } from '../telegram/feedback';
 import { rememberedWay } from '../way/remembered-way';
 import { BookPoint } from './book-point';
 import { BookPoints } from './book-points';
 import { useBooking } from './book-state';
 import { PendingBooking } from './pending-booking';
+import { useCancelSeat } from './use-cancel-seat';
+import { ActionFailure } from '../states/action-failure';
 
 type Props = {
   readonly trip: Trip;
@@ -27,19 +27,11 @@ type Props = {
 // cancel (docs/70). Inside the places gate: the names of the places come from the directory.
 export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
   const { t } = useI18n();
-  const { bookings } = useApiClients();
   const directory = usePlaces();
   const [sent, setSent] = useState<Booking | null>(null);
   const last = rememberedWay(trip.from, trip.to, directory.find);
   const flow = useBooking(trip, last);
-  if (sent) {
-    // A cancel is asked first: one tap never loses a seat (docs/65 B4).
-    const cancel = async () => {
-      if (!(await confirm(t('bookings.cancelAsk'), t('market.request.cancel')))) return;
-      await bookings.cancelMine(sent.id).then(onClose, () => haptic.error());
-    };
-    return <PendingBooking booking={sent} onBack={onClose} onCancel={() => void cancel()} onHome={onHome} />;
-  }
+  if (sent) return <SentSeat booking={sent} onClose={onClose} onHome={onHome} />;
   const region = (id: string) => {
     const place = directory.find(id);
     return (place?.parentId ? directory.find(place.parentId) : place)?.name ?? id;
@@ -93,5 +85,17 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
       />
       <DraftRestored shown={flow.restored} />
     </>
+  );
+}
+
+type SentProps = { readonly booking: Booking; readonly onClose: () => void; readonly onHome: () => void };
+
+// The request just sent: its cancel is the one of the page of the seat (G77).
+function SentSeat({ booking, onClose, onHome }: SentProps) {
+  const { cancel, failure } = useCancelSeat(booking.id, { onDone: onClose });
+  return (
+    <PendingBooking booking={booking} onBack={onClose} onCancel={cancel} onHome={onHome}>
+      <ActionFailure error={failure} />
+    </PendingBooking>
   );
 }

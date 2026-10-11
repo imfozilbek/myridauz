@@ -88,8 +88,15 @@ export const TEXT = {
   decided: t('moderation.decided'),
 };
 export const appUrl = (port: number) => `http://localhost:${port}/`;
-// A case of «Navbat», as a button of the admin bot opens it (docs/50, G75): «application=<id>».
+// A case of «Navbat», as a button of the admin bot opens it (docs/17, G75): «complaint=<id>».
 export const adminCase = (query: string) => `${appUrl(MINI_APPS[2].port)}?${query}`;
+
+// An application the way the team opens it (G77): no bot sends «?application=», the chip «Arizalar»
+// of «Navbat» on the main screen, then its row. The page is open on the main screen of the team.
+export async function openApplication(page: Page, name: string) {
+  await page.getByRole('radio', { name: new RegExp(`^${t('team.filter.application')}`, 'u') }).click();
+  await page.locator('.navbat-row', { hasText: name }).first().click();
+}
 
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;

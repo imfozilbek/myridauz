@@ -34,12 +34,11 @@ describe('StartPage', () => {
     expect(await screen.findByText('24 soat')).toBeTruthy();
   });
 
-  it('opens an application of a link from the admin bot (G06)', async () => {
+  // No bot sends «?application=» (G77, lesson 227): the main screen, the application waits in «Navbat».
+  it('opens the main screen for an «?application=» nobody sends', async () => {
     window.history.replaceState(null, '', '/?application=00000000000000000000000000000005');
-    const clients = owner({ moderation: { queue: async () => [], get: () => new Promise(() => undefined) } });
-    renderInShell(<StartPage />, false, true, undefined, clients);
-    expect(await screen.findByText('Orqaga')).toBeTruthy();
-    expect(screen.queryByText('Hammasi koʻrildi')).toBeNull();
+    renderInShell(<StartPage />, false, true, undefined, owner());
+    expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
   });
 
   it('opens the dashboard at once from a signal of the admin bot (G12)', async () => {

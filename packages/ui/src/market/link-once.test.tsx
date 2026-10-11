@@ -44,10 +44,16 @@ describe('a link from a bot or a channel opens once (docs/94 B10)', () => {
     expect(startParam()).toBe(`trip_${trip.id}`);
   });
 
-  it('a trip of a bot message', async () => {
+  // No bot sends ?trip= (G77, lesson 227): the link without a sender opens nothing.
+  it('no trip by a ?trip= nobody sends', () => {
     window.history.replaceState(null, '', `/?trip=${trip.id}`);
-    await openTwice(TripLink, '1 ta joy band qilish');
-    expect(window.location.search).toBe('');
+    renderMarket(
+      <TripLink enabled>
+        <p>Asosiy</p>
+      </TripLink>,
+      testClients({ market: { trip: async () => trip } }),
+    );
+    expect(screen.getByText('Asosiy')).toBeTruthy();
   });
 
   it('a route of a channel post to subscribe', async () => {

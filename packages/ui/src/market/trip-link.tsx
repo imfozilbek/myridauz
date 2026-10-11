@@ -6,28 +6,24 @@ import type { SeatChoice } from '../find/seat-choice';
 import { useApiClients } from '../context/api-clients';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { freshStartParam, launchParam, useLinkOpened } from '../telegram/launch-param';
+import { freshStartParam, useLinkOpened } from '../telegram/launch-param';
 import { LinkedSearch } from './find-link';
 import { PlacesGate } from './places-gate';
 import { useLoad } from './use-list';
 
-const PARAM = TRIP_LINK;
-const PARAMS = [PARAM];
-const TRIP_ID = /^[A-Za-z0-9-]{1,64}$/u;
-const START = /^trip_([A-Za-z0-9-]{1,64})$/u;
+// The link has only the start parameter: no bot sends ?trip= (G77, lesson 227).
+const NO_PARAMS: readonly string[] = [];
+const START = new RegExp(`^${TRIP_LINK}_([A-Za-z0-9-]{1,64})$`, 'u');
 
-// A trip the link names: "Band qilish" in a channel (startapp=trip_<id>, docs/15) or a bot message
-// about a subscription (?trip=<id>, docs/24).
+// A trip the link names: "Band qilish" in a channel (startapp=trip_<id>, docs/15).
 export function linkedTrip(): string | null {
-  const fromBot = launchParam(PARAM, TRIP_ID);
-  if (fromBot) return fromBot;
   return START.exec(freshStartParam() ?? '')?.[1] ?? null;
 }
 
 // The passenger app opens that trip at once, ready to book; back goes to the main screen.
 export function TripLink({ enabled, children }: { readonly enabled: boolean; readonly children: ReactNode }) {
   const [id, setId] = useState(() => (enabled ? linkedTrip() : null));
-  useLinkOpened(id !== null, PARAMS);
+  useLinkOpened(id !== null, NO_PARAMS);
   if (!id) return <>{children}</>;
   const close = () => setId(null);
   return (

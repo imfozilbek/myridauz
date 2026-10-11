@@ -1,7 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
-import { adminCase, appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
+import { appUrl, MINI_APPS, openApplication, openFindTrip, TEXT } from './apps';
 import { confirmed } from './bookings-mock';
 import { summary } from './drivers-mock';
 import { fromIfAsked, openOwnTrip, searchRoute } from './market';
@@ -126,7 +126,8 @@ test('moderation: after a decision the next application opens at once (S9)', asy
     route.fulfill({ json: { ...next, history: [], samePlate: 0, was: null, gender: 'male' } }),
   );
   await mockTelegram(page);
-  await page.goto(telegramUrl(adminCase(`application=${summary.userId}`)));
+  await page.goto(telegramUrl(appUrl(MINI_APPS[2].port)));
+  await openApplication(page, 'Jasur');
   await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   await page.locator('#tg-main-button', { hasText: TEXT.plateMatches }).click();
   await expect(page.getByText('Vali · ariza')).toBeVisible();

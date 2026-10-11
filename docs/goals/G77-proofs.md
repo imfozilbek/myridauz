@@ -17,8 +17,8 @@
 | B3 первое предложение | `action-sheet/kinds/offer-items.tsx` (первое пришедшее), `action-sheet/action-sheet.tsx` (не закрывается до списков) | `action-sheet/passenger-offer-sheet.test.tsx` «the ring of the first offer»; `action-sheet/action-sheet.test.tsx` «a bot link opens the sheet» |
 | B4 ссылки без отправителя | `market/bookings-link.tsx`: у попутчика нет `?offer=`, у водителя нет `?booking=` | `market/bookings-link.test.tsx`; стенд: `?mytrip=` (`all-driver`, `g63`), `?request=` (`all-passenger`, `g64`), `?sheet=` (`all-driver` «da51») |
 | B5 админка | `team/team-home.tsx`, `team/navbat-section.tsx`, `team/diqqat-section.tsx` (`WALLETS_SECTION`), `apps/miniapp-admin` `start-page.tsx`, `stats/stats-screen.tsx` | `apps/miniapp-admin/.../start-page.test.tsx` (ошибка, «Hamyonlar», `?stats=`); `team/team-home.test.tsx` (фильтр) |
-| C1 принять предложение | `bookings/use-answer-offer.ts` в `action-sheet/kinds/offer-items.tsx`, `bookings/passenger-open.tsx`, `talk/talk-offer.tsx`, `talk/call-talk.tsx` | `action-sheet/passenger-offer-sheet.test.tsx` «Qabul qilish books the seat in one tap, says so on top and opens the seat»; `talk/chat-talk.test.tsx` «lets them take the offer right here» (событие воронки) |
-| C2 предложить поездку | `requests/use-trip-offer.ts` в `requests/board-screen.tsx` и `talk/talk-action.tsx` | `talk/chat-talk.test.tsx` «counts the offer of the chat; a wallet short of the commission opens the sheet of the sum» |
+| C1 принять предложение | `bookings/use-answer-offer.ts` (событие, обновляет общие списки) в `action-sheet/kinds/offer-items.tsx`, `bookings/passenger-open.tsx`, `talk/talk-offer.tsx`, `talk/call-talk.tsx`; в чате место открывается через `market/app-link.ts`; в звонке разговор идёт дальше, место в строке поездки чата | `action-sheet/passenger-offer-sheet.test.tsx` «Qabul qilish … opens the seat»; `talk/chat-talk.test.tsx` «lets them take the offer right here» (событие и место) |
+| C2 предложить поездку | `requests/use-trip-offer.ts` в `requests/board-screen.tsx` и `talk/talk-action.tsx`; салон из чата открывает «Mening safarim», как с доски | `talk/chat-talk.test.tsx` «counts the offer of the chat…», «opens the trip from a whole car request in the chat» |
 | C3 ответ водителя в шторке | `action-sheet/kinds/request-items.tsx` через `bookings/use-answer-booking.ts` | чистка: `action-sheet/driver-request-sheet.test.tsx` (4 теста) зелёные |
 | C4 «Oʻxshash safarlar» | `bookings/similar-trips.ts` (`similarDay`) для блока и страницы брони | `home/home-outcome.test.tsx` «shows the refused seat and finds other trips of its way» (день поездки) |
 | C5 «Hisobni toʻldirish» | `wallet/wallet-screen.tsx`, `wallet/top-up-link.ts`; `TopUpScreen` и `start=topup` бота удалены | `wallet/wallet.test.tsx` «shows the sum…»: поддержка с готовым текстом, без экрана между |
@@ -30,3 +30,20 @@
 | D4 одна загрузка | `market/my-trips-lists.ts`, `home/passenger-data.tsx`, `home/driver-data.tsx` (`useShared…`), `market/asked-seat.ts`; `home/fresh-lists.ts`: экран тихо обновляет те же списки при открытии, ссылка ждёт свежих (урок №230) | `market/shared-lists.test.tsx` (5 тестов: списки главного видны сразу; новая поездка и новая заявка видны) |
 | E1 «сейчас» при отправке | `market/trip-on-route.tsx` (`useNow`, `sending`), `market/trip-form.tsx`; `requests/time-chips.tsx` (`sending`) для `offer-sheet.tsx` и `salon-sheet.tsx` | `market/new-trip.test.tsx` «takes now at the tap of Eʼlon qilish»; `requests/board-sheets.test.tsx` «takes now at the tap» |
 | E2 стенд в любой час | `e2e/test-clock.ts` (`standClock`: у стенда браузер на часах стенда), `e2e/shift-date.ts`, `scripts/stand/stand-hour.mjs`, `shift-clock.mjs`, `shifted-worker.mjs`, `workerd-real.sh`, `check.mjs --at` (уроки №231, №232) | `scripts/stand/stand-hour.test.mjs`, `areas.test.mjs`; кусок стенда «по времени» (16 файлов) зелёный в 23:25, до исправления 8 … 10 падений |
+
+## Находки независимого агента (F2, 11.10.2026) и что сделано
+
+| № | Находка | Код | Тест (падает на старом коде) |
+|---|---|---|---|
+| 1 | «Hamyon» → строка попутчика открывала список, не бронь | `market/my-trips-screen.tsx` (`BOOKING_LINK`) | `wallet/wallet-back.test.tsx` «the row of the passenger opens that booking» |
+| 2, 4 | После своего шага главный экран, «Suhbatlar» показывали старые списки | `home/passenger-home.tsx`, `home/driver-home.tsx`, `chats/role-chats.tsx` (`useFreshLists`); обновление до выхода домой в `my-requests-screen.tsx`, `my-trips-screen.tsx` | `home/home-fresh.test.tsx` |
+| 3 | Принятие в чате не открывало место | `market/app-link.ts`, `launch-links.tsx`, `chat/chat-link.tsx`, `chat/chat-screen.tsx` | `talk/chat-talk.test.tsx` |
+| 5 | Время при нажатии молча подменялось | `own-trip/use-now.ts` (`useClock`), `market/trip-form.tsx`, `requests/time-chips.tsx` (`TOO_SOON`) | `market/new-trip.test.tsx`, `requests/board-sheets.test.tsx` «… is chosen again» |
+| 6 | «Bosh sahifa» из брони по ссылке вела назад, не домой | `market/bookings-link.tsx` (`HomeProvider`) | проверено чтением кода |
+| 7 | Обработчики без отправителя: `?trip=` попутчика, `?application=` админки | `market/trip-link.tsx`, `navbat/linked-case.ts`; e2e и стенд открывают настоящим путём (`e2e/apps.ts` `openApplication`) | `market/link-once.test.tsx`, `apps/miniapp-admin/.../start-page.test.tsx` |
+| 8 | Остатки CSS и копии `MINUTE_MS` | `home/home-note.css`, `navbat/complaint-words.tsx`, `bots/support-bot.ts` | `knip`, тесты зелёные |
+| 9 | Отмена только что отправленного места другая; чат водителя без строки поездки | `bookings/use-cancel-seat.ts`; строка поездки по умолчанию ведёт к брони | `bookings/sent-seat.test.tsx` |
+| 10 | «Yoʻl xaritasi», «Baho berish» из блока: «Назад» в два нажатия | `own-trip/own-trip-live.tsx`, `own-trip/own-trip-flow.tsx` | `own-trip/start-back.test.tsx` |
+| 11 | «Внимание» блока под формой заявки | `home/dock/use-attention.ts` (`useBehind`) | `home/dock/use-attention.test.tsx` «waits while a screen stands over the block» |
+| 9 | «Javob berish» бота открывает чат, звонок отвечается вторым нажатием | оставлено: ответ по ссылке требует новой ссылки, шаг в G79 | |
+| 12 | Экраны водителя по ссылке бота без `DriverContext` (старое, вне G77) | предложено владельцу отдельным исправлением | |

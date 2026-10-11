@@ -15,11 +15,13 @@ type Props = {
   readonly other: string;
   // An answer changed the talk: the booking comes in its place (docs/35).
   readonly onAnswered: () => unknown;
+  // An accepted offer opens its seat (G77).
+  readonly onSeat?: ((bookingId: string) => void) | undefined;
 };
 
 // The offer inside a talk (mockups g64/4 phone 1, g64/5 phone 3): the driver sees what he sent and
 // whom he waits for; the passenger answers right here, as in the list of offers (G61).
-export function TalkOffer({ offer, role, other, onAnswered }: Props) {
+export function TalkOffer({ offer, role, other, onAnswered, onSeat }: Props) {
   const { t, formatNumber, formatMoney } = useI18n();
   const texts = useTalkTexts();
   const answerOffer = useAnswerOffer('chat');
@@ -28,8 +30,9 @@ export function TalkOffer({ offer, role, other, onAnswered }: Props) {
   const answer = (action: OfferAction) => async () => {
     clear();
     try {
-      await answerOffer(offer, action);
+      const answered = await answerOffer(offer, action);
       await onAnswered();
+      if (answered.bookingId) onSeat?.(answered.bookingId);
     } catch (caught) {
       fail(caught);
     }

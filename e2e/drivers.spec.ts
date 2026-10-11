@@ -1,7 +1,7 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { summary } from './drivers-mock';
-import { adminCase, appUrl, MINI_APPS, publishButton, TEXT } from './apps';
+import { mockWaitingApplication, summary } from './drivers-mock';
+import { appUrl, MINI_APPS, openApplication, publishButton, TEXT } from './apps';
 import { applyAsDriver } from './driver-application';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -45,7 +45,9 @@ test('driver: approved, «Siz haydovchisiz!» with the bonus, then the main butt
 test('admin: the team opens an application and approves it', async ({ page }) => {
   await mockApi(page, 'active');
   await mockTelegram(page);
-  await page.goto(telegramUrl(adminCase(`application=${summary.userId}`)));
+  await mockWaitingApplication(page);
+  await page.goto(telegramUrl(appUrl(MINI_APPS[2].port)));
+  await openApplication(page, summary.firstName);
   // «Tasdiqlash» is the main button (docs/86 V10).
   await page.locator('#tg-main-button', { hasText: TEXT.approve }).click();
   // The plate is compared with the front photo before approving (docs/50).

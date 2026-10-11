@@ -2,7 +2,7 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { confirmed, offer } from '../bookings/booking-test-kit';
 import { testClients } from '../test-shell';
-import { BookingsLink } from './bookings-link';
+import { LaunchLinks } from '../launch-links';
 import { renderMarket, tap } from './market-test-kit';
 
 afterEach(() => {
@@ -34,9 +34,9 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
   it('opens the passenger booking from "?booking=", back goes to the main screen in one tap', async () => {
     window.history.replaceState(null, '', `/?booking=${BOOKING_ID}`);
     renderMarket(
-      <BookingsLink app="passenger">
+      <LaunchLinks app="passenger">
         <p>main screen</p>
-      </BookingsLink>,
+      </LaunchLinks>,
       testClients({
         market: { myRequests: async () => [] },
         bookings: { myBookings: async () => [booked], myOffers: async () => [] },
@@ -52,9 +52,9 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
   it('the passenger app has no "?offer=": a new offer rings with its sheet (G77)', async () => {
     window.history.replaceState(null, '', '/?offer=0000000c-0000-4000-8000-000000000001');
     renderMarket(
-      <BookingsLink app="passenger">
+      <LaunchLinks app="passenger">
         <p>main screen</p>
-      </BookingsLink>,
+      </LaunchLinks>,
       testClients({ bookings: { myOffers: async () => [offer] } }),
     );
     expect(await screen.findByText('main screen')).toBeTruthy();
@@ -63,9 +63,9 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
   it('opens the trip of the driver from "?mytrip=", back goes to the main screen in one tap', async () => {
     window.history.replaceState(null, '', `/?mytrip=${TRIP.id}`);
     renderMarket(
-      <BookingsLink app="driver">
+      <LaunchLinks app="driver">
         <p>main screen</p>
-      </BookingsLink>,
+      </LaunchLinks>,
       testClients({
         market: { myTrips: async () => [TRIP] },
         bookings: { driverBookings: async () => [booked], driverOffers: async () => [] },
@@ -80,9 +80,9 @@ describe('a bot button opens its booking (docs/65 B5)', () => {
   it('opens «Mening soʻrovim» from "?request=" under the card of a request (G61)', async () => {
     window.history.replaceState(null, '', `/?request=${REQUEST.id}`);
     renderMarket(
-      <BookingsLink app="passenger">
+      <LaunchLinks app="passenger">
         <p>main screen</p>
-      </BookingsLink>,
+      </LaunchLinks>,
       testClients({
         market: { myRequests: async () => [REQUEST] },
         bookings: { myBookings: async () => [], myOffers: async () => [] },

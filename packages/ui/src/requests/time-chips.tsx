@@ -1,3 +1,4 @@
+import { ApiError } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
@@ -5,7 +6,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { departAtOf, slotsOn } from '../market/first-when';
 import { useSchedule } from '../market/use-schedule';
-import { useNow } from '../own-trip/use-now';
+import { useClock } from '../own-trip/use-now';
 import { haptic } from '../telegram/feedback';
 import { draftOf, keepDraft } from './offer-draft';
 import { offerTimes } from './offer-times';
@@ -15,7 +16,7 @@ import './time-chips.css';
 // the first chip is chosen at once, or the one chosen before the sheet closed. null while they load.
 // The time of the sheet moves on while it stays open; the tap takes «now» once more (G77).
 export function useOfferTime(request: RideRequest) {
-  const now = useNow();
+  const [now, tick] = useClock();
   const rules = useBrand().schedule;
   const schedule = useSchedule(request.from, request.to);
   const [picked, setPicked] = useState<string | null>(() => draftOf('time', request.id) ?? null);
@@ -26,16 +27,26 @@ export function useOfferTime(request: RideRequest) {
       picked !== null && slots.includes(picked) ? picked : (offerTimes(slots)[0] ?? slots[0] ?? null);
     return { slots, time, departAt: time === null ? null : departAtOf(request.date, time) };
   };
+  const shown = timeAt(now);
   return {
-    ...timeAt(now),
+    ...shown,
     full: schedule.full,
-    // The moment that goes at the tap: never a time that became too soon on the open sheet.
-    sending: () => timeAt(Date.now()).departAt,
+    // The moment that goes at the tap; none when the time on the sheet became too soon meanwhile: the
+    // sheet catches up with the clock and the person chooses again, never an unseen time.
+    sending: () => {
+      tick();
+      const at = timeAt(Date.now()).departAt;
+      return at === shown.departAt ? at : null;
+    },
     pick: (time: string) => (keepDraft('time', request.id, time), setPicked(time)),
   };
 }
 
 export type OfferTime = NonNullable<ReturnType<typeof useOfferTime>>;
+
+// The reason a sheet says when its time became too soon before the tap: the same as the API's.
+const UNPROCESSABLE = 422;
+export const TOO_SOON = new ApiError(UNPROCESSABLE, 'trips.too_soon');
 
 // «Qachon joʻnaysiz?» of the sheets (mockups g64/1 and g64/3): three times in two hours from the
 // morning and «Boshqa» with every free time of the day in the native list of the phone.

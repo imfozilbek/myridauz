@@ -1,8 +1,7 @@
-import type { Complaint } from '@platform/contracts';
+import { MINUTE_MS, type Complaint } from '@platform/contracts';
 import { useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 
-const MINUTE_MS = 60_000;
 const HOUR = 60;
 const DAY = 24 * HOUR;
 

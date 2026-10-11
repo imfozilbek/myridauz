@@ -18,7 +18,7 @@ import { publishInput, type TripValues } from './trip-draft';
 type Props = {
   readonly route: Route;
   readonly values: TripValues;
-  // The values as they are at the tap of «Eʼlon qilish»: the time of the day moved on meanwhile (G77).
+  // The values at the tap of «Eʼlon qilish»: the time of the day moved on meanwhile (G77).
   readonly sending: () => TripValues;
   readonly car: Car | null;
   readonly carSeats: number;
@@ -46,9 +46,11 @@ export function TripForm(props: Props) {
   const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const publish = async () => {
-    const input = publishInput(sending());
-    // The day has no free time left: the day and the time are chosen again (docs/103).
-    if (!input) return onOpen('when');
+    const sent = sending();
+    const input = publishInput(sent);
+    // The day has no free time left, or the time on the screen became too soon meanwhile: the day and
+    // the time are chosen again, never a time the person did not see (docs/103, G77).
+    if (!input || sent.date !== values.date || sent.time !== values.time) return onOpen('when');
     setError(null);
     try {
       const trip = await market.publishTrip(input);
