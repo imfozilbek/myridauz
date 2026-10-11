@@ -4,6 +4,7 @@ import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useHomeGo } from '../flow/home-context';
+import { FindTripButton } from '../home/find-trip-button';
 import { PlacesGate } from '../market/places-gate';
 import type { PlaceDirectory } from '../places/directory';
 import { useDirectory } from '../places/use-directory';
@@ -54,11 +55,10 @@ function Chats({ onBack, driver, rows, now }: Props) {
           title={t('chat.list.empty')}
           description={t(driver ? 'chat.list.emptyDriver' : 'chat.list.emptyPassenger')}
         />
-        {go ? (
-          <MainButton
-            text={t(driver ? 'common.driver.passengerRequests' : 'common.passenger.findTrip')}
-            onClick={() => go(driver ? 'passenger_requests' : 'find_trip')}
-          />
+        {go && driver ? (
+          <MainButton text={t('common.driver.passengerRequests')} onClick={() => go('passenger_requests')} />
+        ) : go ? (
+          <FindTripButton directory={places.directory} onFind={(launch) => go('find_trip', launch)} />
         ) : null}
       </>
     );

@@ -1,21 +1,22 @@
 import { appHost } from '@platform/brands';
-import { CHAT_LINK } from '@platform/contracts';
+import { ANSWER_LINK, CHAT_LINK } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../../env';
 import { sendEvent } from '../../feed';
 import { notify } from '../../notifications';
 import { tellOwners } from '../../team-queue';
 import { peopleOf } from '../../users';
-import type { Addressee, ChatSignals, Role } from '../application/ports';
+import type { Addressee, ChatSignals } from '../application/ports';
 import { brandOf } from '../../../shared/brand/brand-of';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
-// The passenger hears from the passenger bot, the driver from the driver bot (docs/07).
-type To = { readonly userId: number; readonly role: Role };
-// A message of the bot of this person with one button that opens the chat at once (docs/07).
-const toChat = async (env: Bindings, to: To, key: string, text: string, button: string) => {
-  const url = `https://${appHost(brandOf(env), to.role)}/?${CHAT_LINK}=${key}`;
+// A message of the bot of this person with one button that opens the chat at once (docs/07): the
+// passenger hears from the passenger bot, the driver from the driver bot; a call is answered there
+// at once (G79).
+const toChat = async (env: Bindings, { to, key, kind }: ChatNews, text: string, button: string) => {
+  const link = kind === 'call' ? ANSWER_LINK : CHAT_LINK;
+  const url = `https://${appHost(brandOf(env), to.role)}/?${link}=${key}`;
   const markup = { inline_keyboard: [[{ text: button, web_app: { url } }]] };
   await notify(env, [{ bot: to.role, chatId: to.userId, text, markup }]);
 };
@@ -33,7 +34,7 @@ let ringUnderSeat: SeatRing = async () => false;
 export const wireChatRings = (next: SeatRing) => void (ringUnderSeat = next);
 
 const ringOr = async (env: Bindings, news: ChatNews, text: string, button: string) => {
-  if (!(await ringUnderSeat(env, news))) await toChat(env, news.to, news.key, text, button);
+  if (!(await ringUnderSeat(env, news))) await toChat(env, news, text, button);
 };
 
 export const botSignals = (env: Bindings): ChatSignals => ({

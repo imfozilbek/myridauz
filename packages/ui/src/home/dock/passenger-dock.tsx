@@ -108,7 +108,7 @@ function Card({ state, go, directory }: CardProps) {
     case 'request':
     case 'offers':
     case 'favorite':
-      return <PassengerPlanCard plan={state} words={words} go={go} now={now} />;
+      return <PassengerPlanCard plan={state} words={words} go={go} now={now} directory={directory} />;
     case 'idle':
       return null;
     default:

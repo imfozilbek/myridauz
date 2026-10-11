@@ -91,11 +91,15 @@ describe('the four tiles of a passenger (G76, mockup g76/2)', { timeout: 20_000 
     expect(await screen.findByText('1 ta haydovchi')).toBeTruthy();
   });
 
-  it('asks for a photo on the right of the head and opens «Profil» there', async () => {
+  // The choice of a photo opens at once, not after «Rasm qoʻshish» of «Profil» (G79 П18): 2 taps → 1.
+  it('asks for a photo on the right of the head and opens the choice of a photo in «Profil»', async () => {
+    const clicked = vi.spyOn(HTMLInputElement.prototype, 'click');
     const { tracked } = home({ bookings: async () => [] });
     expect(await screen.findByText('Tezroq tasdiq')).toBeTruthy();
     await tap('Rasm qoʻshing');
     expect(tracked).toContainEqual(expect.objectContaining({ name: 'screen_open', screen: 'profile' }));
+    expect(clicked.mock.contexts.some((input) => (input as HTMLInputElement).type === 'file')).toBe(true);
+    clicked.mockRestore();
   });
 });
 

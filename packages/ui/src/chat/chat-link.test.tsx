@@ -18,13 +18,14 @@ vi.mock('./chat-screen', async () => {
   type Props = {
     readonly chatKey: string;
     readonly ring?: boolean;
+    readonly answer?: boolean;
     readonly onTrip?: (() => void) | undefined;
     readonly onBack: () => void;
   };
   return {
-    ChatScreen: ({ chatKey, ring, onTrip, onBack }: Props) => (
+    ChatScreen: ({ chatKey, ring, answer, onTrip, onBack }: Props) => (
       <>
-        <p>{`chat ${chatKey}${ring ? ' ring' : ''}`}</p>
+        <p>{`chat ${chatKey}${ring ? ' ring' : ''}${answer ? ' answer' : ''}`}</p>
         {onTrip ? <button onClick={onTrip}>the trip line</button> : null}
         <Back onClick={onBack} />
       </>
@@ -59,15 +60,19 @@ describe('the chat over any screen (docs/07, G68)', () => {
   });
 
   // The two buttons under a trip card of a bot (G77): «📞 Qoʻngʻiroq» starts the call at once.
-  it('«📞 Qoʻngʻiroq» of a bot rings at once; back forgets the link', () => {
-    window.history.replaceState(null, '', `/?call=${KEY}`);
+  // «Javob berish» of a call the bot tells about takes the call at once (G79, docs/170): 2 taps → 1.
+  it.each([
+    ['call', 'ring'],
+    ['answer', 'answer'],
+  ])('?%s= of a bot opens its chat in the mode %s; back forgets the link', (link, mode) => {
+    window.history.replaceState(null, '', `/?${link}=${KEY}`);
     renderInShell(
       <ChatLink>
         <p>home</p>
       </ChatLink>,
       true,
     );
-    expect(screen.getByText(`chat ${KEY} ring`)).toBeTruthy();
+    expect(screen.getByText(`chat ${KEY} ${mode}`)).toBeTruthy();
     act(() => pressBack());
     expect(screen.getByText('home')).toBeTruthy();
     expect(window.location.search).toBe('');

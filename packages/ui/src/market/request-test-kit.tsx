@@ -1,6 +1,7 @@
 import type { MapClient, MarketClient } from '@platform/api-client';
 import type { Location, RideRequest, RideRequestInput } from '@platform/contracts';
 import { vi } from 'vitest';
+import { PassengerData } from '../home/passenger-data';
 import { MapEngineContext } from '../map/map-engine';
 import { fakeMap, testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
@@ -17,6 +18,8 @@ type Options = {
   readonly map?: Partial<Pick<MapClient, 'pitakOf'>>;
   // «Men bilan ayol bor» is a man's (docs/06 rule 4).
   readonly gender?: 'male' | 'female';
+  // Under the lists of the main screen, as in the app (G79 П10).
+  readonly shared?: boolean;
 };
 
 // A request over a fake map (G35, docs/97): what it published.
@@ -27,6 +30,7 @@ export function openRequest({
   map = {},
   mine = {},
   gender = 'male',
+  shared = false,
 }: Options = {}) {
   // A sent request is in «Mening soʻrovim» right after (G61).
   const sent: RideRequest[] = [];
@@ -47,9 +51,10 @@ export function openRequest({
     return made;
   });
   const engine = fakeMap().engine;
+  const flow = <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} {...ends} />;
   renderMarket(
     <MapEngineContext.Provider value={async () => engine}>
-      <NewRequestFlow onBack={onBack} {...(search ? { search } : {})} {...ends} />
+      {shared ? <PassengerData>{flow}</PassengerData> : flow}
     </MapEngineContext.Provider>,
     testClients({
       market: {
@@ -58,7 +63,7 @@ export function openRequest({
         myRequests: async () => sent,
         ...mine,
       },
-      bookings: { myOffers: async () => [] },
+      bookings: { myBookings: async () => [], myOffers: async () => [] },
       map: testMap(map),
     }),
     gender,

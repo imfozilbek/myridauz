@@ -9,7 +9,6 @@ import { useNameText } from '../way/way-end';
 import { errorKey } from './error-text';
 import { ExistingRequest } from './existing-request';
 import type { RequestAnswer } from './new-request-state';
-import { PlacesGate } from './places-gate';
 import { RequestChoice, type RequestChoiceValue } from './request-choice';
 import { useShortDay } from './when';
 
@@ -48,12 +47,7 @@ export function RequestPoints({ answer, recommendation, pitak, onAnswer, onEnd, 
     setError(null);
   };
   if (!route || !date) return null;
-  if (mine)
-    return (
-      <PlacesGate onBack={closeMine}>
-        <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={closeMine} />
-      </PlacesGate>
-    );
+  if (mine) return <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={closeMine} />;
   const publish = async () => {
     setError(null);
     if (!mode || (mode === 'door' && !pickup?.point) || !dropoff?.point) return haptic.error();

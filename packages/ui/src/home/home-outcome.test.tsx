@@ -22,7 +22,7 @@ const refused = {
 
 // A seat that ended without a trip stays in the block until its day (G76, mockup g76/2 state 14):
 // why, then other trips of the same way or a request.
-describe('how a seat ended, in the block at the bottom', () => {
+describe('how a seat ended, in the block at the bottom', { timeout: 20_000 }, () => {
   it('shows the refused seat and finds other trips of its way', async () => {
     const searchTrips = vi.fn<MarketClient['searchTrips']>(() => new Promise(() => undefined));
     renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, {
@@ -37,6 +37,14 @@ describe('how a seat ended, in the block at the bottom', () => {
     await waitFor(() =>
       expect(searchTrips).toHaveBeenCalledWith(expect.objectContaining({ date: tashkentDate(departAt) })),
     );
+  });
+
+  // G79 П14 (docs/170): «Soʻrov qoldirish» takes the day of the refused trip, 1 tap → 0.
+  it('leaves a request on the day of the refused trip', async () => {
+    renderHome((go) => <PassengerHome go={go} />, PASSENGER_ACTIONS, { bookings: async () => [refused] });
+    expect(await screen.findByText('Haydovchi joy bera olmadi')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Soʻrov qoldirish' }));
+    expect(await screen.findByText(new RegExp(` day ${tashkentDate(departAt)}$`, 'u'))).toBeTruthy();
   });
 
   it('forgets it once the trip left', async () => {

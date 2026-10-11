@@ -19,6 +19,10 @@ export function HomeRouteProvider({ children }: { readonly children: ReactNode }
   return <HomeRouteContext.Provider value={value}>{children}</HomeRouteContext.Provider>;
 }
 
+// Outside the main screen (a bot link opened the app): nobody chose an end.
+const NOBODY: HomeRoute = { from: undefined, to: undefined, choose: () => undefined };
+export const useHomeEnds = (): HomeRoute => useContext(HomeRouteContext) ?? NOBODY;
+
 export function useHomeRoute(): HomeRoute {
   const route = useContext(HomeRouteContext);
   if (!route) throw new Error('useHomeRoute outside HomeRouteProvider');

@@ -2,13 +2,13 @@ import type { Location } from '@platform/contracts';
 import { useState } from 'react';
 import { BookPoint } from '../bookings/book-point';
 import { useGoHome } from '../flow/home-context';
+import { useSharedPassengerData } from '../home/passenger-data';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { rememberedWay } from '../way/remembered-way';
 import { DateStep } from './date-step';
-import { ExistingRequest } from './existing-request';
+import { ExistingRequest, openOn } from './existing-request';
 import { keptWay, type useNewRequest } from './new-request-state';
-import { PlacesGate } from './places-gate';
 import { rememberRoute } from './recent-routes';
 import { RequestPoints } from './request-points';
 
@@ -32,14 +32,16 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
   const home = useGoHome(onClose);
   const { step, answer, recommendation, pitak, go, next } = flow;
   const [now] = useState(Date.now);
+  const requests = useSharedPassengerData()?.value?.[1] ?? [];
   const { route, date, mode, pickup, dropoff } = answer;
+  const toDate = search ? onBack : () => go('date');
+  const where = route && date ? { from: route.from.id, to: route.to.id, date } : null;
   // Sent: «Mening soʻrovim» at once, the offers come into it (G61, journey screens 2 and 5).
-  if (flow.sent && route && date)
-    return (
-      <PlacesGate onBack={home}>
-        <ExistingRequest from={route.from.id} to={route.to.id} date={date} onClose={home} />
-      </PlacesGate>
-    );
+  if (where && flow.sent) return <ExistingRequest {...where} onClose={home} />;
+  // One already open on this route and day: it opens at once, not after the points and the price
+  // (G79 П10); «Назад» comes back to the day.
+  if (where && step !== 'route' && step !== 'date' && requests.some(openOn(where)))
+    return <ExistingRequest {...where} onClose={toDate} />;
   if (step === 'route' || !route)
     return (
       <RouteScreen
@@ -49,7 +51,9 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
           ? { initial: route }
           : from && to
             ? { initial: { from, to } }
-            : { pick: 'to' as const, ...(from ? { from } : {}) })}
+            : to
+              ? { pick: 'from' as const, to }
+              : { pick: 'to' as const, ...(from ? { from } : {}) })}
         onBack={onBack}
         onDone={(chosen) => {
           // The route of a request is one tap away on the main screen next time (G40, docs/106 K9).
@@ -92,7 +96,7 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
         onPick={(end) => next({ dropoff: end })}
       />
     );
-  if (!recommendation) return <ScreenSkeleton onBack={search ? onBack : () => go('date')} />;
+  if (!recommendation) return <ScreenSkeleton onBack={toDate} />;
   return (
     <RequestPoints
       answer={answer}
@@ -100,7 +104,7 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
       pitak={pitak}
       onAnswer={next}
       onEnd={go}
-      onBack={search ? onBack : () => go('date')}
+      onBack={toDate}
       onSent={flow.done}
     />
   );

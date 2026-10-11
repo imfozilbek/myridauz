@@ -38,6 +38,8 @@ export const TEAM_TRIPS_SECTION = 'trips';
 // «💬 Chat» and «📞 Qoʻngʻiroq» under a trip card (G77): the chat of the seat, or the call of it at once.
 export const CHAT_LINK = 'chat';
 export const CALL_LINK = 'call';
+// «Javob berish» of a call the bot tells about: its chat, the call that rings there taken at once (G79).
+export const ANSWER_LINK = 'answer';
 
 // A ring of a bot that asks for an answer opens the main screen with its sheet first (docs/122,
 // G68): ?sheet=<id>, the id of the booking or the offer, or the chat key.
