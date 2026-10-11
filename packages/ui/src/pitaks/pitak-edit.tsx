@@ -56,6 +56,8 @@ export function PitakEdit({ pitak, start, directory, onBack }: Props) {
         onBack={() => setPicking(false)}
         onPick={(end) => {
           setPoint(end.point);
+          // An empty name takes the name of the place on the map (G79 К8).
+          if (!name.trim() && end.name) setName(end.name.name);
           setWhere(nameText(end.name, end.place));
           setPicking(false);
         }}
