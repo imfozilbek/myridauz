@@ -99,13 +99,17 @@ test.describe(() => {
   test.use({ actionSheets: 'keep' });
   test('android: an empty wallet leads to top up, not to a «Tasdiqlash» that fails', async ({ page }) => {
     await setBonus(MUROD, 0);
-    // The ring of a new seat in the driver bot: the main screen with the sheet of this seat (G68, G77).
-    await openHome(page, 'driver', MUROD, 'android', `?sheet=${links['waiting']}`);
-    // The sum short of the commission and «Hisobni toʻldirish» in the sheet (G75, docs/158 Г).
-    await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
-    await expect(page.getByText(t('wallet.topUp')).first()).toBeVisible();
-    await shot(page, 'android', 'da51-not-enough');
-    // The walks of passengers use Murod after this one: his bonus comes back.
-    await setBonus(MUROD, WELCOME_BONUS);
+    try {
+      // The ring of a new seat in the driver bot: the main screen with the sheet of this seat (G68, G77).
+      await openHome(page, 'driver', MUROD, 'android', `?sheet=${links['waiting']}`);
+      // The sum short of the commission and «Hisobni toʻldirish» in the sheet (G75, docs/158 Г).
+      const sheet = page.getByRole('dialog');
+      await expect(sheet.getByText(t('wallet.short.missing'), { exact: true })).toBeVisible();
+      // No shot here: the shots of the stand are taken without sheets; the sheet is shot by g68-pixel.
+      await expect(sheet.getByText(t('wallet.topUp'), { exact: true })).toBeVisible();
+    } finally {
+      // The walks of passengers use Murod after this one: his bonus comes back even on a failure.
+      await setBonus(MUROD, WELCOME_BONUS);
+    }
   });
 });
