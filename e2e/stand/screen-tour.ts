@@ -120,3 +120,10 @@ export async function visit(
 }
 
 export const mainButton = (page: Page) => page.locator('#tg-main-button');
+
+// A screen that loads its own data at every open: «Baholarim» of «Profil». «Mening safarlarim» shows
+// the lists of the main screen, kept on a bad network (G77 D4, docs/94), so never this error.
+export async function openReviews(page: Page) {
+  await page.getByLabel(t('account.profile.open')).click();
+  await page.getByText(t('account.profile.reviews')).click();
+}

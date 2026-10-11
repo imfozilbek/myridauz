@@ -92,10 +92,14 @@ export const appUrl = (port: number) => `http://localhost:${port}/`;
 export const adminCase = (query: string) => `${appUrl(MINI_APPS[2].port)}?${query}`;
 
 // An application the way the team opens it (G77): no bot sends «?application=», the chip «Arizalar»
-// of «Navbat» on the main screen, then its row. The page is open on the main screen of the team.
-export async function openApplication(page: Page, name: string) {
+// of «Navbat» on the main screen, then its row; without a name the oldest. The page is open on the
+// main screen of the team.
+export async function openApplication(page: Page, name?: string) {
   await page.getByRole('radio', { name: new RegExp(`^${t('team.filter.application')}`, 'u') }).click();
-  await page.locator('.navbat-row', { hasText: name }).first().click();
+  await page
+    .locator('.navbat-row', name ? { hasText: name } : {})
+    .first()
+    .click();
 }
 
 // The landing (G15) is plain HTML, served on its own port.
