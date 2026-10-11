@@ -15,14 +15,14 @@ D+E+F.
 Definition of Done
 
 0. Ошибки из docs/170 (первый PR, выкладка сразу)
-[ ] О1. Водитель после «Yoʻlga chiqdim» ведёт посадку по точкам,
+[x] О1. Водитель после «Yoʻlga chiqdim» ведёт посадку по точкам,
     как на макете g76/3 состояние 12: «Men keldim», «Keldi»,
     «Kelmadi» в нижнем блоке и на карте, пока есть точка
     посадки; потом дорога и высадка. Попутчик видит «yoʻlda» до
     «Men keldim» водителя, как сейчас.
-[ ] О2. «Qayta yuborish» заявки: день можно выбрать, не всегда
+[x] О2. «Qayta yuborish» заявки: день можно выбрать, не всегда
     сегодня; «Назад» с точек ведёт к дню.
-[ ] О3. Отмена открытой заявки спрашивает, как отмена места
+[x] О3. Отмена открытой заявки спрашивает, как отмена места
     (docs/65 B4); текст вопроса на согласие владельца.
 
 A. «Назад» (люди)
@@ -101,6 +101,14 @@ F. Проверка
 3. Владелец написал «проверил».
 4. goals/INDEX: G77 ✅; ветка удалена.
 ```
+
+## Доказательства (урок №224)
+
+| Пункт | Код | Тест (падает на старом коде) |
+|---|---|---|
+| О1 | `packages/ui/src/home/dock/driver-state.ts` (`pointStates` и после выезда), `home/dock/driver-road-card.tsx` (следующая точка посадки, «Men keldim»), `home/dock/trip-actions.ts` (`cameAll`), `bookings/driver-trip-map.tsx` (точки посадки в пути) | `home/dock/driver-state.test.ts` «leads the points on the way too»; `home/driver-dock-links.test.tsx` «on the way the next point to pick up comes first»; `bookings/driver-trip-map.test.tsx` «on the way keeps the points to pick up» |
+| О2 | `packages/ui/src/market/my-requests-screen.tsx` («Qayta yuborish» через концы, без дня) | `mine/passenger-mine.test.tsx` «counts the seat and both requests» (день, «Назад» к дню) |
+| О3 | `packages/ui/src/bookings/passenger-open.tsx` (`cancelRequest` с вопросом), ключ `market.request.cancelAsk` | `bookings/my-request.test.tsx` «while waiting: … the cancel at the bottom»; `market/my-lists.test.tsx` |
 
 ## Порядок и оценка
 
