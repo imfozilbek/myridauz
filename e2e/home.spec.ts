@@ -104,16 +104,14 @@ function scenarios(platform: 'android' | 'ios') {
     await expect(page.getByText(t('home.dock.here'))).toBeHidden();
   });
 
-  // «Qayerga» at the bottom, then the one screen of a new trip opens with the route and the answers
-  // of the last trip (G40 K3, G63, G66).
+  // «Qayerga» of the last trip stands at the bottom at once (G79 В4): one tap opens the one screen of
+  // a new trip with its route and answers (G40 K3, G63, G66).
   test('a driver whose trips are over repeats the last trip on one screen (G40, G63)', async ({ page }) => {
     const { go, published } = await open(page, DRIVER.port);
     published.push(tripOf('8', 'Dilnoza', false, -48, { status: 'completed' }));
     await go();
     await expect(page.getByText(t('home.dock.here'))).toBeVisible();
-    await page.getByText(t('home.dock.toDriver')).click();
-    await page.getByAltText('Samarqand viloyati').click();
-    await page.getByText('Samarqand shahri', { exact: true }).click();
+    await expect(page.getByText(t('home.dock.toDriver'))).toBeHidden();
     await publishButton(page).click();
     await expect(page.locator('#tg-main-button')).toHaveText(t('market.publish.send'));
     await shot(page, '5-driver-last-trip');

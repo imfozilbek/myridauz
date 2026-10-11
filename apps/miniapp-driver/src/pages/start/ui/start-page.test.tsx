@@ -57,7 +57,8 @@ describe('StartPage', () => {
     expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
     fireEvent.click(screen.getByText('Orqaga'));
     fireEvent.click(await screen.findByRole('button', { name: 'Safar eʼlon qilish' }));
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    // The route opens on its first empty end (G79 В8).
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
 
   it('asks a new driver to fill the application in the block (G62, G76)', async () => {
