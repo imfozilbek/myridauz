@@ -1,10 +1,9 @@
 import type { Offer, OfferAction } from '@platform/contracts';
-import { useApiClients } from '../context/api-clients';
+import { useAnswerOffer } from '../bookings/use-answer-offer';
 import { useI18n } from '../context/i18n-context';
 import { UzPlate } from '../plate/uz-plate';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
-import { haptic } from '../telegram/feedback';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { useTalkTexts } from './talk-texts';
 import './talk.css';
@@ -16,22 +15,24 @@ type Props = {
   readonly other: string;
   // An answer changed the talk: the booking comes in its place (docs/35).
   readonly onAnswered: () => unknown;
+  // An accepted offer opens its seat (G77).
+  readonly onSeat?: ((bookingId: string) => void) | undefined;
 };
 
 // The offer inside a talk (mockups g64/4 phone 1, g64/5 phone 3): the driver sees what he sent and
 // whom he waits for; the passenger answers right here, as in the list of offers (G61).
-export function TalkOffer({ offer, role, other, onAnswered }: Props) {
+export function TalkOffer({ offer, role, other, onAnswered, onSeat }: Props) {
   const { t, formatNumber, formatMoney } = useI18n();
   const texts = useTalkTexts();
-  const { bookings } = useApiClients();
+  const answerOffer = useAnswerOffer('chat');
   const { failure, fail, clear } = useFailure();
   const sum = formatNumber(offer.price * offer.seats);
   const answer = (action: OfferAction) => async () => {
     clear();
     try {
-      await bookings.answerOffer(offer.id, action);
-      haptic.success();
+      const answered = await answerOffer(offer, action);
       await onAnswered();
+      if (answered.bookingId) onSeat?.(answered.bookingId);
     } catch (caught) {
       fail(caught);
     }

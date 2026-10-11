@@ -1,6 +1,5 @@
-import { tashkentTime } from '@platform/contracts';
+import { HOUR_MS, tashkentTime } from '@platform/contracts';
 
-const HOUR_MS = 60 * 60 * 1000;
 const DAY_BEFORE_MS = 24 * HOUR_MS;
 const SOON_MS = 2 * HOUR_MS;
 // A "day before" reminder closer than this to the trip only repeats the "soon" one.

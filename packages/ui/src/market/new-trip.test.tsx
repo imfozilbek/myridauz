@@ -1,6 +1,7 @@
 import { DAY_MS, tashkentDate, tashkentDayStart, type Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { sheetClosed } from '../home/sheet-closed';
 import { chooseRoute, tap } from './market-test-kit';
 import { openNewTrip, seatsLess, seatsMore, tomorrowAtEight } from './new-trip-test-kit';
 
@@ -85,6 +86,23 @@ describe('NewTripFlow: a new trip on one screen', { timeout: 20_000 }, () => {
     seatsLess();
     expect(seatsShown()).toBe('3');
     expect(screen.queryByText(WOMAN)).toBeNull();
+  });
+
+  it('takes «now» at the tap of «Eʼlon qilish»: a time that became too soon is chosen again (G77)', async () => {
+    const { publishTrip } = openNewTrip();
+    await chooseRoute();
+    // A little after 17:00 in Tashkent: a trip leaves an hour later at the earliest (docs/103).
+    expect(await screen.findByText('Bugun, 18:30')).toBeTruthy();
+    vi.setSystemTime(Date.now() + 40 * 60 * 1000);
+    await tap('Eʼlon qilish');
+    // Never a time the person did not see: the day and the time open again, the screen caught up.
+    await tap('Tayyor');
+    expect(await screen.findByText('Bugun, 19:00')).toBeTruthy();
+    expect(publishTrip).not.toHaveBeenCalled();
+    await tap('Eʼlon qilish');
+    const departAt = tashkentDayStart(tashkentDate(Date.now())) + 19 * HOUR;
+    expect(publishTrip).toHaveBeenCalledWith(expect.objectContaining({ departAt }));
+    await sheetClosed();
   });
 
   it('publishes once when «Eʼlon qilish» is tapped twice while the first one runs (docs/65 A4)', async () => {

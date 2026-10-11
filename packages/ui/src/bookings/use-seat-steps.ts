@@ -30,7 +30,7 @@ export function withTold(booking: Booking, told: Booking | null): Booking {
 
 // The steps of a passenger on the way (docs/43, docs/118 path 3): the card for the close people,
 // then «Yetib keldim» on the day of the trip once the driver marked the passenger in the car.
-export function useTripSteps(booking: Booking, onTold: (booking: Booking) => void) {
+export function useSeatSteps(booking: Booking, onTold: (booking: Booking) => void) {
   const { track } = useAnalytics();
   const { chat } = useApiClients();
   const { meetMinutes } = useBrand().schedule;

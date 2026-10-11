@@ -1,4 +1,4 @@
-import type { Gender } from '@platform/contracts';
+import { DAY_MS, type Gender } from '@platform/contracts';
 import { approvedFace, faceShown } from '../domain/face';
 import { activeBlock, type Block, type User } from '../domain/user';
 import type { UsersDeps } from './ports';
@@ -15,8 +15,6 @@ export type Person = {
   // Only for "Mashinada ayol bor" (docs/06): never shown to other people.
   readonly gender: Gender;
 };
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 // The users module as other modules see it (drivers, moderation). They never touch its tables.
 export function people(deps: UsersDeps) {

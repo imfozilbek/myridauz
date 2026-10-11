@@ -1,4 +1,5 @@
 import {
+  BOOKING_LINK,
   DAY_MS,
   MY_TRIP_LINK,
   OFFER_LINK,
@@ -11,7 +12,7 @@ import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
 import { ChatScreen } from '../chat/chat-screen';
-import { useApiClients } from '../context/api-clients';
+import { DriverData, useSharedDriverData } from '../home/driver-data';
 import { OwnTripFlow } from '../own-trip/own-trip-flow';
 import type { TripScreen } from '../own-trip/own-trip-opened';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -25,7 +26,7 @@ import { MY_TRIPS, MyTripsList } from './my-trips-list';
 import { NewTripFlow } from './new-trip-flow';
 import { PlacesGate, usePlaces } from './places-gate';
 import { useLinkOpen } from './use-link-open';
-import { useLoad } from './use-list';
+import { useMyTripsLists } from './my-trips-lists';
 import './market.css';
 import { waitingRequests } from '../home/home-items';
 
@@ -34,11 +35,13 @@ type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink; reado
 
 export function MyTripsScreen(props: ScreenProps) {
   useForgetOnLeave(MY_TRIPS);
-  return (
+  const screen = (
     <PlacesGate onBack={props.onBack}>
       <MyTrips {...props} />
     </PlacesGate>
   );
+  // The same lists as the main screen, not a second load (G77); a bot link opens it with its own.
+  return useSharedDriverData() ? screen : <DriverData>{screen}</DriverData>;
 }
 
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2). home: what the block of
@@ -53,17 +56,15 @@ type Opened = {
 function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
-  const { market, bookings } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(
-    () => Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
-    MY_TRIPS,
-  );
+  const { value, fresh, failed, reload, refresh } = useMyTripsLists();
   const [opened, setOpened] = useState<Opened | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;
-  // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5).
-  useLinkOpen(link, value ?? null, (open, [, booked, offers]) => {
-    const bookingId = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
+  // A bot button or the block opens its trip or the booking of an accepted offer (docs/65 B5); the
+  // row of the passenger in the details of «Hamyon» opens that booking (G65).
+  useLinkOpen(link, fresh ? value : null, (open, [, booked, offers]) => {
+    const offered = offers.find((item) => open.name === OFFER_LINK && item.id === open.id)?.bookingId;
+    const bookingId = open.name === BOOKING_LINK ? open.id : offered;
     const found = booked.find((item) => item.id === bookingId);
     if (found) setOpened({ tripId: found.trip.id, bookingId: found.id, home: 'booking' });
     else if (open.name === MY_TRIP_LINK)
@@ -82,10 +83,11 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (trip && booking) {
+    // A change reloads the lists first: the main screen reads the same ones (G77, lesson 230).
     const close = (changed: boolean) => {
+      if (changed) reload();
       if (opened?.home === 'booking') return onBack();
       setOpened(tripOf(trip.id));
-      if (changed) reload();
     };
     return <DriverBooking booking={booking} onClose={close} />;
   }
@@ -103,7 +105,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       />
     );
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
-  if (!value) return <ScreenSkeleton onBack={onBack} />;
+  if (!value || (link && !fresh)) return <ScreenSkeleton onBack={onBack} />;
   const [trips, booked, offers] = value;
   return (
     <MyTripsList

@@ -1,28 +1,35 @@
 import { ApiError, type ComfortClient } from '@platform/api-client';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { renderMarket, tap, trip } from '../market/market-test-kit';
+import { renderMarket, trip } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
-import { FavoriteCell } from './favorite-cell';
+import { FavoriteSwitch } from '../feedback/favorite-switch';
 import { FavoritesScreen } from './favorites-screen';
 
 afterEach(cleanup);
 
 const DRIVER = { ...trip.driver, car: trip.driver.car };
+// The switch of the review, once the saved drivers came.
+async function favorite() {
+  const box = (await screen.findByLabelText('Sevimli haydovchi')) as HTMLInputElement;
+  await vi.waitFor(() => expect(box.disabled).toBe(false));
+  return box;
+}
 describe('"Sevimli haydovchilar" (docs/18)', () => {
   it('saves the driver of a trip and says the bot will tell about new trips', async () => {
     const save = vi.fn<ComfortClient['save']>(async () => undefined);
     const forget = vi.fn<ComfortClient['forget']>(async () => undefined);
+    // «Sevimli haydovchi» of the review (mockup g60/5) is the one way to save a driver (G77).
     const { tracked } = renderMarket(
-      <FavoriteCell driverId={'00000000000000000000000000000007'} screen="market.trip" />,
+      <FavoriteSwitch driverId={'00000000000000000000000000000007'} />,
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }), save, forget } }),
     );
-    await tap('Sevimli haydovchilarga qoʻshish');
-    expect(save).toHaveBeenCalledWith('00000000000000000000000000000007');
+    fireEvent.click(await favorite());
+    await vi.waitFor(() => expect(save).toHaveBeenCalledWith('00000000000000000000000000000007'));
     expect(await screen.findByText('Uning yangi safarlari haqida xabar beramiz.')).toBeTruthy();
     expect(tracked.map((event) => event.name)).toContain('favorite_driver');
-    await tap('Sevimlilardan olib tashlash');
-    expect(forget).toHaveBeenCalledWith('00000000000000000000000000000007');
+    fireEvent.click(await favorite());
+    await vi.waitFor(() => expect(forget).toHaveBeenCalledWith('00000000000000000000000000000007'));
   });
 
   it('says why the 51st driver is not saved (docs/86 T3)', async () => {
@@ -30,10 +37,10 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       throw new ApiError(409, 'favorites.too_many');
     });
     renderMarket(
-      <FavoriteCell driverId={'00000000000000000000000000000007'} screen="market.trip" />,
+      <FavoriteSwitch driverId={'00000000000000000000000000000007'} />,
       testClients({ comfort: { favorites: async () => ({ drivers: [], trips: [] }), save } }),
     );
-    await tap('Sevimli haydovchilarga qoʻshish');
+    fireEvent.click(await favorite());
     expect(await screen.findByText(/^Saqlangan haydovchilar soni chegaraga yetdi/)).toBeTruthy();
   });
 

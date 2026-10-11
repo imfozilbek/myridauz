@@ -1,5 +1,5 @@
 import type { BookingsClient, MarketClient } from '@platform/api-client';
-import type { ChatAbout, Offer } from '@platform/contracts';
+import type { AppLink, ChatAbout, Offer } from '@platform/contracts';
 import { act, waitFor } from '@testing-library/react';
 import { expect, vi } from 'vitest';
 import { offer } from '../bookings/booking-test-kit';
@@ -34,14 +34,15 @@ type Fakes = {
   readonly about: ChatAbout[];
   readonly market?: Partial<MarketClient>;
   readonly bookings?: Partial<BookingsClient>;
+  readonly onLink?: (link: AppLink) => void;
 };
 
 // The chat of a talk: each load of «about» takes the next state, the last one stays.
-export async function openTalk({ about, market, bookings }: Fakes) {
+export async function openTalk({ about, market, bookings, onLink }: Fakes) {
   const states = [...about];
   const load = vi.fn(async () => (states.length > 1 ? states.shift() : states[0]) as ChatAbout);
-  renderMarket(
-    <ChatScreen chatKey={TALK} onBack={() => undefined} />,
+  const { tracked } = renderMarket(
+    <ChatScreen chatKey={TALK} onBack={() => undefined} onLink={onLink} />,
     testClients({
       chat: { socketUrl: async () => 'wss://api.test/socket', about: load },
       market: { requestBoard: async () => board(), ...market },
@@ -54,5 +55,5 @@ export async function openTalk({ about, market, bookings }: Fakes) {
     socket.open();
     socket.receive({ type: 'history', messages: [], canCall: true });
   });
-  return { socket, load };
+  return { socket, load, tracked };
 }

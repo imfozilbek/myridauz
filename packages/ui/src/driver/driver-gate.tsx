@@ -25,10 +25,18 @@ const NEW_APPLICATION: DriverApplication = {
   reasons: [],
 };
 
+type GateProps = { readonly enabled?: boolean; readonly children: ReactNode };
+
+// The gate of the driver Mini App only (mount-app.tsx). It stands above the links of the bots: a
+// screen a bot opens knows the car and the application of the driver too (G77, finding 12).
+export function DriverGate({ enabled = true, children }: GateProps) {
+  return enabled ? <Gate>{children}</Gate> : <>{children}</>;
+}
+
 // An approved driver works in the driver Mini App (docs/04). A driver whose application is not sent
 // yet (G34), is being checked or has a fix asked looks around the app; publishing waits for the
 // approval. A fix asked opens at once (G62); a rejected application shows why.
-export function DriverGate({ children }: { readonly children: ReactNode }) {
+function Gate({ children }: { readonly children: ReactNode }) {
   const { drivers } = useApiClients();
   const [loaded, setLoaded] = useState<Loaded | null>(null);
   const [failed, setFailed] = useState(false);

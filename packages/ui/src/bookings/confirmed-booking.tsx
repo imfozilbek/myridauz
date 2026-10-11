@@ -17,7 +17,7 @@ import { BookingBanner, endedBadly } from './booking-banner';
 import { DoneTools } from './done-tools';
 import { MeetingCard, meetingTime } from './meeting-card';
 import { mapUrl } from './map-link';
-import { useTripSteps } from './use-trip-steps';
+import { useSeatSteps } from './use-seat-steps';
 import './confirmed-booking.css';
 
 type Props = {
@@ -46,7 +46,7 @@ export function ConfirmedBooking(props: Props) {
   const { driver } = booking.trip;
   const brand = useBrand();
   const { colors } = brand.theme;
-  const steps = useTripSteps(booking, onTold);
+  const steps = useSeatSteps(booking, onTold);
   const button = (icon: IconName, label: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
       <Icon name={icon} size={22} />

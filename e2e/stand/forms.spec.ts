@@ -1,15 +1,14 @@
-import { expect, test } from '../crash-guard';
-import { createModerationClient } from '@platform/api-client';
-import { TEXT } from '../apps';
+import { expect, test, type Page } from '../crash-guard';
+import { openApplication, TEXT } from '../apps';
 import { passConsent } from '../registration';
 import { pressBack } from '../telegram-mock';
 import { OWNER } from './people';
 import { mainButton, NARROW, openHome, shot, t } from './screen-tour';
 import { apply } from './seed';
-import { outsideCalls, openAs, signedAs, type Person } from './stand-kit';
+import { outsideCalls, openAs, type Person } from './stand-kit';
 
-// The forms of the first visit and the link of the admin bot (docs/77 P02, P04, docs/79 T17):
-// a document read before the consent, a name that is not a name, one application opened by a link.
+// The forms of the first visit and a new application of the team (docs/77 P02, P04, docs/79 T17):
+// a document read before the consent, a name that is not a name, one application opened from «Navbat».
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
@@ -34,12 +33,24 @@ test('P02, P04. a document opens before the consent and comes back; a name of si
   await shot(page, 'android', 'p05-name-invalid');
 });
 
-test('T17. «?application=» from the admin bot opens that application', async ({ page }) => {
+// No bot sends «?application=» (G77, lesson 227): a new application waits in «Navbat». The oldest
+// come first and a case leads to the next (mockup g67/1); the stand keeps the applications of other
+// scenarios, so the check is the number of «Arizalar» and the case a row opens (lesson 236).
+const applications = (page: Page) =>
+  page.getByRole('radio', { name: new RegExp(`^${t('team.filter.application')}`, 'u') });
+async function waitingApplications(page: Page): Promise<number> {
+  await expect(page.getByRole('radiogroup', { name: t('team.section.navbat') })).toBeVisible();
+  const chip = applications(page);
+  return (await chip.count()) > 0 ? Number(/\d+/u.exec((await chip.textContent()) ?? '')?.[0]) : 0;
+}
+
+test('T17. a new application waits in «Navbat»; its row opens the case', async ({ page }) => {
   const applicant: Person = { id: 900608, name: 'Laziz', phone: '998901110608' };
+  await openAs(page, 'admin', OWNER);
+  const before = await waitingApplications(page);
   await apply(applicant, '01S678TU', 'male');
-  const queue = await createModerationClient(await signedAs('admin', OWNER)).queue();
-  const id = queue.find((a) => a.firstName === applicant.name)?.userId ?? '';
-  await openAs(page, 'admin', OWNER, { search: `?application=${id}` });
+  await openAs(page, 'admin', OWNER);
+  await expect(applications(page)).toHaveAccessibleName(`${t('team.filter.application')} ${before + 1}`);
+  await openApplication(page);
   await expect(mainButton(page)).toHaveText(TEXT.approve);
-  await expect(page.getByText(applicant.name).first()).toBeVisible();
 });

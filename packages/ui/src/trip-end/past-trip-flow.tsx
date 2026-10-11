@@ -1,12 +1,11 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { useState } from 'react';
 import { ChatScreen } from '../chat/chat-screen';
-import { useBrand } from '../context/brand-context';
+import { useOpenSupport } from '../telegram/support-link';
 import { useI18n } from '../context/i18n-context';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { useMeetMark } from '../meeting/use-meet-mark';
 import { ActionFailure } from '../states/action-failure';
-import { openInTelegram } from '../telegram/feedback';
 import { WalletScreen } from '../wallet/wallet-screen';
 import type { AfterRow } from './after-rows';
 import { PastTripPage } from './past-trip-page';
@@ -34,7 +33,7 @@ type Props = {
 // (docs/124 В) and «Hamyon».
 export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: Props) {
   const { t } = useI18n();
-  const { bots } = useBrand();
+  const support = useOpenSupport();
   const [opened, setOpened] = useState<Opened | null>(null);
   // The row whose passenger the sheet «Qaysi yoʻlovchi?» asks for (G75).
   const [asking, setAsking] = useState<About | null>(null);
@@ -50,6 +49,8 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
         chatKey={opened.booking.chatKey}
         title={opened.booking.passenger.firstName}
         ring={opened.screen === 'call'}
+        // The line of the trip is this very trip (G77).
+        onTrip={back}
         onBack={back}
       />
     );
@@ -62,7 +63,7 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
   const row = (picked: AfterRow) => {
     if (picked === 'rate' || picked === 'commission')
       return setOpened({ screen: picked === 'rate' ? 'rate' : 'wallet' });
-    if (picked === 'support') return openInTelegram(`https://t.me/${bots.support}`);
+    if (picked === 'support') return support();
     if (riders.length > 1) return setAsking(picked);
     const [only] = riders;
     return only ? about(picked, only) : undefined;

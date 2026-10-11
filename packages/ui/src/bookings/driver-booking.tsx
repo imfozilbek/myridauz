@@ -31,6 +31,7 @@ export function DriverBooking({ booking, onClose }: Props) {
   const { balance } = useBalance(booking.status === 'requested');
   const { failure, fail, clear } = useFailure();
   const answerBooking = useAnswerBooking({
+    screen: 'bookings.driver',
     onDone: () => onClose(true),
     onShort: () => setStep('not_enough'),
     fail,
@@ -45,6 +46,8 @@ export function DriverBooking({ booking, onClose }: Props) {
       <ChatScreen
         chatKey={booking.chatKey}
         title={booking.passenger.firstName}
+        // The line of the trip is this very booking (G77).
+        onTrip={() => setStep('view')}
         onBack={() => setStep('view')}
       />
     );

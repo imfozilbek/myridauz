@@ -1,6 +1,5 @@
+import { DAY_MS } from '@platform/contracts';
 import type { ComplaintsDeps, Side } from './ports';
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 // Who blocks, whom and why. byOwner: only the owner blocks a member of the team (docs/02, docs/65 A5).
 export type BlockOrder = {

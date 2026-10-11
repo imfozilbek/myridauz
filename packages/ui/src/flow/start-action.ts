@@ -13,27 +13,8 @@ export type StartAction = {
   readonly tone: Tone;
   readonly labelKey: TranslationKey;
   readonly hintKey: TranslationKey;
-  // A driver waits for the approval of the application before this action works (docs/86 V7).
-  readonly waitsApproval?: true;
-  // Pale until the approval, with its own hint (G62, mockup g62/1 screen 4).
-  readonly paleUntilApproval?: true;
-  // What its tile says live (G53): read where the tile is drawn, so a section loads only its own data.
-  readonly useLive?: () => TileLive;
   // The section the action opens.
   readonly Screen: ComponentType<{ readonly onBack: () => void } & Launch>;
-};
-
-// What a tile of the main screen says now (G53): how many things wait for the person (a badge),
-// another hint, or a number of the day (the admin Mini App).
-export type TileLive = {
-  readonly badge?: number;
-  // «Soʻrov qoldirish» becomes «Soʻrovim» and opens the open request (G66, docs/118).
-  readonly title?: string;
-  readonly hint?: string;
-  readonly opens?: { readonly id: string; readonly launch?: Launch };
-  readonly value?: number;
-  // The number is work waiting for the team: it is red (G53).
-  readonly urgent?: boolean;
 };
 
 // How the main screen opens a section (G25): a booking or a trip by its link, the search right at
@@ -44,6 +25,8 @@ export type Launch = {
   readonly tripScreen?: TripScreen;
   readonly pick?: 'from' | 'to';
   readonly route?: { readonly from: Location; readonly to: Location };
+  // The day of the trips of the route: «Oʻxshash safarlar» of a seat (G77).
+  readonly day?: string;
   // One end of the block at the bottom (G76, docs/165): the other one is asked first.
   readonly from?: Location;
   readonly to?: Location;

@@ -1,15 +1,16 @@
 import { CALL_LINK, CHAT_KEY, CHAT_LINK } from '@platform/contracts';
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useState, type ReactNode } from 'react';
 import { ActionSheet } from '../action-sheet/action-sheet';
 import { CallSource } from '../action-sheet/kinds/call-source';
 import { callIsLive } from '../call/live-call';
 import { useFeedCall } from '../feed/feed-context';
+import { AppLinkContext } from '../market/app-link';
 import { KeptBehind } from '../telegram/kept-behind';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { ChatScreen } from './chat-screen';
-import { OpenChatContext, type OpenChat } from './open-chat';
+import { OpenChatContext, type ChatMode, type OpenChat } from './open-chat';
 
-type Open = { readonly key: string; readonly mode?: 'ring' | 'answer' };
+type Open = { readonly key: string; readonly mode?: ChatMode; readonly onTrip?: () => void };
 
 // "Yangi xabar" from the bot opens its chat at once (docs/07). The app stays under the chat as it
 // was: back comes to the very screen that opened it, «Suhbatlar» or a section (G76). A call that
@@ -24,10 +25,14 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
     return call ? { key: call, mode: 'ring' } : null;
   });
   const [ringing, setRinging] = useState<string | null>(null);
+  const openLink = useContext(AppLinkContext);
   useFeedCall((chat) => {
     if (chat !== open?.key && !callIsLive()) setRinging(chat);
   });
-  const openChat: OpenChat = useCallback((key, mode) => setOpen(mode ? { key, mode } : { key }), []);
+  const openChat: OpenChat = useCallback(
+    (key, mode, onTrip) => setOpen({ key, ...(mode ? { mode } : {}), ...(onTrip ? { onTrip } : {}) }),
+    [],
+  );
   const close = () => {
     forgetLaunchParam(CHAT_LINK);
     forgetLaunchParam(CALL_LINK);
@@ -42,6 +47,8 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
           chatKey={open.key}
           ring={open.mode === 'ring'}
           answer={open.mode === 'answer'}
+          onTrip={open.onTrip ? () => (close(), open.onTrip?.()) : undefined}
+          onLink={openLink ? (link) => (close(), openLink(link)) : undefined}
           onBack={close}
         />
       ) : null}

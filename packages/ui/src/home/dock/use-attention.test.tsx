@@ -1,8 +1,10 @@
 import type { PersonId } from '@platform/contracts';
 import { act, renderHook } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { closeSheet, forgetSheets, openSheet, useActionItems } from '../../action-sheet/action-queue';
 import type { ActionItem } from '../../action-sheet/action-item';
+import { Behind } from '../../telegram/behind';
 import { haptic } from '../../telegram/feedback';
 import { useAttention, type Thing } from './use-attention';
 
@@ -51,5 +53,19 @@ describe('when the block calls the eye (G76, docs/165)', () => {
     expect(result.current).toBe(0);
     act(closeSheet);
     expect(result.current).toBe(1);
+  });
+
+  // The application form or a chat over the main screen hides the block: it waits for it (G77).
+  it('waits while a screen stands over the block', () => {
+    const under = ({ children }: { readonly children: ReactNode }) => (
+      <Behind.Provider value>{children}</Behind.Provider>
+    );
+    const { result, rerender } = renderHook(({ now }) => useAttention(now), {
+      initialProps: { now: thing('idle::', 10, false) },
+      wrapper: under,
+    });
+    rerender({ now: thing('requests:t1', 4) });
+    expect(result.current).toBe(0);
+    expect(shake).not.toHaveBeenCalled();
   });
 });

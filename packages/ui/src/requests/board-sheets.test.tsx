@@ -2,6 +2,7 @@ import { ApiError, type BookingsClient } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { offer } from '../bookings/booking-test-kit';
+import { sheetClosed } from '../home/sheet-closed';
 import { tap, trip } from '../market/market-test-kit';
 import { pressBack } from '../test-native';
 import { board, EIGHT, NOW, openBoard, salon, TEN } from './board-test-kit';
@@ -38,6 +39,24 @@ describe(
       fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
       await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 100000 }));
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    });
+
+    it('takes «now» at the tap: a time that became too soon on the open sheet is chosen again (G77)', async () => {
+      const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
+      openBoard({ bookings: { sendOffer } });
+      await tap('Taklif yuborish');
+      const form = await sheet();
+      expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');
+      // 07:10 in Tashkent: 08:00 is less than an hour away (docs/103). Never a time not seen: the
+      // sheet says why and shows the next time; the next tap sends it.
+      vi.setSystemTime(NOW + 70 * 60_000);
+      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      expect(await form.findByText('Bu vaqt juda yaqin. Keyinroq vaqtni tanlang.')).toBeTruthy();
+      expect(sendOffer).not.toHaveBeenCalled();
+      expect(form.getByRole('radio', { name: '10:00' }).getAttribute('aria-checked')).toBe('true');
+      fireEvent.click(form.getByRole('button', { name: 'Taklif yuborish' }));
+      await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 95000 }));
+      await sheetClosed();
     });
 
     // Telegram «Назад» closes only the sheet: the board stays, the offer typed comes back (G77).

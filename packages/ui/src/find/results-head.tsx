@@ -1,9 +1,7 @@
-import { roadMs, type Location } from '@platform/contracts';
+import { HOUR_MS, roadMs, type Location } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useRegionArt } from '../places/region-art';
 import type { Route } from '../places/route-screen';
-
-const HOUR_MS = 60 * 60 * 1000;
 
 type Props = {
   readonly route: Route;

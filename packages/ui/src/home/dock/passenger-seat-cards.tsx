@@ -2,6 +2,7 @@ import type { Booking } from '@platform/contracts';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import type { PlaceDirectory } from '../../places/directory';
+import { similarDay } from '../../bookings/similar-trips';
 import { useBookingEnds } from '../../trip/booking-ends';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DockCard } from './dock-card';
@@ -39,7 +40,11 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
   const ends = { from: directory.find(trip.from), to: directory.find(trip.to) };
   const again = (back: boolean) => () => {
     const { from, to } = ends;
-    if (from && to) go('find_trip', { route: back ? { from: to, to: from } : { from, to } });
+    if (from && to)
+      go(
+        'find_trip',
+        back ? { route: { from: to, to: from } } : { route: { from, to }, day: similarDay(trip) },
+      );
   };
   switch (kind) {
     case 'asked':

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { NARGIZA } from './people';
+import { openReviews } from './screen-tour';
 import { openAs, outsideCalls } from './stand-kit';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -20,7 +21,7 @@ for (const platform of PLATFORMS) {
     await expect(page.getByText(t('common.myTrips'))).toBeVisible();
     await page.context().setOffline(true);
     await expect(page.getByText(t('common.offline'))).toBeVisible();
-    await page.getByText(t('common.myTrips')).click();
+    await openReviews(page);
     await expect(page.getByText(t('errors.network'))).toBeVisible();
     await shot(page, platform, '1-offline');
     await page.context().setOffline(false);

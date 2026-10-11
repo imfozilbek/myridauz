@@ -1,21 +1,16 @@
 import type { Booking, Offer, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
-import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { confirm, haptic } from '../telegram/feedback';
 import { useI18n } from '../context/i18n-context';
-import { errorKey } from '../market/error-text';
+import { errorKey, isStale } from '../market/error-text';
 import { ChatScreen } from '../chat/chat-screen';
 import { AcceptedBooking } from './accepted-booking';
 import { MyRequest } from './my-request';
 import { PassengerOfferSheet } from './passenger-offer-sheet';
 import { PassengerBooking } from './passenger-booking';
-
-const OFFER_STEP = { accept: 'offer_accepted', decline: 'offer_declined' } as const;
-const isStale = (caught: unknown) =>
-  caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));
+import { useAnswerOffer } from './use-answer-offer';
 
 export type Opened =
   | { readonly kind: 'booking'; readonly booking: Booking }
@@ -34,8 +29,8 @@ type Props = {
 // The parent gives fresh data on each signal (docs/64); an offer is kept by its id (docs/65 B2).
 export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Props) {
   const { t } = useI18n();
-  const { track } = useAnalytics();
-  const { bookings, market } = useApiClients();
+  const answerOffer = useAnswerOffer('bookings.offer');
+  const { market } = useApiClients();
   const [offerId, setOfferId] = useState<string | null>(null);
   const offer = offers.find((item) => item.id === offerId) ?? null;
   const [failure, setFailure] = useState<TranslationKey | null>(null);
@@ -67,15 +62,21 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome }: Prop
   // An answer from the card of the request or from the screen of the offer (G61, mockup 3-offers A).
   const answer = (answered: Offer, action: 'accept' | 'decline') =>
     run(
-      () => bookings.answerOffer(answered.id, action),
-      (result) => {
-        track({ name: 'booking_step', screen: 'bookings.offer', step: OFFER_STEP[action] });
-        if (action === 'accept' && result.bookingId) setAccepted(result.bookingId);
-        else open(null);
-      },
+      () => answerOffer(answered, action),
+      (result) => (result.bookingId ? setAccepted(result.bookingId) : open(null)),
     );
   if (accepted) return <AcceptedBooking bookingId={accepted} onClose={onClose} onHome={onHome} />;
-  if (talk) return <ChatScreen {...talk} onTrip={() => setTalk(null)} onBack={() => setTalk(null)} />;
+  // An offer taken in the talk opens its seat, as one taken here (G77).
+  const seat = (bookingId: string) => (setTalk(null), setAccepted(bookingId));
+  if (talk)
+    return (
+      <ChatScreen
+        {...talk}
+        onTrip={() => setTalk(null)}
+        onLink={(link) => seat(link.id)}
+        onBack={() => setTalk(null)}
+      />
+    );
   if (opened.kind === 'request')
     return (
       <MyRequest

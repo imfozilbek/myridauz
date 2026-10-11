@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { hourLabel, isTeamTime, TOP_UP_START } from '@platform/contracts';
+import { hourLabel, isTeamTime, MINUTE_MS } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { assignTo } from '../modules/assignments';
 import { forwardToTeam, recordSupport, supportDeps, supportTalk } from '../modules/support';
@@ -15,7 +15,6 @@ const { t } = createI18n(DEFAULT_LOCALE);
 export const SUPPORT_BOT = 'support';
 // At most this many messages of one person a minute reach the team; the rest stay in the talk (G42).
 export const SUPPORT_PER_MINUTE = 10;
-const MINUTE_MS = 60 * 1000;
 
 // The admin bot is only for the team: everyone else is sent to the support bot (docs/50).
 export const toSupportBot = (brand: BrandConfig, chatId: number) =>
@@ -76,9 +75,6 @@ function supportWelcome(brand: BrandConfig, chatId: number) {
 
 // The support bot answers everyone, a blocked person too: support is where a block is asked about.
 export function onSupportMessage(context: BotContext, message: BotMessage) {
-  // «Hisobni toʻldirish» of the driver app: the ready question goes to the team (G75, docs/124 Г).
-  if (message.text === `/start ${TOP_UP_START}`)
-    return toSupport(context, { ...message, text: t('bot.support.topUp') });
   if (isStartCommand(message.text)) return supportWelcome(context.brand, message.chat.id);
   return toSupport(context, message);
 }

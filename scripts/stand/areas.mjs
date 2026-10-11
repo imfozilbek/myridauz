@@ -77,7 +77,8 @@ function changedPaths() {
 }
 
 // The command line of pnpm stand:check → the files to run and the words of the report.
-// --area <name> (more than once, or a list with commas), --changed, or files as before.
+// --area <name> (more than once, or a list with commas), --changed, or files as before; --at <time>
+// is the hour of the stand (stand-hour.mjs), not a file.
 export function pickFiles(args) {
   const rest = [];
   const areas = new Set();
@@ -85,6 +86,7 @@ export function pickFiles(args) {
     if (args[i] === '--area') for (const area of (args[++i] ?? '').split(',')) areas.add(area);
     else if (args[i] === '--changed') for (const area of areasOf(changedPaths())) areas.add(area);
     else if (args[i] === '--shots') continue;
+    else if (args[i] === '--at') i += 1;
     else rest.push(args[i]);
   }
   const unknown = [...areas].filter((area) => !NAMES.includes(area));

@@ -4,6 +4,7 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { pressBack } from '../telegram-mock';
 import { answer, book, CHILONZOR, FARGONA, publishTrip } from './market-kit';
 import { BEKZOD, ZARINA } from './people';
+import { openReviews } from './screen-tour';
 import { outsideCalls, openAs } from './stand-kit';
 import { botMessages } from './stand-tools';
 
@@ -33,19 +34,29 @@ async function openBooking(page: Page) {
   await expect(page.getByText(t('chat.open'))).toBeVisible();
 }
 
+// The network drops: the calls of the API fail, the lists and the reviews alike.
+const API = /\/(passenger|users)\//u;
+
 test('1a. a bad network: «Back» from the error screen works, «Qayta urinish» loads', async ({ page }) => {
   await openAs(page, 'passenger', ZARINA);
   await expect(page.getByText(t('common.myTrips'))).toBeVisible();
-  // The network drops: every call of the API fails.
-  await page.route('**/passenger/**', (route) => route.abort('internetdisconnected'));
+  await page.route(API, (route) => route.abort('internetdisconnected'));
+  // «Mening safarlarim» keeps the lists of the main screen: the bookings stay, no error (G77 D4).
   await page.getByText(t('common.myTrips')).click();
+  await expect(page.locator('.mine-card').filter({ hasText: BEKZOD.name }).first()).toBeVisible();
+  await pressBack(page);
+  await openReviews(page);
   await expect(page.getByText(t('common.retry'))).toBeVisible();
   await shot(page, '1-error');
   await pressBack(page);
-  await expect(page.getByText(t('common.myTrips'))).toBeVisible();
-  await shot(page, '1-back-home');
+  await expect(page.getByText(t('account.profile.reviews'))).toBeVisible();
+  await shot(page, '1-back');
   // The network is back: the same screen loads.
-  await page.unroute('**/passenger/**');
+  await page.unroute(API);
+  await page.getByText(t('account.profile.reviews')).click();
+  await expect(page.getByText(t('reviews.empty')).or(page.getByText(t('reviews.list')))).toBeVisible();
+  await pressBack(page);
+  await pressBack(page);
   await openBooking(page);
 });
 

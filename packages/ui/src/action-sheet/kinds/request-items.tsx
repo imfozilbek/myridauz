@@ -1,26 +1,24 @@
-import { MINUTE_MS, type Booking } from '@platform/contracts';
-import { useAnalytics } from '../../context/analytics-context';
-import { useApiClients } from '../../context/api-clients';
+import { ApiError } from '@platform/api-client';
+import { MINUTE_MS } from '@platform/contracts';
+import { useAnswerBooking } from '../../bookings/use-answer-booking';
 import { useI18n } from '../../context/i18n-context';
 import { useDriverData } from '../../home/driver-data';
 import { answerable } from '../../home/home-items';
 import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
 import { useBalance } from '../../bookings/use-balance';
-import { haptic } from '../../telegram/feedback';
 import { useTopUp } from '../../wallet/top-up-link';
 import { itemKey, type ActionItem } from '../action-item';
 import { TripBlock } from '../sheet-parts';
 import { useSheetWords } from '../trip-line';
 
 const HOUR_MINUTES = 60;
+const PAYMENT_REQUIRED = 402;
 
 // «Yangi soʻrov» of a driver (docs/122, mockup g68/7 screen 3): who and how many seats, the trip,
 // the sum and the commission before «Tasdiqlash», the time left; one tap answers (docs/35).
 export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
   const { t, formatNumber } = useI18n();
-  const { bookings } = useApiClients();
-  const { track } = useAnalytics();
   const { value, refresh } = useDriverData();
   const words = useSheetWords(directory);
   const now = useNow();
@@ -30,17 +28,23 @@ export function useRequestItems(directory: PlaceDirectory): ActionItem[] {
       ? t('sheet.request.left', { minutes: String(minutes) })
       : t('sheet.request.leftHours', { hours: String(Math.floor(minutes / HOUR_MINUTES)) });
   };
-  const answer = async (booking: Booking, action: 'confirm' | 'decline') => {
-    await bookings.answer(booking.id, action);
-    track({ name: 'booking_step', screen: 'sheet', step: action === 'confirm' ? 'confirmed' : 'declined' });
-    haptic.success();
-    refresh();
-  };
   const requests = (value?.[1] ?? []).filter((one) => answerable(one, now));
   // The wallet is checked here too (G75, docs/158 Г): short of the commission, the sum short and the
   // ready message to the support instead of a «Tasdiqlash» that fails.
   const { balance } = useBalance(requests.length > 0);
   const topUp = useTopUp();
+  // The same answer as «Mening safarim» and the booking (G77); a failure stays in the sheet with its
+  // reason (docs/65 B3), the money short of the commission too.
+  const answer = useAnswerBooking({
+    screen: 'sheet',
+    onDone: refresh,
+    onShort: () => {
+      throw new ApiError(PAYMENT_REQUIRED, 'wallet.not_enough');
+    },
+    fail: (caught) => {
+      throw caught;
+    },
+  });
   return requests.map((booking) => {
     const { passenger, seats, price, commission } = booking;
     const name = passenger.firstName;

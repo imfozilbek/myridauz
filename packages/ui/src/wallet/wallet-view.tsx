@@ -5,6 +5,7 @@ import { CellValue } from '../account/cell-value';
 import { Cell, List, Section } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { useSigned } from './signed';
 import { useOperationName } from './operation-name';
 import { useRefundText } from './refund-text';
 
@@ -21,7 +22,7 @@ export function WalletView({ wallet, children }: Props) {
   const nameOf = useOperationName(wallet.operations);
   // The money that came back is green and bold (mockup g63/5 phone 6).
   const { success } = useBrand().theme.colors;
-  const signed = (amount: number) => (amount > 0 ? `+${formatMoney(amount)}` : formatMoney(amount));
+  const signed = useSigned();
   const until = wallet.bonusExpiresAt
     ? t('wallet.bonusUntil', { date: formatDate(new Date(wallet.bonusExpiresAt)) })
     : undefined;
@@ -59,7 +60,7 @@ export function WalletView({ wallet, children }: Props) {
                     {refund.sum}
                   </Text>
                 ) : (
-                  <CellValue>{signed(operation.amount)}</CellValue>
+                  <CellValue>{signed(operation.amount, true)}</CellValue>
                 )
               }
             >

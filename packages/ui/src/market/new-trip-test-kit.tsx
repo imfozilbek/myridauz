@@ -1,5 +1,5 @@
 import type { MarketClient } from '@platform/api-client';
-import { DAY_MS, type Recommendation } from '@platform/contracts';
+import { DAY_MS, MINUTE_MS, type Recommendation } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
@@ -34,6 +34,9 @@ type Options = {
 
 export function openNewTrip(options: Options = {}) {
   const { gender = 'male', status = 'approved', pitak = true } = options;
+  // A minute after 17:00, never at the edge of a half hour: the first free time on the screen is still
+  // the one that goes at the tap (G77: a time that became too soon opens the day and the time).
+  vi.setSystemTime(Date.now() + MINUTE_MS);
   const publishTrip = vi.fn<MarketClient['publishTrip']>(async () => published);
   const clients = testClients({
     market: {

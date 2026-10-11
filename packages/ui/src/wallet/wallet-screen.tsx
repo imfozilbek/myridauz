@@ -1,6 +1,5 @@
 import type { AppLink, WalletOperation } from '@platform/contracts';
 import { useEffect, useState } from 'react';
-import { TopUpScreen } from '../bookings/wallet-steps';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
@@ -15,6 +14,7 @@ import { brandVars } from '../theme/brand-vars';
 import { WalletCard } from './wallet-card';
 import { WalletDetailScreen } from './wallet-detail-screen';
 import { WalletRows } from './wallet-rows';
+import { useTopUp } from './top-up-link';
 import './wallet.css';
 
 const CHEVRON = 10;
@@ -37,12 +37,12 @@ export function WalletScreen({ onBack, onOpen }: Props) {
   const { commission } = useBrand();
   const { wallet } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => wallet.mine(), 'wallet');
-  const [topUp, setTopUp] = useState(false);
+  // «Hisobni toʻldirish»: the support chat with the message ready, as everywhere (G77, mockup g75/4 B).
+  const topUp = useTopUp();
   const [opened, setOpened] = useState<WalletOperation | null>(null);
   useEffect(() => {
     track({ name: 'wallet_open', screen: 'wallet' });
   }, [track]);
-  if (topUp) return <TopUpScreen onBack={() => setTopUp(false)} />;
   if (opened) return <WalletDetailScreen operation={opened} onOpen={onOpen} onBack={() => setOpened(null)} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
@@ -52,7 +52,7 @@ export function WalletScreen({ onBack, onOpen }: Props) {
       <h1 className="wallet-title">{t('wallet.title')}</h1>
       <WalletCard wallet={value} />
       <p className="wallet-note">{t('wallet.rule', { percent: String(commission.percent) })}</p>
-      <button type="button" className="wallet-top-up" onClick={() => setTopUp(true)}>
+      <button type="button" className="wallet-top-up" onClick={() => topUp('', 0)}>
         <span className="wallet-top-up-icon">
           <Icon name="more" size={PLUS} />
         </span>

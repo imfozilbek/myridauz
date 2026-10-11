@@ -12,9 +12,10 @@ vi.mock('../telegram/feedback', async (original) => ({
   openInTelegram: support,
   confirm: async () => true,
 }));
+type Chat = { readonly title: string; readonly ring?: boolean; readonly onTrip?: () => void };
 vi.mock('../chat/chat-screen', () => ({
-  ChatScreen: ({ title, ring }: { readonly title: string; readonly ring?: boolean }) => (
-    <p>{`chat ${title}${ring ? ' ring' : ''}`}</p>
+  ChatScreen: ({ title, ring, onTrip }: Chat) => (
+    <button type="button" onClick={onTrip}>{`chat ${title}${ring ? ' ring' : ''}`}</button>
   ),
 }));
 
@@ -52,7 +53,9 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
     expect(screen.getByText('faqat oʻqish')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Qoʻngʻiroq' })).toBeNull();
     screen.getByRole('button', { name: 'Xabar yozish' }).click();
-    expect(await screen.findByText('chat Madina')).toBeTruthy();
+    // The line of the trip in the chat is this very trip: back to its page (G77).
+    await tap('chat Madina');
+    expect(await screen.findByText('Xabarlar')).toBeTruthy();
   });
 
   it('opens no stars after their deadline, and sends a late complaint to support', async () => {

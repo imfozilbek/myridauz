@@ -1,7 +1,7 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
-import { summary } from './drivers-mock';
-import { adminCase, appUrl, MINI_APPS, TEXT } from './apps';
+import { mockWaitingApplication, summary } from './drivers-mock';
+import { appUrl, MINI_APPS, openApplication, TEXT } from './apps';
 import { applyAsDriver } from './driver-application';
 import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
 
@@ -40,7 +40,9 @@ test('driver fixes the application: screenshots', async ({ page }) => {
 test('moderation: screenshots', async ({ page }) => {
   await mockApi(page, 'active');
   await mockTelegram(page);
-  await page.goto(telegramUrl(adminCase(`application=${summary.userId}`)));
+  await mockWaitingApplication(page);
+  await page.goto(telegramUrl(appUrl(MINI_APPS[2].port)));
+  await openApplication(page, summary.firstName);
   await expect(page.getByText('Jasur', { exact: false }).first()).toBeVisible();
   await page.mouse.move(0, 0);
   await page.screenshot({ path: 'screenshots/moderation-2-application.png', fullPage: true });

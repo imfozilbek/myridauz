@@ -1,8 +1,7 @@
+import { HOUR_MS } from '@platform/contracts';
 import { alertsOf } from '../domain/alerts';
 import type { StatsDeps } from './ports';
 import { funnelsOf } from './read-stats';
-
-const HOUR = 3_600_000;
 
 // The Cron job, once an hour: errors of the last hour and drops of today against the usual (docs/29).
 // A signal goes to the admin bot once, then again only after repeatHours.
@@ -21,7 +20,7 @@ export async function checkAlerts(deps: StatsDeps): Promise<number> {
     const key = `alert:${alert.key}`;
     if ((await cache.get(key, now)) !== undefined) continue;
     await deps.tellOwners(alert);
-    await cache.put(key, '1', now + rules.repeatHours * HOUR);
+    await cache.put(key, '1', now + rules.repeatHours * HOUR_MS);
     sent += 1;
   }
   return sent;

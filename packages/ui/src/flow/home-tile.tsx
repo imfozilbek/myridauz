@@ -4,15 +4,15 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { IconTile, type Tone } from '../icon-tile';
 import type { IconName } from '../icons';
-import type { TileLive } from './start-action';
 
-type Props = TileLive & {
+type Props = {
   readonly icon: IconName;
   readonly tone: Tone;
   readonly title: string;
+  readonly hint?: string;
+  // How many things wait for the person: a red-free badge (G53).
+  readonly badge?: number;
   readonly onClick: () => void;
-  // Waits for the approval of the application: grey, it still opens and explains (G62).
-  readonly pale?: boolean;
   // Needs the person now: light red, the hint red (G66, «Hamyon» short of a request).
   readonly alarm?: boolean;
   // Soon needs the person: light amber, the hint amber (G76, «Hamyon» low).
@@ -22,9 +22,9 @@ type Props = TileLive & {
 };
 
 // One tile of the main screen (owner decision 04.10.2026, G53): an icon, a title and a short hint,
-// a red-free badge for what waits for the person, or a big number of the day.
+// a red-free badge for what waits for the person.
 export function HomeTile(props: Props) {
-  const { icon, tone, title, hint, badge, value, urgent, onClick, pale = false, alarm = false } = props;
+  const { icon, tone, title, hint, badge, onClick, alarm = false } = props;
   const { soon = false, square = false } = props;
   const { formatNumber } = useI18n();
   const { colors } = useBrand().theme;
@@ -32,7 +32,7 @@ export function HomeTile(props: Props) {
   return (
     <button
       type="button"
-      className={classes(pale, alarm, soon)}
+      className={classes(alarm, soon)}
       style={alarm || soon ? alarmColors(colors) : undefined}
       onClick={onClick}
     >
@@ -45,11 +45,6 @@ export function HomeTile(props: Props) {
       ) : null}
       <span className="home-tile-text">
         <span className="home-tile-title">{title}</span>
-        {value === undefined ? null : (
-          <span className="home-tile-value" style={urgent ? { color: colors.dangerText } : undefined}>
-            {formatNumber(value)}
-          </span>
-        )}
         {hint ? <span className="home-tile-hint">{hint}</span> : null}
       </span>
     </button>
@@ -59,10 +54,8 @@ export function HomeTile(props: Props) {
 const MAX_BADGE = 99;
 const ALARM_MARK = '!';
 
-const classes = (pale: boolean, alarm: boolean, soon: boolean) =>
-  ['home-tile', pale ? 'home-tile-pale' : '', alarm ? 'home-tile-alarm' : '', soon ? 'home-tile-soon' : '']
-    .filter(Boolean)
-    .join(' ');
+const classes = (alarm: boolean, soon: boolean) =>
+  ['home-tile', alarm ? 'home-tile-alarm' : '', soon ? 'home-tile-soon' : ''].filter(Boolean).join(' ');
 
 const alarmColors = (colors: BrandColors) =>
   ({

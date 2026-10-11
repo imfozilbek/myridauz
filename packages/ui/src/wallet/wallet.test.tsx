@@ -45,12 +45,12 @@ describe('"Hamyon" of a driver (docs/12, G65 mockups g65/1, g65/2)', () => {
     expect(screen.getByText(/^\u221219\s000$/u)).toBeTruthy();
     expect(screen.getByText(/^\+500\s000$/u)).toBeTruthy();
     expect(tracked.some((event) => event.name === 'wallet_open')).toBe(true);
-    await tap('Hisobni toʻldirish');
-    expect(screen.getByText(/qoʻllab-quvvatlash/)).toBeTruthy();
-    // The support bot gets the ready question «Hamyonimni toʻldirmoqchiman.» (G75, docs/124 Г).
+    // «Hisobni toʻldirish»: the support chat with the ready words at once, as on the sheet of the
+    // sum short (G77, mockup g75/4 B); no screen between.
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    fireEvent.click(screen.getByText('Qoʻllab-quvvatlashga yozish'));
-    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}?start=topup`);
+    await tap('Hisobni toʻldirish');
+    const words = encodeURIComponent('Salom! Hamyonimni toʻldirmoqchiman.');
+    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${loadBrand().bots.support}?text=${words}`);
     open.mockRestore();
   });
 

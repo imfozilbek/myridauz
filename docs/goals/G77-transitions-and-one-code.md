@@ -52,44 +52,44 @@ B. Ссылки ботов и админка
     назад в одно нажатие.
 
 C. Одно действие: один код
-[ ] Принять предложение: один хук для шторки, «Mening soʻrovim»,
+[x] Принять предложение: один хук для шторки, «Mening soʻrovim»,
     шторки предложения, чата и звонка; событие аналитики везде;
     после принятия везде открывается место.
-[ ] Предложить поездку на заявку: один хук для доски и чата; в
+[x] Предложить поездку на заявку: один хук для доски и чата; в
     чате тоже шторка нехватки денег и событие offer_sent.
-[ ] Ответ водителя в шторке заявки через useAnswerBooking.
-[ ] «Oʻxshash safarlar»: один помощник, блок и страница брони
+[x] Ответ водителя в шторке заявки через useAnswerBooking.
+[x] «Oʻxshash safarlar»: один помощник, блок и страница брони
     дают один список.
-[ ] «Hisobni toʻldirish» один путь: «Hamyon» тоже открывает
+[x] «Hisobni toʻldirish» один путь: «Hamyon» тоже открывает
     поддержку с готовым текстом, как в макете g75/4 Б; старый
     экран TopUpScreen удалён (снимок владельцу).
-[ ] Чат из блока попутчика через общий чат поверх приложения;
+[x] Чат из блока попутчика через общий чат поверх приложения;
     раздел TRIP_TALK удалён; строка поездки в чате ведёт к месту.
-[ ] «Men keldim» одним хуком для блока и карточки встречи.
+[x] «Men keldim» одним хуком для блока и карточки встречи.
 
 D. Чистота кода (вид не меняется)
-[ ] Мёртвый код: старая ветка главного экрана (ActionTile,
+[x] Мёртвый код: старая ветка главного экрана (ActionTile,
     covered, notice, useLive, opens, waitsApproval,
     paleUntilApproval), face-notice и home-note, favorite-cell,
     useList, nextTrips, lastTrip, againOf, waits; их тесты тоже.
-[ ] Повторы: один isStale, один помощник ссылки поддержки, HOUR_MS
+[x] Повторы: один isStale, один помощник ссылки поддержки, HOUR_MS
     и signed из общего места, два useTripSteps с разными именами.
-[ ] Классы CSS .time-chip, .trip-card-name, .seats-stepper: одно
+[x] Классы CSS .time-chip, .trip-card-name, .seats-stepper: одно
     имя в одном файле; снимки экранов до и после совпадают.
-[ ] «Mening safarlarim» берут списки главного экрана, без второй
+[x] «Mening safarlarim» берут списки главного экрана, без второй
     загрузки; «Safar» не грузит брони заново.
 
 E. Время
-[ ] Публикация проверяет «сейчас» в момент отправки, не с
+[x] Публикация проверяет «сейчас» в момент отправки, не с
     открытия экрана: нет ложного «juda yaqin».
-[ ] Сценарии стенда не зависят от часа: полный стенд зелёный и в
+[x] Сценарии стенда не зависят от часа: полный стенд зелёный и в
     23:30 по Ташкенту (урок №223).
 
 F. Проверка
-[ ] Тесты на каждый пункт; e2e и сценарии e2e/stand обновлены
+[x] Тесты на каждый пункт; e2e и сценарии e2e/stand обновлены
     (урок №221); стенд кусками; полный стенд один раз в конце,
     не с 23:00 до 00:30.
-[ ] Независимый агент заново проходит все переходы (как `168`
+[x] Независимый агент заново проходит все переходы (как `168`
     часть B) и не находит ни одной старой ошибки.
 [ ] Docs 168 (статус части B), 75, 122, 155, 29 обновлены;
     уроки записаны; PR, слияние (согласие владельца), деплой;
@@ -104,21 +104,7 @@ F. Проверка
 
 ## Доказательства (урок №224)
 
-| Пункт | Код | Тест (падает на старом коде) |
-|---|---|---|
-| О1 | `packages/ui/src/home/dock/driver-state.ts` (`pointStates` и после выезда), `home/dock/driver-road-card.tsx` (следующая точка посадки, «Men keldim»), `home/dock/trip-actions.ts` (`cameAll`), `bookings/driver-trip-map.tsx` (точки посадки в пути) | `home/dock/driver-state.test.ts` «leads the points on the way too»; `home/driver-dock-links.test.tsx` «on the way the next point to pick up comes first»; `bookings/driver-trip-map.test.tsx` «on the way keeps the points to pick up» |
-| О2 | `packages/ui/src/market/my-requests-screen.tsx` («Qayta yuborish» через концы, без дня) | `mine/passenger-mine.test.tsx` «counts the seat and both requests» (день, «Назад» к дню) |
-| О3 | `packages/ui/src/bookings/passenger-open.tsx` (`cancelRequest` с вопросом), ключ `market.request.cancelAsk` | `bookings/my-request.test.tsx` «while waiting: … the cancel at the bottom»; `market/my-lists.test.tsx` |
-| A1 «Назад» по ссылке | `market/my-requests-screen.tsx`, `market/my-trips-screen.tsx` (метка `home`), `market/bookings-link.tsx` | `market/bookings-link.test.tsx`: `?booking=`, `?mytrip=`, `?request=` назад одним нажатием; стенд `all-driver` «da20» |
-| A2 шторки | `sheet/sheet-back.tsx` в `ActionSheet`, `BoardSheet`, `OtherCarSheet`, `FormSheet`; `requests/offer-draft.ts` | `sheet/sheet-back.test.tsx`; `requests/board-sheets.test.tsx` «Назад closes the sheet on the board» |
-| A3 «Bosh sahifa» | `bookings/pending-booking.tsx` (`useGoHome`) | `flow/home-context.test.tsx` «Bosh sahifa of a sent seat» |
-| A4 «Profil» → «Mashina» | `driver/driver-gate.tsx` и общий `telegram/kept-behind.tsx` | `driver/car-back.test.tsx` |
-| A5 «Hamyon» | `wallet/wallet-flow.tsx` (`KeptBehind`) | `wallet/wallet-back.test.tsx` |
-| B1 `?open=` | `flow/start-flow.tsx` (`useLinkOpened`) | `flow/start-flow.test.tsx` «opens a section at once by the link» |
-| B2 звонок бота | `contracts` `CALL_LINK`, `passenger-card.ts`, `ask-card.ts`, `chat/chat-link.tsx` | `chat/chat-link.test.tsx` «📞 Qoʻngʻiroq of a bot rings at once» |
-| B3 первое предложение | `action-sheet/kinds/offer-items.tsx` (первое пришедшее), `action-sheet/action-sheet.tsx` (не закрывается до списков) | `action-sheet/passenger-offer-sheet.test.tsx` «the ring of the first offer»; `action-sheet/action-sheet.test.tsx` «a bot link opens the sheet» |
-| B4 ссылки без отправителя | `market/bookings-link.tsx`: у попутчика нет `?offer=`, у водителя нет `?booking=` | `market/bookings-link.test.tsx`; стенд: `?mytrip=` (`all-driver`, `g63`), `?request=` (`all-passenger`, `g64`), `?sheet=` (`all-driver` «da51») |
-| B5 админка | `team/team-home.tsx`, `team/navbat-section.tsx`, `team/diqqat-section.tsx` (`WALLETS_SECTION`), `apps/miniapp-admin` `start-page.tsx`, `stats/stats-screen.tsx` | `apps/miniapp-admin/.../start-page.test.tsx` (ошибка, «Hamyonlar», `?stats=`); `team/team-home.test.tsx` (фильтр) |
+Путь к коду и тест по каждому пункту: `G77-proofs.md`.
 
 ## Порядок и оценка
 
@@ -143,4 +129,4 @@ F. Проверка
 - №225: тест кнопки проверяет конечный экран, не «что-то открылось».
 - №221: меняю переход, ищу его тексты во всём `e2e/`, включая `e2e/stand`.
 - №222: проверки и коммит одной цепочкой `&&`.
-- №223: полный стенд не с 23:00 до 00:30 по Ташкенту.
+- №223, №232: стенд зависел от часа из-за часов моков e2e; проверка в другой час: `pnpm stand:check --at 23:30`.

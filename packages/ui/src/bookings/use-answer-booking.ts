@@ -7,6 +7,8 @@ import { haptic } from '../telegram/feedback';
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
 
 type Options = {
+  // Where the answer is counted: the trip, the booking, the sheet (docs/29).
+  readonly screen: string;
   readonly onDone: () => void;
   // The wallet cannot pay the commission: the way to top up comes instead (G27).
   readonly onShort: (booking: Booking) => void;
@@ -14,15 +16,15 @@ type Options = {
   readonly fail: (caught: unknown) => void;
 };
 
-// The answer of the driver to a booking (docs/35), the same on «Mening safarim» and on the booking:
-// one tap, the step is counted, the phone answers.
-export function useAnswerBooking({ onDone, onShort, fail }: Options) {
+// The answer of the driver to a booking (docs/35), the same on «Mening safarim», on the booking and
+// in the sheet of a new request (G77): one tap, the step is counted, the phone answers.
+export function useAnswerBooking({ screen, onDone, onShort, fail }: Options) {
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   return async (booking: Booking, action: DriverBookingAction) => {
     try {
       await bookings.answer(booking.id, action);
-      track({ name: 'booking_step', screen: 'bookings.driver', step: STEP_OF[action] });
+      track({ name: 'booking_step', screen, step: STEP_OF[action] });
       haptic.success();
       onDone();
     } catch (caught) {

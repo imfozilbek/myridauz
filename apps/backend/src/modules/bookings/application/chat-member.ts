@@ -1,4 +1,4 @@
-import { arrivalAt, type Booking } from '@platform/contracts';
+import { HOUR_MS, arrivalAt, type Booking } from '@platform/contracts';
 import type { Member } from '../../chat';
 import { statusAt } from '../domain/booking';
 import type { BookingsDeps } from './ports';
@@ -36,7 +36,6 @@ type Pair = Talk & {
   readonly callsOff: boolean;
   readonly ringLimit: number | null;
 };
-const HOUR_MS = 60 * 60 * 1000;
 const BOOKED = { callsOff: false, ringLimit: null } as const;
 
 async function talkOf(deps: BookingsDeps, bookingId: string | null): Promise<Talk> {

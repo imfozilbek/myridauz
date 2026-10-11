@@ -53,7 +53,6 @@ export function StartPage() {
       <HomeRouteProvider>
         <StartFlow
           actions={ACTIONS}
-          covered="find_trip"
           home={(go) => <PassengerHome go={go} />}
           tiles={(go) => <PassengerTiles go={go} />}
           side={(openProfile) => <PassengerSide openProfile={openProfile} />}

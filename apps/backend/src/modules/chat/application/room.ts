@@ -1,4 +1,4 @@
-import { type ChatMessage, type ChatServerEvent, type ChatSystemEvent } from '@platform/contracts';
+import { MINUTE_MS, type ChatMessage, type ChatServerEvent, type ChatSystemEvent } from '@platform/contracts';
 import { maskContacts } from '../domain/mask';
 import { callView } from './call-view';
 import {
@@ -15,7 +15,6 @@ const HISTORY = 100;
 const NOTIFY_PAUSE_MS = 5 * 60 * 1000;
 // One person sends at most this many messages a minute: a flood never reaches the other side (G42).
 export const MAX_PER_MINUTE = 30;
-const MINUTE_MS = 60 * 1000;
 // Every third hidden contact from one person reaches the moderators (docs/07, docs/17).
 const ATTEMPTS_STEP = 3;
 

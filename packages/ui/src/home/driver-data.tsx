@@ -24,3 +24,6 @@ export function useDriverData(): DriverLoad {
   if (!load) throw new Error('ui.driver_data_missing');
   return load;
 }
+
+// The lists of the main screen when the screen is inside it, or null (a bot link opens it alone).
+export const useSharedDriverData = (): DriverLoad | null => useContext(DriverDataContext);

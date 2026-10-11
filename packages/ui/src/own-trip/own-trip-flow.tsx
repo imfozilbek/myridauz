@@ -35,7 +35,14 @@ export function OwnTripFlow(props: OwnTripProps) {
     );
   if (after?.screen === 'end')
     return (
-      <TripEndFlow trip={trip} bookings={bookings} onPublish={publish} onClose={close} onRated={onChanged} />
+      <TripEndFlow
+        trip={trip}
+        bookings={bookings}
+        onPublish={publish}
+        // «Baho berish» of the block opened the stars at once: «Назад» goes straight home (G77, A1).
+        onClose={props.start === 'end' ? onBack : close}
+        onRated={onChanged}
+      />
     );
   if (arrived || tripPast(trip))
     return (

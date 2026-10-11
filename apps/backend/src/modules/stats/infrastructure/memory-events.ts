@@ -1,11 +1,10 @@
-import type { ErrorRow } from '@platform/contracts';
+import { HOUR_MS, type ErrorRow } from '@platform/contracts';
 import type { DataPoint } from '../../analytics';
 import { ERROR_EVENTS, type EventSource } from '../application/ports';
 import type { Counter } from '../domain/counters';
 import { toErrorRow } from './sql-rows';
 
-const HOUR = 3_600_000;
-const DAY = 24 * HOUR;
+const DAY = 24 * HOUR_MS;
 const TOP_ERRORS = 10;
 
 // Locally the rows of the memory sink answer the same questions as Analytics Engine (docs/29).
@@ -51,6 +50,6 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
       )
         .sort((a, b) => b.count - a.count)
         .slice(0, TOP_ERRORS),
-    errorsSince: async (hours) => recent(hours * HOUR).filter(isError).length,
+    errorsSince: async (hours) => recent(hours * HOUR_MS).filter(isError).length,
   };
 }

@@ -2,7 +2,7 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FakeSocket } from '../chat/fake-socket';
-import { useList } from '../market/use-list';
+import { useLoad } from '../market/use-list';
 import { useFeedCall } from './feed-context';
 import { FeedProvider } from './feed-provider';
 
@@ -18,7 +18,7 @@ afterEach(() => {
 
 // A list screen like "Mening safarlarim": what the API gives, and when it is still loading.
 function Seats({ load }: { readonly load: () => Promise<string[]> }) {
-  const { items } = useList(load);
+  const { value: items } = useLoad(load);
   return <p>{items === null ? 'loading' : items.join(',')}</p>;
 }
 

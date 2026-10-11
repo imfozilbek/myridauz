@@ -1,9 +1,8 @@
-import { arrivalAt, roadMs } from '@platform/contracts';
+import { HOUR_MS, arrivalAt, roadMs } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import { usePlaces } from '../market/places-gate';
 
-const HOUR_MS = 60 * 60 * 1000;
 // The car before the way on «Qaytish» (mockup g63/4 screen 16).
 const WAY_ICON = 14;
 

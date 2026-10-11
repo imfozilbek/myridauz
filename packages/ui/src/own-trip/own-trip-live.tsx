@@ -38,13 +38,16 @@ export function OwnTripLive(props: Props) {
   const actions = useOwnTripActions({ trip, stage, bookings, open: setOpened, onChanged, onClosed });
   const steps = useTripSteps({ trip, onChanged, onArrived });
   const meet = useMeetMark(() => onChanged());
-  const back = () => setOpened(null);
+  // Back to the screen the chat came from: the map that the block opened at once, else the trip.
+  const back = () => setOpened(props.start === 'map' ? { screen: 'map' } : null);
   if (opened?.screen === 'chat' || opened?.screen === 'call')
     return (
       <ChatScreen
         chatKey={opened.booking.chatKey}
         title={opened.booking.passenger.firstName}
         ring={opened.screen === 'call'}
+        // The line of the trip is this very trip (G77).
+        onTrip={back}
         onBack={back}
       />
     );
@@ -68,7 +71,8 @@ export function OwnTripLive(props: Props) {
         onPoint={
           meetingOpen(trip, now, meetMinutes) ? (stop) => setMeeting(stop.riders.map(({ id }) => id)) : null
         }
-        onBack={back}
+        // «Yoʻl xaritasi» of the block opened the map at once: «Назад» goes straight home (G77, A1).
+        onBack={props.start === 'map' ? onBack : () => setOpened(null)}
       />
     );
   return (

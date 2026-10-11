@@ -1,4 +1,4 @@
-import { MY_TRIP_LINK, type RequestBoardQuery } from '@platform/contracts';
+import { MY_TRIP_LINK, type AppLink, type RequestBoardQuery } from '@platform/contracts';
 import { useState } from 'react';
 import { ChatScreen } from '../chat/chat-screen';
 import { usePending } from '../driver/driver-context';
@@ -19,7 +19,7 @@ type Props = {
 
 type Over =
   | { readonly screen: 'chat'; readonly chatKey: string; readonly ring: boolean }
-  | { readonly screen: 'trip'; readonly tripId: string }
+  | { readonly screen: 'mine'; readonly link: AppLink }
   | { readonly screen: 'publish'; readonly date: string };
 
 // A trip goes between districts: a whole region of the board is asked again in the trip (G37 R4).
@@ -37,9 +37,11 @@ export function RequestsFlow({ onBack, initial, board }: Props) {
   const pending = usePending();
   const close = () => setOver(null);
   if (pending) return <PendingLock onBack={onBack} />;
-  if (over?.screen === 'chat') return <ChatScreen chatKey={over.chatKey} ring={over.ring} onBack={close} />;
-  if (over?.screen === 'trip')
-    return <MyTripsScreen onBack={close} link={{ name: MY_TRIP_LINK, id: over.tripId }} />;
+  // A trip for a whole car opened in the talk opens as from the board, «Назад» back to it (G77).
+  const mine = (link: AppLink) => setOver({ screen: 'mine', link });
+  if (over?.screen === 'chat')
+    return <ChatScreen chatKey={over.chatKey} ring={over.ring} onLink={mine} onBack={close} />;
+  if (over?.screen === 'mine') return <MyTripsScreen onBack={close} link={over.link} />;
   if (over?.screen === 'publish')
     return <NewTripFlow {...tripRoute(route)} date={over.date} onBack={close} />;
   return (
@@ -53,7 +55,7 @@ export function RequestsFlow({ onBack, initial, board }: Props) {
           setQuery({ from: chosen.from.id, to: chosen.to.id });
         }}
         onTalk={(chatKey, ring) => setOver({ screen: 'chat', chatKey, ring })}
-        onTrip={(tripId) => setOver({ screen: 'trip', tripId })}
+        onTrip={(tripId) => mine({ name: MY_TRIP_LINK, id: tripId })}
         onPublish={(date) => setOver({ screen: 'publish', date })}
         onBack={onBack}
       />

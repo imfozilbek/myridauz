@@ -1,10 +1,8 @@
-import { FaceNotice } from '../account/face-notice';
 import './square-tiles.css';
 import type { CSSProperties, ReactNode } from 'react';
 import { useAccount } from '../account/account-context';
 import { useScreenView } from '../context/analytics-context';
-import { usePending } from '../driver/driver-context';
-import { LanguageSwitcher, useI18n } from '../context/i18n-context';
+import { LanguageSwitcher } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useInTelegram } from '../telegram/in-telegram-context';
@@ -12,13 +10,9 @@ import { brandVars } from '../theme/brand-vars';
 import { useBrand } from '../context/brand-context';
 import { useSettingsButton } from '../telegram/settings-button';
 import { HomeProfile } from '../home/home-profile';
-import { HomeTile } from './home-tile';
 import { HomeTop } from './home-top';
-import type { StartAction, TileLive } from './start-action';
 
 type HomeScreenProps = {
-  readonly actions: readonly StartAction[];
-  readonly notice?: ReactNode;
   readonly after?: ReactNode;
   readonly top?: ReactNode;
   // Tiles of the app after the tiles of its actions: the profile, the last route, the wallet (G53).
@@ -27,8 +21,6 @@ type HomeScreenProps = {
   readonly square?: boolean;
   // The right part of the head on the main screens of people (G76, mockup g76/1).
   readonly side?: ReactNode;
-  // A smart tile may open another section, like «Soʻrovim» its request (G66).
-  readonly onOpen: (action: StartAction, opens?: TileLive['opens']) => void;
   readonly onProfile: () => void;
 };
 
@@ -37,12 +29,11 @@ type HomeScreenProps = {
 // «Sozlamalar» of the ⋮ menu lives here only: inside a path it would throw the path away
 // (owner decision 02.10.2026, docs/94 F4).
 export function HomeScreen(props: HomeScreenProps) {
-  const { actions, notice, after, top, tiles, square = false, side, onOpen, onProfile } = props;
+  const { after, top, tiles, square = false, side, onProfile } = props;
   useScreenView('home');
   useScreenBackground();
   // The team of the admin app has no profile of its own: no «Sozlamalar» there (G75).
   useSettingsButton(useAccount() ? onProfile : null);
-  const pending = usePending();
   const { colors } = useBrand().theme;
   const reserve = useInTelegram() ? DOCK_IN_TELEGRAM : DOCK_IN_BROWSER;
   const style = { ...brandVars(colors), '--dock-reserve': `${reserve}px` } as CSSProperties;
@@ -64,21 +55,8 @@ export function HomeScreen(props: HomeScreenProps) {
       ) : (
         <div className="home-stack">
           <HomeProfile onOpen={onProfile} />
-          <FaceNotice onOpen={onProfile} />
-          {notice}
           <HomeTop>{top}</HomeTop>
-          <div className="home-tiles">
-            {actions.map((action) => (
-              <ActionTile
-                key={action.id}
-                action={action}
-                waiting={pending && Boolean(action.waitsApproval)}
-                pale={pending && Boolean(action.waitsApproval || action.paleUntilApproval)}
-                onOpen={(opens) => onOpen(action, opens)}
-              />
-            ))}
-            {tiles}
-          </div>
+          <div className="home-tiles">{tiles}</div>
           {after}
           <LanguageSwitcher />
         </div>
@@ -92,34 +70,3 @@ export function HomeScreen(props: HomeScreenProps) {
 // under them, as on the mockups).
 const DOCK_IN_BROWSER = 300;
 const DOCK_IN_TELEGRAM = 236;
-
-type ActionTileProps = {
-  readonly action: StartAction;
-  readonly waiting: boolean;
-  readonly pale: boolean;
-  readonly onOpen: (opens?: TileLive['opens']) => void;
-};
-
-const NOTHING_LIVE = (): TileLive => ({});
-
-// An action as a tile; what it says live comes from the action itself (G53). While the application
-// is checked, an action that waits says when it works; it still opens and explains (docs/86 V7).
-// Its icon stays in color, as on the mockup the owner chose (G53).
-function ActionTile({ action, waiting, pale, onOpen }: ActionTileProps) {
-  const { t } = useI18n();
-  const live = (action.useLive ?? NOTHING_LIVE)();
-  const hint = waiting ? t('drivers.status.pending.after') : (live.hint ?? t(action.hintKey));
-  return (
-    <HomeTile
-      icon={action.icon}
-      tone={action.tone}
-      title={live.title ?? t(action.labelKey)}
-      hint={hint}
-      pale={pale}
-      {...(live.badge === undefined ? {} : { badge: live.badge })}
-      {...(live.value === undefined ? {} : { value: live.value })}
-      {...(live.urgent ? { urgent: true } : {})}
-      onClick={() => onOpen(live.opens)}
-    />
-  );
-}

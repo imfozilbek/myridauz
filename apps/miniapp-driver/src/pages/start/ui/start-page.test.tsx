@@ -1,3 +1,4 @@
+import { DriverGate } from '@platform/ui';
 import { renderInShell, testClients } from '@platform/ui/testing';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -23,7 +24,17 @@ const driver = testClients({
   market: { myTrips: async () => [] },
   bookings: { driverBookings: async () => [], driverOffers: async () => [] },
 });
-const renderApp = () => renderInShell(<StartPage />, false, true, undefined, driver);
+// The gate of the driver stands above the main screen and the links of the bots (mount-app.tsx).
+const renderApp = (clients = driver) =>
+  renderInShell(
+    <DriverGate>
+      <StartPage />
+    </DriverGate>,
+    false,
+    true,
+    undefined,
+    clients,
+  );
 
 describe('StartPage', () => {
   it('opens the main screen of an approved driver: four tiles and the block with two buttons (G76)', async () => {
@@ -50,11 +61,7 @@ describe('StartPage', () => {
   });
 
   it('asks a new driver to fill the application in the block (G62, G76)', async () => {
-    renderInShell(
-      <StartPage />,
-      false,
-      true,
-      undefined,
+    renderApp(
       testClients({
         drivers: { getApplication: async () => null },
         market: { myTrips: async () => [] },

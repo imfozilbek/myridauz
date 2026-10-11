@@ -16,7 +16,7 @@ import { BoardSheet } from './board-sheet';
 import { draftOf, keepDraft } from './offer-draft';
 import { useEnds } from './ends';
 import { useRequestDay } from './request-day';
-import { TimeChips, useOfferTime } from './time-chips';
+import { TimeChips, TOO_SOON, useOfferTime } from './time-chips';
 
 type Props = {
   readonly request: RideRequest | null;
@@ -55,10 +55,12 @@ function OfferForm({ request, onSent, onShort }: Omit<Props, 'request'> & { read
     setAsked(price + by * bounds.roundStep);
   };
   const send = async () => {
-    if (!when?.departAt) return;
+    const departAt = when?.sending();
+    // The time on the sheet became too soon meanwhile: the sheet shows the next one and says why (G77).
+    if (!departAt) return when ? fail(TOO_SOON) : undefined;
     clear();
     try {
-      await bookings.sendOffer(request.id, { departAt: when.departAt, price });
+      await bookings.sendOffer(request.id, { departAt, price });
       track({ name: 'booking_step', screen: 'requests.offer', step: 'offer_sent' });
       haptic.success();
       onSent();

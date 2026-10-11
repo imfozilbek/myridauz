@@ -1,8 +1,7 @@
-import { useBrand } from '../context/brand-context';
+import { useOpenSupport } from '../telegram/support-link';
 import { useI18n } from '../context/i18n-context';
 import { useUnreadChats } from '../chats/unread-chats';
 import { HomeTile } from '../flow/home-tile';
-import { openInTelegram } from '../telegram/feedback';
 import { useWhen } from './home-when';
 import type { TripsHint } from './tile-hints';
 import { useHomeTap } from './use-home-tap';
@@ -62,7 +61,7 @@ export function ChatsTile({ driver, onOpen }: { readonly driver: boolean; readon
 // «Yordam» opens the support bot of the brand (docs/50): an answer in Telegram itself.
 export function SupportTile() {
   const { t } = useI18n();
-  const { bots } = useBrand();
+  const support = useOpenSupport();
   const tap = useHomeTap();
   return (
     <HomeTile
@@ -71,7 +70,7 @@ export function SupportTile() {
       tone="brand"
       title={t('home.support')}
       hint={t('home.supportHint')}
-      onClick={tap('support', () => openInTelegram(`https://t.me/${bots.support}`))}
+      onClick={tap('support', () => support())}
     />
   );
 }

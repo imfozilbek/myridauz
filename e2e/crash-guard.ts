@@ -45,12 +45,15 @@ export const test = base.extend<{
   pictures: undefined;
   actionSheets: 'later' | 'keep';
   sheetsLater: undefined;
+  standClock: boolean;
   clock: undefined;
 }>({
   actionSheets: ['later', { option: true }],
+  // The stand runs on a real backend and keeps its clock (playwright.stand.config.ts).
+  standClock: [false, { option: true }],
   clock: [
-    async ({ context }, use) => {
-      await testClock(context);
+    async ({ context, standClock }, use) => {
+      await testClock(context, standClock);
       await use(undefined);
     },
     { auto: true },
