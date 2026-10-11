@@ -20,14 +20,15 @@ const asked = {
 
 function driver(requests = [asked], answer = vi.fn(async () => asked), money = 100_000) {
   vi.setSystemTime(NOW);
+  const listed = vi.fn(async () => requests);
   const shown = renderHome(() => <DriverHome />, DRIVER_ACTIONS, {
     trips: async () => [trip],
-    requests: async () => requests,
+    requests: listed,
     sheet: true,
     answers: { answer },
     wallet: async () => ({ ...wallet, bonus: money, main: 0 }),
   });
-  return { ...shown, answer };
+  return { ...shown, answer, listed };
 }
 
 // «Yangi soʻrov» over the main screen of a driver (G68, docs/122, mockup g68/7 screen 3).
@@ -58,6 +59,18 @@ describe('the sheet of a new request (G68)', { timeout: 20_000 }, () => {
     await tap('Tasdiqlash');
     expect(answer).toHaveBeenCalledWith('b3', 'confirm');
     expect(await screen.findByText(/^Madina tasdiqlandi · 19.000 komissiya$/u)).toBeTruthy();
+    await sheetClosed();
+  });
+
+  // One answer for the sheet, «Mening safarim» and the booking (G77 C3, useAnswerBooking): counted, and
+  // the lists of the main screen load again at once, not at the next signal.
+  it('«Tasdiqlash» counts the step and loads the lists of the main screen again', async () => {
+    const { listed, tracked } = driver([{ ...asked, id: 'b7' }]);
+    await tap('Javob berish');
+    const before = listed.mock.calls.length;
+    await tap('Tasdiqlash');
+    await vi.waitFor(() => expect(listed.mock.calls.length).toBeGreaterThan(before));
+    expect(tracked).toContainEqual(expect.objectContaining({ screen: 'sheet', step: 'confirmed' }));
     await sheetClosed();
   });
 
