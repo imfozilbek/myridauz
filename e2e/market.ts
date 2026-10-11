@@ -1,17 +1,29 @@
 import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { openFindTrip, publishButton, TEXT } from './apps';
+import { pressBack } from './telegram-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 
+// The list of «Qayerdan» of a route by lists: the first empty end opens at once (G79 В8); «Qayerdan»
+// filled by the place of the person opens «Qayerga» instead, and «Назад» leads to its row.
+export async function openFromList(page: Page) {
+  const fromList = page.getByText(t('places.fromTitle'));
+  const toList = page.getByText(t('places.toTitle'));
+  await expect(fromList.or(toList)).toBeVisible();
+  if (await fromList.isVisible()) return;
+  await pressBack(page);
+  await page.getByText(TEXT.from, { exact: true }).click();
+}
+
 // The route of a driver from Chilonzor (Toshkent shahri) to Samarqand shahri, or the whole region,
 // by lists (G26, docs/74). «Qayerdan» may be filled already by the place of the person: chosen again.
 // «Qayerga» opens by itself, both ends go on without «Davom etish» (G40, docs/106 K1).
 export async function chooseRoute(page: Page, wholeRegion = false) {
-  await page.getByText(TEXT.from).click();
+  await openFromList(page);
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
   await page.getByAltText('Samarqand viloyati').click();

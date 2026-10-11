@@ -1,6 +1,7 @@
 import { expect, type Browser, type Page } from '@playwright/test';
 import { createChatClient, createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
+import { openFromList } from '../market';
 import { fillCar } from '../driver-application';
 import { OWNER } from './people';
 import { NARROW } from './screen-tour';
@@ -36,7 +37,7 @@ export const liveMicrophone = (page: Page) =>
 
 // From Chilonzor (Toshkent shahri) to Navoiy, tomorrow, by lists.
 export async function chooseRoute(page: Page) {
-  await page.getByText(TEXT.from).click();
+  await openFromList(page);
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
   // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).

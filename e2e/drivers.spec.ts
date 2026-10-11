@@ -3,6 +3,7 @@ import { mockApi } from './api-mock';
 import { mockWaitingApplication, summary } from './drivers-mock';
 import { appUrl, MINI_APPS, openApplication, publishButton, TEXT } from './apps';
 import { applyAsDriver } from './driver-application';
+import { openFromList } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 const [, DRIVER] = MINI_APPS;
@@ -39,7 +40,8 @@ test('driver: approved, «Siz haydovchisiz!» with the bonus, then the main butt
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await expect(page.getByText(TEXT.approved)).toBeVisible();
   await publishButton(page).click();
-  await expect(page.getByText(TEXT.from)).toBeVisible();
+  // The route opens on its first empty end (G79 В6а, В8).
+  await openFromList(page);
 });
 
 test('admin: the team opens an application and approves it', async ({ page }) => {

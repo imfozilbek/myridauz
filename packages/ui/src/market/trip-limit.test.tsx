@@ -31,7 +31,7 @@ describe('the limit of active trips', () => {
 
   it('opens the route when a cancelled or a past trip does not count', async () => {
     open([trip, { ...trip, id: 't2', status: 'cancelled' }, { ...trip, id: 't3', status: 'completed' }]);
-    expect(await screen.findByText('Qayerdan')).toBeTruthy();
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
     expect(screen.queryByText('Faol safarlar 3 ta')).toBeNull();
   });
 });

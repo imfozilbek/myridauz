@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
+import { openFromList } from '../market';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
 import { searchTo } from './search-kit';
@@ -25,7 +26,7 @@ test.afterEach(() => expect(outsideCalls()).toEqual([]));
 
 // From Chilonzor (Toshkent shahri) to Urgut (Samarqand viloyati), by lists.
 async function chooseRoute(page: Page) {
-  await page.getByText(TEXT.from).click();
+  await openFromList(page);
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
   // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).

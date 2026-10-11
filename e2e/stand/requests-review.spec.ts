@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '../crash-guard';
 import { openRequests, TEXT } from '../apps';
+import { openFromList } from '../market';
 import { HUMOYUN } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { fillEnds } from './request-kit';
@@ -78,7 +79,7 @@ for (const platform of PLATFORMS)
     // (R2, R4, G64).
     await openHome(page, 'driver', HUMOYUN, platform);
     await openRequests(page);
-    await page.getByText(TEXT.from).click();
+    await openFromList(page);
     await page.getByAltText('Toshkent shahri').click();
     await page.getByText('Yunusobod').click();
     // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).

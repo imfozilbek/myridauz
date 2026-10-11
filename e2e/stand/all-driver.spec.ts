@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { openNewTrip, openRequests, TEXT } from '../apps';
-import { openOwnTrip } from '../market';
+import { openFromList, openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
 import { MUROD, ZEBO } from './people';
@@ -70,7 +70,7 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
 test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
   await openNewTrip(page);
-  await page.getByText(TEXT.from).click();
+  await openFromList(page);
   await page.getByAltText('Toshkent shahri').click();
   await page.getByText('Chilonzor').click();
   await page.getByAltText('Samarqand viloyati').click();
