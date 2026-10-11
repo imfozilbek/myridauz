@@ -1,8 +1,8 @@
-import type { Attention, AttentionSign, PersonId } from '@platform/contracts';
+import type { Attention, AttentionSign } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import type { HomeGo } from '../flow/start-action';
+import type { HomeGo, Launch, PersonName } from '../flow/start-action';
 import { Icon, type IconName } from '../icons';
 import { haptic } from '../telegram/feedback';
 import { TeamSection } from './team-section';
@@ -66,11 +66,17 @@ const CARDS: Record<Kind, Card> = {
 };
 const KINDS = Object.keys(CARDS) as Kind[];
 
-// The person a sign is about: one sign of a kind opens that person in «Odamlar» (G75).
-function personOf(sign: AttentionSign): PersonId | undefined {
-  if (sign.kind === 'contact' || sign.kind === 'rating' || sign.kind === 'money') return sign.person;
-  return sign.kind === 'pair' ? sign.driverId : undefined;
+// The person a sign is about: one sign of a kind opens that person in «Odamlar» (G75), signs of many
+// open the list of them there (G79 К3).
+function personOf(sign: AttentionSign): PersonName | undefined {
+  if (sign.kind === 'contact' || sign.kind === 'rating' || sign.kind === 'money')
+    return { id: sign.person, name: sign.name };
+  return sign.kind === 'pair' ? { id: sign.driverId, name: sign.driver } : undefined;
 }
+
+// One person: that person; more: the list of them; none: «Odamlar» as it is.
+const whom = ([first, ...more]: readonly PersonName[]): Launch | undefined =>
+  !first ? undefined : more.length === 0 ? { person: first.id } : { people: [first, ...more] };
 
 type SectionProps = { readonly attention: Attention; readonly go: HomeGo };
 
@@ -82,17 +88,14 @@ export function DiqqatSection({ attention, go }: SectionProps) {
   const { colors } = brand.theme;
   const counted = KINDS.map((kind) => {
     const signs = attention.signs.filter(({ sign }) => sign.kind === kind);
-    const [only] = signs;
-    return {
-      kind,
-      count: signs.length,
-      person: signs.length === 1 && only ? personOf(only.sign) : undefined,
-    };
+    const named = signs.flatMap(({ sign }) => personOf(sign) ?? []);
+    const people = named.filter((one, at) => named.findIndex((other) => other.id === one.id) === at);
+    return { kind, count: signs.length, people };
   }).filter(({ count }) => count > 0);
   if (counted.length === 0) return null;
   return (
     <TeamSection title={t('team.section.diqqat')}>
-      {counted.map(({ kind, count, person }) => {
+      {counted.map(({ kind, count, people }) => {
         const card = CARDS[kind];
         return (
           <button
@@ -101,7 +104,7 @@ export function DiqqatSection({ attention, go }: SectionProps) {
             className="team-card diqqat-card"
             onClick={() => {
               haptic.tap();
-              go(card.opens, card.opens === PEOPLE_SECTION && person ? { person } : undefined);
+              go(card.opens, card.opens === PEOPLE_SECTION ? whom(people) : undefined);
             }}
           >
             <Icon name={card.icon} size={ICON} color={card.fault ? colors.danger : colors.attention} />
