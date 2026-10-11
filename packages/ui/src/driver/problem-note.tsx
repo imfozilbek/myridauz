@@ -1,4 +1,10 @@
-import { reasonsAt, type ModerationReason, type ProblemPlace } from '@platform/contracts';
+import {
+  CAR_PHOTO_KINDS,
+  reasonsAt,
+  type DriverApplication,
+  type ModerationReason,
+  type ProblemPlace,
+} from '@platform/contracts';
 import { Caption } from '@telegram-apps/telegram-ui';
 import { useI18n } from '../context/i18n-context';
 
@@ -25,3 +31,8 @@ export function ProblemNote({ reasons, place }: ProblemNoteProps) {
 
 export const hasProblem = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
   reasonsAt(reasons, place).length > 0;
+
+// The three photos of the car are taken and the team asks for no photo, the face neither: ready to send.
+export const photosReady = (photos: DriverApplication['photos'], reasons: readonly ModerationReason[]) =>
+  !hasProblem(reasons, 'avatar') &&
+  CAR_PHOTO_KINDS.every((kind) => photos[kind] && !hasProblem(reasons, kind));

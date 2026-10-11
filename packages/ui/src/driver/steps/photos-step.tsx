@@ -7,6 +7,7 @@ import {
 } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { Text } from '@telegram-apps/telegram-ui';
+import { useEffect } from 'react';
 import { useAccount } from '../../account/account-context';
 import { useFaceShot } from '../../account/profile/use-face-shot';
 import { StepLayout } from '../../account/step-layout';
@@ -21,7 +22,7 @@ import { CarHead } from '../car-head';
 import { FaceTile } from '../face-tile';
 import { PhotoTile } from '../photo-tile';
 import { useCarShots } from '../use-car-shots';
-import { hasProblem } from '../problem-note';
+import { hasProblem, photosReady } from '../problem-note';
 import '../car-form/car-form.css';
 import './photos-step.css';
 
@@ -31,6 +32,8 @@ type Props = {
   readonly reasons: readonly ModerationReason[];
   // The team asked to fix it: the title names the photos to retake, «Qayta yuborish» sends.
   readonly fixing: boolean;
+  // A fix opened by «Tuzatish» with one photo to retake: its camera opens at once (G79 В16).
+  readonly shoot?: boolean;
   readonly failure: TranslationKey | null;
   readonly onPhotos: (application: DriverApplication) => void;
   readonly onChange: () => void;
@@ -45,6 +48,7 @@ export function PhotosStep({
   photos,
   reasons,
   fixing,
+  shoot = false,
   failure,
   onPhotos,
   onChange,
@@ -60,9 +64,14 @@ export function PhotosStep({
   const { camera, take, busy, failed, version } = useCarShots(onPhotos);
   const disabled = !hasCamera || busy !== null || face.busy;
   const faceAsked = hasProblem(reasons, 'avatar');
+  useEffect(() => {
+    const retake = CAR_PHOTO_KINDS.filter((kind) => !photos[kind] || hasProblem(reasons, kind));
+    if (shoot && hasCamera && !faceAsked && retake.length === 1 && retake[0]) take(retake[0]);
+    // Once, when the step opens.
+  }, []);
   const bad = CAR_PHOTO_KINDS.filter((item) => hasProblem(reasons, item)).length + (faceAsked ? 1 : 0);
   // A photo to retake keeps the driver here until it is retaken.
-  const ready = !faceAsked && CAR_PHOTO_KINDS.every((item) => photos[item] && !hasProblem(reasons, item));
+  const ready = photosReady(photos, reasons);
   const shown = failure ?? failed ?? face.failure;
   const photoPlaces: readonly string[] = [...CAR_PHOTO_KINDS, 'avatar'];
   const asked = reasons.filter((reason) => photoPlaces.includes(REASON_PLACE[reason]));

@@ -25,7 +25,8 @@ describe('DriverGate: what the team asked to fix (docs/04, G62 mockup 5)', () =>
     await waitFor(() => expect(submit).toHaveBeenCalledWith(car));
   });
 
-  it('opens a car to fix on the car with the reason, then sends without a photo to retake', async () => {
+  // A fix of the car data only: «Davom etish» sends it, no photos screen in between (G79 В15, 2 → 1).
+  it('opens a car to fix on the car with the reason, then sends it at once when no photo is asked', async () => {
     const { submit } = renderGate(
       application({ status: 'changes_requested', car, reasons: ['plate_mismatch'], photos: allPhotos }),
     );
@@ -35,8 +36,7 @@ describe('DriverGate: what the team asked to fix (docs/04, G62 mockup 5)', () =>
     fireEvent.change(screen.getByDisplayValue('01 A 123 BC'), { target: { value: '01A124BC' } });
     expect(screen.queryByRole('alert')).toBeNull();
     await tap('Davom etish');
-    expect(await screen.findByText('Mashina rasmlari')).toBeTruthy();
-    await tap('Qayta yuborish');
     await waitFor(() => expect(submit).toHaveBeenCalledWith({ ...car, plate: '01A124BC' }));
+    expect(screen.queryByText('Mashina rasmlari')).toBeNull();
   });
 });

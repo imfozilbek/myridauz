@@ -16,7 +16,7 @@ import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { haptic } from '../telegram/feedback';
 import { useCarAnswers } from './car-answers';
 import { CarScreen } from './car-form/car-screen';
-import { hasProblem } from './problem-note';
+import { hasProblem, photosReady } from './problem-note';
 import { PhotosStep } from './steps/photos-step';
 import { useReasons } from './use-reasons';
 
@@ -25,13 +25,15 @@ type ApplicationFlowProps = {
   readonly onSubmitted: (application: DriverApplication) => void;
   // To the main screen (docs/94 B4).
   readonly onClose: () => void;
+  // Opened by a tap of «Tuzatish», not by itself at the start (G79 В16).
+  readonly tapped?: boolean;
 };
 
 const NO_PHOTOS = { front: false, side: false, interior: false };
 
 // The application in 2 screens (G62, docs/118 path 5): the car, then its photos and the sending.
 // A fix opens on the car when the team asked about it, else on the photos.
-export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFlowProps) {
+export function ApplicationFlow({ initial, onSubmitted, onClose, tapped = false }: ApplicationFlowProps) {
   const { track } = useAnalytics();
   const { drivers } = useApiClients();
   const known = initial?.car ?? undefined;
@@ -50,6 +52,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
     onClose();
   });
 
+  // True when sent; a failure is told on the photos screen.
   const send = async () => {
     setFailure(null);
     try {
@@ -60,9 +63,11 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
       haptic.success();
       clear();
       if (application) onSubmitted(application);
+      return true;
     } catch (caught) {
       haptic.error();
       setFailure(errorKey(caught));
+      return false;
     }
   };
 
@@ -74,6 +79,7 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
         photos={photos}
         reasons={reasons}
         fixing={fixing}
+        shoot={tapped && first === 'photos'}
         failure={failure}
         onPhotos={(next) => {
           const all = CAR_PHOTO_KINDS.every((kind) => next.photos[kind]);
@@ -102,9 +108,10 @@ export function ApplicationFlow({ initial, onSubmitted, onClose }: ApplicationFl
         reasons={reasons}
         onChange={edit}
         onBack={leave}
-        onDone={() => {
+        onDone={async () => {
           track({ name: 'driver_application_step', screen: 'driver', step: 'car' });
-          go('photos');
+          // A fix of the car data only: the photos are as the team wants, it is sent at once (G79 В15).
+          if (!fixing || !photosReady(photos, reasons) || !(await send())) go('photos');
         }}
       />
       <DraftRestored shown={restored} />
