@@ -35,6 +35,12 @@ export function RoadCard({ trip, people, act, onChanged }: Props) {
   const stops = pickup ? pickups.filter((stop) => waiting(stop).length > 0) : dropoffs;
   const next = pickup ?? stops.find((stop) => stop.riders.some((booking) => booking.arrivedAt === null));
   const place = next?.name ? nameText(next.name, pickup ? trip.from : trip.to) : (next?.who ?? '');
+  // At a pitak the place is its name: under it who waits there, as on the card of the stop.
+  const who = pickup
+    ? waiting(pickup)
+        .map((one) => one.passenger.firstName)
+        .join(', ')
+    : (next?.who ?? '');
   const title = t('home.dock.onRoadOf', {
     title: t('driverTrip.onWay.title'),
     done: String(done),
@@ -42,7 +48,7 @@ export function RoadCard({ trip, people, act, onChanged }: Props) {
   });
   return (
     <>
-      <DockCard chip={title} chipTone="green" title={t('home.dock.next', { place })} text={next?.who ?? ''} />
+      <DockCard chip={title} chipTone="green" title={t('home.dock.next', { place })} text={who} />
       <NavigatorSheet navigator={navigator} />
       <SecondaryButton
         beside

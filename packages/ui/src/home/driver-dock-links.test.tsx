@@ -45,6 +45,15 @@ describe('the buttons of a trip in the block of a driver', { timeout: 20_000 }, 
     await vi.waitFor(() => expect(meet).toHaveBeenCalledWith(confirmed.id, 'came'));
   });
 
+  it('at a pitak on the way the card names the people who wait there, not the pitak twice', async () => {
+    const road = { ...trip, departAt: Date.now() + 10 * MINUTE_MS, departedAt: Date.now() - MINUTE_MS };
+    const pitak = { id: 'qoyliq', name: 'Qoʻyliq pitagi', point: { lat: 41.2438, lng: 69.3394 }, hint: null };
+    home(road, [{ ...confirmed, trip: road, mode: 'pitak' as const, pitak }]);
+    expect(await screen.findByText('Keyingi: Qoʻyliq pitagi')).toBeTruthy();
+    expect(screen.getByText(confirmed.passenger.firstName)).toBeTruthy();
+    expect(screen.getAllByText(/Qoʻyliq pitagi/u)).toHaveLength(1);
+  });
+
   it('«Yetib keldik» marks the arrival, then «Safar tugadi» with its stars and «Qaytish»', async () => {
     const road = { ...trip, departAt: Date.now() - HOUR_MS, departedAt: Date.now() - HOUR_MS };
     const arriveTrip = vi.fn<MarketClient['arriveTrip']>(async () => ({ ...road, arrivedAt: Date.now() }));
