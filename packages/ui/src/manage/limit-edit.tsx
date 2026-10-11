@@ -10,9 +10,9 @@ import { ManageGroup, ManagePage } from './manage-page';
 import { useLimitValue } from './limit-value';
 import '../find/seats.css';
 
-// A limit other than a sum goes by «−» and «+» (G79 К9): minutes by 5, stars by tenths, the rest by 1.
-const STEPS: Readonly<Record<string, number>> = { minutes: 5, stars: 0.1 };
-const TENTHS = 10;
+// A short range of whole numbers goes by «−» and «+» (G79 К9); a long one (the days of a year, the
+// minutes, the stars in tenths, a sum) is typed: a few taps never become hundreds.
+const STEPPER_MAX_TAPS = 20;
 
 type EditProps = {
   readonly limitKey: LimitKey;
@@ -31,11 +31,8 @@ export function LimitEdit({ limitKey, value, onBack, onSaved }: EditProps) {
   const rule = LIMITS[limitKey];
   const next = Number(text.replace(',', '.'));
   const fits = text.trim() !== '' && limitFits(limitKey, next);
-  const step = STEPS[rule.unit] ?? 1;
-  const stepBy = (by: -1 | 1) => {
-    const moved = Math.round((next + by * step) * TENTHS) / TENTHS;
-    setText(String(Math.min(rule.max, Math.max(rule.min, moved))));
-  };
+  const stepper = rule.unit !== 'sum' && rule.unit !== 'stars' && rule.max - rule.min <= STEPPER_MAX_TAPS;
+  const stepBy = (by: -1 | 1) => setText(String(Math.min(rule.max, Math.max(rule.min, next + by))));
   const save = async () => {
     clear();
     try {
@@ -60,7 +57,7 @@ export function LimitEdit({ limitKey, value, onBack, onSaved }: EditProps) {
             if (fits) void save();
           }}
         >
-          {rule.unit === 'sum' ? (
+          {!stepper ? (
             <input
               inputMode="decimal"
               aria-label={t(`manage.limit.${limitKey}`)}
