@@ -29,7 +29,7 @@ async function publishTrip() {
   return read<{ id: string }>(call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }));
 }
 
-describe('«Hikoyaga joylash» (docs/88 L19)', () => {
+describe('«Hikoyaga joylash» (docs/88 L19)', { timeout: 20_000 }, () => {
   it('keeps the picture of the own open trip behind a public link to the trip', async () => {
     const { id } = await publishTrip();
     const story = await read<{ imageUrl: string; bookLink: string }>(

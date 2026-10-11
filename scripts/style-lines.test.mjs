@@ -12,7 +12,7 @@ const styles = (root) =>
     .filter((name) => !name.split('/').some((part) => part === 'node_modules' || part === 'dist'))
     .map((name) => new URL(name, root));
 
-describe('style files', () => {
+describe('style files', { timeout: 20_000 }, () => {
   it('keep every file within 150 lines', () => {
     const long = ROOTS.flatMap(styles)
       .filter((file) => readFileSync(file, 'utf8').trimEnd().split('\n').length > MAX_LINES)

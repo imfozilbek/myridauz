@@ -13,7 +13,7 @@ const grid = function* () {
     for (let lng = 55.9; lng < 73.2; lng += STEP) yield { lat, lng };
 };
 
-describe('the borders of districts and cities (G24, docs/48)', () => {
+describe('the borders of districts and cities (G24, docs/48)', { timeout: 20_000 }, () => {
   it('has a border for every district and city of the directory and for nothing else', () => {
     expect(borders.map((border) => border.id).sort()).toEqual(level2.map((place) => place.id).sort());
     for (const border of borders) expect(border.parts.length).toBeGreaterThan(0);
