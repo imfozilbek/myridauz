@@ -1,6 +1,7 @@
 import { tashkentDate, TRIP_LINK } from '@platform/contracts';
 import { useState, type ReactNode } from 'react';
 import { BookFlow } from '../bookings/book-flow';
+import { takeChoice } from '../find/kept-choice';
 import { SafarScreen } from '../find/safar-screen';
 import type { SeatChoice } from '../find/seat-choice';
 import { useApiClients } from '../context/api-clients';
@@ -37,7 +38,8 @@ export function TripLink({ enabled, children }: { readonly enabled: boolean; rea
 export function TripById({ id, onClose }: { readonly id: string; readonly onClose: () => void }) {
   const { market } = useApiClients();
   const { value, failed, reload } = useLoad(() => market.trip(id));
-  const [booking, setBooking] = useState<SeatChoice | null>(null);
+  // «Band qilish» before the registration: the booking opens with the seats chosen then (G79 П5).
+  const [booking, setBooking] = useState<SeatChoice | null>(() => takeChoice(id));
   const [others, setOthers] = useState(false);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
   if (!value) return <ScreenSkeleton onBack={onClose} />;
