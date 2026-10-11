@@ -67,4 +67,18 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
     renderMarket(screenOf(), testClients({ map: testMap() }));
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
+
+  // The place comes a moment after the screen (the first visit, nothing of last time): the screen
+  // waits for it, so «Qayerga» opens, not «Qayerdan» (G79 В8, review).
+  it('waits a moment for the place before it opens the first empty end', async () => {
+    location.knownPosition.mockImplementationOnce(
+      () => new Promise((done) => setTimeout(() => done({ lat: 41.3, lng: 69.2 }), 300)),
+    );
+    renderMarket(
+      <RouteScreen allowWholeRegion quick onBack={() => undefined} onDone={() => undefined} />,
+      testClients({ map: testMap() }),
+    );
+    expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
+    expect(screen.queryByText('Qayerdan yoʻlga chiqasiz?')).toBeNull();
+  });
 });

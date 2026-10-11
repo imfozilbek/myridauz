@@ -1,17 +1,15 @@
 import { checkRoute, type Location, type RouteError } from '@platform/contracts';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useI18n } from '../context/i18n-context';
 import type { PlaceDirectory } from '../places/directory';
 import { PlacePicker } from '../places/place-picker';
 import type { Route } from '../places/route-screen';
 import { useDirectory } from '../places/use-directory';
-import { useHereChecked } from '../places/use-here';
+import { useHereAsked } from '../places/use-here';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { haptic } from '../telegram/feedback';
 import { DirectionsScreen } from './directions-screen';
-
-const HERE_WAIT_MS = 1500;
 
 type Props = {
   readonly onBack: () => void;
@@ -41,7 +39,7 @@ function FindStartForm({
   to,
 }: Props & { directory: PlaceDirectory }) {
   const { t } = useI18n();
-  const here = useHereChecked(directory);
+  const here = useHereAsked(directory).settled;
   const [chosen, setChosen] = useState<Location | null>(known ?? null);
   const from = chosen ?? here;
   const [picking, setPicking] = useState(pick === 'from');
@@ -49,11 +47,6 @@ function FindStartForm({
   // The phone still tells where the person stands: a short wait, then the list of «Qayerdan» stays
   // open, it never changes by itself under the finger (G59).
   const waiting = from === undefined && !picking;
-  useEffect(() => {
-    if (!waiting) return undefined;
-    const timer = setTimeout(() => setPicking(true), HERE_WAIT_MS);
-    return () => clearTimeout(timer);
-  }, [waiting]);
   const choose = (start: Location, end: Location) => {
     const found = checkRoute(start, end, directory.find);
     setError(found);

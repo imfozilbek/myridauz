@@ -1,21 +1,13 @@
-import './places.css';
 import { checkRoute, type Location, type RouteError } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
 import { useCallback, useState } from 'react';
-import { useScreenView } from '../context/analytics-context';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
-import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
-import { useScreenBackground } from '../telegram/screen-background';
-import { brandVars } from '../theme/brand-vars';
 import type { PlaceDirectory } from './directory';
-import { PlaceRow } from './district-list';
 import { PlacePicker } from './place-picker';
-import { useHere } from './use-here';
+import { RouteView } from './route-form-view';
+import { useHereAsked } from './use-here';
 import { useOpenAtTop } from '../telegram/screen-top';
 import { useDirectory } from './use-directory';
 
@@ -44,7 +36,19 @@ export function RouteScreen(props: RouteScreenProps) {
   const [state, retry] = useDirectory();
   if (state.status === 'loading') return <ScreenSkeleton onBack={props.onBack} />;
   if (state.status === 'error') return <ErrorScreen onRetry={retry} onBack={props.onBack} />;
-  return <RouteForm {...props} directory={state.directory} />;
+  return <RouteStart {...props} directory={state.directory} />;
+}
+
+type Known = RouteScreenProps & { readonly directory: PlaceDirectory };
+
+// The first empty end opens at once (G79 В8): with no end known, the place of the person is waited
+// for a moment, so «Qayerga» opens where «Qayerdan» is where the person stands.
+function RouteStart(props: Known) {
+  const { live, settled } = useHereAsked(props.directory);
+  const auto = props.quick === true && !props.pick && !props.initial && !props.from && !props.to;
+  if (auto && settled === undefined) return <ScreenSkeleton onBack={props.onBack} />;
+  const first = settled ? 'to' : 'from';
+  return <RouteForm {...props} here={live} {...(auto ? { pick: first } : {})} />;
 }
 
 function RouteForm({
@@ -58,15 +62,14 @@ function RouteForm({
   to: knownTo,
   onEnd,
   quick,
-}: RouteScreenProps & { directory: PlaceDirectory }) {
+  here,
+}: Known & { readonly here: Location | null }) {
   const { t } = useI18n();
   // «Qayerdan» fills itself where the person stands, when they allowed it before (G26, docs/74).
-  const here = useHere(directory);
   const [chosenFrom, setFrom] = useState<Location | null>(initial?.from ?? known ?? null);
   const from = chosenFrom ?? here;
   const [to, setTo] = useState<Location | null>(initial?.to ?? knownTo ?? null);
-  const first = quick && !initial ? (from ? 'to' : 'from') : null;
-  const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? first);
+  const [picking, setPicking] = useState<'from' | 'to' | null>(pick ?? null);
   // Back from a long list, the form shows «Qayerdan» again (docs/83 N22).
   useOpenAtTop(picking);
   const [error, setError] = useState<RouteError | null>(null);
@@ -103,47 +106,5 @@ function RouteForm({
   }
   return (
     <RouteView from={from} to={to} error={error} onPick={setPicking} onBack={onBack} onSubmit={submit} />
-  );
-}
-
-type RouteViewProps = {
-  readonly from: Location | null;
-  readonly to: Location | null;
-  readonly error: RouteError | null;
-  readonly onPick: (end: 'from' | 'to') => void;
-  readonly onBack: () => void;
-  readonly onSubmit: () => void;
-};
-
-function RouteView({ from, to, error, onPick, onBack, onSubmit }: RouteViewProps) {
-  useScreenView('places.route');
-  useScreenBackground();
-  const { t } = useI18n();
-  const { colors } = useBrand().theme;
-  const value = (place: Location | null) => (place ? place.name : t('places.choose'));
-  // The ends in the look of the places of the mockup g75/6 A: one white card, a row for each end.
-  return (
-    <div className="places" style={brandVars(colors)}>
-      <Screen onBack={onBack} />
-      <h1 className="places-title">{t('places.route')}</h1>
-      <div className="district-card">
-        <PlaceRow
-          icon="origin"
-          className="route-from"
-          title={t('places.from')}
-          hint={value(from)}
-          onClick={() => onPick('from')}
-        />
-        <PlaceRow
-          icon="destination"
-          className="route-to"
-          title={t('places.to')}
-          hint={value(to)}
-          onClick={() => onPick('to')}
-        />
-      </div>
-      {error ? <Text className="places-error">{t(`errors.${error}`)}</Text> : null}
-      <MainButton text={t('common.continue')} onClick={onSubmit} />
-    </div>
   );
 }

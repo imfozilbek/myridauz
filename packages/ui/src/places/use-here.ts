@@ -55,3 +55,19 @@ export function useHereChecked(directory: PlaceDirectory | null): Location | nul
   const last = lastHere();
   return (last && directory?.find(last)) || undefined;
 }
+
+// A screen waits for the place of the person a moment only (G59, G79 В8). live: the place now, as
+// useHere; settled: undefined while the phone is asked, then the place or null, and an answer later
+// than the wait never changes what the screen opened.
+const HERE_WAIT_MS = 1500;
+export function useHereAsked(directory: PlaceDirectory | null) {
+  const here = useHereChecked(directory);
+  const [gaveUp, setGaveUp] = useState(false);
+  const asking = here === undefined;
+  useEffect(() => {
+    if (!asking) return undefined;
+    const timer = setTimeout(() => setGaveUp(true), HERE_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [asking]);
+  return { live: here ?? null, settled: gaveUp ? null : here };
+}
