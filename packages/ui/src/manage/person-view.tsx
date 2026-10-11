@@ -8,6 +8,7 @@ import { BlockJournal } from '../moderation/block-journal';
 import { ActionFailure } from '../states/action-failure';
 import { useFailure } from '../states/use-failure';
 import { haptic } from '../telegram/feedback';
+import { DriverWallet } from '../wallet/driver-wallet';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
 
 type ViewProps = { readonly card: PersonCard; readonly onBack: () => void; readonly onChanged: () => void };
@@ -18,6 +19,8 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
   const { t, formatDate, formatRating } = useI18n();
   const { moderation } = useApiClients();
   const [blocking, setBlocking] = useState(false);
+  // The wallet of a driver opens right from the card (G79 К5).
+  const [wallet, setWallet] = useState(false);
   const { failure, fail, clear } = useFailure();
   const block = async (days: BlockInput['days']) => {
     if (!(await allowBlock(days ?? null, t))) return;
@@ -31,6 +34,13 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
     }
     setBlocking(false);
   };
+  if (wallet)
+    return (
+      <DriverWallet
+        owner={{ driverId: card.id, firstName: card.firstName }}
+        onBack={() => setWallet(false)}
+      />
+    );
   if (blocking)
     return (
       <ChoiceStep
@@ -83,7 +93,10 @@ export function PersonView({ card, onBack, onChanged }: ViewProps) {
           hint={String(card.complaintsAgainst)}
         />
         {car ? (
-          <ManageRow icon="carSide" title={`${car.make} ${car.model}`} hint={formatPlate(car.plate)} />
+          <>
+            <ManageRow icon="carSide" title={`${car.make} ${car.model}`} hint={formatPlate(car.plate)} />
+            <ManageRow icon="wallet" title={t('wallet.title')} onClick={() => setWallet(true)} />
+          </>
         ) : null}
         <ManageRow
           icon="blocked"
