@@ -3,7 +3,7 @@ import { DraftRestored } from '../flow/draft-restored';
 import { useDirectory } from '../places/use-directory';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { rememberedWay } from '../way/remembered-way';
-import { useNewRequest } from './new-request-state';
+import { useNewRequest, type RequestAnswer, type RequestRepeat } from './new-request-state';
 import { RequestStep, type Find, type Search } from './request-steps';
 
 type Props = {
@@ -14,12 +14,16 @@ type Props = {
   // The ends of the block at the bottom of the main screen (G76): «Qayerga» is asked when missing.
   readonly from?: Location;
   readonly to?: Location;
+  // The day of a refused trip (G79 П14): the day is not asked, «Назад» from the points comes to it.
+  readonly day?: string;
+  // A request sent again (G79 П11): its people, price and car as they were.
+  readonly repeat?: RequestRepeat;
 };
 
 // "Soʻrov qoldirish" (G35, docs/97): the route by lists, the day, the way only where a pitak is,
 // the points on the maps of their districts, the price, the check with the people. Drivers find
 // it. Each step has its key: it opens at the top with its own state (docs/94 S1).
-export function NewRequestFlow({ onBack, search, from, to, onClose = onBack }: Props) {
+export function NewRequestFlow({ onBack, search, from, to, day, repeat, onClose = onBack }: Props) {
   const [places] = useDirectory();
   if (places.status === 'loading') return <ScreenSkeleton onBack={onBack} />;
   const find: Find = places.status === 'ready' ? places.directory.find : () => undefined;
@@ -31,6 +35,7 @@ export function NewRequestFlow({ onBack, search, from, to, onClose = onBack }: P
       {...(search ? { search } : {})}
       {...(from ? { from } : {})}
       {...(to ? { to } : {})}
+      ahead={{ ...(day ? { date: day } : {}), ...repeat }}
     />
   );
 }
@@ -42,12 +47,13 @@ function Flow({
   to,
   onBack,
   onClose,
-}: Props & { readonly find: Find; readonly onClose: () => void }) {
+  ahead,
+}: Props & { readonly find: Find; readonly onClose: () => void; readonly ahead: RequestAnswer }) {
   // Both ends of the block: the route is not asked again, the day is (G76).
   const known = from && to ? { from, to } : undefined;
   const route = search?.route ?? known;
   const last = route ? rememberedWay(route.from.id, route.to.id, find) : null;
-  const flow = useNewRequest(search, last, known);
+  const flow = useNewRequest(search, last, known, ahead);
   const props = { flow, find, search, from, to, onBack, onClose };
   return (
     <>

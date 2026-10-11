@@ -21,6 +21,8 @@ export type RequestAnswer = {
   readonly withWoman?: boolean;
   readonly wholeCar?: boolean;
 };
+// The people, the price and the car of a request sent again: as they were (G79 П11).
+export type RequestRepeat = Pick<RequestAnswer, 'seats' | 'price' | 'wholeCar' | 'withWoman'>;
 type Saved = { readonly step: RequestStepName; readonly answer: RequestAnswer };
 const DRAFT_KEY = 'new_request';
 
@@ -50,13 +52,15 @@ export const keptWay = (last: RememberedWay | null): RequestAnswer =>
 // an empty day of the search (G35, docs/97 K6) the route and the day come with it, and the way
 // of the last trip on the route too: only the people and the price are left.
 // known: both ends of the block of the main screen (G76): the route is answered, the day is asked.
+// ahead: what is known before the first step (G79): the day of a refused trip, a request sent again.
 export function useNewRequest(
   search: { route: Route; date: string } | undefined,
   last: RememberedWay | null,
   known?: Route,
+  ahead: RequestAnswer = {},
 ) {
   const given = search ?? (known ? { route: known } : undefined);
-  const answer: RequestAnswer = given ? { ...given, ...keptWay(last) } : {};
+  const answer: RequestAnswer = given ? { ...given, ...keptWay(last), ...ahead } : {};
   const start: Saved = { step: nextStep(answer), answer };
   const { value, setValue, restored, clear } = useFlowDraft(DRAFT_KEY, checkSaved, start, Boolean(given));
   const [sent, setSent] = useState(false);

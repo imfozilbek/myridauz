@@ -76,10 +76,19 @@ function MyRequests({ onBack, link }: ScreenProps) {
   if (finding) return <FindTripFlow onBack={() => setFinding(false)} />;
   const route = again && { from: places.find(again.from), to: places.find(again.to) };
   // «Qayta yuborish»: the same route, the day is asked again; «Назад» from the points comes to the
-  // day (G77, docs/170 О2).
-  if (route?.from && route.to) {
+  // day (G77, docs/170 О2). The people, the price and the car as they were (G79 П11).
+  if (again && route?.from && route.to) {
     const close = () => (setAgain(null), reload());
-    return <NewRequestFlow onBack={() => setAgain(null)} onClose={close} from={route.from} to={route.to} />;
+    const { seats, price, wholeCar, withWoman } = again;
+    return (
+      <NewRequestFlow
+        onBack={() => setAgain(null)}
+        onClose={close}
+        from={route.from}
+        to={route.to}
+        repeat={{ seats, price, wholeCar, withWoman }}
+      />
+    );
   }
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (opened && value) {

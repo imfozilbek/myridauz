@@ -109,6 +109,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
               go('leave_request', {
                 ...(ends.from ? { from: ends.from } : {}),
                 ...(ends.to ? { to: ends.to } : {}),
+                day: similarDay(trip),
               })
             }
           />

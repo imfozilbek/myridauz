@@ -99,7 +99,9 @@ function FindTrip({ onBack, initial, route: recent, day, pick, from }: Omit<Prop
       now={now}
       filters={filters}
       onFilters={setFilters}
-      onBack={() => setScreen({ step: 'route', route: screen.route })}
+      // Opened with its route, the search goes back where it was opened; «Qayerga borasiz?» only
+      // when the search began there (G79 П2).
+      onBack={known ? onBack : () => setScreen({ step: 'route', route: screen.route })}
       onHome={onBack}
       onScreen={setScreen}
     />

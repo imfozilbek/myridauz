@@ -1,5 +1,7 @@
+import type { MarketClient } from '@platform/api-client';
 import type { RideRequest } from '@platform/contracts';
 import { cleanup, screen, waitFor } from '@testing-library/react';
+import { recommendation } from '../market/market-test-kit';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { confirmed, request } from '../bookings/booking-test-kit';
 import { searchMarket } from '../find/search-test-kit';
@@ -12,7 +14,7 @@ beforeEach(() => localStorage.clear());
 
 const open = (
   asked: readonly RideRequest[],
-  recommend = vi.fn(() => new Promise<never>(() => undefined)),
+  recommend = vi.fn<MarketClient['recommend']>(() => new Promise(() => undefined)),
 ) => {
   renderMarket(
     <MyRequestsScreen onBack={() => undefined} />,
@@ -41,6 +43,22 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
     await waitFor(() => expect(screen.queryByText(/^Ertaga/u)).toBeNull());
     await tap('Orqaga');
     expect(await screen.findByText(/^Ertaga/u)).toBeTruthy();
+  });
+
+  // G79 П11 (docs/170): «Qayta yuborish» keeps the people, the price, «Boʻsh salon» and «ayol» of
+  // the old request; up to 4 taps → 0.
+  it('sends an old request again with its people, price and car as they were', async () => {
+    const old = { ...request, id: 'r3', status: 'expired' as const, seats: 3, price: 110_000 };
+    open(
+      [{ ...old, wholeCar: true, withWoman: true }],
+      vi.fn(async () => recommendation),
+    );
+    await tap('Qayta yuborish');
+    await tap(/^Ertaga/u);
+    expect(await screen.findByText(/^3 joy × 110[\s.]000$/u)).toBeTruthy();
+    const checked = (name: string) => (screen.getByRole('checkbox', { name }) as HTMLInputElement).checked;
+    expect(checked('Boʻsh salon kerak')).toBe(true);
+    expect(checked('Men bilan ayol bor')).toBe(true);
   });
 
   it('says there is nothing live and offers «Safar topish»', async () => {

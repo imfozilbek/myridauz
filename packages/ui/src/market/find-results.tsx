@@ -49,7 +49,8 @@ function Results({ screen, now, filters, onFilters, onBack, onHome, onScreen }: 
         region={route.to}
         trips={{ total: days.days.reduce((sum, day) => sum + day.trips, 0), places: days.places }}
         onBack={results}
-        onPick={(to) => onScreen({ step: 'results', route: { from: route.from, to } })}
+        // The day stays: a district narrows the search, it does not start it again (G79 П15).
+        onPick={(to) => onScreen({ step: 'results', route: { from: route.from, to }, date })}
       />
     );
   if (open && booking)
