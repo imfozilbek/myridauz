@@ -30,6 +30,8 @@ import { CasePhotos } from './case-photos';
 import type { CaseProps, Outcome } from './case-props';
 
 type Mode = 'view' | Decision | 'block' | CarPhotoKind;
+type ReasonsMode = 'reject' | 'request_changes';
+const NO_TICKS: Record<ReasonsMode, readonly ModerationReason[]> = { reject: [], request_changes: [] };
 
 // The application of a driver (docs/04, docs/120, mockup g67/2 screen 3): the car photos, the car,
 // the plate and the driver; «Tasdiqlash» after the plate check, «Tuzatish», «Rad etish», «Bloklash».
@@ -48,7 +50,8 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
   const { moderation } = useApiClients();
   const [mode, setMode] = useState<Mode>('view');
   const [fixedPlate, setFixedPlate] = useState<string | null>(null);
-  const [ticked, setTicked] = useState<readonly ModerationReason[]>([]);
+  // The ticks of «Tuzatish» and of «Rad etish» apart: one never sends the other's (G79 К10).
+  const [ticked, setTicked] = useState<Record<ReasonsMode, readonly ModerationReason[]>>(NO_TICKS);
   const { failure, fail, clear } = useFailure();
   const { userId } = detail;
   const act = async (work: Promise<unknown>, outcome: Outcome) => {
@@ -80,8 +83,8 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
   if (mode === 'reject' || mode === 'request_changes')
     return (
       <ReasonsStep
-        picked={ticked}
-        onPick={setTicked}
+        picked={ticked[mode]}
+        onPick={(reasons) => setTicked((all) => ({ ...all, [mode]: reasons }))}
         onBack={back}
         onDone={(reasons) => decide({ action: mode, reasons })}
       />
