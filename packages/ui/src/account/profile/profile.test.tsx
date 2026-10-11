@@ -119,6 +119,6 @@ describe('the documents (docs/30)', () => {
     expect(screen.getByText('Hujjatlar').className).toContain('market-title');
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
-    expect(await screen.findByText(/Tahrir 1\.4/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.5/)).toBeTruthy();
   });
 });

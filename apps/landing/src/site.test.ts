@@ -74,7 +74,7 @@ describe('landing (G15)', () => {
   it('shows each document with its edition and every section, no placeholder left', () => {
     const offer = site['offer/index.html'] ?? '';
     expect(offer).toContain(escape(t('legal.offer.title')));
-    expect(offer).toContain('Tahrir 1.4');
+    expect(offer).toContain('Tahrir 1.5');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     // Built without the requisites: the brand name; the script fills what the owner saved (G34).
     expect(offer).toContain(`<span data-company>${escape(brand.name)}</span>`);

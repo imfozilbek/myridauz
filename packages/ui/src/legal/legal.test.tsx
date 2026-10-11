@@ -16,7 +16,7 @@ describe('legal documents (docs/30)', () => {
     renderInShell(<LegalScreen document="offer" onBack={vi.fn()} />);
     expect(screen.getByText('Ommaviy oferta')).toBeTruthy();
     // Without an answer of the API: the base edition and the brand name, never a placeholder (G34).
-    expect(await screen.findByText(/Tahrir 1\.4/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.5/)).toBeTruthy();
     // All the sections open in one white card, read from top to bottom (G75, mockup g75/5 A).
     const card = document.querySelector('.legal-card');
     expect(card?.querySelector('h3')?.textContent).toBe('1. Umumiy qoidalar');
