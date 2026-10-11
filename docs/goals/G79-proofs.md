@@ -23,6 +23,13 @@
 | В13 время прошлого предложения | `requests/offer-draft.ts` (`lastOfferTime`), `requests/time-chips.tsx` | `requests/offer-time-kept.test.tsx` | +1 → 0 |
 | В15 правка без фото | `driver/application-flow.tsx` (сразу `send`), `driver/problem-note.tsx` (`photosReady`) | `driver/driver-problems.test.tsx` «…sends it at once when no photo is asked» | 2 → 1 |
 | В16 одна фотография | `driver/driver-gate.tsx` (`'tap'`), `driver/steps/photos-step.tsx` (`shoot`) | `driver/fix-camera.test.tsx` | 2 → 1 |
+| К3 «Diqqat» с 2+ людьми | `team/diqqat-section.tsx` (`whom`: один человек или список), `manage/people-screen.tsx` (`people`), `flow/start-action.ts` (`PersonName`) | `team/diqqat-people.test.tsx` (оба теста) | нет пути → 2 |
+| К5 «Hamyonlar» | `wallet/team-wallets-screen.tsx` (поиск по имени и id), `wallet/driver-wallet.tsx`, `manage/person-view.tsx` (строка «Hamyon»), `wallet/adjust-form.tsx` (готовые причины, тексты одобрены владельцем) | `wallet/wallet-shortcuts.test.tsx` (3 теста) | ~8 → ~6 |
+| К6 последнее дело «Navbat» | `navbat/navbat-screen.tsx` (`finished`: «Hammasi koʻrildi» 2 секунды, потом главный) | `navbat/navbat-finished.test.tsx` | 1 → 0 |
+| К7 медиана цены | `pricing/direction-edit.tsx` (`MedianHint` с `onPick`) | `pricing/pricing.test.tsx` «takes the median…» | ввод → 1 |
+| К8 имя пятака | `pitaks/pitak-edit.tsx` (пустое имя берёт имя места) | `pitaks/pitaks.test.tsx` «names a new pitak…» | ввод → 0 |
+| К9 лимит степпером | `manage/limit-edit.tsx` (`Stepper`, кроме сумм) | `manage/manage-limits.test.tsx` (первый тест) | ввод → выбор |
+| К10 «Назад» с галочек | `moderation/reasons-step.tsx` (без вопроса), `navbat/application-case.tsx` (галочки живут в деле) | `navbat/navbat-application.test.tsx` «…asks nothing and keeps them» | вопрос → 0 |
 
 Пути `home/…`, `market/…` и подобные: в `packages/ui/src`. Каждый тест проверен на старом коде: код без теста вернули к коммиту до пункта, тест упал.
 
