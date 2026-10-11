@@ -10,6 +10,7 @@ import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
 import { useDirectory } from '../../places/use-directory';
 import { useDriverData } from '../driver-data';
+import { useDriverLaunch } from './driver-launch';
 import { driverCue } from './cues';
 import { DockFailed } from './dock-failed';
 import { DockPanel } from './dock-panel';
@@ -88,5 +89,6 @@ function useDriverState(): DriverState {
 
 function ApplicationCard({ kind, go }: { readonly kind: 'draft' | 'fix'; readonly go: HomeGo }) {
   const act = useTripActions(go, null, () => undefined);
-  return <DriverAppCard kind={kind} wallet={null} missing={0} requests={[]} act={act} go={go} />;
+  const launch = useDriverLaunch(go, null);
+  return <DriverAppCard kind={kind} wallet={null} missing={0} requests={[]} act={act} launch={launch} />;
 }

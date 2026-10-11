@@ -7,6 +7,7 @@ import { ActionFailure } from '../../states/action-failure';
 import { useDriverData } from '../driver-data';
 import { useDockWords } from './dock-words';
 import { DriverAppCard } from './driver-app-cards';
+import { useDriverLaunch } from './driver-launch';
 import { DepartCard, PointCard } from './driver-day-cards';
 import { RoadCard } from './driver-road-card';
 import type { DriverState } from './driver-state';
@@ -24,6 +25,7 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
   const words = useDockWords(directory, now);
   const changed = () => void refresh();
   const act = useTripActions(go, directory, changed);
+  const launch = useDriverLaunch(go, directory);
   const bookings = value?.[1] ?? [];
   const people = 'trip' in state ? bookings.filter((booking) => booking.trip.id === state.trip.id) : [];
   const common = { words, act, go };
@@ -31,7 +33,16 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
     switch (state.kind) {
       case 'welcome':
       case 'low':
-        return <DriverAppCard kind={state.kind} wallet={money} missing={0} requests={[]} act={act} go={go} />;
+        return (
+          <DriverAppCard
+            kind={state.kind}
+            wallet={money}
+            missing={0}
+            requests={[]}
+            act={act}
+            launch={launch}
+          />
+        );
       case 'short':
         return (
           <DriverAppCard
@@ -40,7 +51,7 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
             missing={state.missing}
             requests={state.requests}
             act={act}
-            go={go}
+            launch={launch}
           />
         );
       case 'published':

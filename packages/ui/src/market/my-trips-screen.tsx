@@ -1,13 +1,4 @@
-import {
-  BOOKING_LINK,
-  DAY_MS,
-  MY_TRIP_LINK,
-  OFFER_LINK,
-  tashkentDate,
-  tashkentDayStart,
-  type AppLink,
-  type Trip,
-} from '@platform/contracts';
+import { BOOKING_LINK, MY_TRIP_LINK, OFFER_LINK, type AppLink } from '@platform/contracts';
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
@@ -18,7 +9,7 @@ import type { TripScreen } from '../own-trip/own-trip-opened';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { sameTrip, type ReturnTrip } from '../trip-end/return-plan';
+import { tomorrowTrip, type ReturnTrip } from '../trip-end/return-plan';
 import { useScreenBackground } from '../telegram/screen-background';
 import { useForgetOnLeave } from './list-leave';
 import type { MineTab } from './mine-tabs';
@@ -120,13 +111,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       onSubscriptions={() => setSubscriptionsOpen(true)}
       tab={tab}
       onTab={setTab}
-      onAgain={(last) => setAgain(sameTrip(last, directory, tomorrowAt(last)))}
+      onAgain={(last) => setAgain(tomorrowTrip(last, directory))}
     />
   );
-}
-
-// «Ertaga shu safar»: tomorrow of Tashkent at the time of the day of the trip (mockup g64/6).
-function tomorrowAt(trip: Trip): number {
-  const inDay = trip.departAt - tashkentDayStart(tashkentDate(trip.departAt));
-  return tashkentDayStart(tashkentDate(Date.now() + DAY_MS)) + inDay;
 }
