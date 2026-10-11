@@ -9,7 +9,7 @@ import { outsideCalls, type Person } from './stand-kit';
 import { backUntil } from './steps';
 
 // The requests of a passenger and the search of a driver (G37, docs/101): an empty day, a request,
-// a second one on the same day refused, the own list; the driver finds it, moves to tomorrow and
+// the same day again opens the first one, the own list; the driver finds it, moves to tomorrow and
 // publishes a trip from an empty day.
 test.use({ viewport: NARROW });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
@@ -47,7 +47,7 @@ async function requestToReview(page: Page) {
 }
 
 for (const platform of PLATFORMS)
-  test(`${platform}: a request, a second one refused, the driver finds it`, async ({ page }) => {
+  test(`${platform}: a request, the same day opens it again, the driver finds it`, async ({ page }) => {
     test.setTimeout(120_000);
     const shot = shooter(page, platform);
     await openHome(page, 'passenger', SEEKERS[platform], platform);
@@ -59,16 +59,15 @@ for (const platform of PLATFORMS)
     await requestToReview(page);
     await mainButton(page).click();
     await expect(page.getByText(t('market.request.cancel'))).toBeVisible();
-    // The same route and day again: the first request is offered, no second one (R5).
+    // The same route and day again: the first request opens at once, no second one and no points
+    // and price before it (R5, G79 П10).
     await openHome(page, 'passenger', SEEKERS[platform], platform);
-    await requestToReview(page);
-    await mainButton(page).click();
-    await expect(page.getByText(t('errors.trips.request_exists'))).toBeVisible();
-    await shot('02-p-second');
-    await mainButton(page)
-      .filter({ hasText: t('market.request.openMine') })
-      .click();
+    await toHome(page);
+    await mainButton(page).filter({ hasText: TEXT.findTrip }).click();
+    await searchTo(page, 'Termiz shahri');
+    await page.getByText(t('common.passenger.leaveRequest')).first().click();
     await expect(page.getByText(t('market.request.cancel'))).toBeVisible();
+    await shot('02-p-second');
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await toHome(page);
     await page.getByText(t('common.myTrips')).first().click();
