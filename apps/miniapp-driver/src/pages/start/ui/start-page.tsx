@@ -3,7 +3,6 @@ import {
   DRIVER_TILE_SECTIONS,
   DriverData,
   DriverDock,
-  DriverGate,
   DriverHome,
   DriverSide,
   DriverTiles,
@@ -48,18 +47,10 @@ const SECTIONS: readonly StartAction[] = [
   ...DRIVER_TILE_SECTIONS,
 ];
 
-// The main screen right after the registration (G62, docs/118 path 5).
-export function StartPage() {
-  return (
-    <DriverGate>
-      <DriverStart />
-    </DriverGate>
-  );
-}
-
 // The main screen of a driver (G76, docs/165, mockup g76/3): the head with the car, four tiles, the
-// block at the bottom that leads from the application to the trip of today.
-function DriverStart() {
+// block at the bottom that leads from the application to the trip of today. Right after the
+// registration (G62, docs/118 path 5), behind the gate of the driver (DriverGate, mount-app.tsx).
+export function StartPage() {
   return (
     <DriverData>
       <HomeRouteProvider>

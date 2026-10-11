@@ -74,7 +74,7 @@ D. Чистота кода (вид не меняется)
     useList, nextTrips, lastTrip, againOf, waits; их тесты тоже.
 [x] Повторы: один isStale, один помощник ссылки поддержки, HOUR_MS
     и signed из общего места, два useTripSteps с разными именами.
-[ ] Классы CSS .time-chip, .trip-card-name, .seats-stepper: одно
+[x] Классы CSS .time-chip, .trip-card-name, .seats-stepper: одно
     имя в одном файле; снимки экранов до и после совпадают.
 [x] «Mening safarlarim» берут списки главного экрана, без второй
     загрузки; «Safar» не грузит брони заново.

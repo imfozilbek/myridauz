@@ -26,7 +26,7 @@
 | C7 «Men keldim» | `meeting/use-came.ts` в `bookings/meeting-card.tsx` и `home/dock/seat-actions.ts` | чистка: `bookings/meeting-card.test.tsx`, `home/home.test.tsx` зелёные |
 | D1 мёртвый код | удалены: старая ветка главного (`flow/home-screen.tsx`, `flow/home-tile.tsx`, `home/home-items.ts`), `account/face-notice.tsx`, `home/home-note.tsx`, `comfort/favorite-cell.tsx`, `useList`, `bookings/use-trip-steps.ts` | поиск по именам пуст; `knip` в CI |
 | D2 повторы | `market/error-text.ts` (`isStale`), `telegram/support-link.ts` (`useOpenSupport`), `wallet/signed.ts`, `bookings/use-seat-steps.ts`; `HOUR_MS`, `DAY_MS`, `MINUTE_MS` из `@platform/contracts` | чистка: тесты зелёные, `knip` |
-| D3 CSS | `.time-cell` в `market/when-sheet.css`, `.trip-card-who` в `market/market.css`, `.seats-stepper` один раз | снимки до и после: отличия только там, где вид шёл от чужого CSS; после совпадает с макетами g75/3 и g61 |
+| D3 CSS | `.time-cell` в `market/when-sheet.css`, `.trip-card-who` в `market/market.css`, `.seats-stepper` один раз | снимки до и после: отличия только там, где вид шёл от чужого CSS; после совпадает с макетами g75/3 и g61; владелец согласовал вид 11.10.2026 |
 | D4 одна загрузка | `market/my-trips-lists.ts`, `home/passenger-data.tsx`, `home/driver-data.tsx` (`useShared…`), `market/asked-seat.ts`; `home/fresh-lists.ts`: экран тихо обновляет те же списки при открытии, ссылка ждёт свежих (урок №230) | `market/shared-lists.test.tsx` (5 тестов: списки главного видны сразу; новая поездка и новая заявка видны) |
 | E1 «сейчас» при отправке | `market/trip-on-route.tsx` (`useNow`, `sending`), `market/trip-form.tsx`; `requests/time-chips.tsx` (`sending`) для `offer-sheet.tsx` и `salon-sheet.tsx` | `market/new-trip.test.tsx` «takes now at the tap of Eʼlon qilish»; `requests/board-sheets.test.tsx` «takes now at the tap» |
 | E2 стенд в любой час | `e2e/test-clock.ts` (`standClock`: у стенда браузер на часах стенда), `e2e/shift-date.ts`, `scripts/stand/stand-hour.mjs`, `shift-clock.mjs`, `shifted-worker.mjs`, `workerd-real.sh`, `check.mjs --at` (уроки №231, №232) | `scripts/stand/stand-hour.test.mjs`, `areas.test.mjs`; кусок стенда «по времени» (16 файлов) зелёный в 23:25, до исправления 8 … 10 падений; полный стенд `--at 23:30` 151 из 151 за 216 с (11.10.2026). Первый полный прогон нашёл будильник Durable Object (урок №237) |
@@ -46,7 +46,7 @@
 | 10 | «Yoʻl xaritasi», «Baho berish» из блока: «Назад» в два нажатия | `own-trip/own-trip-live.tsx`, `own-trip/own-trip-flow.tsx` | `own-trip/start-back.test.tsx` |
 | 11 | «Внимание» блока под формой заявки | `home/dock/use-attention.ts` (`useBehind`) | `home/dock/use-attention.test.tsx` «waits while a screen stands over the block» |
 | 9 | «Javob berish» бота открывает чат, звонок отвечается вторым нажатием | оставлено: ответ по ссылке требует новой ссылки, шаг в G79 | |
-| 12 | Экраны водителя по ссылке бота без `DriverContext` (старое, вне G77) | предложено владельцу отдельным исправлением | |
+| 12 | Экраны водителя по ссылке бота без `DriverContext` (старое): «Qaytish» по ссылке публиковал машину на 1 место, отклонённый водитель видел поездки | по решению владельца 11.10.2026 исправлено в G77: `DriverGate` стоит выше ссылок бота (`mount-app.tsx`, `driver/driver-gate.tsx` с `enabled`) | `mount-app.test.tsx` «a bot link of a driver opens behind the gate of the driver» |
 
 ## Повторная проверка агентом (F2, 11.10.2026) и что сделано
 

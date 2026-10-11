@@ -31,6 +31,7 @@ import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
 import { TeamGate } from './account/team-gate';
 import { AppShell } from './app-shell';
+import { DriverGate } from './driver/driver-gate';
 import { FeedProvider } from './feed/feed-provider';
 import { LaunchLinks } from './launch-links';
 import { FollowGate } from './follow/follow-gate';
@@ -125,9 +126,11 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
               <FollowGate enabled={app === 'passenger'}>
                 <LegalGate>
                   <AccountGate app={app} client={users} welcome={welcome}>
-                    <LaunchLinks app={app}>
-                      <Page />
-                    </LaunchLinks>
+                    <DriverGate enabled={app === 'driver'}>
+                      <LaunchLinks app={app}>
+                        <Page />
+                      </LaunchLinks>
+                    </DriverGate>
                   </AccountGate>
                 </LegalGate>
               </FollowGate>
