@@ -1,10 +1,10 @@
 import type { Standing } from '@platform/contracts';
+import { useOpenSupport } from '../../telegram/support-link';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { useDriver } from '../../driver/driver-context';
 import { UzPlate } from '../../plate/uz-plate';
 import { Switch } from '../../switch';
-import { openInTelegram } from '../../telegram/feedback';
 import { openApp } from '../../telegram/open-app';
 import { useAccount } from '../account-context';
 import { formatPhone } from '../cell-value';
@@ -27,6 +27,7 @@ type Props = {
 export function ProfileRows({ standing, onOpen }: Props) {
   const { t } = useI18n();
   const { bots } = useBrand();
+  const support = useOpenSupport();
   const account = useAccount();
   const driver = useDriver();
   const car = driver?.application.status === 'approved' ? driver.application.car : null;
@@ -79,11 +80,7 @@ export function ProfileRows({ standing, onOpen }: Props) {
         <HomeScreenRow />
       </ProfileGroup>
       <ProfileGroup header={t('home.support')}>
-        <ProfileRow
-          icon="help"
-          title={t('home.support')}
-          onClick={() => openInTelegram(`https://t.me/${bots.support}`)}
-        />
+        <ProfileRow icon="help" title={t('home.support')} onClick={() => support()} />
         <ProfileRow
           icon="file"
           title={t('account.profile.documents')}

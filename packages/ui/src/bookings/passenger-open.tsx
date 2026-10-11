@@ -1,20 +1,16 @@
 import type { Booking, Offer, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { confirm, haptic } from '../telegram/feedback';
 import { useI18n } from '../context/i18n-context';
-import { errorKey } from '../market/error-text';
+import { errorKey, isStale } from '../market/error-text';
 import { ChatScreen } from '../chat/chat-screen';
 import { AcceptedBooking } from './accepted-booking';
 import { MyRequest } from './my-request';
 import { PassengerOfferSheet } from './passenger-offer-sheet';
 import { PassengerBooking } from './passenger-booking';
 import { useAnswerOffer } from './use-answer-offer';
-
-const isStale = (caught: unknown) =>
-  caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));
 
 export type Opened =
   | { readonly kind: 'booking'; readonly booking: Booking }

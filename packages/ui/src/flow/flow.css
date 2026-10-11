@@ -70,18 +70,6 @@
   color: var(--tgui--hint_color);
 }
 
-/* Under a number of the day the words are small, one line (the admin mockup). */
-.home-tile-value + .home-tile-hint {
-  font-size: 11.5px;
-}
-
-.home-tile-value {
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--tgui--text_color);
-}
-
 .home-tile-badge {
   /* The padding is inside the 22px: a single digit is a circle, as on the mockup. */
   box-sizing: border-box;
@@ -101,21 +89,4 @@
 /* A lone last tile takes the whole row: the grid never ends with a hole. */
 .home-tiles > :last-child:nth-child(odd) {
   grid-column: span 2;
-}
-
-/* A tile waiting for the approval of the application: pale, it still opens (G62, mockup g62/1). */
-.home-tile-pale {
-  background: color-mix(in srgb, var(--tgui--bg_color) 45%, transparent);
-}
-
-.home-tile-pale > :first-child {
-  opacity: 0.55;
-}
-
-.home-tile-pale .home-tile-title {
-  color: var(--tgui--hint_color);
-}
-
-.home-tile-pale .home-tile-hint {
-  opacity: 0.75;
 }

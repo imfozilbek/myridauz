@@ -47,8 +47,3 @@ export function useLoad<T>(load: () => Promise<T>, memory?: string): LoadState<T
   useFeedChange(() => void refresh());
   return { value, failed, reload, refresh };
 }
-
-export function useList<T>(load: () => Promise<T[]>, memory?: string) {
-  const { value, failed, reload, refresh } = useLoad(load, memory);
-  return { items: value, failed, reload, refresh };
-}

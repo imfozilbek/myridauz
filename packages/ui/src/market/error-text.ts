@@ -91,3 +91,8 @@ export function errorKey(
   const answered = error instanceof ApiError ? error.code : undefined;
   return (answered && codeKey(answered)) || fallback;
 }
+
+// The seat or the request changed meanwhile (another tap, the other side, the Cron): the screen
+// loads it again at once (G52, docs/112).
+export const isStale = (caught: unknown) =>
+  caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));

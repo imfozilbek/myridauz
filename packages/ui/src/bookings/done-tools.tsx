@@ -1,9 +1,9 @@
 import { afterTrip, DAY_MS, type Booking } from '@platform/contracts';
+import { useOpenSupport } from '../telegram/support-link';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import { useUntilText } from '../trip/until-text';
-import { openInTelegram } from '../telegram/feedback';
 
 type Props = {
   readonly booking: Booking;
@@ -18,7 +18,8 @@ export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((
 export function DoneTools({ booking, onOpen }: Props) {
   const { t } = useI18n();
   const brand = useBrand();
-  const { bots, name } = brand;
+  const { name } = brand;
+  const support = useOpenSupport();
   const now = Date.now();
   const { talkUntil, rateUntil, complainUntil, pointsUntil } = afterTrip(
     brand,
@@ -60,11 +61,7 @@ export function DoneTools({ booking, onOpen }: Props) {
             {t('bookings.done.complain', { days: daysLeft(complainUntil, now) })}
           </button>
         ) : (
-          <button
-            type="button"
-            className="booking-link"
-            onClick={() => openInTelegram(`https://t.me/${bots.support}`)}
-          >
+          <button type="button" className="booking-link" onClick={() => support()}>
             {t('bookings.done.complainSupport')}
           </button>
         )}

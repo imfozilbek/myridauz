@@ -33,7 +33,7 @@ export function TimeGrid({ allowed, time, onTime }: Props) {
         <button
           key={slot}
           type="button"
-          className="time-chip"
+          className="time-cell"
           aria-pressed={slot === time}
           disabled={!allowed.includes(slot)}
           onClick={() => {

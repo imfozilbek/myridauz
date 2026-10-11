@@ -23,7 +23,7 @@ function open(schedule: Schedule = FREE) {
 }
 // The tiles of the half hours (G75, mockup g75/3 A phone 1): the chosen one is pressed, the others
 // the driver may take are on, the rest gray.
-const tiles = () => [...document.querySelectorAll<HTMLButtonElement>('.time-chip')];
+const tiles = () => [...document.querySelectorAll<HTMLButtonElement>('.time-cell')];
 const time = async () => (await screen.findAllByRole('button', { pressed: true })).at(-1)?.textContent;
 const times = () =>
   tiles()

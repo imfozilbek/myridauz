@@ -5,6 +5,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { departAtOf, slotsOn } from '../market/first-when';
 import { useSchedule } from '../market/use-schedule';
+import { useNow } from '../own-trip/use-now';
 import { haptic } from '../telegram/feedback';
 import { draftOf, keepDraft } from './offer-draft';
 import { offerTimes } from './offer-times';
@@ -12,20 +13,24 @@ import './time-chips.css';
 
 // The times a driver may leave at on the day of a request, with the driver's busy times (docs/103):
 // the first chip is chosen at once, or the one chosen before the sheet closed. null while they load.
+// The time of the sheet moves on while it stays open; the tap takes «now» once more (G77).
 export function useOfferTime(request: RideRequest) {
-  const [now] = useState(Date.now);
+  const now = useNow();
   const rules = useBrand().schedule;
   const schedule = useSchedule(request.from, request.to);
   const [picked, setPicked] = useState<string | null>(() => draftOf('time', request.id) ?? null);
   if (!schedule) return null;
-  const slots = slotsOn(request.date, now, schedule, rules);
-  const time =
-    picked !== null && slots.includes(picked) ? picked : (offerTimes(slots)[0] ?? slots[0] ?? null);
+  const timeAt = (at: number) => {
+    const slots = slotsOn(request.date, at, schedule, rules);
+    const time =
+      picked !== null && slots.includes(picked) ? picked : (offerTimes(slots)[0] ?? slots[0] ?? null);
+    return { slots, time, departAt: time === null ? null : departAtOf(request.date, time) };
+  };
   return {
-    slots,
+    ...timeAt(now),
     full: schedule.full,
-    time,
-    departAt: time === null ? null : departAtOf(request.date, time),
+    // The moment that goes at the tap: never a time that became too soon on the open sheet.
+    sending: () => timeAt(Date.now()).departAt,
     pick: (time: string) => (keepDraft('time', request.id, time), setPicked(time)),
   };
 }

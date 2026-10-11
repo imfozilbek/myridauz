@@ -24,3 +24,6 @@ export function usePassengerData(): PassengerLoad {
   if (!load) throw new Error('ui.passenger_data_missing');
   return load;
 }
+
+// The lists of the main screen when the screen is inside it, or null (a bot link opens it alone).
+export const useSharedPassengerData = (): PassengerLoad | null => useContext(PassengerDataContext);

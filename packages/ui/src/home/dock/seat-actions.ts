@@ -3,14 +3,14 @@ import { openSheet } from '../../action-sheet/action-queue';
 import { useOpenChat } from '../../chat/open-chat';
 import { useAnalytics } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
-import { useBrand } from '../../context/brand-context';
+import { useOpenSupport } from '../../telegram/support-link';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import { mapUrl } from '../../bookings/map-link';
 import { useShareTrip } from '../../bookings/use-share-trip';
 import { useCame } from '../../meeting/use-came';
 import { useFailure } from '../../states/use-failure';
-import { confirm, haptic, openExternal, openInTelegram } from '../../telegram/feedback';
+import { confirm, haptic, openExternal } from '../../telegram/feedback';
 import { useHomeTap } from '../use-home-tap';
 
 // What the cards of a seat do (G76, docs/165): the chat and the call of the trip (numbers hidden,
@@ -20,7 +20,7 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
   const { t } = useI18n();
   const { bookings, chat } = useApiClients();
   const { track } = useAnalytics();
-  const { bots } = useBrand();
+  const support = useOpenSupport();
   const share = useShareTrip();
   const tap = useHomeTap();
   const openChat = useOpenChat();
@@ -67,7 +67,7 @@ export function useSeatActions(go: HomeGo, refresh: () => void) {
       const point = booking.pitak?.point ?? booking.pickup?.point;
       if (point) openExternal(mapUrl(point));
     },
-    support: () => openInTelegram(`https://t.me/${bots.support}`),
+    support: () => support(),
   };
 }
 

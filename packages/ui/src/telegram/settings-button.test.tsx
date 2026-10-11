@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AccountContext, type Account } from '../account/account-context';
 import { active, fakeClient, profile } from '../account/account-test-kit';
+import type { HomeGo } from '../flow/start-action';
 import { StartFlow } from '../flow/start-flow';
 import { renderInShell } from '../test-shell';
 import { OUTSIDE_TELEGRAM, TelegramContext } from './in-telegram-context';
@@ -52,6 +53,13 @@ function Screen({ onOpen }: { readonly onOpen: () => void }) {
   return null;
 }
 
+// A tile of the main screen opens the section by go (G53).
+const tiles = (go: HomeGo) => (
+  <button type="button" onClick={() => go('my_trips')}>
+    Mening safarlarim
+  </button>
+);
+
 describe('«Sozlamalar» in the ⋮ menu of Telegram (docs/88 L16)', () => {
   it('shows the native settings button and opens the profile with it', () => {
     const onOpen = vi.fn();
@@ -70,7 +78,7 @@ describe('«Sozlamalar» in the ⋮ menu of Telegram (docs/88 L16)', () => {
   it('F4: is only on the main screen, a section has none (owner decision 02.10.2026, docs/94)', () => {
     renderInShell(
       <AccountContext.Provider value={ACCOUNT}>
-        <StartFlow actions={ACTIONS} />
+        <StartFlow actions={ACTIONS} tiles={tiles} />
       </AccountContext.Provider>,
       true,
     );
@@ -81,7 +89,7 @@ describe('«Sozlamalar» in the ⋮ menu of Telegram (docs/88 L16)', () => {
   });
 
   it('the admin app has no own profile, so no «Sozlamalar» and no empty screen (G75, docs/159)', () => {
-    renderInShell(<StartFlow actions={ACTIONS} />, true);
+    renderInShell(<StartFlow actions={ACTIONS} tiles={tiles} />, true);
     expect(screen.getByText('Mening safarlarim')).toBeTruthy();
     expect(sdk.settingsButton.show.ifAvailable).not.toHaveBeenCalled();
     expect(sdk.settingsButton.onClick.ifAvailable).not.toHaveBeenCalled();

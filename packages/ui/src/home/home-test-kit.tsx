@@ -128,7 +128,6 @@ export function renderHome(
           side={(openProfile) => <PassengerSide openProfile={openProfile} />}
           dock={(go) => <PassengerDock go={go} />}
           sections={[...PASSENGER_SECTIONS, ...PASSENGER_TILE_SECTIONS]}
-          covered="find_trip"
         />
       </HomeRouteProvider>
     </PassengerData>

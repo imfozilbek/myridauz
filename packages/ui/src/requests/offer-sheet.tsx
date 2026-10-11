@@ -55,10 +55,11 @@ function OfferForm({ request, onSent, onShort }: Omit<Props, 'request'> & { read
     setAsked(price + by * bounds.roundStep);
   };
   const send = async () => {
-    if (!when?.departAt) return;
+    const departAt = when?.sending();
+    if (!departAt) return;
     clear();
     try {
-      await bookings.sendOffer(request.id, { departAt: when.departAt, price });
+      await bookings.sendOffer(request.id, { departAt, price });
       track({ name: 'booking_step', screen: 'requests.offer', step: 'offer_sent' });
       haptic.success();
       onSent();

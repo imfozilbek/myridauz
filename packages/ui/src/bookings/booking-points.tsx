@@ -1,9 +1,7 @@
-import { arrivalAt, roadMs, type Booking } from '@platform/contracts';
+import { arrivalAt, type Booking, HOUR_MS, roadMs } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import { useBookingEnds } from '../trip/booking-ends';
 import '../find/route-line.css';
-
-const HOUR_MS = 60 * 60 * 1000;
 
 // The two points of a booking with the line of the way between them (docs/126, mockup 4-sent): the
 // place, then its region and the time; «≈ 300 km · ≈ 5 soat yoʻl» in the middle.

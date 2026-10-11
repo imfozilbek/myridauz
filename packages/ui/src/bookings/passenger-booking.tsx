@@ -1,6 +1,5 @@
 import { onTheWay, type Booking } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
-import { ApiError } from '@platform/api-client';
 import { useState } from 'react';
 import { ChatScreen } from '../chat/chat-screen';
 import { useAnalytics } from '../context/analytics-context';
@@ -8,7 +7,7 @@ import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ReviewScreen } from '../feedback/review-screen';
-import { errorKey } from '../market/error-text';
+import { errorKey, isStale } from '../market/error-text';
 import { LinkedSearch } from '../market/find-link';
 import { ActionFailure } from '../states/action-failure';
 import { confirm, haptic } from '../telegram/feedback';
@@ -16,10 +15,7 @@ import { cancellable } from './booking-status';
 import { ConfirmedBooking } from './confirmed-booking';
 import { PendingBooking } from './pending-booking';
 import { similarDay } from './similar-trips';
-import { withTold } from './use-trip-steps';
-
-const isStale = (caught: unknown) =>
-  caught instanceof ApiError && Boolean(caught.code?.endsWith('.wrong_status'));
+import { withTold } from './use-seat-steps';
 
 type Props = {
   readonly booking: Booking;

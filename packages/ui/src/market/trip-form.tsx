@@ -18,6 +18,8 @@ import { publishInput, type TripValues } from './trip-draft';
 type Props = {
   readonly route: Route;
   readonly values: TripValues;
+  // The values as they are at the tap of «Eʼlon qilish»: the time of the day moved on meanwhile (G77).
+  readonly sending: () => TripValues;
   readonly car: Car | null;
   readonly carSeats: number;
   readonly recommendation: Recommendation;
@@ -35,7 +37,7 @@ type Props = {
 // a request with the trip of the driver in it: the car, the route, «Safar», «Eʼlon qilish». A driver
 // whose application is checked tries everything but publishing (docs/86 V7).
 export function TripForm(props: Props) {
-  const { route, values, car, onOpen, onPublished } = props;
+  const { route, values, sending, car, onOpen, onPublished } = props;
   useScreenView('market.publish');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -44,7 +46,7 @@ export function TripForm(props: Props) {
   const pending = usePending();
   const [error, setError] = useState<ReturnType<typeof errorKey> | null>(null);
   const publish = async () => {
-    const input = publishInput(values);
+    const input = publishInput(sending());
     // The day has no free time left: the day and the time are chosen again (docs/103).
     if (!input) return onOpen('when');
     setError(null);

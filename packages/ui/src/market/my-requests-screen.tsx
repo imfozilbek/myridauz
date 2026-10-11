@@ -8,7 +8,7 @@ import {
 import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { PassengerOpen, type Opened } from '../bookings/passenger-open';
-import { useApiClients } from '../context/api-clients';
+import { PassengerData, usePassengerData, useSharedPassengerData } from '../home/passenger-data';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
@@ -20,7 +20,6 @@ import { FindTripFlow } from './find-trip-flow';
 import { NewRequestFlow } from './new-request-flow';
 import { PlacesGate, usePlaces } from './places-gate';
 import { useLinkOpen } from './use-link-open';
-import { useLoad } from './use-list';
 import './market.css';
 
 // "Mening safarlarim" of a passenger: the booked seats, then the requests with drivers' offers.
@@ -28,11 +27,13 @@ type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink };
 
 export function MyRequestsScreen({ onBack, link }: ScreenProps) {
   useForgetOnLeave(MY_REQUESTS);
-  return (
+  const screen = (
     <PlacesGate onBack={onBack}>
       <MyRequests onBack={onBack} {...(link ? { link } : {})} />
     </PlacesGate>
   );
+  // The same lists as the main screen, not a second load (G77); a bot link opens it with its own.
+  return useSharedPassengerData() ? screen : <PassengerData>{screen}</PassengerData>;
 }
 
 // home: opened by the block of the main screen or a bot button, «Назад» goes straight home (G77).
@@ -52,11 +53,7 @@ function MyRequests({ onBack, link }: ScreenProps) {
   useScreenView('market.my_requests');
   // The gradient of docs/121 §5, as on the mockup g60/6.
   useScreenBackground();
-  const { market, bookings } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(
-    () => Promise.all([bookings.myBookings(), market.myRequests(), bookings.myOffers()]),
-    MY_REQUESTS,
-  );
+  const { value, failed, reload, refresh } = usePassengerData();
   // The screen keeps what is open by its id: a signal brings fresh data to it (docs/65 B2).
   const [openedId, setOpened] = useState<OpenedId | null>(null);
   const opened = value && openedId ? fresh(openedId, value[0], value[1]) : null;

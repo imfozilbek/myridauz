@@ -79,7 +79,7 @@
 }
 
 /* The name and the rating on one line: one line less on every card (G40, docs/106 C7). */
-.trip-card-name {
+.trip-card-who {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -136,10 +136,4 @@
 
 .route-summary {
   padding: 12px 16px 4px;
-}
-
-/* «−» and «+» of the seats side by side (G35, docs/97 K3). */
-.seats-stepper {
-  display: inline-flex;
-  gap: 8px;
 }

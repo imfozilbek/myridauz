@@ -40,6 +40,18 @@ describe(
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
     });
 
+    it('takes «now» at the tap: a time that became too soon on the open sheet is not sent (G77)', async () => {
+      const sendOffer = vi.fn<BookingsClient['sendOffer']>(async () => offer);
+      openBoard({ bookings: { sendOffer } });
+      await tap('Taklif yuborish');
+      const form = await sheet();
+      expect(form.getByRole('radio', { name: '08:00' }).getAttribute('aria-checked')).toBe('true');
+      // 07:10 in Tashkent: 08:00 is less than an hour away (docs/103).
+      vi.setSystemTime(NOW + 70 * 60_000);
+      fireEvent.click(await form.findByRole('button', { name: 'Taklif yuborish' }));
+      await waitFor(() => expect(sendOffer).toHaveBeenCalledWith('r1', { departAt: TEN, price: 95000 }));
+    });
+
     // Telegram «Назад» closes only the sheet: the board stays, the offer typed comes back (G77).
     it('«Назад» closes the sheet on the board; it opens again with the time and the price typed', async () => {
       openBoard({ inTelegram: true });

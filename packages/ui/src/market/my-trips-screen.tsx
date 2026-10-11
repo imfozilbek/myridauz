@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
 import { DriverBooking } from '../bookings/driver-booking';
 import { ChatScreen } from '../chat/chat-screen';
-import { useApiClients } from '../context/api-clients';
+import { DriverData, useSharedDriverData } from '../home/driver-data';
 import { OwnTripFlow } from '../own-trip/own-trip-flow';
 import type { TripScreen } from '../own-trip/own-trip-opened';
 import { SubscriptionsScreen } from '../subscriptions/subscriptions-screen';
@@ -25,7 +25,7 @@ import { MY_TRIPS, MyTripsList } from './my-trips-list';
 import { NewTripFlow } from './new-trip-flow';
 import { PlacesGate, usePlaces } from './places-gate';
 import { useLinkOpen } from './use-link-open';
-import { useLoad } from './use-list';
+import { useMyTripsLists } from './my-trips-lists';
 import './market.css';
 import { waitingRequests } from '../home/home-items';
 
@@ -34,11 +34,13 @@ type ScreenProps = { readonly onBack: () => void; readonly link?: AppLink; reado
 
 export function MyTripsScreen(props: ScreenProps) {
   useForgetOnLeave(MY_TRIPS);
-  return (
+  const screen = (
     <PlacesGate onBack={props.onBack}>
       <MyTrips {...props} />
     </PlacesGate>
   );
+  // The same lists as the main screen, not a second load (G77); a bot link opens it with its own.
+  return useSharedDriverData() ? screen : <DriverData>{screen}</DriverData>;
 }
 
 // What is open, by its ids: a signal brings fresh data to it (docs/65 B2). home: what the block of
@@ -53,11 +55,7 @@ type Opened = {
 function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   useScreenView('market.my_trips');
   useScreenBackground();
-  const { market, bookings } = useApiClients();
-  const { value, failed, reload, refresh } = useLoad(
-    () => Promise.all([market.myTrips(), bookings.driverBookings(), bookings.driverOffers()]),
-    MY_TRIPS,
-  );
+  const { value, failed, reload, refresh } = useMyTripsLists();
   const [opened, setOpened] = useState<Opened | null>(null);
   const trip = opened && value ? value[0].find((item) => item.id === opened.tripId) : undefined;
   const booking = opened?.bookingId ? value?.[1].find((item) => item.id === opened.bookingId) : undefined;

@@ -1,5 +1,5 @@
 import { arrivalAt, type Booking } from '@platform/contracts';
-import { useTripSteps } from '../../bookings/use-trip-steps';
+import { useSeatSteps } from '../../bookings/use-seat-steps';
 import { useI18n } from '../../context/i18n-context';
 import { ActionFailure } from '../../states/action-failure';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
@@ -23,7 +23,7 @@ type Props = {
 export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   const { t, formatTime } = useI18n();
   const ends = useBookingEnds(booking);
-  const steps = useTripSteps(booking, onTold);
+  const steps = useSeatSteps(booking, onTold);
   const { trip } = booking;
   const driver = trip.driver;
   const car = words.car(driver.car, booking.plate);

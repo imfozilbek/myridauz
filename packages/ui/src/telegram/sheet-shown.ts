@@ -23,7 +23,7 @@ export function useSheetShown(open: boolean): void {
   }, [open]);
 }
 
-export const useAnySheet = (): boolean => useSyncExternalStore(subscribe, () => shown > 0);
+const useAnySheet = (): boolean => useSyncExternalStore(subscribe, () => shown > 0);
 
 // The block at the bottom of the main screen stays under a sheet, dimmed with the screen (G76,
 // mockup g76/4, lesson 199); only its buttons of Telegram step aside, else they cover the sheet.

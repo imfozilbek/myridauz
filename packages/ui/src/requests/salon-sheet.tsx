@@ -79,10 +79,11 @@ function SalonForm({
     [t('wallet.title'), t('requests.salon.commission', { sum: formatMoney(fee) }), null],
   ] as const;
   const open = async () => {
-    if (!when?.departAt) return;
+    const departAt = when?.sending();
+    if (!departAt) return;
     clear();
     try {
-      const { trip } = await bookings.offerSalonTrip(request.id, when.departAt);
+      const { trip } = await bookings.offerSalonTrip(request.id, departAt);
       track({ name: 'booking_step', screen: 'requests.salon', step: 'offer_sent' });
       haptic.success();
       onOpened(trip.id);

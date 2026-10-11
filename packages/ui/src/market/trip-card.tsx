@@ -80,7 +80,7 @@ export function TripCard(props: TripCardProps) {
               size={PHOTO_SIZE}
             />
             <span className="trip-card-driver">
-              <span className="trip-card-name">
+              <span className="trip-card-who">
                 <Text>{driver.firstName}</Text>
                 <RatingBadge rating={driver.rating} />
               </span>

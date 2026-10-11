@@ -1,7 +1,5 @@
-import { roadMs, type Point } from '@platform/contracts';
+import { HOUR_MS, type Point, roadMs } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-
-const HOUR_MS = 60 * 60 * 1000;
 
 type Props = {
   readonly kind: 'from' | 'to';
