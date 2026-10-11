@@ -1,4 +1,4 @@
-import { DAY_MS } from '@platform/contracts';
+import { DAY_MS, type Trip } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { wallet } from '../bookings/booking-test-kit';
@@ -20,7 +20,7 @@ afterEach(() => {
 const HERE = 'Joylashuvingiz boʻyicha aniqlandi';
 // The tests live at a fixed moment (dom-test-setup.ts): yesterday is counted from it.
 const yesterday = () => ({ ...trip, departAt: Date.now() - DAY_MS, status: 'completed' as const });
-const driver = (trips = [yesterday()], money = { ...wallet, seatsLeft: 20 }) =>
+const driver = (trips: Trip[] = [yesterday()], money = { ...wallet, seatsLeft: 20 }) =>
   renderHome(() => <DriverHome />, DRIVER_ACTIONS, {
     trips: async () => trips,
     requests: async () => [],
