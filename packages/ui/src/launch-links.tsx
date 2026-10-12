@@ -20,7 +20,7 @@ export function LaunchLinks({ app, children }: { readonly app: MiniApp; readonly
         <TripLink enabled={app === 'passenger'}>
           <SubscribeLink enabled={app === 'passenger'}>
             <FindLink enabled={app === 'passenger'}>
-              <FeedbackLink enabled={app !== 'admin'}>
+              <FeedbackLink app={app}>
                 <SubscriptionsLink>
                   <RequestsLink enabled={app === 'driver'}>
                     <BookingsLink app={app} link={booking} onClose={() => setBooking(null)}>

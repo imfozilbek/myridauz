@@ -1,0 +1,61 @@
+/* «Yoʻlovchilarni baholang» (G63, mockup g63/4 screen 15): each passenger with five stars side by side. */
+.trip-end-rate {
+  padding: 14.8px 13px 15.2px;
+  text-align: center;
+}
+
+.trip-end-rate > b {
+  font-size: 15.8px;
+}
+
+.trip-end-riders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 0;
+  margin-top: 7.6px;
+}
+
+.trip-end-rider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.trip-end-stars {
+  display: flex;
+  margin-top: 0.2px;
+}
+
+/* A chosen star is a plain filled star, as the sign «★» of the mockup g63/4 screen 15. */
+.trip-end-stars svg:not([fill='none']) {
+  stroke-width: 0;
+}
+
+.trip-end-stars button {
+  display: flex;
+  /* A taller place for the finger, the stars stay where the mockup has them. */
+  margin: -8px 0;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: var(--reg-brand);
+  cursor: pointer;
+}
+
+.trip-end-stars button[aria-pressed='true'] ~ button {
+  color: var(--reg-control);
+}
+
+/* The person of the bot link on top, on the soft amber of attention (G78 sheet 6). */
+.trip-end-rider-marked {
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: var(--reg-attention-soft);
+}
+
+/* No stars chosen yet: five grey ones wait for the first tap (G78 sheet 6). */
+.trip-end-stars-wait button {
+  color: var(--reg-off);
+}

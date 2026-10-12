@@ -27,7 +27,7 @@ const RESTORED = 'Oldingi yozganingiz tiklandi.';
 const open = (param: string, feedback: Partial<FeedbackClient>) => {
   window.history.replaceState(null, '', `/?${param}=b1`);
   return renderMarket(
-    <FeedbackLink enabled>
+    <FeedbackLink app="passenger">
       <p>Asosiy</p>
     </FeedbackLink>,
     testClients({ feedback: { target: async () => TARGET, ...feedback } }),

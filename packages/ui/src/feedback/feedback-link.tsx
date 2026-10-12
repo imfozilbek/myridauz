@@ -1,7 +1,9 @@
+import type { MiniApp } from '@platform/contracts';
 import { useState, type ReactNode } from 'react';
 import { PlacesGate } from '../market/places-gate';
 import { closeApp } from '../telegram/feedback';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
+import { RateLinkScreen } from '../trip-end/rate-link-screen';
 import { ComplaintScreen } from './complaint-screen';
 import { ReviewScreen } from './review-screen';
 
@@ -20,15 +22,10 @@ function linked(): Open | null {
 
 // The passenger and the driver app open the review or the complaint at once; back goes home.
 // A review sent, «Yopish» closes the Mini App: the person came from the bot and goes back to it
-// (docs/94 C1); a complaint sent goes home with its plaque (G78 П16).
-export function FeedbackLink({
-  enabled,
-  children,
-}: {
-  readonly enabled: boolean;
-  readonly children: ReactNode;
-}) {
-  const [open, setOpen] = useState(() => (enabled ? linked() : null));
+// (docs/94 C1); a complaint sent goes home with its plaque (G78 П16). The driver rates the whole
+// trip of the link (G78 sheet 6).
+export function FeedbackLink({ app, children }: { readonly app: MiniApp; readonly children: ReactNode }) {
+  const [open, setOpen] = useState(() => (app === 'admin' ? null : linked()));
   if (!open) return <>{children}</>;
   const close = () => {
     forgetLaunchParam(REVIEW);
@@ -41,6 +38,12 @@ export function FeedbackLink({
   };
   if (open.screen === 'complain')
     return <ComplaintScreen bookingId={open.bookingId} onBack={close} onSent={close} />;
+  if (app === 'driver')
+    return (
+      <PlacesGate onBack={close}>
+        <RateLinkScreen bookingId={open.bookingId} onBack={close} onSent={done} />
+      </PlacesGate>
+    );
   return (
     <PlacesGate onBack={close}>
       <ReviewScreen

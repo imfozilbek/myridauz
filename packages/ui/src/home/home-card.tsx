@@ -36,14 +36,15 @@ type RowProps = {
   readonly hint?: string;
   // An arrow at the end: the card opens a list (the mockup of «Boshqaruv»).
   readonly arrow?: boolean;
-  readonly onClick: () => void;
+  // Without a tap the card only tells: a step of the block that did not work (G78 sheet 6).
+  readonly onClick?: () => void;
 };
 
 // A card of one line: a colored icon, the words, maybe an arrow.
 export function HomeRowCard({ icon, color, title, hint, arrow = false, onClick }: RowProps) {
   const { colors } = useBrand().theme;
   return (
-    <HomeCard className="home-card-row" onClick={onClick}>
+    <HomeCard className="home-card-row" {...(onClick ? { onClick } : {})}>
       <Icon name={icon} size={ICON} color={color} />
       <span className="home-card-words">
         <span className="home-card-title">{title}</span>

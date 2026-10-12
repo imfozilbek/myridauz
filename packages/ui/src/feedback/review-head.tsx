@@ -16,7 +16,7 @@ export function ReviewHead({
 }) {
   const { t } = useI18n();
   const driver = booking?.trip.driver;
-  // The face of the one rated: a driver rates the passenger of the booking (G78, review by a bot link).
+  // The face of the one rated: the driver of the trip, or the passenger of the booking.
   const photo = target.rateeRole === 'driver' ? driver?.hasAvatar : booking?.passenger.hasAvatar;
   const car =
     target.rateeRole === 'driver' && driver

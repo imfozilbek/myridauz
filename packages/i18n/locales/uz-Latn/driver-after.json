@@ -13,6 +13,7 @@
   "done.charged": "Hamyon: {amount} yechildi",
   "done.left": "Qoldi ≈ {seats} joyga yetadi",
   "done.rate": "Yoʻlovchilarni baholang",
+  "rate.trip": "{day} · {route}",
   "back.title": "Qaytishga yoʻlovchi olasizmi?",
   "back.requests": "{from} → {to}: {count} ta soʻrov bor",
   "back.ready": "Hammasi tayyor: faqat vaqtni tasdiqlang.",

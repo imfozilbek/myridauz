@@ -2,7 +2,7 @@ import type { Booking, Trip } from '@platform/contracts';
 import { NavigatorSheet } from '../../bookings/navigator-sheet';
 import { useNavigator } from '../../bookings/use-navigator';
 import { useI18n } from '../../context/i18n-context';
-import { ActionFailure } from '../../states/action-failure';
+import { DockFailure } from './dock-failure';
 import { useRoadNext } from '../../own-trip/use-road-next';
 import { useTripSteps } from '../../own-trip/use-trip-steps';
 import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
@@ -43,7 +43,7 @@ export function RoadCard({ trip, people, act, onChanged }: Props) {
       ) : (
         <MainButton text={t('driverTrip.main.arrived')} onClick={() => void steps.step('arrived')} />
       )}
-      <ActionFailure error={steps.failure} />
+      <DockFailure error={steps.failure} />
     </>
   );
 }

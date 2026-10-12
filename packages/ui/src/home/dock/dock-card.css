@@ -75,3 +75,8 @@
   line-height: 1.35;
   color: var(--reg-secondary);
 }
+
+/* A step that did not work: the red row under the card (G78 sheet 6). */
+.dock-failure {
+  margin-top: 8px;
+}
