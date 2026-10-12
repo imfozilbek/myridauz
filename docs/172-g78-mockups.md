@@ -11,7 +11,7 @@
 | `3-admin-1.png` | Statistika, Safarlar, Safar, Hamyonlar, Hamyon, Hamyonni tuzatish (одним экраном), Narxlar, Formula с итогом, Yoʻnalish narxi, Pitaklar, Pitak | 11 |
 | `3-admin-2.png` | Kanallar, Kanal, Odamlar, Odam, Bloklash шторкой, Jamoa, Cheklovlar, Cheklov шторкой, Jurnal по дням, Hujjatlar va kompaniya, Ovozlar, Sabablar шторкой, К2 ariza, К1 rasm, К4 shikoyat | 15 |
 | `4-steps-passenger.png` | П4, П6, П7, П9, П13, П16, П17, П22 | 8 |
-| `5-steps-driver.png` | В1–В3, В2 (страница поездки), В5 A и B, В9, В10 A и В11, В12, В14, В17 | 9 |
+| `5-steps-driver.png` | В1 … В3, В2 (страница поездки), В5 A и B, В9, В10 A и В11, В12, В14, В17 | 9 |
 
 ## Одна вещь, один вид (`168`, дубликаты)
 
