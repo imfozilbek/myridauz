@@ -2,7 +2,16 @@ import { Icon } from '../icons';
 import { haptic } from '../telegram/feedback';
 import './choice-rows.css';
 
-type Choice<K extends string> = { readonly key: K; readonly title: string; readonly hint?: string };
+type Choice<K extends string> = {
+  readonly key: K;
+  readonly title: string;
+  readonly hint?: string;
+  // A choice that cannot be undone is red: «Butunlay» of a block (G78 sheet 6).
+  readonly danger?: boolean;
+};
+
+const rowClass = (choice: { readonly danger?: boolean }) =>
+  choice.danger ? 'choice-row choice-danger' : 'choice-row';
 
 type Props<K extends string> = {
   readonly name: string;
@@ -23,7 +32,7 @@ export function ChoiceRows<K extends string>({ name, choices, value, onPick }: P
     return (
       <div className="choice-rows">
         {choices.map((choice) => (
-          <button key={choice.key} type="button" className="choice-row" onClick={() => pick(choice.key)}>
+          <button key={choice.key} type="button" className={rowClass(choice)} onClick={() => pick(choice.key)}>
             <Words choice={choice} />
             <span className="choice-arrow">
               <Icon name="next" size={18} />
@@ -35,7 +44,7 @@ export function ChoiceRows<K extends string>({ name, choices, value, onPick }: P
   return (
     <div className="choice-rows" role="radiogroup">
       {choices.map((choice) => (
-        <label key={choice.key} className="choice-row">
+        <label key={choice.key} className={rowClass(choice)}>
           <Words choice={choice} />
           <input
             type="radio"

@@ -129,8 +129,10 @@
 
 .manage-value {
   flex: none;
+  max-width: 55%;
   font-size: 14px;
   font-weight: 700;
+  text-align: right;
   color: var(--reg-ink);
 }
 

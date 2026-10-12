@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sheetClosed } from '../home/sheet-closed';
 import { COMPLAINT, COMPLAINT_DETAIL, KAMOLA, MADINA, renderNavbat } from './navbat-test-kit';
 
 afterEach(cleanup);
@@ -41,6 +42,7 @@ describe('the cases of «Navbat»', () => {
     vi.unstubAllGlobals();
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
     expect(decide).toHaveBeenCalledWith('c1', { action: 'block', days: 7, refund: false });
+    await sheetClosed();
   });
 
   it('answers a question of support: the talk, «Blok haqida» and the answer from the bot', async () => {

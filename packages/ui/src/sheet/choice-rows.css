@@ -61,3 +61,8 @@ button.choice-row {
   flex: none;
   color: var(--reg-control);
 }
+
+/* A choice that cannot be undone is red (G78 sheet 6, «Butunlay»). */
+.choice-row.choice-danger {
+  color: var(--reg-danger);
+}

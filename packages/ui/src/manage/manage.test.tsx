@@ -1,6 +1,7 @@
 import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sheetClosed } from '../home/sheet-closed';
 import { tap } from '../market/market-test-kit';
 import { CARD, MEMBERS, PERSON, renderManagement } from './manage-test-kit';
 
@@ -23,6 +24,7 @@ describe('«Boshqaruv»', () => {
     expect(await screen.findByText('1 moderator')).toBeTruthy();
   });
 
+  // The values on the right; «Bloklash» at the bottom, the days in a sheet (G78 sheet 6).
   it('opens a person by the public id in «Odamlar» and blocks for 7 days', async () => {
     const block = vi.fn(async () => undefined);
     renderManagement({ moderation: { block, blocks: async () => ({ active: null, entries: [] }) } });
@@ -34,10 +36,13 @@ describe('«Boshqaruv»', () => {
     await tap('Ochish');
     expect(await screen.findByText('Haydovchi: 5 · yoʻlovchi: 2')).toBeTruthy();
     expect(screen.getByText(/4,8 \(37 ta baho\)/u)).toBeTruthy();
-    expect(screen.getByText('01 A 123 BC')).toBeTruthy();
+    expect(screen.getByText('01 A 123 BC').className).toBe('manage-value');
+    expect(await screen.findByText('Hech qachon bloklanmagan')).toBeTruthy();
     await tap('Bloklash');
+    expect(await screen.findByText('Qancha muddatga bloklaymiz?')).toBeTruthy();
     await tap('7 kun');
     await waitFor(() => expect(block).toHaveBeenCalledWith(CARD.id, 7));
+    await sheetClosed();
   });
 
   it('adds a moderator by the public id in «Jamoa» and removes one', async () => {

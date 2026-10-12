@@ -1,7 +1,7 @@
 import { ApiError } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { closeSheet } from '../home/sheet-closed';
+import { closeSheet, sheetClosed } from '../home/sheet-closed';
 import { BOBUR, detailOf, JASUR, renderNavbat } from './navbat-test-kit';
 
 afterEach(cleanup);
@@ -60,19 +60,23 @@ describe('an application in «Navbat»', () => {
       action: 'request_changes',
       reasons: ['plate_not_readable', 'interior_unclear'],
     });
+    await sheetClosed();
   });
 
+  // The days in a sheet over the application (G78 sheet 6).
   it('blocks for 7 days; a block for good is asked first', async () => {
     const block = vi.fn(async () => undefined);
     renderNavbat(open, [JASUR], { moderation: { block } });
     fireEvent.click(await screen.findByText('Bloklash'));
+    expect(await screen.findByText('Qancha muddatga bloklaymiz?')).toBeTruthy();
     vi.stubGlobal('confirm', () => false);
-    fireEvent.click(screen.getByText('Butunlay'));
+    await act(async () => fireEvent.click(screen.getByText('Butunlay')));
     vi.unstubAllGlobals();
     expect(block).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('7 kun'));
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
     expect(block).toHaveBeenCalledWith(JASUR.id, 7);
+    await sheetClosed();
   });
 
   it('stays on the application with the reason when the decision did not go through (G43)', async () => {

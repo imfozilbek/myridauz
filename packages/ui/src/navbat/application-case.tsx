@@ -1,7 +1,5 @@
 import {
-  BLOCK_DAYS,
   type ApplicationDetail,
-  type BlockInput,
   type CarPhotoKind,
   type Decision,
   type DecisionInput,
@@ -10,10 +8,9 @@ import {
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { ChoiceStep } from '../driver/steps/choice-step';
 import { useLoad } from '../market/use-list';
-import { allowBlock } from '../moderation/ask-block';
 import { ApproveFlow } from '../moderation/approve-flow';
+import { BlockSheet } from '../moderation/block-sheet';
 import { PhotoScreen } from '../moderation/photo-screen';
 import { ReasonsSheet } from '../moderation/reasons-sheet';
 import { Screen } from '../screen/screen';
@@ -66,9 +63,6 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
     }
   };
   const decide = (decision: DecisionInput) => void act(moderation.decide(userId, decision), 'decided');
-  const block = async (days: BlockInput['days']) => {
-    if (await allowBlock(days ?? null, t)) await act(moderation.block(userId, days), 'blocked');
-  };
   const back = () => setMode('view');
   if (mode === 'approve')
     return (
@@ -80,26 +74,10 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
         onApprove={(plate) => decide(plate ? { action: 'approve', plate } : { action: 'approve' })}
       />
     );
-  if (mode === 'block')
-    return (
-      <ChoiceStep
-        screen="moderation.block"
-        icon="blocked"
-        title={t('moderation.block.title')}
-        choices={[
-          ...BLOCK_DAYS.map((value) => ({
-            value,
-            label: t('moderation.block.days', { days: String(value) }),
-          })),
-          { value: null, label: t('moderation.block.forever') },
-        ]}
-        onBack={back}
-        onDone={block}
-      />
-    );
-  if (mode !== 'view' && mode !== 'reject' && mode !== 'request_changes')
+  if (mode !== 'view' && mode !== 'reject' && mode !== 'request_changes' && mode !== 'block')
     return <PhotoScreen userId={userId} kind={mode} onBack={back} />;
-  // The reasons of «Tuzatish» or of «Rad etish» in a sheet over the application (G78 К2).
+  // The reasons of «Tuzatish» or of «Rad etish» and the days of a block in sheets over the
+  // application (G78 К2, sheet 6).
   const reasons: ReasonsMode = mode === 'reject' ? 'reject' : 'request_changes';
   return (
     <div className="case">
@@ -117,11 +95,16 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
       />
       <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} />
       <ReasonsSheet
-        open={mode !== 'view'}
+        open={mode === 'reject' || mode === 'request_changes'}
         picked={ticked[reasons]}
         onPick={(picked) => setTicked((all) => ({ ...all, [reasons]: picked }))}
         onClose={back}
         onDone={(picked) => decide({ action: reasons, reasons: picked })}
+      />
+      <BlockSheet
+        open={mode === 'block'}
+        onClose={back}
+        onBlock={(days) => act(moderation.block(userId, days), 'blocked')}
       />
     </div>
   );
