@@ -62,7 +62,7 @@
 | Сообщение сверху экрана | `Banner` с кнопкой «Yopish» | `notice-banner.tsx` |
 | Ошибка, которая меняет действие | `Banner` сверху шага, главная кнопка ведёт к выходу (G37) | `market/request-review.tsx` |
 | День и время на одном экране | `SegmentedControl` дня + `Select` только разрешённых часов (родное колесо телефона, G38, `103`) | `market/when-step.tsx` |
-| Путь брони | `Timeline` | `bookings/booking-timeline.tsx` |
+| Путь брони | Строки «шаг · время» в одной карточке, только пройденные шаги (G78, `174`) | `bookings/booking-steps.tsx` |
 | Действие сделано, можно вернуть | `Snackbar` с «Qaytarish» | `subscriptions/removed-snackbar.tsx` |
 | Выбор поверх экрана | `Modal` (лист снизу), в Telegram родное окно | `bookings/navigator-sheet.tsx` |
 | Точка на карте | Карта сверху, шторка снизу: заголовок, поиск, 2 последних места (G36, `100`) | `way/point-screen.tsx`, `way/way.css` |

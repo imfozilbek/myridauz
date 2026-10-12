@@ -20,6 +20,7 @@
   "book.dropoff": "Tushirish joyi",
   "driver.area": "{area} atrofi · +{km} km",
   "driver.areaOnly": "{area} atrofi",
+  "driver.endHint": "{name}, {area}",
   "driver.extra": "+{km} km",
   "driver.fits": "Bu safarga mos",
   "driver.others": "Boshqa soʻrovlar",

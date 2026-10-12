@@ -14,7 +14,6 @@ export {
   Snackbar,
   Spinner,
   Textarea,
-  Timeline,
 } from '@telegram-apps/telegram-ui';
 export { Cell } from './cell';
 export { Field } from './field';
