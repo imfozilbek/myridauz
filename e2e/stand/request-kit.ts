@@ -18,18 +18,23 @@ const ENDS = [
 ] as const;
 
 // «Qayerdan, qayerga?» of a request (G61): an end not chosen yet opens its map, «Shu yerda» takes
-// it; the way of the last request may be kept already (G35 K4).
+// it; the way of the last request may be kept already (G35 K4). The map of the end opens by itself
+// right after the start while the end is not chosen (G78 П4).
 export async function fillEnds(
   page: Page,
   tap: (target: Locator) => Promise<void> = (target) => target.click(),
 ) {
-  await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+  const points = page.getByText(t('bookings.points.title'));
+  await expect(points).toBeVisible();
   for (const [index, title] of ENDS) {
-    const row = page.locator('.points-row').nth(index);
-    if (!(await row.locator('.points-empty').isVisible())) continue;
-    await tap(row);
+    if (!(await page.getByText(t(title)).isVisible())) {
+      const row = page.locator('.points-row').nth(index);
+      if (!(await row.locator('.points-empty').isVisible())) continue;
+      await tap(row);
+    }
     await mapReady(page, title);
     await tap(mainButton(page));
-    await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
+    await expect(points.or(page.getByText(t('way.point.to')))).toBeVisible();
   }
+  await expect(points).toBeVisible();
 }
