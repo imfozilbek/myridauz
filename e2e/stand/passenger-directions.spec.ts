@@ -20,8 +20,8 @@ test('a card of a region: its price, then its trips', async ({ page }) => {
   const asked = page.getByText(t('places.fromTitle'));
   await expect(asked.or(page.getByText(t('find.title')))).toBeVisible();
   if (await asked.isVisible()) {
+    // Toshkent shahri is taken whole in one tap (G78 П9).
     await page.getByAltText('Toshkent shahri').click();
-    await page.getByText('Chilonzor').click();
   }
   const cards = page.locator('.direction-card');
   await expect(cards).toHaveCount(DIRECTION_CARDS);

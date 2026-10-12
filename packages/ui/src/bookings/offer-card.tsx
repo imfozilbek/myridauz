@@ -11,7 +11,7 @@ type Props = {
   readonly offer: Offer;
   // Each answer runs once: a second tap while it runs does nothing (docs/65 A4).
   readonly onAnswer: (action: 'accept' | 'decline') => Promise<unknown>;
-  // The card itself opens the offer with its chat (docs/07).
+  // The card itself opens the offer in the sheet of the main screen (G78 sheet 2).
   readonly onOpen: () => void;
 };
 

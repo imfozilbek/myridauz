@@ -13,7 +13,7 @@ import { HomeScreenRow } from './home-screen-row';
 import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
-export type ProfileOpen = 'reviews' | 'channels' | 'documents' | 'delete';
+export type ProfileOpen = 'reviews' | 'channels' | 'subscriptions' | 'documents' | 'delete';
 // What the head of the main screen opens straight away (G76): the ratings, how the drivers see one.
 export type ProfilePart = 'reviews' | 'look' | 'photo';
 
@@ -52,6 +52,12 @@ export function ProfileRows({ standing, onOpen }: Props) {
           onClick={() => onOpen('reviews')}
         />
         <ChannelsRow onOpen={() => onOpen('channels')} />
+        {/* «Obunalar» one tap from «Profil», under «Kanallar» (G78 П22). */}
+        <ProfileRow
+          icon="subscriptions"
+          title={t('subscriptions.title')}
+          onClick={() => onOpen('subscriptions')}
+        />
         {/* «Haydovchi boʻling» is here always for a passenger, the strip of the main screen only while
             its block is free (G76, docs/165). */}
         {account.profile.roles.includes('driver') ? null : (

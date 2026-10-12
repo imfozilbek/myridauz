@@ -47,6 +47,7 @@ export function ConfirmedBooking(props: Props) {
   const brand = useBrand();
   const { colors } = brand.theme;
   const steps = useSeatSteps(booking, onTold);
+  const meeting = meetingTime(booking, Date.now(), brand.schedule.meetMinutes);
   const button = (icon: IconName, label: string, onClick: () => void) => (
     <button type="button" className="booking-button" onClick={onClick}>
       <Icon name={icon} size={22} />
@@ -57,20 +58,21 @@ export function ConfirmedBooking(props: Props) {
     <div className="booking-page" style={brandVars(colors)}>
       <Screen onBack={onBack} />
       <BookingBanner booking={booking} />
-      {meetingTime(booking, Date.now(), brand.schedule.meetMinutes) ? (
-        <MeetingCard booking={booking} onTold={onTold} />
-      ) : null}
+      {meeting ? <MeetingCard booking={booking} onOpen={onOpen} onTold={onTold} /> : null}
       <div className="booking-card">
-        <DriverRow
-          driver={driver}
-          car={driver.car}
-          note={
-            driver.rating.average === null
-              ? null
-              : t('find.stars', { rating: formatRating(driver.rating.average) })
-          }
-          plate={booking.plate}
-        />
+        {/* At the meeting the driver is in its card: no second row of him (G78 sheet 2). */}
+        {meeting ? null : (
+          <DriverRow
+            driver={driver}
+            car={driver.car}
+            note={
+              driver.rating.average === null
+                ? null
+                : t('find.stars', { rating: formatRating(driver.rating.average) })
+            }
+            plate={booking.plate}
+          />
+        )}
         <TripCard booking={booking} onPoint={(point) => openExternal(mapUrl(point))} />
       </div>
       {booking.status === 'completed' ? (

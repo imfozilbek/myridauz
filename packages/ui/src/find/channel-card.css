@@ -104,3 +104,30 @@
   font-size: 13px;
   color: var(--reg-muted);
 }
+
+/* A row that is not tapped (G78 sheet 2): «Hozircha safar yoʻq» gray, «Obuna boʻldingiz» green. */
+div.way-row {
+  cursor: default;
+}
+
+.way-row-icon-muted {
+  background: var(--reg-bg);
+  color: var(--reg-muted);
+}
+
+.way-row-icon-done {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+.way-row-done .way-row-title {
+  color: var(--reg-success);
+}
+
+.way-row-art {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  object-fit: cover;
+}

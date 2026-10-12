@@ -11,8 +11,8 @@ export async function searchTo(page: Page, place: string) {
   await expect(asked.or(page.getByText(t('find.title'))).or(found)).toBeVisible();
   if (await found.isVisible()) return;
   if (await asked.isVisible()) {
+    // Toshkent shahri is taken whole in one tap (G78 П9).
     await page.getByAltText('Toshkent shahri').click();
-    await page.getByText('Chilonzor').click();
   }
   await page.getByText(t('find.other')).click();
   await page.getByPlaceholder(t('find.other')).fill(place.slice(0, 4));

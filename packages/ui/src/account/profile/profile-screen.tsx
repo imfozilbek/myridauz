@@ -5,6 +5,7 @@ import { useApiClients } from '../../context/api-clients';
 import { useBrand } from '../../context/brand-context';
 import { useLoad } from '../../market/use-list';
 import { Screen } from '../../screen/screen';
+import { SubscriptionsScreen } from '../../subscriptions/subscriptions-screen';
 import { useScreenBackground } from '../../telegram/screen-background';
 import { brandVars } from '../../theme/brand-vars';
 import { useAccount } from '../account-context';
@@ -55,6 +56,7 @@ export function ProfileScreen({ onBack, part }: Props) {
       />
     );
   if (open === 'channels') return <MyChannelsScreen onBack={back} />;
+  if (open === 'subscriptions') return <SubscriptionsScreen onBack={back} />;
   if (open === 'documents') return <DocumentsScreen onBack={back} />;
   if (open === 'delete') return <DeleteAccountScreen client={account.client} onBack={back} />;
   return (

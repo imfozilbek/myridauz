@@ -49,7 +49,8 @@ export function PlacePicker({
   const [query, setQuery] = useState('');
   const pick = (place: Location) => {
     haptic.select();
-    if (place.parentId !== null) return onPick(place);
+    // A city that is a region is taken whole at once where that is allowed (G78 П9).
+    if (place.parentId !== null || (allowWholeRegion && place.oneCity)) return onPick(place);
     setQuery('');
     setRegion(place);
   };
@@ -84,7 +85,9 @@ export function PlacePicker({
           onWhole={() => onPick(region)}
         />
       ) : null}
-      {!results && !region ? <RegionGrid regions={directory.regions} onOpen={pick} /> : null}
+      {!results && !region ? (
+        <RegionGrid regions={directory.regions} whole={allowWholeRegion} onOpen={pick} />
+      ) : null}
     </div>
   );
 }

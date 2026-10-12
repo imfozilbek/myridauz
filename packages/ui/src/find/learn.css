@@ -14,36 +14,18 @@
   text-transform: uppercase;
 }
 
-.learn-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
+/* The empty day (G78 sheet 2): the sign and the three ways in one card, rows of one kind. */
+.learn-one {
+  overflow: hidden;
   margin-top: 8px;
-  padding: 20px 14px 18px;
   border-radius: 14px;
   background: var(--reg-card);
-  text-align: center;
 }
 
-.learn-empty-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  background: var(--reg-bg);
-  color: var(--reg-muted);
+.learn-one > .way-row {
+  border-radius: 0;
 }
 
-.learn-empty-title {
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.learn-empty-hint {
-  font-size: 13px;
-  color: var(--reg-muted);
+.learn-one > .way-row + .way-row {
+  border-top: 1px solid var(--reg-divider);
 }

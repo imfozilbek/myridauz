@@ -11,7 +11,8 @@ const CLOCK = 12;
 
 type CardTone = 'brand' | 'soon' | 'now' | 'off';
 type ChipTone = 'brand' | 'green' | 'red' | 'gray';
-type Tool = {
+// The chat and the call next to the person (docs/07: numbers hidden).
+export type DockTool = {
   readonly icon: 'phone' | 'chat';
   readonly label: string;
   readonly dot?: boolean;
@@ -28,7 +29,7 @@ export type DockCardProps = {
   readonly text: ReactNode;
   readonly tone?: CardTone;
   // The other person of the trip with the chat and the call (docs/07: numbers hidden).
-  readonly who?: { readonly person: Person; readonly sub: string; readonly tools?: readonly Tool[] };
+  readonly who?: { readonly person: Person; readonly sub: string; readonly tools?: readonly DockTool[] };
   // Ready words under the card: «5 daqiqada», «10 daqiqada» (docs/164, from the meeting sheet).
   readonly quick?: readonly { readonly label: string; readonly onClick: () => void }[];
 };

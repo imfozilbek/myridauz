@@ -50,13 +50,12 @@ export async function publishTrip(page: Page, shot: Shot = none) {
 }
 
 // The passenger's search (G59, docs/118 path 2): «Qayerdan» is asked only when the place of the person
-// is unknown, then Chilonzor (Toshkent shahri); «Qayerga borasiz?» comes after it.
+// is unknown, then Toshkent shahri whole in one tap (G78 П9); «Qayerga borasiz?» comes after it.
 export async function fromIfAsked(page: Page) {
   const asked = page.getByText(TEXT.fromTitle);
   await expect(asked.or(page.getByText(TEXT.directions))).toBeVisible();
   if (!(await asked.isVisible())) return;
   await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
 }
 
 // Samarqand shahri by «Boshqa joy: tuman yoki shahar», then the trips of the nearest day with trips.

@@ -97,7 +97,9 @@ describe('RouteScreen (docs/14)', () => {
     fireEvent.change(screen.getByPlaceholderText('Viloyat, tuman yoki shahar'), { target: { value: 'xyz' } });
     expect(screen.getByText('Hech narsa topilmadi')).toBeTruthy();
     fireEvent.change(screen.getByPlaceholderText('Viloyat, tuman yoki shahar'), { target: { value: '' } });
-    await choose('Toshkent shahri', 'Butun shahar');
+    // The city that is a region says «Butun shahar» and is taken in one tap (G78 П9).
+    expect(screen.getByText('Butun shahar')).toBeTruthy();
+    await choose('Toshkent shahri');
     expect(screen.getByText('Toshkent shahri')).toBeTruthy();
   });
 

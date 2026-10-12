@@ -25,8 +25,8 @@ const ANY: Subscription = {
   expired: true,
 };
 
-// The empty day of a search has one action, the request (G37, docs/101 R9): «Xabar bering» lives
-// on a closed trip and on a channel post.
+// «Xabar bering» (docs/24, G78 П13): a row; a tap on a day of its sheet subscribes at once, no button.
+// Subscribed, the row turns green in its place; a failure stays in the sheet with its reason.
 describe('"Xabar bering" (docs/24)', () => {
   it('subscribes to the searched route for the day or any day', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
@@ -35,16 +35,17 @@ describe('"Xabar bering" (docs/24)', () => {
       testClients({ subscriptions: { subscribe } }),
     );
     await tap('Xabar bering');
-    // A sheet (G75, mockup g75/3 A phone 4): «Istalgan kun» is chosen, the button subscribes.
     expect(screen.getByText('Shu kungi safarlar')).toBeTruthy();
-    expect(screen.getByRole('radio', { name: /Istalgan kun/u })).toHaveProperty('checked', true);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
-    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(screen.queryByRole('radio')).toBeNull();
+    await tap('Istalgan kun');
+    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
+    expect(screen.getByText('Mos eʼlon chiqsa, bot xabar beradi.')).toBeTruthy();
+    expect(document.querySelector('.way-row-done')).not.toBeNull();
     expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730401', date: null, woman: false });
     expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
   });
 
-  it('explains the limit of 5 subscriptions', async () => {
+  it('explains the limit of 5 subscriptions in the sheet', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => {
       throw new ApiError(409, 'subscriptions.too_many');
     });
@@ -54,8 +55,8 @@ describe('"Xabar bering" (docs/24)', () => {
     );
     await tap('Xabar bering');
     await tap(/^Faqat/);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
     expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();
+    expect(screen.getByText('Istalgan kun')).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-10-02' }));
   });
 });
@@ -133,8 +134,7 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     // The sheet names the route of the post over the question (mockup g75/3 A phone 4).
     expect(await screen.findByText(/\. Qaysi kunga\?$/u)).toBeTruthy();
     await tap(/^Faqat/);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
-    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith({
       from: '1726',
       to: '1730',

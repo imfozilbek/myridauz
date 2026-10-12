@@ -40,7 +40,7 @@ test('places: screenshots', async ({ page }) => {
     await page.mouse.move(0, 0);
     await page.screenshot({ path: `screenshots/places-${name}.png`, fullPage: true });
   };
-  // «Qayerdan» is changed by its list (G59): the regions, the search, the districts.
+  // «Qayerdan» is changed by its list (G59): the regions and the search.
   await openFindTrip(page);
   await fromIfAsked(page);
   await page.getByText(TEXT.change).click();
@@ -52,9 +52,8 @@ test('places: screenshots', async ({ page }) => {
   await expect(page.getByText('Gʻijduvon')).toBeVisible();
   await shot('4-search');
   await search.fill('');
+  // Toshkent shahri is taken whole in one tap (G78 П9).
   await page.getByAltText('Toshkent shahri').click();
-  await shot('3-districts');
-  await page.getByText('Yunusobod').click();
   // A place of the same city is refused under the search (docs/14).
   await page.getByText(TEXT.otherPlace).click();
   await page.getByPlaceholder(TEXT.otherPlace).fill('Chilon');

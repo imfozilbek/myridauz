@@ -1,15 +1,14 @@
-import type { Booking, Offer, RideRequest } from '@platform/contracts';
+import type { Booking, Offer, OfferAction, RideRequest } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { confirm, haptic } from '../telegram/feedback';
 import { useI18n } from '../context/i18n-context';
 import { errorKey, isStale } from '../market/error-text';
-import { ChatScreen } from '../chat/chat-screen';
 import { AcceptedBooking } from './accepted-booking';
 import { MyRequest } from './my-request';
-import { PassengerOfferSheet } from './passenger-offer-sheet';
 import { PassengerBooking } from './passenger-booking';
+import { RequestOfferSheet } from './request-offer-sheet';
 import { useAnswerOffer } from './use-answer-offer';
 
 export type Opened =
@@ -37,7 +36,6 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome, stars 
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   // The booking of an accepted offer: its page opens at once (G61, journey screen 8).
   const [accepted, setAccepted] = useState<string | null>(null);
-  const [talk, setTalk] = useState<{ chatKey: string; title: string; ring?: boolean } | null>(null);
   // A failed action keeps the screen and says why; the fresh data comes with the next signal.
   const run = async <T,>(action: () => Promise<T>, after: (result: T) => void) => {
     try {
@@ -61,23 +59,23 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome, stars 
     );
   };
   // An answer from the card of the request or from the screen of the offer (G61, mockup 3-offers A).
-  const answer = (answered: Offer, action: 'accept' | 'decline') =>
+  const answer = (answered: Offer, action: OfferAction) =>
     run(
       () => answerOffer(answered, action),
       (result) => (result.bookingId ? setAccepted(result.bookingId) : open(null)),
     );
+  // The sheet says why itself: its answer fails to it (docs/65 B3).
+  const answerInSheet = async (answered: Offer, action: OfferAction) => {
+    try {
+      const result = await answerOffer(answered, action);
+      if (result.bookingId) setAccepted(result.bookingId);
+      else open(null);
+    } catch (caught) {
+      if (isStale(caught)) onStale?.();
+      throw caught;
+    }
+  };
   if (accepted) return <AcceptedBooking bookingId={accepted} onClose={onClose} onHome={onHome} />;
-  // An offer taken in the talk opens its seat, as one taken here (G77).
-  const seat = (bookingId: string) => (setTalk(null), setAccepted(bookingId));
-  if (talk)
-    return (
-      <ChatScreen
-        {...talk}
-        onTrip={() => setTalk(null)}
-        onLink={(link) => seat(link.id)}
-        onBack={() => setTalk(null)}
-      />
-    );
   if (opened.kind === 'request')
     return (
       <MyRequest
@@ -89,13 +87,11 @@ export function PassengerOpen({ opened, offers, onClose, onStale, onHome, stars 
         onAnswer={answer}
         onOpen={open}
       >
-        {/* One offer opens in a sheet over the request (G75, mockup g75/4 B phone 2). */}
-        <PassengerOfferSheet
+        {/* One offer opens in the sheet of the main screen over the request (G78 sheet 2). */}
+        <RequestOfferSheet
           offer={offer}
-          failure={failure}
-          onAccept={(chosen) => answer(chosen, 'accept')}
-          onDecline={(chosen) => answer(chosen, 'decline')}
-          onChat={(chosen) => setTalk({ chatKey: chosen.chatKey, title: chosen.driver.firstName })}
+          same={offers.filter((one) => one.requestId === opened.request.id && one.status === 'sent').length}
+          onAnswer={answerInSheet}
           onClose={() => open(null)}
         />
       </MyRequest>

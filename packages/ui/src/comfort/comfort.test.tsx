@@ -50,8 +50,9 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       testClients({ comfort: { favorites: async () => ({ drivers: [DRIVER], trips: [trip] }) } }),
     );
     expect(await screen.findByText('Sevimli haydovchilar')).toBeTruthy();
-    expect(screen.getAllByText('Jasur').length).toBeGreaterThan(1);
-    expect(screen.getByText('Katta yuk olmayman')).toBeTruthy();
+    expect(screen.getByText('Jasur')).toBeTruthy();
+    // Their trips are the cards of «Safarlar» (G78 sheet 2).
+    expect(document.querySelectorAll('.search-trips .search-trip')).toHaveLength(1);
     cleanup();
     renderMarket(
       <FavoritesScreen onBack={() => undefined} />,

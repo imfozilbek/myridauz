@@ -80,8 +80,8 @@ for (const platform of PLATFORMS)
     await openHome(page, 'driver', HUMOYUN, platform);
     await openRequests(page);
     await openFromList(page);
+    // Toshkent shahri is taken whole in one tap (G78 П9).
     await page.getByAltText('Toshkent shahri').click();
-    await page.getByText('Yunusobod').click();
     // «Qayerga» opens by itself, both ends go on (G40, docs/106 K1).
     await page.getByAltText('Surxondaryo viloyati').click();
     await page.getByText('Termiz shahri', { exact: true }).click();

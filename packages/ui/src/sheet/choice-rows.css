@@ -42,3 +42,22 @@
 .choice-radio:checked {
   border: 7px solid var(--reg-strong);
 }
+
+/* A row that does its step at once (G78 sheet 2, «Xabar bering»): an arrow instead of the mark. */
+button.choice-row {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--reg-divider);
+  background: none;
+  font-family: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.choice-arrow {
+  display: flex;
+  flex: none;
+  color: var(--reg-control);
+}

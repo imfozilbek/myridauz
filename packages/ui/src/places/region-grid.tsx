@@ -1,15 +1,19 @@
 import type { Location } from '@platform/contracts';
 import { Text } from '@telegram-apps/telegram-ui';
+import { useI18n } from '../context/i18n-context';
 import { useRegionArt } from './region-art';
 
 type RegionGridProps = {
   readonly regions: readonly Location[];
+  // A place may be taken whole: a city that is a region is one tap, «Butun shahar» (G78 П9).
+  readonly whole: boolean;
   readonly onOpen: (region: Location) => void;
 };
 
 // 14 regions as picture cards: people find their region by the picture faster than by the name.
 // The name lies under the drawing on white, never on the picture (docs/118).
-export function RegionGrid({ regions, onOpen }: RegionGridProps) {
+export function RegionGrid({ regions, whole, onOpen }: RegionGridProps) {
+  const { t } = useI18n();
   const artOf = useRegionArt();
   return (
     <div className="region-grid">
@@ -20,6 +24,7 @@ export function RegionGrid({ regions, onOpen }: RegionGridProps) {
             {art ? <img className="region-photo" src={art} alt={region.name} loading="lazy" /> : null}
             <Text weight="2" className="region-name">
               {region.name}
+              {whole && region.oneCity ? <span className="region-whole">{t('places.wholeCity')}</span> : null}
             </Text>
           </button>
         );
