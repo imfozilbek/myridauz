@@ -48,8 +48,8 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi»',
   await pressBack(page);
   // «Qanday band qilinadi?» (G61): seats only.
   await page.getByText(t('market.rule.title')).click();
+  // A tap on a card chooses it and comes back to the form (G78 В14).
   await page.getByText(t('market.rule.seats')).click();
-  await mainButton(page).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   await shot(page, '3-driver-publish');
   await mainButton(page).click();

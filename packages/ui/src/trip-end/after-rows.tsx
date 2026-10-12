@@ -3,7 +3,7 @@ import { daysLeft } from '../bookings/done-tools';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useUntilText } from '../trip/until-text';
-import { tripSums } from './trip-sums';
+import { ridersOf, tripSums } from './trip-sums';
 import './after-rows.css';
 import { useBrand } from '../context/brand-context';
 
@@ -19,8 +19,9 @@ type Props = {
   readonly onRow: (row: AfterRow) => void;
 };
 
-// One row: what it is, its deadline; null when there is nothing to open any more.
-type Row = readonly [AfterRow | null, string, string];
+// One row: what it is, its deadline; null when there is nothing to open any more; done: the line
+// under it is green.
+type Row = readonly [AfterRow | null, string, string, boolean?];
 
 // «Safardan keyin» of the driver (docs/129, mockup g63/5 phone 5): what may still be done after the
 // trip, each with its deadline from afterTrip, as for the passenger (DoneTools): the chat stays to
@@ -41,11 +42,16 @@ export function AfterRows({ trip, bookings, now, onRow }: Props) {
       : sums.refunded > 0
         ? t('driverAfter.past.refunded', { charged, refund: formatNumber(sums.refunded) })
         : t('driverAfter.past.charged', { charged });
-  // The stars keep their days while they may be given, as on the mockup, rated or not.
+  // The stars keep their days while they may be given; all given, the row only says so and opens
+  // nothing (G78 В17).
+  const riders = ridersOf(bookings);
+  const rated = riders.length > 0 && riders.every((booking) => booking.rated === true);
   const rows: readonly Row[] = [
-    now >= rateUntil
-      ? [null, t('driverAfter.past.rate'), over]
-      : ['rate', t('driverAfter.past.rate'), left(rateUntil)],
+    rated
+      ? [null, t('driverAfter.past.rate'), t('driverAfter.tag.rated'), true]
+      : now >= rateUntil
+        ? [null, t('driverAfter.past.rate'), over]
+        : ['rate', t('driverAfter.past.rate'), left(rateUntil)],
     now < talkUntil
       ? [
           'talk',
@@ -60,11 +66,11 @@ export function AfterRows({ trip, bookings, now, onRow }: Props) {
   ];
   return (
     <div className="past-after">
-      {rows.map(([row, title, sub]) => {
+      {rows.map(([row, title, sub, done]) => {
         const text = (
           <span className="past-after-text">
             {title}
-            <span>{sub}</span>
+            <span data-done={done ? '' : undefined}>{sub}</span>
           </span>
         );
         return row ? (

@@ -85,8 +85,8 @@ test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ p
   // «Qanday band qilinadi?» (G61): seats or the whole car.
   await page.getByText(t('market.rule.title')).click();
   await shot(page, 'android', 'da44a-rule');
+  // A tap on a card chooses it and comes back to the form (G78 В14).
   await page.getByText(t('market.rule.seatsOrCar')).click();
-  await mainButton(page).click();
   await page.getByText(t('market.publish.comment')).click();
   await shot(page, 'android', 'da45-comment');
   await page.getByText(TEXT.commentSkip).click();

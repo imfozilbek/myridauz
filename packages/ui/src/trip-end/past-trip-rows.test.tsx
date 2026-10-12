@@ -47,6 +47,13 @@ describe('«Safardan keyin» of the driver: who a row is about (docs/129, mockup
     expect(await screen.findByText('complaint r4')).toBeTruthy();
   });
 
+  it('all rated: the stars row says so in green and opens nothing (G78 В17)', async () => {
+    openPast([{ ...rode, rated: true }]);
+    const done = await screen.findByText('Hammasi baholandi');
+    expect(done.hasAttribute('data-done')).toBe(true);
+    expect(done.closest('button')).toBeNull();
+  });
+
   it('the chat and the call of a passenger row: the call rings', async () => {
     openPast([rode]);
     (await screen.findByRole('button', { name: 'Qoʻngʻiroq' })).click();

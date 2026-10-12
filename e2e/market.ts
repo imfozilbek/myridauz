@@ -40,9 +40,9 @@ export async function publishTrip(page: Page, shot: Shot = none) {
   await expect(mainButton).toHaveText(TEXT.publish);
   await shot('2-publish');
   await page.getByText(t('market.rule.title')).click();
-  await page.getByText(t('market.rule.seatsOrCar')).click();
   await shot('3-rule');
-  await mainButton.click();
+  // A tap on a card chooses it and comes back to the form (G78 В14).
+  await page.getByText(t('market.rule.seatsOrCar')).click();
   await expect(mainButton).toHaveText(TEXT.publish);
   await mainButton.click();
   await expect(page.getByText(TEXT.tripOpened)).toBeVisible();

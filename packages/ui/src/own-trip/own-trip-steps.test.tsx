@@ -89,8 +89,9 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     expect(review).toHaveBeenCalledWith({ bookingId: 'b2', stars: 5 });
     expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
     await tap('Qaytishni eʼlon qilish');
-    // The route the other way, the day after, the seats of the trip and a new comment.
-    const publish = await screen.findByText(/^publish 1730401 1726269 2026-10-03 3 \[\]$/u);
+    // The route the other way, today as it makes it by 22:00 (G78 В11), the seats of the trip and
+    // a new comment.
+    const publish = await screen.findByText(/^publish 1730401 1726269 2026-10-02 3 \[\]$/u);
     expect(tracked.some((event) => event.name === 'return_trip_created')).toBe(false);
     fireEvent.click(publish);
     expect(tracked.filter((event) => event.name === 'return_trip_created')).toHaveLength(1);

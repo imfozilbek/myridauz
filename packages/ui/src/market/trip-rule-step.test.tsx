@@ -7,11 +7,12 @@ import { TripRuleStep } from './trip-rule-step';
 afterEach(cleanup);
 
 const open = () => {
+  const onDone = vi.fn();
   const { container } = renderMarket(
-    <TripRuleStep model="Cobalt" seats={4} price={90_000} onBack={() => undefined} onDone={vi.fn()} />,
+    <TripRuleStep model="Cobalt" seats={4} price={90_000} onBack={() => undefined} onDone={onDone} />,
     testClients({}),
   );
-  return { container };
+  return { container, onDone };
 };
 
 describe('«Qanday band qilinadi?» as the mockup 2-whole-car screen 1 (G61)', () => {
@@ -37,11 +38,11 @@ describe('«Qanday band qilinadi?» as the mockup 2-whole-car screen 1 (G61)', (
     expect(container.querySelector('.rule-card-on')?.textContent).toContain('Faqat joylar');
   });
 
-  it('a tap anywhere on a card chooses it', async () => {
-    const { container } = open();
+  it('a tap anywhere on a card chooses it and comes back, no «Davom etish» (G78 В14)', async () => {
+    const { onDone } = open();
     fireEvent.click(await screen.findByText('Joylar yoki butun salon'));
-    expect(container.querySelector('.rule-card-on')?.textContent).toContain('Joylar yoki butun salon');
-    expect((screen.getAllByRole('radio')[1] as HTMLInputElement).checked).toBe(true);
+    expect(onDone).toHaveBeenCalledWith('seats_or_car');
+    expect(screen.queryByText('Davom etish')).toBeNull();
   });
 
   it('shows the price of the whole car under the cards', async () => {
