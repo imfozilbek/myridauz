@@ -19,4 +19,6 @@ export function useBalance(asked: boolean) {
   return { balance, reload };
 }
 
-export const short = (balance: number | null, commission: number) => balance !== null && balance < commission;
+// What the wallet lacks for a commission; nothing while the balance is not known yet.
+export const missingFor = (balance: number | null, commission: number) =>
+  balance === null ? 0 : Math.max(0, commission - balance);

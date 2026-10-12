@@ -5,6 +5,11 @@ import { useApiClients } from '../context/api-clients';
 import { haptic } from '../telegram/feedback';
 
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
+const PAYMENT_REQUIRED = 402;
+
+// The refusal of the server when the wallet cannot pay the commission: a page or a sheet says it with
+// its own words, as any failure (docs/65 B3).
+export const notEnough = () => new ApiError(PAYMENT_REQUIRED, 'wallet.not_enough');
 
 type Options = {
   // Where the answer is counted: the trip, the booking, the sheet (docs/29).

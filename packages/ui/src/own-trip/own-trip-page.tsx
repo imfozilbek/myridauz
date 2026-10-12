@@ -1,7 +1,7 @@
 import type { Booking, Offer, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { requestsByTime } from '../bookings/trip-bookings-order';
-import { short } from '../bookings/use-balance';
+import { missingFor } from '../bookings/use-balance';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -89,9 +89,8 @@ export function OwnTripPage(props: Props) {
             <SeatRequestCard
               key={booking.id}
               booking={booking}
-              short={short(balance, booking.commission)}
+              missing={missingFor(balance, booking.commission)}
               onAnswer={(action) => onAnswer(booking, action)}
-              onTopUp={() => onOpen(booking, 'not_enough')}
               onOpen={() => onOpen(booking, 'request')}
             />
           ))}

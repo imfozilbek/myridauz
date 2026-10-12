@@ -1,7 +1,7 @@
 import type { Booking, Trip } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useRef, useState } from 'react';
-import { useAnswerBooking } from '../bookings/use-answer-booking';
+import { notEnough, useAnswerBooking } from '../bookings/use-answer-booking';
 import { useBalance } from '../bookings/use-balance';
 import { useTripStory } from '../comfort/use-trip-story';
 import { useApiClients } from '../context/api-clients';
@@ -38,13 +38,16 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
   const story = useTripStory(trip);
   const posting = useRef(false);
   const cancelling = useRef(false);
+  // Fresh wallet and trip after an answer, here or in the sheet of a request (G78 sheet 3).
+  const refresh = () => {
+    balance.reload();
+    onChanged();
+  };
+  // The server found the wallet short: the card shows the sum short and «Hisobni toʻldirish» (В9).
   const answerBooking = useAnswerBooking({
     screen: 'bookings.driver',
-    onDone: () => {
-      balance.reload();
-      onChanged();
-    },
-    onShort: (booking) => open({ screen: 'not_enough', booking }),
+    onDone: refresh,
+    onShort: () => (balance.reload(), fail(notEnough())),
     fail,
   });
   const answer = (booking: Booking, action: 'confirm' | 'decline') => {
@@ -85,5 +88,5 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
       cancelling.current = false;
     }
   };
-  return { balance: balance.balance, failure, note, share, answer, tile, cancel };
+  return { balance: balance.balance, refresh, failure, note, share, answer, tile, cancel };
 }

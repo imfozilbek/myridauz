@@ -7,6 +7,21 @@
   background: var(--reg-card);
 }
 
+/* Short of the commission (G78 sheet 3, В9): the card is framed red and says the sum short. */
+.seat-card-short {
+  border: 1.5px solid var(--reg-danger-line);
+}
+
+.seat-card-missing {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--reg-danger);
+}
+
 .seat-card-head {
   width: 100%;
 }

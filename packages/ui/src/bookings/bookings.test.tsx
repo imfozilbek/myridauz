@@ -1,5 +1,4 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
-import { loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
@@ -84,7 +83,8 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     expect(screen.queryByText('Joy tasdiqlandi')).toBeNull();
   });
 
-  it('without money explains how to top up', async () => {
+  // The server found the wallet short: the sheet stays and says why (docs/65 B3, G78 sheet 3).
+  it('without money says why in the sheet', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => {
       throw new ApiError(409, 'wallet.not_enough');
     });
@@ -92,15 +92,8 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     await openOwnTrip();
     await tap('Dilnoza');
     inSheet('Tasdiqlash');
-    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
-    expect(screen.getByText(/Yordamga tayyor xabar boradi/u)).toBeTruthy();
-    // The way out is one tap: the support chat of the brand opens with the message ready (G75).
-    const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap('Hisobni toʻldirish');
-    expect(String(open.mock.calls[0]?.[0])).toMatch(
-      new RegExp(`^https://t.me/${loadBrand().bots.support}\\?text=`, 'u'),
-    );
-    open.mockRestore();
+    expect(await screen.findByText('Hamyonda komissiya uchun mablagʻ yetarli emas.')).toBeTruthy();
+    expect(screen.getByText('Yangi soʻrov')).toBeTruthy();
   });
 
   it('declines a booking', async () => {

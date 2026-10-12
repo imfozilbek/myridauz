@@ -61,7 +61,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     await openOwnTrip();
     expect(await screen.findByText(/komissiya 19\s000$/u)).toBeTruthy();
     await tap('Dilnoza');
-    expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
+    expect(await screen.findByText(/^Javob berish uchun \d+ (daqiqa|soat)/u)).toBeTruthy();
     // The rule about changing seats is the passenger's, not the driver's (G27).
     expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
     await closeSheet();
@@ -78,16 +78,16 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
       }),
     );
     await openOwnTrip();
-    // On the trip and on the booking the button leads to the top up (G27).
+    // On the trip and in the sheet the sum short shows and the button leads to the top up (G27, В9).
+    expect(await screen.findByText(/^Hamyonda 19\s000 yetmaydi$/u)).toBeTruthy();
+    const sent = vi.spyOn(window, 'open').mockReturnValue(null);
     await tap('Hisobni toʻldirish');
-    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
-    expect(answer).not.toHaveBeenCalled();
-    // The sheet over the trip closes by «Keyinroq» (G75, mockup g75/4 B).
-    await tap('Keyinroq');
     await tap('Dilnoza');
-    await tap('Hisobni toʻldirish');
-    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Hisobni toʻldirish' }).at(-1) as HTMLElement);
+    expect(sent).toHaveBeenCalledTimes(2);
     expect(answer).not.toHaveBeenCalled();
+    sent.mockRestore();
     await closeSheet();
   });
 });
