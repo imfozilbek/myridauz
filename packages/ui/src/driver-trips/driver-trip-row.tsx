@@ -1,55 +1,44 @@
-import { tashkentDate, type Trip } from '@platform/contracts';
+import type { Trip } from '@platform/contracts';
+import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
-import { useEnds } from '../requests/ends';
-import { useRequestDay } from '../requests/request-day';
-import { WAYS } from '../requests/request-marks';
 import './driver-trips.css';
 
 const CHEVRON = 10;
 
 type Props = {
   readonly trip: Trip;
-  // New requests for a seat that wait for the answer of the driver (G41, docs/90 F-D4).
-  readonly requests: number;
-  // «Qaytish safari» in place of the pitak (mockup g64/6).
-  readonly wayBack: boolean;
+  // The day and the ends: short on a live trip, as on the card of a past one (G78 sheet 3).
+  readonly day: string;
+  readonly from: string;
+  readonly to: string;
+  // Where people are taken: the pitak of a live trip, the words of the card on a past one.
+  readonly place: string;
+  readonly chevron?: number;
   readonly onOpen: () => void;
+  // The marks under the row.
+  readonly children: ReactNode;
 };
 
-// One live trip of a driver (G64, mockup g64/6): when, the route, where people are taken and the
-// price of a seat, then the marks: new requests, free seats or «Hamma joy band». A tap opens
-// «Mening safarim» (path 6).
-export function DriverTripRow({ trip, requests, wayBack, onOpen }: Props) {
+// One trip of a driver (G64, mockup g64/6), live in «Faol» and past in «Oʻtgan» (G78 sheet 3): when,
+// the route, where people are taken and the price of a seat, then its marks. A tap opens «Mening
+// safarim» (path 6).
+export function DriverTripRow(props: Props) {
+  const { trip, day, from, to, place, chevron = CHEVRON, onOpen, children } = props;
   const { t, formatTime, formatNumber } = useI18n();
-  const day = useRequestDay();
-  const ends = useEnds()(trip);
-  const place = wayBack ? t('driverTrip.row.back') : (trip.pitak?.name ?? t(WAYS[trip.pickupMode]));
   return (
     <button type="button" className="driver-trip" onClick={onOpen}>
       <span className="driver-trip-text">
         <b className="driver-trip-when">
-          {t('driverTrip.row.when', {
-            day: day(tashkentDate(trip.departAt)),
-            time: formatTime(new Date(trip.departAt)),
-          })}
+          {t('driverTrip.row.when', { day, time: formatTime(new Date(trip.departAt)) })}
         </b>
-        <span className="driver-trip-route">{t('requests.card.route', ends)}</span>
+        <span className="driver-trip-route">{t('requests.card.route', { from, to })}</span>
         <span className="driver-trip-sub">
           {t('driverTrip.row.sub', { place, price: formatNumber(trip.price) })}
         </span>
-        <span className="driver-trip-tags">
-          {requests > 0 ? (
-            <span className="driver-tag driver-tag-new">{t('home.requests', { count: requests })}</span>
-          ) : null}
-          {trip.seatsLeft > 0 ? (
-            <span className="driver-tag">{t('driverTrip.row.free', { count: trip.seatsLeft })}</span>
-          ) : (
-            <span className="driver-tag driver-tag-full">{t('driverTrip.row.full')}</span>
-          )}
-        </span>
+        <span className="driver-trip-tags">{children}</span>
       </span>
-      <Icon name="next" size={CHEVRON} />
+      <Icon name="next" size={chevron} />
     </button>
   );
 }

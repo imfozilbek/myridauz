@@ -1,0 +1,4 @@
+/* A past trip with nothing left to do has no marks and no room for them (G78 sheet 3). */
+.driver-trip-tags:empty {
+  display: none;
+}

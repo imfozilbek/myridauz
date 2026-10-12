@@ -69,8 +69,10 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
   const [subscriptionsOpen, setSubscriptionsOpen] = useState(false);
   const [tab, setTab] = useState<MineTab>('live');
   const [again, setAgain] = useState<ReturnTrip | null>(null);
+  const [publishing, setPublishing] = useState(false);
   const directory = usePlaces();
   if (again) return <NewTripFlow route={again.route} again={again.again} onBack={() => setAgain(null)} />;
+  if (publishing) return <NewTripFlow onBack={() => setPublishing(false)} />;
   if (subscriptionsOpen) return <SubscriptionsScreen onBack={() => setSubscriptionsOpen(false)} />;
   if (chatKey) return <ChatScreen chatKey={chatKey} onBack={() => setChatKey(null)} />;
   if (trip && booking) {
@@ -112,6 +114,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       tab={tab}
       onTab={setTab}
       onAgain={(last) => setAgain(tomorrowTrip(last, directory))}
+      onPublish={() => setPublishing(true)}
     />
   );
 }

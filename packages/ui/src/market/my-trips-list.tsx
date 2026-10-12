@@ -1,12 +1,14 @@
 import { tashkentDate, type Booking, type Offer, type Trip } from '@platform/contracts';
-import { Button, Title } from '@telegram-apps/telegram-ui';
+import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
 import { SentOffers } from '../bookings/sent-offers';
 import { List } from '../components';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { AgainCard } from '../driver-trips/again-card';
-import { DriverTripRow } from '../driver-trips/driver-trip-row';
+import { LiveTripRow } from '../driver-trips/live-trip-row';
+import { NoTripsRow } from '../driver-trips/no-trips-row';
+import { PastTripRow } from '../driver-trips/past-trip-row';
 import { MonthTotal } from '../driver-trips/month-total';
 import { weekOf } from '../days/week';
 import { WeekRow } from '../days/week-row';
@@ -16,11 +18,10 @@ import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
 import { EmptyState } from '../states/empty-state';
 import { SubscriptionsEntry } from '../subscriptions/subscriptions-entry';
+import { MainButton } from '../telegram/bottom-button';
 import { brandVars } from '../theme/brand-vars';
-import { PastTripTags } from '../trip-end/past-trip-tags';
 import { MineTabs, type MineTab } from './mine-tabs';
 import { Paged } from './paged';
-import { TripCard } from './trip-card';
 
 // The memory of the driver's «Mening safarlarim»: data, pages and place (docs/94 F2).
 export const MY_TRIPS = 'market.mine.trips';
@@ -42,11 +43,13 @@ type Props = {
   // «Ertaga shu safar»: the last trip again, tomorrow at its time (mockup g64/6).
   readonly onAgain: (trip: Trip) => void;
   readonly onSubscriptions: () => void;
+  // A new trip from the empty list (G78 sheet 3).
+  readonly onPublish: () => void;
 };
 
 // «Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6): «Faol» is the week with its
-// dots, «Ertaga shu safar», the live trips with their marks and the month; «Oʻtgan» the past trips.
-// Back from a trip the list stands at the same place (docs/94 F2, S3).
+// dots, «Ertaga shu safar», the live trips with their marks and the month; «Oʻtgan» the past trips
+// in the same rows (G78 sheet 3). Back from a trip the list stands at the same place (docs/94 F2, S3).
 export function MyTripsList(props: Props) {
   const { trips, booked, waiting, offers, tab, onTab, onBack, onRefresh, onTrip, onOffer } = props;
   const { t } = useI18n();
@@ -59,16 +62,8 @@ export function MyTripsList(props: Props) {
     return (
       <>
         <Screen onBack={onBack} onRefresh={onRefresh} />
-        <EmptyState
-          icon="myTrips"
-          title={t('market.mine.empty')}
-          description={t('market.mine.emptyHint')}
-          action={
-            <Button size="m" mode="bezeled" onClick={props.onSubscriptions}>
-              {t('subscriptions.title')}
-            </Button>
-          }
-        />
+        <EmptyState icon="myTrips" title={t('market.mine.empty')} description={t('market.mine.emptyHint')} />
+        <MainButton text={t('home.publish')} onClick={props.onPublish} />
       </>
     );
   }
@@ -78,6 +73,7 @@ export function MyTripsList(props: Props) {
   const shown = picked ? live.filter((trip) => tashkentDate(trip.departAt) === picked) : live;
   const again = tripToRepeat(trips, now);
   const sent = offers.filter((offer) => offer.status === 'sent');
+  const past = trips.filter((trip) => !isLive(trip, now));
   return (
     <div className="market market-mine driver-trips" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={onRefresh} />
@@ -87,18 +83,18 @@ export function MyTripsList(props: Props) {
       <MineTabs tab={tab} live={live.length} onTab={onTab} />
       {tab === 'past' ? (
         <List>
+          {past.length === 0 ? <NoTripsRow text={t('market.mine.noPast')} inList /> : null}
           <Paged
             memory={`${MY_TRIPS}:past`}
-            items={trips.filter((trip) => !isLive(trip, now))}
+            items={past}
             render={(trip) => (
               <div key={trip.id} data-row={trip.id}>
-                <TripCard trip={trip} own requests={waiting(trip)} onOpen={() => onTrip(trip)}>
-                  <PastTripTags
-                    trip={trip}
-                    bookings={booked.filter((booking) => booking.trip.id === trip.id)}
-                    now={now}
-                  />
-                </TripCard>
+                <PastTripRow
+                  trip={trip}
+                  bookings={booked.filter((booking) => booking.trip.id === trip.id)}
+                  now={now}
+                  onOpen={() => onTrip(trip)}
+                />
               </div>
             )}
           />
@@ -112,10 +108,11 @@ export function MyTripsList(props: Props) {
             on={picked ?? today}
             onPick={(date) => setPicked(date === picked ? null : date)}
           />
+          {shown.length === 0 ? <NoTripsRow text={t('market.mine.noLive')} /> : null}
           {again ? <AgainCard trip={again} onOpen={() => props.onAgain(again)} /> : null}
           {shown.map((trip) => (
             <div key={trip.id} data-row={trip.id}>
-              <DriverTripRow
+              <LiveTripRow
                 trip={trip}
                 requests={waiting(trip)}
                 wayBack={isWayBack(trip, trips)}

@@ -118,12 +118,12 @@ export const tap = async (text: string | RegExp) => fireEvent.click(await screen
 // A trip of «Mening safarlarim» opens from its row (G64, mockup g64/6), an over one from «Oʻtgan».
 export async function openOwnTrip() {
   await waitFor(() => expect(document.querySelector('.driver-trip, .market-tabs')).not.toBeNull());
-  const live = document.querySelector('.driver-trip');
-  if (!live) {
+  // A past trip is a row of «Oʻtgan» as a live one is of «Faol» (G78 sheet 3).
+  if (!document.querySelector('.driver-trip')) {
     fireEvent.click(screen.getByText('Oʻtgan'));
-    await waitFor(() => expect(document.querySelector('.trip-card')).not.toBeNull());
+    await waitFor(() => expect(document.querySelector('.driver-trip')).not.toBeNull());
   }
-  fireEvent.click((live ?? document.querySelector('.trip-card')) as HTMLElement);
+  fireEvent.click(document.querySelector('.driver-trip') as HTMLElement);
 }
 
 // From Chilonzor (Toshkent shahri) to Fargʻona shahri or the whole Fargʻona region: «Qayerdan» opens

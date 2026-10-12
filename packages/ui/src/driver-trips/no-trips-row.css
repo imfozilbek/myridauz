@@ -1,0 +1,15 @@
+/* «Faol safar yoʻq» and «Oʻtgan safar yoʻq» (G78 sheet 3): not a button, the icon in grey. */
+.driver-none {
+  cursor: default;
+}
+
+.driver-none .driver-again-plus {
+  background: var(--reg-bg);
+  color: var(--reg-muted);
+}
+
+/* As wide as the list of «Oʻtgan», 10 px over «Obunalar»: stronger than the 12 px of the list. */
+.driver-trips .driver-again.driver-none-list {
+  width: 100%;
+  margin: 0 0 10px;
+}

@@ -9,10 +9,10 @@ import { TripCard } from './trip-card';
 afterEach(cleanup);
 
 const HOUR = 60 * 60 * 1000;
-const card = (shown: Trip, own = false) =>
+const card = (shown: Trip) =>
   renderMarket(
     <PlacesGate>
-      <TripCard trip={shown} own={own} onOpen={() => undefined} />
+      <TripCard trip={shown} onOpen={() => undefined} />
     </PlacesGate>,
     testClients({}),
   );
@@ -25,15 +25,10 @@ describe('the marks of a trip in the search (G39, docs/104, 10)', () => {
     expect(screen.getByText('Narxi tushdi')).toBeTruthy();
   });
 
-  it('shows no marks on a usual trip and on the own trips of a driver', async () => {
+  it('shows no marks on a usual trip', async () => {
     const later = { ...trip, departAt: Date.now() + 3 * HOUR };
     card(later);
     await screen.findByText('Jasur');
     expect(screen.queryByText('Tez orada joʻnaydi')).toBeNull();
-    cleanup();
-    const cheaper = { ...later, price: 90000 };
-    card(cheaper, true);
-    await screen.findByText('Faol');
-    expect(screen.queryByText('Narxi tushdi')).toBeNull();
   });
 });

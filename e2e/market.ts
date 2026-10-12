@@ -84,10 +84,10 @@ export async function findTrips(page: Page, shot: Shot = none) {
 }
 
 // A trip of «Mening safarlarim» of a driver (G64, mockup g64/6): a live one from its row, an over
-// one from «Oʻtgan».
+// one from its row on «Oʻtgan» (G78 sheet 3).
 export async function openOwnTrip(page: Page) {
   const live = page.locator('.driver-trip');
   await page.locator('.market-tabs').waitFor();
   if ((await live.count()) === 0) await page.getByText(t('bookings.tab.past')).click();
-  await page.locator('.driver-trip, .trip-card').first().click();
+  await page.locator('.driver-trip').first().click();
 }
