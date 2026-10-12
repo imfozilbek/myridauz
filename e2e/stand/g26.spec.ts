@@ -3,6 +3,7 @@ import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
 import { openEndMap } from '../bookings';
+import { mapFound } from '../map-wait';
 import { openFromList } from '../market';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
@@ -71,8 +72,7 @@ async function findAndOpen(page: Page, person: Person) {
 // One end of «Qayerdan, qayerga?»: its row opens the map, the name of the place came (lesson 77).
 async function openEnd(page: Page, end: 'pickup' | 'dropoff') {
   await openEndMap(page, end);
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
+  await mapFound(page);
 }
 
 test('1. a passenger «from home»: the door in Toshkent, the home in Urgut', async ({ page }) => {

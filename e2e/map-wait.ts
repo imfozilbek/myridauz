@@ -12,9 +12,14 @@ export const TILES_MS = 1500;
 export const placeFound = (page: Page) =>
   expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: PLACE_FOUND_MS });
 
-// The map is drawn and its place is found: ready for a picture.
-export async function mapDrawn(page: Page) {
+// The map is ready and the name under its pin came: the stand of four (docs/75) answers as late.
+export async function mapFound(page: Page) {
   await expect(page.locator('[data-state="ready"]').first()).toBeVisible({ timeout: PLACE_FOUND_MS });
   await placeFound(page);
+}
+
+// The map is drawn and its place is found: ready for a picture.
+export async function mapDrawn(page: Page) {
+  await mapFound(page);
   await page.waitForTimeout(TILES_MS);
 }

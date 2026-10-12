@@ -1,6 +1,7 @@
 import { expect, test } from '../crash-guard';
 import { createModerationClient } from '@platform/api-client';
 import { TEXT } from '../apps';
+import { placeFound } from '../map-wait';
 import { addFace, passConsent } from '../registration';
 import { CHILONZOR, publishTrip } from './market-kit';
 import { askRide, offerOn, SAMARQAND } from './g27-kit';
@@ -17,7 +18,6 @@ test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 const who = (id: number, name: string): Person => ({ id, name, phone: `99890111${id - 900000}` });
 const SEEKER = who(900701, 'Oydin');
-const NAME_MS = 15_000;
 
 test('the first visit: «Siz haqingizda» before and after the gender', async ({ page }) => {
   await openHome(page, 'passenger', who(900702, 'Shoira'), 'android');
@@ -45,14 +45,14 @@ test('the search and the booking up to its review', async ({ page }) => {
   await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   // The name under the pin is known: the button takes this place, not one still being asked.
-  // Four stands side by side answer slowly: the same wait as the other map checks.
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });
+  // Four stands side by side answer slowly: the one wait of every map check (lesson 157).
+  await placeFound(page);
   await shot(page, 'android', 'pb17-pickup');
   // The map of the end opens by itself right after the start (G78 П4).
   await mainButton(page).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   // The name under the pin is known: the button takes this place, not one still being asked.
-  await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });
+  await placeFound(page);
   await shot(page, 'android', 'pb18-dropoff');
   await mainButton(page).click();
   await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
