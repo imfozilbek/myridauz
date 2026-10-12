@@ -18,6 +18,7 @@
 | `7-edits-3-driver.png` | Лист 2 и шаги водителя поверх текущих экранов: заявка шторкой G68, место попутчика, В9, пустые «Faol» и «Oʻtgan», «Oʻtgan» строками, «Obunalar», «Xabar bering» на доске, В2, В10 A; В11, В17, В12 уже в ветке | 14 пар |
 | `7-edits-4-admin.png` | Листы 3 админки поверх текущих экранов, вид g67/1: Statistika, Safarlar, Safar, Hamyonlar, Hamyon, Hamyonni tuzatish, Narxlar, Formula, Pitaklar | 9 пар |
 | `7-edits-5-admin.png` | Kanallar, Cheklovlar, лимит шторкой, Jurnal, Kompaniya rekvizitlari, Ovozlar, К2 причины шторкой, К1 «Mos emas» у каждой проверки | 8 пар |
+| `7-edits-6-rest.png` | Остальное из цели: ошибка шага красной строкой, оценка водителя по ссылке бота, «Yoʻnalish narxi», пятак направления; П4, В14 и строка «списки не загрузились» уже в ветке или в `main` | 7 пар |
 
 ## Одна вещь, один вид (`168`, дубликаты)
 
