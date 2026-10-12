@@ -55,9 +55,11 @@ const TRIP = tripOf('7', 'Jasur', false, 0, { departAt: tashkent(`${TOMORROW}T08
 export type Board = 'today' | 'trip' | 'salon' | 'nilufar';
 const BOARDS = {
   today: { date: TODAY, trip: null, fits: [], others: [sardor(TODAY), dilnoza(TODAY), nilufar(TODAY)] },
+  // A live trip: the driver offers only into it (owner decision 12.10.2026, docs/172).
   trip: {
     date: TOMORROW,
     trip: TRIP,
+    busy: true,
     fits: [
       { ...sardor(TOMORROW), extraKm: 2 },
       { ...dilnoza(TOMORROW), withWoman: false, extraKm: 4 },
