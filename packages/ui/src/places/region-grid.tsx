@@ -5,14 +5,14 @@ import { useRegionArt } from './region-art';
 
 type RegionGridProps = {
   readonly regions: readonly Location[];
-  // A place may be taken whole: a city that is a region is one tap, «Butun shahar» (G78 П9).
-  readonly whole: boolean;
+  // A city that is a region is one tap, «Butun shahar» (G78 П9).
+  readonly cityAtOnce: boolean;
   readonly onOpen: (region: Location) => void;
 };
 
 // 14 regions as picture cards: people find their region by the picture faster than by the name.
 // The name lies under the drawing on white, never on the picture (docs/118).
-export function RegionGrid({ regions, whole, onOpen }: RegionGridProps) {
+export function RegionGrid({ regions, cityAtOnce, onOpen }: RegionGridProps) {
   const { t } = useI18n();
   const artOf = useRegionArt();
   return (
@@ -24,7 +24,9 @@ export function RegionGrid({ regions, whole, onOpen }: RegionGridProps) {
             {art ? <img className="region-photo" src={art} alt={region.name} loading="lazy" /> : null}
             <Text weight="2" className="region-name">
               {region.name}
-              {whole && region.oneCity ? <span className="region-whole">{t('places.wholeCity')}</span> : null}
+              {cityAtOnce && region.oneCity ? (
+                <span className="region-whole">{t('places.wholeCity')}</span>
+              ) : null}
             </Text>
           </button>
         );

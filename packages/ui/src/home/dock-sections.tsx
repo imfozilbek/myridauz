@@ -15,7 +15,7 @@ export const DOCK_TO = 'dock_to';
 type Props = { readonly onBack: () => void };
 
 // «Qayerdan» of the block at the bottom of the main screen (G66): the list of places, then back.
-function PickFrom({ onBack }: Props) {
+function PickFrom({ onBack, cityAtOnce = false }: Props & { readonly cityAtOnce?: boolean }) {
   const { t } = useI18n();
   const { choose } = useHomeRoute();
   const [places, retry] = useDirectory();
@@ -26,6 +26,7 @@ function PickFrom({ onBack }: Props) {
       title={t('places.fromTitle')}
       directory={places.directory}
       allowWholeRegion
+      cityAtOnce={cityAtOnce}
       onPick={(from) => {
         choose({ from });
         onBack();
@@ -34,6 +35,9 @@ function PickFrom({ onBack }: Props) {
     />
   );
 }
+
+// A passenger takes Toshkent shahri in one tap (G78 П9), a driver publishes from a district.
+const PassengerPickFrom = ({ onBack }: Props) => <PickFrom onBack={onBack} cityAtOnce />;
 
 // «Qayerga» of a driver (G66, mockup g66/2): the list of places, the trip is published from the block.
 function PickPlaceTo({ onBack }: Props) {
@@ -84,7 +88,7 @@ export const PASSENGER_SECTIONS: readonly StartAction[] = [
     tone: 'brand',
     labelKey: 'places.from',
     hintKey: 'places.fromTitle',
-    Screen: PickFrom,
+    Screen: PassengerPickFrom,
   },
   {
     id: DOCK_TO,

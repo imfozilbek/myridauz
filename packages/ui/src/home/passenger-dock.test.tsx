@@ -41,6 +41,16 @@ describe(
       location.knownPosition.mockResolvedValue({ lat: 41.3, lng: 69.2 });
     });
 
+    // The point of the seat tells the district later (G78 П9).
+    it('takes Toshkent shahri whole in one tap', async () => {
+      home();
+      await screen.findByText(HERE);
+      fireEvent.click(fromLine() as HTMLElement);
+      expect(await screen.findByText('Butun shahar')).toBeTruthy();
+      await tap('Toshkent shahri');
+      await waitFor(() => expect(fromLine()?.textContent).toContain('Toshkent shahri'));
+    });
+
     it('swaps the ends with ⇅', async () => {
       home();
       await screen.findByText(HERE);

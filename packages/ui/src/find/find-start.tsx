@@ -60,6 +60,7 @@ function FindStartForm({
         title={t('places.fromTitle')}
         directory={directory}
         allowWholeRegion
+        cityAtOnce
         onPick={(place) => {
           setChosen(place);
           setPicking(false);

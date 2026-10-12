@@ -21,7 +21,8 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { ...searchMarket([0, 3]), searchTrips } }),
     );
-    // Toshkent shahri is taken whole in one tap (G78 П9).
+    // Toshkent shahri says «Butun shahar» and is taken whole in one tap (G78 П9).
+    expect(await screen.findByText('Butun shahar')).toBeTruthy();
     await tap('Toshkent shahri');
     // «Qayerdan» in one line, the card of the region with its trips and «… soʻmdan».
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
