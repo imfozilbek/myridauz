@@ -16,7 +16,9 @@ type Props = { readonly go: HomeGo; readonly directory: PlaceDirectory | null };
 
 // The block of a free driver (G76, mockup g76/3 states 2 and 5): «Qayerdan / Qayerga», then
 // «Soʻrovlarni koʻrish» and «Safar eʼlon qilish». One end is enough (docs/165): the requests from
-// it to every side, a new trip asking «Qayerga» first. While the application is checked, both wait.
+// it to every side, a new trip asking the other end first; the «x» of an end empties it, an empty
+// «Qayerdan» is filled where the person stands by «Joylashuvim» (G79 В4).
+// While the application is checked, both wait.
 export function DriverIdle({ go, directory }: Props) {
   const { t } = useI18n();
   const tap = useHomeTap();
@@ -32,13 +34,20 @@ export function DriverIdle({ go, directory }: Props) {
           placeholder: t('way.fromEmpty'),
           ...(ends.detected ? { hint: t('home.dock.here') } : {}),
           onTap: tap('dock_from', () => go(DOCK_FROM)),
+          onClear: tap('dock_from_clear', ends.clearFrom),
+          // Unknown where the person stands: the list of «Qayerdan» instead.
+          onLocate: tap('dock_from_locate', () => {
+            void ends.locate().then((found) => {
+              if (!found) go(DOCK_FROM);
+            });
+          }),
         }}
         to={{
           value: to ? names.end(to) : null,
           placeholder: t('home.dock.toDriver'),
           ...(from && to && !pending ? { hint: <RequestCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),
-          onClear: tap('dock_clear', ends.clearTo),
+          onClear: tap('dock_to_clear', ends.clearTo),
         }}
         onSwap={tap('dock_swap', ends.swap)}
       />

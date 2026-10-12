@@ -1,3 +1,4 @@
+import type { MapClient } from '@platform/api-client';
 import { insideUzbekistan, type Location, type Point } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
@@ -25,6 +26,17 @@ function keepHere(id: string | null) {
   }
 }
 
+// The district of a point of the phone; outside Uzbekistan or not known: null.
+export async function districtAt(
+  point: Point | null,
+  map: MapClient,
+  directory: PlaceDirectory,
+): Promise<Location | null> {
+  if (!point || !insideUzbekistan(point)) return null;
+  const where = await map.where(point).catch(() => null);
+  return (where?.district ? directory.find(where.district) : undefined) ?? null;
+}
+
 // The district where the person stands (G26, docs/74): «Qayerdan» fills itself, only when the
 // person allowed the place before. Nothing is asked here; outside Uzbekistan nothing is filled.
 export function useHere(directory: PlaceDirectory | null): Location | null {
@@ -44,11 +56,7 @@ function useHereChecked(directory: PlaceDirectory | null): Location | null | und
       keepHere(place?.id ?? null);
       if (active) setHere(place);
     };
-    void knownPosition().then(async (point: Point | null) => {
-      if (!point || !insideUzbekistan(point)) return found(null);
-      const where = await map.where(point).catch(() => null);
-      found((where?.district ? directory.find(where.district) : undefined) ?? null);
-    });
+    void knownPosition().then(async (point) => found(await districtAt(point, map, directory)));
     return () => void (active = false);
   }, [map, directory]);
   if (here !== undefined) return here;

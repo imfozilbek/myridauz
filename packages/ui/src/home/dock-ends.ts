@@ -5,6 +5,7 @@ import { recentRoutes, rememberRoute } from '../market/recent-routes';
 import type { PlaceDirectory } from '../places/directory';
 import type { Route } from '../places/route-screen';
 import { useHere } from '../places/use-here';
+import { useLocate } from '../places/use-locate';
 import { useHomeEnds } from './home-route';
 
 // The ends shown in the block «Qayerdan / Qayerga» (G66, docs/118): «Qayerdan» chosen by the person,
@@ -15,6 +16,9 @@ import { useHomeEnds } from './home-route';
 export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null = null) {
   const { from: chosen, to: picked, choose } = useHomeEnds();
   const here = useHere(directory);
+  const locateHere = useLocate(directory);
+  // The district found by «Joylashuvim»: the note says so too.
+  const [located, setLocated] = useState<string | null>(null);
   const [kept] = useState(recentRoutes);
   const known = (id: string) => directory?.find(id) ?? null;
   const [ids] = kept.filter((route) => known(route.from) && known(route.to));
@@ -25,10 +29,20 @@ export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null
   return {
     from,
     to,
-    detected: here !== null && from?.id === here.id,
+    detected: from !== null && (from.id === here?.id || from.id === located),
     swap: () => choose({ from: to, to: from }),
-    // The «x» of «Qayerga» (G79 В4, owner 12.10.2026): the end filled for the person is emptied.
+    // The «x» of an end (G79 В4, owner 12.10.2026): the end filled for the person is emptied.
+    clearFrom: () => choose({ from: null }),
     clearTo: () => choose({ to: null }),
+    // «Joylashuvim» of an empty «Qayerdan» (G79 В4): false when the place stays unknown.
+    locate: async () => {
+      const place = await locateHere();
+      if (place) {
+        setLocated(place.id);
+        choose({ from: place });
+      }
+      return place !== null;
+    },
   };
 }
 

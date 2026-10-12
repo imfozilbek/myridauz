@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
+import { Icon, type IconName } from '../icons';
 import './route-dock.css';
 
 const SWAP = 16;
-const CLEAR = 16;
+const TOOL = 16;
 
 type DockEnd = {
   // The place shown, or null: the gray question takes its line.
@@ -14,8 +14,10 @@ type DockEnd = {
   // Under the place: how it was found, or how many trips go there.
   readonly hint?: ReactNode;
   readonly onTap: () => void;
-  // The «x» that empties a filled end (G79 В4): only where the block fills it for the person.
+  // The «x» that empties a filled end (G79 В4, owner 12.10.2026): both ends of a driver.
   readonly onClear?: (() => void) | undefined;
+  // «Joylashuvim» of an empty end: where the person stands (G79 В4, owner 12.10.2026).
+  readonly onLocate?: (() => void) | undefined;
 };
 
 type Props = { readonly from: DockEnd; readonly to: DockEnd; readonly onSwap: () => void };
@@ -39,21 +41,31 @@ export function RouteDock({ from, to, onSwap }: Props) {
 }
 
 type EndProps = { readonly end: DockEnd; readonly label: string; readonly ring: string };
+type Tool = {
+  readonly icon: IconName;
+  readonly label: string;
+  readonly run: () => void;
+  readonly color?: string;
+};
 
+// The round tool of an end, over or under ⇅: «x» on a place, «Joylashuvim» on an empty end.
 function End({ end, label, ring }: EndProps) {
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const button = <EndButton end={end} label={label} ring={ring} />;
-  if (!end.value || !end.onClear) return button;
+  const clear = end.value && end.onClear;
+  const locate = !end.value && end.onLocate;
+  const tool: Tool | null = clear
+    ? { icon: 'close', label: t('home.dock.clear'), run: clear }
+    : locate
+      ? { icon: 'locate', label: t('way.point.locate'), run: locate, color: colors.routeSwap }
+      : null;
+  if (!tool) return button;
   return (
-    <div className="home-dock-clearable">
+    <div className="home-dock-tooled">
       {button}
-      <button
-        type="button"
-        className="home-dock-clear"
-        aria-label={t('home.dock.clearTo')}
-        onClick={end.onClear}
-      >
-        <Icon name="close" size={CLEAR} />
+      <button type="button" className="home-dock-tool" aria-label={tool.label} onClick={tool.run}>
+        <Icon name={tool.icon} size={TOOL} {...(tool.color ? { color: tool.color } : {})} />
       </button>
     </div>
   );

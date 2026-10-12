@@ -13,8 +13,9 @@ import { TripOnRoute } from './trip-on-route';
 type NewTripFlowProps = {
   readonly onBack: () => void;
   readonly route?: Route;
-  // «Qayerdan» of the block at the bottom of the main screen (G76): the first answer is «Qayerga».
+  // One end of the block at the bottom of the main screen (G76; G79 В4): the other one is asked first.
   readonly from?: Location;
+  readonly to?: Location;
   // The day of the requests the driver looked at: the trip opens on it (G37, docs/101 R4).
   readonly date?: string;
   // «Oxirgi yoʻnalish»: the answers of the last trip, the day is the first free one (G40, docs/106 K3).
@@ -47,6 +48,7 @@ export function NewTripFlow(props: NewTripFlowProps) {
         flow={flow}
         known={props.route !== undefined}
         {...(props.from ? { from: props.from } : {})}
+        {...(props.to ? { to: props.to } : {})}
         onBack={props.onBack}
         onPublished={done}
       />
@@ -60,12 +62,13 @@ type RouteProps = {
   // The route came with the flow: «Назад» from the trip leaves, else it goes back to the route.
   readonly known: boolean;
   readonly from?: Location;
+  readonly to?: Location;
   readonly onBack: () => void;
   readonly onPublished: (trip: Trip) => void;
 };
 
 // The route by lists, all of it or one end from «Oʻzgartirish» (G26, docs/74), then the trip on it.
-function TripRoute({ flow, known, from, onBack, onPublished }: RouteProps) {
+function TripRoute({ flow, known, from, to, onBack, onPublished }: RouteProps) {
   const { screen, answer, open, back, reroute } = flow;
   const { route } = answer;
   const end = screen === 'from' || screen === 'to' ? screen : null;
@@ -74,7 +77,7 @@ function TripRoute({ flow, known, from, onBack, onPublished }: RouteProps) {
       <RouteScreen
         allowWholeRegion={false}
         quick
-        {...(route ? { initial: route } : from ? { from, pick: 'to' as const } : {})}
+        {...(route ? { initial: route } : oneEnd(from, to))}
         {...(route && end ? { pick: end } : {})}
         onBack={route && end ? () => back() : onBack}
         onDone={reroute}
@@ -86,4 +89,10 @@ function TripRoute({ flow, known, from, onBack, onPublished }: RouteProps) {
       <TripOnRoute flow={flow} route={route} onBack={leave} onPublished={onPublished} />
     </PlacesGate>
   );
+}
+
+// One end from the block: the list of the other end opens at once.
+function oneEnd(from: Location | undefined, to: Location | undefined) {
+  if (from) return { from, pick: 'to' as const };
+  return to ? { to, pick: 'from' as const } : {};
 }

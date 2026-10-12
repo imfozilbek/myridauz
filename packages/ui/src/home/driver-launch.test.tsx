@@ -19,6 +19,7 @@ afterEach(() => {
 });
 
 const HERE = 'Joylashuvingiz boʻyicha aniqlandi';
+const CLEAR = 'Joyni tozalash';
 // The tests live at a fixed moment (dom-test-setup.ts): yesterday is counted from it.
 const yesterday = () => ({ ...trip, departAt: Date.now() - DAY_MS, status: 'completed' as const });
 const driver = (trips: Trip[] = [yesterday()], money = { ...wallet, seatsLeft: 20 }) =>
@@ -42,18 +43,33 @@ describe('«Safar eʼlon qilish» of a driver from the main screen', { timeout: 
     expect(screen.getByText(/^opened Chilonzor>Fargʻona shahri again 3$/u)).toBeTruthy();
   });
 
-  // The owner keeps the filled «Qayerga» and its «x» (12.10.2026): one tap empties it.
+  // The owner keeps the filled ends and gives each its «x» (12.10.2026): one tap empties it.
+  const clear = (end: number) =>
+    fireEvent.click(screen.getAllByRole('button', { name: CLEAR })[end] as HTMLElement);
   it('the «x» of «Qayerga» empties it; a new trip then asks «Qayerga» first', async () => {
     markApprovalSeen();
     driver();
     await screen.findByText(HERE);
     expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
-    press('Joyni tozalash');
+    clear(1);
     expect(screen.queryByText('Fargʻona shahri')).toBeNull();
     expect(screen.getByText('Qayerga ketyapsiz?')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Joyni tozalash' })).toBeNull();
+    expect(screen.getAllByRole('button', { name: CLEAR })).toHaveLength(1);
     press('Safar eʼlon qilish');
     expect(screen.getByText('opened from Chilonzor')).toBeTruthy();
+  });
+
+  it('the «x» of «Qayerdan» empties it; a new trip keeps «Qayerga» and asks «Qayerdan»', async () => {
+    markApprovalSeen();
+    driver();
+    await screen.findByText(HERE);
+    expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
+    clear(0);
+    expect(screen.queryByText(HERE)).toBeNull();
+    expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: CLEAR })).toHaveLength(1);
+    press('Safar eʼlon qilish');
+    expect(screen.getByText('opened to Fargʻona shahri')).toBeTruthy();
   });
 
   it('standing at the end of the last trip, «Qayerga» is the way back', async () => {
