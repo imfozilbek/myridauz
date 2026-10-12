@@ -1,5 +1,6 @@
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sheetClosed } from '../home/sheet-closed';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
@@ -7,6 +8,12 @@ import { testClients } from '../test-shell';
 import { booking, offer, wallet } from './booking-test-kit';
 
 afterEach(cleanup);
+
+// A test ends with its sheet closed: the timer of the sheet never outlives the file (lesson 235).
+const closeSheet = async () => {
+  fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
+  await sheetClosed();
+};
 
 const request = {
   id: 'r1',
@@ -57,6 +64,7 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
     // The rule about changing seats is the passenger's, not the driver's (G27).
     expect(screen.queryByText(/^Bron qilingach/)).toBeNull();
+    await closeSheet();
   });
 
   it('a driver without the commission is led to top up, not to a «Tasdiqlash» that fails (G27)', async () => {
@@ -80,5 +88,6 @@ describe('what people need to decide is on the screen (docs/65 C)', () => {
     await tap('Hisobni toʻldirish');
     expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
     expect(answer).not.toHaveBeenCalled();
+    await closeSheet();
   });
 });
