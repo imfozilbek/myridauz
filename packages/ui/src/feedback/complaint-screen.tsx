@@ -6,6 +6,7 @@ import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { showPlaque } from '../action-sheet/plaque';
 import { errorKey } from '../market/error-text';
 import { useDraft } from '../screen/draft';
 import { Screen } from '../screen/screen';
@@ -17,18 +18,19 @@ import { brandVars } from '../theme/brand-vars';
 import './complaint.css';
 import { DraftNote } from './draft-note';
 import { checkComplaintDraft, complaintDraftKey, type ComplaintDraft } from './feedback-draft';
-import { SentScreen } from './sent-screen';
 
 type Props = {
   readonly bookingId: string;
   readonly onBack: () => void;
-  readonly onClose?: (() => void) | undefined;
+  // Sent: back to the screen it came from, the plaque says so (G78 П16).
+  readonly onSent: () => void;
 };
-type Step = 'edit' | 'sent' | { readonly failed: unknown };
+type Step = 'edit' | { readonly failed: unknown };
 
 // A complaint about the other side of a ride (docs/17, mockup g75/5 A): one or more reasons as ticks
-// (owner decision 10.10.2026), a comment if needed. The other side never sees who complained.
-export function ComplaintScreen({ bookingId, onBack, onClose }: Props) {
+// (owner decision 10.10.2026), a comment if needed. The other side never sees who complained. Sent,
+// it closes by itself, no screen of its own (G78 П16).
+export function ComplaintScreen({ bookingId, onBack, onSent }: Props) {
   useScreenView('complaints.form');
   const { t } = useI18n();
   const { track } = useAnalytics();
@@ -59,22 +61,13 @@ export function ComplaintScreen({ bookingId, onBack, onClose }: Props) {
       track({ name: 'complaint_sent', screen: 'complaints.form' });
       haptic.success();
       draft.clear();
-      setStep('sent');
+      showPlaque(t('complaints.sent'));
+      onSent();
     } catch (error) {
       haptic.error();
       setStep({ failed: error });
     }
   };
-  if (step === 'sent')
-    return (
-      <SentScreen
-        icon="complaints"
-        title={t('complaints.sent')}
-        description={t('complaints.anonymous')}
-        onBack={onBack}
-        onClose={onClose}
-      />
-    );
   return (
     <div className="complaint" style={brandVars(colors)}>
       <Screen onBack={onBack} />

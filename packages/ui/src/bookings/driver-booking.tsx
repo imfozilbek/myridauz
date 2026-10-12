@@ -51,7 +51,10 @@ export function DriverBooking({ booking, onClose }: Props) {
         onBack={() => setStep('view')}
       />
     );
-  if (step === 'complain') return <ComplaintScreen bookingId={booking.id} onBack={() => setStep('view')} />;
+  if (step === 'complain')
+    return (
+      <ComplaintScreen bookingId={booking.id} onBack={() => setStep('view')} onSent={() => setStep('view')} />
+    );
   // A cancel of a confirmed seat is asked first (docs/65 B4).
   const cancel = async () => {
     if (await confirm(t('bookings.driverCancelAsk'), t('bookings.cancel'))) await answer('cancel');

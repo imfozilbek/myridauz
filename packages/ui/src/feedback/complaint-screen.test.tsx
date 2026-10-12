@@ -1,9 +1,10 @@
 import type { FeedbackClient } from '@platform/api-client';
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, renderHook, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
 import { ComplaintScreen } from './complaint-screen';
+import { showPlaque, usePlaque } from '../action-sheet/plaque';
 
 beforeEach(() => localStorage.clear());
 afterEach(cleanup);
@@ -13,8 +14,10 @@ afterEach(cleanup);
 describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
   it('asks under the title, ticks several reasons in one card and sends them in order', async () => {
     const complain = vi.fn<FeedbackClient['complain']>(async () => undefined);
+    const onSent = vi.fn();
+    const { result: plaque } = renderHook(() => usePlaque());
     renderMarket(
-      <ComplaintScreen bookingId="b1" onBack={() => undefined} />,
+      <ComplaintScreen bookingId="b1" onBack={() => undefined} onSent={onSent} />,
       testClients({ feedback: { complain } }),
     );
     expect(screen.getByText('Nima boʻldi? Bir nechtasini tanlash mumkin.')).toBeTruthy();
@@ -37,5 +40,9 @@ describe('«Shikoyat» (G75, mockup g75/5 A, docs/17)', () => {
         comment: '',
       }),
     );
+    // Sent, it closes by itself: back to where it came from, the plaque says so (G78 П16).
+    await waitFor(() => expect(onSent).toHaveBeenCalledOnce());
+    expect(plaque.current).toBe('Shikoyatingiz yuborildi. Moderator koʻrib chiqadi.');
+    showPlaque(null);
   });
 });

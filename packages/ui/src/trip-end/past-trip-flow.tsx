@@ -54,7 +54,8 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
         onBack={back}
       />
     );
-  if (opened?.screen === 'complain') return <ComplaintScreen bookingId={opened.booking.id} onBack={back} />;
+  if (opened?.screen === 'complain')
+    return <ComplaintScreen bookingId={opened.booking.id} onBack={back} onSent={back} />;
   if (opened?.screen === 'rate')
     return (
       <TripEndFlow trip={trip} bookings={bookings} onPublish={onPublish} onClose={back} onRated={onChanged} />

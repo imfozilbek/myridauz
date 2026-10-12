@@ -10,6 +10,7 @@ import { useSheetShown } from '../telegram/sheet-shown';
 import { ActionCard } from './action-card';
 import type { ActionItem } from './action-item';
 import { answeredSheet, closeSheet, pinFirst, useActionQueue } from './action-queue';
+import { showPlaque, usePlaque } from './plaque';
 
 // Long enough to read «Madina tasdiqlandi · 20 000 komissiya» once.
 const PLAQUE_MS = 4000;
@@ -21,7 +22,7 @@ export function ActionSheet() {
   const { t } = useI18n();
   const queue = useActionQueue();
   const [done, setDone] = useState(0);
-  const [plaque, setPlaque] = useState<string | null>(null);
+  const plaque = usePlaque();
   const item = queue[0];
   useSheetShown(item !== undefined);
   // A bot link names its thing: the main screen opens and that sheet comes first.
@@ -66,7 +67,7 @@ export function ActionSheet() {
             laterLabel={t('sheet.later')}
             onDone={(words) => {
               answer(item);
-              if (words) setPlaque(words);
+              if (words) showPlaque(words);
             }}
             onLater={() => leave(item)}
           />
@@ -77,7 +78,7 @@ export function ActionSheet() {
           className="action-plaque"
           duration={PLAQUE_MS}
           before={<Icon name="selected" size={20} />}
-          onClose={() => setPlaque(null)}
+          onClose={() => showPlaque(null)}
         >
           {plaque}
         </Snackbar>

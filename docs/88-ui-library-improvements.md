@@ -21,7 +21,7 @@
 | L5 | Результаты поиска (pb15) | Один Switch «Mashinada ayol bor» | Ещё **Switch** «Uyimdan olib ketsin» (фильтр на телефоне, без backend) | Мама с детьми и пожилой сразу видят нужные поездки |
 | L6 | Бронь (pa20), бронь у водителя (da20) | Статус одной строкой «Tasdiqlangan» | **Timeline**: Soʻrov → Tasdiqlandi → Yoʻlda → Yetib keldi | Понятно, что было и что будет дальше; меньше вопросов в поддержку |
 | L7 | После действий: «Obuna boʻldingiz», «Taklif yuborildi», «Saqlandi», удаление подписки | Отдельный экран «готово» или ничего | **Snackbar** на 3 секунды, у удаления кнопка «Qaytarish» | Быстрее; ошибку удаления можно отменить |
-| L8 | Подписки (pa25) | «Oʻchirish» удаляет сразу, без вопроса | Родной **popup** «Oʻchirilsinmi?» (наш `confirm`) или Snackbar с «Qaytarish» из L7 | Нет случайных удалений |
+| L8 | Подписки (pa25) | «Oʻchirish» удаляет сразу, без вопроса | Snackbar с «Qaytarish» из L7; вопрос убран (G78 П17, `170`) | Нет случайных удалений, нет лишнего шага |
 | L9 | Отзыв: «Nima yoqdi?» (pa23) | Строки без признака выбора до нажатия | **Multiselectable** (галочка слева), как в причинах модерации | Сразу видно: можно выбрать несколько |
 | L10 | Чат (pa21) | Кнопка текстом «Yuborish» | **IconButton** со стрелкой Lucide `Send` | Как в Telegram; больше места для текста |
 | L11 | Главный экран водителя: «Ariza tasdiqlandi» (V7), «Ariza tekshirilmoqda» | Обычная строка списка | **Banner** с крестиком «закрыть» | Видно, что это сообщение, а не раздел; человек сам закрывает |
@@ -68,4 +68,4 @@
 
 Новые тексты на согласие владельца: L1 «Bot xabarlari», «Yangiliklar va safar eslatmalari. Bron va chat xabarlari har doim keladi.», «Yangiliklar va safar eslatmalari kelmaydi. Bron va chat xabarlari har doim keladi.»; L19 «Hikoyaga joylash», «Doʻstlaringiz safarni koʻradi va joy band qiladi», «Yangi safar», подпись истории «{from} → {to}, {date} soat {time}. {seats} ta joy bor. Joy band qilish: {link}».
 
-Все новые тексты G28 на проверку носителем: «Uyimdan olib ketsin» (L5); «Obunani oʻchirasizmi?», «Obuna oʻchirildi», «Qaytarish» (L7, L8); «Bosh ekranga qoʻshish», «{brand} telefoningiz ekranida turadi va bir bosishda ochiladi.» (L17); тексты L1 и L19 выше.
+Все новые тексты G28 на проверку носителем: «Uyimdan olib ketsin» (L5); «Obuna oʻchirildi», «Qaytarish» (L7, L8); «Bosh ekranga qoʻshish», «{brand} telefoningiz ekranida turadi va bir bosishda ochiladi.» (L17); тексты L1 и L19 выше.

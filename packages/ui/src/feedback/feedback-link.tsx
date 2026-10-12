@@ -19,7 +19,8 @@ function linked(): Open | null {
 }
 
 // The passenger and the driver app open the review or the complaint at once; back goes home.
-// Sent, «Yopish» closes the Mini App: the person came from the bot and goes back to it (docs/94 C1).
+// A review sent, «Yopish» closes the Mini App: the person came from the bot and goes back to it
+// (docs/94 C1); a complaint sent goes home with its plaque (G78 П16).
 export function FeedbackLink({
   enabled,
   children,
@@ -39,7 +40,7 @@ export function FeedbackLink({
     closeApp();
   };
   if (open.screen === 'complain')
-    return <ComplaintScreen bookingId={open.bookingId} onBack={close} onClose={done} />;
+    return <ComplaintScreen bookingId={open.bookingId} onBack={close} onSent={close} />;
   return (
     <PlacesGate onBack={close}>
       <ReviewScreen

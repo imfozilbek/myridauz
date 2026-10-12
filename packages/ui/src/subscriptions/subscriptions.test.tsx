@@ -86,13 +86,12 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
     // A removal is red, like in Telegram (docs/86 V12).
     expect(screen.getByRole('button', { name: 'Oʻchirish' }).className).toBe('row-card-action');
-    // Asked first in the native window; a «no» keeps it (docs/88 L8).
-    vi.stubGlobal('confirm', () => false);
-    fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
-    expect(remove).not.toHaveBeenCalled();
-    vi.stubGlobal('confirm', () => true);
+    // Gone at once, no question in the native window (G78 П17).
+    const asked = vi.fn(() => true);
+    vi.stubGlobal('confirm', asked);
     fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+    expect(asked).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
     // A short line says it is gone and brings it back by one tap (docs/88 L7).
     expect(screen.getByText('Obuna oʻchirildi')).toBeTruthy();

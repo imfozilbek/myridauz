@@ -43,7 +43,6 @@ describe('"Obunalar" says why a change did not work (G43, docs/65 B3)', () => {
     window.history.replaceState(null, '', '/?subscriptions=1');
     let list = [EXPIRED];
     const remove = vi.fn<SubscriptionsClient['remove']>(async () => void (list = []));
-    vi.stubGlobal('confirm', () => true);
     renderMarket(
       <SubscriptionsLink>
         <p>Asosiy</p>
