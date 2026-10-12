@@ -85,10 +85,10 @@ describe('«Yoʻlga chiqdim» and «Yetib keldik» on the server (G63 B1, docs/3
     await tap('Yetib keldik');
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
     expect(arriveTrip).toHaveBeenCalledWith('t1');
-    await tap('Yuborish');
-    expect(review).toHaveBeenCalledWith({ bookingId: 'b2', stars: 5 });
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
-    await tap('Qaytishni eʼlon qilish');
+    // The way back is under the stars: «Qaytish safari» sends them and publishes it (G78 В10 A).
+    expect(screen.getByText(/^Qaytishga yoʻlovchi olasizmi\? · /u)).toBeTruthy();
+    await tap('Qaytish safari');
+    await vi.waitFor(() => expect(review).toHaveBeenCalledWith({ bookingId: 'b2', stars: 5 }));
     // The route the other way, today as it makes it by 22:00 (G78 В11), the seats of the trip and
     // a new comment.
     const publish = await screen.findByText(/^publish 1730401 1726269 2026-10-02 3 \[\]$/u);

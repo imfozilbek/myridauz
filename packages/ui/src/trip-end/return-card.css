@@ -1,0 +1,28 @@
+/* The way back under the stars (G78 В10 A): the values of the mockup at 360 px. */
+.trip-back-day {
+  align-self: stretch;
+  margin: 6px 0 0;
+  font-size: 14.7px;
+  line-height: 17px;
+  text-align: left;
+  color: var(--reg-muted);
+}
+
+.trip-end .route-line,
+.trip-back-requests {
+  align-self: stretch;
+}
+
+.trip-back-requests {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 12.3px 13.6px 12.8px;
+  font-size: 14.7px;
+  line-height: 17.6px;
+  color: var(--reg-secondary);
+}
+
+.trip-back-requests b {
+  color: var(--reg-text);
+}

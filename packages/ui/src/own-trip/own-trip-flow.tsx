@@ -3,7 +3,7 @@ import { useAnalytics } from '../context/analytics-context';
 import { NewTripFlow } from '../market/new-trip-flow';
 import { PastTripFlow } from '../trip-end/past-trip-flow';
 import type { ReturnTrip } from '../trip-end/return-plan';
-import { TripEndFlow } from '../trip-end/trip-end-flow';
+import { TripDoneScreen } from '../trip-end/trip-done-screen';
 import { OwnTripLive } from './own-trip-live';
 import type { OwnTripProps } from './own-trip-opened';
 import { tripPast } from './trip-stage';
@@ -35,7 +35,7 @@ export function OwnTripFlow(props: OwnTripProps) {
     );
   if (after?.screen === 'end')
     return (
-      <TripEndFlow
+      <TripDoneScreen
         trip={trip}
         bookings={bookings}
         onPublish={publish}

@@ -8,7 +8,7 @@ import { renderMarket, tap } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
 import { akmal, madina } from '../meeting/meet-test-kit';
 import { testClients } from '../test-shell';
-import { TripEndFlow } from './trip-end-flow';
+import { TripDoneScreen } from './trip-done-screen';
 
 afterEach(cleanup);
 const ARRIVED = madina.trip.departAt + 6 * HOUR_MS;
@@ -27,7 +27,7 @@ function open(
 ) {
   renderMarket(
     <PlacesGate>
-      <TripEndFlow
+      <TripDoneScreen
         trip={madina.trip}
         bookings={[madina, sardor, gone, rated]}
         onPublish={onPublish}
@@ -37,10 +37,11 @@ function open(
     </PlacesGate>,
     testClients({ feedback: { review }, market: { searchRequests }, wallet: { mine: async () => wallet } }),
   );
-  return onPublish;
+  return { onPublish, onClose };
 }
 
-describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g63/4 screens 15, 16)', () => {
+// «Safar tugadi» with the way back under the stars (docs/124 В, mockup g63/4 screen 15, G78 В10 A).
+describe('«Safar tugadi» of the driver with the way back', () => {
   it('shows the trip in numbers and the wallet', async () => {
     open(vi.fn(), async () => []);
     expect(await screen.findByText('Safar tugadi')).toBeTruthy();
@@ -50,10 +51,19 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     expect(await screen.findByText(/^Qoldi ≈.50 joyga yetadi$/u)).toBeTruthy();
   });
 
-  it('rates the passengers not rated yet, five stars unless lowered, then offers the way back', async () => {
+  it('shows the way back under the stars at once, with the requests waiting', async () => {
+    open(vi.fn(), async () => [request, request]);
+    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    // Back at 13:20, two hours of rest: the way back leaves today at 15:30 (G78 В11).
+    expect(screen.getByText(/^Qaytishga yoʻlovchi olasizmi\? · Bugun, /u)).toBeTruthy();
+    expect(await screen.findByText('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')).toBeTruthy();
+    expect(screen.getByText('Hammasi tayyor: faqat vaqtni tasdiqlang.')).toBeTruthy();
+  });
+
+  it('«Yuborish» sends the stars not given yet, five unless lowered, and closes', async () => {
     const review = vi.fn<FeedbackClient['review']>(async () => undefined);
     const onRated = vi.fn();
-    const onPublish = open(review, async () => [request, request], vi.fn(), vi.fn(), onRated);
+    const { onPublish, onClose } = open(review, async () => [], vi.fn(), vi.fn(), onRated);
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
     expect(screen.queryByText('Akmal')).toBeNull();
     expect(screen.queryByText('Bobur')).toBeNull();
@@ -61,14 +71,20 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     screen.getByLabelText('Sardor 3').click();
     await tap('Yuborish');
     expect(review.mock.calls).toEqual([[{ bookingId: 'm1', stars: 5 }], [{ bookingId: 's1', stars: 3 }]]);
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
     // The list brings the seats marked rated: the past trip does not offer the stars again.
+    await vi.waitFor(() => expect(onClose).toHaveBeenCalledOnce());
     expect(onRated).toHaveBeenCalledOnce();
-    // Back at 13:20, two hours of rest: the way back leaves today at 15:30 (G78 В11).
-    expect(screen.getByText(/^Bugun, /u)).toBeTruthy();
-    expect(screen.getByText('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')).toBeTruthy();
-    expect(screen.getByText('Hammasi tayyor: faqat vaqtni tasdiqlang.')).toBeTruthy();
-    await tap('Qaytishni eʼlon qilish');
+    expect(onPublish).not.toHaveBeenCalled();
+  });
+
+  it('«Qaytish safari» sends the stars, then publishes the way back', async () => {
+    const review = vi.fn<FeedbackClient['review']>(async () => undefined);
+    const { onPublish, onClose } = open(review, async () => []);
+    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    await tap('Qaytish safari');
+    await vi.waitFor(() => expect(onPublish).toHaveBeenCalledOnce());
+    expect(review).toHaveBeenCalledTimes(2);
+    expect(onClose).not.toHaveBeenCalled();
     const back = onPublish.mock.calls[0]?.[0];
     expect(back.route.from.id).toBe(madina.trip.to);
     expect(back.route.to.id).toBe(madina.trip.from);
@@ -88,24 +104,18 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     expect(screen.getByText('Safar tugadi')).toBeTruthy();
   });
 
-  it('«Назад» leaves at once, without the stars and without «Qaytish»', async () => {
-    const onClose = vi.fn();
+  it('«Назад» leaves at once, without the stars', async () => {
     const review = vi.fn<FeedbackClient['review']>();
-    open(review, async () => [], vi.fn(), onClose);
+    const { onClose } = open(review, async () => []);
     expect(await screen.findByText('Safar tugadi')).toBeTruthy();
     await tap('Orqaga');
     expect(onClose).toHaveBeenCalledOnce();
     expect(review).not.toHaveBeenCalled();
-    expect(screen.queryByText('Qaytishga yoʻlovchi olasizmi?')).toBeNull();
   });
 
   it('hides the line of the requests when nobody asks the way back', async () => {
-    open(
-      async () => undefined,
-      async () => [],
-    );
-    await tap('Yuborish');
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
+    open(vi.fn(), async () => []);
+    expect(await screen.findByText(/^Qaytishga yoʻlovchi olasizmi\? · /u)).toBeTruthy();
     expect(screen.queryByText(/soʻrov bor/u)).toBeNull();
   });
 });

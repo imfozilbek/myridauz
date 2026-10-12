@@ -76,10 +76,8 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
     expect(onPublish.mock.calls[0]?.[0].route.from.id).toBe(trip.to);
     await tap('Yoʻlovchilarni baholash');
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    // «Yuborish» comes back to the past trip with the stars just given (G78 В10 A).
     await tap('Yuborish');
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
-    // «Назад» of «Qaytish» comes back to the past trip with the stars just given.
-    await tap('Orqaga');
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
   });
 

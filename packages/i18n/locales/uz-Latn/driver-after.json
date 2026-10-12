@@ -17,6 +17,8 @@
   "back.requests": "{from} → {to}: {count} ta soʻrov bor",
   "back.ready": "Hammasi tayyor: faqat vaqtni tasdiqlang.",
   "back.publish": "Qaytishni eʼlon qilish",
+  "back.when": "{question} · {day}",
+  "back.trip": "Qaytish safari",
   "past.rated": "Baho: {stars} qoʻydingiz",
   "past.after": "Safardan keyin",
   "past.rate": "Yoʻlovchilarni baholash",

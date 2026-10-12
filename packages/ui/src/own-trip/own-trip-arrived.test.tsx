@@ -81,8 +81,6 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     await tap('Yetib keldik');
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
     await tap('Yuborish');
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
-    await tap('Orqaga');
     await pastShown();
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
   });

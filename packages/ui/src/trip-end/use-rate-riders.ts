@@ -8,8 +8,8 @@ import { haptic } from '../telegram/feedback';
 const ALL_STARS = 5;
 
 // The stars of each passenger not rated yet (docs/24): five by default, one tap lowers them; «Yuborish»
-// sends them all with the rating API of G11, then the next step.
-export function useRateRiders(toRate: readonly Booking[], onSent: () => void) {
+// sends them all with the rating API of G11, then the next step: the list, or the way back (G78 В10 A).
+export function useRateRiders(toRate: readonly Booking[]) {
   const { feedback } = useApiClients();
   const { track } = useAnalytics();
   const { failure, fail, clear } = useFailure();
@@ -19,13 +19,13 @@ export function useRateRiders(toRate: readonly Booking[], onSent: () => void) {
     haptic.select();
     setStars({ ...stars, [booking.id]: value });
   };
-  const send = async () => {
+  const send = async (then: () => void) => {
     clear();
     try {
       for (const booking of toRate) await feedback.review({ bookingId: booking.id, stars: starsOf(booking) });
       if (toRate.length > 0) track({ name: 'review_sent', screen: 'trip_end.rate' });
       haptic.success();
-      onSent();
+      then();
     } catch (caught) {
       fail(caught);
     }

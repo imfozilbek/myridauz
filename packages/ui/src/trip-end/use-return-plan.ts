@@ -3,6 +3,8 @@ import { useBrand } from '../context/brand-context';
 import { usePlaces } from '../market/places-gate';
 import { returnDepartAt, returnTrip } from './return-plan';
 
+export type ReturnPlan = ReturnType<typeof useReturnPlan>;
+
 // The way back from now (docs/40, G78 В11): today when it leaves by the brand's time, else the next
 // morning, and the publishing of it; null while a place of the trip is unknown.
 export function useReturnPlan(trip: Trip) {
