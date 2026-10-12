@@ -100,10 +100,10 @@ const MOCK = String((signedContact: string | null) => {
           button.style.color = data.text_color;
           button.style.display = data.is_visible ? 'block' : 'none';
           bar.style.display = button.style.display;
-          // An inactive button sends nothing, as in Telegram (G58: the consent).
-          button.disabled = data.is_active === false;
-          // In Telegram the button is under the web view, not over it: the view gets shorter.
+          button.disabled = data.is_active === false; // An inactive button sends nothing (G58).
+          // The button is under the web view in Telegram: the view gets shorter, the last row shows (G78).
           viewport(data.is_visible ? innerHeight - BUTTON_SPACE : innerHeight);
+          document.body.style.paddingBottom = data.is_visible ? `${BUTTON_SPACE}px` : '';
         }
         if (type === 'web_app_setup_secondary_button') {
           second.textContent = data.text;

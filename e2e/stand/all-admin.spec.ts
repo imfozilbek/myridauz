@@ -89,7 +89,11 @@ test('android: a hand correction of a wallet', async ({ page }) => {
 test('android: the hand price of one direction', async ({ page }) => {
   await management(page, 'android');
   await page.getByText(t('pricing.title')).first().click();
-  await page.getByText('Samarqand viloyati').first().click();
+  // The row names the places of the direction (G78 sheet 4).
+  await page
+    .getByText(/→ Samarqand/u)
+    .first()
+    .click();
   await shot(page, 'android', 'ta46-direction');
 });
 
