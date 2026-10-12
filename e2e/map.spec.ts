@@ -4,7 +4,8 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
 import { openEndMap } from './bookings';
 import { noSeatYet } from './bookings-mock';
-import { FOUND, mapState, mockMap, type MapState } from './map-mock';
+import { mapState, mockMap, type MapState } from './map-mock';
+import { FOUND, landedOn } from './map-places';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
 import { PITAK } from './market-mock';
 import { mockTelegram, telegramEvents, telegramUrl } from './telegram-mock';
@@ -45,11 +46,10 @@ async function openBooking(page: Page) {
   return state;
 }
 
-// A place found by its name inside the zone of the map; the pin names the place under it.
-// The map stopped there: it asks the name of the new place (the old name may be the same).
+// A place found by its name inside the zone of the map: landed there, the pin names it (lesson 257).
 async function findPlace(page: Page, query: string, name: string, under: string) {
   await page.getByPlaceholder(t('way.point.search')).fill(query);
-  const asked = page.waitForRequest((request) => request.url().includes('/map/where?'));
+  const asked = page.waitForRequest((request) => landedOn(request.url(), name));
   await page.getByText(name, { exact: true }).click();
   await asked;
   await expect(page.getByRole('status')).toHaveText(under);

@@ -3,6 +3,7 @@ import type { Page, Route } from '@playwright/test';
 import BORDERS from '../apps/backend/seed/district-borders.json' with { type: 'json' };
 import { borderOf, districtAt } from '../apps/backend/src/modules/map/domain/borders';
 import { confirmed } from './bookings-mock';
+import { FOUND, pinOf } from './map-places';
 
 // The map of the pickup point (G22) as the Mini Apps see it: a small piece of Tashkent from the
 // real archive, read by parts like the API gives it, and the fonts of its labels.
@@ -15,24 +16,6 @@ export type MapState = {
   readonly zones: string[];
 };
 export const mapState = (): MapState => ({ booked: null, searched: [], zones: [] });
-// Places of the search by name (G23) as the index has them: real names inside the piece of the map,
-// and the home of the passenger in Samarqand (G24).
-export const FOUND = [
-  {
-    name: 'Mustaqillik maydoni',
-    kind: 'transport',
-    area: 'Yakkasaroy',
-    district: '1726287',
-    point: { lat: 41.31495, lng: 69.27107 },
-  },
-  {
-    name: 'Registon maydoni',
-    kind: 'place',
-    area: 'Samarqand shahri',
-    district: '1718401',
-    point: { lat: 39.6547, lng: 66.9758 },
-  },
-];
 const DISTRICTS = Object.entries(BORDERS.places as Record<string, string[][]>).map(([id, lines]) =>
   borderOf(id, lines),
 );
@@ -123,9 +106,7 @@ export async function mockMap(page: Page, state: MapState) {
     });
   });
   await page.route('**/api/passenger/map/where?*', (route) => {
-    const [lat = 0, lng = 0] = (new URL(route.request().url()).searchParams.get('at') ?? '')
-      .split(',')
-      .map(Number);
+    const [lat = 0, lng = 0] = pinOf(route.request().url());
     return json(route, whereOf(lat, lng));
   });
   // The real borders of the repository (G24, docs/48): the map of a point is cut by its district;
