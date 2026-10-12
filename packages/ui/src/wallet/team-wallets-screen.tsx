@@ -1,20 +1,15 @@
 import type { AdminWallets } from '@platform/contracts';
-import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { CellValue } from '../account/cell-value';
-import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
-import { useScreenBackground } from '../telegram/screen-background';
 import { DriverWallet } from './driver-wallet';
-import '../market/market.css';
 
 type Owner = AdminWallets['wallets'][number];
 
@@ -24,10 +19,10 @@ const found = (query: string) => (owner: Owner) => {
 };
 
 // "Hamyonlar" for the team (docs/12): every driver's balances; an owner corrects one by hand. A name
-// or the id finds a driver among the loaded ones (G79 К5).
+// or the id finds a driver among the loaded ones (G79 К5). The search on top, each wallet one row
+// with its money on the right (G78 sheet 4).
 export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('team.wallets');
-  useScreenBackground();
   const { t, formatMoney } = useI18n();
   const { wallet } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => wallet.all(0), 'team.wallets');
@@ -52,42 +47,39 @@ export function TeamWalletsScreen({ onBack }: { readonly onBack: () => void }) {
   if (open) return <DriverWallet owner={open} onBack={close} />;
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
+  const all = [...value.wallets, ...(added?.wallets ?? [])];
   return (
-    <div className="market">
-      <Screen onBack={onBack} onRefresh={refresh} />
-      <Title weight="1" className="market-title">
-        {t('wallet.team.title')}
-      </Title>
-      {value.wallets.length === 0 ? (
-        <EmptyState icon="wallet" title={t('wallet.team.empty')} />
-      ) : (
-        <List>
-          <Field
-            label={t('manage.person.search')}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-          />
-          <Section>
-            {[...value.wallets, ...(added?.wallets ?? [])].filter(found(query)).map((owner) => (
-              <Cell
-                key={owner.driverId}
-                onClick={() => setOpen(owner)}
-                subtitle={`${t('wallet.bonus')}: ${formatMoney(owner.bonus)}`}
-                after={<CellValue>{formatMoney(owner.main)}</CellValue>}
-              >
-                {owner.firstName}
-              </Cell>
-            ))}
-          </Section>
+    <ManagePage title={t('wallet.team.title')} onBack={onBack} onRefresh={refresh}>
+      {all.length === 0 ? <EmptyState icon="wallet" title={t('wallet.team.empty')} /> : null}
+      {all.length > 0 ? (
+        <ManageGroup>
+          <form className="manage-field" onSubmit={(event) => event.preventDefault()}>
+            <input
+              aria-label={t('manage.person.search')}
+              placeholder={t('manage.person.search')}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </form>
+        </ManageGroup>
+      ) : null}
+      {all.length > 0 ? (
+        <ManageGroup>
+          {all.filter(found(query)).map((owner) => (
+            <ManageRow
+              key={owner.driverId}
+              icon="wallet"
+              title={owner.firstName}
+              hint={`${t('wallet.bonus')}: ${formatMoney(owner.bonus)}`}
+              value={formatMoney(owner.main)}
+              onClick={() => setOpen(owner)}
+            />
+          ))}
           {(added ? added.more : value.more) ? (
-            <div className="step-note">
-              <Button mode="plain" size="m" stretched onClick={() => void loadMore()}>
-                {t('market.mine.more')}
-              </Button>
-            </div>
+            <ManageRow icon="down" title={t('market.mine.more')} onClick={() => void loadMore()} />
           ) : null}
-        </List>
-      )}
-    </div>
+        </ManageGroup>
+      ) : null}
+    </ManagePage>
   );
 }

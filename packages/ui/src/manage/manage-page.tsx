@@ -74,7 +74,9 @@ export function ManageRow({ icon, title, hint, danger = false, alarm = false, va
       <span className="navbat-words">
         <span className={danger ? 'navbat-title manage-danger' : 'navbat-title'}>{title}</span>
         {hint === undefined ? null : (
-          <span className={alarm ? 'navbat-hint manage-row-hint manage-danger' : 'navbat-hint manage-row-hint'}>
+          <span
+            className={alarm ? 'navbat-hint manage-row-hint manage-danger' : 'navbat-hint manage-row-hint'}
+          >
             {hint}
           </span>
         )}

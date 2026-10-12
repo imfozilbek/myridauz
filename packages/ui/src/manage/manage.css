@@ -92,6 +92,15 @@
   opacity: 0.4;
 }
 
+.manage-chips-wrap {
+  flex-wrap: wrap;
+}
+
+/* The money that came in (G78 sheet 4). */
+.manage-success {
+  color: var(--reg-success);
+}
+
 .manage-value {
   flex: none;
   font-size: 14px;
