@@ -4,9 +4,9 @@ import { TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
 import { placeFound } from './map-wait';
 import { findTrips, openOwnTrip } from './market';
-import { pressBack } from './telegram-mock';
+import { pressBack, telegramEvents } from './telegram-mock';
 
-const { t } = createI18n(DEFAULT_LOCALE);
+const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 const B = {
@@ -18,7 +18,6 @@ const B = {
   accept: t('bookings.offer.accept'),
   confirm: t('bookings.confirm'),
   confirmed: t('bookings.confirmed.title'),
-  notEnough: t('wallet.notEnough.title'),
   topUp: t('wallet.topUp'),
   wallet: t('wallet.title'),
   wallets: t('wallet.team.title'),
@@ -108,12 +107,12 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
     await shot('2-confirmed');
     return;
   }
-  // Without money for the commission the way to top up comes instead, no «Tasdiqlash» (docs/83 N20).
-  await page.getByRole('button', { name: B.topUp, exact: true }).click();
-  // A sheet with only the sum short; its button opens the support chat with the message ready (G75).
-  await expect(page.getByText(B.notEnough)).toBeVisible();
-  await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
+  // Without money for the commission the card names the sum short and the way to top up comes instead
+  // of «Tasdiqlash» (docs/83 N20); one tap opens the support chat with the message ready (G78 В9).
+  await expect(page.getByText(t('driverTrip.short', { amount: formatNumber(18_000) }))).toBeVisible();
   await shot('3-not-enough');
+  await page.getByRole('button', { name: B.topUp, exact: true }).click();
+  await expect.poll(async () => (await telegramEvents(page, 'web_app_open_tg_link')).length).toBe(1);
 }
 
 // "Hamyon" from its tile on the main screen of an approved driver (docs/118 path 9, G65): the bonus,
