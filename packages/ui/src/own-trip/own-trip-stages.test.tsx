@@ -114,6 +114,14 @@ describe('«Mening safarim» before the departure and on the way (mockup g63/3, 
     expect(steps.departTrip).not.toHaveBeenCalled();
   });
 
+  it('on the way says the next point and who waits there, as the block of the main screen (G78 В2)', async () => {
+    vi.setSystemTime(trip.departAt + 10 * MINUTE);
+    await open({ ...trip, seatsLeft: 1, departedAt: trip.departAt }, [rider]);
+    expect(await screen.findByText('Yoʻldasiz · 0 / 1')).toBeTruthy();
+    expect(screen.getByText('Keyingi: Chilonzor bozori yaqinida')).toBeTruthy();
+    expect(screen.getByText('Dilnoza · 2 kishi')).toBeTruthy();
+  });
+
   it('a cancelled trip says so in grey, without a cancel or a main button', async () => {
     await open({ ...trip, status: 'cancelled' }, []);
     expect(await screen.findByText('Safar bekor qilindi')).toBeTruthy();

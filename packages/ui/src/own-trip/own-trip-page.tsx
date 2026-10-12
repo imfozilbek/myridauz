@@ -16,6 +16,7 @@ import { taken } from '../trip-end/trip-sums';
 import { OwnTripBanner } from './own-trip-banner';
 import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
 import { PrivateTripBanner } from './private-trip-banner';
+import { RoadNextCard } from './road-next-card';
 import { RiderRow } from './rider-row';
 import { SeatRequestCard } from './seat-request-card';
 import { TripMainButton } from './trip-main-button';
@@ -80,6 +81,7 @@ export function OwnTripPage(props: Props) {
       ) : (
         <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
       )}
+      {stage === 'on_way' && open ? <RoadNextCard trip={trip} bookings={bookings} /> : null}
       {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
       {notLeft && open ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (

@@ -1,3 +1,4 @@
+import type { SubscriptionsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DriverContext } from '../driver/driver-context';
@@ -13,7 +14,13 @@ const ROUTE = { from: '1726', to: '1718' };
 
 // The market kit is the driver app.
 function open(notify: typeof ROUTE | null) {
-  const subscribe = vi.fn(async () => undefined);
+  const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async (input) => ({
+    ...input,
+    id: 's1',
+    kind: 'requests',
+    expiresAt: Date.parse('2026-10-31T12:00:00Z'),
+    expired: false,
+  }));
   renderMarket(
     <DriverContext.Provider value={approved}>
       <RequestsFlow onBack={() => undefined} />
