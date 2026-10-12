@@ -33,7 +33,7 @@ export function useHere(directory: PlaceDirectory | null): Location | null {
 
 // The same, and undefined while the phone is still asked and no district of last time stands in:
 // a screen waits instead of showing a list that changes by itself a moment later (G59).
-export function useHereChecked(directory: PlaceDirectory | null): Location | null | undefined {
+function useHereChecked(directory: PlaceDirectory | null): Location | null | undefined {
   const { map } = useApiClients();
   // undefined: not checked yet, the district of last time stands in.
   const [here, setHere] = useState<Location | null | undefined>(undefined);

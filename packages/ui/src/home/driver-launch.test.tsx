@@ -42,6 +42,20 @@ describe('«Safar eʼlon qilish» of a driver from the main screen', { timeout: 
     expect(screen.getByText(/^opened Chilonzor>Fargʻona shahri again 3$/u)).toBeTruthy();
   });
 
+  // The owner keeps the filled «Qayerga» and its «x» (12.10.2026): one tap empties it.
+  it('the «x» of «Qayerga» empties it; a new trip then asks «Qayerga» first', async () => {
+    markApprovalSeen();
+    driver();
+    await screen.findByText(HERE);
+    expect(await screen.findByText('Fargʻona shahri')).toBeTruthy();
+    press('Joyni tozalash');
+    expect(screen.queryByText('Fargʻona shahri')).toBeNull();
+    expect(screen.getByText('Qayerga ketyapsiz?')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Joyni tozalash' })).toBeNull();
+    press('Safar eʼlon qilish');
+    expect(screen.getByText('opened from Chilonzor')).toBeTruthy();
+  });
+
   it('standing at the end of the last trip, «Qayerga» is the way back', async () => {
     markApprovalSeen();
     driver([{ ...yesterday(), from: trip.to, to: trip.from }]);

@@ -5,6 +5,7 @@ import { Icon } from '../icons';
 import './route-dock.css';
 
 const SWAP = 16;
+const CLEAR = 16;
 
 type DockEnd = {
   // The place shown, or null: the gray question takes its line.
@@ -13,6 +14,8 @@ type DockEnd = {
   // Under the place: how it was found, or how many trips go there.
   readonly hint?: ReactNode;
   readonly onTap: () => void;
+  // The «x» that empties a filled end (G79 В4): only where the block fills it for the person.
+  readonly onClear?: (() => void) | undefined;
 };
 
 type Props = { readonly from: DockEnd; readonly to: DockEnd; readonly onSwap: () => void };
@@ -38,6 +41,25 @@ export function RouteDock({ from, to, onSwap }: Props) {
 type EndProps = { readonly end: DockEnd; readonly label: string; readonly ring: string };
 
 function End({ end, label, ring }: EndProps) {
+  const { t } = useI18n();
+  const button = <EndButton end={end} label={label} ring={ring} />;
+  if (!end.value || !end.onClear) return button;
+  return (
+    <div className="home-dock-clearable">
+      {button}
+      <button
+        type="button"
+        className="home-dock-clear"
+        aria-label={t('home.dock.clearTo')}
+        onClick={end.onClear}
+      >
+        <Icon name="close" size={CLEAR} />
+      </button>
+    </div>
+  );
+}
+
+function EndButton({ end, label, ring }: EndProps) {
   return (
     <button type="button" className="home-dock-end" onClick={end.onTap}>
       <span className={`home-dock-ring ${ring}`} />

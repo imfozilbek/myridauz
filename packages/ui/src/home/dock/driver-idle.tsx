@@ -38,6 +38,7 @@ export function DriverIdle({ go, directory }: Props) {
           placeholder: t('home.dock.toDriver'),
           ...(from && to && !pending ? { hint: <RequestCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),
+          onClear: tap('dock_clear', ends.clearTo),
         }}
         onSwap={tap('dock_swap', ends.swap)}
       />

@@ -91,6 +91,8 @@
 
 .home-dock-swap {
   position: absolute;
+  /* Over the end below it, which holds its «x» (G79 В4): ⇅ stays tapped in full. */
+  z-index: 1;
   top: 50%;
   right: 12px;
   display: grid;
@@ -103,6 +105,28 @@
   background: var(--reg-card);
   box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   transform: translateY(-50%);
+  cursor: pointer;
+}
+
+/* A filled end with its «x» (G79 В4, owner 12.10.2026): the «x» stands under ⇅, on the line of
+   the place, and empties the end. */
+.home-dock-clearable {
+  position: relative;
+}
+
+.home-dock-clear {
+  position: absolute;
+  top: 24px;
+  right: 15px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--reg-muted);
   cursor: pointer;
 }
 

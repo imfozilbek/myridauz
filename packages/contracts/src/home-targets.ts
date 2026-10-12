@@ -10,6 +10,8 @@ export const HOME_TARGETS = [
   'dock_from',
   'dock_to',
   'dock_swap',
+  // G79 В4: the «x» that empties «Qayerga» of a driver.
+  'dock_clear',
   // G66: the chat and the call of a trip, «Haydovchi boʻling».
   'trip_chat',
   'trip_call',

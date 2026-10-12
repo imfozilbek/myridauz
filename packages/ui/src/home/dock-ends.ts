@@ -27,6 +27,8 @@ export function useDockEnds(directory: PlaceDirectory | null, trip: Route | null
     to,
     detected: here !== null && from?.id === here.id,
     swap: () => choose({ from: to, to: from }),
+    // The «x» of «Qayerga» (G79 В4, owner 12.10.2026): the end filled for the person is emptied.
+    clearTo: () => choose({ to: null }),
   };
 }
 
