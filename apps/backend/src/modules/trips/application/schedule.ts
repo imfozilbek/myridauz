@@ -9,7 +9,8 @@ type Route = { readonly from: string; readonly to: string; readonly km: number }
 
 // The busy times of the driver for a new trip on this route (G38, docs/103): the driver must make it
 // from the end of each trip to its start and from its end to the next trip, with time to gather people.
-// except: the trip whose time the driver moves does not stand in its own way (G39, docs/104).
+// except: the trip whose time the driver moves does not stand in its own way (G39, docs/104). A trip
+// after «Yetib keldik» is over for the schedule: the way back may leave today (G78 В11).
 export async function driverSchedule(
   deps: Deps,
   driverId: number,
@@ -18,7 +19,7 @@ export async function driverSchedule(
 ): Promise<Schedule> {
   const now = deps.now();
   const live = (await deps.trips.byDriver(driverId)).filter(
-    (trip) => isLive(trip, now) && trip.id !== except,
+    (trip) => isLive(trip, now) && trip.arrivedAt === null && trip.id !== except,
   );
   const pairs = live.flatMap((trip) => [
     [route.to, trip.from],

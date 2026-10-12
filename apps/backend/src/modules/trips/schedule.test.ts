@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { arriveTrip, departTrip } from './application/progress';
 import { publishTrip } from './application/publish';
 import { driverSchedule } from './application/schedule';
 import { HOUR, NOW, setup } from './test-kit';
@@ -33,6 +34,23 @@ describe('when a driver may leave (docs/103)', () => {
     const early = await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2 * HOUR });
     expect(early).toEqual({ ok: false, error: 'trips.busy' });
     expect((await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2.5 * HOUR })).ok).toBe(true);
+  });
+
+  it('frees the driver at «Yetib keldik»: the way back today, the trip out of the limit (G78 В11)', async () => {
+    const { deps, trip, setNow } = setup();
+    const there = await publishTrip(deps, 1, trip);
+    if (!there.ok) throw new Error(there.error);
+    for (let day = 1; day < 3; day += 1)
+      await publishTrip(deps, 1, { ...trip, departAt: trip.departAt + day * DAY });
+    setNow(trip.departAt);
+    await departTrip(deps, 1, there.value.id);
+    const arrival = trip.departAt + 4 * HOUR;
+    setNow(arrival);
+    await arriveTrip(deps, 1, there.value.id);
+    const { windows, full } = await driverSchedule(deps, 1, { ...BACK, km: 300 });
+    expect({ windows: windows.length, full }).toEqual({ windows: 2, full: false });
+    const back = await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2 * HOUR });
+    expect(back.ok).toBe(true);
   });
 
   it('adds the road to a start elsewhere, and makes it to the next trip too', async () => {

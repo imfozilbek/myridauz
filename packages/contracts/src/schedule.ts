@@ -63,7 +63,8 @@ export function busyWindows(
   }));
 }
 
-export const earliestDepart = (now: number, rules: ScheduleRules) => now + rules.leadMinutes * MINUTE_MS;
+export const earliestDepart = (now: number, rules: Pick<ScheduleRules, 'leadMinutes'>) =>
+  now + rules.leadMinutes * MINUTE_MS;
 
 export const isBusy = (at: number, windows: readonly BusyWindow[]) =>
   windows.some((window) => at > window.from && at < window.to);

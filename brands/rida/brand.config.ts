@@ -48,6 +48,8 @@ export const brandConfig: BrandConfig = {
     shiftMinutes: 60,
     meetMinutes: 30,
     autoDepartHours: 2,
+    // The way back today at 22:00 the latest, later: the next morning (owner decision 12.10.2026, G78 В11).
+    returnUntil: '22:00',
   },
   // docs/127 §2..7: the limits of people; the owner changes them in «Cheklovlar» (docs/128 §4).
   bookings: { maxPending: 3, answerHours: 24 },

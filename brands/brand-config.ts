@@ -57,6 +57,7 @@ type ModerationRules = {
 // daysAhead; another day opens at defaultTime; at most maxActiveTrips; the time to gather people is the
 // road time × factor, within the bounds. A trip moves at most shiftMinutes later (G39); the meeting opens
 // meetMinutes before the departure (docs/126); the Cron departs a trip autoDepartHours after its time.
+// The way back after a trip leaves today when it can at returnUntil the latest, else the next morning.
 type ScheduleRules = {
   readonly leadMinutes: number;
   readonly daysAhead: number;
@@ -66,6 +67,7 @@ type ScheduleRules = {
   readonly shiftMinutes: number;
   readonly meetMinutes: number;
   readonly autoDepartHours: number;
+  readonly returnUntil: string;
 };
 
 // The party of the legal documents (docs/30): requisites from the admin Mini App (G34).

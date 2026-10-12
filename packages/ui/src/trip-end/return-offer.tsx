@@ -24,7 +24,7 @@ type Props = {
 };
 
 // «Qaytish» after the review (owner decision 06.10.2026, docs/124 В, mockup g63/4 screen 16): the
-// way back tomorrow at the time after the arrival and the rest, with the requests already waiting.
+// way back after the arrival and the rest, today when it makes it (G78 В11), with the requests waiting.
 export function ReturnOffer({ trip, onPublish, onClose }: Props) {
   useScreenView('trip_end.return');
   useScreenBackground();

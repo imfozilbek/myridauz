@@ -64,7 +64,8 @@ describe('«Safar tugadi» and «Qaytish» of the driver (docs/124 В, mockup g6
     expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
     // The list brings the seats marked rated: the past trip does not offer the stars again.
     expect(onRated).toHaveBeenCalledOnce();
-    expect(screen.getByText(/^Ertaga, /u)).toBeTruthy();
+    // Back at 13:20, two hours of rest: the way back leaves today at 15:30 (G78 В11).
+    expect(screen.getByText(/^Bugun, /u)).toBeTruthy();
     expect(screen.getByText('Fargʻona viloyati → Toshkent shahri: 2 ta soʻrov bor')).toBeTruthy();
     expect(screen.getByText('Hammasi tayyor: faqat vaqtni tasdiqlang.')).toBeTruthy();
     await tap('Qaytishni eʼlon qilish');
