@@ -1,6 +1,7 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { bookSeats, confirmBooking } from './bookings';
 import { passengerChat } from './chat';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -10,6 +11,7 @@ const [PASSENGER, DRIVER] = MINI_APPS;
 // Both sides of a booking in the real build (G08): a passenger asks, the driver confirms.
 test('a passenger books seats on a trip', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await bookSeats(page);

@@ -2,6 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -11,8 +12,10 @@ const shooter = (page: Page) => async (name: string) => {
   await page.mouse.move(0, 0);
   await page.screenshot({ path: `screenshots/comfort-${name}.png`, fullPage: true });
 };
-const open = async (page: Page, port: number) => {
+// A passenger who books has no seat yet: one at a time (docs/172).
+const open = async (page: Page, port: number, seatless = false) => {
   await mockApi(page, 'active');
+  if (seatless) await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(port)));
   return shooter(page);
@@ -21,7 +24,7 @@ const open = async (page: Page, port: number) => {
 // The screens of G18 for the owner review (docs/33).
 // A driver is saved on «Baho» after the trip (mockup screen 17), not on «Safar».
 test('passenger: the trip of a driver', async ({ page }) => {
-  const shot = await open(page, PASSENGER.port);
+  const shot = await open(page, PASSENGER.port, true);
   await findTrips(page);
   await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
   await shot('1-trip');

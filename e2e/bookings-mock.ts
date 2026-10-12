@@ -129,6 +129,6 @@ export async function mockBookings(page: Page, money = true) {
   return { trip, answered };
 }
 
-// A passenger who has no seat yet: the trip offers «Joy band qilish» (one seat request per trip, G52).
+// A passenger who has no seat yet: the trip offers «Joy band qilish» (one seat at a time, docs/172).
 export const noSeatYet = (page: Page) =>
   page.route('**/api/passenger/bookings', (route) => route.fulfill({ json: { bookings: [] } }));

@@ -1,6 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openRequests, publishButton, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -23,6 +24,7 @@ test('driver: main screen and a new trip', async ({ page }) => {
 
 test('passenger: main screen and the search', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page, 'trip-search');

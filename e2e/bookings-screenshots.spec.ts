@@ -1,7 +1,7 @@
 import { test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
-import { mockBookings } from './bookings-mock';
+import { mockBookings, noSeatYet } from './bookings-mock';
 import { bookSeats, confirmBooking, openWallet, passengerTrips, teamWallets } from './bookings';
 import { followTrip, passengerChat } from './chat';
 import { SHARE_TOKEN } from './chat-mock';
@@ -20,6 +20,7 @@ const open = async (page: Page, port: number) => {
 // Screenshots for the owner review (docs/33): bookings, the confirmation, "Hamyon" (G08).
 test('passenger: books seats', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await open(page, PASSENGER.port);
   await bookSeats(page, shooter(page, 'booking-new'));
 });
