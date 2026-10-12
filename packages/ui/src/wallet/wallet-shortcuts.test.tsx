@@ -42,8 +42,11 @@ describe('the wallets of the team in fewer taps', { timeout: 20_000 }, () => {
     await tap('Ochish');
     await tap('Hamyon');
     await tap('Hamyonni tuzatish');
+    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Oʻzim yozdim' } });
     await tap('Boshqa');
     expect(document.activeElement).toBe(screen.getByLabelText('Sabab'));
+    // A reason typed by hand stays (review).
+    expect(screen.getByLabelText('Sabab')).toHaveProperty('value', 'Oʻzim yozdim');
     await tap('Kelmadi: komissiya qaytarildi');
     expect(screen.getByLabelText('Sabab')).toHaveProperty('value', 'Kelmadi: komissiya qaytarildi');
     fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '9000' } });

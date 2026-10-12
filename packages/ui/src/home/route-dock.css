@@ -44,6 +44,8 @@
 }
 
 .home-dock-line {
+  /* ⇅ stands right on the line and over the ends, whatever their height (G79 В4). */
+  position: relative;
   height: 1px;
   background: var(--reg-off);
 }
@@ -90,20 +92,44 @@
 }
 
 .home-dock-swap {
-  position: absolute;
+  z-index: 1;
   top: 50%;
   right: 12px;
-  display: grid;
-  place-items: center;
   width: 34px;
   height: 34px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
   background: var(--reg-card);
   box-shadow: 0 1px 3px rgb(0 0 0 / 15%);
   transform: translateY(-50%);
+}
+
+/* ⇅ and the tool of an end («x», «Joylashuvim»): round buttons, their icon in the middle. */
+.home-dock-swap,
+.home-dock-tool {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
   cursor: pointer;
+}
+
+/* An end with its tool on its line, over or under ⇅ (G79 В4, owner 12.10.2026), clear of ⇅. */
+.home-dock-tooled {
+  position: relative;
+}
+
+.home-dock-tooled:first-child .home-dock-end {
+  min-height: 68px;
+}
+
+.home-dock-tool {
+  top: 20px;
+  right: 15px;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  color: var(--reg-muted);
 }
 
 /* A step of the trip that did not work: the reason right above the button (docs/65 B3). */

@@ -47,6 +47,17 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     expect(screen.getByText(/3 ta → 2 ta · Fozil/u)).toBeTruthy();
   });
 
+  // A long range is typed, never hundreds of taps (G79 К9, review).
+  it('types a limit of a long range', async () => {
+    renderManagement({
+      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(3), change: vi.fn() },
+    });
+    await tap('Cheklovlar');
+    await tap('Jamoa ishining boshlanishi');
+    expect(screen.getByLabelText('Jamoa ishining boshlanishi').tagName).toBe('INPUT');
+    expect(screen.queryByRole('button', { name: 'Kamaytirish' })).toBeNull();
+  });
+
   it('says every decision in words and shows the older ones on «Yana»', async () => {
     const journal = vi.fn(async (before?: number) =>
       before === undefined

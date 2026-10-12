@@ -34,6 +34,7 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
   const [direction, setDirection] = useState<Direction | null>(null);
   const [amount, setAmount] = useState('');
   const [reason, setReason] = useState('');
+  const readyReasons = READY_REASONS.map((key) => t(`wallet.adjust.reason.${key}`));
   const guard = useUnsavedGuard(
     balance !== FIRST_BALANCE || direction !== null || amount !== '' || reason !== '',
   );
@@ -72,13 +73,11 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
           onChange={(event) => setReason(event.target.value)}
         />
         <Section>
-          {READY_REASONS.map((key) => {
-            const words = t(`wallet.adjust.reason.${key}`);
-            return choice(words, reason, setReason, words);
-          })}
+          {readyReasons.map((words) => choice(words, reason, setReason, words))}
           <Cell
             onClick={() => {
-              setReason('');
+              // A reason typed by hand stays; a ready one gives way to the typing.
+              if (readyReasons.includes(reason)) setReason('');
               document.getElementById(REASON_FIELD)?.focus();
             }}
           >

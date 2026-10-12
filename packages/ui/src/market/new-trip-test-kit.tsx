@@ -1,5 +1,5 @@
 import type { MarketClient } from '@platform/api-client';
-import { DAY_MS, MINUTE_MS, type Recommendation } from '@platform/contracts';
+import { DAY_MS, MINUTE_MS, type Location, type Recommendation } from '@platform/contracts';
 import { fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { DriverContext, type Driver } from '../driver/driver-context';
@@ -30,6 +30,8 @@ type Options = {
   readonly recommend?: () => Promise<Recommendation>;
   readonly route?: Route;
   readonly again?: TripAgain;
+  // Only «Qayerga» of the block at the bottom of the main screen (G79 В4).
+  readonly to?: Location;
 };
 
 export function openNewTrip(options: Options = {}) {
@@ -53,6 +55,7 @@ export function openNewTrip(options: Options = {}) {
         onBack={() => undefined}
         {...(options.route ? { route: options.route } : {})}
         {...(options.again ? { again: options.again } : {})}
+        {...(options.to ? { to: options.to } : {})}
       />
     </DriverContext.Provider>,
     clients,

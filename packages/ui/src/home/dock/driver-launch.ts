@@ -1,7 +1,7 @@
-import { NEW_TRIP_SECTION } from '@platform/contracts';
+import { NEW_TRIP_SECTION, type Location } from '@platform/contracts';
 import { useState } from 'react';
 import { tripToRepeat } from '../../driver-trips/trip-week';
-import type { HomeGo } from '../../flow/start-action';
+import type { HomeGo, Launch } from '../../flow/start-action';
 import type { PlaceDirectory } from '../../places/directory';
 import { tomorrowTrip } from '../../trip-end/return-plan';
 import { useDockEnds } from '../dock-ends';
@@ -21,11 +21,17 @@ export function useDriverLaunch(go: HomeGo, directory: PlaceDirectory | null) {
   const ends = useDockEnds(directory, again?.route ?? null);
   const { from, to } = ends;
   const same = again && from?.id === again.route.from.id && to?.id === again.route.to.id;
-  const publish = () =>
-    go(NEW_TRIP_SECTION, same ? again : from && to ? { route: { from, to } } : from ? { from } : undefined);
+  const publish = () => go(NEW_TRIP_SECTION, same ? again : tripEnds(from, to));
   const requests = () =>
     go(PASSENGER_REQUESTS, from ? { board: { from: from.id, ...(to ? { to: to.id } : {}) } } : undefined);
   return { ends, publish, requests };
 }
 
 export type DriverLaunch = ReturnType<typeof useDriverLaunch>;
+
+// A new trip from the ends of the block: one end is kept, the other is asked first (G79 В4).
+function tripEnds(from: Location | null, to: Location | null): Launch | undefined {
+  if (from && to) return { route: { from, to } };
+  if (from) return { from };
+  return to ? { to } : undefined;
+}
