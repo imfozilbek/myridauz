@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { tashkentDayStart } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { akmal, madina } from '../meeting/meet-test-kit';
@@ -27,10 +28,25 @@ describe('the trip in numbers (mockups g63/4 screen 15, g63/5 phone 5)', () => {
 
 describe('the way back (mockup g63/4 screen 16)', () => {
   const { trip } = madina;
-  it('leaves the next day after the arrival and the rest, on a slot of 30 minutes', () => {
-    // 320 km at 60 km/h from 08:00: ≈ 13:25, then two hours of rest: 15:30.
-    const at = returnDepartAt({ ...trip, departAt: Date.parse('2026-10-07T08:00:00+05:00') }, '2026-10-08');
-    expect(at).toBe(tashkentDayStart('2026-10-08') + 15.5 * HOUR);
+  // 320 km at 60 km/h from 08:00 of 7 October: ≈ 13:25 there.
+  const there = { ...trip, departAt: Date.parse('2026-10-07T08:00:00+05:00'), arrivedAt: null };
+  const RULES = loadBrand().schedule;
+  const at = (time: string, day = '2026-10-07') => Date.parse(`${day}T${time}:00+05:00`);
+  const back = (arrivedAt: number | null, now: number) => returnDepartAt({ ...there, arrivedAt }, now, RULES);
+
+  it('leaves today after the arrival and two hours of rest, on a slot of 30 minutes (G78 В11)', () => {
+    expect(back(null, at('08:00'))).toBe(at('15:30'));
+    expect(back(at('12:40'), at('12:45'))).toBe(at('15:00'));
+  });
+
+  it('leaves an hour after now at the earliest when the driver comes late', () => {
+    expect(back(at('13:25'), at('16:10'))).toBe(at('17:30'));
+  });
+
+  it('leaves today at 22:00 the latest, later the next morning; the night is the morning too', () => {
+    expect(back(at('19:50'), at('19:55'))).toBe(at('22:00'));
+    expect(back(at('20:10'), at('20:15'))).toBe(at('08:00', '2026-10-08'));
+    expect(back(at('23:30'), at('23:35'))).toBe(at('08:00', '2026-10-08'));
   });
 
   it('turns the route and keeps the seats, the price and the rules', () => {

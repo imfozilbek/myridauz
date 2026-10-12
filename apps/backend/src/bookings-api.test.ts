@@ -8,6 +8,8 @@ afterAll(() => vi.unstubAllGlobals());
 
 const DRIVER = 61;
 const PASSENGER = 62;
+const OTHER_DRIVER = 65;
+const OTHER_PASSENGER = 66;
 
 describe('bookings and the wallet API (docs/12, docs/35)', () => {
   it('books, confirms with the bonus and never shows a contact', async () => {
@@ -52,34 +54,36 @@ describe('bookings and the wallet API (docs/12, docs/35)', () => {
   });
 
   it('cancels the bookings when the driver cancels the trip, with a refund', async () => {
+    // Another driver and passenger: one live trip and one seat at a time (docs/172).
+    await approvedDriver(OTHER_DRIVER);
+    await registerUser(OTHER_PASSENGER);
     const trip = {
       from: '1726273',
       to: '1718401',
-      // Two days after the first trip: the trips of one driver cannot overlap (docs/103).
       departAt: Date.now() + 53 * 3_600_000,
       seats: 2,
       price: 90_000,
     };
     const published = await read<{ id: string }>(
-      call('/driver/trips', DRIVER, {
+      call('/driver/trips', OTHER_DRIVER, {
         app: 'driver',
         ...json({ ...trip, womanOnBoard: false, pickupMode: 'door', comment: '' }),
       }),
     );
     const asked = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(2))),
+      call(`/trips/${published.id}/bookings`, OTHER_PASSENGER, json(doorBooking(2))),
     );
-    await call(`/driver/bookings/${asked.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
-    const before = await read<{ bonus: number }>(call('/driver/wallet', DRIVER, { app: 'driver' }));
-    await call(`/driver/trips/${published.id}/cancel`, DRIVER, { method: 'POST', app: 'driver' });
+    await call(`/driver/bookings/${asked.id}/confirm`, OTHER_DRIVER, { method: 'POST', app: 'driver' });
+    const before = await read<{ bonus: number }>(call('/driver/wallet', OTHER_DRIVER, { app: 'driver' }));
+    await call(`/driver/trips/${published.id}/cancel`, OTHER_DRIVER, { method: 'POST', app: 'driver' });
     const mine = await read<{ bookings: { id: string; status: string }[] }>(
-      call('/passenger/bookings', PASSENGER),
+      call('/passenger/bookings', OTHER_PASSENGER),
     );
     expect(mine.bookings.find((booking) => booking.id === asked.id)?.status).toBe('cancelled_by_driver');
     // Two seats at 90 000: 2 × 9 000 goes back to the bonus (owner decision 29.09.2026).
-    expect((await read<{ bonus: number }>(call('/driver/wallet', DRIVER, { app: 'driver' }))).bonus).toBe(
-      before.bonus + 18_000,
-    );
+    expect(
+      (await read<{ bonus: number }>(call('/driver/wallet', OTHER_DRIVER, { app: 'driver' }))).bonus,
+    ).toBe(before.bonus + 18_000);
   });
 
   it('lets only an owner correct a wallet, with a reason', async () => {

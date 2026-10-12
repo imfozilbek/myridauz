@@ -18,9 +18,9 @@ describe('the trips of the team day by day (docs/90 F-A6)', () => {
     expect(teamTrips.mock.calls.map(([date]) => date)).toEqual(
       [-1, 0, 1, 2].map((days) => tashkentDate(Date.now() + days * DAY_MS)),
     );
-    expect(screen.getAllByText('Jasur')).toHaveLength(1);
+    expect(screen.getAllByText(/Jasur/u)).toHaveLength(1);
     fireEvent.click(screen.getByText('Yana koʻrsatish'));
-    await waitFor(() => expect(screen.getAllByText('Jasur')).toHaveLength(2));
+    await waitFor(() => expect(screen.getAllByText(/Jasur/u)).toHaveLength(2));
     expect(teamTrips).toHaveBeenCalledWith(later);
   });
 

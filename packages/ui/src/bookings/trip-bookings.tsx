@@ -1,19 +1,19 @@
-import { FAR_EXTRA_KM, type Booking } from '@platform/contracts';
-import { CellValue } from '../account/cell-value';
-import { ProfilePhoto } from '../account/profile/profile-photo';
-import { Cell, Section } from '../components';
+import { FAR_EXTRA_KM, type Booking, type PersonId } from '@platform/contracts';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { ManageGroup, ManageRow } from '../manage/manage-page';
 import { useLoad } from '../market/use-list';
-import { PassengersStack } from './passengers-stack';
 import { requestsInOrder, takenFirst } from './trip-bookings-order';
 
-const PHOTO_SIZE = 40;
-type Props = { readonly bookings: readonly Booking[] };
+type Props = {
+  readonly bookings: readonly Booking[];
+  readonly onPerson: (id: PersonId) => void;
+};
 
-// The bookings of one trip for the team: who, how many seats, the status. The requests come
-// first, by the extra way to the passengers already taken (G24, docs/70).
-export function TripBookings({ bookings }: Props) {
+// The bookings of one trip for the team: who, the status, how many seats; a tap opens the card of
+// the person (G78 sheet 4). The requests come first, by the extra way to the passengers already
+// taken (G24, docs/70).
+export function TripBookings({ bookings, onPerson }: Props) {
   const { t } = useI18n();
   const requested = requestsInOrder(bookings.filter((booking) => booking.status === 'requested'));
   const fits = requested.filter((booking) => (booking.extraKm ?? 0) <= FAR_EXTRA_KM);
@@ -21,45 +21,44 @@ export function TripBookings({ bookings }: Props) {
   const rest = takenFirst(bookings.filter((booking) => booking.status !== 'requested'));
   const row = (booking: Booking) => {
     const status = t(`bookings.status.${booking.status}`);
+    const seats = t('market.request.seats', { count: String(booking.seats) });
     const extra = booking.extraKm ? t('way.driver.extra', { km: String(booking.extraKm) }) : null;
     return (
-      <Cell
+      <ManageRow
         key={booking.id}
-        before={
-          <ProfilePhoto
-            userId={booking.passenger.id}
-            name={booking.passenger.firstName}
-            hasAvatar={booking.passenger.hasAvatar}
-            size={PHOTO_SIZE}
-          />
-        }
-        subtitle={extra ? `${status} · ${extra}` : status}
-        after={<CellValue>{t('market.request.seats', { count: String(booking.seats) })}</CellValue>}
-      >
-        {booking.passenger.firstName}
-      </Cell>
+        icon="profile"
+        title={booking.passenger.firstName}
+        hint={t('home.meta', {
+          when: status,
+          more: extra ? t('home.meta', { when: seats, more: extra }) : seats,
+        })}
+        onClick={() => onPerson(booking.passenger.id)}
+      />
     );
   };
   return (
     <>
-      <PassengersStack bookings={bookings} />
-      {fits.length > 0 ? <Section header={t('way.driver.fits')}>{fits.map(row)}</Section> : null}
-      {others.length > 0 ? <Section header={t('way.driver.others')}>{others.map(row)}</Section> : null}
+      {fits.length > 0 ? <ManageGroup title={t('way.driver.fits')}>{fits.map(row)}</ManageGroup> : null}
+      {others.length > 0 ? <ManageGroup title={t('way.driver.others')}>{others.map(row)}</ManageGroup> : null}
       {rest.length > 0 || requested.length === 0 ? (
-        <Section
-          header={t('bookings.passengers')}
-          footer={bookings.length === 0 ? t('bookings.none') : undefined}
-        >
+        <ManageGroup title={t('bookings.passengers')}>
+          {bookings.length === 0 ? <ManageRow icon="passengers" title={t('bookings.none')} /> : null}
           {rest.map(row)}
-        </Section>
+        </ManageGroup>
       ) : null}
     </>
   );
 }
 
 // The team looks at the bookings of any trip (G08): read only.
-export function TeamTripBookings({ tripId }: { readonly tripId: string }) {
+export function TeamTripBookings({
+  tripId,
+  onPerson,
+}: {
+  readonly tripId: string;
+  readonly onPerson: Props['onPerson'];
+}) {
   const { bookings } = useApiClients();
   const { value } = useLoad(() => bookings.tripBookings(tripId));
-  return value ? <TripBookings bookings={value} /> : null;
+  return value ? <TripBookings bookings={value} onPerson={onPerson} /> : null;
 }

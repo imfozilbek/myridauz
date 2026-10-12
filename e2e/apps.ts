@@ -83,7 +83,8 @@ export const TEXT = {
   pendingRequests: t('drivers.status.pending.requests'),
   pricing: t('pricing.title'),
   editFormula: t('pricing.edit'),
-  preview: t('pricing.preview'),
+  rate: t('pricing.ratePerKm'),
+  newPrices: t('pricing.previewTitle'),
   plateMatches: t('moderation.plateCheck.approve'),
   decided: t('moderation.decided'),
 };

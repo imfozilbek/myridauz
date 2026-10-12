@@ -96,16 +96,3 @@
   font-size: 13.7px;
   margin-left: -0.8px;
 }
-
-/* A face without a photo: light from the bottom right (mockup g63/4 screen 13). */
-.meet-who .profile-empty {
-  flex: none;
-  background: linear-gradient(135deg, var(--reg-off), var(--reg-bg));
-}
-
-/* The person icon of a face without a photo is smaller here (mockup g63/4 screen 13). */
-.meet-who .profile-empty svg {
-  width: 28px;
-  height: 28px;
-  margin-top: 1.6px;
-}

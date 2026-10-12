@@ -1,6 +1,7 @@
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openRequests, publishButton, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -23,6 +24,7 @@ test('driver: main screen and a new trip', async ({ page }) => {
 
 test('passenger: main screen and the search', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   const shot = shooter(page, 'trip-search');
@@ -44,11 +46,10 @@ test('admin: main screen and prices', async ({ page }) => {
   await expect(page.getByText(TEXT.editFormula)).toBeVisible();
   await shot('3-prices');
   await page.getByText(TEXT.editFormula).click();
-  await page.getByRole('spinbutton').first().fill('320');
+  await page.getByLabel(TEXT.rate).fill('320');
+  // The new prices show on the same screen (G78 sheet 4).
+  await expect(page.getByText(TEXT.newPrices)).toBeVisible();
   await shot('4-edit');
-  await page.locator('#tg-main-button').click();
-  await expect(page.getByText('→').first()).toBeVisible();
-  await shot('5-preview');
 });
 
 test('driver: looks around while the application is checked', async ({ page }) => {

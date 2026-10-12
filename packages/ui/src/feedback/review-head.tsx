@@ -16,6 +16,8 @@ export function ReviewHead({
 }) {
   const { t } = useI18n();
   const driver = booking?.trip.driver;
+  // The face of the one rated: the driver of the trip, or the passenger of the booking.
+  const photo = target.rateeRole === 'driver' ? driver?.hasAvatar : booking?.passenger.hasAvatar;
   const car =
     target.rateeRole === 'driver' && driver
       ? `${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`
@@ -25,9 +27,9 @@ export function ReviewHead({
       <PersonBadge
         id={target.rateeId}
         name={target.rateeName}
-        hasAvatar={driver?.hasAvatar ?? false}
+        hasAvatar={photo ?? false}
         size={PHOTO}
-        plain
+        role={target.rateeRole}
       />
       <span className="review-head-text">
         <b>{target.rateeName}</b>

@@ -81,16 +81,37 @@ describe('«Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6)
     expect(rows()).toHaveLength(3);
   });
 
-  it('keeps the trips that are over on «Oʻtgan»', async () => {
+  // G78 sheet 3: a past trip is the row of «Faol», in the words of its card.
+  it('keeps the trips that are over on «Oʻtgan» in rows', async () => {
     open();
     await tap('Oʻtgan');
-    await waitFor(() => expect(document.querySelectorAll('.trip-card')).toHaveLength(1));
-    expect(rows()).toHaveLength(0);
+    await waitFor(() => expect(rows()).toHaveLength(1));
+    expect(screen.getByText('Uyingizdan yoki Qoʻyliq pitagidan · 95 000')).toBeTruthy();
+    expect(screen.queryByText('Oʻtgan safar yoʻq')).toBeNull();
+  });
+
+  // G78 sheet 3: an empty tab says so in a row; the rest stays under it.
+  it('says «Faol safar yoʻq» and «Oʻtgan safar yoʻq» in a row', async () => {
+    open([done]);
+    expect(await screen.findByText('Faol safar yoʻq')).toBeTruthy();
+    expect(screen.getByText('Ertaga shu safar')).toBeTruthy();
+    cleanup();
+    open([trip]);
+    await tap('Oʻtgan');
+    expect(await screen.findByText('Oʻtgan safar yoʻq')).toBeTruthy();
+    expect(screen.getByText('Obunalar')).toBeTruthy();
+  });
+
+  it('an empty list publishes a trip (G78 sheet 3)', async () => {
+    open([]);
+    expect(await screen.findByText('Hali safarlaringiz yoʻq')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Safar eʼlon qilish' }));
+    expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
 
   it('«Ertaga shu safar» repeats the last trip tomorrow at its time on the publishing', async () => {
-    // Under the limit of live trips (G38): the publishing opens, not the limit.
-    open([trip, done]);
+    // No live trip (one at a time, docs/172): the publishing opens, not the limit.
+    open([done]);
     const again = (await screen.findByText('Ertaga shu safar')).closest('button') as HTMLElement;
     expect(within(again).getByText('Chilonzor → Fargʻona · 08:00')).toBeTruthy();
     fireEvent.click(again);
@@ -99,8 +120,12 @@ describe('«Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6)
     expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
   });
 
-  it('offers no repeat while no trip has left yet', async () => {
+  it('offers no repeat while no trip has left yet, nor while a trip is live (docs/172)', async () => {
     open([trip]);
+    await screen.findByText('Faol (1)');
+    expect(screen.queryByText('Ertaga shu safar')).toBeNull();
+    cleanup();
+    open([trip, done]);
     await screen.findByText('Faol (1)');
     expect(screen.queryByText('Ertaga shu safar')).toBeNull();
   });

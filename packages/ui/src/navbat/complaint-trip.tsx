@@ -11,7 +11,6 @@ import { useDirectory } from '../places/use-directory';
 import type { PlaceDirectory } from '../places/directory';
 
 const FACE = 38;
-const LETTER = 16;
 const STATE: Record<Trip['status'], TranslationKey> = {
   active: 'market.status.open',
   full: 'market.status.full',
@@ -45,14 +44,7 @@ function TripCard({ trip, directory }: { readonly trip: Trip; readonly directory
     <div className="case-card case-trip">
       <span className="case-trip-pill">{t('home.meta', { when, more: t(STATE[trip.status]) })}</span>
       <span className="case-trip-who">
-        <PersonBadge
-          id={driver.id}
-          name={driver.firstName}
-          hasAvatar={false}
-          size={FACE}
-          letter={LETTER}
-          plain
-        />
+        <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={false} size={FACE} role="driver" />
         <span className="navbat-words">
           <b className="case-trip-name">
             {to ? t('home.meta', { when: driver.firstName, more: names.toward(to) }) : driver.firstName}

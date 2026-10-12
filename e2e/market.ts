@@ -40,9 +40,9 @@ export async function publishTrip(page: Page, shot: Shot = none) {
   await expect(mainButton).toHaveText(TEXT.publish);
   await shot('2-publish');
   await page.getByText(t('market.rule.title')).click();
-  await page.getByText(t('market.rule.seatsOrCar')).click();
   await shot('3-rule');
-  await mainButton.click();
+  // A tap on a card chooses it and comes back to the form (G78 В14).
+  await page.getByText(t('market.rule.seatsOrCar')).click();
   await expect(mainButton).toHaveText(TEXT.publish);
   await mainButton.click();
   await expect(page.getByText(TEXT.tripOpened)).toBeVisible();
@@ -50,13 +50,12 @@ export async function publishTrip(page: Page, shot: Shot = none) {
 }
 
 // The passenger's search (G59, docs/118 path 2): «Qayerdan» is asked only when the place of the person
-// is unknown, then Chilonzor (Toshkent shahri); «Qayerga borasiz?» comes after it.
+// is unknown, then Toshkent shahri whole in one tap (G78 П9); «Qayerga borasiz?» comes after it.
 export async function fromIfAsked(page: Page) {
   const asked = page.getByText(TEXT.fromTitle);
   await expect(asked.or(page.getByText(TEXT.directions))).toBeVisible();
   if (!(await asked.isVisible())) return;
   await page.getByAltText('Toshkent shahri').click();
-  await page.getByText('Chilonzor').click();
 }
 
 // Samarqand shahri by «Boshqa joy: tuman yoki shahar», then the trips of the nearest day with trips.
@@ -85,10 +84,10 @@ export async function findTrips(page: Page, shot: Shot = none) {
 }
 
 // A trip of «Mening safarlarim» of a driver (G64, mockup g64/6): a live one from its row, an over
-// one from «Oʻtgan».
+// one from its row on «Oʻtgan» (G78 sheet 3).
 export async function openOwnTrip(page: Page) {
   const live = page.locator('.driver-trip');
   await page.locator('.market-tabs').waitFor();
   if ((await live.count()) === 0) await page.getByText(t('bookings.tab.past')).click();
-  await page.locator('.driver-trip, .trip-card').first().click();
+  await page.locator('.driver-trip').first().click();
 }

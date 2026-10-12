@@ -13,22 +13,8 @@
   line-height: 26px;
 }
 
-.board .day-counts {
-  grid-auto-columns: calc((100% - 14.67px) / 3);
-  gap: 7.33px;
+.board .week-row {
   margin: 6.67px 12px 10.67px;
-}
-
-.board .day-count {
-  height: 46.67px;
-}
-
-.board .day-count-name {
-  font-size: clamp(11.5px, 3.611vw, 13px);
-}
-
-.board .day-count-trips {
-  font-size: clamp(11px, 3.334vw, 12px);
 }
 
 .board-trip {
@@ -65,4 +51,21 @@
   line-height: 14px;
   text-transform: uppercase;
   color: var(--reg-muted);
+}
+
+/* A live trip of the driver (owner decision 12.10.2026, sheet 7-edits-1): a new offer waits. */
+.board-busy {
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention-ink);
+  font-size: 13px;
+  line-height: 17px;
+}
+
+/* «Xabar bering» under the words of an empty day, as wide as they are (G78 sheet 3). */
+.board .empty-state .way-row {
+  width: 100%;
+  margin-top: 14px;
 }

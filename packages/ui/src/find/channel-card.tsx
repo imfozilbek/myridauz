@@ -5,6 +5,7 @@ import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
 import { useRegionArt } from '../places/region-art';
 import { openInTelegram } from '../telegram/feedback';
+import { WayRow } from './way-row';
 
 type Props = {
   readonly channel: BrandChannel;
@@ -30,16 +31,30 @@ export function ChannelCard({ channel, region, onClose }: Props) {
           <Icon name="close" size={18} />
         </button>
       </div>
-      <button
-        type="button"
-        className="channel-card-join"
-        onClick={() => {
-          openInTelegram(`https://t.me/${channel.username}`);
-          onClose();
-        }}
-      >
+      <button type="button" className="channel-card-join" onClick={() => join(channel, onClose)}>
         {t('find.channelJoin')}
       </button>
     </div>
+  );
+}
+
+// Joined: it never comes again.
+function join(channel: BrandChannel, onClose: () => void) {
+  openInTelegram(`https://t.me/${channel.username}`);
+  onClose();
+}
+
+// The channel as a row of the empty day (G78 sheet 2): the picture of the zone, one tap joins.
+export function ChannelRow({ channel, region, onClose }: Props) {
+  const { t } = useI18n();
+  const { name } = useBrand();
+  const art = useRegionArt()(region?.id ?? '');
+  return (
+    <WayRow
+      icon={art ? { src: art, alt: channel.title } : 'channel'}
+      title={t('find.channel', { brand: name, zone: channel.title })}
+      hint={t('find.channelHint', { zone: channel.title })}
+      onClick={() => join(channel, onClose)}
+    />
   );
 }

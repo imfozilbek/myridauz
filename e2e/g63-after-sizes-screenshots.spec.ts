@@ -35,7 +35,7 @@ for (const width of WIDTHS) {
     await look(page, 'past', width);
   });
 
-  test(`${width}px: «Safar tugadi» and «Qaytish» fit (docs/121)`, async ({ page }) => {
+  test(`${width}px: «Safar tugadi» with the way back fits (docs/121, G78 В10 A)`, async ({ page }) => {
     await page.setViewportSize({ width, height: HEIGHT });
     const trip = mockupTrip({ price: 100000 });
     const seats = [seat(trip, '1', 'Madina', 2), seat(trip, '3', 'Sardor', 1)];
@@ -45,10 +45,7 @@ for (const width of WIDTHS) {
     await expect(page.getByText(t('driverAfter.done.rate'))).toBeVisible();
     await nothingCut(page);
     await oneSize(page, '.trip-end-stars button');
-    await look(page, 'done', width);
-    await page.locator('#tg-main-button').click();
     await expect(page.getByText(t('driverAfter.back.title'))).toBeVisible();
-    await nothingCut(page);
-    await look(page, 'back', width);
+    await look(page, 'done', width);
   });
 }

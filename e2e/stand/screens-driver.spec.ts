@@ -1,24 +1,26 @@
 import { expect, test } from '../crash-guard';
-import { book, CHILONZOR, publishTrip } from './market-kit';
-import { askRide, confirmedSeat, dayAfterTomorrow, SAMARQAND, TO_SAMARQAND } from './g27-kit';
+import { book } from './market-kit';
+import { askRide, confirmedSeat, TO_SAMARQAND } from './g27-kit';
 import { MALIKA, OYBEK, ROZA } from './people';
 import { passConsent } from '../registration';
 import { NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
+import { register } from './seed';
 import { outsideCalls, type Person } from './stand-kit';
 
-// The screens of a driver (docs/78) for the UX review: a newcomer, and an approved driver with a
-// confirmed seat, a waiting request of a seat and a request of a passenger on the route.
+// The screens of a driver (docs/78) for the UX review: a newcomer, and an approved driver with one
+// live trip (docs/172): a confirmed seat, a waiting request of a seat and a request of a passenger
+// on the route.
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
 const NEWCOMER: Person = { id: 900503, name: 'Sherzod', phone: '998901110503' };
+const ASKING: Person = { id: 900708, name: 'Hilola', phone: '998901110708' };
 
 test.beforeAll(async () => {
-  await confirmedSeat(OYBEK, MALIKA);
-  const trip = await publishTrip(OYBEK, CHILONZOR, SAMARQAND, 'door');
+  const { trip } = await confirmedSeat(OYBEK, MALIKA);
   await book(ROZA, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
-  // Roza asks for tomorrow in driver-account: here another day (G37, docs/101 R5).
-  await askRide(ROZA, dayAfterTomorrow());
+  await register('passenger', ASKING, 'female');
+  await askRide(ASKING);
 });
 
 test('a newcomer: welcome and the way to become a driver', async ({ page }) => {

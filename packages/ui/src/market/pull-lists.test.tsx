@@ -67,6 +67,8 @@ const DATA: Record<string, unknown> = {
     fits: [],
     others: [],
     carSeats: 4,
+    busy: false,
+    notify: null,
   },
 };
 

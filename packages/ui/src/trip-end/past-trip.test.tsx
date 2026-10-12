@@ -32,9 +32,10 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
     expect(screen.getByText(/^Kelmadi · qaytarish 9.500 kutilmoqda$/u)).toBeTruthy();
     expect(screen.getByText(/^Hamma joy band · 95.000$/u)).toBeTruthy();
     expect(screen.getByText('Safardan keyin')).toBeTruthy();
-    // As on the mockup: the stars keep their six days though Madina is rated, so does the complaint.
-    expect(screen.queryByText('Hammasi baholandi')).toBeNull();
-    expect(screen.getAllByText('6 kun qoldi')).toHaveLength(2);
+    // Madina, the only one who rode, is rated: the stars row only says so (G78 В17); the complaint
+    // keeps its six days.
+    expect(screen.getByText('Hammasi baholandi')).toBeTruthy();
+    expect(screen.getAllByText('6 kun qoldi')).toHaveLength(1);
     expect(screen.getByText(/^Yozish mumkin: ertaga /u)).toBeTruthy();
     // What stays taken, then what may come back (mockup: «18 000 yechildi · 9 000 qaytishi mumkin»).
     expect(screen.getByText(/^19.000 yechildi · 9.500 qaytishi mumkin$/u)).toBeTruthy();
@@ -75,10 +76,8 @@ describe('the past trip of the driver (docs/129, mockup g63/5 phone 5)', () => {
     expect(onPublish.mock.calls[0]?.[0].route.from.id).toBe(trip.to);
     await tap('Yoʻlovchilarni baholash');
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    // «Yuborish» comes back to the past trip with the stars just given (G78 В10 A).
     await tap('Yuborish');
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
-    // «Назад» of «Qaytish» comes back to the past trip with the stars just given.
-    await tap('Orqaga');
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
   });
 

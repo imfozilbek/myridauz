@@ -22,6 +22,9 @@ type PlacePickerProps = {
   readonly directory: PlaceDirectory;
   // A passenger may search in a whole region; a trip always goes to a district or a city.
   readonly allowWholeRegion: boolean;
+  // The «Qayerdan» of a passenger takes a city that is a region whole in one tap: the point of the
+  // seat tells the district later (G78 П9). A trip of a driver needs its district.
+  readonly cityAtOnce?: boolean;
   readonly onPick: (place: Location) => void;
   readonly onBack: () => void;
   // «Samarqandning qaysi joyi?»: the places of one region at once (G59).
@@ -35,6 +38,7 @@ export function PlacePicker({
   title,
   directory,
   allowWholeRegion,
+  cityAtOnce = false,
   onPick,
   onBack,
   region: open,
@@ -49,7 +53,7 @@ export function PlacePicker({
   const [query, setQuery] = useState('');
   const pick = (place: Location) => {
     haptic.select();
-    if (place.parentId !== null) return onPick(place);
+    if (place.parentId !== null || (cityAtOnce && place.oneCity)) return onPick(place);
     setQuery('');
     setRegion(place);
   };
@@ -84,7 +88,9 @@ export function PlacePicker({
           onWhole={() => onPick(region)}
         />
       ) : null}
-      {!results && !region ? <RegionGrid regions={directory.regions} onOpen={pick} /> : null}
+      {!results && !region ? (
+        <RegionGrid regions={directory.regions} cityAtOnce={cityAtOnce} onOpen={pick} />
+      ) : null}
     </div>
   );
 }

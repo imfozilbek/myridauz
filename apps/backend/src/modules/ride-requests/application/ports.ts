@@ -52,11 +52,17 @@ export type RequestsDeps = {
   // and the nearest live trip with free seats with the stops of its passengers (docs/70).
   readonly board: {
     directions(driverId: number): Promise<readonly { readonly from: string; readonly to: string }[]>;
+    // The routes the driver is subscribed to already (docs/24): «Xabar bering» is not offered again.
+    subscribed(driverId: number): Promise<readonly { readonly from: string; readonly to: string }[]>;
     trip(driverId: number): Promise<{ readonly trip: Trip; readonly stops: Stops } | null>;
+    // A live trip of the driver, one at a time (docs/172).
+    busy(driverId: number): Promise<boolean>;
   };
   // The ratings of passengers on the cards of drivers (G64, docs/24).
   readonly ratings: (userIds: readonly number[]) => Promise<ReadonlyMap<number, Rating>>;
-  // The open requests and their seats, the days ahead (brand with the owner's values, docs/128 §4).
+  // A passenger with a seat leaves no request: one at a time (owner decision 12.10.2026, docs/172).
+  readonly seatHeld: (passengerId: number) => Promise<boolean>;
+  // The seats of a request, the days ahead (brand with the owner's values, docs/128 §4).
   readonly limits: Pick<BrandConfig, 'requests' | 'schedule'>;
   readonly newId: () => string;
   readonly now: () => number;

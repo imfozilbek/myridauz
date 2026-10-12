@@ -11,7 +11,7 @@ import type { AfterRow } from './after-rows';
 import { PastTripPage } from './past-trip-page';
 import type { ReturnTrip } from './return-plan';
 import { RiderPick } from './rider-pick';
-import { TripEndFlow } from './trip-end-flow';
+import { TripDoneScreen } from './trip-done-screen';
 import { taken } from './trip-sums';
 
 type About = 'talk' | 'complain';
@@ -54,10 +54,17 @@ export function PastTripFlow({ trip, bookings, onBack, onChanged, onPublish }: P
         onBack={back}
       />
     );
-  if (opened?.screen === 'complain') return <ComplaintScreen bookingId={opened.booking.id} onBack={back} />;
+  if (opened?.screen === 'complain')
+    return <ComplaintScreen bookingId={opened.booking.id} onBack={back} onSent={back} />;
   if (opened?.screen === 'rate')
     return (
-      <TripEndFlow trip={trip} bookings={bookings} onPublish={onPublish} onClose={back} onRated={onChanged} />
+      <TripDoneScreen
+        trip={trip}
+        bookings={bookings}
+        onPublish={onPublish}
+        onClose={back}
+        onRated={onChanged}
+      />
     );
   if (opened?.screen === 'wallet') return <WalletScreen onBack={back} />;
   const row = (picked: AfterRow) => {

@@ -20,6 +20,8 @@ export async function openRuleStep(page: Page) {
   await chooseRoute(page);
   await page.getByText(t('market.rule.title')).click();
   await page.getByText(t('market.rule.seatsOrCar')).click();
+  // The tap comes back to the form (G78 В14): the rule opens again with its card chosen.
+  await page.getByText(t('market.rule.title')).click();
   await expect(page.locator('.rule-card-on')).toContainText(t('market.rule.seatsOrCar'));
   await page.mouse.move(0, 0);
 }

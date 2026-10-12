@@ -34,7 +34,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     tripDays: NOT_USED,
     myTrips: NOT_USED,
     publishTrip: NOT_USED,
-    schedule: async () => ({ windows: [], full: false }),
+    schedule: async () => ({ full: false }),
     cancelTrip: NOT_USED,
     retimeTrip: NOT_USED,
     lowerTripPrice: NOT_USED,

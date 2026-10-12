@@ -76,7 +76,7 @@ describe('a booking of seats (docs/35)', () => {
     expect(balanceOf(await wallet(), 'bonus')).toBe(500_000);
   });
 
-  it('keeps the limits: not the own trip, free seats, one per trip, 3 waiting at once', async () => {
+  it('keeps the limits: not the own trip, free seats, one seat at a time (docs/172)', async () => {
     const { deps, addTrip } = setup();
     const tripId = addTrip();
     expect(await requestBooking(deps, DRIVER, tripId, seats(1))).toEqual({
@@ -92,12 +92,20 @@ describe('a booking of seats (docs/35)', () => {
       ok: false,
       error: 'bookings.wrong_status',
     });
-    value(await requestBooking(deps, OLIM, addTrip(), seats(1)));
-    value(await requestBooking(deps, OLIM, addTrip(), seats(1)));
     expect(await requestBooking(deps, OLIM, addTrip(), seats(1))).toEqual({
       ok: false,
       error: 'bookings.too_many',
     });
+  });
+
+  // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both.
+  it('closes the open request when the passenger asks a seat, frees her when the ask is refused', async () => {
+    const { deps, addTrip, addRequest } = setup();
+    const requestId = addRequest();
+    const asked = value(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
+    expect((await deps.requests.find(requestId))?.open).toBe(false);
+    await answer(deps, DRIVER, asked.id, 'decline');
+    value(await requestBooking(deps, DILNOZA, addTrip(), seats(1)));
   });
 
   it('expires a request without an answer after 24 hours (a night end at 08:00) or at the departure', async () => {

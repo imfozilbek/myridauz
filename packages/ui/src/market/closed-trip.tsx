@@ -18,7 +18,10 @@ export function ClosedTrip({ trip, reason, onOthers }: Props) {
           {t('market.trip.others')}
         </Button>
       ) : null}
-      <NotifyMe from={trip.from} to={trip.to} date={tashkentDate(trip.departAt)} />
+      {/* A row under the button, not a second big button (G78 П13). */}
+      <div className="closed-notify">
+        <NotifyMe from={trip.from} to={trip.to} date={tashkentDate(trip.departAt)} small />
+      </div>
     </>
   );
 }

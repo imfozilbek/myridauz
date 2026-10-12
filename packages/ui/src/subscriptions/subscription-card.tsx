@@ -6,7 +6,7 @@ import { noonOf } from '../market/when';
 import { RowCard } from '../mine/row-card';
 import { useWay } from '../mine/use-way';
 import type { useFailure } from '../states/use-failure';
-import { confirm, haptic } from '../telegram/feedback';
+import { haptic } from '../telegram/feedback';
 
 type CardProps = {
   readonly subscription: Subscription;
@@ -34,9 +34,8 @@ export function SubscriptionCard({ subscription, onChange, onAct, onRemoved }: C
     setBusy(false);
     onChange();
   };
-  // Asked first in the native window; then a short line can bring it back (docs/88 L7, L8).
+  // Gone at once, no question: a short line brings it back by one tap (docs/88 L7, G78 П17).
   const remove = async () => {
-    if (!(await confirm(t('subscriptions.removeAsk'), t('subscriptions.remove')))) return;
     await act(async () => {
       await subscriptions.remove(subscription.id);
       onRemoved();

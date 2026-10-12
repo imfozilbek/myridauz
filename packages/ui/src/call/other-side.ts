@@ -1,9 +1,12 @@
 import type { CarColor, ChatAbout, Rating } from '@platform/contracts';
+import type { FaceRole } from '../find/person-badge';
 
 type Side = {
   readonly id: string;
   readonly firstName: string;
   readonly hasAvatar: boolean;
+  // Whose face it is: the icon of a passenger or of a driver without a photo (docs/172).
+  readonly role: FaceRole;
   // The car with its plate: the passenger sees whom they talk to (mockups g60/2, g64/4).
   readonly car: {
     readonly make: string;
@@ -19,14 +22,14 @@ type Side = {
 // driver. Before a booking, the sides of a talk about a request (G64, docs/118 path 7).
 export function otherSide({ booking, request, role, driver, offer }: ChatAbout): Side | null {
   if (booking) {
-    if (role !== 'passenger') return { ...booking.passenger, car: null, rider: null };
+    if (role !== 'passenger') return { ...booking.passenger, role: 'passenger', car: null, rider: null };
     const { id, firstName, hasAvatar, car } = booking.trip.driver;
-    return { id, firstName, hasAvatar, car: { ...car, plate: booking.plate }, rider: null };
+    return { id, firstName, hasAvatar, role: 'driver', car: { ...car, plate: booking.plate }, rider: null };
   }
   if (!request) return null;
-  if (role === 'driver') return { ...request.passenger, car: null, rider: request };
+  if (role === 'driver') return { ...request.passenger, role: 'passenger', car: null, rider: request };
   const person = driver ?? offer?.driver;
-  return person ? { ...person, rider: null } : null;
+  return person ? { ...person, role: 'driver', rider: null } : null;
 }
 
 export function otherName(about: ChatAbout): string | null {

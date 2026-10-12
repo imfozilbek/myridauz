@@ -78,5 +78,5 @@ test('route: a place is chosen by region photo, search, and a trip inside the ci
   await page.getByPlaceholder(TEXT.otherPlace).fill("farg'ona sh");
   await page.getByText('Fargʻona shahri', { exact: true }).click();
   await expect(page.getByText(TEXT.insideCity)).toBeHidden();
-  await expect(page.getByRole('tab').first()).toBeVisible();
+  await expect(page.locator('.week-day').first()).toBeVisible();
 });

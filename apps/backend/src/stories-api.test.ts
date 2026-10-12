@@ -12,10 +12,13 @@ const jpeg = (size: number) => ({
   headers: { 'content-type': 'image/jpeg' },
 });
 
-// Each trip two days after the one before: the trips of one driver cannot overlap (docs/103).
+// Each trip two days after the one before; a driver has one live trip, so the trip before ends first
+// (docs/172).
 let trips = 0;
+let last: string | null = null;
 async function publishTrip() {
   await approvedDriver(DRIVER);
+  if (last) await call(`/driver/trips/${last}/cancel`, DRIVER, { method: 'POST', app: 'driver' });
   const trip = {
     from: '1726273',
     to: '1718401',
@@ -26,7 +29,9 @@ async function publishTrip() {
     pickupMode: 'door',
     comment: '',
   };
-  return read<{ id: string }>(call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }));
+  const made = await read<{ id: string }>(call('/driver/trips', DRIVER, { app: 'driver', ...json(trip) }));
+  last = made.id;
+  return made;
 }
 
 describe('«Hikoyaga joylash» (docs/88 L19)', { timeout: 20_000 }, () => {

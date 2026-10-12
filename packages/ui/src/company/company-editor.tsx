@@ -3,14 +3,11 @@ import { companyEdition, type Company, type CompanyState } from '@platform/contr
 import { legalCompany, type TranslationKey } from '@platform/i18n';
 import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { StepLayout } from '../account/step-layout';
-import { Banner, Cell, List, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { errorKey } from '../market/error-text';
-import { Screen } from '../screen/screen';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
 import { MainButton } from '../telegram/bottom-button';
 import { haptic } from '../telegram/feedback';
@@ -22,6 +19,7 @@ import {
   type CompanyDraft,
 } from './company-fields';
 import { CompanyHistory } from './company-history';
+import './company.css';
 
 type Props = { readonly loaded: CompanyState; readonly onBack: () => void };
 
@@ -33,8 +31,8 @@ const saveError = (error: unknown): TranslationKey =>
     ? 'errors.company.invalid_input'
     : errorKey(error);
 
-// The form, the live line of the offer and the history (docs/96 T22 … T27). Only the owner saves;
-// a moderator reads the same screen without the button (docs/02).
+// The form in one card, the live line of the offer under it and the history (docs/96 T22 … T27,
+// G78 sheet 5). Only the owner saves; a moderator reads the same screen without the button (docs/02).
 export function CompanyEditor({ loaded, onBack }: Props) {
   const i18n = useI18n();
   const { t } = i18n;
@@ -74,28 +72,29 @@ export function CompanyEditor({ loaded, onBack }: Props) {
   // Live, as typed; with no name yet the documents name the brand (packages/i18n/src/legal.ts).
   const line = draft.legalName.trim() ? legalCompany(i18n, draft) : brand.name;
   return (
-    <StepLayout icon="document" title={t('legal.admin.title')}>
-      <Screen onBack={guard(onBack)} />
+    <ManagePage title={t('legal.admin.title')} onBack={guard(onBack)}>
       {saved ? (
-        <Banner
-          type="section"
-          before={<IconTile name="approved" />}
-          header={t('legal.admin.saved', { version: saved })}
-        />
+        <ManageGroup>
+          <ManageRow icon="approved" tone="success" title={t('legal.admin.saved', { version: saved })} />
+        </ManageGroup>
       ) : null}
-      <List>
+      <ManageGroup>
         <CompanyFields draft={draft} invalid={invalid} onChange={change} />
-        {invalid.includes('stir') ? <Text className="step-error">{t('legal.admin.stirInvalid')}</Text> : null}
-        {invalid.length > 0 && !invalid.includes('stir') ? (
-          <Text className="step-error">{t('errors.company.invalid_input')}</Text>
-        ) : null}
-        {failure ? <Text className="step-error">{t(failure)}</Text> : null}
-        <Section header={t('legal.admin.preview')}>
-          <Cell before={<IconTile name="document" />}>{line}</Cell>
-        </Section>
-        <CompanyHistory history={state.history} />
-      </List>
+      </ManageGroup>
+      {invalid.includes('stir') ? <Text className="step-error">{t('legal.admin.stirInvalid')}</Text> : null}
+      {invalid.length > 0 && !invalid.includes('stir') ? (
+        <Text className="step-error">{t('errors.company.invalid_input')}</Text>
+      ) : null}
+      {failure ? <Text className="step-error">{t(failure)}</Text> : null}
+      <ManageGroup title={t('legal.admin.preview')}>
+        <div className="navbat-row manage-row">
+          <span className="navbat-words">
+            <span className="navbat-hint manage-row-hint company-line">{line}</span>
+          </span>
+        </div>
+      </ManageGroup>
+      <CompanyHistory history={state.history} />
       {dirty ? <MainButton text={t('legal.admin.save')} onClick={save} /> : null}
-    </StepLayout>
+    </ManagePage>
   );
 }

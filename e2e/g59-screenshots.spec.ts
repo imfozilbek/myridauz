@@ -43,7 +43,7 @@ for (const platform of PLATFORMS)
       await shot('02-other-place');
       await page.getByText('Samarqand shahri', { exact: true }).click();
       await expect(page.locator('.search-trip').first()).toBeVisible();
-      await oneSize(page, '.day-count');
+      await oneSize(page, '.week-day');
       await shot('03-trips');
       await page.locator('.search-trip').first().click();
       await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
@@ -60,7 +60,7 @@ for (const platform of PLATFORMS)
       await mainButton(page)
         .filter({ hasText: t('way.point.takeFrom') })
         .click();
-      await page.getByText(t('way.book.dropoff')).click();
+      // The map of the end opens by itself right after the start (G78 П4).
       await mapDrawn(page);
       await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
       await page.getByText('Registon maydoni', { exact: true }).click();

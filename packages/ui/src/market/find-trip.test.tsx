@@ -21,17 +21,20 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
       <FindTripFlow onBack={() => undefined} />,
       testClients({ market: { ...searchMarket([0, 3]), searchTrips } }),
     );
+    // Toshkent shahri says «Butun shahar» and is taken whole in one tap (G78 П9).
+    expect(await screen.findByText('Butun shahar')).toBeTruthy();
     await tap('Toshkent shahri');
-    await tap('Chilonzor');
     // «Qayerdan» in one line, the card of the region with its trips and «… soʻmdan».
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.getByText(/^Chilonzor/u)).toBeTruthy();
+    expect(screen.getByText(/^Toshkentdan/u)).toBeTruthy();
     expect(screen.getByText('Bugun 2 ta, ertaga 5 ta safar')).toBeTruthy();
     await tap('Fargʻona');
-    // Today has no trips: the list opens on tomorrow, every day says how many it has.
+    // Today has no trips: the list opens on tomorrow; a day with trips has its dot (docs/172).
     expect(await screen.findByText(/^Jasur ★/u)).toBeTruthy();
-    expect(screen.getByRole('tab', { name: /Ertaga\s*3 ta/u, selected: true })).toBeTruthy();
-    expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726269', to: '1730' });
+    expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
+    expect(document.querySelectorAll('.week-day')[1]?.querySelector('.week-dot-none')).toBeNull();
+    expect(document.querySelectorAll('.week-day')[0]?.querySelector('.week-dot-none')).not.toBeNull();
+    expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730' });
     // A whole region: its district is chosen by a link under the list.
     expect(screen.getByText('Fargʻonaning qaysi joyi? Tuman tanlash')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /Mashinada ayol bor/u }));
@@ -49,11 +52,15 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     );
     await findRoute();
     await waitFor(() => expect(searchTrips).toHaveBeenCalled());
-    expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726269', to: '1730401' });
-    // No trips: the three ways to know about a new one.
+    expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730401' });
+    // No trips: the sign and the ways to know about a new one in one card, rows of one kind (G78).
     expect(await screen.findByText('Hozircha safar yoʻq')).toBeTruthy();
-    expect(screen.getByText('Xabar bering')).toBeTruthy();
-    expect(screen.getByText('Soʻrov qoldirish')).toBeTruthy();
+    const rows = [...document.querySelectorAll('.learn-one > .way-row .way-row-title')];
+    expect(rows.map((row) => row.textContent).filter((title) => !title?.endsWith('kanali'))).toEqual([
+      'Hozircha safar yoʻq',
+      'Xabar bering',
+      'Soʻrov qoldirish',
+    ]);
   });
 
   it('books 2 seats: «Jami» counts them, then the points and at once the waiting booking', async () => {

@@ -20,6 +20,13 @@
   margin-top: 11.28px;
 }
 
+/* A face without a photo stands on the line as a photo does (G78 sheet 2): the icon out of the flow
+   leaves the badge no baseline but its bottom, so the sheet is as high with the icon as with a photo;
+   the icon stays in the middle of the badge. */
+.action-sheet .sheet-face .person-badge svg {
+  position: absolute;
+}
+
 /* «1 / 3» at the top right while more things wait (mockup g68/7 screen 5). */
 .action-count {
   position: absolute;

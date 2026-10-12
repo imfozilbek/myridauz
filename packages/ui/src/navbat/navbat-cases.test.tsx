@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { sheetClosed } from '../home/sheet-closed';
 import { COMPLAINT, COMPLAINT_DETAIL, KAMOLA, MADINA, renderNavbat } from './navbat-test-kit';
 
 afterEach(cleanup);
@@ -8,7 +9,8 @@ URL.revokeObjectURL = vi.fn();
 
 // The cases of «Navbat» other than an application (G75, docs/120, mockup g67/2 screens 4 and 5).
 describe('the cases of «Navbat»', () => {
-  it('checks a face photo by 3 points and refuses it by the first point not ticked', async () => {
+  // «Mos emas» at each point refuses the photo for that point in one tap (G78 К1).
+  it('checks a face photo by 3 points and refuses it by the «Mos emas» of one', async () => {
     const decideFace = vi.fn(async () => undefined);
     renderNavbat({ filter: 'face', kind: 'face', id: MADINA.id }, [MADINA], {
       moderation: { facePhoto: async () => new Blob(['x']), decideFace },
@@ -18,9 +20,9 @@ describe('the cases of «Navbat»', () => {
     const face = screen.getByRole('checkbox', { name: 'Yuz aniq koʻrinadi' });
     fireEvent.click(face);
     expect(face.getAttribute('aria-checked')).toBe('true');
-    fireEvent.click(screen.getByText('Mos emas: sababi'));
-    expect(await screen.findByText('Rasm nimasi bilan mos emas?')).toBeTruthy();
-    fireEvent.click(screen.getByText('Rasmda bitta odam emas'));
+    expect(screen.getAllByText('Mos emas')).toHaveLength(3);
+    const one = screen.getByRole('group', { name: 'Bitta odam' });
+    fireEvent.click(within(one).getByText('Mos emas'));
     expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
     expect(decideFace).toHaveBeenCalledWith(MADINA.id, { action: 'reject', reason: 'not_one_person' });
   });
@@ -40,6 +42,7 @@ describe('the cases of «Navbat»', () => {
     vi.unstubAllGlobals();
     expect(await screen.findByText('Bloklandi')).toBeTruthy();
     expect(decide).toHaveBeenCalledWith('c1', { action: 'block', days: 7, refund: false });
+    await sheetClosed();
   });
 
   it('answers a question of support: the talk, «Blok haqida» and the answer from the bot', async () => {

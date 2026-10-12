@@ -1,0 +1,4 @@
+/* The line of the offer as the documents print it (G78 sheet 5): the hint of a row, in black. */
+.company-line {
+  color: var(--reg-ink);
+}

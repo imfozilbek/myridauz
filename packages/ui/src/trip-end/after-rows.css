@@ -33,6 +33,11 @@ button.past-after-row {
   color: var(--reg-muted);
 }
 
+/* «Hammasi baholandi»: done, green as the tag of «Oʻtgan» (G78 В17, mockup 5-steps-driver). */
+.past-after-text span[data-done] {
+  color: var(--reg-success-deep);
+}
+
 /* The small chevron is as bold as the sign «›» of the mockup g63/5 phone 5. */
 .past-after-row > svg {
   flex: none;

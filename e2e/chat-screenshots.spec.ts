@@ -47,6 +47,10 @@ test('passenger: Yetib keldim and stop sharing', async ({ page }) => {
 test('driver: the chat of a booking', async ({ page }) => {
   const { published, trip } = await mockApi(page, 'active');
   published.push(trip);
+  // A confirmed seat opens its page with the chat; a request opens the sheet of G68 (G78 sheet 3).
+  await page.route('**/api/driver/bookings', (route) =>
+    route.fulfill({ json: { bookings: [{ ...confirmed, trip }] } }),
+  );
   const shot = shooter(page, 'driver-chat');
   await open(page, appUrl(DRIVER.port));
   await page.getByText(t('common.myTrips')).click();

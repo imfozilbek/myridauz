@@ -1,7 +1,7 @@
 import { NAVBAT_KINDS, type Navbat } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
 import type { NavbatFilter } from '../flow/start-action';
-import { haptic } from '../telegram/feedback';
+import { ManageChips } from '../manage/manage-chips';
 
 type ChipsProps = {
   readonly counts: Navbat['counts'];
@@ -20,22 +20,18 @@ export function NavbatChips({ counts, value, onChange }: ChipsProps) {
     ...kinds.map((kind) => ({ id: kind, count: counts[kind] })),
   ];
   return (
-    <div className="navbat-chips" role="radiogroup" aria-label={t('team.section.navbat')}>
-      {chips.map(({ id, count }) => (
-        <button
-          key={id}
-          type="button"
-          role="radio"
-          aria-checked={id === value}
-          className={id === value ? 'navbat-chip navbat-chip-on' : 'navbat-chip'}
-          onClick={() => {
-            haptic.select();
-            onChange(id);
-          }}
-        >
-          {t(`team.filter.${id}`)} <b>{count}</b>
-        </button>
-      ))}
-    </div>
+    <ManageChips
+      label={t('team.section.navbat')}
+      chips={chips.map(({ id, count }) => ({
+        id,
+        label: (
+          <>
+            {t(`team.filter.${id}`)} <b>{count}</b>
+          </>
+        ),
+      }))}
+      value={value}
+      onChange={onChange}
+    />
   );
 }

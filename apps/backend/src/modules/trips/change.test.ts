@@ -5,8 +5,6 @@ import { publishTrip } from './application/publish';
 import { HOUR, NOW, setup } from './test-kit';
 
 const MINUTE = HOUR / 60;
-// The way back has no pitak in the kit: its trip takes people at the door (docs/70).
-const BACK = { from: '1718401', to: '1726273', pickupMode: 'door' } as const;
 
 async function published(later = 0) {
   const kit = setup();
@@ -30,16 +28,6 @@ describe('a driver moves the time later (G39, docs/104, 8)', () => {
     expect(await retimeTrip(deps, 2, id, trip.departAt + 40 * MINUTE)).toEqual({
       ok: false,
       error: 'trips.not_found',
-    });
-  });
-
-  it('refuses a time the driver cannot make before the next trip (docs/103)', async () => {
-    const { deps, trip, id } = await published();
-    // The way back leaves at the earliest: arrival after 5 hours and 2.5 hours to gather people.
-    await publishTrip(deps, 1, { ...trip, ...BACK, departAt: trip.departAt + 7.5 * HOUR });
-    expect(await retimeTrip(deps, 1, id, trip.departAt + 30 * MINUTE)).toEqual({
-      ok: false,
-      error: 'trips.busy',
     });
   });
 });

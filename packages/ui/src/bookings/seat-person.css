@@ -1,0 +1,36 @@
+/* The passenger of a seat (G78 sheet 3, d-seat): the values of the mockup at 360 px. */
+.seat-seats {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: normal;
+  color: var(--tgui--hint_color);
+}
+
+.seat-state {
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.seat-state-done {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+.seat-state-asked {
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention);
+}
+
+.seat-state-over {
+  background: var(--reg-off);
+  color: var(--reg-neutral-pale-text);
+}
+
+/* The state stands 14 px from the edge of the card, as in the mockup. */
+.market .seat-person {
+  padding-right: 14px;
+}

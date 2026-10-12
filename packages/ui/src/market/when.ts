@@ -19,6 +19,17 @@ export function useDayLabel() {
   };
 }
 
+// "Bugun", "Kecha", else "10-oktabr": a day already passed, the title of a day of «Jurnal» (G78 sheet 5).
+export function usePastDay() {
+  const { t, formatDate } = useI18n();
+  return (date: string, now: number) =>
+    date === today(now)
+      ? t('market.day.today')
+      : date === tashkentDate(now - DAY_MS)
+        ? t('bookings.past.yesterday')
+        : formatDate(noonOf(date));
+}
+
 // "Bugun", "Ertaga", else "3-oktabr": the day of a request on one line (G61, mockups 1-request, 3-offers).
 export function useShortDay() {
   const { t, formatDate } = useI18n();

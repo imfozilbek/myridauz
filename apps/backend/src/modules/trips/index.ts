@@ -7,7 +7,7 @@ import { realPrices } from './application/prices';
 import { cancelTrip, MY_TRIPS_LIMIT, teamTrips } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
-import { scheduleError } from './application/schedule';
+import { driverSchedule, scheduleError } from './application/schedule';
 import { tripsDeps } from './deps';
 import { progressRoutes } from './http/progress-routes';
 import { tripRoutes } from './http/trip-routes';
@@ -72,11 +72,11 @@ export const lastTripPrice = async (env: Bindings, driverId: number) =>
 export const driverTripIds = async (env: Bindings, driverId: number) =>
   (await tripsDeps(env).trips.byDriver(driverId)).map((trip) => trip.id);
 // An offer becomes a trip when it is accepted: the driver hears the schedule now (docs/103).
-export const scheduleErrorFor = (
-  env: Bindings,
-  driverId: number,
-  trip: { from: string; to: string; departAt: number; km: number },
-) => scheduleError(tripsDeps(env), driverId, trip);
+export const scheduleErrorFor = (env: Bindings, driverId: number, departAt: number) =>
+  scheduleError(tripsDeps(env), driverId, departAt);
+// A live trip of the driver: one at a time, the board offers only to it (docs/172).
+export const driverBusy = async (env: Bindings, driverId: number) =>
+  (await driverSchedule(tripsDeps(env), driverId)).full;
 export const tripViewsOf = async (env: Bindings, ids: readonly string[]) => {
   const deps = tripsDeps(env);
   const found = await Promise.all(ids.map((id) => deps.trips.find(id)));

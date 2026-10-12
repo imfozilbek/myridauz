@@ -61,14 +61,13 @@ for (const platform of PLATFORMS)
     await visit(page, platform, t('common.admin.statistics'), 'ta32-stats');
     await open(page, platform, t('pricing.title'), 'ta33-pricing');
     await open(page, platform, t('pricing.edit'), 'ta34-pricing-edit');
-    await open(page, platform, t('pricing.preview'), 'ta35-pricing-preview');
   });
 
 // Each tool from «Boshqaruv» on its own page: «Back» from a tool goes to the main screen.
 const tools: readonly [string, string, string, string][] = [
   [t('manage.people'), 'ta47-people', t('manage.person.search'), 'ta48-people-search'],
   [t('manage.team'), 'ta49-team', t('manage.teamAdd'), 'ta50-team-add'],
-  [t('manage.limits'), 'ta51-limits', t('manage.limit.schedule.maxActiveTrips'), 'ta52-limit-edit'],
+  [t('manage.limits'), 'ta51-limits', t('manage.limit.requests.maxSeats'), 'ta52-limit-edit'],
   [t('wallet.team.title'), 'ta36-wallets', MUROD.name, 'ta37-wallet-adjust'],
   [t('channels.title'), 'ta38-channels', t('channels.add'), 'ta39-channel-edit'],
   [t('pitaks.title'), 'ta40-pitaks', t('pitaks.add'), 'ta41-pitak-edit'],
@@ -90,7 +89,11 @@ test('android: a hand correction of a wallet', async ({ page }) => {
 test('android: the hand price of one direction', async ({ page }) => {
   await management(page, 'android');
   await page.getByText(t('pricing.title')).first().click();
-  await page.getByText('Samarqand viloyati').first().click();
+  // The row names the places of the direction (G78 sheet 4).
+  await page
+    .getByText(/→ Samarqand/u)
+    .first()
+    .click();
   await shot(page, 'android', 'ta46-direction');
 });
 

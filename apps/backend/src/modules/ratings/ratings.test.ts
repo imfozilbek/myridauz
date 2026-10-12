@@ -68,6 +68,14 @@ describe('the rating of a person (docs/24)', () => {
     expect(asked.slice(2).map((item) => [item.ask.raterId, item.reminder])).toEqual([[DRIVER, true]]);
   });
 
+  // The stars come right after «Yetib keldim» (G78 П6): who already rated is not asked again.
+  it('does not ask a side who already rated the ride', async () => {
+    const { deps, asked } = setup();
+    await rate(deps, 101, review('b1', 5));
+    await askRatings(deps);
+    expect(asked.map((item) => item.ask.raterId)).toEqual([DRIVER]);
+  });
+
   it('keeps a review hidden until the other side answers or 7 days pass (G60, docs/129)', async () => {
     const { deps } = setup();
     expect(await rate(deps, 101, review('b1', 2, 'qoʻpol, +998901234567'))).toBe('ok');

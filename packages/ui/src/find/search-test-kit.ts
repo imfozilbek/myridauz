@@ -23,11 +23,10 @@ export const searchMarket = (
   tripDays: async () => weekOf(counts),
 });
 
-// «Qayerdan» is not known on a new phone: Chilonzor from the list, then Fargʻona shahri by
-// «Boshqa joy», or the whole Fargʻona region by its card.
+// «Qayerdan» is not known on a new phone: Toshkent shahri whole in one tap (G78 П9), then Fargʻona
+// shahri by «Boshqa joy», or the whole Fargʻona region by its card.
 export async function findRoute(wholeRegion = false) {
   await tap('Toshkent shahri');
-  await tap('Chilonzor');
   return wholeRegion ? tap('Fargʻona') : findTo();
 }
 

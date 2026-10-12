@@ -67,6 +67,12 @@ export type BrandColors = {
   readonly neutralFace: HexColor;
   // A face without a photo among the passengers of the own trip (mockup g63/3).
   readonly neutralFacePale: HexColor;
+  // A face without a photo (owner decision 12.10.2026, docs/172): the icon of the role on its color,
+  // the passenger and the driver each their own in every app.
+  readonly facePassenger: HexColor;
+  readonly facePassengerIcon: HexColor;
+  readonly faceDriver: HexColor;
+  readonly faceDriverIcon: HexColor;
   // The grey tag «Qaytarish kutilmoqda» of a past trip in «Oʻtgan»: background, words (mockup g63/5).
   readonly neutralPale: HexColor;
   readonly neutralPaleText: HexColor;

@@ -73,8 +73,8 @@ export function createMarketClient(options: SignedOptions) {
       tripsSchema.parse(await (await request(DRIVER_TRIPS_PATH)).json()).trips,
     publishTrip: async (input: TripInput): Promise<Trip> => trip(await post(DRIVER_TRIPS_PATH, input)),
     // The busy times of the driver for a new trip on this route (docs/103).
-    schedule: async (from: string, to: string): Promise<Schedule> =>
-      scheduleSchema.parse(await (await request(`${DRIVER_SCHEDULE_PATH}?${query({ from, to })}`)).json()),
+    schedule: async (): Promise<Schedule> =>
+      scheduleSchema.parse(await (await request(DRIVER_SCHEDULE_PATH)).json()),
     cancelTrip: async (id: string): Promise<Trip> => trip(await post(driverTripCancelPath(id), {})),
     // The driver moves the time later or lowers the price (G39, docs/104).
     retimeTrip: async (id: string, departAt: number): Promise<Trip> =>

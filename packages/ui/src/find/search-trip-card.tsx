@@ -46,7 +46,13 @@ export function SearchTripCard({ trip, onOpen }: Props) {
       </div>
       <p className="search-trip-facts">{facts.join(' · ')}</p>
       <div className="search-trip-driver">
-        <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={BADGE} />
+        <PersonBadge
+          id={driver.id}
+          name={driver.firstName}
+          hasAvatar={driver.hasAvatar}
+          size={BADGE}
+          role="driver"
+        />
         <span>
           {driver.rating.average === null
             ? t('find.driverNew', { name: driver.firstName, car: driver.car.model })

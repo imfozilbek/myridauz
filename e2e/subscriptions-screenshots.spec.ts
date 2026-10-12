@@ -2,6 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { passengerList, passengerSubscribes } from './subscriptions';
 import { LINKED, mockSubscriptions } from './subscriptions-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
@@ -33,6 +34,7 @@ test('passenger: Xabar bering and Obunalar', async ({ page }) => {
 
 test('passenger: Band qilish in a channel opens the trip', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await mockSubscriptions(page);
   await open(page, `${telegramUrl(appUrl(PASSENGER.port))}&tgWebAppStartParam=trip_${LINKED.id}`);
   await expect(page.getByText(TEXT.book)).toBeVisible();

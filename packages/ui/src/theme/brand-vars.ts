@@ -37,7 +37,6 @@ export const brandVars = (colors: BrandColors) =>
     '--reg-face-pale': colors.neutralFacePale,
     '--reg-neutral-pale': colors.neutralPale,
     '--reg-neutral-pale-text': colors.neutralPaleText,
-    '--reg-face-text': colors.neutralText,
     '--reg-off': colors.disabled,
     '--reg-success': colors.success,
     '--reg-success-soft': colors.successSoft,

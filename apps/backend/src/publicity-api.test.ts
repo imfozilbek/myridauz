@@ -19,21 +19,29 @@ const BRAND = loadBrand();
 const ZONE = BRAND.channels.find((channel) => channel.places.includes('1718401'));
 const CHANNEL = { username: ZONE?.username, title: ZONE?.title };
 
-// Each trip two days after the one before: the trips of one driver cannot overlap (docs/103).
+// Each trip a day after the one before, all within the 7 days from today; a driver has one live trip,
+// so the trip before ends first (docs/172).
 let trips = 0;
+const lastOf = new Map<number, string>();
 async function publishTrip(driver = DRIVER, env = {}) {
   await approvedDriver(driver);
+  const last = lastOf.get(driver);
+  if (last) await call(`/driver/trips/${last}/cancel`, driver, { method: 'POST', app: 'driver' });
   const trip = {
     from: '1726273',
     to: '1718401',
-    departAt: Date.now() + 5 * HOUR + (trips += 1) * 2 * DAY_MS,
+    departAt: Date.now() + 5 * HOUR + (trips += 1) * DAY_MS,
     seats: 3,
     price: 90_000,
     womanOnBoard: false,
     pickupMode: 'door',
     comment: '',
   };
-  return read<{ id: string }>(call('/driver/trips', driver, { app: 'driver', env, ...json(trip) }));
+  const made = await read<{ id: string }>(
+    call('/driver/trips', driver, { app: 'driver', env, ...json(trip) }),
+  );
+  lastOf.set(driver, made.id);
+  return made;
 }
 
 const publicityOf = (id: string, env = {}, driver = DRIVER) =>

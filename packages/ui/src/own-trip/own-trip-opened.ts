@@ -1,7 +1,7 @@
 import type { Booking, Offer, Trip } from '@platform/contracts';
 
-// What opens from a passenger on «Mening safarim»: the booking, the chat, the call or the wallet.
-export type RiderScreen = 'booking' | 'request' | 'chat' | 'call' | 'not_enough';
+// What opens from a passenger on «Mening safarim»: the booking, the request, the chat or the call.
+export type RiderScreen = 'booking' | 'request' | 'chat' | 'call';
 
 // The screen open over «Mening safarim», by what it needs (G63).
 export type Opened =

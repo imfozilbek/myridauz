@@ -51,21 +51,29 @@ function setup() {
 }
 
 describe('Narxlar: the price engine for the team (docs/23)', () => {
-  it('changes the formula after a preview of the new prices', async () => {
+  it('changes the formula with the new prices on the same screen (G78 sheet 4)', async () => {
     const pricing = setup();
     await tap('Narxlar');
     await tap('Formulani oʻzgartirish');
     // Every field is named on every platform, not only by a header iOS hides (G27).
     fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
     expect(screen.getByLabelText('Eng koʻp narx')).toHaveProperty('value', '600000');
-    await tap('Oʻzgarishni koʻrish');
-    // A plain title, the number of changed directions and the new price marked (docs/86 V13).
+    // The prices follow the typing; the new price of a changed direction is marked (docs/86 V13).
     expect(await screen.findByText('Narxlar qanday oʻzgaradi')).toBeTruthy();
-    expect(screen.getByText('1 ta yoʻnalishda narx oʻzgaradi')).toBeTruthy();
-    expect(screen.getByText('130 000 soʻm').className).toBe('price-changed');
-    expect(screen.getByText('90 000 soʻm').className).not.toBe('price-changed');
+    expect(pricing.preview).toHaveBeenLastCalledWith({ ...V, ratePerKm: 400 });
+    expect(screen.getByText(/^130.000$/u).className).toBe('manage-changed');
+    expect(screen.getByText(/^90.000 → 90.000$/u)).toBeTruthy();
     await tap('Saqlash');
     expect(pricing.save).toHaveBeenCalledWith({ ...V, ratePerKm: 400 });
+  });
+
+  it('says what is wrong with the numbers and saves nothing', async () => {
+    setup();
+    await tap('Narxlar');
+    await tap('Formulani oʻzgartirish');
+    fireEvent.change(screen.getByLabelText('Eng kam narx'), { target: { value: '700000' } });
+    expect(screen.getByText(/^Qiymatlarni tekshiring/u)).toBeTruthy();
+    expect(screen.queryByText('Saqlash')).toBeNull();
   });
 
   it('sets a price for a direction, refuses one out of the bounds and rolls back a version', async () => {
@@ -93,19 +101,15 @@ describe('Narxlar: the price engine for the team (docs/23)', () => {
     expect(screen.queryByText('Narx ruxsat etilgan chegarada boʻlsin.')).toBeNull();
   });
 
-  it('Back from the preview keeps the typed numbers; Back with changes asks (docs/94 B9, F3)', async () => {
+  it('Back with changes asks before the typed numbers go (docs/94 F3)', async () => {
     setup();
     const asked = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValueOnce(true);
     await tap('Narxlar');
     await tap('Formulani oʻzgartirish');
     fireEvent.change(screen.getByLabelText('Stavka (1 km uchun)'), { target: { value: '400' } });
-    await tap('Oʻzgarishni koʻrish');
-    await screen.findByText('Narxlar qanday oʻzgaradi');
-    await tap('Orqaga');
-    expect(await screen.findByLabelText('Stavka (1 km uchun)')).toHaveProperty('value', '400');
     await act(async () => fireEvent.click(screen.getByText('Orqaga')));
     expect(asked).toHaveBeenCalledWith('Oʻzgarishlar saqlanmaydi. Chiqasizmi?');
-    expect(screen.getByLabelText('Stavka (1 km uchun)')).toBeTruthy();
+    expect(screen.getByLabelText('Stavka (1 km uchun)')).toHaveProperty('value', '400');
     await act(async () => fireEvent.click(screen.getByText('Orqaga')));
     expect(await screen.findByText('Formulani oʻzgartirish')).toBeTruthy();
     asked.mockRestore();

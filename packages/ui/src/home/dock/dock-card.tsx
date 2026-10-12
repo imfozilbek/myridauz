@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { ProfilePhoto } from '../../account/profile/profile-photo';
+import { useOtherRole } from '../../find/other-role';
+import { PersonBadge } from '../../find/person-badge';
 import { Icon } from '../../icons';
 import './dock-card.css';
 import './dock-who.css';
@@ -10,7 +11,8 @@ const CLOCK = 12;
 
 type CardTone = 'brand' | 'soon' | 'now' | 'off';
 type ChipTone = 'brand' | 'green' | 'red' | 'gray';
-type Tool = {
+// The chat and the call next to the person (docs/07: numbers hidden).
+export type DockTool = {
   readonly icon: 'phone' | 'chat';
   readonly label: string;
   readonly dot?: boolean;
@@ -27,7 +29,7 @@ export type DockCardProps = {
   readonly text: ReactNode;
   readonly tone?: CardTone;
   // The other person of the trip with the chat and the call (docs/07: numbers hidden).
-  readonly who?: { readonly person: Person; readonly sub: string; readonly tools?: readonly Tool[] };
+  readonly who?: { readonly person: Person; readonly sub: string; readonly tools?: readonly DockTool[] };
   // Ready words under the card: «5 daqiqada», «10 daqiqada» (docs/164, from the meeting sheet).
   readonly quick?: readonly { readonly label: string; readonly onClick: () => void }[];
 };
@@ -44,6 +46,7 @@ export function DockCard({
   who,
   quick,
 }: DockCardProps) {
+  const face = useOtherRole();
   return (
     <>
       <div className={`dock-card dock-card-${tone}`}>
@@ -58,13 +61,13 @@ export function DockCard({
         <p className="dock-card-text">{text}</p>
         {who ? (
           <div className="dock-who">
-            {who.person.hasAvatar ? (
-              <ProfilePhoto userId={who.person.id} name={who.person.firstName} hasAvatar size={FACE} />
-            ) : (
-              <span className="dock-face" aria-hidden>
-                {who.person.firstName.slice(0, 1)}
-              </span>
-            )}
+            <PersonBadge
+              id={who.person.id}
+              name={who.person.firstName}
+              hasAvatar={who.person.hasAvatar}
+              size={FACE}
+              role={face}
+            />
             <span className="dock-who-words">
               <b>{who.person.firstName}</b>
               <span>{who.sub}</span>

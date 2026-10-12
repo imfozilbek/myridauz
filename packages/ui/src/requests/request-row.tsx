@@ -10,7 +10,6 @@ import './request-row.css';
 
 // The values of the mockups g64/1 and g64/2 at 360 px: the face 62 px of the mockup at 1.5.
 const FACE = 41.33;
-const LETTER = 16;
 const TOOL_ICON = 17;
 
 // «Safarimga taklif qilish» on the driver's trip, «Safar ochib taklif qilish» for a whole car,
@@ -30,7 +29,8 @@ type Props = {
   readonly extraKm?: number;
   // The day of the trip a whole car opens, when it is not today (mockup g64/3 phone 1).
   readonly day?: string | undefined;
-  readonly action: RowAction;
+  // None while the driver has a live trip and the request is not for it (docs/172).
+  readonly action: RowAction | null;
   // A live offer of the driver waits for the answer: one offer at a time (docs/35).
   readonly offered: boolean;
   readonly onAction: () => unknown;
@@ -65,8 +65,7 @@ export function RequestRow({
           name={passenger.firstName}
           hasAvatar={passenger.hasAvatar}
           size={FACE}
-          letter={LETTER}
-          plain
+          role="passenger"
         />
         <span className="request-row-who">
           <span className="request-row-name">
@@ -89,9 +88,11 @@ export function RequestRow({
         <button type="button" className="request-tool" aria-label={t('calls.call')} onClick={onCall}>
           <Icon name="phone" size={TOOL_ICON} />
         </button>
-        <button type="button" className="request-act" disabled={offered || act.busy} onClick={act.run}>
-          {t(offered ? 'bookings.offer.sent.title' : ACTIONS[action])}
-        </button>
+        {action ? (
+          <button type="button" className="request-act" disabled={offered || act.busy} onClick={act.run}>
+            {t(offered ? 'bookings.offer.sent.title' : ACTIONS[action])}
+          </button>
+        ) : null}
       </div>
     </div>
   );

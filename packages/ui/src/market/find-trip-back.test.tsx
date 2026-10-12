@@ -39,6 +39,6 @@ describe('FindTripFlow: «Orqaga» keeps what the person chose (docs/90)', { tim
     await screen.findByText('Hozircha safar yoʻq');
     await tap('Orqaga');
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
-    expect(screen.getByText(/^Chilonzor/u)).toBeTruthy();
+    expect(screen.getByText(/^Toshkentdan/u)).toBeTruthy();
   });
 });

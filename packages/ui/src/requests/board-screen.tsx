@@ -4,13 +4,15 @@ import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { DayCounts } from '../find/day-counts';
+import { countedWeek } from '../days/week';
+import { WeekRow } from '../days/week-row';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { NotifyMe } from '../subscriptions/notify-me';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
@@ -78,6 +80,8 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
     if (request) offering.short(need, request);
   }
   const empty = board.fits.length + board.others.length === 0;
+  // A live trip, shown or not: no new trip is asked for (one at a time, docs/172).
+  const free = !trip && !board.busy;
   return (
     <div className="board" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={refresh} />
@@ -85,7 +89,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
       {trip ? (
         <BoardTrip trip={trip} onOpen={() => onTrip(trip.id)} />
       ) : (
-        <DayCounts days={board.days} date={board.date} onDay={onDay} />
+        <WeekRow days={countedWeek(board.days)} on={board.date} onPick={onDay} />
       )}
       <ActionFailure error={failure} />
       <BoardList
@@ -98,10 +102,13 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
         <EmptyState
           icon="passengers"
           title={t('market.requests.empty')}
-          {...(trip ? {} : { description: t('market.requests.emptyHint') })}
+          {...(free ? { description: t('market.requests.emptyHint') } : {})}
+          {...(board.notify
+            ? { action: <NotifyMe from={board.notify.from} to={board.notify.to} date={board.date} small /> }
+            : {})}
         />
       ) : null}
-      {empty && !trip ? (
+      {empty && free ? (
         <MainButton text={t('market.requests.publish')} onClick={() => onPublish(board.date)} />
       ) : null}
       <OfferSheet

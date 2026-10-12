@@ -27,7 +27,6 @@ const STATUS = {
   'trips.price_out_of_bounds': 422,
   'trips.too_many': 409,
   'trips.too_soon': 422,
-  'trips.busy': 409,
   'wallet.not_enough': 402,
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const fail = failWith(STATUS);

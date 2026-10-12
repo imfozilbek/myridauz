@@ -45,7 +45,9 @@ test('the booking, its chat, the past trip and the review (mockups g60)', async 
     await expect(page.getByRole('button', { name: t('calls.call') })).toBeVisible();
     await shot(page, `2-chat-${platform}`);
     // The trip ended an hour ago (docs/129): the chat and the call stay 24 hours, the stars 7 days.
+    // Completed as the Cron completes it: the next platform's trip is the driver's one live trip (docs/172).
     moveTrip(trip.id, Date.now() - 6 * HOUR, Date.now() - HOUR);
+    standSql(`UPDATE trips SET status = 'completed' WHERE id = '${trip.id}'`);
     standSql(`UPDATE bookings SET status = 'completed' WHERE id = '${seat.id}'`);
     // A new phone: the app keeps the last screen (G33), and the chat was open.
     await page.context().close();

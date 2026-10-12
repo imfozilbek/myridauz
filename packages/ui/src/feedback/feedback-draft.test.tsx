@@ -27,7 +27,7 @@ const RESTORED = 'Oldingi yozganingiz tiklandi.';
 const open = (param: string, feedback: Partial<FeedbackClient>) => {
   window.history.replaceState(null, '', `/?${param}=b1`);
   return renderMarket(
-    <FeedbackLink enabled>
+    <FeedbackLink app="passenger">
       <p>Asosiy</p>
     </FeedbackLink>,
     testClients({ feedback: { target: async () => TARGET, ...feedback } }),
@@ -77,7 +77,8 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
         comment: 'Bir soat kutdim',
       }),
     );
-    await screen.findByText(/Moderator koʻrib chiqadi/u);
+    // Sent from the bot link, it closes by itself to the main screen (G78 П16).
+    expect(await screen.findByText('Asosiy')).toBeTruthy();
     expect(localStorage.length).toBe(0);
   });
 
@@ -100,12 +101,15 @@ describe('a review and a complaint keep what was written (docs/94 F3, C1, C5)', 
     expect(await screen.findByText('Asosiy')).toBeTruthy();
   });
 
-  it('a complaint from a booking has no «Yopish»: the person stays in the app', async () => {
+  it('a complaint from a booking closes by itself: the person stays in the app (G78 П16)', async () => {
     const clients = testClients({ feedback: { complain: async () => undefined } });
-    renderMarket(<ComplaintScreen bookingId="b1" onBack={() => undefined} />, clients);
+    const onSent = vi.fn();
+    sdk.miniApp.close.ifAvailable.mockClear();
+    renderMarket(<ComplaintScreen bookingId="b1" onBack={() => undefined} onSent={onSent} />, clients);
     await tap('Boshqa');
     await tap('Yuborish');
-    await screen.findByText(/Moderator koʻrib chiqadi/u);
+    await waitFor(() => expect(onSent).toHaveBeenCalledOnce());
     expect(screen.queryByText('Yopish')).toBeNull();
+    expect(sdk.miniApp.close.ifAvailable).not.toHaveBeenCalled();
   });
 });

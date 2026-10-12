@@ -41,6 +41,8 @@ describe('talks, board and salon trips API (G64)', () => {
     expect(off.callsOff).toBe(true);
     const stranger = await call(`/passenger/requests/${request.id}/calls`, STRANGER, json({ on: false }));
     expect(stranger.status).toBe(404);
+    // One request at a time (docs/172): the next test leaves its own.
+    await call(`/passenger/requests/${request.id}/cancel`, PASSENGER, { method: 'POST' });
   });
 
   it('shows the board on a route and opens a salon trip only the passenger sees', async () => {

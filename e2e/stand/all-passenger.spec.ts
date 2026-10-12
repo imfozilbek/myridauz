@@ -1,43 +1,49 @@
 import { test } from '../crash-guard';
 import { createChatClient, createComfortClient, createSubscriptionsClient } from '@platform/api-client';
 import { CHILONZOR } from './market-kit';
-import { askRide, confirmedSeat, MINUTE, moveTrip, offerOn, SAMARQAND, tomorrow } from './g27-kit';
+import { askRide, confirmedSeat, MINUTE, moveTrip, offerInto, SAMARQAND, tomorrow } from './g27-kit';
 import { MUROD, ZEBO } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, visit, type Platform } from './screen-tour';
-import { signedAs } from './stand-kit';
+import { register } from './seed';
+import { signedAs, type Person } from './stand-kit';
 import { runCron } from './stand-tools';
 
 // Every screen of a passenger with real data (docs/83): Zebo has a seat, a ride that ended, a saved
-// driver, a subscription and an offer on her request. Screens open as a person opens them: by taps
-// and by the buttons of the bots.
+// driver and a subscription. Screens open as a person opens them: by taps and by the buttons of the
+// bots. A passenger has a seat or a request, one at a time (docs/172): the offer is on another
+// woman's request.
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 const HOUR = 60 * MINUTE;
+const ASKING: Person = { id: 900707, name: 'Nozima', phone: '998901110707' };
 const links: Record<string, string> = {};
 
 test.beforeAll(async () => {
-  const { seat, trip } = await confirmedSeat(MUROD, ZEBO);
-  links['booking'] = seat.id;
-  links['chat'] = seat.chatKey;
-  links['trip'] = trip.id;
+  // The ride that ended first: Murod has one live trip (docs/172).
   const ended = await confirmedSeat(MUROD, ZEBO);
   moveTrip(ended.trip.id, Date.now() - 10 * HOUR, Date.now() - MINUTE);
   await runCron();
   links['review'] = ended.seat.id;
+  const { seat, trip } = await confirmedSeat(MUROD, ZEBO);
+  links['booking'] = seat.id;
+  links['chat'] = seat.chatKey;
+  links['trip'] = trip.id;
   await createComfortClient(await signedAs('passenger', ZEBO)).save(trip.driver.id);
   const route = { from: CHILONZOR, to: SAMARQAND, woman: false, date: tomorrow() };
   await createSubscriptionsClient(await signedAs('passenger', ZEBO)).subscribe(route);
   // «Takliflarni koʻrish» under the card of a request (G61): the bot sends ?request=, not ?offer= (G77).
-  const asked = await askRide(ZEBO);
-  await offerOn(MUROD, asked.id);
+  await register('passenger', ASKING, 'female');
+  const asked = await askRide(ASKING);
+  await offerInto(MUROD, asked.id, trip);
   links['request'] = asked.id;
   links['follow'] = (await createChatClient(await signedAs('passenger', ZEBO)).share(seat.id)).link.slice(
     -43,
   );
 });
 
-const byLink = async (platform: Platform, page: Parameters<typeof shot>[0], search: string, name: string) => {
-  await openHome(page, 'passenger', ZEBO, platform, search);
+type Page = Parameters<typeof shot>[0];
+const byLink = async (platform: Platform, page: Page, search: string, name: string, person = ZEBO) => {
+  await openHome(page, 'passenger', person, platform, search);
   await shot(page, platform, name);
 };
 
@@ -56,7 +62,7 @@ for (const platform of PLATFORMS)
 test('android: every screen a bot button opens', async ({ page }) => {
   await byLink('android', page, `?booking=${links['booking']}`, 'pa20-booking');
   await byLink('android', page, `?chat=${links['chat']}`, 'pa21-chat');
-  await byLink('android', page, `?request=${links['request']}`, 'pa22-offer');
+  await byLink('android', page, `?request=${links['request']}`, 'pa22-offer', ASKING);
   await byLink('android', page, `?review=${links['review']}`, 'pa23-review');
   await byLink('android', page, `?complain=${links['review']}`, 'pa24-complaint');
   await byLink('android', page, '?subscriptions=1', 'pa25-subscriptions');

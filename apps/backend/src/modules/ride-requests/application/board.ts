@@ -7,6 +7,7 @@ import {
 } from '@platform/contracts';
 import { placeMatches, regionIn } from '../../../shared/places/place-match';
 import { boardDays, tripFit } from '../domain/board-fit';
+import { notifyRoute } from '../domain/board-notify';
 import { isOpen, type RequestRecord } from '../domain/ride-request';
 import type { RequestsDeps, Result } from './ports';
 import { views } from './views';
@@ -32,10 +33,22 @@ export async function requestBoard(
   const route = from && to ? { from, to } : null;
   const directions = route ? [] : await deps.board.directions(driverId);
   const date = query.date ?? today;
+  const busy = await deps.board.busy(driverId);
+  const notify = notifyRoute(route, directions, await deps.board.subscribed(driverId), regionOf);
   if (!route && directions.length === 0)
     return {
       ok: true,
-      value: { known: false, date, days: [], trip: null, fits: [], others: [], carSeats: car.seats },
+      value: {
+        known: false,
+        date,
+        days: [],
+        trip: null,
+        fits: [],
+        others: [],
+        carSeats: car.seats,
+        busy,
+        notify,
+      },
     };
   const onDirection = (request: RequestRecord) =>
     route
@@ -71,6 +84,8 @@ export async function requestBoard(
         fits: [],
         others: await views(deps, ofDay),
         carSeats: car.seats,
+        busy,
+        notify,
       },
     };
   const measured = ofDay.map((request) => ({
@@ -92,6 +107,16 @@ export async function requestBoard(
   );
   return {
     ok: true,
-    value: { known: true, date: day, days, trip: nearest.trip, fits, others, carSeats: car.seats },
+    value: {
+      known: true,
+      date: day,
+      days,
+      trip: nearest.trip,
+      fits,
+      others,
+      carSeats: car.seats,
+      busy,
+      notify,
+    },
   };
 }

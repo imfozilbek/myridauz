@@ -6,7 +6,6 @@ import { Icon } from '../icons';
 import { RiderLine } from './rider-line';
 
 const FACE = 36;
-const LETTER = 14;
 const TOOL_ICON = 16;
 // The bubble of the chat is drawn smaller than the phone beside it (mockups g63/3, g63/5).
 const CHAT_ICON = 14.4;
@@ -46,8 +45,7 @@ export function RiderRow({ booking, onChat, onCall, onOpen, line }: Props) {
           name={passenger.firstName}
           hasAvatar={false}
           size={FACE}
-          letter={LETTER}
-          plain
+          role="passenger"
         />
         <span className="rider-who">
           {onOpen ? (

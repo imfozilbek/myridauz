@@ -1,14 +1,15 @@
 import { Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Cell, List, Section } from '../components';
 import { RowCard } from '../mine/row-card';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { RatingBadge } from '../feedback/rating-badge';
+import { SearchTripCard } from '../find/search-trip-card';
 import { PlacesGate } from '../market/places-gate';
-import { TripCard } from '../market/trip-card';
 import { TripById } from '../market/trip-link';
 import { useLoad } from '../market/use-list';
 import { EmptyState } from '../states/empty-state';
@@ -16,7 +17,9 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { Screen } from '../screen/screen';
 import { useScreenBackground } from '../telegram/screen-background';
+import { brandVars } from '../theme/brand-vars';
 import '../market/market.css';
+import '../find/trip-card.css';
 
 // The face takes the place of the tile of a card (mockup g75/2 A).
 const PHOTO_SIZE = 36;
@@ -34,6 +37,7 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
   useScreenView('comfort.favorites');
   useScreenBackground();
   const { t } = useI18n();
+  const { colors } = useBrand().theme;
   const { comfort } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => comfort.favorites(), 'favorites');
   const [opened, setOpened] = useState<string | null>(null);
@@ -66,11 +70,12 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
             key={driver.id}
             icon="favorite"
             before={
-              <ProfilePhoto
-                userId={driver.id}
+              <PersonBadge
+                id={driver.id}
                 name={driver.firstName}
                 hasAvatar={driver.hasAvatar}
                 size={PHOTO_SIZE}
+                role="driver"
               />
             }
             title={driver.firstName}
@@ -82,10 +87,14 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
           <Section header={t('comfort.favorites.trips')}>
             <Cell>{t('comfort.favorites.noTrips')}</Cell>
           </Section>
-        ) : null}
-        {value.trips.map((trip) => (
-          <TripCard key={trip.id} trip={trip} onOpen={() => setOpened(trip.id)} />
-        ))}
+        ) : (
+          // Their trips are the cards of «Safarlar», one component (G78 sheet 2).
+          <div className="search-trips" style={brandVars(colors)}>
+            {value.trips.map((trip) => (
+              <SearchTripCard key={trip.id} trip={trip} onOpen={() => setOpened(trip.id)} />
+            ))}
+          </div>
+        )}
       </List>
     </div>
   );

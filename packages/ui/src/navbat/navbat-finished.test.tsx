@@ -17,8 +17,7 @@ describe('the last case of «Navbat»', { timeout: 20_000 }, () => {
       { moderation: { facePhoto: async () => new Blob(['x']), decideFace: vi.fn(async () => undefined) } },
       onBack,
     );
-    fireEvent.click(await screen.findByText('Mos emas: sababi'));
-    fireEvent.click(await screen.findByText('Rasmda bitta odam emas'));
+    fireEvent.click((await screen.findAllByText('Mos emas')).at(0) as HTMLElement);
     expect(await screen.findByText('Hammasi koʻrildi')).toBeTruthy();
     expect(onBack).not.toHaveBeenCalled();
     await waitFor(() => expect(onBack).toHaveBeenCalledOnce(), { timeout: 4000 });

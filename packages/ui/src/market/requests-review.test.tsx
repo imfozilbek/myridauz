@@ -4,10 +4,10 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { request } from '../bookings/booking-test-kit';
 import { testClients } from '../test-shell';
-import { statusIcon } from './fact-chips';
 import { quickRoute, renderMarket, takePoint, tap } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { openRequest } from './request-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(() => {
   cleanup();
@@ -26,7 +26,6 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     // The card of mockup g75/2 A: the day, the way, how many people (G75).
     expect(await screen.findByText(/· Soʻrov$/u)).toBeTruthy();
     expect(screen.queryByText('Dilnoza')).toBeNull();
-    expect(statusIcon('open')).toBe('waiting');
   });
 
   it('offers the request already left on that day instead of a second one (R5)', async () => {
@@ -37,10 +36,9 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     const publishRequest = openRequest({ mine: { myRequests } });
     publishRequest.mockRejectedValueOnce(new ApiError(409, 'trips.request_exists'));
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     await tap('Olib ketish joyi');
     await takePoint('Chorsu bozori yaqinida');
-    await tap('Tushirish joyi');
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
     expect(await screen.findByText('Bu kunga shu yoʻnalishda soʻrovingiz bor.')).toBeTruthy();

@@ -124,10 +124,10 @@ export const fakeTripView = (facts: TripFacts, taken: number): Trip => {
   };
 };
 
-export const SCHEDULE = loadBrand().schedule;
-// The lead time and the limit of the brand; the road between trips is the trips module's (docs/103).
+const SCHEDULE = loadBrand().schedule;
+// The lead time of the brand and one live trip (docs/172); the road between trips is the trips module's.
 export function scheduleCheck(departAt: number, now: number, trips: Iterable<TripFacts>, driverId: number) {
   if (departAt < earliestDepart(now, SCHEDULE)) return 'trips.too_soon';
-  const live = [...trips].filter((trip) => trip.driverId === driverId && trip.live).length;
-  return live >= SCHEDULE.maxActiveTrips ? 'trips.too_many' : null;
+  const live = [...trips].some((trip) => trip.driverId === driverId && trip.live && trip.arrivedAt === null);
+  return live ? 'trips.too_many' : null;
 }

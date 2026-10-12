@@ -25,6 +25,11 @@
   color: var(--reg-muted);
 }
 
+/* A gray note under a card (G78 sheet 4). */
+.manage-note {
+  margin: -2px 0 0 14px;
+}
+
 .manage-row {
   gap: 12.67px;
   min-height: 51.33px;
@@ -44,7 +49,8 @@
   color: var(--reg-ink);
 }
 
-.manage-danger {
+/* Red wins over the dark title: «Qayta urinish», «Pitak yoʻq» (G78 sheet 4). */
+.manage-row .manage-danger {
   color: var(--reg-danger);
 }
 
@@ -86,9 +92,57 @@
   opacity: 0.4;
 }
 
+.manage-chips-wrap {
+  flex-wrap: wrap;
+}
+
+/* The money that came in (G78 sheet 4). */
+.manage-success {
+  color: var(--reg-success);
+}
+
+/* The new price of a changed direction (docs/86 V13) and the version in force: quiet. */
+.manage-changed {
+  color: var(--reg-strong);
+}
+
+.manage-quiet {
+  color: var(--reg-muted);
+  font-weight: 400;
+}
+
+/* A number of the formula typed right in its row (G78 sheet 4). */
+.manage-number input {
+  box-sizing: border-box;
+  width: 96px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0 10px;
+  border: 1px solid var(--reg-off);
+  border-radius: 10px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 15px;
+  text-align: right;
+}
+
 .manage-value {
   flex: none;
+  max-width: 55%;
   font-size: 14px;
   font-weight: 700;
+  text-align: right;
   color: var(--reg-ink);
+}
+
+/* The sign of a decision of «Jurnal» (G78 sheet 5). */
+.navbat-icon.manage-tone-success {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+.navbat-icon.manage-tone-danger {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger);
 }

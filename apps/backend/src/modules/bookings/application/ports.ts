@@ -79,12 +79,9 @@ export type BookingsDeps = {
     find(id: string): Promise<TripFacts | undefined>;
     // Ids of the driver's trips, for "Mening safarlarim" with bookings.
     ofDriver(driverId: number): Promise<string[]>;
-    // An accepted offer becomes a trip: one the driver makes, within the limit (docs/103). Its way
-    // is the trips module's: both where the direction has a pitak, else the door (docs/70).
-    scheduleError(
-      driverId: number,
-      trip: { from: string; to: string; departAt: number; km: number },
-    ): Promise<'trips.too_soon' | 'trips.too_many' | 'trips.busy' | null>;
+    // An accepted offer becomes a trip: in time and the driver's only live one (docs/103, docs/172).
+    // Its way is the trips module's: both where the direction has a pitak, else the door (docs/70).
+    scheduleError(driverId: number, departAt: number): Promise<'trips.too_soon' | 'trips.too_many' | null>;
     views(ids: readonly string[]): Promise<Trip[]>;
     publish(driverId: number, input: Omit<Required<TripInput>, 'pickupMode'>): Promise<Published>;
     // «Safar ochib taklif qilish» (G64): a trip only the passenger of the request sees; opened for

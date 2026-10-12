@@ -22,7 +22,7 @@ const TARGET: ReviewTarget = {
 const open = (param: string, feedback: Partial<FeedbackClient>) => {
   window.history.replaceState(null, '', `/?${param}=b1`);
   return renderMarket(
-    <FeedbackLink enabled>
+    <FeedbackLink app="passenger">
       <p>Asosiy</p>
     </FeedbackLink>,
     testClients({ feedback }),
@@ -84,7 +84,8 @@ describe('ratings and reviews in the Mini App (docs/24)', () => {
         comment: '',
       }),
     );
-    expect(await screen.findByText(/Moderator koʻrib chiqadi/u)).toBeTruthy();
+    // Sent, it closes by itself to the main screen with its plaque (G78 П16).
+    expect(await screen.findByText('Asosiy')).toBeTruthy();
     cleanup();
     open('complain', { complain: async () => Promise.reject(new ApiError(409, 'complaints.already')) });
     await tap('Boshqa');

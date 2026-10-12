@@ -15,12 +15,13 @@ type Props = BoardHandlers & {
 };
 
 // The requests of the board (mockups g64/1 and g64/2): with a trip of the driver the ones that fit
-// it come first under «Safaringizga mos», one tap offers the trip; then the others.
+// it come first under «Safaringizga mos», one tap offers the trip; then the others. A live trip
+// keeps the others to a chat and a call: a new offer waits until it is over (docs/172).
 export function BoardList({ board, offered, onAction, onTalk }: Props) {
   const { t } = useI18n();
   const ends = useEnds();
   const laterDay = useLaterDay();
-  const row = (request: RideRequest, action: RowAction, extraKm?: number) => (
+  const row = (request: RideRequest, action: RowAction | null, extraKm?: number) => (
     <RequestRow
       key={request.id}
       request={request}
@@ -29,13 +30,22 @@ export function BoardList({ board, offered, onAction, onTalk }: Props) {
       day={action === 'salon' ? laterDay(request.date) : undefined}
       action={action}
       offered={offered.has(request.id)}
-      onAction={() => onAction(request, action)}
+      onAction={() => (action ? onAction(request, action) : undefined)}
       onChat={() => onTalk(request, false)}
       onCall={() => onTalk(request, true)}
     />
   );
-  const other = (request: RideRequest) => row(request, request.wholeCar ? 'salon' : 'offer');
-  if (!board.trip) return <>{board.others.map(other)}</>;
+  const other = (request: RideRequest) =>
+    row(request, board.busy ? null : request.wholeCar ? 'salon' : 'offer');
+  const busy =
+    board.busy && board.others.length > 0 ? <p className="board-busy">{t('requests.board.busy')}</p> : null;
+  if (!board.trip)
+    return (
+      <>
+        {busy}
+        {board.others.map(other)}
+      </>
+    );
   return (
     <>
       {board.fits.length > 0 ? (
@@ -47,6 +57,7 @@ export function BoardList({ board, offered, onAction, onTalk }: Props) {
           {t('requests.board.others', { count: String(board.others.length) })}
         </span>
       ) : null}
+      {busy}
       {board.others.map(other)}
     </>
   );

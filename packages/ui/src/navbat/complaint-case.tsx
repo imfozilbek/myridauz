@@ -1,14 +1,13 @@
-import { BLOCK_DAYS, type BlockInput, type Complaint, type ComplaintDecision } from '@platform/contracts';
+import type { Complaint, ComplaintDecision } from '@platform/contracts';
 import { useState } from 'react';
 import { Switch } from '../components';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
 import { RefundSection } from '../complaints/refund-section';
-import { ChoiceStep } from '../driver/steps/choice-step';
 import { Icon } from '../icons';
 import { useLoad } from '../market/use-list';
-import { allowBlock } from '../moderation/ask-block';
+import { BlockSheet } from '../moderation/block-sheet';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
@@ -58,28 +57,8 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
       setMode('view');
     }
   };
-  const block = async (days: BlockInput['days']) => {
-    if (await allowBlock(days ?? null, t)) await decide({ action: 'block', days: days ?? null });
-  };
   const back = () => setMode('view');
   if (mode === 'chat') return <ComplaintChat complaint={complaint} onBack={back} />;
-  if (mode === 'block')
-    return (
-      <ChoiceStep
-        screen="moderation.block"
-        icon="blocked"
-        title={t('moderation.block.title')}
-        choices={[
-          ...BLOCK_DAYS.map((value) => ({
-            value,
-            label: t('moderation.block.days', { days: String(value) }),
-          })),
-          { value: null, label: t('moderation.block.forever') },
-        ]}
-        onBack={back}
-        onDone={block}
-      />
-    );
   const { author, against } = complaint;
   const role = t(`complaints.${against.role}`).toLocaleLowerCase('uz');
   return (
@@ -126,6 +105,11 @@ function Review({ complaint, progress, onBack, onDone }: ReviewProps) {
           <MainButton text={t('complaints.warning')} onClick={() => decide({ action: 'warning' })} />
         </>
       ) : null}
+      <BlockSheet
+        open={mode === 'block'}
+        onClose={back}
+        onBlock={(days) => decide({ action: 'block', days })}
+      />
     </div>
   );
 }

@@ -46,11 +46,11 @@ export async function openPublish(page: Page) {
   await startPublish(page);
   const main = page.locator('#tg-main-button');
   await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
-  await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
-  await main.click();
+  await page.locator('.week-day').nth(1).click();
+  await page.getByRole('button', { name: '08:00', exact: true }).click();
   await page.getByText(t('market.rule.title')).click();
+  // A tap on a card chooses it and comes back to the form (G78 В14).
   await page.getByText(t('market.rule.seatsOrCar')).click();
-  await main.click();
   await expect(main).toHaveText(TEXT.publish);
   await expect(
     page.getByText(t('market.publish.day', { date: t('market.day.tomorrow'), time: '08:00' })),

@@ -1,14 +1,10 @@
-import { DAY_MS, tashkentDate, type Trip } from '@platform/contracts';
+import { DAY_MS, tripHolds, type Trip } from '@platform/contracts';
 import { tripStage } from '../own-trip/trip-stage';
 
-// «Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6): the week from today, the
-// trips that still live, the way back and the trip to repeat tomorrow.
-const WEEK_DAYS = 7;
+// «Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6): the trips that still live,
+// the way back and the trip to repeat tomorrow (the week: days/week.ts).
 // A trip the other way within two days of the first one is its way back.
 const WAY_BACK_MS = 2 * DAY_MS;
-
-export const weekOf = (now: number) =>
-  Array.from({ length: WEEK_DAYS }, (_, day) => tashkentDate(now + day * DAY_MS));
 
 // Live until it is over: past, cancelled or its time ended (the tab «Oʻtgan» takes the rest).
 export const isLive = (trip: Trip, now: number) => tripStage(trip, now) !== 'over';
@@ -23,8 +19,10 @@ export const isWayBack = (trip: Trip, trips: readonly Trip[]) =>
       trip.departAt - other.departAt <= WAY_BACK_MS,
   );
 
-// «Ertaga shu safar»: the last trip that already left, not cancelled, repeated tomorrow at its time.
+// «Ertaga shu safar»: the last trip that already left, not cancelled, repeated tomorrow at its time;
+// only while no trip is live, one at a time (owner decision 12.10.2026, docs/172).
 export function tripToRepeat(trips: readonly Trip[], now: number): Trip | null {
+  if (trips.some((trip) => tripHolds(trip, now))) return null;
   const left = trips.filter((trip) => trip.departAt <= now && trip.status !== 'cancelled');
   return left.reduce<Trip | null>(
     (last, trip) => (!last || trip.departAt > last.departAt ? trip : last),

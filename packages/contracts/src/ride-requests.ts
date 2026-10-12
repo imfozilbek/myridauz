@@ -96,5 +96,9 @@ export const requestBoardSchema = z.object({
   others: z.array(rideRequestSchema),
   // The seats of the driver's car: a trip for a whole car takes them all (G64).
   carSeats: z.number().int(),
+  // The driver has a live trip, shown or not: a new offer waits until it is over (docs/172).
+  busy: z.boolean().default(false),
+  // «Xabar bering» of an empty day (G78 sheet 3): the route to subscribe to; none once subscribed.
+  notify: z.object({ from: locationIdSchema, to: locationIdSchema }).nullable().default(null),
 });
 export type RequestBoard = z.infer<typeof requestBoardSchema>;

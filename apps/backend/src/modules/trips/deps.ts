@@ -3,7 +3,7 @@ import { bookingStore } from '../bookings/infrastructure/store';
 import { maskContacts } from '../chat';
 import { approvedCar } from '../drivers';
 import { sendSignals } from '../feed';
-import { placesOf, roadKmBetween } from '../locations';
+import { placesOf } from '../locations';
 import { directionRecommendationFor, recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
 import { pitakOf } from '../pitaks';
@@ -41,7 +41,6 @@ export const tripsDeps = (env: Bindings): TripsDeps => ({
   ...standingOf(env),
   recommend: (from, to) => recommendationFor(env, from, to),
   recommendDirection: (from, to) => directionRecommendationFor(env, from, to),
-  roadKm: (from, to) => roadKmBetween(env, from, to),
   schedule: brandOf(env).schedule,
   places: () => placesOf(env),
   pitakOf: (from, to) => pitakOf(env, from, to),

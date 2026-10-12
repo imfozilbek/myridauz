@@ -6,8 +6,8 @@ import { useI18n } from '../context/i18n-context';
 import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { LimitEdit } from './limit-edit';
 import { ManageGroup, ManagePage, ManageRow } from './manage-page';
+import { LimitSheet } from './limit-sheet';
 import { useLimitValue } from './limit-value';
 
 // The groups of «Cheklovlar» by the first word of a key: money, trips, bookings, talk, ratings, team.
@@ -20,8 +20,9 @@ const GROUPS: readonly { readonly titleKey: TranslationKey; readonly of: readonl
 ];
 const groupOf = (key: LimitKey) => key.split('.')[0] ?? '';
 
-// «Cheklovlar» of the owner (G75, docs/128 §4): every limit of people with its value; a change has
-// its history and the server and every Mini App read it at once.
+// «Cheklovlar» of the owner (G75, docs/128 §4): every limit of people with its value on the right; a
+// tap opens the sheet of one limit over the list (G78 sheet 5). A change has its history and the
+// server and every Mini App read it at once.
 export function LimitsScreen({ onBack }: { readonly onBack: () => void }) {
   const { limits } = useApiClients();
   const { value, failed, reload } = useLoad(() => limits.state(), 'manage.limits');
@@ -30,33 +31,34 @@ export function LimitsScreen({ onBack }: { readonly onBack: () => void }) {
   const shown = state ?? value;
   if (failed && !shown) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!shown) return <ScreenSkeleton onBack={onBack} />;
-  if (open) {
-    const limit = shown.limits.find((item) => item.key === open);
-    return (
-      <LimitEdit
+  const valueOf = (key: LimitKey | null) =>
+    shown.limits.find((item) => item.key === key)?.value ?? Number.NaN;
+  return (
+    <>
+      <LimitsList limits={shown} valueOf={valueOf} onBack={onBack} onOpen={setOpen} />
+      <LimitSheet
         limitKey={open}
-        value={limit?.value ?? Number.NaN}
-        onBack={() => setOpen(null)}
+        value={valueOf(open)}
+        onClose={() => setOpen(null)}
         onSaved={(next) => {
           setState(next);
           setOpen(null);
         }}
       />
-    );
-  }
-  return <LimitsList limits={shown} onBack={onBack} onOpen={setOpen} />;
+    </>
+  );
 }
 
 type ListProps = {
   readonly limits: Limits;
+  readonly valueOf: (key: LimitKey) => number;
   readonly onBack: () => void;
   readonly onOpen: (key: LimitKey) => void;
 };
 
-function LimitsList({ limits, onBack, onOpen }: ListProps) {
+function LimitsList({ limits, valueOf: value, onBack, onOpen }: ListProps) {
   const { t, formatDate } = useI18n();
   const valueOf = useLimitValue();
-  const value = (key: LimitKey) => limits.limits.find((item) => item.key === key)?.value ?? Number.NaN;
   return (
     <ManagePage title={t('manage.limits')} hint={t('manage.limitsHint')} onBack={onBack}>
       {GROUPS.map((group) => (
@@ -66,7 +68,7 @@ function LimitsList({ limits, onBack, onOpen }: ListProps) {
               key={key}
               icon="locked"
               title={t(`manage.limit.${key}`)}
-              hint={valueOf(key, value(key))}
+              value={valueOf(key, value(key))}
               onClick={() => onOpen(key)}
             />
           ))}

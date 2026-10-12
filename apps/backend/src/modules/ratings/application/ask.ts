@@ -14,10 +14,16 @@ export async function askRatings(deps: RatingsDeps): Promise<void> {
   const rides = await deps.rides.ended(now - ASK_WINDOW_MS, now);
   const asked = await deps.store.askedBookings(rides.map((ride) => ride.bookingId));
   const fresh = rides.filter((ride) => !asked.has(ride.bookingId));
-  const asks = fresh.flatMap((ride): Ask[] => [
-    { bookingId: ride.bookingId, raterId: ride.passengerId, rateeId: ride.driverId, askedAt: now },
-    { bookingId: ride.bookingId, raterId: ride.driverId, rateeId: ride.passengerId, askedAt: now },
+  // A side who rated already, right after «Yetib keldim» or «Yetib keldik», is not asked (G78 П6).
+  const rated = await deps.store.writtenBy([
+    ...new Set(fresh.flatMap((ride) => [ride.passengerId, ride.driverId])),
   ]);
+  const asks = fresh
+    .flatMap((ride): Ask[] => [
+      { bookingId: ride.bookingId, raterId: ride.passengerId, rateeId: ride.driverId, askedAt: now },
+      { bookingId: ride.bookingId, raterId: ride.driverId, rateeId: ride.passengerId, askedAt: now },
+    ])
+    .filter((ask) => !rated.has(`${ask.bookingId}:${ask.raterId}`));
   if (asks.length > 0) await deps.store.saveAsks(asks);
   const byBooking = new Map(fresh.map((ride) => [ride.bookingId, ride]));
   await send(deps, asks, (ask) => byBooking.get(ask.bookingId), false);

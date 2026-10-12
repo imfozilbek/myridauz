@@ -49,7 +49,7 @@ describe('the trips of each direction (G59, docs/118)', () => {
   it('«Safarlar» counts the week by the place inside the region the trips go to', async () => {
     const { deps } = await market();
     const { trip } = setup();
-    const third = await publishTrip(deps, 1, { ...trip, to: '1718233', departAt: TOMORROW + 6 * HOUR });
+    const third = await publishTrip(deps, 4, { ...trip, to: '1718233', departAt: TOMORROW + 6 * HOUR });
     expect(third).toMatchObject({ ok: true });
     const days = await tripDays(deps, '1726', '1718');
     expect(days.ok && days.value.places).toEqual([

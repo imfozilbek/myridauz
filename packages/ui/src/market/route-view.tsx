@@ -14,10 +14,12 @@ type RouteViewProps = {
   // With the departure and the distance the stops show the time: "12:30" and "≈ 17:30".
   readonly departAt?: number;
   readonly km?: number;
+  // The points of a seat in place of the ends of the trip (G78 sheet 3, d-seat).
+  readonly ends?: { readonly from: PlaceLabel; readonly to: PlaceLabel };
 };
 
 // Point A (green) and point B (red), each as the place and its region (docs/14, owner decision 29.09.2026).
-export function RouteView({ from, to, departAt, km }: RouteViewProps) {
+export function RouteView({ from, to, departAt, km, ends }: RouteViewProps) {
   const { t, formatTime } = useI18n();
   const { colors } = useBrand().theme;
   const place = usePlaceLabel();
@@ -29,8 +31,8 @@ export function RouteView({ from, to, departAt, km }: RouteViewProps) {
       : t('market.trip.arrival', { time: time(arrivalAt(departAt, km)) });
   return (
     <div className="route">
-      <Stop icon="origin" color={colors.routeFrom} label={place(from)} time={departs} />
-      <Stop icon="destination" color={colors.routeTo} label={place(to)} time={arrives} />
+      <Stop icon="origin" color={colors.routeFrom} label={ends?.from ?? place(from)} time={departs} />
+      <Stop icon="destination" color={colors.routeTo} label={ends?.to ?? place(to)} time={arrives} />
     </div>
   );
 }

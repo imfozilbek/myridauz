@@ -1,14 +1,17 @@
 import {
   arrivalAt,
   DAY_MS,
+  earliestDepart,
   MINUTE_MS,
   RETURN_REST_MS,
   SLOT_MINUTES,
   tashkentDate,
   tashkentDayStart,
   tashkentTime,
+  type ScheduleRules,
   type Trip,
 } from '@platform/contracts';
+import { departAtOf } from '../market/first-when';
 import type { TripAgain } from '../market/trip-draft';
 import type { PlaceDirectory } from '../places/directory';
 import type { Route } from '../places/route-screen';
@@ -18,12 +21,25 @@ const SLOT_MS = SLOT_MINUTES * MINUTE_MS;
 // The way back as the one screen of the publishing takes it (G63 C1): its route and its answers.
 export type ReturnTrip = { readonly route: Route; readonly again: TripAgain };
 
-// The way back on the given day: at the time of the arrival and the rest, on a slot of the
-// publishing (G38); the driver confirms or changes it there.
-export function returnDepartAt(trip: Pick<Trip, 'departAt' | 'km'>, day: string): number {
-  const back = arrivalAt(trip.departAt, trip.km) + RETURN_REST_MS;
-  const inDay = back - tashkentDayStart(tashkentDate(back));
-  return tashkentDayStart(day) + Math.ceil(inDay / SLOT_MS) * SLOT_MS;
+// The brand's times of the way back: the lead time, the morning and the last time of today (G78 В11).
+type ReturnRules = Pick<ScheduleRules, 'leadMinutes' | 'defaultTime'> & { readonly returnUntil: string };
+
+// The way back after the arrival and the rest, on a slot of the publishing (G38): today when it
+// leaves at returnUntil the latest, else the next morning; a time of the night is the morning too
+// (owner decision 12.10.2026, G78 В11). The driver confirms or changes it there.
+export function returnDepartAt(
+  trip: Pick<Trip, 'departAt' | 'km' | 'arrivedAt'>,
+  now: number,
+  rules: ReturnRules,
+) {
+  const arrived = trip.arrivedAt ?? arrivalAt(trip.departAt, trip.km);
+  const back = Math.max(arrived + RETURN_REST_MS, earliestDepart(now, rules));
+  const date = tashkentDate(back);
+  const at = tashkentDayStart(date) + Math.ceil((back - tashkentDayStart(date)) / SLOT_MS) * SLOT_MS;
+  const time = tashkentTime(at);
+  if (time > rules.returnUntil)
+    return departAtOf(tashkentDate(tashkentDayStart(date) + DAY_MS), rules.defaultTime);
+  return time < rules.defaultTime ? departAtOf(tashkentDate(at), rules.defaultTime) : at;
 }
 
 // «Qaytish» (docs/40, question 43): the route the other way with the same seats, price, the rule of

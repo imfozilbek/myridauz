@@ -1,4 +1,4 @@
-/* The driver application: paint dots and red marks of what to fix (docs/04, docs/21). */
+/* The driver application: red marks of what to fix (docs/04, docs/21). */
 .problem-note {
   display: flex;
   flex-direction: column;
@@ -12,15 +12,4 @@
 .cell-problem [class*='subtitle'],
 .cell-problem .cell-value {
   color: var(--tgui--destructive_text_color);
-}
-
-/* A car paint dot: a thin ring keeps white and silver visible on white. */
-.car-swatch {
-  display: block;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  box-shadow:
-    inset 0 0 0 1px var(--tgui--outline),
-    0 0 0 1px var(--tgui--outline);
 }

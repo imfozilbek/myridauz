@@ -38,6 +38,17 @@ describe('the refund of a no-show: a moderator proposes, the owner confirms (doc
     expect(await complaintQueue(deps)).toEqual([]);
   });
 
+  // G78 К4 (docs/170): the owner who decides with the refund on confirms it by the same tap: 4 → 2.
+  it('the owner deciding with a refund gives the money back at once, nothing waits for him', async () => {
+    const { deps, log } = setup();
+    const filed = await fileComplaint(deps, DRIVER, input('b1'));
+    const id = typeof filed === 'string' ? '' : filed.id;
+    expect(await decide(deps, BY_OWNER, id, { action: 'warning', refund: true })).toBe('ok');
+    expect(log.filter((line) => line.startsWith('refund'))).toEqual([`refund ${DRIVER} b1`]);
+    expect((await deps.store.find(id))?.refund).toMatchObject({ state: 'confirmed', decidedBy: BY_OWNER.id });
+    expect(await complaintQueue(deps)).toEqual([]);
+  });
+
   it('two owner taps at the same moment give the money back once (docs/65 A4)', async () => {
     const { deps, log, id } = await proposed();
     const tap = () => answerRefund(deps, BY_OWNER, id, 'confirm');

@@ -7,7 +7,7 @@ import { useLoad } from '../../market/use-list';
 import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
 import { useDirectory } from '../../places/use-directory';
-import { ActionFailure } from '../../states/action-failure';
+import { DockFailure } from './dock-failure';
 import { usePassengerData } from '../passenger-data';
 import { passengerCue } from './cues';
 import { DockFailed } from './dock-failed';
@@ -87,7 +87,7 @@ function Card({ state, go, directory }: CardProps) {
   const now = useNow();
   const words = useDockWords(directory, now);
   const act = useSeatActions(go, () => void refresh());
-  const failure = <ActionFailure error={act.failure} />;
+  const failure = <DockFailure error={act.failure} />;
   switch (state.kind) {
     case 'driverWaits':
     case 'meeting':

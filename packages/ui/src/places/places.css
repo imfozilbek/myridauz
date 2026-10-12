@@ -86,3 +86,11 @@
   line-height: 1.2;
   overflow-wrap: break-word;
 }
+
+.region-whole {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--tgui--hint_color);
+}

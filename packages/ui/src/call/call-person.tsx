@@ -5,7 +5,6 @@ import { UzPlate } from '../plate/uz-plate';
 import { otherSide } from './other-side';
 
 const PHOTO = 118;
-const LETTER = 40;
 
 // Who is on the call (mockup g60/4): the face in a ring, the name, the car and the plate. A driver
 // knows the own car: the passenger is a face and a name. Before a booking the offer shows the car
@@ -23,8 +22,7 @@ export function CallPerson({ about, name }: { readonly about: ChatAbout | null; 
             name={other.firstName}
             hasAvatar={other.hasAvatar}
             size={PHOTO}
-            letter={LETTER}
-            plain
+            role={other.role}
           />
         ) : null}
       </span>

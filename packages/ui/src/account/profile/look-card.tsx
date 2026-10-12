@@ -32,7 +32,13 @@ export function LookCard({ standing }: { readonly standing: Standing | null }) {
   return (
     <div className="look-card">
       <div className="look-top">
-        <PersonBadge id={id} name={firstName} hasAvatar={hasAvatar} size={PHOTO} />
+        <PersonBadge
+          id={id}
+          name={firstName}
+          hasAvatar={hasAvatar}
+          size={PHOTO}
+          role={account.app === 'driver' ? 'driver' : 'passenger'}
+        />
         <span className="look-words">
           <span>
             <b className="look-name">{firstName}</b>{' '}

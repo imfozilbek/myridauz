@@ -1,0 +1,90 @@
+/* The face photo of a passenger (G75, mockup g67/2 screen 5; G78 К1): the photo, who, the 3 points. */
+.face-case-photo {
+  align-self: center;
+  width: 149.33px;
+  height: 149.33px;
+  border-radius: 50%;
+  background: var(--reg-face-pale);
+  overflow: hidden;
+}
+
+.face-case-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.face-case-who,
+.face-case-wait {
+  margin: 0;
+  text-align: center;
+}
+
+.face-case-who {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.face-case-wait {
+  margin-top: -8px;
+  font-size: 12.5px;
+  color: var(--reg-muted);
+}
+
+.face-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13.33px;
+}
+
+/* The point itself: its mark and its words; a tap ticks it. */
+.face-check-tick {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10.67px;
+  min-height: 38.67px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--reg-success-deep);
+  font: inherit;
+  font-size: 13.5px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.face-check + .face-check {
+  border-top: 1px solid var(--reg-divider);
+}
+
+.face-check-box {
+  display: grid;
+  place-items: center;
+  width: 18.67px;
+  height: 18.67px;
+  border-radius: 5.33px;
+  background: var(--reg-neutral-pale);
+  color: var(--reg-control);
+}
+
+.face-check-on .face-check-box {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+/* «Mos emas» at each point (G78 К1): one tap refuses the photo for this point. */
+.face-not {
+  flex: none;
+  padding: 3px 8px;
+  border: 1px solid var(--reg-danger-line);
+  border-radius: 8px;
+  background: var(--reg-card);
+  color: var(--reg-danger);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}

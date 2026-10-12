@@ -13,13 +13,6 @@
   gap: 10.67px;
 }
 
-.request-row-head .person-badge-plain {
-  box-sizing: border-box;
-  padding-top: 1.33px;
-  background: var(--reg-face-pale);
-  font-weight: 700;
-}
-
 .request-row-who {
   display: flex;
   flex: 1;

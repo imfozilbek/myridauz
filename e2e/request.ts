@@ -2,6 +2,7 @@ import { expect, type Page } from '@playwright/test';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { openFindTrip } from './apps';
 import { takeEnd } from './bookings';
+import { noSeatYet } from './bookings-mock';
 import { MAN } from './g59-pixel-mock';
 import { tripOf } from './market-mock';
 import { fromIfAsked, searchRoute } from './market';
@@ -48,6 +49,8 @@ export async function leaveRequest(page: Page, open: () => Promise<unknown>) {
 export async function bookWholeCar(page: Page, open: () => Promise<unknown>) {
   const trip = tripOf('5', 'Jasur', false, 26, { bookingRule: 'seats_or_car', seats: 4, seatsLeft: 4 });
   await page.route('**/api/trips?*', (route) => route.fulfill({ json: { trips: [trip] } }));
+  // One at a time (docs/172): a passenger who books holds no seat yet.
+  await noSeatYet(page);
   const bodies = sentTo(page, '/bookings');
   await open();
   await openFindTrip(page);

@@ -4,9 +4,9 @@ import { TEXT } from './apps';
 import { mapState, mockMap } from './map-mock';
 import { placeFound } from './map-wait';
 import { findTrips, openOwnTrip } from './market';
-import { pressBack } from './telegram-mock';
+import { pressBack, telegramEvents } from './telegram-mock';
 
-const { t } = createI18n(DEFAULT_LOCALE);
+const { t, formatNumber } = createI18n(DEFAULT_LOCALE);
 type Shot = (name: string) => Promise<unknown>;
 const none: Shot = async () => undefined;
 const B = {
@@ -18,7 +18,6 @@ const B = {
   accept: t('bookings.offer.accept'),
   confirm: t('bookings.confirm'),
   confirmed: t('bookings.confirmed.title'),
-  notEnough: t('wallet.notEnough.title'),
   topUp: t('wallet.topUp'),
   wallet: t('wallet.title'),
   wallets: t('wallet.team.title'),
@@ -27,9 +26,17 @@ const B = {
 };
 
 // One end of a booking on «Qayerdan, qayerga?»: its row opens the map, the main button takes it (G59).
+// The map of an end: the end opens by itself right after the start (G78 П4), else its row opens it.
+export async function openEndMap(page: Page, end: 'pickup' | 'dropoff') {
+  const title = page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'));
+  await expect(page.getByText(B.points).or(title)).toBeVisible();
+  if (!(await title.isVisible()))
+    await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
+  await expect(title).toBeVisible();
+}
+
 export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
-  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
-  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await openEndMap(page, end);
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   if (search) {
     await page.getByPlaceholder(t('way.point.search')).fill(search[0]);
@@ -40,7 +47,7 @@ export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [s
     .locator('#tg-main-button')
     .filter({ hasText: t(end === 'pickup' ? 'way.point.takeFrom' : 'way.point.takeTo') })
     .click();
-  await expect(page.getByText(B.points)).toBeVisible();
+  await expect(page.getByText(B.points).or(page.getByText(t('way.point.to')))).toBeVisible();
 }
 
 // A passenger books 2 seats on a found trip (G59, docs/118 path 2): «+» on «Safar», then the door on
@@ -100,12 +107,12 @@ export async function confirmBooking(page: Page, shot: Shot = none, money = true
     await shot('2-confirmed');
     return;
   }
-  // Without money for the commission the way to top up comes instead, no «Tasdiqlash» (docs/83 N20).
-  await page.getByRole('button', { name: B.topUp, exact: true }).click();
-  // A sheet with only the sum short; its button opens the support chat with the message ready (G75).
-  await expect(page.getByText(B.notEnough)).toBeVisible();
-  await expect(page.getByText(t('wallet.short.missing'))).toBeVisible();
+  // Without money for the commission the card names the sum short and the way to top up comes instead
+  // of «Tasdiqlash» (docs/83 N20); one tap opens the support chat with the message ready (G78 В9).
+  await expect(page.getByText(t('driverTrip.short', { amount: formatNumber(18_000) }))).toBeVisible();
   await shot('3-not-enough');
+  await page.getByRole('button', { name: B.topUp, exact: true }).click();
+  await expect.poll(async () => (await telegramEvents(page, 'web_app_open_tg_link')).length).toBe(1);
 }
 
 // "Hamyon" from its tile on the main screen of an approved driver (docs/118 path 9, G65): the bonus,
@@ -131,6 +138,6 @@ export async function teamWallets(page: Page, shot: Shot = none) {
   await page.getByText(B.adjust).click();
   await page.getByText(t('wallet.adjust.add')).click();
   await page.getByLabel(t('wallet.adjust.amount')).fill('100000');
-  await page.getByLabel(t('wallet.adjust.reason')).fill('Yoʻlovchi kelmadi');
+  await page.getByRole('radio', { name: t('wallet.adjust.reason.noShow') }).click();
   await shot('3-adjust');
 }

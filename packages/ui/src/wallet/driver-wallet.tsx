@@ -1,18 +1,15 @@
 import type { Adjustment, PersonId } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
 import { haptic } from '../telegram/feedback';
 import { AdjustForm } from './adjust-form';
 import { WalletView } from './wallet-view';
-import '../market/market.css';
 
 type Props = {
   readonly owner: { readonly driverId: PersonId; readonly firstName: string };
@@ -20,7 +17,8 @@ type Props = {
 };
 
 // The wallet of one driver for the owner (docs/12): its balances and history, a correction by hand.
-// «Hamyonlar» and the card of the driver in «Odamlar» open it (G79 К5).
+// «Hamyonlar» and the card of the driver in «Odamlar» open it (G79 К5), in the look of «Boshqaruv»
+// (G78 sheet 4).
 export function DriverWallet({ owner, onBack }: Props) {
   const { t } = useI18n();
   const { wallet } = useApiClients();
@@ -54,18 +52,17 @@ export function DriverWallet({ owner, onBack }: Props) {
       />
     );
   return (
-    <div className="market">
-      <Screen onBack={onBack} onRefresh={refresh} />
-      <Title weight="1" className="market-title">
-        {owner.firstName}
-      </Title>
+    <ManagePage title={owner.firstName} onBack={onBack} onRefresh={refresh}>
       <WalletView wallet={value}>
-        <Section>
-          <Cell onClick={adjust} subtitle={t('wallet.adjust.hint')}>
-            {t('wallet.adjust.title')}
-          </Cell>
-        </Section>
+        <ManageGroup>
+          <ManageRow
+            icon="change"
+            title={t('wallet.adjust.title')}
+            hint={t('wallet.adjust.hint')}
+            onClick={adjust}
+          />
+        </ManageGroup>
       </WalletView>
-    </div>
+    </ManagePage>
   );
 }

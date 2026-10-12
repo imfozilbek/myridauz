@@ -62,7 +62,6 @@ describe('the parts of a new trip', { timeout: 20_000 }, () => {
     expect(await screen.findByText(/^Faqat joylar · 380\s000$/u)).toBeTruthy();
     await tap('Qanday band qilinadi?');
     await tap('Joylar yoki butun salon');
-    await tap('Davom etish');
     expect(await screen.findByText(/^Joylar yoki butun salon · 380\s000$/u)).toBeTruthy();
     await tap('Izoh (ixtiyoriy)');
     fireEvent.change(await screen.findByPlaceholderText('Izoh yozing'), { target: { value: 'Yuk yoʻq' } });

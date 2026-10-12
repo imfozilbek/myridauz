@@ -1,6 +1,7 @@
 import type { Subscription } from '@platform/contracts';
 import { Text, Title } from '@telegram-apps/telegram-ui';
 import { useEffect, useState } from 'react';
+import { useAccount } from '../account/account-context';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
@@ -37,6 +38,8 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
   const { colors } = useBrand().theme;
+  // A driver waits for the requests on the route, a passenger for the trips (G78 sheet 3).
+  const driver = useAccount()?.app === 'driver';
   const { value, failed, reload, refresh } = useLoad(() => subscriptions.mine(), 'subscriptions');
   const [removed, setRemoved] = useState<Subscription | null>(null);
   // A renew, a removal or «Qaytarish» that did not work says why (G43, docs/65 B3).
@@ -69,7 +72,9 @@ function Subscriptions({ onBack }: { readonly onBack: () => void }) {
           <Title weight="1" className="market-title">
             {t('subscriptions.title')}
           </Title>
-          <Text className="market-subtitle">{t('subscriptions.hint')}</Text>
+          <Text className="market-subtitle">
+            {t(driver ? 'subscriptions.hintDriver' : 'subscriptions.hint')}
+          </Text>
           {value.map((subscription) => (
             <SubscriptionCard
               key={subscription.id}

@@ -12,7 +12,13 @@ export function DriverCard({ driver }: { readonly driver: Trip['driver'] }) {
   const { t, formatRating } = useI18n();
   return (
     <div className="safar-card driver-card">
-      <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={PHOTO} />
+      <PersonBadge
+        id={driver.id}
+        name={driver.firstName}
+        hasAvatar={driver.hasAvatar}
+        size={PHOTO}
+        role="driver"
+      />
       <span className="driver-card-text">
         <span className="driver-card-name">
           {driver.firstName}

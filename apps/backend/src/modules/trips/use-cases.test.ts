@@ -109,16 +109,16 @@ describe('finding trips (docs/06, docs/14)', () => {
 describe('my trips and the end of a trip (docs/35)', () => {
   it('lets the driver cancel, and completes a trip after the road and 2 hours', async () => {
     const { deps, trip, setNow } = setup();
-    const first = await publishTrip(deps, 1, trip);
-    const second = await publishTrip(deps, 1, { ...trip, departAt: NOW + 30 * HOUR });
+    const first = await publishTrip(deps, 1, { ...trip, departAt: NOW + 30 * HOUR });
     const firstId = first.ok ? first.value.id : '';
+    expect(await cancelTrip(deps, 2, firstId)).toEqual({ ok: false, error: 'trips.not_found' });
+    expect((await cancelTrip(deps, 1, firstId)).ok).toBe(true);
+    expect(await cancelTrip(deps, 1, firstId)).toEqual({ ok: false, error: 'trips.wrong_status' });
+    // The cancelled trip frees the driver (docs/172): 3 h to leave, 5 h on the road, 2 h after.
+    const second = await publishTrip(deps, 1, trip);
     const secondId = second.ok ? second.value.id : '';
-    expect(await cancelTrip(deps, 2, secondId)).toEqual({ ok: false, error: 'trips.not_found' });
-    expect((await cancelTrip(deps, 1, secondId)).ok).toBe(true);
-    expect(await cancelTrip(deps, 1, secondId)).toEqual({ ok: false, error: 'trips.wrong_status' });
-    // 3 h to leave, 5 h on the road (300 km at 60 km/h), 2 h after arrival.
     setNow(NOW + 10 * HOUR);
-    expect((await tripDetail(deps, firstId, 0))?.status).toBe('completed');
+    expect((await tripDetail(deps, secondId, 0))?.status).toBe('completed');
     await deps.trips.completeOver(NOW + 10 * HOUR);
     expect((await myTrips(deps, 1)).map((item) => item.status)).toEqual(['cancelled', 'completed']);
   });

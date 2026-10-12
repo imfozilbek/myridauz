@@ -6,6 +6,7 @@ import type { AppEnv } from './env';
 import './account-deletion';
 import './module-events';
 import './board-events';
+import './seat-events';
 import { analyticsModule } from './modules/analytics';
 import {
   bookingForShare,

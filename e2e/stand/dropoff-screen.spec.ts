@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
-import { CHILONZOR, publishTrip } from './market-kit';
+import { CHILONZOR, declineWaiting, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
 import { searchTo } from './search-kit';
 import { mainButton, openHome, PLATFORMS, t, type Platform } from './screen-tour';
@@ -56,8 +56,8 @@ for (const platform of PLATFORMS)
     await page.getByText(t('way.book.pickup')).click();
     await mapReady(page, 'way.point.from');
     await shot('01-pickup');
+    // The map of the end opens by itself right after the start (G78 П4).
     await mainButton(page).click();
-    await page.getByText(t('way.book.dropoff')).click();
     await mapReady(page, 'way.point.to');
     await shot('02-dropoff');
     await page.getByPlaceholder(t('way.point.search')).fill('Bahor');
@@ -73,9 +73,10 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('bookings.points.all'))).toBeVisible();
     await mainButton(page).click();
     await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
-    // Again with the other driver: the way is kept, «Oʻzgartirish» of the dropoff opens the map. The
-    // seat waits in the block at the bottom: the search opens like a bot button (G76, docs/165).
+    // Again with the other driver after a «no» (one seat at a time, docs/172): the way is kept,
+    // «Oʻzgartirish» of the dropoff opens the map; the search opens like a bot button (G76, docs/165).
     await backUntil(page, page.getByTestId('home-dock'));
+    await declineWaiting(ELYOR, SEEKERS[platform]);
     await openFindTrip(page);
     await searchTo(page, 'Guliston shahri');
     await card(page, FARRUX.name).click();

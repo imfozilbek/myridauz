@@ -2,6 +2,7 @@ import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { AccountContext, type Account } from '../account/account-context';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
@@ -25,26 +26,29 @@ const ANY: Subscription = {
   expired: true,
 };
 
-// The empty day of a search has one action, the request (G37, docs/101 R9): «Xabar bering» lives
-// on a closed trip and on a channel post.
+// «Xabar bering» (docs/24, G78 П13): a row; a tap on a day of its sheet subscribes at once, no button.
+// Subscribed, the row turns green in its place; a failure stays in the sheet with its reason.
 describe('"Xabar bering" (docs/24)', () => {
   it('subscribes to the searched route for the day or any day', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
     const { tracked } = renderMarket(
-      <NotifyMe from="1726269" to="1730401" date="2026-10-02" />,
+      <AccountContext.Provider value={{ app: 'passenger' } as unknown as Account}>
+        <NotifyMe from="1726269" to="1730401" date="2026-10-02" />
+      </AccountContext.Provider>,
       testClients({ subscriptions: { subscribe } }),
     );
     await tap('Xabar bering');
-    // A sheet (G75, mockup g75/3 A phone 4): «Istalgan kun» is chosen, the button subscribes.
     expect(screen.getByText('Shu kungi safarlar')).toBeTruthy();
-    expect(screen.getByRole('radio', { name: /Istalgan kun/u })).toHaveProperty('checked', true);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
-    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(screen.queryByRole('radio')).toBeNull();
+    await tap('Istalgan kun');
+    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
+    expect(screen.getByText('Mos eʼlon chiqsa, bot xabar beradi.')).toBeTruthy();
+    expect(document.querySelector('.way-row-done')).not.toBeNull();
     expect(subscribe).toHaveBeenCalledWith({ from: '1726269', to: '1730401', date: null, woman: false });
     expect(tracked.some((event) => event.name === 'route_subscribed')).toBe(true);
   });
 
-  it('explains the limit of 5 subscriptions', async () => {
+  it('explains the limit of 5 subscriptions in the sheet', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => {
       throw new ApiError(409, 'subscriptions.too_many');
     });
@@ -54,8 +58,8 @@ describe('"Xabar bering" (docs/24)', () => {
     );
     await tap('Xabar bering');
     await tap(/^Faqat/);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
     expect(await screen.findByText('Obunalar soni chegaraga yetdi. Keraksizini oʻchiring.')).toBeTruthy();
+    expect(screen.getByText('Istalgan kun')).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-10-02' }));
   });
 });
@@ -86,13 +90,12 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     await waitFor(() => expect(mine).toHaveBeenCalledTimes(2));
     // A removal is red, like in Telegram (docs/86 V12).
     expect(screen.getByRole('button', { name: 'Oʻchirish' }).className).toBe('row-card-action');
-    // Asked first in the native window; a «no» keeps it (docs/88 L8).
-    vi.stubGlobal('confirm', () => false);
-    fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
-    expect(remove).not.toHaveBeenCalled();
-    vi.stubGlobal('confirm', () => true);
+    // Gone at once, no question in the native window (G78 П17).
+    const asked = vi.fn(() => true);
+    vi.stubGlobal('confirm', asked);
     fireEvent.click(screen.getByRole('button', { name: 'Oʻchirish' }));
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+    expect(asked).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
     // A short line says it is gone and brings it back by one tap (docs/88 L7).
     expect(screen.getByText('Obuna oʻchirildi')).toBeTruthy();
@@ -134,8 +137,7 @@ describe('"Obunalar" and the links of bots and channels (docs/15, docs/24)', () 
     // The sheet names the route of the post over the question (mockup g75/3 A phone 4).
     expect(await screen.findByText(/\. Qaysi kunga\?$/u)).toBeTruthy();
     await tap(/^Faqat/);
-    fireEvent.click(screen.getByRole('button', { name: 'Xabar bering' }));
-    expect(await screen.findByText(/Obuna boʻldingiz/)).toBeTruthy();
+    expect(await screen.findByText('Obuna boʻldingiz')).toBeTruthy();
     expect(subscribe).toHaveBeenCalledWith({
       from: '1726',
       to: '1730',

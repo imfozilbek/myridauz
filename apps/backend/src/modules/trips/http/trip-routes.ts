@@ -8,7 +8,6 @@ import {
   dateSchema,
   daysQuerySchema,
   directionsQuerySchema,
-  scheduleQuerySchema,
   tripInputSchema,
   tripPriceSchema,
   tripSearchSchema,
@@ -35,7 +34,6 @@ const STATUS = {
   'trips.price_out_of_bounds': 422,
   'trips.in_past': 422,
   'trips.too_soon': 422,
-  'trips.busy': 409,
   'trips.wrong_status': 409,
   'trips.no_pitak': 400,
   'locations.not_found': 404,
@@ -58,17 +56,10 @@ export function tripRoutes(deps: (env: Bindings) => TripsDeps) {
         const result = await publishTrip(deps(context.env), context.get('session').user.id, input.data);
         return result.ok ? context.json(result.value, 201) : fail(context, result.error);
       })
-      // The busy times of a new trip on a route: the day and time screen shows only the free ones (docs/103).
-      .get(DRIVER_SCHEDULE_PATH, async (context) => {
-        const route = scheduleQuerySchema.safeParse(context.req.query());
-        if (!route.success) return fail(context, 'trips.invalid_input');
-        const tripsDeps = deps(context.env);
-        const recommendation = await tripsDeps.recommend(route.data.from, route.data.to);
-        if (!recommendation.ok) return fail(context, recommendation.error);
-        const { km } = recommendation.value;
-        const driverId = context.get('session').user.id;
-        return context.json(await driverSchedule(tripsDeps, driverId, { ...route.data, km }));
-      })
+      // Whether the driver has a live trip: the day and time screen says it at once (docs/172).
+      .get(DRIVER_SCHEDULE_PATH, async (context) =>
+        context.json(await driverSchedule(deps(context.env), context.get('session').user.id)),
+      )
       // The driver moves the time later or lowers the price (G39, docs/104).
       .post(`${DRIVER_TRIPS_PATH}/${ONE}/time`, async (context) => {
         const input = tripTimeSchema.safeParse(await context.req.json().catch(() => null));

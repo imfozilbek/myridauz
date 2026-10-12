@@ -38,6 +38,8 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
   };
   if (flow.screen === 'pickup' || flow.screen === 'dropoff') {
     const pickup = flow.screen === 'pickup';
+    // The start chosen, the map of the end opens at once while the end is not chosen yet (G78 П4).
+    const afterStart = flow.dropoff ? 'points' : 'dropoff';
     return (
       <BookPoint
         placeId={pickup ? trip.from : trip.to}
@@ -47,13 +49,13 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
         {...(pickup && flow.pitakFirst && trip.pitak && flow.mode !== 'pitak'
           ? {
               pitak: trip.pitak,
-              onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: 'points' }),
+              onPitak: () => flow.patch({ mode: 'pitak', pickup: null, screen: afterStart }),
             }
           : {})}
         onBack={() => flow.patch({ screen: 'points' })}
         onPick={(end) =>
           flow.patch(
-            pickup ? { mode: 'door', pickup: end, screen: 'points' } : { dropoff: end, screen: 'points' },
+            pickup ? { mode: 'door', pickup: end, screen: afterStart } : { dropoff: end, screen: 'points' },
           )
         }
       />

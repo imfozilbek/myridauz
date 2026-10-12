@@ -7,23 +7,14 @@ import { sardor, tashkent } from './g64-requests-mock';
 import { tripOf } from './market-mock';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
-// «Mening safarlarim» of the mockup g64/6, one to one (lesson 151): today is 7 October, a trip at
-// 16:00 with a new request, tomorrow 08:00 full, the way back on 9 October; yesterday's trip at 08:00
-// is the one to repeat. The private trip of g64/3 phone 3 waits for Sardor.
+// «Mening safarlarim» of the mockup g64/6 with one live trip (owner decision 12.10.2026, docs/172
+// sheet 1, 9): today is 7 October, the trip at 16:00 has a new request; yesterday's trip at 08:00 is
+// over. The private trip of g64/3 phone 3 waits for Sardor.
 const { t } = createI18n(DEFAULT_LOCALE);
 const [, DRIVER] = MINI_APPS;
 const at = (day: string, time: string) => tashkent(`2026-10-${day}T${time}`);
-const there = tripOf('3', 'Jasur', false, 0, {
-  departAt: at('09', '15:00'),
-  seats: 4,
-  seatsLeft: 4,
-  pitak: null,
-});
 const trips = [
   tripOf('1', 'Jasur', false, 0, { departAt: at('07', '16:00'), seats: 4, seatsLeft: 3 }),
-  tripOf('2', 'Jasur', false, 0, { departAt: at('08', '08:00'), seats: 4, seatsLeft: 0 }),
-  // The way back of the trips to Samarqand.
-  { ...there, from: there.to, to: there.from },
   tripOf('4', 'Jasur', false, 0, {
     departAt: at('06', '08:00'),
     status: 'completed',

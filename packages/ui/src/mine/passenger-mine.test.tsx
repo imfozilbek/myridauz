@@ -8,6 +8,7 @@ import { searchMarket } from '../find/search-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
@@ -39,10 +40,10 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
     // The same way again: the request opens with its route and asks the day, never «today» by
     // itself (G77, docs/170 О2); «Назад» from the points comes back to the day.
     expect(recommend).toHaveBeenCalledWith(request.from, request.to);
-    await tap(/^Ertaga/u);
-    await waitFor(() => expect(screen.queryByText(/^Ertaga/u)).toBeNull());
+    await pickDay(1);
+    await waitFor(() => expect(screen.queryByText('Qaysi kuni?')).toBeNull());
     await tap('Orqaga');
-    expect(await screen.findByText(/^Ertaga/u)).toBeTruthy();
+    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
   });
 
   // G79 П11 (docs/170): «Qayta yuborish» keeps the people, the price, «Boʻsh salon» and «ayol» of
@@ -54,7 +55,7 @@ describe('«Mening safarlarim» of a passenger', { timeout: 15_000 }, () => {
       vi.fn(async () => recommendation),
     );
     await tap('Qayta yuborish');
-    await tap(/^Ertaga/u);
+    await pickDay(1);
     expect(await screen.findByText(/^3 joy × 110[\s.]000$/u)).toBeTruthy();
     const checked = (name: string) => (screen.getByRole('checkbox', { name }) as HTMLInputElement).checked;
     expect(checked('Boʻsh salon kerak')).toBe(true);

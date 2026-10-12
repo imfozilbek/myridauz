@@ -105,11 +105,13 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     await tap('Jasur');
     await tap('Hamyonni tuzatish');
     const amount = screen.getByLabelText('Summa, soʻm');
-    // The label is a section header that wraps, not a field header cut on a 360 px phone (G27).
+    // The name is over the box, never a placeholder that goes away (G27).
     expect(amount.getAttribute('placeholder')).toBeNull();
-    expect(screen.getByText('Summa, soʻm').closest('label')).toBeNull();
     fireEvent.change(amount, { target: { value: '100000' } });
-    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Yoʻlovchi kelmadi' } });
+    // The sum is read in groups of three while typed (G78 sheet 4).
+    expect((amount as HTMLInputElement).value).toMatch(/^100\s000$/u);
+    await tap('Boshqa');
+    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: 'Yoʻlovchi kelmadi' } });
     // Adding or taking away is a choice, not a minus to remember (docs/86 V2).
     expect(screen.queryByText('Saqlash')).toBeNull();
     await tap('Qoʻshish');
@@ -139,7 +141,7 @@ describe('"Hamyonlar" for the team (docs/12)', () => {
     await tap('Asosiy hisob');
     await tap('Ayirish');
     fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '5000' } });
-    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Xato' } });
+    await tap('Xato yechilgan komissiya');
     expect(screen.getByText(/^-5\s000/)).toBeTruthy();
     await tap('Saqlash');
     expect(await screen.findByText('Buni faqat loyiha egasi qila oladi.')).toBeTruthy();

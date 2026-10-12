@@ -50,31 +50,27 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     expect(answer).toHaveBeenCalledWith('b1', 'decline');
   });
 
+  // В9 (G78 sheet 3): the card says the sum short; «Hisobni toʻldirish» opens the support chat at once.
   it('offers the way to top up, not a «Tasdiqlash» that would fail (G27)', async () => {
     const answer = vi.fn<BookingsClient['answer']>();
     await open(() => [booking], { answer, mine: async () => ({ ...wallet, bonus: 0, main: 0 }) });
-    await tap('Hisobni toʻldirish');
-    // A sheet over the trip (G75, mockup g75/4 B): only the sum short, then the ready message.
-    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
-    expect(screen.getByText('Komissiya · 2 joy')).toBeTruthy();
-    expect(screen.getAllByText(/19\s000/u).length).toBeGreaterThan(0);
-    expect(screen.getByText('Dilnozaning joyini tasdiqlash uchun')).toBeTruthy();
-    expect(answer).not.toHaveBeenCalled();
+    expect(await screen.findByText(/^Hamyonda 19\s000 yetmaydi$/u)).toBeTruthy();
     const sent = vi.spyOn(window, 'open').mockReturnValue(null);
-    const buttons = screen.getAllByRole('button', { name: 'Hisobni toʻldirish' });
-    fireEvent.click(buttons.at(-1) as HTMLElement);
+    await tap('Hisobni toʻldirish');
     const url = decodeURIComponent(String(sent.mock.calls[0]?.[0]));
     expect(url).toMatch(/\?text=Salom! Hamyonimni toʻldirmoqchiman\. Dilnozaning joyini tasdiqlash/u);
+    expect(answer).not.toHaveBeenCalled();
     sent.mockRestore();
   });
 
-  it('goes to the top up when the server says the money is short', async () => {
+  it('says why when the server finds the money short', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => {
       throw new ApiError(409, 'wallet.not_enough');
     });
     await open(() => [booking], { answer, mine: async () => Promise.reject(new Error('down')) });
     await tap('Tasdiqlash');
-    expect(await screen.findByText('Hamyonda mablagʻ yetarli emas')).toBeTruthy();
+    expect(await screen.findByText('Hamyonda komissiya uchun mablagʻ yetarli emas.')).toBeTruthy();
+    expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
   });
 
   it('keeps the page with the reason when an answer fails', async () => {
@@ -87,16 +83,14 @@ describe('the driver answers a request right in its card (owner decision 06.10.2
     expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
   });
 
-  // A sheet over the trip (G75, mockup g75/4 B phone 1): the deadline, the points, the commission.
+  // The sheet of the main screen over the trip (G78 sheet 3): who, the trip, the time left, the answer.
   it('opens the request in a sheet from the name and answers there', async () => {
     const answer = vi.fn<BookingsClient['answer']>(async () => booking);
     await open(() => [booking], { answer });
     await tap('Dilnoza');
     expect(await screen.findByText('Yangi soʻrov')).toBeTruthy();
-    expect(screen.getByText(/^Javob berish muddati · /u)).toBeTruthy();
+    expect(screen.getByText(/^Javob berish uchun \d+ (daqiqa|soat)/u)).toBeTruthy();
     expect(screen.getByText('Joy soʻraganlar (1)')).toBeTruthy();
-    // The chat before the answer stays in the sheet (docs/07).
-    expect(screen.getAllByText('Xabar yozish').length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole('button', { name: 'Tasdiqlash' }).at(-1) as HTMLElement);
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'confirm'));
   });

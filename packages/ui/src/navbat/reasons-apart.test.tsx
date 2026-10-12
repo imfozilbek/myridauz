@@ -1,5 +1,6 @@
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { closeSheet } from '../home/sheet-closed';
 import { JASUR, renderNavbat } from './navbat-test-kit';
 
 afterEach(cleanup);
@@ -13,11 +14,12 @@ describe('the ticks of «Tuzatish» and «Rad etish»', { timeout: 20_000 }, () 
     renderNavbat({ filter: 'application', kind: 'application', id: JASUR.id }, [JASUR]);
     fireEvent.click(await screen.findByText('Tuzatish'));
     fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    await closeSheet();
     fireEvent.click(await screen.findByText('Rad etish'));
     expect(screen.queryByText('Yuborish')).toBeNull();
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    await closeSheet();
     fireEvent.click(await screen.findByText('Tuzatish'));
     expect(screen.getByText('Yuborish')).toBeTruthy();
+    await closeSheet();
   });
 });

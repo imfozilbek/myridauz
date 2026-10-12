@@ -28,7 +28,7 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.ok && board.value).toMatchObject({ known: false, others: [] });
   });
 
-  it('counts the requests of today, tomorrow and the next day that has some, on the directions of the driver', async () => {
+  it('counts the requests of the 7 days from today on the directions of the driver (owner 12.10.2026)', async () => {
     const { deps, request, directions } = setup();
     directions([{ from: '1726', to: '1718' }]);
     await publishRequest(deps, 1, request);
@@ -42,7 +42,11 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.value.days).toEqual([
       { date: '2026-10-01', count: 1 },
       { date: '2026-10-02', count: 2 },
+      { date: '2026-10-03', count: 0 },
+      { date: '2026-10-04', count: 0 },
       { date: '2026-10-05', count: 1 },
+      { date: '2026-10-06', count: 0 },
+      { date: '2026-10-07', count: 0 },
     ]);
     expect(board.value.others.map((item) => item.passenger.firstName)).toEqual(['P2', 'P3']);
   });
@@ -67,17 +71,28 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.value.others.map((item) => item.passenger.firstName)).toEqual(['P3', 'P4']);
     // A trip for a whole car takes every seat of it (G64): the sheet shows them from here.
     expect(board.value.carSeats).toBe(4);
+    // One live trip (docs/172): the driver offers only to it.
+    expect(board.value.busy).toBe(true);
   });
 
-  it('shows one route asked by a bot link without the trip', async () => {
+  it('shows one route asked by a bot link without the trip, the driver still busy with it', async () => {
     const { deps, request, boardTrip } = setup();
     boardTrip({ trip: TRIP, stops: { pickups: [], dropoffs: [] } });
     await publishRequest(deps, 1, request);
     const board = await requestBoard(deps, 9, { from: '1726', to: '1718', date: '2026-10-01' });
-    expect(board.ok && [board.value.known, board.value.trip, board.value.others.length]).toEqual([
-      true,
-      null,
-      1,
-    ]);
+    expect(
+      board.ok && [board.value.known, board.value.trip, board.value.others.length, board.value.busy],
+    ).toEqual([true, null, 1, true]);
+  });
+
+  it('says a full or a departed trip keeps the driver busy, though the board shows no trip', async () => {
+    const { deps, request, directions, liveTrip } = setup();
+    directions([{ from: '1726', to: '1718' }]);
+    await publishRequest(deps, 1, request);
+    const free = await requestBoard(deps, 9, {});
+    expect(free.ok && free.value.busy).toBe(false);
+    liveTrip();
+    const busy = await requestBoard(deps, 9, {});
+    expect(busy.ok && [busy.value.trip, busy.value.busy]).toEqual([null, true]);
   });
 });

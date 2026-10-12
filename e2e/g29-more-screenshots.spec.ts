@@ -33,7 +33,7 @@ test('passenger: «Orqaga» keeps the filters and «Qayerdan», «Boshqa joy» f
   await shot(page, 'fp3-samarkand');
   await page.getByText('Samarqand shahri', { exact: true }).click();
   // The trips of the nearest day at once; «Orqaga» keeps «Qayerdan» (lesson 79).
-  await expect(page.getByRole('tab').first()).toBeVisible();
+  await expect(page.locator('.week-day').first()).toBeVisible();
   await pressBack(page);
   await expect(page.getByText(TEXT.directions)).toBeVisible();
   await shot(page, 'fp2-route-kept');

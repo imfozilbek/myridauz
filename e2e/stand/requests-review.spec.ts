@@ -87,7 +87,7 @@ for (const platform of PLATFORMS)
     await page.getByText('Termiz shahri', { exact: true }).click();
     await expect(page.locator('.request-row').filter({ hasText: SEEKERS[platform].name })).toBeVisible();
     await shot('04-d-requests');
-    await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
+    await page.locator('.week-day').nth(1).click();
     await expect(page.getByText(t('market.requests.empty'))).toBeVisible();
     await shot('05-d-empty');
     await page.getByText(t('market.requests.publish')).click();

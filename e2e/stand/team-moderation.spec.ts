@@ -62,17 +62,16 @@ test('T21, T23, T25. a no-show complaint: a warning and the commission back to t
   ).complain({ bookingId: seat.id, reasons: ['no_show'] });
   const team = createFeedbackClient(await signedAs('admin', OWNER));
   const complaint = (await team.queue()).find((c) => c.tripId === trip.id);
-  // The team proposes the refund, the owner confirms it; it goes back to the balances the commission
-  // came from (docs/12, docs/35, G63).
+  // The owner decides with the refund on: it goes back at once to the balances the commission came
+  // from (docs/12, docs/35, G63; G78 К4: no second confirmation, nothing waits in «Navbat»).
   const total = async () => {
     const wallet = await walletOf(JAHONGIR);
     return wallet.main + wallet.bonus;
   };
   const before = await total();
   await team.decide(complaint?.id ?? '', { action: 'warning', refund: true });
-  expect(await total()).toBe(before);
-  await team.answerRefund(complaint?.id ?? '', 'confirm');
   expect(await total()).toBe(before + seat.commission);
+  expect((await team.queue()).some((c) => c.id === complaint?.id)).toBe(false);
 });
 
 test('T40, T41, T46, T47. a formula with a history, a channel added and removed, the numbers', async () => {

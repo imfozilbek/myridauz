@@ -1,9 +1,5 @@
 // Apps get TelegramUI only through this file (docs/19): replacing the library changes only packages/ui.
 export {
-  Avatar,
-  AvatarStack,
-  Badge,
-  Banner,
   Button,
   Input,
   List,
@@ -14,7 +10,6 @@ export {
   Snackbar,
   Spinner,
   Textarea,
-  Timeline,
 } from '@telegram-apps/telegram-ui';
 export { Cell } from './cell';
 export { Field } from './field';

@@ -38,7 +38,8 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome, sta
     const day = opened.screen === 'others' ? { day: similarDay(booking.trip) } : {};
     return <LinkedSearch ids={{ from, to, ...day }} onClose={back} />;
   }
-  if (opened?.screen === 'complaint') return <ComplaintScreen bookingId={booking.id} onBack={back} />;
+  if (opened?.screen === 'complaint')
+    return <ComplaintScreen bookingId={booking.id} onBack={back} onSent={back} />;
   if (opened?.screen === 'review')
     return (
       <ReviewScreen

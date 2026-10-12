@@ -43,12 +43,12 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   await main.click();
   await expect(main).toHaveText(t('driverTrip.main.arrived'));
   await main.click();
-  // «Safar tugadi» right after the arrival: five stars unless lowered, then «Qaytish».
+  // «Safar tugadi» right after the arrival: five stars unless lowered, the way back under them
+  // (G78 В10 A). «Qaytish safari» sends the stars and opens the publishing.
   await expect(page.getByText(t('driverAfter.done.rate'))).toBeVisible();
   await expect(main).toHaveText(t('reviews.send'));
-  await main.click();
   await expect(page.getByText(t('driverAfter.back.title'))).toBeVisible();
-  await main.click();
+  await page.locator('#tg-secondary-button', { hasText: t('driverAfter.back.trip') }).click();
   // The one screen of the publishing with the route the other way and the answers of the trip.
   await expect(main).toHaveText(TEXT.publish);
   await expect(page.locator('.points-value').nth(0)).toContainText('Samarqand shahri');

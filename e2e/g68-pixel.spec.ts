@@ -11,6 +11,7 @@ import { ask, asked, NOW, offers, seat, trip, withLists } from './g68-sheet-mock
 const { t } = createI18n(DEFAULT_LOCALE);
 const OUT = 'screenshots/pixel-g68';
 const WORDS = 'Uydan olib ketaman, 07:50 da Grand oldida boʻlaman.';
+const RING_MS = 2000;
 test.use({ viewport: { width: 360, height: 808 }, deviceScaleFactor: 1.375, actionSheets: 'keep' });
 
 // Nothing is cut (docs/121): every word of a button fits its button.
@@ -96,8 +97,11 @@ async function ringing(page: Page) {
   });
   await withLists(page, { 'passenger/bookings': { bookings: [seat] }, 'chats/*/about': about });
   await expect.poll(() => feeds.length).toBeGreaterThan(0);
-  feeds.forEach((feed) => feed.send(JSON.stringify({ type: 'call', chat: seat.chatKey })));
-  await expect(page.getByText(t('sheet.call.hidden'))).toBeVisible();
+  // One signal can come before the app listens on a slow machine: it comes again until the sheet rings.
+  await expect(async () => {
+    feeds.forEach((feed) => feed.send(JSON.stringify({ type: 'call', chat: seat.chatKey })));
+    await expect(page.getByText(t('sheet.call.hidden'))).toBeVisible({ timeout: RING_MS });
+  }).toPass();
 }
 
 test('8-3: a call while the app is open', async ({ page }) => {

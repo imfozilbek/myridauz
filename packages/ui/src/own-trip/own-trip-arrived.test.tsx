@@ -57,13 +57,12 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     expect(screen.getByText('Safar tugadi')).toBeTruthy();
   });
 
-  it('its card in the list says it ended and what is left after it', async () => {
+  it('its row in the list is past and says what is left after it', async () => {
     open({ ...left, arrivedAt: NOW - 30 * MINUTE }, true);
     await tap('Oʻtgan');
-    expect(await screen.findByText('Yakunlangan')).toBeTruthy();
+    expect(await screen.findByText(/^Baho bering · \d kun$/u)).toBeTruthy();
     // «Faol» is only the tab now, no chip of a live trip (mockup g75/2 A).
     expect(screen.getAllByText('Faol')).toHaveLength(1);
-    expect(screen.getByText(/^Baho bering · \d kun$/u)).toBeTruthy();
   });
 
   it('«Safar tugadi» once after the arrival; «Назад» leads to the past trip, the list may lag', async () => {
@@ -82,8 +81,6 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     await tap('Yetib keldik');
     expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
     await tap('Yuborish');
-    expect(await screen.findByText('Qaytishga yoʻlovchi olasizmi?')).toBeTruthy();
-    await tap('Orqaga');
     await pastShown();
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
   });

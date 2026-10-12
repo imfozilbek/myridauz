@@ -1,30 +1,30 @@
+import { tripHolds } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
-import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Screen } from '../screen/screen';
 import { StateScreen } from '../states/state-screen';
 import { MainButton } from '../telegram/bottom-button';
 
-// Whether the driver already has as many active trips as the brand allows (docs/103): known before
-// the first step, so the limit is said at once, not after the whole trip is filled (G52, docs/112).
-// While loading or on a failure the flow opens: the server checks the limit again.
-// The number of the active trips once it is the limit, else null.
+// One live trip of a driver (owner decision 12.10.2026, docs/172): known before the first step, so
+// it is said at once, not after the whole trip is filled (G52, docs/112). While loading or on a
+// failure the flow opens: the server checks again.
+// The number of the live trips once there is one, else null.
 export function useTripLimitReached(): number | null {
   const { market } = useApiClients();
-  const { maxActiveTrips } = useBrand().schedule;
   const [reached, setReached] = useState<number | null>(null);
   useEffect(() => {
     let live = true;
     market.myTrips().then(
       (trips) => {
-        const active = trips.filter((trip) => trip.status === 'active' || trip.status === 'full');
-        if (live) setReached(active.length >= maxActiveTrips ? active.length : null);
+        const now = Date.now();
+        const held = trips.filter((trip) => tripHolds(trip, now)).length;
+        if (live) setReached(held > 0 ? held : null);
       },
       () => undefined,
     );
     return () => void (live = false);
-  }, [market, maxActiveTrips]);
+  }, [market]);
   return reached;
 }
 

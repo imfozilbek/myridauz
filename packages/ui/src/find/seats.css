@@ -129,6 +129,10 @@
   padding: 0 14px;
 }
 
+.closed-notify {
+  margin-top: 10px;
+}
+
 /* A 320 px phone: the price and its buttons get narrower, the label keeps its line (docs/121). */
 @media (max-width: 340px) {
   .seats-stepper {

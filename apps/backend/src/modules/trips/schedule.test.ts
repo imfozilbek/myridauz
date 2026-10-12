@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest';
+import { arriveTrip, departTrip } from './application/progress';
 import { publishTrip } from './application/publish';
+import { cancelTrip } from './application/read';
 import { driverSchedule } from './application/schedule';
 import { HOUR, NOW, setup } from './test-kit';
 
-// G38 (owner decisions 03.10.2026, docs/103). In the kit a trip is 300 km, 5 hours on the road, so
-// gathering its people takes 2.5 hours; every other place is 5 hours away. These directions have
-// no pitak: their trips take people at the door (docs/70).
+// G38 (owner decisions 03.10.2026, docs/103) and one live trip at a time (owner decision 12.10.2026,
+// docs/172). In the kit a trip is 300 km, 5 hours on the road; the way back has no pitak.
 const DAY = 24 * HOUR;
 const BACK = { from: '1718401', to: '1726273', pickupMode: 'door' } as const;
-const ELSEWHERE = { from: '1718233', to: '1726294', pickupMode: 'door' } as const;
 
-describe('when a driver may leave (docs/103)', () => {
+describe('when a driver may leave (docs/103, docs/172)', () => {
   it('leaves an hour after the trip is made at the earliest', async () => {
     const { deps, trip } = setup();
     const soon = await publishTrip(deps, 1, { ...trip, departAt: NOW + HOUR / 2 });
@@ -18,41 +18,36 @@ describe('when a driver may leave (docs/103)', () => {
     expect((await publishTrip(deps, 1, { ...trip, departAt: NOW + HOUR })).ok).toBe(true);
   });
 
-  it('keeps at most 3 active trips of a driver', async () => {
+  it('keeps one live trip of a driver, on any day', async () => {
     const { deps, trip } = setup();
-    for (let day = 0; day < 3; day += 1)
-      await publishTrip(deps, 1, { ...trip, departAt: trip.departAt + day * DAY });
-    const fourth = await publishTrip(deps, 1, { ...trip, departAt: trip.departAt + 3 * DAY });
-    expect(fourth).toEqual({ ok: false, error: 'trips.too_many' });
+    expect(await driverSchedule(deps, 1)).toEqual({ full: false });
+    expect((await publishTrip(deps, 1, trip)).ok).toBe(true);
+    expect(await driverSchedule(deps, 1)).toEqual({ full: true });
+    const next = await publishTrip(deps, 1, { ...trip, departAt: trip.departAt + 3 * DAY });
+    expect(next).toEqual({ ok: false, error: 'trips.too_many' });
+    // Another driver is free.
+    expect(await driverSchedule(deps, 2)).toEqual({ full: false });
   });
 
-  it('takes the way back after the arrival and the time to gather people', async () => {
-    const { deps, trip } = setup();
-    await publishTrip(deps, 1, trip);
-    const arrival = trip.departAt + 5 * HOUR;
-    const early = await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2 * HOUR });
-    expect(early).toEqual({ ok: false, error: 'trips.busy' });
-    expect((await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2.5 * HOUR })).ok).toBe(true);
+  it('frees the driver at «Yetib keldik»: the way back today (G78 В11)', async () => {
+    const { deps, trip, setNow } = setup();
+    const there = await publishTrip(deps, 1, trip);
+    if (!there.ok) throw new Error(there.error);
+    setNow(trip.departAt);
+    await departTrip(deps, 1, there.value.id);
+    const arrival = trip.departAt + 4 * HOUR;
+    setNow(arrival);
+    await arriveTrip(deps, 1, there.value.id);
+    expect(await driverSchedule(deps, 1)).toEqual({ full: false });
+    const back = await publishTrip(deps, 1, { ...trip, ...BACK, departAt: arrival + 2 * HOUR });
+    expect(back.ok).toBe(true);
   });
 
-  it('adds the road to a start elsewhere, and makes it to the next trip too', async () => {
+  it('frees the driver when the trip is cancelled', async () => {
     const { deps, trip } = setup();
-    await publishTrip(deps, 1, { ...trip, departAt: NOW + 2 * DAY });
-    const before = (departAt: number) => publishTrip(deps, 1, { ...trip, ...ELSEWHERE, departAt });
-    // 5 hours of its own, 5 to the start of the next trip and 2.5 to gather its people.
-    expect(await before(NOW + 2 * DAY - 12 * HOUR)).toEqual({ ok: false, error: 'trips.busy' });
-    expect((await before(NOW + 2 * DAY - 12.5 * HOUR)).ok).toBe(true);
-    const after = NOW + 2 * DAY + 5 * HOUR + 5 * HOUR + 2.5 * HOUR;
-    expect((await publishTrip(deps, 1, { ...trip, ...ELSEWHERE, departAt: after })).ok).toBe(true);
-  });
-
-  it('gives the screen the busy times and the limit', async () => {
-    const { deps, trip } = setup();
-    await publishTrip(deps, 1, trip);
-    const schedule = await driverSchedule(deps, 1, { ...BACK, km: 300 });
-    expect(schedule).toEqual({
-      windows: [{ from: trip.departAt - 5 * HOUR - 2.5 * HOUR, to: trip.departAt + 7.5 * HOUR }],
-      full: false,
-    });
+    const first = await publishTrip(deps, 1, trip);
+    if (!first.ok) throw new Error(first.error);
+    await cancelTrip(deps, 1, first.value.id);
+    expect((await publishTrip(deps, 1, { ...trip, departAt: trip.departAt + DAY })).ok).toBe(true);
   });
 });

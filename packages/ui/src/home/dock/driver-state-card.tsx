@@ -4,7 +4,7 @@ import type { HomeGo } from '../../flow/start-action';
 import { useLoad } from '../../market/use-list';
 import { useNow } from '../../own-trip/use-now';
 import type { PlaceDirectory } from '../../places/directory';
-import { ActionFailure } from '../../states/action-failure';
+import { DockFailure } from './dock-failure';
 import { useDriverData } from '../driver-data';
 import { useDockWords } from './dock-words';
 import { DriverAppCard } from './driver-app-cards';
@@ -98,7 +98,7 @@ export function DriverStateCard({ state, go, directory }: CardProps) {
   return (
     <>
       {card}
-      <ActionFailure error={act.failure} />
+      <DockFailure error={act.failure} />
     </>
   );
 }

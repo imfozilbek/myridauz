@@ -1,9 +1,10 @@
 import { expect, test, type Locator, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
-import { CHILONZOR, publishTrip } from './market-kit';
+import { CHILONZOR, declineWaiting, publishTrip } from './market-kit';
 import { DOSTON, GAYRAT } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
 import { mapReady, fillEnds } from './request-kit';
+import { freshPassenger } from './schedule-kit';
 import { register } from './seed';
 import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
@@ -80,8 +81,8 @@ for (const platform of PLATFORMS)
     await first.tap(page.getByText(t('way.book.pickup')));
     await mapReady(page, 'way.point.from');
     await shot('07-pickup');
+    // The map of the end opens by itself right after the start (G78 П4).
     await first.tap(mainButton(page));
-    await first.tap(page.getByText(t('way.book.dropoff')));
     await mapReady(page, 'way.point.to');
     await shot('08-dropoff');
     await first.tap(mainButton(page));
@@ -91,13 +92,16 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
     await shot('10-sent');
     expect(first.taps()).toBeLessThanOrEqual(10);
-    // Again (K4, K5): the seat waits in the block at the bottom, the search opens like a bot button
-    // (G76, docs/165) with the trips of the last route at once, the points of the last trip kept.
+    // Again (K4, K5): the seat waits in the block at the bottom. The driver says no (one seat at a
+    // time, docs/172): «Oʻxshash safarlar» of the block opens the trips of the route at once (G76,
+    // docs/165), the points of the last trip kept.
     const again = counter();
     // «Назад» up to the main screen: the app keeps its screen while it stays open.
     await backUntil(page, page.getByTestId('home-dock'));
     await shot('11-home-again');
-    await again.step(() => openFindTrip(page));
+    await declineWaiting(GAYRAT, SEEKERS[platform]);
+    await page.reload();
+    await again.tap(mainButton(page).filter({ hasText: t('bookings.others') }));
     await expect(page.getByRole('heading', { name: /→ Jizzax$/u })).toBeVisible();
     await again.tap(card(page, DOSTON.name));
     await again.tap(mainButton(page));
@@ -112,6 +116,8 @@ for (const platform of PLATFORMS)
   test(`${platform}: no trip that day → «Soʻrov qoldirish» → the request left`, async ({ page }) => {
     const shot = shooter(page, platform);
     const person = counter();
+    // A request or a seat (docs/172): the seat of the scenario before is not hers here.
+    freshPassenger(SEEKERS[platform]);
     await openHome(page, 'passenger', SEEKERS[platform], platform);
     await person.step(() => openFindTrip(page));
     await person.tap(page.getByText(t('find.other')));

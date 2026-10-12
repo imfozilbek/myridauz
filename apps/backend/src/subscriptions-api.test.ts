@@ -23,6 +23,8 @@ const SAMARQAND = `@${channelOf(brand, '1718401')?.username ?? ''}`;
 const TOSHKENT_REGION = `@${channelOf(brand, '1727401')?.username ?? ''}`;
 const DRIVER = 71;
 const PASSENGER = 72;
+// A passenger without a seat: one seat or one request at a time (docs/172).
+const ASKING = 76;
 const tomorrow = () => new Date(Date.now() + 29 * 3_600_000).toISOString().slice(0, 10);
 const trip = (departAt: number) =>
   json({
@@ -83,10 +85,11 @@ describe('route subscriptions and channel posts (docs/15, docs/24)', () => {
       call('/driver/subscriptions', DRIVER, { app: 'driver', ...json(route) }),
     );
     expect(created.woman).toBe(false);
+    await registerUser(ASKING);
     telegram.length = 0;
     await call(
       '/passenger/requests',
-      PASSENGER,
+      ASKING,
       json({ ...route, from: '1726273', to: '1718401', seats: 1, price: 90_000, ...REQUEST_WAY }),
     );
     const [told] = sentTo(DRIVER);

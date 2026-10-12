@@ -5,7 +5,6 @@ import {
   defaultSlot,
   tashkentDate,
   tashkentDayStart,
-  type Schedule,
   type ScheduleRules,
 } from '@platform/contracts';
 import { today } from './when';
@@ -19,13 +18,12 @@ export const departAtOf = (date: string, time: string) => {
 };
 
 // The times a driver may leave at on a day (G38, docs/103).
-export const slotsOn = (day: string, now: number, schedule: Schedule, rules: ScheduleRules) =>
-  daySlots(day, now, schedule.windows, rules);
+export const slotsOn = (day: string, now: number, rules: ScheduleRules) => daySlots(day, now, rules);
 
-// The first day with a free time: today, else tomorrow (docs/103).
-export const firstDayOf = (now: number, schedule: Schedule, rules: ScheduleRules) =>
-  slotsOn(today(now), now, schedule, rules).length > 0 ? today(now) : tashkentDate(now + DAY_MS);
+// The first day with a time left: today, else tomorrow (docs/103).
+export const firstDayOf = (now: number, rules: ScheduleRules) =>
+  slotsOn(today(now), now, rules).length > 0 ? today(now) : tashkentDate(now + DAY_MS);
 
-// The time a day opens with: the morning time on another day, the first free time today (docs/103).
-export const timeOn = (day: string, now: number, schedule: Schedule, rules: ScheduleRules) =>
-  defaultSlot(slotsOn(day, now, schedule, rules), day === today(now), rules);
+// The time a day opens with: the morning time on another day, the first time left today (docs/103).
+export const timeOn = (day: string, now: number, rules: ScheduleRules) =>
+  defaultSlot(slotsOn(day, now, rules), day === today(now), rules);

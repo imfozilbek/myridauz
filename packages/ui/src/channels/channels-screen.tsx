@@ -1,35 +1,33 @@
-import type { Channel } from '@platform/contracts';
-import { Button, Title } from '@telegram-apps/telegram-ui';
+import type { Channel, ChannelHealth } from '@platform/contracts';
 import { useState } from 'react';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { useLoad } from '../market/use-list';
 import { useDirectory } from '../places/use-directory';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
-import { useScreenBackground } from '../telegram/screen-background';
+import { MainButton } from '../telegram/bottom-button';
+import { openInTelegram } from '../telegram/feedback';
 import { ChannelEdit } from './channel-edit';
-import { ChannelHealthLine } from './channel-health-line';
-import '../market/market.css';
 
 type Props = { readonly onBack: () => void; readonly readOnly?: boolean };
+type Health = ChannelHealth['channels'][number];
 const NO_HEALTH = Promise.resolve(null);
 
-// "Kanallar" for the team (docs/63): the region channels and the district channels the team added.
-// "No channels yet" only when there is none at all, never above a filled list (docs/86 V14). A
-// moderator only reads the list: no adding, no editing, no health of the owner (docs/120).
+// "Kanallar" for the team (docs/63, G78 sheet 5): each channel one row, the channels the team added
+// first, «Kanal qoʻshish» at the bottom. A channel the team added opens to be changed; a main
+// channel of the brand opens in Telegram. A channel in trouble says it in red (G75, docs/120). A
+// moderator only reads the list: no adding, no editing, no health of the owner.
 export function ChannelsScreen({ onBack, readOnly = false }: Props) {
   useScreenView('channels');
-  useScreenBackground();
   const { t } = useI18n();
+  const brand = useBrand();
   const clients = useApiClients();
-  const { channels } = clients;
-  const { value, failed, reload, refresh } = useLoad(() => channels.list(), 'channels');
+  const { value, failed, reload, refresh } = useLoad(() => clients.channels.list(), 'channels');
   const [directory, retry] = useDirectory();
   // The health comes from the Cron check; the list never waits for it (G75).
   const health = useLoad(
@@ -51,41 +49,40 @@ export function ChannelsScreen({ onBack, readOnly = false }: Props) {
         }}
       />
     );
-  const row = (channel: Channel) => (
-    <Cell
-      key={channel.username}
-      before={<IconTile name="channel" tone={channel.fixed ? 'deep' : 'brand'} />}
-      subtitle={`@${channel.username} · ${channel.fixed ? t('channels.fixed') : t('channels.places', { count: String(channel.places.length) })}`}
-      description={
-        <ChannelHealthLine health={health?.channels.find((one) => one.username === channel.username)} />
-      }
-      {...(channel.fixed || readOnly ? {} : { onClick: () => setOpen(channel) })}
-    >
-      {channel.title}
-    </Cell>
-  );
+  const trouble = (one: Health | undefined) =>
+    one?.canPost === false
+      ? t('manage.channel.noPost')
+      : one && one.failed > 0
+        ? t('manage.channel.failed', { count: one.failed })
+        : null;
+  const row = (channel: Channel) => {
+    const said = trouble(health?.channels.find((one) => one.username === channel.username));
+    const name = `@${channel.username}`;
+    const kind = channel.fixed
+      ? t('channels.fixed')
+      : t('channels.places', { count: String(channel.places.length) });
+    return (
+      <ManageRow
+        key={channel.username}
+        icon="channel"
+        title={channel.fixed ? t('home.meta', { when: brand.name, more: channel.title }) : channel.title}
+        hint={t('home.meta', { when: name, more: said ?? kind })}
+        alarm={said !== null}
+        onClick={() =>
+          channel.fixed || readOnly ? openInTelegram(`https://t.me/${channel.username}`) : setOpen(channel)
+        }
+      />
+    );
+  };
   const team = value.filter((channel) => !channel.fixed);
   return (
-    <div className="market">
-      <Screen onBack={onBack} onRefresh={refresh} />
-      <Title weight="1" className="market-title">
-        {t('channels.title')}
-      </Title>
-      <List>
-        {value.length === 0 ? <EmptyState icon="channel" title={t('channels.empty')} /> : null}
-        {team.length > 0 ? <Section>{team.map(row)}</Section> : null}
-        {readOnly ? null : (
-          <div className="step-note">
-            <Button size="l" stretched onClick={() => setOpen('new')}>
-              {t('channels.add')}
-            </Button>
-          </div>
-        )}
-        {value.length > team.length ? (
-          <Section>{value.filter((channel) => channel.fixed).map(row)}</Section>
-        ) : null}
-      </List>
-    </div>
+    <ManagePage title={t('channels.title')} onBack={onBack} onRefresh={refresh}>
+      {value.length === 0 ? <EmptyState icon="channel" title={t('channels.empty')} /> : null}
+      {value.length > 0 ? (
+        <ManageGroup>{[...team, ...value.filter((channel) => channel.fixed)].map(row)}</ManageGroup>
+      ) : null}
+      {readOnly ? null : <MainButton text={t('channels.add')} onClick={() => setOpen('new')} />}
+    </ManagePage>
   );
 }
 

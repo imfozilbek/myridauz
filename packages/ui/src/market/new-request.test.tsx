@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { quickRoute, ROUTE, takePoint, tap } from './market-test-kit';
 import { recentRoutes } from './recent-routes';
 import { openRequest } from './request-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
@@ -12,14 +13,15 @@ const row = (label: string) => screen.getByText(label).closest('button') as HTML
 const more = (index: number) =>
   fireEvent.click(screen.getAllByRole('button', { name: 'Oshirish' })[index] as HTMLElement);
 
-// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps.
+// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps: the map of
+// the end opens right after the start (G78 П4).
 async function toPoints() {
   await quickRoute();
-  await tap(/^Ertaga/);
+  await pickDay(1);
   expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
   fireEvent.click(row('Olib ketish joyi'));
   await takePoint('Chorsu bozori yaqinida');
-  fireEvent.click(await screen.findByText('Tushirish joyi'));
+  expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
   await takePoint('Yangi Margʻilon');
   await screen.findByText('Qayerdan, qayerga?');
 }
@@ -62,7 +64,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
   it('sends nothing until both points are chosen', async () => {
     const publishRequest = openRequest();
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     await tap('Soʻrov qoldirish');
     expect(publishRequest).not.toHaveBeenCalled();
     expect(screen.getByText('Qayerdan, qayerga?')).toBeTruthy();
@@ -93,10 +95,9 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
   it('the pitak on the map of the start: no point at the door (docs/70)', async () => {
     const publishRequest = openRequest();
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     fireEvent.click(row('Olib ketish joyi'));
     await tap('Qoʻyliq pitagi');
-    fireEvent.click(await screen.findByText('Tushirish joyi'));
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
     await screen.findByText('Soʻrovni bekor qilish');
@@ -108,7 +109,7 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
   it('no pitak on the direction: the map has no pitak tile', async () => {
     openRequest({ map: { pitakOf: vi.fn(async () => null) } });
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     fireEvent.click(row('Olib ketish joyi'));
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
     expect(screen.queryByText('Qoʻyliq pitagi')).toBeNull();

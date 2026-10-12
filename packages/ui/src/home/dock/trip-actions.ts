@@ -5,13 +5,13 @@ import { useOpenChat } from '../../chat/open-chat';
 import type { TripScreen } from '../../own-trip/own-trip-opened';
 import { useAnalytics } from '../../context/analytics-context';
 import { useApiClients } from '../../context/api-clients';
+import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import type { HomeGo } from '../../flow/start-action';
 import { useMeetMark } from '../../meeting/use-meet-mark';
 import type { PlaceDirectory } from '../../places/directory';
 import { useFailure } from '../../states/use-failure';
 import { haptic } from '../../telegram/feedback';
-import { tomorrow } from '../../market/when';
 import { returnDepartAt, returnTrip } from '../../trip-end/return-plan';
 import { useTopUp } from '../../wallet/top-up-link';
 import { useHomeTap } from '../use-home-tap';
@@ -21,6 +21,7 @@ import { useRef } from 'react';
 // docs/07), the marks of the point, the ready words, the money, the way back.
 export function useTripActions(go: HomeGo, directory: PlaceDirectory | null, refresh: () => void) {
   const { t } = useI18n();
+  const rules = useBrand().schedule;
   const { chat } = useApiClients();
   const { track } = useAnalytics();
   const openChat = useOpenChat();
@@ -59,7 +60,6 @@ export function useTripActions(go: HomeGo, directory: PlaceDirectory | null, ref
         unread.has(booking.chatKey) ? openSheet('message', booking.chatKey) : openChat(booking.chatKey),
       ),
     call: (booking: Booking) => tap('trip_call', () => openChat(booking.chatKey, 'ring')),
-    came: (booking: Booking) => () => void meet.mark(booking, 'came'),
     // «Men keldim» at a point where several people wait, a pitak (G77).
     cameAll: (people: readonly Booking[]) => () =>
       void Promise.all(people.map((booking) => meet.mark(booking, 'came'))),
@@ -84,10 +84,10 @@ export function useTripActions(go: HomeGo, directory: PlaceDirectory | null, ref
       ),
     topUp: (booking: Booking | undefined, missing: number) => () =>
       topUp(booking?.passenger.firstName ?? '', missing),
-    // «Qaytish safari»: the way back as «Qaytish» after the trip plans it, tomorrow with the same
-    // seats, price and rule (docs/124 В), counted once it is out (docs/29).
+    // «Qaytish safari»: the way back as «Qaytish» after the trip plans it, today when it makes it
+    // (G78 В11), with the same seats, price and rule (docs/124 В), counted once it is out (docs/29).
     back: (trip: Trip) => () => {
-      const plan = directory ? returnTrip(trip, directory, returnDepartAt(trip, tomorrow(Date.now()))) : null;
+      const plan = directory ? returnTrip(trip, directory, returnDepartAt(trip, Date.now(), rules)) : null;
       const onPublished = () => track({ name: 'return_trip_created', screen: 'market.publish' });
       go(NEW_TRIP_SECTION, plan ? { route: plan.route, again: plan.again, onPublished } : undefined);
     },

@@ -16,9 +16,11 @@ const send = botSender(telegram.fetch);
 const DRIVER = 71;
 const PASSENGER = 72;
 const STRANGER = 73;
-// A second driver: the first one has a trip at that time already.
+// Other drivers and passengers: one live trip and one seat at a time (docs/172).
 const ARRIVING = 74;
 const FORGOT = 75;
+const RIDER = 76;
+const LATE_RIDER = 77;
 const press = (data: string, fromId = DRIVER) => ({
   callback_query: {
     id: 'q',
@@ -29,7 +31,7 @@ const press = (data: string, fromId = DRIVER) => ({
 });
 const notice = async (response: Response) => ((await response.json()) as { text?: string }).text;
 
-async function asked(departIn = 5 * 3_600_000, driverId = DRIVER) {
+async function asked(departIn = 5 * 3_600_000, driverId = DRIVER, passengerId = PASSENGER) {
   const trip = {
     from: '1726273',
     to: '1718401',
@@ -44,7 +46,7 @@ async function asked(departIn = 5 * 3_600_000, driverId = DRIVER) {
     }),
   );
   const booking = await read<{ id: string }>(
-    call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
+    call(`/trips/${published.id}/bookings`, passengerId, json(doorBooking(1))),
   );
   return { tripId: published.id, bookingId: booking.id };
 }
@@ -82,7 +84,8 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
 
   it('«Yetib keldik» ends both cards: they say so and leave the top of the chat', async () => {
     await approvedDriver(ARRIVING);
-    const { tripId, bookingId } = await asked(90 * 60_000, ARRIVING);
+    await registerUser(RIDER);
+    const { tripId, bookingId } = await asked(90 * 60_000, ARRIVING, RIDER);
     await send('driver', press(`ask:${bookingId}:yes`, ARRIVING));
     // Half an hour later: «Yoʻlga chiqdim» opens an hour before the time.
     vi.useFakeTimers({ toFake: ['Date'], now: Date.now() + 30 * 60_000 });
@@ -96,16 +99,17 @@ describe('the driver bot: the trip card and a request answered in the bot (G68, 
         (sent) => sent.body.chat_id === chatId && String(sent.body.text).startsWith('<b>🏁 Yetib keldingiz'),
       );
     expect(arrived(ARRIVING)).toBe(true);
-    expect(arrived(PASSENGER)).toBe(true);
+    expect(arrived(RIDER)).toBe(true);
     const unpinned = after
       .filter((sent) => sent.method === 'unpinChatMessage')
       .map((sent) => sent.body.chat_id);
-    expect(unpinned.sort()).toEqual([ARRIVING, PASSENGER].sort());
+    expect(unpinned.sort()).toEqual([ARRIVING, RIDER].sort());
   });
 
   it('a trip the Cron closes ends the card too, when the driver forgot «Yetib keldik»', async () => {
     await approvedDriver(FORGOT);
-    const { tripId } = await asked(3 * 3_600_000, FORGOT);
+    await registerUser(LATE_RIDER);
+    const { tripId } = await asked(3 * 3_600_000, FORGOT, LATE_RIDER);
     vi.useFakeTimers({ toFake: ['Date'], now: Date.now() + 24 * 3_600_000 });
     const before = telegram.calls.length;
     await completeTrips(testEnv, Date.now());

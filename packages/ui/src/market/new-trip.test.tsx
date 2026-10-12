@@ -96,7 +96,7 @@ describe('NewTripFlow: a new trip on one screen', { timeout: 20_000 }, () => {
     vi.setSystemTime(Date.now() + 40 * 60 * 1000);
     await tap('Eʼlon qilish');
     // Never a time the person did not see: the day and the time open again, the screen caught up.
-    await tap('Tayyor');
+    await tap('19:00');
     expect(await screen.findByText('Bugun, 19:00')).toBeTruthy();
     expect(publishTrip).not.toHaveBeenCalled();
     await tap('Eʼlon qilish');

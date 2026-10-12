@@ -76,8 +76,6 @@ export type TripsDeps = {
   ) => Promise<Result<Recommendation, RouteError | 'locations.not_found'>>;
   // The same for a direction that may end in a whole region (G59, «Qayerga borasiz?»).
   readonly recommendDirection: TripsDeps['recommend'];
-  // Road km between two places of the driver's trips (docs/103): 0 for the same place.
-  readonly roadKm: (from: string, to: string) => Promise<number>;
   readonly schedule: ScheduleRules;
   readonly places: () => Promise<
     ReadonlyMap<string, { id: string; parentId: string | null; oneCity: boolean }>

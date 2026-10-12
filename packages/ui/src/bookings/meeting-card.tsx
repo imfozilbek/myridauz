@@ -1,12 +1,13 @@
 import { meetingStartsAt, type Booking } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import { UzPlate } from '../plate/uz-plate';
-import { Icon } from '../icons';
-import { ActionFailure } from '../states/action-failure';
+import { useDockWords } from '../home/dock/dock-words';
+import { SeatMeetCard } from '../home/dock/seat-meet-card';
+import { usePlaces } from '../market/places-gate';
 import { useCame } from '../meeting/use-came';
+import { useNow } from '../own-trip/use-now';
+import { ActionFailure } from '../states/action-failure';
 import { openExternal } from '../telegram/feedback';
 import { useBookingEnds } from '../trip/booking-ends';
-import { MeetingMap } from '../trip/meeting-map';
 import { mapUrl } from './map-link';
 import './meeting-card.css';
 
@@ -16,29 +17,50 @@ export const meetingTime = (booking: Booking, now: number, minutes: number) =>
   booking.boardedAt === null &&
   now >= meetingStartsAt(booking.trip.departAt, minutes);
 
-type Props = { readonly booking: Booking; readonly onTold: (booking: Booking) => void };
+type Props = {
+  readonly booking: Booking;
+  readonly onOpen: (screen: 'chat' | 'call') => void;
+  readonly onTold: (booking: Booking) => void;
+};
 
-// The meeting (owner decision 06.10.2026, docs/126): when, where on a small map, the plate big;
-// «Men keldim» tells the driver the passenger is at the point.
-export function MeetingCard({ booking, onTold }: Props) {
-  const { t, formatTime } = useI18n();
+// The meeting on the page of the seat (docs/126, G78 sheet 2): the card of the block at the bottom,
+// one component, with the driver in it; «Xaritada ochish» and «Men keldim» under it. After «Men
+// keldim» the map stays until the driver's «Keldi», as in the block (G76).
+export function MeetingCard({ booking, onOpen, onTold }: Props) {
+  const { t } = useI18n();
+  const words = useDockWords(usePlaces(), useNow());
   const { came, failure } = useCame(onTold, 'bookings.passenger');
-  const { start, startPoint } = useBookingEnds(booking);
+  const { startPoint } = useBookingEnds(booking);
+  const told = booking.cameAt !== null;
+  const tools = [
+    { icon: 'phone' as const, label: t('sheet.meet.call'), onClick: () => onOpen('call') },
+    {
+      icon: 'chat' as const,
+      label: t('chat.open'),
+      dot: (booking.unread ?? 0) > 0,
+      onClick: () => onOpen('chat'),
+    },
+  ];
   return (
-    <section className="meeting-card" aria-label={t('bookings.meeting.title')}>
-      <b>{t('bookings.meeting.when', { time: formatTime(new Date(booking.trip.departAt)) })}</b>
-      {startPoint ? <MeetingMap point={startPoint} onOpen={() => openExternal(mapUrl(startPoint))} /> : null}
-      <span className="meeting-place">{start}</span>
-      {booking.plate ? <UzPlate plate={booking.plate} /> : null}
+    <div className="meeting-block">
+      <SeatMeetCard booking={booking} words={words} tools={tools} />
       <ActionFailure error={failure} />
-      {booking.cameAt === null ? (
-        <button type="button" className="meeting-came" onClick={() => void came(booking)}>
-          <Icon name="selected" size={20} />
-          {t('bookings.meeting.came')}
-        </button>
-      ) : (
-        <span className="meeting-told">{t('bookings.meeting.told')}</span>
-      )}
-    </section>
+      <div className="meeting-buttons">
+        {startPoint ? (
+          <button
+            type="button"
+            className={told ? 'meeting-main' : 'meeting-second'}
+            onClick={() => openExternal(mapUrl(startPoint))}
+          >
+            {t('bookings.openMap')}
+          </button>
+        ) : null}
+        {told ? null : (
+          <button type="button" className="meeting-main" onClick={() => void came(booking)}>
+            {t('bookings.meeting.came')}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

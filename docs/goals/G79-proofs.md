@@ -29,7 +29,7 @@
 | К7 медиана цены | `pricing/direction-edit.tsx` (`MedianHint` с `onPick`) | `pricing/pricing.test.tsx` «takes the median…» | ввод → 1 |
 | К8 имя пятака | `pitaks/pitak-edit.tsx` (пустое имя берёт имя места) | `pitaks/pitaks.test.tsx` «names a new pitak…» | ввод → 0 |
 | К9 лимит степпером | `manage/limit-edit.tsx` (`Stepper`, кроме сумм) | `manage/manage-limits.test.tsx` (первый тест) | ввод → выбор |
-| К10 «Назад» с галочек | `moderation/reasons-step.tsx` (без вопроса), `navbat/application-case.tsx` (галочки живут в деле) | `navbat/navbat-application.test.tsx` «…asks nothing and keeps them» | вопрос → 0 |
+| К10 «Назад» с галочек | `moderation/reasons-sheet.tsx` (без вопроса), `navbat/application-case.tsx` (галочки живут в деле) | `navbat/navbat-application.test.tsx` «…asks nothing and keeps them» | вопрос → 0 |
 
 Пути `home/…`, `market/…` и подобные: в `packages/ui/src`. Каждый тест проверен на старом коде: код без теста вернули к коммиту до пункта, тест упал.
 

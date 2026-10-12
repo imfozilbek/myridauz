@@ -95,21 +95,19 @@ async function meetAndLeave(context: BrowserContext, page: Page, walk: Walk, tri
   return later;
 }
 
-// 4. «Yetib keldik»: «Safar tugadi» once with what the wallet gave and the stars, «Yuborish»,
-// «Qaytish», then the past trip with the stars the server keeps (docs/143 §4).
+// 4. «Yetib keldik»: «Safar tugadi» once with what the wallet gave, the stars and the way back under
+// them (G78 В10 A), «Yuborish», then the past trip with the stars the server keeps (docs/143 §4).
 async function arriveAndRate(page: Page, walk: Walk, trip: Trip) {
   await press(page, t('driverTrip.main.arrived'));
   await seen(page, t('driverAfter.done.rate'));
   await seen(page, t('driverAfter.done.charged', { amount: commissionOf(trip) }));
   await seen(page, t('driverAfter.done.left', { seats: await seatsLeft(walk.driver, trip) }));
   await page.getByLabel(`${walk.passenger.name} ${STARS}`, { exact: true }).click();
+  await expect(page.getByText(t('driverAfter.back.title'))).toBeVisible();
   await shoot(page, walk, '10-done');
   await press(page, t('reviews.send'));
-  await seen(page, t('driverAfter.back.title'));
-  await expect(mainButton(page)).toHaveText(t('driverAfter.back.publish'));
-  await shoot(page, walk, '11-return');
-  await pressBack(page);
   await seen(page, t('driverAfter.past.after'));
+  await expect(mainButton(page)).toHaveText(t('driverAfter.back.publish'));
   await seen(page, t('driverAfter.past.rated', { stars: t('find.star').repeat(STARS) }));
   await shoot(page, walk, '12-past');
 }

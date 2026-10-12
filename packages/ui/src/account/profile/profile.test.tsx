@@ -69,6 +69,14 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     open.mockRestore();
   });
 
+  // One tap from «Profil», under «Kanallar» (G78 П22).
+  it('opens «Obunalar» from the profile', async () => {
+    renderProfile({}, { clients: { subscriptions: { mine: async () => [] } } });
+    fireEvent.click(screen.getByText('Dilnoza'));
+    fireEvent.click(screen.getByRole('button', { name: 'Obunalar' }));
+    expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
+  });
+
   it('always has «Haydovchi boʻling» for a passenger; a driver has the app already (G76)', () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderProfile();

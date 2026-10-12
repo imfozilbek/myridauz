@@ -1,6 +1,7 @@
 import { tashkentDate, type Offer, type Trip } from '@platform/contracts';
 import { offerStatusAt } from '../domain/offer';
 import { sendOffer, type OfferError } from './offers';
+import { endNewTripOffers } from './offers-ended';
 import type { BookingsDeps, Result } from './ports';
 
 // The errors of publishing that reach the driver as they are (docs/103, docs/70); any other one
@@ -9,7 +10,6 @@ const TRIP_ERRORS = [
   'trips.price_out_of_bounds',
   'trips.too_soon',
   'trips.too_many',
-  'trips.busy',
   'trips.no_pitak',
   'trips.in_past',
 ] as const;
@@ -56,6 +56,7 @@ export async function offerSalonTrip(
     await deps.trips.cancel(driverId, trip.id);
     return offer;
   }
+  await endNewTripOffers(deps, driverId);
   return { ok: true, value: { trip, offer: offer.value } };
 }
 

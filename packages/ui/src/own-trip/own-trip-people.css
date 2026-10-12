@@ -99,11 +99,6 @@
   line-height: 14.4px;
 }
 
-/* A face without a photo is light grey here (mockup g63/3). */
-.own-trip .person-badge-plain {
-  background: var(--reg-face-pale);
-}
-
 .rider-tool {
   display: flex;
   flex: none;

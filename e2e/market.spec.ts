@@ -1,6 +1,7 @@
 import { expect, test } from './crash-guard';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS } from './apps';
+import { noSeatYet } from './bookings-mock';
 import { findTrips, publishTrip } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
@@ -27,6 +28,7 @@ test('driver: publishes a trip on one screen with the recommended price (G07, G6
 
 test('passenger: finds trips of a day and filters "Mashinada ayol bor" (G07)', async ({ page }) => {
   await mockApi(page, 'active');
+  await noSeatYet(page);
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port)));
   await findTrips(page);

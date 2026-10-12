@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
+import { openEndMap } from '../bookings';
 import { openFromList } from '../market';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
@@ -48,8 +49,8 @@ test('3. the driver sees the pitak of the direction and publishes «Ikkalasi»',
   await pressBack(page);
   // «Qanday band qilinadi?» (G61): seats only.
   await page.getByText(t('market.rule.title')).click();
+  // A tap on a card chooses it and comes back to the form (G78 В14).
   await page.getByText(t('market.rule.seats')).click();
-  await mainButton(page).click();
   await expect(mainButton(page)).toHaveText(TEXT.publish);
   await shot(page, '3-driver-publish');
   await mainButton(page).click();
@@ -69,8 +70,7 @@ async function findAndOpen(page: Page, person: Person) {
 
 // One end of «Qayerdan, qayerga?»: its row opens the map, the name of the place came (lesson 77).
 async function openEnd(page: Page, end: 'pickup' | 'dropoff') {
-  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
-  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await openEndMap(page, end);
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
 }

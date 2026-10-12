@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test';
 import { createBookingsClient, createMarketClient, createWalletClient } from '@platform/api-client';
-import { tashkentDate, type Booking, type OfferAction } from '@platform/contracts';
+import { tashkentDate, type Booking, type OfferAction, type Trip } from '@platform/contracts';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
-import { freeDepart, freshDriver } from './schedule-kit';
+import { freeDepart, freshDriver, freshPassenger } from './schedule-kit';
 import { OWNER } from './people';
 import { signedAs, type Person } from './stand-kit';
 import { botMessages, standSql } from './stand-tools';
@@ -81,6 +81,7 @@ export const dayAfterTomorrow = () => tashkentDate(Date.now() + 2 * DAY);
 const NINE = '09:00';
 
 export async function askRide(passenger: Person, date = tomorrow()) {
+  freshPassenger(passenger);
   const market = createMarketClient(await signedAs('passenger', passenger));
   const { price } = await market.recommend(CHILONZOR, SAMARQAND);
   const input = { from: CHILONZOR, to: SAMARQAND, date, seats: 1, price, pickupMode: 'door' as const };
@@ -90,9 +91,16 @@ export async function offerOn(driver: Person, requestId: string, date = tomorrow
   freshDriver(driver);
   const market = createMarketClient(await signedAs('driver', driver));
   const { price } = await market.recommend(CHILONZOR, SAMARQAND);
-  const departAt = await freeDepart(market, CHILONZOR, SAMARQAND, date, NINE);
+  const departAt = freeDepart(date, NINE);
   return createBookingsClient(await signedAs('driver', driver)).sendOffer(requestId, { departAt, price });
 }
+// «Safarimga taklif qilish» (G64): a driver with a live trip offers only into it (docs/172).
+export const offerInto = async (driver: Person, requestId: string, trip: Trip) =>
+  createBookingsClient(await signedAs('driver', driver)).sendOffer(requestId, {
+    departAt: trip.departAt,
+    price: trip.price,
+    tripId: trip.id,
+  });
 export const answerOffer = async (passenger: Person, offerId: string, action: OfferAction) =>
   createBookingsClient(await signedAs('passenger', passenger)).answerOffer(offerId, action);
 

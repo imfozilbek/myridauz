@@ -37,20 +37,21 @@ export const brandConfig: BrandConfig = {
   // docs/30: the requisites come from the admin Mini App (G34); this address answers until they do.
   company: { email: 'myrida.llc@gmail.com' },
   // G38 (owner decisions 03.10.2026, docs/103): a trip leaves an hour after it is made at the earliest;
-  // another day opens at 08:00; at most 3 trips; gathering people takes half the road, 1 to 3 hours.
+  // another day opens at 08:00; one live trip of a driver (owner decision 12.10.2026, docs/172).
+  // A trip or a request goes on a day of the row of 7 days from today (owner decision 12.10.2026, docs/172).
   schedule: {
     leadMinutes: 60,
-    daysAhead: 30,
+    daysAhead: 6,
     defaultTime: '08:00',
-    maxActiveTrips: 3,
-    gather: { factor: 0.5, minMinutes: 60, maxMinutes: 180 },
     shiftMinutes: 60,
     meetMinutes: 30,
     autoDepartHours: 2,
+    // The way back today at 22:00 the latest, later: the next morning (owner decision 12.10.2026, G78 В11).
+    returnUntil: '22:00',
   },
   // docs/127 §2..7: the limits of people; the owner changes them in «Cheklovlar» (docs/128 §4).
-  bookings: { maxPending: 3, answerHours: 24 },
-  requests: { maxOpen: 3, maxSeats: 4 },
+  bookings: { answerHours: 24 },
+  requests: { maxSeats: 4 },
   wallet: { fewSeats: 5 },
   chat: { afterTripHours: 24 },
   subscriptions: { max: 5, anyDateDays: 30 },

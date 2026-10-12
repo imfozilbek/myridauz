@@ -1,23 +1,22 @@
 import { BALANCES, type Adjustment, type BalanceKind, type Wallet } from '@platform/contracts';
-import { Text } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { CellValue } from '../account/cell-value';
-import { StepLayout } from '../account/step-layout';
-import { Cell, Field, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
-import { Screen } from '../screen/screen';
+import { ManageChips } from '../manage/manage-chips';
+import { ManageInput } from '../manage/manage-input';
+import { ManageGroup, ManageNote, ManagePage, ManageRow } from '../manage/manage-page';
 import { useUnsavedGuard } from '../screen/unsaved-guard';
+import { TeamSection } from '../team/team-section';
 import { MainButton } from '../telegram/bottom-button';
 
 const REASON_MIN = 3;
-// The ready reasons of a correction (G79 К5): a tap fills «Sabab», «Boshqa» leaves it to be typed.
-const READY_REASONS = ['bonus', 'noShow', 'mistake', 'payment'] as const;
-const REASON_FIELD = 'adjust-reason';
+// The ready reasons of a correction (G79 К5): a tap chooses one, «Boshqa» opens the box to type it.
+const REASONS = ['bonus', 'noShow', 'mistake', 'payment', 'other'] as const;
+type Reason = (typeof REASONS)[number];
 const FIRST_BALANCE: BalanceKind = 'bonus';
 const DIRECTIONS = ['add', 'take'] as const;
 type Direction = (typeof DIRECTIONS)[number];
+const DIGITS = /\D/gu;
 type Props = {
   readonly current: Pick<Wallet, BalanceKind>;
   readonly error: string | null;
@@ -25,80 +24,74 @@ type Props = {
   readonly onSave: (adjustment: Adjustment) => void;
 };
 
-// A hand correction by an owner (docs/12): which balance, add or take away, a sum, a reason.
-// Adding or taking away is a choice and the new balance shows before saving (docs/86 V2).
+// A hand correction by an owner (docs/12) on one screen (G78 sheet 4): the balance, add or take away
+// and the reason are chips, the sum a box; the new balance shows before saving (docs/86 V2).
 export function AdjustForm({ current, error, onBack, onSave }: Props) {
   useScreenView('wallet.adjust');
-  const { t, formatMoney } = useI18n();
+  const { t, formatMoney, formatNumber } = useI18n();
   const [balance, setBalance] = useState<BalanceKind>(FIRST_BALANCE);
   const [direction, setDirection] = useState<Direction | null>(null);
-  const [amount, setAmount] = useState('');
-  const [reason, setReason] = useState('');
-  const readyReasons = READY_REASONS.map((key) => t(`wallet.adjust.reason.${key}`));
+  const [digits, setDigits] = useState('');
+  const [chosen, setChosen] = useState<Reason | null>(null);
+  const [typed, setTyped] = useState('');
+  const reason = chosen === null ? '' : chosen === 'other' ? typed : t(`wallet.adjust.reason.${chosen}`);
   const guard = useUnsavedGuard(
-    balance !== FIRST_BALANCE || direction !== null || amount !== '' || reason !== '',
+    balance !== FIRST_BALANCE || direction !== null || digits !== '' || chosen !== null,
   );
-  const sum = Number(amount);
-  const valid = direction !== null && Number.isInteger(sum) && sum > 0;
+  const sum = Number(digits);
+  const valid = direction !== null && sum > 0;
   const signed = direction === 'take' ? -sum : sum;
   const ready = valid && reason.trim().length >= REASON_MIN;
-  const choice = <T extends string>(value: T, chosen: T | null, choose: (next: T) => void, label: string) => (
-    <Cell
-      key={value}
-      onClick={() => choose(value)}
-      after={value === chosen ? <Icon name="selected" /> : null}
-    >
-      {label}
-    </Cell>
-  );
   return (
-    <StepLayout icon="wallet" title={t('wallet.adjust.title')} hint={t('wallet.adjust.hint')}>
-      <Screen onBack={guard(onBack)} />
-      <List>
-        <Section>{BALANCES.map((kind) => choice(kind, balance, setBalance, t(`wallet.${kind}`)))}</Section>
-        <Section>
-          {DIRECTIONS.map((each) => choice(each, direction, setDirection, t(`wallet.adjust.${each}`)))}
-        </Section>
-        <Field
+    <ManagePage title={t('wallet.adjust.title')} hint={t('wallet.adjust.hint')} onBack={guard(onBack)}>
+      <ManageChips
+        label={t('wallet.detail.account')}
+        chips={BALANCES.map((id) => ({ id, label: t(`wallet.${id}`) }))}
+        value={balance}
+        onChange={setBalance}
+      />
+      <ManageChips
+        label={t('wallet.adjust.title')}
+        chips={DIRECTIONS.map((id) => ({ id, label: t(`wallet.adjust.${id}`) }))}
+        value={direction}
+        onChange={setDirection}
+      />
+      <ManageGroup>
+        <ManageInput
           label={t('wallet.adjust.amount')}
-          type="number"
-          inputMode="numeric"
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
+          value={digits ? formatNumber(sum) : ''}
+          mode="numeric"
+          onChange={(text) => setDigits(text.replace(DIGITS, ''))}
         />
-        <Field
-          id={REASON_FIELD}
-          label={t('wallet.adjust.reason')}
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-        />
-        <Section>
-          {readyReasons.map((words) => choice(words, reason, setReason, words))}
-          <Cell
-            onClick={() => {
-              // A reason typed by hand stays; a ready one gives way to the typing.
-              if (readyReasons.includes(reason)) setReason('');
-              document.getElementById(REASON_FIELD)?.focus();
-            }}
-          >
-            {t('wallet.adjust.reason.other')}
-          </Cell>
-        </Section>
         {valid ? (
-          <Section>
-            <Cell after={<CellValue>{formatMoney(current[balance] + signed)}</CellValue>}>
-              {t('wallet.adjust.newBalance')}
-            </Cell>
-          </Section>
+          <ManageRow
+            icon="wallet"
+            title={t('wallet.adjust.newBalance')}
+            value={formatMoney(current[balance] + signed)}
+          />
         ) : null}
-      </List>
-      {error ? <Text className="step-error">{error}</Text> : null}
+      </ManageGroup>
+      <TeamSection title={t('wallet.adjust.reason')}>
+        <ManageChips
+          label={t('wallet.adjust.reason')}
+          chips={REASONS.map((id) => ({ id, label: t(`wallet.adjust.reason.${id}`) }))}
+          value={chosen}
+          onChange={setChosen}
+          wrap
+        />
+      </TeamSection>
+      {chosen === 'other' ? (
+        <ManageGroup>
+          <ManageInput label={t('wallet.adjust.reason.other')} value={typed} onChange={setTyped} autoFocus />
+        </ManageGroup>
+      ) : null}
+      {error ? <ManageNote>{error}</ManageNote> : null}
       {ready ? (
         <MainButton
           text={t('wallet.adjust.save')}
           onClick={() => onSave({ balance, amount: signed, reason })}
         />
       ) : null}
-    </StepLayout>
+    </ManagePage>
   );
 }

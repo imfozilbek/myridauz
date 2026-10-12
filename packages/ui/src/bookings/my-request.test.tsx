@@ -115,17 +115,31 @@ describe('«Mening soʻrovim» (G61, docs/118 path 4, mockup 3-offers A)', () =>
     expect(screen.getByRole('alert')).toBeTruthy();
   });
 
-  // The offer opens in a sheet over «Mening soʻrovim» (G75, mockup g75/4 B phone 2): the driver, the
-  // car, the time, the sum; «Qabul qilish» answers there.
-  it('the card opens the offer in a sheet and accepts it there', async () => {
+  // The offer opens over «Mening soʻrovim» in the sheet of the main screen (G78 sheet 2): the driver,
+  // the car, the trip, the sum; «Qabul qilish» answers there.
+  it('the card opens the offer in the sheet of the main screen and accepts it there', async () => {
     const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => ({ ...offer, status: 'declined' }));
     open({ answerOffer });
     await tap(/· Soʻrov$/u);
     await tap('Jasur');
-    expect(await screen.findByText('Jasur taklif yubordi')).toBeTruthy();
+    expect(await screen.findByText('Yangi taklif')).toBeTruthy();
     expect(screen.getByText('Takliflar (1)')).toBeTruthy();
-    expect(screen.getByText(/^2 joy × 95.000$/u)).toBeTruthy();
+    expect(screen.getByText(/^Bir joy 95.000$/u)).toBeTruthy();
+    expect(screen.queryByText(/^Barcha takliflar/u)).toBeNull();
     fireEvent.click(screen.getAllByRole('button', { name: 'Qabul qilish' }).at(-1) as HTMLElement);
     await waitFor(() => expect(answerOffer).toHaveBeenCalledWith('o1', 'accept'));
+    await waitFor(() => expect(screen.queryByText('Yangi taklif')).toBeNull());
+  });
+
+  it('keeps the sheet and says why when the answer fails', async () => {
+    const answerOffer = vi.fn<BookingsClient['answerOffer']>(async () => {
+      throw new ApiError(409, 'bookings.too_many');
+    });
+    open({ answerOffer });
+    await tap(/· Soʻrov$/u);
+    await tap('Jasur');
+    fireEvent.click((await screen.findAllByRole('button', { name: 'Qabul qilish' })).at(-1) as HTMLElement);
+    expect(await screen.findByRole('alert')).toBeTruthy();
+    expect(screen.getByText('Yangi taklif')).toBeTruthy();
   });
 });

@@ -6,7 +6,7 @@ import {
   bookingOf,
   driverSeatOf,
   MINUTE,
-  offerOn,
+  offerInto,
   outcome,
   SAMARQAND,
   setBonus,
@@ -49,8 +49,9 @@ test('V07, C03, D42, D62, V06, C02, D72. 1 sum short of the commission, then exa
   await setBonus(BOBUR, commission - 1);
   expect(await outcome(answer(BOBUR, seat.id, 'confirm'))).toBe('wallet.not_enough');
   expect((await bookingOf(AZIZA, seat.id))?.status).toBe('requested');
+  // A driver with a live trip offers only into it (docs/172).
   const request = await askRide(SEVARA);
-  expect(await outcome(offerOn(BOBUR, request.id))).toBe('wallet.not_enough');
+  expect(await outcome(offerInto(BOBUR, request.id, trip))).toBe('wallet.not_enough');
   // Exactly the commission: the seat is confirmed, the spent bonus brings the next one (docs/12).
   await setBonus(BOBUR, commission);
   await answer(BOBUR, seat.id, 'confirm');

@@ -34,7 +34,7 @@ describe('the wallets of the team in fewer taps', { timeout: 20_000 }, () => {
     expect(await screen.findByText('Hamyonni tuzatish')).toBeTruthy();
   });
 
-  it('takes a ready reason in one tap; «Boshqa» leaves the field to type', async () => {
+  it('takes a ready reason in one tap; «Boshqa» opens the box to type', async () => {
     const adjust = vi.fn<WalletClient['adjust']>(async () => wallet);
     renderManagement({ wallet: { of: async () => wallet, adjust } });
     await tap('Odamlar');
@@ -42,13 +42,13 @@ describe('the wallets of the team in fewer taps', { timeout: 20_000 }, () => {
     await tap('Ochish');
     await tap('Hamyon');
     await tap('Hamyonni tuzatish');
-    fireEvent.change(screen.getByLabelText('Sabab'), { target: { value: 'Oʻzim yozdim' } });
-    await tap('Boshqa');
-    expect(document.activeElement).toBe(screen.getByLabelText('Sabab'));
-    // A reason typed by hand stays (review).
-    expect(screen.getByLabelText('Sabab')).toHaveProperty('value', 'Oʻzim yozdim');
+    // «Boshqa» opens the box to type the reason; a ready one is one tap (G78 sheet 4).
+    expect(screen.queryByLabelText('Boshqa')).toBeNull();
+    fireEvent.click(screen.getByRole('radio', { name: 'Boshqa' }));
+    expect(document.activeElement).toBe(screen.getByLabelText('Boshqa'));
+    fireEvent.change(screen.getByLabelText('Boshqa'), { target: { value: 'Oʻzim yozdim' } });
     await tap('Kelmadi: komissiya qaytarildi');
-    expect(screen.getByLabelText('Sabab')).toHaveProperty('value', 'Kelmadi: komissiya qaytarildi');
+    expect(screen.queryByLabelText('Boshqa')).toBeNull();
     fireEvent.change(screen.getByLabelText('Summa, soʻm'), { target: { value: '9000' } });
     await tap('Qoʻshish');
     await tap('Saqlash');

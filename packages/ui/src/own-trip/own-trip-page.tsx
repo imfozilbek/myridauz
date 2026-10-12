@@ -1,7 +1,7 @@
 import type { Booking, Offer, Trip } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { requestsByTime } from '../bookings/trip-bookings-order';
-import { short } from '../bookings/use-balance';
+import { missingFor } from '../bookings/use-balance';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -16,6 +16,7 @@ import { taken } from '../trip-end/trip-sums';
 import { OwnTripBanner } from './own-trip-banner';
 import { OwnTripTiles, type OwnTripTile } from './own-trip-tiles';
 import { PrivateTripBanner } from './private-trip-banner';
+import { RoadNextCard } from './road-next-card';
 import { RiderRow } from './rider-row';
 import { SeatRequestCard } from './seat-request-card';
 import { TripMainButton } from './trip-main-button';
@@ -80,6 +81,7 @@ export function OwnTripPage(props: Props) {
       ) : (
         <OwnTripBanner trip={trip} stage={stage} riders={seats} now={now} />
       )}
+      {stage === 'on_way' && open ? <RoadNextCard trip={trip} bookings={bookings} /> : null}
       {/* While people look for the trip (owner decision 08.10.2026, docs/119). */}
       {notLeft && open ? <TripPublicity trip={trip} /> : null}
       {requested.length > 0 ? (
@@ -89,9 +91,8 @@ export function OwnTripPage(props: Props) {
             <SeatRequestCard
               key={booking.id}
               booking={booking}
-              short={short(balance, booking.commission)}
+              missing={missingFor(balance, booking.commission)}
               onAnswer={(action) => onAnswer(booking, action)}
-              onTopUp={() => onOpen(booking, 'not_enough')}
               onOpen={() => onOpen(booking, 'request')}
             />
           ))}

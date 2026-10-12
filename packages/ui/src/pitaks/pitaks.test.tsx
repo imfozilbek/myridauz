@@ -56,6 +56,8 @@ describe('Pitaklar: the pitaks of the team (G24, docs/72)', { timeout: 20_000 },
     const pitaks = open();
     await tap('Pitaklar');
     await tap('Toshkent shahri → Fargʻona viloyati');
+    // Each pitak a row with its state, the chosen one marked (G78 sheet 6).
+    expect(document.querySelector('.manage-tone-success')).not.toBeNull();
     await tap('Qoʻyliq pitagi');
     expect(pitaks.direction).toHaveBeenCalledWith({ ...DIRECTION, pitakId: 'qoyliq' });
     expect(await screen.findByText('Barcha pitaklar')).toBeTruthy();

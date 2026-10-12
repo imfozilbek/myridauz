@@ -1,4 +1,4 @@
-import { commonModes, extraKm, FAR_EXTRA_KM, type Stops, type Trip } from '@platform/contracts';
+import { commonModes, COUNTED_DAYS, extraKm, FAR_EXTRA_KM, type Stops, type Trip } from '@platform/contracts';
 import type { RequestRecord } from './ride-request';
 
 type TripFacts = Pick<Trip, 'from' | 'to' | 'seats' | 'seatsLeft' | 'bookingRule' | 'pickupMode'>;
@@ -22,13 +22,10 @@ export function tripFit(
   return extra <= FAR_EXTRA_KM ? extra : null;
 }
 
-// The day buttons (G64): today, tomorrow and the next day that has requests, else the day after
-// tomorrow; each with its count.
+// The row of the week (owner decision 12.10.2026, docs/172): today and the six days after it, each
+// with its count; a request goes no further (docs/127).
 export function boardDays(dates: readonly string[], today: string, nextDay: (date: string) => string) {
-  const tomorrow = nextDay(today);
-  const later = dates.filter((date) => date > tomorrow).sort()[0] ?? nextDay(tomorrow);
-  return [today, tomorrow, later].map((date) => ({
-    date,
-    count: dates.filter((day) => day === date).length,
-  }));
+  const week = [today];
+  while (week.length < COUNTED_DAYS) week.push(nextDay(week[week.length - 1] ?? today));
+  return week.map((date) => ({ date, count: dates.filter((day) => day === date).length }));
 }

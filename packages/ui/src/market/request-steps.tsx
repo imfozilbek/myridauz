@@ -72,6 +72,11 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
       />
     );
   const toPoints = () => go('points');
+  // The start chosen, the map of the end opens at once while the end is not chosen yet (G78 П4).
+  const started = (patch: Parameters<typeof next>[0]) => {
+    next(patch);
+    if (!dropoff) go('dropoff');
+  };
   if (step === 'pickup')
     return (
       <BookPoint
@@ -80,10 +85,10 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
         initial={pickup ?? null}
         // The pitak of the direction is one more start, taken in one tap (docs/70, docs/72).
         {...(pitak && mode !== 'pitak'
-          ? { pitak, onPitak: () => next({ mode: 'pitak', pickup: null }) }
+          ? { pitak, onPitak: () => started({ mode: 'pitak', pickup: null }) }
           : {})}
         onBack={toPoints}
-        onPick={(end) => next({ mode: 'door', pickup: end })}
+        onPick={(end) => started({ mode: 'door', pickup: end })}
       />
     );
   if (step === 'dropoff')

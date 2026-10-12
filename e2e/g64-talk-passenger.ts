@@ -46,9 +46,8 @@ export async function openPassengerTalk(page: Page, fresh = false) {
   await page.clock.setFixedTime(tashkent(`${TODAY}T12:20`));
   await mockTelegram(page);
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
-  await page.getByText(t('common.myTrips')).click();
-  await page.locator('.mine-card').first().click();
-  await page.locator('.offer-card').first().click();
-  await page.getByText(t('chat.open')).click();
+  // The talk of an offer is in «Suhbatlar»: the sheet of the offer is the one of the main screen (G78).
+  await page.getByText(t('home.chats.title')).click();
+  await page.locator('.chat-card').first().click();
   await page.getByText(HISTORY[1]?.text ?? '').waitFor();
 }

@@ -104,7 +104,17 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
       { ...trip, id: 'c', to: '1703202', departAt: NOW - 86_400_000 },
     ];
     const others = [request, { ...request, id: 'r2' }];
-    const board = { known: true, date: '2026-10-09', days: [], trip: null, fits: [], others, carSeats: 4 };
+    const board = {
+      known: true,
+      date: '2026-10-09',
+      days: [],
+      trip: null,
+      fits: [],
+      others,
+      carSeats: 4,
+      busy: false,
+      notify: null,
+    };
     await openChannels({ market: { myTrips: async () => trips, requestBoard: async () => board } }, true);
     expect(screen.getByText('Safarlaringiz shu kanallarda chiqadi')).toBeTruthy();
     expect(screen.getByText('Koʻp yurasiz')).toBeTruthy();

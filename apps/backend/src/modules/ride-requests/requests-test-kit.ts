@@ -36,7 +36,11 @@ export function setup() {
   let now = NOW;
   let id = 0;
   let routes: Awaited<ReturnType<Board['directions']>> = [];
+  let subscribed: Awaited<ReturnType<Board['subscribed']>> = [];
   let nearest: BoardTrip = null;
+  let seatHeld = false;
+  // A live trip of the driver, shown on the board or not (docs/172).
+  let busy = false;
   const deps: RequestsDeps = {
     requests: createMemoryRequests(),
     seen: createMemoryRequestViews(),
@@ -74,8 +78,14 @@ export function setup() {
     published: async () => undefined,
     changed: async () => undefined,
     hidden: async () => new Set(),
-    board: { directions: async () => routes, trip: async () => nearest },
+    board: {
+      directions: async () => routes,
+      subscribed: async () => subscribed,
+      trip: async () => nearest,
+      busy: async () => busy || nearest !== null,
+    },
     ratings: async (ids) => new Map(ids.map((userId) => [userId, { average: 4.8, count: 12 }])),
+    seatHeld: async () => seatHeld,
     limits: loadBrand(),
     newId: () => `request-${(id += 1)}`,
     now: () => now,
@@ -97,6 +107,9 @@ export function setup() {
     request,
     setNow: (next: number) => void (now = next),
     directions: (next: typeof routes) => void (routes = next),
+    subscribe: (next: typeof subscribed) => void (subscribed = next),
     boardTrip: (next: BoardTrip) => void (nearest = next),
+    holdSeat: () => void (seatHeld = true),
+    liveTrip: () => void (busy = true),
   };
 }

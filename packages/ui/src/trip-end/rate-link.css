@@ -1,0 +1,10 @@
+/* The stars of a trip opened by the link of the bot (G78 sheet 6): the day and the way above them. */
+.trip-end-link {
+  padding-top: 16px;
+}
+
+.trip-end-trip {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--reg-muted);
+}

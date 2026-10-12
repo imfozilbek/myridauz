@@ -19,7 +19,7 @@ test('3-1: «Qachon joʻnaysiz?»', async ({ page }) => {
   await page.clock.setFixedTime(Date.parse('2026-10-12T10:00:00+05:00'));
   await startPublish(page);
   await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
-  await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
+  await page.locator('.week-day').nth(1).click();
   await expect(page.getByRole('button', { name: '08:00', pressed: true })).toBeVisible();
   await page.screenshot({ path: `${OUT}/3-1-code.png`, animations: 'disabled' });
 });

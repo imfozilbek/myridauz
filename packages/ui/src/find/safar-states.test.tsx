@@ -1,7 +1,8 @@
-import { cleanup, screen } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
-import type { Trip } from '@platform/contracts';
-import { booking } from '../bookings/booking-test-kit';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { AppLink, Booking, RideRequest, Trip } from '@platform/contracts';
+import { booking, request } from '../bookings/booking-test-kit';
+import { AppLinkContext } from '../market/app-link';
 import { PlacesGate } from '../market/places-gate';
 import { renderMarket, trip } from '../market/market-test-kit';
 import { testClients } from '../test-shell';
@@ -11,18 +12,26 @@ afterEach(cleanup);
 
 const BOOK = '1 ta joy band qilish';
 // The person of renderMarket has the id …01; trip is driven by …07.
-const open = (shown: Trip, clients = testClients({})) =>
+const open = (shown: Trip, clients = testClients({}), openLink: (link: AppLink) => void = () => undefined) =>
   renderMarket(
-    <PlacesGate>
-      <SafarScreen
-        trip={shown}
-        onBack={() => undefined}
-        onBook={() => undefined}
-        onOthers={() => undefined}
-      />
-    </PlacesGate>,
+    <AppLinkContext.Provider value={openLink}>
+      <PlacesGate>
+        <SafarScreen
+          trip={shown}
+          onBack={() => undefined}
+          onBook={() => undefined}
+          onOthers={() => undefined}
+        />
+      </PlacesGate>
+    </AppLinkContext.Provider>,
     clients,
   );
+// The seats and the requests of the passenger.
+const theirs = (mine: readonly Booking[], requests: readonly RideRequest[] = []) =>
+  testClients({
+    bookings: { myBookings: async () => [...mine] },
+    market: { myRequests: async () => [...requests] },
+  });
 
 // «Safar» instead of «Joy band qilish» when the trip cannot be booked (G52, docs/112, docs/65 B8 and C);
 // these checks came from the old trip screen, now the screen of the team only (G75, docs/159).
@@ -34,12 +43,7 @@ describe('«Safar» that cannot be booked', () => {
   });
 
   it('says the seat is asked already', async () => {
-    open(
-      trip,
-      testClients({
-        bookings: { myBookings: async () => [{ ...booking, trip: { ...booking.trip, id: trip.id } }] },
-      }),
-    );
+    open(trip, theirs([{ ...booking, trip: { ...booking.trip, id: trip.id } }]));
     expect(await screen.findByText('Bu safarda joyingiz bor.')).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
   });
@@ -55,21 +59,30 @@ describe('«Safar» that cannot be booked', () => {
     expect(document.querySelector('.outcome-plate.outcome-plate-off')?.textContent).toContain('bekor qildi');
   });
 
-  // The limit before the tap, not after it (G75, docs/158 А): 3 requests wait for an answer.
-  it('says the limit of the waiting requests instead of the button', async () => {
-    const waiting = [1, 2, 3].map((n) => ({
-      ...booking,
-      id: `w${n}`,
-      status: 'requested' as const,
-      trip: { ...booking.trip, id: `other${n}` },
-    }));
-    open(trip, testClients({ bookings: { myBookings: async () => waiting } }));
+  // One at a time (owner decision 12.10.2026, docs/172): a seat on another trip opens instead.
+  it('says a seat is held on another trip, «Joyimni ochish» opens it', async () => {
+    const openLink = vi.fn();
+    const held = { ...booking, id: 'held', trip: { ...booking.trip, id: 'other' } };
+    open(trip, theirs([held]), openLink);
     expect(
-      await screen.findByText(
-        'Javob kutayotgan soʻrovlar soni chegaraga yetdi. Haydovchilar javobini kuting.',
-      ),
+      await screen.findByText('Sizda boshqa safarda joy bor. Yangi joy shu safar tugagach.'),
     ).toBeTruthy();
     expect(screen.queryByText(BOOK)).toBeNull();
+    fireEvent.click(screen.getByText('Joyimni ochish'));
+    expect(openLink).toHaveBeenCalledWith({ name: 'booking', id: 'held' });
+  });
+
+  it('says an open request closes with the seat, the button stays', async () => {
+    open(trip, theirs([], [{ ...request, status: 'open' }]));
+    expect(await screen.findByText('Joy soʻrasangiz, ochiq soʻrovingiz yopiladi.')).toBeTruthy();
+    expect(screen.getByText(BOOK)).toBeTruthy();
+  });
+
+  it('a seat of a past or cancelled trip holds nothing', async () => {
+    const over = { ...booking, trip: { ...booking.trip, id: 'other', status: 'cancelled' as const } };
+    open(trip, theirs([over], [{ ...request, status: 'expired' }]));
+    expect(await screen.findByText(BOOK)).toBeTruthy();
+    expect(document.querySelector('.safar-alert')).toBeNull();
   });
 
   it('books the trip of another driver', async () => {

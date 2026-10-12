@@ -1,17 +1,16 @@
 import type { TranslationKey } from '@platform/i18n';
 import type { PersonId } from '@platform/contracts';
 import { useState } from 'react';
-import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { ManageGroup, ManageRow } from '../manage/manage-page';
 import { errorKey } from '../market/error-text';
 import { useLoad } from '../market/use-list';
 import { ActionFailure } from '../states/action-failure';
 import { confirm, haptic } from '../telegram/feedback';
 
-// "Bloklar tarixi" of a person (docs/65 C): the block now, every block before it, who and why.
-// The owner lifts a block here; a moderator sees why it is not allowed.
+// "Bloklar tarixi" of a person (docs/65 C): the block now, every block before it, who and why, a
+// card of «Boshqaruv» (G78 sheet 6). The owner lifts a block here; a moderator sees why it is not allowed.
 export function BlockJournal({ userId }: { readonly userId: PersonId }) {
   const { t, formatDate } = useI18n();
   const { moderation } = useApiClients();
@@ -40,25 +39,28 @@ export function BlockJournal({ userId }: { readonly userId: PersonId }) {
       : t('moderation.blocks.none');
   return (
     <>
-      <Section header={t('moderation.blocks.title')}>
-        <Cell before={<IconTile name="blocked" tone={active ? 'accent' : 'brand'} />}>{now}</Cell>
+      <ManageGroup title={t('moderation.blocks.title')}>
+        <ManageRow icon="blocked" title={now} danger={active !== null} />
         {value.entries.map((entry) => (
-          <Cell
+          <ManageRow
             key={entry.at}
-            subtitle={`${entry.by}, ${formatDate(new Date(entry.at))}`}
-            description={
-              entry.reason === 'unblock'
-                ? undefined
-                : entry.until === null
-                  ? t('moderation.blocks.forever')
-                  : t('moderation.blocks.until', { date: formatDate(new Date(entry.until)) })
-            }
-          >
-            {t(`moderation.blocks.reason.${entry.reason}`)}
-          </Cell>
+            icon="blocked"
+            title={t(`moderation.blocks.reason.${entry.reason}`)}
+            hint={`${entry.by}, ${formatDate(new Date(entry.at))}`}
+            {...(entry.reason === 'unblock'
+              ? {}
+              : {
+                  value:
+                    entry.until === null
+                      ? t('moderation.blocks.forever')
+                      : t('moderation.blocks.until', { date: formatDate(new Date(entry.until)) }),
+                })}
+          />
         ))}
-        {active ? <Cell onClick={() => void unblock()}>{t('moderation.unblock')}</Cell> : null}
-      </Section>
+        {active ? (
+          <ManageRow icon="blocked" title={t('moderation.unblock')} onClick={() => void unblock()} />
+        ) : null}
+      </ManageGroup>
       <ActionFailure error={failure} />
     </>
   );

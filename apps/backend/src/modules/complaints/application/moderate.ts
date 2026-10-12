@@ -4,6 +4,7 @@ import { queueOrder } from '../domain/complaint';
 import { blockPerson } from './block';
 import { complaintView as view, sideOf } from './complaint-view';
 import type { ComplaintsDeps, Ride } from './ports';
+import { answerRefund } from './refund';
 
 // Who decides: a moderator, or the owner who may also block a member of the team.
 export type Moderator = { readonly id: number; readonly owner: boolean };
@@ -51,7 +52,8 @@ export async function complaintChat(deps: ComplaintsDeps, moderatorId: number, i
 
 // The decision (docs/17): nothing, a warning, or a block by Telegram ID and phone with the
 // person's live trips and bookings cancelled. On a no-show the moderator may propose to give the
-// driver the commission back: no money moves until the owner confirms (docs/35, G63).
+// driver the commission back: no money moves until the owner confirms (docs/35, G63); the owner's
+// own decision confirms it by the same tap (G78 К4).
 export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: string, decision: Decision) {
   const moderatorId = moderator.id;
   const complaint = await deps.store.find(id);
@@ -94,7 +96,7 @@ export async function decide(deps: ComplaintsDeps, moderator: Moderator, id: str
   await forgetEvidence(deps, ride);
   await deps.tell.resolved(complaint.authorId, sideOf(ride, complaint.authorId));
   await deps.tell.queueChanged();
-  return 'ok' as const;
+  return refund && moderator.owner ? answerRefund(deps, moderator, id, 'confirm') : ('ok' as const);
 }
 
 // The chat of a ride stays as evidence when a side deletes the account (docs/65 A5); the last
