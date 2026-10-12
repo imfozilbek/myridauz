@@ -61,7 +61,6 @@ for (const platform of PLATFORMS)
     await visit(page, platform, t('common.admin.statistics'), 'ta32-stats');
     await open(page, platform, t('pricing.title'), 'ta33-pricing');
     await open(page, platform, t('pricing.edit'), 'ta34-pricing-edit');
-    await open(page, platform, t('pricing.preview'), 'ta35-pricing-preview');
   });
 
 // Each tool from «Boshqaruv» on its own page: «Back» from a tool goes to the main screen.

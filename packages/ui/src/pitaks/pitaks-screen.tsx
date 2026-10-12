@@ -1,32 +1,27 @@
 import type { AdminPitak, PitakDirection } from '@platform/contracts';
-import { Button, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { IconTile } from '../icon-tile';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { useLoad } from '../market/use-list';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { Screen } from '../screen/screen';
-import { useScreenBackground } from '../telegram/screen-background';
+import { MainButton } from '../telegram/bottom-button';
 import { DirectionPitak } from './direction-pitak';
 import { PitakEdit } from './pitak-edit';
 import { PitakHistory } from './pitak-history';
-import '../market/market.css';
 
 type Open =
   | { readonly kind: 'direction'; readonly direction: PitakDirection }
   | { readonly kind: 'pitak'; readonly pitak: AdminPitak | null }
   | { readonly kind: 'history' };
 
-// "Pitaklar" for the team (G24, docs/72): the live directions with their main pitak, the pitaks
-// themselves and the history of changes.
+// "Pitaklar" for the team (G24, docs/72): the live directions with their main pitak, a missing one in
+// red, the pitaks themselves and the history of changes at the end (G78 sheet 4).
 export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('pitaks');
-  useScreenBackground();
   const { t } = useI18n();
   const { pitaks } = useApiClients();
   const { value, failed, reload, refresh } = useLoad(() => pitaks.all(), 'pitaks');
@@ -61,46 +56,40 @@ export function PitaksScreen({ onBack }: { readonly onBack: () => void }) {
   }
   const pitakName = (id: string | null) => value.pitaks.find((pitak) => pitak.id === id)?.name;
   return (
-    <div className="market">
-      <Screen onBack={onBack} onRefresh={refresh} />
-      <Title weight="1" className="market-title">
-        {t('pitaks.title')}
-      </Title>
-      <List>
-        <Section>
-          <Cell before={<IconTile name="history" />} onClick={() => setOpen({ kind: 'history' })}>
-            {t('pitaks.history')}
-          </Cell>
-        </Section>
-        <Section header={t('pitaks.directions')}>
-          {value.directions.map((direction) => (
-            <Cell
+    <ManagePage title={t('pitaks.title')} onBack={onBack} onRefresh={refresh}>
+      <ManageGroup title={t('pitaks.directions')}>
+        {value.directions.map((direction) => {
+          const name = pitakName(direction.pitakId);
+          return (
+            <ManageRow
               key={`${direction.from}>${direction.to}`}
-              subtitle={pitakName(direction.pitakId) ?? t('pitaks.none')}
+              icon="trip"
+              title={title(direction)}
+              hint={name ?? t('pitaks.none')}
+              alarm={name === undefined}
               onClick={() => setOpen({ kind: 'direction', direction })}
-            >
-              {title(direction)}
-            </Cell>
-          ))}
-        </Section>
-        <Section header={t('pitaks.all')}>
-          {value.pitaks.map((pitak) => (
-            <Cell
-              key={pitak.id}
-              before={<IconTile name="pickup" tone={pitak.status === 'closed' ? 'deep' : 'brand'} />}
-              subtitle={`${regionName(pitak.regionId)} · ${t(`pitaks.status.${pitak.status}`)}`}
-              onClick={() => setOpen({ kind: 'pitak', pitak })}
-            >
-              {pitak.name}
-            </Cell>
-          ))}
-        </Section>
-        <div className="step-note">
-          <Button size="l" stretched onClick={() => setOpen({ kind: 'pitak', pitak: null })}>
-            {t('pitaks.add')}
-          </Button>
-        </div>
-      </List>
-    </div>
+            />
+          );
+        })}
+      </ManageGroup>
+      <ManageGroup title={t('pitaks.all')}>
+        {value.pitaks.map((pitak) => (
+          <ManageRow
+            key={pitak.id}
+            icon="pickup"
+            title={pitak.name}
+            hint={t('home.meta', {
+              when: regionName(pitak.regionId),
+              more: t(`pitaks.status.${pitak.status}`),
+            })}
+            onClick={() => setOpen({ kind: 'pitak', pitak })}
+          />
+        ))}
+      </ManageGroup>
+      <ManageGroup>
+        <ManageRow icon="history" title={t('pitaks.history')} onClick={() => setOpen({ kind: 'history' })} />
+      </ManageGroup>
+      <MainButton text={t('pitaks.add')} onClick={() => setOpen({ kind: 'pitak', pitak: null })} />
+    </ManagePage>
   );
 }

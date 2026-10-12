@@ -101,6 +101,32 @@
   color: var(--reg-success);
 }
 
+/* The new price of a changed direction (docs/86 V13) and the version in force: quiet. */
+.manage-changed {
+  color: var(--reg-strong);
+}
+
+.manage-quiet {
+  color: var(--reg-muted);
+  font-weight: 400;
+}
+
+/* A number of the formula typed right in its row (G78 sheet 4). */
+.manage-number input {
+  box-sizing: border-box;
+  width: 96px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0 10px;
+  border: 1px solid var(--reg-off);
+  border-radius: 10px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 15px;
+  text-align: right;
+}
+
 .manage-value {
   flex: none;
   font-size: 14px;

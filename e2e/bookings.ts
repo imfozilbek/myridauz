@@ -139,6 +139,6 @@ export async function teamWallets(page: Page, shot: Shot = none) {
   await page.getByText(B.adjust).click();
   await page.getByText(t('wallet.adjust.add')).click();
   await page.getByLabel(t('wallet.adjust.amount')).fill('100000');
-  await page.getByLabel(t('wallet.adjust.reason')).fill('Yoʻlovchi kelmadi');
+  await page.getByRole('radio', { name: t('wallet.adjust.reason.noShow') }).click();
   await shot('3-adjust');
 }

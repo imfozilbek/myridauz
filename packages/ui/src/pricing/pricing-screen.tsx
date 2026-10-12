@@ -1,5 +1,5 @@
 import { ApiError } from '@platform/api-client';
-import type { Direction, PricingPreview, PricingVariables } from '@platform/contracts';
+import type { Direction } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useCallback, useEffect, useState } from 'react';
 import { useScreenView } from '../context/analytics-context';
@@ -11,14 +11,12 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { haptic } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { DirectionEdit } from './direction-edit';
-import { PricingPreviewScreen } from './pricing-preview';
+import { FormulaScreen } from './formula-screen';
 import { PricingView, type Loaded } from './pricing-view';
-import { VariablesEditor } from './variables-editor';
 
 type Mode =
   | { readonly kind: 'view' }
-  | { readonly kind: 'edit'; readonly typed: PricingVariables | null }
-  | { readonly kind: 'preview'; readonly next: PricingVariables; readonly preview: PricingPreview }
+  | { readonly kind: 'edit' }
   | { readonly kind: 'direction'; readonly direction: Direction; readonly failed: TranslationKey | null };
 
 // The price engine for the team: the formula, the directions, the history (docs/23).
@@ -64,26 +62,11 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
   if (!loaded) return <ScreenSkeleton onBack={onBack} />;
   const { variables } = loaded.state.current;
   if (mode.kind === 'edit') {
-    const preview = (next: PricingVariables) =>
-      pricing.preview(next).then(
-        (result) => setMode({ kind: 'preview', next, preview: result }),
-        () => setFailed(true),
-      );
     return (
-      <VariablesEditor
+      <FormulaScreen
         current={variables}
-        typed={mode.typed}
         onBack={() => setMode({ kind: 'view' })}
-        onPreview={(next) => void preview(next)}
-      />
-    );
-  }
-  if (mode.kind === 'preview') {
-    return (
-      <PricingPreviewScreen
-        preview={mode.preview}
-        onBack={() => setMode({ kind: 'edit', typed: mode.next })}
-        onSave={() => void done(pricing.save(mode.next))}
+        onSave={(next) => void done(pricing.save(next))}
       />
     );
   }
@@ -102,7 +85,7 @@ function Pricing({ onBack }: { readonly onBack: () => void }) {
     <PricingView
       loaded={loaded}
       onBack={onBack}
-      onEdit={() => setMode({ kind: 'edit', typed: null })}
+      onEdit={() => setMode({ kind: 'edit' })}
       onDirection={(direction) => setMode({ kind: 'direction', direction, failed: null })}
       onRollback={(version) => void done(pricing.rollback(version))}
     />
