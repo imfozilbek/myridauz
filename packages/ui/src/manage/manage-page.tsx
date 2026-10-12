@@ -65,6 +65,8 @@ type RowProps = {
   // The number or the money on the right, bold (G78 sheet 4).
   readonly value?: ReactNode;
   readonly onClick?: () => void;
+  // A row that does its act in place has no arrow: «Qoʻngʻiroq» plays, a set is picked (G78 sheet 5).
+  readonly arrow?: boolean;
 };
 
 // One row: the gray icon tile, the title, the line under it, the value, and an arrow when it opens
@@ -78,6 +80,7 @@ export function ManageRow({
   alarm = false,
   value,
   onClick,
+  arrow = true,
 }: RowProps) {
   const words = (
     <>
@@ -108,7 +111,7 @@ export function ManageRow({
       }}
     >
       {words}
-      <Icon name="next" size={ARROW} />
+      {arrow ? <Icon name="next" size={ARROW} /> : null}
     </button>
   );
 }

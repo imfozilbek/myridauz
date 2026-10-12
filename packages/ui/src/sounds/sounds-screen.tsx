@@ -1,21 +1,17 @@
 import type { SoundsState } from '@platform/contracts';
-import { Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
-import { Icon } from '../icons';
-import { IconTile } from '../icon-tile';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { useLoad } from '../market/use-list';
-import { Screen } from '../screen/screen';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { unlockAudio } from './audio';
 import { previewSound } from './brand-sound';
-import '../market/market.css';
 
-// «Ovozlar» in «Boshqaruv» (G54, docs/115): every set to listen to; the owner picks the one in use.
+// «Ovozlar» in «Boshqaruv» (G54, docs/115, G78 sheet 5): each set its own card to listen to, the one
+// in use marked green; the owner picks it by its first row.
 export function SoundsScreen({ onBack }: { readonly onBack: () => void }) {
   useScreenView('sounds');
   const { sounds } = useApiClients();
@@ -44,35 +40,35 @@ function SoundSets({ loaded, onBack }: { readonly loaded: SoundsState; readonly 
     }
   };
   return (
-    <div className="market">
-      <Screen onBack={onBack} />
-      <Title weight="1" className="market-title">
-        {t('common.admin.sounds')}
-      </Title>
-      <List>
-        {state.sets.map((set) => {
-          const chosen = set === state.set;
-          const canPick = !chosen && !busy;
-          return (
-            <Section key={set}>
-              <Cell
-                before={<IconTile name="sounds" />}
-                after={chosen ? <Icon name="selected" /> : undefined}
-                subtitle={chosen ? t('common.admin.soundChosen') : undefined}
-                {...(canPick ? { onClick: pick(set) } : {})}
-              >
-                {t('common.admin.soundSet', { n: set })}
-              </Cell>
-              <Cell before={<Icon name="play" />} onClick={listen(set, 'ring')}>
-                {t('common.admin.soundRing')}
-              </Cell>
-              <Cell before={<Icon name="play" />} onClick={listen(set, 'notify')}>
-                {t('common.admin.soundNotify')}
-              </Cell>
-            </Section>
-          );
-        })}
-      </List>
-    </div>
+    <ManagePage title={t('common.admin.sounds')} onBack={onBack}>
+      {state.sets.map((set) => {
+        const chosen = set === state.set;
+        const canPick = !chosen && !busy;
+        return (
+          <ManageGroup key={set}>
+            <ManageRow
+              icon={chosen ? 'selected' : 'sounds'}
+              {...(chosen ? { tone: 'success' as const } : {})}
+              title={t('common.admin.soundSet', { n: set })}
+              {...(chosen ? { hint: t('common.admin.soundChosen') } : {})}
+              arrow={false}
+              {...(canPick ? { onClick: pick(set) } : {})}
+            />
+            <ManageRow
+              icon="play"
+              title={t('common.admin.soundRing')}
+              arrow={false}
+              onClick={listen(set, 'ring')}
+            />
+            <ManageRow
+              icon="play"
+              title={t('common.admin.soundNotify')}
+              arrow={false}
+              onClick={listen(set, 'notify')}
+            />
+          </ManageGroup>
+        );
+      })}
+    </ManagePage>
   );
 }

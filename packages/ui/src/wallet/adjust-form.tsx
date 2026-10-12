@@ -60,7 +60,7 @@ export function AdjustForm({ current, error, onBack, onSave }: Props) {
         <ManageInput
           label={t('wallet.adjust.amount')}
           value={digits ? formatNumber(sum) : ''}
-          numeric
+          mode="numeric"
           onChange={(text) => setDigits(text.replace(DIGITS, ''))}
         />
         {valid ? (

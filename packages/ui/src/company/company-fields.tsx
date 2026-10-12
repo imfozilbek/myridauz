@@ -1,6 +1,6 @@
 import { companySchema, type Company } from '@platform/contracts';
-import { Field } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { ManageInput } from '../manage/manage-input';
 
 export const COMPANY_FIELDS = ['legalName', 'form', 'stir', 'address', 'email'] as const;
 export type CompanyDraft = Record<keyof Company, string>;
@@ -20,18 +20,19 @@ type Props = {
   readonly onChange: (field: keyof Company, value: string) => void;
 };
 
-// The five requisites of the documents (G34, docs/96 T23): the owner changes them (G75).
+// The five requisites of the documents (G34, docs/96 T23): the owner changes them (G75), each a field
+// of «Boshqaruv» in one card (G78 sheet 5).
 export function CompanyFields({ draft, invalid, onChange }: Props) {
   const { t } = useI18n();
   return COMPANY_FIELDS.map((field) => (
-    <Field
+    <ManageInput
       key={field}
       label={t(`legal.admin.${field}`)}
       value={draft[field]}
-      status={invalid.includes(field) ? 'error' : 'default'}
-      {...(field === 'stir' ? { inputMode: 'numeric' as const, maxLength: 9 } : {})}
-      {...(field === 'email' ? { type: 'email', inputMode: 'email' as const } : {})}
-      onChange={(event) => onChange(field, event.target.value)}
+      invalid={invalid.includes(field)}
+      {...(field === 'stir' ? { mode: 'numeric' as const, maxLength: 9 } : {})}
+      {...(field === 'email' ? { mode: 'email' as const } : {})}
+      onChange={(value) => onChange(field, value)}
     />
   ));
 }

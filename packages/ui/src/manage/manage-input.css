@@ -23,3 +23,7 @@
   font: inherit;
   font-size: 15px;
 }
+
+.manage-input-invalid input {
+  border-color: var(--reg-danger);
+}
