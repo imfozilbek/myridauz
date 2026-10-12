@@ -1,11 +1,12 @@
 import { useI18n } from '../context/i18n-context';
 import { FindStart } from '../find/find-start';
+import { useHomeGo } from '../flow/home-context';
 import type { StartAction } from '../flow/start-action';
 import { PlacePicker } from '../places/place-picker';
 import { useDirectory } from '../places/use-directory';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
-import { useDockEnds } from './dock-ends';
+import { startFind, useDockEnds } from './dock-ends';
 import { useHomeRoute } from './home-route';
 
 export const DOCK_FROM = 'dock_from';
@@ -55,10 +56,11 @@ function PickPlaceTo({ onBack }: Props) {
   );
 }
 
-// «Qayerga» opens the directions with their drawings and trips (G59, docs/118); the pick comes back
-// to the main screen, «Safar topish» then opens its days and trips (mockup g66/1 phone 2).
+// «Qayerga» opens the directions with their drawings and trips (G59, docs/118); the pick opens its
+// days and trips at once and stays in the block (G78 П7, mockup 4-steps-passenger).
 function PickTo({ onBack }: Props) {
   const { choose } = useHomeRoute();
+  const go = useHomeGo();
   const [places] = useDirectory();
   const { from } = useDockEnds(places.status === 'ready' ? places.directory : null);
   return (
@@ -67,7 +69,8 @@ function PickTo({ onBack }: Props) {
       onBack={onBack}
       onDone={(route) => {
         choose(route.from.id === from?.id ? { to: route.to } : route);
-        onBack();
+        if (go) go('find_trip', startFind(route));
+        else onBack();
       }}
     />
   );
