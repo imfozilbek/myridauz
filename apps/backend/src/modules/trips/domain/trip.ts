@@ -1,6 +1,8 @@
 import {
   DAY_MS,
   onTheWay,
+  tashkentDate,
+  tashkentDayStart,
   tripEndsAt,
   type BookingRule,
   type Car,
@@ -48,14 +50,16 @@ export type TripRecord = {
 
 export const endsAt = tripEndsAt;
 
-// The time of a new trip: in the future and not further than the brand's days (docs/35).
+// The time of a new trip: in the future and on a day of the row, the whole last day too (docs/35;
+// owner decision 12.10.2026, docs/172).
 export function departError(
   departAt: number,
   now: number,
   daysAhead: number,
 ): 'trips.in_past' | 'trips.invalid_input' | null {
   if (departAt <= now) return 'trips.in_past';
-  return departAt > now + daysAhead * DAY_MS ? 'trips.invalid_input' : null;
+  const afterRow = tashkentDayStart(tashkentDate(now + daysAhead * DAY_MS)) + DAY_MS;
+  return departAt >= afterRow ? 'trips.invalid_input' : null;
 }
 
 // Active or full and not over yet: it counts for the limit of 5 and shows in the search.

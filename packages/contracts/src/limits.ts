@@ -22,7 +22,6 @@ export const LIMITS = {
   'promo.windowDays': { min: 1, max: 730, unit: 'days' },
   'schedule.leadMinutes': { min: 0, max: 240, unit: 'minutes' },
   'schedule.maxActiveTrips': { min: 1, max: 10, unit: 'count' },
-  'schedule.daysAhead': { min: 1, max: 90, unit: 'days' },
   'schedule.shiftMinutes': { min: 0, max: 240, unit: 'minutes' },
   'schedule.meetMinutes': { min: 10, max: 120, unit: 'minutes' },
   'schedule.autoDepartHours': { min: 1, max: 6, unit: 'hours' },

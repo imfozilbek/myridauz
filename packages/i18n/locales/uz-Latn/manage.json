@@ -37,7 +37,6 @@
   "limit.promo.windowDays": "Aksiya davri",
   "limit.schedule.leadMinutes": "Safar boshlanishiga eng kam vaqt",
   "limit.schedule.maxActiveTrips": "Haydovchining faol safarlari",
-  "limit.schedule.daysAhead": "Necha kun oldin eʼlon qilish mumkin",
   "limit.schedule.shiftMinutes": "Vaqtni surish chegarasi",
   "limit.schedule.meetMinutes": "Uchrashuv qachon boshlanadi",
   "limit.schedule.autoDepartHours": "Oʻzi yoʻlga chiqqan deb belgilash",

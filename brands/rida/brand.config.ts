@@ -38,9 +38,10 @@ export const brandConfig: BrandConfig = {
   company: { email: 'myrida.llc@gmail.com' },
   // G38 (owner decisions 03.10.2026, docs/103): a trip leaves an hour after it is made at the earliest;
   // another day opens at 08:00; at most 3 trips; gathering people takes half the road, 1 to 3 hours.
+  // A trip or a request goes on a day of the row of 7 days from today (owner decision 12.10.2026, docs/172).
   schedule: {
     leadMinutes: 60,
-    daysAhead: 30,
+    daysAhead: 6,
     defaultTime: '08:00',
     maxActiveTrips: 3,
     gather: { factor: 0.5, minMinutes: 60, maxMinutes: 180 },
