@@ -104,7 +104,8 @@ export function PointCard({
           ]}
         />
         <SecondaryButton beside text={t('sheet.meet.call')} onClick={act.call(booking)} />
-        <MainButton text={t('bookings.meeting.came')} destructive onClick={act.came(booking)} />
+        {/* The passenger is at the point already: «Keldi» at once, no «Men keldim» first (G78 В1 … В3). */}
+        <MainButton text={t('driverAfter.meet.met')} onClick={act.met(booking)} />
       </>
     );
   return (

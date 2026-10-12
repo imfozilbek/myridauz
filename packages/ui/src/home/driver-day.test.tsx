@@ -79,5 +79,8 @@ describe('the day of a trip of a driver (G76, mockup g76/3 states 12 and 15)', {
     );
     expect(await screen.findByText('Dilnoza joyida')).toBeTruthy();
     expect(screen.getByText('Metro yonida')).toBeTruthy();
+    // She is at the point already: «Keldi» at once, no «Men keldim» first (G78 В1 … В3).
+    expect(screen.getByRole('button', { name: 'Keldi' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Men keldim' })).toBeNull();
   });
 });

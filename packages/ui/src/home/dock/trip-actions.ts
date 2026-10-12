@@ -60,7 +60,6 @@ export function useTripActions(go: HomeGo, directory: PlaceDirectory | null, ref
         unread.has(booking.chatKey) ? openSheet('message', booking.chatKey) : openChat(booking.chatKey),
       ),
     call: (booking: Booking) => tap('trip_call', () => openChat(booking.chatKey, 'ring')),
-    came: (booking: Booking) => () => void meet.mark(booking, 'came'),
     // «Men keldim» at a point where several people wait, a pitak (G77).
     cameAll: (people: readonly Booking[]) => () =>
       void Promise.all(people.map((booking) => meet.mark(booking, 'came'))),
