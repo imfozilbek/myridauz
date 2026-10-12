@@ -28,7 +28,11 @@ export function DirectionPitak({ direction, title, pitaks, onBack }: Props) {
   const [failed, setFailed] = useState(false);
   if (failed) return <ErrorScreen onRetry={() => setFailed(false)} onBack={() => onBack(false)} />;
   const rows = [
-    ...pitaks.map((pitak) => ({ key: pitak.id, title: pitak.name, hint: t(`pitaks.status.${pitak.status}`) })),
+    ...pitaks.map((pitak) => ({
+      key: pitak.id,
+      title: pitak.name,
+      hint: t(`pitaks.status.${pitak.status}`),
+    })),
     { key: NONE, title: t('pitaks.withoutPitak') },
   ];
   const save = (id: string) =>

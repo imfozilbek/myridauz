@@ -32,7 +32,12 @@ export function ChoiceRows<K extends string>({ name, choices, value, onPick }: P
     return (
       <div className="choice-rows">
         {choices.map((choice) => (
-          <button key={choice.key} type="button" className={rowClass(choice)} onClick={() => pick(choice.key)}>
+          <button
+            key={choice.key}
+            type="button"
+            className={rowClass(choice)}
+            onClick={() => pick(choice.key)}
+          >
             <Words choice={choice} />
             <span className="choice-arrow">
               <Icon name="next" size={18} />

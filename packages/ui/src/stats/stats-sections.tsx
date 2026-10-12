@@ -42,7 +42,9 @@ function FunnelSection({ funnel, hint }: { readonly funnel: Funnel; readonly hin
             key={step.step}
             icon="statistics"
             title={t(`stats.step.${step.step}`)}
-            {...(step.drop ? { hint: t('stats.left', { drop: step.drop }), alarm: step.drop >= HIGH_DROP } : {})}
+            {...(step.drop
+              ? { hint: t('stats.left', { drop: step.drop }), alarm: step.drop >= HIGH_DROP }
+              : {})}
             value={formatNumber(step.count)}
           />
         ))}
