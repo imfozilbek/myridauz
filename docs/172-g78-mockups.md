@@ -16,6 +16,8 @@
 | `7-edits-1.png` | Правки владельца 12.10.2026 поверх текущих экранов (слева `main`, справа ветка с изменением): значки вместо букв, два списка часов, одно в моменте; 4 вопроса | 12 пар |
 | `7-edits-2-passenger.png` | Лист 1 и шаги попутчика поверх текущих экранов: пустой день одной карточкой, «Xabar bering» строками, «Sevimli» карточками поиска, шторка G68 над «Mening soʻrovim», карточка встречи из блока, «Obunalar» в «Profil», «Butun shahar»; П16 и П7 уже в ветке | 12 пар |
 | `7-edits-3-driver.png` | Лист 2 и шаги водителя поверх текущих экранов: заявка шторкой G68, место попутчика, В9, пустые «Faol» и «Oʻtgan», «Oʻtgan» строками, «Obunalar», «Xabar bering» на доске, В2, В10 A; В11, В17, В12 уже в ветке | 14 пар |
+| `7-edits-4-admin.png` | Листы 3 админки поверх текущих экранов, вид g67/1: Statistika, Safarlar, Safar, Hamyonlar, Hamyon, Hamyonni tuzatish, Narxlar, Formula, Pitaklar | 9 пар |
+| `7-edits-5-admin.png` | Kanallar, Cheklovlar, лимит шторкой, Jurnal, Kompaniya rekvizitlari, Ovozlar, К2 причины шторкой, К1 «Mos emas» у каждой проверки | 8 пар |
 
 ## Одна вещь, один вид (`168`, дубликаты)
 
