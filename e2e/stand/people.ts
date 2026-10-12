@@ -36,7 +36,7 @@ export const GAYRAT: Person = { id: 900110, name: 'Gʻayrat', phone: '9989011101
 export const KOMIL: Person = { id: 900111, name: 'Komil', phone: '998901110111' };
 // The walk through every screen (e2e/stand/all-*.spec.ts).
 export const MUROD: Person = { id: 900112, name: 'Murod', phone: '998901110112' };
-// The driver of the admin walk only: the trips of Jahongir stay under the limit (lesson 63).
+// The driver of the admin walk and of the publish form of the driver walk (lesson 63).
 export const SHERZOD: Person = { id: 900113, name: 'Sherzod', phone: '998901110113' };
 // G35: the second trip on the route, for a passenger who went before (docs/97 K4, K5).
 export const DOSTON: Person = { id: 900114, name: 'Doston', phone: '998901110114' };

@@ -48,6 +48,14 @@ export async function book(passenger: Person, trip: Trip, input: BookingInput) {
 export const answer = async (driver: Person, bookingId: string, action: DriverBookingAction) =>
   (await bookingsOf('driver', driver)).answer(bookingId, action);
 
+// The driver says no to the waiting seat: one seat at a time, the passenger asks again (docs/172).
+export async function declineWaiting(driver: Person, passenger: Person) {
+  const mine = await (await bookingsOf('passenger', passenger)).myBookings();
+  const waiting = mine.find((booking) => booking.status === 'requested');
+  if (!waiting) throw new Error(`stand: no waiting seat of ${passenger.name}`);
+  return answer(driver, waiting.id, 'decline');
+}
+
 // «Keldi» of the driver at the point: the passenger is in the car (G76, docs/43).
 export const markMet = async (driver: Person, bookingId: string) =>
   (await bookingsOf('driver', driver)).meet(bookingId, 'met');

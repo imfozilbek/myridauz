@@ -1,14 +1,13 @@
 import { expect, test } from '../crash-guard';
 import { TEXT } from '../apps';
 import { passConsent } from '../registration';
-import { book, CHILONZOR, publishTrip } from './market-kit';
-import { confirmedSeat, SAMARQAND, TO_SAMARQAND } from './g27-kit';
+import { confirmedSeat } from './g27-kit';
 import { FERUZA, OYBEK } from './people';
 import { NARROW, openHome, PLATFORMS, shot, t, visit, type Platform } from './screen-tour';
 import { outsideCalls, type Person } from './stand-kit';
 
 // The screens of a passenger (docs/77) for the UX review: the first visit, the main screen with a
-// confirmed and a waiting seat, and every screen one step from it.
+// confirmed seat (one seat at a time, docs/172), and every screen one step from it.
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 test.afterEach(() => expect(outsideCalls()).toEqual([]));
@@ -19,8 +18,6 @@ const NEWCOMERS: Record<Platform, Person> = {
 
 test.beforeAll(async () => {
   await confirmedSeat(OYBEK, FERUZA);
-  const trip = await publishTrip(OYBEK, CHILONZOR, SAMARQAND, 'door');
-  await book(FERUZA, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
 });
 
 for (const platform of PLATFORMS)

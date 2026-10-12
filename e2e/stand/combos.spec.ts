@@ -18,11 +18,14 @@ test('docs/82 ways: a pitak trip takes no seat from home, a city trip takes no s
   const pitakOnly = await publishTrip(GAYRAT, CHILONZOR, URGUT, 'pitak');
   const door = { seats: 1, mode: 'door' as const, pickup: TO_SAMARQAND.pickup, dropoff: TO_URGUT.dropoff };
   expect(await outcome(book(TIMUR, pitakOnly, door))).toBe('bookings.wrong_mode');
+  // One live trip of a driver (docs/172); Toshkent → Urgut is the route of G26: its search must not
+  // meet this trip (docs/75).
+  const market = createMarketClient(await signedAs('driver', GAYRAT));
+  await market.cancelTrip(pitakOnly.id);
   const cityOnly = await publishTrip(GAYRAT, CHILONZOR, SAMARQAND, 'door');
   const pitak = { seats: 1, mode: 'pitak' as const, pickup: null, dropoff: TO_SAMARQAND.dropoff };
   expect(await outcome(book(TIMUR, cityOnly, pitak))).toBe('bookings.wrong_mode');
-  // Toshkent → Urgut is the route of G26: its search must not meet this trip (docs/75).
-  await createMarketClient(await signedAs('driver', GAYRAT)).cancelTrip(pitakOnly.id);
+  await market.cancelTrip(cityOnly.id);
 });
 
 test('C06, P12. a seat cancelled before the answer: the driver hears it; an empty day is empty', async () => {

@@ -1,8 +1,7 @@
 import { expect, test } from '../crash-guard';
 import { answer, book, cancelMine, CHILONZOR, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, SAMARQAND, tailOf, toldBy, TO_SAMARQAND, walletOf } from './g27-kit';
-import { AZIZA, BOBUR, FERUZA, MALIKA, NIGORA, OYBEK, RUSTAM, SEVARA, ULUGBEK } from './people';
-import type { Person } from './stand-kit';
+import { AZIZA, FERUZA, MALIKA, NIGORA, RUSTAM, SEVARA, ULUGBEK } from './people';
 import { clearBotMessages, standSql } from './stand-tools';
 
 // The paths of a passenger with a seat (docs/77 P24 … P45, docs/82 C04, C07, C12) on the whole local
@@ -25,18 +24,13 @@ test('P24, P25, C12. the last seat goes to one; the next hears there are no seat
   expect(await outcome(answer(ULUGBEK, waiting.id, 'confirm'))).toBe('bookings.no_seats');
 });
 
-test('P26, P27. at most 3 waiting requests, one per trip', async () => {
-  // Four drivers: one driver cannot have four trips at once (docs/103).
-  const publish = (driver: Person) => publishTrip(driver, CHILONZOR, SAMARQAND, 'door');
-  const [first, second, third, fourth] = [
-    await publish(RUSTAM),
-    await publish(ULUGBEK),
-    await publish(BOBUR),
-    await publish(OYBEK),
-  ];
-  for (const trip of [first, second, third]) await book(SEVARA, trip, door(1));
+// One seat at a time (owner decision 12.10.2026, docs/172): not twice on a trip, none on another.
+test('P26, P27. one waiting seat: not twice on a trip, not on another trip', async () => {
+  const first = await publishTrip(RUSTAM, CHILONZOR, SAMARQAND, 'door');
+  const second = await publishTrip(ULUGBEK, CHILONZOR, SAMARQAND, 'door');
+  await book(SEVARA, first, door(1));
   expect(await outcome(book(SEVARA, first, door(1)))).toBe('bookings.wrong_status');
-  expect(await outcome(book(SEVARA, fourth, door(1)))).toBe('bookings.too_many');
+  expect(await outcome(book(SEVARA, second, door(1)))).toBe('bookings.too_many');
 });
 
 test('P29, C04. a declined seat: the passenger hears it from the passenger bot', async () => {

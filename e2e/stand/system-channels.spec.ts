@@ -39,6 +39,8 @@ test('S60, S61, S62. a new trip is posted, the post follows a full car and a can
 test('P51. a saved driver: the new trip comes by the bot', async () => {
   const first = await publishTrip(JAHONGIR, CHILONZOR, SAMARQAND, 'door');
   await createComfortClient(await signedAs('passenger', NARGIZA)).save(first.driver.id);
+  // One live trip of a driver (docs/172): the next one comes after the first is over.
+  await createMarketClient(await signedAs('driver', JAHONGIR)).cancelTrip(first.id);
   await publishTrip(JAHONGIR, CHILONZOR, SAMARQAND, 'door');
   await toldBy('passenger', NARGIZA, wordsOf('bot.news.favorite'));
 });

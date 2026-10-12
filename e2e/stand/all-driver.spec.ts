@@ -3,19 +3,22 @@ import { openNewTrip, openRequests, TEXT } from '../apps';
 import { openFromList, openOwnTrip } from '../market';
 import { book } from './market-kit';
 import { askRide, confirmedSeat, setBonus, TO_SAMARQAND } from './g27-kit';
-import { MUROD, ZEBO } from './people';
+import { MUROD, SHERZOD, ZEBO } from './people';
 import { pressBack } from '../telegram-mock';
 import { mainButton, NARROW, openHome, PLATFORMS, shot, t, visit } from './screen-tour';
+import { freshDriver } from './schedule-kit';
 import { register } from './seed';
 import type { Person } from './stand-kit';
 
 // Every screen of a driver with real data (docs/83): Murod has a confirmed seat, a waiting one, a
-// request of a passenger on his route; then his wallet is empty and a seat cannot be confirmed.
+// request of a passenger on his route; then his wallet is empty and a seat cannot be confirmed. A
+// passenger has a seat or a request, one at a time (docs/172): the request is another woman's.
 test.use({ viewport: NARROW });
 test.describe.configure({ mode: 'serial' });
 const links: Record<string, string> = {};
 const WELCOME_BONUS = 500_000;
 const WAITING: Person = { id: 900704, name: 'Robiya', phone: '998901110704' };
+const ASKING: Person = { id: 900706, name: 'Gavhar', phone: '998901110706' };
 
 test.beforeAll(async () => {
   const { trip } = await confirmedSeat(MUROD, ZEBO);
@@ -23,7 +26,8 @@ test.beforeAll(async () => {
   await register('passenger', WAITING, 'female');
   const waiting = await book(WAITING, trip, { seats: 1, mode: 'door', ...TO_SAMARQAND });
   links['waiting'] = waiting.id;
-  await askRide(WAITING);
+  await register('passenger', ASKING, 'female');
+  await askRide(ASKING);
 });
 
 for (const platform of PLATFORMS)
@@ -57,7 +61,7 @@ test('android: a trip, its seats, its map and a waiting seat', async ({ page }) 
 test('android: the requests of passengers and an offer', async ({ page }) => {
   await openHome(page, 'driver', MUROD, 'android');
   await openRequests(page);
-  const row = page.locator('.request-row', { hasText: WAITING.name });
+  const row = page.locator('.request-row', { hasText: ASKING.name });
   await expect(row).toBeVisible();
   await shot(page, 'android', 'da30-requests');
   await row.getByRole('button', { name: t('chat.open') }).click();
@@ -66,9 +70,11 @@ test('android: the requests of passengers and an offer', async ({ page }) => {
 });
 
 // One screen (G63, docs/118 path 6): the way of pickup, the seats of the car with «Mashinada ayol
-// bor» when fewer, the rule and the comment on their own screens and back.
+// bor» when fewer, the rule and the comment on their own screens and back. Murod has a live trip, so
+// another driver publishes (one live trip, docs/172).
 test('android: publish a trip on one screen up to «Eʼlon qilish»', async ({ page }) => {
-  await openHome(page, 'driver', MUROD, 'android');
+  freshDriver(SHERZOD);
+  await openHome(page, 'driver', SHERZOD, 'android');
   await openNewTrip(page);
   await openFromList(page);
   await page.getByAltText('Toshkent shahri').click();
