@@ -15,7 +15,7 @@ import { useLoad } from '../market/use-list';
 import { allowBlock } from '../moderation/ask-block';
 import { ApproveFlow } from '../moderation/approve-flow';
 import { PhotoScreen } from '../moderation/photo-screen';
-import { ReasonsStep } from '../moderation/reasons-step';
+import { ReasonsSheet } from '../moderation/reasons-sheet';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
 import { ErrorScreen } from '../states/error-screen';
@@ -80,15 +80,6 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
         onApprove={(plate) => decide(plate ? { action: 'approve', plate } : { action: 'approve' })}
       />
     );
-  if (mode === 'reject' || mode === 'request_changes')
-    return (
-      <ReasonsStep
-        picked={ticked[mode]}
-        onPick={(reasons) => setTicked((all) => ({ ...all, [mode]: reasons }))}
-        onBack={back}
-        onDone={(reasons) => decide({ action: mode, reasons })}
-      />
-    );
   if (mode === 'block')
     return (
       <ChoiceStep
@@ -106,7 +97,10 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
         onDone={block}
       />
     );
-  if (mode !== 'view') return <PhotoScreen userId={userId} kind={mode} onBack={back} />;
+  if (mode !== 'view' && mode !== 'reject' && mode !== 'request_changes')
+    return <PhotoScreen userId={userId} kind={mode} onBack={back} />;
+  // The reasons of «Tuzatish» or of «Rad etish» in a sheet over the application (G78 К2).
+  const reasons: ReasonsMode = mode === 'reject' ? 'reject' : 'request_changes';
   return (
     <div className="case">
       <Screen onBack={onBack} />
@@ -122,6 +116,13 @@ function Application({ detail, progress, onBack, onDone }: ApplicationProps) {
         ]}
       />
       <MainButton text={t('moderation.approve')} onClick={() => setMode('approve')} />
+      <ReasonsSheet
+        open={mode !== 'view'}
+        picked={ticked[reasons]}
+        onPick={(picked) => setTicked((all) => ({ ...all, [reasons]: picked }))}
+        onClose={back}
+        onDone={(picked) => decide({ action: reasons, reasons: picked })}
+      />
     </div>
   );
 }

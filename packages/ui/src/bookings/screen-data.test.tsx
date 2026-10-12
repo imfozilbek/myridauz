@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { sheetClosed } from '../home/sheet-closed';
+import { closeSheet } from '../home/sheet-closed';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
@@ -8,12 +8,6 @@ import { testClients } from '../test-shell';
 import { booking, offer, wallet } from './booking-test-kit';
 
 afterEach(cleanup);
-
-// A test ends with its sheet closed: the timer of the sheet never outlives the file (lesson 235).
-const closeSheet = async () => {
-  fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
-  await sheetClosed();
-};
 
 const request = {
   id: 'r1',

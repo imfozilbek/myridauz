@@ -1,6 +1,7 @@
 import { ApiError } from '@platform/api-client';
 import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { closeSheet } from '../home/sheet-closed';
 import { BOBUR, detailOf, JASUR, renderNavbat } from './navbat-test-kit';
 
 afterEach(cleanup);
@@ -39,13 +40,16 @@ describe('an application in «Navbat»', () => {
     expect(decide).toHaveBeenLastCalledWith(JASUR.id, { action: 'approve', plate: '01A124BC' });
   });
 
-  // «Назад» from the ticks asks nothing and keeps them (G79 К10): the next open has them ticked.
-  it('asks for changes with ticked reasons; Back from them asks nothing and keeps them', async () => {
+  // The reasons in a sheet over the application (G78 К2); closing it asks nothing and keeps the
+  // ticks (G79 К10): the next open has them ticked.
+  it('asks for changes with ticked reasons; closing them asks nothing and keeps them', async () => {
     const { decide } = renderNavbat(open, [JASUR]);
     const asked = vi.spyOn(window, 'confirm');
     fireEvent.click(await screen.findByText('Tuzatish'));
+    expect(await screen.findByText('Sabablarni tanlang')).toBeTruthy();
+    expect(screen.getByText('Jasur · ariza')).toBeTruthy();
     fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
-    await act(async () => fireEvent.click(screen.getByText('Orqaga')));
+    await closeSheet();
     expect(asked).not.toHaveBeenCalled();
     asked.mockRestore();
     fireEvent.click(await screen.findByText('Tuzatish'));

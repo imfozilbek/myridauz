@@ -3,7 +3,7 @@ import type { TranslationKey } from '@platform/i18n';
 
 export type CaseAction = {
   readonly labelKey: TranslationKey;
-  // A hard decision is red: «Rad etish», «Bloklash», «Mos emas: sababi» (mockup g67/2).
+  // A hard decision is red: «Rad etish», «Bloklash» (mockup g67/2).
   readonly danger?: boolean;
   readonly onClick: () => void;
 };
