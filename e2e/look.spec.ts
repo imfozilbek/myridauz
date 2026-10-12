@@ -1,7 +1,8 @@
 import { loadBrand } from '@platform/brands';
 import { expect, test, type Page } from './crash-guard';
 import { mockApi } from './api-mock';
-import { appUrl, MINI_APPS } from './apps';
+import { appUrl, MINI_APPS, openFindTrip, TEXT } from './apps';
+import { searchRoute } from './market';
 import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // The look of every Mini App (G72): the top loader of docs/121 §3.
@@ -45,9 +46,21 @@ test('a slow answer shows the line of the Mini App color, then it leaves', async
   await expect(loader(page)).toHaveCount(0, { timeout: 5_000 });
 });
 
+// The first start loads the code of the app and of its screens: on a busy machine that alone may
+// take longer than the wait of the line (G72). On the found trips the filter «ayol bor» asks the
+// server again, and only its fast answer is watched.
+const isSearch = (url: string) => new URL(url).pathname === '/api/trips';
 test('a fast answer never shows the line', async ({ page }) => {
   await open(page, 0);
-  await page.waitForLoadState('networkidle');
+  await openFindTrip(page);
+  await searchRoute(page);
+  await expect(page.getByText('Jasur', { exact: false })).toBeVisible();
+  await expect(loader(page)).toHaveCount(0, { timeout: 5_000 });
+  await page.evaluate(() => ((window as unknown as { loaderSeen: { lines: number } }).loaderSeen.lines = 0));
+  const asked = page.waitForRequest((request) => isSearch(request.url()));
+  await page.getByText(TEXT.womanFilter).first().click();
+  await asked;
+  await expect(page.getByText('Jasur', { exact: false })).toBeHidden();
   await page.waitForTimeout(800);
   expect(await linesSeen(page)).toBe(0);
 });

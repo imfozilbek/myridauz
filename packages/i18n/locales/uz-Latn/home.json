@@ -97,7 +97,7 @@
   "dock.lowHint": "Bonus {date} tugaydi. Toʻldirsangiz, soʻrovlarni darhol tasdiqlaysiz",
   "dock.markHint": "{name} keldimi? Belgilang",
   "dock.next": "Keyingi: {place}",
-  "dock.onRoadOf": "{title} · {done} / {all}",
+  "dock.onRoadOf": "{title} · {inCar} / {all}",
   "cue.start": "Bu yerdan boshlang",
   "cue.forYou": "Siz uchun safar",
   "cue.first": "Birinchi safar",

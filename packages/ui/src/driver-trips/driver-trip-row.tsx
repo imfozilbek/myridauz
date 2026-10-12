@@ -8,13 +8,12 @@ const CHEVRON = 10;
 
 type Props = {
   readonly trip: Trip;
-  // The day and the ends: short on a live trip, as on the card of a past one (G78 sheet 3).
+  // The day and the ends by their short names, live and past alike (owner decision 12.10.2026).
   readonly day: string;
   readonly from: string;
   readonly to: string;
   // Where people are taken: the pitak of a live trip, the words of the card on a past one.
   readonly place: string;
-  readonly chevron?: number;
   readonly onOpen: () => void;
   // The marks under the row.
   readonly children: ReactNode;
@@ -24,7 +23,7 @@ type Props = {
 // the route, where people are taken and the price of a seat, then its marks. A tap opens «Mening
 // safarim» (path 6).
 export function DriverTripRow(props: Props) {
-  const { trip, day, from, to, place, chevron = CHEVRON, onOpen, children } = props;
+  const { trip, day, from, to, place, onOpen, children } = props;
   const { t, formatTime, formatNumber } = useI18n();
   return (
     <button type="button" className="driver-trip" onClick={onOpen}>
@@ -38,7 +37,7 @@ export function DriverTripRow(props: Props) {
         </span>
         <span className="driver-trip-tags">{children}</span>
       </span>
-      <Icon name="next" size={chevron} />
+      <Icon name="next" size={CHEVRON} />
     </button>
   );
 }
