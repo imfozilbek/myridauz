@@ -10,7 +10,6 @@ import { useRiderStars } from './rider-line';
 import './request-sheet.css';
 
 const FACE = 52;
-const LETTER = 18;
 
 type Props = {
   readonly booking: Booking | null;
@@ -74,8 +73,7 @@ function RequestCard({ booking }: { readonly booking: Booking }) {
           name={passenger.firstName}
           hasAvatar={false}
           size={FACE}
-          letter={LETTER}
-          plain
+          role="passenger"
         />
         <span className="request-card-who">
           <b>{passenger.firstName}</b>

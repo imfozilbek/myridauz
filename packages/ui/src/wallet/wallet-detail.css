@@ -68,11 +68,6 @@
   text-align: start;
 }
 
-.wallet-rider .person-badge-plain {
-  background: var(--reg-face-pale);
-  font-weight: 700;
-}
-
 .wallet-rider-name {
   flex: 1;
   min-width: 0;

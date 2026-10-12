@@ -83,11 +83,9 @@ describe('"Maʼlumotlarimni oʻchirish" (docs/30)', () => {
   });
 
   it('erases a driver: the trips end and the car is no longer theirs', async () => {
-    // Two days after the trip of the test before: the trips of one driver cannot overlap (docs/103).
-    const later = { ...trip, departAt: trip.departAt + 2 * 86_400_000 };
-    const published = await read<{ id: string }>(
-      call('/driver/trips', DRIVER, { app: 'driver', ...json(later) }),
-    );
+    // The trip of the test before: a driver has one live trip (docs/172).
+    const mine = await read<{ trips: { id: string }[] }>(call('/driver/trips', DRIVER, { app: 'driver' }));
+    const published = { id: mine.trips[0]?.id ?? '' };
     // The driver saw a request on «Yoʻlovchilar soʻrovlari»: the look goes with the account (G76).
     await registerUser(PASSENGER);
     // The board opens on the day of the nearest trip of the driver: the trip of the test before.

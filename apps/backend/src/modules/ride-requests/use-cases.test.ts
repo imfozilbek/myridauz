@@ -3,7 +3,7 @@ import { cancelRequest, myRequests, publishRequest, searchRequests } from './app
 import { FAR_NORTH, HOME, setup } from './requests-test-kit';
 
 describe('ride requests (docs/09, docs/35)', () => {
-  it('checks the day, the route, the price and keeps at most 3 open requests', async () => {
+  it('checks the day, the route, the price and keeps one open request (docs/172)', async () => {
     const { deps, request } = setup();
     expect(await publishRequest(deps, 1, { ...request, date: '2026-09-30' })).toEqual({
       ok: false,
@@ -17,12 +17,18 @@ describe('ride requests (docs/09, docs/35)', () => {
       ok: false,
       error: 'trips.price_out_of_bounds',
     });
-    const days = ['2026-10-01', '2026-10-02', '2026-10-03'];
-    for (const date of days) expect((await publishRequest(deps, 1, { ...request, date })).ok).toBe(true);
-    expect(await publishRequest(deps, 1, { ...request, date: '2026-10-04' })).toEqual({
+    expect((await publishRequest(deps, 1, request)).ok).toBe(true);
+    expect(await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).toEqual({
       ok: false,
       error: 'trips.too_many',
     });
+  });
+
+  // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both.
+  it('leaves no request while the passenger holds a seat', async () => {
+    const { deps, request, holdSeat } = setup();
+    holdSeat();
+    expect(await publishRequest(deps, 1, request)).toEqual({ ok: false, error: 'trips.too_many' });
   });
 
   it('keeps one open request of a person on one route and day (G37, docs/101 R5)', async () => {
@@ -32,8 +38,7 @@ describe('ride requests (docs/09, docs/35)', () => {
       ok: false,
       error: 'trips.request_exists',
     });
-    // Another day, or another person on the same day, is a new request.
-    expect((await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).ok).toBe(true);
+    // Another person on the same day is a new request.
     expect((await publishRequest(deps, 2, request)).ok).toBe(true);
   });
 
@@ -66,10 +71,11 @@ describe('ride requests (docs/09, docs/35)', () => {
   it('lets the passenger cancel and expires a request when its day is over', async () => {
     const { deps, request, setNow } = setup();
     const first = await publishRequest(deps, 1, request);
-    await publishRequest(deps, 1, { ...request, date: '2026-10-02' });
     const firstId = first.ok ? first.value.id : '';
     expect(await cancelRequest(deps, 2, firstId)).toEqual({ ok: false, error: 'trips.not_found' });
     expect((await cancelRequest(deps, 1, firstId)).ok).toBe(true);
+    // The cancelled one frees the passenger for another request (docs/172).
+    expect((await publishRequest(deps, 1, { ...request, date: '2026-10-02' })).ok).toBe(true);
     setNow(Date.parse('2026-10-02T19:00:00Z'));
     await deps.requests.expireOver(Date.parse('2026-10-02T19:00:00Z'));
     expect((await myRequests(deps, 1)).map((item) => item.status).sort()).toEqual(['cancelled', 'expired']);

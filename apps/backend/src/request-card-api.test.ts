@@ -19,6 +19,9 @@ afterAll(() => {
 const DRIVER = 51;
 const SECOND_DRIVER = 52;
 const PASSENGER = 53;
+// One live trip and one seat at a time (docs/172): the second test takes its own people.
+const LATER_DRIVER = 54;
+const LATER_PASSENGER = 55;
 const PRICE = 90_000;
 
 async function asked(passenger: number, days: number) {
@@ -34,14 +37,14 @@ const offer = (driver: number, requestId: string, departAt: number) =>
       ...json({ departAt, price: PRICE }),
     }),
   );
-const toPassenger = () => telegram.sentTo(PASSENGER);
+const toPassenger = (person = PASSENGER) => telegram.sentTo(person);
 // «Yoʻlovchi soʻrovi yopildi» of a driver whose offer waited (G75).
 const over = (driver: number) =>
   telegram.sentTo(driver).filter((sent) => String(sent.body.text).includes('soʻrovi yopildi'));
 // The last form of a card: its last edit (an unpin after it carries no text).
-const lastText = () =>
+const lastText = (person = PASSENGER) =>
   String(
-    toPassenger()
+    toPassenger(person)
       .filter((sent) => sent.method === 'editMessageText')
       .at(-1)?.body.text,
   );
@@ -79,13 +82,15 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
   });
 
   it('says so when the passenger cancels it and when its day is over', async () => {
-    const cancelled = await asked(PASSENGER, 2);
-    await offer(DRIVER, cancelled.request.id, cancelled.departAt);
-    await call(`/passenger/requests/${cancelled.request.id}/cancel`, PASSENGER, { method: 'POST' });
-    expect(lastText()).toContain('Bekor qilindi');
-    expect(over(DRIVER)).toHaveLength(1);
-    await asked(PASSENGER, 3);
+    await approvedDriver(LATER_DRIVER);
+    await registerUser(LATER_PASSENGER);
+    const cancelled = await asked(LATER_PASSENGER, 2);
+    await offer(LATER_DRIVER, cancelled.request.id, cancelled.departAt);
+    await call(`/passenger/requests/${cancelled.request.id}/cancel`, LATER_PASSENGER, { method: 'POST' });
+    expect(lastText(LATER_PASSENGER)).toContain('Bekor qilindi');
+    expect(over(LATER_DRIVER)).toHaveLength(1);
+    await asked(LATER_PASSENGER, 3);
     await expireRequests(testEnv, Date.now() + 5 * DAY_MS);
-    expect(lastText()).toContain('Soʻrov muddati tugadi');
+    expect(lastText(LATER_PASSENGER)).toContain('Soʻrov muddati tugadi');
   });
 });

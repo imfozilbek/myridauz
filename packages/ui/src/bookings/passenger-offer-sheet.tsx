@@ -61,7 +61,13 @@ function OfferBody({ offer }: { readonly offer: Offer }) {
   return (
     <div className="offer-sheet-card">
       <div className="offer-sheet-head">
-        <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={FACE} plain />
+        <PersonBadge
+          id={driver.id}
+          name={driver.firstName}
+          hasAvatar={driver.hasAvatar}
+          size={FACE}
+          role="driver"
+        />
         <span className="offer-sheet-who">
           <b>
             {driver.firstName}

@@ -1,36 +1,42 @@
 import type { PersonId } from '@platform/contracts';
 import { ProfilePhoto } from '../account/profile/profile-photo';
+import { useBrand } from '../context/brand-context';
+import { Icon, type IconName } from '../icons';
 import './person-badge.css';
 
-// The letter's share of the face: smaller and thinner on the grey face (G60 mockups).
-const LETTER = 0.45;
-const PLAIN_LETTER = 0.35;
+// The icon's share of the face (sheet 7-edits-1).
+const ICON = 0.56;
+
+// Who the face is: the passenger and the driver each have their own icon and color.
+export type FaceRole = 'passenger' | 'driver';
+const ICONS: Record<FaceRole, IconName> = { passenger: 'profile', driver: 'car' };
 
 type Props = {
   readonly id: PersonId;
   readonly name: string;
   readonly hasAvatar: boolean;
   readonly size: number;
-  // Grey on the screens of a booked trip (G60 mockups), mint in the search (G59).
-  readonly plain?: boolean;
-  // The size of the letter, when a mockup draws it smaller than the usual share of the face.
-  readonly letter?: number;
+  readonly role: FaceRole;
 };
 
-// A small round face, or the first letter on mint while there is no photo (the approved mockups).
-export function PersonBadge({ id, name, hasAvatar, size, plain = false, letter }: Props) {
+// A small round face, or the icon of the role on its color while there is no photo: never a letter,
+// never an emoji (owner decision 12.10.2026, docs/172).
+export function PersonBadge({ id, name, hasAvatar, size, role }: Props) {
+  const { colors } = useBrand().theme;
   if (hasAvatar) return <ProfilePhoto userId={id} name={name} hasAvatar size={size} />;
+  const driver = role === 'driver';
   return (
     <span
-      className={plain ? 'person-badge person-badge-plain' : 'person-badge'}
+      className="person-badge"
       style={{
         width: size,
         height: size,
-        fontSize: letter ?? Math.round(size * (plain ? PLAIN_LETTER : LETTER)),
+        background: driver ? colors.faceDriver : colors.facePassenger,
+        color: driver ? colors.faceDriverIcon : colors.facePassengerIcon,
       }}
       aria-hidden
     >
-      {name.slice(0, 1).toUpperCase()}
+      <Icon name={ICONS[role]} size={Math.round(size * ICON)} />
     </span>
   );
 }

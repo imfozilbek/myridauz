@@ -1,15 +1,18 @@
-import { SLOT_MINUTES } from '@platform/contracts';
-import { useLayoutEffect, useRef } from 'react';
+import type { TranslationKey } from '@platform/i18n';
+import { useState } from 'react';
+import { SegmentedControl } from '../components';
+import { useI18n } from '../context/i18n-context';
 import { haptic } from '../telegram/feedback';
 
-const SLOTS_A_DAY = (24 * 60) / SLOT_MINUTES;
-const COLUMNS = 4;
-const label = (index: number) => {
-  const minutes = index * SLOT_MINUTES;
-  const pad = (value: number) => String(value).padStart(2, '0');
-  return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+// The whole hours or the half hours, switched on the sheet (owner decisions 12.10.2026).
+type Kind = 'whole' | 'half';
+const ENDS: Record<Kind, string> = { whole: ':00', half: ':30' };
+const TITLES: Record<Kind, TranslationKey> = {
+  whole: 'market.when.wholeHours',
+  half: 'market.when.halfHours',
 };
-const ALL = Array.from({ length: SLOTS_A_DAY }, (_, index) => label(index));
+const KINDS: readonly Kind[] = ['whole', 'half'];
+const kindOf = (slot: string | null): Kind => (slot?.endsWith(ENDS.half) ? 'half' : 'whole');
 
 type Props = {
   readonly allowed: readonly string[];
@@ -17,33 +20,49 @@ type Props = {
   readonly onTime: (time: string) => void;
 };
 
-// Every half hour of the day as a tile, four in a row (G75, mockup g75/3 A phone 1): the times the
-// driver may not leave at are gray and do nothing; the chosen one stands in the middle row.
+// The times the driver may leave at as tiles, six in a row (G75, mockup g75/3 A phone 1): only the
+// free ones, the whole hours or the half hours by the switch over them; it opens on the kind of the
+// chosen time and shows only while both kinds have a free time (owner decisions 12.10.2026).
 export function TimeGrid({ allowed, time, onTime }: Props) {
-  const box = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    const grid = box.current;
-    const chosen = grid?.querySelector<HTMLElement>('[aria-pressed="true"]');
-    if (!grid || !chosen) return;
-    grid.scrollTop = chosen.offsetTop - grid.offsetTop - (chosen.offsetHeight + 8);
-  }, [time]);
+  const { t } = useI18n();
+  const [picked, setPicked] = useState<Kind>(() => kindOf(time));
+  const free = (kind: Kind) => allowed.filter((slot) => slot.endsWith(ENDS[kind]));
+  const both = KINDS.every((kind) => free(kind).length > 0);
+  const kind = both || free(picked).length > 0 ? picked : picked === 'whole' ? 'half' : 'whole';
   return (
-    <div ref={box} className="time-grid" style={{ gridTemplateColumns: `repeat(${COLUMNS}, 1fr)` }}>
-      {ALL.map((slot) => (
-        <button
-          key={slot}
-          type="button"
-          className="time-cell"
-          aria-pressed={slot === time}
-          disabled={!allowed.includes(slot)}
-          onClick={() => {
-            haptic.select();
-            onTime(slot);
-          }}
-        >
-          {slot}
-        </button>
-      ))}
-    </div>
+    <>
+      {both ? (
+        <div className="time-kinds">
+          <SegmentedControl>
+            {KINDS.map((one) => (
+              <SegmentedControl.Item
+                key={one}
+                selected={one === kind}
+                className={one === kind ? 'time-kind-on' : undefined}
+                onClick={() => setPicked(one)}
+              >
+                {t(TITLES[one])}
+              </SegmentedControl.Item>
+            ))}
+          </SegmentedControl>
+        </div>
+      ) : null}
+      <div className="time-grid">
+        {free(kind).map((slot) => (
+          <button
+            key={slot}
+            type="button"
+            className="time-cell"
+            aria-pressed={slot === time}
+            onClick={() => {
+              haptic.select();
+              onTime(slot);
+            }}
+          >
+            {slot}
+          </button>
+        ))}
+      </div>
+    </>
   );
 }

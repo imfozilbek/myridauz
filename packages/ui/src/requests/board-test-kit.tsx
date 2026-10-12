@@ -36,6 +36,7 @@ export const board = (over: Partial<RequestBoard> = {}): RequestBoard => ({
   fits: [],
   others: [asked],
   carSeats: 4,
+  busy: false,
   ...over,
 });
 

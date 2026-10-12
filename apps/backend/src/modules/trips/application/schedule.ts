@@ -1,62 +1,23 @@
-import { arrivalAt, busyWindows, earliestDepart, isBusy, roadMs, type Schedule } from '@platform/contracts';
-import { isLive } from '../domain/trip';
+import { earliestDepart, tripHolds, type Schedule } from '@platform/contracts';
 import type { TripsDeps } from './ports';
 
-export type ScheduleError = 'trips.too_soon' | 'trips.too_many' | 'trips.busy';
+export type ScheduleError = 'trips.too_soon' | 'trips.too_many';
 
-type Deps = Pick<TripsDeps, 'trips' | 'roadKm' | 'schedule' | 'now'>;
-type Route = { readonly from: string; readonly to: string; readonly km: number };
+type Deps = Pick<TripsDeps, 'trips' | 'schedule' | 'now'>;
 
-// The busy times of the driver for a new trip on this route (G38, docs/103): the driver must make it
-// from the end of each trip to its start and from its end to the next trip, with time to gather people.
-// except: the trip whose time the driver moves does not stand in its own way (G39, docs/104). A trip
-// after «Yetib keldik» is over for the schedule: the way back may leave today (G78 В11).
-export async function driverSchedule(
-  deps: Deps,
-  driverId: number,
-  route: Route,
-  except?: string,
-): Promise<Schedule> {
+// One live trip of a driver at a time (owner decision 12.10.2026, docs/172): with one the schedule is
+// full. A trip after «Yetib keldik» is over for it: the way back may leave today (G78 В11).
+export async function driverSchedule(deps: Deps, driverId: number): Promise<Schedule> {
   const now = deps.now();
-  const live = (await deps.trips.byDriver(driverId)).filter(
-    (trip) => isLive(trip, now) && trip.arrivedAt === null && trip.id !== except,
-  );
-  const pairs = live.flatMap((trip) => [
-    [route.to, trip.from],
-    [trip.to, route.from],
-  ]);
-  const kms = new Map(
-    await Promise.all(
-      pairs.map(async ([from = '', to = '']) => [`${from}>${to}`, await deps.roadKm(from, to)] as const),
-    ),
-  );
-  const planned = live.map((trip) => ({ ...trip, arriveAt: arrivalAt(trip.departAt, trip.km) }));
-  const windows = busyWindows(
-    planned,
-    { from: route.from, to: route.to, roadMs: roadMs(route.km) },
-    (from, to) => roadMs(kms.get(`${from}>${to}`) ?? 0),
-    deps.schedule,
-  );
-  return { windows, full: live.length >= deps.schedule.maxActiveTrips };
+  return { full: (await deps.trips.byDriver(driverId)).some((trip) => tripHolds(trip, now)) };
 }
 
-// A new trip of the driver: at least the lead time ahead, within the limit, and one the driver makes.
+// A new trip of the driver: at least the lead time ahead (G38, docs/103) and no other live trip.
 export async function scheduleError(
   deps: Deps,
   driverId: number,
-  trip: Route & { readonly departAt: number },
+  departAt: number,
 ): Promise<ScheduleError | null> {
-  if (trip.departAt < earliestDepart(deps.now(), deps.schedule)) return 'trips.too_soon';
-  const { windows, full } = await driverSchedule(deps, driverId, trip);
-  if (full) return 'trips.too_many';
-  return isBusy(trip.departAt, windows) ? 'trips.busy' : null;
-}
-
-// A trip moved later still lets the driver make the trips around it (G39, docs/104, 8).
-export async function movedBusy(
-  deps: Deps,
-  trip: Route & { readonly id: string; readonly driverId: number; readonly departAt: number },
-): Promise<boolean> {
-  const { windows } = await driverSchedule(deps, trip.driverId, trip, trip.id);
-  return isBusy(trip.departAt, windows);
+  if (departAt < earliestDepart(deps.now(), deps.schedule)) return 'trips.too_soon';
+  return (await driverSchedule(deps, driverId)).full ? 'trips.too_many' : null;
 }

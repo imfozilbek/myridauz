@@ -6,7 +6,6 @@ import { RiderLine, useRiderStars } from './rider-line';
 import './seat-request-card.css';
 
 const FACE = 42;
-const LETTER = 16;
 
 type Props = {
   readonly booking: Booking;
@@ -35,8 +34,7 @@ export function SeatRequestCard({ booking, short, onAnswer, onTopUp, onOpen }: P
           name={passenger.firstName}
           hasAvatar={false}
           size={FACE}
-          letter={LETTER}
-          plain
+          role="passenger"
         />
         <span className="seat-card-who">
           <span className="seat-card-name">

@@ -19,24 +19,25 @@ const target = (rateeRole: ReviewTarget['rateeRole'], rateeName: string): Review
   rateeRole,
   mine: null,
 });
-const letter = () => document.querySelector('.person-badge')?.textContent ?? null;
+// The icon of the face without a photo: a passenger or a driver (owner decision 12.10.2026).
+const icon = () => document.querySelector('.person-badge svg')?.getAttribute('class') ?? null;
 
 // The face is the one of the person rated (G78): a driver rating a passenger by a bot link saw the
 // photo flag of himself.
 describe('the face over the stars', () => {
-  it('a driver rates a passenger without a photo: her letter, though the driver has a photo', () => {
+  it('a driver rates a passenger without a photo: her icon, though the driver has a photo', () => {
     renderMarket(
       <ReviewHead target={target('passenger', 'Dilnoza')} booking={withPhotos(true, false)} />,
       testClients({}),
     );
-    expect(letter()).toBe('D');
+    expect(icon()).toContain('lucide-user-round');
   });
 
-  it('a passenger rates a driver without a photo: his letter, though the passenger has a photo', () => {
+  it('a passenger rates a driver without a photo: his icon, though the passenger has a photo', () => {
     renderMarket(
       <ReviewHead target={target('driver', 'Jasur')} booking={withPhotos(false, true)} />,
       testClients({}),
     );
-    expect(letter()).toBe('J');
+    expect(icon()).toContain('lucide-car-front');
   });
 });

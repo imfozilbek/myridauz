@@ -19,7 +19,6 @@ type Props = {
 };
 
 const PHOTO = 38;
-const LETTER = 16;
 
 // The head of a chat (owner decision 06.10.2026, docs/118 path 3, mockup g60/2): the face, the
 // name, the car and its plate, the call; under them the line of the trip that opens the booking.
@@ -40,8 +39,7 @@ export function ChatHead({ about, name, onCall, onTrip }: Props) {
             name={other.firstName}
             hasAvatar={other.hasAvatar}
             size={PHOTO}
-            letter={LETTER}
-            plain
+            role={other.role}
           />
         ) : null}
         <span className="chat-head-text">

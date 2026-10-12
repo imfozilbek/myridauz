@@ -3,6 +3,7 @@
   "board.tripSub": "{seats} boʻsh joy · {price}",
   "board.fits": "Safaringizga mos ({count})",
   "board.others": "Boshqa soʻrovlar ({count})",
+  "board.busy": "Yangi taklif shu safar tugagach",
   "card.route": "{from} → {to}",
   "card.pitak": "Pitakdan",
   "card.door": "Uyidan",

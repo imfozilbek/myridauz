@@ -38,6 +38,8 @@ const publish = (departAt = Date.now() + 5 * HOUR) =>
       }),
     }),
   );
+// A driver has one live trip (docs/172): a test ends its trip before the next one.
+const cancel = (id: string) => call(`/driver/trips/${id}/cancel`, DRIVER, { method: 'POST', app: 'driver' });
 const toPassenger = () => telegram.filter((item) => item.body.chat_id === PASSENGER);
 const favorites = () =>
   read<{ drivers: { id: number }[]; trips: { id: string }[] }>(call('/passenger/favorites', PASSENGER));
@@ -58,7 +60,6 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
       trips: [],
     });
     telegram.length = 0;
-    // Days apart from the trips of the other tests: a driver makes one trip at a time (docs/103).
     const trip = await publish(Date.now() + 6 * DAY);
     expect(trip.recommendedPrice).toBeGreaterThan(0);
     const told = toPassenger();
@@ -73,8 +74,9 @@ describe('"Sevimli haydovchilar" (docs/18)', () => {
     expect(
       (await call(`/passenger/favorites/${await pid(DRIVER)}`, PASSENGER, { method: 'DELETE' })).status,
     ).toBe(404);
+    await cancel(trip.id);
     telegram.length = 0;
-    await publish(Date.now() + 9 * DAY);
+    await cancel((await publish(Date.now() + 9 * DAY)).id);
     expect(toPassenger()).toEqual([]);
   });
 });
@@ -104,7 +106,7 @@ describe('the driver shares a trip with the family (docs/43, G18)', () => {
       ...json({ departAt: trip.departAt + 1000 }),
     });
     expect(retimed.status).toBe(200);
-    await call(`/driver/trips/${trip.id}/cancel`, DRIVER, { method: 'POST', app: 'driver' });
+    await cancel(trip.id);
     const toClose = telegram.filter((item) => item.body.chat_id === CLOSE).map((item) => item.body.text);
     expect(toClose).toHaveLength(2);
     expect(String(toClose[0])).toMatch(/^Vaqt oʻzgardi: Ali /u);

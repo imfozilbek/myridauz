@@ -1,11 +1,4 @@
-import type {
-  BookingRule,
-  PickupMode,
-  Pitak,
-  Recommendation,
-  Schedule,
-  ScheduleRules,
-} from '@platform/contracts';
+import type { BookingRule, PickupMode, Pitak, Recommendation, ScheduleRules } from '@platform/contracts';
 import type { Route } from '../places/route-screen';
 import { departAtOf, firstDayOf, slotsOn, timeOn } from './first-when';
 
@@ -29,7 +22,6 @@ export type TripAgain = Pick<TripDraft, 'pickupMode' | 'seats' | 'price' | 'comm
 
 type Known = {
   readonly now: number;
-  readonly schedule: Schedule;
   readonly rules: ScheduleRules;
   readonly recommendation: Recommendation;
   // The pitak of the direction; none: the driver takes people at their doors (docs/72).
@@ -50,11 +42,11 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 // What the one screen shows (G63, docs/118 path 6): each answer of the driver, else its start: all
 // the seats of the car, the recommended price, the pitak when the direction has one, the first day.
 export function tripValues(answer: Partial<TripDraft> & { readonly route: Route }, known: Known): TripValues {
-  const { now, schedule, rules, recommendation, pitak, carSeats, isMan } = known;
-  const date = answer.date ?? firstDayOf(now, schedule, rules);
+  const { now, rules, recommendation, pitak, carSeats, isMan } = known;
+  const date = answer.date ?? firstDayOf(now, rules);
   // A time kept in the draft may be gone since: the first free one of the day instead (docs/103).
-  const slots = slotsOn(date, now, schedule, rules);
-  const time = answer.time && slots.includes(answer.time) ? answer.time : timeOn(date, now, schedule, rules);
+  const slots = slotsOn(date, now, rules);
+  const time = answer.time && slots.includes(answer.time) ? answer.time : timeOn(date, now, rules);
   const seats = clamp(answer.seats ?? carSeats, 1, carSeats);
   const askWoman = isMan && seats < carSeats;
   const mode = answer.pickupMode ?? 'pitak';

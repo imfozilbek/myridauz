@@ -1,4 +1,10 @@
-import { expireBookingsOfTrip, tellBookedOfRetime, tellDriver, tellTripPassengers } from './modules/bookings';
+import {
+  endOffersOfNewTrip,
+  expireBookingsOfTrip,
+  tellBookedOfRetime,
+  tellDriver,
+  tellTripPassengers,
+} from './modules/bookings';
 import { channelBoards, channels } from './modules/channels';
 import { tellFavoriteFans } from './modules/favorites';
 import { handleAfterSent } from './modules/notifications';
@@ -13,11 +19,11 @@ const tripChannels = channels(tripOf);
 const boards = channelBoards(tripOf, tripsOfDate);
 
 // The trip card of the driver bot and the boards of the day follow every change (G68). A published
-// trip goes to the channels and to subscribed passengers; a changed one edits its posts (docs/15,
-// docs/24); a cancelled one is told to the driver's family (G18). A new time or a lower price reaches
-// the booked passengers, a lower price the subscribed ones too (G39, docs/104). «Yoʻlga chiqdim»
-// closes the posts and the unanswered requests (G63); passengers hear it (G68); the arrival edits
-// the posts once more.
+// trip ends the driver's offers waiting without a trip (one live trip, docs/172) and goes to the
+// channels and to subscribed passengers; a changed one edits its posts (docs/15, docs/24); a cancelled
+// one is told to the driver's family (G18). A new time or a lower price reaches the booked passengers,
+// a lower price the subscribed ones too (G39, docs/104). «Yoʻlga chiqdim» closes the posts and the
+// unanswered requests (G63); passengers hear it (G68); the arrival edits the posts once more.
 handleTripChange(async (env, tripId, event) => {
   await tellDriver(env, tripId);
   await boards.ofTrip(env, tripId);
@@ -32,6 +38,7 @@ handleTripChange(async (env, tripId, event) => {
     return tripChannels.left(env, tripId);
   }
   if (event === 'published') {
+    await endOffersOfNewTrip(env, tripId);
     await tripChannels.posted(env, tripId);
     const trip = await tripOf(env, tripId);
     if (trip) await tripPublished(env, trip).then(() => tellFavoriteFans(env, trip));

@@ -29,7 +29,6 @@ const STATUS = {
   'trips.price_out_of_bounds': 422,
   'trips.too_many': 409,
   'trips.too_soon': 422,
-  'trips.busy': 409,
   'trips.no_pitak': 422,
   'trips.in_past': 422,
   'wallet.not_enough': 402,

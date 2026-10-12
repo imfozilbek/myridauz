@@ -22,7 +22,13 @@ export function DriverRow({ driver, car, note, plate, photo = PHOTO }: Props) {
   const { t } = useI18n();
   return (
     <div className={plate ? 'driver-row' : 'driver-row driver-row-bare'}>
-      <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={photo} plain />
+      <PersonBadge
+        id={driver.id}
+        name={driver.firstName}
+        hasAvatar={driver.hasAvatar}
+        size={photo}
+        role="driver"
+      />
       <span className="driver-row-text">
         <span className="driver-row-name">
           {driver.firstName}

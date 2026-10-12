@@ -65,7 +65,8 @@ export async function publishRequest(
     (item) => item.from === input.from && item.to === input.to && item.date === input.date,
   );
   if (same) return { ok: false, error: 'trips.request_exists' };
-  if (open.length >= deps.limits.requests.maxOpen) return { ok: false, error: 'trips.too_many' };
+  // One at a time (owner decision 12.10.2026, docs/172): an open request or a seat, never both.
+  if (open.length > 0 || (await deps.seatHeld(passengerId))) return { ok: false, error: 'trips.too_many' };
   const pointsError = await wayError(deps, input);
   if (pointsError) return { ok: false, error: pointsError };
   const passenger = await deps.people.find(passengerId);

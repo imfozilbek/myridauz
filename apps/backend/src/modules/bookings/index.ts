@@ -59,6 +59,7 @@ export const expireBookings = (env: Bindings, now: number) => expireRequests(boo
 // «Yoʻlga chiqdim» before the time (G63): the requests of the trip end, the passengers hear it.
 export const expireBookingsOfTrip = (env: Bindings, tripId: string) =>
   expireTripRequests(bookingsDeps(env), tripId);
+export { endOffersOfNewTrip, heldSeatOf } from './one-at-a-time';
 
 // The Cron job (docs/69): points 30 days after the trip go, except under an open complaint.
 export const erasePastPoints = (env: Bindings, now: number, complained: ReadonlySet<string>) =>

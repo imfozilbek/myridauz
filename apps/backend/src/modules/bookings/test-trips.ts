@@ -51,7 +51,7 @@ export function fakeTrips(
   const port: BookingsDeps['trips'] = {
     find: async (tripId) => trips.get(tripId),
     ofDriver: async (driverId) => [...trips.values()].filter((t) => t.driverId === driverId).map((t) => t.id),
-    scheduleError: async (driverId, trip) => scheduleCheck(trip.departAt, now(), trips.values(), driverId),
+    scheduleError: async (driverId, departAt) => scheduleCheck(departAt, now(), trips.values(), driverId),
     views: async (ids) => Promise.all(ids.flatMap((tripId) => trips.get(tripId) ?? []).map(view)),
     publish: async (driverId, input) =>
       published(addTrip({ ...input, driverId, bookingRule: input.bookingRule ?? 'seats' })),

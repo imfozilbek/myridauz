@@ -19,6 +19,7 @@ const empty: RequestBoard = {
   fits: [],
   others: [],
   carSeats: 4,
+  busy: false,
 };
 
 const open = (link: string, enabled = true) => {

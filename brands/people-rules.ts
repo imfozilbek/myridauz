@@ -1,11 +1,11 @@
 // The limits of people from docs/127 §2..7 (G75): the brand gives the defaults, the owner changes them
 // in «Cheklovlar» of the admin app (docs/128 §4); the server and the Mini Apps read the same values.
 
-// A passenger waits for an answer to at most maxPending bookings; a driver answers in answerHours.
-type BookingRules = { readonly maxPending: number; readonly answerHours: number };
+// A driver answers a seat asked in answerHours.
+type BookingRules = { readonly answerHours: number };
 
-// A passenger keeps at most maxOpen requests, each for 1 … maxSeats seats.
-type RequestRules = { readonly maxOpen: number; readonly maxSeats: number };
+// A request is for 1 … maxSeats seats; one at a time (docs/172).
+type RequestRules = { readonly maxSeats: number };
 
 // «Hamyon» turns red when the money confirms fewer than fewSeats seats (G65, docs/122).
 type WalletRules = { readonly fewSeats: number };

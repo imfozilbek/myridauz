@@ -13,8 +13,7 @@ export type PlanError =
   | 'bookings.outside_area'
   | 'trips.price_out_of_bounds'
   | 'trips.too_many'
-  | 'trips.too_soon'
-  | 'trips.busy';
+  | 'trips.too_soon';
 // What the offer promises: the time, the price of a seat and the seats.
 type Plan = { readonly departAt: number; readonly price: number; readonly seats: number };
 
@@ -31,10 +30,10 @@ export async function newTripPlan(
     return { ok: false, error: 'bookings.invalid_input' };
   const recommendation = await deps.recommend(request.from, request.to);
   if (!recommendation.ok) return { ok: false, error: 'bookings.not_found' };
-  const { km, minPrice, maxPrice } = recommendation.value;
+  const { minPrice, maxPrice } = recommendation.value;
   if (input.price < minPrice || input.price > maxPrice)
     return { ok: false, error: 'trips.price_out_of_bounds' };
-  const busy = await deps.trips.scheduleError(driverId, { ...request, departAt: input.departAt, km });
+  const busy = await deps.trips.scheduleError(driverId, input.departAt);
   if (busy) return { ok: false, error: busy };
   // The whole car is every seat of this car, priced per seat (docs/09).
   return { ok: true, value: { ...input, seats: request.wholeCar ? car.seats : request.seats } };

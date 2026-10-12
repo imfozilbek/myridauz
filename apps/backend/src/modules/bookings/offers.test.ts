@@ -14,9 +14,10 @@ describe('a driver on a new check (docs/65 A1)', () => {
   it('keeps the plate of a confirmed booking and the car of a sent offer', async () => {
     const { deps, addTrip, addRequest, bonus, recheck } = setup();
     await bonus();
+    // The offer goes before the trip: a driver with a live trip offers only to it (docs/172).
+    await sendOffer(deps, DRIVER, addRequest({ passengerId: ALI }), offer);
     const booked = await requestBooking(deps, DILNOZA, addTrip(), seats(1));
     await confirm(deps, DRIVER, booked.ok ? booked.value.id : '');
-    await sendOffer(deps, DRIVER, addRequest({ passengerId: ALI }), offer);
     recheck();
     expect((await passengerBookings(deps, DILNOZA))[0]?.plate).toBe('01A123BC');
     // The plate is on the offer card before the answer (G61, owner decision 07.10.2026).

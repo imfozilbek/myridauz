@@ -79,6 +79,8 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
     if (request) offering.short(need, request);
   }
   const empty = board.fits.length + board.others.length === 0;
+  // A live trip, shown or not: no new trip is asked for (one at a time, docs/172).
+  const free = !trip && !board.busy;
   return (
     <div className="board" style={brandVars(colors)}>
       <Screen onBack={onBack} onRefresh={refresh} />
@@ -99,10 +101,10 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
         <EmptyState
           icon="passengers"
           title={t('market.requests.empty')}
-          {...(trip ? {} : { description: t('market.requests.emptyHint') })}
+          {...(free ? { description: t('market.requests.emptyHint') } : {})}
         />
       ) : null}
-      {empty && !trip ? (
+      {empty && free ? (
         <MainButton text={t('market.requests.publish')} onClick={() => onPublish(board.date)} />
       ) : null}
       <OfferSheet

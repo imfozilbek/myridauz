@@ -89,8 +89,8 @@ describe('«Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6)
   });
 
   it('«Ertaga shu safar» repeats the last trip tomorrow at its time on the publishing', async () => {
-    // Under the limit of live trips (G38): the publishing opens, not the limit.
-    open([trip, done]);
+    // No live trip (one at a time, docs/172): the publishing opens, not the limit.
+    open([done]);
     const again = (await screen.findByText('Ertaga shu safar')).closest('button') as HTMLElement;
     expect(within(again).getByText('Chilonzor → Fargʻona · 08:00')).toBeTruthy();
     fireEvent.click(again);
@@ -99,8 +99,12 @@ describe('«Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6)
     expect(screen.getByText('Fargʻona shahri')).toBeTruthy();
   });
 
-  it('offers no repeat while no trip has left yet', async () => {
+  it('offers no repeat while no trip has left yet, nor while a trip is live (docs/172)', async () => {
     open([trip]);
+    await screen.findByText('Faol (1)');
+    expect(screen.queryByText('Ertaga shu safar')).toBeNull();
+    cleanup();
+    open([trip, done]);
     await screen.findByText('Faol (1)');
     expect(screen.queryByText('Ertaga shu safar')).toBeNull();
   });

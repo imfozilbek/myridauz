@@ -23,19 +23,6 @@
   color: var(--reg-muted);
 }
 
-/* A person without a photo: the first letter on grey, as on the mockups. */
-.dock-face {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--reg-face);
-  color: var(--reg-face-text);
-  font-weight: 800;
-}
-
 .dock-tools {
   display: flex;
   gap: 6px;

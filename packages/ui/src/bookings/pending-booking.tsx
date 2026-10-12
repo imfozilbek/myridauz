@@ -60,7 +60,13 @@ export function PendingBooking({ booking, onBack, onCancel, onHome, children }: 
       </div>
       <div className="pending-card">
         <div className="pending-driver">
-          <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={42} />
+          <PersonBadge
+            id={driver.id}
+            name={driver.firstName}
+            hasAvatar={driver.hasAvatar}
+            size={42}
+            role="driver"
+          />
           <span className="pending-driver-text">
             <b>{driver.firstName}</b>
             <span className="plate-line">

@@ -44,7 +44,7 @@ export async function publishTrip(
     return { ok: false, error: 'trips.price_out_of_bounds' };
   if (input.pickupMode !== 'door' && !(await directionPitak(deps, input.from, input.to)))
     return { ok: false, error: 'trips.no_pitak' };
-  const busy = await scheduleError(deps, driverId, { ...input, km });
+  const busy = await scheduleError(deps, driverId, input.departAt);
   if (busy) return { ok: false, error: busy };
   const trip: TripRecord = {
     ...input,

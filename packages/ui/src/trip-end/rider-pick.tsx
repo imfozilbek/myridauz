@@ -48,7 +48,7 @@ function Riders({
             name={booking.passenger.firstName}
             hasAvatar={booking.passenger.hasAvatar}
             size={FACE}
-            plain
+            role="passenger"
           />
           <span className="rider-pick-name">{booking.passenger.firstName}</span>
           <Icon name="next" size={CHEVRON} />

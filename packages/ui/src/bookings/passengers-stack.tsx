@@ -1,9 +1,13 @@
 import type { Booking } from '@platform/contracts';
 import { useAvatarUrl } from '../account/profile/use-avatar-url';
 import { Avatar, AvatarStack, Cell, Section } from '../components';
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
+import { Icon } from '../icons';
 
 const SIZE = 28;
+// The icon of a passenger without a photo, as in every face (docs/172).
+const ICON = 16;
 
 // Who rides, at a glance: the faces of the confirmed passengers and their seats (docs/88 L14).
 export function PassengersStack({ bookings }: { readonly bookings: readonly Booking[] }) {
@@ -32,7 +36,15 @@ export function PassengersStack({ bookings }: { readonly bookings: readonly Book
 }
 
 function Face({ booking }: { readonly booking: Booking }) {
-  const { id, firstName, hasAvatar } = booking.passenger;
+  const { id, hasAvatar } = booking.passenger;
   const url = useAvatarUrl(id, hasAvatar);
-  return <Avatar size={SIZE} acronym={firstName.slice(0, 1)} {...(url ? { src: url } : {})} />;
+  const { colors } = useBrand().theme;
+  if (url) return <Avatar size={SIZE} src={url} />;
+  return (
+    <Avatar
+      size={SIZE}
+      style={{ background: colors.facePassenger, color: colors.facePassengerIcon }}
+      fallbackIcon={<Icon name="profile" size={ICON} />}
+    />
+  );
 }

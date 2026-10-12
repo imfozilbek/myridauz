@@ -44,7 +44,8 @@ export function openNewTrip(options: Options = {}) {
     market: {
       recommend: options.recommend ?? (async () => recommendation),
       publishTrip,
-      myTrips: async () => [published],
+      // The driver has no live trip until this one is out (one at a time, docs/172).
+      myTrips: async () => (publishTrip.mock.calls.length > 0 ? [published] : []),
     },
     bookings: { driverBookings: async () => [] },
     map: testMap(pitak ? {} : { pitakOf: vi.fn(async () => null) }),

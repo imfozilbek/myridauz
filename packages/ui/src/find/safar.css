@@ -55,3 +55,14 @@
   font-size: 13px;
   color: var(--reg-muted);
 }
+
+/* One at a time (owner decision 12.10.2026, sheet 7-edits-1): an open request or a seat elsewhere. */
+.safar-alert {
+  margin: 0 16px 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention-ink);
+  font-size: 13px;
+  line-height: 17px;
+}

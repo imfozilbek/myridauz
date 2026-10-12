@@ -19,7 +19,7 @@ import { NO_LINKS } from '../wallet/test-links';
 
 export const HOUR = 60 * 60 * 1000;
 const CAR: Car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, SCHEDULE, seats } from './test-fakes';
+export { ALI, AWAY, DILNOZA, DRIVER, HOME, NOW, OLIM, PITAK, seats } from './test-fakes';
 export function setup() {
   let now = NOW;
   let approved = true;

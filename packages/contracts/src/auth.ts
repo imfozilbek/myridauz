@@ -48,7 +48,6 @@ export const API_ERRORS = [
   'trips.price_out_of_bounds',
   'trips.in_past',
   'trips.too_soon',
-  'trips.busy',
   'trips.wrong_status',
   // «Yoʻlga chiqdim» and «Yetib keldik» (G63, docs/35); a pitak way where the direction has none.
   'trips.too_early_to_depart',

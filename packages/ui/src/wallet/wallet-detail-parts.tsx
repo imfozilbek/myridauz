@@ -9,7 +9,6 @@ import { TripPoint } from '../trip/trip-point';
 import '../trip/trip-card.css';
 
 const FACE = 32;
-const LETTER = 15;
 const CHEVRON = 10;
 
 type TripProps = {
@@ -36,8 +35,7 @@ export function DetailTrip({ booking, onRider }: TripProps) {
         name={passenger.firstName}
         hasAvatar={false}
         size={FACE}
-        letter={LETTER}
-        plain
+        role="passenger"
       />
       <span className="wallet-rider-name">
         {t('wallet.detail.rider', { name: passenger.firstName, seats: String(booking.seats) })}

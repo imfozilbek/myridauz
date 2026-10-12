@@ -29,7 +29,7 @@ export function ReviewHead({
         name={target.rateeName}
         hasAvatar={photo ?? false}
         size={PHOTO}
-        plain
+        role={target.rateeRole}
       />
       <span className="review-head-text">
         <b>{target.rateeName}</b>

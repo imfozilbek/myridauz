@@ -33,10 +33,13 @@ describe('the week and the marks of «Mening safarlarim» (G64, mockup g64/6)', 
     expect(isWayBack({ ...back, departAt: NOW + 3 * DAY_MS }, [trip])).toBe(false);
   });
 
-  it('repeats the last trip that already left, never a cancelled one', () => {
+  it('repeats the last trip that already left, never a cancelled one, none while one is live', () => {
     const earlier = { ...trip, id: 't0', departAt: NOW - DAY_MS };
-    expect(tripToRepeat([earlier, trip, back], NOW + HOUR_MS)?.id).toBe('t1');
+    const arrived = { ...trip, arrivedAt: NOW + HOUR_MS };
+    expect(tripToRepeat([earlier, arrived], NOW + 2 * HOUR_MS)?.id).toBe('t1');
     expect(tripToRepeat([earlier, { ...trip, status: 'cancelled' as const }], NOW + HOUR_MS)?.id).toBe('t0');
-    expect(tripToRepeat([back], NOW)).toBeNull();
+    // One live trip at a time (docs/172): on the road, or a trip ahead.
+    expect(tripToRepeat([earlier, trip], NOW + HOUR_MS)).toBeNull();
+    expect(tripToRepeat([earlier, back], NOW)).toBeNull();
   });
 });

@@ -34,7 +34,7 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const { t } = useI18n();
   // The time of the screen moves on while it stays open: never a time that became too soon (G77).
   const [now, tick] = useClock();
-  const schedule = useSchedule(route.from.id, route.to.id);
+  const schedule = useSchedule();
   const rules = useBrand().schedule;
   const car = useDriver()?.application.car ?? null;
   const isMan = useAccount()?.profile.gender === 'male';
@@ -42,7 +42,7 @@ export function TripOnRoute({ flow, route, onBack, onPublished }: Props) {
   const names = usePlaceNames(places);
   if (!recommendation || pitak === undefined || !schedule) return <ScreenSkeleton onBack={onBack} />;
   const carSeats = car?.seats ?? 1;
-  const known = { now, schedule, rules, recommendation, pitak, carSeats, isMan };
+  const known = { now, rules, recommendation, pitak, carSeats, isMan };
   const values = tripValues({ ...answer, route }, known);
   // At the tap the screen catches up with the clock: its time is the one that goes, or none (G77).
   const sending = () => (tick(), tripValues({ ...answer, route }, { ...known, now: Date.now() }));

@@ -2,10 +2,9 @@ import type { Trip } from '@platform/contracts';
 import { lowerPrice, priceNoticeDue, retime, type ChangeError } from '../domain/trip-change';
 import type { TripRecord } from '../domain/trip';
 import type { Result, TripEvent, TripsDeps } from './ports';
-import { movedBusy } from './schedule';
 import { views } from './views-of';
 
-type Changed = Promise<Result<Trip, ChangeError | 'trips.busy' | 'trips.price_out_of_bounds'>>;
+type Changed = Promise<Result<Trip, ChangeError | 'trips.price_out_of_bounds'>>;
 
 async function saved(deps: TripsDeps, next: TripRecord, event: TripEvent): Changed {
   await deps.trips.save(next);
@@ -14,14 +13,12 @@ async function saved(deps: TripsDeps, next: TripRecord, event: TripEvent): Chang
   return view ? { ok: true, value: view } : { ok: false, error: 'trips.not_found' };
 }
 
-// The driver moves the time later (docs/104, 8): the trips around it still fit (docs/103), the
-// people with a booking are told.
+// The driver moves the time later (docs/104, 8): the people with a booking are told.
 export async function retimeTrip(deps: TripsDeps, driverId: number, id: string, departAt: number): Changed {
   const trip = await deps.trips.find(id);
   if (!trip) return { ok: false, error: 'trips.not_found' };
   const next = retime(trip, driverId, departAt, deps.now(), deps.schedule.shiftMinutes);
   if (typeof next === 'string') return { ok: false, error: next };
-  if (await movedBusy(deps, next)) return { ok: false, error: 'trips.busy' };
   return saved(deps, next, 'retimed');
 }
 

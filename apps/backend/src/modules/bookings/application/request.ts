@@ -2,6 +2,7 @@ import { arrivalAt, onTheWay, type Booking, type BookingInput } from '@platform/
 import { answerDeadline } from '../domain/answer-deadline';
 import { move, NO_MARKS, statusAt, type BookingRecord } from '../domain/booking';
 import type { BookingsDeps, Result } from './ports';
+import { heldSeat } from './held-seat';
 import { bookingViews } from './views';
 import { chosenPoints, type PointsError } from './booking-points';
 import { keepsWithWoman, seatChoiceError, type ChoiceError } from '../domain/seat-choice';
@@ -21,8 +22,9 @@ const isWaiting = (booking: BookingRecord, now: number) => statusAt(booking, now
 const isHolding = (booking: BookingRecord, now: number) =>
   isWaiting(booking, now) || booking.status === 'confirmed';
 
-// A passenger asks for seats (docs/35): a live trip of someone else, enough free seats,
-// one booking per trip, at most 3 waiting requests at once; the way and the points fixed (docs/70).
+// A passenger asks for seats (docs/35): a live trip of someone else, enough free seats, one seat at a
+// time; the open request closes (owner decision 12.10.2026, docs/172); the way and the points fixed
+// (docs/70).
 export async function requestBooking(
   deps: BookingsDeps,
   passengerId: number,
@@ -44,8 +46,7 @@ export async function requestBooking(
   const mine = await deps.bookings.byPassenger(passengerId);
   if (mine.some((booking) => booking.tripId === tripId && isHolding(booking, now)))
     return { ok: false, error: 'bookings.wrong_status' };
-  if (mine.filter((booking) => isWaiting(booking, now)).length >= deps.limits.bookings.maxPending)
-    return { ok: false, error: 'bookings.too_many' };
+  if (await heldSeat(deps, mine, now)) return { ok: false, error: 'bookings.too_many' };
   const points = await chosenPoints(deps, trip, input);
   if (!points.ok) return points;
   const passenger = await deps.people.find(passengerId);
@@ -73,6 +74,8 @@ export async function requestBooking(
     updatedAt: now,
   };
   await deps.bookings.save(record);
+  for (const request of await deps.requests.ofPassenger(passengerId))
+    if (request.open) await deps.requests.cancel(passengerId, request.id);
   // The bots get the passenger's own view: the driver's card loads the trip as its driver sees it.
   const [view] = await bookingViews(deps, [record], 'passenger');
   if (view) await deps.notify.requested(view);

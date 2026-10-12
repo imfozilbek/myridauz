@@ -9,7 +9,6 @@ import { signedAs, staleSignedAs } from './stand-kit';
 import { standSql } from './stand-tools';
 
 // The brand defaults (docs/127): the owner changed nothing on the stand.
-const { maxOpen: MAX_OPEN_REQUESTS } = loadBrand().requests;
 const BOOKING_ANSWER_HOURS = loadBrand().bookings.answerHours;
 
 // The edges of time, limits and the way in (docs/81 A11, A13, V02, V03, docs/77 P11): each one ends
@@ -23,17 +22,16 @@ test('A11. a launch older than a day is refused: the Mini App asks to open it ag
   expect(await outcome(market.myRequests())).toBe('auth.expired');
 });
 
-test('P11, A13. a request inside one city is refused; at most 3 open requests', async () => {
+test('P11, A13. a request inside one city is refused; one open request (docs/172)', async () => {
   const market = createMarketClient(await signedAs('passenger', NARGIZA));
   const { price } = await market.recommend(CHILONZOR, SAMARQAND);
   const inside = { from: CHILONZOR, to: '1726290', date: tashkentDate(Date.now() + 24 * HOUR), seats: 1 };
   const local = { ...inside, price, pickupMode: 'door' as const, ...TO_SAMARQAND };
   expect(await outcome(market.publishRequest(local))).toMatch(/^locations\./u);
-  const days = [1, 2, 3, 4].map((day) => tashkentDate(Date.now() + day * 24 * HOUR));
+  const days = [1, 2].map((day) => tashkentDate(Date.now() + day * 24 * HOUR));
   const answers = [];
   for (const date of days) answers.push(await outcome(askRide(NARGIZA, date)));
-  expect(answers.slice(0, MAX_OPEN_REQUESTS)).toEqual(['ok', 'ok', 'ok']);
-  expect(answers.at(-1)).toBe('trips.too_many');
+  expect(answers).toEqual(['ok', 'trips.too_many']);
 });
 
 test('V02. a seat asked 10 minutes before the departure waits only until the departure', async () => {

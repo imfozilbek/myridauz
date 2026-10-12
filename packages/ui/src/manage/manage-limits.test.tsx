@@ -6,14 +6,13 @@ import { renderManagement } from './manage-test-kit';
 
 afterEach(cleanup);
 
-const limitsOf = (maxActiveTrips: number): Limits => ({
+const limitsOf = (maxSeats: number): Limits => ({
   limits: [
-    { key: 'schedule.maxActiveTrips', value: maxActiveTrips, base: 3 },
+    { key: 'requests.maxSeats', value: maxSeats, base: 4 },
     { key: 'commission.minPerSeat', value: 9000, base: 9000 },
     { key: 'moderation.hours.from', value: 7, base: 7 },
   ],
-  history:
-    maxActiveTrips === 3 ? [] : [{ key: 'schedule.maxActiveTrips', before: 3, after: 2, by: 'Fozil', at: 1 }],
+  history: maxSeats === 4 ? [] : [{ key: 'requests.maxSeats', before: 4, after: 3, by: 'Fozil', at: 1 }],
 });
 const entry = (kind: JournalKind, action: string, subject = 'c1'): Journal['entries'][number] => ({
   member: 'Aziz',
@@ -26,31 +25,31 @@ const entry = (kind: JournalKind, action: string, subject = 'c1'): Journal['entr
 // «Cheklovlar» and «Jurnal» of the owner (G75, docs/128 §4, gap К of docs/158).
 describe('«Cheklovlar» and «Jurnal»', () => {
   it('shows each limit with its unit and changes one within its rule', async () => {
-    const change = vi.fn(async () => limitsOf(2));
+    const change = vi.fn(async () => limitsOf(3));
     renderManagement({
-      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(3), change },
+      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change },
     });
     await tap('Cheklovlar');
-    expect(await screen.findByText('3 ta')).toBeTruthy();
+    expect(await screen.findByText('4 ta')).toBeTruthy();
     expect(screen.getByText(/9\s000 soʻm/u)).toBeTruthy();
     expect(screen.getByText('07:00')).toBeTruthy();
-    await tap('Haydovchining faol safarlari');
-    expect(screen.getByText('1 ta … 10 ta')).toBeTruthy();
+    await tap('Bir soʻrovdagi joylar');
+    expect(screen.getByText('1 ta … 7 ta')).toBeTruthy();
     // A count goes by «−» and «+», not typed (G79 К9): one tap instead of a keyboard.
-    expect(screen.queryByLabelText('Haydovchining faol safarlari')).toBeNull();
+    expect(screen.queryByLabelText('Bir soʻrovdagi joylar')).toBeNull();
     expect(screen.getByText('Saqlash').closest('button')?.disabled).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Kamaytirish' }));
-    expect(screen.getByText('2 ta')).toBeTruthy();
+    expect(screen.getByText('3 ta')).toBeTruthy();
     await tap('Saqlash');
-    await waitFor(() => expect(change).toHaveBeenCalledWith('schedule.maxActiveTrips', 2));
-    expect(await screen.findByText('2 ta')).toBeTruthy();
-    expect(screen.getByText(/3 ta → 2 ta · Fozil/u)).toBeTruthy();
+    await waitFor(() => expect(change).toHaveBeenCalledWith('requests.maxSeats', 3));
+    expect(await screen.findByText('3 ta')).toBeTruthy();
+    expect(screen.getByText(/4 ta → 3 ta · Fozil/u)).toBeTruthy();
   });
 
   // A long range is typed, never hundreds of taps (G79 К9, review).
   it('types a limit of a long range', async () => {
     renderManagement({
-      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(3), change: vi.fn() },
+      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change: vi.fn() },
     });
     await tap('Cheklovlar');
     await tap('Jamoa ishining boshlanishi');
@@ -65,7 +64,7 @@ describe('«Cheklovlar» and «Jurnal»', () => {
             entries: [
               entry('application', 'approve'),
               entry('complaint', 'block:7:refund'),
-              entry('limits', '2', 'schedule.maxActiveTrips'),
+              entry('limits', '2', 'requests.maxSeats'),
             ],
           }
         : { entries: before > 1 ? [{ ...entry('team', 'add'), at: 1 }] : [] },
@@ -74,7 +73,7 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     await tap('Jurnal');
     expect(await screen.findByText('Ariza tasdiqlandi')).toBeTruthy();
     expect(screen.getByText('7 kunga blok · qaytarish taklif qilindi')).toBeTruthy();
-    expect(screen.getByText('Haydovchining faol safarlari: 2')).toBeTruthy();
+    expect(screen.getByText('Bir soʻrovdagi joylar: 2')).toBeTruthy();
     await tap('Yana');
     expect(await screen.findByText('Jamoaga qoʻshildi')).toBeTruthy();
     await tap('Yana');

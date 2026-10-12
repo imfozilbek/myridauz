@@ -16,22 +16,27 @@ const open = (trips: readonly (typeof trip)[]) =>
     }),
   );
 
-// The driver hears of the limit of 3 trips before filling a new one, not at its end (G52, docs/112).
-describe('the limit of active trips', () => {
-  it('stops a new trip at once when 3 trips are active, «Mening safarlarim» opens them', async () => {
-    open([trip, { ...trip, id: 't2', status: 'full' }, { ...trip, id: 't3' }]);
+// One live trip of a driver (owner decision 12.10.2026, docs/172), heard before filling a new one,
+// not at its end (G52, docs/112).
+describe('one live trip of a driver', () => {
+  it('stops a new trip at once while one trip is live, «Mening safarlarim» opens it', async () => {
+    open([trip, { ...trip, id: 't2', status: 'cancelled' }]);
     // Mockup g75/1 A, phone 3 (G75): the number, what to do, one button.
-    expect(await screen.findByText('Faol safarlar 3 ta')).toBeTruthy();
+    expect(await screen.findByText('Faol safarlar 1 ta')).toBeTruthy();
     expect(
       screen.getByText('Yangi safar eʼlon qilish uchun bittasini bekor qiling yoki yakunlang.'),
     ).toBeTruthy();
     fireEvent.click(screen.getByText('Mening safarlarim'));
-    expect(await screen.findByText('Faol (3)')).toBeTruthy();
+    expect(await screen.findByText('Faol (1)')).toBeTruthy();
   });
 
-  it('opens the route when a cancelled or a past trip does not count', async () => {
-    open([trip, { ...trip, id: 't2', status: 'cancelled' }, { ...trip, id: 't3', status: 'completed' }]);
+  it('opens the route when a cancelled, a past or an arrived trip does not count', async () => {
+    open([
+      { ...trip, status: 'cancelled' },
+      { ...trip, id: 't2', status: 'completed' },
+      { ...trip, id: 't3', arrivedAt: trip.departAt },
+    ]);
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
-    expect(screen.queryByText('Faol safarlar 3 ta')).toBeNull();
+    expect(screen.queryByText(/Faol safarlar/u)).toBeNull();
   });
 });

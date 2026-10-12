@@ -32,10 +32,11 @@ export async function requestBoard(
   const route = from && to ? { from, to } : null;
   const directions = route ? [] : await deps.board.directions(driverId);
   const date = query.date ?? today;
+  const busy = await deps.board.busy(driverId);
   if (!route && directions.length === 0)
     return {
       ok: true,
-      value: { known: false, date, days: [], trip: null, fits: [], others: [], carSeats: car.seats },
+      value: { known: false, date, days: [], trip: null, fits: [], others: [], carSeats: car.seats, busy },
     };
   const onDirection = (request: RequestRecord) =>
     route
@@ -71,6 +72,7 @@ export async function requestBoard(
         fits: [],
         others: await views(deps, ofDay),
         carSeats: car.seats,
+        busy,
       },
     };
   const measured = ofDay.map((request) => ({
@@ -92,6 +94,6 @@ export async function requestBoard(
   );
   return {
     ok: true,
-    value: { known: true, date: day, days, trip: nearest.trip, fits, others, carSeats: car.seats },
+    value: { known: true, date: day, days, trip: nearest.trip, fits, others, carSeats: car.seats, busy },
   };
 }

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { ProfilePhoto } from '../../account/profile/profile-photo';
+import { useAccount } from '../../account/account-context';
+import { PersonBadge } from '../../find/person-badge';
 import { Icon } from '../../icons';
 import './dock-card.css';
 import './dock-who.css';
@@ -44,6 +45,8 @@ export function DockCard({
   who,
   quick,
 }: DockCardProps) {
+  // The other side of the trip: the passengers of a driver, the driver of a passenger.
+  const face = useAccount()?.app === 'driver' ? 'passenger' : 'driver';
   return (
     <>
       <div className={`dock-card dock-card-${tone}`}>
@@ -58,13 +61,13 @@ export function DockCard({
         <p className="dock-card-text">{text}</p>
         {who ? (
           <div className="dock-who">
-            {who.person.hasAvatar ? (
-              <ProfilePhoto userId={who.person.id} name={who.person.firstName} hasAvatar size={FACE} />
-            ) : (
-              <span className="dock-face" aria-hidden>
-                {who.person.firstName.slice(0, 1)}
-              </span>
-            )}
+            <PersonBadge
+              id={who.person.id}
+              name={who.person.firstName}
+              hasAvatar={who.person.hasAvatar}
+              size={FACE}
+              role={face}
+            />
             <span className="dock-who-words">
               <b>{who.person.firstName}</b>
               <span>{who.sub}</span>

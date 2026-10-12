@@ -1,22 +1,41 @@
-/* «Qachon joʻnaysiz?» in its sheet (mockup g75/3 A phone 1): the row of the week (docs/172), the half
-   hours four in a row, three rows seen at once; the chosen ones in the main color of the app. */
+/* «Qachon joʻnaysiz?» in its sheet (mockup g75/3 A phone 1): the row of the week (docs/172), the
+   whole hours or the half hours by a switch, only the free times six in a row (owner decisions
+   12.10.2026); the chosen ones in the main color of the app. */
+.time-kinds {
+  padding: 0 16px 10px;
+}
+
+.time-kinds > div {
+  height: 38px;
+  border-radius: 10px;
+  background: var(--reg-off);
+}
+
+.time-kind-on {
+  color: var(--reg-ink);
+}
+
+.time-kind-on > * {
+  font-weight: 700;
+}
+
 .time-grid {
   display: grid;
-  gap: 8px;
-  max-height: 148px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 5px;
+  margin-bottom: 10px;
   padding: 0 16px;
-  overflow-y: auto;
 }
 
 .time-cell {
-  height: 44px;
+  height: 34px;
+  padding: 0;
   border: 0;
   border-radius: 10px;
   background: var(--reg-off);
   color: var(--reg-ink);
   font: inherit;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -24,11 +43,6 @@
   background: var(--reg-strong);
   color: var(--reg-card);
   font-weight: 700;
-}
-
-.time-cell:disabled {
-  color: var(--reg-control);
-  cursor: default;
 }
 
 /* The row of the week on the white sheet: the days gray as the sheet of the mockup 6-days phone 3. */

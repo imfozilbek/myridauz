@@ -38,9 +38,14 @@ export const wireHiddenRequesters = (hidden: Hidden) => void (hiddenOf = hidden)
 type Board = {
   readonly directions: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['directions']>;
   readonly trip: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['trip']>;
+  readonly busy: (env: Bindings, driverId: number) => Promise<boolean>;
 };
-let boardOf: Board = { directions: async () => [], trip: async () => null };
+let boardOf: Board = { directions: async () => [], trip: async () => null, busy: async () => false };
 export const wireRequestBoard = (board: Board) => void (boardOf = board);
+// A seat the passenger holds (one at a time, docs/172): set by the app, the bookings know the seats.
+type SeatHeld = (env: Bindings, passengerId: number) => Promise<boolean>;
+let seatHeldOf: SeatHeld = async () => false;
+export const wireHeldSeats = (held: SeatHeld) => void (seatHeldOf = held);
 
 const requestsDeps = (env: Bindings): RequestsDeps => ({
   requests: env.DB ? d1Requests(env.DB) : localRequests,
@@ -57,8 +62,10 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   board: {
     directions: (driverId) => boardOf.directions(env, driverId),
     trip: (driverId) => boardOf.trip(env, driverId),
+    busy: (driverId) => boardOf.busy(env, driverId),
   },
   ratings: (userIds) => ratingsOfPeople(env, userIds),
+  seatHeld: (passengerId) => seatHeldOf(env, passengerId),
   limits: brandOf(env),
   newId: () => crypto.randomUUID(),
   now: Date.now,

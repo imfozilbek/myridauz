@@ -52,3 +52,14 @@
   text-transform: uppercase;
   color: var(--reg-muted);
 }
+
+/* A live trip of the driver (owner decision 12.10.2026, sheet 7-edits-1): a new offer waits. */
+.board-busy {
+  margin: 0 12px 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--reg-attention-soft);
+  color: var(--reg-attention-ink);
+  font-size: 13px;
+  line-height: 17px;
+}

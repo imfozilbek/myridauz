@@ -28,6 +28,7 @@ const board: RequestBoard = {
   fits: [],
   others: [],
   carSeats: 4,
+  busy: false,
 };
 // The trip of tomorrow on the card, one more on Saturday with a request, one made on Tuesday.
 const later = { ...trip, id: 't2', departAt: trip.departAt + DAY_MS };

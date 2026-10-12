@@ -31,22 +31,22 @@ describe('«Cheklovlar»', () => {
   it('shows every limit with its default, and a change reaches the rules of the server', async () => {
     await registerUser(OWNER);
     const before = await read();
-    expect(before.limits).toContainEqual({ key: 'schedule.maxActiveTrips', value: 3, base: 3 });
+    expect(before.limits).toContainEqual({ key: 'requests.maxSeats', value: 4, base: 4 });
     const changed = limitsSchema.parse(
-      await (await call(adminLimitPath('schedule.maxActiveTrips'), OWNER, put(2))).json(),
+      await (await call(adminLimitPath('requests.maxSeats'), OWNER, put(2))).json(),
     );
-    expect(changed.limits).toContainEqual({ key: 'schedule.maxActiveTrips', value: 2, base: 3 });
+    expect(changed.limits).toContainEqual({ key: 'requests.maxSeats', value: 2, base: 4 });
     expect(changed.history[0]).toMatchObject({
-      key: 'schedule.maxActiveTrips',
-      before: 3,
+      key: 'requests.maxSeats',
+      before: 4,
       after: 2,
       by: 'Ali',
     });
-    expect(brandOf({}).schedule.maxActiveTrips).toBe(2);
+    expect(brandOf({}).requests.maxSeats).toBe(2);
     const journal = journalSchema.parse(await (await call(ADMIN_JOURNAL_PATH, OWNER, team)).json());
     expect(journal.entries[0]).toMatchObject({
       kind: 'limits',
-      subject: 'schedule.maxActiveTrips',
+      subject: 'requests.maxSeats',
       action: '2',
     });
   });
@@ -64,7 +64,7 @@ describe('«Cheklovlar»', () => {
     const second = await subscribe('1703');
     expect([second.status, await second.json()]).toEqual([409, { error: 'subscriptions.too_many' }]);
     const shown = await fetchPublic();
-    expect(shown.values).toMatchObject({ 'subscriptions.max': 1, 'schedule.maxActiveTrips': 2 });
+    expect(shown.values).toMatchObject({ 'subscriptions.max': 1, 'requests.maxSeats': 2 });
   });
 
   it('takes the stars in tenths: a low rating below 3,7 (docs/127 §7)', async () => {
@@ -74,8 +74,8 @@ describe('«Cheklovlar»', () => {
   });
 
   it('refuses a value out of its rule and team hours that close before they open', async () => {
-    expect((await call(adminLimitPath('schedule.maxActiveTrips'), OWNER, put(0))).status).toBe(400);
-    expect((await call(adminLimitPath('schedule.maxActiveTrips'), OWNER, put(2.5))).status).toBe(400);
+    expect((await call(adminLimitPath('requests.maxSeats'), OWNER, put(0))).status).toBe(400);
+    expect((await call(adminLimitPath('requests.maxSeats'), OWNER, put(2.5))).status).toBe(400);
     expect((await call(adminLimitPath('moderation.hours.from'), OWNER, put(23))).status).toBe(400);
     expect((await call(`${ADMIN_LIMITS_PATH}/sizes.photo`, OWNER, put(1))).status).toBe(400);
   });

@@ -12,7 +12,7 @@ describe('the trips of the team by days (docs/90 F-A6)', () => {
     const { deps, trip } = setup();
     const late = idOf(await publishTrip(deps, 1, { ...trip, departAt: NOW + 10 * HOUR }));
     const early = idOf(await publishTrip(deps, 2, trip));
-    const tomorrow = idOf(await publishTrip(deps, 1, { ...trip, departAt: NOW + 30 * HOUR }));
+    const tomorrow = idOf(await publishTrip(deps, 4, { ...trip, departAt: NOW + 30 * HOUR }));
     await cancelTrip(deps, 2, early);
     const ids = async (day: number) => (await teamTrips(deps, tashkentDate(day))).map((item) => item.id);
     expect(await ids(NOW)).toEqual([early, late]);
@@ -27,10 +27,10 @@ describe('the real prices of the median (docs/90 F-A7)', () => {
     await publishTrip(deps, 1, { ...trip, price: 80000 });
     await publishTrip(deps, 2, { ...trip, price: 100000, departAt: NOW + 4 * HOUR });
     const cancelled = idOf(
-      await publishTrip(deps, 1, { ...trip, price: 300000, departAt: NOW + 4.5 * HOUR }),
+      await publishTrip(deps, 4, { ...trip, price: 300000, departAt: NOW + 4.5 * HOUR }),
     );
-    await cancelTrip(deps, 1, cancelled);
-    await publishTrip(deps, 2, { ...trip, price: 500000, departAt: NOW + 48 * HOUR });
+    await cancelTrip(deps, 4, cancelled);
+    await publishTrip(deps, 5, { ...trip, price: 500000, departAt: NOW + 48 * HOUR });
     setNow(NOW + 5 * HOUR);
     const prices = await realPrices(deps, NOW - 24 * HOUR);
     expect(prices.map((item) => item.price)).toEqual([100000, 80000]);

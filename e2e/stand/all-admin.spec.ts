@@ -68,7 +68,7 @@ for (const platform of PLATFORMS)
 const tools: readonly [string, string, string, string][] = [
   [t('manage.people'), 'ta47-people', t('manage.person.search'), 'ta48-people-search'],
   [t('manage.team'), 'ta49-team', t('manage.teamAdd'), 'ta50-team-add'],
-  [t('manage.limits'), 'ta51-limits', t('manage.limit.schedule.maxActiveTrips'), 'ta52-limit-edit'],
+  [t('manage.limits'), 'ta51-limits', t('manage.limit.requests.maxSeats'), 'ta52-limit-edit'],
   [t('wallet.team.title'), 'ta36-wallets', MUROD.name, 'ta37-wallet-adjust'],
   [t('channels.title'), 'ta38-channels', t('channels.add'), 'ta39-channel-edit'],
   [t('pitaks.title'), 'ta40-pitaks', t('pitaks.add'), 'ta41-pitak-edit'],

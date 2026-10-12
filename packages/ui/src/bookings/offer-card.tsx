@@ -31,7 +31,13 @@ export function OfferCard({ offer, onAnswer, onOpen }: Props) {
   return (
     <div className="offer-card">
       <button type="button" className="offer-card-top" onClick={onOpen}>
-        <PersonBadge id={driver.id} name={driver.firstName} hasAvatar={driver.hasAvatar} size={PHOTO} plain />
+        <PersonBadge
+          id={driver.id}
+          name={driver.firstName}
+          hasAvatar={driver.hasAvatar}
+          size={PHOTO}
+          role="driver"
+        />
         <span className="offer-card-who">
           <span className="offer-card-name">
             {driver.firstName}

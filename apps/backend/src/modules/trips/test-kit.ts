@@ -41,14 +41,19 @@ export function setup() {
   const signals: string[] = [];
   // The people who opened each trip page (trip_views, G76).
   const views = new Map<string, number>();
+  // One live trip of a driver (docs/172): drivers 4 and 5 make the other trips of a test.
   const cars = new Map<number, Car>([
     [1, CAR],
     [2, CAR],
+    [4, CAR],
+    [5, CAR],
   ]);
   const people = new Map([
     [1, person(1, 'male')],
     [2, person(2, 'female')],
     [3, person(3, 'male')],
+    [4, person(4, 'male')],
+    [5, person(5, 'male')],
   ]);
   const deps: TripsDeps = {
     trips: createMemoryTrips(),
@@ -76,7 +81,6 @@ export function setup() {
     // A whole region is measured like its places here: the real rule is tested in pricing (G59).
     recommendDirection: (from, to) => deps.recommend(from, to),
     // Every other place is one trip away (300 km, 5 hours): the road from the end of a trip (docs/103).
-    roadKm: async (from, to) => (from === to ? 0 : TRIP_KM),
     schedule: loadBrand().schedule,
     places: async () => PLACES,
     // Toshkent shahri → Samarqand viloyati has its pitak; other directions have none.

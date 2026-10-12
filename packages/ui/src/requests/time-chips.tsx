@@ -19,13 +19,13 @@ import './time-chips.css';
 export function useOfferTime(request: RideRequest) {
   const [now, tick] = useClock();
   const rules = useBrand().schedule;
-  const schedule = useSchedule(request.from, request.to);
+  const schedule = useSchedule();
   const [picked, setPicked] = useState<string | null>(
     () => draftOf('time', request.id) ?? lastOfferTime() ?? null,
   );
   if (!schedule) return null;
   const timeAt = (at: number) => {
-    const slots = slotsOn(request.date, at, schedule, rules);
+    const slots = slotsOn(request.date, at, rules);
     const time =
       picked !== null && slots.includes(picked) ? picked : (offerTimes(slots)[0] ?? slots[0] ?? null);
     return { slots, time, departAt: time === null ? null : departAtOf(request.date, time) };

@@ -1,4 +1,4 @@
-import { DAY_MS, type Trip } from '@platform/contracts';
+import { DAY_MS, tripHolds, type Trip } from '@platform/contracts';
 import { tripStage } from '../own-trip/trip-stage';
 
 // «Mening safarlarim» of a driver (G64, docs/118 path 7, mockup g64/6): the trips that still live,
@@ -19,8 +19,10 @@ export const isWayBack = (trip: Trip, trips: readonly Trip[]) =>
       trip.departAt - other.departAt <= WAY_BACK_MS,
   );
 
-// «Ertaga shu safar»: the last trip that already left, not cancelled, repeated tomorrow at its time.
+// «Ertaga shu safar»: the last trip that already left, not cancelled, repeated tomorrow at its time;
+// only while no trip is live, one at a time (owner decision 12.10.2026, docs/172).
 export function tripToRepeat(trips: readonly Trip[], now: number): Trip | null {
+  if (trips.some((trip) => tripHolds(trip, now))) return null;
   const left = trips.filter((trip) => trip.departAt <= now && trip.status !== 'cancelled');
   return left.reduce<Trip | null>(
     (last, trip) => (!last || trip.departAt > last.departAt ? trip : last),
