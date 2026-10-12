@@ -43,7 +43,7 @@ for (const platform of PLATFORMS)
       await shot('02-other-place');
       await page.getByText('Samarqand shahri', { exact: true }).click();
       await expect(page.locator('.search-trip').first()).toBeVisible();
-      await oneSize(page, '.day-count');
+      await oneSize(page, '.week-day');
       await shot('03-trips');
       await page.locator('.search-trip').first().click();
       await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();

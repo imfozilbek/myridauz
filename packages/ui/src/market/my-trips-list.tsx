@@ -8,8 +8,9 @@ import { useI18n } from '../context/i18n-context';
 import { AgainCard } from '../driver-trips/again-card';
 import { DriverTripRow } from '../driver-trips/driver-trip-row';
 import { MonthTotal } from '../driver-trips/month-total';
-import { isLive, isWayBack, tripToRepeat, weekOf } from '../driver-trips/trip-week';
-import { WeekRow } from '../driver-trips/week-row';
+import { weekOf } from '../days/week';
+import { WeekRow } from '../days/week-row';
+import { isLive, isWayBack, tripToRepeat } from '../driver-trips/trip-week';
 import { useKeepPlace } from '../screen/keep-place';
 import { useListPlace } from '../screen/list-memory';
 import { Screen } from '../screen/screen';
@@ -72,6 +73,8 @@ export function MyTripsList(props: Props) {
     );
   }
   const live = trips.filter((trip) => isLive(trip, now)).sort(byTime);
+  const liveDays = new Set(live.map((trip) => tashkentDate(trip.departAt)));
+  const today = tashkentDate(now);
   const shown = picked ? live.filter((trip) => tashkentDate(trip.departAt) === picked) : live;
   const again = tripToRepeat(trips, now);
   const sent = offers.filter((offer) => offer.status === 'sent');
@@ -105,10 +108,9 @@ export function MyTripsList(props: Props) {
       ) : (
         <>
           <WeekRow
-            week={weekOf(now)}
-            marked={new Set(live.map((trip) => tashkentDate(trip.departAt)))}
-            picked={picked}
-            onPick={setPicked}
+            days={weekOf(now).map((date) => ({ date, marked: liveDays.has(date) }))}
+            on={picked ?? today}
+            onPick={(date) => setPicked(date === picked ? null : date)}
           />
           {again ? <AgainCard trip={again} onOpen={() => props.onAgain(again)} /> : null}
           {shown.map((trip) => (

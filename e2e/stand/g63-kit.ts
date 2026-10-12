@@ -68,9 +68,10 @@ export async function publishOnOneScreen(page: Page, walk: Walk): Promise<Trip> 
   await seen(page, t('way.trip.onMap'));
   // Tomorrow morning: the trip waits for people until the clock of the stand moves (step 3).
   await page.getByText(DAY_ROW).first().click();
-  await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
-  await mainButton(page).click();
+  // Tomorrow in the row of the week; the tap on the time closes the sheet (docs/172, G78 В12).
   const time = BRAND.schedule.defaultTime;
+  await page.locator('.week-day').nth(1).click();
+  await page.getByRole('button', { name: time, exact: true }).click();
   await seen(page, t('market.publish.day', { date: t('market.day.tomorrow'), time }));
   const raised = price + roundStep;
   await more(page).last().click();

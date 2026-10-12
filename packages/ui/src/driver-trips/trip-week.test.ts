@@ -1,7 +1,8 @@
 import { DAY_MS, HOUR_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { trip } from '../market/market-test-kit';
-import { isLive, isWayBack, tripToRepeat, weekOf } from './trip-week';
+import { weekOf } from '../days/week';
+import { isLive, isWayBack, tripToRepeat } from './trip-week';
 
 // 2026-10-02 08:00 in Tashkent: the trip of the test kit leaves at this time.
 const NOW = trip.departAt;

@@ -61,7 +61,7 @@ test('the search and «Safar» against the journey of the mockup', async ({ page
   await pressBack(page);
   await page.locator('.direction-card').first().click();
   await expect(page.locator('.search-trip').first()).toBeVisible();
-  await page.getByRole('tab').nth(1).click();
+  await page.locator('.week-day').nth(1).click();
   await page.getByRole('button', { name: '2', exact: true }).click();
   await page.waitForLoadState('networkidle');
   await shot(page, '05');

@@ -1,4 +1,4 @@
-/* The week of «Mening safarlarim» of a driver (G64, mockup g64/6): the values of the mockup at 360 px. */
+/* The row of the week (G64, mockup g64/6), everywhere a day is chosen (docs/172): the values at 360 px. */
 .week-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);

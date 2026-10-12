@@ -4,7 +4,8 @@ import { useScreenView } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
-import { DayCounts } from '../find/day-counts';
+import { countedWeek } from '../days/week';
+import { WeekRow } from '../days/week-row';
 import { RouteScreen, type Route } from '../places/route-screen';
 import { Screen } from '../screen/screen';
 import { ActionFailure } from '../states/action-failure';
@@ -85,7 +86,7 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
       {trip ? (
         <BoardTrip trip={trip} onOpen={() => onTrip(trip.id)} />
       ) : (
-        <DayCounts days={board.days} date={board.date} onDay={onDay} />
+        <WeekRow days={countedWeek(board.days)} on={board.date} onPick={onDay} />
       )}
       <ActionFailure error={failure} />
       <BoardList

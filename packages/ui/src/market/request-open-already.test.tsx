@@ -4,6 +4,7 @@ import { request } from '../bookings/booking-test-kit';
 import { quickRoute, ROUTE, tap } from './market-test-kit';
 import { openRequest } from './request-test-kit';
 import { tomorrow } from './when';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
@@ -15,11 +16,12 @@ describe('a second request on the same route and day', { timeout: 20_000 }, () =
     const open = { ...request, from: ROUTE.from.id, to: ROUTE.to.id, date: tomorrow(Date.now()) };
     const publishRequest = openRequest({ shared: true, mine: { myRequests: async () => [open] } });
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     expect(await screen.findByText('Soʻrovni bekor qilish')).toBeTruthy();
     expect(screen.queryByText('Qayerdan, qayerga?')).toBeNull();
     await tap('Orqaga');
-    expect(await screen.findByText(/^Ertaga/)).toBeTruthy();
+    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
+    expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
     expect(publishRequest).not.toHaveBeenCalled();
   });
 

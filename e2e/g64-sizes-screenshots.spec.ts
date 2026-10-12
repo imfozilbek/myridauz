@@ -33,7 +33,7 @@ for (const width of WIDTHS) {
       await openBoard(page, board);
       await nothingCut(page);
       await oneSize(page, '.request-tool');
-      if (board === 'today') await oneSize(page, '.day-count');
+      if (board === 'today') await oneSize(page, '.week-day');
       await look(page, `board-${board}`, width);
     }
     const page = await phone(context, width);

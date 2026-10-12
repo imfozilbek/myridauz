@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ROUTE, tap } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -27,7 +27,9 @@ const REAL: Record<string, StartAction['Screen']> = {
 const ACTIONS = PASSENGER_ACTIONS.map((action) => ({ ...action, Screen: REAL[action.id] ?? action.Screen }));
 const home = () =>
   renderHome((go) => <PassengerHome go={go} />, ACTIONS, { bookings: async () => [], where: true });
-const today = () => screen.findByRole('tab', { name: /Bugun/u, selected: true });
+// The trips open on today: the first day of the row of the week stands out (docs/172).
+const today = () =>
+  waitFor(() => expect(document.querySelector('.week-day')?.getAttribute('aria-pressed')).toBe('true'));
 
 // G79 П20, П21 (docs/170): the ends of the block are not asked again; 3 taps → 2.
 describe('the ends of the block at the bottom of the main screen', { timeout: 20_000 }, () => {
@@ -39,7 +41,7 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
     await tap('Fargʻona viloyati');
     await tap('Fargʻona shahri');
-    expect(await today()).toBeTruthy();
+    await today();
   });
 
   it('only «Qayerga»: «Soʻrov qoldirish» asks «Qayerdan», then the day', async () => {
@@ -50,7 +52,7 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
     await tap('Fargʻona viloyati');
     await tap('Fargʻona shahri');
-    expect(await screen.findByText(/^Ertaga/u)).toBeTruthy();
+    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
   });
 
   it('an empty «Suhbatlar» searches from the ends of the block', async () => {
@@ -60,7 +62,7 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     await tap('Suhbatlar');
     await screen.findByText('Hali suhbat yoʻq');
     await tap('Safar topish');
-    expect(await today()).toBeTruthy();
+    await today();
   });
 
   it('an empty «Faol» of «Mening safarlarim» searches from the ends of the block', async () => {
@@ -70,6 +72,6 @@ describe('the ends of the block at the bottom of the main screen', { timeout: 20
     await tap('Mening safarlarim');
     await screen.findByText('Faol safar yoʻq');
     await tap('Safar topish');
-    expect(await today()).toBeTruthy();
+    await today();
   });
 });

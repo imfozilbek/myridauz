@@ -13,22 +13,8 @@
   line-height: 26px;
 }
 
-.board .day-counts {
-  grid-auto-columns: calc((100% - 14.67px) / 3);
-  gap: 7.33px;
+.board .week-row {
   margin: 6.67px 12px 10.67px;
-}
-
-.board .day-count {
-  height: 46.67px;
-}
-
-.board .day-count-name {
-  font-size: clamp(11.5px, 3.611vw, 13px);
-}
-
-.board .day-count-trips {
-  font-size: clamp(11px, 3.334vw, 12px);
 }
 
 .board-trip {

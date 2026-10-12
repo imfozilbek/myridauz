@@ -19,14 +19,15 @@ const BRAND = loadBrand();
 const ZONE = BRAND.channels.find((channel) => channel.places.includes('1718401'));
 const CHANNEL = { username: ZONE?.username, title: ZONE?.title };
 
-// Each trip two days after the one before: the trips of one driver cannot overlap (docs/103).
+// Each trip a day after the one before: the trips of one driver cannot overlap (docs/103), and all
+// stay within the 7 days from today (docs/172).
 let trips = 0;
 async function publishTrip(driver = DRIVER, env = {}) {
   await approvedDriver(driver);
   const trip = {
     from: '1726273',
     to: '1718401',
-    departAt: Date.now() + 5 * HOUR + (trips += 1) * 2 * DAY_MS,
+    departAt: Date.now() + 5 * HOUR + (trips += 1) * DAY_MS,
     seats: 3,
     price: 90_000,
     womanOnBoard: false,

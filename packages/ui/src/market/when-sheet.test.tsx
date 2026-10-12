@@ -30,30 +30,40 @@ const times = () =>
     .filter((tile) => !tile.disabled)
     .map((tile) => tile.textContent);
 
-// G38 (owner decisions 03.10.2026, docs/103): the day and the time in one sheet (G75).
+// G38 (owner decisions 03.10.2026, docs/103): the day and the time in one sheet (G75); the tap on a
+// time closes it (G78 В12).
 describe('WhenSheet', () => {
   it('today: the first time an hour ahead, up to 30 minutes; nothing sooner', async () => {
     const onDone = open();
     expect(await time()).toBe('15:30');
     expect(times()[0]).toBe('15:30');
     expect(tiles().find((tile) => tile.textContent === '15:00')?.disabled).toBe(true);
-    await tap('Tayyor');
+    expect(screen.queryByText('Tayyor')).toBeNull();
+    await tap('15:30');
     const departAt = tashkentDayStart('2026-10-01') + 15.5 * HOUR;
     expect(onDone).toHaveBeenCalledWith({ date: '2026-10-01', time: '15:30', departAt });
+  });
+
+  it('takes the day from the row of the week: 7 days from today (docs/172)', () => {
+    open();
+    expect(document.querySelectorAll('.week-day')).toHaveLength(7);
+    expect(screen.queryByText('Boshqa kun')).toBeNull();
+    expect(document.querySelector('input[type="date"]')).toBeNull();
   });
 
   it('another day opens at 08:00, or at the first free time after it', async () => {
     const morning = tashkentDayStart('2026-10-02');
     open({ windows: [{ from: morning + 7 * HOUR, to: morning + 9 * HOUR }], full: false });
-    await tap('Ertaga');
+    await tap('2');
     expect(await time()).toBe('09:00');
     expect(times()).not.toContain('08:00');
     expect(times()).toContain('07:00');
   });
 
   it('at the limit of trips: the reason and no way on', async () => {
-    open({ windows: [], full: true });
+    const onDone = open({ windows: [], full: true });
     expect(await screen.findByText(/Faol eʼlonlar soni chegaraga yetdi/u)).toBeTruthy();
-    expect(screen.queryByText('Tayyor')).toBeNull();
+    await tap('15:30');
+    expect(onDone).not.toHaveBeenCalled();
   });
 });

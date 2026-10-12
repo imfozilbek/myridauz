@@ -2,6 +2,7 @@ import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { quickRoute, ROUTE, takePoint, tap } from './market-test-kit';
 import { openRequest } from './request-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 const RESTORED = 'Oldingi yozganingiz tiklandi.';
 afterEach(cleanup);
@@ -10,7 +11,7 @@ beforeEach(() => localStorage.clear());
 // From the main screen to «Qayerdan, qayerga?»: the route, tomorrow, the start chosen on its map.
 async function toPoints() {
   await quickRoute();
-  await tap(/^Ertaga/);
+  await pickDay(1);
   fireEvent.click(await screen.findByText('Olib ketish joyi'));
   await takePoint('Chorsu bozori yaqinida');
   await screen.findByText('Qayerdan, qayerga?');
@@ -25,7 +26,8 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
     await tap('Orqaga');
     expect(await screen.findByText('Chorsu bozori yaqinida')).toBeTruthy();
     await tap('Orqaga');
-    expect(await screen.findByText(/^Ertaga/)).toBeTruthy();
+    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
+    expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('a closed app opens the same screen; sent, the draft is gone', async () => {
@@ -49,7 +51,7 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
 
   it('both ends of the block: the day is asked at once, the route is not asked again (G76)', async () => {
     openRequest({ ends: ROUTE });
-    expect(await screen.findByText(/^Ertaga/)).toBeTruthy();
+    expect(await screen.findByText('Qaysi kuni?')).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Davom etish' })).toBeNull();
     await tap('Orqaga');
     expect(await screen.findByText('Chilonzor')).toBeTruthy();

@@ -68,10 +68,12 @@ export function openNewTrip(options: Options = {}) {
 export const seatsLess = () => fireEvent.click(screen.getAllByLabelText('Kamaytirish')[0] as HTMLElement);
 export const seatsMore = () => fireEvent.click(screen.getAllByLabelText('Oshirish')[0] as HTMLElement);
 
-// The day row opens the sheet of the day and the time (G75); «Ertaga» at 08:00 comes back to the screen.
+// The day row opens the sheet of the day and the time (G75); tomorrow in the row of the week, the tap
+// on 08:00 comes back to the screen (G78 В12).
 export async function tomorrowAtEight() {
   await tap(/^(Bugun|Ertaga), \d\d:\d\d$/u);
-  fireEvent.click(await screen.findByRole('button', { name: /^Ertaga/u }));
-  await tap('Tayyor');
+  await screen.findByText('Qachon joʻnaysiz?');
+  fireEvent.click(document.querySelectorAll('.week-day')[1] as HTMLElement);
+  await tap('08:00');
   await screen.findByText('Ertaga, 08:00');
 }

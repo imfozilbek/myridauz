@@ -26,6 +26,10 @@ export const board = (over: Partial<RequestBoard> = {}): RequestBoard => ({
   days: [
     { date: '2026-10-02', count: 1 },
     { date: '2026-10-03', count: 5 },
+    { date: '2026-10-04', count: 0 },
+    { date: '2026-10-05', count: 0 },
+    { date: '2026-10-06', count: 0 },
+    { date: '2026-10-07', count: 0 },
     { date: '2026-10-08', count: 1 },
   ],
   trip: null,

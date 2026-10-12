@@ -1,10 +1,11 @@
 import type { MarketClient } from '@platform/api-client';
-import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { FindTripFlow } from '../market/find-trip-flow';
 import { testClients } from '../test-shell';
 import { findRoute, searchMarket, weekOf } from './search-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(() => {
   cleanup();
@@ -37,12 +38,14 @@ describe('the places of a region with their trips', { timeout: 20_000 }, () => {
     );
     await findRoute(true);
     // The third day, not the first day with trips that a new search opens on.
-    fireEvent.click((await screen.findAllByRole('tab'))[2] as HTMLElement);
+    await pickDay(2);
     const third = weekOf([0, 3, 1]).days[2]?.date;
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(third));
     await tap('Fargʻonaning qaysi joyi? Tuman tanlash');
     await tap('Fargʻona shahri');
-    await waitFor(() => expect(screen.getAllByRole('tab')[2]?.getAttribute('aria-selected')).toBe('true'));
+    await waitFor(() =>
+      expect(document.querySelectorAll('.week-day')[2]?.getAttribute('aria-pressed')).toBe('true'),
+    );
     expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(third);
   });
 });

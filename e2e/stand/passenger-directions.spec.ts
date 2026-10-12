@@ -27,7 +27,7 @@ test('a card of a region: its price, then its trips', async ({ page }) => {
   await expect(cards).toHaveCount(DIRECTION_CARDS);
   await shot(page, 'android', 'directions');
   await cards.last().click();
-  await expect(page.locator('.day-counts')).toBeVisible();
+  await expect(page.locator('.week-row')).toBeVisible();
   await expect(page.getByText(t('common.retry'))).toHaveCount(0);
   await shot(page, 'android', 'directions-results');
 });

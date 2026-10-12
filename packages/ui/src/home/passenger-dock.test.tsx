@@ -59,7 +59,9 @@ describe(
       expect(tracked).toContainEqual(expect.objectContaining({ name: 'home_tap', target: 'dock_to' }));
       // «Safar topish» opens the trips of the route and keeps it for «Oxirgi yoʻnalish» (G35 K5).
       fireEvent.click(screen.getByRole('button', { name: 'Safar topish' }));
-      expect(await screen.findByRole('tab', { name: /Bugun/u, selected: true })).toBeTruthy();
+      await waitFor(() =>
+        expect(document.querySelector('.week-day')?.getAttribute('aria-pressed')).toBe('true'),
+      );
       expect(recentRoutes()[0]).toEqual({ from: ROUTE.from.id, to: '1730' });
     });
 

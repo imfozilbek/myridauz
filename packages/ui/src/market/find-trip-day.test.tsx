@@ -6,6 +6,7 @@ import { testMap } from '../map/map-test-kit';
 import { testClients } from '../test-shell';
 import { FindTripFlow } from './find-trip-flow';
 import { recommendation, renderMarket, tap } from './market-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(() => {
   cleanup();
@@ -20,13 +21,14 @@ describe('FindTripFlow: the days and the empty day (G59, docs/97 K2, K6)', { tim
       testClients({ market: { ...searchMarket([]), searchTrips } }),
     );
     await findRoute();
-    expect(await screen.findByRole('tab', { name: /Bugun\s*0 ta/u, selected: true })).toBeTruthy();
-    // Seven days, the third one by its date.
-    expect(screen.getAllByRole('tab')).toHaveLength(7);
-    await tap('Ertaga');
+    // The row of the week (docs/172): today stands out, no dot without trips.
+    await waitFor(() => expect(document.querySelectorAll('.week-day')).toHaveLength(7));
+    expect(document.querySelector('.week-day[aria-pressed="true"]')?.textContent).toMatch(/^Bu\d/u);
+    expect(document.querySelectorAll('.week-dot:not(.week-dot-none)')).toHaveLength(0);
+    await pickDay(1);
     const tomorrow = weekOf([]).days[1]?.date;
     await waitFor(() => expect(searchTrips.mock.calls.at(-1)?.[0].date).toBe(tomorrow));
-    expect(screen.getByRole('tab', { name: /Ertaga/u, selected: true })).toBeTruthy();
+    expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
   });
 
   it('leaves a request from an empty day with its route and day (K6)', async () => {

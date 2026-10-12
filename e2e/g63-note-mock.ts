@@ -51,7 +51,7 @@ export async function openBookingPoints(page: Page) {
   await page.goto(telegramUrl(appUrl(PASSENGER.port), 'android'));
   await openFindTrip(page);
   await page.locator('.direction-card').first().click();
-  await page.getByRole('tab').nth(1).click();
+  await page.locator('.week-day').nth(1).click();
   await page.locator('.search-trip').first().click();
   await expect(page.getByText(t('find.seatsTitle'))).toBeVisible();
   await page.getByLabel(t('market.price.more')).click();

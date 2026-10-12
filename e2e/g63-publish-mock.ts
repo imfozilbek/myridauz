@@ -46,8 +46,8 @@ export async function openPublish(page: Page) {
   await startPublish(page);
   const main = page.locator('#tg-main-button');
   await page.getByText(/^(Bugun|Ertaga), \d\d:\d\d$/u).click();
-  await page.getByText(t('market.day.tomorrow'), { exact: true }).click();
-  await main.click();
+  await page.locator('.week-day').nth(1).click();
+  await page.getByRole('button', { name: '08:00', exact: true }).click();
   await page.getByText(t('market.rule.title')).click();
   await page.getByText(t('market.rule.seatsOrCar')).click();
   await main.click();

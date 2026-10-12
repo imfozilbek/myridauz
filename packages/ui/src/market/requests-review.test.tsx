@@ -8,6 +8,7 @@ import { statusIcon } from './fact-chips';
 import { quickRoute, renderMarket, takePoint, tap } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { openRequest } from './request-test-kit';
+import { pickDay } from '../days/week-test-kit';
 
 afterEach(() => {
   cleanup();
@@ -37,7 +38,7 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     const publishRequest = openRequest({ mine: { myRequests } });
     publishRequest.mockRejectedValueOnce(new ApiError(409, 'trips.request_exists'));
     await quickRoute();
-    await tap(/^Ertaga/);
+    await pickDay(1);
     await tap('Olib ketish joyi');
     await takePoint('Chorsu bozori yaqinida');
     await tap('Tushirish joyi');

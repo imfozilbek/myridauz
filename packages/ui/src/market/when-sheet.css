@@ -1,48 +1,5 @@
-/* «Qachon joʻnaysiz?» in its sheet (mockup g75/3 A phone 1): three day tiles, the half hours four
-   in a row, three rows seen at once; the chosen ones in the main color of the app. */
-.when-days {
-  display: flex;
-  gap: 8px;
-  padding: 0 16px 12px;
-}
-
-.when-day {
-  flex: 1;
-  padding: 8px 4px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--reg-off);
-  color: var(--reg-ink);
-  font: inherit;
-  font-size: 15px;
-  line-height: 1.3;
-  cursor: pointer;
-}
-
-.when-day span {
-  display: block;
-}
-
-.when-day small {
-  display: block;
-  font-size: 12px;
-  color: var(--reg-muted);
-}
-
-.when-day[aria-pressed='true'] {
-  background: var(--reg-strong);
-  color: var(--reg-card);
-  font-weight: 700;
-}
-
-.when-day[aria-pressed='true'] small {
-  color: var(--reg-card);
-}
-
-.when-calendar {
-  margin: 0 16px 12px;
-}
-
+/* «Qachon joʻnaysiz?» in its sheet (mockup g75/3 A phone 1): the row of the week (docs/172), the half
+   hours four in a row, three rows seen at once; the chosen ones in the main color of the app. */
 .time-grid {
   display: grid;
   gap: 8px;
@@ -72,4 +29,13 @@
 .time-cell:disabled {
   color: var(--reg-control);
   cursor: default;
+}
+
+/* The row of the week on the white sheet: the days gray as the sheet of the mockup 6-days phone 3. */
+.when-week .week-row {
+  margin: 0 12px 12px;
+}
+
+.when-week .week-day:not([data-on]) {
+  background: var(--reg-bg);
 }

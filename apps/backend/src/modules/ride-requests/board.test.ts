@@ -28,7 +28,7 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.ok && board.value).toMatchObject({ known: false, others: [] });
   });
 
-  it('counts the requests of today, tomorrow and the next day that has some, on the directions of the driver', async () => {
+  it('counts the requests of the 7 days from today on the directions of the driver (owner 12.10.2026)', async () => {
     const { deps, request, directions } = setup();
     directions([{ from: '1726', to: '1718' }]);
     await publishRequest(deps, 1, request);
@@ -42,7 +42,11 @@ describe('the board of requests of a driver (G64)', () => {
     expect(board.value.days).toEqual([
       { date: '2026-10-01', count: 1 },
       { date: '2026-10-02', count: 2 },
+      { date: '2026-10-03', count: 0 },
+      { date: '2026-10-04', count: 0 },
       { date: '2026-10-05', count: 1 },
+      { date: '2026-10-06', count: 0 },
+      { date: '2026-10-07', count: 0 },
     ]);
     expect(board.value.others.map((item) => item.passenger.firstName)).toEqual(['P2', 'P3']);
   });

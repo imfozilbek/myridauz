@@ -28,9 +28,11 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     expect(screen.getByText(/^Chilonzor/u)).toBeTruthy();
     expect(screen.getByText('Bugun 2 ta, ertaga 5 ta safar')).toBeTruthy();
     await tap('Fargʻona');
-    // Today has no trips: the list opens on tomorrow, every day says how many it has.
+    // Today has no trips: the list opens on tomorrow; a day with trips has its dot (docs/172).
     expect(await screen.findByText(/^Jasur ★/u)).toBeTruthy();
-    expect(screen.getByRole('tab', { name: /Ertaga\s*3 ta/u, selected: true })).toBeTruthy();
+    expect(document.querySelectorAll('.week-day')[1]?.getAttribute('aria-pressed')).toBe('true');
+    expect(document.querySelectorAll('.week-day')[1]?.querySelector('.week-dot-none')).toBeNull();
+    expect(document.querySelectorAll('.week-day')[0]?.querySelector('.week-dot-none')).not.toBeNull();
     expect(searchTrips.mock.calls[0]?.[0]).toMatchObject({ from: '1726269', to: '1730' });
     // A whole region: its district is chosen by a link under the list.
     expect(screen.getByText('Fargʻonaning qaysi joyi? Tuman tanlash')).toBeTruthy();

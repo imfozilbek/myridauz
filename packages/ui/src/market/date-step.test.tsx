@@ -17,28 +17,22 @@ const open = (initial?: string) => {
   return onDone;
 };
 
-// The day of a request in the look of «Qachon joʻnaysiz?» (G75, mockup g75/3 A phone 1): three tiles.
+// The day of a request in the row of the week (owner decision 12.10.2026, docs/172): 7 days from
+// today, nothing further, no calendar of the phone.
 describe('«Qaysi kuni?» of a request', () => {
-  it('takes today or tomorrow in one tap', () => {
+  it('takes any of the 7 days from today in one tap', () => {
     const onDone = open();
     expect(screen.getByText('Qaysi kuni?').tagName).toBe('H1');
-    expect(document.querySelectorAll('.when-day')).toHaveLength(3);
-    expect(document.querySelector('.when-day[aria-pressed="true"]')).toBeNull();
-    fireEvent.click(screen.getByText('Ertaga'));
-    expect(onDone).toHaveBeenCalledWith(tashkentDate(NOW + DAY_MS));
+    expect(document.querySelectorAll('.week-day')).toHaveLength(7);
+    expect(document.querySelector('.week-day[aria-pressed="true"]')).toBeNull();
+    expect(screen.queryByText('Boshqa')).toBeNull();
+    expect(document.querySelector('input[type="date"]')).toBeNull();
+    fireEvent.click(screen.getByText('18'));
+    expect(onDone).toHaveBeenCalledWith(tashkentDate(NOW + 6 * DAY_MS));
   });
 
-  it('«Boshqa» opens the calendar, the day after tomorrow is ready', () => {
-    const onDone = open();
-    fireEvent.click(screen.getByText('Boshqa'));
-    const field = document.querySelector('input[type="date"]') as HTMLInputElement;
-    expect(field.value).toBe(tashkentDate(NOW + 2 * DAY_MS));
-    fireEvent.click(screen.getByText('Davom etish'));
-    expect(onDone).toHaveBeenCalledWith(tashkentDate(NOW + 2 * DAY_MS));
-  });
-
-  it('shows a day chosen before on its tile', () => {
+  it('shows a day chosen before', () => {
     open(tashkentDate(NOW + 3 * DAY_MS));
-    expect(document.querySelector('.when-day[aria-pressed="true"]')?.textContent).toContain('Boshqa');
+    expect(document.querySelector('.week-day[aria-pressed="true"]')?.textContent).toContain('15');
   });
 });
