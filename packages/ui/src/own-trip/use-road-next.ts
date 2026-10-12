@@ -11,7 +11,8 @@ export function useRoadNext(trip: Trip, people: readonly Booking[]) {
   const { t } = useI18n();
   const nameText = useNameText();
   const riders = people.filter((booking) => booking.status === 'confirmed' || booking.status === 'completed');
-  const done = riders.filter((booking) => booking.arrivedAt !== null).length;
+  // «Yoʻldasiz · 1 / 2»: who is in the car now, met and not yet there (owner decision 12.10.2026, spot 5).
+  const inCar = riders.filter((booking) => meetStep(booking) === 'met' && booking.arrivedAt === null).length;
   const { pickups, dropoffs } = stopsInOrder(riders, null);
   // Who the driver has not come to yet at a point (docs/126).
   const waiting = (stop: Stop) => stop.riders.filter((one) => meetStep(one) === 'come');
@@ -22,7 +23,7 @@ export function useRoadNext(trip: Trip, people: readonly Booking[]) {
   return {
     chip: t('home.dock.onRoadOf', {
       title: t('driverTrip.onWay.title'),
-      done: String(done),
+      inCar: String(inCar),
       all: String(riders.length),
     }),
     place: next?.name ? nameText(next.name, pickup ? trip.from : trip.to) : (next?.who ?? ''),
