@@ -49,8 +49,9 @@ async function asRide(deps: BookingsDeps, booking: BookingRecord): Promise<Ride 
     passengerId: booking.passengerId,
     departAt,
     endsAt,
-    // «Yetib keldik» ends the ride at once: the stars come right after it (docs/129, docs/124 В).
-    over: over || arrivedAt !== null,
+    // «Yetib keldik» ends the ride at once: the stars come right after it (docs/129, docs/124 В); the
+    // passenger's own «Yetib keldim» ends it for that passenger (G78 П6).
+    over: over || arrivedAt !== null || booking.arrivedAt !== null,
     commission: booking.commission,
     chatKey: bookingChatKey(booking),
   };
