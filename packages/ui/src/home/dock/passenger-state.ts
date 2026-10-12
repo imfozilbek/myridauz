@@ -75,15 +75,15 @@ function seatState(
 ): PassengerState | null {
   const { trip } = booking;
   const of = <K extends PassengerState['kind']>(kind: K) => ({ kind, booking }) as PassengerState;
-  if (booking.status === 'completed') {
-    const fresh = now < tripEndsAt(trip.departAt, trip.km) + rateDays * DAY_MS;
-    return fresh && booking.rated !== true && booking.noShowAt === null ? of('ended') : null;
-  }
+  const fresh = now < tripEndsAt(trip.departAt, trip.km) + rateDays * DAY_MS;
+  const toRate = () => (fresh && booking.rated !== true && booking.noShowAt === null ? of('ended') : null);
+  if (booking.status === 'completed') return toRate();
   if (endedBadly(booking.status))
     return booking.status !== 'cancelled_by_passenger' && trip.departAt > now ? of('refused') : null;
   if (booking.noShowAt !== null) return now < tripEndsAt(trip.departAt, trip.km) ? of('noShow') : null;
   if (booking.status === 'requested') return of('asked');
-  if (booking.arrivedAt !== null) return null;
+  // Her own «Yetib keldim» ends the ride for her: the stars at once (G78 П6, docs/170).
+  if (booking.arrivedAt !== null) return toRate();
   if (inCar(booking, now, meet)) {
     const late = now >= arrivalAt(trip.departAt, trip.km) + ASK_ARRIVED_AFTER_MS;
     return late && !marks.stillOnWay.has(booking.id) ? of('arrivedAsk') : of('onRoad');

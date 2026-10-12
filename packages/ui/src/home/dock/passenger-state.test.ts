@@ -67,6 +67,13 @@ describe('the block of a passenger: one state by its level (G76, docs/165)', () 
     expect(kind({ bookings: [{ ...seat, noShowAt: at(0) }] }, at(HOUR_MS))).toBe('noShow');
   });
 
+  // G78 П6 (docs/170): her own «Yetib keldim» asks the stars at once, the trip itself still on the way.
+  it('asks the stars right after «Yetib keldim», once', () => {
+    const arrived = { ...seat, boardedAt: at(0), arrivedAt: at(3 * HOUR_MS) };
+    expect(kind({ bookings: [arrived] }, at(3 * HOUR_MS))).toBe('ended');
+    expect(kind({ bookings: [{ ...arrived, rated: true }] }, at(3 * HOUR_MS))).toBe('idle');
+  });
+
   it('puts the most important first: a driver waiting beats offers', () => {
     const came = { ...seat, driverCameAt: at(-5 * MINUTE_MS) };
     const lists = { bookings: [came], requests: [request], offers: [offer], favorite: trip, rateDays: 7 };
