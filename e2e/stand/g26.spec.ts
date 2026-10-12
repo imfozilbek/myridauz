@@ -2,6 +2,7 @@ import { expect, test, type Page } from '../crash-guard';
 import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
+import { openEndMap } from '../bookings';
 import { openFromList } from '../market';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
@@ -69,8 +70,7 @@ async function findAndOpen(page: Page, person: Person) {
 
 // One end of «Qayerdan, qayerga?»: its row opens the map, the name of the place came (lesson 77).
 async function openEnd(page: Page, end: 'pickup' | 'dropoff') {
-  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
-  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await openEndMap(page, end);
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'));
 }

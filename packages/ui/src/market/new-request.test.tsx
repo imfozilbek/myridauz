@@ -13,14 +13,15 @@ const row = (label: string) => screen.getByText(label).closest('button') as HTML
 const more = (index: number) =>
   fireEvent.click(screen.getAllByRole('button', { name: 'Oshirish' })[index] as HTMLElement);
 
-// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps.
+// The route and tomorrow, then «Qayerdan, qayerga?» with both points chosen on their maps: the map of
+// the end opens right after the start (G78 П4).
 async function toPoints() {
   await quickRoute();
   await pickDay(1);
   expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
   fireEvent.click(row('Olib ketish joyi'));
   await takePoint('Chorsu bozori yaqinida');
-  fireEvent.click(await screen.findByText('Tushirish joyi'));
+  expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
   await takePoint('Yangi Margʻilon');
   await screen.findByText('Qayerdan, qayerga?');
 }
@@ -97,7 +98,6 @@ describe('«Soʻrov qoldirish» on one screen (G61, docs/118 path 4)', { timeout
     await pickDay(1);
     fireEvent.click(row('Olib ketish joyi'));
     await tap('Qoʻyliq pitagi');
-    fireEvent.click(await screen.findByText('Tushirish joyi'));
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
     await screen.findByText('Soʻrovni bekor qilish');

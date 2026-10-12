@@ -60,7 +60,7 @@ for (const platform of PLATFORMS)
       await mainButton(page)
         .filter({ hasText: t('way.point.takeFrom') })
         .click();
-      await page.getByText(t('way.book.dropoff')).click();
+      // The map of the end opens by itself right after the start (G78 П4).
       await mapDrawn(page);
       await page.getByPlaceholder(t('way.point.search')).fill('Регистон');
       await page.getByText('Registon maydoni', { exact: true }).click();

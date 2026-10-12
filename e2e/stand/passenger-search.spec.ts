@@ -80,8 +80,8 @@ for (const platform of PLATFORMS)
     await first.tap(page.getByText(t('way.book.pickup')));
     await mapReady(page, 'way.point.from');
     await shot('07-pickup');
+    // The map of the end opens by itself right after the start (G78 П4).
     await first.tap(mainButton(page));
-    await first.tap(page.getByText(t('way.book.dropoff')));
     await mapReady(page, 'way.point.to');
     await shot('08-dropoff');
     await first.tap(mainButton(page));

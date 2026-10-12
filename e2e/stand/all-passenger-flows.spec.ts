@@ -48,8 +48,8 @@ test('the search and the booking up to its review', async ({ page }) => {
   // Four stands side by side answer slowly: the same wait as the other map checks.
   await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });
   await shot(page, 'android', 'pb17-pickup');
+  // The map of the end opens by itself right after the start (G78 П4).
   await mainButton(page).click();
-  await page.getByText(t('way.book.dropoff')).click();
   await expect(page.getByText(t('way.point.to'))).toBeVisible();
   // The name under the pin is known: the button takes this place, not one still being asked.
   await expect(page.getByRole('status')).not.toHaveText(t('way.point.finding'), { timeout: NAME_MS });

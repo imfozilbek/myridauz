@@ -8,21 +8,20 @@ const RESTORED = 'Oldingi yozganingiz tiklandi.';
 afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
-// From the main screen to «Qayerdan, qayerga?»: the route, tomorrow, the start chosen on its map.
-async function toPoints() {
+// From the main screen to the map of the end: the route, tomorrow, the start chosen on its map; the
+// map of the end opens at once (G78 П4).
+async function toEndMap() {
   await quickRoute();
   await pickDay(1);
   fireEvent.click(await screen.findByText('Olib ketish joyi'));
   await takePoint('Chorsu bozori yaqinida');
-  await screen.findByText('Qayerdan, qayerga?');
+  await screen.findByText('Qayerda tushasiz?');
 }
 
 describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_000 }, () => {
   it('«Назад» from a map comes back to the screen with the chosen point; from it to the day', async () => {
     openRequest();
-    await toPoints();
-    fireEvent.click(screen.getByText('Tushirish joyi'));
-    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
+    await toEndMap();
     await tap('Orqaga');
     expect(await screen.findByText('Chorsu bozori yaqinida')).toBeTruthy();
     await tap('Orqaga');
@@ -32,8 +31,9 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
 
   it('a closed app opens the same screen; sent, the draft is gone', async () => {
     openRequest();
-    await toPoints();
-    fireEvent.click(screen.getAllByRole('button', { name: 'Oshirish' })[0] as HTMLElement);
+    await toEndMap();
+    await tap('Orqaga');
+    fireEvent.click((await screen.findAllByRole('button', { name: 'Oshirish' }))[0] as HTMLElement);
     cleanup();
     const publishRequest = openRequest();
     expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
@@ -60,8 +60,7 @@ describe('NewRequestFlow keeps its answers (docs/94 F3, F8, F9)', { timeout: 20_
   it('F9: the sent request has «Назад» to the main screen', async () => {
     const home = vi.fn();
     openRequest({ onBack: home });
-    await toPoints();
-    fireEvent.click(screen.getByText('Tushirish joyi'));
+    await toEndMap();
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
     await screen.findByText('Soʻrovni bekor qilish');

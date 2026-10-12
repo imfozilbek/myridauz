@@ -2,7 +2,7 @@ import { ApiError, type BookingsClient } from '@platform/api-client';
 import type { Border } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { tap } from '../market/market-test-kit';
+import { takePoint, tap } from '../market/market-test-kit';
 import { FARGONA_WHERE, openBook, row } from './book-flow-test-kit';
 
 afterEach(cleanup);
@@ -77,6 +77,14 @@ describe('«Qayerdan, qayerga?» (G59, docs/118 path 2, B)', { timeout: 20_000 }
     expect(await screen.findByText('Qayerdan olib ketsin?')).toBeTruthy();
     expect(screen.getByText('Uyim')).toBeTruthy();
     expect(screen.getByText('Yaqin joylar')).toBeTruthy();
+  });
+
+  it('opens the map of the end right after the start while the end is not chosen (G78 П4)', async () => {
+    openBook('door');
+    fireEvent.click(await screen.findByText('Olib ketish joyi'));
+    await screen.findByText('Qayerdan olib ketsin?');
+    await takePoint('Chorsu bozori yaqinida');
+    expect(await screen.findByText('Qayerda tushasiz?')).toBeTruthy();
   });
 
   it('keeps the point inside the zone: a place outside it is not taken', async () => {

@@ -56,8 +56,8 @@ for (const platform of PLATFORMS)
     await page.getByText(t('way.book.pickup')).click();
     await mapReady(page, 'way.point.from');
     await shot('01-pickup');
+    // The map of the end opens by itself right after the start (G78 П4).
     await mainButton(page).click();
-    await page.getByText(t('way.book.dropoff')).click();
     await mapReady(page, 'way.point.to');
     await shot('02-dropoff');
     await page.getByPlaceholder(t('way.point.search')).fill('Bahor');

@@ -41,7 +41,6 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     await pickDay(1);
     await tap('Olib ketish joyi');
     await takePoint('Chorsu bozori yaqinida');
-    await tap('Tushirish joyi');
     await takePoint('Yangi Margʻilon');
     await tap('Soʻrov qoldirish');
     expect(await screen.findByText('Bu kunga shu yoʻnalishda soʻrovingiz bor.')).toBeTruthy();

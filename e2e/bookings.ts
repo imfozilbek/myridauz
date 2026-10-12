@@ -27,9 +27,17 @@ const B = {
 };
 
 // One end of a booking on «Qayerdan, qayerga?»: its row opens the map, the main button takes it (G59).
+// The map of an end: the end opens by itself right after the start (G78 П4), else its row opens it.
+export async function openEndMap(page: Page, end: 'pickup' | 'dropoff') {
+  const title = page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'));
+  await expect(page.getByText(B.points).or(title)).toBeVisible();
+  if (!(await title.isVisible()))
+    await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
+  await expect(title).toBeVisible();
+}
+
 export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [string, string]) {
-  await page.getByText(t(end === 'pickup' ? 'way.book.pickup' : 'way.book.dropoff')).click();
-  await expect(page.getByText(t(end === 'pickup' ? 'way.point.from' : 'way.point.to'))).toBeVisible();
+  await openEndMap(page, end);
   await expect(page.locator('[data-state="ready"]')).toBeVisible();
   if (search) {
     await page.getByPlaceholder(t('way.point.search')).fill(search[0]);
@@ -40,7 +48,7 @@ export async function takeEnd(page: Page, end: 'pickup' | 'dropoff', search?: [s
     .locator('#tg-main-button')
     .filter({ hasText: t(end === 'pickup' ? 'way.point.takeFrom' : 'way.point.takeTo') })
     .click();
-  await expect(page.getByText(B.points)).toBeVisible();
+  await expect(page.getByText(B.points).or(page.getByText(t('way.point.to')))).toBeVisible();
 }
 
 // A passenger books 2 seats on a found trip (G59, docs/118 path 2): «+» on «Safar», then the door on

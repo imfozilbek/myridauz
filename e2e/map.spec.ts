@@ -2,6 +2,7 @@ import { expect, test, type Page } from './crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, openFindTrip, publishButton, TEXT } from './apps';
+import { openEndMap } from './bookings';
 import { noSeatYet } from './bookings-mock';
 import { FOUND, mapState, mockMap, type MapState } from './map-mock';
 import { chooseRoute, openOwnTrip, searchRoute } from './market';
@@ -56,8 +57,7 @@ async function findPlace(page: Page, query: string, name: string, under: string)
 
 // The home in Samarqand: the map of the district of the trip, found by a search in Cyrillic.
 async function chooseHome(page: Page, state: MapState) {
-  await page.getByText(t('way.book.dropoff')).click();
-  await expect(page.getByText(t('way.point.to'))).toBeVisible();
+  await openEndMap(page, 'dropoff');
   await drawn(page);
   await findPlace(page, 'Регистон', 'Registon maydoni', 'Registon maydoni yaqinida');
   expect(state.zones[state.searched.indexOf('Регистон')]).toBe('1718401');
