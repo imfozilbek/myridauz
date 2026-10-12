@@ -9,16 +9,19 @@ import { startFind, useDockEnds } from '../dock-ends';
 import { DOCK_FROM, DOCK_TO } from '../dock-sections';
 import { RouteDock } from '../route-dock';
 import { useHomeTap } from '../use-home-tap';
+import { useEndTools } from './end-tools';
 
 type Props = { readonly go: HomeGo; readonly directory: PlaceDirectory | null };
 
 // The block of a free passenger (G76, mockup g76/2 states 1 and 2): «Qayerdan / Qayerga», then
 // «Soʻrov qoldirish» and «Safar topish». One end is enough (owner decision 10.10.2026, docs/165):
-// the search shows the directions from it, the request asks «Qayerga» first.
+// the search shows the directions from it, the request asks «Qayerga» first. The «x» of an end and
+// «Joylashuvim» of an empty «Qayerdan» as for a driver (G79 В4).
 export function PassengerIdle({ go, directory }: Props) {
   const { t } = useI18n();
   const tap = useHomeTap();
   const ends = useDockEnds(directory);
+  const tools = useEndTools(ends, go);
   const { from, to } = ends;
   const names = usePlaceNames(directory);
   const find = () => go('find_trip', startFind(ends));
@@ -31,12 +34,14 @@ export function PassengerIdle({ go, directory }: Props) {
           placeholder: t('way.fromEmpty'),
           ...(ends.detected ? { hint: t('home.dock.here') } : {}),
           onTap: tap('dock_from', () => go(DOCK_FROM)),
+          ...tools.from,
         }}
         to={{
           value: to ? names.end(to) : null,
           placeholder: t('way.toEmpty'),
           ...(from && to ? { hint: <TripCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),
+          ...tools.to,
         }}
         onSwap={tap('dock_swap', ends.swap)}
       />

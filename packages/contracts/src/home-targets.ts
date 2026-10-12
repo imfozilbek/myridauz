@@ -10,7 +10,7 @@ export const HOME_TARGETS = [
   'dock_from',
   'dock_to',
   'dock_swap',
-  // G79 В4: the «x» that empties an end of a driver, «Joylashuvim» of an empty «Qayerdan».
+  // G79 В4: the «x» that empties an end, «Joylashuvim» of an empty «Qayerdan».
   'dock_from_clear',
   'dock_to_clear',
   'dock_from_locate',

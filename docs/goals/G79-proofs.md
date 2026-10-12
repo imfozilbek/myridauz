@@ -1,6 +1,6 @@
 # G79: доказательства по пунктам
 
-> **Кратко:** у каждого пункта цели G79 (`G79-fewer-steps.md`) путь к коду, тест, который падает на старом коде (урок №224), и счёт нажатий до и после (`../170`). Вид экранов не меняется, кроме «x» у концов маршрута водителя и знака локации у пустого «Qayerdan» (решения владельца 12.10.2026, `../167` спор 15).
+> **Кратко:** у каждого пункта цели G79 (`G79-fewer-steps.md`) путь к коду, тест, который падает на старом коде (урок №224), и счёт нажатий до и после (`../170`). Вид экранов не меняется, кроме «x» у концов маршрута и знака локации у пустого «Qayerdan» в блоке обеих ролей (решения владельца 12.10.2026, `../167` спор 15).
 
 | Пункт | Код | Тест (падает на старом коде) | Нажатий |
 |---|---|---|---|
@@ -16,7 +16,7 @@
 | П18 жёлтое «Rasm qoʻshing» | `home/home-side.tsx` (`openProfile('photo')`), `account/profile/avatar-picker.tsx` (`pick`) | `home/home-tiles.test.tsx` «…opens the choice of a photo in «Profil»» | 2 → 1 |
 | П20, П21 концы блока | `home/dock-ends.ts` (`startFind`), `home/find-trip-button.tsx`, `find/find-start.tsx` и `places/route-screen.tsx` (`to`) | `home/block-ends-search.test.tsx` (4 теста) | 3 → 2 |
 | «Javob berish» звонка из бота | `contracts/launch-links.ts` (`ANSWER_LINK`), `bookings/infrastructure/chat-ring-button.ts`, `chat/infrastructure/bot-signals.ts`, `ui/chat/chat-link.tsx` | `ui/chat/chat-link.test.tsx` «?answer=…», `backend/chat-ring-api.test.ts` (`answer=` у обеих ролей) | 2 → 1 |
-| В4 «Qayerga» и ответы последней поездки | `home/dock/driver-launch.ts` (`useDriverLaunch`), `home/dock-ends.ts` (маршрут последней поездки, путь назад), `trip-end/return-plan.ts` (`tomorrowTrip`, один код с «Ertaga shu safar») | `home/driver-launch.test.tsx` (первые 4 теста: «x» очищает «Qayerga» и «Qayerdan»), `market/new-trip-one-end.test.tsx` (только «Qayerga»: сначала «Qayerdan»), `home/dock-locate.test.tsx` («Joylashuvim» у пустого «Qayerdan») | ~9 → 2 |
+| В4 «Qayerga» и ответы последней поездки | `home/dock/driver-launch.ts` (`useDriverLaunch`), `home/dock-ends.ts` (маршрут последней поездки, путь назад), `trip-end/return-plan.ts` (`tomorrowTrip`, один код с «Ertaga shu safar») | `home/driver-launch.test.tsx` (первые 4 теста: «x» очищает «Qayerga» и «Qayerdan»), `market/new-trip-one-end.test.tsx` (только «Qayerga»: сначала «Qayerdan»), `home/dock-locate.test.tsx` («Joylashuvim» и «x» обеих ролей) | ~9 → 2 |
 | В6а «Kam» и «Siz haydovchisiz!» | `home/dock/driver-app-cards.tsx` (`launch`), `home/dock/driver-state-card.tsx` | `home/driver-launch.test.tsx` (тесты 3 и 4) | 6 → 1 … 2 |
 | В7 доска: пустой день | `requests/requests-flow.tsx` (`BoardTrip`: маршрут доски, область спрашивается) | `requests/board-route-trip.test.tsx` (оба теста) | 6 → 1 |
 | В8 экран маршрута | `places/route-screen.tsx` (`first`: первый пустой конец сразу) | `places/route-here.test.tsx` «opens «Qayerga» at once…» | +1 → 0 |

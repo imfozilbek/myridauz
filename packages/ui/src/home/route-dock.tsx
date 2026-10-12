@@ -14,7 +14,7 @@ type DockEnd = {
   // Under the place: how it was found, or how many trips go there.
   readonly hint?: ReactNode;
   readonly onTap: () => void;
-  // The «x» that empties a filled end (G79 В4, owner 12.10.2026): both ends of a driver.
+  // The «x» that empties a filled end (G79 В4, owner 12.10.2026): both ends of both roles.
   readonly onClear?: (() => void) | undefined;
   // «Joylashuvim» of an empty end: where the person stands (G79 В4, owner 12.10.2026).
   readonly onLocate?: (() => void) | undefined;

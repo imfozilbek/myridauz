@@ -10,6 +10,7 @@ import { MainButton, SecondaryButton } from '../../telegram/bottom-button';
 import { DOCK_FROM, DOCK_TO } from '../dock-sections';
 import { RouteDock } from '../route-dock';
 import { useDriverLaunch } from './driver-launch';
+import { useEndTools } from './end-tools';
 import { useHomeTap } from '../use-home-tap';
 
 type Props = { readonly go: HomeGo; readonly directory: PlaceDirectory | null };
@@ -25,6 +26,7 @@ export function DriverIdle({ go, directory }: Props) {
   const pending = usePending();
   const names = usePlaceNames(directory);
   const { ends, publish, requests } = useDriverLaunch(go, directory);
+  const tools = useEndTools(ends, go);
   const { from, to } = ends;
   return (
     <>
@@ -34,20 +36,14 @@ export function DriverIdle({ go, directory }: Props) {
           placeholder: t('way.fromEmpty'),
           ...(ends.detected ? { hint: t('home.dock.here') } : {}),
           onTap: tap('dock_from', () => go(DOCK_FROM)),
-          onClear: tap('dock_from_clear', ends.clearFrom),
-          // Unknown where the person stands: the list of «Qayerdan» instead.
-          onLocate: tap('dock_from_locate', () => {
-            void ends.locate().then((found) => {
-              if (!found) go(DOCK_FROM);
-            });
-          }),
+          ...tools.from,
         }}
         to={{
           value: to ? names.end(to) : null,
           placeholder: t('home.dock.toDriver'),
           ...(from && to && !pending ? { hint: <RequestCount from={from} to={to} /> } : {}),
           onTap: tap('dock_to', () => go(DOCK_TO)),
-          onClear: tap('dock_to_clear', ends.clearTo),
+          ...tools.to,
         }}
         onSwap={tap('dock_swap', ends.swap)}
       />
