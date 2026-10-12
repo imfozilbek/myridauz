@@ -49,7 +49,8 @@
   color: var(--reg-ink);
 }
 
-.manage-danger {
+/* Red wins over the dark title: «Qayta urinish», «Pitak yoʻq» (G78 sheet 4). */
+.manage-row .manage-danger {
   color: var(--reg-danger);
 }
 

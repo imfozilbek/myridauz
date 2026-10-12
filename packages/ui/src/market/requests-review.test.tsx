@@ -4,7 +4,6 @@ import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { request } from '../bookings/booking-test-kit';
 import { testClients } from '../test-shell';
-import { statusIcon } from './fact-chips';
 import { quickRoute, renderMarket, takePoint, tap } from './market-test-kit';
 import { MyRequestsScreen } from './my-requests-screen';
 import { openRequest } from './request-test-kit';
@@ -27,7 +26,6 @@ describe('The requests of a passenger (G37, docs/101)', { timeout: 20_000 }, () 
     // The card of mockup g75/2 A: the day, the way, how many people (G75).
     expect(await screen.findByText(/· Soʻrov$/u)).toBeTruthy();
     expect(screen.queryByText('Dilnoza')).toBeNull();
-    expect(statusIcon('open')).toBe('waiting');
   });
 
   it('offers the request already left on that day instead of a second one (R5)', async () => {

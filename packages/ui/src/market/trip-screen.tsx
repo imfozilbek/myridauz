@@ -1,93 +1,67 @@
-import type { Trip } from '@platform/contracts';
-import { Text, Title } from '@telegram-apps/telegram-ui';
+import { arrivalAt, type PersonId, type Trip } from '@platform/contracts';
 import { useEffect, type ReactNode } from 'react';
-import { CellValue } from '../account/cell-value';
-import { Badge, Cell, List, Section } from '../components';
 import { useAnalytics, useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
-import { Icon, type IconName } from '../icons';
-import { IconTile } from '../icon-tile';
-import { Screen } from '../screen/screen';
+import { PersonReviews } from '../feedback/driver-reviews';
+import { ManageGroup, ManagePage, ManageRow } from '../manage/manage-page';
 import { otherPrice } from './other-price';
-import { RouteView } from './route-view';
+import { usePlaceLabel } from './places-gate';
 import { TripDriver } from './trip-driver';
-import { useWayFacts } from './way-line';
-import './market.css';
+import { useWayText } from './way-line';
 
 type TripScreenProps = {
   readonly trip: Trip;
   readonly onBack: () => void;
+  // The card of the driver or of a passenger (G78 sheet 4).
+  readonly onPerson: (id: PersonId) => void;
   // The bookings of the trip for the team (G08).
   readonly children?: ReactNode;
 };
 
 // Everything about one trip for the team, with its bookings: no booking, no cancel (owner decision
-// 29.09.2026, docs/35). A passenger sees «Safar» (find/safar-screen.tsx, G59).
-export function TripScreen({ trip, onBack, children }: TripScreenProps) {
+// 29.09.2026, docs/35). Short rows in the look of «Boshqaruv», then the driver, the passengers and
+// the reviews of the driver (G78 sheet 4). A passenger sees «Safar» (find/safar-screen.tsx, G59).
+export function TripScreen({ trip, onBack, onPerson, children }: TripScreenProps) {
   useScreenView('market.trip');
   const { track } = useAnalytics();
-  const { t, formatMoney, formatDate, formatWeekday } = useI18n();
-  const wayFacts = useWayFacts();
+  const { t, formatMoney, formatDate, formatWeekday, formatTime, formatNumber } = useI18n();
+  const way = useWayText();
+  const place = usePlaceLabel();
   const day = new Date(trip.departAt);
   useEffect(() => {
     track({ name: 'trip_open', screen: 'market.trip' });
   }, [track]);
-  const line = (icon: IconName, label: string, value: string) => (
-    <Cell before={<IconTile name={icon} />} after={<CellValue>{value}</CellValue>}>
-      {label}
-    </Cell>
-  );
+  const times = t('common.route', {
+    from: formatTime(day),
+    to: t('market.trip.arrival', { time: formatTime(new Date(arrivalAt(trip.departAt, trip.km))) }),
+  });
   const recommended = otherPrice(trip);
-  // A fact of the way with its icon, like on the cards (docs/88 L15).
-  const fact = (icon: IconName, text: string) => (
-    <Cell
-      key={text}
-      before={
-        <span className="fact-icon">
-          <Icon name={icon} />
-        </span>
-      }
-    >
-      {text}
-    </Cell>
-  );
   return (
-    <div className="market">
-      <Screen onBack={onBack} />
-      <Title weight="1" className="market-title">
-        {t('market.date.other', { date: formatDate(day), weekday: formatWeekday(day) })}
-      </Title>
-      <Text className="market-subtitle">{t('market.trip.km', { km: String(trip.km) })}</Text>
-      <List>
-        <Section>
-          <div className="route-summary">
-            <RouteView from={trip.from} to={trip.to} departAt={trip.departAt} km={trip.km} />
-          </div>
-          {line('seats', t('market.review.seats'), String(trip.seatsLeft))}
-          {line('price', t('market.review.price'), formatMoney(trip.price))}
-          {recommended === null
-            ? null
-            : line('statistics', t('market.trip.recommended'), formatMoney(recommended))}
-          {trip.woman ? fact('profile', t('market.search.woman')) : null}
-          {wayFacts(trip).map(([icon, text]) => fact(icon, text))}
-          {trip.comment ? <Cell description={trip.comment}>{t('market.review.comment')}</Cell> : null}
-          <Cell
-            after={
-              <Badge
-                type="number"
-                mode={trip.status === 'active' ? 'primary' : 'gray'}
-                className="trip-status"
-              >
-                {t(`market.status.${trip.status}`)}
-              </Badge>
-            }
-          >
-            {t('market.review.status')}
-          </Cell>
-        </Section>
-        <TripDriver trip={trip} />
-        {children}
-      </List>
-    </div>
+    <ManagePage
+      title={t('market.date.other', { date: formatDate(day), weekday: formatWeekday(day) })}
+      onBack={onBack}
+    >
+      <ManageGroup>
+        <ManageRow
+          icon="trip"
+          title={t('common.route', { from: place(trip.from).name, to: place(trip.to).name })}
+          hint={t('home.meta', { when: times, more: t('market.trip.km', { km: String(trip.km) }) })}
+        />
+        <ManageRow icon="fact" title={t('market.review.seats')} value={formatNumber(trip.seatsLeft)} />
+        <ManageRow icon="fact" title={t('market.review.price')} value={formatMoney(trip.price)} />
+        {recommended === null ? null : (
+          <ManageRow icon="fact" title={t('market.trip.recommended')} value={formatMoney(recommended)} />
+        )}
+        {trip.woman ? <ManageRow icon="fact" title={t('market.search.woman')} /> : null}
+        <ManageRow icon="fact" title={way(trip)} />
+        {trip.comment ? (
+          <ManageRow icon="fact" title={t('market.review.comment')} hint={trip.comment} />
+        ) : null}
+        <ManageRow icon="state" title={t('market.review.status')} value={t(`market.status.${trip.status}`)} />
+      </ManageGroup>
+      <TripDriver trip={trip} onOpen={() => onPerson(trip.driver.id)} />
+      {children}
+      <PersonReviews key={trip.driver.id} userId={trip.driver.id} />
+    </ManagePage>
   );
 }

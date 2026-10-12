@@ -3,7 +3,7 @@ import type { Trip } from '@platform/contracts';
 import { afterEach, describe, expect, it } from 'vitest';
 import { renderMarket, trip } from '../market/market-test-kit';
 import { PlacesGate } from '../market/places-gate';
-import { TripCard } from '../market/trip-card';
+import { TripScreen } from '../market/trip-screen';
 import { DirectionEdit } from '../pricing/direction-edit';
 import { testClients } from '../test-shell';
 
@@ -14,11 +14,12 @@ describe('prices next to each other (docs/40, question 44)', () => {
     const cheap: Trip = { ...trip, price: 80000 };
     renderMarket(
       <PlacesGate>
-        <TripCard trip={cheap} onOpen={() => undefined} />
+        <TripScreen trip={cheap} onBack={() => undefined} onPerson={() => undefined} />
       </PlacesGate>,
       testClients({}),
     );
-    expect(await screen.findByText('Tavsiya: 95 000 soʻm')).toBeTruthy();
+    expect(await screen.findByText('Tavsiya etilgan narx')).toBeTruthy();
+    expect(screen.getByText('95 000 soʻm')).toBeTruthy();
   });
 
   it('gives the team the median only as a hint while editing a direction (docs/09)', async () => {

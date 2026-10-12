@@ -1,6 +1,5 @@
 import type { Trip } from '@platform/contracts';
 import { useI18n } from '../context/i18n-context';
-import type { Fact } from './fact-chips';
 
 // How the driver picks people up (docs/70): the passenger sees it on the card and chooses the trip;
 // the driver sees the same words on a past trip of «Oʻtgan» (G78 sheet 3).
@@ -12,9 +11,4 @@ export function useWayText() {
       ? t('way.card.door')
       : t(trip.pickupMode === 'pitak' ? 'way.card.pitak' : 'way.card.both', { pitak });
   };
-}
-
-export function useWayFacts() {
-  const way = useWayText();
-  return (trip: Trip): Fact[] => [['origin', way(trip)]];
 }

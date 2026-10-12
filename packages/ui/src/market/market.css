@@ -25,113 +25,13 @@
   text-transform: uppercase;
 }
 
-.trip-card-prices {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.trip-price {
-  font-weight: 600;
-  color: var(--tgui--text_color);
-}
-/* The price of one seat and what it is for, right under it (G37, docs/101 R7). */
-.trip-price-box {
-  display: grid;
-  justify-items: end;
-}
-.trip-price-unit {
-  color: var(--tgui--hint_color);
-}
-
 /* A sum is read as one piece: "90 000 soʻm" never breaks into two lines. */
 .market .cell-value {
   white-space: nowrap;
 }
 
-/* A trip in a list is a card of its own: tap anywhere to open it. */
-.trip-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
-  cursor: pointer;
-}
-
-.trip-card-head,
-.trip-card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.trip-card-foot {
-  padding-top: 10px;
-  border-top: 1px solid var(--tgui--divider);
-}
-
-.trip-card-driver {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-}
-
-/* The name and the rating on one line: one line less on every card (G40, docs/106 C7). */
-.trip-card-who {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 .trip-card-hint {
   color: var(--tgui--hint_color);
-}
-
-.trip-card-comment {
-  overflow: hidden;
-  color: var(--tgui--hint_color);
-  font-style: italic;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-/* Seats, "ayol bor", the meeting point: quiet marks, an icon always with its words (docs/19). */
-.trip-card-facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.trip-fact {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  background: var(--tgui--secondary_bg_color);
-  color: var(--tgui--text_color);
-}
-
-.trip-mark {
-  background: color-mix(in srgb, var(--tgui--link_color) 12%, transparent);
-  color: var(--tgui--link_color);
-}
-
-.trip-card-car {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.trip-card-car .car-swatch {
-  display: inline-block;
-  flex: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px var(--tgui--outline);
 }
 
 .route-summary {
