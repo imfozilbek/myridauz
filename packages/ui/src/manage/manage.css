@@ -25,6 +25,11 @@
   color: var(--reg-muted);
 }
 
+/* A gray note under a card (G78 sheet 4). */
+.manage-note {
+  margin: -2px 0 0 14px;
+}
+
 .manage-row {
   gap: 12.67px;
   min-height: 51.33px;

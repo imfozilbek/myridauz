@@ -1,7 +1,6 @@
 import type { ErrorRow } from '@platform/contracts';
-import { CellValue } from '../account/cell-value';
-import { Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
+import { ManageGroup, ManageRow } from '../manage/manage-page';
 import { codeKey } from '../market/error-text';
 
 const APPS = ['passenger', 'driver', 'admin'] as const;
@@ -17,13 +16,13 @@ export function ErrorsSections({ errors }: { readonly errors: readonly ErrorRow[
   const row = (item: ErrorRow, title: string) => {
     const app = appName(item.app);
     return (
-      <Cell
+      <ManageRow
         key={`${item.kind}:${item.app}:${item.screen}:${item.code}:${item.what}`}
-        subtitle={`${app ? t(`stats.app.${app}`) : item.app} · ${item.screen}`}
-        after={<CellValue>{formatNumber(item.count)}</CellValue>}
-      >
-        {title}
-      </Cell>
+        icon="error"
+        title={title}
+        hint={`${app ? t(`stats.app.${app}`) : item.app} · ${item.screen}`}
+        value={formatNumber(item.count)}
+      />
     );
   };
   const refusalTitle = (item: ErrorRow) => {
@@ -32,14 +31,14 @@ export function ErrorsSections({ errors }: { readonly errors: readonly ErrorRow[
   };
   return (
     <>
-      <Section header={t('stats.crashes')}>
-        {crashes.length === 0 ? <Cell>{t('stats.errorsEmpty')}</Cell> : null}
+      <ManageGroup title={t('stats.crashes')}>
+        {crashes.length === 0 ? <ManageRow icon="error" title={t('stats.errorsEmpty')} /> : null}
         {crashes.map((item) => row(item, item.what || item.code))}
-      </Section>
+      </ManageGroup>
       {refusals.length > 0 ? (
-        <Section header={t('stats.refusals')}>
+        <ManageGroup title={t('stats.refusals')}>
           {refusals.map((item) => row(item, refusalTitle(item)))}
-        </Section>
+        </ManageGroup>
       ) : null}
     </>
   );

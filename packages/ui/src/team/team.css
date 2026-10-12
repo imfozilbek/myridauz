@@ -103,33 +103,3 @@ button.team-card:active,
   line-height: 15px;
   color: var(--reg-success-deep);
 }
-
-/* The own numbers of a moderator: four squares in a row (mockup g67/1). */
-.work-numbers {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-
-.work-number {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 85.33px;
-  box-sizing: border-box;
-  padding: 9px 4px 9.67px;
-  border-radius: 16px;
-  background: var(--reg-card);
-  text-align: center;
-}
-
-.work-number b {
-  font-size: 20px;
-  line-height: 24px;
-}
-
-.work-number span {
-  font-size: 11.5px;
-  line-height: 14px;
-  color: var(--reg-muted);
-}

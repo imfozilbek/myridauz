@@ -1,0 +1,56 @@
+/* Numbers on white tiles (mockup g67/1): four squares of the own work of a moderator, three tiles of
+   «Statistika» (G78 sheet 4). */
+.number-tiles {
+  display: grid;
+  gap: 8px;
+}
+
+.number-tile {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: var(--reg-card);
+  text-align: center;
+}
+
+.number-tile b {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.number-tile span {
+  color: var(--reg-muted);
+}
+
+.number-tiles-work {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.number-tiles-work .number-tile {
+  align-items: center;
+  min-height: 85.33px;
+  padding: 9px 4px 9.67px;
+  border-radius: 16px;
+}
+
+.number-tiles-work .number-tile span {
+  font-size: 11.5px;
+  line-height: 14px;
+}
+
+.number-tiles-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.number-tiles-stats .number-tile {
+  justify-content: center;
+  gap: 2px;
+  min-height: 82px;
+  padding: 10px 6px;
+  border-radius: 14px;
+}
+
+.number-tiles-stats .number-tile span {
+  font-size: 11px;
+  line-height: 13px;
+}
