@@ -133,3 +133,14 @@
   font-weight: 700;
   color: var(--reg-ink);
 }
+
+/* The sign of a decision of «Jurnal» (G78 sheet 5). */
+.navbat-icon.manage-tone-success {
+  background: var(--reg-success-soft);
+  color: var(--reg-success);
+}
+
+.navbat-icon.manage-tone-danger {
+  background: var(--reg-danger-tile);
+  color: var(--reg-danger);
+}

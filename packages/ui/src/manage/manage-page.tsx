@@ -50,8 +50,12 @@ export function ManageNote({ children }: { readonly children: ReactNode }) {
   return <p className="manage-hint manage-note">{children}</p>;
 }
 
+// The tile of the icon in a color: a decision that let a person on or stopped one (G78 sheet 5).
+export type RowTone = 'success' | 'danger';
+
 type RowProps = {
   readonly icon: IconName;
+  readonly tone?: RowTone;
   readonly title: string;
   // A live line like «Bugun 17 ta»; its place is kept while it loads, the rows do not move.
   readonly hint?: string | null;
@@ -65,10 +69,19 @@ type RowProps = {
 
 // One row: the gray icon tile, the title, the line under it, the value, and an arrow when it opens
 // something.
-export function ManageRow({ icon, title, hint, danger = false, alarm = false, value, onClick }: RowProps) {
+export function ManageRow({
+  icon,
+  tone,
+  title,
+  hint,
+  danger = false,
+  alarm = false,
+  value,
+  onClick,
+}: RowProps) {
   const words = (
     <>
-      <span className="navbat-icon">
+      <span className={tone ? `navbat-icon manage-tone-${tone}` : 'navbat-icon'}>
         <Icon name={icon} size={ICON} />
       </span>
       <span className="navbat-words">

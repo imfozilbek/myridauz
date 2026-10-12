@@ -60,11 +60,17 @@ function setup(list: Channel[], save = vi.fn(async () => kitob)) {
 }
 
 describe('Kanallar: the channels of the team (docs/63)', () => {
-  it('shows how many are in each channel, who came by it, and in red when the bot may not post', async () => {
+  // Each channel one row (G78 sheet 5): a main channel with the name of the brand opens in Telegram;
+  // a channel in trouble says it in red.
+  it('lists each channel in a row and says in red when the bot may not post', async () => {
     setup([fixed, kitob]);
     await tap('Kanallar');
-    expect(await screen.findByText(/1\s200 obunachi · oyda 12 kishi keldi/u)).toBeTruthy();
-    expect(screen.getByText('Bot yoza olmaydi').className).toContain('danger-text');
+    expect(await screen.findByText('@ch_kitob · Bot yoza olmaydi')).toBeTruthy();
+    expect(screen.getByText('@ch_kitob · Bot yoza olmaydi').className).toContain('manage-danger');
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    await tap(/ · Qashqadaryo viloyati$/u);
+    expect(open.mock.calls[0]?.[0]).toBe('https://t.me/ch_qashqadaryo');
+    open.mockRestore();
   });
 
   it('counts neighbours in a straight line and adds only the close districts', () => {
@@ -124,7 +130,7 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
     await tap('Saqlash');
     expect(channels.save).toHaveBeenCalledWith('ch_kitob', { title: 'Kanal | Kitob', places: ['1710401'] });
     // Back on the list after the save: the channel opens again.
-    await tap('@ch_kitob · 1 ta joy');
+    await tap('@ch_kitob · Bot yoza olmaydi');
     await tap('Kanalni oʻchirish');
     expect(channels.remove).toHaveBeenCalledWith('ch_kitob');
   });

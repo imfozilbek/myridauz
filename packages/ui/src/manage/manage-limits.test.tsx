@@ -1,8 +1,8 @@
-import type { Journal, JournalKind, Limits } from '@platform/contracts';
+import { DAY_MS, type Journal, type JournalKind, type Limits } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { tap } from '../market/market-test-kit';
-import { renderManagement } from './manage-test-kit';
+import { PERSON, renderManagement } from './manage-test-kit';
 
 afterEach(cleanup);
 
@@ -33,11 +33,12 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     expect(await screen.findByText('4 ta')).toBeTruthy();
     expect(screen.getByText(/9\s000 soʻm/u)).toBeTruthy();
     expect(screen.getByText('07:00')).toBeTruthy();
+    // The value stands on the right of its row (G78 sheet 5); a tap opens its sheet over the list.
     await tap('Bir soʻrovdagi joylar');
     expect(screen.getByText('1 ta … 7 ta')).toBeTruthy();
+    expect(screen.getByText('Cheklovlar')).toBeTruthy();
     // A count goes by «−» and «+», not typed (G79 К9): one tap instead of a keyboard.
     expect(screen.queryByLabelText('Bir soʻrovdagi joylar')).toBeNull();
-    expect(screen.getByText('Saqlash').closest('button')?.disabled).toBe(true);
     fireEvent.click(screen.getByRole('button', { name: 'Kamaytirish' }));
     expect(screen.getByText('3 ta')).toBeTruthy();
     await tap('Saqlash');
@@ -48,13 +49,22 @@ describe('«Cheklovlar» and «Jurnal»', () => {
 
   // A long range is typed, never hundreds of taps (G79 К9, review).
   it('types a limit of a long range', async () => {
+    const change = vi.fn();
     renderManagement({
-      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change: vi.fn() },
+      limits: { current: async () => ({ values: {} }), state: async () => limitsOf(4), change },
     });
     await tap('Cheklovlar');
-    await tap('Jamoa ishining boshlanishi');
-    expect(screen.getByLabelText('Jamoa ishining boshlanishi').tagName).toBe('INPUT');
+    await tap('Bir joy uchun eng kam komissiya');
+    expect(screen.getByLabelText('Bir joy uchun eng kam komissiya').tagName).toBe('INPUT');
     expect(screen.queryByRole('button', { name: 'Kamaytirish' })).toBeNull();
+    const field = screen.getByLabelText('Bir joy uchun eng kam komissiya');
+    fireEvent.change(field, { target: { value: '' } });
+    expect(screen.getByText('Saqlash').closest('button')?.disabled).toBe(true);
+    // «Saqlash» with the same value only closes the sheet: nothing to send.
+    fireEvent.change(field, { target: { value: '9000' } });
+    await tap('Saqlash');
+    await waitFor(() => expect(screen.queryByLabelText('Bir joy uchun eng kam komissiya')).toBeNull());
+    expect(change).not.toHaveBeenCalled();
   });
 
   it('says every decision in words and shows the older ones on «Yana»', async () => {
@@ -78,5 +88,23 @@ describe('«Cheklovlar» and «Jurnal»', () => {
     expect(await screen.findByText('Jamoaga qoʻshildi')).toBeTruthy();
     await tap('Yana');
     await waitFor(() => expect(screen.queryByText('Yana')).toBeNull());
+  });
+
+  // By days with the time, a sign for each decision; a decision about a person opens the person (G78 sheet 5).
+  it('groups the decisions by days and opens the person of one', async () => {
+    const now = Date.now();
+    const journal = vi.fn(async () => ({
+      entries: [
+        { ...entry('face', 'approve', PERSON), at: now },
+        { ...entry('complaint', 'none'), at: now - DAY_MS },
+      ],
+    }));
+    renderManagement({ team: { journal } });
+    await tap('Jurnal');
+    expect(await screen.findByText('Bugun')).toBeTruthy();
+    expect(screen.getByText('Kecha')).toBeTruthy();
+    expect(document.querySelector('.manage-tone-success')).not.toBeNull();
+    await tap('Rasm mos');
+    expect(await screen.findByText('Jasur')).toBeTruthy();
   });
 });

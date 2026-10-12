@@ -1,0 +1,41 @@
+/* The value of one limit in its sheet (G78 sheet 5): a gray box, dark «−» and «+», the value big. */
+.limit-box {
+  display: flex;
+  justify-content: center;
+  margin: 0 16px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--reg-bg);
+}
+
+.limit-box .seats-stepper {
+  gap: 28px;
+}
+
+.limit-box .seats-stepper button {
+  width: 44px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.limit-box .seats-count {
+  min-width: 70px;
+  font-size: 24px;
+}
+
+.limit-box input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--reg-off);
+  border-radius: 10px;
+  background: var(--reg-card);
+  color: var(--reg-ink);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+}

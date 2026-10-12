@@ -67,7 +67,6 @@
   "limitHistory": "Oʻzgarishlar",
   "limitChange": "{before} → {after} · {by} · {date}",
   "limitRange": "{min} … {max}",
-  "limitNew": "Yangi qiymat",
   "limitSave": "Saqlash",
   "unit.count": "{value} ta",
   "unit.minutes": "{value} daq",
@@ -97,8 +96,6 @@
   "entry.teamAdd": "Jamoaga qoʻshildi",
   "entry.teamRemove": "Jamoadan olindi",
   "entry.limit": "{name}: {value}",
-  "channel.subscribers": "{count} obunachi",
-  "channel.arrivals": "oyda {count} kishi keldi",
   "channel.noPost": "Bot yoza olmaydi",
   "channel.failed": "{count} post bormadi"
 }

@@ -1,5 +1,5 @@
 import type { Channel } from '@platform/contracts';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderInShell, testClients } from '../test-shell';
 import { ReadChannelsScreen } from './channels-screen';
@@ -32,9 +32,13 @@ describe('Kanallar of a moderator', () => {
     const channels = { list: async () => [kitob] };
     const clients = testClients({ channels, team: { channelHealth } });
     renderInShell(<ReadChannelsScreen onBack={() => undefined} />, false, true, locations, clients);
-    const row = await screen.findByText('Kanal | Kitob');
-    expect(row.closest('button')).toBeNull();
+    // A tap opens the channel in Telegram, never its editing (G78 sheet 5).
+    const open = vi.spyOn(window, 'open').mockReturnValue(null);
+    fireEvent.click(await screen.findByText('Kanal | Kitob'));
+    expect(open.mock.calls[0]?.[0]).toBe('https://t.me/ch_kitob');
+    open.mockRestore();
     expect(screen.queryByText('Kanal qoʻshish')).toBeNull();
+    expect(screen.queryByText('Kanalni oʻchirish')).toBeNull();
     expect(channelHealth).not.toHaveBeenCalled();
   });
 });

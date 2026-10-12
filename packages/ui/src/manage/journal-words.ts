@@ -1,6 +1,8 @@
-import { LIMIT_KEYS, type Journal, type LimitKey } from '@platform/contracts';
+import { LIMIT_KEYS, type Journal, type JournalKind, type LimitKey } from '@platform/contracts';
 import type { TranslationKey } from '@platform/i18n';
 import { useI18n } from '../context/i18n-context';
+import type { IconName } from '../icons';
+import type { RowTone } from './manage-page';
 
 type Entry = Journal['entries'][number];
 
@@ -39,4 +41,26 @@ export function useEntryWords() {
           : action;
     return refund ? t('home.meta', { when: said, more: t('manage.entry.refundProposed') }) : said;
   };
+}
+
+// The sign of a decision (G78 sheet 5): the icon of its kind, green when it lets a person on, red when
+// it stops one, gray for a change.
+const SIGNS: Readonly<Record<JournalKind, IconName>> = {
+  application: 'applications',
+  complaint: 'complaints',
+  face: 'photo',
+  block: 'blocked',
+  unblock: 'blocked',
+  refund: 'price',
+  team: 'team',
+  limits: 'locked',
+};
+const GOOD: ReadonlySet<string> = new Set(['approve', 'none', 'unblock', 'confirm', 'add']);
+const BAD: ReadonlySet<string> = new Set(['reject', 'block', 'remove']);
+
+export function entrySign({ kind, action }: Entry): { readonly icon: IconName; readonly tone?: RowTone } {
+  const [what = ''] = action.split(':');
+  const icon = SIGNS[kind];
+  if (GOOD.has(what)) return { icon, tone: 'success' };
+  return BAD.has(what) ? { icon, tone: 'danger' } : { icon };
 }
