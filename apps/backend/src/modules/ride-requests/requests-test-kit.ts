@@ -36,6 +36,7 @@ export function setup() {
   let now = NOW;
   let id = 0;
   let routes: Awaited<ReturnType<Board['directions']>> = [];
+  let subscribed: Awaited<ReturnType<Board['subscribed']>> = [];
   let nearest: BoardTrip = null;
   let seatHeld = false;
   // A live trip of the driver, shown on the board or not (docs/172).
@@ -79,6 +80,7 @@ export function setup() {
     hidden: async () => new Set(),
     board: {
       directions: async () => routes,
+      subscribed: async () => subscribed,
       trip: async () => nearest,
       busy: async () => busy || nearest !== null,
     },
@@ -105,6 +107,7 @@ export function setup() {
     request,
     setNow: (next: number) => void (now = next),
     directions: (next: typeof routes) => void (routes = next),
+    subscribe: (next: typeof subscribed) => void (subscribed = next),
     boardTrip: (next: BoardTrip) => void (nearest = next),
     holdSeat: () => void (seatHeld = true),
     liveTrip: () => void (busy = true),

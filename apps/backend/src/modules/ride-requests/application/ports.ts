@@ -52,6 +52,8 @@ export type RequestsDeps = {
   // and the nearest live trip with free seats with the stops of its passengers (docs/70).
   readonly board: {
     directions(driverId: number): Promise<readonly { readonly from: string; readonly to: string }[]>;
+    // The routes the driver is subscribed to already (docs/24): «Xabar bering» is not offered again.
+    subscribed(driverId: number): Promise<readonly { readonly from: string; readonly to: string }[]>;
     trip(driverId: number): Promise<{ readonly trip: Trip; readonly stops: Stops } | null>;
     // A live trip of the driver, one at a time (docs/172).
     busy(driverId: number): Promise<boolean>;

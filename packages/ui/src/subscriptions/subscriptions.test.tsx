@@ -2,6 +2,7 @@ import { ApiError, type SubscriptionsClient } from '@platform/api-client';
 import { tashkentDate, type Subscription } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { AccountContext, type Account } from '../account/account-context';
 import { renderMarket, tap, trip } from '../market/market-test-kit';
 import { TripLink } from '../market/trip-link';
 import { testClients } from '../test-shell';
@@ -31,7 +32,9 @@ describe('"Xabar bering" (docs/24)', () => {
   it('subscribes to the searched route for the day or any day', async () => {
     const subscribe = vi.fn<SubscriptionsClient['subscribe']>(async () => ANY);
     const { tracked } = renderMarket(
-      <NotifyMe from="1726269" to="1730401" date="2026-10-02" />,
+      <AccountContext.Provider value={{ app: 'passenger' } as unknown as Account}>
+        <NotifyMe from="1726269" to="1730401" date="2026-10-02" />
+      </AccountContext.Provider>,
       testClients({ subscriptions: { subscribe } }),
     );
     await tap('Xabar bering');

@@ -1,5 +1,6 @@
 import type { TranslationKey } from '@platform/i18n';
 import { useState } from 'react';
+import { useAccount } from '../account/account-context';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -29,6 +30,16 @@ type Props = {
 type Step = 'ask' | 'when' | 'busy' | 'done';
 type Day = 'day' | 'any';
 
+// A passenger waits for the trips of the search, a driver for the requests of the board (G78 sheet 3).
+const WORDS = {
+  passenger: { hint: 'find.notifyHint', dayHint: 'subscriptions.when.dayHint', screen: 'market.results' },
+  driver: {
+    hint: 'subscriptions.notifyHintDriver',
+    dayHint: 'subscriptions.when.dayHintDriver',
+    screen: 'requests.board',
+  },
+} as const;
+
 // «Xabar bering» (docs/24, G78 П13): the bot tells when a trip or a request on this route comes. A
 // row; its sheet asks the day and a tap on a day subscribes at once, nothing to type and no button.
 // Subscribed, the row turns green in its place.
@@ -36,6 +47,7 @@ export function NotifyMe({ from, to, date, way, open = false, small = false }: P
   const { t, formatDate } = useI18n();
   const { track } = useAnalytics();
   const { subscriptions } = useApiClients();
+  const words = WORDS[useAccount()?.app === 'driver' ? 'driver' : 'passenger'];
   const [step, setStep] = useState<Step>(open ? 'when' : 'ask');
   const [failure, setFailure] = useState<TranslationKey | null>(null);
   const subscribe = async (day: Day) => {
@@ -44,7 +56,7 @@ export function NotifyMe({ from, to, date, way, open = false, small = false }: P
     setFailure(null);
     try {
       await subscriptions.subscribe({ from, to, date: day === 'day' ? date : null, woman: false });
-      track({ name: 'route_subscribed', screen: 'market.results' });
+      track({ name: 'route_subscribed', screen: words.screen });
       haptic.success();
       setStep('done');
     } catch (error) {
@@ -70,7 +82,7 @@ export function NotifyMe({ from, to, date, way, open = false, small = false }: P
         icon="subscriptions"
         {...(small ? { iconSize: SMALL } : {})}
         title={t('subscriptions.notify')}
-        hint={t('find.notifyHint')}
+        hint={t(words.hint)}
         onClick={() => setStep('when')}
       />
       <FormSheet
@@ -86,7 +98,7 @@ export function NotifyMe({ from, to, date, way, open = false, small = false }: P
             {
               key: 'day',
               title: t('subscriptions.when.day', { day: formatDate(noonOf(date)) }),
-              hint: t('subscriptions.when.dayHint'),
+              hint: t(words.dayHint),
             },
             { key: 'any', title: t('subscriptions.when.any'), hint: t('subscriptions.when.anyHint') },
           ]}

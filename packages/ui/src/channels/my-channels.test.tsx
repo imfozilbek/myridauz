@@ -113,6 +113,7 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
       others,
       carSeats: 4,
       busy: false,
+      notify: null,
     };
     await openChannels({ market: { myTrips: async () => trips, requestBoard: async () => board } }, true);
     expect(screen.getByText('Safarlaringiz shu kanallarda chiqadi')).toBeTruthy();

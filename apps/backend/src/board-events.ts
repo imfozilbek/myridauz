@@ -11,6 +11,7 @@ wireRequestBoard({
     ...(await driverDirections(env, driverId)),
     ...(await requestRoutesOf(env, driverId)),
   ],
+  subscribed: requestRoutesOf,
   trip: boardTripOf,
   busy: driverBusy,
 });

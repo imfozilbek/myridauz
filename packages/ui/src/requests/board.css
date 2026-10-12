@@ -63,3 +63,9 @@
   font-size: 13px;
   line-height: 17px;
 }
+
+/* «Xabar bering» under the words of an empty day, as wide as they are (G78 sheet 3). */
+.board .empty-state .way-row {
+  width: 100%;
+  margin-top: 14px;
+}

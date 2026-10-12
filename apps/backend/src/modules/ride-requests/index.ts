@@ -37,10 +37,16 @@ export const wireHiddenRequesters = (hidden: Hidden) => void (hiddenOf = hidden)
 // and the bookings, set by the app (module-events.ts).
 type Board = {
   readonly directions: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['directions']>;
+  readonly subscribed: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['subscribed']>;
   readonly trip: (env: Bindings, driverId: number) => ReturnType<RequestsDeps['board']['trip']>;
   readonly busy: (env: Bindings, driverId: number) => Promise<boolean>;
 };
-let boardOf: Board = { directions: async () => [], trip: async () => null, busy: async () => false };
+let boardOf: Board = {
+  directions: async () => [],
+  subscribed: async () => [],
+  trip: async () => null,
+  busy: async () => false,
+};
 export const wireRequestBoard = (board: Board) => void (boardOf = board);
 // A seat the passenger holds (one at a time, docs/172): set by the app, the bookings know the seats.
 type SeatHeld = (env: Bindings, passengerId: number) => Promise<boolean>;
@@ -61,6 +67,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   hidden: (userIds) => hiddenOf(env, userIds),
   board: {
     directions: (driverId) => boardOf.directions(env, driverId),
+    subscribed: (driverId) => boardOf.subscribed(env, driverId),
     trip: (driverId) => boardOf.trip(env, driverId),
     busy: (driverId) => boardOf.busy(env, driverId),
   },

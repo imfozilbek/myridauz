@@ -12,6 +12,7 @@ import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
+import { NotifyMe } from '../subscriptions/notify-me';
 import { MainButton } from '../telegram/bottom-button';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
@@ -102,6 +103,9 @@ export function BoardScreen({ query, onDay, onRoute, onTalk, onTrip, onPublish, 
           icon="passengers"
           title={t('market.requests.empty')}
           {...(free ? { description: t('market.requests.emptyHint') } : {})}
+          {...(board.notify
+            ? { action: <NotifyMe from={board.notify.from} to={board.notify.to} date={board.date} small /> }
+            : {})}
         />
       ) : null}
       {empty && free ? (
