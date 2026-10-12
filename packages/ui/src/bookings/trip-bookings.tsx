@@ -1,6 +1,6 @@
 import { FAR_EXTRA_KM, type Booking } from '@platform/contracts';
 import { CellValue } from '../account/cell-value';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Cell, Section } from '../components';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -26,11 +26,12 @@ export function TripBookings({ bookings }: Props) {
       <Cell
         key={booking.id}
         before={
-          <ProfilePhoto
-            userId={booking.passenger.id}
+          <PersonBadge
+            id={booking.passenger.id}
             name={booking.passenger.firstName}
             hasAvatar={booking.passenger.hasAvatar}
             size={PHOTO_SIZE}
+            role="passenger"
           />
         }
         subtitle={extra ? `${status} · ${extra}` : status}

@@ -1,5 +1,5 @@
 import type { Trip } from '@platform/contracts';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Cell, Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { PersonReviews } from '../feedback/driver-reviews';
@@ -16,11 +16,12 @@ export function TripDriver({ trip }: { readonly trip: Trip }) {
       <Section header={t('market.trip.driver')}>
         <Cell
           before={
-            <ProfilePhoto
-              userId={driver.id}
+            <PersonBadge
+              id={driver.id}
               name={driver.firstName}
               hasAvatar={driver.hasAvatar}
               size={PHOTO_SIZE}
+              role="driver"
             />
           }
           subtitle={`${driver.car.make} ${driver.car.model}, ${t(`drivers.color.${driver.car.color}`)}`}

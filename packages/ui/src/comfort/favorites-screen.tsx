@@ -1,6 +1,6 @@
 import { Caption, Title } from '@telegram-apps/telegram-ui';
 import { useState } from 'react';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Cell, List, Section } from '../components';
 import { RowCard } from '../mine/row-card';
 import { useScreenView } from '../context/analytics-context';
@@ -70,11 +70,12 @@ function Favorites({ onBack }: { readonly onBack: () => void }) {
             key={driver.id}
             icon="favorite"
             before={
-              <ProfilePhoto
-                userId={driver.id}
+              <PersonBadge
+                id={driver.id}
                 name={driver.firstName}
                 hasAvatar={driver.hasAvatar}
                 size={PHOTO_SIZE}
+                role="driver"
               />
             }
             title={driver.firstName}

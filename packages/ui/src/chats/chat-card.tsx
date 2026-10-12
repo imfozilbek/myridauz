@@ -1,5 +1,6 @@
 import { DAY_MS, tashkentDate } from '@platform/contracts';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { useOtherRole } from '../find/other-role';
+import { PersonBadge } from '../find/person-badge';
 import { useI18n } from '../context/i18n-context';
 import { useWhen } from '../home/home-when';
 import { useCardDay } from '../market/when';
@@ -22,6 +23,7 @@ export function ChatCard({ row, directory, now, onOpen }: Props) {
   const { t, formatNumber, formatTime } = useI18n();
   const when = useWhen(now);
   const cardDay = useCardDay();
+  const role = useOtherRole();
   const route = useRegionRoute(directory)(row.from, row.to);
   const day = row.day ? cardDay(tashkentDate(row.at), now) : when(row.at);
   const trip = [day, route, ...(row.day ? [t('chat.list.request')] : [])].join(' · ');
@@ -35,11 +37,12 @@ export function ChatCard({ row, directory, now, onOpen }: Props) {
         : cardDay(tashkentDate(at), now);
   return (
     <button type="button" className="chat-card" onClick={onOpen}>
-      <ProfilePhoto
-        userId={row.person.id}
+      <PersonBadge
+        id={row.person.id}
         name={row.person.firstName}
         hasAvatar={row.person.hasAvatar}
         size={FACE}
+        role={role}
       />
       <span className="chat-card-words">
         <span className="chat-card-top">

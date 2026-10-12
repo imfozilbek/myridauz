@@ -1,5 +1,6 @@
 import type { PersonId } from '@platform/contracts';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { useOtherRole } from '../find/other-role';
+import { PersonBadge } from '../find/person-badge';
 import { Icon, type IconName } from '../icons';
 
 const PHOTO = 80;
@@ -17,11 +18,12 @@ type Props = {
 // The top of a sheet of the main screen (mockups g60/6, g60/7): the grabber, then the face with a
 // round badge that says what the sheet is about.
 export function SheetFace({ id, name, hasAvatar, badge, size = PHOTO }: Props) {
+  const role = useOtherRole();
   return (
     <>
       <span className="sheet-grab" aria-hidden />
       <span className="sheet-face">
-        <ProfilePhoto userId={id} name={name} hasAvatar={hasAvatar} size={size} />
+        <PersonBadge id={id} name={name} hasAvatar={hasAvatar} size={size} role={role} />
         {badge ? (
           <span className="sheet-badge" aria-hidden>
             <Icon name={badge} size={BADGE} />

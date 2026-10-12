@@ -1,7 +1,7 @@
 import { tripMarks, type Trip } from '@platform/contracts';
 import { Caption, Tappable, Text } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Section } from '../components';
 import { useI18n } from '../context/i18n-context';
 import { tripPast } from '../own-trip/trip-stage';
@@ -73,11 +73,12 @@ export function TripCard(props: TripCardProps) {
         {children}
         {own ? null : (
           <div className="trip-card-foot">
-            <ProfilePhoto
-              userId={driver.id}
+            <PersonBadge
+              id={driver.id}
               name={driver.firstName}
               hasAvatar={driver.hasAvatar}
               size={PHOTO_SIZE}
+              role="driver"
             />
             <span className="trip-card-driver">
               <span className="trip-card-who">

@@ -1,5 +1,5 @@
 import type { Booking, DriverMeetStep } from '@platform/contracts';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { mapUrl } from '../bookings/map-link';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
@@ -58,11 +58,12 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
         <span>{area}</span>
       </span>
       <span className="meet-who">
-        <ProfilePhoto
-          userId={passenger.id}
+        <PersonBadge
+          id={passenger.id}
           name={passenger.firstName}
           hasAvatar={passenger.hasAvatar}
           size={FACE}
+          role="passenger"
         />
         <span className="meet-who-text">
           <b>{`${passenger.firstName} · ${t('bookings.card.seats', { seats: String(booking.seats) })}`}</b>

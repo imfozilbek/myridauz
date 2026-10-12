@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { useAccount } from '../../account/account-context';
+import { useOtherRole } from '../../find/other-role';
 import { PersonBadge } from '../../find/person-badge';
 import { Icon } from '../../icons';
 import './dock-card.css';
@@ -46,8 +46,7 @@ export function DockCard({
   who,
   quick,
 }: DockCardProps) {
-  // The other side of the trip: the passengers of a driver, the driver of a passenger.
-  const face = useAccount()?.app === 'driver' ? 'passenger' : 'driver';
+  const face = useOtherRole();
   return (
     <>
       <div className={`dock-card dock-card-${tone}`}>

@@ -2,7 +2,7 @@ import type { Booking } from '@platform/contracts';
 import { Button, Text, Title } from '@telegram-apps/telegram-ui';
 import type { ReactNode } from 'react';
 import { CellValue } from '../account/cell-value';
-import { ProfilePhoto } from '../account/profile/profile-photo';
+import { PersonBadge } from '../find/person-badge';
 import { Cell, List, Section } from '../components';
 import { useScreenView } from '../context/analytics-context';
 import { useI18n } from '../context/i18n-context';
@@ -67,11 +67,12 @@ export function BookingScreen({ booking, onBack, actions, children }: Props) {
         <Section header={t('bookings.passengers')}>
           <Cell
             before={
-              <ProfilePhoto
-                userId={passenger.id}
+              <PersonBadge
+                id={passenger.id}
                 name={passenger.firstName}
                 hasAvatar={passenger.hasAvatar}
                 size={PHOTO_SIZE}
+                role="passenger"
               />
             }
           >
