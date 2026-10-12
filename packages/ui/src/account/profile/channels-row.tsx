@@ -20,7 +20,7 @@ export function ChannelsRow({ onOpen }: { readonly onOpen: () => void }) {
       ? joined.slice(0, ARTS).flatMap(({ channel }) => {
           const region = channelRegion(directory.directory, channel);
           const src = region ? art(region.id) : null;
-          return src ? [{ username: channel.username, title: channel.title, src }] : [];
+          return src ? [{ chat: channel.chat, title: channel.title, src }] : [];
         })
       : [];
   return (
@@ -31,8 +31,8 @@ export function ChannelsRow({ onOpen }: { readonly onOpen: () => void }) {
       after={
         arts.length > 0 ? (
           <span className="profile-arts" aria-hidden>
-            {arts.map(({ username, title, src }) => (
-              <img key={username} src={src} alt={title} />
+            {arts.map(({ chat, title, src }) => (
+              <img key={chat} src={src} alt={title} />
             ))}
           </span>
         ) : undefined

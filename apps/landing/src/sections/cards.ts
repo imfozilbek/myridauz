@@ -47,13 +47,13 @@ export function safety(brand: BrandConfig, i18n: I18n) {
 </div></section>`;
 }
 
-// "Hammasi Telegramda": the phone with the channels and a chip for every channel zone (docs/63).
+// "Hammasi Telegramda": the phone with the channels and a chip for every channel of a direction (docs/176).
 export function telegram(brand: BrandConfig, i18n: I18n) {
   const { t } = i18n;
   const chips = brand.channels
     .map(
-      ({ username, title, code }) =>
-        `<li><a href="${telegramLink(username)}"><b class="code">${escape(code)}</b>${escape(title)}</a></li>`,
+      ({ link, title, code }) =>
+        `<li><a href="${escape(link)}"><b class="code">${escape(code)}</b>${escape(title)}</a></li>`,
     )
     .join('');
   return `<section class="telegram"><div class="wrap tg-grid">

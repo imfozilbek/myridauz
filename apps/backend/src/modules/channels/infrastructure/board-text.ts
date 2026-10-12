@@ -3,7 +3,8 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
 import { bold, escapeHtml, italic } from '../../../shared/telegram/html';
-import { covers, postState, regionOf, type ChannelCoverage } from '../domain/route-channels';
+import { covers, postState, regionOf } from '../domain/route-channels';
+import type { TeamChannel } from '../application/team';
 import { timeOf } from './post-parts';
 
 const { t, formatDate, formatTime, formatNumber } = createI18n(DEFAULT_LOCALE);
@@ -41,9 +42,9 @@ function line(trip: Trip, places: Places, now: number, inbound: boolean, book: s
 }
 
 // «➡️ Toshkent shahridan» for the trips coming to the channel, «⬅️ Toshkent shahriga» for leaving.
-function groupsOf(channel: ChannelCoverage, trips: readonly Trip[], places: Places, now: number, site: Site) {
+function groupsOf(channel: TeamChannel, trips: readonly Trip[], places: Places, now: number, site: Site) {
   const groups = new Map<string, Group>();
-  const via = channelVia(channel.username);
+  const via = channelVia(channel.chat);
   for (const trip of trips) {
     const inbound = covers(channel, trip.to, places);
     const other = nameOf(regionOf(inbound ? trip.from : trip.to, places), places);
@@ -70,11 +71,11 @@ function textOf(head: string, groups: readonly Group[]): string {
   return parts.join('\n');
 }
 
-function buttons(channel: ChannelCoverage, first: Trip, places: Places, site: Site, share: string) {
-  const via = channelVia(channel.username);
+function buttons(channel: TeamChannel, first: Trip, places: Places, site: Site, share: string) {
+  const via = channelVia(channel.chat);
   const route = `${regionOf(first.from, places)}_${regionOf(first.to, places)}`;
   const subscribe = `https://t.me/${site.bot}?startapp=${withVia(`sub_${route}_${tashkentDate(first.departAt)}`, via)}`;
-  const shared = `https://t.me/share/url?url=${encodeURIComponent(`https://t.me/${channel.username}`)}&text=${encodeURIComponent(share)}`;
+  const shared = `https://t.me/share/url?url=${encodeURIComponent(channel.link)}&text=${encodeURIComponent(share)}`;
   return {
     inline_keyboard: [
       [{ text: t('bot.board.find'), url: `https://t.me/${site.bot}?startapp=${withVia('', via)}` }],
@@ -90,17 +91,17 @@ function buttons(channel: ChannelCoverage, first: Trip, places: Places, site: Si
 // today, pinned, its first message the one sound of the day, the picture of the direction above it.
 export const boardCard =
   (site: Site) =>
-  (channel: ChannelCoverage, trips: readonly Trip[], places: Places, now: number): Card | null => {
+  (channel: TeamChannel, trips: readonly Trip[], places: Places, now: number): Card | null => {
     const today = trips
       .filter((trip) => trip.status !== 'cancelled' && !trip.private)
       .sort((a, b) => a.departAt - b.departAt);
     const first = today[0];
     if (!first) return null;
     const values = { date: formatDate(new Date(now)), count: String(today.length) };
-    const page = site.pageOf(channel.username);
+    const page = site.pageOf(channel.chat);
     return {
-      bot: 'passenger',
-      chatId: `@${channel.username}`,
+      bot: 'poster',
+      chatId: channel.chat,
       key: `board:${tashkentDate(now)}`,
       text: textOf(bold(t('bot.board.title', values)), groupsOf(channel, today, places, now, site)),
       footer: italic(

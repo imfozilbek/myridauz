@@ -31,7 +31,14 @@ for (const width of WIDTHS) {
 // «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119): the long
 // channel name and the button get smaller on a narrow phone, never cut (docs/121).
 const PUBLICITY = {
-  channels: [{ username: 'yol_samarqand', title: 'Samarqand viloyati yoʻli', posted: true }],
+  channels: [
+    {
+      chat: '-1001',
+      title: 'Samarqand shahri, Samarqand tumani',
+      link: 'https://t.me/+samarqand',
+      posted: true,
+    },
+  ],
   views: 3200,
   link: 'https://t.me/test_bot?startapp=trip_7__driver',
 };

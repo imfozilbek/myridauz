@@ -16,8 +16,8 @@ export async function postTrip(deps: ChannelsDeps, tripId: string): Promise<void
       const { text, markup } = deps.render(trip, places, deps.now(), channel);
       const after = { type: 'channelPost' as const, tripId, channel, shown };
       return {
-        bot: 'passenger' as const,
-        chatId: `@${channel}`,
+        bot: 'poster' as const,
+        chatId: channel,
         html: true,
         silent: true,
         text,
@@ -35,8 +35,14 @@ async function edit(deps: ChannelsDeps, trip: Trip, posts: readonly ChannelPost[
   const places = await deps.places();
   const jobs = posts.flatMap((post) => {
     const { text, markup, remove } = deps.render(trip, places, deps.now(), post.channel);
-    const chatId = `@${post.channel}`;
-    const shown = { bot: 'passenger' as const, chatId, html: true, edit: post.messageId, text, markup };
+    const shown = {
+      bot: 'poster' as const,
+      chatId: post.channel,
+      html: true,
+      edit: post.messageId,
+      text,
+      markup,
+    };
     return remove ? [shown, { ...shown, remove: true }] : [shown];
   });
   await deps.send(jobs);

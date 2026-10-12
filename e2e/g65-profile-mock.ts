@@ -20,7 +20,7 @@ const PEOPLE = {
   },
 } as const;
 
-export type Membership = { readonly username: string; readonly member: boolean };
+export type Membership = { readonly chat: string; readonly member: boolean };
 
 // `more` mocks what a screen opened from «Profil» reads, over the mocks of the whole app.
 export async function openMockupProfile(

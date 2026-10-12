@@ -9,14 +9,14 @@ import { JAHONGIR, NARGIZA } from './people';
 import { signedAs } from './stand-kit';
 import { botMessages, clearBotMessages, runCron } from './stand-tools';
 
-// The channels of the zones and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
+// The channels of the directions and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
 // trip is posted where people of its route read, its post follows the seats; a saved driver brings
 // the new trips; the history keeps the rides.
 test.describe.configure({ mode: 'serial' });
 const HOUR = 60 * MINUTE;
-// Toshkent has no channel of its own (docs/15): a trip to Samarqand goes to the channel of Samarqand.
+// Toshkent has no channel of its own (docs/15): a trip to Samarqand goes to the channels of Samarqand.
 const ZONE = channelOf(loadBrand(), SAMARQAND);
-const CHANNEL = `@${ZONE?.username ?? ''}`;
+const CHANNEL = ZONE?.chat ?? '';
 const posts = async (method: string) =>
   (await botMessages()).filter((m) => m.chat === CHANNEL && m.method === method);
 

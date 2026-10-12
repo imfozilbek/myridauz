@@ -71,13 +71,18 @@ type ScheduleRules = {
 // The party of the legal documents (docs/30): requisites from the admin Mini App (G34).
 type Company = { readonly email: string };
 
-// A channel zone: the username without "@", its name, the plate code of its region (docs/36)
-// and the SOATO codes of its districts and cities.
+// A channel of a direction (docs/63, docs/176): a private channel the bot posts to by its chat number,
+// its name after the brand, the plate code of its region (docs/36) and the SOATO codes of the
+// districts and cities its posts are for.
 export type BrandChannel = {
-  readonly username: string;
+  readonly chat: string;
   readonly title: string;
   readonly code: string;
   readonly places: readonly string[];
+  // The big town that opens the name: the channel only passes it, its own channel is another one.
+  readonly hubs?: readonly string[];
+  // The invite link: a private channel has no public name.
+  readonly link: string;
   // The page of the direction on the site: its picture shows above the board of the day (G68).
   readonly page?: string;
 };
@@ -101,8 +106,10 @@ export type BrandConfig = PeopleRules & {
     readonly admin: string;
     readonly support: string;
   };
-  // Telegram channel zones (docs/15, docs/63): a trip goes to the zone of each end.
+  // Telegram channels of the directions (docs/15, docs/176): a trip goes to the channels of each end.
   readonly channels: readonly BrandChannel[];
+  // The public main channel, without "@": a guide to every channel of the directions (docs/176).
+  readonly mainChannel: string;
   readonly pricing: PricingStrategy;
   readonly alerts: AlertRules;
   readonly calls: CallRules;

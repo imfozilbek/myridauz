@@ -1,4 +1,11 @@
+import { channelOf, loadBrand } from '@platform/brands';
+import { CHANNEL_VIA_PREFIX, channelVia } from '@platform/contracts';
 import type { Page } from '@playwright/test';
+
+// The mark of the channel of Samarqand shahri: its number, the screen shows its title (docs/176).
+const SAMARQAND_MARK = channelVia(channelOf(loadBrand(), '1718401')?.chat ?? '').slice(
+  CHANNEL_VIA_PREFIX.length,
+);
 
 // The dashboard of the team as the admin Mini App sees it (G12, docs/29).
 const steps = (names: readonly string[], counts: readonly number[]) =>
@@ -32,7 +39,7 @@ const statsOf = (period: string) => {
     // Where the new people came from and on what (G55, docs/116).
     arrivals: {
       sources: [
-        { kind: 'channel', mark: 'yol-samarqand', count: 11 * week },
+        { kind: 'channel', mark: SAMARQAND_MARK, count: 11 * week },
         { kind: 'direct', mark: '', count: 7 * week },
         { kind: 'ad', mark: 'insta1', count: 4 * week },
         { kind: 'story', mark: '', count: 2 * week },

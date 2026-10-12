@@ -6,9 +6,9 @@ import { CHANNELS, PLACES, TRIP } from './channels-fixtures';
 
 describe('the channels of a trip (docs/15)', () => {
   it('posts to the channels of both regions, never to Toshkent shahri', () => {
-    expect(channelsOf('1726269', '1718401', PLACES, CHANNELS)).toEqual(['ch_samarqand']);
-    expect(channelsOf('1718401', '1706401', PLACES, CHANNELS)).toEqual(['ch_samarqand', 'ch_buxoro']);
-    expect(channelsOf('1718401', '1718', PLACES, CHANNELS)).toEqual(['ch_samarqand']);
+    expect(channelsOf('1726269', '1718401', PLACES, CHANNELS)).toEqual(['@ch_samarqand']);
+    expect(channelsOf('1718401', '1706401', PLACES, CHANNELS)).toEqual(['@ch_samarqand', '@ch_buxoro']);
+    expect(channelsOf('1718401', '1718', PLACES, CHANNELS)).toEqual(['@ch_samarqand']);
     expect(channelsOf('1726269', '1726', PLACES, CHANNELS)).toEqual([]);
   });
 });
@@ -24,23 +24,23 @@ describe('one post in several district channels (docs/63)', () => {
     ]);
     const near = ['1710224', '1710245', '1710250'];
     const channels = [
-      { username: 'ch_qashqadaryo', places: ['1710'] },
-      { username: 'ch_kitob', places: near },
-      { username: 'ch_shahrisabz', places: near },
-      { username: 'ch_yakkabog', places: ['1710250', '1710245'] },
-      { username: 'ch_samarqand', places: ['1718'] },
+      { chat: '@ch_qashqadaryo', link: 'https://t.me/ch_qashqadaryo', places: ['1710'] },
+      { chat: '@ch_kitob', link: 'https://t.me/ch_kitob', places: near },
+      { chat: '@ch_shahrisabz', link: 'https://t.me/ch_shahrisabz', places: near },
+      { chat: '@ch_yakkabog', link: 'https://t.me/ch_yakkabog', places: ['1710250', '1710245'] },
+      { chat: '@ch_samarqand', link: 'https://t.me/ch_samarqand', places: ['1718'] },
     ];
     expect(channelsOf('1726269', '1710245', places, channels)).toEqual([
-      'ch_qashqadaryo',
-      'ch_kitob',
-      'ch_shahrisabz',
-      'ch_yakkabog',
+      '@ch_qashqadaryo',
+      '@ch_kitob',
+      '@ch_shahrisabz',
+      '@ch_yakkabog',
     ]);
     expect(channelsOf('1710224', '1718401', places, channels)).toEqual([
-      'ch_qashqadaryo',
-      'ch_kitob',
-      'ch_shahrisabz',
-      'ch_samarqand',
+      '@ch_qashqadaryo',
+      '@ch_kitob',
+      '@ch_shahrisabz',
+      '@ch_samarqand',
     ]);
   });
 });
@@ -53,10 +53,10 @@ describe('posting and editing through the queue (docs/15)', () => {
     expect(sent[0]?.after).toEqual({
       type: 'channelPost',
       tripId: 'trip-1',
-      channel: 'ch_buxoro',
+      channel: '@ch_buxoro',
       shown: 'active 3 true',
     });
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_buxoro', messageId: 41 }, 'active 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_buxoro', messageId: 41 }, 'active 3 true');
     expect(sent).toHaveLength(1);
     change({ seatsLeft: 0, status: 'full' });
     await refreshPosts(deps, 'trip-1');
@@ -74,7 +74,7 @@ describe('posting and editing through the queue (docs/15)', () => {
     await postTrip(deps, 'trip-1');
     const links = sent.map((job) => JSON.stringify(job.markup).match(/trip_trip-1__[a-z0-9-]+/u)?.[0]);
     expect(links).toEqual(['trip_trip-1__ch-ch-samarqand', 'trip_trip-1__ch-ch-buxoro']);
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_buxoro', messageId: 41 }, 'active 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_buxoro', messageId: 41 }, 'active 3 true');
     await refreshPosts(deps, 'trip-1');
     expect(JSON.stringify(sent.at(-1)?.markup)).toContain('__ch-ch-buxoro');
   });
@@ -82,7 +82,7 @@ describe('posting and editing through the queue (docs/15)', () => {
   it('edits at once a post whose trip changed while it waited in the queue', async () => {
     const { deps, sent, change } = setup();
     change({ seatsLeft: 2 });
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
     expect(sent).toHaveLength(1);
     expect(sent[0]?.text).toContain('🟩🟩⬜⬜ 2 ta boʻsh joy');
   });
@@ -99,7 +99,7 @@ describe('posting and editing through the queue (docs/15)', () => {
 
   it('says once in its posts that a trip has left, without "Joy band qilish"', async () => {
     const { deps, sent, later } = setup();
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
     await closeDeparted(deps);
     expect(sent).toEqual([]);
     later(TRIP.departAt);
@@ -112,7 +112,7 @@ describe('posting and editing through the queue (docs/15)', () => {
 
   it('closes the posts at once when the driver pressed «Yoʻlga chiqdim» early (G63)', async () => {
     const { deps, sent, change, later } = setup();
-    await rememberPost(deps, { tripId: 'trip-1', channel: 'ch_samarqand', messageId: 7 }, 'active 3 true');
+    await rememberPost(deps, { tripId: 'trip-1', channel: '@ch_samarqand', messageId: 7 }, 'active 3 true');
     change({ departedAt: BEFORE });
     await closePosts(deps, 'trip-1');
     expect(sent[0]?.text.startsWith('<b>🚗 Yoʻlga chiqdi</b>')).toBe(true);

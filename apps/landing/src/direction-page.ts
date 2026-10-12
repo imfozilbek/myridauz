@@ -1,7 +1,7 @@
 import { channelOf, type BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
 import type { Direction } from './directions';
-import { escape, telegramLink } from './html';
+import { escape } from './html';
 import { icon } from './icons';
 import type { MapData } from './map-data';
 import { final, safety } from './sections/cards';
@@ -26,12 +26,12 @@ export function directionQuestions(brand: BrandConfig, i18n: I18n, { from, to }:
 // The search of the Mini App with this route (docs/89 S4): every passenger button of the page.
 export const startOf = ({ from, to }: Direction) => `find_${from.soato}_${to.soato}`;
 
-// The channel of the direction under the buttons (docs/119): the new trips of its zone in Telegram.
+// The channel of the direction under the buttons (docs/119): the new trips of its places in Telegram.
 function channelButton(brand: BrandConfig, { t }: I18n, { from, to }: Direction) {
   const channel = channelOf(brand, to.place, to.soato) ?? channelOf(brand, from.place, from.soato);
   if (!channel) return '';
   const text = t('landing.direction.channel', { brand: brand.name, zone: channel.title });
-  return `<a class="button channel-button" href="${telegramLink(channel.username)}">${icon('telegram')}<span>${escape(text)}</span></a>`;
+  return `<a class="button channel-button" href="${escape(channel.link)}">${icon('telegram')}<span>${escape(text)}</span></a>`;
 }
 
 // A page of one direction (docs/60): the route is already chosen on the map, the button opens

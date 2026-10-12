@@ -46,7 +46,7 @@ test('landing: the steps, the switch and the map answer a tap', async ({ page })
   );
   await expect(page.locator('[data-channel-link]')).toHaveAttribute(
     'href',
-    `https://t.me/${channelOf(brand, '1706401')?.username ?? ''}`,
+    channelOf(brand, '1706401')?.link ?? '',
   );
 });
 

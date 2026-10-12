@@ -56,21 +56,20 @@ export function ChannelsScreen({ onBack, readOnly = false }: Props) {
         ? t('manage.channel.failed', { count: one.failed })
         : null;
   const row = (channel: Channel) => {
-    const said = trouble(health?.channels.find((one) => one.username === channel.username));
-    const name = `@${channel.username}`;
+    const said = trouble(health?.channels.find((one) => one.chat === channel.chat));
     const kind = channel.fixed
       ? t('channels.fixed')
       : t('channels.places', { count: String(channel.places.length) });
+    // A private channel of the brand has no public name: its title says it (docs/176).
+    const state = said ?? kind;
     return (
       <ManageRow
-        key={channel.username}
+        key={channel.chat}
         icon="channel"
         title={channel.fixed ? t('home.meta', { when: brand.name, more: channel.title }) : channel.title}
-        hint={t('home.meta', { when: name, more: said ?? kind })}
+        hint={channel.chat.startsWith('@') ? t('home.meta', { when: channel.chat, more: state }) : state}
         alarm={said !== null}
-        onClick={() =>
-          channel.fixed || readOnly ? openInTelegram(`https://t.me/${channel.username}`) : setOpen(channel)
-        }
+        onClick={() => (channel.fixed || readOnly ? openInTelegram(channel.link) : setOpen(channel))}
       />
     );
   };

@@ -1,296 +1,570 @@
 [
   {
-    "username": "rida_andijon",
-    "title": "Andijon",
+    "chat": "-1004328825984",
+    "title": "Boʻka, Bekobod",
+    "code": "10",
+    "places": ["1727220", "1727228", "1727413"],
+    "link": "https://t.me/+_P_ASn5TjKFlYWEy",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1003970856640",
+    "title": "Nurafshon, Oʻrta Chirchiq, Piskent",
+    "code": "10",
+    "places": ["1727250", "1727253", "1727401"],
+    "link": "https://t.me/+_gFzmTuwLTQxMTcy",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004484698892",
+    "title": "Ohangaron, Olmaliq, Angren",
+    "code": "10",
+    "places": ["1727212", "1727404", "1727407", "1727415"],
+    "link": "https://t.me/+5ayVl8oCtWA2Yjli",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004335475079",
+    "title": "Qibray, Chirchiq, Boʻstonliq",
+    "code": "10",
+    "places": ["1727224", "1727248", "1727419"],
+    "link": "https://t.me/+kvoFFoQAGMc3YTJi",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004327049311",
+    "title": "Yangiyoʻl, Chinoz",
+    "code": "10",
+    "places": ["1727256", "1727259", "1727424"],
+    "hubs": ["1727259", "1727424"],
+    "link": "https://t.me/+-Dzxe0d78J81N2Yy",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004456009327",
+    "title": "Yangiyoʻl, Quyi Chirchiq, Oqqoʻrgʻon",
+    "code": "10",
+    "places": ["1727206", "1727233", "1727259", "1727424"],
+    "hubs": ["1727259", "1727424"],
+    "link": "https://t.me/+h18gNRPuXsI0ZDZi",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004417927222",
+    "title": "Yuqori Chirchiq, Parkent",
+    "code": "10",
+    "places": ["1727239", "1727249"],
+    "link": "https://t.me/+912w96IjJg8wZWZi",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1004322887469",
+    "title": "Zangiota, Toshkent tumani (Keles)",
+    "code": "10",
+    "places": ["1727237", "1727265"],
+    "link": "https://t.me/+NriuNSQAMjJhYTk6",
+    "page": "/yonalish/toshkent-nurafshon/"
+  },
+  {
+    "chat": "-1003903769331",
+    "title": "Andijon shahri / Andijon tumani",
     "code": "60",
-    "places": [
-      "1703202",
-      "1703203",
-      "1703206",
-      "1703209",
-      "1703210",
-      "1703211",
-      "1703214",
-      "1703217",
-      "1703220",
-      "1703224",
-      "1703227",
-      "1703230",
-      "1703232",
-      "1703236",
-      "1703401",
-      "1703408"
-    ],
+    "places": ["1703203", "1703401"],
+    "link": "https://t.me/+dU62S4w19AY3YmIy",
     "page": "/yonalish/toshkent-andijon/"
   },
   {
-    "username": "rida_namangan",
-    "title": "Namangan",
+    "chat": "-1003743043307",
+    "title": "Andijon, Xoʻjaobod, Jalaquduq, Qoʻrgʻontepa, Xonobod",
+    "code": "60",
+    "places": ["1703203", "1703211", "1703220", "1703236", "1703401", "1703408"],
+    "hubs": ["1703203", "1703401"],
+    "link": "https://t.me/+rhWojO-bFMFhNDE6",
+    "page": "/yonalish/toshkent-andijon/"
+  },
+  {
+    "chat": "-1003733098763",
+    "title": "Asaka, Marhamat, Buloqboshi",
+    "code": "60",
+    "places": ["1703210", "1703224", "1703227"],
+    "link": "https://t.me/+7NfdluDZJntjMTYy",
+    "page": "/yonalish/toshkent-andijon/"
+  },
+  {
+    "chat": "-1003988776395",
+    "title": "Baliqchi, Izboskan, Paxtaobod",
+    "code": "60",
+    "places": ["1703206", "1703214", "1703232"],
+    "link": "https://t.me/+80n6LzEeFOkyYmRi",
+    "page": "/yonalish/toshkent-andijon/"
+  },
+  {
+    "chat": "-1004454466941",
+    "title": "Ulugʻnor, Boʻston, Shahrixon, Oltinkoʻl",
+    "code": "60",
+    "places": ["1703202", "1703209", "1703217", "1703230"],
+    "link": "https://t.me/+aGfUNfjM5ghiZjRi",
+    "page": "/yonalish/toshkent-andijon/"
+  },
+  {
+    "chat": "-1004475182369",
+    "title": "Fargʻona, Fargʻona tumani (Vodil), Quvasoy",
+    "code": "40",
+    "places": ["1730233", "1730401", "1730408"],
+    "hubs": ["1730401"],
+    "link": "https://t.me/+-bbnYzsMdQtmNDAy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004122436103",
+    "title": "Margʻilon, Fargʻona shahri",
+    "code": "40",
+    "places": ["1730401", "1730412"],
+    "link": "https://t.me/+1h-TF9uRoW0xNjUy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004372440544",
+    "title": "Qamchiq, Furqat, Qoʻqon",
+    "code": "40",
+    "places": ["1730238", "1730405"],
+    "link": "https://t.me/+7hZo1hnR6YFjZmFi",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004425023971",
+    "title": "Qoʻqon, Bagʻdod, Rishton, Soʻx",
+    "code": "40",
+    "places": ["1730209", "1730224", "1730226", "1730405"],
+    "hubs": ["1730405"],
+    "link": "https://t.me/+CiXxRYJqL_hlZDdi",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004312729381",
+    "title": "Qoʻqon, Dangʻara, Buvayda, Uchkoʻprik",
+    "code": "40",
+    "places": ["1730212", "1730221", "1730236", "1730405"],
+    "hubs": ["1730405"],
+    "link": "https://t.me/+XjCmEN6-6NFiZTgy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004497407961",
+    "title": "Qoʻqon, Oltiariq, Qoʻshtepa",
+    "code": "40",
+    "places": ["1730203", "1730206", "1730405"],
+    "hubs": ["1730405"],
+    "link": "https://t.me/+764e-Atw5kAwMzUy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1003908715792",
+    "title": "Qoʻqon, Oʻzbekiston, Beshariq",
+    "code": "40",
+    "places": ["1730215", "1730230", "1730405"],
+    "hubs": ["1730405"],
+    "link": "https://t.me/+y7b517NIpUkzZGUy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1003710532919",
+    "title": "Toshloq, Yozyovon, Quva",
+    "code": "40",
+    "places": ["1730218", "1730227", "1730242"],
+    "link": "https://t.me/+qCyd2aM-8BFmOWEy",
+    "page": "/yonalish/toshkent-fargona/"
+  },
+  {
+    "chat": "-1004476208324",
+    "title": "Namangan tumani, Namangan shahri",
     "code": "50",
-    "places": [
-      "1714204",
-      "1714207",
-      "1714212",
-      "1714216",
-      "1714219",
-      "1714224",
-      "1714229",
-      "1714234",
-      "1714236",
-      "1714237",
-      "1714242",
-      "1714401"
-    ],
+    "places": ["1714212", "1714401"],
+    "link": "https://t.me/+eTM5g5hW7tY0N2Ey",
     "page": "/yonalish/toshkent-namangan/"
   },
   {
-    "username": "rida_fargona",
-    "title": "Fargʻona, Margʻilon",
-    "code": "40",
-    "places": [
-      "1730203",
-      "1730206",
-      "1730209",
-      "1730218",
-      "1730224",
-      "1730226",
-      "1730227",
-      "1730233",
-      "1730242",
-      "1730401",
-      "1730408",
-      "1730412"
-    ],
-    "page": "/yonalish/toshkent-fargona/"
+    "chat": "-1004447920011",
+    "title": "Namangan, Chortoq, Uychi, Uchqoʻrgʻon, Norin",
+    "code": "50",
+    "places": ["1714212", "1714216", "1714229", "1714234", "1714236", "1714401"],
+    "hubs": ["1714212", "1714401"],
+    "link": "https://t.me/+dnC8RyBA-4c1YmIy",
+    "page": "/yonalish/toshkent-namangan/"
   },
   {
-    "username": "rida_qoqon",
-    "title": "Qoʻqon",
-    "code": "40",
-    "places": ["1730212", "1730215", "1730221", "1730230", "1730236", "1730238", "1730405"],
-    "page": "/yonalish/toshkent-fargona/"
+    "chat": "-1004402197394",
+    "title": "Qamchiq, Pop, Chust, Mingbuloq",
+    "code": "50",
+    "places": ["1714204", "1714219", "1714237"],
+    "link": "https://t.me/+ikWPLDPbNXQ1ZjUy",
+    "page": "/yonalish/toshkent-namangan/"
   },
   {
-    "username": "rida_chirchiq",
-    "title": "Chirchiq, Boʻstonliq",
-    "code": "10",
-    "places": ["1727224", "1727239", "1727248", "1727249", "1727265", "1727419"],
-    "page": "/yonalish/toshkent-nurafshon/"
+    "chat": "-1004402795556",
+    "title": "Toʻraqoʻrgʻon, Kosonsoy, Yangiqoʻrgʻon",
+    "code": "50",
+    "places": ["1714207", "1714224", "1714242"],
+    "link": "https://t.me/+gNHhnUcZMJVmYjIy",
+    "page": "/yonalish/toshkent-namangan/"
   },
   {
-    "username": "rida_angren",
-    "title": "Angren, Olmaliq, Bekobod",
-    "code": "10",
-    "places": ["1727212", "1727220", "1727228", "1727250", "1727404", "1727407", "1727413", "1727415"],
-    "page": "/yonalish/toshkent-nurafshon/"
-  },
-  {
-    "username": "rida_yangiyol",
-    "title": "Yangiyoʻl, Chinoz, Nurafshon",
-    "code": "10",
-    "places": ["1727206", "1727233", "1727237", "1727253", "1727256", "1727259", "1727401", "1727424"],
-    "page": "/yonalish/toshkent-nurafshon/"
-  },
-  {
-    "username": "rida_sirdaryo",
-    "title": "Sirdaryo",
+    "chat": "-1003917929507",
+    "title": "Chinoz, Sirdaryo, Sayxunobod",
     "code": "20",
-    "places": [
-      "1724206",
-      "1724212",
-      "1724216",
-      "1724220",
-      "1724226",
-      "1724228",
-      "1724231",
-      "1724235",
-      "1724401",
-      "1724410",
-      "1724413"
-    ],
+    "places": ["1724216", "1724231", "1727256"],
+    "hubs": ["1727256"],
+    "link": "https://t.me/+bD4Abi7Q5wZlZWFi",
     "page": "/yonalish/toshkent-guliston/"
   },
   {
-    "username": "rida_jizzax",
-    "title": "Jizzax",
+    "chat": "-1004325256212",
+    "title": "Guliston shahri, Guliston tumani, Boyovut",
+    "code": "20",
+    "places": ["1724212", "1724220", "1724401"],
+    "link": "https://t.me/+-AGegreDKpBmNWZi",
+    "page": "/yonalish/toshkent-guliston/"
+  },
+  {
+    "chat": "-1003717942763",
+    "title": "Guliston, Mirzaobod, Oqoltin, Sardoba",
+    "code": "20",
+    "places": ["1724206", "1724220", "1724226", "1724228", "1724401"],
+    "hubs": ["1724220", "1724401"],
+    "link": "https://t.me/+eGbEFK5AXqFmMzBi",
+    "page": "/yonalish/toshkent-guliston/"
+  },
+  {
+    "chat": "-1004301668936",
+    "title": "Guliston, Yangiyer, Xovos, Shirin",
+    "code": "20",
+    "places": ["1724220", "1724235", "1724401", "1724410", "1724413"],
+    "hubs": ["1724220", "1724401"],
+    "link": "https://t.me/+nNzzVmdv9Yw2OTIy",
+    "page": "/yonalish/toshkent-guliston/"
+  },
+  {
+    "chat": "-1003954982457",
+    "title": "Jizzax sharqi, Zarbdor, Zomin, Yangiobod",
     "code": "25",
-    "places": [
-      "1708201",
-      "1708204",
-      "1708209",
-      "1708212",
-      "1708215",
-      "1708218",
-      "1708220",
-      "1708223",
-      "1708225",
-      "1708228",
-      "1708235",
-      "1708237",
-      "1708401"
-    ],
+    "places": ["1708218", "1708220", "1708237"],
+    "link": "https://t.me/+ZRrupn4GdidiOWUy",
     "page": "/yonalish/toshkent-jizzax/"
   },
   {
-    "username": "rida_samarqand",
-    "title": "Samarqand",
+    "chat": "-1004305271973",
+    "title": "Jizzax, Gʻallaorol, Baxmal",
+    "code": "25",
+    "places": ["1708204", "1708209", "1708401"],
+    "hubs": ["1708401"],
+    "link": "https://t.me/+DoK4BI9piLw3M2Ri",
+    "page": "/yonalish/toshkent-jizzax/"
+  },
+  {
+    "chat": "-1004455467324",
+    "title": "Mirzachoʻl, Doʻstlik, Paxtakor, Arnasoy",
+    "code": "25",
+    "places": ["1708201", "1708215", "1708223", "1708228"],
+    "link": "https://t.me/+pzwuqWyeadtmMGNi",
+    "page": "/yonalish/toshkent-jizzax/"
+  },
+  {
+    "chat": "-1004466712919",
+    "title": "Zafarobod, Sharof Rashidov, Jizzax, Forish",
+    "code": "25",
+    "places": ["1708212", "1708225", "1708235", "1708401"],
+    "link": "https://t.me/+Ti5vQ1-M6GY1OTYy",
+    "page": "/yonalish/toshkent-jizzax/"
+  },
+  {
+    "chat": "-1003906211929",
+    "title": "Bulungʻur, Jomboy, Payariq, Qoʻshrabot",
     "code": "30",
-    "places": [
-      "1718203",
-      "1718206",
-      "1718209",
-      "1718224",
-      "1718227",
-      "1718233",
-      "1718236",
-      "1718238",
-      "1718401"
-    ],
+    "places": ["1718206", "1718209", "1718216", "1718224"],
+    "link": "https://t.me/+LIKhbxsTYSozZmNi",
     "page": "/yonalish/toshkent-samarqand/"
   },
   {
-    "username": "rida_kattaqorgon",
-    "title": "Kattaqoʻrgʻon",
+    "chat": "-1003902576050",
+    "title": "Kattaqoʻrgʻon shahri, Narpay, Paxtachi",
     "code": "30",
-    "places": ["1718212", "1718215", "1718216", "1718218", "1718230", "1718235", "1718406"],
+    "places": ["1718218", "1718230", "1718406"],
+    "link": "https://t.me/+BXNMn1AaPAA2Mjhi",
     "page": "/yonalish/toshkent-samarqand/"
   },
   {
-    "username": "rida_navoiy",
-    "title": "Navoiy",
-    "code": "85",
-    "places": [
-      "1712211",
-      "1712216",
-      "1712230",
-      "1712234",
-      "1712238",
-      "1712244",
-      "1712248",
-      "1712251",
-      "1712401",
-      "1712408",
-      "1712412"
-    ],
-    "page": "/yonalish/toshkent-navoiy/"
+    "chat": "-1004207165005",
+    "title": "Samarqand shahri, Samarqand tumani",
+    "code": "30",
+    "places": ["1718233", "1718401"],
+    "link": "https://t.me/+X_IumNR_NYZjNWMy",
+    "page": "/yonalish/toshkent-samarqand/"
   },
   {
-    "username": "rida_buxoro",
-    "title": "Buxoro",
+    "chat": "-1004426600138",
+    "title": "Samarqand, Oqdaryo, Ishtixon, Kattaqoʻrgʻon tumani",
+    "code": "30",
+    "places": ["1718203", "1718212", "1718215", "1718233", "1718401"],
+    "hubs": ["1718233", "1718401"],
+    "link": "https://t.me/+GWa20Qh9aGkxNzBi",
+    "page": "/yonalish/toshkent-samarqand/"
+  },
+  {
+    "chat": "-1003782038328",
+    "title": "Samarqand, Pastdargʻom, Nurobod",
+    "code": "30",
+    "places": ["1718227", "1718233", "1718235", "1718401"],
+    "hubs": ["1718233", "1718401"],
+    "link": "https://t.me/+xxzClV-UGxU4YTY6",
+    "page": "/yonalish/toshkent-samarqand/"
+  },
+  {
+    "chat": "-1004356807611",
+    "title": "Samarqand, Toyloq, Urgut",
+    "code": "30",
+    "places": ["1718233", "1718236", "1718238", "1718401"],
+    "hubs": ["1718233", "1718401"],
+    "link": "https://t.me/+NIrp_4AQcTBkYTIy",
+    "page": "/yonalish/toshkent-samarqand/"
+  },
+  {
+    "chat": "-1004438182937",
+    "title": "Buxoro shahri, Kogon, Qorovulbozor",
     "code": "80",
-    "places": [
-      "1706204",
-      "1706207",
-      "1706212",
-      "1706215",
-      "1706219",
-      "1706230",
-      "1706232",
-      "1706240",
-      "1706242",
-      "1706246",
-      "1706258",
-      "1706401",
-      "1706403"
-    ],
+    "places": ["1706219", "1706232", "1706401", "1706403"],
+    "link": "https://t.me/+0emTrn7LQskwYjky",
     "page": "/yonalish/toshkent-buxoro/"
   },
   {
-    "username": "rida_qarshi",
-    "title": "Qarshi",
+    "chat": "-1003772817243",
+    "title": "Buxoro, Jondor, Qorakoʻl, Olot",
+    "code": "80",
+    "places": ["1706204", "1706207", "1706230", "1706246", "1706401"],
+    "hubs": ["1706207", "1706401"],
+    "link": "https://t.me/+zH9jV48jJ7BlMzgy",
+    "page": "/yonalish/toshkent-buxoro/"
+  },
+  {
+    "chat": "-1004388087594",
+    "title": "Gʻijduvon, Shofirkon, Peshku",
+    "code": "80",
+    "places": ["1706215", "1706240", "1706258"],
+    "link": "https://t.me/+3icLmUnBvA4wN2Vi",
+    "page": "/yonalish/toshkent-buxoro/"
+  },
+  {
+    "chat": "-1004381247668",
+    "title": "Vobkent, Romitan, Buxoro tumani",
+    "code": "80",
+    "places": ["1706207", "1706212", "1706242"],
+    "link": "https://t.me/+26aATH96b2A4OTYy",
+    "page": "/yonalish/toshkent-buxoro/"
+  },
+  {
+    "chat": "-1004370886942",
+    "title": "Navoiy, Konimex, Tomdi, Zarafshon, Uchquduq",
+    "code": "85",
+    "places": ["1712211", "1712244", "1712248", "1712401", "1712408"],
+    "hubs": ["1712401"],
+    "link": "https://t.me/+jdW3paW2IvQyOGM6",
+    "page": "/yonalish/toshkent-navoiy/"
+  },
+  {
+    "chat": "-1004498835551",
+    "title": "Navoiy, Navbahor, Gʻozgʻon, Nurota",
+    "code": "85",
+    "places": ["1712230", "1712238", "1712401", "1712412"],
+    "hubs": ["1712401"],
+    "link": "https://t.me/+sr25-cW78uo0MWJi",
+    "page": "/yonalish/toshkent-navoiy/"
+  },
+  {
+    "chat": "-1004429110328",
+    "title": "Xatirchi, Karmana, Navoiy, Qiziltepa",
+    "code": "85",
+    "places": ["1712216", "1712234", "1712251", "1712401"],
+    "link": "https://t.me/+9zdBhoZH-hgyNTFi",
+    "page": "/yonalish/toshkent-navoiy/"
+  },
+  {
+    "chat": "-1004337469928",
+    "title": "Gʻuzor, Dehqonobod",
     "code": "70",
-    "places": [
-      "1710207",
-      "1710212",
-      "1710220",
-      "1710224",
-      "1710229",
-      "1710233",
-      "1710234",
-      "1710235",
-      "1710237",
-      "1710401"
-    ],
+    "places": ["1710207", "1710212"],
+    "link": "https://t.me/+3sd2D4MWJ0IxYTFi",
     "page": "/yonalish/toshkent-qarshi/"
   },
   {
-    "username": "rida_shahrisabz",
-    "title": "Shahrisabz, Kitob, Yakkabogʻ",
+    "chat": "-1004392777443",
+    "title": "Kitob, Shahrisabz, Yakkabogʻ",
     "code": "70",
-    "places": ["1710232", "1710240", "1710242", "1710245", "1710250", "1710405"],
+    "places": ["1710232", "1710245", "1710250", "1710405"],
+    "link": "https://t.me/+9VAiZ4eoS3w2YTNi",
     "page": "/yonalish/toshkent-qarshi/"
   },
   {
-    "username": "rida_termiz",
-    "title": "Termiz",
+    "chat": "-1003973675378",
+    "title": "Koʻkdala, Chiroqchi, Qamashi",
+    "code": "70",
+    "places": ["1710220", "1710240", "1710242"],
+    "link": "https://t.me/+pSn6G1PlxndjOGMy",
+    "page": "/yonalish/toshkent-qarshi/"
+  },
+  {
+    "chat": "-1004212171607",
+    "title": "Qarshi shahri, Qarshi tumani, Nishon",
+    "code": "70",
+    "places": ["1710224", "1710235", "1710401"],
+    "link": "https://t.me/+nYhPQGkpeuU1MTgy",
+    "page": "/yonalish/toshkent-qarshi/"
+  },
+  {
+    "chat": "-1004306319877",
+    "title": "Qarshi, Kasbi, Mirishkor",
+    "code": "70",
+    "places": ["1710224", "1710233", "1710237", "1710401"],
+    "hubs": ["1710224", "1710401"],
+    "link": "https://t.me/+eKew0RNgD_g2N2I6",
+    "page": "/yonalish/toshkent-qarshi/"
+  },
+  {
+    "chat": "-1004043602622",
+    "title": "Qarshi, Koson, Muborak",
+    "code": "70",
+    "places": ["1710224", "1710229", "1710234", "1710401"],
+    "hubs": ["1710224", "1710401"],
+    "link": "https://t.me/+IQmg3if3_SczNzIy",
+    "page": "/yonalish/toshkent-qarshi/"
+  },
+  {
+    "chat": "-1004329085792",
+    "title": "Darband, Boysun, Bandixon, Qumqoʻrgʻon, Shoʻrchi",
     "code": "75",
-    "places": [
-      "1722202",
-      "1722203",
-      "1722207",
-      "1722212",
-      "1722214",
-      "1722215",
-      "1722220",
-      "1722223",
-      "1722401"
-    ],
+    "places": ["1722203", "1722204", "1722214", "1722226"],
+    "link": "https://t.me/+LQSI0i5Mw0AzNDMy",
     "page": "/yonalish/toshkent-termiz/"
   },
   {
-    "username": "rida_denov",
-    "title": "Denov",
+    "chat": "-1004359200187",
+    "title": "Denov, Sariosiyo, Uzun",
     "code": "75",
-    "places": ["1722201", "1722204", "1722210", "1722217", "1722221", "1722226"],
+    "places": ["1722210", "1722217", "1722221"],
+    "hubs": ["1722210"],
+    "link": "https://t.me/+KSwgJejho8FlZTNi",
     "page": "/yonalish/toshkent-termiz/"
   },
   {
-    "username": "rida_xorazm",
-    "title": "Xorazm",
+    "chat": "-1004350515343",
+    "title": "Sherobod, Muzrabot, Termiz",
+    "code": "75",
+    "places": ["1722207", "1722220", "1722223", "1722401"],
+    "hubs": ["1722223"],
+    "link": "https://t.me/+V8zxTZO1M0o1NjVi",
+    "page": "/yonalish/toshkent-termiz/"
+  },
+  {
+    "chat": "-1003928932315",
+    "title": "Sherobod, Qiziriq, Jarqoʻrgʻon, Angor",
+    "code": "75",
+    "places": ["1722202", "1722212", "1722215", "1722223"],
+    "hubs": ["1722223"],
+    "link": "https://t.me/+QE8cLyFOWt5mNzBi",
+    "page": "/yonalish/toshkent-termiz/"
+  },
+  {
+    "chat": "-1004347401502",
+    "title": "Shoʻrchi, Oltinsoy, Denov",
+    "code": "75",
+    "places": ["1722201", "1722210", "1722226"],
+    "hubs": ["1722226"],
+    "link": "https://t.me/+fBh0OUfAQf1kZWVi",
+    "page": "/yonalish/toshkent-termiz/"
+  },
+  {
+    "chat": "-1004486613480",
+    "title": "Hazorasp, Bogʻot, Yangiariq, Xiva",
     "code": "90",
-    "places": [
-      "1733204",
-      "1733208",
-      "1733212",
-      "1733217",
-      "1733220",
-      "1733221",
-      "1733223",
-      "1733226",
-      "1733230",
-      "1733233",
-      "1733236",
-      "1733401",
-      "1733406"
-    ],
+    "places": ["1733204", "1733220", "1733226", "1733233", "1733406"],
+    "hubs": ["1733220"],
+    "link": "https://t.me/+CSnHS7vxpIlkMmZi",
     "page": "/yonalish/toshkent-urganch/"
   },
   {
-    "username": "rida_nukus",
-    "title": "Nukus",
+    "chat": "-1004292125942",
+    "title": "Tuproqqalʼa, Hazorasp, Xonqa",
+    "code": "90",
+    "places": ["1733220", "1733221", "1733223"],
+    "link": "https://t.me/+CF3aayQ4yPkzZGQ6",
+    "page": "/yonalish/toshkent-urganch/"
+  },
+  {
+    "chat": "-1004492557056",
+    "title": "Urganch shahri, Urganch tumani, Yangibozor",
+    "code": "90",
+    "places": ["1733217", "1733236", "1733401"],
+    "link": "https://t.me/+gtcdvazF_640YmQy",
+    "page": "/yonalish/toshkent-urganch/"
+  },
+  {
+    "chat": "-1004313383099",
+    "title": "Urganch, Qoʻshkoʻpir, Shovot, Gurlan",
+    "code": "90",
+    "places": ["1733208", "1733212", "1733217", "1733230", "1733401"],
+    "hubs": ["1733217", "1733401"],
+    "link": "https://t.me/+7mxJ4hGovAU3YWU6",
+    "page": "/yonalish/toshkent-urganch/"
+  },
+  {
+    "chat": "-1004323472905",
+    "title": "Beruniy, Amudaryo, Taxiatosh, Nukus shahri",
     "code": "95",
-    "places": [
-      "1735209",
-      "1735211",
-      "1735212",
-      "1735215",
-      "1735218",
-      "1735222",
-      "1735225",
-      "1735228",
-      "1735230",
-      "1735236",
-      "1735240",
-      "1735243",
-      "1735401"
-    ],
+    "places": ["1735204", "1735207", "1735228", "1735401"],
+    "hubs": ["1735207"],
+    "link": "https://t.me/+pJT2U3U38zEyNDcy",
     "page": "/yonalish/toshkent-nukus/"
   },
   {
-    "username": "rida_beruniy",
-    "title": "Beruniy, Toʻrtkoʻl",
+    "chat": "-1004317565998",
+    "title": "Nukus, Chimboy, Qoraoʻzak, Taxtakoʻpir",
     "code": "95",
-    "places": ["1735204", "1735207", "1735233", "1735250"],
+    "places": ["1735211", "1735225", "1735230", "1735240", "1735401"],
+    "hubs": ["1735225", "1735401"],
+    "link": "https://t.me/+dVeGPsxD_LNmMDJi",
+    "page": "/yonalish/toshkent-nukus/"
+  },
+  {
+    "chat": "-1003922991370",
+    "title": "Nukus, Nukus tumani, Kegeyli, Boʻzatov",
+    "code": "95",
+    "places": ["1735209", "1735212", "1735225", "1735401"],
+    "hubs": ["1735401"],
+    "link": "https://t.me/+6AUV_COhDZI3Nzg6",
+    "page": "/yonalish/toshkent-nukus/"
+  },
+  {
+    "chat": "-1004384598327",
+    "title": "Nukus, Qoʻngʻirot, Moʻynoq",
+    "code": "95",
+    "places": ["1735215", "1735222", "1735225", "1735401"],
+    "hubs": ["1735225", "1735401"],
+    "link": "https://t.me/+7MqKu5aCVBsxMTg6",
+    "page": "/yonalish/toshkent-nukus/"
+  },
+  {
+    "chat": "-1004365982403",
+    "title": "Nukus, Xoʻjayli, Shumanay, Qanlikoʻl",
+    "code": "95",
+    "places": ["1735218", "1735225", "1735236", "1735243", "1735401"],
+    "hubs": ["1735225", "1735401"],
+    "link": "https://t.me/+Ki6zCOxp_604NGZi",
+    "page": "/yonalish/toshkent-nukus/"
+  },
+  {
+    "chat": "-1004415390889",
+    "title": "Toʻrtkoʻl, Ellikqalʼa, Beruniy",
+    "code": "95",
+    "places": ["1735207", "1735233", "1735250"],
+    "link": "https://t.me/+CKs0Z6ZaKu9kMmIy",
     "page": "/yonalish/toshkent-nukus/"
   }
 ]

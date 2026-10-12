@@ -20,8 +20,8 @@ const MINUTE = 60 * 1000;
 const LINK = 'https://t.me/test_bot?startapp=trip_t1__driver';
 const publicity: TripPublicity = {
   channels: [
-    { username: 'yol_toshkent', title: 'Toshkent yoʻli', posted: false },
-    { username: 'yol_fargona', title: 'Fargʻona yoʻli', posted: true },
+    { chat: '-1001', title: 'Toshkent yoʻli', link: 'https://t.me/+toshkent', posted: false },
+    { chat: '-1002', title: 'Fargʻona yoʻli', link: 'https://t.me/+fargona', posted: true },
   ],
   views: 12,
   link: LINK,
@@ -60,7 +60,7 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     expect(card.previousElementSibling?.classList.contains('own-banner')).toBe(true);
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     fireEvent.click(screen.getByText('Safaringiz kanalda chiqdi'));
-    expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/yol_fargona');
+    expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/+fargona');
     fireEvent.click(screen.getByText('Havolani yoʻlovchilarga yuborish'));
     await vi.waitFor(() =>
       expect(opened.mock.calls[1]?.[0]).toBe(`https://t.me/share/url?url=${encodeURIComponent(LINK)}`),

@@ -56,7 +56,7 @@ export async function mockCases(page: Page) {
 
 export async function mockManagement(page: Page) {
   const health = (n: number, subscribers: number) => ({
-    username: `zone_${n}`,
+    chat: `@zone_${n}`,
     title: `zone ${n}`,
     subscribers,
     canPost: true,

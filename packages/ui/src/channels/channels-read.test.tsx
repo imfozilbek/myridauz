@@ -6,7 +6,13 @@ import { ReadChannelsScreen } from './channels-screen';
 
 afterEach(cleanup);
 
-const kitob: Channel = { username: 'ch_kitob', title: 'Kanal | Kitob', places: ['1710224'], fixed: false };
+const kitob: Channel = {
+  chat: '@ch_kitob',
+  link: 'https://t.me/ch_kitob',
+  title: 'Kanal | Kitob',
+  places: ['1710224'],
+  fixed: false,
+};
 const locations = {
   getLocations: async () => ({
     version: '1',

@@ -24,13 +24,15 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
   useScreenView('channels.edit');
   const { t } = useI18n();
   const { channels } = useApiClients();
-  const [username, setUsername] = useState(channel?.username ?? '');
+  // A channel of the team is a public one: its chat is "@" and its name (docs/63).
+  const known = channel?.chat.replace(/^@/u, '') ?? '';
+  const [username, setUsername] = useState(known);
   const [title, setTitle] = useState(channel?.title ?? '');
   const [places, setPlaces] = useState<readonly string[]>(channel?.places ?? []);
   const [region, setRegion] = useState<string | null>(null);
   const [error, setError] = useState<unknown>(null);
   const guard = useUnsavedGuard(
-    username !== (channel?.username ?? '') ||
+    username !== known ||
       title !== (channel?.title ?? '') ||
       places.join() !== (channel?.places ?? []).join(),
   );
@@ -99,12 +101,7 @@ export function ChannelEdit({ channel, directory, onBack }: Props) {
       {error ? <Text className="step-error">{t(errorKey(error))}</Text> : null}
       {channel ? (
         <div className="step-note">
-          <Button
-            mode="plain"
-            size="m"
-            stretched
-            onClick={() => run(() => channels.remove(channel.username))}
-          >
+          <Button mode="plain" size="m" stretched onClick={() => run(() => channels.remove(known))}>
             {t('channels.remove')}
           </Button>
         </div>

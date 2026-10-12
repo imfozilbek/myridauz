@@ -20,7 +20,7 @@ const samarqand = channelOf(loadBrand(), '1718401');
 const search = (id: number, from: string, init: object = on) =>
   call(`/trips?from=${from}&to=1726273&date=${tashkentDate(Date.now())}`, id, init);
 const invites = (id: number) =>
-  telegram.sentTo(id).filter((sent) => String(sent.body.text).includes('hududi kanalida'));
+  telegram.sentTo(id).filter((sent) => String(sent.body.text).includes('kanalida har kuni'));
 
 async function registerFrom(id: number, via: string) {
   const contact = await signTelegramData(
@@ -39,10 +39,12 @@ async function registerFrom(id: number, via: string) {
 
 describe('the channel of the zone of a new passenger (docs/119 row 6)', () => {
   it('invites a person who came by a channel post at the registration, once', async () => {
-    expect((await registerFrom(701, channelVia(samarqand?.username ?? ''))).status).toBe(201);
+    expect((await registerFrom(701, channelVia(samarqand?.chat ?? ''))).status).toBe(201);
     const [invite] = invites(701);
     expect(invite?.token).toBe(testEnv.PASSENGER_BOT_TOKEN);
-    expect(JSON.stringify(invite?.body.reply_markup)).toContain(`https://t.me/${samarqand?.username ?? ''}`);
+    // The channel by its name in Telegram (docs/176).
+    expect(String(invite?.body.text)).toContain(`«${loadBrand().name} | ${samarqand?.title ?? '-'}»`);
+    expect(JSON.stringify(invite?.body.reply_markup)).toContain(samarqand?.link ?? '-');
     await search(701, '1718401');
     expect(invites(701)).toHaveLength(1);
   });

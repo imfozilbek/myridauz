@@ -11,7 +11,7 @@
   "channel.book": "Joy band qilish",
   "channel.share": "📤 Doʻstga",
   "channel.shareText": "{from} → {to}, {date}: boʻsh joy bor.",
-  "zone.invite": "{zone} hududi kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz.",
+  "zone.invite": "«{brand} | {zone}» kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz.",
   "zone.join": "Kanalga oʻtish",
   "zone.find": "Safar topish",
   "channel.new": "🆕 Yangi safar",

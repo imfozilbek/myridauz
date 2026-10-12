@@ -14,9 +14,9 @@ const PLACES = new Map([
   ['1703', { name: 'Andijon viloyati', parentId: null }],
 ]);
 const CHANNELS = [
-  { username: 'yol_andijon', title: 'Andijon', places: ['1703'] },
-  { username: 'yol_samarqand', title: 'Samarqand', places: ['1718'] },
-  { username: 'yol_urgut', title: 'Urgut yoʻli', places: ['1718401'] },
+  { chat: '@yol_andijon', link: 'https://t.me/yol_andijon', title: 'Andijon', places: ['1703'] },
+  { chat: '@yol_samarqand', link: 'https://t.me/yol_samarqand', title: 'Samarqand', places: ['1718'] },
+  { chat: '@yol_urgut', link: 'https://t.me/yol_urgut', title: 'Urgut yoʻli', places: ['1718401'] },
 ];
 const TRIP: TripFacts = { driverId: DRIVER, from: '1726273', to: '1718401' };
 const LINK = 'https://t.me/test_bot?startapp=trip_trip-1__driver';
@@ -44,12 +44,12 @@ const postedOf = async (deps: PublicityDeps) =>
 describe('what the driver sees after the publishing (G63, docs/119)', () => {
   it('names the channels of both ends with the team ones, the people who opened it and the link', async () => {
     const { deps, posts, views } = setup();
-    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, NOW);
+    await posts.save({ tripId: 'trip-1', channel: '@yol_samarqand', messageId: 3 }, NOW);
     await views.record('trip-1', 21, NOW);
     expect(await tripPublicity(deps, DRIVER, 'trip-1')).toEqual({
       channels: [
-        { username: 'yol_samarqand', title: 'Samarqand', posted: true },
-        { username: 'yol_urgut', title: 'Urgut yoʻli', posted: false },
+        { chat: '@yol_samarqand', link: 'https://t.me/yol_samarqand', title: 'Samarqand', posted: true },
+        { chat: '@yol_urgut', link: 'https://t.me/yol_urgut', title: 'Urgut yoʻli', posted: false },
       ],
       views: 1,
       link: LINK,
@@ -64,7 +64,7 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
 
   it('shows no post while the channel posts are switched off', async () => {
     const { deps, posts } = setup({ enabled: false });
-    await posts.save({ tripId: 'trip-1', channel: 'yol_samarqand', messageId: 3 }, NOW);
+    await posts.save({ tripId: 'trip-1', channel: '@yol_samarqand', messageId: 3 }, NOW);
     expect(await postedOf(deps)).toEqual([false, false]);
   });
 

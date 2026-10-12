@@ -6,7 +6,12 @@ import { PLACES, TRIP } from './channels-fixtures';
 import { dayCard, weekCard } from './infrastructure/summary-text';
 
 const HOUR = 3_600_000;
-const SAMARQAND = { username: 'ch_samarqand', title: 'Samarqand', places: ['1718'] };
+const SAMARQAND = {
+  chat: '@ch_samarqand',
+  link: 'https://t.me/ch_samarqand',
+  title: 'Samarqand',
+  places: ['1718'],
+};
 const site = { bot: 'test_bot', domain: 'site.test', pageOf: () => '/yonalish/toshkent-samarqand/' };
 // Thursday 1.10.2026 22:10 and Monday 5.10.2026 10:10 in Tashkent.
 const EVENING = Date.parse('2026-10-01T17:10:00Z');

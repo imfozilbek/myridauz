@@ -6,7 +6,14 @@ import type { Page, Route } from '@playwright/test';
 const HOUR = 3_600_000;
 const SEAT = '00000000-0000-4000-8000-0000000000d1';
 const PUBLICITY = {
-  channels: [{ username: 'yol_samarqand', title: 'Samarqand yoʻli', posted: true }],
+  channels: [
+    {
+      chat: '-1001',
+      title: 'Samarqand shahri, Samarqand tumani',
+      link: 'https://t.me/+samarqand',
+      posted: true,
+    },
+  ],
   views: 3,
   link: 'https://t.me/test_bot?startapp=trip_1__driver',
 };

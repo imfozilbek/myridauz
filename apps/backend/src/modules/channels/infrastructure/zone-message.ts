@@ -11,10 +11,10 @@ export const zoneMessage =
   (userId: number, zone: BrandChannel): NotificationJob => ({
     bot: 'passenger',
     chatId: userId,
-    text: t('bot.zone.invite', { zone: zone.title }),
+    text: t('bot.zone.invite', { brand: brand.name, zone: zone.title }),
     markup: {
       inline_keyboard: [
-        [{ text: t('bot.zone.join'), url: `https://t.me/${zone.username}` }],
+        [{ text: t('bot.zone.join'), url: zone.link }],
         [{ text: t('bot.zone.find'), web_app: { url: `https://${appHost(brand, 'passenger')}/` } }],
       ],
     },

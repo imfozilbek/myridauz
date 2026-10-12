@@ -2,7 +2,8 @@ import { channelVia, tashkentDate, withVia, type Trip } from '@platform/contract
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { bold, escapeHtml, quote } from '../../../shared/telegram/html';
-import { postState, type ChannelCoverage } from '../domain/route-channels';
+import { postState } from '../domain/route-channels';
+import type { TeamChannel } from '../application/team';
 import { peopleOf } from './post-parts';
 
 const { t, formatDate, formatNumber } = createI18n(DEFAULT_LOCALE);
@@ -13,7 +14,6 @@ type Site = {
   readonly domain: string;
   readonly pageOf: (channel: string) => string | undefined;
 };
-type Channel = ChannelCoverage & { readonly title?: string };
 
 const live = (trips: readonly Trip[]) => trips.filter((trip) => trip.status !== 'cancelled' && !trip.private);
 const sum = (values: readonly number[]) => values.reduce((total, value) => total + value, 0);
@@ -25,7 +25,7 @@ const arrived = (trips: readonly Trip[], now: number) =>
 // tomorrow; at 22:00, without sound, once (G68, docs/122, mockup g68/5).
 export const dayCard =
   (site: Site) =>
-  (channel: Channel, today: readonly Trip[], tomorrow: readonly Trip[], now: number): Card | null => {
+  (channel: TeamChannel, today: readonly Trip[], tomorrow: readonly Trip[], now: number): Card | null => {
     const trips = live(today);
     if (trips.length === 0) return null;
     const values = {
@@ -39,10 +39,10 @@ export const dayCard =
       quote([t('bot.daySum.trips', values), t('bot.daySum.seats', values)]),
       ...(next > 0 ? [t('bot.daySum.tomorrow', { count: bold(String(next)) })] : []),
     ].join('\n');
-    const find = `https://t.me/${site.bot}?startapp=${withVia('', channelVia(channel.username))}`;
+    const find = `https://t.me/${site.bot}?startapp=${withVia('', channelVia(channel.chat))}`;
     return {
-      bot: 'passenger',
-      chatId: `@${channel.username}`,
+      bot: 'poster',
+      chatId: channel.chat,
       key: `day:${tashkentDate(now)}`,
       text,
       markup: { inline_keyboard: [[{ text: t('bot.daySum.find'), url: find }]] },
@@ -61,10 +61,10 @@ function driversRating(trips: readonly Trip[]): number | null {
 // with sound and the picture of the direction (G68, docs/122, mockup g68/5).
 export const weekCard =
   (site: Site) =>
-  (channel: Channel, week: readonly Trip[], now: number): Card | null => {
+  (channel: TeamChannel, week: readonly Trip[], now: number): Card | null => {
     const came = arrived(live(week), now);
     if (came.length === 0) return null;
-    const name = escapeHtml(channel.title ?? channel.username);
+    const name = escapeHtml(channel.title);
     const rating = driversRating(came);
     const values = { trips: bold(String(came.length)), people: bold(String(sum(came.map(peopleOf)))) };
     const lines = [
@@ -77,14 +77,14 @@ export const weekCard =
       t('bot.weekSum.thanks'),
     ].join('\n');
     const words = t('bot.weekSum.shareText', {
-      channel: channel.title ?? channel.username,
+      channel: channel.title,
       trips: String(came.length),
     });
-    const share = `https://t.me/share/url?url=${encodeURIComponent(`https://t.me/${channel.username}`)}&text=${encodeURIComponent(words)}`;
-    const page = site.pageOf(channel.username);
+    const share = `https://t.me/share/url?url=${encodeURIComponent(channel.link)}&text=${encodeURIComponent(words)}`;
+    const page = site.pageOf(channel.chat);
     return {
-      bot: 'passenger',
-      chatId: `@${channel.username}`,
+      bot: 'poster',
+      chatId: channel.chat,
       key: `week:${tashkentDate(now)}`,
       text,
       markup: { inline_keyboard: [[{ text: t('bot.weekSum.share'), url: share }]] },

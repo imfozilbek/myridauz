@@ -18,7 +18,7 @@ type TripsOfDate = (env: Bindings, date: string) => Promise<readonly Trip[]>;
 // The parts of the boards and the summaries: the channels, the trips, the site of the brand.
 function common(env: Bindings, tripsOf: TripsOfDate) {
   const brand = brandOf(env);
-  const pageOf = (username: string) => brand.channels.find((zone) => zone.username === username)?.page;
+  const pageOf = (chat: string) => brand.channels.find((channel) => channel.chat === chat)?.page;
   return {
     site: { bot: brand.bots.passenger, domain: brand.domain, pageOf },
     deps: {

@@ -6,8 +6,8 @@ type Places = ReadonlyMap<string, Place>;
 
 export const regionOf = (id: string, places: Places) => places.get(id)?.parentId ?? id;
 
-// A channel and the places it covers: a region, districts or both (docs/63).
-export type ChannelCoverage = { readonly username: string; readonly places: readonly string[] };
+// A channel as the bot names it (docs/176) and the places it covers: a region, districts or both.
+export type ChannelCoverage = { readonly chat: string; readonly places: readonly string[] };
 
 // A place and every place above it: a district, then its region.
 function lineOf(id: string, places: Places): string[] {
@@ -31,9 +31,7 @@ export function channelsOf(
   channels: readonly ChannelCoverage[],
 ): string[] {
   const reached = new Set([...lineOf(from, places), ...lineOf(to, places)]);
-  return channels
-    .filter((channel) => channel.places.some((place) => reached.has(place)))
-    .map((c) => c.username);
+  return channels.filter((channel) => channel.places.some((place) => reached.has(place))).map((c) => c.chat);
 }
 
 // What a post says about a trip now (docs/15, G68 «Post hayoti»): seats to book, the last seat, no

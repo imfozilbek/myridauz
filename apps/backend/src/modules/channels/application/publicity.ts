@@ -23,7 +23,7 @@ export type PublicityDeps = {
   readonly enabled: boolean;
   readonly trip: (id: string) => Promise<TripFacts | undefined>;
   readonly places: ChannelsDeps['places'];
-  // The zones of the brand and the channels of the team, with their titles (docs/63).
+  // The channels of the brand and of the team, with their titles and links (docs/63, docs/176).
   readonly channels: () => Promise<readonly TeamChannel[]>;
   readonly posts: Pick<ChannelPostStore, 'byTrip'>;
   readonly views: TripViewStore;
@@ -53,8 +53,8 @@ export async function tripPublicity(
   const reached = new Set(channelsOf(trip.from, trip.to, places, list));
   const saved = new Set(posts.map((post) => post.channel));
   const channels = list
-    .filter((channel) => reached.has(channel.username))
-    .map(({ username, title }) => ({ username, title, posted: deps.enabled && saved.has(username) }));
+    .filter((channel) => reached.has(channel.chat))
+    .map(({ chat, title, link }) => ({ chat, title, link, posted: deps.enabled && saved.has(chat) }));
   return { channels, views, link: deps.link(tripId) };
 }
 

@@ -10,7 +10,13 @@ const HOUR = 3_600_000;
 const TASHKENT = 'Toshkent shahri';
 // 2.10.2026 07:30 in Tashkent: the board of the day is up.
 const MORNING = Date.parse('2026-10-02T02:30:00Z');
-const SAMARQAND = { username: 'ch_samarqand', places: ['1718'] };
+const BUXORO = { chat: '@ch_buxoro', title: 'Buxoro', link: 'https://t.me/ch_buxoro', places: ['1706'] };
+const SAMARQAND = {
+  chat: '@ch_samarqand',
+  title: 'Samarqand',
+  link: 'https://t.me/ch_samarqand',
+  places: ['1718'],
+};
 const at = (hours: number) => Date.parse('2026-10-02T03:30:00Z') + hours * HOUR;
 const FIRST: Trip = { ...TRIP, id: '0f6c2b9e-0000-4000-8000-000000000001' };
 const TRIPS: Trip[] = [
@@ -50,7 +56,7 @@ describe('the board of the day in a channel (G68)', () => {
     ]);
     expect(card?.footer).toContain('vaqtni bossangiz, safar ochiladi');
     expect(card).toMatchObject({
-      bot: 'passenger',
+      bot: 'poster',
       chatId: '@ch_samarqand',
       key: 'board:2026-10-02',
       pin: true,
@@ -68,7 +74,7 @@ describe('the board of the day in a channel (G68)', () => {
     expect(road?.text).toContain('<s>08:30 Chilonzor → Samarqand shahri · yoʻlga chiqdi</s>');
     const came = render(SAMARQAND, [{ ...FIRST, status: 'completed' }], PLACES, at(6));
     expect(came?.text).toContain('· yetib bordi</s>');
-    expect(render({ username: 'ch_buxoro', places: ['1706'] }, [], PLACES, MORNING)).toBeNull();
+    expect(render(BUXORO, [], PLACES, MORNING)).toBeNull();
   });
 });
 
@@ -77,7 +83,7 @@ function setup(now: number, enabled = true) {
   const asked: string[] = [];
   const deps: BoardDeps = {
     enabled,
-    channels: async () => [SAMARQAND, { username: 'ch_buxoro', places: ['1706'] }],
+    channels: async () => [SAMARQAND, BUXORO],
     places: async () => PLACES,
     tripsOf: async (date) => (asked.push(date), TRIPS),
     card: render,
@@ -100,7 +106,7 @@ describe('showing the boards (G68)', () => {
 
   it('only the channels of one trip, and nothing while autoposting is off', async () => {
     const one = setup(MORNING);
-    await showBoards(one.deps, ['ch_buxoro']);
+    await showBoards(one.deps, ['@ch_buxoro']);
     expect(one.shown).toEqual([]);
     const off = setup(MORNING, false);
     await showBoards(off.deps);

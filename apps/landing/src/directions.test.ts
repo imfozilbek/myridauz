@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { directions } from './directions';
@@ -54,12 +54,10 @@ describe('directions for search engines (docs/60)', () => {
   });
 
   it('offers the channel of the direction under the buttons (docs/119)', () => {
-    // Toshkent has no channel: the channel of the zone of Samarqand.
-    const channel = brand.channels.find(
-      (zone) => zone.places.includes('1718401') || zone.places.includes('1718'),
-    );
+    // Toshkent has no channel: the own channel of Samarqand shahri (docs/176).
+    const channel = channelOf(brand, '1718401');
     const text = t('landing.direction.channel', { brand: brand.name, zone: channel?.title ?? '' });
-    expect(page).toContain(`class="button channel-button" href="https://t.me/${channel?.username}"`);
+    expect(page).toContain(`class="button channel-button" href="${channel?.link}"`);
     expect(page).toContain(escape(text));
   });
 

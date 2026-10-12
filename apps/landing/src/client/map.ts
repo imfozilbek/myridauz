@@ -3,9 +3,9 @@ import { fill, groupThousands } from './format';
 
 const SEATS = { min: 1, max: 4, first: 3 } as const;
 const CURVE = 0.25;
-// A SOATO code of a region and a Telegram username: the only values that go into links.
+// A SOATO code of a region and the code of a channel invite: the only values that go into links.
 const SOATO = /^\d{2,10}$/u;
-const USERNAME = /^[A-Za-z0-9_]{5,32}$/u;
+const INVITE = /^[A-Za-z0-9_-]{10,40}$/u;
 
 type Fetch = (url: string) => Promise<{ ok: boolean; json: () => Promise<unknown> }>;
 
@@ -79,16 +79,16 @@ export function initMap(root: HTMLElement, load: Fetch = (url) => fetch(url)) {
     text('[data-name=to]', to?.textContent ?? '');
     drawRoad(from, to);
     const route = [from?.value ?? '', to?.value ?? ''];
-    // Only codes and usernames go into a link, escaped: nothing of the page is read as a URL (CodeQL).
+    // Only codes go into a link, escaped: nothing of the page is read as a URL (CodeQL).
     if (route.every((code) => SOATO.test(code)))
       find<HTMLAnchorElement>('[data-go]')?.setAttribute(
         'href',
         `${data['bot'] ?? ''}?startapp=${withVia(`find_${route.map(encodeURIComponent).join('_')}`, VIA_SITE)}`,
       );
     const found = to?.dataset['channel'] ?? from?.dataset['channel'];
-    const channel = found && USERNAME.test(found) ? found : undefined;
+    const channel = found && INVITE.test(found) ? found : undefined;
     const link = find<HTMLAnchorElement>('[data-channel-link]');
-    if (link && channel) link.href = `https://t.me/${encodeURIComponent(channel)}`;
+    if (link && channel) link.href = `https://t.me/+${encodeURIComponent(channel)}`;
     link?.toggleAttribute('hidden', !channel);
     const places = [from?.dataset['place'] ?? '', to?.dataset['place'] ?? ''] as const;
     const key = places.join('_');

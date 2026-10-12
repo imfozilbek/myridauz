@@ -7,6 +7,7 @@ export const testEnv = {
   PASSENGER_BOT_TOKEN: '1:passenger',
   DRIVER_BOT_TOKEN: '2:driver',
   ADMIN_BOT_TOKEN: '3:admin',
+  POSTER_BOT_TOKEN: '4:poster',
   ADMIN_TELEGRAM_IDS: '900',
 };
 export const nowSeconds = () => Math.floor(Date.now() / 1000);

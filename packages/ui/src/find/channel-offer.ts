@@ -15,25 +15,25 @@ function offered(): string[] {
   }
 }
 
-function remember(username: string) {
+function remember(chat: string) {
   try {
-    localStorage.setItem(KEY, JSON.stringify([...offered(), username]));
+    localStorage.setItem(KEY, JSON.stringify([...offered(), chat]));
   } catch {
     // No storage on this phone: the card comes again next time.
   }
 }
 
-// The channel of the other end of the trip (docs/119): the zone of the place, or of a place of the
-// region when the search is a whole region. Tashkent has no channel (docs/15).
+// The channel of the other end of the trip (docs/119): the own channel of the place, or of a place
+// of the region when the search is a whole region. Tashkent has no channel (docs/15).
 // No route (a place gone from the directory): no channel.
 export function useChannelOffer(route: Route | null, directory: PlaceDirectory) {
   const brand = useBrand();
   const to = route?.to;
   const places = !to ? [] : to.parentId === null ? directory.inside(to.id).map((place) => place.id) : [to.id];
   const found = channelOf(brand, ...places);
-  const [hidden, setHidden] = useState(() => (found ? offered().includes(found.username) : true));
+  const [hidden, setHidden] = useState(() => (found ? offered().includes(found.chat) : true));
   const close = () => {
-    if (found) remember(found.username);
+    if (found) remember(found.chat);
     setHidden(true);
   };
   return { channel: hidden ? null : (found ?? null), close } satisfies {

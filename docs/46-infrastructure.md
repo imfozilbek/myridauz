@@ -44,6 +44,7 @@
 | `@myrida_haydovchi_bot` | `api.myrida.uz/telegram/driver` | «ilova» → `driver.myrida.uz` |
 | `@myrida_admin_bot` | `api.myrida.uz/telegram/admin` | «ilova» → `admin.myrida.uz`: поставил владелец в BotFather, код её не трогает |
 | `@myrida_support_bot` | `api.myrida.uz/telegram/support` | нет: люди пишут вопрос (G30, `50`) |
+| `@rida1uz_poster_bot` (бот каналов) | `api.myrida.uz/telegram/poster`: только `chat_member` | нет: публикует в 67 каналов (G80, `176`) |
 
 - Вебхук принимает только запросы с `secret_token` (заголовок Telegram).
 - Админ-бот открывает Mini App только команде. Остальных он ведёт в бот поддержки (G30).
@@ -52,7 +53,7 @@
 
 | Секрет | Где | Кто видит |
 |---|---|---|
-| Токены 4 ботов (`SUPPORT_BOT_TOKEN` с G30), `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker (`wrangler secret`) | Только Worker |
+| Токены 5 ботов (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80), `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker (`wrangler secret`) | Только Worker |
 | `ANALYTICS_API_TOKEN`, `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker | Только Worker |
 | `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`) | Секреты Worker | Только Worker |
 | `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `production` | Только job `deploy` на `main` |
@@ -80,6 +81,6 @@
 - Cron Worker: каждые 15 минут (`brands/rida/wrangler.toml`). Завершает поездки, закрывает
   старые заявки (`51`), шлёт пачки подписок и напоминания о поездке (`54`).
 - Посты в каналы включает переменная `CHANNEL_POSTS` в `wrangler.toml` (`off` или `on`, `54`).
-  Бот попутчиков должен быть админом 13 каналов с правом публиковать и менять посты.
+  Бот каналов `@rida1uz_poster_bot` должен быть админом 67 каналов с правом публиковать и менять посты (`176`).
 - После смены настроек ботов: `pnpm run setup-bots --brand=rida`. Он ставит вебхук, меню, команды, имя и описания ботов (`62`). После G06 обязательно:
   боты получают нажатия кнопок (`callback_query`, `50`).

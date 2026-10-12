@@ -22,7 +22,8 @@ describe('the mark of a link (G55, docs/116)', () => {
   });
 
   it('names a channel in a short mark of letters, digits and hyphens', () => {
-    expect(channelVia('yol_andijon')).toBe('ch-yol-andijon');
+    expect(channelVia('@yol_andijon')).toBe('ch-yol-andijon');
+    expect(channelVia('-1004328825984')).toBe('ch-1004328825984');
     expect(channelVia('Yol_Qashqadaryo_Shahrisabz')).toBe('ch-yol-qashqadaryo-sh');
     expect(channelVia('a_very_long_name_ending_in__')).toMatch(/^ch-[a-z0-9-]*[a-z0-9]$/);
   });

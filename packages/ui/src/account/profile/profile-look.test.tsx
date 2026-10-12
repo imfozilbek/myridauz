@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { approved, NOW, renderProfile, standing } from './profile-test-kit';
@@ -66,12 +66,11 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
   });
 
   it('counts the channels the person is in with their drawings (docs/119)', async () => {
-    const [andijon, samarqand] = loadBrand().channels.filter(
-      (zone) => zone.places.includes('1703202') || zone.places.includes('1718203'),
-    );
+    const brand = loadBrand();
+    const [andijon, samarqand] = ['1703202', '1718401'].map((place) => channelOf(brand, place));
     const mine = async () => [
-      { username: andijon?.username ?? '', member: true },
-      { username: samarqand?.username ?? '', member: true },
+      { chat: andijon?.chat ?? '', member: true },
+      { chat: samarqand?.chat ?? '', member: true },
     ];
     renderProfile({}, { clients: { channels: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));

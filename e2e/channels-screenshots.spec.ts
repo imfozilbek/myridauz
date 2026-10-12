@@ -12,10 +12,17 @@ const shot = (page: Page) => async (name: string) => {
   await page.mouse.move(0, 0);
   await page.screenshot({ path: `screenshots/channels-${name}.png`, fullPage: true });
 };
-// The channel zones of the brand and one district channel of the team (docs/63).
-const fixed = brand.channels.map(({ username, title, places }) => ({ username, title, places, fixed: true }));
+// The channels of the directions of the brand and one channel of the team (docs/176).
+const fixed = brand.channels.map(({ chat, link, title, places }) => ({
+  chat,
+  link,
+  title,
+  places,
+  fixed: true,
+}));
 const shahrisabz = {
-  username: 'ch_shahrisabz',
+  chat: '@ch_shahrisabz',
+  link: 'https://t.me/ch_shahrisabz',
   title: 'Kanal | Shahrisabz',
   places: ['1710245'],
   fixed: false,

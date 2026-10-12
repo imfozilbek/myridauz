@@ -23,8 +23,8 @@ export type HealthStore = {
 export type HealthDeps = {
   readonly channels: () => Promise<Channel[]>;
   readonly store: HealthStore;
-  readonly count: (username: string) => Promise<number | null>;
-  readonly canPost: (username: string) => Promise<boolean>;
+  readonly count: (chat: string) => Promise<number | null>;
+  readonly canPost: (chat: string) => Promise<boolean>;
   // The posts Telegram never took, by channel; the people who came by the marks of the channels.
   readonly failed: (since: number) => Promise<ReadonlyMap<string, number>>;
   readonly arrivals: (since: number) => Promise<ReadonlyMap<string, number>>;
@@ -40,14 +40,14 @@ export async function checkChannels(deps: HealthDeps): Promise<void> {
   const [channels, rows] = await Promise.all([deps.channels(), deps.store.rows()]);
   const checked = new Map(rows.map((row) => [row.channel, row.checkedAt]));
   const due = [...channels]
-    .sort((a, b) => (checked.get(a.username) ?? 0) - (checked.get(b.username) ?? 0))
+    .sort((a, b) => (checked.get(a.chat) ?? 0) - (checked.get(b.chat) ?? 0))
     .slice(0, CHECKED_PER_RUN);
-  for (const { username } of due) {
+  for (const { chat } of due) {
     const [subscribers, canPost] = await Promise.all([
-      deps.count(username),
-      deps.canPost(username).catch(() => null),
+      deps.count(chat),
+      deps.canPost(chat).catch(() => null),
     ]);
-    await deps.store.save({ channel: username, subscribers, canPost, checkedAt: deps.now() });
+    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt: deps.now() });
   }
 }
 
@@ -62,16 +62,16 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
   ]);
   const byChannel = new Map(rows.map((row) => [row.channel, row]));
   return {
-    channels: channels.map(({ username, title }) => {
-      const row = byChannel.get(username);
+    channels: channels.map(({ chat, title }) => {
+      const row = byChannel.get(chat);
       return {
-        username,
+        chat,
         title,
         subscribers: row?.subscribers ?? null,
         canPost: row?.canPost ?? null,
         checkedAt: row?.checkedAt ?? null,
-        failed: failed.get(username) ?? 0,
-        arrivals: arrivals.get(channelVia(username)) ?? 0,
+        failed: failed.get(chat) ?? 0,
+        arrivals: arrivals.get(channelVia(chat)) ?? 0,
       };
     }),
   };

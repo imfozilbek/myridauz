@@ -40,7 +40,7 @@ export function ChannelCard({ channel, region, onClose }: Props) {
 
 // Joined: it never comes again.
 function join(channel: BrandChannel, onClose: () => void) {
-  openInTelegram(`https://t.me/${channel.username}`);
+  openInTelegram(channel.link);
   onClose();
 }
 

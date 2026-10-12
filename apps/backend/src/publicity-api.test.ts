@@ -15,9 +15,10 @@ const OTHER_DRIVER = 194;
 const SEARCHER = 195;
 const POSTS_ON = { CHANNEL_POSTS: 'on' };
 const BRAND = loadBrand();
-// The zone of the brand that covers the end of the test route (docs/63).
-const ZONE = BRAND.channels.find((channel) => channel.places.includes('1718401'));
-const CHANNEL = { username: ZONE?.username, title: ZONE?.title };
+// The channels of the brand that cover the end of the test route (docs/176), in their order.
+const CHANNELS = BRAND.channels
+  .filter((channel) => channel.places.includes('1718401'))
+  .map(({ chat, title, link }) => ({ chat, title, link }));
 
 // Each trip a day after the one before, all within the 7 days from today; a driver has one live trip,
 // so the trip before ends first (docs/172).
@@ -60,7 +61,7 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
     // Reading the trip counts nothing: the search shows it from the list it already has.
     expect((await call(`/trips/${id}`, SEARCHER)).status).toBe(200);
     expect(await publicityOf(id)).toEqual({
-      channels: [{ ...CHANNEL, posted: false }],
+      channels: CHANNELS.map((channel) => ({ ...channel, posted: false })),
       views: 2,
       link: `https://t.me/${BRAND.bots.passenger}?startapp=trip_${id}__driver`,
     });
@@ -73,9 +74,13 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
 
   it('shows the post once Telegram gave it an id, never a post that is not there (docs/15)', async () => {
     const posted = await publishTrip(DRIVER, POSTS_ON);
-    expect((await publicityOf(posted.id, POSTS_ON)).channels).toEqual([{ ...CHANNEL, posted: true }]);
+    expect((await publicityOf(posted.id, POSTS_ON)).channels).toEqual(
+      CHANNELS.map((channel) => ({ ...channel, posted: true })),
+    );
     const before = await publishTrip();
-    expect((await publicityOf(before.id, POSTS_ON)).channels).toEqual([{ ...CHANNEL, posted: false }]);
+    expect((await publicityOf(before.id, POSTS_ON)).channels).toEqual(
+      CHANNELS.map((channel) => ({ ...channel, posted: false })),
+    );
   });
 
   it('answers only the driver of the trip', async () => {

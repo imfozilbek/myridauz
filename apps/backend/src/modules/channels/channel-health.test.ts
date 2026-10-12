@@ -8,7 +8,13 @@ import { createMemoryHealth, d1Health } from './infrastructure/d1-health';
 
 const NOW = Date.parse('2026-10-12T05:00:00Z');
 const DAY = 24 * 60 * 60 * 1000;
-const channel = (username: string): Channel => ({ username, title: username, places: ['1726'], fixed: true });
+const channel = (name: string): Channel => ({
+  chat: `@${name}`,
+  title: name,
+  places: ['1726'],
+  link: `https://t.me/${name}`,
+  fixed: true,
+});
 const CHANNELS = ['zone_samarqand', 'zone_buxoro', 'zone_navoiy', 'zone_xorazm'].map(channel);
 
 function setup(): HealthDeps & { readonly asked: string[] } {
@@ -17,12 +23,12 @@ function setup(): HealthDeps & { readonly asked: string[] } {
     asked,
     channels: async () => CHANNELS,
     store: createMemoryHealth(),
-    count: async (username) => {
-      asked.push(username);
-      return username === 'zone_navoiy' ? null : 1200;
+    count: async (chat) => {
+      asked.push(chat);
+      return chat === '@zone_navoiy' ? null : 1200;
     },
-    canPost: async (username) => username !== 'zone_buxoro',
-    failed: async () => new Map([['zone_buxoro', 4]]),
+    canPost: async (chat) => chat !== '@zone_buxoro',
+    failed: async () => new Map([['@zone_buxoro', 4]]),
     arrivals: async () => new Map([['ch-zone-samarqand', 17]]),
     now: () => NOW,
   };
@@ -33,13 +39,13 @@ describe('the health of the channels', () => {
   it('reads a few channels an hour from Telegram, the never checked first, then the oldest', async () => {
     const deps = setup();
     await deps.store.save({
-      channel: 'zone_samarqand',
+      channel: '@zone_samarqand',
       subscribers: 900,
       canPost: true,
       checkedAt: NOW - DAY,
     });
     await checkChannels(deps);
-    expect(deps.asked).toEqual(['zone_buxoro', 'zone_navoiy', 'zone_xorazm']);
+    expect(deps.asked).toEqual(['@zone_buxoro', '@zone_navoiy', '@zone_xorazm']);
     const health = await channelHealth(deps);
     expect(health.channels).toEqual([
       { ...row('zone_samarqand'), subscribers: 900, canPost: true, checkedAt: NOW - DAY, arrivals: 17 },
@@ -67,22 +73,27 @@ describe('the health of the channels', () => {
       { channel: 'zone_buxoro', subscribers: 50, canPost: false, checkedAt: NOW },
     ]);
     await db.exec(
-      `INSERT INTO dead_notifications (bot, chat_id, text, reason, at) VALUES ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW}), ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW - 9 * DAY}), ('passenger', 42, 't', 'telegram', ${NOW})`,
+      `INSERT INTO dead_notifications (bot, chat_id, text, reason, at) VALUES ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW}), ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW - 9 * DAY}), ('passenger', 42, 't', 'telegram', ${NOW}), ('passenger', -1004328825984, 't', 'telegram', ${NOW})`,
     );
     await db.exec(
       `INSERT INTO user_arrivals (user_id, source, via, client, arrived_at) VALUES (1, 'trip', 'ch-zone-buxoro', NULL, ${NOW}), (2, 'trip', 'site', NULL, ${NOW}), (3, 'trip', 'ch-zone-buxoro', NULL, ${NOW - 40 * DAY})`,
     );
-    expect(await deadPostsByChannel(db, NOW - 7 * DAY)).toEqual(new Map([['zone_buxoro', 1]]));
+    expect(await deadPostsByChannel(db, NOW - 7 * DAY)).toEqual(
+      new Map([
+        ['-1004328825984', 1],
+        ['@zone_buxoro', 1],
+      ]),
+    );
     expect(await arrivalsByChannelVia(db, NOW - 30 * DAY)).toEqual(new Map([['ch-zone-buxoro', 1]]));
     const scans = fullScans(db).filter((scan) => /dead_notifications|user_arrivals/.test(scan));
     expect(scans).toEqual([]);
   });
 });
 
-function row(username: string) {
+function row(name: string) {
   return {
-    username,
-    title: username,
+    chat: `@${name}`,
+    title: name,
     subscribers: null,
     canPost: null,
     checkedAt: null,

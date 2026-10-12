@@ -1,21 +1,50 @@
 import { describe, expect, it } from 'vitest';
-import { channelOfPlate } from './channels';
+import locations from '../apps/backend/seed/locations.json' with { type: 'json' };
+import { channelOf } from './channels';
 import { loadBrand } from './index';
 
-// The zone of a driver by the region of the car plate (G62, docs/119): the first number of the
-// region of each zone is its code; Tashkent (01 … 09) has no channel (docs/15).
-describe('channelOfPlate', () => {
-  const brand = loadBrand();
-  it('gives the main zone of the region of the plate', () => {
-    expect(channelOfPlate(brand, '30A123BC')?.username).toBe('rida_samarqand');
-    expect(channelOfPlate(brand, '39123ABC')?.username).toBe('rida_samarqand');
-    expect(channelOfPlate(brand, '40A123BC')?.username).toBe('rida_fargona');
-    expect(channelOfPlate(brand, '74A123BC')?.username).toBe('rida_qarshi');
-    expect(channelOfPlate(brand, '75A123BC')?.username).toBe('rida_termiz');
-    expect(channelOfPlate(brand, '95A123BC')?.username).toBe('rida_nukus');
+const brand = loadBrand();
+const TOSHKENT_SHAHRI = '1726';
+const SAMARQAND_SHAHRI = '1718401';
+const QOQON = '1730405';
+const SHEROBOD = '1722223';
+
+// 67 channels of directions (docs/176): every district and city outside Toshkent shahri is in one.
+describe('the channels of the brand', () => {
+  it('cover every place outside Toshkent shahri, each by a known place', () => {
+    const places = locations.filter((place) => place.parentId && place.parentId !== TOSHKENT_SHAHRI);
+    const covered = new Set(brand.channels.flatMap((channel) => channel.places));
+    expect(places.filter((place) => !covered.has(place.id))).toEqual([]);
+    const known = new Set(places.map((place) => place.id));
+    expect([...covered].filter((id) => !known.has(id))).toEqual([]);
   });
 
-  it('has no channel for a Tashkent plate', () => {
-    expect(channelOfPlate(brand, '01A123BC')).toBeUndefined();
+  it('have their own chat, title and invite link', () => {
+    expect(brand.channels).toHaveLength(67);
+    for (const key of ['chat', 'title', 'link'] as const)
+      expect(new Set(brand.channels.map((channel) => channel[key])).size).toBe(67);
+    expect(brand.channels.every((channel) => /^-100\d+$/u.test(channel.chat))).toBe(true);
+    expect(brand.channels.every((channel) => channel.link.startsWith('https://t.me/+'))).toBe(true);
+  });
+
+  it('only pass a hub they cover', () => {
+    for (const channel of brand.channels)
+      expect((channel.hubs ?? []).filter((hub) => !channel.places.includes(hub))).toEqual([]);
+  });
+});
+
+describe('channelOf', () => {
+  it('gives the channel that names a place, not one that only passes it', () => {
+    expect(channelOf(brand, QOQON)?.title).toBe('Qamchiq, Furqat, Qoʻqon');
+    expect(channelOf(brand, SAMARQAND_SHAHRI)?.title).toBe('Samarqand shahri, Samarqand tumani');
+  });
+
+  it('gives the first channel of a place every channel only passes', () => {
+    expect(channelOf(brand, SHEROBOD)?.title).toBe('Sherobod, Muzrabot, Termiz');
+  });
+
+  it('takes the next place when a place has no channel', () => {
+    expect(channelOf(brand, '1726262', QOQON)?.title).toBe('Qamchiq, Furqat, Qoʻqon');
+    expect(channelOf(brand, '1726262')).toBeUndefined();
   });
 });

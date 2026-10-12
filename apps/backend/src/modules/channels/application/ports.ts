@@ -17,7 +17,7 @@ type Place = { readonly name: string; readonly parentId: string | null };
 export type ChannelsDeps = {
   // Autoposting starts only when the owner switches it on (docs/33, public action).
   readonly enabled: boolean;
-  // The 13 region channels of the brand and the channels the team added (docs/63).
+  // The channels of the directions of the brand and the channels the team added (docs/176, docs/63).
   readonly channels: () => Promise<readonly ChannelCoverage[]>;
   readonly places: () => Promise<ReadonlyMap<string, Place>>;
   readonly trip: (id: string) => Promise<Trip | undefined>;

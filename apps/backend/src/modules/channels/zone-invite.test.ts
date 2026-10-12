@@ -28,7 +28,7 @@ describe('the channel of the zone after the registration (docs/119 row 6)', () =
     expect(sent).toHaveLength(1);
     expect(sent[0]).toMatchObject({ bot: 'passenger', chatId: 5 });
     const markup = JSON.stringify(sent[0]);
-    expect(markup).toContain(`"url":"https://t.me/${zone?.username ?? ''}"`);
+    expect(markup).toContain(`"url":"${zone?.link ?? ''}"`);
     expect(markup).toContain('Kanalga oʻtish');
     expect(markup).toContain('Safar topish');
   });

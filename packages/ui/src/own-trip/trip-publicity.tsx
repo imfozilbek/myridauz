@@ -33,11 +33,7 @@ export function TripPublicity({ trip }: { readonly trip: Trip }) {
   return (
     <div className="own-channel">
       {channel ? (
-        <button
-          type="button"
-          className="own-channel-top"
-          onClick={() => openInTelegram(`https://t.me/${channel.username}`)}
-        >
+        <button type="button" className="own-channel-top" onClick={() => openInTelegram(channel.link)}>
           {picture ? <img className="own-channel-art" src={picture} alt={name} /> : null}
           <span className="own-channel-text">
             <b>{t('driverTrip.channel.title')}</b>

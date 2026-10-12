@@ -1,4 +1,10 @@
-import type { Stats, StatsPeriod } from '@platform/contracts';
+import { channelOf, loadBrand } from '@platform/brands';
+import { CHANNEL_VIA_PREFIX, channelVia, type Stats, type StatsPeriod } from '@platform/contracts';
+
+// The mark of the channel of Samarqand shahri: its number, the screen shows its title (docs/176).
+const SAMARQAND_MARK = channelVia(channelOf(loadBrand(), '1718401')?.chat ?? '').slice(
+  CHANNEL_VIA_PREFIX.length,
+);
 
 // A dashboard answer for tests and screenshots (docs/29).
 export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): Stats => ({
@@ -13,7 +19,7 @@ export const statsOf = (period: StatsPeriod, events: Stats['events'] = 'on'): St
   },
   arrivals: {
     sources: [
-      { kind: 'channel', mark: 'yol-samarqand', count: period === 'day' ? 11 : 64 },
+      { kind: 'channel', mark: SAMARQAND_MARK, count: period === 'day' ? 11 : 64 },
       { kind: 'direct', mark: '', count: period === 'day' ? 7 : 49 },
       { kind: 'ad', mark: 'insta1', count: period === 'day' ? 4 : 31 },
       { kind: 'story', mark: '', count: period === 'day' ? 2 : 14 },

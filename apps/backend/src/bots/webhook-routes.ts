@@ -3,9 +3,9 @@ import type { AppEnv } from '../env';
 import { recordServerEvent } from '../modules/analytics';
 import { teamRole } from '../modules/team';
 import { isBlocked } from '../modules/users';
-import { safeEqual } from '../shared/http/safe-equal';
 import { botToken } from '../shared/telegram/bot-config';
 import type { Fetch } from '../shared/telegram/telegram-api';
+import { fromTelegram } from '../shared/telegram/webhook-secret';
 import { onAdminCallback } from './admin-callbacks';
 import { isAskButton, onAskCallback } from './ask-callbacks';
 import { isNewsOffButton, onNewsOffCallback } from './news-callbacks';
@@ -21,7 +21,6 @@ import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
 import { brandOf } from '../shared/brand/brand-of';
 
-const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 const UNAUTHORIZED = 401;
 const NOT_FOUND = 404;
 
@@ -33,7 +32,7 @@ export function webhookRoutes(fetch: Fetch) {
     if (role !== SUPPORT_BOT && !isBotRole(role)) return context.body(null, NOT_FOUND);
     const secret = context.env.TELEGRAM_WEBHOOK_SECRET;
     if (!secret || !botToken(context.env, role)) return context.body(null, NOT_FOUND);
-    if (!safeEqual(context.req.header(SECRET_HEADER) ?? '', secret)) return context.body(null, UNAUTHORIZED);
+    if (!fromTelegram(context.req, secret)) return context.body(null, UNAUTHORIZED);
     const update = telegramUpdateSchema.safeParse(await context.req.json().catch(() => null));
     if (!update.success) return context.json({});
     const event = botEventOf(role, update.data);

@@ -31,13 +31,14 @@ const token = () => `${randomBytes(4).readUInt32BE()}:${randomBytes(24).toString
 
 mkdirSync(STAND_DIR, { recursive: true });
 // Made again when a value is new (the support bot, G30; calls, G33): every bot needs its token.
-const LAST_BOT = 'TURN_KEY_TOKEN=';
+const LAST_BOT = 'POSTER_BOT_TOKEN=';
 if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_BOT)) {
   const vars = {
     PASSENGER_BOT_TOKEN: token(),
     DRIVER_BOT_TOKEN: token(),
     ADMIN_BOT_TOKEN: token(),
     SUPPORT_BOT_TOKEN: token(),
+    POSTER_BOT_TOKEN: token(),
     TELEGRAM_WEBHOOK_SECRET: randomBytes(16).toString('hex'),
     ADMIN_TELEGRAM_IDS: String(STAND_OWNER_ID),
     // Calls are switched on with values that reach nothing: a call rings, but never connects (G33).

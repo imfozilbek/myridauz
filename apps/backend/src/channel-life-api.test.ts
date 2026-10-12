@@ -20,7 +20,7 @@ afterAll(() => {
 // The owner approved the post: autoposting is on in this test (docs/33).
 Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
 const brand = loadBrand();
-const SAMARQAND = `@${channelOf(brand, '1718401')?.username ?? ''}`;
+const SAMARQAND = channelOf(brand, '1718401')?.chat ?? '';
 const HOUR = 3_600_000;
 const [DRIVER, PASSENGER, OTHER_DRIVER] = [81, 82, 83];
 const trip = (departAt: number) =>

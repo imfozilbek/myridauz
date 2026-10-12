@@ -50,7 +50,7 @@ describe('landing (G15)', () => {
     expect(home).toContain('data-region="1718"');
     expect(home).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1726_1718__site"`);
     expect(home).toContain('src="/art/hero-map.webp"');
-    expect(home).toContain('<b class="code">30</b>Samarqand</a></li>');
+    expect(home).toContain('<b class="code">30</b>Samarqand shahri, Samarqand tumani</a></li>');
     expect(home.match(/<details/gu)).toHaveLength(7);
     expect(home).toContain('<script>run()</script>');
   });
