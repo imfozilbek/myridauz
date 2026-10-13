@@ -43,6 +43,9 @@ describe('the card of a channel (docs/119)', () => {
     const logo = screen.getByAltText('Boʻka | Bekobod');
     expect(logo.getAttribute('src')).toBe(`/channels/${samarqand?.code ?? ''}.webp`);
     expect(screen.getByText('Boʻka | Bekobod', { selector: '.channel-card-name' })).toBeTruthy();
+    // The name says the places: the hint does not say them again (owner 13.10.2026, docs/177).
+    const hint = screen.getByText('Shu yoʻnalishdagi barcha yangi safarlar bir joyda');
+    expect(hint.className).toBe('channel-card-hint');
   });
 
   it('joins by the own link of the app once the server gave it', async () => {

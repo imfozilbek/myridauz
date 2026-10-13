@@ -10,7 +10,7 @@
 | `bot.zone.invite` (после регистрации) | {zone} hududi kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. | «{channel}» kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. |
 
 - В `bot.driver.channel` `{username}` это главный канал `@rida1uz`: водитель ездит по разным направлениям, ему нужны все каналы.
-- В `bot.zone.invite` `{channel}` это имя канала в Telegram как есть, например «Rida | Samarqand shahri | Samarqand tumani» (13.10.2026, ниже).
+- В `bot.zone.invite` `{channel}` это имя канала в Telegram как есть, например «Rida | Samarqand shahri | Samarqand tumani» (13.10.2026, ниже). Бот пишет имя целиком, без бренда его пишет только Mini App.
 
 ## Ссылка приложения в канале
 
@@ -30,7 +30,8 @@
 
 - `bot.profile.driver.description` (профиль бота водителя): как есть, решение владельца 13.10.2026 «профиль бота потом решим».
 - «Kanalga oʻtish», «Safar topish», «Safar eʼlon qilish», «Kanallar», «Siz uchun», «Qoʻshilish», «✓ Aʼzosiz».
-## Имя канала как в Telegram (13.10.2026, на согласие)
+
+## Имя канала как в Telegram (согласие владельца: да, 13.10.2026)
 
 Владелец: «название бери из самих каналов» (`176`). Имя канала больше не собирается из текста: его берём из Telegram.
 
@@ -41,3 +42,6 @@
 | `find.channel` (карточка канала в поиске) | {brand} \| {zone} kanali | Удалён: имя канала из Telegram |
 | `driverTrip.channel.name` («Safaringiz kanalda chiqdi») | {brand} \| {title} | Удалён: имя канала из Telegram |
 | `channels.mine.zone` («Kanallar», строка под именем) | {brand} \| {zone} | Удалён: строку мест под именем убрали |
+| `find.channelHint` (карточка и строка канала в поиске) | {zone} yoʻnalishidagi barcha yangi safarlar bir joyda | Shu yoʻnalishdagi barcha yangi safarlar bir joyda |
+
+- `find.channelHint`: имя канала уже называет места, подсказка их не повторяет (совет Claude, «да» владельца 13.10.2026).

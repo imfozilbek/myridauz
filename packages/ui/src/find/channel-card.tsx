@@ -11,8 +11,9 @@ import { WayRow } from './way-row';
 type Props = { readonly channel: BrandChannel; readonly onClose: () => void };
 
 // The channel of the direction (docs/119, mockup 7-channels-1) with its logo and name from Telegram
-// without the brand (owner 13.10.2026, docs/176): the new trips of the zone without opening the app; every post leads
-// back to Rida (docs/18). Joined or closed: it never comes again.
+// without the brand (owner 13.10.2026, docs/176); the hint does not say the places again, the name
+// says them. The new trips of the zone without opening the app; every post leads back to Rida
+// (docs/18). Joined or closed: it never comes again.
 export function ChannelCard({ channel, onClose }: Props) {
   const { t } = useI18n();
   const link = useChannelLink(channel);
@@ -23,7 +24,7 @@ export function ChannelCard({ channel, onClose }: Props) {
         <img className="channel-card-art" src={channelLogo(channel)} alt={name} />
         <span className="channel-card-text">
           <span className="channel-card-name">{name}</span>
-          <span className="channel-card-hint">{t('find.channelHint', { zone: channel.title })}</span>
+          <span className="channel-card-hint">{t('find.channelHint')}</span>
         </span>
         <button type="button" className="channel-card-close" aria-label={t('common.close')} onClick={onClose}>
           <Icon name="close" size={18} />
@@ -51,7 +52,7 @@ export function ChannelRow({ channel, onClose }: Props) {
     <WayRow
       icon={{ src: channelLogo(channel), alt: name }}
       title={name}
-      hint={t('find.channelHint', { zone: channel.title })}
+      hint={t('find.channelHint')}
       onClick={() => join(link, onClose)}
     />
   );
