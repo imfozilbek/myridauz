@@ -1,5 +1,5 @@
 import { configure } from '@testing-library/react';
-import { beforeEach, vi } from 'vitest';
+import { afterAll, beforeEach, vi } from 'vitest';
 import { forgetSheets } from './action-sheet/action-queue';
 import { forgetAllLists } from './screen/list-memory';
 
@@ -20,3 +20,19 @@ beforeEach(() => {
 
 // jsdom has no scrolling: a screen that opens at the top calls a no-op here.
 if (typeof window !== 'undefined') window.scrollTo = () => undefined;
+
+// A sheet of vaul sets React state on its timers (the longest is 500 ms), also after the test left the
+// page; a timer that outlives the file breaks the run: «window is not defined» (lessons 194, 203, 235,
+// 244, 270). A file that opened a sheet waits for them once at the end.
+const SHEET_TIMERS_MS = 600;
+let sheetOpened = false;
+if (typeof document !== 'undefined') {
+  new MutationObserver(() => {
+    sheetOpened ||= document.querySelector('[vaul-drawer]') !== null;
+  }).observe(document.body, { childList: true, subtree: true });
+}
+afterAll(async () => {
+  if (!sheetOpened) return;
+  vi.useRealTimers();
+  await new Promise((done) => setTimeout(done, SHEET_TIMERS_MS));
+});
