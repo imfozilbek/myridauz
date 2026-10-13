@@ -14,9 +14,12 @@ const brand = loadBrand();
 const [andijon, samarqand, fargona, qoqon] = ['1703202', '1718401', '1730401', '1730405'].map((place) =>
   channelOf(brand, place),
 );
+// The server made the link «Rida ilovasi» of Qoʻqon, not yet of the others (docs/176).
+const APP_LINK = 'https://t.me/+app_qoqon';
 const made = [andijon, samarqand, fargona, qoqon].map((zone) => ({
   chat: zone?.chat ?? '',
   member: zone === samarqand,
+  link: zone === qoqon ? APP_LINK : (zone?.link ?? ''),
 }));
 const ride = (id: string): HistoryItem => ({
   id,
@@ -90,12 +93,12 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
     expect(screen.getByText('Bunday kanal topilmadi')).toBeTruthy();
   });
 
-  it('opens the channel in Telegram from «Qoʻshilish»', async () => {
+  it('opens the channel in Telegram from «Qoʻshilish» by the own link of the app', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     await openChannels(passenger);
     fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'qoʻqon' } });
     fireEvent.click(screen.getByText('Qoʻshilish'));
-    expect(open.mock.calls[0]?.[0]).toBe(qoqon?.link);
+    expect(open.mock.calls[0]?.[0]).toBe(APP_LINK);
     open.mockRestore();
   });
 

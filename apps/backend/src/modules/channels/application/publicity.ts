@@ -25,6 +25,8 @@ export type PublicityDeps = {
   readonly places: ChannelsDeps['places'];
   // The channels of the brand and of the team, with their titles and links (docs/63, docs/176).
   readonly channels: () => Promise<readonly TeamChannel[]>;
+  // The links «Rida ilovasi» the hourly check made (docs/176): the driver joins by the app's link.
+  readonly appLinks: () => Promise<ReadonlyMap<string, string>>;
   readonly posts: Pick<ChannelPostStore, 'byTrip'>;
   readonly views: TripViewStore;
   // The link the driver sends to people: it carries its own mark (docs/116).
@@ -44,9 +46,10 @@ export async function tripPublicity(
 ): Promise<TripPublicity | undefined> {
   const trip = await deps.trip(tripId);
   if (trip?.driverId !== driverId) return undefined;
-  const [places, list, posts, views] = await Promise.all([
+  const [places, list, links, posts, views] = await Promise.all([
     deps.places(),
     deps.channels(),
+    deps.appLinks(),
     deps.posts.byTrip(tripId),
     deps.views.count(tripId),
   ]);
@@ -54,7 +57,12 @@ export async function tripPublicity(
   const saved = new Set(posts.map((post) => post.channel));
   const channels = list
     .filter((channel) => reached.has(channel.chat))
-    .map(({ chat, title, link }) => ({ chat, title, link, posted: deps.enabled && saved.has(chat) }));
+    .map(({ chat, title, link }) => ({
+      chat,
+      title,
+      link: links.get(chat) ?? link,
+      posted: deps.enabled && saved.has(chat),
+    }));
   return { channels, views, link: deps.link(tripId) };
 }
 

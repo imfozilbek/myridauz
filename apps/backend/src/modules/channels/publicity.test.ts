@@ -29,6 +29,8 @@ function setup(change: Partial<PublicityDeps> = {}) {
     trip: async (id) => (id === 'trip-1' ? TRIP : undefined),
     places: async () => PLACES,
     channels: async () => CHANNELS,
+    // The check made the link «Rida ilovasi» of Urgut, not yet of Samarqand (docs/176).
+    appLinks: async () => new Map([['@yol_urgut', 'https://t.me/+app_urgut']]),
     posts,
     views,
     link: (id) => `https://t.me/test_bot?startapp=trip_${id}__driver`,
@@ -49,7 +51,7 @@ describe('what the driver sees after the publishing (G63, docs/119)', () => {
     expect(await tripPublicity(deps, DRIVER, 'trip-1')).toEqual({
       channels: [
         { chat: '@yol_samarqand', link: 'https://t.me/yol_samarqand', title: 'Samarqand', posted: true },
-        { chat: '@yol_urgut', link: 'https://t.me/yol_urgut', title: 'Urgut yoʻli', posted: false },
+        { chat: '@yol_urgut', link: 'https://t.me/+app_urgut', title: 'Urgut yoʻli', posted: false },
       ],
       views: 1,
       link: LINK,

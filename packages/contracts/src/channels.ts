@@ -51,9 +51,14 @@ export type TripPublicity = z.infer<typeof tripPublicitySchema>;
 // The trip page of the passenger app says it was opened: from the search, a post button or a link.
 export const tripViewPath = (tripId: string) => `${TRIPS_PATH}/${tripId}/view`;
 
-// «Kanallar» of a person (G65, docs/119): the channels of the zones that are there, and «✓ Aʼzosiz».
+// «Kanallar» of a person (G65, docs/119): the channels of the zones that are there, «✓ Aʼzosiz», and
+// the link the app opens: «Rida ilovasi» once the bot made it (docs/176).
 export const MY_CHANNELS_PATH = '/me/channels';
-export const myChannelSchema = z.object({ chat: z.string().regex(CHANNEL_CHAT), member: z.boolean() });
+export const myChannelSchema = z.object({
+  chat: z.string().regex(CHANNEL_CHAT),
+  member: z.boolean(),
+  link: channelLinkSchema,
+});
 export type MyChannel = z.infer<typeof myChannelSchema>;
 export const myChannelsSchema = z.object({ channels: z.array(myChannelSchema) });
 export type MyChannels = z.infer<typeof myChannelsSchema>;

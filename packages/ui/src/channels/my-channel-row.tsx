@@ -28,7 +28,7 @@ export function MyChannelRow({ mine, line }: { readonly mine: MyChannel; readonl
       <button
         type="button"
         className={mine.member ? 'my-channel-pill my-channel-in' : 'my-channel-pill'}
-        onClick={() => openInTelegram(mine.channel.link)}
+        onClick={() => openInTelegram(mine.link)}
       >
         {t(mine.member ? 'channels.mine.member' : 'channels.mine.join')}
       </button>

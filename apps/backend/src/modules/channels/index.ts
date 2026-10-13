@@ -10,8 +10,8 @@ import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone
 import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
 import { healthRoutes } from './http/health-routes';
-import { checkChannels } from './application/health';
-import { healthDeps } from './health-deps';
+import { appLinks, checkChannels } from './application/health';
+import { healthDeps, healthStoreOf } from './health-deps';
 import { myChannelsRoutes } from './http/my-channels-routes';
 import { posterRoutes } from './http/poster-routes';
 export { POSTER_WEBHOOK_PATH } from './http/poster-routes';
@@ -110,6 +110,7 @@ const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
   trip: (id) => tripOf(env, id),
   places: () => placesOf(env),
   channels: async () => allChannels(await teamDeps(env)),
+  appLinks: () => appLinks(healthStoreOf(env)),
   posts: postsOf(env),
   views: viewsOf(env),
   link: (tripId) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_DRIVER),

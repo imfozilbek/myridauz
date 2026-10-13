@@ -1,5 +1,6 @@
 import type { BrandChannel } from '@platform/brands';
 import type { MyChannel } from '@platform/contracts';
+import type { HealthRow } from './health';
 
 // One join or leave the bot of the posts heard in a channel (chat_member, docs/176).
 export type MemberChange = {
@@ -20,17 +21,19 @@ export type MyChannelsDeps = {
   // The channels of the directions of the brand (docs/176).
   readonly zones: readonly BrandChannel[];
   readonly members: ChannelMembers;
-  // The channels the last check found the bot may not post in (G75): not there for people.
-  readonly broken: () => Promise<ReadonlySet<string>>;
+  // What the hourly check last read of each channel (G75).
+  readonly health: () => Promise<readonly HealthRow[]>;
 };
 
 // «Kanallar» of a person (G65, docs/119): every channel the bot can post in, «✓ Aʼzosiz» on the ones
-// the person is in. Two reads of D1, never a call a channel to Telegram (docs/117).
+// the person is in, and the link «Rida ilovasi» once the check made it (docs/176). Two reads of D1,
+// never a call a channel to Telegram (docs/117).
 export async function myChannels(deps: MyChannelsDeps, userId: number): Promise<MyChannel[]> {
-  const [joined, broken] = await Promise.all([deps.members.joined(userId), deps.broken()]);
+  const [joined, rows] = await Promise.all([deps.members.joined(userId), deps.health()]);
+  const checked = new Map(rows.map((row) => [row.channel, row]));
   return deps.zones
-    .filter(({ chat }) => !broken.has(chat))
-    .map(({ chat }) => ({ chat, member: joined.has(chat) }));
+    .filter(({ chat }) => checked.get(chat)?.canPost !== false)
+    .map(({ chat, link }) => ({ chat, member: joined.has(chat), link: checked.get(chat)?.appLink ?? link }));
 }
 
 export type HeardDeps = {

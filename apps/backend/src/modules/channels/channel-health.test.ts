@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { fullScans, testD1 } from '../../test-d1';
 import { deadPostsByChannel } from '../notifications/infrastructure/dead-posts';
 import { arrivalsByChannelVia } from '../users/infrastructure/channel-arrivals';
-import { channelHealth, checkChannels, type HealthDeps } from './application/health';
+import { appLinks, channelHealth, checkChannels, type HealthDeps } from './application/health';
 import { createMemoryHealth, d1Health } from './infrastructure/d1-health';
 
 const NOW = Date.parse('2026-10-12T05:00:00Z');
@@ -17,10 +17,12 @@ const channel = (name: string): Channel => ({
 });
 const CHANNELS = ['zone_samarqand', 'zone_buxoro', 'zone_navoiy', 'zone_xorazm'].map(channel);
 
-function setup(): HealthDeps & { readonly asked: string[] } {
+function setup(): HealthDeps & { readonly asked: string[]; readonly linked: string[] } {
   const asked: string[] = [];
+  const linked: string[] = [];
   return {
     asked,
+    linked,
     channels: async () => CHANNELS,
     store: createMemoryHealth(),
     count: async (chat) => {
@@ -28,6 +30,11 @@ function setup(): HealthDeps & { readonly asked: string[] } {
       return chat === '@zone_navoiy' ? null : 1200;
     },
     canPost: async (chat) => chat !== '@zone_buxoro',
+    // Telegram makes the link «Rida ilovasi» of every channel but Navoiy.
+    appLink: async (chat) => {
+      linked.push(chat);
+      return chat === '@zone_navoiy' ? null : `https://t.me/+app_${chat.slice(1)}`;
+    },
     failed: async () => new Map([['@zone_buxoro', 4]]),
     arrivals: async () => new Map([['ch-zone-samarqand', 17]]),
     now: () => NOW,
@@ -43,6 +50,7 @@ describe('the health of the channels', () => {
       subscribers: 900,
       canPost: true,
       checkedAt: NOW - DAY,
+      appLink: null,
     });
     await checkChannels(deps);
     expect(deps.asked).toEqual(['@zone_buxoro', '@zone_navoiy', '@zone_xorazm']);
@@ -53,6 +61,26 @@ describe('the health of the channels', () => {
       { ...row('zone_navoiy'), subscribers: null, canPost: true, checkedAt: NOW },
       { ...row('zone_xorazm'), subscribers: 1200, canPost: true, checkedAt: NOW },
     ]);
+  });
+
+  // Owner decision 4 (docs/176): the app opens its own link of each channel, Telegram counts by it.
+  it('makes the own link of the app in a channel once and makes a failed one at the next check', async () => {
+    const deps = setup();
+    for (let hour = 0; hour < 3; hour += 1) await checkChannels({ ...deps, now: () => NOW + hour });
+    expect(deps.linked.toSorted()).toEqual([
+      '@zone_buxoro',
+      '@zone_navoiy',
+      '@zone_navoiy',
+      '@zone_samarqand',
+      '@zone_xorazm',
+    ]);
+    expect(await appLinks(deps.store)).toEqual(
+      new Map([
+        ['@zone_samarqand', 'https://t.me/+app_zone_samarqand'],
+        ['@zone_buxoro', 'https://t.me/+app_zone_buxoro'],
+        ['@zone_xorazm', 'https://t.me/+app_zone_xorazm'],
+      ]),
+    );
   });
 
   it('shows a channel never checked with no numbers yet', async () => {
@@ -68,9 +96,10 @@ describe('the health of the channels', () => {
   it('keeps the rows, counts the lost posts and the arrivals in D1 without a full scan', async () => {
     const db = testD1();
     const store = d1Health(db);
-    await store.save({ channel: 'zone_buxoro', subscribers: 50, canPost: false, checkedAt: NOW });
+    const appLink = 'https://t.me/+app';
+    await store.save({ channel: 'zone_buxoro', subscribers: 50, canPost: false, checkedAt: NOW, appLink });
     expect(await store.rows()).toEqual([
-      { channel: 'zone_buxoro', subscribers: 50, canPost: false, checkedAt: NOW },
+      { channel: 'zone_buxoro', subscribers: 50, canPost: false, checkedAt: NOW, appLink },
     ]);
     await db.exec(
       `INSERT INTO dead_notifications (bot, chat_id, text, reason, at) VALUES ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW}), ('passenger', '@zone_buxoro', 't', 'telegram', ${NOW - 9 * DAY}), ('passenger', 42, 't', 'telegram', ${NOW}), ('passenger', -1004328825984, 't', 'telegram', ${NOW})`,

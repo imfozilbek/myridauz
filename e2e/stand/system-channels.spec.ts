@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { channelOf, loadBrand } from '../../brands/index';
-import { createComfortClient, createMarketClient } from '@platform/api-client';
+import { createChannelsClient, createComfortClient, createMarketClient } from '@platform/api-client';
 import { showChat } from './bot-chat';
 import { channelChat } from './first-contact-kit';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
@@ -53,4 +53,12 @@ test('P52. the history keeps a ride that ended, with whom', async () => {
   const ridden = async () =>
     (await history.history()).some((ride) => ride.from === trip.from && ride.to === trip.to);
   await expect.poll(ridden).toBe(true);
+});
+
+// Owner decision 4 (docs/176): the hourly check makes the own link of the app of a channel once, and
+// «Kanallar» gives it, so Telegram counts who joined from the app.
+test('S76. the check makes the link of the app of a channel, «Kanallar» gives it', async () => {
+  await runCron();
+  const mine = await createChannelsClient(await signedAs('passenger', NARGIZA)).mine();
+  expect(mine.some((channel) => channel.link.startsWith('https://t.me/+stand'))).toBe(true);
 });

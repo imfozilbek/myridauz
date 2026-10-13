@@ -8,15 +8,12 @@ import { createMemoryChannelMembers, d1ChannelMembers } from './infrastructure/c
 const localMembers = createMemoryChannelMembers();
 export const membersOf = (env: Bindings) => (env.DB ? d1ChannelMembers(env.DB) : localMembers);
 
-// «Kanallar» of a person (docs/119): the members from D1, the channels the bot may not post in from
-// the hourly check (G75).
+// «Kanallar» of a person (docs/119): the members from D1; the channels the bot may not post in and
+// the links «Rida ilovasi» from the hourly check (G75, docs/176).
 export const myChannelsDeps = (env: Bindings): MyChannelsDeps => ({
   zones: brandOf(env).channels,
   members: membersOf(env),
-  broken: async () =>
-    new Set(
-      (await healthStoreOf(env).rows()).filter((row) => row.canPost === false).map((row) => row.channel),
-    ),
+  health: () => healthStoreOf(env).rows(),
 });
 
 // What the bot of the posts hears (docs/176): the channels of the brand, the people of the brand.

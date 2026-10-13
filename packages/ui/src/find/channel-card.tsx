@@ -1,5 +1,6 @@
 import type { BrandChannel } from '@platform/brands';
 import type { Location } from '@platform/contracts';
+import { useChannelLink } from '../channels/use-my-channels';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
@@ -19,6 +20,7 @@ export function ChannelCard({ channel, region, onClose }: Props) {
   const { t } = useI18n();
   const { name } = useBrand();
   const art = useRegionArt()(region?.id ?? '');
+  const link = useChannelLink(channel);
   return (
     <div className="channel-card">
       <div className="channel-card-top">
@@ -31,7 +33,7 @@ export function ChannelCard({ channel, region, onClose }: Props) {
           <Icon name="close" size={18} />
         </button>
       </div>
-      <button type="button" className="channel-card-join" onClick={() => join(channel, onClose)}>
+      <button type="button" className="channel-card-join" onClick={() => join(link, onClose)}>
         {t('find.channelJoin')}
       </button>
     </div>
@@ -39,8 +41,8 @@ export function ChannelCard({ channel, region, onClose }: Props) {
 }
 
 // Joined: it never comes again.
-function join(channel: BrandChannel, onClose: () => void) {
-  openInTelegram(channel.link);
+function join(link: string, onClose: () => void) {
+  openInTelegram(link);
   onClose();
 }
 
@@ -49,12 +51,13 @@ export function ChannelRow({ channel, region, onClose }: Props) {
   const { t } = useI18n();
   const { name } = useBrand();
   const art = useRegionArt()(region?.id ?? '');
+  const link = useChannelLink(channel);
   return (
     <WayRow
       icon={art ? { src: art, alt: channel.title } : 'channel'}
       title={t('find.channel', { brand: name, zone: channel.title })}
       hint={t('find.channelHint', { zone: channel.title })}
-      onClick={() => join(channel, onClose)}
+      onClick={() => join(link, onClose)}
     />
   );
 }

@@ -69,8 +69,8 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     const brand = loadBrand();
     const [andijon, samarqand] = ['1703202', '1718401'].map((place) => channelOf(brand, place));
     const mine = async () => [
-      { chat: andijon?.chat ?? '', member: true },
-      { chat: samarqand?.chat ?? '', member: true },
+      { chat: andijon?.chat ?? '', member: true, link: andijon?.link ?? '' },
+      { chat: samarqand?.chat ?? '', member: true, link: samarqand?.link ?? '' },
     ];
     renderProfile({}, { clients: { channels: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));

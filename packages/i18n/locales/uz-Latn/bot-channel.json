@@ -14,6 +14,7 @@
   "zone.invite": "«{brand} | {zone}» kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz.",
   "zone.join": "Kanalga oʻtish",
   "zone.find": "Safar topish",
+  "zone.appLink": "{brand} ilovasi",
   "channel.new": "🆕 Yangi safar",
   "channel.when": "{day} · {depart} → ≈ {arrive}",
   "channel.at": "{day} · {time}",

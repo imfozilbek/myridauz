@@ -40,7 +40,9 @@ describe('«Kanallar» through the API in both apps (G80, docs/176)', () => {
     for (const app of ['passenger', 'driver'] as const) {
       const channels = await mine(PERSON, app);
       expect(channels).toHaveLength(loadBrand().channels.length);
-      expect(channels.filter((channel) => channel.member)).toEqual([{ chat: FIRST, member: true }]);
+      expect(channels.filter((channel) => channel.member)).toEqual([
+        { chat: FIRST, member: true, link: first?.link },
+      ]);
     }
   });
 

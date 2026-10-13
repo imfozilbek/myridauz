@@ -49,3 +49,21 @@ export const memberCount = (fetch: Fetch, token: string | undefined) => async (c
   const { result } = (await response.json()) as { readonly result?: number };
   return typeof result === 'number' ? result : null;
 };
+
+// The name of an invite link is 32 letters at most in Telegram.
+const LINK_NAME_MAX = 32;
+
+// The own invite link of the app in a channel (owner decision 4, docs/176): Telegram counts who joined
+// by it, so the team sees the people the app brought. The name is seen only by the admins.
+export const createAppLink =
+  (fetch: Fetch, token: string | undefined, name: string) => async (chat: string) => {
+    if (!token) return null;
+    const response = await fetch(telegramUrl(token, 'createChatInviteLink'), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ chat_id: chat, name: name.slice(0, LINK_NAME_MAX) }),
+    });
+    if (!response.ok) return null;
+    const { result } = (await response.json()) as { readonly result?: { readonly invite_link?: string } };
+    return result?.invite_link ?? null;
+  };

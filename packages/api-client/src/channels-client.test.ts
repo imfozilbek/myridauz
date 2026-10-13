@@ -39,7 +39,7 @@ describe('the publicity of a trip in the driver app (G63, docs/119)', () => {
 
 describe('«Kanallar» of a person (G65, docs/119)', () => {
   it('reads the channels that are there and «✓ Aʼzosiz», in both apps', async () => {
-    const mine = { channels: [{ chat: '-1004328825984', member: true }] };
+    const mine = { channels: [{ chat: '-1004328825984', member: true, link: 'https://t.me/+app' }] };
     for (const app of ['passenger', 'driver'] as const) {
       const fetch = vi.fn<Fetch>(async () => Response.json(mine));
       expect(await createChannelsClient({ ...options, app, fetch }).mine()).toEqual(mine.channels);

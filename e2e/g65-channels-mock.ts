@@ -55,7 +55,11 @@ async function driver(page: Page) {
 export async function openMockupChannels(page: Page, role: Role) {
   const brand = loadBrand();
   const samarqand = channelOf(brand, SAMARQAND);
-  const channels = brand.channels.map((zone) => ({ chat: zone.chat, member: zone === samarqand }));
+  const channels = brand.channels.map((zone) => ({
+    chat: zone.chat,
+    member: zone === samarqand,
+    link: zone.link,
+  }));
   await openMockupProfile(page, role, channels, () => (role === 'driver' ? driver(page) : passenger(page)));
   await page.getByText(t('channels.title'), { exact: true }).click();
   await page.getByText(t('channels.mine.forYou')).waitFor();
