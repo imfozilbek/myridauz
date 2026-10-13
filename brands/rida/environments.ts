@@ -17,6 +17,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     },
     channels: [],
     mainChannel: 'myrida_uz',
+    // The team sees every post before people do (owner, 13.10.2026).
+    posts: true,
   },
   production: {
     domain: 'ridaone.uz',
@@ -29,5 +31,7 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     },
     channels,
     mainChannel: 'rida1uz',
+    // On only after the owner says yes to the posts for people (docs/33).
+    posts: false,
   },
 };

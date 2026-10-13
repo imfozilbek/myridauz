@@ -42,11 +42,16 @@ export const resourcesOf = (base) => ({
   media: valueOf(base, /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u, 'MEDIA bucket'),
 });
 
-// The settings with the address, the database and the name of the environment.
-export function withEnvironment(base, { host, databaseId, environment }) {
+// The settings with the address, the database, the name of the environment and its channel posts.
+export function withEnvironment(base, { host, databaseId, environment, posts }) {
   const config = replaced(base, /pattern = "api\.[^"]+"/u, `pattern = "${host}"`);
   const withDatabase = replaced(config, /database_id = "[^"]+"/u, `database_id = "${databaseId}"`);
-  return replaced(withDatabase, /\[vars\]\n/u, `[vars]\nENVIRONMENT = "${environment}"\n`);
+  const withPosts = replaced(
+    withDatabase,
+    /CHANNEL_POSTS = "[^"]*"/u,
+    `CHANNEL_POSTS = "${posts ? 'on' : 'off'}"`,
+  );
+  return replaced(withPosts, /\[vars\]\n/u, `[vars]\nENVIRONMENT = "${environment}"\n`);
 }
 
 // Writes brands/<brand>/wrangler.<environment>.toml next to the settings (their paths are relative) and
@@ -58,6 +63,7 @@ export async function workerConfig(brand, environment) {
   await ensureQueue(queue);
   await ensureBucket(media);
   const path = `brands/${brand.id}/wrangler.${environment}.toml`;
-  writeFileSync(path, withEnvironment(base, { host: apiHost(brand), databaseId: id, environment }));
+  const values = { host: apiHost(brand), databaseId: id, environment, posts: brand.posts };
+  writeFileSync(path, withEnvironment(base, values));
   return path;
 }

@@ -62,7 +62,7 @@
 | Лендинг | `pnpm landing`: картинки из сцен ролика в `brands/rida/landing/art/` и дороги карты `data/hero-roads.json` (`59`, `60`) |
 | Шрифт сайта | `python3 tools/web-font.py` (нужен `fonttools`, `brotli`): Rubik 300…900 в `brands/rida/landing/fonts/brand.woff2`, знак ʻ из глифа ‘ (`60`) |
 | Соцсети | `social/`: посты «Tez orada», запуск, «Mashinada ayol bor»; сторис для водителей и «Yangi safar» |
-| Печать | `print/`: наклейка на машину 200 мм, QR-плакат A4 (ведёт на https://myrida.uz) |
+| Печать | `print/`: наклейка на машину 200 мм, QR-плакат A4 (ведёт на сайт прода, сейчас https://ridaone.uz) |
 | Моушн | `motion/`: 4 видео, слои SVG |
 | Токены | `tokens/`: цвета и моушн (JSON, CSS) |
 | Шрифт | `fonts/`: Rubik 500, 600, 800, лицензия OFL |

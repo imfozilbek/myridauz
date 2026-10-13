@@ -17,20 +17,20 @@ describe('loadBrand', () => {
   it('gives the internal environment its own address, bots and channels, the rest the same', () => {
     const internal = loadBrand('rida', 'internal');
     const production = loadBrand('rida', 'production');
-    expect(internal).toMatchObject({ domain: 'myrida.uz', indexed: false, mainChannel: 'myrida_uz' });
+    expect(internal).toMatchObject({
+      domain: 'myrida.uz',
+      indexed: false,
+      mainChannel: 'myrida_uz',
+      posts: true,
+    });
+    expect(production.posts).toBe(false);
     expect(internal.bots.passenger).toBe('myrida_bot');
     const bots = (brand: typeof internal) => Object.values(brand.bots);
     expect(bots(internal).filter((bot) => bots(production).includes(bot))).toEqual([]);
     const chats = new Set(production.channels.map((channel) => channel.chat));
     expect(internal.channels.filter((channel) => chats.has(channel.chat))).toEqual([]);
-    expect({ ...internal, domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0 }).toEqual({
-      ...production,
-      domain: 0,
-      indexed: 0,
-      bots: 0,
-      channels: 0,
-      mainChannel: 0,
-    });
+    const shared = { domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0, posts: 0 };
+    expect({ ...internal, ...shared }).toEqual({ ...production, ...shared });
   });
 
   it('returns a brand by id', () => {
@@ -40,6 +40,7 @@ describe('loadBrand', () => {
   it('fails on an unknown brand or environment', () => {
     expect(() => loadBrand('unknown')).toThrow(UnknownBrandError);
     expect(() => loadBrand('rida', 'staging')).toThrow(UnknownEnvironmentError);
+    expect(() => loadBrand('rida', 'toString')).toThrow(UnknownEnvironmentError);
   });
 });
 

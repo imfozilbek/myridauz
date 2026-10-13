@@ -125,8 +125,7 @@
     "people": ["*Odamlar* uchun", "yaratildi"],
     "slogan": "Manzil sari",
     "tagline": "Viloyatlararo birga safarlar",
-    "bot": "Telegramda: @myrida_bot",
-    "site": "myrida.uz",
+    "bot": "Telegramda: {bot}",
     "credit": "Musiqa: Kevin MacLeod, «Achilles» (incompetech.com), CC BY 4.0"
   }
 }

@@ -28,7 +28,7 @@
 | 24 | [24-ratings-reviews-subscriptions.md](24-ratings-reviews-subscriptions.md) | Рейтинг, отзывы, подписка на маршрут |
 | 25 | [25-uzbek-language-guide.md](25-uzbek-language-guide.md) | Узбекский язык продукта: правила и источники |
 | 26 | [26-lessons-learned.md](26-lessons-learned.md) | Уроки: причины и следствия ошибок |
-| 27 | [27-launch-roadmap.md](27-launch-roadmap.md) | Запуск 1 февраля 2027: план и объём |
+| 27 | [27-launch-roadmap.md](27-launch-roadmap.md) | Запуск 18 октября 2026: план по дням и объём |
 | 28 | [28-documentation-rules.md](28-documentation-rules.md) | Правила документации |
 | 29 | [29-product-analytics.md](29-product-analytics.md) | Продуктовая аналитика: где люди застревают |
 | 30 | [30-legal.md](30-legal.md) | Правовая часть: оферта, конфиденциальность, законы |

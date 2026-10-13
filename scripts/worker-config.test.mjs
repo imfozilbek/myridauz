@@ -5,7 +5,12 @@ import { resourcesOf, withEnvironment } from './deploy/worker-config.mjs';
 
 const { id } = loadBrand();
 const BASE = readFileSync(`brands/${id}/wrangler.toml`, 'utf8');
-const VALUES = { host: 'api.example.uz', databaseId: 'db-of-the-account', environment: 'production' };
+const VALUES = {
+  host: 'api.example.uz',
+  databaseId: 'db-of-the-account',
+  environment: 'production',
+  posts: false,
+};
 
 // docs/179: one settings file of the Worker, each environment with its address and database.
 describe('the Worker of an environment', () => {
@@ -22,7 +27,13 @@ describe('the Worker of an environment', () => {
     expect(config).toContain('routes = [{ pattern = "api.example.uz", custom_domain = true }]');
     expect(config).toContain('database_id = "db-of-the-account"');
     expect(config).toContain(`[vars]\nENVIRONMENT = "production"\nBRAND = "${id}"`);
+    expect(config).toContain('CHANNEL_POSTS = "off"');
     expect(config.split('\n')).toHaveLength(BASE.split('\n').length + 1);
+  });
+
+  // The owner, 13.10.2026: the team sees the posts in its own channel before people do.
+  it('turns the channel posts on only where the environment wants them', () => {
+    expect(withEnvironment(BASE, { ...VALUES, posts: true })).toContain('CHANNEL_POSTS = "on"');
   });
 
   it('stops when the settings changed their shape', () => {

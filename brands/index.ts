@@ -49,7 +49,7 @@ export function loadBrand(
 ): BrandConfig {
   const brand = BRANDS[id];
   if (!brand) throw new UnknownBrandError(id);
-  const config = brand[environment];
+  const config = Object.hasOwn(brand, environment) ? brand[environment] : undefined;
   if (!config) throw new UnknownEnvironmentError(environment);
   return config;
 }
