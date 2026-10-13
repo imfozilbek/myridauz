@@ -1,10 +1,9 @@
-import { loadBrand } from '@platform/brands';
 import type { MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { recordAction } from '../journal';
 import { peopleOf } from '../users';
 import type { LimitStore } from './application/ports';
-import { brandOf, keepLimits, ownerLimits } from '../../shared/brand/brand-of';
+import { brandOf, configOf, keepLimits, ownerLimits } from '../../shared/brand/brand-of';
 import { createMemoryLimits, d1Limits } from './infrastructure/d1-limits';
 import { limitRoutes } from './http/limit-routes';
 
@@ -35,7 +34,7 @@ export const freshLimits: MiddlewareHandler<AppEnv> = async (context, next) => {
 export const limitsModule = limitRoutes({
   store: storeOf,
   brand: brandOf,
-  base: (env) => loadBrand(env.BRAND),
+  base: configOf,
   changed: async (env, key, by, values, after) => {
     keepLimits(values);
     readAt = Date.now();

@@ -281,12 +281,33 @@ jobs:
             echo "deploy=false" >> "$GITHUB_OUTPUT"
           fi
 
-  # Production deploy (docs/32): only from main, only after every gate is green,
-  # only through the Environment "production" that the owner approves. Pull requests never reach this job.
+  # Deploys (docs/32, docs/179): only from main, only after every gate is green. First the internal
+  # environment of the team on its account (Environment "internal"), then production for people on its
+  # own account, through the Environment "production" that the owner approves. Both Environments keep
+  # secrets of the same names, each of its account. Pull requests never reach these jobs.
   # The screenshots are media for people: the deploy does not wait for them (docs/45).
-  deploy:
+  deploy-internal:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.deploy == 'true'
     needs: [ci-ok, changes]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: internal
+    concurrency:
+      group: deploy-internal
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - run: pnpm run deploy --brand=rida --env=internal
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  # The same commit goes to people only after it works for the team.
+  deploy-production:
+    needs: [deploy-internal]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
@@ -298,7 +319,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - run: pnpm run deploy --brand=rida
+      - run: pnpm run deploy --brand=rida --env=production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

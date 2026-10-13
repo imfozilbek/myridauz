@@ -1,4 +1,7 @@
 # Cloudflare settings of the brand (docs/22). Secrets are set with `wrangler secret`, never here (docs/32).
+# One file for both environments (docs/179): the deploy writes wrangler.<environment>.toml with the API
+# address of the environment, the id of the database on its account and ENVIRONMENT; the local stand reads
+# this file as it is.
 name = "rida-backend"
 main = "../../apps/backend/src/index.ts"
 compatibility_date = "2026-09-01"

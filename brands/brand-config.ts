@@ -93,6 +93,8 @@ export type BrandConfig = PeopleRules & {
   readonly id: string;
   readonly name: string;
   readonly domain: string;
+  // Search engines read the site (docs/60); the site of the internal environment stays out (docs/179).
+  readonly indexed: boolean;
   readonly slogan: string;
   readonly monetization: 'commission'; // model A of docs/12; a subscription (B) comes as a new value
   readonly commission: CommissionRule;
@@ -120,3 +122,9 @@ export type BrandConfig = PeopleRules & {
   readonly company: Company;
   readonly schedule: ScheduleRules;
 };
+
+// The environments of a brand (owner, 13.10.2026, docs/179): the internal one of the team and production.
+export type EnvironmentName = 'internal' | 'production';
+// What differs between them: the address, the bots, the channels. The rest is one for both.
+export type BrandEnvironment = Pick<BrandConfig, 'domain' | 'indexed' | 'bots' | 'channels' | 'mainChannel'>;
+export type BrandBase = Omit<BrandConfig, keyof BrandEnvironment>;

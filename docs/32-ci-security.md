@@ -15,10 +15,10 @@
 
 | Секрет | Где хранится | В GitHub? |
 |---|---|---|
-| Токены 3 ботов, секрет вебхука | Cloudflare (`wrangler secret`) | **Нет** |
+| Токены 5 ботов, секрет вебхука (свои в каждой среде, `179`) | Cloudflare (`wrangler secret`) | **Нет** |
 | Ключи Realtime, прочие ключи сервисов | Cloudflare (`wrangler secret`) | **Нет** |
-| Токен деплоя Cloudflare (узкие права) | GitHub Environment `production` | Да, под защитой |
-| ID аккаунта Cloudflare | GitHub Environment `production` | Да |
+| Токен деплоя Cloudflare (узкие права) | GitHub Environment `internal` (первый аккаунт) и `production` (новый), `179` | Да, под защитой |
+| ID аккаунта Cloudflare | GitHub Environment `internal` и `production` | Да |
 
 - Локально: `.dev.vars` в `.gitignore`. В репозитории только
   `.dev.vars.example` без значений.
@@ -34,9 +34,10 @@
    Код из чужих форков не видит ни одного секрета.
 2. **Запрещено** `pull_request_target` и запуск кода из PR с секретами.
 3. **Деплой** только из основной ветки (`push` в `main`) и только
-   через Environment `production`:
-   - правило: деплой только из `main`;
-   - обязательное подтверждение владельцем (required reviewer).
+   через Environment (`179`):
+   - правило обоих: деплой только из `main`;
+   - `internal` (среда команды): без подтверждения, первым;
+   - `production`: после `internal`, обязательное подтверждение владельцем (required reviewer).
 4. `permissions:` минимальные: по умолчанию `contents: read`; job `changes` ещё читает `deployments` (только чтение, только на `main`).
 5. Сторонние actions закреплены по полному SHA коммита, не по тегу.
 6. Первые запуски CI от новых внешних участников требуют одобрения
@@ -73,7 +74,7 @@
 
 | Переменная | Что это |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Токен API с правами на аккаунт и зону `myrida.uz` |
+| `CLOUDFLARE_API_TOKEN` | Токен API с правами на аккаунт и зону своей среды (`179`) |
 | `CLOUDFLARE_ACCOUNT_ID` | ID аккаунта |
 | `PASSENGER_BOT_TOKEN` | Токен бота пассажиров |
 | `DRIVER_BOT_TOKEN` | Токен бота водителей |
@@ -81,7 +82,7 @@
 
 - Права токена Cloudflare (Custom token): на аккаунт: Workers Scripts,
   Workers KV, Workers R2 Storage (Edit: запись карты, `67`), D1, Pages, Queues, Realtime, чтение аналитики
-  и настроек; на зону `myrida.uz`: DNS, Workers Routes, чтение зоны.
+  и настроек; на зону своей среды: DNS, Workers Routes, чтение зоны.
 - Токены ботов Claude сам кладёт в Cloudflare (`wrangler secret`).
 - **Решение владельца на время разработки:** ключи можно передать в чате.
   Claude хранит их в локальном файле `.env` (в `.gitignore`, в репозиторий

@@ -7,7 +7,11 @@ export const keepLimits = (next: OwnerLimits['values']) => void (values = next);
 // The values for the Mini Apps (GET /public/limits).
 export const ownerLimits = (): OwnerLimits['values'] => values;
 
+type BrandEnv = { readonly BRAND?: string; readonly ENVIRONMENT?: string };
+
+// The bare config of the Worker: its brand in its environment (docs/22, docs/179).
+export const configOf = (env: BrandEnv): BrandConfig => loadBrand(env.BRAND, env.ENVIRONMENT);
+
 // The brand on the server: its config with the limits of the owner. Every rule of people reads this
 // instead of the bare config (docs/22, docs/128 §4).
-export const brandOf = (env: { readonly BRAND?: string }): BrandConfig =>
-  withLimits(loadBrand(env.BRAND), values);
+export const brandOf = (env: BrandEnv): BrandConfig => withLimits(configOf(env), values);

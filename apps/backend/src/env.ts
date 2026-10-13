@@ -6,6 +6,8 @@ import type { TelegramUser } from './shared/auth/telegram-fields';
 // Optional ones are absent when running locally and in tests.
 export type Bindings = {
   readonly BRAND?: string;
+  // "internal" or "production" (docs/179): the address, the bots and the channels of the brand.
+  readonly ENVIRONMENT?: string;
   readonly ANALYTICS?: AnalyticsEngineDataset;
   readonly DB?: D1Database;
   readonly MEDIA?: R2Bucket;

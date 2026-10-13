@@ -58,7 +58,7 @@ type MountOptions = { readonly welcome?: Welcome };
 export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOptions = {}): void {
   const container = document.getElementById(ROOT_ID);
   if (!container) throw new Error('ui.root_missing');
-  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app);
+  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND, import.meta.env.VITE_ENVIRONMENT), app);
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
   markLowMotion();

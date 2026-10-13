@@ -1,12 +1,35 @@
 import { describe, expect, it } from 'vitest';
-import { brandForApp, loadBrand, UnknownBrandError } from './index';
+import { brandForApp, loadBrand, UnknownBrandError, UnknownEnvironmentError } from './index';
 
 describe('loadBrand', () => {
-  it('returns the main brand by default', () => {
+  it('returns the main brand in production by default', () => {
     expect(loadBrand()).toMatchObject({
-      domain: 'myrida.uz',
+      domain: 'ridaone.uz',
       slogan: 'Manzil sari',
       monetization: 'commission',
+      mainChannel: 'rida1uz',
+    });
+    expect(loadBrand()).toBe(loadBrand('rida', 'production'));
+    expect(loadBrand().channels).toHaveLength(67);
+  });
+
+  // docs/179: the team works on the first account with its own address, bots and channels.
+  it('gives the internal environment its own address, bots and channels, the rest the same', () => {
+    const internal = loadBrand('rida', 'internal');
+    const production = loadBrand('rida', 'production');
+    expect(internal).toMatchObject({ domain: 'myrida.uz', indexed: false, mainChannel: 'myrida_uz' });
+    expect(internal.bots.passenger).toBe('myrida_bot');
+    const bots = (brand: typeof internal) => Object.values(brand.bots);
+    expect(bots(internal).filter((bot) => bots(production).includes(bot))).toEqual([]);
+    const chats = new Set(production.channels.map((channel) => channel.chat));
+    expect(internal.channels.filter((channel) => chats.has(channel.chat))).toEqual([]);
+    expect({ ...internal, domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0 }).toEqual({
+      ...production,
+      domain: 0,
+      indexed: 0,
+      bots: 0,
+      channels: 0,
+      mainChannel: 0,
     });
   });
 
@@ -14,8 +37,9 @@ describe('loadBrand', () => {
     expect(loadBrand('rida').name).toBe('Rida');
   });
 
-  it('fails on an unknown brand', () => {
+  it('fails on an unknown brand or environment', () => {
     expect(() => loadBrand('unknown')).toThrow(UnknownBrandError);
+    expect(() => loadBrand('rida', 'staging')).toThrow(UnknownEnvironmentError);
   });
 });
 
