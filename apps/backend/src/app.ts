@@ -17,6 +17,7 @@ import {
 } from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
 import { channelsModule, publicityModule, zoneWatch } from './modules/channels';
+import { looksModule } from './modules/looks';
 import { chatRoutes } from './modules/chat';
 import { companyModule } from './modules/company';
 import { soundsModule } from './modules/sounds';
@@ -135,11 +136,12 @@ export const app = new Hono<AppEnv>()
   )
   .route('/', feedRoutes)
   .route('/', sharesModule(bookingForShare, tripForFamily))
-  // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
+  // Setup and looks go before the webhook route: "/telegram/:role" would take them as a bot name.
   .route(
     '/',
     setupRoutes((input, init) => fetch(input, init)),
   )
+  .route('/', looksModule)
   .route(
     '/',
     webhookRoutes((input, init) => fetch(input, init)),

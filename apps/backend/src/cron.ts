@@ -2,6 +2,7 @@ import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
 import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
 import { checkChannelHealth } from './modules/channels';
+import { keepTelegramLooks } from './modules/looks';
 import { erasePastPoints, expireBookings } from './modules/bookings';
 import { bookingsUnderComplaint } from './modules/complaints';
 import { decisionsBetween, grantMissedBonuses, waitingApplications } from './modules/drivers';
@@ -22,6 +23,9 @@ import { TICK_MINUTES } from './shared/cron/tick';
 // jobs, and the first tick of DAILY_HOUR_UTC (05:00 in Tashkent, the quietest hour) the daily ones:
 // a rare job does not read D1 96 times a day (G56, docs/117).
 const DAILY_HOUR_UTC = 0;
+// The looks of the bots and channels run at half past the hour: the hourly jobs of the first tick
+// already spend part of the requests of a run (docs/117, docs/180).
+const LOOKS_MINUTE = 30;
 
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
 // forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
@@ -72,15 +76,21 @@ const everyDay = (env: Bindings, now: number): Job[] => [
   ['forgetOldCards', () => forgetOldCards(env, now)],
 ];
 
+// The names, the texts and the pictures of the bots and channels come from the repository (G82).
+const everyHalfPast = (env: Bindings): Job[] => [['keepTelegramLooks', () => keepTelegramLooks(env)]];
+
 // The jobs of the tick at `now`.
 export function cronJobs(env: Bindings, now: number): Job[] {
   const at = new Date(now);
   const every = env.CRON_TIERS === 'off';
   const hourly = every || at.getUTCMinutes() < TICK_MINUTES;
   const daily = every || (hourly && at.getUTCHours() === DAILY_HOUR_UTC);
+  const minute = at.getUTCMinutes() - LOOKS_MINUTE;
+  const halfPast = every || (minute >= 0 && minute < TICK_MINUTES);
   return [
     ...everyTick(env, now),
     ...(hourly ? everyHour(env, now) : []),
     ...(daily ? everyDay(env, now) : []),
+    ...(halfPast ? everyHalfPast(env) : []),
   ];
 }

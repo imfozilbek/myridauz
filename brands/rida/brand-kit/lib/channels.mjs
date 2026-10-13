@@ -8,6 +8,14 @@ export function channelAvatar(r) {
     textCentered(r.title.toUpperCase(), { cx: 320, cy: 478, h: 50, fill: C.white, maxWidth: 470, spacing: 0.04 }));
 }
 
+// The main channel of an environment (docs/180): the R of the brand in an amber ring, as @rida1uz has
+// it since 12.10.2026; Telegram shows it as a circle, the ring stays inside.
+export function mainAvatar(S = 640) {
+  return svg(S, S, `<rect width="${S}" height="${S}" fill="${C.teal}"/>` +
+    `<circle cx="${S / 2}" cy="${S / 2}" r="${S * 0.442}" fill="none" stroke="${C.amber}" stroke-width="${S * 0.025}"/>` +
+    markR({ cx: S / 2, cy: S / 2, h: S * 0.51, fill: C.white }));
+}
+
 const fit = (str, weight, maxW, maxSize) => Math.min(maxSize, maxSize * maxW / layout(str, { weight, size: maxSize }).width);
 
 export function channelPost(r) {

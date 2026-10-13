@@ -1,9 +1,10 @@
-import type { MiniApp } from '@platform/contracts';
+import { MINI_APPS, type MiniApp } from '@platform/contracts';
 import type { Bindings } from '../../env';
 
 // One bot per Mini App (docs/02) and the support bot (docs/50). Tokens are Worker secrets, never in
 // the repository (docs/32).
 export type BotName = MiniApp | 'support';
+export const BOT_NAMES: readonly BotName[] = [...MINI_APPS, 'support'];
 
 export function botToken(env: Bindings, bot: BotName): string | undefined {
   return {
