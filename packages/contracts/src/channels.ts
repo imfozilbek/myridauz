@@ -9,6 +9,10 @@ export const adminChannelPath = (username: string) => `${ADMIN_CHANNELS_PATH}/${
 
 // A public Telegram username: letters, digits and "_", 5 to 32 signs.
 export const CHANNEL_USERNAME = /^[A-Za-z][A-Za-z0-9_]{4,31}$/u;
+// A channel as the bot names it (docs/176): the number of a private channel or "@" and a public name.
+export const CHANNEL_CHAT = /^(-100\d{6,16}|@[A-Za-z][A-Za-z0-9_]{4,31})$/u;
+// Where a person opens it: an invite link or the public name.
+const channelLinkSchema = z.string().startsWith('https://t.me/');
 export const CHANNEL_TITLE_MAX = 64;
 export const CHANNEL_PLACES_MAX = 40;
 
@@ -19,8 +23,9 @@ export const channelInputSchema = z.object({
 export type ChannelInput = z.input<typeof channelInputSchema>;
 
 export const channelSchema = channelInputSchema.extend({
-  username: z.string().regex(CHANNEL_USERNAME),
-  // The channels of the brand config (13 regions) cannot be edited in the admin, only in the code.
+  chat: z.string().regex(CHANNEL_CHAT),
+  link: channelLinkSchema,
+  // The channels of the brand config (docs/176) cannot be edited in the admin, only in the code.
   fixed: z.boolean(),
 });
 export type Channel = z.infer<typeof channelSchema>;
@@ -32,7 +37,12 @@ export const channelsResponseSchema = z.object({ channels: z.array(channelSchema
 export const driverTripPublicityPath = (tripId: string) => `${DRIVER_TRIPS_PATH}/${tripId}/publicity`;
 export const tripPublicitySchema = z.object({
   channels: z.array(
-    z.object({ username: z.string().regex(CHANNEL_USERNAME), title: z.string(), posted: z.boolean() }),
+    z.object({
+      chat: z.string().regex(CHANNEL_CHAT),
+      title: z.string(),
+      link: channelLinkSchema,
+      posted: z.boolean(),
+    }),
   ),
   views: z.number().int().min(0),
   link: z.string().startsWith('https://t.me/'),
@@ -41,11 +51,13 @@ export type TripPublicity = z.infer<typeof tripPublicitySchema>;
 // The trip page of the passenger app says it was opened: from the search, a post button or a link.
 export const tripViewPath = (tripId: string) => `${TRIPS_PATH}/${tripId}/view`;
 
-// «Kanallar» of a person (G65, docs/119): the channels of the zones that are there, and «✓ Aʼzosiz».
+// «Kanallar» of a person (G65, docs/119): the channels of the zones that are there, «✓ Aʼzosiz», and
+// the link the app opens: «Rida ilovasi» once the bot made it (docs/176).
 export const MY_CHANNELS_PATH = '/me/channels';
 export const myChannelSchema = z.object({
-  username: z.string().regex(CHANNEL_USERNAME),
+  chat: z.string().regex(CHANNEL_CHAT),
   member: z.boolean(),
+  link: channelLinkSchema,
 });
 export type MyChannel = z.infer<typeof myChannelSchema>;
 export const myChannelsSchema = z.object({ channels: z.array(myChannelSchema) });

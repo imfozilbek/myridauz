@@ -1,14 +1,14 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { directions } from './directions';
 import { escape } from './html';
 import { renderSite } from './site';
-import { MAP, ROADS } from './test-map';
+import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, script: 'run()' });
+const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: 'run()' });
 const page = site['yonalish/samarqand-toshkent/index.html'] ?? '';
 const values = { from: 'Samarqand', to: 'Toshkent', brand: brand.name };
 const jsonLd = (html: string) =>
@@ -54,12 +54,10 @@ describe('directions for search engines (docs/60)', () => {
   });
 
   it('offers the channel of the direction under the buttons (docs/119)', () => {
-    // Toshkent has no channel: the channel of the zone of Samarqand.
-    const channel = brand.channels.find(
-      (zone) => zone.places.includes('1718401') || zone.places.includes('1718'),
-    );
-    const text = t('landing.direction.channel', { brand: brand.name, zone: channel?.title ?? '' });
-    expect(page).toContain(`class="button channel-button" href="https://t.me/${channel?.username}"`);
+    // Toshkent has no channel: the own channel of Samarqand shahri (docs/176).
+    const channel = channelOf(brand, '1718401');
+    const text = t('landing.direction.channel', { channel: channel?.name ?? '' });
+    expect(page).toContain(`class="button channel-button" href="${channel?.link}"`);
     expect(page).toContain(escape(text));
   });
 

@@ -1,4 +1,5 @@
 import { ApiError } from '@platform/api-client';
+import { loadBrand } from '@platform/brands';
 import type { Channel, Location } from '@platform/contracts';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -25,17 +26,27 @@ const KITOB = place('1710224', '1710', 'Kitob', 39.12, 66.88);
 const SHAHRISABZ = place('1710245', '1710', 'Shahrisabz', 39.06, 66.83);
 const QARSHI = place('1710401', '1710', 'Qarshi', 38.86, 65.79);
 const LOCATIONS = [REGION, KITOB, SHAHRISABZ, QARSHI];
+// A main channel of the brand is private: no public name, only its invite link; the row says its
+// name copied from Telegram (owner 13.10.2026, docs/176).
+const [own] = loadBrand().channels;
 const fixed: Channel = {
-  username: 'ch_qashqadaryo',
-  title: 'Qashqadaryo viloyati',
+  chat: own?.chat ?? '',
+  link: own?.link ?? '',
+  title: own?.title ?? '',
   places: ['1710'],
   fixed: true,
 };
-const kitob: Channel = { username: 'ch_kitob', title: 'Kanal | Kitob', places: ['1710224'], fixed: false };
+const kitob: Channel = {
+  chat: '@ch_kitob',
+  link: 'https://t.me/ch_kitob',
+  title: 'Kanal | Kitob',
+  places: ['1710224'],
+  fixed: false,
+};
 
-const health = (username: string, subscribers: number | null, canPost: boolean | null, failed: number) => ({
-  username,
-  title: username,
+const health = (chat: string, subscribers: number | null, canPost: boolean | null, failed: number) => ({
+  chat,
+  title: chat,
   subscribers,
   canPost,
   checkedAt: 1,
@@ -43,7 +54,7 @@ const health = (username: string, subscribers: number | null, canPost: boolean |
   arrivals: 12,
 });
 // The health of the channels from the Cron check (G75, docs/120).
-const HEALTH = { channels: [health('ch_qashqadaryo', 1200, true, 0), health('ch_kitob', null, false, 2)] };
+const HEALTH = { channels: [health(fixed.chat, 1200, true, 0), health('@ch_kitob', null, false, 2)] };
 
 function setup(list: Channel[], save = vi.fn(async () => kitob)) {
   const channels = { list: vi.fn(async () => list), save, remove: vi.fn(async () => undefined) };
@@ -68,8 +79,8 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
     expect(await screen.findByText('@ch_kitob · Bot yoza olmaydi')).toBeTruthy();
     expect(screen.getByText('@ch_kitob · Bot yoza olmaydi').className).toContain('manage-danger');
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    await tap(/ · Qashqadaryo viloyati$/u);
-    expect(open.mock.calls[0]?.[0]).toBe('https://t.me/ch_qashqadaryo');
+    await tap('Boʻka | Bekobod');
+    expect(open.mock.calls[0]?.[0]).toBe(fixed.link);
     open.mockRestore();
   });
 
@@ -82,7 +93,7 @@ describe('Kanallar: the channels of the team (docs/63)', () => {
   it('adds a district channel with its close districts', async () => {
     const channels = setup([fixed]);
     await tap('Kanallar');
-    expect(await screen.findByText('@ch_qashqadaryo · Asosiy kanal')).toBeTruthy();
+    expect(await screen.findByText('Asosiy kanal')).toBeTruthy();
     // "No channels yet" is never shown above a filled list (docs/86 V14).
     expect(screen.queryByText('Hozircha tuman kanallari yoʻq.')).toBeNull();
     await tap('Kanal qoʻshish');

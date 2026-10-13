@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Page } from '@playwright/test';
 import { openMockupProfile, type Role } from './g65-profile-mock';
@@ -53,9 +53,13 @@ async function driver(page: Page) {
 }
 
 export async function openMockupChannels(page: Page, role: Role) {
-  const zones = loadBrand().channels;
-  const samarqand = zones.find((zone) => zone.places.includes(SAMARQAND));
-  const channels = zones.map((zone) => ({ username: zone.username, member: zone === samarqand }));
+  const brand = loadBrand();
+  const samarqand = channelOf(brand, SAMARQAND);
+  const channels = brand.channels.map((zone) => ({
+    chat: zone.chat,
+    member: zone === samarqand,
+    link: zone.link,
+  }));
   await openMockupProfile(page, role, channels, () => (role === 'driver' ? driver(page) : passenger(page)));
   await page.getByText(t('channels.title'), { exact: true }).click();
   await page.getByText(t('channels.mine.forYou')).waitFor();

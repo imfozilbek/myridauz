@@ -10,7 +10,7 @@ type Candidates = readonly (readonly [string | null, Reason])[];
 
 // The reasons of «Siz uchun» from what the app knows of the person (docs/119): a passenger's past
 // rides, open request and last search; a driver's trips and today's requests on the driver's
-// directions. A failed load offers nothing: the 20 channels stay below.
+// directions. A failed load offers nothing: every channel stays below.
 export function useForYouCandidates(): Candidates | null {
   const brand = useBrand();
   const channel = routeChannel(brand, usePlaces());

@@ -4,7 +4,9 @@ import { createMemoryTeamChannels } from './infrastructure/team-channels';
 
 const SAMARQAND = '1718401';
 const deps = (admin: boolean): TeamChannelsDeps => ({
-  fixed: [{ username: 'zone_samarqand', title: 'Samarqand', places: [SAMARQAND] }],
+  fixed: [
+    { chat: '@zone_samarqand', title: 'Samarqand', places: [SAMARQAND], link: 'https://t.me/zone_samarqand' },
+  ],
   titleOf: (place) => (place === SAMARQAND ? 'Samarqand shahri' : undefined),
   store: createMemoryTeamChannels(),
   botIsAdmin: async () => admin,
@@ -37,11 +39,11 @@ describe('a channel the team adds', () => {
   it('is saved after the zones of the brand, and removed', async () => {
     const admin = deps(true);
     expect((await saveChannel(admin, 'team_channel', input)).ok).toBe(true);
-    expect((await allChannels(admin)).map((c) => [c.username, c.fixed])).toEqual([
-      ['zone_samarqand', true],
-      ['team_channel', false],
+    expect((await allChannels(admin)).map((c) => [c.chat, c.link, c.fixed])).toEqual([
+      ['@zone_samarqand', 'https://t.me/zone_samarqand', true],
+      ['@team_channel', 'https://t.me/team_channel', false],
     ]);
     expect(await removeChannel(admin, 'team_channel')).toBe(true);
-    expect((await allChannels(admin)).map((c) => c.username)).toEqual(['zone_samarqand']);
+    expect((await allChannels(admin)).map((c) => c.chat)).toEqual(['@zone_samarqand']);
   });
 });

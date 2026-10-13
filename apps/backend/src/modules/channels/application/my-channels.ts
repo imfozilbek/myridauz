@@ -1,22 +1,51 @@
 import type { BrandChannel } from '@platform/brands';
 import type { MyChannel } from '@platform/contracts';
+import type { HealthRow } from './health';
 
-// «missing»: no answer, the channel is not there yet or the bot is not its admin (OPS-02).
-export type Membership = 'in' | 'out' | 'missing';
-
-export type MyChannelsDeps = {
-  // The channels of the zones of the brand (docs/63).
-  readonly zones: readonly BrandChannel[];
-  readonly membership: (username: string, userId: number) => Promise<Membership>;
+// One join or leave the bot of the posts heard in a channel (chat_member, docs/176).
+export type MemberChange = {
+  readonly chat: string;
+  readonly userId: number;
+  readonly member: boolean;
+  readonly at: number;
 };
 
-// «Kanallar» of a person (G65, docs/119): the zones whose channel is there, «✓ Aʼzosiz» on the ones
-// the person is in. A channel the team has not made yet (OPS-02) has no row.
+// Who is in which channel of the brand, as the bot of the posts heard it.
+export type ChannelMembers = {
+  joined(userId: number): Promise<ReadonlySet<string>>;
+  mark(change: MemberChange): Promise<void>;
+  forget(userId: number): Promise<void>;
+};
+
+export type MyChannelsDeps = {
+  // The channels of the directions of the brand (docs/176).
+  readonly zones: readonly BrandChannel[];
+  readonly members: ChannelMembers;
+  // What the hourly check last read of each channel (G75).
+  readonly health: () => Promise<readonly HealthRow[]>;
+};
+
+// «Kanallar» of a person (G65, docs/119): every channel the bot can post in, «✓ Aʼzosiz» on the ones
+// the person is in, and the link «Rida ilovasi» once the check made it (docs/176). Two reads of D1,
+// never a call a channel to Telegram (docs/117).
 export async function myChannels(deps: MyChannelsDeps, userId: number): Promise<MyChannel[]> {
-  const found = await Promise.all(
-    deps.zones.map(async ({ username }) => ({ username, state: await deps.membership(username, userId) })),
-  );
-  return found
-    .filter(({ state }) => state !== 'missing')
-    .map(({ username, state }) => ({ username, member: state === 'in' }));
+  const [joined, rows] = await Promise.all([deps.members.joined(userId), deps.health()]);
+  const checked = new Map(rows.map((row) => [row.channel, row]));
+  return deps.zones
+    .filter(({ chat }) => checked.get(chat)?.canPost !== false)
+    .map(({ chat, link }) => ({ chat, member: joined.has(chat), link: checked.get(chat)?.appLink ?? link }));
+}
+
+export type HeardDeps = {
+  readonly members: ChannelMembers;
+  // The chats of the channels of the brand.
+  readonly chats: ReadonlySet<string>;
+  readonly registered: (userId: number) => Promise<boolean>;
+};
+
+// Only the channels of the brand and only the people of the brand are kept: the id of anyone else
+// is never stored (docs/30).
+export async function heard(deps: HeardDeps, change: MemberChange): Promise<void> {
+  if (!deps.chats.has(change.chat) || !(await deps.registered(change.userId))) return;
+  await deps.members.mark(change);
 }

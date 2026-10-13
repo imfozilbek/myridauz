@@ -121,7 +121,7 @@ export async function openRequestScreen(page: Page) {
 export async function openMyRequest(page: Page, channel = false) {
   await mockApi(page, 'active');
   await mockRequestData(page);
-  const closed = JSON.stringify(channel ? [] : [channelOf(loadBrand(), URGANCH)?.username]);
+  const closed = JSON.stringify(channel ? [] : [channelOf(loadBrand(), URGANCH)?.chat]);
   await page.addInitScript((kept) => localStorage.setItem('channel_offered', kept), closed);
   await page.route('**/api/passenger/requests', (route) => route.fulfill({ json: { requests: [asked()] } }));
   await page.route('**/api/passenger/bookings', (route) => route.fulfill({ json: { bookings: [] } }));

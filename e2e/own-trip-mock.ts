@@ -1,3 +1,4 @@
+import { channelOf, loadBrand } from '@platform/brands';
 import type { Page, Route } from '@playwright/test';
 
 // The own trip of a driver from the publishing to the way back (G63): one passenger asks, the
@@ -5,8 +6,17 @@ import type { Page, Route } from '@playwright/test';
 // (mockMarket) and answers each step; every call the screens make is kept in order.
 const HOUR = 3_600_000;
 const SEAT = '00000000-0000-4000-8000-0000000000d1';
+// The own channel of Samarqand shahri posted the trip: the card says its name in Telegram (docs/176).
+const SAMARQAND = channelOf(loadBrand(), '1718401');
 const PUBLICITY = {
-  channels: [{ username: 'yol_samarqand', title: 'Samarqand yoʻli', posted: true }],
+  channels: [
+    {
+      chat: SAMARQAND?.chat ?? '',
+      title: SAMARQAND?.title ?? '',
+      link: 'https://t.me/+samarqand',
+      posted: true,
+    },
+  ],
   views: 3,
   link: 'https://t.me/test_bot?startapp=trip_1__driver',
 };

@@ -34,7 +34,7 @@ export function renderManagement(overrides: Overrides = {}) {
     sign: { kind: 'money' as const, name: 'Jasur', person: PERSON, seats: 2 },
   });
   const health = (n: number, subscribers: number) => ({
-    username: `zone_${n}`,
+    chat: `@zone_${n}`,
     title: `zone ${n}`,
     subscribers,
     canPost: true,

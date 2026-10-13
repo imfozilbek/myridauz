@@ -9,7 +9,8 @@
     "landing": "node landing/build.mjs",
     "bot": "node landing/bot.mjs",
     "cuts": "node promo/cuts.mjs",
-    "regions": "node region-drawings.mjs"
+    "regions": "node region-drawings.mjs",
+    "logos": "node channel-logos.mjs"
   },
   "dependencies": {
     "lucide-static": "1.48.0",

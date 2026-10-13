@@ -1,3 +1,4 @@
+import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, test } from './crash-guard';
 import { openTripAt } from './g63-pixel-mock';
@@ -28,10 +29,12 @@ for (const width of WIDTHS) {
   });
 }
 
-// «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119): the long
-// channel name and the button get smaller on a narrow phone, never cut (docs/121).
+// «Safaringiz kanalda chiqdi» on «Mening safarim» (owner decision 08.10.2026, docs/119): the longest
+// name a channel has in Telegram (docs/176) and the button get smaller on a narrow phone, never cut
+// (docs/121).
+const [longest] = [...loadBrand().channels].sort((a, b) => b.name.length - a.name.length);
 const PUBLICITY = {
-  channels: [{ username: 'yol_samarqand', title: 'Samarqand viloyati yoʻli', posted: true }],
+  channels: [{ chat: longest?.chat, title: longest?.title, link: longest?.link, posted: true }],
   views: 3200,
   link: 'https://t.me/test_bot?startapp=trip_7__driver',
 };

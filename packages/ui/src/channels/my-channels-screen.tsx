@@ -18,7 +18,8 @@ import { useMyChannels } from './use-my-channels';
 import './my-channels.css';
 
 // «Kanallar» of a passenger and of a driver (docs/119, mockups 7-channels-2 and 7-channels-3): «Siz
-// uchun» with the reason, then every channel that is made under its region, «Qoʻshilish» or «✓ Aʼzosiz».
+// uchun» with the reason, then every channel that is made under its region by its name in Telegram
+// (owner 13.10.2026, docs/176), «Qoʻshilish» or «✓ Aʼzosiz».
 export function MyChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <PlacesGate onBack={onBack}>
@@ -39,14 +40,12 @@ function Channels({ onBack }: { readonly onBack: () => void }) {
   const [query, setQuery] = useState('');
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
-  const byName = new Map(value.map((mine) => [mine.channel.username, mine]));
-  const picked = query === '' ? forYou(candidates ?? [], new Set(byName.keys())) : [];
+  const byChat = new Map(value.map((mine) => [mine.channel.chat, mine]));
+  const picked = query === '' ? forYou(candidates ?? [], new Set(byChat.keys())) : [];
   const groups = byRegion(
     directory,
     value.filter((mine) => matchesChannel(directory, mine, query)),
   );
-  const coverage = (title: string) =>
-    title.includes(', ') ? title : t('channels.mine.zone', { brand: brand.name, zone: title });
   return (
     <div className={`my-channels my-channels-${app}`} style={brandVars(brand.theme.colors)}>
       <Screen onBack={onBack} />
@@ -65,10 +64,10 @@ function Channels({ onBack }: { readonly onBack: () => void }) {
         <>
           <h2 className="my-channels-head">{t('channels.mine.forYou')}</h2>
           <div className="my-channels-group">
-            {picked.flatMap(({ username, reason }) => {
-              const mine = byName.get(username);
+            {picked.flatMap(({ chat, reason }) => {
+              const mine = byChat.get(chat);
               return mine
-                ? [<MyChannelRow key={username} mine={mine} line={t(`channels.mine.reason.${reason}`)} />]
+                ? [<MyChannelRow key={chat} mine={mine} line={t(`channels.mine.reason.${reason}`)} />]
                 : [];
             })}
           </div>
@@ -81,7 +80,7 @@ function Channels({ onBack }: { readonly onBack: () => void }) {
           <h3 className="my-channels-head">{region.name}</h3>
           <div className="my-channels-group">
             {channels.map((mine) => (
-              <MyChannelRow key={mine.channel.username} mine={mine} line={coverage(mine.channel.title)} />
+              <MyChannelRow key={mine.channel.chat} mine={mine} />
             ))}
           </div>
         </section>

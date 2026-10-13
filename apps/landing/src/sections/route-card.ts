@@ -30,6 +30,6 @@ export function routeCard(brand: BrandConfig, i18n: I18n, route: Route, map: Map
 </div>
 <a class="button" data-go href="${start}">${escape(t('landing.map.go'))}</a>
 <small class="go-hint">${escape(t('landing.map.goHint', { brand: brand.name }))}</small>
-<a class="channel" data-channel-link href="${telegramLink(channel?.username ?? brand.bots.passenger)}">${icon('telegram')}<span>${escape(t('landing.map.channel'))}</span></a>
+<a class="channel" data-channel-link href="${escape(channel?.link ?? telegramLink(brand.bots.passenger))}">${icon('telegram')}<span>${escape(t('landing.map.channel'))}</span></a>
 </div>`;
 }

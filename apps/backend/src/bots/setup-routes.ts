@@ -11,6 +11,7 @@ import { botCommands } from './documents-reply';
 import { menuButton } from './start-reply';
 import { SUPPORT_BOT } from './support-bot';
 import { brandOf } from '../shared/brand/brand-of';
+import { POSTER_WEBHOOK_PATH } from '../modules/channels';
 
 const SETUP_HEADER = 'x-setup-secret';
 const UNAUTHORIZED = 401;
@@ -52,6 +53,17 @@ export function setupRoutes(fetch: Fetch) {
         await callTelegram(fetch, token, 'setMyCommands', { commands: botCommands() });
       }
       configured.push(role);
+    }
+    // The bot of the posts hears only who joins or leaves the channels (docs/176).
+    const poster = context.env.POSTER_BOT_TOKEN;
+    if (poster) {
+      await callTelegram(fetch, poster, 'setWebhook', {
+        url: `https://${apiHost(brand)}${POSTER_WEBHOOK_PATH}`,
+        secret_token: secret,
+        allowed_updates: ['chat_member'],
+        drop_pending_updates: true,
+      });
+      configured.push('poster');
     }
     return context.json({ configured });
   });

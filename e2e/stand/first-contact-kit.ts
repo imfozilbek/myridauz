@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { loadBrand } from '@platform/brands';
 import type { Page } from '@playwright/test';
 import type { Reply } from './bot-kit';
@@ -44,14 +44,13 @@ export const botOf = (role: 'passenger' | 'driver' | 'admin'): Bot => ({
 });
 export const DRIVER_BOT = botOf('driver');
 
-// A channel as its own chat (G68, mockup g68/5): its title and its round picture of the brand kit.
-export function channelChat(zone: { readonly title: string; readonly username: string }): Bot {
-  const slug = zone.username.split('_').at(-1) ?? '';
-  const round = readdirSync(`${KIT}/channels`).find(
-    (file) => file.includes('avatar') && file.endsWith(`-${slug}.png`),
-  );
-  return { name: zone.title, avatar: round ? `channels/${round}` : 'bot-passenger-avatar.png', picture: '' };
-}
+// A channel as its own chat (G68, mockup g68/5): its name in Telegram and the round picture of the
+// brand (docs/176).
+export const channelChat = (channel: { readonly name: string }): Bot => ({
+  name: channel.name,
+  avatar: 'bot-passenger-avatar.png',
+  picture: '',
+});
 
 // pinned: the first line of the message on top of the chat (docs/122 rule 6).
 export async function draw(page: Page, bot: Bot, body: string, footer = '', pinned = '') {

@@ -96,7 +96,7 @@
   "face.alreadyDecided": "Bu rasmga javob berilgan.",
   "face.rejected": "Yuz rasmingiz tekshiruvdan oʻtmadi.\nSababi: {reason}.\nYuzingiz aniq koʻrinadigan yangi rasm qoʻying.",
   "face.change": "Rasmni almashtirish",
-  "driver.channel": "«{zone}» kanalida safarlaringiz chiqadi, yoʻlovchilar u yerdan topadi: t.me/{username}",
+  "driver.channel": "Safarlaringiz yoʻnalish kanallarida chiqadi, yoʻlovchilar u yerdan topadi. Barcha kanallar: t.me/{username}",
   "driver.join": "Kanalga oʻtish",
   "driver.publish": "Safar eʼlon qilish"
 }

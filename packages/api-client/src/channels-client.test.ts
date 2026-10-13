@@ -6,7 +6,7 @@ import type { Fetch } from './fetch';
 const options = { baseUrl: 'https://api.test/', app: 'driver', initData: 'a=1' } as const;
 const ID = '6f1c2f7e-3c1b-4f5e-9a3d-2b8c1d0e4f5a';
 const publicity = {
-  channels: [{ username: 'yol_samarqand', title: 'Samarqand', posted: true }],
+  channels: [{ chat: '-1004328825984', title: 'Samarqand', link: 'https://t.me/+abcdefghij', posted: true }],
   views: 4,
   link: `https://t.me/test_bot?startapp=trip_${ID}__driver`,
 };
@@ -39,7 +39,7 @@ describe('the publicity of a trip in the driver app (G63, docs/119)', () => {
 
 describe('«Kanallar» of a person (G65, docs/119)', () => {
   it('reads the channels that are there and «✓ Aʼzosiz», in both apps', async () => {
-    const mine = { channels: [{ username: 'yol_samarqand', member: true }] };
+    const mine = { channels: [{ chat: '-1004328825984', member: true, link: 'https://t.me/+app' }] };
     for (const app of ['passenger', 'driver'] as const) {
       const fetch = vi.fn<Fetch>(async () => Response.json(mine));
       expect(await createChannelsClient({ ...options, app, fetch }).mine()).toEqual(mine.channels);

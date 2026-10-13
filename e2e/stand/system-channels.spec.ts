@@ -1,6 +1,6 @@
 import { expect, test } from '../crash-guard';
 import { channelOf, loadBrand } from '../../brands/index';
-import { createComfortClient, createMarketClient } from '@platform/api-client';
+import { createChannelsClient, createComfortClient, createMarketClient } from '@platform/api-client';
 import { showChat } from './bot-chat';
 import { channelChat } from './first-contact-kit';
 import { answer, book, CHILONZOR, publishTrip } from './market-kit';
@@ -9,14 +9,14 @@ import { JAHONGIR, NARGIZA } from './people';
 import { signedAs } from './stand-kit';
 import { botMessages, clearBotMessages, runCron } from './stand-tools';
 
-// The channels of the zones and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
+// The channels of the directions and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
 // trip is posted where people of its route read, its post follows the seats; a saved driver brings
 // the new trips; the history keeps the rides.
 test.describe.configure({ mode: 'serial' });
 const HOUR = 60 * MINUTE;
-// Toshkent has no channel of its own (docs/15): a trip to Samarqand goes to the channel of Samarqand.
+// Toshkent has no channel of its own (docs/15): a trip to Samarqand goes to the channels of Samarqand.
 const ZONE = channelOf(loadBrand(), SAMARQAND);
-const CHANNEL = `@${ZONE?.username ?? ''}`;
+const CHANNEL = ZONE?.chat ?? '';
 const posts = async (method: string) =>
   (await botMessages()).filter((m) => m.chat === CHANNEL && m.method === method);
 
@@ -53,4 +53,12 @@ test('P52. the history keeps a ride that ended, with whom', async () => {
   const ridden = async () =>
     (await history.history()).some((ride) => ride.from === trip.from && ride.to === trip.to);
   await expect.poll(ridden).toBe(true);
+});
+
+// Owner decision 4 (docs/176): the hourly check makes the own link of the app of a channel once, and
+// «Kanallar» gives it, so Telegram counts who joined from the app.
+test('S76. the check makes the link of the app of a channel, «Kanallar» gives it', async () => {
+  await runCron();
+  const mine = await createChannelsClient(await signedAs('passenger', NARGIZA)).mine();
+  expect(mine.some((channel) => channel.link.startsWith('https://t.me/+stand'))).toBe(true);
 });

@@ -8,11 +8,14 @@ import { routeCard } from './route-card';
 
 type Side = keyof Route;
 
+// The code of the invite link of a private channel (https://t.me/+code, docs/176).
+const inviteOf = (link: string) => link.replace(/^https:\/\/t\.me\/\+/u, '');
+
 // A list of the region centers; every option carries what the script needs (place, point, channel).
 function select(side: Side, route: Route, map: MapData, brand: BrandConfig, label: string) {
   const options = map.cities.map((city) => {
     const channel = channelOf(brand, city.place, city.soato);
-    const data = `data-place="${city.place}" data-x="${city.x}" data-y="${city.y}"${channel ? ` data-channel="${escape(channel.username)}"` : ''}`;
+    const data = `data-place="${city.place}" data-x="${city.x}" data-y="${city.y}"${channel ? ` data-channel="${escape(inviteOf(channel.link))}"` : ''}`;
     const selected = city.soato === route[side] ? ' selected' : '';
     return `<option value="${city.soato}" ${data}${selected}>${escape(city.name)}</option>`;
   });

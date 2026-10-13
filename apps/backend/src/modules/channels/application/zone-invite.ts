@@ -7,7 +7,7 @@ export type ZoneInviteDeps = {
   // true once per person: the users module keeps it (docs/119).
   readonly claim: (userId: number) => Promise<boolean>;
   // Already in the channel: no invite. Unknown counts as not in.
-  readonly inChannel: (username: string, userId: number) => Promise<boolean>;
+  readonly inChannel: (chat: string, userId: number) => Promise<boolean>;
   readonly message: (userId: number, zone: BrandChannel) => NotificationJob;
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
 };
@@ -24,7 +24,7 @@ export const tellsHome = (place: Place | undefined) =>
 export async function inviteToZone(deps: ZoneInviteDeps, userId: number, zone: BrandChannel | undefined) {
   if (!deps.enabled || !(await deps.claim(userId)) || !zone) return;
   try {
-    if (await deps.inChannel(zone.username, userId)) return;
+    if (await deps.inChannel(zone.chat, userId)) return;
     await deps.send([deps.message(userId, zone)]);
   } catch (error) {
     console.warn(JSON.stringify({ event: 'zone_invite_failed', message: String(error) }));

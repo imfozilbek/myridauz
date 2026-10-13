@@ -22,9 +22,11 @@ test('driver: publishes, confirms, leaves, arrives, rates and publishes the way 
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
   await publishTrip(page);
   expect(api.published).toEqual([expect.objectContaining({ from: '1726294', to: '1718401', seats: 4 })]);
-  // The channel of the direction posted the trip, three people opened it (docs/119).
+  // The channel of the direction posted the trip by its name in Telegram without the brand, three
+  // people opened it (docs/119, docs/176).
   await expect(page.getByText(t('driverTrip.channel.title'))).toBeVisible();
-  await expect(page.getByText('Samarqand yoʻli · 3 koʻrdi')).toBeVisible();
+  const views = t('driverTrip.channel.views', { channel: 'Samarqand shahri | Samarqand tumani', count: '3' });
+  await expect(page.getByText(views, { exact: true })).toBeVisible();
   await expect(page.getByText(t('driverTrip.channel.share'))).toBeVisible();
   // A passenger asks: the personal channel brings the request to the open page (docs/64).
   await expect.poll(() => api.feed.sockets.length).toBeGreaterThan(0);

@@ -43,9 +43,11 @@ const PLACES = [
   place('1726269', '1726', 'Chilonzor'),
   place('1703202', '1703', 'Andijon tumani'),
   place('1718203', '1718', 'Bulungʻur tumani'),
+  place('1718233', '1718', 'Samarqand tumani'),
   place('1718401', '1718', 'Samarqand shahri'),
-  place('1730203', '1730', 'Oltiariq tumani'),
-  place('1730212', '1730', 'Qoʻqon shahri'),
+  place('1730238', '1730', 'Furqat tumani'),
+  place('1730401', '1730', 'Fargʻona shahri'),
+  place('1730405', '1730', 'Qoʻqon shahri'),
 ];
 const locations = { getLocations: async () => ({ version: '1', locations: PLACES }) };
 

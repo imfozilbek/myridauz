@@ -1,9 +1,11 @@
+import { readFileSync } from 'node:fs';
 import { loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { escape } from './html';
+import type { RegionName } from './map-data';
 import { renderSite } from './site';
-import { MAP, ROADS } from './test-map';
+import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -11,6 +13,7 @@ const site = renderSite(brand, {
   year: 2027,
   map: MAP,
   roads: ROADS,
+  regions: REGIONS,
   script: 'run()',
 });
 const home = site['index.html'] ?? '';
@@ -50,9 +53,21 @@ describe('landing (G15)', () => {
     expect(home).toContain('data-region="1718"');
     expect(home).toContain(`href="https://t.me/${brand.bots.passenger}?startapp=find_1726_1718__site"`);
     expect(home).toContain('src="/art/hero-map.webp"');
-    expect(home).toContain('<b class="code">30</b>Samarqand</a></li>');
-    expect(home.match(/<details/gu)).toHaveLength(7);
+    expect(home.match(/<details class="reveal">/gu)).toHaveLength(7);
     expect(home).toContain('<script>run()</script>');
+  });
+
+  // Owner decisions 13.10.2026 (docs/176): the regions first, a region opens to its channels by their
+  // names in Telegram.
+  it('shows every channel of a direction under its region, the name of the region from the brand kit', () => {
+    const codes = new Set(brand.channels.map(({ code }) => code));
+    expect(home.match(/<details><summary>/gu)).toHaveLength(codes.size);
+    expect(home).toContain('<b class="code">30</b>Samarqand viloyati</span>');
+    for (const { link, name } of brand.channels)
+      expect(home).toContain(`<li><a href="${escape(link)}">${escape(name)}</a></li>`);
+    const kit = new URL(`../../../brands/${brand.id}/brand-kit/data/regions.json`, import.meta.url);
+    const named = (JSON.parse(readFileSync(kit, 'utf8')) as RegionName[]).map(({ code }) => code);
+    expect([...codes].filter((code) => !named.includes(code))).toEqual([]);
   });
 
   it('asks the public API for prices and gives the script templates, not texts', () => {

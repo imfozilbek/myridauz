@@ -3,6 +3,7 @@ import type { I18n, TranslationKey } from '@platform/i18n';
 import { art } from '../art';
 import { escape, telegramLink } from '../html';
 import { icon, type IconName } from '../icons';
+import type { RegionName } from '../map-data';
 import { actions } from './hero';
 
 type Values = Record<string, string>;
@@ -47,20 +48,27 @@ export function safety(brand: BrandConfig, i18n: I18n) {
 </div></section>`;
 }
 
-// "Hammasi Telegramda": the phone with the channels and a chip for every channel zone (docs/63).
-export function telegram(brand: BrandConfig, i18n: I18n) {
+// "Hammasi Telegramda": the phone and the channels of the directions by their names in Telegram under
+// their regions. A region opens in place to its channels, no JavaScript needed (owner decisions
+// 13.10.2026, docs/176).
+export function telegram(brand: BrandConfig, i18n: I18n, regions: readonly RegionName[]) {
   const { t } = i18n;
-  const chips = brand.channels
-    .map(
-      ({ username, title, code }) =>
-        `<li><a href="${telegramLink(username)}"><b class="code">${escape(code)}</b>${escape(title)}</a></li>`,
-    )
+  const codes = [...new Set(brand.channels.map(({ code }) => code))];
+  const groups = codes
+    .map((code) => {
+      const chips = brand.channels
+        .filter((channel) => channel.code === code)
+        .map(({ link, name }) => `<li><a href="${escape(link)}">${escape(name)}</a></li>`)
+        .join('');
+      const name = regions.find((region) => region.code === code)?.region ?? code;
+      return `<details><summary><span><b class="code">${escape(code)}</b>${escape(name)}</span>${icon('open')}</summary><ul class="chips">${chips}</ul></details>`;
+    })
     .join('');
   return `<section class="telegram"><div class="wrap tg-grid">
 <div class="phone single">${art({ name: 'phone-telegram', alt: t('landing.telegram.title'), size: 'phone' }, { className: 'screen shown' })}</div>
 <div><h2>${escape(t('landing.telegram.title'))}</h2>
 <p class="section-lead">${escape(t('landing.telegram.text'))}</p>
-<ul class="chips">${chips}</ul></div>
+<div class="regions">${groups}</div></div>
 </div></section>`;
 }
 

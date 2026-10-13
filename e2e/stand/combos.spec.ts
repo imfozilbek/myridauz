@@ -1,18 +1,21 @@
 import { expect, test } from '../crash-guard';
 import { createMarketClient } from '@platform/api-client';
+import { loadBrand } from '@platform/brands';
 import { tashkentDate } from '@platform/contracts';
 import { book, CHILONZOR, cancelMine, publishTrip } from './market-kit';
 import { bookingOf, MINUTE, outcome, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } from './g27-kit';
 import { GAYRAT, TIMUR } from './people';
 import { freshDriver } from './schedule-kit';
 import { signedAs } from './stand-kit';
-import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
+import { botMessages, clearBotMessages, isChannel, runCron, standRows, standSql } from './stand-tools';
 
 // The combinations of docs/82: the way of a trip × the way of a seat, «ayol bor» with a man driver,
 // a seat cancelled before an answer, an empty search, the post of a trip that left.
 test.describe.configure({ mode: 'serial' });
 const URGUT = '1718236';
 const TO_URGUT = { pickup: null, dropoff: { lat: 39.402, lng: 67.243 } };
+// Samarqand shahri is in several channels of the brand: a trip there gets a post in each (docs/176).
+const POSTS = loadBrand().channels.filter((channel) => channel.places.includes(SAMARQAND)).length;
 
 test('docs/82 ways: a pitak trip takes no seat from home, a city trip takes no seat at the pitak', async () => {
   const pitakOnly = await publishTrip(GAYRAT, CHILONZOR, URGUT, 'pitak');
@@ -69,12 +72,12 @@ test('docs/82 «ayol bor»: a man driver with a woman in the car is found by the
 test('S28. a trip that left: its channel post says it left, by the Cron', async () => {
   const trip = await publishTrip(GAYRAT, CHILONZOR, SAMARQAND, 'door');
   await expect
-    .poll(async () => (await botMessages()).some((m) => m.method === 'sendMessage' && m.chat.startsWith('@')))
+    .poll(async () => (await botMessages()).some((m) => m.method === 'sendMessage' && isChannel(m)))
     .toBe(true);
   await clearBotMessages();
   // The worker keeps the post only after Telegram answered: change its time when it is there (lesson 121).
   const kept = `SELECT trip_id FROM channel_posts WHERE trip_id = '${trip.id}'`;
-  await expect.poll(() => standRows(kept).length).toBe(1);
+  await expect.poll(() => standRows(kept).length).toBe(POSTS);
   // The post keeps the departure of its trip: both move back in time.
   const left = Date.now() - MINUTE;
   standSql(`UPDATE trips SET depart_at = ${left} WHERE id = '${trip.id}'`);

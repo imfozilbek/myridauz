@@ -17,10 +17,10 @@ const send = botSender((input, init) => fetch(input, init));
 // The owner approved the post: autoposting is on in this test (docs/33).
 Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
 
-// The zones of Samarqand and of Nurafshon (Toshkent viloyati) in the brand config (docs/63).
+// The channels of Samarqand shahri and of Nurafshon (Toshkent viloyati) in the brand config (docs/176).
 const brand = loadBrand();
-const SAMARQAND = `@${channelOf(brand, '1718401')?.username ?? ''}`;
-const TOSHKENT_REGION = `@${channelOf(brand, '1727401')?.username ?? ''}`;
+const SAMARQAND = channelOf(brand, '1718401')?.chat ?? '';
+const TOSHKENT_REGION = channelOf(brand, '1727401')?.chat ?? '';
 const DRIVER = 71;
 const PASSENGER = 72;
 // A passenger without a seat: one seat or one request at a time (docs/172).

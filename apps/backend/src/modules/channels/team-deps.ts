@@ -14,7 +14,7 @@ export async function teamDeps(env: Bindings): Promise<TeamChannelsDeps> {
     fixed: brandOf(env).channels,
     titleOf: (id) => places.get(id)?.name,
     store: env.DB ? d1TeamChannels(env.DB) : localTeam,
-    botIsAdmin: botIsAdmin((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
+    botIsAdmin: botIsAdmin((input, init) => fetch(input, init), env.POSTER_BOT_TOKEN),
     now: () => Date.now(),
   };
 }

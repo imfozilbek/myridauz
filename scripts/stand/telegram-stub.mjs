@@ -16,6 +16,7 @@ const resultOf = (method, id) => {
   if (method === 'savePreparedInlineMessage') return { id: `prepared-${id}`, expiration_date: 0 };
   if (method === 'sendMediaGroup') return [{ message_id: id }];
   if (method === 'getFile') return { file_path: `voice/${id}.oga` };
+  if (method === 'createChatInviteLink') return { invite_link: `https://t.me/+stand${id}` };
   if (method.startsWith('send') || method === 'editMessageText') return { message_id: id };
   return true;
 };

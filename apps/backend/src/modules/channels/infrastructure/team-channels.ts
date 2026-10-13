@@ -1,4 +1,4 @@
-import type { TeamChannel, TeamChannelStore } from '../application/team';
+import type { PublicChannel, TeamChannelStore } from '../application/team';
 
 type Row = { username: string; title: string; places: string };
 
@@ -24,7 +24,7 @@ export const d1TeamChannels = (db: D1Database): TeamChannelStore => ({
 
 // In memory: tests and local runs without D1.
 export function createMemoryTeamChannels(): TeamChannelStore {
-  const kept = new Map<string, TeamChannel>();
+  const kept = new Map<string, PublicChannel>();
   return {
     list: async () => [...kept.values()].sort((a, b) => a.title.localeCompare(b.title)),
     save: async (channel) => void kept.set(channel.username, channel),

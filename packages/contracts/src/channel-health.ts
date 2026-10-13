@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CHANNEL_USERNAME } from './channels';
+import { CHANNEL_CHAT } from './channels';
 
 // The health of the channels in «Kanallar» of «Boshqaruv» (G75, docs/120, docs/119): how many people
 // are in each, whether the bot may still post there, the posts Telegram never took this week and the
@@ -11,7 +11,7 @@ export const CHANNEL_ARRIVALS_DAYS = 30;
 export const channelHealthSchema = z.object({
   channels: z.array(
     z.object({
-      username: z.string().regex(CHANNEL_USERNAME),
+      chat: z.string().regex(CHANNEL_CHAT),
       title: z.string(),
       // The last check by the Cron; null before the first one or when Telegram did not answer.
       subscribers: z.number().int().min(0).nullable(),

@@ -13,6 +13,8 @@ export type HealthRow = {
   readonly subscribers: number | null;
   readonly canPost: boolean | null;
   readonly checkedAt: number;
+  // The own invite link «Rida ilovasi» (docs/176): null until the bot made it.
+  readonly appLink: string | null;
 };
 
 export type HealthStore = {
@@ -23,32 +25,43 @@ export type HealthStore = {
 export type HealthDeps = {
   readonly channels: () => Promise<Channel[]>;
   readonly store: HealthStore;
-  readonly count: (username: string) => Promise<number | null>;
-  readonly canPost: (username: string) => Promise<boolean>;
+  readonly count: (chat: string) => Promise<number | null>;
+  readonly canPost: (chat: string) => Promise<boolean>;
+  // Makes the invite link «Rida ilovasi» of a channel; null when Telegram did not.
+  readonly appLink: (chat: string) => Promise<string | null>;
   // The posts Telegram never took, by channel; the people who came by the marks of the channels.
   readonly failed: (since: number) => Promise<ReadonlyMap<string, number>>;
   readonly arrivals: (since: number) => Promise<ReadonlyMap<string, number>>;
   readonly now: () => number;
 };
 
-// Two calls to Telegram a channel: a few channels an hour keep the Cron light (docs/117), the oldest
-// check first, never checked first of all.
+// Two calls to Telegram a channel, three while it has no link «Rida ilovasi»: a few channels an hour
+// keep the Cron light (docs/117, lesson 262), the oldest check first, never checked first of all.
 const CHECKED_PER_RUN = 3;
 
-// The hourly Cron job: the channels checked the longest ago are read again.
+// The hourly Cron job: the channels checked the longest ago are read again. A channel without its link
+// «Rida ilovasi» gets it once (docs/176); the link is kept, a failed one is made at the next check.
 export async function checkChannels(deps: HealthDeps): Promise<void> {
   const [channels, rows] = await Promise.all([deps.channels(), deps.store.rows()]);
-  const checked = new Map(rows.map((row) => [row.channel, row.checkedAt]));
+  const before = new Map(rows.map((row) => [row.channel, row]));
   const due = [...channels]
-    .sort((a, b) => (checked.get(a.username) ?? 0) - (checked.get(b.username) ?? 0))
+    .sort((a, b) => (before.get(a.chat)?.checkedAt ?? 0) - (before.get(b.chat)?.checkedAt ?? 0))
     .slice(0, CHECKED_PER_RUN);
-  for (const { username } of due) {
-    const [subscribers, canPost] = await Promise.all([
-      deps.count(username),
-      deps.canPost(username).catch(() => null),
+  for (const { chat } of due) {
+    const [subscribers, canPost, appLink] = await Promise.all([
+      deps.count(chat),
+      deps.canPost(chat).catch(() => null),
+      before.get(chat)?.appLink ?? deps.appLink(chat).catch(() => null),
     ]);
-    await deps.store.save({ channel: username, subscribers, canPost, checkedAt: deps.now() });
+    await deps.store.save({ channel: chat, subscribers, canPost, checkedAt: deps.now(), appLink });
   }
+}
+
+// The links «Rida ilovasi» the checks made, by channel: the app opens them (docs/176).
+export async function appLinks(store: HealthStore): Promise<ReadonlyMap<string, string>> {
+  return new Map(
+    (await store.rows()).flatMap(({ channel, appLink }) => (appLink ? [[channel, appLink] as const] : [])),
+  );
 }
 
 // «Kanallar» of the owner: every channel with its people, its bot, its lost posts and its arrivals.
@@ -62,16 +75,16 @@ export async function channelHealth(deps: HealthDeps): Promise<ChannelHealth> {
   ]);
   const byChannel = new Map(rows.map((row) => [row.channel, row]));
   return {
-    channels: channels.map(({ username, title }) => {
-      const row = byChannel.get(username);
+    channels: channels.map(({ chat, title }) => {
+      const row = byChannel.get(chat);
       return {
-        username,
+        chat,
         title,
         subscribers: row?.subscribers ?? null,
         canPost: row?.canPost ?? null,
         checkedAt: row?.checkedAt ?? null,
-        failed: failed.get(username) ?? 0,
-        arrivals: arrivals.get(channelVia(username)) ?? 0,
+        failed: failed.get(chat) ?? 0,
+        arrivals: arrivals.get(channelVia(chat)) ?? 0,
       };
     }),
   };

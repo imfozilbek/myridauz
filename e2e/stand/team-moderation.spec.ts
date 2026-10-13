@@ -87,8 +87,8 @@ test('T40, T41, T46, T47. a formula with a history, a channel added and removed,
   const channel = { title: 'Sinov', places: [SAMARQAND] };
   // The stub of Telegram makes the bot an admin everywhere; «not an admin» is a unit test.
   await channels.save('stand_g27_channel', channel);
-  expect((await channels.list()).some((c) => c.username === 'stand_g27_channel')).toBe(true);
+  expect((await channels.list()).some((c) => c.chat === '@stand_g27_channel')).toBe(true);
   await channels.remove('stand_g27_channel');
-  expect((await channels.list()).some((c) => c.username === 'stand_g27_channel')).toBe(false);
+  expect((await channels.list()).some((c) => c.chat === '@stand_g27_channel')).toBe(false);
   expect(await outcome(createStatsClient(await signedAs('admin', OWNER)).get('day'))).toBe('ok');
 });

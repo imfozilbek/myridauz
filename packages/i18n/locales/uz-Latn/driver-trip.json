@@ -27,7 +27,6 @@
   "story.left": "Yoʻlga chiqqan safarni hikoyaga joylab boʻlmaydi.",
   "change.closed": "Yoʻlga chiqqan safarning vaqti va narxi oʻzgarmaydi.",
   "channel.title": "Safaringiz kanalda chiqdi",
-  "channel.name": "{brand} | {title}",
   "channel.views": "{channel} · {count} koʻrdi",
   "channel.share": "Havolani yoʻlovchilarga yuborish",
   "private.waiting.title": "{name}ga taklif yuborildi",

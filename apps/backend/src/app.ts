@@ -92,7 +92,7 @@ export const app = new Hono<AppEnv>()
   .use('/chats/:key/messages', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/feed/ticket', rateLimit('ACTIONS_LIMIT', 'action'))
   .use('/passenger/map/search', rateLimit('SEARCH_LIMIT', 'search'))
-  // «Kanallar» asks Telegram once a channel (G65).
+  // «Kanallar» of a person reads the members the bot of the posts heard (G80, docs/176).
   .use(MY_CHANNELS_PATH, rateLimit('ACTIONS_LIMIT', 'action'))
   .route('/', healthModule)
   .route('/', analyticsModule)

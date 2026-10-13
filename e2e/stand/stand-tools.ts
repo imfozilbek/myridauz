@@ -13,7 +13,7 @@ export type BotMessage = {
   readonly bot: string;
   readonly method: string;
   readonly chatId: number | null;
-  // The chat as Telegram got it: a person's id or a channel's @username.
+  // The chat as Telegram got it: a person's id, a private channel's number or a channel's @username.
   readonly chat: string;
   readonly text: string;
   readonly buttons: readonly Button[];
@@ -31,6 +31,8 @@ type Call = {
   readonly body: Record<string, unknown>;
   readonly id?: number;
 };
+// A channel: a private one of the brand by its number (-100…), one of the team by its @name (docs/176).
+export const isChannel = (message: BotMessage) => /^(@|-100)/u.test(message.chat);
 const idOf = (value: unknown) => (typeof value === 'number' ? value : null);
 type Markup = { inline_keyboard?: { text: string; url?: string; web_app?: { url: string } }[][] };
 

@@ -7,15 +7,17 @@ import { notify } from '../notifications';
 import { claimZoneInvite } from '../users';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
-import type { MyChannelsDeps } from './application/my-channels';
 import { allChannels } from './application/team';
 import { channelRoutes } from './http/channel-routes';
 import { healthRoutes } from './http/health-routes';
-import { checkChannels } from './application/health';
-import { healthDeps } from './health-deps';
+import { appLinks, checkChannels } from './application/health';
+import { healthDeps, healthStoreOf } from './health-deps';
 import { myChannelsRoutes } from './http/my-channels-routes';
+import { posterRoutes } from './http/poster-routes';
+export { POSTER_WEBHOOK_PATH } from './http/poster-routes';
+import { heardDeps, membersOf, myChannelsDeps } from './members-deps';
 import { publicityRoutes } from './http/publicity-routes';
-import { inChannel, membership } from './infrastructure/bot-admin';
+import { inChannel } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
 import type { PublicityDeps, TripFacts } from './application/publicity';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
@@ -62,17 +64,13 @@ export const channels = (tripOf: TripOf) => ({
   left: (env: Bindings, tripId: string) => closePosts(channelsDeps(env, tripOf), tripId),
 });
 
-// One call a channel: the bot of the posts is its admin (docs/63).
-const myChannelsDeps = (env: Bindings): MyChannelsDeps => ({
-  zones: brandOf(env).channels,
-  membership: membership((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
-});
-
 // The team's channels in the admin Mini App (docs/63) and «Kanallar» of a person (G65, docs/119).
 export const channelsModule = new Hono<AppEnv>()
   .route('/', healthRoutes(healthDeps))
   .route('/', channelRoutes(teamDeps))
-  .route('/', myChannelsRoutes(myChannelsDeps));
+  .route('/', myChannelsRoutes(myChannelsDeps))
+  // Before the webhook of the bots: "/telegram/:role" would take the bot of the posts (docs/176).
+  .route('/', posterRoutes(heardDeps));
 
 // The hourly Cron: a few channels read again from Telegram for «Kanallar» of the owner (G75).
 export const checkChannelHealth = async (env: Bindings) => checkChannels(await healthDeps(env));
@@ -80,7 +78,7 @@ export const checkChannelHealth = async (env: Bindings) => checkChannels(await h
 const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
   enabled: env.CHANNEL_POSTS === 'on',
   claim: (userId) => claimZoneInvite(env, userId),
-  inChannel: inChannel((input, init) => fetch(input, init), env.PASSENGER_BOT_TOKEN),
+  inChannel: inChannel((input, init) => fetch(input, init), env.POSTER_BOT_TOKEN),
   message: zoneMessage(brand),
   send: (jobs) => notify(env, jobs),
 });
@@ -88,7 +86,7 @@ const zoneDeps = (env: Bindings, brand: BrandConfig): ZoneInviteDeps => ({
 // The registration knows the zone only from the mark of a channel post the person came by (docs/116).
 export const inviteFromMark = async (env: Bindings, userId: number, via: string | undefined) => {
   const brand = brandOf(env);
-  const zone = brand.channels.find((channel) => channelVia(channel.username) === via);
+  const zone = brand.channels.find((channel) => channelVia(channel.chat) === via);
   if (zone) await inviteToZone(zoneDeps(env, brand), userId, zone);
 };
 
@@ -112,6 +110,7 @@ const publicityDeps = (env: Bindings, tripOf: TripFactsOf): PublicityDeps => ({
   trip: (id) => tripOf(env, id),
   places: () => placesOf(env),
   channels: async () => allChannels(await teamDeps(env)),
+  appLinks: () => appLinks(healthStoreOf(env)),
   posts: postsOf(env),
   views: viewsOf(env),
   link: (tripId) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_DRIVER),
@@ -123,5 +122,6 @@ export const publicityModule = (tripOf: TripFactsOf) => publicityRoutes((env) =>
 // «23 kishi koʻrdi» of the driver's live trips (G76): one count by the key per trip.
 export const tripViewCounts = async (env: Bindings, tripIds: readonly string[]) =>
   new Map(await Promise.all(tripIds.map(async (id) => [id, await viewsOf(env).count(id)] as const)));
-// A deleted account (docs/30): the trips it opened forget it.
+// A deleted account (docs/30): the trips it opened forget it, and the channels it is in.
 export const forgetTripViews = (env: Bindings, userId: number) => viewsOf(env).forget(userId);
+export const forgetChannelMembers = (env: Bindings, userId: number) => membersOf(env).forget(userId);

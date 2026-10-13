@@ -1,5 +1,5 @@
 import { cancelAllOf, chatsOf, erasePointsOf, filedRideOfBooking } from './modules/bookings';
-import { forgetTripViews } from './modules/channels';
+import { forgetChannelMembers, forgetTripViews } from './modules/channels';
 import { forgetChat, forgetUnread } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
@@ -36,6 +36,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetFollows(env, userId);
   // The trips the person opened forget them: «N koʻrdi» counts only people with an account (G63).
   await forgetTripViews(env, userId);
+  // Who is in which channel goes too (docs/176).
+  await forgetChannelMembers(env, userId);
   await forgetRequestViews(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);

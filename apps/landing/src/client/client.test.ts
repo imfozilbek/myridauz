@@ -79,7 +79,7 @@ describe('landing script (docs/59)', () => {
       `https://t.me/${brand.bots.passenger}?startapp=find_1726_1718__site`,
     );
     expect(document.querySelector<HTMLAnchorElement>('[data-channel-link]')?.href).toContain(
-      channelOf(brand, '1718401')?.username ?? '',
+      channelOf(brand, '1718401')?.link ?? '-',
     );
     click('[data-swap]');
     await vi.waitFor(() => expect(text('[data-name=from]')).toBe('Samarqand'));
@@ -113,7 +113,7 @@ describe('landing script (docs/59)', () => {
     await vi.waitFor(() => expect(text('[data-price]')).toMatch(/^≈\s90\s000\ssoʻm$/u));
   });
 
-  it('puts only codes and usernames into the links', async () => {
+  it('puts only codes into the links', async () => {
     const root = mount(mapSection(MAP, brand, i18n));
     const target = root.querySelector<HTMLOptionElement>('[data-side=to] option[selected]');
     if (target) {

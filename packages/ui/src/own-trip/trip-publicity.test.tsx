@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import type { ChannelsClient } from '@platform/api-client';
 import type { Trip, TripPublicity } from '@platform/contracts';
 import { activity, counted } from '@platform/api-client';
@@ -8,8 +8,15 @@ import { openOwnTrip, renderMarket, trip } from '../market/market-test-kit';
 import { MyTripsScreen } from '../market/my-trips-screen';
 import { testClients } from '../test-shell';
 
-// The channel by its name in Telegram (mockup g59/7 phone 1, docs/37): «{brand} | {title}».
-const BRAND = loadBrand().name;
+// The channel by its name in Telegram (mockup g59/7 phone 1, owner 13.10.2026, docs/176): a channel of
+// the brand by the name copied from Telegram, a channel of the team by the title the team gave it.
+const FARGONA = channelOf(loadBrand(), '1730401');
+const TEAM = {
+  chat: '@yol_fargona',
+  title: 'Fargʻona yoʻli',
+  link: 'https://t.me/yol_fargona',
+  posted: true,
+};
 
 afterEach(() => {
   cleanup();
@@ -20,8 +27,8 @@ const MINUTE = 60 * 1000;
 const LINK = 'https://t.me/test_bot?startapp=trip_t1__driver';
 const publicity: TripPublicity = {
   channels: [
-    { username: 'yol_toshkent', title: 'Toshkent yoʻli', posted: false },
-    { username: 'yol_fargona', title: 'Fargʻona yoʻli', posted: true },
+    { chat: '@yol_toshkent', title: 'Toshkent yoʻli', link: 'https://t.me/yol_toshkent', posted: false },
+    { chat: FARGONA?.chat ?? '', title: FARGONA?.title ?? '', link: 'https://t.me/+fargona', posted: true },
   ],
   views: 12,
   link: LINK,
@@ -55,22 +62,22 @@ describe('the trip in the channel on «Mening safarim» (owner decision 08.10.20
     expect(await screen.findByText('Safaringiz kanalda chiqdi')).toBeTruthy();
     expect(tripPublicity).toHaveBeenCalledWith('t1');
     expect(busy).toEqual([0]);
-    expect(screen.getByText(`${BRAND} | Fargʻona yoʻli · 12 koʻrdi`)).toBeTruthy();
+    expect(screen.getByText('Margʻilon | Fargʻona shahri · 12 koʻrdi')).toBeTruthy();
     const card = document.querySelector('.own-channel') as HTMLElement;
     expect(card.previousElementSibling?.classList.contains('own-banner')).toBe(true);
     const opened = vi.spyOn(window, 'open').mockReturnValue(null);
     fireEvent.click(screen.getByText('Safaringiz kanalda chiqdi'));
-    expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/yol_fargona');
+    expect(opened.mock.calls[0]?.[0]).toBe('https://t.me/+fargona');
     fireEvent.click(screen.getByText('Havolani yoʻlovchilarga yuborish'));
     await vi.waitFor(() =>
       expect(opened.mock.calls[1]?.[0]).toBe(`https://t.me/share/url?url=${encodeURIComponent(LINK)}`),
     );
   });
 
-  it('shows only the channel while nobody opened the trip yet', async () => {
-    open(trip, async () => ({ ...publicity, views: 0 }));
+  it('shows only the channel while nobody opened the trip yet, a channel of the team by its title', async () => {
+    open(trip, async () => ({ ...publicity, channels: [TEAM], views: 0 }));
     await openTrip();
-    expect(await screen.findByText(`${BRAND} | Fargʻona yoʻli`)).toBeTruthy();
+    expect(await screen.findByText('Fargʻona yoʻli')).toBeTruthy();
     expect(screen.queryByText(/koʻrdi/u)).toBeNull();
   });
 

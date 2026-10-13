@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyApplication } from './domain/application';
 import { telegramNotifier } from './infrastructure/telegram-notifier';
 
+const brand = loadBrand();
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '30A123BC', seats: 4 } as const;
 const APPROVED = { ...emptyApplication(7, 0), status: 'approved' as const, car };
 type Buttons = { inline_keyboard: { text: string; url?: string; web_app?: { url: string } }[][] };
@@ -15,7 +16,7 @@ describe('the approval in the driver bot', () => {
   const message = async (bonus: { amount: number; expiresAt: number } | null, plate: string = car.plate) => {
     const shown: { cards: readonly Card[]; rings: readonly Ring[] }[] = [];
     const notifier = telegramNotifier({
-      brand: loadBrand(),
+      brand,
       show: async (cards, rings) => void shown.push({ cards, rings }),
       assign: async () => undefined,
       queue: async () => undefined,
@@ -44,19 +45,15 @@ describe('the approval in the driver bot', () => {
     expect(await sent(null)).not.toContain('bonus');
   });
 
-  // The channel of the region of the car and two buttons (G62, docs/119 driver 4).
-  it('invites to the channel of the region of the plate and to publish a trip', async () => {
-    const { card, buttons } = await message(null);
-    const zone = loadBrand().channels.find((channel) => channel.code === '30')?.username;
-    expect(card?.text).toContain(`t.me/${zone}`);
-    expect(buttons.map((button) => button.text)).toEqual(['Kanalga oʻtish', 'Safar eʼlon qilish']);
-    expect(buttons[0]?.url).toBe(`https://t.me/${zone}`);
-    expect(buttons[1]?.web_app?.url).toMatch(/\?open=new_trip$/u);
-  });
-
-  it('has no channel for a Tashkent car, only «Safar eʼlon qilish»', async () => {
-    const { card, buttons } = await message(null, '01A123BC');
-    expect(card?.text).not.toContain('t.me/');
-    expect(buttons.map((button) => button.text)).toEqual(['Safar eʼlon qilish']);
-  });
+  // The main channel with the channels of every direction and two buttons (docs/176, docs/119).
+  it.each(['30A123BC', '01A123BC'])(
+    'invites the car %s to the main channel and to publish a trip',
+    async (plate) => {
+      const { card, buttons } = await message(null, plate);
+      expect(card?.text).toContain(`t.me/${brand.mainChannel}`);
+      expect(buttons.map((button) => button.text)).toEqual(['Kanalga oʻtish', 'Safar eʼlon qilish']);
+      expect(buttons[0]?.url).toBe(`https://t.me/${brand.mainChannel}`);
+      expect(buttons[1]?.web_app?.url).toMatch(/\?open=new_trip$/u);
+    },
+  );
 });

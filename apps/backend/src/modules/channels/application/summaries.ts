@@ -1,7 +1,8 @@
 import { DAY_MS, HOUR_MS, tashkentDate, tashkentDayStart, type Trip } from '@platform/contracts';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
-import { covers, type ChannelCoverage } from '../domain/route-channels';
+import { covers } from '../domain/route-channels';
+import type { TeamChannel } from './team';
 
 // The day ends at 22:00, the week is told on Monday from 10:00 (docs/122, mockup g68/5).
 const DAY_FROM_MS = 22 * HOUR_MS;
@@ -9,7 +10,7 @@ const WEEK_FROM_MS = 10 * HOUR_MS;
 const MONDAY = 1;
 const WEEK_DAYS = 7;
 
-type Channel = ChannelCoverage & { readonly title?: string };
+type Channel = TeamChannel;
 export type SummaryDeps = {
   readonly enabled: boolean;
   readonly channels: () => Promise<readonly Channel[]>;

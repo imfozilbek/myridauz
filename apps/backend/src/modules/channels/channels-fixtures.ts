@@ -11,8 +11,8 @@ export const PLACES = new Map([
   ['1706401', { name: 'Buxoro shahri', parentId: '1706' }],
 ]);
 export const CHANNELS = [
-  { username: 'ch_samarqand', places: ['1718'] },
-  { username: 'ch_buxoro', places: ['1706'] },
+  { chat: '@ch_samarqand', link: 'https://t.me/ch_samarqand', places: ['1718'] },
+  { chat: '@ch_buxoro', link: 'https://t.me/ch_buxoro', places: ['1706'] },
 ];
 export const TRIP: Trip = {
   id: 'trip-1',

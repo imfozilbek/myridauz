@@ -50,7 +50,7 @@
   width: 24px;
   height: 24px;
   border: 1.5px solid var(--reg-card);
-  border-radius: 7px;
+  border-radius: 50%;
   object-fit: cover;
 }
 

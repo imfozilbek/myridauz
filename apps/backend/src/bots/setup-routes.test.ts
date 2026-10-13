@@ -22,7 +22,7 @@ const bodyOf = (body: RequestInit['body']): Record<string, unknown> =>
       )
     : (JSON.parse(String(body)) as Record<string, unknown>);
 
-function setup(secret: string, status = 200, avatarStatus = 200) {
+function setup(secret: string, status = 200, avatarStatus = 200, extra = {}) {
   const calls: Call[] = [];
   const routes = setupRoutes(async (url, init) => {
     if (url.startsWith(`https://${brand.domain}/`)) {
@@ -35,7 +35,7 @@ function setup(secret: string, status = 200, avatarStatus = 200) {
   const request = routes.request(
     '/telegram/setup',
     { method: 'POST', headers: { 'x-setup-secret': secret } },
-    env,
+    { ...env, ...extra },
   );
   return { request, calls };
 }
@@ -65,6 +65,18 @@ describe('POST /telegram/setup', () => {
     expect(commands[0]?.body.commands).toContainEqual({
       command: 'hujjatlar',
       description: 'Hujjatlar: oferta va maxfiylik',
+    });
+  });
+
+  it('points the bot of the posts at the API for the joins and leaves only (docs/176)', async () => {
+    const { request, calls } = setup('hook', 200, 200, { POSTER_BOT_TOKEN: 'c' });
+    expect(((await (await request).json()) as { configured: string[] }).configured).toContain('poster');
+    const poster = calls.filter((call) => call.url.startsWith('https://api.telegram.org/botc/'));
+    expect(poster.map((call) => call.url)).toEqual(['https://api.telegram.org/botc/setWebhook']);
+    expect(poster[0]?.body).toMatchObject({
+      url: `https://api.${brand.domain}/telegram/poster`,
+      secret_token: 'hook',
+      allowed_updates: ['chat_member'],
     });
   });
 

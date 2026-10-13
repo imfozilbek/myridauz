@@ -15,7 +15,7 @@
   flex: none;
   width: 44.67px;
   height: 44.67px;
-  border-radius: 10px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
@@ -28,9 +28,12 @@
 }
 
 .my-channel-name {
-  /* Narrower phones make the words smaller, never cut them (docs/121). */
-  font-size: clamp(14px, 4.445vw, 16px);
-  line-height: 16px;
+  /* The whole name of the channel in Telegram (docs/176), small (owner 13.10.2026): smaller on
+     narrower phones, never cut, no word alone on its last line (docs/121). */
+  font-size: clamp(12px, 3.612vw, 14px);
+  font-weight: 600;
+  line-height: 17px;
+  text-wrap: pretty;
 }
 
 .my-channel-line {

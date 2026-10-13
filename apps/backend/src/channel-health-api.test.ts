@@ -19,8 +19,8 @@ describe('the health of the channels in the admin app', () => {
     await registerUser(OWNER);
     await checkChannelHealth(testEnv);
     const health = channelHealthSchema.parse(await (await read(OWNER)).json());
-    expect(health.channels.map((item) => item.username)).toEqual(
-      loadBrand().channels.map((zone) => zone.username),
+    expect(health.channels.map((item) => item.chat)).toEqual(
+      loadBrand().channels.map((channel) => channel.chat),
     );
     expect(health.channels.filter((item) => item.checkedAt !== null)).toHaveLength(3);
   });

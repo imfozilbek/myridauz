@@ -1,4 +1,4 @@
-import { loadBrand } from '@platform/brands';
+import { channelOf, loadBrand } from '@platform/brands';
 import type { HistoryItem } from '@platform/contracts';
 import { cleanup, fireEvent, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -7,14 +7,19 @@ import { request } from '../bookings/booking-test-kit';
 import { trip } from '../market/market-test-kit';
 import type { Overrides } from '../test-clients-other';
 
-// «Kanallar» of a person (docs/119, mockups 7-channels-2 and 7-channels-3): the channels of the zones
-// that are made, «Siz uchun» with the reason, «Qoʻshilish» or «✓ Aʼzosiz».
-const zones = loadBrand().channels;
-const zoneOf = (place: string) => zones.find((zone) => zone.places.includes(place));
-const [andijon, samarqand, fargona, qoqon] = ['1703202', '1718203', '1730203', '1730212'].map(zoneOf);
+// «Kanallar» of a person (docs/119, mockups 7-channels-2 and 7-channels-3): the channels of the
+// directions that are made, «Siz uchun» with the reason, «Qoʻshilish» or «✓ Aʼzosiz». The own
+// channels of the last search, of the trips to Samarqand, of the request to Fargʻona and of Qoʻqon.
+const brand = loadBrand();
+const [andijon, samarqand, fargona, qoqon] = ['1703202', '1718401', '1730401', '1730405'].map((place) =>
+  channelOf(brand, place),
+);
+// The server made the link «Rida ilovasi» of Qoʻqon, not yet of the others (docs/176).
+const APP_LINK = 'https://t.me/+app_qoqon';
 const made = [andijon, samarqand, fargona, qoqon].map((zone) => ({
-  username: zone?.username ?? '',
+  chat: zone?.chat ?? '',
   member: zone === samarqand,
+  link: zone === qoqon ? APP_LINK : (zone?.link ?? ''),
 }));
 const ride = (id: string): HistoryItem => ({
   id,
@@ -70,9 +75,10 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
     expect(within(forYou).getByText('Oxirgi qidiruv')).toBeTruthy();
     expect(within(forYou).getByText('✓ Aʼzosiz')).toBeTruthy();
     expect(screen.getByText('Fargʻona viloyati')).toBeTruthy();
-    // A zone of several places names them, a zone of one place says the channel (mockup 7-channels-2).
-    expect(screen.getByText('Fargʻona, Margʻilon')).toBeTruthy();
-    expect(screen.getByText(`${loadBrand().name} | ${qoqon?.title ?? ''}`)).toBeTruthy();
+    // A channel by its name in Telegram without the brand (owner 13.10.2026, docs/176), in «Siz uchun»
+    // and under its region.
+    expect(screen.getAllByText('Margʻilon | Fargʻona shahri')).toHaveLength(2);
+    expect(screen.getByText('Qamchiq | Furqat | Qoʻqon')).toBeTruthy();
     // Only the channels that are made: 4 here, 3 of them «Siz uchun» too.
     expect(screen.getAllByText(/Qoʻshilish|✓ Aʼzosiz/u)).toHaveLength(7);
   });
@@ -88,12 +94,12 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
     expect(screen.getByText('Bunday kanal topilmadi')).toBeTruthy();
   });
 
-  it('opens the channel in Telegram from «Qoʻshilish»', async () => {
+  it('opens the channel in Telegram from «Qoʻshilish» by the own link of the app', async () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     await openChannels(passenger);
     fireEvent.change(screen.getByPlaceholderText('Viloyat yoki shahar'), { target: { value: 'qoʻqon' } });
     fireEvent.click(screen.getByText('Qoʻshilish'));
-    expect(open.mock.calls[0]?.[0]).toBe(`https://t.me/${qoqon?.username ?? ''}`);
+    expect(open.mock.calls[0]?.[0]).toBe(APP_LINK);
     open.mockRestore();
   });
 

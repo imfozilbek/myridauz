@@ -5,7 +5,7 @@ import { app } from './app';
 import { localLocations } from './modules/locations';
 import { initDataFor } from './shared/auth/test-signing';
 
-const env = { PASSENGER_BOT_TOKEN: '1:passenger', ADMIN_BOT_TOKEN: '3:admin', ADMIN_TELEGRAM_IDS: '900' };
+const env = { POSTER_BOT_TOKEN: '4:poster', ADMIN_BOT_TOKEN: '3:admin', ADMIN_TELEGRAM_IDS: '900' };
 const place = (id: string, parentId: string | null): Location => ({
   id,
   parentId,
@@ -51,16 +51,17 @@ describe('channels of the team (docs/63)', () => {
     expect((await put('ch_nobot', kitob)).status).toBe(422);
     expect((await put('ab', kitob)).status).toBe(400);
     expect((await put('ch_kitob', { ...kitob, places: ['1799999'] })).status).toBe(404);
-    expect((await put(loadBrand().channels[0]?.username ?? '', kitob)).status).toBe(400);
+    expect((await put(loadBrand().channels[0]?.chat ?? '', kitob)).status).toBe(400);
     const saved = await put('ch_kitob', kitob);
     expect(await saved.json()).toEqual({
       ...kitob,
-      username: 'ch_kitob',
+      chat: '@ch_kitob',
+      link: 'https://t.me/ch_kitob',
       places: ['1710224', '1710245'],
       fixed: false,
     });
     const { channels } = (await (await call('', 900)).json()) as { channels: Channel[] };
-    expect(channels.at(-1)?.username).toBe('ch_kitob');
+    expect(channels.at(-1)?.chat).toBe('@ch_kitob');
     expect((await call('/ch_kitob', 900, { method: 'DELETE' })).status).toBe(204);
     expect((await call('/ch_kitob', 900, { method: 'DELETE' })).status).toBe(404);
   });

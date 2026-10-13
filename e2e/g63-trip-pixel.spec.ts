@@ -24,13 +24,13 @@ const PHONES = [
   ['3-3', ON_WAY, true, t('driverTrip.onWay.title')],
 ] as const;
 
-// The channel of Samarqand as the server gives it (its zone title, docs/63) with the number of the
+// The channel of Samarqand as the server gives it (its title, docs/176) with the number of the
 // mockup g59/7-channels-3 phone 1: the people who opened the trip instead of the subscribers (owner
 // decision 08.10.2026, docs/119).
 const SAMARQAND = '1718401';
 const channel = channelOf(loadBrand(), SAMARQAND);
 const PUBLICITY = {
-  channels: [{ username: channel?.username, title: channel?.title, posted: true }],
+  channels: [{ chat: channel?.chat, title: channel?.title, link: channel?.link, posted: true }],
   views: 3200,
   link: 'https://t.me/test_bot?startapp=trip_7__driver',
 };

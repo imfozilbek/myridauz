@@ -5,7 +5,7 @@ import { CHILONZOR, publishTrip } from './market-kit';
 import { confirmedSeat, MINUTE, SAMARQAND, toldBy, wordsOf } from './g27-kit';
 import { KOMIL, OWNER, SEVARA } from './people';
 import { signedAs } from './stand-kit';
-import { botMessages, clearBotMessages, standSql } from './stand-tools';
+import { botMessages, clearBotMessages, isChannel, standSql } from './stand-tools';
 
 // An urgent complaint and its chat (docs/79 T20, T22), the buttons of a channel post (docs/80 S63,
 // S64) and a trip near midnight in Tashkent (docs/81 V01).
@@ -34,7 +34,7 @@ test('S63, S64. a channel post books this trip and is shared; the board of the d
   const post = async () =>
     (await botMessages()).find(
       (m) =>
-        m.chat.startsWith('@') &&
+        isChannel(m) &&
         m.method === 'sendMessage' &&
         m.buttons.some((b) => (b.url ?? '').includes(`trip_${trip.id}`)),
     );

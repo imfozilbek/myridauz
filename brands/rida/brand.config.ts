@@ -1,6 +1,6 @@
 import type { BrandConfig } from '../brand-config';
-// 20 channel zones over all districts (owner decision 30.09.2026, docs/63): one zone per road
-// direction, every district in exactly one zone; Toshkent shahri has none (docs/15).
+// 67 channels of directions over all districts (owner, 12.10.2026, docs/176): a district may be in
+// several of them; Toshkent shahri has none (docs/15).
 import channels from './channels.json' with { type: 'json' };
 import { theme } from './theme.ts';
 
@@ -22,6 +22,7 @@ export const brandConfig: BrandConfig = {
     support: 'myrida_support_bot',
   },
   channels,
+  mainChannel: 'rida1uz',
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
   // from at least 20 people; the same signal once in 6 hours.
