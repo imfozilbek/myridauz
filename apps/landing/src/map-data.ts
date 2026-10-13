@@ -16,6 +16,9 @@ export type MapData = {
   }[];
 };
 
+// A region of the brand kit (data/regions.json): its code on the car plates and its name.
+export type RegionName = { readonly code: string; readonly region: string };
+
 // A pair of region SOATO codes.
 export type Route = { readonly from: string; readonly to: string };
 

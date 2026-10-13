@@ -22,7 +22,9 @@ export const interactive = `.map-card{background:var(--bg);border-radius:24px;pa
 .chips a{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;background:var(--bg);
 text-decoration:none;font-weight:600;font-size:15px}
 .chips svg{width:16px;height:16px}
-.chips .code{background:var(--strong);color:var(--bg);border-radius:8px;padding:0 6px;font-size:13px}
+.regions .code{background:var(--strong);color:var(--bg);border-radius:8px;padding:0 6px;font-size:13px}
+.regions summary span{display:flex;align-items:center;gap:8px}
+.regions .chips{padding-bottom:16px}
 details{background:var(--grouped);border-radius:16px;padding:0 18px;margin-bottom:8px}
 summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0;font-weight:700;cursor:pointer}
 summary::-webkit-details-marker{display:none}

@@ -31,6 +31,7 @@
 
 ## Сайт
 
+- Главная страница, блок «Hammasi Telegramda»: 13 областей, в каждой её каналы (`59`, `176`).
 - Страница направления (`myrida.uz/yonalish/toshkent-samarqand/`, адрес `/yonalish/…`: решение владельца 06.10.2026, `60`): под «Telegramda safar topish» вторая кнопка «Telegram kanal: Rida | Samarqand shahri, Samarqand tumani» по ссылке-приглашению (G59, G80).
 
 ## Где не предлагаем

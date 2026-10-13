@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { directions } from './directions';
 import { escape } from './html';
 import { renderSite } from './site';
-import { MAP, ROADS } from './test-map';
+import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, script: 'run()' });
+const site = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: 'run()' });
 const page = site['yonalish/samarqand-toshkent/index.html'] ?? '';
 const values = { from: 'Samarqand', to: 'Toshkent', brand: brand.name };
 const jsonLd = (html: string) =>

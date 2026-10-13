@@ -4,11 +4,12 @@ import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { initCount } from './client/count';
 import { renderSite } from './site';
-import { MAP, ROADS } from './test-map';
+import { MAP, REGIONS, ROADS } from './test-map';
 
 const brand = loadBrand();
 const { t } = createI18n(DEFAULT_LOCALE);
-const home = renderSite(brand, { year: 2027, map: MAP, roads: ROADS, script: '' })['index.html'] ?? '';
+const home =
+  renderSite(brand, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: '' })['index.html'] ?? '';
 
 afterEach(() => vi.unstubAllGlobals());
 

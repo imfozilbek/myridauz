@@ -1,4 +1,4 @@
-import type { HeroRoads, MapData } from './map-data';
+import type { HeroRoads, MapData, RegionName } from './map-data';
 
 // A small map for tests: Toshkent and Samarqand (docs/59).
 export const MAP: MapData = {
@@ -20,3 +20,9 @@ export const ROADS: HeroRoads = {
   hub: [809, 921],
   routes: ['M809 921Q700 900 600 1000', 'M809 921Q900 910 980 960'],
 };
+
+// The names of two regions; a channel of a region without a name shows its code.
+export const REGIONS: readonly RegionName[] = [
+  { code: '30', region: 'Samarqand viloyati' },
+  { code: '10', region: 'Toshkent viloyati' },
+];
