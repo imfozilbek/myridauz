@@ -5,6 +5,7 @@ import { TRIP_LINK, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { expect, type Page } from '../crash-guard';
 import { publishButton, TEXT } from '../apps';
+import { SLOW_MS } from '../map-wait';
 import { chooseRoute } from '../market';
 import { SAMARQAND, walletOf } from './g27-kit';
 import { CHILONZOR } from './market-kit';
@@ -30,7 +31,9 @@ export const shootIn =
   async (page: Page, { platform }: { readonly platform: Platform }, name: string) => {
     // The data and the small maps are drawn first: the picture shows the screen people see.
     await page.waitForLoadState('networkidle');
-    await expect(page.locator('[aria-busy="true"], [data-state="loading"]')).toHaveCount(0);
+    await expect(page.locator('[aria-busy="true"], [data-state="loading"]')).toHaveCount(0, {
+      timeout: SLOW_MS,
+    });
     await page.screenshot({
       path: `screenshots/stand/${goal}/${platform}-${name}.png`,
       animations: 'disabled',

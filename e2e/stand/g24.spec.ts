@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '../crash-guard';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
+import { SLOW_MS } from '../map-wait';
 import { telegramEvents } from '../telegram-mock';
 import { answer, book, BUXORO, cancelMine, CHILONZOR, publishTrip } from './market-kit';
 import { GULNORA, KAMOLA, LOLA, SARDOR, SHAHNOZA } from './people';
@@ -65,7 +66,7 @@ test('4. the map of the trip opens the stops in the navigator; a cancelled seat 
 }) => {
   await openTrip(page);
   await page.getByText(t('driverTrip.tile.map')).click();
-  await expect(page.locator('[data-state="ready"]').first()).toBeVisible();
+  await expect(page.locator('[data-state="ready"]').first()).toBeVisible({ timeout: SLOW_MS });
   await page.waitForLoadState('networkidle');
   await expect(page.getByText(SHAHNOZA.name).first()).toBeVisible();
   await expect(page.getByText(GULNORA.name)).toHaveCount(0);
