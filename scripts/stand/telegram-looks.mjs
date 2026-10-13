@@ -13,7 +13,7 @@ export function standLooks() {
   const looks = new Map();
   // A channel by its chat, a bot by its token.
   const lookOf = (token, body) => {
-    const key = body.chat_id ?? token;
+    const key = String(body.chat_id ?? token);
     if (!looks.has(key)) looks.set(key, {});
     return looks.get(key);
   };

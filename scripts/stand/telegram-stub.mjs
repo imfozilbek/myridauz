@@ -28,7 +28,9 @@ const resultOf = (method, id) => {
 const FIELD = /name="(\w+)"\r\n\r\n([^\r]*)\r\n/gu;
 const formOf = (raw) => {
   const fields = Object.fromEntries([...raw.matchAll(FIELD)].map(([, key, value]) => [key, value]));
-  return { multipart: true, ...fields, ...(fields.chat_id ? { chat_id: Number(fields.chat_id) } : {}) };
+  // A person or a private channel by number, a public channel by its @name (docs/180).
+  const chat = fields.chat_id && /^-?\d+$/u.test(fields.chat_id) ? { chat_id: Number(fields.chat_id) } : {};
+  return { multipart: true, ...fields, ...chat };
 };
 
 const bodyOf = (raw, type) => {

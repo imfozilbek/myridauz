@@ -7,7 +7,7 @@ import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { confirmedSeat, MINUTE, moveTrip, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } from './g27-kit';
 import { JAHONGIR, NARGIZA } from './people';
 import { signedAs } from './stand-kit';
-import { botMessages, clearBotMessages, runCron } from './stand-tools';
+import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
 
 // The channels of the directions and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
 // trip is posted where people of its route read, its post follows the seats; a saved driver brings
@@ -61,4 +61,25 @@ test('S76. the check makes the link of the app of a channel, «Kanallar» gives 
   await runCron();
   const mine = await createChannelsClient(await signedAs('passenger', NARGIZA)).mine();
   expect(mine.some((channel) => channel.link.startsWith('https://t.me/+stand'))).toBe(true);
+});
+
+// docs/180: the Cron brings a bot to the repository, then leaves it alone while it is like it.
+test('S77. the look of a bot comes from the repository, a bot like it gets no call', async () => {
+  const PASSENGER = "face = 'bot:passenger'";
+  const checkedAt = () =>
+    Number(standRows(`SELECT checked_at FROM looks WHERE ${PASSENGER}`)[0]?.checked_at ?? -2);
+  const sets = async () =>
+    (await botMessages()).filter((m) => m.bot === 'passenger' && m.method.startsWith('setMy'));
+  // Never checked: the first of the next round, it gets the picture of the repository.
+  standSql(`DELETE FROM looks WHERE ${PASSENGER}`);
+  await clearBotMessages();
+  await runCron();
+  await expect.poll(checkedAt).toBeGreaterThan(0);
+  expect((await sets()).map((m) => m.method)).toContain('setMyProfilePhoto');
+  // Checked again first: Telegram is like the repository, nothing is set.
+  standSql(`UPDATE looks SET checked_at = -1 WHERE ${PASSENGER}`);
+  await clearBotMessages();
+  await runCron();
+  await expect.poll(checkedAt).toBeGreaterThan(0);
+  expect(await sets()).toEqual([]);
 });
