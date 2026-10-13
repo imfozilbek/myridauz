@@ -5,12 +5,14 @@ import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { apiHost, appHost, mapHost } from '../brands/index.ts';
 import { MAP_ARCHIVE } from '../packages/contracts/src/map.ts';
+import { ensureAccountOf } from './deploy/account.mjs';
 import { copyMap, dropOldMaps, ensureMapBucket, ensureStoriesRule, mapServed } from './deploy/map-bucket.mjs';
 import { ensurePagesDomain, ensurePagesProject } from './deploy/pages.mjs';
 import { targetOf } from './deploy/target.mjs';
 import { workerConfig } from './deploy/worker-config.mjs';
 
 const { brand, environment } = targetOf('deploy');
+await ensureAccountOf(brand, environment);
 const config = await workerConfig(brand, environment);
 const apps = readdirSync('apps')
   .filter((dir) => dir.startsWith('miniapp-'))

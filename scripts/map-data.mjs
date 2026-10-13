@@ -11,6 +11,7 @@ import { MAP_ARCHIVE, MAP_FONTS } from '../packages/contracts/src/map.ts';
 import border from '../packages/contracts/src/uzbekistan-border.json' with { type: 'json' };
 import { writePlaceIndex } from './map-places.mjs';
 import { STAND_STATE } from './stand/paths.ts';
+import { ensureAccountOf } from './deploy/account.mjs';
 import { dropOldMaps, ensureMapBucket, putMapObject } from './deploy/map-bucket.mjs';
 import { targetOf } from './deploy/target.mjs';
 import { workerConfig } from './deploy/worker-config.mjs';
@@ -37,6 +38,7 @@ const dryRun = process.argv.includes('--dry-run');
 // --local fills the local stand instead of Cloudflare (docs/75): the same data, no keys needed.
 const local = process.argv.includes('--local');
 const { brand, environment } = targetOf('map-data', { remote: !local && !dryRun });
+if (!local && !dryRun) await ensureAccountOf(brand, environment);
 const target = local ? ['--local', '--persist-to', STAND_STATE] : ['--remote'];
 // The Worker settings of the environment: its database (docs/179); the stand reads the plain ones.
 const configPath =

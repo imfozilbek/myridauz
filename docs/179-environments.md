@@ -39,6 +39,8 @@
 - На пустом аккаунте деплой сам создаёт D1 `rida-db`, очередь `rida-notifications`, R2 `rida-media`.
   Карту `rida-map`, проекты Pages и их домены он создавал и раньше (`46`).
 - Имена ресурсов одинаковые в обоих аккаунтах. Отличается только id базы D1.
+- Деплой и «Map data» сначала ищут на аккаунте секретов зону домена своей среды (`scripts/deploy/account.mjs`).
+  Зоны нет: это секреты другой среды, команда останавливается до любых изменений (урок №271).
 - Канал «MyRida | Viloyatlar» попадёт в код, когда бот каналов узнает его номер (`chat`).
   До этого у внутренней среды каналов направлений нет: посты никуда не идут.
 
@@ -64,7 +66,7 @@
 
 | № | Кто | Что |
 |---|---|---|
-| 1 | Владелец | GitHub → Settings → Environments: новый `internal` с секретами первого аккаунта (те же, что сейчас в `production`) |
+| 1 | Владелец | GitHub → Settings → Environments: новый `internal` с секретами первого аккаунта (те же, что сейчас в `production`); в `production` включить Required reviewers (владелец). Оба до слияния G81 |
 | 2 | Владелец | В `production`: токен и Account ID **нового** аккаунта |
 | 3 | Владелец | R2 на новом аккаунте: включить в панели (может попросить карту, платить не нужно) |
 | 4 | Владелец | Переменные новой сессии Claude: `PROD_CLOUDFLARE_API_TOKEN`, `PROD_CLOUDFLARE_ACCOUNT_ID`, `PROD_PASSENGER_BOT_TOKEN`, `PROD_DRIVER_BOT_TOKEN`, `PROD_ADMIN_BOT_TOKEN`, `PROD_SUPPORT_BOT_TOKEN`, `PROD_POSTER_BOT_TOKEN`, `INTERNAL_POSTER_BOT_TOKEN`. В чат никогда |
