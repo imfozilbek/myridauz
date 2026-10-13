@@ -127,9 +127,9 @@ export type BrandConfig = PeopleRules & {
 
 // The environments of a brand (owner, 13.10.2026, docs/179): the internal one of the team and production.
 export type EnvironmentName = 'internal' | 'production';
-// What differs between them: the address, the bots, the channels. The rest is one for both.
+// What differs between them: the name, the address, the bots, the channels. The rest is one for both.
 export type BrandEnvironment = Pick<
   BrandConfig,
-  'domain' | 'indexed' | 'bots' | 'channels' | 'mainChannel' | 'posts'
+  'name' | 'domain' | 'indexed' | 'bots' | 'channels' | 'mainChannel' | 'posts'
 >;
 export type BrandBase = Omit<BrandConfig, keyof BrandEnvironment>;

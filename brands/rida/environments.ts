@@ -7,6 +7,8 @@ import channels from './channels.json' with { type: 'json' };
 // the internal one of the team on the first account, with its own bots and channels.
 export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> = {
   internal: {
+    // The team never mixes up its bots with the ones of people (owner, 13.10.2026).
+    name: 'MyRida',
     domain: 'myrida.uz',
     indexed: false,
     bots: {
@@ -21,6 +23,7 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     posts: true,
   },
   production: {
+    name: 'Rida',
     domain: 'ridaone.uz',
     indexed: true,
     bots: {

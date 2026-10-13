@@ -23,9 +23,10 @@ function splash(brand) {
   };
 }
 
-// Static files of the brand (region photos, docs/48) come from brands/<brand>/public.
+// Static files of the brand (region photos, docs/48) come from brands/<brand>/public; the splash
+// shows the name of the environment of the build (docs/179).
 export default function miniApp(app) {
-  const brand = brandForApp(loadBrand(process.env.VITE_BRAND), app);
+  const brand = brandForApp(loadBrand(process.env.VITE_BRAND, process.env.VITE_ENVIRONMENT), app);
   const publicDir = fileURLToPath(new URL(`../../brands/${brand.id}/public`, import.meta.url));
   return defineConfig({ plugins: [react(), splash(brand)], publicDir });
 }

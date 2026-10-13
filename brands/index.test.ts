@@ -13,11 +13,12 @@ describe('loadBrand', () => {
     expect(loadBrand().channels).toHaveLength(67);
   });
 
-  // docs/179: the team works on the first account with its own address, bots and channels.
-  it('gives the internal environment its own address, bots and channels, the rest the same', () => {
+  // docs/179: the team works on the first account with its own name, address, bots and channels.
+  it('gives the internal environment its own name, address, bots and channels, the rest the same', () => {
     const internal = loadBrand('rida', 'internal');
     const production = loadBrand('rida', 'production');
     expect(internal).toMatchObject({
+      name: 'MyRida',
       domain: 'myrida.uz',
       indexed: false,
       mainChannel: 'myrida_uz',
@@ -29,7 +30,7 @@ describe('loadBrand', () => {
     expect(bots(internal).filter((bot) => bots(production).includes(bot))).toEqual([]);
     const chats = new Set(production.channels.map((channel) => channel.chat));
     expect(internal.channels.filter((channel) => chats.has(channel.chat))).toEqual([]);
-    const shared = { domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0, posts: 0 };
+    const shared = { name: 0, domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0, posts: 0 };
     expect({ ...internal, ...shared }).toEqual({ ...production, ...shared });
   });
 

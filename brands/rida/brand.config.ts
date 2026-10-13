@@ -4,7 +4,6 @@ import { theme } from './theme.ts';
 // The address, the bots and the channels differ by environment: environments.ts (docs/179).
 export const brandConfig: BrandBase = {
   id: 'rida',
-  name: 'Rida',
   slogan: 'Manzil sari',
   monetization: 'commission',
   // docs/12: 10% per seat, at least 3 000 sum per seat; up to 3 × 500 000 sum of bonus.

@@ -14,6 +14,7 @@
 | | Внутренняя (`internal`) | Прод (`production`) |
 |---|---|---|
 | Аккаунт Cloudflare | первый | новый |
+| Имя бренда | «MyRida»: боты «MyRida \| yoʻlovchi» и другие, Mini App, сайт | «Rida» |
 | Сайт и API | `myrida.uz`, `api.myrida.uz` | `ridaone.uz`, `api.ridaone.uz` |
 | Mini App | `passenger.`, `driver.`, `admin.myrida.uz` | `passenger.`, `driver.`, `admin.ridaone.uz` |
 | Боты | `@myrida_bot`, `@myrida_haydovchi_bot`, `@myrida_admin_bot`, `@myrida_support_bot` | `@rida1uz_bot`, `@rida1uz_haydovchi_bot`, `@rida1uz_admin_bot`, `@rida1uz_yordam_bot` |
@@ -24,14 +25,14 @@
 | Деплой | сам, после зелёного CI на `main` | после внутренней, с согласием владельца |
 | Данные | тестовые данные команды остаются | новая база: справочники из миграций, люди с нуля |
 
-Всё остальное одно на обе среды: правила, цены, комиссия, лимиты, тексты, вид экранов.
+Всё остальное одно на обе среды: правила, цены, комиссия, лимиты, тексты (с именем своей среды), вид экранов.
 
 ## Как устроено в коде
 
-- `brands/rida/environments.ts`: адрес, `indexed`, боты, каналы и главный канал каждой среды.
+- `brands/rida/environments.ts`: имя, адрес, `indexed`, боты, каналы и главный канал каждой среды.
   Остальное в `brand.config.ts`, одно на обе (`22`).
 - `loadBrand(id, environment)`: без среды прод. Тесты и стенд работают с продом (67 каналов).
-- Worker читает переменную `ENVIRONMENT`, Mini App и сайт: `VITE_ENVIRONMENT`.
+- Worker читает переменную `ENVIRONMENT`, Mini App, их заставка при сборке и сайт: `VITE_ENVIRONMENT`.
 - Команды `deploy`, `setup-bots`, `map-data` требуют `--env=internal|production`.
   Прод «по умолчанию» никогда. Стенд (`--local`) среду не спрашивает.
 - `brands/rida/wrangler.toml` один. Деплой пишет `wrangler.<среда>.toml` (git его не хранит):
@@ -84,3 +85,4 @@
 - Посты: во внутренней среде включены (`posts` в `environments.ts`), в проде выключены до «да» владельца.
 - Картинки бренд-пакета (`38`): домен и бот прода (`ridaone.uz`, `@rida1uz_bot`) из конфига бренда (`brand-kit/lib/production.mjs`); картинка ссылок сайта, наклейка, пост «Tez orada», QR-плакат и финал ролика. QR перерисован теми же настройками (уровень H, версия 3) и проверен: ведёт на `https://ridaone.uz`.
 - Изменения сессии инфраструктуры для нового аккаунта (датчик расхода, ночная копия D1): да.
+- Имя во внутренней среде «MyRida» везде: боты, Mini App, сайт (ответ «1 да»). Команда не путает своих ботов с ботами прода.
