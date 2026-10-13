@@ -15,7 +15,10 @@ export function ChannelsRow({ onOpen }: { readonly onOpen: () => void }) {
   const brand = useBrand();
   const { value } = useMyChannels();
   const joined = value?.filter((mine) => mine.member) ?? [];
-  const logos = joined.slice(0, LOGOS).map(({ channel }) => channel);
+  // The pictures are files of the brand: the server only says in which channels the person is.
+  const logos = brand.channels
+    .filter((own) => joined.some(({ channel }) => channel.chat === own.chat))
+    .slice(0, LOGOS);
   return (
     <ProfileRow
       icon="channel"
