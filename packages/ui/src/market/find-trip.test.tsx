@@ -56,8 +56,11 @@ describe('FindTripFlow: a passenger looks for a trip (G59, docs/118 path 2)', { 
     // No trips: the sign and the ways to know about a new one in one card, rows of one kind (G78).
     expect(await screen.findByText('Hozircha safar yoʻq')).toBeTruthy();
     const rows = [...document.querySelectorAll('.learn-one > .way-row .way-row-title')];
-    expect(rows.map((row) => row.textContent).filter((title) => !title?.endsWith('kanali'))).toEqual([
+    // The channel of Fargʻona shahri by its name in Telegram without the brand (docs/176), its lines
+    // may break.
+    expect(rows.map((row) => row.textContent?.replace(/\s/gu, ' '))).toEqual([
       'Hozircha safar yoʻq',
+      'Margʻilon | Fargʻona shahri',
       'Xabar bering',
       'Soʻrov qoldirish',
     ]);

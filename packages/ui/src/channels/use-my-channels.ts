@@ -36,10 +36,3 @@ export function channelRegion(directory: PlaceDirectory, channel: BrandChannel) 
   const place = first === undefined ? undefined : directory.find(first);
   return place ? directory.find(regionOf(place)) : undefined;
 }
-
-// The short name of a channel: the first place of its title, or the second when the first is a big
-// town the channel only passes (docs/176), so the channels from Qoʻqon read Bagʻdod, Dangʻara …
-export function channelName(channel: BrandChannel) {
-  const parts = channel.title.split(', ');
-  return (channel.hubs ? parts[1] : parts[0]) ?? channel.title;
-}

@@ -18,7 +18,8 @@ import { useMyChannels } from './use-my-channels';
 import './my-channels.css';
 
 // «Kanallar» of a passenger and of a driver (docs/119, mockups 7-channels-2 and 7-channels-3): «Siz
-// uchun» with the reason, then every channel that is made under its region, «Qoʻshilish» or «✓ Aʼzosiz».
+// uchun» with the reason, then every channel that is made under its region by its name in Telegram
+// (owner 13.10.2026, docs/176), «Qoʻshilish» or «✓ Aʼzosiz».
 export function MyChannelsScreen({ onBack }: { readonly onBack: () => void }) {
   return (
     <PlacesGate onBack={onBack}>
@@ -45,8 +46,6 @@ function Channels({ onBack }: { readonly onBack: () => void }) {
     directory,
     value.filter((mine) => matchesChannel(directory, mine, query)),
   );
-  const coverage = (title: string) =>
-    title.includes(', ') ? title : t('channels.mine.zone', { brand: brand.name, zone: title });
   return (
     <div className={`my-channels my-channels-${app}`} style={brandVars(brand.theme.colors)}>
       <Screen onBack={onBack} />
@@ -81,7 +80,7 @@ function Channels({ onBack }: { readonly onBack: () => void }) {
           <h3 className="my-channels-head">{region.name}</h3>
           <div className="my-channels-group">
             {channels.map((mine) => (
-              <MyChannelRow key={mine.channel.chat} mine={mine} line={coverage(mine.channel.title)} />
+              <MyChannelRow key={mine.channel.chat} mine={mine} />
             ))}
           </div>
         </section>

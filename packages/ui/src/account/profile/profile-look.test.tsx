@@ -75,6 +75,6 @@ describe('«Profil» of a driver and how the other side sees the person (G65)', 
     renderProfile({}, { clients: { channels: { mine } } });
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(await screen.findByText('2 ta kanaldasiz')).toBeTruthy();
-    expect(await screen.findByAltText(samarqand?.title ?? '')).toBeTruthy();
+    expect(await screen.findByAltText('Samarqand shahri | Samarqand tumani')).toBeTruthy();
   });
 });

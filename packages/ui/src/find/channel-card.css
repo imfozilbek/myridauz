@@ -27,8 +27,12 @@
 }
 
 .channel-card-name {
-  font-size: 15px;
-  font-weight: 700;
+  /* The whole name of the channel in Telegram (docs/176), small (owner 13.10.2026), no word alone on
+     its last line. */
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 17px;
+  text-wrap: pretty;
 }
 
 .channel-card-hint {
@@ -118,6 +122,14 @@ div.way-row {
 .way-row-icon-done {
   background: var(--reg-success-soft);
   color: var(--reg-success);
+}
+
+/* The row of a channel, the one with a picture: its name in Telegram as small as on the card. */
+.way-row-art + .way-row-text .way-row-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 17px;
+  text-wrap: pretty;
 }
 
 .way-row-done .way-row-title {

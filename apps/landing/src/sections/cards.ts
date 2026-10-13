@@ -48,8 +48,9 @@ export function safety(brand: BrandConfig, i18n: I18n) {
 </div></section>`;
 }
 
-// "Hammasi Telegramda": the phone and the channels of the directions under their regions. A region
-// opens in place to its channels, no JavaScript needed (owner decision 13.10.2026, docs/176).
+// "Hammasi Telegramda": the phone and the channels of the directions by their names in Telegram under
+// their regions. A region opens in place to its channels, no JavaScript needed (owner decisions
+// 13.10.2026, docs/176).
 export function telegram(brand: BrandConfig, i18n: I18n, regions: readonly RegionName[]) {
   const { t } = i18n;
   const codes = [...new Set(brand.channels.map(({ code }) => code))];
@@ -57,7 +58,7 @@ export function telegram(brand: BrandConfig, i18n: I18n, regions: readonly Regio
     .map((code) => {
       const chips = brand.channels
         .filter((channel) => channel.code === code)
-        .map(({ link, title }) => `<li><a href="${escape(link)}">${escape(title)}</a></li>`)
+        .map(({ link, name }) => `<li><a href="${escape(link)}">${escape(name)}</a></li>`)
         .join('');
       const name = regions.find((region) => region.code === code)?.region ?? code;
       return `<details><summary><span><b class="code">${escape(code)}</b>${escape(name)}</span>${icon('open')}</summary><ul class="chips">${chips}</ul></details>`;

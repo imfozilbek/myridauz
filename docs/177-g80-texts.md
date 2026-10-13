@@ -7,10 +7,10 @@
 | Ключ | Было | Будет |
 |---|---|---|
 | `bot.driver.channel` (одобрение водителя) | «{zone}» kanalida safarlaringiz chiqadi, yoʻlovchilar u yerdan topadi: t.me/{username} | Safarlaringiz yoʻnalish kanallarida chiqadi, yoʻlovchilar u yerdan topadi. Barcha kanallar: t.me/{username} |
-| `bot.zone.invite` (после регистрации) | {zone} hududi kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. | «{brand} \| {zone}» kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. |
+| `bot.zone.invite` (после регистрации) | {zone} hududi kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. | «{channel}» kanalida har kuni yangi safarlar chiqadi. Kanalga qoʻshiling: ilovani ochmasdan safarlarni koʻrib turasiz. |
 
 - В `bot.driver.channel` `{username}` это главный канал `@rida1uz`: водитель ездит по разным направлениям, ему нужны все каналы.
-- В `bot.zone.invite` `{zone}` это имя канала без «Rida | », например «Samarqand shahri, Samarqand tumani». Человек видит то же имя, что в Telegram.
+- В `bot.zone.invite` `{channel}` это имя канала в Telegram как есть, например «Rida | Samarqand shahri | Samarqand tumani» (13.10.2026, ниже).
 
 ## Ссылка приложения в канале
 
@@ -30,4 +30,14 @@
 
 - `bot.profile.driver.description` (профиль бота водителя): как есть, решение владельца 13.10.2026 «профиль бота потом решим».
 - «Kanalga oʻtish», «Safar topish», «Safar eʼlon qilish», «Kanallar», «Siz uchun», «Qoʻshilish», «✓ Aʼzosiz».
-- `landing.direction.channel`: «Telegram kanal: {brand} | {zone}». `{zone}` теперь имя канала направления.
+## Имя канала как в Telegram (13.10.2026, на согласие)
+
+Владелец: «название бери из самих каналов» (`176`). Имя канала больше не собирается из текста: его берём из Telegram.
+
+| Ключ | Было | Будет |
+|---|---|---|
+| `landing.direction.channel` (кнопка страницы направления) | Telegram kanal: {brand} \| {zone} | Telegram kanal: {channel} |
+| `bot.zone.invite` | «{brand} \| {zone}» kanalida … | «{channel}» kanalida … (строка выше) |
+| `find.channel` (карточка канала в поиске) | {brand} \| {zone} kanali | Удалён: имя канала из Telegram |
+| `driverTrip.channel.name` («Safaringiz kanalda chiqdi») | {brand} \| {title} | Удалён: имя канала из Telegram |
+| `channels.mine.zone` («Kanallar», строка под именем) | {brand} \| {zone} | Удалён: строку мест под именем убрали |

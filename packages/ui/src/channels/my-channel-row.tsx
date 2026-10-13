@@ -1,21 +1,25 @@
+import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { openInTelegram } from '../telegram/feedback';
 import { channelLogo } from './channel-logo';
-import { channelName, type MyChannel } from './use-my-channels';
+import { shownName } from './channel-name';
+import type { MyChannel } from './use-my-channels';
 import './my-channel-row.css';
 
-// One channel of «Kanallar» (docs/119, mockups 7-channels-2 and 7-channels-3): its logo as in Telegram
-// (owner decision 13.10.2026, docs/176), its own first place, why it is here or what it covers,
-// «Qoʻshilish» or the grey «✓ Aʼzosiz».
-export function MyChannelRow({ mine, line }: { readonly mine: MyChannel; readonly line: string }) {
+type Props = { readonly mine: MyChannel; readonly line?: string };
+
+// One channel of «Kanallar» (docs/119, mockups 7-channels-2 and 7-channels-3): its logo and its name
+// as in Telegram without the brand (owner decisions 13.10.2026, docs/176), why it is here in «Siz uchun», «Qoʻshilish»
+// or the grey «✓ Aʼzosiz».
+export function MyChannelRow({ mine, line }: Props) {
   const { t } = useI18n();
-  const name = channelName(mine.channel);
+  const name = shownName(useBrand(), mine.channel.name);
   return (
     <div className="my-channel">
-      <img className="my-channel-art" src={channelLogo(mine.channel)} alt={mine.channel.title} />
+      <img className="my-channel-art" src={channelLogo(mine.channel)} alt={name} />
       <span className="my-channel-text">
         <b className="my-channel-name">{name}</b>
-        <span className="my-channel-line">{line}</span>
+        {line ? <span className="my-channel-line">{line}</span> : null}
       </span>
       <button
         type="button"

@@ -11,7 +11,7 @@ export const zoneMessage =
   (userId: number, zone: BrandChannel): NotificationJob => ({
     bot: 'passenger',
     chatId: userId,
-    text: t('bot.zone.invite', { brand: brand.name, zone: zone.title }),
+    text: t('bot.zone.invite', { channel: zone.name }),
     markup: {
       inline_keyboard: [
         [{ text: t('bot.zone.join'), url: zone.link }],

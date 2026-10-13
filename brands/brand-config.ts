@@ -72,11 +72,13 @@ type ScheduleRules = {
 type Company = { readonly email: string };
 
 // A channel of a direction (docs/63, docs/176): a private channel the bot posts to by its chat number,
-// its name after the brand, the plate code of its region (docs/36) and the SOATO codes of the
-// districts and cities its posts are for.
+// the places of its name for the texts, the plate code of its region (docs/36) and the SOATO codes of
+// the districts and cities its posts are for.
 export type BrandChannel = {
   readonly chat: string;
   readonly title: string;
+  // The name the channel has in Telegram, as it is: the apps and the site show it (owner 13.10.2026).
+  readonly name: string;
   readonly code: string;
   readonly places: readonly string[];
   // The big town that opens the name: the channel only passes it, its own channel is another one.

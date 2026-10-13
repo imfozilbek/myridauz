@@ -1,7 +1,7 @@
 import { channelOf, loadBrand } from '@platform/brands';
 import { CHANNEL_VIA_PREFIX, channelVia, type Stats, type StatsPeriod } from '@platform/contracts';
 
-// The mark of the channel of Samarqand shahri: its number, the screen shows its title (docs/176).
+// The mark of the channel of Samarqand shahri: its number, the screen shows its name (docs/176).
 const SAMARQAND_MARK = channelVia(channelOf(loadBrand(), '1718401')?.chat ?? '').slice(
   CHANNEL_VIA_PREFIX.length,
 );

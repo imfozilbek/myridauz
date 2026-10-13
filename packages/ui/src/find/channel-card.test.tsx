@@ -38,10 +38,11 @@ async function join(channel: typeof samarqand, channels: Partial<ChannelsClient>
 // Owner decision 4 (docs/176): the card of the channel in the search and «Kutayotganda» opens the link
 // of the app, so Telegram counts who joined from the app.
 describe('the card of a channel (docs/119)', () => {
-  it('shows the logo the channel has in Telegram', async () => {
+  it('shows the logo and the name the channel has in Telegram, without the brand', async () => {
     await join(samarqand, { mine: vi.fn(mine) });
-    const logo = screen.getByAltText(samarqand?.title ?? '');
+    const logo = screen.getByAltText('Boʻka | Bekobod');
     expect(logo.getAttribute('src')).toBe(`/channels/${samarqand?.code ?? ''}.webp`);
+    expect(screen.getByText('Boʻka | Bekobod', { selector: '.channel-card-name' })).toBeTruthy();
   });
 
   it('joins by the own link of the app once the server gave it', async () => {

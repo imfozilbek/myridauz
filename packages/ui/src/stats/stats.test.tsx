@@ -18,7 +18,7 @@ describe('Statistika of the team (docs/29)', () => {
     expect(screen.getByText('60% ketdi')).toBeTruthy();
     // Where the new people came from and on what (G55, docs/116).
     expect(screen.getByText('Qayerdan kelishdi')).toBeTruthy();
-    expect(screen.getByText('Samarqand shahri, Samarqand tumani')).toBeTruthy();
+    expect(screen.getByText('Samarqand shahri | Samarqand tumani')).toBeTruthy();
     expect(screen.getByText('insta1')).toBeTruthy();
     expect(screen.getByText('Haydovchi hikoyasi')).toBeTruthy();
     expect(screen.getByText('iPhone')).toBeTruthy();

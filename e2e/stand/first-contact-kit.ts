@@ -46,8 +46,8 @@ export const DRIVER_BOT = botOf('driver');
 
 // A channel as its own chat (G68, mockup g68/5): its name in Telegram and the round picture of the
 // brand (docs/176).
-export const channelChat = (channel: { readonly title: string }): Bot => ({
-  name: `${brand.name} | ${channel.title}`,
+export const channelChat = (channel: { readonly name: string }): Bot => ({
+  name: channel.name,
   avatar: 'bot-passenger-avatar.png',
   picture: '',
 });

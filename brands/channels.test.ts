@@ -19,12 +19,18 @@ describe('the channels of the brand', () => {
     expect([...covered].filter((id) => !known.has(id))).toEqual([]);
   });
 
-  it('have their own chat, title and invite link', () => {
+  it('have their own chat, title, name and invite link', () => {
     expect(brand.channels).toHaveLength(67);
-    for (const key of ['chat', 'title', 'link'] as const)
+    for (const key of ['chat', 'title', 'name', 'link'] as const)
       expect(new Set(brand.channels.map((channel) => channel[key])).size).toBe(67);
     expect(brand.channels.every((channel) => /^-100\d+$/u.test(channel.chat))).toBe(true);
     expect(brand.channels.every((channel) => channel.link.startsWith('https://t.me/+'))).toBe(true);
+  });
+
+  // The name is copied from Telegram (owner 13.10.2026); the title says the same places for the texts.
+  it('are named after the brand by the places of their title, as in Telegram', () => {
+    for (const channel of brand.channels)
+      expect(channel.name).toBe([brand.name, ...channel.title.split(', ')].join(' | '));
   });
 
   it('only pass a hub they cover', () => {

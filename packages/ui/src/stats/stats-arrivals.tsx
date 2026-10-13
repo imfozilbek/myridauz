@@ -1,18 +1,23 @@
 import { CHANNEL_VIA_PREFIX, channelVia, type Arrivals } from '@platform/contracts';
+import { shownName } from '../channels/channel-name';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
 
 // The new people of the period: where they came from and on what (G55, docs/116). A channel and an
 // ad show their name under the kind, so the owner sees which post or ad brought people. A channel of
-// the brand is private: its mark is its number, so the title stands for it (docs/176).
+// the brand is private: its mark is its number, so its name in Telegram stands for it, without the
+// brand as in all the apps (docs/176).
 export function ArrivalsSections({ arrivals }: { readonly arrivals: Arrivals }) {
   const { t, formatNumber } = useI18n();
-  const { channels } = useBrand();
-  const nameOf = (kind: string, mark: string) =>
-    (kind === 'channel'
-      ? channels.find(({ chat }) => channelVia(chat) === `${CHANNEL_VIA_PREFIX}${mark}`)?.title
-      : undefined) ?? mark;
+  const brand = useBrand();
+  const nameOf = (kind: string, mark: string) => {
+    const own =
+      kind === 'channel'
+        ? brand.channels.find(({ chat }) => channelVia(chat) === `${CHANNEL_VIA_PREFIX}${mark}`)
+        : undefined;
+    return own ? shownName(brand, own.name) : mark;
+  };
   return (
     <>
       <ManageGroup title={t('stats.arrivals')}>

@@ -75,9 +75,10 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
     expect(within(forYou).getByText('Oxirgi qidiruv')).toBeTruthy();
     expect(within(forYou).getByText('✓ Aʼzosiz')).toBeTruthy();
     expect(screen.getByText('Fargʻona viloyati')).toBeTruthy();
-    // A channel says the places it covers under its short name (mockup 7-channels-2, docs/176).
-    expect(screen.getByText(fargona?.title ?? '')).toBeTruthy();
-    expect(screen.getByText('Qamchiq')).toBeTruthy();
+    // A channel by its name in Telegram without the brand (owner 13.10.2026, docs/176), in «Siz uchun»
+    // and under its region.
+    expect(screen.getAllByText('Margʻilon | Fargʻona shahri')).toHaveLength(2);
+    expect(screen.getByText('Qamchiq | Furqat | Qoʻqon')).toBeTruthy();
     // Only the channels that are made: 4 here, 3 of them «Siz uchun» too.
     expect(screen.getAllByText(/Qoʻshilish|✓ Aʼzosiz/u)).toHaveLength(7);
   });

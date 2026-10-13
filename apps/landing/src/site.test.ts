@@ -57,13 +57,14 @@ describe('landing (G15)', () => {
     expect(home).toContain('<script>run()</script>');
   });
 
-  // Owner decision 13.10.2026 (docs/176): the regions first, a region opens to its channels.
+  // Owner decisions 13.10.2026 (docs/176): the regions first, a region opens to its channels by their
+  // names in Telegram.
   it('shows every channel of a direction under its region, the name of the region from the brand kit', () => {
     const codes = new Set(brand.channels.map(({ code }) => code));
     expect(home.match(/<details><summary>/gu)).toHaveLength(codes.size);
     expect(home).toContain('<b class="code">30</b>Samarqand viloyati</span>');
-    for (const { link, title } of brand.channels)
-      expect(home).toContain(`<li><a href="${escape(link)}">${escape(title)}</a></li>`);
+    for (const { link, name } of brand.channels)
+      expect(home).toContain(`<li><a href="${escape(link)}">${escape(name)}</a></li>`);
     const kit = new URL(`../../../brands/${brand.id}/brand-kit/data/regions.json`, import.meta.url);
     const named = (JSON.parse(readFileSync(kit, 'utf8')) as RegionName[]).map(({ code }) => code);
     expect([...codes].filter((code) => !named.includes(code))).toEqual([]);

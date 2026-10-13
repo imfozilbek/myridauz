@@ -43,7 +43,7 @@ describe('the channel of the zone of a new passenger (docs/119 row 6)', () => {
     const [invite] = invites(701);
     expect(invite?.token).toBe(testEnv.PASSENGER_BOT_TOKEN);
     // The channel by its name in Telegram (docs/176).
-    expect(String(invite?.body.text)).toContain(`«${loadBrand().name} | ${samarqand?.title ?? '-'}»`);
+    expect(String(invite?.body.text)).toContain(`«${samarqand?.name ?? '-'}»`);
     expect(JSON.stringify(invite?.body.reply_markup)).toContain(samarqand?.link ?? '-');
     await search(701, '1718401');
     expect(invites(701)).toHaveLength(1);

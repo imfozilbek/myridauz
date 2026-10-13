@@ -1,5 +1,7 @@
-import { useI18n } from '../../context/i18n-context';
 import { channelLogo } from '../../channels/channel-logo';
+import { shownName } from '../../channels/channel-name';
+import { useBrand } from '../../context/brand-context';
+import { useI18n } from '../../context/i18n-context';
 import { useMyChannels } from '../../channels/use-my-channels';
 import { ProfileRow } from './profile-row';
 
@@ -10,6 +12,7 @@ const LOGOS = 3;
 // all the channels of the brand.
 export function ChannelsRow({ onOpen }: { readonly onOpen: () => void }) {
   const { t } = useI18n();
+  const brand = useBrand();
   const { value } = useMyChannels();
   const joined = value?.filter((mine) => mine.member) ?? [];
   const logos = joined.slice(0, LOGOS).map(({ channel }) => channel);
@@ -22,7 +25,7 @@ export function ChannelsRow({ onOpen }: { readonly onOpen: () => void }) {
         logos.length > 0 ? (
           <span className="profile-arts" aria-hidden>
             {logos.map((channel) => (
-              <img key={channel.chat} src={channelLogo(channel)} alt={channel.title} />
+              <img key={channel.chat} src={channelLogo(channel)} alt={shownName(brand, channel.name)} />
             ))}
           </span>
         ) : undefined

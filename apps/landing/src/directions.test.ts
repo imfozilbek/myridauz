@@ -56,7 +56,7 @@ describe('directions for search engines (docs/60)', () => {
   it('offers the channel of the direction under the buttons (docs/119)', () => {
     // Toshkent has no channel: the own channel of Samarqand shahri (docs/176).
     const channel = channelOf(brand, '1718401');
-    const text = t('landing.direction.channel', { brand: brand.name, zone: channel?.title ?? '' });
+    const text = t('landing.direction.channel', { channel: channel?.name ?? '' });
     expect(page).toContain(`class="button channel-button" href="${channel?.link}"`);
     expect(page).toContain(escape(text));
   });

@@ -26,7 +26,6 @@
   "driverNew": "{name} · {car}",
   "learn": "Yangi safarlarni bilish",
   "emptyHint": "Yangi safar chiqishi bilan bilib olishning 3 yoʻli",
-  "channel": "{brand} | {zone} kanali",
   "channelHint": "{zone} yoʻnalishidagi barcha yangi safarlar bir joyda",
   "channelJoin": "Kanalga qoʻshilish",
   "notifyHint": "Shu yoʻnalishda safar chiqsa, bot xabar beradi",

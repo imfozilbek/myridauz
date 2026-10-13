@@ -13,6 +13,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { MainButton } from '../telegram/bottom-button';
 import { openInTelegram } from '../telegram/feedback';
 import { ChannelEdit } from './channel-edit';
+import { channelName } from './channel-name';
 
 type Props = { readonly onBack: () => void; readonly readOnly?: boolean };
 type Health = ChannelHealth['channels'][number];
@@ -60,13 +61,13 @@ export function ChannelsScreen({ onBack, readOnly = false }: Props) {
     const kind = channel.fixed
       ? t('channels.fixed')
       : t('channels.places', { count: String(channel.places.length) });
-    // A private channel of the brand has no public name: its title says it (docs/176).
+    // A private channel of the brand has no public name: its name in Telegram says it (docs/176).
     const state = said ?? kind;
     return (
       <ManageRow
         key={channel.chat}
         icon="channel"
-        title={channel.fixed ? t('home.meta', { when: brand.name, more: channel.title }) : channel.title}
+        title={channelName(brand, channel)}
         hint={channel.chat.startsWith('@') ? t('home.meta', { when: channel.chat, more: state }) : state}
         alarm={said !== null}
         onClick={() => (channel.fixed || readOnly ? openInTelegram(channel.link) : setOpen(channel))}

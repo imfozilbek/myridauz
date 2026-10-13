@@ -2,6 +2,7 @@
   {
     "chat": "-1004328825984",
     "title": "Boʻka, Bekobod",
+    "name": "Rida | Boʻka | Bekobod",
     "code": "10",
     "places": ["1727220", "1727228", "1727413"],
     "link": "https://t.me/+_P_ASn5TjKFlYWEy",
@@ -10,6 +11,7 @@
   {
     "chat": "-1003970856640",
     "title": "Nurafshon, Oʻrta Chirchiq, Piskent",
+    "name": "Rida | Nurafshon | Oʻrta Chirchiq | Piskent",
     "code": "10",
     "places": ["1727250", "1727253", "1727401"],
     "link": "https://t.me/+_gFzmTuwLTQxMTcy",
@@ -18,6 +20,7 @@
   {
     "chat": "-1004484698892",
     "title": "Ohangaron, Olmaliq, Angren",
+    "name": "Rida | Ohangaron | Olmaliq | Angren",
     "code": "10",
     "places": ["1727212", "1727404", "1727407", "1727415"],
     "link": "https://t.me/+5ayVl8oCtWA2Yjli",
@@ -26,6 +29,7 @@
   {
     "chat": "-1004335475079",
     "title": "Qibray, Chirchiq, Boʻstonliq",
+    "name": "Rida | Qibray | Chirchiq | Boʻstonliq",
     "code": "10",
     "places": ["1727224", "1727248", "1727419"],
     "link": "https://t.me/+kvoFFoQAGMc3YTJi",
@@ -34,6 +38,7 @@
   {
     "chat": "-1004327049311",
     "title": "Yangiyoʻl, Chinoz",
+    "name": "Rida | Yangiyoʻl | Chinoz",
     "code": "10",
     "places": ["1727256", "1727259", "1727424"],
     "hubs": ["1727259", "1727424"],
@@ -43,6 +48,7 @@
   {
     "chat": "-1004456009327",
     "title": "Yangiyoʻl, Quyi Chirchiq, Oqqoʻrgʻon",
+    "name": "Rida | Yangiyoʻl | Quyi Chirchiq | Oqqoʻrgʻon",
     "code": "10",
     "places": ["1727206", "1727233", "1727259", "1727424"],
     "hubs": ["1727259", "1727424"],
@@ -52,6 +58,7 @@
   {
     "chat": "-1004417927222",
     "title": "Yuqori Chirchiq, Parkent",
+    "name": "Rida | Yuqori Chirchiq | Parkent",
     "code": "10",
     "places": ["1727239", "1727249"],
     "link": "https://t.me/+912w96IjJg8wZWZi",
@@ -60,6 +67,7 @@
   {
     "chat": "-1004322887469",
     "title": "Zangiota, Toshkent tumani (Keles)",
+    "name": "Rida | Zangiota | Toshkent tumani (Keles)",
     "code": "10",
     "places": ["1727237", "1727265"],
     "link": "https://t.me/+NriuNSQAMjJhYTk6",
@@ -68,6 +76,7 @@
   {
     "chat": "-1003903769331",
     "title": "Andijon shahri / Andijon tumani",
+    "name": "Rida | Andijon shahri / Andijon tumani",
     "code": "60",
     "places": ["1703203", "1703401"],
     "link": "https://t.me/+dU62S4w19AY3YmIy",
@@ -76,6 +85,7 @@
   {
     "chat": "-1003743043307",
     "title": "Andijon, Xoʻjaobod, Jalaquduq, Qoʻrgʻontepa, Xonobod",
+    "name": "Rida | Andijon | Xoʻjaobod | Jalaquduq | Qoʻrgʻontepa | Xonobod",
     "code": "60",
     "places": ["1703203", "1703211", "1703220", "1703236", "1703401", "1703408"],
     "hubs": ["1703203", "1703401"],
@@ -85,6 +95,7 @@
   {
     "chat": "-1003733098763",
     "title": "Asaka, Marhamat, Buloqboshi",
+    "name": "Rida | Asaka | Marhamat | Buloqboshi",
     "code": "60",
     "places": ["1703210", "1703224", "1703227"],
     "link": "https://t.me/+7NfdluDZJntjMTYy",
@@ -93,6 +104,7 @@
   {
     "chat": "-1003988776395",
     "title": "Baliqchi, Izboskan, Paxtaobod",
+    "name": "Rida | Baliqchi | Izboskan | Paxtaobod",
     "code": "60",
     "places": ["1703206", "1703214", "1703232"],
     "link": "https://t.me/+80n6LzEeFOkyYmRi",
@@ -101,6 +113,7 @@
   {
     "chat": "-1004454466941",
     "title": "Ulugʻnor, Boʻston, Shahrixon, Oltinkoʻl",
+    "name": "Rida | Ulugʻnor | Boʻston | Shahrixon | Oltinkoʻl",
     "code": "60",
     "places": ["1703202", "1703209", "1703217", "1703230"],
     "link": "https://t.me/+aGfUNfjM5ghiZjRi",
@@ -109,6 +122,7 @@
   {
     "chat": "-1004475182369",
     "title": "Fargʻona, Fargʻona tumani (Vodil), Quvasoy",
+    "name": "Rida | Fargʻona | Fargʻona tumani (Vodil) | Quvasoy",
     "code": "40",
     "places": ["1730233", "1730401", "1730408"],
     "hubs": ["1730401"],
@@ -118,6 +132,7 @@
   {
     "chat": "-1004122436103",
     "title": "Margʻilon, Fargʻona shahri",
+    "name": "Rida | Margʻilon | Fargʻona shahri",
     "code": "40",
     "places": ["1730401", "1730412"],
     "link": "https://t.me/+1h-TF9uRoW0xNjUy",
@@ -126,6 +141,7 @@
   {
     "chat": "-1004372440544",
     "title": "Qamchiq, Furqat, Qoʻqon",
+    "name": "Rida | Qamchiq | Furqat | Qoʻqon",
     "code": "40",
     "places": ["1730238", "1730405"],
     "link": "https://t.me/+7hZo1hnR6YFjZmFi",
@@ -134,6 +150,7 @@
   {
     "chat": "-1004425023971",
     "title": "Qoʻqon, Bagʻdod, Rishton, Soʻx",
+    "name": "Rida | Qoʻqon | Bagʻdod | Rishton | Soʻx",
     "code": "40",
     "places": ["1730209", "1730224", "1730226", "1730405"],
     "hubs": ["1730405"],
@@ -143,6 +160,7 @@
   {
     "chat": "-1004312729381",
     "title": "Qoʻqon, Dangʻara, Buvayda, Uchkoʻprik",
+    "name": "Rida | Qoʻqon | Dangʻara | Buvayda | Uchkoʻprik",
     "code": "40",
     "places": ["1730212", "1730221", "1730236", "1730405"],
     "hubs": ["1730405"],
@@ -152,6 +170,7 @@
   {
     "chat": "-1004497407961",
     "title": "Qoʻqon, Oltiariq, Qoʻshtepa",
+    "name": "Rida | Qoʻqon | Oltiariq | Qoʻshtepa",
     "code": "40",
     "places": ["1730203", "1730206", "1730405"],
     "hubs": ["1730405"],
@@ -161,6 +180,7 @@
   {
     "chat": "-1003908715792",
     "title": "Qoʻqon, Oʻzbekiston, Beshariq",
+    "name": "Rida | Qoʻqon | Oʻzbekiston | Beshariq",
     "code": "40",
     "places": ["1730215", "1730230", "1730405"],
     "hubs": ["1730405"],
@@ -170,6 +190,7 @@
   {
     "chat": "-1003710532919",
     "title": "Toshloq, Yozyovon, Quva",
+    "name": "Rida | Toshloq | Yozyovon | Quva",
     "code": "40",
     "places": ["1730218", "1730227", "1730242"],
     "link": "https://t.me/+qCyd2aM-8BFmOWEy",
@@ -178,6 +199,7 @@
   {
     "chat": "-1004476208324",
     "title": "Namangan tumani, Namangan shahri",
+    "name": "Rida | Namangan tumani | Namangan shahri",
     "code": "50",
     "places": ["1714212", "1714401"],
     "link": "https://t.me/+eTM5g5hW7tY0N2Ey",
@@ -186,6 +208,7 @@
   {
     "chat": "-1004447920011",
     "title": "Namangan, Chortoq, Uychi, Uchqoʻrgʻon, Norin",
+    "name": "Rida | Namangan | Chortoq | Uychi | Uchqoʻrgʻon | Norin",
     "code": "50",
     "places": ["1714212", "1714216", "1714229", "1714234", "1714236", "1714401"],
     "hubs": ["1714212", "1714401"],
@@ -195,6 +218,7 @@
   {
     "chat": "-1004402197394",
     "title": "Qamchiq, Pop, Chust, Mingbuloq",
+    "name": "Rida | Qamchiq | Pop | Chust | Mingbuloq",
     "code": "50",
     "places": ["1714204", "1714219", "1714237"],
     "link": "https://t.me/+ikWPLDPbNXQ1ZjUy",
@@ -203,6 +227,7 @@
   {
     "chat": "-1004402795556",
     "title": "Toʻraqoʻrgʻon, Kosonsoy, Yangiqoʻrgʻon",
+    "name": "Rida | Toʻraqoʻrgʻon | Kosonsoy | Yangiqoʻrgʻon",
     "code": "50",
     "places": ["1714207", "1714224", "1714242"],
     "link": "https://t.me/+gNHhnUcZMJVmYjIy",
@@ -211,6 +236,7 @@
   {
     "chat": "-1003917929507",
     "title": "Chinoz, Sirdaryo, Sayxunobod",
+    "name": "Rida | Chinoz | Sirdaryo | Sayxunobod",
     "code": "20",
     "places": ["1724216", "1724231", "1727256"],
     "hubs": ["1727256"],
@@ -220,6 +246,7 @@
   {
     "chat": "-1004325256212",
     "title": "Guliston shahri, Guliston tumani, Boyovut",
+    "name": "Rida | Guliston shahri | Guliston tumani | Boyovut",
     "code": "20",
     "places": ["1724212", "1724220", "1724401"],
     "link": "https://t.me/+-AGegreDKpBmNWZi",
@@ -228,6 +255,7 @@
   {
     "chat": "-1003717942763",
     "title": "Guliston, Mirzaobod, Oqoltin, Sardoba",
+    "name": "Rida | Guliston | Mirzaobod | Oqoltin | Sardoba",
     "code": "20",
     "places": ["1724206", "1724220", "1724226", "1724228", "1724401"],
     "hubs": ["1724220", "1724401"],
@@ -237,6 +265,7 @@
   {
     "chat": "-1004301668936",
     "title": "Guliston, Yangiyer, Xovos, Shirin",
+    "name": "Rida | Guliston | Yangiyer | Xovos | Shirin",
     "code": "20",
     "places": ["1724220", "1724235", "1724401", "1724410", "1724413"],
     "hubs": ["1724220", "1724401"],
@@ -246,6 +275,7 @@
   {
     "chat": "-1003954982457",
     "title": "Jizzax sharqi, Zarbdor, Zomin, Yangiobod",
+    "name": "Rida | Jizzax sharqi | Zarbdor | Zomin | Yangiobod",
     "code": "25",
     "places": ["1708218", "1708220", "1708237"],
     "link": "https://t.me/+ZRrupn4GdidiOWUy",
@@ -254,6 +284,7 @@
   {
     "chat": "-1004305271973",
     "title": "Jizzax, Gʻallaorol, Baxmal",
+    "name": "Rida | Jizzax | Gʻallaorol | Baxmal",
     "code": "25",
     "places": ["1708204", "1708209", "1708401"],
     "hubs": ["1708401"],
@@ -263,6 +294,7 @@
   {
     "chat": "-1004455467324",
     "title": "Mirzachoʻl, Doʻstlik, Paxtakor, Arnasoy",
+    "name": "Rida | Mirzachoʻl | Doʻstlik | Paxtakor | Arnasoy",
     "code": "25",
     "places": ["1708201", "1708215", "1708223", "1708228"],
     "link": "https://t.me/+pzwuqWyeadtmMGNi",
@@ -271,6 +303,7 @@
   {
     "chat": "-1004466712919",
     "title": "Zafarobod, Sharof Rashidov, Jizzax, Forish",
+    "name": "Rida | Zafarobod | Sharof Rashidov | Jizzax | Forish",
     "code": "25",
     "places": ["1708212", "1708225", "1708235", "1708401"],
     "link": "https://t.me/+Ti5vQ1-M6GY1OTYy",
@@ -279,6 +312,7 @@
   {
     "chat": "-1003906211929",
     "title": "Bulungʻur, Jomboy, Payariq, Qoʻshrabot",
+    "name": "Rida | Bulungʻur | Jomboy | Payariq | Qoʻshrabot",
     "code": "30",
     "places": ["1718206", "1718209", "1718216", "1718224"],
     "link": "https://t.me/+LIKhbxsTYSozZmNi",
@@ -287,6 +321,7 @@
   {
     "chat": "-1003902576050",
     "title": "Kattaqoʻrgʻon shahri, Narpay, Paxtachi",
+    "name": "Rida | Kattaqoʻrgʻon shahri | Narpay | Paxtachi",
     "code": "30",
     "places": ["1718218", "1718230", "1718406"],
     "link": "https://t.me/+BXNMn1AaPAA2Mjhi",
@@ -295,6 +330,7 @@
   {
     "chat": "-1004207165005",
     "title": "Samarqand shahri, Samarqand tumani",
+    "name": "Rida | Samarqand shahri | Samarqand tumani",
     "code": "30",
     "places": ["1718233", "1718401"],
     "link": "https://t.me/+X_IumNR_NYZjNWMy",
@@ -303,6 +339,7 @@
   {
     "chat": "-1004426600138",
     "title": "Samarqand, Oqdaryo, Ishtixon, Kattaqoʻrgʻon tumani",
+    "name": "Rida | Samarqand | Oqdaryo | Ishtixon | Kattaqoʻrgʻon tumani",
     "code": "30",
     "places": ["1718203", "1718212", "1718215", "1718233", "1718401"],
     "hubs": ["1718233", "1718401"],
@@ -312,6 +349,7 @@
   {
     "chat": "-1003782038328",
     "title": "Samarqand, Pastdargʻom, Nurobod",
+    "name": "Rida | Samarqand | Pastdargʻom | Nurobod",
     "code": "30",
     "places": ["1718227", "1718233", "1718235", "1718401"],
     "hubs": ["1718233", "1718401"],
@@ -321,6 +359,7 @@
   {
     "chat": "-1004356807611",
     "title": "Samarqand, Toyloq, Urgut",
+    "name": "Rida | Samarqand | Toyloq | Urgut",
     "code": "30",
     "places": ["1718233", "1718236", "1718238", "1718401"],
     "hubs": ["1718233", "1718401"],
@@ -330,6 +369,7 @@
   {
     "chat": "-1004438182937",
     "title": "Buxoro shahri, Kogon, Qorovulbozor",
+    "name": "Rida | Buxoro shahri | Kogon | Qorovulbozor",
     "code": "80",
     "places": ["1706219", "1706232", "1706401", "1706403"],
     "link": "https://t.me/+0emTrn7LQskwYjky",
@@ -338,6 +378,7 @@
   {
     "chat": "-1003772817243",
     "title": "Buxoro, Jondor, Qorakoʻl, Olot",
+    "name": "Rida | Buxoro | Jondor | Qorakoʻl | Olot",
     "code": "80",
     "places": ["1706204", "1706207", "1706230", "1706246", "1706401"],
     "hubs": ["1706207", "1706401"],
@@ -347,6 +388,7 @@
   {
     "chat": "-1004388087594",
     "title": "Gʻijduvon, Shofirkon, Peshku",
+    "name": "Rida | Gʻijduvon | Shofirkon | Peshku",
     "code": "80",
     "places": ["1706215", "1706240", "1706258"],
     "link": "https://t.me/+3icLmUnBvA4wN2Vi",
@@ -355,6 +397,7 @@
   {
     "chat": "-1004381247668",
     "title": "Vobkent, Romitan, Buxoro tumani",
+    "name": "Rida | Vobkent | Romitan | Buxoro tumani",
     "code": "80",
     "places": ["1706207", "1706212", "1706242"],
     "link": "https://t.me/+26aATH96b2A4OTYy",
@@ -363,6 +406,7 @@
   {
     "chat": "-1004370886942",
     "title": "Navoiy, Konimex, Tomdi, Zarafshon, Uchquduq",
+    "name": "Rida | Navoiy | Konimex | Tomdi | Zarafshon | Uchquduq",
     "code": "85",
     "places": ["1712211", "1712244", "1712248", "1712401", "1712408"],
     "hubs": ["1712401"],
@@ -372,6 +416,7 @@
   {
     "chat": "-1004498835551",
     "title": "Navoiy, Navbahor, Gʻozgʻon, Nurota",
+    "name": "Rida | Navoiy | Navbahor | Gʻozgʻon | Nurota",
     "code": "85",
     "places": ["1712230", "1712238", "1712401", "1712412"],
     "hubs": ["1712401"],
@@ -381,6 +426,7 @@
   {
     "chat": "-1004429110328",
     "title": "Xatirchi, Karmana, Navoiy, Qiziltepa",
+    "name": "Rida | Xatirchi | Karmana | Navoiy | Qiziltepa",
     "code": "85",
     "places": ["1712216", "1712234", "1712251", "1712401"],
     "link": "https://t.me/+9zdBhoZH-hgyNTFi",
@@ -389,6 +435,7 @@
   {
     "chat": "-1004337469928",
     "title": "Gʻuzor, Dehqonobod",
+    "name": "Rida | Gʻuzor | Dehqonobod",
     "code": "70",
     "places": ["1710207", "1710212"],
     "link": "https://t.me/+3sd2D4MWJ0IxYTFi",
@@ -397,6 +444,7 @@
   {
     "chat": "-1004392777443",
     "title": "Kitob, Shahrisabz, Yakkabogʻ",
+    "name": "Rida | Kitob | Shahrisabz | Yakkabogʻ",
     "code": "70",
     "places": ["1710232", "1710245", "1710250", "1710405"],
     "link": "https://t.me/+9VAiZ4eoS3w2YTNi",
@@ -405,6 +453,7 @@
   {
     "chat": "-1003973675378",
     "title": "Koʻkdala, Chiroqchi, Qamashi",
+    "name": "Rida | Koʻkdala | Chiroqchi | Qamashi",
     "code": "70",
     "places": ["1710220", "1710240", "1710242"],
     "link": "https://t.me/+pSn6G1PlxndjOGMy",
@@ -413,6 +462,7 @@
   {
     "chat": "-1004212171607",
     "title": "Qarshi shahri, Qarshi tumani, Nishon",
+    "name": "Rida | Qarshi shahri | Qarshi tumani | Nishon",
     "code": "70",
     "places": ["1710224", "1710235", "1710401"],
     "link": "https://t.me/+nYhPQGkpeuU1MTgy",
@@ -421,6 +471,7 @@
   {
     "chat": "-1004306319877",
     "title": "Qarshi, Kasbi, Mirishkor",
+    "name": "Rida | Qarshi | Kasbi | Mirishkor",
     "code": "70",
     "places": ["1710224", "1710233", "1710237", "1710401"],
     "hubs": ["1710224", "1710401"],
@@ -430,6 +481,7 @@
   {
     "chat": "-1004043602622",
     "title": "Qarshi, Koson, Muborak",
+    "name": "Rida | Qarshi | Koson | Muborak",
     "code": "70",
     "places": ["1710224", "1710229", "1710234", "1710401"],
     "hubs": ["1710224", "1710401"],
@@ -439,6 +491,7 @@
   {
     "chat": "-1004329085792",
     "title": "Darband, Boysun, Bandixon, Qumqoʻrgʻon, Shoʻrchi",
+    "name": "Rida | Darband | Boysun | Bandixon | Qumqoʻrgʻon | Shoʻrchi",
     "code": "75",
     "places": ["1722203", "1722204", "1722214", "1722226"],
     "link": "https://t.me/+LQSI0i5Mw0AzNDMy",
@@ -447,6 +500,7 @@
   {
     "chat": "-1004359200187",
     "title": "Denov, Sariosiyo, Uzun",
+    "name": "Rida | Denov | Sariosiyo | Uzun",
     "code": "75",
     "places": ["1722210", "1722217", "1722221"],
     "hubs": ["1722210"],
@@ -456,6 +510,7 @@
   {
     "chat": "-1004350515343",
     "title": "Sherobod, Muzrabot, Termiz",
+    "name": "Rida | Sherobod | Muzrabot | Termiz",
     "code": "75",
     "places": ["1722207", "1722220", "1722223", "1722401"],
     "hubs": ["1722223"],
@@ -465,6 +520,7 @@
   {
     "chat": "-1003928932315",
     "title": "Sherobod, Qiziriq, Jarqoʻrgʻon, Angor",
+    "name": "Rida | Sherobod | Qiziriq | Jarqoʻrgʻon | Angor",
     "code": "75",
     "places": ["1722202", "1722212", "1722215", "1722223"],
     "hubs": ["1722223"],
@@ -474,6 +530,7 @@
   {
     "chat": "-1004347401502",
     "title": "Shoʻrchi, Oltinsoy, Denov",
+    "name": "Rida | Shoʻrchi | Oltinsoy | Denov",
     "code": "75",
     "places": ["1722201", "1722210", "1722226"],
     "hubs": ["1722226"],
@@ -483,6 +540,7 @@
   {
     "chat": "-1004486613480",
     "title": "Hazorasp, Bogʻot, Yangiariq, Xiva",
+    "name": "Rida | Hazorasp | Bogʻot | Yangiariq | Xiva",
     "code": "90",
     "places": ["1733204", "1733220", "1733226", "1733233", "1733406"],
     "hubs": ["1733220"],
@@ -492,6 +550,7 @@
   {
     "chat": "-1004292125942",
     "title": "Tuproqqalʼa, Hazorasp, Xonqa",
+    "name": "Rida | Tuproqqalʼa | Hazorasp | Xonqa",
     "code": "90",
     "places": ["1733220", "1733221", "1733223"],
     "link": "https://t.me/+CF3aayQ4yPkzZGQ6",
@@ -500,6 +559,7 @@
   {
     "chat": "-1004492557056",
     "title": "Urganch shahri, Urganch tumani, Yangibozor",
+    "name": "Rida | Urganch shahri | Urganch tumani | Yangibozor",
     "code": "90",
     "places": ["1733217", "1733236", "1733401"],
     "link": "https://t.me/+gtcdvazF_640YmQy",
@@ -508,6 +568,7 @@
   {
     "chat": "-1004313383099",
     "title": "Urganch, Qoʻshkoʻpir, Shovot, Gurlan",
+    "name": "Rida | Urganch | Qoʻshkoʻpir | Shovot | Gurlan",
     "code": "90",
     "places": ["1733208", "1733212", "1733217", "1733230", "1733401"],
     "hubs": ["1733217", "1733401"],
@@ -517,6 +578,7 @@
   {
     "chat": "-1004323472905",
     "title": "Beruniy, Amudaryo, Taxiatosh, Nukus shahri",
+    "name": "Rida | Beruniy | Amudaryo | Taxiatosh | Nukus shahri",
     "code": "95",
     "places": ["1735204", "1735207", "1735228", "1735401"],
     "hubs": ["1735207"],
@@ -526,6 +588,7 @@
   {
     "chat": "-1004317565998",
     "title": "Nukus, Chimboy, Qoraoʻzak, Taxtakoʻpir",
+    "name": "Rida | Nukus | Chimboy | Qoraoʻzak | Taxtakoʻpir",
     "code": "95",
     "places": ["1735211", "1735225", "1735230", "1735240", "1735401"],
     "hubs": ["1735225", "1735401"],
@@ -535,6 +598,7 @@
   {
     "chat": "-1003922991370",
     "title": "Nukus, Nukus tumani, Kegeyli, Boʻzatov",
+    "name": "Rida | Nukus | Nukus tumani | Kegeyli | Boʻzatov",
     "code": "95",
     "places": ["1735209", "1735212", "1735225", "1735401"],
     "hubs": ["1735401"],
@@ -544,6 +608,7 @@
   {
     "chat": "-1004384598327",
     "title": "Nukus, Qoʻngʻirot, Moʻynoq",
+    "name": "Rida | Nukus | Qoʻngʻirot | Moʻynoq",
     "code": "95",
     "places": ["1735215", "1735222", "1735225", "1735401"],
     "hubs": ["1735225", "1735401"],
@@ -553,6 +618,7 @@
   {
     "chat": "-1004365982403",
     "title": "Nukus, Xoʻjayli, Shumanay, Qanlikoʻl",
+    "name": "Rida | Nukus | Xoʻjayli | Shumanay | Qanlikoʻl",
     "code": "95",
     "places": ["1735218", "1735225", "1735236", "1735243", "1735401"],
     "hubs": ["1735225", "1735401"],
@@ -562,6 +628,7 @@
   {
     "chat": "-1004415390889",
     "title": "Toʻrtkoʻl, Ellikqalʼa, Beruniy",
+    "name": "Rida | Toʻrtkoʻl | Ellikqalʼa | Beruniy",
     "code": "95",
     "places": ["1735207", "1735233", "1735250"],
     "link": "https://t.me/+CKs0Z6ZaKu9kMmIy",
