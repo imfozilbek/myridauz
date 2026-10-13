@@ -12,14 +12,13 @@ export function WaitingChannel({ request }: { readonly request: RideRequest }) {
   const directory = usePlaces();
   const from = directory.find(request.from);
   const to = directory.find(request.to);
-  const region = to?.parentId ? directory.find(to.parentId) : to;
   const { channel, close } = useChannelOffer(from && to ? { from, to } : null, directory);
   if (!channel) return null;
   return (
     <>
       <p className="find-head my-request-head">{t('bookings.request.waiting')}</p>
       <div className="my-request-channel">
-        <ChannelCard channel={channel} region={region} onClose={close} />
+        <ChannelCard channel={channel} onClose={close} />
       </div>
     </>
   );

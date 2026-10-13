@@ -1,30 +1,25 @@
 import type { BrandChannel } from '@platform/brands';
-import type { Location } from '@platform/contracts';
+import { channelLogo } from '../channels/channel-logo';
 import { useChannelLink } from '../channels/use-my-channels';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
-import { useRegionArt } from '../places/region-art';
 import { openInTelegram } from '../telegram/feedback';
 import { WayRow } from './way-row';
 
-type Props = {
-  readonly channel: BrandChannel;
-  readonly region: Location | undefined;
-  readonly onClose: () => void;
-};
+type Props = { readonly channel: BrandChannel; readonly onClose: () => void };
 
-// The channel of the direction (docs/119, mockup 7-channels-1): the new trips of the zone without
-// opening the app; every post leads back to Rida (docs/18). Joined or closed: it never comes again.
-export function ChannelCard({ channel, region, onClose }: Props) {
+// The channel of the direction (docs/119, mockup 7-channels-1) with its logo from Telegram (docs/176):
+// the new trips of the zone without opening the app; every post leads back to Rida (docs/18). Joined
+// or closed: it never comes again.
+export function ChannelCard({ channel, onClose }: Props) {
   const { t } = useI18n();
   const { name } = useBrand();
-  const art = useRegionArt()(region?.id ?? '');
   const link = useChannelLink(channel);
   return (
     <div className="channel-card">
       <div className="channel-card-top">
-        {art ? <img className="channel-card-art" src={art} alt={channel.title} /> : null}
+        <img className="channel-card-art" src={channelLogo(channel)} alt={channel.title} />
         <span className="channel-card-text">
           <span className="channel-card-name">{t('find.channel', { brand: name, zone: channel.title })}</span>
           <span className="channel-card-hint">{t('find.channelHint', { zone: channel.title })}</span>
@@ -46,15 +41,14 @@ function join(link: string, onClose: () => void) {
   onClose();
 }
 
-// The channel as a row of the empty day (G78 sheet 2): the picture of the zone, one tap joins.
-export function ChannelRow({ channel, region, onClose }: Props) {
+// The channel as a row of the empty day (G78 sheet 2): the logo of the channel, one tap joins.
+export function ChannelRow({ channel, onClose }: Props) {
   const { t } = useI18n();
   const { name } = useBrand();
-  const art = useRegionArt()(region?.id ?? '');
   const link = useChannelLink(channel);
   return (
     <WayRow
-      icon={art ? { src: art, alt: channel.title } : 'channel'}
+      icon={{ src: channelLogo(channel), alt: channel.title }}
       title={t('find.channel', { brand: name, zone: channel.title })}
       hint={t('find.channelHint', { zone: channel.title })}
       onClick={() => join(link, onClose)}

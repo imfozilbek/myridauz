@@ -1,4 +1,5 @@
 import type { Trip } from '@platform/contracts';
+import { channelLogo } from '../channels/channel-logo';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon } from '../icons';
@@ -19,16 +20,18 @@ const SEND = 18;
 // of the trip for the passengers the driver knows. The channel part waits for the first post.
 export function TripPublicity({ trip }: { readonly trip: Trip }) {
   const { t, formatNumber } = useI18n();
-  const brand = useBrand().name;
+  const brand = useBrand();
   const directory = usePlaces();
   const art = useRegionArt();
   const publicity = useTripPublicity(trip.id);
   if (!publicity) return null;
   const channel = publicity.channels.find((item) => item.posted);
   // The name the channel has in Telegram (docs/37): «Rida | Samarqand».
-  const name = channel ? t('driverTrip.channel.name', { brand, title: channel.title }) : '';
+  const name = channel ? t('driverTrip.channel.name', { brand: brand.name, title: channel.title }) : '';
+  // The logo of a channel of the brand as in Telegram (docs/176); a team channel: the region of the end.
+  const own = brand.channels.find((item) => item.chat === channel?.chat);
   const end = directory.find(trip.to);
-  const picture = art(end ? regionOf(end) : trip.to);
+  const picture = own ? channelLogo(own) : art(end ? regionOf(end) : trip.to);
   const views = formatNumber(publicity.views);
   return (
     <div className="own-channel">

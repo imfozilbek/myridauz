@@ -24,10 +24,7 @@ async function join(channel: typeof samarqand, channels: Partial<ChannelsClient>
   if (!channel) throw new Error('the brand has no channels');
   const open = vi.spyOn(window, 'open').mockReturnValue(null);
   const onClose = vi.fn();
-  renderMarket(
-    <ChannelCard channel={channel} region={undefined} onClose={onClose} />,
-    testClients({ channels }),
-  );
+  renderMarket(<ChannelCard channel={channel} onClose={onClose} />, testClients({ channels }));
   await vi.waitFor(() => expect(channels.mine).toHaveBeenCalled());
   // The answer of the server comes in.
   await act(() => new Promise((done) => setTimeout(done, 0)));
@@ -41,6 +38,12 @@ async function join(channel: typeof samarqand, channels: Partial<ChannelsClient>
 // Owner decision 4 (docs/176): the card of the channel in the search and «Kutayotganda» opens the link
 // of the app, so Telegram counts who joined from the app.
 describe('the card of a channel (docs/119)', () => {
+  it('shows the logo the channel has in Telegram', async () => {
+    await join(samarqand, { mine: vi.fn(mine) });
+    const logo = screen.getByAltText(samarqand?.title ?? '');
+    expect(logo.getAttribute('src')).toBe(`/channels/${samarqand?.code ?? ''}.webp`);
+  });
+
   it('joins by the own link of the app once the server gave it', async () => {
     expect(await join(samarqand, { mine: vi.fn(mine) })).toBe(APP_LINK);
   });

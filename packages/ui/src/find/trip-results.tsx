@@ -60,14 +60,7 @@ export function TripResults(props: Props) {
   const week = countedWeek(days.days.map((day) => ({ date: day.date, count: day.trips })));
   const filtered = !stale && shown?.length === 0 && (trips?.length !== 0 || filters.woman);
   const learn = (empty: boolean) => (
-    <LearnBlock
-      route={route}
-      region={region}
-      date={date}
-      directory={directory}
-      empty={empty}
-      onRequest={onRequest}
-    />
+    <LearnBlock route={route} date={date} directory={directory} empty={empty} onRequest={onRequest} />
   );
   return (
     <div className="find" style={brandVars(colors)}>
