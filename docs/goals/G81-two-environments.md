@@ -18,23 +18,28 @@ A. Код и CI
 [x] Сайт внутренней среды закрыт для поисковиков; тест.
 [x] deploy, setup-bots, map-data: --env обязателен; деплой пишет
     wrangler.<среда>.toml и сам создаёт D1, очередь, R2; тесты.
-[x] CI: deploy-internal, потом deploy-production (Approve);
-    «Map data» с выбором среды.
+[x] CI: deploy-internal; «Map data» для internal. Прод в CI
+    вернётся с новым аккаунтом (решение владельца 13.10, вечер).
 [x] Документы: 179, 46, 45, 32, 22, 10, 27, INDEX.
 
-B. Шаги владельца (docs/179, «Шаги запуска прода» 1 … 6)
-[ ] GitHub Environments internal и production с секретами.
-[ ] R2 на новом аккаунте; переменные новой сессии Claude.
-[ ] @myrida_poster_bot админ в двух внутренних каналах.
-
-C. Новый аккаунт (Claude)
-[ ] Номер канала «MyRida | Viloyatlar» в environments.ts.
+B. Внутренняя среда (docs/179, «Шаги: сначала внутренняя среда»)
+[ ] Владелец: GitHub Environment internal с секретами первого
+    аккаунта; @myrida_poster_bot админ в «MyRida | Viloyatlar»;
+    INTERNAL_POSTER_BOT_TOKEN в окружении Claude.
+[ ] Claude: номер и ссылка канала в environments.ts.
 [ ] Полный стенд один раз; PR; CI и CodeQL зелёные; слияние.
-[ ] deploy-internal и deploy-production зелёные: стек на ridaone.uz.
-[ ] Секреты Worker прода; новый секрет вебхука в обеих средах;
-    setup-bots обеих сред.
-[ ] «Map data» для прода; права бота каналов в 67 каналах.
-[ ] Проверка: /health, 5 ботов каждой среды, Mini App, карта,
-    сайт, пост во внутреннем канале; скриншоты владельцу.
+[ ] deploy-internal зелёный; POSTER_BOT_TOKEN и новый секрет
+    вебхука в Worker; setup-bots --env=internal (боты «MyRida | …»).
+[ ] Проверка: /health, 5 ботов, Mini App, сайт, пост во внутреннем
+    канале; скриншоты владельцу.
+
+C. Прод на новом аккаунте (docs/179, «Шаги прода»)
+[ ] Владелец: R2, Environment production с новым аккаунтом,
+    переменные PROD_*, Telegram ID команды.
+[ ] Claude: вернуть deploy-production и прод в «Map data»; PR;
+    слияние; деплой прода с Approve: стек на ridaone.uz.
+[ ] Секреты Worker прода; новый секрет вебхука; setup-bots прода;
+    «Map data» прода; права бота каналов в 67 каналах.
+[ ] Проверка: /health, 5 ботов, Mini App, карта, сайт; скриншоты.
 [ ] Проверка владельца.
 ```

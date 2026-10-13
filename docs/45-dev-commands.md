@@ -21,7 +21,7 @@
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
-| `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами и лендинг. В CI: `deploy-internal`, `deploy-production` |
+| `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами и лендинг. В CI: `deploy-internal`; прод вернётся с новым аккаунтом (`179`) |
 | `pnpm run setup-bots --brand=rida --env=<среда>` | Вебхуки, кнопки меню, имена и описания 5 ботов среды. После первого деплоя и при смене настроек ботов. Нужен `TELEGRAM_WEBHOOK_SECRET` этой среды |
 
 - Для `check:secrets` локально нужен файл `gitleaks` (v8.30.1) в `PATH`.
@@ -67,7 +67,7 @@
 | `secrets`, `brand-kit` | gitleaks; бренд-пакет собирается, только если менялись `brands/` или lock |
 | `screenshots (1/2)`, `(2/2)` | После барьеров, артефакт для людей; не барьер |
 
-- `deploy-internal` ждёт `CI ok`, `deploy-production` ждёт `deploy-internal`. Запускаются, только если прод поменялся с последнего успешного деплоя (`changes`, `46`, `179`).
+- `deploy-internal` ждёт `CI ok`. Запускается, только если код поменялся с последнего успешного деплоя внутренней среды (`changes`, `46`, `179`).
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.
 
 ## Надёжность сервера (G42)

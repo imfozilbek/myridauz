@@ -56,7 +56,7 @@
 | Токены 5 ботов своей среды (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80), свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker каждой среды (`wrangler secret`) | Только Worker |
 | `ANALYTICS_API_TOKEN`, `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker | Только Worker |
 | `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`) | Секреты Worker | Только Worker |
-| `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal` (первый аккаунт) и `production` (новый) | Только job `deploy-internal` и `deploy-production` на `main` |
+| `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal` (первый аккаунт); `production` (новый) вернётся с продом (`179`) | Только job `deploy-internal` на `main` |
 | Токен Claude и ключи для настройки | Переменные окружения сессии Claude | Только Claude |
 
 - `ANALYTICS_API_TOKEN` сейчас равен токену деплоя (решение владельца 29.09.2026). Позже заменить
@@ -66,16 +66,16 @@
 ## Деплой
 
 - `pnpm run deploy --brand=rida --env=internal|production`: одна команда на бренд и среду (`45`, `179`).
-- CI: только на `main`, после барьеров: `deploy-internal` сам, потом `deploy-production` с подтверждением владельца.
-  Машина делает всё за 2 или 3 минуты; остальное время деплой ждёт нажатия **Approve**.
-- **Одобрение деплоя (решение владельца 29.09.2026):** только в GitHub Mobile.
+- CI: только на `main`, после барьеров: `deploy-internal` сам, без **Approve** (решение владельца 13.10.2026).
+  Прод с **Approve** вернётся вместе с новым аккаунтом (`179`).
+- **Одобрение деплоя прода (решение владельца 29.09.2026):** только в GitHub Mobile.
   Уведомление «requested your review to deploy» (или ссылка от Claude) → **Approve** →
   поставить галочку у `production` (без неё кнопка серая) → **Approve** вверху справа.
   Claude присылает ссылку на запуск сразу после каждого слияния.
 - **Деплой только при изменении прода:** job `changes` смотрит, что поменялось
   (`apps/`, `packages/`, `brands/`, скрипт деплоя, зависимости). Только docs или CI:
-  деплоя нет, одобрять нечего.
-- Сравнение идёт с **последним успешным деплоем** (`deployments` окружения `production`),
+  деплоя нет.
+- Сравнение идёт с **последним успешным деплоем** (`deployments` окружения `internal`),
   а не с прошлым слиянием: код, чей деплой упал или был пропущен, уйдёт в прод со следующим
   слиянием (решение владельца 10.10.2026, урок №208). Нет ответа GitHub: деплой предлагается.
 - Cron Worker: каждые 15 минут (`brands/rida/wrangler.toml`). Завершает поездки, закрывает
