@@ -38,7 +38,7 @@ function setup(faces: readonly Face[], file = 'v1') {
   const deps: LooksDeps = {
     faces,
     store: createMemoryLooks(),
-    picture: async () => new TextEncoder().encode(picture).buffer,
+    picture: () => new Response(picture).arrayBuffer(),
     hash: async (bytes) => new TextDecoder().decode(bytes),
     now: () => NOW,
   };

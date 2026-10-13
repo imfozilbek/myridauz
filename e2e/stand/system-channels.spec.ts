@@ -66,20 +66,19 @@ test('S76. the check makes the link of the app of a channel, «Kanallar» gives 
 // docs/180: the Cron brings a bot to the repository, then leaves it alone while it is like it.
 test('S77. the look of a bot comes from the repository, a bot like it gets no call', async () => {
   const PASSENGER = "face = 'bot:passenger'";
-  const checkedAt = () =>
-    Number(standRows(`SELECT checked_at FROM looks WHERE ${PASSENGER}`)[0]?.checked_at ?? -2);
+  const row = () => standRows(`SELECT checked_at, photo_id FROM looks WHERE ${PASSENGER}`)[0];
   const sets = async () =>
     (await botMessages()).filter((m) => m.bot === 'passenger' && m.method.startsWith('setMy'));
   // Never checked: the first of the next round, it gets the picture of the repository.
   standSql(`DELETE FROM looks WHERE ${PASSENGER}`);
   await clearBotMessages();
   await runCron();
-  await expect.poll(checkedAt).toBeGreaterThan(0);
   expect((await sets()).map((m) => m.method)).toContain('setMyProfilePhoto');
+  expect(String(row()?.photo_id)).toMatch(/^stand-photo-/u);
   // Checked again first: Telegram is like the repository, nothing is set.
   standSql(`UPDATE looks SET checked_at = -1 WHERE ${PASSENGER}`);
   await clearBotMessages();
   await runCron();
-  await expect.poll(checkedAt).toBeGreaterThan(0);
+  expect(Number(row()?.checked_at)).toBeGreaterThan(0);
   expect(await sets()).toEqual([]);
 });
