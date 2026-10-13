@@ -1,6 +1,7 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
 import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { closeSheet, sheetClosed } from '../home/sheet-closed';
 import { renderMarket, tap, trip, openOwnTrip } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
 import { MyTripsScreen } from '../market/my-trips-screen';
@@ -81,6 +82,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     // Back on «Mening safarim»: no «Joy tasdiqlandi» screen in between (owner decision 06.10.2026).
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
     expect(screen.queryByText('Joy tasdiqlandi')).toBeNull();
+    await sheetClosed();
   });
 
   // The server found the wallet short: the sheet stays and says why (docs/65 B3, G78 sheet 3).
@@ -94,6 +96,7 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     inSheet('Tasdiqlash');
     expect(await screen.findByText('Hamyonda komissiya uchun mablagʻ yetarli emas.')).toBeTruthy();
     expect(screen.getByText('Yangi soʻrov')).toBeTruthy();
+    await closeSheet();
   });
 
   it('declines a booking', async () => {
@@ -104,5 +107,6 @@ describe('a driver answers a booking (docs/35, docs/12)', () => {
     inSheet('Rad etish');
     await vi.waitFor(() => expect(answer).toHaveBeenCalledWith('b1', 'decline'));
     expect(await screen.findByText('Safar eʼlon qilindi')).toBeTruthy();
+    await sheetClosed();
   });
 });

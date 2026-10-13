@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
+import { SLOW_MS } from '../map-wait';
 import { CHILONZOR, declineWaiting, publishTrip } from './market-kit';
 import { DOSTON, GAYRAT } from './people';
 import { mainButton, NARROW, openHome, PLATFORMS, t, type Platform } from './screen-tour';
@@ -108,7 +109,8 @@ for (const platform of PLATFORMS)
     await expect(page.getByText(t('way.change')).first()).toBeVisible();
     await shot('12-review-kept');
     await again.tap(mainButton(page));
-    await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible();
+    // The server answers late with four stands side by side (lesson 268).
+    await expect(page.getByText(t('bookings.status.requested')).first()).toBeVisible({ timeout: SLOW_MS });
     expect(again.taps()).toBeLessThanOrEqual(4);
   });
 

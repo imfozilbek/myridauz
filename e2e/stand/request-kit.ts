@@ -1,15 +1,14 @@
 import { expect, type Locator, type Page } from '../crash-guard';
+import { SLOW_MS } from '../map-wait';
 import { mainButton, t } from './screen-tour';
 
-// The map is slow with four stands side by side: it waits as long as the name of the pin (G77).
-const MAP_MS = 15_000;
-
-// The map stands still and the name of the pin came: «Shu yerda» takes this place (lesson 77).
+// The map stands still and the name of the pin came: «Shu yerda» takes this place (lesson 77). The map
+// is slow with four stands side by side (G77).
 export async function mapReady(page: Page, title: 'way.point.from' | 'way.point.to') {
   await expect(page.getByText(t(title))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible({ timeout: MAP_MS });
+  await expect(page.locator('[data-state="ready"]')).toBeVisible({ timeout: SLOW_MS });
   // The name came and the map is inside the place (a center outside its border moves in, G35).
-  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: MAP_MS });
+  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: SLOW_MS });
 }
 
 const ENDS = [

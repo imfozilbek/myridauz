@@ -1,9 +1,11 @@
 import { expect, test, type Page } from '../crash-guard';
 import { openFindTrip, TEXT } from '../apps';
+import { SLOW_MS } from '../map-wait';
 import { CHILONZOR, declineWaiting, publishTrip } from './market-kit';
 import { ELYOR, FARRUX } from './people';
 import { searchTo } from './search-kit';
 import { mainButton, openHome, PLATFORMS, t, type Platform } from './screen-tour';
+import { mapReady } from './request-kit';
 import { register } from './seed';
 import { backUntil } from './steps';
 import { outsideCalls, type Person } from './stand-kit';
@@ -31,18 +33,12 @@ const shooter = (page: Page, platform: Platform) => async (name: string) => {
   await page.waitForLoadState('networkidle');
   // A map moved to the person a moment ago: its new name came too (lesson 77).
   const pin = page.getByRole('status');
-  if ((await pin.count()) > 0) await expect(pin).not.toHaveText(/aniqlanmoqda/u, { timeout: 15_000 });
+  if ((await pin.count()) > 0) await expect(pin).not.toHaveText(/aniqlanmoqda/u, { timeout: SLOW_MS });
   await page.screenshot({
     path: `screenshots/stand/dropoff-screen/${platform}/${name}.png`,
     animations: 'disabled',
   });
 };
-// The map stands and the name under the pin came (lesson 77).
-async function mapReady(page: Page, title: 'way.point.from' | 'way.point.to') {
-  await expect(page.getByText(t(title))).toBeVisible();
-  await expect(page.locator('[data-state="ready"]')).toBeVisible();
-  await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
-}
 const card = (page: Page, driver: string) => page.locator('.search-trip').filter({ hasText: driver }).first();
 
 for (const platform of PLATFORMS)
@@ -66,8 +62,10 @@ for (const platform of PLATFORMS)
     const before = await page.getByRole('status').textContent();
     await page.getByText(PLACE, { exact: true }).click();
     // The map came to the place: its name under the pin is new (lesson 77).
-    await expect(page.getByRole('status')).not.toHaveText(before ?? '', { timeout: 15_000 });
-    await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, { timeout: 15_000 });
+    await expect(page.getByRole('status')).not.toHaveText(before ?? '', { timeout: SLOW_MS });
+    await expect(page.getByRole('status')).not.toHaveText(/aniqlanmoqda|hududida emas/u, {
+      timeout: SLOW_MS,
+    });
     await shot('04-dropoff-found');
     await mainButton(page).click();
     await expect(page.getByText(t('bookings.points.all'))).toBeVisible();

@@ -3,7 +3,7 @@ import { createBookingsClient } from '@platform/api-client';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { TEXT, publishButton } from '../apps';
 import { openEndMap } from '../bookings';
-import { mapFound } from '../map-wait';
+import { mapFound, SLOW_MS } from '../map-wait';
 import { openFromList } from '../market';
 import { pressBack } from '../telegram-mock';
 import { DILNOZA, DRIVER, MADINA, NODIRA } from './people';
@@ -17,7 +17,7 @@ const shot = (page: Page, name: string) =>
 const mainButton = (page: Page) => page.locator('#tg-main-button');
 // The small map of the pitak is drawn and its tiles came: a screenshot shows the real map.
 async function pitakMapDrawn(page: Page) {
-  await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible();
+  await expect(page.locator('.pitak-map[data-state="ready"]')).toBeVisible({ timeout: SLOW_MS });
   await page.waitForLoadState('networkidle');
 }
 
