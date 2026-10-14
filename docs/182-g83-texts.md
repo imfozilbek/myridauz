@@ -55,6 +55,8 @@
 | Блок | Kutayotganlar · {p} yoʻlovchi · {d} haydovchi · {n} yoʻnalish, eng koʻpi tepada · Eng koʻp ogʻriq: {pain} · Yoʻlovchilarning {share} % i tanlagan · Hammasi ({n}) |
 | Направление | Roʻyxat {date}dan beri · Yoʻlovchilar · Yoʻlovchilarni nima qiynaydi · Haydovchilar · Ariza tasdiqlangan |
 | Открытие | Yoʻnalishni ochish · Yoʻnalishni ochasizmi? · {p} yoʻlovchi va {d} haydovchiga bot xabar yuboradi. Xabar bir marta ketadi. · Ochish · Ochildi · {date} · Xabar ketdi: {n} kishiga |
+| Воронки (`183`) | Roʻyxatga yozilish · Botni ochdi · Ilovani ochdi (есть) · Rolni tanladi · Roʻyxatda · Roʻyxat: yoʻlovchi · Roʻyxat: haydovchi · Rol · Muammolar · Qayerdan · Qayerga · Joy · Qachon · {drop}% ketdi (есть) |
+| Блоки статистики (`183`) | Roʻyxatdan keyin · Kanalga qoʻshildi · Kanallar qadamida · Doʻstini chaqirdi · Havolani yubordi · Doʻst orqali yozildi · Bitta odam oʻrtacha {n} kishini olib keldi · Qayerdan kelishdi (есть) · {n} ochdi · {share} % yozildi · Doʻst havolasi · Haydovchi yetishmaydi · Qachon yozilishdi · Qurilmalar (есть) · Qanchalik tez-tez · Ham yoʻlovchi, ham haydovchi |
 
 ## Убрано
 
