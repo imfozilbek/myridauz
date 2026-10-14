@@ -34,7 +34,7 @@ B. Бот и данные
     запись стирает общее удаление данных (`58`).
 [ ] API и события шагов `waitlist_step`: воронки «Roʻyxatga yozilish», «Roʻyxat: yoʻlovchi»,
     «Roʻyxat: haydovchi» (docs/183).
-[ ] Блоки «золота» в «Statistika» по макету g83/6-stats (docs/183), после «да» владельца.
+[ ] Блоки «золота» в «Statistika» по утверждённому макету approved/6-team-stats (docs/183).
 
 C. Mini App
 [ ] Экраны один в один как макеты (сверка Pixel Perfect).
