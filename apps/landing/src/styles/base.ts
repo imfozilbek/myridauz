@@ -8,6 +8,7 @@ color:var(--text);background:var(--bg);-webkit-text-size-adjust:100%}
 a{color:var(--brand-text)}
 img{max-width:100%;height:auto;display:block}
 svg{flex:none}
+[hidden]{display:none!important}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .narrow{max-width:760px}
 header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);

@@ -1,4 +1,5 @@
 import { loadBrand } from '@platform/brands';
+import { PUBLIC_WAITLIST_PATH } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { app } from './app';
 import { json, read } from './bookings-test-api';
@@ -60,5 +61,17 @@ describe('the bot of the channels hears the people of the list (docs/176, docs/1
       call(`/admin/ad-links/${ad.code}`, OWNER, { app: 'admin', env }),
     );
     expect(result.result).toMatchObject({ joined: 1, passengers: 1 });
+  });
+});
+
+describe('the site reads whether the list is open (G83, docs/181)', () => {
+  it('answers without a signature and follows the switch of the owner', async () => {
+    const own = { DB: testD1() };
+    const site = () => app.request(PUBLIC_WAITLIST_PATH, {}, own);
+    const first = await site();
+    expect(first.headers.get('cache-control')).toBe('public, max-age=60');
+    expect(await first.json()).toEqual({ open: true });
+    await call('/admin/waitlist-switch', OWNER, { app: 'admin', env: own, ...json({ open: false }, 'PUT') });
+    expect(await (await site()).json()).toEqual({ open: false });
   });
 });

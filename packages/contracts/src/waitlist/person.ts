@@ -64,3 +64,9 @@ export const waitlistSaveSchema = waitlistAnswersSchema;
 export const waitlistInviteSchema = z.object({ role: z.enum(WAITLIST_ROLES) });
 export const waitlistInvitedSchema = z.object({ prepared: z.string().nullable(), link: z.url() });
 export type WaitlistInvited = z.infer<typeof waitlistInvitedSchema>;
+
+// Whether the list is open, for the site without a signature: its buttons lead to the main bot while
+// it is open, to the bots of the trips when the owner closes it (docs/181).
+export const PUBLIC_WAITLIST_PATH = '/public/waitlist';
+export const publicWaitlistSchema = z.object({ open: z.boolean() });
+export type PublicWaitlist = z.infer<typeof publicWaitlistSchema>;

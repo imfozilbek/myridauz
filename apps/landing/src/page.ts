@@ -1,7 +1,7 @@
-import type { BrandConfig } from '@platform/brands';
-import { LEGAL_DOCUMENTS } from '@platform/contracts';
+import { apiHost, type BrandConfig } from '@platform/brands';
+import { LEGAL_DOCUMENTS, PUBLIC_WAITLIST_PATH } from '@platform/contracts';
 import type { I18n } from '@platform/i18n';
-import { escape, passengerLink, telegramLink } from './html';
+import { entryButton, escape, passengerLink, telegramLink } from './html';
 import { styles } from './styles';
 
 type Page = {
@@ -58,11 +58,11 @@ export function page({ brand, i18n, year, title, path, body, script = '', ...mor
 <style>${styles(brand)}</style>
 ${more.head ?? ''}
 </head>
-<body>
+<body data-waitlist="https://${apiHost(brand)}${PUBLIC_WAITLIST_PATH}">
 <header><div class="wrap"><a class="brand" href="/"><img src="/favicon.svg" alt="${escape(
     t('landing.logo', { brand: brand.name }),
   )}" width="36" height="36">${escape(brand.name)}</a>
-<a class="button small" href="${passengerLink(brand.bots.passenger, more.start)}">${escape(t('landing.cta.passenger'))}</a></div></header>
+${entryButton(brand, 'button small', escape(t('landing.cta.passenger')), passengerLink(brand.bots.passenger, more.start))}</div></header>
 <main>${body}</main>
 <footer><div class="wrap">
 <strong>${escape(t('landing.footer.documents'))}</strong>
