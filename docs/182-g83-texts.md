@@ -41,8 +41,7 @@
 | Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
 | Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
 | Откуда, куда (`5-regions`) | Qayerdan yoʻlga chiqasiz? · Qayerga borasiz? (есть) · имена областей из справочника (есть) · группы на карте: Toshkent · Vodiy · Markaz · Janub · Gʻarb · подпись на кнопке: Qayerdan |
-| Место (по желанию) | {region}ning qaysi joyi? (есть) · Bilsangiz, tanlang. Shart emas. · Butun viloyat (есть) · Joyni keyin tanlayman |
-| Каналы (последний шаг) | Yoʻnalishingiz kanallari · Yangi safarlar va yangiliklar shu yerda. Keraklisiga qoʻshiling. · Asosiy kanal · {region} · Sizning joyingiz · Qoʻshilish · ✓ Aʼzosiz (есть) · Yangiliklar, ochilish kunlari · Davom etish (есть) |
+| Каналы (последний шаг) | Yoʻnalishingiz kanallari · Yangi safarlar va yangiliklar shu yerda. Keraklisiga qoʻshiling. · Asosiy kanal · {region} · Qoʻshilish · ✓ Aʼzosiz (есть) · Yangiliklar, ochilish kunlari · Davom etish (есть) |
 | Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan |
 | Результат | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. · {count} kishi kutmoqda · Bu yoʻnalishda. {share} % ini ham {pain} qiynaydi. · водитель: {count} yoʻlovchi kutmoqda · Bu yoʻnalishda. Ochilganda safaringizni koʻradi. · {brand} buni hal qiladi |
 | Кнопки | Doʻstimni chaqiraman · Haydovchi boʻlish (есть) |
@@ -56,7 +55,7 @@
 | Блок | Kutayotganlar · {p} yoʻlovchi · {d} haydovchi · {n} yoʻnalish, eng koʻpi tepada · Eng koʻp ogʻriq: {pain} · Yoʻlovchilarning {share} % i tanlagan · Hammasi ({n}) |
 | Направление | Roʻyxat {date}dan beri · Yoʻlovchilar · Yoʻlovchilarni nima qiynaydi · Haydovchilar · Ariza tasdiqlangan |
 | Открытие | Yoʻnalishni ochish · Yoʻnalishni ochasizmi? · {p} yoʻlovchi va {d} haydovchiga bot xabar yuboradi. Xabar bir marta ketadi. · Ochish · Ochildi · {date} · Xabar ketdi: {n} kishiga |
-| Воронки (`183`) | Roʻyxatga yozilish · Botni ochdi · Ilovani ochdi (есть) · Rolni tanladi · Roʻyxatda · Roʻyxat: yoʻlovchi · Roʻyxat: haydovchi · Rol · Muammolar · Qayerdan · Qayerga · Joy · Qachon · {drop}% ketdi (есть) |
+| Воронки (`183`) | Roʻyxatga yozilish · Botni ochdi · Ilovani ochdi (есть) · Rolni tanladi · Roʻyxatda · Roʻyxat: yoʻlovchi · Roʻyxat: haydovchi · Rol · Muammolar · Qayerdan · Qayerga · Qachon · {drop}% ketdi (есть) |
 | Рубильник (`181`) | Kutish roʻyxati · Roʻyxatga yozish · Ochiq: yangi odamlar roʻyxatga yoziladi · Yopiq · {time} dan: botda safar tugmalari · {n} ta havola · Roʻyxatni yopasizmi? · Yangi odamlar endi roʻyxatga yozilmaydi: botda «Safar topish» va «Safar eʼlon qilish» tugmalari chiqadi. · Kutayotgan {n} kishiga hozir xabar ketmaydi: har yoʻnalish ochilganda yozamiz. · Yopish · Roʻyxatni ochasizmi? · Yangi odamlar yana roʻyxatga yoziladi. · Ochish (есть) · Bekor qilish (есть) |
 | Ссылки для рекламы (`184`) | Reklama havolalari · Har reklama uchun alohida havola: qaysi reklama nechta odam olib kelganini koʻrasiz. · Yangi havola · Havolalar · {n} bosdi · {n} yozildi · Oʻngda: bitta yozilgan odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh. · Qayerga olib boradi · Bot · Kanal · Qayerda reklama · Telegram · Instagram · Bloger · Boshqa · Nomi · Statistikada shu nom koʻrinadi. · Narxi (shart emas) · Necha kun turadi · {n} kun · Doimiy · Tepada: boshqa post chiqmaydi · Yoʻq · {n} soat · Qadalgan (pin) · tepada {n} soat · qadalgan {n} soat · Havola yaratish · Qaysi kanalga? · Havola shu kanalga qoʻshilish havolasi boʻladi. · Asosiy kanal (есть) · Viloyat kanallari · botga · kanalga · Havola botga olib boradi. · Havola «{channel}» kanaliga olib boradi. Kim shu havola orqali qoʻshilganini koʻramiz. · Havola tayyor · Havolani reklama sotuvchisiga yuboring: u postdagi tugmaga yoki matnga qoʻysin. Rasm, video, matn: istalgan kontent boʻlishi mumkin. · Havolani nusxalash · Nima berdi · Bosdi · {p} yoʻlovchi · {d} haydovchi · {n} qoʻshildi · Kanalga qoʻshildi · Kanalda qoldi · {n}% chiqib ketdi · Roʻyxatga yozildi · Bitta obunachi · Shartlar va pul · Narxi · Bitta yozilgan odam · Keyin · Doʻst orqali yana yozildi · Shu reklamadan kelganlar chaqirdi |
 | Блоки статистики (`183`) | Roʻyxatdan keyin · Kanalga qoʻshildi · Kanallar qadamida · Doʻstini chaqirdi · Havolani yubordi · Doʻst orqali yozildi · Bitta odam oʻrtacha {n} kishini olib keldi · Qayerdan kelishdi (есть) · {n} ochdi · {share} % yozildi · Doʻst havolasi · Haydovchi yetishmaydi · Qachon yozilishdi · Qurilmalar (есть) · Qanchalik tez-tez · Ham yoʻlovchi, ham haydovchi |
@@ -65,6 +64,7 @@
 
 - По правилам рекламы: «Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.
 - «Roʻyxatdan chiqish» и его шторка: решение владельца 14.10.2026.
+- Шаг «{region}ning qaysi joyi?» и «Sizning joyingiz»: район в опроснике не спрашиваем (решение владельца 14.10.2026).
 - Шторка «Qaysi kuni?» и «Kunini tanlaysiz»: точную дату в опроснике не спрашиваем (решение владельца 14.10.2026).
 - По системе G68 (`122`): отдельные сообщения «Siz roʻyxatdasiz» и пост канала: их заменила живая карточка.
 

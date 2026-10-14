@@ -20,7 +20,6 @@
 | Rol | `role` | выбрана роль |
 | Muammolar | `pains` | «Davom etish» на болях |
 | Qayerdan, Qayerga | `from`, `to` | выбрана область |
-| Joy | `place` | выбрано место или «Butun viloyat». У Toshkent shahri шага нет: событие пишется само, иначе в воронке был бы ложный уход |
 | Qachon | `when` | выбран ответ. **Запись сохраняется на этом шаге:** уход на каналах не теряет человека |
 | Roʻyxatda | `done` | сервер сохранил запись (событие сервера) |
 | Kanalga qoʻshildi | `channel_join` | «Qoʻshilish» на шаге каналов; вход подтверждает `chat_member` (G80, `176`) |
@@ -31,7 +30,7 @@
 | Воронка | Шаги |
 |---|---|
 | Roʻyxatga yozilish | Botni ochdi, Ilovani ochdi, Rolni tanladi, Roʻyxatda |
-| Roʻyxat: yoʻlovchi | Rol, Muammolar, Qayerdan, Qayerga, Joy, Qachon, Roʻyxatda |
+| Roʻyxat: yoʻlovchi | Rol, Muammolar, Qayerdan, Qayerga, Qachon, Roʻyxatda |
 | Roʻyxat: haydovchi | те же шаги |
 
 - Счёт как в `56`: шаги внутри Mini App по сессиям; «Botni ochdi» и «Roʻyxatda» по событиям.
