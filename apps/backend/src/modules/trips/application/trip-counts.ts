@@ -87,3 +87,13 @@ export async function directionCards(
   );
   return cards.filter((card) => card !== null);
 }
+
+// The trips of today and tomorrow from a place to a region: the card of an opened direction of the
+// waitlist (G83, docs/181).
+export async function regionTrips(deps: TripsDeps, from: string, region: string) {
+  const { open, places, today, tomorrow } = await openTrips(deps, from, 2);
+  const regionOf = regionIn(places);
+  const fits = open.filter(({ trip }) => regionOf(trip.to) === region);
+  const count = (date: string) => fits.filter((item) => item.date === date).length;
+  return { today: count(today), tomorrow: count(tomorrow) };
+}

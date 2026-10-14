@@ -65,6 +65,10 @@ const GROWING = [
   'face_log',
   'trip_views',
   'request_views',
+  // The waitlist of G83 (docs/181): the records, the first touches, the joins by an ad.
+  'waitlist',
+  'waitlist_visits',
+  'ad_joins',
 ] as const;
 // «SCAN t» reads every row of t, through an index or not; «SEARCH t USING INDEX» reads only what it needs.
 const SCAN = /^SCAN (\w+)/u;

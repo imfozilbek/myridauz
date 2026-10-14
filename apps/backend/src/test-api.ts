@@ -8,6 +8,7 @@ export const testEnv = {
   DRIVER_BOT_TOKEN: '2:driver',
   ADMIN_BOT_TOKEN: '3:admin',
   POSTER_BOT_TOKEN: '4:poster',
+  MAIN_BOT_TOKEN: '5:main',
   ADMIN_TELEGRAM_IDS: '900',
 };
 export const nowSeconds = () => Math.floor(Date.now() / 1000);
@@ -18,6 +19,7 @@ const TOKENS: Readonly<Record<string, string>> = {
   passenger: testEnv.PASSENGER_BOT_TOKEN,
   driver: testEnv.DRIVER_BOT_TOKEN,
   admin: testEnv.ADMIN_BOT_TOKEN,
+  main: testEnv.MAIN_BOT_TOKEN,
 };
 
 export async function call(

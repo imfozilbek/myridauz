@@ -13,11 +13,12 @@ import { healthRoutes } from './http/health-routes';
 import { appLinks, checkChannels } from './application/health';
 import { healthDeps, healthStoreOf } from './health-deps';
 import { myChannelsRoutes } from './http/my-channels-routes';
-import { posterRoutes } from './http/poster-routes';
-export { POSTER_WEBHOOK_PATH } from './http/poster-routes';
+import { posterRoutes, type ChannelChange } from './http/poster-routes';
+export { POSTER_WEBHOOK_PATH, type ChannelChange } from './http/poster-routes';
+export { wireKnownPeople } from './members-deps';
 import { heardDeps, membersOf, myChannelsDeps } from './members-deps';
 import { publicityRoutes } from './http/publicity-routes';
-import { inChannel } from './infrastructure/bot-admin';
+import { createAppLink, inChannel } from './infrastructure/bot-admin';
 import type { ChannelsDeps } from './application/ports';
 import type { PublicityDeps, TripFacts } from './application/publicity';
 import { createMemoryChannelPosts, d1ChannelPosts } from './infrastructure/channel-posts';
@@ -27,6 +28,10 @@ import { zoneMessage } from './infrastructure/zone-message';
 import { teamDeps } from './team-deps';
 import { brandOf } from '../../shared/brand/brand-of';
 
+// A join or a leave the bot of the posts heard, for the ads of the waitlist (G83): set by the app.
+type ChangeHandler = (env: Bindings, change: ChannelChange) => Promise<void>;
+let onChange: ChangeHandler = async () => undefined;
+export const wireChannelChanges = (handler: ChangeHandler) => void (onChange = handler);
 const localPosts = createMemoryChannelPosts();
 const localViews = createMemoryTripViews();
 const postsOf = (env: Bindings) => (env.DB ? d1ChannelPosts(env.DB) : localPosts);
@@ -70,7 +75,10 @@ export const channelsModule = new Hono<AppEnv>()
   .route('/', channelRoutes(teamDeps))
   .route('/', myChannelsRoutes(myChannelsDeps))
   // Before the webhook of the bots: "/telegram/:role" would take the bot of the posts (docs/176).
-  .route('/', posterRoutes(heardDeps));
+  .route(
+    '/',
+    posterRoutes(heardDeps, (env, change) => onChange(env, change)),
+  );
 
 // The hourly Cron: a few channels read again from Telegram for «Kanallar» of the owner (G75).
 export const checkChannelHealth = async (env: Bindings) => checkChannels(await healthDeps(env));
@@ -125,3 +133,16 @@ export const tripViewCounts = async (env: Bindings, tripIds: readonly string[]) 
 // A deleted account (docs/30): the trips it opened forget it, and the channels it is in.
 export const forgetTripViews = (env: Bindings, userId: number) => viewsOf(env).forget(userId);
 export const forgetChannelMembers = (env: Bindings, userId: number) => membersOf(env).forget(userId);
+// The channels of the directions a person is in, and the main channel (G83): one read, one call.
+export const channelsOfPerson = async (env: Bindings, userId: number) => [
+  ...(await membersOf(env).joined(userId)),
+  ...((await inChannel((input, init) => fetch(input, init), env.POSTER_BOT_TOKEN)(
+    `@${brandOf(env).mainChannel}`,
+    userId,
+  ))
+    ? [`@${brandOf(env).mainChannel}`]
+    : []),
+];
+// The own invite link of an ad in a channel, made by the bot of the posts (docs/184).
+export const adInviteLink = (env: Bindings, chat: string, name: string) =>
+  createAppLink((input, init) => fetch(input, init), env.POSTER_BOT_TOKEN, name)(chat);

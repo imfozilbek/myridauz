@@ -13,6 +13,7 @@ export const tokensOf = (env: Bindings): Tokens => ({
   driver: env.DRIVER_BOT_TOKEN,
   admin: env.ADMIN_BOT_TOKEN,
   poster: env.POSTER_BOT_TOKEN,
+  main: env.MAIN_BOT_TOKEN,
 });
 export const send = (input: string, init?: RequestInit) => fetch(input, init);
 

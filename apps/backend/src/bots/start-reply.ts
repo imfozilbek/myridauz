@@ -6,7 +6,7 @@ const { t, formatMoney } = createI18n(DEFAULT_LOCALE);
 // A driver who came from the passenger bot already knows Rida: another first line (G34).
 const FROM_PASSENGER = 'from_passenger';
 // The welcome pictures of the public bots, served by the landing (brand-kit/landing/bot.mjs).
-export const welcomePicture = (brand: BrandConfig, role: 'passenger' | 'driver' | 'support') =>
+export const welcomePicture = (brand: BrandConfig, role: 'passenger' | 'driver' | 'support' | 'main') =>
   `https://${brand.domain}/bot/${role}-welcome.png`;
 
 // A close person opens the passenger Mini App to follow a trip, no registration (docs/43).
@@ -52,7 +52,8 @@ function welcome(brand: BrandConfig, role: 'passenger' | 'driver', chatId: numbe
 
 type StartContext = {
   readonly brand: BrandConfig;
-  readonly role: BotRole;
+  // The main bot greets in main-bot.ts: its welcome reads the switch of the list (G83).
+  readonly role: Exclude<BotRole, 'main'>;
   readonly chatId: number;
   // "/start follow_<token>" from the card of a shared trip (docs/43).
   readonly payload?: string;

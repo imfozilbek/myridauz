@@ -4,6 +4,7 @@ import type { AppEnv, Bindings } from '../../env';
 import { openTrip, publishPrivateTrip, releaseTrip } from './application/private-trip';
 import { publishOfferTrip, type Input } from './application/publish';
 import { realPrices } from './application/prices';
+import { regionTrips } from './application/trip-counts';
 import { cancelTrip, MY_TRIPS_LIMIT, teamTrips } from './application/read';
 import { views } from './application/views-of';
 import { familyView, upcomingOf } from './application/driver-trips';
@@ -17,6 +18,8 @@ export { handleTripChange, wireTripStanding } from './deps';
 // A booking was confirmed or cancelled: the seats left changed (G08).
 export const tripChanged = (env: Bindings, tripId: string) => tripsDeps(env).changed(tripId, 'updated');
 
+export const regionTripsOf = (env: Bindings, from: string, region: string) =>
+  regionTrips(tripsDeps(env), from, region);
 export const tripsModule = new Hono<AppEnv>()
   .route('/', tripRoutes(tripsDeps))
   .route('/', progressRoutes(tripsDeps));

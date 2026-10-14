@@ -1,6 +1,7 @@
 // One bot message waiting in the queue (docs/03, docs/07). The text is ready: the queue only sends.
 // The poster is the bot of the channels: no Mini App, no people write to it (docs/176).
-type BotName = 'passenger' | 'driver' | 'admin' | 'poster';
+// main: the bot of the waitlist (G83, docs/181).
+type BotName = 'passenger' | 'driver' | 'admin' | 'poster' | 'main';
 
 // Something to remember once Telegram gave the message its id: a channel post is edited later
 // (docs/15).
