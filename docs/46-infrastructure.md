@@ -1,6 +1,6 @@
 # 46. Инфраструктура: ресурсы, домены, секреты
 
-> **Кратко:** Rida работает в одном аккаунте Cloudflare: Worker `api.myrida.uz`, база D1, приватный R2, Analytics Engine, 3 Mini App на Pages. Секреты только в Cloudflare и в Environment `production`. Сделано в G03 (28.09.2026).
+> **Кратко:** Rida работает в одном аккаунте Cloudflare: Worker `api.myrida.uz`, база D1, приватный R2, Analytics Engine, 4 Mini App на Pages. Секреты только в Cloudflare и в Environment `production`. Сделано в G03 (28.09.2026).
 
 ## Адреса
 
@@ -10,6 +10,7 @@
 | `passenger.myrida.uz` | Mini App попутчика | Pages `rida-passenger` |
 | `driver.myrida.uz` | Mini App водителя | Pages `rida-driver` |
 | `admin.myrida.uz` | Mini App админа | Pages `rida-admin` |
+| `main.myrida.uz` | Mini App списка ожидания (G83, `181`) | Pages `rida-main`: деплой создаёт сам |
 | `myrida.uz`, `www.myrida.uz` | Лендинг и документы (`59`) | Pages `rida-landing` |
 
 - Адреса строятся из домена бренда: `brands/hosts.ts` (`22`).
@@ -43,6 +44,7 @@
 | `@myrida_bot` | `api.myrida.uz/telegram/passenger` | «ilova» → `passenger.myrida.uz` |
 | `@myrida_haydovchi_bot` | `api.myrida.uz/telegram/driver` | «ilova» → `driver.myrida.uz` |
 | `@myrida_admin_bot` | `api.myrida.uz/telegram/admin` | «ilova» → `admin.myrida.uz`: поставил владелец в BotFather, код её не трогает |
+| `@myridauz_bot` (общий бот, G83) | `api.myrida.uz/telegram/main` | «ilova» → `main.myrida.uz`: ставит `setup-bots` |
 | `@myrida_support_bot` | `api.myrida.uz/telegram/support` | нет: люди пишут вопрос (G30, `50`) |
 | `@rida1uz_poster_bot` (бот каналов) | `api.myrida.uz/telegram/poster`: только `chat_member` | нет: публикует в 67 каналов (G80, `176`) |
 
