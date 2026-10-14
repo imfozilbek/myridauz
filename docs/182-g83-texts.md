@@ -6,32 +6,37 @@
 
 | Ключ | Боль и подпись | Решение | Статус |
 |---|---|---|---|
+| `chats` попутчик | Guruhlarda tartibsizlik · Kerakli eʼlonni topib boʻlmaydi | Hamma safarlar bir roʻyxatda: qayerdan, qayerga va qachon boʻyicha darhol topasiz. | новое, приоритет 1 |
+| `chats` водитель | Guruhlarda tartibsizlik · Kerakli xabarni topib boʻlmaydi, yoʻlovchi yoʻqoladi | Yoʻlovchilar soʻrovlari botga oʻzi keladi: qayerdan, qayerga, qachon. | решение утв. 12.10, подпись новая, приоритет 1 |
+| `fixed` попутчик | Narx qatʼiy belgilangan · Narxni ilova qoʻyadi, kelishib boʻlmaydi | Narxni oʻzingiz taklif qilasiz. {brand} faqat tavsiya beradi. | новое, приоритет 2 |
+| `fixed` водитель | Narx qatʼiy belgilangan · Narxni ilova qoʻyadi, oʻzim belgilay olmayman | Safar narxini oʻzingiz qoʻyasiz. {brand} faqat tavsiya beradi. | новое, приоритет 2 |
+| `phone` попутчик | Raqamim hammaga ochiq · Guruhda eʼlon bersam, raqamimni hamma koʻradi | Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. | подпись новая, приоритет 3 |
+| `phone` водитель | Raqamim hammaga ochiq · Guruhda eʼlon bersam, raqamimni hamma koʻradi | Raqamingiz hech kimga koʻrinmaydi. Yoʻlovchi bilan {brand} ichida gaplashasiz. | новое, приоритет 3 |
 | `wait` попутчик | Pitakda kutish · Mashina toʻlishini soatlab kutaman | Joyni oldindan band qilasiz. Haydovchi yoʻlga chiqish vaqtini oldindan yozadi. | утв. 12.10 (решение), подпись новая |
+| `wait` водитель | Pitakda kutish · Soatlab yoʻlovchi kutaman, mashina yarim boʻsh | Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. | утв. 12.10 |
 | `price` | Bayram oldidan narx · Narx birdan ikki baravar oshadi | Narx safar eʼlonida yoziladi. Band qilishdan oldin koʻrasiz. | утв. 12.10, подпись новая |
-| `phone` попутчик | Raqamim begonalarda · Guruhga yozsam, notanishlar qoʻngʻiroq qiladi | Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. | утв. 12.10, короче |
+| `empty` | Orqaga boʻsh qaytish · Qaytishda mashina boʻsh, yoqilgʻi menga qoladi | Qaytish safarini oldindan eʼlon qilasiz va yoʻlovchilar uni ham band qiladi. | утв. 12.10 |
 | `woman` | Mashinada ayol bormi · Yolgʻiz ayol qaysi mashinaga oʻtirishni bilmaydi | «Mashinada ayol bor» belgili safarlarni tanlaysiz. | утв. 12.10 |
 | `family` | Yaqinlarim xavotirda · Qaysi mashinada ketayotganimni bilishmaydi | Safarni yaqinlaringizga bir tugma bilan yuborasiz: mashina, raqami va «yetib keldi». | утв. 12.10, короче |
-| `wait` водитель | Pitakda kutish · Soatlab yoʻlovchi kutaman, mashina yarim boʻsh | Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. | утв. 12.10 |
-| `chats` | Chatlarda qidirish · Yuzlab xabar ichidan yoʻlovchi qidiraman | Yoʻlovchilar soʻrovlari botga oʻzi keladi: qayerdan, qayerga, qachon. | утв. 12.10 |
-| `empty` | Orqaga boʻsh qaytish · Qaytishda mashina boʻsh, yoqilgʻi menga qoladi | Qaytish safarini oldindan eʼlon qilasiz va yoʻlovchilar uni ham band qiladi. | утв. 12.10 |
-| `phone` водитель | Raqamim begonalarda · Notanishlar qoʻngʻiroq qiladi, reklama yozadi | Raqamingiz hech kimga koʻrinmaydi. Yoʻlovchi bilan {brand} ichida gaplashasiz. | новое |
+
+Порядок в таблице: порядок на экране (приоритет владельца 14.10.2026, `181`).
 
 ## Бот
 
 | Где | Текст |
 |---|---|
-| Описание до Start | Pitakda soatlab kutasizmi? Bayram oldidan narx oshadimi? Raqamingiz begonalardami? {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
-| Первое сообщение (видео 15 с) | Assalomu alaykum, {name}! 👋 · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · Tanish gaplarmi? · ⏳ Pitakda mashina toʻlishini soatlab kutish · 📈 Bayram oldidan narx ikki baravar · 🔒 Raqamingiz begonalarda · {brand} tez orada ochiladi va shularni hal qiladi. · цитата: 📝 Yoʻnalishingizni yozib qoʻying: 1 daqiqa, telefon raqami kerak emas |
+| Описание до Start | Guruhlarda kerakli eʼlonni topa olmayapsizmi? Narxni ilova qatʼiy qoʻyadimi? Raqamingiz hammaga ochiqmi? {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
+| Первое сообщение (видео 15 с) | Assalomu alaykum, {name}! 👋 · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · Tanish gaplarmi? · 🔎 Guruhlarda kerakli eʼlonni topib boʻlmaydi · 💸 Narxni ilova qatʼiy qoʻyadi · 🔒 Raqamingiz hammaga ochiq · {brand} tez orada ochiladi va shularni hal qiladi. · цитата: 📝 Yoʻnalishingizni yozib qoʻying: 1 daqiqa, telefon raqami kerak emas |
 | Кнопки | 🚀 Roʻyxatga yozilish · 📣 Kanal · меню «ilova» (есть); документы: команда `/documents` (есть) |
 | Живая карточка | ⏳ Roʻyxatdasiz (водитель: · haydovchi) · {when} · tez orada ochiladi · 🟢 {from} · 🔴 {to} · 👥 {count} kishi kutmoqda · 🚗 {drivers} haydovchi · Siz tanlagan: {pains} · ✏️ {time} da yangilandi · har dushanba yangilanadi |
 | Карточка, кнопки | 👥 Doʻstimni chaqiraman · ✏️ Oʻzgartirish · 📣 Kanal · водитель сверху: 🚗 Haydovchi boʻlish |
 | Закреп | 📌 {from} → {to} · roʻyxatdasiz / haydovchi / ochildi |
 | Карточка открыта | ✅ Yoʻnalish ochildi · Bugun {n} ta safar · ertaga {m} ta (водитель: {count} yoʻlovchi kutmoqda) · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Yoʻnalish kanali |
-| Звонок при открытии | цитата {from} → {to} · 🔔 Yoʻnalishingiz ochildi: endi pitakda kutmaysiz, joyni oldindan band qiling. · водитель: 🔔 Yoʻnalishingiz ochildi: {count} yoʻlovchi safaringizni kutmoqda. Endi orqaga boʻsh qaytmaysiz. |
+| Звонок при открытии | цитата {from} → {to} · 🔔 Yoʻnalishingiz ochildi: endi guruhlardan qidirmaysiz, hamma safarlar bir joyda. · водитель: 🔔 Yoʻnalishingiz ochildi: {count} yoʻlovchi safaringizni kutmoqda. Endi guruhlarda yoʻlovchi qidirmaysiz. |
 | Приветствие, список закрыт | Assalomu alaykum, {name}! 👋 · {brand} ochildi: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · 🔎 Safar toping va joyni oldindan band qiling. · 🚗 Mashinangiz boʻlsa, safar eʼlon qiling. · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Kanal |
-| Другу | Men ham pitakda soatlab kutishdan charchadim. {brand} tez orada ochiladi: u yerda joyni oldindan band qilasiz. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
+| Другу | Men ham guruhlarda kerakli eʼlonni qidirib charchadim. {brand} tez orada ochiladi: u yerda hamma safarlar bir joyda. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
-Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль, всего 9 пар (как в таблице болей).
+Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль: 7 у попутчика и 5 у водителя (как в таблице болей).
 
 ## Mini App
 
@@ -71,7 +76,7 @@
 ## Вопросы носителю
 
 - «Yoʻlda sizni nima qiynaydi?»: звучит естественно?
-- «Raqamim begonalarda»: понятно без пояснения?
+- «Narx qatʼiy belgilangan» и «Narxni ilova qoʻyadi»: понятно, о чём речь?
 - «Tanish gaplarmi?» в приветствии: так говорят?
 - Группы «Vodiy», «Markaz», «Janub», «Gʻarb»: так люди называют части страны?
 - «Tepada: boshqa post chiqmaydi» и «Qadalgan (pin)»: так говорят продавцы рекламы в каналах?
