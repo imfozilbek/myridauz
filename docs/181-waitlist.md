@@ -31,13 +31,13 @@
 | 1 | Бот до Start | Описание и картинка (BotFather) | `1-bot` 1 |
 | 2 | Бот после Start | Первое сообщение с видео (ролик 15 с, `41`) как в G68: боли, кнопки «🚀 Roʻyxatga yozilish» и «📣 Kanal» (без «Hujjatlar»: решение владельца 14.10.2026; документы в меню команд `/documents`), меню «ilova» | `1-bot` 2 |
 | 3 | Mini App | «Kim boʻlib yoʻlga chiqasiz?»: Yoʻlovchiman или Haydovchiman; цвет приложения дальше по роли | `2-questionnaire` 1 |
-| 3а | Mini App | «Yoʻlda sizni nima qiynaydi?»: боли роли, можно несколько (v2, ниже) | `2-questionnaire` 2, 10 |
-| 4 | Mini App | «Qayerdan yoʻlga chiqasiz?»: **карта и все 14 областей без прокрутки** (вариант B, решения владельца 14.10.2026; ниже) | `2-questionnaire` 3, 11; `5-regions` 1, 2, 5 |
-| 5 | Mini App | «Qayerga borasiz?»: тот же экран, область «Qayerdan» зелёная на карте, её кнопка серая с подписью «Qayerdan» | `2-questionnaire` 4, 12; `5-regions` 3, 4 |
+| 3а | Mini App | «Yoʻlda sizni nima qiynaydi?»: боли роли, можно несколько (v2, ниже) | `2-questionnaire` 2, 9 |
+| 4 | Mini App | «Qayerdan yoʻlga chiqasiz?»: **карта и все 14 областей без прокрутки** (вариант B, решения владельца 14.10.2026; ниже) | `2-questionnaire` 3, 10; `5-regions` 1, 2, 5 |
+| 5 | Mini App | «Qayerga borasiz?»: тот же экран, область «Qayerdan» зелёная на карте, её кнопка серая с подписью «Qayerdan» | `2-questionnaire` 4, 11; `5-regions` 3, 4 |
 | 6 | Mini App | «…ning qaysi joyi?»: **по желанию** (решение владельца 14.10.2026): сверху «Butun viloyat»; у «Toshkent shahri» шага нет | `2-questionnaire` 5 |
-| 7 | Mini App | «Qachon»: попутчик har hafta, har oy, bayramlarda, bir marta (день шторкой); водитель har kuni, har hafta, har oy, baʼzan | `2-questionnaire` 6, 7, 13 |
-| 7а | Mini App | **«Yoʻnalishingiz kanallari»**, последний шаг (решение владельца 14.10.2026): главный канал среды и все каналы выбранных областей, канал места человека первым («Sizning joyingiz»); у каждого «Qoʻshilish» или «✓ Aʼzosiz» | `2-questionnaire` 8, 15 |
-| 8 | Mini App | «Siz roʻyxatdasiz»: ответы, счётчик с долей боли, «MyRida buni hal qiladi» по выбранным болям, 2 кнопки | `2-questionnaire` 9, 14, 16; `3-result` 1 … 3 |
+| 7 | Mini App | «Qachon»: попутчик har hafta, har oy, bayramlarda, bir marta; водитель har kuni, har hafta, har oy, baʼzan. Точную дату не спрашиваем (решение владельца 14.10.2026) | `2-questionnaire` 6, 12 |
+| 7а | Mini App | **«Yoʻnalishingiz kanallari»**, последний шаг (решение владельца 14.10.2026): главный канал среды и все каналы выбранных областей, канал места человека первым («Sizning joyingiz»); у каждого «Qoʻshilish» или «✓ Aʼzosiz» | `2-questionnaire` 7, 14 |
+| 8 | Mini App | «Siz roʻyxatdasiz»: ответы, счётчик с долей боли, «MyRida buni hal qiladi» по выбранным болям, 2 кнопки | `2-questionnaire` 8, 13, 15; `3-result` 1 … 3 |
 | 9 | Бот | Одна **живая карточка** записи (📌, без звука): статус, когда, 🟢 откуда, 🔴 куда, сколько ждут, выбранные боли; кнопки «👥 Doʻstimni chaqiraman», «✏️ Oʻzgartirish», «📣 Kanal» | `1-bot` 3, 4 |
 | 10 | Бот, позже | Карточка становится зелёной «✅ Yoʻnalish ochildi»; один звонок со звуком коротким ответом на карточку | `1-bot` 5, 6 |
 
@@ -113,7 +113,7 @@
 |---|---|
 | `telegram_id`, `role` | Ключ: одна запись на роль |
 | `from_place`, `to_place` | Места из справочника (`48`) |
-| `cadence`, `day` | «Когда»; `day` только для «bir marta» |
+| `cadence` | «Когда»: как часто; точной даты нет |
 | `pains` | Выбранные боли (ключи: `wait`, `price`, `phone`, `woman`, `family`, `chats`, `empty`) |
 | `via`, `created_at`, `notified_at` | Откуда пришёл; когда бот написал об открытии |
 
