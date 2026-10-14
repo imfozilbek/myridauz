@@ -62,7 +62,7 @@
 | 58 | [58-legal-documents-and-deletion.md](58-legal-documents-and-deletion.md) | Оферта, конфиденциальность, согласие в Mini App и ботах; удаление своих данных (G14) |
 | 59 | [59-landing.md](59-landing.md) | Лендинг myrida.uz: разделы, интерактивы, живые цены, картинки из ролика (G15) |
 | 60 | [60-landing-growth.md](60-landing-growth.md) | Лендинг v2: страницы направлений для поиска, JSON-LD, шрифт бренда, живая карта, цифры |
-| 61 | [61-capacity.md](61-capacity.md) | Нагрузка на запуск: 2 000 активных, лимиты бесплатного тарифа, порог Workers Paid в `117` |
+| 61 | [61-capacity.md](61-capacity.md) | Нагрузка на запуск: 2 000 активных, лимиты бесплатного тарифа, тариф Workers Paid в `117` |
 | 62 | [62-launch-checklist.md](62-launch-checklist.md) | Чек-лист запуска: готово, профиль ботов в BotFather, что ждёт бета-теста и недели 18 |
 | 63 | [63-district-channels.md](63-district-channels.md) | Один пост в нескольких каналах («канал = список мест»), каналы команды, экран «Kanallar», лимиты Telegram |
 | 64 | [64-realtime.md](64-realtime.md) | Живое обновление экранов: личный канал, сигнал «изменилось», тихое обновление (G19) |
