@@ -1,4 +1,5 @@
 import { MAIN_NUMBERS, type Funnel, type Stats } from '@platform/contracts';
+import type { ReactNode } from 'react';
 import { useI18n } from '../context/i18n-context';
 import { ManageGroup, ManageNote, ManageRow } from '../manage/manage-page';
 import { NumberTiles } from '../team/number-tiles';
@@ -8,8 +9,16 @@ import { ErrorsSections } from './stats-errors';
 // A drop from this share is where people get stuck: it is marked (docs/29).
 const HIGH_DROP = 50;
 
-export function StatsSections({ stats }: { readonly stats: Stats }) {
+// The funnels of the waitlist (G83, docs/183) go first while the list runs, with its «gold» after them.
+const isWaitlist = (funnel: Funnel) => funnel.id.startsWith('waitlist');
+
+export function StatsSections({ stats, gold }: { readonly stats: Stats; readonly gold?: ReactNode }) {
   const { t, formatNumber, formatTime } = useI18n();
+  const funnels = [
+    ...stats.funnels.filter(isWaitlist),
+    ...stats.funnels.filter((funnel) => !isWaitlist(funnel)),
+  ];
+  const listFunnels = stats.funnels.filter(isWaitlist).length;
   return (
     <>
       <NumberTiles
@@ -19,12 +28,16 @@ export function StatsSections({ stats }: { readonly stats: Stats }) {
           label: t(`stats.number.${key}`),
         }))}
       />
-      <ArrivalsSections arrivals={stats.arrivals} />
       {stats.events === 'on' ? null : (
         <ManageNote>{t(stats.events === 'off' ? 'stats.eventsOff' : 'stats.eventsFailed')}</ManageNote>
       )}
-      {stats.funnels.map((funnel, index) => (
+      {funnels.slice(0, listFunnels).map((funnel, index) => (
         <FunnelSection key={funnel.id} funnel={funnel} hint={index === 0} />
+      ))}
+      {gold}
+      <ArrivalsSections arrivals={stats.arrivals} />
+      {funnels.slice(listFunnels).map((funnel, index) => (
+        <FunnelSection key={funnel.id} funnel={funnel} hint={listFunnels === 0 && index === 0} />
       ))}
       {stats.events === 'on' ? <ErrorsSections errors={stats.errors} /> : null}
       <ManageNote>{t('stats.updated', { time: formatTime(new Date(stats.at)) })}</ManageNote>

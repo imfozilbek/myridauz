@@ -41,6 +41,8 @@ import navbat from '../locales/uz-Latn/navbat.json' with { type: 'json' };
 import manage from '../locales/uz-Latn/manage.json' with { type: 'json' };
 // The questionnaire of the waitlist (G83, docs/182).
 import waitlist from '../locales/uz-Latn/waitlist.json' with { type: 'json' };
+import waitlistTeam from '../locales/uz-Latn/waitlist-team.json' with { type: 'json' };
+import ads from '../locales/uz-Latn/ads.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -82,6 +84,9 @@ const REFERENCE = {
   navbat,
   manage,
   waitlist,
+  // The waitlist of the team and the links of the ads (G83, docs/183, docs/184).
+  waitlistTeam,
+  ads,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

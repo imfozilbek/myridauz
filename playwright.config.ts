@@ -94,6 +94,7 @@ export default defineConfig({
         'g68-pixel.spec.ts',
         'g76-pixel.spec.ts',
         'g83-pixel.spec.ts',
+        'g83-team-pixel.spec.ts',
       ],
     },
   ],

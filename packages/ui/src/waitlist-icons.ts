@@ -1,4 +1,5 @@
 import {
+  Bot,
   CalendarCheck,
   CalendarClock,
   CalendarDays,
@@ -38,4 +39,5 @@ export const WAITLIST_ICONS = {
   onOff: Power,
   adLink: Link,
   copy: Copy,
+  botFace: Bot,
 } satisfies Record<string, LucideIcon>;
