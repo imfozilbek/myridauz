@@ -29,7 +29,7 @@
 | № | Где | Что | Лист |
 |---|---|---|---|
 | 1 | Бот до Start | Описание и картинка (BotFather) | `1-bot` 1 |
-| 2 | Бот после Start | Приветствие, «Roʻyxatga yozilish» открывает Mini App, «Kanalimiz», меню «ilova» | `1-bot` 2 |
+| 2 | Бот после Start | Первое сообщение с видео (ролик 15 с, `41`) как в G68: боли, кнопки «🚀 Roʻyxatga yozilish», «📣 Kanal», «📄 Hujjatlar», меню «ilova» | `1-bot` 2 |
 | 3 | Mini App | «Kim boʻlib yoʻlga chiqasiz?»: Yoʻlovchiman или Haydovchiman; цвет приложения дальше по роли | `2-questionnaire` 1 |
 | 3а | Mini App | «Yoʻlda sizni nima qiynaydi?»: боли роли, можно несколько (v2, ниже) | `2-questionnaire` 2, 3 |
 | 4 | Mini App | «Qayerdan yoʻlga chiqasiz?»: 14 областей (как G26) | `2-questionnaire` 2, 7 |
@@ -37,8 +37,10 @@
 | 6 | Mini App | «…ning qaysi joyi?»: место в области; у «Toshkent shahri» шага нет | `2-questionnaire` 4 |
 | 7 | Mini App | «Qachon»: попутчик har hafta, har oy, bayramlarda, bir marta (день шторкой); водитель har kuni, har hafta, har oy, baʼzan | `2-questionnaire` 5, 6, 8 |
 | 8 | Mini App | «Siz roʻyxatdasiz»: ответы, счётчик с долей боли, «MyRida buni hal qiladi» по выбранным болям, 2 кнопки | `3-result` 1 … 3 |
-| 9 | Бот | Итог и пост канала «MyRida | Oʻzbekiston» | `1-bot` 3, 4 |
-| 10 | Бот, позже | «Yoʻnalishingiz ochildi»: попутчику поиск в боте попутчика, водителю бот водителя | `1-bot` 5, 6 |
+| 9 | Бот | Одна **живая карточка** записи (📌, без звука): статус, когда, 🟢 откуда, 🔴 куда, сколько ждут, выбранные боли; кнопки «👥 Doʻstimni chaqiraman», «✏️ Oʻzgartirish», «📣 Kanal» | `1-bot` 3, 4 |
+| 10 | Бот, позже | Карточка становится зелёной «✅ Yoʻnalish ochildi»; один звонок со звуком коротким ответом на карточку | `1-bot` 5, 6 |
+
+**Бот по системе G68 (`122`, решение владельца 14.10.2026):** одна сущность = одна карточка; изменения правят её без звука (раз в неделю: сколько ждут); о действии самого человека не пишем, поэтому отдельного «Siz roʻyxatdasiz» нет; звук только при открытии направления; ночью 22:00 … 07:00 без звука.
 
 - Телефон не спрашиваем: хватает Telegram ID. Меньше шагов.
 - Выбор, а не ввод: ни одного поля для текста.

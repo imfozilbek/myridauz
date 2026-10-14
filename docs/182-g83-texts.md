@@ -21,14 +21,13 @@
 | Где | Текст |
 |---|---|
 | Описание до Start | Pitakda soatlab kutasizmi? Bayram oldidan narx oshadimi? Raqamingiz begonalardami? {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
-| Приветствие | Assalomu alaykum, {name} 👋 Pitakda soatlab kutish, bayram oldidan qimmat narx, guruhlarda raqamingiz hammada. Tanish gaplarmi? {brand} tez orada ochiladi va shularni hal qiladi. Yoʻnalishingizni yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
-| Строка и кнопки | ⏱ 1 daqiqa · telefon raqami kerak emas · Roʻyxatga yozilish · Kanalimiz · меню «ilova» (есть) |
-| Итог | ✅ Siz roʻyxatdasiz · {route} · har hafta · Siz tanladingiz: {pains}. {brand} ikkalasini ham hal qiladi. · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. |
-| Итог водителя | Hozir haydovchi boʻling: yoʻnalish ochilganda birinchilardan boʻlib safar eʼlon qilasiz. · кнопка Haydovchi boʻlish (есть) |
-| Кнопки итога | Doʻstimni chaqiraman · Oʻzgartirish (есть) |
-| Пост канала | 📣 Kutayotganda kanalimizni kuzating · {channel}: yoʻldagi muammolar va {brand} yechimi, yangiliklar, qaysi yoʻnalish qachon ochilishi. · Kanalga oʻtish |
-| Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Endi pitakda kutmaysiz: joyni oldindan band qiling. (строка по первой боли) · Yangi safarlar yoʻnalish kanalida ham chiqadi. · Safar topish (есть) · Yoʻnalish kanali |
-| Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Endi orqaga boʻsh qaytmaysiz: borish va qaytish safarini eʼlon qiling. · Safaringiz yoʻnalish kanalida ham chiqadi. · Safar eʼlon qilish (есть) · Yoʻnalish kanali |
+| Первое сообщение (видео 15 с) | Assalomu alaykum, {name}! 👋 · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · Tanish gaplarmi? · ⏳ Pitakda mashina toʻlishini soatlab kutish · 📈 Bayram oldidan narx ikki baravar · 🔒 Raqamingiz begonalarda · {brand} tez orada ochiladi va shularni hal qiladi. · цитата: 📝 Yoʻnalishingizni yozib qoʻying: 1 daqiqa, telefon raqami kerak emas |
+| Кнопки | 🚀 Roʻyxatga yozilish · 📣 Kanal · 📄 Hujjatlar (есть) · меню «ilova» (есть) |
+| Живая карточка | ⏳ Roʻyxatdasiz (водитель: · haydovchi) · {when} · tez orada ochiladi · 🟢 {from} · 🔴 {to} · 👥 {count} kishi kutmoqda · 🚗 {drivers} haydovchi · Siz tanlagan: {pains} · ✏️ {time} da yangilandi · har dushanba yangilanadi |
+| Карточка, кнопки | 👥 Doʻstimni chaqiraman · ✏️ Oʻzgartirish · 📣 Kanal · водитель сверху: 🚗 Haydovchi boʻlish |
+| Закреп | 📌 {from} → {to} · roʻyxatdasiz / haydovchi / ochildi |
+| Карточка открыта | ✅ Yoʻnalish ochildi · Bugun {n} ta safar · ertaga {m} ta (водитель: {count} yoʻlovchi kutmoqda) · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Yoʻnalish kanali |
+| Звонок при открытии | цитата {from} → {to} · 🔔 Yoʻnalishingiz ochildi: endi pitakda kutmaysiz, joyni oldindan band qiling. · водитель: 🔔 Yoʻnalishingiz ochildi: {count} yoʻlovchi safaringizni kutmoqda. Endi orqaga boʻsh qaytmaysiz. |
 | Другу | Men ham pitakda soatlab kutishdan charchadim. {brand} tez orada ochiladi: u yerda joyni oldindan band qilasiz. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
 Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль, всего 9 пар (как в таблице болей).
@@ -55,9 +54,10 @@
 | Направление | Roʻyxat {date}dan beri · Yoʻlovchilar · Yoʻlovchilarni nima qiynaydi · Haydovchilar · Ariza tasdiqlangan |
 | Открытие | Yoʻnalishni ochish · Yoʻnalishni ochasizmi? · {p} yoʻlovchi va {d} haydovchiga bot xabar yuboradi. Xabar bir marta ketadi. · Ochish · Ochildi · {date} · Xabar ketdi: {n} kishiga |
 
-## Убрано по правилам рекламы
+## Убрано
 
-«Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.
+- По правилам рекламы: «Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.
+- По системе G68 (`122`): отдельные сообщения «Siz roʻyxatdasiz» и пост канала: их заменила живая карточка.
 
 ## Вопросы носителю
 
