@@ -1,6 +1,6 @@
 # 181. Список ожидания: заявки заранее от попутчика и водителя (G83)
 
-> **Кратко:** решение владельца 14.10.2026. До открытия поездок человек не видит пустой поиск. Один новый бот «MyRida» (`@myridauz_bot`) и его Mini App: человек выбирает роль, направление и «когда»; видит ценность Rida и «Tez orada»; получает канал «MyRida | Oʻzbekiston». Обе стороны говорят заранее: попутчик «я поеду», водитель «я повезу». Команда видит, сколько людей ждёт на каждом направлении, и открывает направление, когда там есть водители: бот пишет всем, кто ждёт. Макеты: `goals/g83`, тексты: `182`. План: запуск списка 18.10.2026.
+> **Кратко:** решение владельца 14.10.2026. До открытия поездок человек не видит пустой поиск. Один новый бот «MyRida» (`@myridauz_bot`) и его Mini App: человек выбирает роль, **свои боли** (v2), направление и «когда»; видит, как Rida решает именно его боли, и «Tez orada»; получает канал «MyRida | Oʻzbekiston». Обе стороны говорят заранее: попутчик «я поеду», водитель «я повезу». Команда видит, сколько людей ждёт на каждом направлении, и открывает направление, когда там есть водители: бот пишет всем, кто ждёт. Макеты: `goals/g83`, тексты: `182`. План: запуск списка 18.10.2026.
 
 ## Среда (`179`, две среды)
 
@@ -31,11 +31,12 @@
 | 1 | Бот до Start | Описание и картинка (BotFather) | `1-bot` 1 |
 | 2 | Бот после Start | Приветствие, «Roʻyxatga yozilish» открывает Mini App, «Kanalimiz», меню «ilova» | `1-bot` 2 |
 | 3 | Mini App | «Kim boʻlib yoʻlga chiqasiz?»: Yoʻlovchiman или Haydovchiman; цвет приложения дальше по роли | `2-questionnaire` 1 |
+| 3а | Mini App | «Yoʻlda sizni nima qiynaydi?»: боли роли, можно несколько (v2, ниже) | `2-questionnaire` 2, 3 |
 | 4 | Mini App | «Qayerdan yoʻlga chiqasiz?»: 14 областей (как G26) | `2-questionnaire` 2, 7 |
 | 5 | Mini App | «Qayerga borasiz?»: та же сетка, область «Qayerdan» серая | `2-questionnaire` 3 |
 | 6 | Mini App | «…ning qaysi joyi?»: место в области; у «Toshkent shahri» шага нет | `2-questionnaire` 4 |
 | 7 | Mini App | «Qachon»: попутчик har hafta, har oy, bayramlarda, bir marta (день шторкой); водитель har kuni, har hafta, har oy, baʼzan | `2-questionnaire` 5, 6, 8 |
-| 8 | Mini App | «Siz roʻyxatdasiz»: ответы, счётчик, «Nima uchun Rida», 2 кнопки | `3-result` 1 … 3 |
+| 8 | Mini App | «Siz roʻyxatdasiz»: ответы, счётчик с долей боли, «MyRida buni hal qiladi» по выбранным болям, 2 кнопки | `3-result` 1 … 3 |
 | 9 | Бот | Итог и пост канала «MyRida | Oʻzbekiston» | `1-bot` 3, 4 |
 | 10 | Бот, позже | «Yoʻnalishingiz ochildi»: попутчику поиск в боте попутчика, водителю бот водителя | `1-bot` 5, 6 |
 
@@ -43,6 +44,26 @@
 - Выбор, а не ввод: ни одного поля для текста.
 - Кнопки внизу экрана результата: попутчик «Doʻstimni chaqiraman» и «Kanalga qoʻshilish»; водитель «Tekshiruvdan oʻtish» и «Doʻstimni chaqiraman».
 - «Oʻzgartirish» открывает шторку: направление, «когда», вторая роль, «Roʻyxatdan chiqish» (`3-result` 4, 5).
+
+## Боли рынка (v2, 14.10.2026)
+
+Владелец не согласился с макетами v1: в них не было болей людей. Боли взяты у сессии infra: серия, утверждённая владельцем 12.10.2026 (`@rida1uz`, посты 114 … 121), основа `40`.
+
+| Роль | Боль | Решение Rida (текст серии) |
+|---|---|---|
+| Попутчик | Pitakda kutish | Joyni oldindan band qilasiz, vaqt oldindan yoziladi |
+| Попутчик | Bayram oldidan narx | Narx eʼlonda yoziladi, band qilishdan oldin koʻrasiz |
+| Попутчик | Raqamim begonalarda | Raqam koʻrinmaydi, yozish va qoʻngʻiroq ilova ichida |
+| Попутчик | Mashinada ayol bormi | «Mashinada ayol bor» belgili safarlar |
+| Попутчик (близкие) | Yaqinlarim xavotirda | Safarni bir tugma bilan yaqinlarga yuborish |
+| Водитель | Pitakda kutish | Safar eʼlon qilinadi, yoʻlovchilar oʻzi band qiladi |
+| Водитель | Chatlarda qidirish | Soʻrovlar botga oʻzi keladi |
+| Водитель | Orqaga boʻsh qaytish | Qaytish safarini ham oldindan eʼlon qilasiz |
+| Водитель | Raqamim begonalarda | Новый текст для водителя (`182`) |
+
+- Боли выбираются нажатием, можно несколько; бот, результат, сообщение другу и «Yoʻnalishingiz ochildi» говорят о первой боли человека.
+- Живых слов людей пока нет (infra их не собирал). Список ожидания сам их соберёт: доля каждой боли по направлению.
+- Правила рекламы (хаб команды): без слова «taksi», без «tekshirilgan haydovchi» (документы не проверяются), без цен и бонусов без согласия, без сравнения с конкурентами. Поэтому в v2 нет «Bu taksi emas», «Haydovchilar tekshirilgan», кнопка водителя «Haydovchi boʻlish».
 
 ## Правила
 
@@ -58,7 +79,8 @@
 ## Команда (`4-admin`)
 
 - «Statistika» → новый блок «Kutayotganlar»: всего попутчиков и водителей; направления (пара областей) по числу ждущих.
-- Экран направления: попутчики по «когда», водители по «когда», сколько прошли проверку, откуда пришли (`via`).
+- Экран направления: попутчики по «когда», **доля каждой боли** (полоски), водители по «когда» и болям, сколько заявок одобрено.
+- В блоке «Kutayotganlar» строка «Eng koʻp ogʻriq»: самая частая боль и её доля.
 - «Yoʻnalishni ochish»: шторка с числом людей; бот пишет всем один раз; в строке «Ochildi · дата» и «Xabar ketdi: N kishiga».
 
 ## Каналы
@@ -74,6 +96,7 @@
 | `telegram_id`, `role` | Ключ: одна запись на роль |
 | `from_place`, `to_place` | Места из справочника (`48`) |
 | `cadence`, `day` | «Когда»; `day` только для «bir marta» |
+| `pains` | Выбранные боли (ключи: `wait`, `price`, `phone`, `woman`, `family`, `chats`, `empty`) |
 | `via`, `created_at`, `notified_at` | Откуда пришёл; когда бот написал об открытии |
 
 ## Решения владельца и вопросы
@@ -81,7 +104,8 @@
 | Что | Статус |
 |---|---|
 | Логика «обе стороны заранее» | Да, 14.10.2026 |
-| Макеты `goals/g83` (4 листа) | Ждут согласия |
+| Макеты v1 | Не согласен (14.10.2026): нет болей рынка |
+| Макеты v2 `goals/g83` (боли из серии 12.10) | Ждут согласия |
 | Тексты `182` | Ждут согласия и проверки носителем |
 | Новый бот | `@myridauz_bot`, имя «MyRida» (решение владельца 14.10.2026); токен: секрет Worker `MAIN_BOT_TOKEN` (`46`), не в чат |
 | 18.10.2026: запуск списка, поездки по направлениям позже | Ждёт подтверждения |

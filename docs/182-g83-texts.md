@@ -1,65 +1,65 @@
-# 182. G83: тексты списка ожидания на согласие владельца
+# 182. G83: тексты списка ожидания на согласие владельца (v2, с болями)
 
-> **Кратко:** все тексты нового бота «MyRida» (`@myridauz_bot`), опросника, экрана результата и блока команды по макетам `goals/g83` (`181`). Знак «есть» значит: текст уже есть в продукте, берём тот же ключ. Остальное новое: нужно «да» владельца и проверка носителем (`25`). Имя бренда в текстах из конфига бренда (`{brand}`), не в коде.
+> **Кратко:** тексты бота «MyRida» (`@myridauz_bot`), опросника, результата и блока команды по макетам v2 `goals/g83` (`181`). Знак «утв. 12.10» значит: текст из серии болей, которую владелец утвердил 12.10.2026 (`@rida1uz`, 114 … 121). «есть»: текст уже есть в продукте. Остальное новое: нужно «да» владельца и проверка носителем (`25`). `{brand}`: имя среды («MyRida» во внутренней, «Rida» в проде, `179`).
+
+## Боли и решения
+
+| Ключ | Боль и подпись | Решение | Статус |
+|---|---|---|---|
+| `wait` попутчик | Pitakda kutish · Mashina toʻlishini soatlab kutaman | Joyni oldindan band qilasiz. Haydovchi yoʻlga chiqish vaqtini oldindan yozadi. | утв. 12.10 (решение), подпись новая |
+| `price` | Bayram oldidan narx · Narx birdan ikki baravar oshadi | Narx safar eʼlonida yoziladi. Band qilishdan oldin koʻrasiz. | утв. 12.10, подпись новая |
+| `phone` попутчик | Raqamim begonalarda · Guruhga yozsam, notanishlar qoʻngʻiroq qiladi | Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. | утв. 12.10, короче |
+| `woman` | Mashinada ayol bormi · Yolgʻiz ayol qaysi mashinaga oʻtirishni bilmaydi | «Mashinada ayol bor» belgili safarlarni tanlaysiz. | утв. 12.10 |
+| `family` | Yaqinlarim xavotirda · Qaysi mashinada ketayotganimni bilishmaydi | Safarni yaqinlaringizga bir tugma bilan yuborasiz: mashina, raqami va «yetib keldi». | утв. 12.10, короче |
+| `wait` водитель | Pitakda kutish · Soatlab yoʻlovchi kutaman, mashina yarim boʻsh | Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. | утв. 12.10 |
+| `chats` | Chatlarda qidirish · Yuzlab xabar ichidan yoʻlovchi qidiraman | Yoʻlovchilar soʻrovlari botga oʻzi keladi: qayerdan, qayerga, qachon. | утв. 12.10 |
+| `empty` | Orqaga boʻsh qaytish · Qaytishda mashina boʻsh, yoqilgʻi menga qoladi | Qaytish safarini oldindan eʼlon qilasiz va yoʻlovchilar uni ham band qiladi. | утв. 12.10 |
+| `phone` водитель | Raqamim begonalarda · Notanishlar qoʻngʻiroq qiladi, reklama yozadi | Raqamingiz hech kimga koʻrinmaydi. Yoʻlovchi bilan {brand} ichida gaplashasiz. | новое |
 
 ## Бот
 
-| Где | Текст | Смысл |
-|---|---|---|
-| Описание до Start | Rida: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas. Rida tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib sizga xabar beramiz. | Что это и что делать сейчас |
-| Приветствие | Assalomu alaykum, {name} 👋 Rida tez orada ochiladi. Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas. Yoʻnalishingizni yozib qoʻying: ochilganda birinchi boʻlib sizga xabar beramiz. | Приветствие и просьба |
-| Приветствие, строка | ⏱ 1 daqiqa · telefon raqami kerak emas | Быстро, без телефона |
-| Кнопки | Roʻyxatga yozilish · Kanalimiz | Записаться · Наш канал |
-| Меню | ilova (есть) | Открыть приложение |
-| Итог | ✅ Siz roʻyxatdasiz · {route} · Yoʻlovchi · har hafta · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. | Вы в списке |
-| Итог водителя | Hozir tekshiruvdan oʻting: yoʻnalish ochilganda birinchilardan boʻlib safar eʼlon qilasiz. | Пройдите проверку сейчас |
-| Кнопки итога | Tekshiruvdan oʻtish · Doʻstimni chaqiraman · Oʻzgartirish (есть) | Проверка · Позвать друга · Изменить |
-| Пост канала | 📣 Kutayotganda kanalimizni kuzating · MyRida | Oʻzbekiston: yangiliklar va qaysi yoʻnalish qachon ochilishi. | Наш канал, пока ждёте |
-| Кнопка поста | Kanalga oʻtish | Перейти в канал |
-| Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Birinchilardan boʻlib joy band qiling. | Направление открыто |
-| Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Safaringizni eʼlon qiling. | Вас ждут попутчики |
-| Кнопки открытия | Safar topish (есть) · Safar eʼlon qilish (есть) | |
-| Другу | Men Ridaga yozildim: {route}. Yoʻli bir odamlar birga boradi va yoʻl xarajatini boʻlishadi. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. | От первого лица (`123`) |
+| Где | Текст |
+|---|---|
+| Описание до Start | Pitakda soatlab kutasizmi? Bayram oldidan narx oshadimi? Raqamingiz begonalardami? {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
+| Приветствие | Assalomu alaykum, {name} 👋 Pitakda soatlab kutish, bayram oldidan qimmat narx, guruhlarda raqamingiz hammada. Tanish gaplarmi? {brand} tez orada ochiladi va shularni hal qiladi. Yoʻnalishingizni yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. |
+| Строка и кнопки | ⏱ 1 daqiqa · telefon raqami kerak emas · Roʻyxatga yozilish · Kanalimiz · меню «ilova» (есть) |
+| Итог | ✅ Siz roʻyxatdasiz · {route} · har hafta · Siz tanladingiz: {pains}. {brand} ikkalasini ham hal qiladi. · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. |
+| Итог водителя | Hozir haydovchi boʻling: yoʻnalish ochilganda birinchilardan boʻlib safar eʼlon qilasiz. · кнопка Haydovchi boʻlish (есть) |
+| Кнопки итога | Doʻstimni chaqiraman · Oʻzgartirish (есть) |
+| Пост канала | 📣 Kutayotganda kanalimizni kuzating · {channel}: yoʻldagi muammolar va {brand} yechimi, yangiliklar, qaysi yoʻnalish qachon ochilishi. · Kanalga oʻtish |
+| Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Endi pitakda kutmaysiz: joyni oldindan band qiling. (строка по первой боли) · Safar topish (есть) |
+| Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Endi orqaga boʻsh qaytmaysiz: borish va qaytish safarini eʼlon qiling. · Safar eʼlon qilish (есть) |
+| Другу | Men ham pitakda soatlab kutishdan charchadim. {brand} tez orada ochiladi: u yerda joyni oldindan band qilasiz. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
-## Mini App: опросник
+Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль, всего 9 пар (как в таблице болей).
 
-| Где | Текст | Смысл |
-|---|---|---|
-| Первый экран | Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas. | Слоган, скоро, что это |
-| Вопрос | Kim boʻlib yoʻlga chiqasiz? | Кем вы поедете? |
-| Плитки | Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor | Роль и пояснение |
-| Под плитками | Javobni keyin oʻzgartirsa boʻladi. | Можно изменить потом |
-| Откуда | Qayerdan yoʻlga chiqasiz? (есть) · Viloyat, tuman yoki shahar (есть) | |
-| Куда | Qayerga borasiz? (есть) · метка Qayerdan (есть) | |
-| Место | {region}ning qaysi joyi? (есть) | |
-| Когда, попутчик | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · Kunini tanlaysiz | Как часто едете |
-| Когда, водитель | Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Har hafta · Har oy · Baʼzan | Как часто ездите |
-| День | Qaysi kuni? (есть) · Oktabr. Kun oʻtib ketsa, bot yana soʻraydi. | Если день прошёл, бот спросит снова |
+## Mini App
 
-## Mini App: результат
-
-| Где | Текст | Смысл |
-|---|---|---|
-| Верх | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. | Вы в списке |
-| «Bir marta» | Bir marta: {date}, {weekday} | Один раз: день |
-| Счётчик, попутчик | Bu yoʻnalishda {count} kishi kutmoqda · Qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. | Только при N от 10 |
-| Счётчик, водитель | Bu yoʻnalishda {count} yoʻlovchi kutmoqda · Yoʻnalish ochilganda ular safaringizni koʻradi. | |
-| Ценность, попутчик | Nima uchun Rida (есть) · три строки регистрации (есть) | |
-| Ценность, водитель | Yoʻlovchilar sizni oʻzi topadi: pitakda kutmaysiz. · Qaytish safariga ham yoʻlovchi topasiz. · Raqamingiz hech kimga koʻrinmaydi. (есть) | |
-| Кнопки | Doʻstimni chaqiraman · Kanalga qoʻshilish · Tekshiruvdan oʻtish | |
-| Шторка | Oʻzgartirish · Yoʻnalish · Qayerdan va qayerga · Qachon · Haydovchi sifatida ham yozilish · Mashinangiz boʻlsa · Roʻyxatdan chiqish | |
-| Выход | Roʻyxatdan chiqasizmi? · Yoʻnalishingiz va javoblaringiz oʻchiriladi. Yoʻnalish ochilganda xabar kelmaydi. · Roʻyxatdan chiqish · Bekor qilish (есть) | |
+| Где | Текст |
+|---|---|
+| Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. |
+| Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
+| Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
+| Откуда, куда, место | есть (G26, G75) |
+| Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · Kunini tanlaysiz · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan · Qaysi kuni? (есть) · Oktabr. Kun oʻtib ketsa, bot yana soʻraydi. |
+| Результат | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. · Bu yoʻnalishda {count} kishi kutmoqda · Ularning {share} % ini ham {pain} qiynaydi. · водитель: Bu yoʻnalishda {count} yoʻlovchi kutmoqda · Yoʻnalish ochilganda ular safaringizni koʻradi. · {brand} buni hal qiladi |
+| Кнопки | Doʻstimni chaqiraman · Kanalga qoʻshilish · Haydovchi boʻlish (есть) |
+| Шторки | Oʻzgartirish · Muammolar · Yoʻnalish · Qayerdan va qayerga · Qachon · Haydovchi sifatida ham yozilish · Mashinangiz boʻlsa · Roʻyxatdan chiqish · Roʻyxatdan chiqasizmi? · Yoʻnalishingiz va javoblaringiz oʻchiriladi. Yoʻnalish ochilganda xabar kelmaydi. · Bekor qilish (есть) |
 
 ## Админка
 
 | Где | Текст |
 |---|---|
-| Блок | Kutayotganlar · {p} yoʻlovchi · {d} haydovchi · {n} yoʻnalish, eng koʻpi tepada · Hammasi ({n}) |
-| Направление | Roʻyxat {date}dan beri · Yoʻlovchilar · Haydovchilar · Tekshiruvdan oʻtgan · Qayerdan kelishdi · Kanal · Doʻst taklifi · Guruh va reklama |
+| Блок | Kutayotganlar · {p} yoʻlovchi · {d} haydovchi · {n} yoʻnalish, eng koʻpi tepada · Eng koʻp ogʻriq: {pain} · Yoʻlovchilarning {share} % i tanlagan · Hammasi ({n}) |
+| Направление | Roʻyxat {date}dan beri · Yoʻlovchilar · Yoʻlovchilarni nima qiynaydi · Haydovchilar · Ariza tasdiqlangan |
 | Открытие | Yoʻnalishni ochish · Yoʻnalishni ochasizmi? · {p} yoʻlovchi va {d} haydovchiga bot xabar yuboradi. Xabar bir marta ketadi. · Ochish · Ochildi · {date} · Xabar ketdi: {n} kishiga |
+
+## Убрано по правилам рекламы
+
+«Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.
 
 ## Вопросы носителю
 
-- «Roʻyxatga yozilish» или короче «Yozilish»?
-- «Kim boʻlib yoʻlga chiqasiz?»: звучит естественно?
-- «Qachon yoʻlga chiqasiz?» для частоты или лучше «Qanchalik tez-tez yoʻlga chiqasiz?» как у водителя?
+- «Yoʻlda sizni nima qiynaydi?»: звучит естественно?
+- «Raqamim begonalarda»: понятно без пояснения?
+- «Tanish gaplarmi?» в приветствии: так говорят?
