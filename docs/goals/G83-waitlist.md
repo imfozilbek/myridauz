@@ -35,7 +35,7 @@ B. Бот и данные
 [ ] API и события шагов `waitlist_step`: воронки «Roʻyxatga yozilish», «Roʻyxat: yoʻlovchi»,
     «Roʻyxat: haydovchi» (docs/183).
 [ ] Блоки «золота» в «Statistika» по утверждённому макету approved/6-team-stats (docs/183).
-[ ] Рубильник списка в «Boshqaruv» (docs/181, макет g83/8-switch), после «да»;
+[ ] Рубильник списка в «Boshqaruv» по утверждённому макету approved/8-team-switch (docs/181);
     сверка Pixel Perfect экрана «Boshqaruv».
 [ ] «Reklama havolalari»: ссылка в бот или канал с меткой для рекламы по утверждённому
     макету approved/7-team-ad-links (docs/184).
