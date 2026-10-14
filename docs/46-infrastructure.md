@@ -53,7 +53,7 @@
 
 | Секрет | Где | Кто видит |
 |---|---|---|
-| Токены 5 ботов (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80), `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker (`wrangler secret`) | Только Worker |
+| Токены 6 ботов (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80, `MAIN_BOT_TOKEN` общего бота `@myridauz_bot` с G81), `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker (`wrangler secret`) | Только Worker |
 | `ANALYTICS_API_TOKEN`, `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker | Только Worker |
 | `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`) | Секреты Worker | Только Worker |
 | `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `production` | Только job `deploy` на `main` |
