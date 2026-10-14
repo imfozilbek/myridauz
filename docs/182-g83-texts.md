@@ -27,8 +27,8 @@
 | Итог водителя | Hozir haydovchi boʻling: yoʻnalish ochilganda birinchilardan boʻlib safar eʼlon qilasiz. · кнопка Haydovchi boʻlish (есть) |
 | Кнопки итога | Doʻstimni chaqiraman · Oʻzgartirish (есть) |
 | Пост канала | 📣 Kutayotganda kanalimizni kuzating · {channel}: yoʻldagi muammolar va {brand} yechimi, yangiliklar, qaysi yoʻnalish qachon ochilishi. · Kanalga oʻtish |
-| Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Endi pitakda kutmaysiz: joyni oldindan band qiling. (строка по первой боли) · Safar topish (есть) |
-| Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Endi orqaga boʻsh qaytmaysiz: borish va qaytish safarini eʼlon qiling. · Safar eʼlon qilish (есть) |
+| Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Endi pitakda kutmaysiz: joyni oldindan band qiling. (строка по первой боли) · Yangi safarlar yoʻnalish kanalida ham chiqadi. · Safar topish (есть) · Yoʻnalish kanali |
+| Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Endi orqaga boʻsh qaytmaysiz: borish va qaytish safarini eʼlon qiling. · Safaringiz yoʻnalish kanalida ham chiqadi. · Safar eʼlon qilish (есть) · Yoʻnalish kanali |
 | Другу | Men ham pitakda soatlab kutishdan charchadim. {brand} tez orada ochiladi: u yerda joyni oldindan band qilasiz. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
 Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль, всего 9 пар (как в таблице болей).
@@ -42,8 +42,9 @@
 | Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
 | Откуда, куда, место | есть (G26, G75) |
 | Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · Kunini tanlaysiz · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan · Qaysi kuni? (есть) · Oktabr. Kun oʻtib ketsa, bot yana soʻraydi. |
-| Результат | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. · Bu yoʻnalishda {count} kishi kutmoqda · Ularning {share} % ini ham {pain} qiynaydi. · водитель: Bu yoʻnalishda {count} yoʻlovchi kutmoqda · Yoʻnalish ochilganda ular safaringizni koʻradi. · {brand} buni hal qiladi |
-| Кнопки | Doʻstimni chaqiraman · Kanalga qoʻshilish · Haydovchi boʻlish (есть) |
+| Результат | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. · {count} kishi kutmoqda · Bu yoʻnalishda. {share} % ini ham {pain} qiynaydi. · водитель: {count} yoʻlovchi kutmoqda · Bu yoʻnalishda. Ochilganda safaringizni koʻradi. · {brand} buni hal qiladi |
+| Кнопки | Doʻstimni chaqiraman · Haydovchi boʻlish (есть) |
+| Карточка канала | {channel} (имя из Telegram) · Qoʻshilish · ✓ Aʼzosiz (есть, `119`) |
 | Шторки | Oʻzgartirish · Muammolar · Yoʻnalish · Qayerdan va qayerga · Qachon · Haydovchi sifatida ham yozilish · Mashinangiz boʻlsa · Roʻyxatdan chiqish · Roʻyxatdan chiqasizmi? · Yoʻnalishingiz va javoblaringiz oʻchiriladi. Yoʻnalish ochilganda xabar kelmaydi. · Bekor qilish (есть) |
 
 ## Админка
