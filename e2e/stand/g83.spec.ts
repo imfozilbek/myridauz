@@ -67,7 +67,7 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
   await expect.poll(async () => (await chatShot(chat, AZIZ, '2-bot-card')).length).toBeGreaterThan(0);
 
   const driver = createWaitlistClient(await signedAs('main', JASUR));
-  await driver.open();
+  await driver.open(null, null);
   await driver.save({
     role: 'driver',
     pains: ['empty'],
