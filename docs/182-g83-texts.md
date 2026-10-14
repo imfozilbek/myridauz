@@ -39,7 +39,7 @@
 | Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. |
 | Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
 | Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
-| Откуда, куда (`5-regions`) | Qayerdan yoʻlga chiqasiz? · Qayerga borasiz? (есть) · имена областей из справочника (есть) · группы: Toshkent · Vodiy · Markaz · Janub · Gʻarb · метка: Qayerdan |
+| Откуда, куда (`5-regions`) | Qayerdan yoʻlga chiqasiz? · Qayerga borasiz? (есть) · имена областей из справочника (есть) · группы на карте: Toshkent · Vodiy · Markaz · Janub · Gʻarb · подпись на кнопке: Qayerdan |
 | Место (по желанию) | {region}ning qaysi joyi? (есть) · Bilsangiz, tanlang. Shart emas. · Butun viloyat (есть) · Joyni keyin tanlayman |
 | Каналы (последний шаг) | Yoʻnalishingiz kanallari · Yangi safarlar va yangiliklar shu yerda. Keraklisiga qoʻshiling. · Asosiy kanal · {region} · Sizning joyingiz · Qoʻshilish · ✓ Aʼzosiz (есть) · Yangiliklar, ochilish kunlari · Davom etish (есть) |
 | Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · Kunini tanlaysiz · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan · Qaysi kuni? (есть) · Oktabr. Kun oʻtib ketsa, bot yana soʻraydi. |
