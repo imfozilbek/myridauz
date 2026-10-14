@@ -35,7 +35,8 @@ B. Бот и данные
 [ ] API и события шагов `waitlist_step`: воронки «Roʻyxatga yozilish», «Roʻyxat: yoʻlovchi»,
     «Roʻyxat: haydovchi» (docs/183).
 [ ] Блоки «золота» в «Statistika» по утверждённому макету approved/6-team-stats (docs/183).
-[ ] «Reklama havolalari»: ссылка с меткой для рекламы (docs/184), после «да».
+[ ] «Reklama havolalari»: ссылка в бот или канал с меткой для рекламы по утверждённому
+    макету approved/7-team-ad-links (docs/184).
 
 C. Mini App
 [ ] Экраны один в один как макеты (сверка Pixel Perfect).
