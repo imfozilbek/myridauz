@@ -9,6 +9,8 @@ const ROLES = {
   driver: { combo: 6, sign: 'CarFront' },
   admin: { combo: 5, sign: 'ShieldCheck' },
   support: { combo: 2, sign: 'Headset' },
+  // The main bot of the waitlist (G83, mockup goals/g83/approved/1-bot): the R alone, for everyone.
+  main: { combo: 1, sign: null },
 };
 // Telegram shows an avatar as a circle: the badge stays inside it.
 const R_CENTER = 0.42, R_HEIGHT = 0.5, BADGE_CENTER = 0.7, BADGE_RADIUS = 0.17, SIGN = 0.18;
@@ -16,6 +18,8 @@ const R_CENTER = 0.42, R_HEIGHT = 0.5, BADGE_CENTER = 0.7, BADGE_RADIUS = 0.17, 
 export function botAvatar(role, S = 640) {
   const { bg, fg } = COMBOS[ROLES[role].combo];
   const at = (part) => S * part;
+  if (ROLES[role].sign === null)
+    return svg(S, S, `<rect width="${S}" height="${S}" fill="${bg}"/>` + markR({ cx: S / 2, cy: S / 2, h: at(R_HEIGHT), fill: fg }));
   const body = `<rect width="${S}" height="${S}" fill="${bg}"/>` +
     markR({ cx: at(R_CENTER), cy: at(R_CENTER), h: at(R_HEIGHT), fill: fg }) +
     `<circle cx="${at(BADGE_CENTER)}" cy="${at(BADGE_CENTER)}" r="${at(BADGE_RADIUS)}" fill="${fg}" stroke="${bg}" stroke-width="${at(0.02)}"/>` +

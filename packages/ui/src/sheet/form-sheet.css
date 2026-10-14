@@ -16,6 +16,24 @@
   color: var(--reg-ink);
 }
 
+/* The sheet «Oʻzgartirish» of the waitlist (G83, mockup 3-result screen 4): wider words. */
+.form-sheet-grouped {
+  padding-top: 10px;
+  background: var(--reg-bg);
+}
+
+.form-sheet-grouped .form-sheet-grab {
+  margin-bottom: 6px;
+}
+
+.form-sheet-grouped .form-sheet-title {
+  padding: 6px 20px 4px;
+}
+
+.form-sheet-grouped .form-sheet-hint {
+  padding: 0 20px 12px;
+}
+
 .form-sheet-grab {
   align-self: center;
   width: 40px;

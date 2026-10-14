@@ -71,6 +71,6 @@ describe('the switch «Roʻyxatga yozish» (docs/181)', () => {
     const kit = setup();
     expect(await readSwitch(kit.ads)).toEqual({ open: true, at: null, links: 0 });
     expect(await setSwitch(kit.ads, false, 900)).toEqual({ open: false, at: kit.at(), links: 0 });
-    expect(kit.journal).toEqual(['900 switch close']);
+    expect(kit.journal).toEqual(['900 switch list_close']);
   });
 });

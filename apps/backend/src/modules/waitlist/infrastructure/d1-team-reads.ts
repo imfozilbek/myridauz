@@ -1,7 +1,6 @@
-import { PAINS, type Cadence, type Pain, type WaitlistRole } from '@platform/contracts';
+import { HOUR_MS, PAINS, type Cadence, type Pain, type WaitlistRole } from '@platform/contracts';
 import type { PainCounts, ReachRow, RoleRow, SideRow, TeamReads } from '../application/ports';
 
-const HOUR_MS = 3_600_000;
 const TASHKENT_MS = 5 * HOUR_MS;
 const SLOT_HOURS = 3;
 const SLOT_MS = SLOT_HOURS * HOUR_MS;

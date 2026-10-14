@@ -1,5 +1,5 @@
 // Where the local stand keeps its data and listens (docs/75): the database, the bucket, the Durable
-// Objects, the test tokens of the bots, the ports of the backend and of the three Mini Apps.
+// Objects, the test tokens of the bots, the ports of the backend and of the four Mini Apps.
 // STAND_SHARD=n: the n-th of the stands that run side by side (pnpm stand:check), each with its own
 // copy of the data and its own ports, so the scenarios of one never touch another (lesson 125).
 const SHARD = Number(process.env['STAND_SHARD'] ?? '0');
@@ -17,6 +17,7 @@ export const STAND_API_PORT = shift(8787);
 export const STAND_TELEGRAM_PORT = shift(8790);
 // The debugger port of the local Worker: one per stand.
 export const STAND_INSPECTOR_PORT = shift(9229);
-export const STAND_APPS = { passenger: shift(4201), driver: shift(4202), admin: shift(4203) };
+// main: the questionnaire of the main bot (G83, docs/181).
+export const STAND_APPS = { passenger: shift(4201), driver: shift(4202), admin: shift(4203), main: shift(4204) };
 // The Telegram id of the owner on the stand: the team list of the backend (docs/02).
 export const STAND_OWNER_ID = 900001;

@@ -105,6 +105,8 @@ export async function openApplication(page: Page, name?: string) {
 
 // The landing (G15) is plain HTML, served on its own port.
 export const LANDING_PORT = 4104;
+// The questionnaire of the main bot (G83): no registration, so not among the apps above.
+export const WAITLIST_PORT = 4105;
 
 // «Safar eʼlon qilish» of an approved driver: the main button under «Qayerdan / Qayerga» (G66).
 export const publishButton = (page: Page) => page.locator('#tg-main-button', { hasText: TEXT.newTrip });

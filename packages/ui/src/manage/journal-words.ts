@@ -20,6 +20,11 @@ const ACTIONS: Readonly<Record<string, TranslationKey>> = {
   'refund:reject': 'manage.entry.refundRejected',
   'team:add': 'manage.entry.teamAdd',
   'team:remove': 'manage.entry.teamRemove',
+  // The waitlist of G83 (docs/181, docs/184): the switch, an opened direction, a new ad link.
+  'waitlist:list_open': 'manage.entry.listOpen',
+  'waitlist:list_close': 'manage.entry.listClose',
+  'waitlist:open': 'manage.entry.directionOpen',
+  'waitlist:ad': 'manage.entry.adLink',
 };
 const FOREVER = 'forever';
 const isLimit = (key: string): key is LimitKey => (LIMIT_KEYS as readonly string[]).includes(key);
@@ -54,6 +59,7 @@ const SIGNS: Readonly<Record<JournalKind, IconName>> = {
   refund: 'price',
   team: 'team',
   limits: 'locked',
+  waitlist: 'channel',
 };
 const GOOD: ReadonlySet<string> = new Set(['approve', 'none', 'unblock', 'confirm', 'add']);
 const BAD: ReadonlySet<string> = new Set(['reject', 'block', 'remove']);

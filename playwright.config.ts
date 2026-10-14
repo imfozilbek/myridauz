@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-import { appUrl, LANDING_PORT, MINI_APPS } from './e2e/apps';
+import { appUrl, LANDING_PORT, MINI_APPS, WAITLIST_PORT } from './e2e/apps';
 
 const PHONE = { ...devices['Pixel 7'], browserName: 'chromium' as const };
 // A fake camera that is always allowed: tests take photos with our camera screen (docs/47).
@@ -93,6 +93,7 @@ export default defineConfig({
         'g75-places-pixel.spec.ts',
         'g68-pixel.spec.ts',
         'g76-pixel.spec.ts',
+        'g83-pixel.spec.ts',
       ],
     },
   ],
@@ -101,6 +102,10 @@ export default defineConfig({
       const app = `pnpm --filter @platform/miniapp-${name}`;
       return { command: `${app} build && ${app} preview --port ${port} --strictPort`, url: appUrl(port) };
     }),
+    {
+      command: `pnpm --filter @platform/miniapp-main build && pnpm --filter @platform/miniapp-main preview --port ${WAITLIST_PORT} --strictPort`,
+      url: appUrl(WAITLIST_PORT),
+    },
     {
       command: `pnpm --filter @platform/landing build && pnpm --filter @platform/landing preview --port ${LANDING_PORT} --strictPort`,
       url: appUrl(LANDING_PORT),

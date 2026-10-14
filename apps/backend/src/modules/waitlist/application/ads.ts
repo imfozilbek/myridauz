@@ -90,6 +90,6 @@ export async function readSwitch(deps: AdDeps): Promise<WaitlistSwitch> {
 
 export async function setSwitch(deps: AdDeps, open: boolean, by: number): Promise<WaitlistSwitch> {
   await deps.switches.set(open, by, deps.now());
-  await deps.journal(by, 'switch', open ? 'open' : 'close');
+  await deps.journal(by, 'switch', open ? 'list_open' : 'list_close');
   return readSwitch(deps);
 }

@@ -1,0 +1,129 @@
+/* The map, the regions, the channels and the result of the approved mockups (goals/g83/src). */
+.wl-map-card {
+  display: flex;
+  justify-content: center;
+  margin: 0 14px 10px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--reg-card);
+}
+
+.wl-map {
+  display: block;
+  width: 100%;
+  max-height: 196px;
+  border-radius: 12px;
+}
+
+.wl-map path {
+  cursor: pointer;
+}
+
+.wl-regions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 0 14px 14px;
+}
+
+.wl-region {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  color: inherit;
+  cursor: pointer;
+}
+
+.wl-region-on {
+  background: var(--reg-strong);
+  color: var(--reg-card);
+}
+
+.wl-chan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--reg-divider);
+}
+
+.wl-chan:last-child {
+  border-bottom: 0;
+}
+
+.wl-chan-logo {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wl-chan-name {
+  font-size: 14px;
+}
+
+.wl-pill {
+  flex: none;
+  padding: 6px 11px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--reg-soft);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--reg-text);
+  cursor: pointer;
+}
+
+.wl-pill-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  background: var(--reg-off);
+  color: var(--reg-secondary);
+  cursor: default;
+}
+
+.wl-ok {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 20px 14px;
+}
+
+.wl-ok-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--reg-success-soft);
+  color: var(--reg-success-deep);
+}
+
+.wl-ok-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.wl-ok-hint {
+  margin: 3px 0 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--reg-muted);
+}
