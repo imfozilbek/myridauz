@@ -44,7 +44,7 @@ function mainWelcome(brand: BrandConfig, chatId: number, name: string, open: boo
   return {
     method: 'sendPhoto',
     chat_id: chatId,
-    photo: welcomePicture(brand, 'main'),
+    photo: welcomePicture(brand, open ? 'main' : 'main-open'),
     caption: caption.join('\n'),
     parse_mode: 'HTML',
     reply_markup: { inline_keyboard: rows },

@@ -42,14 +42,15 @@ const ROLES = {
 };
 
 // The main bot of the waitlist (G83, mockup goals/g83/approved/1-bot): the R on the deep teal, the
-// name and «Manzil sari · Tez orada»; the pains come in the words of the message.
-function mainWelcome() {
+// name and «Manzil sari · Tez orada»; the pains come in the words of the message. The list closed
+// (mockup approved/8-team-switch): Rida is open, the slogan alone.
+function mainWelcome(soon) {
   const body = '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
     `<stop offset="0" stop-color="${C.deep}"/><stop offset="1" stop-color="${C.teal}"/></linearGradient></defs>` +
     '<rect width="1280" height="720" fill="url(#g)"/>' + squircle(540, 150, 200, C.white) +
     markR({ cx: 640, cy: 250, h: 124, fill: C.teal }) +
     textCentered(brandConfig.name, { cx: 640, cy: 470, h: 64, fill: C.white }) +
-    textCentered(`${brandConfig.slogan} · Tez orada`, { cx: 640, cy: 560, h: 34, fill: C.white, weight: 600 });
+    textCentered(soon ? `${brandConfig.slogan} · Tez orada` : brandConfig.slogan, { cx: 640, cy: 560, h: 34, fill: C.white, weight: 600 });
   return svg(1280, 720, body);
 }
 
@@ -61,7 +62,7 @@ function point(look, [name, line], index) {
 }
 
 export function botWelcome(role = 'driver') {
-  if (role === 'main') return mainWelcome();
+  if (role === 'main' || role === 'main-open') return mainWelcome(role === 'main');
   const look = ROLES[role];
   const head = look.head ?? look.ink;
   const body = `<rect width="1280" height="720" fill="${look.bg}"/>` + squircle(80, 80, 160, C.deep) +

@@ -52,6 +52,7 @@ describe('the main bot of the waitlist (G83, docs/181)', () => {
       .run();
     const answer = await welcome(44, '/start');
     expect(answer.caption).toContain('ochildi');
+    expect(answer.photo).toBe(`https://${brand.domain}/bot/main-open-welcome.png`);
     const urls = answer.reply_markup.inline_keyboard.flat().map((button) => button.url ?? '');
     expect(urls).toContain(`https://t.me/${brand.bots.passenger}?startapp=__main`);
     expect(urls).toContain(`https://t.me/${brand.bots.driver}?startapp=__main`);
