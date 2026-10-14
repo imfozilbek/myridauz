@@ -4,24 +4,23 @@
 
 ## Боли и решения
 
-Тексты болей: владелец 14.10.2026 (названия, короткие и длинные вопросы, порядок); решения: серия 12.10 и `09`, `06`, `24`, `17`. Где какой текст: название в результате, карточке бота и админке; короткий вопрос в опроснике; длинный вопрос в описании бота, постах и рекламе (`181`).
+Тексты владельца 14.10.2026. На экране болей: название и подпись (попутчик: картинка владельца слово в слово, 6 болей; водитель: названия и «Izoh» владельца, 7 болей). Короткий вопрос: приветствие бота (первые 3). Длинный вопрос: описание бота (первые 3), посты, реклама. Название: результат, карточка бота, админка. Решения: серия 12.10 и `09`, `06`, `24`, `17`.
 
-| № | Название | Короткий вопрос | Длинный вопрос | Решение |
+| № | Название · подпись (экран) | Короткий вопрос | Длинный вопрос | Решение |
 |---|---|---|---|---|
-| 1 поп. `chats` | Guruhlarda tartibsizlik | Guruhlardan kerakli eʼlonni topish qiyinmi? | Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? | Hamma safarlar bir roʻyxatda: qayerdan, qayerga va qachon boʻyicha darhol topasiz. |
-| 2 поп. `fixed` | Qatʼiy narxlar | Narxni kelisha olmaslik xalaqit beryaptimi? | Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? | Narxni oʻzingiz taklif qilasiz. {brand} faqat tavsiya beradi. |
-| 3 поп. `phone` | Raqamim ochiqligi | Raqamingiz hammaning koʻz oʻngida turishi yoqmaydimi? | Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? | Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. |
-| 4 поп. `wait` | Pitakda kutish | Pitakda soatlab kutish joningizga tegdimi? | Pitakda mashina toʻlishini soatlab kutishdan charchadingizmi? | Joyni oldindan band qilasiz. Haydovchi yoʻlga chiqish vaqtini oldindan yozadi. |
-| 5 поп. `price` | Bayramda narx oshishi | Bayramlarda narx oshib ketishi muammomi? | Bayram kunlari narxlar keskin oshib ketishidan norozimisiz? | Narx safar eʼlonida yoziladi. Band qilishdan oldin koʻrasiz. |
-| 6 поп. `woman` | Ayollar uchun qulaylik | Mashinada ayollar borligini bilish muhimmi? | Mashinada ayollar bor-yoʻqligini oldindan bilish muhimmi? | «Mashinada ayol bor» belgili safarlarni tanlaysiz. |
-| 7 поп. `family` | Xavfsizlik xavotiri | Yaqinlaringiz xavfsizligingizdan xavotirdami? | Yaqinlaringiz qay yerda ketayotganingizdan xavotir olishadimi? | Safarni yaqinlaringizga bir tugma bilan yuborasiz: mashina, raqami va «yetib keldi». |
-| 1 вод. `chats` | Guruhlarda tartibsizlik | Guruhda mijoz yoki eʼlon yoʻqolib qolyaptimi? | Guruhlarda xabarlar koʻpligidan mijozni yoʻqotib qoʻyyapsizmi? | Yoʻlovchilar soʻrovlari botga oʻzi keladi: qayerdan, qayerga, qachon. |
-| 2 вод. `fixed` | Qatʼiy narxlar | Narxni oʻzingiz belgilay olmaslik muammomi? | Ilova qoʻygan narxni oʻzingiz oʻzgartira olmaslik noqulaymi? | Safar narxini oʻzingiz qoʻyasiz. {brand} faqat tavsiya beradi. |
-| 3 вод. `phone` | Raqamim ochiqligi | Raqamingiz hamma uchun ochiq turishiga qarshimisiz? | Telefon raqamingiz guruhda hammaning koʻziga koʻrinishi yoqmaydimi? | Raqamingiz hech kimga koʻrinmaydi. Yoʻlovchi bilan {brand} ichida gaplashasiz. |
-| 4 вод. `wait` | Pitakda kutish | Mijoz kutib vaqt yoʻqotyapsizmi? | Pitakda mijoz yigʻilishini soatlab kutishdan charchadingizmi? | Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. |
-| 5 вод. `empty` | Boʻsh (pustoy) qaytish | Orqaga boʻsh (pustoy) qaytyapsizmi? | Yoʻlning bir tomoniga boʻsh (pustoy) qaytishdan bezor boʻldingizmi? | Qaytish safarini oldindan eʼlon qilasiz va yoʻlovchilar uni ham band qiladi. |
-| 6 вод. `woman` | Ayol yoʻlovchi tanlash | Ayol yoʻlovchilar borligini belgilash imkoni kerakmi? | Mashinangizda ayol yoʻlovchi bor-yoʻqligini koʻrsatish muhimmi? | Mashinada ayol boʻlsa, «Mashinada ayol bor» belgisini qoʻyasiz: ayol yoʻlovchilar sizni koʻradi. |
-| 7 вод. `safety` | Xavfsizlik xavotiri | Yoʻlovchilar va yoʻl xavfsizligi xavotirga solyaptimi? | Yoʻldagi xavfsizlik va yoʻlovchilar ishonchliligi sizni tashvishlantiradimi? | Yoʻlovchining reytingi va sharhlarini oldindan koʻrasiz. Muammo boʻlsa, shikoyat qilasiz. |
+| 1 поп. `chats` | Telegram guruhlaridagi tartibsizlik · Kerakli eʼlonni topish qiyin va maʼlumotlar chalkash | Guruhlardan kerakli eʼlonni topish qiyinmi? | Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? | Hamma safarlar bir roʻyxatda: qayerdan, qayerga va qachon boʻyicha darhol topasiz. |
+| 2 поп. `fixed` | Narxlarning mos kelmasligi · Yoʻl haqi men xohlagandek emas, kelishish imkoni yoʻq | Narxni kelisha olmaslik xalaqit beryaptimi? | Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? | Narxni oʻzingiz taklif qilasiz. {brand} faqat tavsiya beradi. |
+| 3 поп. `phone` | Shaxsiy raqam xavfsizligi · Aloqaga chiqish uchun raqamimni begonalarga berishga toʻgʻri keladi | Raqamingiz hammaning koʻz oʻngida turishi yoqmaydimi? | Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? | Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. |
+| 4 поп. `wait` | Vokzalda (pitakda) uzoq kutish · Mashina toʻlmaguncha soatlab kutishga toʻgʻri keladi | Pitakda soatlab kutish joningizga tegdimi? | Pitakda mashina toʻlishini soatlab kutishdan charchadingizmi? | Joyni oldindan band qilasiz. Haydovchi yoʻlga chiqish vaqtini oldindan yozadi. |
+| 5 поп. `price` | Bayramlarda narxlar oshishi · Bayramoldi kunlarda yoʻl haqining asossiz qimmatlashishi | Bayramlarda narx oshib ketishi muammomi? | Bayram kunlari narxlar keskin oshib ketishidan norozimisiz? | Narx safar eʼlonida yoziladi. Band qilishdan oldin koʻrasiz. |
+| 6 поп. `woman` | Ayollar uchun noqulaylik · Mashinada ayol kishi bor-yoʻqligini bilib boʻlmasligi | Mashinada ayollar borligini bilish muhimmi? | Mashinada ayollar bor-yoʻqligini oldindan bilish muhimmi? | «Mashinada ayol bor» belgili safarlarni tanlaysiz. |
+| 1 вод. `chats` | Guruhlarda tartibsizlik · Yoʻlovchi yoki eʼlon yoʻqolib qoladi | Guruhda mijoz yoki eʼlon yoʻqolib qolyaptimi? | Guruhlarda xabarlar koʻpligidan mijozni yoʻqotib qoʻyyapsizmi? | Yoʻlovchilar soʻrovlari botga oʻzi keladi: qayerdan, qayerga, qachon. |
+| 2 вод. `fixed` | Qatʼiy narxlar · Narxni oʻzim belgilay olmayman | Narxni oʻzingiz belgilay olmaslik muammomi? | Ilova qoʻygan narxni oʻzingiz oʻzgartira olmaslik noqulaymi? | Safar narxini oʻzingiz qoʻyasiz. {brand} faqat tavsiya beradi. |
+| 3 вод. `phone` | Raqamim ochiqligi · Telefon raqamimni hamma koʻradi | Raqamingiz hamma uchun ochiq turishiga qarshimisiz? | Telefon raqamingiz guruhda hammaning koʻziga koʻrinishi yoqmaydimi? | Raqamingiz hech kimga koʻrinmaydi. Yoʻlovchi bilan {brand} ichida gaplashasiz. |
+| 4 вод. `wait` | Pitakda kutish · Mijoz yigʻilishini soatlab kutaman | Mijoz kutib vaqt yoʻqotyapsizmi? | Pitakda mijoz yigʻilishini soatlab kutishdan charchadingizmi? | Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. |
+| 5 вод. `empty` | Pustoy (boʻsh) qaytish · Orqaga yoʻlovchisiz qaytaman | Orqaga boʻsh (pustoy) qaytyapsizmi? | Yoʻlning bir tomoniga boʻsh (pustoy) qaytishdan bezor boʻldingizmi? | Qaytish safarini oldindan eʼlon qilasiz va yoʻlovchilar uni ham band qiladi. |
+| 6 вод. `woman` | Ayol yoʻlovchi tanlash · Avtomobilga ayol yoʻlovchi olish cheklovi | Ayol yoʻlovchilar borligini belgilash imkoni kerakmi? | Mashinangizda ayol yoʻlovchi bor-yoʻqligini koʻrsatish muhimmi? | Mashinada ayol boʻlsa, «Mashinada ayol bor» belgisini qoʻyasiz: ayol yoʻlovchilar sizni koʻradi. |
+| 7 вод. `safety` | Xavfsizlik xavotiri · Yoʻlovchi va yoʻl xavfsizligi nomaʼlum | Yoʻlovchilar va yoʻl xavfsizligi xavotirga solyaptimi? | Yoʻldagi xavfsizlik va yoʻlovchilar ishonchliligi sizni tashvishlantiradimi? | Yoʻlovchining reytingi va sharhlarini oldindan koʻrasiz. Muammo boʻlsa, shikoyat qilasiz. |
 
 ## Бот
 
@@ -38,7 +37,7 @@
 | Приветствие, список закрыт | Assalomu alaykum, {name}! 👋 · {brand} ochildi: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. · 🔎 Safar toping va joyni oldindan band qiling. · 🚗 Mashinangiz boʻlsa, safar eʼlon qiling. · 🔎 Safar topish · 🚗 Safar eʼlon qilish · 📣 Kanal |
 | Другу | Men ham guruhlarda kerakli eʼlonni qidirib charchadim. {brand} tez orada ochiladi: u yerda hamma safarlar bir joyda. Men yozildim: {route}. Siz ham yoziling: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. · Roʻyxatga yozilish |
 
-Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль: 7 у попутчика и 7 у водителя (как в таблице болей).
+Строки «Endi … » и первая строка сообщения другу: по одной на каждую боль: 6 у попутчика и 7 у водителя (как в таблице болей).
 
 ## Mini App
 
@@ -46,7 +45,7 @@
 |---|---|
 | Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. |
 | Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
-| Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
+| Боли | Safar davomida qanday muammolarga duch kelgansiz? · (Bir yoki bir nechtasini tanlash mumkin) · Davom etish (есть) |
 | Маршрут (`5-regions`) | Qaysi viloyatdansiz? · Yoʻnalishingizni shunga qarab tuzamiz: viloyatingiz ↔ Toshkent shahri. · Qaysi viloyatga qatnaysiz? · Toshkent shahridan qaysi viloyatga yurasiz? · Yoʻnalish · имена областей из справочника (есть) · группы на карте: Toshkent · Vodiy · Markaz · Janub · Gʻarb |
 | Каналы (последний шаг) | Yoʻnalishingiz kanallari · Yangi safarlar va yangiliklar shu yerda. Keraklisiga qoʻshiling. · Asosiy kanal · {region} · Qoʻshilish · ✓ Aʼzosiz (есть) · Yangiliklar, ochilish kunlari · Davom etish (есть) |
 | Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan |
