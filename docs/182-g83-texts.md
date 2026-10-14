@@ -66,6 +66,27 @@
 | Ссылки для рекламы (`184`) | Reklama havolalari · Har reklama uchun alohida havola: qaysi reklama nechta odam olib kelganini koʻrasiz. · Yangi havola · Havolalar · {n} bosdi · {n} yozildi · Oʻngda: bitta yozilgan odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh. · Qayerga olib boradi · Bot · Kanal · Qayerda reklama · Telegram · Instagram · Bloger · Boshqa · Nomi · Statistikada shu nom koʻrinadi. · Narxi (shart emas) · Necha kun turadi · {n} kun · Doimiy · Tepada: boshqa post chiqmaydi · Yoʻq · {n} soat · Qadalgan (pin) · tepada {n} soat · qadalgan {n} soat · Havola yaratish · Qaysi kanalga? · Havola shu kanalga qoʻshilish havolasi boʻladi. · Asosiy kanal (есть) · Viloyat kanallari · botga · kanalga · Havola botga olib boradi. · Havola «{channel}» kanaliga olib boradi. Kim shu havola orqali qoʻshilganini koʻramiz. · Havola tayyor · Havolani reklama sotuvchisiga yuboring: u postdagi tugmaga yoki matnga qoʻysin. Rasm, video, matn: istalgan kontent boʻlishi mumkin. · Havolani nusxalash · Nima berdi · Bosdi · {p} yoʻlovchi · {d} haydovchi · {n} qoʻshildi · Kanalga qoʻshildi · Kanalda qoldi · {n}% chiqib ketdi · Roʻyxatga yozildi · Bitta obunachi · Shartlar va pul · Narxi · Bitta yozilgan odam · Keyin · Doʻst orqali yana yozildi · Shu reklamadan kelganlar chaqirdi |
 | Блоки статистики (`183`) | Roʻyxatdan keyin · Kanalga qoʻshildi · Kanallar qadamida · Doʻstini chaqirdi · Havolani yubordi · Doʻst orqali yozildi · Bitta odam oʻrtacha {n} kishini olib keldi · Qayerdan kelishdi (есть) · {n} ochdi · {share} % yozildi · Doʻst havolasi · Haydovchi yetishmaydi · Qachon yozilishdi · Qurilmalar (есть) · Qanchalik tez-tez · Ham yoʻlovchi, ham haydovchi |
 
+## Новые в коде (сверх таблиц выше)
+
+| Где | Текст |
+|---|---|
+| Шторка «Oʻzgartirish» у водителя | Yoʻlovchi sifatida ham yozilish · Safarga joy kerak boʻlsa |
+| Подписи карты | короткие имена областей: Toshkent, Fargʻona, Andijon, Namangan, Samarqand, Jizzax, Sirdaryo, Navoiy, Buxoro, Qashqadaryo, Surxondaryo, Xorazm, Qoraqalpogʻiston; Toshkent shahri |
+| Журнал «Boshqaruv» | Roʻyxatga yozish ochildi · Roʻyxatga yozish yopildi · Yoʻnalish ochildi · Reklama havolasi yaratildi |
+
+## Анонсы в каналах (первые 4)
+
+Два раза в неделю, с 18.10.2026 (`181`). Только реальные новости; цифры берём в «Statistika» в день поста. Кнопка каждого поста: бот со знаком канала `?start=ch-<канал>` (`116`), например `t.me/myridauz_bot?start=ch-rida1uz`. Без «taksi», без «tekshirilgan haydovchi», без цен, бонусов и сравнения с другими.
+
+| № · день | Текст | Кнопка |
+|---|---|---|
+| 1 · вс 18.10 | 📝 {brand} roʻyxati ochildi · {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Tez orada ochiladi. · Yoʻnalishingizni hozir yozib qoʻying: ochilganda birinchi boʻlib xabar beramiz. 1 daqiqa, telefon raqami kerak emas. | 🚀 Roʻyxatga yozilish |
+| 2 · ср 21.10 | 🔎 Guruhlarda eʼlon koʻpligidan keraklisini topishga qiynalasizmi? · 💸 Narxlar qatʼiy belgilangani va kelishib boʻlmasligi yoqmaydimi? · 🔒 Telefon raqamingiz guruhlarda ochiq koʻrinishidan xavotirdamisiz? · {brand} shularni hal qiladi: · Hamma safarlar bir roʻyxatda: qayerdan, qayerga va qachon boʻyicha darhol topasiz. · Narxni oʻzingiz taklif qilasiz. {brand} faqat tavsiya beradi. · Raqamingiz hech kimga koʻrinmaydi. Haydovchi bilan {brand} ichida yozishasiz. | 🚀 Roʻyxatga yozilish |
+| 3 · вс 25.10 | 📊 Roʻyxatning birinchi haftasi · {p} yoʻlovchi va {d} haydovchi yoʻnalishini yozdi. · Eng koʻp kutilgan yoʻnalishlar: · 1. Toshkent shahri ↔ {region}: {n} kishi (три строки) · Yoʻnalish haydovchilar yetarli boʻlganda ochiladi. Doʻstingizni ham chaqiring: qancha koʻp odam yozilsa, haydovchi shuncha tez topiladi. | 🚀 Roʻyxatga yozilish |
+| 4 · ср 28.10 | 🚗 Haydovchilar uchun · 🔁 Yoʻlning bir tomoniga boʻsh (pustoy) qaytishdan bezor boʻldingizmi? · ⏳ Pitakda mijoz yigʻilishini soatlab kutishdan charchadingizmi? · Safaringizni eʼlon qilasiz, yoʻlovchilar oʻzlari joy band qiladi. Qaytish safarini ham oldindan eʼlon qilasiz. · {region} yoʻnalishida {p} yoʻlovchi kutmoqda. Mashinangiz boʻlsa, yoziling: yoʻnalish ochilganda yoʻlovchilar safaringizni koʻradi. | 🚗 Haydovchi sifatida yozilish |
+
+Пост 3 выходит, только если в списке уже есть люди: пустые цифры не публикуем. В посте 4 направление с самым большим числом попутчиков.
+
 ## Убрано
 
 - По правилам рекламы: «Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.

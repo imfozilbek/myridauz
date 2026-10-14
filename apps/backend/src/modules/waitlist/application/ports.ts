@@ -50,7 +50,7 @@ export type OpeningStore = {
 };
 
 // The switch of the list (docs/181): on until the owner turns it off.
-export type SwitchState = { readonly open: boolean; readonly at: number | null };
+type SwitchState = { readonly open: boolean; readonly at: number | null };
 export type SwitchStore = {
   read(): Promise<SwitchState>;
   set(open: boolean, by: number, now: number): Promise<void>;
@@ -58,7 +58,7 @@ export type SwitchStore = {
 
 export type { PainCounts, ReachRow, RoleRow };
 export type SideRow = { readonly role: WaitlistRole; readonly cadence: Cadence; readonly count: number };
-export type AfterRow = {
+type AfterRow = {
   readonly listed: number;
   readonly joined: number;
   readonly invited: number;

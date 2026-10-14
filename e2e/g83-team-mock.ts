@@ -33,7 +33,7 @@ const adOf = ([code, target, place, name, at, [days = 0, top = 0, pin = 0], coun
     result: { clicked, opened, passengers, drivers, joined, stayed, byFriends: 31 },
   };
 };
-export const ADS = (
+const ADS = (
   [
     [
       'ad-k7f2qx',

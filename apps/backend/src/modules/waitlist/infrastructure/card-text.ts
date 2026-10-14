@@ -12,10 +12,10 @@ const { t, formatTime } = createI18n(DEFAULT_LOCALE);
 // The mark of the links from the main bot to the trips (docs/116).
 const VIA_WAITLIST = 'waitlist';
 // «Oʻzgartirish» and «Yoʻnalish kanali» open the questionnaire on its sheet or its channels.
-export const EDIT_LINK = { name: 'open', id: 'edit' } as const;
-export const CHANNELS_LINK = { name: 'open', id: 'channels' } as const;
+const EDIT_LINK = { name: 'open', id: 'edit' } as const;
+const CHANNELS_LINK = { name: 'open', id: 'channels' } as const;
 
-export const waitlistCardKey = (role: WaitlistRole) => `waitlist:${role}`;
+const waitlistCardKey = (role: WaitlistRole) => `waitlist:${role}`;
 export type Trips = { readonly today: number; readonly tomorrow: number };
 
 const key = (value: string) => value as TranslationKey;

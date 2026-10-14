@@ -18,6 +18,11 @@ export const STAND_TELEGRAM_PORT = shift(8790);
 // The debugger port of the local Worker: one per stand.
 export const STAND_INSPECTOR_PORT = shift(9229);
 // main: the questionnaire of the main bot (G83, docs/181).
-export const STAND_APPS = { passenger: shift(4201), driver: shift(4202), admin: shift(4203), main: shift(4204) };
+export const STAND_APPS = {
+  passenger: shift(4201),
+  driver: shift(4202),
+  admin: shift(4203),
+  main: shift(4204),
+};
 // The Telegram id of the owner on the stand: the team list of the backend (docs/02).
 export const STAND_OWNER_ID = 900001;

@@ -17,7 +17,7 @@ const VIA_MAIN = 'main';
 
 // The welcome of the main bot (G83, docs/181, docs/182): a picture, the three short questions of the
 // pains, «🚀 Roʻyxatga yozilish» into the questionnaire and «📣 Kanal». Closed by the owner: the trips.
-export function mainWelcome(brand: BrandConfig, chatId: number, name: string, open: boolean) {
+function mainWelcome(brand: BrandConfig, chatId: number, name: string, open: boolean) {
   const hello = t('bot.main.hello', { name: escapeHtml(name) });
   const about = (key: 'bot.main.about' | 'bot.main.openedAbout') =>
     t(key, { brand: bold(escapeHtml(brand.name)) });

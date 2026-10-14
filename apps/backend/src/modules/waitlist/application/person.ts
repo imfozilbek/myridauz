@@ -27,7 +27,7 @@ export type PersonDeps = {
 
 type ViewDeps = Pick<PersonDeps, 'records' | 'openings' | 'visits'>;
 
-export async function viewOf(
+async function viewOf(
   deps: Pick<PersonDeps, 'records' | 'openings'>,
   record: WaitlistRecord,
 ): Promise<DirectionView> {
