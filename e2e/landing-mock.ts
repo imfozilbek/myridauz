@@ -26,3 +26,9 @@ export async function mockPrices(page: Page) {
     return route.fulfill({ json: { from, to, km, price }, headers: { 'access-control-allow-origin': '*' } });
   });
 }
+
+// Whether the list of waiting is open (G83, docs/181): the buttons of the site follow it.
+export const mockList = (page: Page, open: boolean) =>
+  page.route('**/public/waitlist', (route) =>
+    route.fulfill({ json: { open }, headers: { 'access-control-allow-origin': '*' } }),
+  );

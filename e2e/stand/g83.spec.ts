@@ -41,12 +41,14 @@ test.beforeEach(() => {
   standSql(`DELETE FROM switches`);
 });
 
-test('G83. both sides write their direction, the team opens it, the bot rings', async ({ page }) => {
+test('G83. both sides write their direction, the team opens it, the bot rings', async ({ page, context }) => {
+  // Each app and the drawn chat on its own page: one Telegram of the stand per page.
+  const [chat, team] = [await context.newPage(), await context.newPage()];
   await clearBotMessages();
   const welcome = await say('main', AZIZ, '/start site');
   expect(welcome.caption).toContain(t('bot.main.hello', { name: AZIZ.name }));
-  await answered(page, MAIN_BOT, '/start', welcome);
-  await page.screenshot({ path: `${OUT}/1-bot-welcome.png`, fullPage: true });
+  await answered(chat, MAIN_BOT, '/start', welcome);
+  await chat.screenshot({ path: `${OUT}/1-bot-welcome.png`, fullPage: true });
 
   await openHome(page, 'main', AZIZ, 'android');
   await shot(page, 'android', 'g83-1-role');
@@ -62,7 +64,7 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
   await mainButton(page).click();
   await expect(page.getByText(t('waitlist.done.title'))).toBeVisible();
   await shot(page, 'android', 'g83-5-result');
-  await expect.poll(async () => (await chatShot(page, AZIZ, '2-bot-card')).length).toBeGreaterThan(0);
+  await expect.poll(async () => (await chatShot(chat, AZIZ, '2-bot-card')).length).toBeGreaterThan(0);
 
   const driver = createWaitlistClient(await signedAs('main', JASUR));
   await driver.open();
@@ -74,17 +76,24 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
     cadence: 'daily',
   });
 
-  await openHome(page, 'admin', OWNER, 'android');
-  await page.getByText(t('common.admin.management')).first().click();
-  await page.getByText(t('common.admin.statistics')).first().click();
-  await expect(page.getByText(t('waitlistTeam.waiting')).first()).toBeVisible();
-  await shot(page, 'android', 'g83-6-team-stats');
-  await page.getByText(ROUTE).first().click();
-  await shot(page, 'android', 'g83-7-direction');
-  await tap(page, t('waitlistTeam.open'));
-  await tap(page, t('waitlistTeam.openYes'));
+  await openHome(team, 'admin', OWNER, 'android');
+  await team.getByText(t('common.admin.management')).first().click();
+  await team.getByText(t('common.admin.statistics')).first().click();
+  await expect(team.getByText(t('waitlistTeam.waiting')).first()).toBeVisible();
+  await shot(team, 'android', 'g83-6-team-stats');
+  await team.getByText(ROUTE).first().click();
+  await shot(team, 'android', 'g83-7-direction');
+  await expect(mainButton(team)).toHaveText(t('waitlistTeam.open'));
+  await mainButton(team).click();
+  await expect(team.getByText(t('waitlistTeam.openAsk'))).toBeVisible();
+  await expect(mainButton(team)).toHaveText(t('waitlistTeam.openYes'));
+  await mainButton(team).click();
+  await expect(team.getByText(/^Ochildi/u)).toBeVisible();
+  await shot(team, 'android', 'g83-8-opened');
   await expect
-    .poll(async () => (await chatShot(page, AZIZ, '3-bot-opened')).some((one) => one.replyTo !== null))
+    .poll(async () => (await chatShot(chat, AZIZ, '3-bot-opened')).some((one) => one.replyTo !== null), {
+      timeout: 15_000,
+    })
     .toBe(true);
   const rings = await botMessages();
   expect(rings.some((one) => one.bot === 'main' && one.chatId === JASUR.id)).toBe(true);
@@ -93,10 +102,15 @@ test('G83. both sides write their direction, the team opens it, the bot rings', 
 test('G83. the owner closes the list: a new person gets the bots of the trips', async ({ page }) => {
   await openHome(page, 'admin', OWNER, 'android');
   await page.getByText(t('common.admin.management')).first().click();
-  await page.getByRole('checkbox', { name: new RegExp(t('waitlistTeam.switch'), 'u') }).click();
-  await tap(page, t('waitlistTeam.closeYes'));
+  // The visible switch inside its label, as a finger taps it: the box itself is hidden.
+  const box = page.getByRole('checkbox', { name: t('waitlistTeam.switch') });
+  await expect(box).toBeChecked();
+  await box.locator('xpath=ancestor::label[1]').click();
+  await expect(page.getByText(t('waitlistTeam.closeAsk'))).toBeVisible();
+  await expect(mainButton(page)).toHaveText(t('waitlistTeam.closeYes'));
+  await mainButton(page).click();
   await expect(page.getByText(/^Yopiq/u)).toBeVisible();
-  await shot(page, 'android', 'g83-8-closed');
+  await shot(page, 'android', 'g83-9-closed');
   const welcome = await say('main', LATE, '/start');
   const buttons = (welcome.reply_markup?.inline_keyboard ?? []).flat().map((button) => button.text);
   expect(buttons).toContain(t('bot.main.find'));

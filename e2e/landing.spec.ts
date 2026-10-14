@@ -2,18 +2,26 @@ import { expect, test } from './crash-guard';
 import { channelOf, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { appUrl, LANDING_PORT } from './apps';
-import { mockPrices } from './landing-mock';
+import { mockList, mockPrices } from './landing-mock';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 const brand = loadBrand();
 
-// The landing leads people into the two bots and explains itself (G15, docs/59).
+// The landing leads people into the two bots and explains itself (G15, docs/59); into the main bot
+// while the list of waiting is open (G83, docs/181).
 test('landing: the buttons open the bots, the documents open from the footer', async ({ page }) => {
+  await mockList(page, true);
   await page.goto(appUrl(LANDING_PORT));
   await expect(page).toHaveTitle(t('landing.title', { brand: brand.name }));
   const passenger = page.locator('.hero').getByRole('link', { name: t('landing.cta.passenger') });
-  await expect(passenger).toHaveAttribute('href', `https://t.me/${brand.bots.passenger}`);
   const driver = page.locator('.hero').getByRole('link', { name: t('landing.cta.driver') });
+  const main = `https://t.me/${brand.bots.main}?start=site`;
+  await expect(passenger).toHaveAttribute('href', main);
+  await expect(driver).toHaveAttribute('href', main);
+  await page.unrouteAll();
+  await mockList(page, false);
+  await page.reload();
+  await expect(passenger).toHaveAttribute('href', `https://t.me/${brand.bots.passenger}`);
   await expect(driver).toHaveAttribute('href', `https://t.me/${brand.bots.driver}`);
   await page.getByRole('link', { name: t('legal.privacy.title') }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(t('legal.privacy.title'));
@@ -23,6 +31,7 @@ test('landing: the buttons open the bots, the documents open from the footer', a
 
 test('landing: the steps, the switch and the map answer a tap', async ({ page }) => {
   await mockPrices(page);
+  await mockList(page, false);
   await page.goto(appUrl(LANDING_PORT));
   await page.getByRole('button', { name: t('landing.pains.after', { brand: brand.name }) }).click();
   await expect(page.getByText(t('landing.pains.wait.after'))).toBeVisible();
