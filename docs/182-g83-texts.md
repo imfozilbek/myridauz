@@ -39,14 +39,14 @@
 | Первый экран | {brand} · Manzil sari (есть) · Tez orada ochiladi · Yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. |
 | Роль | Kim boʻlib yoʻlga chiqasiz? · Yoʻlovchiman · Safarga joy kerak · Haydovchiman · Mashinam bor, boʻsh joy bor · Javobni keyin oʻzgartirsa boʻladi. |
 | Боли | Yoʻlda sizni nima qiynaydi? · Bir nechtasini tanlang. · Davom etish (есть) |
-| Откуда, куда | есть (G26, G75); вид списка областей: лист 5, выбор владельца |
+| Откуда, куда (`5-regions`) | Qayerdan yoʻlga chiqasiz? · Qayerga borasiz? (есть) · имена областей из справочника (есть) · группы: Toshkent · Vodiy · Markaz · Janub · Gʻarb · метка: Qayerdan |
 | Место (по желанию) | {region}ning qaysi joyi? (есть) · Bilsangiz, tanlang. Shart emas. · Butun viloyat (есть) · Joyni keyin tanlayman |
 | Каналы (последний шаг) | Yoʻnalishingiz kanallari · Yangi safarlar va yangiliklar shu yerda. Keraklisiga qoʻshiling. · Asosiy kanal · {region} · Sizning joyingiz · Qoʻshilish · ✓ Aʼzosiz (есть) · Yangiliklar, ochilish kunlari · Davom etish (есть) |
 | Когда | Qachon yoʻlga chiqasiz? · Har hafta · Har oy · Bayramlarda · Bir marta · Kunini tanlaysiz · водитель: Bu yoʻnalishda qanchalik tez-tez yurasiz? · Har kuni · Baʼzan · Qaysi kuni? (есть) · Oktabr. Kun oʻtib ketsa, bot yana soʻraydi. |
 | Результат | Siz roʻyxatdasiz · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. · {count} kishi kutmoqda · Bu yoʻnalishda. {share} % ini ham {pain} qiynaydi. · водитель: {count} yoʻlovchi kutmoqda · Bu yoʻnalishda. Ochilganda safaringizni koʻradi. · {brand} buni hal qiladi |
 | Кнопки | Doʻstimni chaqiraman · Haydovchi boʻlish (есть) |
 | Строка каналов на результате | Kanallar · {n} ta kanaldasiz · Hali kanalga qoʻshilmagansiz |
-| Шторки | Oʻzgartirish · Muammolar · Yoʻnalish · Qayerdan va qayerga · Qachon · Haydovchi sifatida ham yozilish · Mashinangiz boʻlsa · Roʻyxatdan chiqish · Roʻyxatdan chiqasizmi? · Yoʻnalishingiz va javoblaringiz oʻchiriladi. Yoʻnalish ochilganda xabar kelmaydi. · Bekor qilish (есть) |
+| Шторки | Oʻzgartirish · Muammolar · Yoʻnalish · Qayerdan va qayerga · Qachon · Haydovchi sifatida ham yozilish · Mashinangiz boʻlsa |
 
 ## Админка
 
@@ -59,6 +59,7 @@
 ## Убрано
 
 - По правилам рекламы: «Bu taksi emas», «Haydovchilar tekshirilgan», «Tekshiruvdan oʻtish» (документы водителя не проверяются), цены и бонусы.
+- «Roʻyxatdan chiqish» и его шторка: решение владельца 14.10.2026.
 - По системе G68 (`122`): отдельные сообщения «Siz roʻyxatdasiz» и пост канала: их заменила живая карточка.
 
 ## Вопросы носителю
@@ -66,3 +67,4 @@
 - «Yoʻlda sizni nima qiynaydi?»: звучит естественно?
 - «Raqamim begonalarda»: понятно без пояснения?
 - «Tanish gaplarmi?» в приветствии: так говорят?
+- Группы «Vodiy», «Markaz», «Janub», «Gʻarb»: так люди называют части страны?
