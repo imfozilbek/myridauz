@@ -1,6 +1,6 @@
-# 180. G81: тексты списка ожидания на согласие владельца
+# 182. G83: тексты списка ожидания на согласие владельца
 
-> **Кратко:** все тексты нового бота «MyRida» (`@myridauz_bot`), опросника, экрана результата и блока команды по макетам `goals/g81` (`179`). Знак «есть» значит: текст уже есть в продукте, берём тот же ключ. Остальное новое: нужно «да» владельца и проверка носителем (`25`). Имя бренда в текстах из конфига бренда (`{brand}`), не в коде.
+> **Кратко:** все тексты нового бота «MyRida» (`@myridauz_bot`), опросника, экрана результата и блока команды по макетам `goals/g83` (`181`). Знак «есть» значит: текст уже есть в продукте, берём тот же ключ. Остальное новое: нужно «да» владельца и проверка носителем (`25`). Имя бренда в текстах из конфига бренда (`{brand}`), не в коде.
 
 ## Бот
 
@@ -14,7 +14,7 @@
 | Итог | ✅ Siz roʻyxatdasiz · {route} · Yoʻlovchi · har hafta · Yoʻnalishingiz ochilganda birinchi boʻlib xabar beramiz. | Вы в списке |
 | Итог водителя | Hozir tekshiruvdan oʻting: yoʻnalish ochilganda birinchilardan boʻlib safar eʼlon qilasiz. | Пройдите проверку сейчас |
 | Кнопки итога | Tekshiruvdan oʻtish · Doʻstimni chaqiraman · Oʻzgartirish (есть) | Проверка · Позвать друга · Изменить |
-| Пост канала | 📣 Kutayotganda kanalimizni kuzating · MyRida Oʻzbekistan: yangiliklar va qaysi yoʻnalish qachon ochilishi. | Наш канал, пока ждёте |
+| Пост канала | 📣 Kutayotganda kanalimizni kuzating · MyRida | Oʻzbekiston: yangiliklar va qaysi yoʻnalish qachon ochilishi. | Наш канал, пока ждёте |
 | Кнопка поста | Kanalga oʻtish | Перейти в канал |
 | Открытие, попутчик | 🔔 Yoʻnalishingiz ochildi · {route}: haydovchilar safar eʼlon qilmoqda. · Birinchilardan boʻlib joy band qiling. | Направление открыто |
 | Открытие, водитель | 🔔 Yoʻnalishingiz ochildi · {route}: {count} yoʻlovchi kutmoqda. · Safaringizni eʼlon qiling. | Вас ждут попутчики |
