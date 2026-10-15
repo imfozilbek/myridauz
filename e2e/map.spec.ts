@@ -68,13 +68,13 @@ async function chooseHome(page: Page, state: MapState) {
 
 // Owner check 1: the door on the map of the whole city, the home, «Qayerdan, qayerga?», then sent.
 test('the passenger books from the door to the home inside the zones of the trip', async ({ page }) => {
+  test.slow(); // two maps and their tiles: about 27 s here, past the 30 s limit on a slow runner
   const state = await openBooking(page);
   await page.getByText(t('way.book.pickup')).click();
   await expect(page.getByText(t('way.point.from'))).toBeVisible();
   await drawn(page);
   await shot(page, '1-door');
-  // Farther out: the whole city of Toshkent, the rest shaded; the map does not go beyond it. The
-  // wheel turns over the map, above the sheet (G36, docs/100).
+  // Farther out: all Toshkent, the rest shaded, not beyond; the wheel over the map, the sheet (G36).
   await page.mouse.move(200, 200);
   for (let step = 0; step < 6; step += 1) await page.mouse.wheel(0, 600);
   await page.waitForTimeout(TILES_MS);

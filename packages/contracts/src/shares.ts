@@ -59,8 +59,8 @@ export const sharedTripSchema = z.object({
   status: z.enum(SHARE_STATUSES),
   followers: z.number().int(),
   // The mark of «Men ham yoʻlga chiqaman»: the loop «Yaqinlarimga» and the code of the one who shared
-  // (G69, docs/123); null without it.
-  via: z.string().regex(VIA_PATTERN).nullable(),
+  // (G69, docs/123); null without it and from an older server.
+  via: z.string().regex(VIA_PATTERN).nullable().default(null),
 });
 export type SharedTrip = z.infer<typeof sharedTripSchema>;
 // The trip of a link before its mark is added.
