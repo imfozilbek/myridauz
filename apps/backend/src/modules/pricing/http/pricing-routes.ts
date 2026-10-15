@@ -24,7 +24,7 @@ import {
 import type { PricingDeps } from '../application/ports';
 import { ownerOnly } from '../../../shared/auth/owner-only';
 import { teamOnly } from '../../../shared/auth/team-only';
-import { recommendPrice } from '../application/recommend';
+import { recommendDirection, recommendPrice } from '../application/recommend';
 
 const STATUS = {
   'pricing.not_found': 404,
@@ -45,10 +45,11 @@ const body = (context: Context<AppEnv>) => context.req.json().catch(() => null);
 export function pricingRoutes(deps: (env: Bindings) => PricingDeps) {
   return (
     new Hono<AppEnv>()
+      // A request of a passenger may end in a whole region (G52, docs/112): measured as the directions.
       .get(PRICE_RECOMMENDATION_PATH, async (context) => {
         const query = distanceQuerySchema.safeParse(context.req.query());
         if (!query.success) return fail(context, 'pricing.invalid_input');
-        const result = await recommendPrice(deps(context.env), query.data.from, query.data.to);
+        const result = await recommendDirection(deps(context.env), query.data.from, query.data.to);
         return result.ok ? context.json(result.value) : fail(context, result.error);
       })
       // The same recommendation for the landing, without a signature and without personal data (docs/59).

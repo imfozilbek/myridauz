@@ -5,6 +5,7 @@ import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { RequestsFlow } from '../requests/requests-flow';
+import { ErrorBoundary } from '../states/error-boundary';
 
 type Linked = { readonly from: string; readonly to: string; readonly date: string };
 
@@ -29,7 +30,11 @@ export function RequestsLink({
     forgetLaunchParam(REQUESTS_LINK);
     setLinked(null);
   };
-  return <LinkedRequests linked={linked} onClose={close} />;
+  return (
+    <ErrorBoundary onBack={close}>
+      <LinkedRequests linked={linked} onClose={close} />
+    </ErrorBoundary>
+  );
 }
 
 // Unknown places open the board of the driver's own directions, never a wrong route.
