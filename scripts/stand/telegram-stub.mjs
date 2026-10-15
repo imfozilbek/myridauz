@@ -1,11 +1,14 @@
 // The Bot API of the stand (docs/75): it keeps every call of the bots so scenarios can read the
 // messages and their buttons (GET /__sent), and answers like Telegram. Nothing leaves the computer.
 import { createServer } from 'node:http';
+import { standLooks } from './telegram-looks.mjs';
 
 const SENT_PATH = '/__sent';
 const CALL = /^\/bot([^/]+)\/(\w+)$/u;
 // A file a bot got (a voice message): a few bytes are enough for the backend (docs/50).
 const FILE = /^\/file\/bot[^/]+\//u;
+// A picture of the site for the looks of the channels (docs/180): SITE_URL of the stand.
+const SITE = /^\/__site\//u;
 const KEEP_ALIVE_MS = 60 * 1000;
 const JSON_TYPE = { 'content-type': 'application/json' };
 
@@ -25,7 +28,9 @@ const resultOf = (method, id) => {
 const FIELD = /name="(\w+)"\r\n\r\n([^\r]*)\r\n/gu;
 const formOf = (raw) => {
   const fields = Object.fromEntries([...raw.matchAll(FIELD)].map(([, key, value]) => [key, value]));
-  return { multipart: true, ...fields, ...(fields.chat_id ? { chat_id: Number(fields.chat_id) } : {}) };
+  // A person or a private channel by number, a public channel by its @name (docs/180).
+  const chat = fields.chat_id && /^-?\d+$/u.test(fields.chat_id) ? { chat_id: Number(fields.chat_id) } : {};
+  return { multipart: true, ...fields, ...chat };
 };
 
 const bodyOf = (raw, type) => {
@@ -41,6 +46,7 @@ export function serveTelegram(port) {
   let sent = [];
   // Message ids never repeat, also after a clear: a reply must reach its own message (docs/50).
   let lastId = 0;
+  const looks = standLooks();
   const server = createServer((incoming, outgoing) => {
     const url = incoming.url ?? '/';
     if (url === SENT_PATH) {
@@ -50,6 +56,10 @@ export function serveTelegram(port) {
     }
     if (FILE.test(url)) {
       outgoing.writeHead(200, { 'content-type': 'audio/ogg' }).end(Buffer.from([1, 2, 3]));
+      return;
+    }
+    if (SITE.test(url)) {
+      outgoing.writeHead(200, { 'content-type': 'image/jpeg' }).end(Buffer.from(url));
       return;
     }
     const [, token, method] = CALL.exec(url) ?? [];
@@ -65,7 +75,8 @@ export function serveTelegram(port) {
       const body = bodyOf(raw, incoming.headers['content-type']);
       // The id a sent message got: a snapshot draws the edits and the answers on it (G68).
       sent.push({ token, method, body, at: Date.now(), ...(method.startsWith('send') ? { id } : {}) });
-      outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result: resultOf(method, id) }));
+      const result = looks(method, token, body, id) ?? resultOf(method, id);
+      outgoing.writeHead(200, JSON_TYPE).end(JSON.stringify({ ok: true, result }));
     });
   });
   // A scenario reuses its connection: the stub keeps it longer than the client, or under the load of

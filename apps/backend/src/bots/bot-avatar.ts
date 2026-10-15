@@ -1,13 +1,11 @@
-import type { BrandConfig } from '@platform/brands';
 import { telegramUrl } from '../shared/telegram/api-url';
 import type { Fetch } from '../shared/telegram/telegram-api';
 import type { BotName } from '../shared/telegram/bot-config';
 
 const AVATAR_PART = 'avatar';
 
-// The picture of a bot: brand-kit/landing/bot.mjs draws it, the landing serves it (G34).
-export const avatarUrl = (brand: BrandConfig, bot: BotName) =>
-  `https://${brand.domain}/bot/${bot}-avatar.jpg`;
+// The picture of a bot: brand-kit/landing/bot.mjs draws it, the site of the environment serves it (G34).
+export const avatarUrl = (site: string, bot: BotName) => `${site}/bot/${bot}-avatar.jpg`;
 
 // setMyProfilePhoto takes the picture as an uploaded file (InputProfilePhotoStatic): the Worker
 // fetches it from the landing and sends its bytes, so nobody uploads it by hand in BotFather.

@@ -24,16 +24,14 @@ export default {
     await refreshLimits(env);
     return consumeNotifications(batch, env);
   },
-  scheduled: async (_controller, env, context) => {
+  // The Cron answers when its jobs are done: the Cron of the stand too, so a scenario never meets the
+  // jobs of the Cron before it (lesson 274).
+  scheduled: async (_controller, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
-    const now = Date.now();
-    const run = async () => {
-      // The limits the owner set reach the Cron jobs too (G75, docs/128 §4).
-      await refreshLimits(env);
-      const failed = await runJobs(cronJobs(env, now));
-      // A broken job is counted on the dashboard like any server error (G42).
-      for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });
-    };
-    context.waitUntil(run());
+    // The limits the owner set reach the Cron jobs too (G75, docs/128 §4).
+    await refreshLimits(env);
+    const failed = await runJobs(cronJobs(env, Date.now()));
+    // A broken job is counted on the dashboard like any server error (G42).
+    for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });
   },
 } satisfies ExportedHandler<Bindings, NotificationJob>;

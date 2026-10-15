@@ -25,7 +25,7 @@ const bodyOf = (body: RequestInit['body']): Record<string, unknown> =>
 function setup(secret: string, status = 200, avatarStatus = 200, extra = {}) {
   const calls: Call[] = [];
   const routes = setupRoutes(async (url, init) => {
-    if (url.startsWith(`https://${brand.domain}/`)) {
+    if (url.endsWith('-avatar.jpg')) {
       calls.push({ url, body: {} });
       return new Response(AVATAR_BYTES, { status: avatarStatus });
     }
@@ -114,6 +114,13 @@ describe('POST /telegram/setup', () => {
       photo: JSON.stringify({ type: 'static', photo: 'attach://avatar' }),
       avatar: AVATAR_BYTES.length,
     });
+  });
+
+  it('takes the pictures from the site of the stand: nothing leaves the computer (docs/180)', async () => {
+    const { request, calls } = setup('hook', 200, 200, { SITE_URL: 'http://localhost:1/__site' });
+    await request;
+    const pictures = calls.filter((call) => call.url.endsWith('-avatar.jpg')).map((call) => call.url);
+    expect(pictures[0]).toBe('http://localhost:1/__site/bot/passenger-avatar.jpg');
   });
 
   it('goes on with the setup when a picture is missing', async () => {
