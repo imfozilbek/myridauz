@@ -34,6 +34,12 @@ export function startVia(): string | null {
   return raw === null ? null : splitStart(raw).via;
 }
 
+// The mark of a link opened inside the app (G69, docs/123): «Men ham yoʻlga chiqaman» of a followed
+// trip carries the loop «Yaqinlarimga» and the code of the one who shared it into the registration.
+let viaInside: string | null = null;
+export const rememberVia = (via: string | null) => void (viaInside = via ?? viaInside);
+export const rememberedVia = () => viaInside;
+
 // The start parameter stays in the address (Telegram's own, and the source of the launch,
 // docs/89 S3); a used one is marked in the page's history state instead.
 const USED_START = 'usedStartParam';

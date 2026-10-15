@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ShareMoment } from '@platform/contracts';
 import { momentCard } from './application/cards';
-import { dueMoment, offeredWith } from './application/moments';
+import { dueMoment, offeredWith, ridesByTrip } from './application/moments';
 import type { CardDeps } from './application/cards';
 import type { CardMessage, Ride, Side } from './application/ports';
 
@@ -81,6 +81,13 @@ describe('the moments of the cards of a person', () => {
     expect(await due({ rides: { driver: twelve } }, 'driver')).toBe('riders10');
     expect(await due({ approvedAt: NOW - 3 * DAY }, 'driver')).toBe('driver');
     expect(await due({ approvedAt: NOW - 8 * DAY }, 'driver')).toBeNull();
+  });
+
+  it('counts the seats of one trip together', () => {
+    expect(ridesByTrip([ride(1, 2), ride(1, 1), ride(3, 4)]).map((one) => [one.tripId, one.seats])).toEqual([
+      ['t1', 3],
+      ['t3', 4],
+    ]);
   });
 
   it('leads a trip card to the search of its direction with the loop and the code', async () => {

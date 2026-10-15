@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { fullScans, testD1 } from '../../test-d1';
 import { d1Users } from '../users/infrastructure/d1-users';
 import { d1Growth } from './infrastructure/d1-growth';
-import { d1Rides } from './infrastructure/d1-rides';
 
 const DAY = 24 * 60 * 60 * 1000;
 const NOW = Date.parse('2026-10-15T05:00:00Z');
@@ -27,7 +26,7 @@ async function seeded() {
       booking('b4', 'open', VALI, 1, 'confirmed'),
     ].join(', ')};
     UPDATE bookings SET no_show_at = ${NOW} WHERE id = 'b1';`);
-  return { db, growth: d1Growth(db), rides: d1Rides(db) };
+  return { db, growth: d1Growth(db) };
 }
 
 // The codes, the people they brought and the moments of G69 in D1 (migration 0069, docs/123).
@@ -40,17 +39,10 @@ describe('the loops of growth in D1', () => {
     expect(await growth.codeOf(VALI)).not.toBe(code);
   });
 
-  it('counts only the rides that happened: no no-show, no cancelled seat, no open trip', async () => {
-    const { growth, rides } = await seeded();
-    expect(await rides(ALI, 'passenger')).toEqual([
-      { tripId: 'new', from: '1726273', to: '1718401', departAt: NOW - DAY, seats: 2 },
-    ]);
-    expect(await rides(VALI, 'passenger')).toEqual([]);
-    expect((await rides(DRIVER, 'driver')).map((ride) => [ride.tripId, ride.seats])).toEqual([
-      ['old', 0],
-      ['new', 2],
-    ]);
+  it('counts the people of a trip who rode: no no-show, no cancelled seat', async () => {
+    const { growth } = await seeded();
     expect(await growth.riders('new')).toBe(2);
+    expect(await growth.riders('old')).toBe(0);
     expect(await growth.riders('open')).toBe(0);
   });
 
@@ -82,15 +74,13 @@ describe('the loops of growth in D1', () => {
   });
 
   it('never reads a growing table whole', async () => {
-    const { db, growth, rides } = await seeded();
+    const { db, growth } = await seeded();
     await Promise.all([
       growth.codeOf(ALI),
       growth.impactOf(ALI),
       growth.offered(ALI),
       growth.approvedAt(DRIVER),
       growth.riders('new'),
-      rides(ALI, 'passenger'),
-      rides(DRIVER, 'driver'),
     ]);
     expect(fullScans(db)).toEqual([]);
   });

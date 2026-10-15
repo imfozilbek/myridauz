@@ -4,6 +4,8 @@ import {
   MOMENT_OFFERED_PATH,
   MOMENT_PATH,
   MOMENT_STORY_PATH,
+  LOOP_CARD_PATH,
+  loopCardSchema,
   momentCardSchema,
   momentOfferedSchema,
   momentQuerySchema,
@@ -16,6 +18,7 @@ import { Hono, type Context } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { readCapped } from '../../../shared/upload/read-capped';
 import { momentCard, myGrowth, offerMoment, type CardDeps } from '../application/cards';
+import { loopCard, type LoopDeps } from '../application/loop-cards';
 import { saveMomentStory, type StoryDeps } from '../application/moment-story';
 import { dueMoment } from '../application/moments';
 
@@ -27,7 +30,7 @@ const STATUS = {
 } as const satisfies Partial<Record<ApiErrorCode, number>>;
 const fail = (code: keyof typeof STATUS) => Response.json({ error: code }, { status: STATUS[code] });
 
-export type Wiring = CardDeps & StoryDeps;
+export type Wiring = CardDeps & StoryDeps & LoopDeps;
 type Handler = (context: Context<AppEnv>, wiring: Wiring, userId: number) => Promise<Response>;
 
 // The loops of growth of a person (G69, docs/123): the moment due, its card for a chat and a story,
@@ -66,6 +69,15 @@ export function growthRoutes(deps: (env: Bindings) => Wiring | null) {
         const input = momentCardSchema.safeParse(await context.req.json().catch(() => null));
         if (!input.success) return fail('growth.invalid_input');
         const card = await momentCard(wiring, userId, input.data.moment, input.data.phrase);
+        return card ? context.json(card) : fail('growth.not_found');
+      }),
+    )
+    .post(
+      LOOP_CARD_PATH,
+      on(async (context, wiring, userId) => {
+        const input = loopCardSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success) return fail('growth.invalid_input');
+        const card = await loopCard(wiring, userId, input.data);
         return card ? context.json(card) : fail('growth.not_found');
       }),
     )

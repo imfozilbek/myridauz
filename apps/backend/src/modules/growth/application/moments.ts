@@ -28,6 +28,16 @@ const RIDER_MARKS = [
 const reached = (count: number, marks: readonly (readonly [number, ShareMoment])[]) =>
   marks.find(([mark]) => count >= mark)?.[1] ?? null;
 
+// The rides of a person by trip: the seats of one trip count together (a driver's car, docs/123).
+export function ridesByTrip(rides: readonly Ride[]): Ride[] {
+  const trips = new Map<string, Ride>();
+  for (const ride of rides) {
+    const known = trips.get(ride.tripId);
+    trips.set(ride.tripId, known ? { ...known, seats: known.seats + ride.seats } : ride);
+  }
+  return [...trips.values()];
+}
+
 const lastOf = (rides: readonly Ride[]) =>
   rides.reduce<Ride | null>((last, ride) => (!last || ride.departAt > last.departAt ? ride : last), null);
 

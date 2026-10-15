@@ -13,6 +13,7 @@ import { OutcomePlate } from '../states/outcome-plate';
 import { CallsSwitch } from '../talk/calls-switch';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
+import { LoopInvite } from '../growth/loop-invite';
 import { OfferCard } from './offer-card';
 import { WaitingChannel } from './waiting-channel';
 import './my-request.css';
@@ -76,6 +77,16 @@ export function MyRequest({ request, offers, failure, onBack, onCancel, onAnswer
             />
           ))}
         </>
+      ) : null}
+      {/* No offer yet: the drivers of the district see it in its group (G69, docs/123 loop 2). */}
+      {open && waiting.length === 0 ? (
+        <LoopInvite
+          card={{ loop: 'req-share', requestId: request.id }}
+          icon="channel"
+          title={t('growth.group.title')}
+          text={t('growth.group.text')}
+          button={t('growth.group.button')}
+        />
       ) : null}
       {open ? <CallsSwitch request={request} /> : null}
       {open ? <WaitingChannel request={request} /> : null}

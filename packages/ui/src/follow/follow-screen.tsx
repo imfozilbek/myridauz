@@ -10,7 +10,7 @@ import { ActionFailure } from '../states/action-failure';
 import { EmptyState } from '../states/empty-state';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { useFailure } from '../states/use-failure';
-import { launchParam } from '../telegram/launch-param';
+import { launchParam, rememberVia } from '../telegram/launch-param';
 import { requestBotMessages } from '../telegram/permissions';
 import { haptic } from '../telegram/feedback';
 import { MainButton } from '../telegram/bottom-button';
@@ -55,6 +55,7 @@ function Follow({ token, onJoin }: Props) {
   }, [track]);
   const join = () => {
     track({ name: 'share_join', screen: 'share.follow' });
+    rememberVia(value?.via ?? null);
     onJoin();
   };
   if (failed) {

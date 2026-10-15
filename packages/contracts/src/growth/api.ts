@@ -50,6 +50,16 @@ export const momentCardSchema = z.object({
 export const preparedCardSchema = z.object({ prepared: z.string().nullable(), link: z.string() });
 export type PreparedCard = z.infer<typeof preparedCardSchema>;
 
+// The ready message of a loop outside the moments (docs/123): a request with no offer into the group
+// of the district (loop 2), the free seats of a booked trip to a friend (loop 3).
+export const LOOP_CARD_PATH = '/me/loop-card';
+const ID = z.string().min(1).max(64);
+export const loopCardSchema = z.discriminatedUnion('loop', [
+  z.object({ loop: z.literal('req-share'), requestId: ID }),
+  z.object({ loop: z.literal('seats'), bookingId: ID }),
+]);
+export type LoopCard = z.infer<typeof loopCardSchema>;
+
 // «Hikoyamga joylash»: the Mini App draws the card, the API keeps it a day behind a public link
 // (stories/, docs/117) like the story of a trip.
 export const MOMENT_STORY_PATH = '/me/moment/story';

@@ -1,5 +1,5 @@
 import type { Arrival } from '@platform/contracts';
-import { startParam, startVia } from './launch-param';
+import { rememberedVia, startParam, startVia } from './launch-param';
 
 // The kind of the link (find, trip, sub ...) or «direct» without one (docs/89 S3).
 const KIND = /^[a-z]{1,16}(?=_|$)/u;
@@ -9,7 +9,7 @@ const DIRECT = 'direct';
 // source and the Telegram app with its engine. Only marks and names, never the ids of the link.
 export function launchArrival(client: string): Arrival {
   const start = startParam();
-  const via = startVia();
+  const via = startVia() ?? rememberedVia();
   const source = start === null ? DIRECT : (KIND.exec(start)?.[0] ?? 'other');
   return { source, ...(via ? { via } : {}), client };
 }

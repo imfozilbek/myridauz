@@ -52,3 +52,8 @@
   color: var(--reg-to);
   cursor: pointer;
 }
+
+/* «Tumaningiz guruhiga yuboring» while no driver answered (G69, docs/123 loop 2). */
+.my-request .loop-invite {
+  margin: 12px 14px 0;
+}

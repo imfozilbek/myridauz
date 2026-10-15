@@ -1,4 +1,5 @@
 import type { BrandColors } from '@platform/brands';
+import { box, fitted, STORY, storyCanvas, storyJpeg, write, type Paint } from '../media/story-paint';
 
 // The picture of a story (docs/88 L19), drawn like the story of the brand kit (docs/38):
 // the brand color, a white card with the route, the price and the logo.
@@ -14,35 +15,9 @@ export type StoryTexts = {
   readonly slogan: string;
 };
 
-const WIDTH = 1080;
-const HEIGHT = 1920;
+const WIDTH = STORY.width;
 const CARD = { x: 90, y: 380, width: 900, height: 1120, radius: 50 };
 const INSIDE = { left: 150, right: 930, text: 262 };
-const JPEG_QUALITY = 0.9;
-
-type Paint = CanvasRenderingContext2D;
-
-const box = (paint: Paint, x: number, y: number, width: number, height: number, radius: number) => {
-  paint.beginPath();
-  paint.roundRect(x, y, width, height, radius);
-  paint.fill();
-};
-
-// A long name gets smaller until it fits: «Qoraqalpogʻiston Respublikasi» stays on one line.
-const fitted = (paint: Paint, text: string, weight: number, size: number, maxWidth: number, font: string) => {
-  let current = size;
-  paint.font = `${weight} ${current}px ${font}`;
-  while (paint.measureText(text).width > maxWidth && current > size / 2) {
-    current -= 2;
-    paint.font = `${weight} ${current}px ${font}`;
-  }
-};
-
-const write = (paint: Paint, text: string, x: number, y: number, color: string, align: CanvasTextAlign) => {
-  paint.fillStyle = color;
-  paint.textAlign = align;
-  paint.fillText(text, x, y);
-};
 
 function drawStop(
   paint: Paint,
@@ -92,13 +67,11 @@ function drawCard(paint: Paint, texts: StoryTexts, colors: BrandColors, font: st
 
 // null: the browser cannot draw (no canvas), the button stays hidden.
 export async function drawStory(texts: StoryTexts, colors: BrandColors, font: string): Promise<Blob | null> {
-  const canvas = document.createElement('canvas');
-  canvas.width = WIDTH;
-  canvas.height = HEIGHT;
-  const paint = canvas.getContext('2d');
-  if (!paint) return null;
+  const drawn = storyCanvas();
+  if (!drawn) return null;
+  const { canvas, paint } = drawn;
   paint.fillStyle = colors.brandStrong;
-  paint.fillRect(0, 0, WIDTH, HEIGHT);
+  paint.fillRect(0, 0, WIDTH, STORY.height);
   paint.font = `800 110px ${font}`;
   write(paint, texts.title, WIDTH / 2, 290, colors.bg, 'center');
   drawCard(paint, texts, colors, font);
@@ -108,5 +81,5 @@ export async function drawStory(texts: StoryTexts, colors: BrandColors, font: st
   write(paint, texts.brandName.charAt(0).toUpperCase(), WIDTH / 2, 1695, colors.brandStrong, 'center');
   paint.font = `600 56px ${font}`;
   write(paint, texts.slogan, WIDTH / 2, 1830, colors.bg, 'center');
-  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
+  return storyJpeg(canvas);
 }

@@ -16,6 +16,7 @@ export { createWalletClient, type WalletClient } from './wallet-client';
 export { createChatClient, type ChatClient } from './chat-client';
 export { createSubscriptionsClient, type SubscriptionsClient } from './subscriptions-client';
 export { createComfortClient, type ComfortClient } from './comfort-client';
+export { createGrowthClient, type GrowthClient } from './growth-client';
 export { createFeedbackClient, type FeedbackClient } from './feedback-client';
 export { createStatsClient, type StatsClient } from './stats-client';
 export { createCallsClient, type CallsClient } from './calls-client';

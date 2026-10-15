@@ -20,6 +20,7 @@ const TRIP: SharedTrip = {
   dropoffPoint: { lat: 39.65, lng: 66.97 },
   status: 'on_the_way',
   followers: 1,
+  via: 'follow-a1b2c3',
 };
 
 const open = (trip: SharedTrip = TRIP) =>

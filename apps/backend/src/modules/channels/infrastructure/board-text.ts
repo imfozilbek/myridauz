@@ -1,4 +1,11 @@
-import { botStartLink, channelVia, tashkentDate, tripBookLink, withVia, type Trip } from '@platform/contracts';
+import {
+  botStartLink,
+  channelVia,
+  tashkentDate,
+  tripBookLink,
+  withVia,
+  type Trip,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
