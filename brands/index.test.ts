@@ -11,6 +11,8 @@ describe('loadBrand', () => {
     });
     expect(loadBrand()).toBe(loadBrand('rida', 'production'));
     expect(loadBrand().channels).toHaveLength(67);
+    // The main bot of production: owner decision 15.10.2026 (docs/181).
+    expect(loadBrand().bots.main).toBe('ridauz_bot');
   });
 
   // docs/179: the team works on the first account with its own name, address, bots and channels.
