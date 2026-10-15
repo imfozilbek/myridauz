@@ -58,4 +58,6 @@
 4. Копии D1 в R2.
 5. Карта из публичного R2.
 
+Остальное (Mini App из Worker на одном адресе с API, Smart Placement, `delaySeconds`, Web Analytics на Mini App, Email Routing, D1 read replication) делает цель G85 после запуска (`goals/G85-cloudflare-polish.md`, решение владельца 15.10.2026).
+
 Источники: developers.cloudflare.com (Workers limits, Static Assets, R2 pricing и public buckets, Placement, Rate Limiting binding и changelog 2025-09-19, D1 read replication, Workflows, Workers AI, KV, Images, Workers Logs).
