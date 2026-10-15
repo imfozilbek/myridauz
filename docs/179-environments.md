@@ -70,7 +70,7 @@
 
 | № | Кто | Что |
 |---|---|---|
-| 1 | Владелец | GitHub → Settings → Environments: новый `internal` с `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` первого аккаунта (те же, что в `production`). Переименовать Environment в GitHub нельзя; `production` пока не трогать |
+| 1 | Владелец | GitHub → Settings → Environments → `internal`: `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` первого аккаунта (те же, что в `production`). GitHub создаёт `internal` сам при первом запуске `deploy-internal`, пустым: без секретов выкладка останавливается и называет их. Переименовать Environment в GitHub нельзя; `production` пока не трогать |
 | 2 | Владелец | `@myrida_poster_bot` админ в «MyRida \| Viloyatlar»: публикация, редактирование и удаление сообщений, добавление подписчиков; одно сообщение в канале |
 | 3 | Владелец | Переменная окружения Claude `INTERNAL_POSTER_BOT_TOKEN`, потом новая сессия (`32`). В чат никогда |
 | 4 | Claude | Номер канала (`getUpdates`) и ссылка-приглашение с одобрением заявок (бот) → `environments.ts`; полный стенд; PR; слияние |
