@@ -17,6 +17,7 @@ import { botEventOf } from './bot-events';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
+import { onMainUpdate } from './main-bot';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
 import { brandOf } from '../shared/brand/brand-of';
@@ -52,6 +53,7 @@ export function webhookRoutes(fetch: Fetch) {
 // The answer to one update of a bot: a reply method for Telegram, or nothing to do.
 async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data: TelegramUpdate) {
   if (role === SUPPORT_BOT) return data.message ? onSupportMessage(bot, data.message) : {};
+  if (role === 'main') return onMainUpdate(bot, data);
   const query = data.callback_query;
   if (query) {
     if (role === 'admin') return onAdminCallback(bot, query);

@@ -40,6 +40,7 @@ import { teamRole } from './modules/team';
 import { tripFacts, tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
+import { waitlistModule } from './modules/waitlist';
 import { telegramAuth } from './shared/auth/telegram-auth';
 import { allowMap, allowMiniApps, allowPublic } from './shared/http/cors';
 import { notFound, onServerError } from './shared/http/errors';
@@ -53,9 +54,9 @@ export const app = new Hono<AppEnv>()
   // The limits the owner set reach every rule of this request (G75, docs/128 §4).
   .use('*', freshLimits)
   .use('/analytics', allowMiniApps, rateLimit('ANALYTICS_LIMIT', 'analytics'))
-  // CORS goes first: a browser preflight carries no Telegram signature.
-  // "/me/*" also matches "/me".
+  // CORS goes first: a browser preflight carries no Telegram signature. "/me/*" also matches "/me".
   .use('/me/*', allowMiniApps, auth)
+  .use('/waitlist/*', allowMiniApps, auth)
   .use('/users/*', allowMiniApps, auth)
   .use('/driver/*', allowMiniApps, auth, blockedGuard)
   .use('/admin/*', allowMiniApps, auth, blockedGuard)
@@ -122,6 +123,7 @@ export const app = new Hono<AppEnv>()
   .route('/', teamScreens)
   .route('/', bookingsModule)
   .route('/', walletModule)
+  .route('/', waitlistModule)
   .route(
     '/',
     chatRoutes(async (env, key, userId) => {

@@ -22,6 +22,8 @@ export type Bindings = {
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;
   readonly SUPPORT_BOT_TOKEN?: string;
+  // The main bot of the waitlist and its questionnaire (G83, docs/181).
+  readonly MAIN_BOT_TOKEN?: string;
   // The bot of the channels (docs/176): the admin of every channel, it posts, edits and counts there.
   readonly POSTER_BOT_TOKEN?: string;
   readonly TELEGRAM_WEBHOOK_SECRET?: string;

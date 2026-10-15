@@ -83,6 +83,12 @@ describe('toDataPoint', () => {
     expect(detail({ name: 'dock_state', state: 'offers', ...base })).toBe('offers');
   });
 
+  it('names the role of a waitlist step in its code (G83, docs/183)', () => {
+    const step = { name: 'waitlist_step', step: 'pains', ...base, app: 'main' } as const;
+    expect(toDataPoint({ ...step, role: 'driver' }, 1).blobs[5]).toBe('driver.pains');
+    expect(toDataPoint({ ...step, step: 'opened' }, 1).blobs[5]).toBe('opened');
+  });
+
   it('writes a bot event of the backend with its bot and id (G12)', () => {
     const point = serverDataPoint({ name: 'bot_command', source: 'driver', code: 'start' }, 5);
     expect(point).toEqual({

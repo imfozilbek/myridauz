@@ -16,6 +16,8 @@ import { ManageGroup, ManagePage, ManageRow } from './manage-page';
 import { useManagementHints } from './management-hints';
 import { PeopleScreen } from './people-screen';
 import { TeamScreen } from './team-screen';
+import { AdLinksScreen } from '../waitlist/team/ad-links-screen';
+import { ListGroup } from '../waitlist/team/list-group';
 
 type Back = { readonly onBack: () => void };
 const SCREENS = {
@@ -30,11 +32,12 @@ const SCREENS = {
   journal: JournalScreen,
   company: CompanyScreen,
   sounds: SoundsScreen,
+  ads: AdLinksScreen,
 } satisfies Record<string, ComponentType<Back>>;
 type Open = 'menu' | 'statistics' | keyof typeof SCREENS;
 
 // «Boshqaruv» of the owner in 4 groups (G75, docs/120, mockup g67/2 screen 6): people and trips,
-// money, places, and Rida itself; «Cheklovlar» and «Jurnal» go last, after the rows of the mockup. A moderator never opens it: the server refuses the changes too.
+// money, places, and Rida itself, under «Kutish roʻyxati» of the waitlist (G83, mockup 8-team-switch); «Cheklovlar» and «Jurnal» go last, after the rows of the mockup. A moderator never opens it: the server refuses the changes too.
 export function ManagementScreen({ onBack }: Back) {
   useScreenView('management');
   const { t } = useI18n();
@@ -49,6 +52,7 @@ export function ManagementScreen({ onBack }: Back) {
   }
   return (
     <ManagePage title={t('common.admin.management')} hint={t('manage.ownerOnly')} onBack={onBack}>
+      <ListGroup onAds={() => setOpen('ads')} />
       <ManageGroup title={t('manage.group.people')}>
         <ManageRow
           icon="passengers"

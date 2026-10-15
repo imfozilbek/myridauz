@@ -96,6 +96,10 @@
   "entry.teamAdd": "Jamoaga qoʻshildi",
   "entry.teamRemove": "Jamoadan olindi",
   "entry.limit": "{name}: {value}",
+  "entry.listOpen": "Roʻyxatga yozish ochildi",
+  "entry.listClose": "Roʻyxatga yozish yopildi",
+  "entry.directionOpen": "Yoʻnalish ochildi",
+  "entry.adLink": "Reklama havolasi yaratildi",
   "channel.noPost": "Bot yoza olmaydi",
   "channel.failed": "{count} post bormadi"
 }

@@ -22,26 +22,20 @@ import {
   createSoundsClient,
   createLimitsClient,
   createTeamClient,
+  createWaitlistClient,
 } from '@platform/api-client';
 import { brandForApp, loadBrand } from '@platform/brands';
 import { QUIET_API_ERRORS, type MiniApp } from '@platform/contracts';
 import { StrictMode, type ComponentType } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AccountGate } from './account/account-gate';
 import type { Welcome } from './account/registration/registration-flow';
-import { TeamGate } from './account/team-gate';
+import { AppGates } from './app-gates';
 import { AppShell } from './app-shell';
-import { DriverGate } from './driver/driver-gate';
-import { FeedProvider } from './feed/feed-provider';
-import { LaunchLinks } from './launch-links';
-import { FollowGate } from './follow/follow-gate';
-import { LegalGate } from './legal/legal-gate';
 import { markExpired } from './network/session-expired';
 import { unlockAudio } from './sounds/audio';
-import { loadSounds, playNotify } from './sounds/brand-sound';
+import { loadSounds } from './sounds/brand-sound';
 import { reportCrashes } from './states/report-crashes';
 import { TelegramOnly } from './states/telegram-only';
-import { onAppVisible } from './telegram/app-visible';
 import { initTelegram } from './telegram/init-telegram';
 import { markLowMotion } from './telegram/low-motion';
 
@@ -58,7 +52,8 @@ type MountOptions = { readonly welcome?: Welcome };
 export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOptions = {}): void {
   const container = document.getElementById(ROOT_ID);
   if (!container) throw new Error('ui.root_missing');
-  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app);
+  // The questionnaire of the main bot starts in the colors of the passenger (G83, docs/181).
+  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app === 'main' ? 'passenger' : app);
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
   markLowMotion();
@@ -102,6 +97,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     sounds: createSoundsClient(signed),
     limits: createLimitsClient(signed),
     team: createTeamClient(signed),
+    waitlist: createWaitlistClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).
@@ -120,26 +116,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     <StrictMode>
       <AppShell brand={brand} analytics={analytics} locations={locations} clients={clients} session={session}>
         <TelegramOnly app={app} required={import.meta.env.PROD}>
-          <FeedProvider connect={feed.socketUrl} onWake={onAppVisible} onSignal={() => playNotify()}>
-            {welcome ? (
-              // Only the passenger app is opened from a shared trip card (docs/43).
-              <FollowGate enabled={app === 'passenger'}>
-                <LegalGate>
-                  <AccountGate app={app} client={users} welcome={welcome}>
-                    <DriverGate enabled={app === 'driver'}>
-                      <LaunchLinks app={app}>
-                        <Page />
-                      </LaunchLinks>
-                    </DriverGate>
-                  </AccountGate>
-                </LegalGate>
-              </FollowGate>
-            ) : (
-              <TeamGate client={users}>
-                <Page />
-              </TeamGate>
-            )}
-          </FeedProvider>
+          <AppGates app={app} welcome={welcome} users={users} connect={feed.socketUrl} Page={Page} />
         </TelegramOnly>
       </AppShell>
     </StrictMode>,

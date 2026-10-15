@@ -1,0 +1,67 @@
+/* The ad links of the team (G83): the values of the approved mockup 7-team-ad-links. */
+.ad-chips {
+  display: grid;
+  gap: 6px;
+  padding: 0 14px 10px;
+}
+
+.ad-chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ad-chip-on {
+  border-color: var(--reg-strong);
+  color: var(--reg-text);
+}
+
+.ad-field {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 28px);
+  margin: 0 14px 6px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--reg-card);
+  font: inherit;
+  font-size: 16px;
+  color: var(--reg-ink);
+}
+
+.ad-field::placeholder {
+  color: var(--reg-control);
+}
+
+.ad-link-box {
+  margin: 0 14px 12px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--reg-card);
+  font-family: 'DejaVu Sans Mono', monospace;
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.ad-hint {
+  margin: 0;
+  padding: 0 30px 12px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--reg-muted);
+}
+
+.ad-lines {
+  display: block;
+}

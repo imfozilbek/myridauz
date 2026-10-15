@@ -7,6 +7,10 @@ import { ManagePage } from '../manage/manage-page';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
+import { DirectionScreen } from '../waitlist/team/direction-screen';
+import { DirectionsScreen } from '../waitlist/team/directions-screen';
+import { GoldSections } from '../waitlist/team/gold-sections';
+import { WaitingBlock } from '../waitlist/team/waiting-block';
 import { StatsSections } from './stats-sections';
 import { usePeriodStats } from './use-period-stats';
 
@@ -32,8 +36,14 @@ export function StatsScreen({
     forgetLaunchParam(PARAM);
   }, []);
   const { shown, failed, reload } = usePeriodStats(period);
+  // «Kutayotganlar» on top opens a direction or all of them (G83, docs/181).
+  const [direction, setDirection] = useState<string | null>(null);
+  const [all, setAll] = useState(false);
+  if (direction) return <DirectionScreen region={direction} onBack={() => setDirection(null)} />;
+  if (all) return <DirectionsScreen onDirection={setDirection} onBack={() => setAll(false)} />;
   return (
     <ManagePage title={t('stats.title')} onBack={onBack}>
+      <WaitingBlock onDirection={setDirection} onAll={() => setAll(true)} />
       <ManageChips
         label={t('stats.title')}
         chips={STATS_PERIODS.map((id) => ({ id, label: t(`stats.period.${id}`) }))}
@@ -43,7 +53,7 @@ export function StatsScreen({
       {failed ? (
         <ErrorScreen onRetry={reload} />
       ) : shown ? (
-        <StatsSections stats={shown} />
+        <StatsSections stats={shown} gold={<GoldSections period={period} />} />
       ) : (
         <ScreenSkeleton />
       )}

@@ -20,6 +20,8 @@ export const brandConfig: BrandConfig = {
     driver: 'myrida_haydovchi_bot',
     admin: 'myrida_admin_bot',
     support: 'myrida_support_bot',
+    // The main bot «MyRida» of the waitlist (owner decision 14.10.2026, docs/181).
+    main: 'myridauz_bot',
   },
   channels,
   mainChannel: 'rida1uz',

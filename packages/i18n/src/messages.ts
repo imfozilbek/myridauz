@@ -5,6 +5,8 @@ import botChannel from '../locales/uz-Latn/bot-channel.json' with { type: 'json'
 import botCard from '../locales/uz-Latn/bot-card.json' with { type: 'json' };
 import botDriver from '../locales/uz-Latn/bot-driver.json' with { type: 'json' };
 import botTeam from '../locales/uz-Latn/bot-team.json' with { type: 'json' };
+// The main bot of the waitlist (G83, docs/182).
+import botMain from '../locales/uz-Latn/bot-main.json' with { type: 'json' };
 import calls from '../locales/uz-Latn/calls.json' with { type: 'json' };
 import comfort from '../locales/uz-Latn/comfort.json' with { type: 'json' };
 import channels from '../locales/uz-Latn/channels.json' with { type: 'json' };
@@ -37,6 +39,10 @@ import driverAfter from '../locales/uz-Latn/driver-after.json' with { type: 'jso
 import team from '../locales/uz-Latn/team.json' with { type: 'json' };
 import navbat from '../locales/uz-Latn/navbat.json' with { type: 'json' };
 import manage from '../locales/uz-Latn/manage.json' with { type: 'json' };
+// The questionnaire of the waitlist (G83, docs/182).
+import waitlist from '../locales/uz-Latn/waitlist.json' with { type: 'json' };
+import waitlistTeam from '../locales/uz-Latn/waitlist-team.json' with { type: 'json' };
+import ads from '../locales/uz-Latn/ads.json' with { type: 'json' };
 import type { Locale } from './config';
 
 // uz-Latn is the reference: its keys are the only valid keys (docs/13).
@@ -44,7 +50,7 @@ const REFERENCE = {
   account,
   bookings,
   // One namespace in files of at most 150 lines (docs/11): the channel posts and the cards apart.
-  bot: { ...bot, ...botChannel, ...botCard, ...botDriver, ...botTeam },
+  bot: { ...bot, ...botChannel, ...botCard, ...botDriver, ...botTeam, ...botMain },
   calls,
   comfort,
   channels,
@@ -77,6 +83,10 @@ const REFERENCE = {
   team,
   navbat,
   manage,
+  waitlist,
+  // The waitlist of the team and the links of the ads (G83, docs/183, docs/184).
+  waitlistTeam,
+  ads,
 };
 type Namespaces = typeof REFERENCE;
 export type TranslationKey = {

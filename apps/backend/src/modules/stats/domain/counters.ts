@@ -8,11 +8,11 @@ export type Counter = {
   readonly events: number;
 };
 
-// A funnel step matches events by name and, when set, by Mini App and code.
+// A funnel step matches events by name and, when set, by Mini App and code: one, or any of some.
 export type StepMatch = {
   readonly name: string;
   readonly app?: string;
-  readonly code?: string;
+  readonly code?: string | readonly string[];
   // Steps done in another session (by the other side or the server) are counted by events.
   readonly by: 'sessions' | 'events';
 };
@@ -23,6 +23,7 @@ export const countOf = (counters: readonly Counter[], match: StepMatch): number 
       (row) =>
         row.name === match.name &&
         (match.app === undefined || row.app === match.app) &&
-        (match.code === undefined || row.code === match.code),
+        (match.code === undefined ||
+          (typeof match.code === 'string' ? row.code === match.code : match.code.includes(row.code))),
     )
     .reduce((sum, row) => sum + row[match.by], 0);

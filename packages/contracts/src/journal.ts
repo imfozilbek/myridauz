@@ -13,6 +13,8 @@ export const JOURNAL_KINDS = [
   'refund',
   'team',
   'limits',
+  // G83: the switch of the list, an opened direction, a new ad link (docs/181, docs/184).
+  'waitlist',
 ] as const;
 export type JournalKind = (typeof JOURNAL_KINDS)[number];
 

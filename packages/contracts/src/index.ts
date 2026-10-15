@@ -146,3 +146,4 @@ export * from './sounds';
 export * from './arrival';
 export * from './after-trip';
 export * from './one-at-a-time';
+export * from './waitlist';

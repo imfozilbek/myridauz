@@ -112,6 +112,11 @@ export const API_ERRORS = [
   'channels.bot_not_admin',
   'team.invalid_input',
   'team.not_found',
+  // The waitlist of G83 (docs/181, docs/184): closed for new people, a wrong answer, an ad link.
+  'waitlist.closed',
+  'waitlist.invalid_input',
+  'waitlist.not_found',
+  'waitlist.unavailable',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

@@ -11,7 +11,7 @@ import { botWelcome } from '../lib/welcome.mjs';
 const OUT = new URL('../../landing/bot/', import.meta.url);
 const AVATAR = 640;
 const JPEG_QUALITY = 90;
-const ROLES = ['passenger', 'driver', 'admin', 'support'];
+const ROLES = ['passenger', 'driver', 'admin', 'support', 'main'];
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
 const page = await browser.newPage();
@@ -29,6 +29,6 @@ async function save(name, body, width, height, type) {
 fs.mkdirSync(OUT, { recursive: true });
 // The splash of Telegram before the Mini App (BotFather, docs/121 §4, OPS-05): one white «R».
 fs.writeFileSync(new URL('miniapp-splash.svg', OUT), splash());
-for (const role of ['driver', 'passenger', 'support']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
+for (const role of ['driver', 'passenger', 'support', 'main', 'main-open']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
 for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
 await browser.close();

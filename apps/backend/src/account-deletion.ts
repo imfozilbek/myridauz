@@ -12,6 +12,7 @@ import { forgetFollows } from './modules/shares';
 import { forgetSupport } from './modules/support';
 import { wireAccountDeletion } from './modules/users';
 import { closeWalletOf } from './modules/wallet';
+import { forgetWaitlist } from './modules/waitlist';
 
 // "Maʼlumotlarimni oʻchirish" (docs/30): what each module forgets of a deleted person. Here, next to
 // module-events.ts, because it knows every module. The users module erases the profile itself.
@@ -38,6 +39,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetTripViews(env, userId);
   // Who is in which channel goes too (docs/176).
   await forgetChannelMembers(env, userId);
+  // The records of the waitlist, its first touch and its joins by an ad (G83, docs/181).
+  await forgetWaitlist(env, userId);
   await forgetRequestViews(env, userId);
   // The support talk goes with the account (G32, docs/30).
   await forgetSupport(env, userId);
