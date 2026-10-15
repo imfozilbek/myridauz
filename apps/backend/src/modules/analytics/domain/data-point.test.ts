@@ -89,6 +89,16 @@ describe('toDataPoint', () => {
     expect(toDataPoint({ ...step, step: 'opened' }, 1).blobs[5]).toBe('opened');
   });
 
+  it('writes the loop and the place of a share, and the direction of a search (G69, docs/123)', () => {
+    const shown = { name: 'share_shown', button: 'req-share', ...base } as const;
+    expect(toDataPoint(shown, 1).blobs[5]).toBe('req-share');
+    expect(toDataPoint({ ...shown, name: 'share_done', target: 'story' }, 1).blobs[5]).toBe(
+      'req-share.story',
+    );
+    const search = { name: 'trip_search', result: 'found', route: '1726-1718', ...base } as const;
+    expect(toDataPoint(search, 1).blobs.slice(5)).toEqual(['found', '1726-1718']);
+  });
+
   it('writes a bot event of the backend with its bot and id (G12)', () => {
     const point = serverDataPoint({ name: 'bot_command', source: 'driver', code: 'start' }, 5);
     expect(point).toEqual({

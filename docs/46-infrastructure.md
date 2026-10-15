@@ -53,17 +53,19 @@
 
 ## Где лежат секреты
 
-| Секрет | Где | Кто видит |
-|---|---|---|
-| Токены 6 ботов своей среды (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80, `MAIN_BOT_TOKEN` общего бота с G83), свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker каждой среды (`wrangler secret`) | Только Worker |
-| `ANALYTICS_API_TOKEN`, `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker | Только Worker |
-| `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`) | Секреты Worker | Только Worker |
-| `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal` (первый аккаунт); `production` (новый) вернётся с продом (`179`) | Только job `deploy-internal` на `main` |
-| Токен Claude и ключи для настройки | Переменные окружения сессии Claude | Только Claude |
+Карта всех ключей обеих сред и права токенов: `179` («Ключи обеих сред»), источник правды: `dream-infra`, `docs/18-rida-keys.md`.
 
-- `ANALYTICS_API_TOKEN` сейчас равен токену деплоя (решение владельца 29.09.2026). Позже заменить
-  на токен только для чтения Account Analytics.
-- В репозитории и в CI для PR секретов нет (`32`).
+| Секрет | Где | Кто кладёт |
+|---|---|---|
+| Токены 6 ботов своей среды (`PASSENGER_`, `DRIVER_`, `ADMIN_`, `SUPPORT_`, `POSTER_`, `MAIN_BOT_TOKEN`) | Секреты Worker своей среды | Владелец (BotFather → панель Cloudflare); Cron сам настраивает ботов |
+| `TELEGRAM_WEBHOOK_SECRET` (свой в каждой среде), `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` | Секреты Worker | Claude (`wrangler secret`) |
+| `ANALYTICS_API_TOKEN`: токен `rida-<среда>-analytics`, только Account Analytics: Read | Секреты Worker | Владелец |
+| `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`): свои у каждого аккаунта | Секреты Worker | Позже, со звонками |
+| `CLOUDFLARE_API_TOKEN` (`rida-<среда>-deploy`), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal`; `production` вернётся с продом (`179`) | Владелец |
+| `CLOUDFLARE_*`, `PROD_CLOUDFLARE_*` (`rida-<среда>-claude`) | Окружение Claude: только эти 4 переменные, без токенов ботов | Владелец |
+
+- `ANALYTICS_API_TOKEN` больше не равен токену деплоя: карта владельца 15.10.2026 заменяет решение 29.09.2026.
+- В репозитории, в CI для PR и в чате секретов нет (`32`).
 
 ## Деплой
 

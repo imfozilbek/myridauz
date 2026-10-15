@@ -13,25 +13,27 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
   const code =
     event.name === 'waitlist_step' && event.role
       ? `${event.role}.${event.step}`
-      : 'source' in event && event.source
-        ? event.source
-        : 'code' in event
-          ? event.code
-          : 'step' in event
-            ? event.step
-            : 'result' in event
-              ? event.result
-              : 'method' in event
-                ? event.method
-                : 'length' in event
-                  ? String(event.length)
-                  : 'navigator' in event
-                    ? event.navigator
-                    : 'target' in event
-                      ? event.target
-                      : 'state' in event
-                        ? event.state
-                        : '';
+      : 'button' in event
+        ? [event.button, event.target].filter(Boolean).join('.')
+        : 'source' in event && event.source
+          ? event.source
+          : 'code' in event
+            ? event.code
+            : 'step' in event
+              ? event.step
+              : 'result' in event
+                ? event.result
+                : 'method' in event
+                  ? event.method
+                  : 'length' in event
+                    ? String(event.length)
+                    : 'navigator' in event
+                      ? event.navigator
+                      : 'target' in event
+                        ? event.target
+                        : 'state' in event
+                          ? event.state
+                          : '';
   // What broke a screen follows its code (G52, docs/112). The first screen of a session keeps the
   // platform in the same place and the mark of the source after it (G55, docs/116); so does the ready app.
   const crash =
@@ -41,7 +43,9 @@ export function toDataPoint(event: AnalyticsEvent, receivedAt: number): DataPoin
         ? ['', '', event.client ?? '', '', event.via ?? '']
         : event.name === 'app_ready'
           ? ['', '', event.client ?? '']
-          : [];
+          : event.name === 'trip_search' && event.route
+            ? [event.route] // G69: the direction of the search for «Rost» (docs/123)
+            : [];
   // The time of the first screen is a number of its own (G72, docs/121 §4).
   const ready = event.name === 'app_ready' ? [event.ms] : [];
   return {

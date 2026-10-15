@@ -1,8 +1,7 @@
 import { Hono } from 'hono';
 import { tripBookLink, VIA_STORY, type Booking } from '@platform/contracts';
 import type { AppEnv, Bindings } from '../../env';
-import { createMemoryImages } from '../../shared/storage/memory-images';
-import { r2Images } from '../../shared/storage/r2-images';
+import { storiesOf } from '../../shared/storage/stories';
 import { placesOf } from '../locations';
 import { notify } from '../notifications';
 import type { DriverTrip, SharedBooking, SharesDeps, ShareUpdate } from './application/ports';
@@ -13,11 +12,11 @@ import { storyRoutes } from './http/story-routes';
 import { d1Shares } from './infrastructure/d1-shares';
 import { createMemoryShares } from './infrastructure/memory-shares';
 import { prepareCard } from '../../shared/telegram/prepared-card';
-import { shareTexts } from './infrastructure/share-texts';
+import { cardWords, shareTexts } from './infrastructure/share-texts';
+import { personVia } from '../growth';
 import { brandOf } from '../../shared/brand/brand-of';
 
 const localShares = createMemoryShares();
-const localStories = createMemoryImages();
 // The card's button opens the passenger bot, which gives the Mini App in the follow mode (docs/43).
 const FOLLOW_START = 'follow_';
 
@@ -39,14 +38,16 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
   ...base(env),
   booking: (id) => bookingOf(env, id),
   driverTrip: (id) => driverTripOf(env, id),
-  prepare: (bot, userId, text, link) =>
+  prepare: (bot, userId, text, link, via) =>
     prepareCard(
       (input, init) => fetch(input, init),
       bot === 'passenger' ? env.PASSENGER_BOT_TOKEN : env.DRIVER_BOT_TOKEN,
       userId,
       text,
       link,
+      cardWords(brandOf(env).bots.passenger, via),
     ),
+  via: (userId) => personVia(env, userId, 'follow'),
   followers: brandOf(env).shares.followers,
   now: Date.now,
 });
@@ -54,7 +55,7 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
 // The story opens the trip in the passenger bot, like the button of a channel post (docs/15).
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
-  stories: env.MEDIA ? r2Images(env.MEDIA) : localStories,
+  stories: storiesOf(env),
   bookLink: (tripId: string) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_STORY),
 });
 

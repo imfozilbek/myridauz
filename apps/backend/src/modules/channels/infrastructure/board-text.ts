@@ -1,4 +1,11 @@
-import { channelVia, tashkentDate, tripBookLink, withVia, type Trip } from '@platform/contracts';
+import {
+  botStartLink,
+  channelVia,
+  tashkentDate,
+  tripBookLink,
+  withVia,
+  type Trip,
+} from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import type { Places } from '../../../shared/places/end-names';
@@ -78,7 +85,7 @@ function buttons(channel: TeamChannel, first: Trip, places: Places, site: Site, 
   const shared = `https://t.me/share/url?url=${encodeURIComponent(channel.link)}&text=${encodeURIComponent(share)}`;
   return {
     inline_keyboard: [
-      [{ text: t('bot.board.find'), url: `https://t.me/${site.bot}?startapp=${withVia('', via)}` }],
+      [{ text: t('bot.board.find'), url: botStartLink(site.bot, via) }],
       [
         { text: t('bot.board.subscribe'), url: subscribe },
         { text: t('bot.channel.share'), url: shared },

@@ -69,13 +69,14 @@ describe('"Yaqinlarimga yuborish" (docs/43)', () => {
     const created = await read<{ preparedMessageId: string; link: string }>(share());
     expect(created.preparedMessageId).toBe('prepared-1');
     expect(created.link).toMatch(/^https:\/\/t\.me\/.+\?start=follow_[\w-]{43}$/u);
-    expect(telegram.find((item) => item.method === 'savePreparedInlineMessage')?.body.user_id).toBe(
-      passenger,
-    );
+    const prepared = telegram.find((item) => item.method === 'savePreparedInlineMessage')?.body;
+    expect(prepared?.user_id).toBe(passenger);
+    // The last line calls close people to the brand too (G69, docs/123 loop 4).
+    expect(JSON.stringify(prepared)).toMatch(/\\n\\nSiz ham \w+ bilan yoʻlga chiqing\."/u);
     const token = tokenOf(created.link);
     expect((await shared('x'.repeat(43))).status).toBe(404);
     const trip = await read<Record<string, unknown>>(shared(token));
-    expect(trip).toMatchObject({ passengerName: 'Ali', plate: '01A123BC', status: 'waiting' });
+    expect(trip).toMatchObject({ passengerName: 'Ali', plate: '01A123BC', status: 'waiting', via: null });
     // Close people see where the passenger boards and gets off (the owner, docs/111 Q1).
     expect(trip).toMatchObject({ meetingPoint: { lat: 41.292 }, dropoffPoint: { lat: 39.6547 } });
     for (const id of CLOSE.slice(0, 5))

@@ -1,4 +1,4 @@
-import type { Booking, Share, SharedTrip } from '@platform/contracts';
+import type { Booking, Share, SharedTrip, SharedView } from '@platform/contracts';
 import { hashToken, openUntil, shareStatus, type ShareSubject } from '../domain/share';
 import { driverShared } from './driver-shares';
 import { issueLink, tellAll } from './links';
@@ -25,7 +25,7 @@ export async function stopSharing(deps: SharesDeps, passengerId: number, booking
   return true;
 }
 
-function bookingShared(deps: SharesDeps, booking: Booking, followers: number): SharedTrip | null {
+function bookingShared(deps: SharesDeps, booking: Booking, followers: number): SharedView | null {
   const { trip } = booking;
   if (deps.now() > openUntil(trip.departAt, trip.km)) return null;
   return {
@@ -49,7 +49,7 @@ function bookingShared(deps: SharesDeps, booking: Booking, followers: number): S
 async function openShare(
   deps: SharesDeps,
   token: string,
-): Promise<{ readonly subject: ShareSubject; readonly trip: SharedTrip } | null> {
+): Promise<{ readonly subject: ShareSubject; readonly trip: SharedView; readonly sharedBy: number } | null> {
   const share = await deps.shares.find(await hashToken(token));
   if (!share || share.revokedAt !== null) return null;
   const { subject } = share;
@@ -57,15 +57,18 @@ async function openShare(
   if (subject.kind === 'trip') {
     const trip = await deps.driverTrip(subject.id);
     const view = trip ? driverShared(trip, followers, deps.now()) : null;
-    return view && { subject, trip: view };
+    return trip && view ? { subject, trip: view, sharedBy: trip.driverId } : null;
   }
-  const booking = (await deps.booking(subject.id))?.view;
-  const view = booking ? bookingShared(deps, booking, followers) : null;
-  return view && { subject, trip: view };
+  const booking = await deps.booking(subject.id);
+  const view = booking ? bookingShared(deps, booking.view, followers) : null;
+  return booking && view ? { subject, trip: view, sharedBy: booking.passengerId } : null;
 }
 
-export const sharedTrip = async (deps: SharesDeps, token: string) =>
-  (await openShare(deps, token))?.trip ?? null;
+// The trip with the mark of the one who shared it: «Men ham yoʻlga chiqaman» carries it (G69).
+export async function sharedTrip(deps: SharesDeps, token: string): Promise<SharedTrip | null> {
+  const opened = await openShare(deps, token);
+  return opened && { ...opened.trip, via: await deps.via(opened.sharedBy) };
+}
 
 // "Xabar olish": a close person gets bot messages about the trip, at most 5 people.
 export async function follow(

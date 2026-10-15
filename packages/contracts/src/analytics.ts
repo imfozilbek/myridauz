@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { crash, ready, route } from './analytics-fields';
 import { CLIENT_PATTERN, VIA_PATTERN } from './arrival';
 import { DOCK_STATES } from './dock-states';
+import { shareFields } from './growth';
 import { HOME_TARGETS } from './home-targets';
 import { NAVIGATORS } from './navigator';
 import { waitlistStepFields } from './waitlist/person';
@@ -40,8 +42,6 @@ const BOOKING_STEPS = [
 // The screen of the start and the end (G24, docs/29): how a point was chosen, and the funnel.
 const POINT_METHODS = ['map', 'search', 'location', 'recent', 'saved'] as const;
 const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
-// The splash never waits this long (docs/121 §4): a longer time is a mistake of the phone clock.
-const MAX_READY_MS = 120_000;
 
 // Normal states, not errors: not sent as api_error (G12); no signature gets «Telegramda oching» (G52).
 const QUIET = ['users.not_registered', 'drivers.not_found', 'auth.missing'];
@@ -56,28 +56,6 @@ const context = {
   sessionId: z.uuid(),
   version: z.string().max(32),
 };
-
-// G52: what broke a screen, to find it (docs/112). The class of the error and its words without
-// numbers or signs, never free text of a person; client: the Telegram platform, its version
-// and the engine with its major version («android 9.6 chrome 83»).
-const crash = {
-  error: z
-    .string()
-    .regex(/^[A-Za-z]{1,40}$/)
-    .optional(),
-  detail: z
-    .string()
-    .regex(/^[A-Za-z .,'()_:#-]{0,120}$/)
-    .optional(),
-  client: z.string().regex(CLIENT_PATTERN).optional(),
-  // The place in the build: «index-abc.js:95:12345», no words of a person (docs/112).
-  where: z
-    .string()
-    .regex(/^[A-Za-z0-9_.-]{1,80}\.js:\d{1,7}:\d{1,7}$/)
-    .optional(),
-};
-
-const ready = { ms: z.number().int().min(0).max(MAX_READY_MS), client: crash.client };
 
 export const analyticsEventSchema = z.discriminatedUnion('name', [
   // The first screen of a launch says where the person came from: the kind of the startapp link,
@@ -101,7 +79,8 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('driver_application_step'), step: z.enum(DRIVER_STEPS), ...context }),
   // Trips (G07): the steps of a new trip, a search and whether it found something, an opened trip.
   z.object({ name: z.literal('trip_step'), step: z.enum(TRIP_STEPS), ...context }),
-  z.object({ name: z.literal('trip_search'), result: z.enum(['found', 'empty']), ...context }),
+  // G69: the direction of a search, two regions (docs/123 «Rost»), never the places themselves.
+  z.object({ name: z.literal('trip_search'), result: z.enum(['found', 'empty']), route, ...context }),
   z.object({ name: z.literal('trip_open'), ...context }),
   // Bookings (G08): one event per step of the funnel; a refused confirmation carries the reason.
   z.object({ name: z.literal('booking_step'), step: z.enum(BOOKING_STEPS), ...context }),
@@ -143,5 +122,8 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('dock_state'), state: z.enum(DOCK_STATES), ...context }),
   // G83: a step of the waitlist questionnaire and the role it is for (docs/183).
   z.object({ name: z.literal('waitlist_step'), ...waitlistStepFields, ...context }),
+  // G69: a share button shown and used, by loop and place (docs/123).
+  z.object({ name: z.literal('share_shown'), ...shareFields, ...context }),
+  z.object({ name: z.literal('share_done'), ...shareFields, ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;

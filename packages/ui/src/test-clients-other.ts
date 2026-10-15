@@ -42,7 +42,7 @@ export const otherClients = (overrides: Overrides) => ({
     answerRefund: NOT_USED,
     ...overrides.feedback,
   },
-  stats: { get: NOT_USED, ...overrides.stats },
+  stats: { get: NOT_USED, rost: NOT_USED, ...overrides.stats },
   calls: { ice: NOT_USED, connect: NOT_USED, pull: NOT_USED, renegotiate: NOT_USED, ...overrides.calls },
   comfort: {
     favorites: NOT_USED,
@@ -104,5 +104,16 @@ export const otherClients = (overrides: Overrides) => ({
     createAd: NOT_USED,
     adLink: NOT_USED,
     ...overrides.waitlist,
+  },
+  // No moment by default: the screens show no celebration unless a test brings one (G69).
+  growth: {
+    mine: NOT_USED,
+    moment: async () => ({ moment: null, route: null, people: 0, link: '' }),
+    offered: NOT_USED,
+    momentCard: NOT_USED,
+    momentStory: NOT_USED,
+    qrPicture: NOT_USED,
+    loopCard: NOT_USED,
+    ...overrides.growth,
   },
 });

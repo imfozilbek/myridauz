@@ -13,7 +13,7 @@ import { HomeScreenRow } from './home-screen-row';
 import { NavigatorRow } from './navigator-row';
 import { ProfileGroup, ProfileRow } from './profile-row';
 
-export type ProfileOpen = 'reviews' | 'channels' | 'subscriptions' | 'documents' | 'delete';
+export type ProfileOpen = 'reviews' | 'channels' | 'subscriptions' | 'impact' | 'qr' | 'documents' | 'delete';
 // What the head of the main screen opens straight away (G76): the ratings, how the drivers see one.
 export type ProfilePart = 'reviews' | 'look' | 'photo';
 
@@ -26,7 +26,8 @@ type Props = {
 // channels; «Sozlamalar» with «Bot xabarlari» always on and the phone only the person sees; «Yordam».
 export function ProfileRows({ standing, onOpen }: Props) {
   const { t } = useI18n();
-  const { bots } = useBrand();
+  const brand = useBrand();
+  const { bots } = brand;
   const support = useOpenSupport();
   const account = useAccount();
   const driver = useDriver();
@@ -52,6 +53,21 @@ export function ProfileRows({ standing, onOpen }: Props) {
           onClick={() => onOpen('reviews')}
         />
         <ChannelsRow onOpen={() => onOpen('channels')} />
+        {/* What came of the person's links, and the QR of a driver on the glass (G69, docs/123). */}
+        <ProfileRow
+          icon="companion"
+          title={t('growth.impact.title')}
+          hint={t('growth.impact.lead', { brand: brand.name })}
+          onClick={() => onOpen('impact')}
+        />
+        {driver && car ? (
+          <ProfileRow
+            icon="qr"
+            title={t('growth.qr.title')}
+            hint={t('growth.qr.hint')}
+            onClick={() => onOpen('qr')}
+          />
+        ) : null}
         {/* «Obunalar» one tap from «Profil», under «Kanallar» (G78 П22). */}
         <ProfileRow
           icon="subscriptions"

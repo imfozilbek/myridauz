@@ -71,8 +71,9 @@ export type ErrorRow = z.infer<typeof errorRowSchema>;
 
 // G55 (docs/116): the new people of the period by their source and by their platform. mark: the name
 // after the kind («rida-samarqand» of a channel, «insta1» of an ad), empty for the others.
-// driver: the link a driver sent to people after the publishing (G63, docs/119).
-export const ARRIVAL_KINDS = ['channel', 'ad', 'story', 'site', 'driver', 'direct', 'other'] as const;
+// driver: the link a driver sent to people after the publishing (G63, docs/119). loop: a loop of growth,
+// the mark its name without the code of the author (G69, docs/123).
+export const ARRIVAL_KINDS = ['channel', 'ad', 'story', 'site', 'driver', 'loop', 'direct', 'other'] as const;
 export type ArrivalKind = (typeof ARRIVAL_KINDS)[number];
 export const PLATFORMS = ['android', 'ios', 'desktop', 'other'] as const;
 export type Platform = (typeof PLATFORMS)[number];

@@ -7,6 +7,7 @@ import { TeamGate } from './account/team-gate';
 import { DriverGate } from './driver/driver-gate';
 import { FeedProvider } from './feed/feed-provider';
 import { FollowGate } from './follow/follow-gate';
+import { MomentGate } from './growth/moment-step';
 import { LaunchLinks } from './launch-links';
 import { LegalGate } from './legal/legal-gate';
 import { playNotify } from './sounds/brand-sound';
@@ -33,9 +34,11 @@ export function AppGates({ app, welcome, users, connect, Page }: AppGatesProps) 
           <LegalGate>
             <AccountGate app={app} client={users} welcome={welcome}>
               <DriverGate enabled={app === 'driver'}>
-                <LaunchLinks app={app}>
-                  <Page />
-                </LaunchLinks>
+                <MomentGate enabled>
+                  <LaunchLinks app={app}>
+                    <Page />
+                  </LaunchLinks>
+                </MomentGate>
               </DriverGate>
             </AccountGate>
           </LegalGate>

@@ -11,33 +11,33 @@ G84. Запуск сред: шаги владельца, прод и оформ�
 Definition of Done
 
 A. Внутренняя среда (docs/179, «Шаги: сначала внутренняя среда»)
-[ ] Владелец: GitHub → Settings → Environments → internal (GitHub
-    создаёт его сам при первом запуске, пустым): добавить
-    CLOUDFLARE_API_TOKEN и CLOUDFLARE_ACCOUNT_ID первого аккаунта
-    (те же, что сейчас в production). Около 2 минут.
+Ключи по карте владельца 15.10.2026 (docs/179, «Ключи обеих сред»).
 [x] PR #237 (G81 и G82) слит в main 15.10.2026.
-[ ] Claude: перезапуск deploy-internal после секретов; зелёный.
-[ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и в
-    @myrida_uz: публикация, редактирование, удаление сообщений,
-    добавление подписчиков, изменение профиля канала.
-[ ] Владелец: переменная окружения Claude INTERNAL_POSTER_BOT_TOKEN,
-    потом новая сессия. Токен в чат никогда (docs/46).
-[ ] Claude: номер и ссылка канала Viloyatlar в environments.ts;
-    POSTER_BOT_TOKEN и новый секрет вебхука в Worker; setup-bots.
+[ ] Владелец: rida-internal-deploy → GitHub internal; общий секрет
+    репозитория с тем же именем удалить, если есть.
+[ ] Claude: перезапуск deploy-internal; зелёный.
+[ ] Владелец: rida-internal-claude → окружение Claude;
+    rida-internal-analytics → Worker первого аккаунта.
+[ ] Владелец: 6 ботов внутренней среды: Revoke → новый токен →
+    Worker; «боты внутренней среды готовы». Токен в чат никогда.
+[ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и
+    @myrida_uz; номер канала и ссылка-приглашение Claude.
+[ ] Claude: канал в environments.ts; секрет вебхука,
+    ADMIN_TELEGRAM_IDS, CF_ACCOUNT_ID в Worker; стенд; PR.
 [ ] Проверка: /health, боты «MyRida | …», Mini App, сайт, пост во
     внутреннем канале; скриншоты владельцу.
 
 B. Прод на новом аккаунте (docs/179, «Шаги прода»)
-[ ] Владелец: R2 на новом аккаунте; в production токен и Account ID
-    нового аккаунта; переменные PROD_* в окружении Claude; Telegram
-    ID команды для прода (или «те же»).
 [x] Владелец: общий бот прода @ridauz_bot создан 15.10.2026
     (docs/181); токен потом только в Worker прода.
+[ ] Владелец: R2 на новом аккаунте; rida-prod-deploy → production;
+    rida-prod-claude → окружение Claude; ID команды прода.
 [ ] Claude: deploy-production и прод в «Map data»; PR; слияние;
     деплой прода с Approve.
-[ ] Claude: секреты Worker прода, секрет вебхука, setup-bots прода,
-    «Map data» прода.
+[ ] Владелец: rida-prod-analytics и 6 ботов прода → Worker прода.
+[ ] Claude: секреты Worker прода, «Map data» прода.
 [ ] Проверка: /health, боты, Mini App, карта, сайт; скриншоты.
+[ ] Владелец: удалить rida-deploy, rida-claude и токены вне карты.
 
 C. Оформление каналов (docs/180, остаток G82; ботов оформляет G83)
 [ ] Владелец: «да» сессии инфраструктуры на выгрузку в репозиторий
@@ -57,9 +57,11 @@ D. Проверка владельца
 
 | № | Что | Где | Время |
 |---|---|---|---|
-| 1 | Два секрета в Environment `internal` | GitHub → Settings → Environments → `internal` | 2 минуты |
-| 2 | Бот каналов админ в двух каналах | Telegram | 3 минуты |
-| 3 | `INTERNAL_POSTER_BOT_TOKEN`, новая сессия | настройки окружения Claude | 2 минуты |
-| 4 | R2, секреты нового аккаунта, `PROD_*`, ID команды | Cloudflare, GitHub, настройки Claude | 15 минут |
-| 5 | ~~`@ridauz_bot` в BotFather~~ создан 15.10.2026; токен потом только в Worker прода | BotFather | готово |
-| 6 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
+| 1 | `rida-internal-deploy` в GitHub `internal`, перезапуск | Cloudflare, GitHub | 5 минут |
+| 2 | `rida-internal-claude`, `rida-internal-analytics` | Cloudflare, настройки Claude, Worker | 5 минут |
+| 3 | 6 ботов внутренней среды: новый токен в Worker | BotFather, Cloudflare | 10 минут |
+| 4 | Бот каналов админ; номер и ссылка канала | Telegram | 3 минуты |
+| 5 | Новый аккаунт: R2, `rida-prod-deploy`, `rida-prod-claude`, ID команды | Cloudflare, GitHub, настройки Claude | 15 минут |
+| 6 | После первой выкладки прода: `rida-prod-analytics`, 6 ботов прода | Cloudflare, BotFather | 10 минут |
+| 7 | Удалить старые токены | Cloudflare | 2 минуты |
+| 8 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |

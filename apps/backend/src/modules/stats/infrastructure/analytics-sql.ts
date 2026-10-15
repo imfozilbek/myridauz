@@ -1,6 +1,15 @@
 import type { Fetch } from '../../../shared/telegram/telegram-api';
 import { ERROR_EVENTS, type EventSource } from '../application/ports';
-import { counterRow, errorRow, sqlAnswerSchema, toCounter, toErrorRow, totalRow } from './sql-rows';
+import {
+  counterRow,
+  errorRow,
+  markRow,
+  searchRow,
+  sqlAnswerSchema,
+  toCounter,
+  toErrorRow,
+  totalRow,
+} from './sql-rows';
 
 // Columns of a row (modules/analytics/domain/data-point.ts): blob1 name, blob2 app, blob3 screen,
 // blob5 session, blob6 code, blob7 and blob8 the class and the words of a crash (G52). _sample_interval makes counts right when Cloudflare samples.
@@ -11,6 +20,8 @@ type Options = {
   readonly fetch: Fetch;
 };
 const TOP_ERRORS = 15;
+// The marks of the first screens and the directions of «Rost»: enough rows for every author code.
+const TOP_MARKS = 2000;
 const list = (names: readonly string[]) => names.map((name) => `'${name}'`).join(', ');
 const within = (unit: 'DAY' | 'HOUR', amount: number) =>
   `timestamp > NOW() - INTERVAL '${Math.trunc(amount)}' ${unit}`;
@@ -52,6 +63,21 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
         `SELECT SUM(_sample_interval) AS count FROM ${dataset} ` +
         `WHERE ${within('HOUR', hours)} AND blob1 IN (${list(ERROR_EVENTS)})`;
       return sqlAnswerSchema(totalRow).parse(await query(sql)).data[0]?.count ?? 0;
+    },
+    // blob11: the mark of the first screen of a session (G55); one session counts once.
+    marks: async (days) => {
+      const sql =
+        `SELECT blob11 AS via, count(DISTINCT blob5) AS count FROM ${dataset} WHERE ${within('DAY', days)} ` +
+        `AND blob1 = 'screen_open' AND blob11 != '' GROUP BY via ORDER BY count DESC LIMIT ${TOP_MARKS}`;
+      return sqlAnswerSchema(markRow).parse(await query(sql)).data;
+    },
+    // blob6: found or empty, blob7: the two regions of the search (G69).
+    searches: async (days) => {
+      const sql =
+        `SELECT blob7 AS route, blob6 AS result, SUM(_sample_interval) AS count FROM ${dataset} ` +
+        `WHERE ${within('DAY', days)} AND blob1 = 'trip_search' AND blob7 != '' GROUP BY route, result ` +
+        `ORDER BY count DESC LIMIT ${TOP_MARKS}`;
+      return sqlAnswerSchema(searchRow).parse(await query(sql)).data;
     },
   };
 }

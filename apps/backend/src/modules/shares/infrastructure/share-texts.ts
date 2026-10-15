@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { formatPlate, type Booking } from '@platform/contracts';
+import { botStartLink, formatPlate, type Booking } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { ShareTexts, ShareUpdate } from '../application/ports';
 
@@ -22,39 +22,55 @@ const carOf = (booking: Booking) => {
 };
 const plateOf = (booking: Booking) => (booking.plate ? formatPlate(booking.plate) : '');
 
-// The card and the messages close people get (docs/43): names, the car, never a phone.
-export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promise<string>): ShareTexts => ({
-  card: async (booking) =>
-    t('bot.share.card', {
-      name: booking.passenger.firstName,
-      brand: brand.name,
-      from: await placeName(booking.trip.from),
-      to: await placeName(booking.trip.to),
-      date: formatDate(new Date(booking.trip.departAt)),
-      time: formatTime(new Date(booking.trip.departAt)),
-      car: carOf(booking),
-      plate: plateOf(booking),
-      driver: booking.trip.driver.firstName,
-    }),
-  driverCard: async (trip) =>
-    t('bot.share.driverCard', {
-      name: trip.driverName,
-      brand: brand.name,
-      from: await placeName(trip.from),
-      to: await placeName(trip.to),
-      date: formatDate(new Date(trip.departAt)),
-      time: formatTime(new Date(trip.departAt)),
-      car: `${trip.car.make} ${trip.car.model}`,
-      plate: formatPlate(trip.plate),
-    }),
-  cancelled: () => t('bot.share.cancelled'),
-  retimed,
-  update: (booking, update) =>
-    update === 'retimed'
-      ? retimed(booking.passenger.firstName, booking.trip.departAt)
-      : t(UPDATE_TEXT[update], {
+// The buttons of the card: follow the trip; «Men ham yoʻlga chiqaman» with the mark of the loop
+// «Yaqinlarimga» (G69, docs/123), the start of the passenger bot.
+export const cardWords = (bot: string, via: string | null) => ({
+  title: t('bot.share.title'),
+  button: t('bot.share.follow'),
+  ...(via ? { second: { text: t('share.follow.join'), url: botStartLink(bot, via) } } : {}),
+});
+
+// The card and the messages close people get (docs/43): names, the car, never a phone. The last line
+// calls them to the brand too (G69, docs/123 loop 4).
+export const shareTexts = (brand: BrandConfig, placeName: (id: string) => Promise<string>): ShareTexts => {
+  const invited = (card: string) => `${card}\n\n${t('bot.share.invite', { brand: brand.name })}`;
+  return {
+    card: async (booking) =>
+      invited(
+        t('bot.share.card', {
           name: booking.passenger.firstName,
+          brand: brand.name,
+          from: await placeName(booking.trip.from),
+          to: await placeName(booking.trip.to),
+          date: formatDate(new Date(booking.trip.departAt)),
+          time: formatTime(new Date(booking.trip.departAt)),
           car: carOf(booking),
           plate: plateOf(booking),
+          driver: booking.trip.driver.firstName,
         }),
-});
+      ),
+    driverCard: async (trip) =>
+      invited(
+        t('bot.share.driverCard', {
+          name: trip.driverName,
+          brand: brand.name,
+          from: await placeName(trip.from),
+          to: await placeName(trip.to),
+          date: formatDate(new Date(trip.departAt)),
+          time: formatTime(new Date(trip.departAt)),
+          car: `${trip.car.make} ${trip.car.model}`,
+          plate: formatPlate(trip.plate),
+        }),
+      ),
+    cancelled: () => t('bot.share.cancelled'),
+    retimed,
+    update: (booking, update) =>
+      update === 'retimed'
+        ? retimed(booking.passenger.firstName, booking.trip.departAt)
+        : t(UPDATE_TEXT[update], {
+            name: booking.passenger.firstName,
+            car: carOf(booking),
+            plate: plateOf(booking),
+          }),
+  };
+};

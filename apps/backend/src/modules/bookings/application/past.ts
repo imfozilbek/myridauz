@@ -32,7 +32,8 @@ export async function pastRides(
   const rides = await Promise.all(
     rode.map(async (booking) => {
       const trip = await tripOf(booking.tripId);
-      if (!trip?.over) return null;
+      // Over by the clock, or arrived: «Yetib keldik» ends the ride at once (G69, docs/124 В).
+      if (!trip || !(trip.over || trip.arrivedAt !== null || booking.arrivedAt !== null)) return null;
       const { driverId, from, to, departAt, km } = trip;
       const { id: bookingId, tripId, passengerId, seats, price } = booking;
       return { bookingId, tripId, driverId, passengerId, seats, price, from, to, departAt, km };

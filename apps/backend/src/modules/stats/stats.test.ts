@@ -30,10 +30,12 @@ function setup(events: EventSource | null) {
     counters: (days, names) => ((queries += 1), events.counters(days, names)),
     topErrors: (days) => ((queries += 1), events.topErrors(days)),
     errorsSince: (hours) => ((queries += 1), events.errorsSince(hours)),
+    marks: (days) => ((queries += 1), events.marks(days)),
+    searches: (days) => ((queries += 1), events.searches(days)),
   };
   const deps: StatsDeps = {
     events: counting,
-    numbers: { numbers: async () => numbers, arrivals: async () => [] },
+    numbers: { numbers: async () => numbers, arrivals: async () => [], riders: async () => [] },
     cache: createMemoryCache(),
     rules: { errorGrowth: 3, minErrors: 2, dropGrowth: 20, minPeople: 2, repeatHours: 6 },
     tellOwners: async (alert) => void told.push(alert),
@@ -79,6 +81,8 @@ describe('readStats (docs/29)', () => {
       counters: () => Promise.reject(new Error('stats.sql_500')),
       topErrors: async () => [],
       errorsSince: async () => 0,
+      marks: async () => [],
+      searches: async () => [],
     };
     expect(await readStats(setup(broken).deps, 'day')).toMatchObject({
       events: 'failed',

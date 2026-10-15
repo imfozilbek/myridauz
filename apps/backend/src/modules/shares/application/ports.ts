@@ -59,8 +59,11 @@ export type SharesDeps = {
     userId: number,
     text: string,
     link: string,
+    via: string | null,
   ) => Promise<string | null>;
   readonly link: (token: string) => string;
+  // The mark of the loop «Yaqinlarimga» with the code of the person who shared (G69, docs/123).
+  readonly via: (userId: number) => Promise<string | null>;
   readonly notify: (jobs: readonly NotificationJob[]) => Promise<void>;
   // The close ones who follow one trip at most (brand, docs/43, docs/128 §4).
   readonly followers: number;

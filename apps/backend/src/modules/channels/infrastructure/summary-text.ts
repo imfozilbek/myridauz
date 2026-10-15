@@ -1,4 +1,4 @@
-import { channelVia, tashkentDate, withVia, type Trip } from '@platform/contracts';
+import { botStartLink, channelVia, tashkentDate, type Trip } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Card } from '../../notifications';
 import { bold, escapeHtml, quote } from '../../../shared/telegram/html';
@@ -39,7 +39,7 @@ export const dayCard =
       quote([t('bot.daySum.trips', values), t('bot.daySum.seats', values)]),
       ...(next > 0 ? [t('bot.daySum.tomorrow', { count: bold(String(next)) })] : []),
     ].join('\n');
-    const find = `https://t.me/${site.bot}?startapp=${withVia('', channelVia(channel.chat))}`;
+    const find = botStartLink(site.bot, channelVia(channel.chat));
     return {
       bot: 'poster',
       chatId: channel.chat,
