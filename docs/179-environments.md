@@ -19,7 +19,7 @@
 | Mini App | `passenger.`, `driver.`, `admin.myrida.uz` | `passenger.`, `driver.`, `admin.ridaone.uz` |
 | Боты | `@myrida_bot`, `@myrida_haydovchi_bot`, `@myrida_admin_bot`, `@myrida_support_bot` | `@rida1uz_bot`, `@rida1uz_haydovchi_bot`, `@rida1uz_admin_bot`, `@rida1uz_yordam_bot` |
 | Бот каналов | `@myrida_poster_bot` | `@rida1uz_poster_bot` |
-| Общий бот списка ожидания (G83, `181`) | `@myridauz_bot` «MyRida» | имя выберет владелец |
+| Общий бот списка ожидания (G83, `181`) | `@myridauz_bot` «MyRida» | `@ridauz_bot` «Rida» (решение владельца 15.10.2026) |
 | Главный канал | `@myrida_uz` | `@rida1uz` |
 | Каналы направлений | один приватный «MyRida \| Viloyatlar»: все направления | 67 приватных (`176`) |
 | Поисковики | закрыт: `robots.txt` «Disallow: /» | открыт, карта сайта (`60`) |
@@ -46,25 +46,40 @@
 - Канал «MyRida | Viloyatlar» попадёт в код, когда бот каналов узнает его номер (`chat`).
   До этого у внутренней среды каналов направлений нет: посты никуда не идут.
 
-## CI и секреты
+## Ключи обеих сред (карта владельца 15.10.2026)
 
-- `deploy-internal`: Environment `internal`, без согласия, после зелёного CI на `main`.
-- Прода в CI пока нет (решение владельца 13.10.2026, вечер): сначала работает внутренняя среда. `deploy-production` и прод в «Map data» вернутся вместе с новым аккаунтом: Environment `production`, согласие владельца (`32`), тот же коммит после внутренней среды.
-- Секреты Environment: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` своего аккаунта, имена одинаковые.
-- Workflow «Map data»: пока только `internal`.
-- Секреты Worker у каждой среды свои (`46`): токены 5 ботов своей среды, свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, ключи аналитики, звонков и TURN своего аккаунта.
+Источник правды по ключам: карта в репозитории инфраструктуры `dream-infra`, `docs/18-rida-keys.md` (утвердил владелец).
+Правило: один ключ лежит в одном месте и делает одно дело; имя `rida-<среда>-<задача>`.
 
-## Права токена нового аккаунта
+| Токен Cloudflare | Аккаунт | Права | Где лежит, имя |
+|---|---|---|---|
+| `rida-internal-deploy` | первый | права деплоя (ниже), зона `myrida.uz` | GitHub Environment `internal`: `CLOUDFLARE_API_TOKEN` |
+| `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `CLOUDFLARE_API_TOKEN` |
+| `rida-internal-analytics` | первый | только Account Analytics: Read | секрет Worker: `ANALYTICS_API_TOKEN` |
+| `rida-prod-deploy` | новый | права деплоя, зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
+| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; зона `ridaone.uz`: Zone Settings, SSL and Certificates: Edit (настройки зоны делает infra) | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| `rida-prod-analytics` | новый | только Account Analytics: Read | секрет Worker прода: `ANALYTICS_API_TOKEN` |
 
-Токен деплоя (Account API Token) с правами:
+- Рядом с токеном: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).
+- Окружение Claude для Rida: только эти 4 переменные. Токенов ботов в нём нет: окружение одно на все проекты.
+- Токены 6 ботов своей среды кладёт владелец: BotFather (Revoke, новый токен) → Cloudflare → Workers & Pages → `rida-backend` → Settings → Variables and Secrets. Cron сам ставит ботам вебхук, меню и описания (`46`).
+- Claude ставит в Worker: новый `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` (номера даёт владелец), `CF_ACCOUNT_ID`. Ключи звонков (`REALTIME_*`, `TURN_*`) у каждого аккаунта свои (`08`).
+- Значения ключей в чат и в репозиторий никогда (`32`).
+- `deploy-internal`: без согласия, после зелёного CI на `main`. Прод в CI вернётся с новым аккаунтом: Environment `production`, согласие владельца (`32`). «Map data»: пока только `internal`.
+
+## Права токена деплоя
+
+Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать, только создать заново с этими правами (урок №297).
 
 | Где | Право |
 |---|---|
 | Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit |
-| Account | Account Analytics: Read; Realtime (Calls): Edit |
-| Zone `ridaone.uz` | Workers Routes, DNS: Edit; Zone: Read |
+| Account | Account Settings: Read |
+| Zone своей среды | Workers Routes, DNS: Edit; Zone: Read |
 
-Токен внутренней среды (Environment `internal`, первый аккаунт): те же права, только зона `myrida.uz`. Без «Workers Routes» выкладка падает после загрузки Worker: Mini App и сайт не выкладываются (15.10.2026).
+- Только то, что вызывает `scripts/deploy.mjs`: Worker и его маршрут, D1, очередь, R2, Pages, DNS. KV, Realtime и аналитика выкладке не нужны.
+- Без «Workers Routes» выкладка падает после загрузки Worker: Mini App и сайт не выкладываются (15.10.2026).
+- В GitHub токен лежит в **Secrets** Environment, не в Variables. Секрет Environment сильнее секрета репозитория с тем же именем: общий секрет репозитория лишний.
 
 ## Шаги: сначала внутренняя среда
 
@@ -72,22 +87,22 @@
 
 | № | Кто | Что |
 |---|---|---|
-| 1 | Владелец | GitHub → Settings → Environments → `internal`: `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` первого аккаунта (те же, что в `production`). GitHub создаёт `internal` сам при первом запуске `deploy-internal`, пустым: без секретов выкладка останавливается и называет их. Переименовать Environment в GitHub нельзя; `production` пока не трогать |
-| 2 | Владелец | `@myrida_poster_bot` админ в «MyRida \| Viloyatlar»: публикация, редактирование и удаление сообщений, добавление подписчиков; одно сообщение в канале |
-| 3 | Владелец | Переменная окружения Claude `INTERNAL_POSTER_BOT_TOKEN`, потом новая сессия (`32`). В чат никогда |
-| 4 | Claude | Номер канала (`getUpdates`) и ссылка-приглашение с одобрением заявок (бот) → `environments.ts`; полный стенд; PR; слияние |
-| 5 | CI | `deploy-internal` |
-| 6 | Claude | `POSTER_BOT_TOKEN` и новый `TELEGRAM_WEBHOOK_SECRET` в Worker; `setup-bots --env=internal` (боты «MyRida \| …»); тестовая поездка, пост в канале, скриншоты |
+| 1 | Владелец | `rida-internal-deploy` → GitHub `internal` (`CLOUDFLARE_API_TOKEN`; `CLOUDFLARE_ACCOUNT_ID` первого аккаунта); общий секрет репозитория с тем же именем удалить, если есть; перезапуск `deploy-internal` |
+| 2 | Владелец | `rida-internal-claude` → окружение Claude; `rida-internal-analytics` → Worker первого аккаунта |
+| 3 | Владелец | 6 ботов внутренней среды: Revoke → новый токен → Worker первого аккаунта; Claude от владельца: «боты внутренней среды готовы» |
+| 4 | Владелец | `@myrida_poster_bot` админ в «MyRida \| Viloyatlar» и `@myrida_uz`; Claude от владельца: номер канала (web.telegram.org, число после `#`) и ссылка-приглашение с одобрением заявок. Это не секреты |
+| 5 | Claude | Канал в `environments.ts`; `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` в Worker; полный стенд; PR; слияние; `deploy-internal` |
+| 6 | Claude | Тестовая поездка, пост в канале, скриншоты |
 
-## Шаги прода (позже, к запуску 18.10)
+## Шаги прода (к запуску 18.10)
 
 | № | Кто | Что |
 |---|---|---|
-| 1 | Владелец | R2 на новом аккаунте: включить в панели (может попросить карту, платить не нужно) |
-| 2 | Владелец | В `production`: токен и Account ID **нового** аккаунта (Approve владельца там уже стоит) |
-| 3 | Владелец | Переменные Claude: `PROD_CLOUDFLARE_API_TOKEN`, `PROD_CLOUDFLARE_ACCOUNT_ID`, `PROD_PASSENGER_BOT_TOKEN`, `PROD_DRIVER_BOT_TOKEN`, `PROD_ADMIN_BOT_TOKEN`, `PROD_SUPPORT_BOT_TOKEN`, `PROD_POSTER_BOT_TOKEN`; Telegram ID команды для прода (или «те же») |
-| 4 | Claude | Вернуть `deploy-production` и прод в «Map data»; PR; слияние; деплой прода (Approve владельца) |
-| 5 | Claude | Секреты Worker прода, новый секрет вебхука, `setup-bots --env=production`, «Map data» прода; проверка: `/health`, боты, Mini App, карта, сайт |
+| 1 | Владелец | Новый аккаунт: включить R2 (может попросить карту, платить не нужно); `rida-prod-deploy` → GitHub `production` (Approve владельца там уже стоит); `rida-prod-claude` → окружение Claude; новая сессия; Telegram ID команды (или «те же») |
+| 2 | Claude | Вернуть `deploy-production` и прод в «Map data»; PR; слияние; деплой прода (Approve владельца) |
+| 3 | Владелец | `rida-prod-analytics` и 6 ботов прода → Worker нового аккаунта |
+| 4 | Claude | `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` прода; «Map data» прода; проверка: `/health`, боты, Mini App, карта, сайт |
+| 5 | Владелец | Удалить старые `rida-deploy`, `rida-claude` и все токены, которых нет в карте |
 
 ## Решения владельца 13.10.2026 (ответ «Запуск 18.10, да на всё, посты во внутреннем да»)
 

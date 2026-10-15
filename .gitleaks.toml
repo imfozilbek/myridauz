@@ -1,0 +1,11 @@
+# Gitleaks: all default rules plus one exception (docs/32). CI reads this file by itself.
+[extend]
+useDefault = true
+
+# The Uzbek words keyin, keyinroq, keyingi contain «key»: before a long translation key
+# (`"later": "Keyinroq",` then `"phrase.join.0"`) the rule took that key for an API key (lesson 298).
+[[allowlists]]
+description = "Uzbek words keyin, keyinroq, keyingi"
+targetRules = ["generic-api-key"]
+regexTarget = "match"
+regexes = ['''(?i)keyin''']
