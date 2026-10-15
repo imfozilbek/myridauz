@@ -2,6 +2,7 @@ import { ApiError } from '@platform/api-client';
 import type { Booking, DriverBookingAction } from '@platform/contracts';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
+import { isStale } from '../market/error-text';
 import { haptic } from '../telegram/feedback';
 
 const STEP_OF = { confirm: 'confirmed', decline: 'declined', cancel: 'cancelled' } as const;
@@ -19,11 +20,14 @@ type Options = {
   readonly onShort: (booking: Booking) => void;
   // Any other failure keeps the screen with its reason (docs/65 B3).
   readonly fail: (caught: unknown) => void;
+  // The seat changed meanwhile (the passenger cancelled, the time ran out): the screen loads it again
+  // at once, with the reason on it (G52, docs/112).
+  readonly onStale?: () => void;
 };
 
 // The answer of the driver to a booking (docs/35), the same on «Mening safarim», on the booking and
 // in the sheet of a new request (G77): one tap, the step is counted, the phone answers.
-export function useAnswerBooking({ screen, onDone, onShort, fail }: Options) {
+export function useAnswerBooking({ screen, onDone, onShort, fail, onStale }: Options) {
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   return async (booking: Booking, action: DriverBookingAction) => {
@@ -33,6 +37,7 @@ export function useAnswerBooking({ screen, onDone, onShort, fail }: Options) {
       haptic.success();
       onDone();
     } catch (caught) {
+      if (isStale(caught)) onStale?.();
       if (!(caught instanceof ApiError && caught.code === 'wallet.not_enough')) return fail(caught);
       haptic.error();
       onShort(booking);

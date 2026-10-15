@@ -82,7 +82,7 @@ function MyTrips({ onBack, link, tripScreen }: ScreenProps) {
       if (opened?.home === 'booking') return onBack();
       setOpened(tripOf(trip.id));
     };
-    return <DriverBooking booking={booking} onClose={close} />;
+    return <DriverBooking booking={booking} onClose={close} onStale={() => void refresh()} />;
   }
   if (trip && value)
     return (

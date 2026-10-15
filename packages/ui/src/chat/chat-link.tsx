@@ -9,6 +9,7 @@ import { KeptBehind } from '../telegram/kept-behind';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { ChatScreen } from './chat-screen';
 import { OpenChatContext, type ChatMode, type OpenChat } from './open-chat';
+import { ErrorBoundary } from '../states/error-boundary';
 
 type Open = { readonly key: string; readonly mode?: ChatMode; readonly onTrip?: () => void };
 
@@ -46,15 +47,17 @@ export function ChatLink({ children }: { readonly children: ReactNode }) {
     <OpenChatContext.Provider value={openChat}>
       <KeptBehind under={open !== null}>{children}</KeptBehind>
       {open ? (
-        <ChatScreen
-          key={open.key}
-          chatKey={open.key}
-          ring={open.mode === 'ring'}
-          answer={open.mode === 'answer'}
-          onTrip={open.onTrip ? () => (close(), open.onTrip?.()) : undefined}
-          onLink={openLink ? (link) => (close(), openLink(link)) : undefined}
-          onBack={close}
-        />
+        <ErrorBoundary onBack={close}>
+          <ChatScreen
+            key={open.key}
+            chatKey={open.key}
+            ring={open.mode === 'ring'}
+            answer={open.mode === 'answer'}
+            onTrip={open.onTrip ? () => (close(), open.onTrip?.()) : undefined}
+            onLink={openLink ? (link) => (close(), openLink(link)) : undefined}
+            onBack={close}
+          />
+        </ErrorBoundary>
       ) : null}
       {ringing ? (
         <CallSource

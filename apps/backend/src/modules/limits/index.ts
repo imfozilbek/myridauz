@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
+import { callsReady } from '../calls';
 import { recordAction } from '../journal';
 import { peopleOf } from '../users';
 import type { LimitStore } from './application/ports';
@@ -48,4 +49,5 @@ export const limitsModule = limitRoutes({
   },
   name: async (env, id) => (await peopleOf(env).find(id))?.firstName ?? '',
   owners: ownerLimits,
+  calls: callsReady,
 });

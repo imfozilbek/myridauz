@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_ANALYTICS_BATCH } from './analytics';
+import { MAX_ANALYTICS_BATCH, QUIET_API_ERRORS } from './analytics';
 import { goodEvents } from './analytics-batch';
 
 const accepted = (events: unknown[]) => goodEvents({ events }) !== null;
@@ -71,5 +71,9 @@ describe('goodEvents', () => {
     const apiError = { ...event, name: 'api_error' };
     expect(accepted([{ ...apiError, code: 'users.blocked' }])).toBe(true);
     expect(accepted([{ ...apiError, code: 'Ali Valiyev' }])).toBe(false);
+  });
+
+  it('does not send a launch without a signature as an error: the app asks to open it in Telegram (G52)', () => {
+    expect(QUIET_API_ERRORS).toContain('auth.missing');
   });
 });

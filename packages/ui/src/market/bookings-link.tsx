@@ -9,6 +9,7 @@ import {
 } from '@platform/contracts';
 import type { ReactNode } from 'react';
 import { HomeProvider } from '../flow/home-context';
+import { ErrorBoundary } from '../states/error-boundary';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { MyRequestsScreen } from './my-requests-screen';
 import { MyTripsScreen } from './my-trips-screen';
@@ -52,11 +53,13 @@ export function BookingsLink({ app, link, onClose, children }: Props) {
   const key = `${link.name}:${link.id}`;
   return (
     <HomeProvider value={close}>
-      {app === 'driver' ? (
-        <MyTripsScreen key={key} onBack={close} link={link} />
-      ) : (
-        <MyRequestsScreen key={key} onBack={close} link={link} />
-      )}
+      <ErrorBoundary key={key} onBack={close}>
+        {app === 'driver' ? (
+          <MyTripsScreen onBack={close} link={link} />
+        ) : (
+          <MyRequestsScreen onBack={close} link={link} />
+        )}
+      </ErrorBoundary>
     </HomeProvider>
   );
 }

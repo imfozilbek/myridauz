@@ -14,7 +14,11 @@ import { BookingSteps } from './booking-steps';
 import { useSeatEnds } from './seat-ends';
 import { SeatPerson } from './seat-person';
 
-export type BookingAction = { readonly label: string; readonly onClick: () => void; readonly main?: boolean };
+export type BookingAction = {
+  readonly label: string;
+  readonly onClick: () => unknown;
+  readonly main?: boolean;
+};
 type Props = {
   readonly booking: Booking;
   readonly onBack: () => void;

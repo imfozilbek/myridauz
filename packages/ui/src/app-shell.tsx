@@ -4,6 +4,7 @@ import type { AnalyticsClient, LocationsClient } from '@platform/api-client';
 import type { BrandConfig } from '@platform/brands';
 import { AppRoot } from '@telegram-apps/telegram-ui';
 import { Suspense, useCallback, type ReactNode } from 'react';
+import { CallsOnContext } from './call/calls-on';
 import { AnalyticsContext } from './context/analytics-context';
 import { ApiClientsContext, type ApiClients } from './context/api-clients';
 import { BrandContext } from './context/brand-context';
@@ -43,7 +44,7 @@ export function AppShell({
     [analytics, session.client],
   );
   useSplash(brand.theme.colors.brandStrong, ready);
-  const limited = useOwnerLimits(brand, clients.limits);
+  const { limited, calls } = useOwnerLimits(brand, clients.limits);
   return (
     <BrandContext.Provider value={limited}>
       <TelegramContext.Provider value={session}>
@@ -57,14 +58,16 @@ export function AppShell({
             >
               <LocationsClientContext.Provider value={locations}>
                 <ApiClientsContext.Provider value={clients}>
-                  <TopLoader />
-                  <StepProgressProvider>
-                    <ErrorBoundary>
-                      <ConnectionGate>
-                        <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
-                      </ConnectionGate>
-                    </ErrorBoundary>
-                  </StepProgressProvider>
+                  <CallsOnContext.Provider value={calls}>
+                    <TopLoader />
+                    <StepProgressProvider>
+                      <ErrorBoundary>
+                        <ConnectionGate>
+                          <Suspense fallback={<ScreenSkeleton />}>{children}</Suspense>
+                        </ConnectionGate>
+                      </ErrorBoundary>
+                    </StepProgressProvider>
+                  </CallsOnContext.Provider>
                 </ApiClientsContext.Provider>
               </LocationsClientContext.Provider>
             </AppRoot>

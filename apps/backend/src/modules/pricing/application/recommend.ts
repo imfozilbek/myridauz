@@ -37,8 +37,9 @@ export async function recommendPrice(
     : { ok: true, value: { ...base, price: manual, source: 'manual' } };
 }
 
-// A direction of «Qayerga borasiz?» may end in a whole region (G59): the same recommendation, measured
-// from the place of the region nearest to its center. Other callers keep places only (docs/59).
+// A direction of «Qayerga borasiz?» (G59) and a request of a passenger (G52) may end in a whole region:
+// the same recommendation, measured from the place of the region nearest to its center. The landing
+// keeps places only (docs/59).
 export async function recommendDirection(
   deps: PricingDeps,
   from: string,

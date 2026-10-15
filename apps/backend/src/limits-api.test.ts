@@ -85,4 +85,8 @@ describe('«Cheklovlar»', () => {
     expect((await call(ADMIN_LIMITS_PATH, MODERATOR, team)).status).toBe(403);
     expect((await call(adminLimitPath('promo.amount'), MODERATOR, put(1))).status).toBe(403);
   });
+
+  it('tells every Mini App whether calls are set up: without Realtime the buttons go (G52)', async () => {
+    expect((await fetchPublic()).calls).toBe(false);
+  });
 });

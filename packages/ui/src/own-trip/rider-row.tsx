@@ -4,6 +4,7 @@ import { useI18n } from '../context/i18n-context';
 import { PersonBadge } from '../find/person-badge';
 import { Icon } from '../icons';
 import { RiderLine } from './rider-line';
+import { useCallsOn } from '../call/calls-on';
 
 const FACE = 36;
 const TOOL_ICON = 16;
@@ -29,6 +30,7 @@ type Props = {
 // it may be a button too, never a button inside a button.
 export function RiderRow({ booking, onChat, onCall, onOpen, line }: Props) {
   const { t } = useI18n();
+  const callsOn = useCallsOn();
   const { passenger } = booking;
   const usual = <RiderLine booking={booking} withCommission={false} className="rider-line" />;
   const name = (
@@ -61,7 +63,7 @@ export function RiderRow({ booking, onChat, onCall, onOpen, line }: Props) {
       <button type="button" className="rider-tool" aria-label={t('chat.open')} onClick={onChat}>
         <Icon name="chat" size={CHAT_ICON} />
       </button>
-      {onCall ? (
+      {onCall && callsOn ? (
         <button type="button" className="rider-tool" aria-label={t('calls.call')} onClick={onCall}>
           <Icon name="phone" size={TOOL_ICON} />
         </button>

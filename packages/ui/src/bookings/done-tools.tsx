@@ -4,6 +4,7 @@ import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { Icon, type IconName } from '../icons';
 import { useUntilText } from '../trip/until-text';
+import { useCallsOn } from '../call/calls-on';
 
 type Props = {
   readonly booking: Booking;
@@ -17,6 +18,7 @@ export const daysLeft = (until: number, now: number) => Math.max(1, Math.floor((
 // gives, and each thing with its deadline. The chat stays to read; the complaint goes to support.
 export function DoneTools({ booking, onOpen }: Props) {
   const { t } = useI18n();
+  const callsOn = useCallsOn();
   const brand = useBrand();
   const { name } = brand;
   const support = useOpenSupport();
@@ -47,7 +49,7 @@ export function DoneTools({ booking, onOpen }: Props) {
         {talk
           ? tile('chat', t('chat.open'), until(talkUntil), () => onOpen('chat'))
           : tile('chat', t('bookings.done.messages'), t('bookings.done.readOnly'), () => onOpen('chat'))}
-        {talk ? tile('phone', t('calls.call'), until(talkUntil), () => onOpen('call')) : null}
+        {talk && callsOn ? tile('phone', t('calls.call'), until(talkUntil), () => onOpen('call')) : null}
         {tile(
           'star',
           t(rate ? 'bookings.done.rate' : 'bookings.done.rating'),

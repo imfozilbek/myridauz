@@ -1,5 +1,5 @@
 import { ApiError, type BookingsClient } from '@platform/api-client';
-import { cleanup, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
@@ -29,5 +29,23 @@ describe('a booking changed under the passenger', () => {
     await tap('Jasur');
     await tap('Joyni bekor qilish');
     await waitFor(() => expect(myBookings).toHaveBeenCalledTimes(2));
+  });
+
+  it('sends one cancel for two taps (G52)', async () => {
+    const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => confirmed);
+    vi.stubGlobal('confirm', () => true);
+    renderMarket(
+      <MyRequestsScreen onBack={() => undefined} />,
+      testClients({
+        market: { myRequests: async () => [] },
+        bookings: { myBookings: async () => [confirmed], myOffers: async () => [], cancelMine },
+      }),
+    );
+    await tap('Jasur');
+    const cancel = await screen.findByText('Joyni bekor qilish');
+    fireEvent.click(cancel);
+    fireEvent.click(cancel);
+    await waitFor(() => expect(cancelMine).toHaveBeenCalled());
+    expect(cancelMine).toHaveBeenCalledOnce();
   });
 });
