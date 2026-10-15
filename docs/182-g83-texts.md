@@ -74,6 +74,16 @@
 | Подписи карты | короткие имена областей: Toshkent, Fargʻona, Andijon, Namangan, Samarqand, Jizzax, Sirdaryo, Navoiy, Buxoro, Qashqadaryo, Surxondaryo, Xorazm, Qoraqalpogʻiston; Toshkent shahri |
 | Журнал «Boshqaruv» | Roʻyxatga yozish ochildi · Roʻyxatga yozish yopildi · Yoʻnalish ochildi · Reklama havolasi yaratildi |
 
+## Строка в «Maxfiylik siyosati» (предложение)
+
+Три добавки в `legal.privacy.*` (`30`, `58`). Вношу в код после «да» владельца, вместе с новой редакцией документа.
+
+| Раздел | Что добавить |
+|---|---|
+| 2. Qanday maʼlumotlar | • Kutish roʻyxatida: kim boʻlib yozilganingiz (yoʻlovchi yoki haydovchi), viloyatingiz, qanchalik tez-tez yurishingiz va tanlagan muammolaringiz. Telefon raqami soʻralmaydi. |
+| 3. Nima uchun | В строку «Xizmat ishlashi uchun»: «…, yoʻnalishingiz ochilganda bot orqali xabar berish» |
+| 6. Maʼlumotlarni oʻchirish | • kutish roʻyxatidagi yozuvlaringiz oʻchiriladi; |
+
 ## Анонсы в каналах (первые 4)
 
 Два раза в неделю, с 18.10.2026 (`181`). Только реальные новости; цифры берём в «Statistika» в день поста. Кнопка каждого поста: бот со знаком канала `?start=ch-<канал>` (`116`), например `t.me/myridauz_bot?start=ch-rida1uz`. Без «taksi», без «tekshirilgan haydovchi», без цен, бонусов и сравнения с другими.
