@@ -54,10 +54,10 @@
 | Токен Cloudflare | Аккаунт | Права | Где лежит, имя |
 |---|---|---|---|
 | `rida-internal-deploy` | первый | права деплоя (ниже), зона `myrida.uz` | GitHub Environment `internal`: `CLOUDFLARE_API_TOKEN` |
-| `rida-internal-claude` | первый | права деплоя и Workers Tail: Read | окружение Claude: `CLOUDFLARE_API_TOKEN` |
+| `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `CLOUDFLARE_API_TOKEN` |
 | `rida-internal-analytics` | первый | только Account Analytics: Read | секрет Worker: `ANALYTICS_API_TOKEN` |
 | `rida-prod-deploy` | новый | права деплоя, зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
-| `rida-prod-claude` | новый | права деплоя и Workers Tail: Read | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
 | `rida-prod-analytics` | новый | только Account Analytics: Read | секрет Worker прода: `ANALYTICS_API_TOKEN` |
 
 - Рядом с токеном: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).
@@ -73,9 +73,12 @@
 
 | Где | Право |
 |---|---|
-| Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages, Workers KV Storage, Realtime: Edit |
-| Account | Account Settings, Account Analytics: Read |
+| Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit |
+| Account | Account Settings: Read |
 | Zone своей среды | Workers Routes, DNS: Edit; Zone: Read |
+
+- Только то, что вызывает `scripts/deploy.mjs`: Worker и его маршрут, D1, очередь, R2, Pages, DNS. KV, Realtime и аналитика выкладке не нужны.
+- В GitHub токен лежит в **Secrets** Environment, не в Variables. Секрет Environment сильнее секрета репозитория с тем же именем: общий секрет репозитория лишний.
 
 ## Шаги: сначала внутренняя среда
 

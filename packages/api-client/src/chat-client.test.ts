@@ -37,3 +37,22 @@ describe('the unread chats and a ready answer (G68)', () => {
     });
   });
 });
+
+// «Yaqinlarimga» from an older server: no mark of the loop, the page still opens (G69, docs/123).
+describe('a shared trip without the mark of the loop', () => {
+  it('reads it as no mark', async () => {
+    const trip = {
+      ...{ passengerName: 'Dilnoza', from: '1726269', to: '1730401', departAt: 1, firstDepartAt: 1, km: 320 },
+      driver: { firstName: 'Jasur', car: { make: 'Chevrolet', model: 'Cobalt', color: 'white' } },
+      ...{ plate: null, meetingPoint: null, dropoffPoint: null, status: 'waiting', followers: 0 },
+    };
+    const fetch = vi.fn<Fetch>(async () => Response.json(trip));
+    const client = createChatClient({
+      baseUrl: 'https://api.test',
+      fetch,
+      app: 'passenger',
+      initData: 'a=1',
+    });
+    expect((await client.sharedTrip('a'.repeat(43))).via).toBeNull();
+  });
+});
