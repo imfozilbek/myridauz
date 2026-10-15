@@ -51,10 +51,13 @@ const sharesDeps = (env: Bindings, bookingOf: BookingOf, driverTripOf: DriverTri
   now: Date.now,
 });
 
+// The pictures of Telegram stories: of a trip and of a moment «Men Rida bilan» (G69, docs/123).
+export const storiesOf = (env: Bindings) => (env.MEDIA ? r2Images(env.MEDIA) : localStories);
+
 // The story opens the trip in the passenger bot, like the button of a channel post (docs/15).
 const storiesDeps = (env: Bindings, driverTripOf: DriverTripOf) => ({
   driverTrip: (id: string) => driverTripOf(env, id),
-  stories: env.MEDIA ? r2Images(env.MEDIA) : localStories,
+  stories: storiesOf(env),
   bookLink: (tripId: string) => tripBookLink(brandOf(env).bots.passenger, tripId, VIA_STORY),
 });
 

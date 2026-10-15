@@ -1,4 +1,4 @@
-import { withVia } from '@platform/contracts';
+import { botStartLink } from '@platform/contracts';
 import { useScreenView } from '../context/analytics-context';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
@@ -16,7 +16,7 @@ export function ClosedScreen() {
   useScreenView('waitlist_closed');
   const { t } = useI18n();
   const brand = useBrand();
-  const open = (bot: string) => () => openInTelegram(`https://t.me/${bot}?startapp=${withVia('', VIA_MAIN)}`);
+  const open = (bot: string) => () => openInTelegram(botStartLink(bot, VIA_MAIN));
   return (
     <>
       <div className="wl-space" />

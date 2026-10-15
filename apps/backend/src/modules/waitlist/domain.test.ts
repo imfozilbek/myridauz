@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { directionsOf, reachBy, shareOf, shortageOf, topPainOf } from './domain/gold';
-import { randomCode, sourceOf } from './domain/sources';
+import { randomCode } from '../../shared/codes/random-code';
+import { sourceOf } from './domain/sources';
 import { mondayStart, orderedPains, waitingOf } from './domain/waiting';
 
 const PAINS = { total: 0, chats: 0, fixed: 0, phone: 0, wait: 0, price: 0, woman: 0, empty: 0, safety: 0 };

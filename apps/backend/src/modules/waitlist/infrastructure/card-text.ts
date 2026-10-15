@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { routeFindLink, TASHKENT_CITY, withVia, type WaitlistRole } from '@platform/contracts';
+import { botStartLink, routeFindLink, TASHKENT_CITY, type WaitlistRole } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
 import type { Card, Ring } from '../../notifications';
 import { bold, escapeHtml, italic, quote } from '../../../shared/telegram/html';
@@ -25,7 +25,7 @@ const routeOf = (region: string, places: Places) => {
 };
 const tripsLink = (brand: BrandConfig, role: WaitlistRole, home: string, region: string) =>
   role === 'driver'
-    ? `https://t.me/${brand.bots.driver}?startapp=${withVia('', VIA_WAITLIST)}`
+    ? botStartLink(brand.bots.driver, VIA_WAITLIST)
     : routeFindLink(
         brand.bots.passenger,
         home === TASHKENT_CITY ? home : region,

@@ -4,8 +4,10 @@ import { telegramUrl } from './api-url';
 const { t } = createI18n(DEFAULT_LOCALE);
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 
-// The title of the card and the words of its button: a shared trip by default (docs/43).
-type Words = { readonly title: string; readonly button: string };
+// The title of the card and the words of its button: a shared trip by default (docs/43). A card
+// of «Men Rida bilan» has a second button under the first (G69, docs/123).
+type Button = { readonly text: string; readonly url: string };
+type Words = { readonly title: string; readonly button: string; readonly second?: Button };
 
 // Telegram keeps the card, and the Mini App opens its own "send to a chat" window (shareMessage,
 // docs/21, docs/43). When Telegram says no, the Mini App falls back to a plain share link.
@@ -23,7 +25,9 @@ export async function prepareCard(
     id: crypto.randomUUID(),
     title: words.title,
     input_message_content: { message_text: text },
-    reply_markup: { inline_keyboard: [[{ text: words.button, url: link }]] },
+    reply_markup: {
+      inline_keyboard: [[{ text: words.button, url: link }], ...(words.second ? [[words.second]] : [])],
+    },
   };
   try {
     const response = await fetch(telegramUrl(token, 'savePreparedInlineMessage'), {

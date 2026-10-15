@@ -117,6 +117,11 @@ export const API_ERRORS = [
   'waitlist.invalid_input',
   'waitlist.not_found',
   'waitlist.unavailable',
+  // The cards «Men Rida bilan» of G69 (docs/123): a moment not reached, a wrong picture.
+  'growth.not_found',
+  'growth.invalid_input',
+  'growth.invalid_image',
+  'growth.unavailable',
   ...ROUTE_ERRORS,
 ] as const;
 export type ApiErrorCode = (typeof API_ERRORS)[number];

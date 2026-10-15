@@ -1,4 +1,4 @@
-import { TASHKENT_CITY, withVia, type WaitlistEntry, type WaitlistRole } from '@platform/contracts';
+import { botStartLink, TASHKENT_CITY, type WaitlistEntry, type WaitlistRole } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
@@ -119,9 +119,7 @@ function Waitlist() {
           onEdit={() => setSheet(true)}
           onChannels={() => setChannels(true)}
           onInvite={invite}
-          onDriver={() =>
-            openInTelegram(`https://t.me/${brand.bots.driver}?startapp=${withVia('', VIA_MAIN)}`)
-          }
+          onDriver={() => openInTelegram(botStartLink(brand.bots.driver, VIA_MAIN))}
         />
       )}
       <EditSheet

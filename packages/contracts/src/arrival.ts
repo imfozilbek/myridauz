@@ -27,6 +27,8 @@ export type Arrival = z.infer<typeof arrivalSchema>;
 
 // A link with its mark: the link stays as it was, the screens of links read it without the mark.
 export const withVia = (start: string, via: string) => `${start}${VIA_SEPARATOR}${via}`;
+// The start of a bot with a mark alone: the Mini App opens on its home (an ad, a post, a card).
+export const botStartLink = (bot: string, via: string) => `https://t.me/${bot}?startapp=${withVia('', via)}`;
 
 // A trip ready to book in the passenger bot: t.me/<bot>?startapp=trip_<id>__<mark>. The button of a
 // channel post, a driver's story and the driver's own link (docs/15, docs/116, docs/119).
