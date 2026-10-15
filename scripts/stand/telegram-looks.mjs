@@ -1,6 +1,6 @@
 // The looks of the channels on the stand (docs/180): what a bot set, Telegram gives back, so the next
 // round of the Cron finds nothing to change, like in Telegram. The method comes from the address of a
-// request: it is only compared with known names, never used to call a function (lesson 285).
+// request: it is only compared with known names, never used to call a function (lesson 289).
 const SETS = new Map([
   ['setMyName', ['name', 'name']],
   ['setChatTitle', ['name', 'title']],
