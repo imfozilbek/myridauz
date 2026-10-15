@@ -57,7 +57,7 @@
 | `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `CLOUDFLARE_API_TOKEN` |
 | `rida-internal-analytics` | первый | только Account Analytics: Read | секрет Worker: `ANALYTICS_API_TOKEN` |
 | `rida-prod-deploy` | новый | права деплоя, зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
-| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; зона `ridaone.uz`: Zone Settings, SSL and Certificates: Edit (настройки зоны делает infra) | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
 | `rida-prod-analytics` | новый | только Account Analytics: Read | секрет Worker прода: `ANALYTICS_API_TOKEN` |
 
 - Рядом с токеном: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).
@@ -69,7 +69,7 @@
 
 ## Права токена деплоя
 
-Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать, только создать заново с этими правами (урок №296).
+Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать, только создать заново с этими правами (урок №297).
 
 | Где | Право |
 |---|---|
@@ -78,6 +78,7 @@
 | Zone своей среды | Workers Routes, DNS: Edit; Zone: Read |
 
 - Только то, что вызывает `scripts/deploy.mjs`: Worker и его маршрут, D1, очередь, R2, Pages, DNS. KV, Realtime и аналитика выкладке не нужны.
+- Без «Workers Routes» выкладка падает после загрузки Worker: Mini App и сайт не выкладываются (15.10.2026).
 - В GitHub токен лежит в **Secrets** Environment, не в Variables. Секрет Environment сильнее секрета репозитория с тем же именем: общий секрет репозитория лишний.
 
 ## Шаги: сначала внутренняя среда
