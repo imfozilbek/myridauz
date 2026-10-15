@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { TRIP_LINK } from './launch-links';
+import { REQUESTS_LINK, TRIP_LINK } from './launch-links';
 
 // Where a person came from and on what (G55, docs/116). A link of the bot may end with a mark of
 // its source: t.me/<bot>?startapp=<link>__<mark>. Only marks and names, never a person's words.
@@ -27,6 +27,8 @@ export type Arrival = z.infer<typeof arrivalSchema>;
 
 // A link with its mark: the link stays as it was, the screens of links read it without the mark.
 export const withVia = (start: string, via: string) => `${start}${VIA_SEPARATOR}${via}`;
+// The start of a bot with a mark alone: the Mini App opens on its home (an ad, a post, a card).
+export const botStartLink = (bot: string, via: string) => `https://t.me/${bot}?startapp=${withVia('', via)}`;
 
 // A trip ready to book in the passenger bot: t.me/<bot>?startapp=trip_<id>__<mark>. The button of a
 // channel post, a driver's story and the driver's own link (docs/15, docs/116, docs/119).
@@ -37,6 +39,11 @@ export const tripBookLink = (bot: string, tripId: string, via: string) =>
 // site and the channel posts of a full or ended trip open it (docs/59, G68).
 export const routeFindLink = (bot: string, from: string, to: string, via: string) =>
   `https://t.me/${bot}?startapp=${withVia(`find_${from}_${to}`, via)}`;
+
+// The requests of a route and day in the driver bot (docs/83 N08): a request a passenger sent into
+// the group of the district opens there (G69, docs/123 loop 2).
+export const requestsBoardLink = (bot: string, value: string, via: string) =>
+  `https://t.me/${bot}?startapp=${withVia(`${REQUESTS_LINK}_${value}`, via)}`;
 
 // The link and the mark of a start parameter; an empty link is a mark alone (an ad to the home).
 export function splitStart(param: string): { readonly start: string | null; readonly via: string | null } {

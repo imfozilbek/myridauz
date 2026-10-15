@@ -16,6 +16,8 @@ import complaints from '../locales/uz-Latn/complaints.json' with { type: 'json' 
 import drivers from '../locales/uz-Latn/drivers.json' with { type: 'json' };
 import driverTrip from '../locales/uz-Latn/driver-trip.json' with { type: 'json' };
 import find from '../locales/uz-Latn/find.json' with { type: 'json' };
+// The loops of growth and the cards «Men Rida bilan» (G69, docs/123).
+import growth from '../locales/uz-Latn/growth.json' with { type: 'json' };
 import errors from '../locales/uz-Latn/errors.json' with { type: 'json' };
 import home from '../locales/uz-Latn/home.json' with { type: 'json' };
 import landing from '../locales/uz-Latn/landing.json' with { type: 'json' };
@@ -60,6 +62,7 @@ const REFERENCE = {
   drivers,
   driverTrip,
   find,
+  growth,
   errors,
   home,
   landing,

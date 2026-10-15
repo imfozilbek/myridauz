@@ -1,4 +1,5 @@
 import {
+  loopOf,
   VIA_DRIVER,
   VIA_SITE,
   VIA_STORY,
@@ -29,6 +30,8 @@ const PLAIN: Readonly<Record<string, ArrivalKind>> = {
 // «ch-rida-samarqand» is a channel named rida-samarqand; no mark is a direct visit (G55, docs/116).
 function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {
   if (via === null) return { kind: 'direct', mark: '' };
+  const loop = loopOf(via)?.loop;
+  if (loop) return { kind: 'loop', mark: loop };
   const marked = MARKED.find(([prefix]) => via.startsWith(prefix));
   if (marked) return { kind: marked[1], mark: via.slice(marked[0].length) };
   return { kind: PLAIN[via] ?? 'other', mark: PLAIN[via] ? '' : via };

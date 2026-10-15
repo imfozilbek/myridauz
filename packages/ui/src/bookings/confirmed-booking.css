@@ -94,3 +94,8 @@
   color: var(--reg-strong);
   text-align: center;
 }
+
+/* «Doʻstingni chaqir» while the car has free seats (G69, docs/123 loop 3). */
+.booking-page .loop-invite {
+  margin: 12px 14px 0;
+}

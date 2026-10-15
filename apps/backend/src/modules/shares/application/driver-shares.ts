@@ -1,4 +1,4 @@
-import type { Share, SharedTrip } from '@platform/contracts';
+import type { Share, SharedView } from '@platform/contracts';
 import { driverShareStatus, openUntil } from '../domain/share';
 import { issueLink, tellAll } from './links';
 import type { DriverTrip, Result, SharesDeps } from './ports';
@@ -26,7 +26,7 @@ export async function stopDriverSharing(deps: SharesDeps, driverId: number, trip
 }
 
 // What the family sees: the driver's first name, the car and the plate; never a phone (docs/07).
-export function driverShared(trip: DriverTrip, followers: number, now: number): SharedTrip | null {
+export function driverShared(trip: DriverTrip, followers: number, now: number): SharedView | null {
   if (now > openUntil(trip.departAt, trip.km)) return null;
   return {
     passengerName: trip.driverName,

@@ -24,6 +24,7 @@ import { soundsModule } from './modules/sounds';
 import { complaintsModule } from './modules/complaints';
 import { avatarWatch, driversModule } from './modules/drivers';
 import { favoritesModule } from './modules/favorites';
+import { growthModule } from './modules/growth';
 import { feedRoutes } from './modules/feed';
 import { healthModule } from './modules/health';
 import { historyModule } from './modules/history';
@@ -127,6 +128,7 @@ export const app = new Hono<AppEnv>()
   .route('/', bookingsModule)
   .route('/', walletModule)
   .route('/', waitlistModule)
+  .route('/', growthModule)
   .route(
     '/',
     chatRoutes(async (env, key, userId) => {

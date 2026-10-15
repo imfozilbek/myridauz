@@ -1,5 +1,5 @@
 import type { BrandConfig } from '@platform/brands';
-import { withVia } from '@platform/contracts';
+import { botStartLink } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { isBlocked } from '../modules/users';
 import { mainStarted } from '../modules/waitlist';
@@ -24,7 +24,7 @@ function mainWelcome(brand: BrandConfig, chatId: number, name: string, open: boo
   const channel = { text: t('bot.main.channel'), url: `https://t.me/${brand.mainChannel}` };
   const trips = (bot: string, text: string) => ({
     text,
-    url: `https://t.me/${bot}?startapp=${withVia('', VIA_MAIN)}`,
+    url: botStartLink(bot, VIA_MAIN),
   });
   const caption = open
     ? [

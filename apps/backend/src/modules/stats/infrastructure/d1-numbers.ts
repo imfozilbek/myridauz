@@ -1,4 +1,5 @@
 import type { NumbersSource } from '../application/ports';
+import type { MarkCount } from '../domain/rost';
 import type { ArrivalCount } from '../domain/arrivals';
 
 // The main numbers of a period, straight from the tables (docs/29).
@@ -10,6 +11,13 @@ const SQL = `SELECT
   (SELECT COUNT(*) FROM bookings WHERE created_at >= ?1) AS bookings,
   (SELECT COUNT(*) FROM driver_applications WHERE submitted_at >= ?1) AS driverApplications,
   (SELECT COUNT(*) FROM complaints WHERE created_at >= ?1) AS complaints`;
+
+const RIDERS = `SELECT a.via AS via, COUNT(*) AS count FROM user_arrivals a
+  WHERE a.arrived_at >= ? AND a.via IS NOT NULL AND (
+    EXISTS (SELECT 1 FROM bookings b WHERE b.passenger_id = a.user_id AND b.status = 'completed'
+      AND b.no_show_at IS NULL)
+    OR EXISTS (SELECT 1 FROM trips t WHERE t.driver_id = a.user_id AND t.status = 'completed'))
+  GROUP BY a.via`;
 
 type Row = {
   newUsers: number;
@@ -41,6 +49,11 @@ export const d1Numbers = (db: D1Database): NumbersSource => ({
       )
       .bind(since)
       .all<ArrivalCount>();
+    return results;
+  },
+  // The new people of a mark who rode (G69, docs/123): through the index of the arrival time.
+  riders: async (since) => {
+    const { results } = await db.prepare(RIDERS).bind(since).all<MarkCount>();
     return results;
   },
 });

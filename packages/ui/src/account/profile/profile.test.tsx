@@ -2,7 +2,7 @@ import { ApiError } from '@platform/api-client';
 import { loadBrand } from '@platform/brands';
 import { act, cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { NOW, profile, renderProfile } from './profile-test-kit';
+import { approved, NOW, profile, renderProfile } from './profile-test-kit';
 
 const compress = vi.hoisted(() => ({ compressImage: vi.fn(async (file: Blob) => file) }));
 vi.mock('./compress-image', () => compress);
@@ -77,6 +77,19 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     expect(await screen.findByText('Hali obunalar yoʻq')).toBeTruthy();
   });
 
+  it('opens «Sizning taʼsiringiz»; only an approved driver has «Oynaga QR» (G69, docs/123)', async () => {
+    const mine = async () => ({ joined: 0, rode: 0, link: 'https://t.me/b', qr: 'https://t.me/q' });
+    renderProfile({}, { clients: { growth: { mine } } });
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(screen.queryByText('Oynaga QR')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /^Sizning taʼsiringiz/u }));
+    expect(await screen.findByText('0 kishi')).toBeTruthy();
+    cleanup();
+    renderProfile({}, { driver: approved, clients: { growth: { mine } } });
+    fireEvent.click(screen.getByText('Dilnoza'));
+    expect(screen.getByText('Oynaga QR')).toBeTruthy();
+  });
+
   it('always has «Haydovchi boʻling» for a passenger; a driver has the app already (G76)', () => {
     const open = vi.spyOn(window, 'open').mockReturnValue(null);
     renderProfile();
@@ -127,6 +140,6 @@ describe('the documents (docs/30)', () => {
     expect(screen.getByText('Hujjatlar').className).toContain('market-title');
     fireEvent.click(screen.getByText('Maxfiylik siyosati'));
     // The edition comes with the requisites from the API (G34).
-    expect(await screen.findByText(/Tahrir 1\.6/)).toBeTruthy();
+    expect(await screen.findByText(/Tahrir 1\.7/)).toBeTruthy();
   });
 });

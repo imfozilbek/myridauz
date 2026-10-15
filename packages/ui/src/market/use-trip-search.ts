@@ -5,6 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useFeedChange } from '../feed/feed-context';
 import type { Route } from '../places/route-screen';
 import { keepValue, keptValue } from '../screen/list-memory';
+import { regionOf } from '../way/way-end';
 
 // The results of a search come back after a trip is opened and closed (docs/94 F2): the same trips
 // at once, refreshed quietly; the search is counted once, not on every return.
@@ -40,10 +41,17 @@ export function useTripSearch(route: Route, date: string, woman: boolean) {
       ),
     [market, search, memory, take],
   );
+  // The two regions of the search: «Rost» shows how many searches of each direction found a trip (G69).
+  const regions = `${regionOf(route.from)}-${regionOf(route.to)}`;
   const counted = useCallback(
     (found: Trip[]) =>
-      track({ name: 'trip_search', screen: 'market.results', result: found.length > 0 ? 'found' : 'empty' }),
-    [track],
+      track({
+        name: 'trip_search',
+        screen: 'market.results',
+        result: found.length > 0 ? 'found' : 'empty',
+        route: regions,
+      }),
+    [track, regions],
   );
   const load = useCallback(() => {
     setFailed(false);

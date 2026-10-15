@@ -12,6 +12,7 @@ import {
   createChatClient,
   createSubscriptionsClient,
   createComfortClient,
+  createGrowthClient,
   createFeedbackClient,
   createStatsClient,
   createCallsClient,
@@ -102,6 +103,7 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
     limits: createLimitsClient(signed),
     team: createTeamClient(signed),
     waitlist: createWaitlistClient(signed),
+    growth: createGrowthClient(signed),
   };
   const locations = createLocationsClient({ baseUrl, fetch });
   // The live channel is quiet: its failures never reach the error analytics (docs/64).

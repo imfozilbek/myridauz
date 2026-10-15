@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { VIA_PATTERN } from './arrival';
 import { CAR_COLORS } from './drivers';
 import { locationIdSchema } from './locations';
 import { DRIVER_BOOKINGS_PATH, PASSENGER_BOOKINGS_PATH } from './bookings';
@@ -57,5 +58,10 @@ export const sharedTripSchema = z.object({
   dropoffPoint: z.object({ lat: z.number(), lng: z.number() }).nullable(),
   status: z.enum(SHARE_STATUSES),
   followers: z.number().int(),
+  // The mark of «Men ham yoʻlga chiqaman»: the loop «Yaqinlarimga» and the code of the one who shared
+  // (G69, docs/123); null without it.
+  via: z.string().regex(VIA_PATTERN).nullable(),
 });
 export type SharedTrip = z.infer<typeof sharedTripSchema>;
+// The trip of a link before its mark is added.
+export type SharedView = Omit<SharedTrip, 'via'>;

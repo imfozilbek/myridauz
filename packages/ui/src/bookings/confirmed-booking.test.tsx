@@ -1,4 +1,4 @@
-import type { ChatClient } from '@platform/api-client';
+import type { ChatClient, GrowthClient } from '@platform/api-client';
 import { DAY_MS, MINUTE_MS } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -10,13 +10,14 @@ import { TRIP_DAY, confirmed } from './booking-test-kit';
 afterEach(cleanup);
 
 const BOARDED_AT = Date.parse('2026-10-02T03:05:00Z');
-const open = (booking = confirmed, chat: Partial<ChatClient> = {}) =>
+const open = (booking = confirmed, chat: Partial<ChatClient> = {}, growth: Partial<GrowthClient> = {}) =>
   renderMarket(
     <MyRequestsScreen onBack={() => undefined} />,
     testClients({
       market: { myRequests: async () => [] },
       bookings: { myBookings: async () => [booking], myOffers: async () => [] },
       chat,
+      growth,
     }),
   );
 
@@ -68,5 +69,25 @@ describe('the page of a confirmed seat (G60, mockup g60/1)', () => {
     await tap('Jasur');
     expect(screen.getByText('Yaqinlarimga')).toBeTruthy();
     expect(screen.queryByText('Yetib keldim')).toBeNull();
+  });
+
+  it('calls a friend to the free seats of the car, only while it has some (G69, docs/123 loop 3)', async () => {
+    vi.setSystemTime(TRIP_DAY);
+    const loopCard = vi.fn<GrowthClient['loopCard']>(async () => ({
+      prepared: null,
+      link: 'https://t.me/p',
+    }));
+    const opened = vi.spyOn(window, 'open').mockReturnValue(null);
+    open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 2 } }, {}, { loopCard });
+    await tap('Jasur');
+    expect(screen.getByText('Bu safarda yana 2 ta joy bor')).toBeTruthy();
+    await tap('Doʻstingni chaqir');
+    await vi.waitFor(() => expect(opened).toHaveBeenCalled());
+    expect(loopCard).toHaveBeenCalledWith({ loop: 'seats', bookingId: confirmed.id });
+    opened.mockRestore();
+    cleanup();
+    open({ ...confirmed, trip: { ...confirmed.trip, seatsLeft: 0, status: 'full' } });
+    await tap('Jasur');
+    expect(screen.queryByText('Doʻstingni chaqir')).toBeNull();
   });
 });

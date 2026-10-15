@@ -1,5 +1,6 @@
 import type { Visit, VisitStore } from '../application/ports';
-import { FRIEND_CODE_LENGTH, randomCode } from '../domain/sources';
+import { randomCode } from '../../../shared/codes/random-code';
+import { FRIEND_CODE_LENGTH } from '../domain/sources';
 
 type Moment = 'started_at' | 'opened_at' | 'invited_at';
 

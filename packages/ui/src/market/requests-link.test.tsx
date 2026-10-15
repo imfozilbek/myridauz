@@ -23,8 +23,8 @@ const empty: RequestBoard = {
   notify: null,
 };
 
-const open = (link: string, enabled = true) => {
-  window.history.replaceState(null, '', `/?requests=${link}`);
+const open = (link: string, enabled = true, address = `/?requests=${link}`) => {
+  window.history.replaceState(null, '', address);
   const requestBoard = vi.fn<MarketClient['requestBoard']>(async () => empty);
   renderMarket(
     <RequestsLink enabled={enabled}>
@@ -61,5 +61,15 @@ describe('a new request on a followed route (docs/83 N08, G64)', { timeout: 20_0
     cleanup();
     open('1726_1730_2026-10-02', false);
     expect(screen.getByText('Asosiy')).toBeTruthy();
+  });
+
+  it('opens the request a passenger sent into the group of the district (G69, docs/123 loop 2)', async () => {
+    const requestBoard = open(
+      '',
+      true,
+      '/?tgWebAppStartParam=requests_1726_1730_2026-10-02__req-share-a1b2c3',
+    );
+    await vi.waitFor(() => expect(requestBoard).toHaveBeenCalled(), { timeout: 5000 });
+    expect(requestBoard.mock.calls[0]?.[0]).toMatchObject({ from: '1726', to: '1730', date: '2026-10-02' });
   });
 });

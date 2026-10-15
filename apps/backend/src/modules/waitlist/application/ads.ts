@@ -1,5 +1,6 @@
 import type { AdLink, AdLinkInput, WaitlistSwitch } from '@platform/contracts';
-import { AD_CODE_LENGTH, AD_PREFIX, randomCode } from '../domain/sources';
+import { randomCode } from '../../../shared/codes/random-code';
+import { AD_CODE_LENGTH, AD_PREFIX } from '../domain/sources';
 import type { AdRow, AdStore, SwitchStore } from './ports';
 
 export type AdDeps = {

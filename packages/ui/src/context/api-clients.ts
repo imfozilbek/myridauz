@@ -7,6 +7,7 @@ import type {
   ComfortClient,
   DriversClient,
   FeedbackClient,
+  GrowthClient,
   LimitsClient,
   MapClient,
   MarketClient,
@@ -45,6 +46,8 @@ export type ApiClients = {
   readonly team: TeamClient;
   // The waitlist of G83: the questionnaire of the main bot and the team's screens (docs/181).
   readonly waitlist: WaitlistClient;
+  // The loops of growth of G69 (docs/123).
+  readonly growth: GrowthClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

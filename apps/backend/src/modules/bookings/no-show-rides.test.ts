@@ -42,6 +42,28 @@ describe('a passenger who did not come rode nothing (docs/129, G63)', () => {
     expect((await pastRides(over, DRIVER, 'driver')).map((ride) => ride.bookingId)).toEqual([kit.rode]);
   });
 
+  // «Yetib keldik» ends the ride before the clock: the celebration after the review counts it (G69).
+  it('counts a trip that arrived before its time is over', async () => {
+    const kit = await tripWithNoShow();
+    const arrived = async (id: string) => {
+      const trip = await kit.deps.trips.find(id);
+      return trip && { ...trip, over: false, arrivedAt: ENDS - HOUR };
+    };
+    const early = { ...kit.deps, trips: { ...kit.deps.trips, find: arrived } };
+    expect((await pastRides(early, ALI, 'passenger')).map((ride) => ride.bookingId)).toEqual([kit.rode]);
+    const late = {
+      ...kit.deps,
+      trips: {
+        ...kit.deps.trips,
+        find: async (id: string) => {
+          const trip = await kit.deps.trips.find(id);
+          return trip && { ...trip, over: false, arrivedAt: null };
+        },
+      },
+    };
+    expect(await pastRides(late, ALI, 'passenger')).toEqual([]);
+  });
+
   it('still leaves the ride for the complaint and its decision', async () => {
     const { deps, missed } = await tripWithNoShow();
     expect((await filedRideOf(deps, missed))?.commission).toBe(9000);

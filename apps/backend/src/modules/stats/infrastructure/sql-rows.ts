@@ -18,6 +18,9 @@ export const errorRow = z.object({
   count: number,
 });
 export const totalRow = z.object({ count: number });
+// «Rost» (G69): the sessions of a mark, the searches of a direction with their result.
+export const markRow = z.object({ via: text, count: number });
+export const searchRow = z.object({ route: text, result: text, count: number });
 
 // An id of the contract; an empty or odd value becomes "unknown" (docs/29: ids only).
 const ID = /^[a-z][a-z0-9_.]{0,47}$/;

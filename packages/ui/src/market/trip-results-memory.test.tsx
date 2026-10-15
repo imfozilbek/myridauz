@@ -34,6 +34,10 @@ describe('Search results after «Назад» from a trip (docs/94 F2)', { timeo
     expect(screen.getByText(DRIVER)).toBeTruthy();
     expect(scrollTo).toHaveBeenLastCalledWith(0, 700);
     expect(searches(tracked)).toBe(1);
+    // The two regions of the search for «Rost» (G69, docs/123).
+    expect(tracked.find((event) => event.name === 'trip_search')).toMatchObject({
+      route: expect.stringMatching(/^\d{4}-\d{4}$/u),
+    });
     // A quiet refresh in the background.
     await waitFor(() => expect(searchTrips).toHaveBeenCalledTimes(2));
     await tap('Orqaga');

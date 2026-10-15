@@ -11,6 +11,7 @@ import { MainButton } from '../telegram/bottom-button';
 import { openExternal } from '../telegram/feedback';
 import { useScreenBackground } from '../telegram/screen-background';
 import { brandVars } from '../theme/brand-vars';
+import { LoopInvite } from '../growth/loop-invite';
 import { DriverRow } from '../trip/driver-row';
 import { TripCard } from '../trip/trip-card';
 import { BookingBanner, endedBadly } from './booking-banner';
@@ -104,6 +105,17 @@ export function ConfirmedBooking(props: Props) {
               ) : null}
             </p>
           ) : null}
+          {/* Free seats in the car before it goes: a friend books one by the passenger's own link (G69,
+              docs/123 loop 3). */}
+          {freeSeats(booking) ? (
+            <LoopInvite
+              card={{ loop: 'seats', bookingId: booking.id }}
+              icon="passengers"
+              title={t('growth.seats.title', { seats: String(booking.trip.seatsLeft) })}
+              text={t('growth.seats.text')}
+              button={t('growth.seats.button')}
+            />
+          ) : null}
           <div className="booking-links">
             {canComplain(booking.status) ? (
               <button type="button" className="booking-link" onClick={() => onOpen('complaint')}>
@@ -123,3 +135,11 @@ export function ConfirmedBooking(props: Props) {
     </div>
   );
 }
+
+// The car still takes people: confirmed, open for booking, not on the way yet.
+const freeSeats = ({ status, boardedAt, trip }: Booking) =>
+  status === 'confirmed' &&
+  boardedAt === null &&
+  trip.status === 'active' &&
+  trip.departedAt === null &&
+  trip.seatsLeft > 0;

@@ -1,4 +1,4 @@
-import { AVATAR_STATUSES, FACE_REASONS } from '@platform/contracts';
+import { AVATAR_STATUSES, FACE_REASONS, loopOf } from '@platform/contracts';
 import type { UserRepository } from '../application/ports';
 import type { FaceCheck } from '../domain/face';
 import type { Block, User } from '../domain/user';
@@ -111,14 +111,21 @@ export const d1Users = (db: D1Database): UserRepository => ({
         )
         .bind(at, at, id),
       db.prepare('DELETE FROM user_arrivals WHERE user_id = ?').bind(id),
+      // The code of the person goes, and the people they brought are nobody's now (G69).
+      db.prepare('DELETE FROM user_codes WHERE user_id = ?').bind(id),
+      db.prepare('UPDATE user_arrivals SET inviter_id = NULL WHERE inviter_id = ?').bind(id),
+      db.prepare('DELETE FROM share_moments WHERE user_id = ?').bind(id),
     ]);
   },
+  // A link a person shared names its author by a short code (G69, docs/123): who brought whom.
   arrived: async (id, { source, via, client }, at) => {
+    const code = via ? (loopOf(via)?.code ?? null) : null;
     await db
       .prepare(
-        `INSERT OR REPLACE INTO user_arrivals (user_id, source, via, client, arrived_at) VALUES (?, ?, ?, ?, ?)`,
+        `INSERT OR REPLACE INTO user_arrivals (user_id, source, via, client, arrived_at, inviter_id)
+         VALUES (?, ?, ?, ?, ?, (SELECT user_id FROM user_codes WHERE code = ? AND user_id != ?))`,
       )
-      .bind(id, source ?? null, via ?? null, client ?? null, at)
+      .bind(id, source ?? null, via ?? null, client ?? null, at, code, id)
       .run();
   },
   // By the index of the status: never every person (G56, docs/117).

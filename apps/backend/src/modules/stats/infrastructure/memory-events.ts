@@ -51,5 +51,17 @@ export function memoryEvents(rows: readonly DataPoint[], now: () => number): Eve
         .sort((a, b) => b.count - a.count)
         .slice(0, TOP_ERRORS),
     errorsSince: async (hours) => recent(hours * HOUR_MS).filter(isError).length,
+    marks: async (days) =>
+      group(
+        recent(days * DAY).filter((row) => row.blobs[0] === 'screen_open' && row.blobs[10]),
+        ({ blobs }) => blobs[10] ?? '',
+        (same) => ({ via: same[0]?.blobs[10] ?? '', count: new Set(same.map((row) => row.blobs[4])).size }),
+      ),
+    searches: async (days) =>
+      group(
+        recent(days * DAY).filter((row) => row.blobs[0] === 'trip_search' && row.blobs[6]),
+        ({ blobs }) => [blobs[6], blobs[5]].join('|'),
+        (same) => ({ route: same[0]?.blobs[6] ?? '', result: same[0]?.blobs[5] ?? '', count: same.length }),
+      ),
   };
 }
