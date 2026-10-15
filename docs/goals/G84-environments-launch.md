@@ -14,7 +14,8 @@ A. Внутренняя среда (docs/179, «Шаги: сначала вну�
 [ ] Владелец: GitHub → Settings → Environments: новый internal с
     CLOUDFLARE_API_TOKEN и CLOUDFLARE_ACCOUNT_ID первого аккаунта
     (те же, что сейчас в production). Около 2 минут.
-[ ] Claude: слить PR G81; deploy-internal зелёный.
+[ ] Claude: слить PR G81 (#237), потом G82 (#238);
+    deploy-internal зелёный.
 [ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и в
     @myrida_uz: публикация, редактирование, удаление сообщений,
     добавление подписчиков, изменение профиля канала.
