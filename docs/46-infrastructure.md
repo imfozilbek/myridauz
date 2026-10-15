@@ -44,7 +44,7 @@
 | `@myrida_bot` / `@rida1uz_bot` | `api.<домен>/telegram/passenger` | «ilova» → `passenger.<домен>` |
 | `@myrida_haydovchi_bot` / `@rida1uz_haydovchi_bot` | `api.<домен>/telegram/driver` | «ilova» → `driver.<домен>` |
 | `@myrida_admin_bot` / `@rida1uz_admin_bot` | `api.<домен>/telegram/admin` | «ilova» → `admin.<домен>`: ставит владелец в BotFather, код её не трогает |
-| `@myridauz_bot` / прод: имя выберет владелец (общий бот, G83, `181`) | `api.<домен>/telegram/main` | «ilova» → `main.<домен>`: ставит `setup-bots` |
+| `@myridauz_bot` / прод: `@ridauz_bot` (общий бот, G83, `181`) | `api.<домен>/telegram/main` | «ilova» → `main.<домен>`: ставит `setup-bots` |
 | `@myrida_support_bot` / `@rida1uz_yordam_bot` | `api.<домен>/telegram/support` | нет: люди пишут вопрос (G30, `50`) |
 | `@myrida_poster_bot` / `@rida1uz_poster_bot` (бот каналов) | `api.<домен>/telegram/poster`: только `chat_member` | нет: публикует в каналы среды (G80, `176`, `179`) |
 

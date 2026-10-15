@@ -33,8 +33,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
       driver: 'rida1uz_haydovchi_bot',
       admin: 'rida1uz_admin_bot',
       support: 'rida1uz_yordam_bot',
-      // The owner names the main bot of production before its waitlist opens (docs/181).
-      main: '',
+      // The main bot of production: owner decision 15.10.2026 (docs/181).
+      main: 'ridauz_bot',
     },
     channels,
     mainChannel: 'rida1uz',

@@ -19,7 +19,7 @@
 | Mini App | `passenger.`, `driver.`, `admin.myrida.uz` | `passenger.`, `driver.`, `admin.ridaone.uz` |
 | Боты | `@myrida_bot`, `@myrida_haydovchi_bot`, `@myrida_admin_bot`, `@myrida_support_bot` | `@rida1uz_bot`, `@rida1uz_haydovchi_bot`, `@rida1uz_admin_bot`, `@rida1uz_yordam_bot` |
 | Бот каналов | `@myrida_poster_bot` | `@rida1uz_poster_bot` |
-| Общий бот списка ожидания (G83, `181`) | `@myridauz_bot` «MyRida» | имя выберет владелец |
+| Общий бот списка ожидания (G83, `181`) | `@myridauz_bot` «MyRida» | `@ridauz_bot` «Rida» (решение владельца 15.10.2026) |
 | Главный канал | `@myrida_uz` | `@rida1uz` |
 | Каналы направлений | один приватный «MyRida \| Viloyatlar»: все направления | 67 приватных (`176`) |
 | Поисковики | закрыт: `robots.txt` «Disallow: /» | открыт, карта сайта (`60`) |
@@ -54,15 +54,15 @@
 - Workflow «Map data»: пока только `internal`.
 - Секреты Worker у каждой среды свои (`46`): токены 5 ботов своей среды, свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, ключи аналитики, звонков и TURN своего аккаунта.
 
-## Права токена нового аккаунта
+## Права токена деплоя
 
-Токен деплоя (Account API Token) с правами:
+Свой токен у каждой среды: зона `myrida.uz` у внутренней, `ridaone.uz` у прода. Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать, только создать заново с этими правами (урок №291).
 
 | Где | Право |
 |---|---|
-| Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit |
-| Account | Account Analytics: Read; Realtime (Calls): Edit |
-| Zone `ridaone.uz` | Workers Routes, DNS: Edit; Zone: Read |
+| Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages, Workers KV: Edit |
+| Account | Account Settings, Account Analytics: Read; Realtime (Calls): Edit |
+| Zone своей среды | Workers Routes, DNS: Edit; Zone: Read |
 
 ## Шаги: сначала внутренняя среда
 
