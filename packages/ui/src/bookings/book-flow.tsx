@@ -6,6 +6,7 @@ import { DraftRestored } from '../flow/draft-restored';
 import { usePlaces } from '../market/places-gate';
 import { CommentSheet } from '../market/trip-steps';
 import { rememberedWay } from '../way/remembered-way';
+import { AcceptedBooking } from './accepted-booking';
 import { BookPoint } from './book-point';
 import { BookPoints } from './book-points';
 import { useBooking } from './book-state';
@@ -92,9 +93,12 @@ export function BookFlow({ trip, choice, onBack, onClose, onHome }: Props) {
 
 type SentProps = { readonly booking: Booking; readonly onClose: () => void; readonly onHome: () => void };
 
-// The request just sent: its cancel is the one of the page of the seat (G77).
+// The request just sent: its cancel is the one of the page of the seat (G77). Changed meanwhile (the
+// driver answered): the page of the seat as it is now (G52, docs/112).
 function SentSeat({ booking, onClose, onHome }: SentProps) {
-  const { cancel, failure } = useCancelSeat(booking.id, { onDone: onClose });
+  const [stale, setStale] = useState(false);
+  const { cancel, failure } = useCancelSeat(booking.id, { onDone: onClose, onStale: () => setStale(true) });
+  if (stale) return <AcceptedBooking bookingId={booking.id} onClose={onClose} onHome={onHome} />;
   return (
     <PendingBooking booking={booking} onBack={onClose} onCancel={cancel} onHome={onHome}>
       <ActionFailure error={failure} />

@@ -1,5 +1,5 @@
 import type { TranslationKey } from '@platform/i18n';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAnalytics } from '../context/analytics-context';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -16,7 +16,18 @@ export function useCancelSeat(id: string, { onDone, onStale }: Done) {
   const { track } = useAnalytics();
   const { bookings } = useApiClients();
   const [failure, setFailure] = useState<TranslationKey | null>(null);
+  // One cancel at a time: a second tap while the first runs sends nothing (G52, docs/112).
+  const running = useRef(false);
   const cancel = async () => {
+    if (running.current) return;
+    running.current = true;
+    try {
+      await cancelOnce();
+    } finally {
+      running.current = false;
+    }
+  };
+  const cancelOnce = async () => {
     if (!(await confirm(t('bookings.cancelAsk'), t('bookings.cancel')))) return;
     try {
       setFailure(null);
