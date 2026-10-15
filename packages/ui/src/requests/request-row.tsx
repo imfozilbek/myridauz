@@ -7,6 +7,7 @@ import { useRiderStars } from '../own-trip/rider-line';
 import { useOneAtATime } from '../telegram/one-at-a-time';
 import { RequestMarks } from './request-marks';
 import './request-row.css';
+import { useCallsOn } from '../call/calls-on';
 
 // The values of the mockups g64/1 and g64/2 at 360 px: the face 62 px of the mockup at 1.5.
 const FACE = 41.33;
@@ -53,6 +54,7 @@ export function RequestRow({
   onCall,
 }: Props) {
   const { t, formatNumber } = useI18n();
+  const callsOn = useCallsOn();
   const act = useOneAtATime(onAction);
   const { passenger } = request;
   const stars = useRiderStars(request);
@@ -85,9 +87,11 @@ export function RequestRow({
         <button type="button" className="request-tool" aria-label={t('chat.open')} onClick={onChat}>
           <Icon name="chat" size={TOOL_ICON} />
         </button>
-        <button type="button" className="request-tool" aria-label={t('calls.call')} onClick={onCall}>
-          <Icon name="phone" size={TOOL_ICON} />
-        </button>
+        {callsOn ? (
+          <button type="button" className="request-tool" aria-label={t('calls.call')} onClick={onCall}>
+            <Icon name="phone" size={TOOL_ICON} />
+          </button>
+        ) : null}
         {action ? (
           <button type="button" className="request-act" disabled={offered || act.busy} onClick={act.run}>
             {t(offered ? 'bookings.offer.sent.title' : ACTIONS[action])}

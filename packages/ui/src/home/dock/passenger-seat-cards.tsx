@@ -9,6 +9,7 @@ import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
 import { markAgreed } from './passenger-marks';
 import type { SeatActions } from './seat-actions';
+import { useTalkTools } from './talk-tools';
 
 type Kind = 'asked' | 'confirmed' | 'moved' | 'refused' | 'noShow' | 'ended';
 type Props = {
@@ -25,15 +26,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
   const { t, formatTime } = useI18n();
   const { trip } = booking;
   const driver = trip.driver;
-  const tools = [
-    { icon: 'phone' as const, label: t('sheet.meet.call'), onClick: act.call(booking) },
-    {
-      icon: 'chat' as const,
-      label: t('chat.open'),
-      dot: (booking.unread ?? 0) > 0,
-      onClick: act.talk(booking),
-    },
-  ];
+  const { tools, chat } = useTalkTools(act.call(booking), act.talk(booking), (booking.unread ?? 0) > 0);
   const who = { person: driver, sub: words.car(driver.car, booking.plate), tools };
   const route = words.route(trip);
   const start = useBookingEnds(booking).start;
@@ -56,7 +49,7 @@ export function PassengerSeatCard({ kind, booking, words, act, go, directory }: 
             timer={{ text: words.left(booking.expiresAt), now: false }}
             title={words.when(trip.departAt)}
             text={route}
-            who={{ ...who, tools: tools.slice(1) }}
+            who={{ ...who, tools: [chat] }}
           />
           <SecondaryButton beside text={t('home.dock.cancel')} onClick={act.cancel(booking)} />
           <MainButton text={t('chat.open')} onClick={act.chat(booking)} />

@@ -7,6 +7,7 @@ import { useBookingEnds } from '../../trip/booking-ends';
 import { DockCard } from './dock-card';
 import type { DockWords } from './dock-words';
 import type { TripActions } from './trip-actions';
+import { useTalkTools } from './talk-tools';
 
 type Props = {
   readonly trip: Trip;
@@ -80,13 +81,7 @@ export function PointCard({
   const ends = useBookingEnds(booking);
   const person = booking.passenger;
   const sub = t('home.dock.seatsOf', { count: String(booking.seats) });
-  const phone = { icon: 'phone' as const, label: t('sheet.meet.call'), onClick: act.call(booking) };
-  const chat = {
-    icon: 'chat' as const,
-    label: t('chat.open'),
-    dot: act.unread(booking),
-    onClick: act.talk(booking),
-  };
+  const { phone, tools } = useTalkTools(act.call(booking), act.talk(booking), act.unread(booking));
   if (waiting)
     return (
       <>
@@ -97,7 +92,7 @@ export function PointCard({
           timer={{ text: words.waits(booking.cameAt ?? Date.now()), now: true }}
           title={ends.start}
           text={booking.pitak?.hint ?? booking.note ?? words.route(booking.trip)}
-          who={{ person, sub, tools: [phone, chat] }}
+          who={{ person, sub, tools }}
           quick={[
             { label: t('sheet.meet.five'), onClick: act.say(booking, 'five') },
             { label: t('sheet.meet.ten'), onClick: act.say(booking, 'ten') },
@@ -117,7 +112,7 @@ export function PointCard({
         timer={{ text: words.waits(booking.driverCameAt ?? Date.now()), now: false }}
         title={ends.start}
         text={t('home.dock.markHint', { name: person.firstName })}
-        who={{ person, sub, tools: [phone] }}
+        who={{ person, sub, tools: phone }}
       />
       <SecondaryButton beside text={t('complaints.reason.no_show')} onClick={act.missed(booking)} />
       <MainButton text={t('driverAfter.meet.met')} onClick={act.met(booking)} />

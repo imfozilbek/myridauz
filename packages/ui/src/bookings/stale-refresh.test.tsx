@@ -32,7 +32,7 @@ describe('a booking changed under the passenger', () => {
   });
 
   it('sends one cancel for two taps (G52)', async () => {
-    const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => undefined);
+    const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => confirmed);
     vi.stubGlobal('confirm', () => true);
     renderMarket(
       <MyRequestsScreen onBack={() => undefined} />,

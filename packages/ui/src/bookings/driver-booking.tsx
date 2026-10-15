@@ -15,6 +15,7 @@ import { BookingScreen, type BookingAction } from './booking-screen';
 import { notEnough, useAnswerBooking } from './use-answer-booking';
 import { missingFor, useBalance } from './use-balance';
 import { useTopUp } from '../wallet/top-up-link';
+import { useCallsOn } from '../call/calls-on';
 
 type Step = 'view' | 'chat' | 'call' | 'complain';
 type Props = {
@@ -30,6 +31,7 @@ type Props = {
 // can still be cancelled: the commission goes back.
 export function DriverBooking({ booking, onClose, onStale }: Props) {
   const { t } = useI18n();
+  const callsOn = useCallsOn();
   const [step, setStep] = useState<Step>('view');
   const { balance, reload } = useBalance(booking.status === 'requested');
   const { failure, fail, clear } = useFailure();
@@ -93,7 +95,7 @@ export function DriverBooking({ booking, onClose, onStale }: Props) {
           {t('chat.open')}
         </Cell>
         {/* The call of a seat that rides, as on «Mening safarim» (G78 sheet 3, d-seat). */}
-        {taken(booking) ? (
+        {taken(booking) && callsOn ? (
           <Cell before={<IconTile name="phone" size="row" />} onClick={() => setStep('call')}>
             {t('calls.call')}
           </Cell>
