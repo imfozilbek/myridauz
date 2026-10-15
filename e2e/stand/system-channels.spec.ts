@@ -7,6 +7,7 @@ import { answer, book, CHILONZOR, publishTrip } from './market-kit';
 import { confirmedSeat, MINUTE, moveTrip, SAMARQAND, toldBy, TO_SAMARQAND, wordsOf } from './g27-kit';
 import { JAHONGIR, NARGIZA } from './people';
 import { signedAs } from './stand-kit';
+import { STAND_TELEGRAM_PORT } from '../../scripts/stand/paths.ts';
 import { botMessages, clearBotMessages, runCron, standRows, standSql } from './stand-tools';
 
 // The channels of the directions and the reasons to come back (docs/80 S60 … S62, docs/77 P51, P52): a
@@ -63,20 +64,34 @@ test('S76. the check makes the link of the app of a channel, «Kanallar» gives 
   expect(mine.some((channel) => channel.link.startsWith('https://t.me/+stand'))).toBe(true);
 });
 
-// docs/180: the Cron brings a bot to the repository, then leaves it alone while it is like it.
-test('S77. the look of a bot comes from the repository, a bot like it gets no call', async () => {
-  const PASSENGER = "face = 'bot:passenger'";
-  const row = () => standRows(`SELECT checked_at, photo_id FROM looks WHERE ${PASSENGER}`)[0];
+// Someone changes a channel by hand in Telegram: the stub of the stand keeps a channel by its chat.
+const byHand = (method: string, body: object) =>
+  fetch(`http://localhost:${STAND_TELEGRAM_PORT}/bot0:hand/${method}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+// docs/180: the Cron brings the main channel back to the repository, then leaves it alone while it is like it.
+test('S77. a channel changed by hand gets its look from the repository, a channel like it gets no call', async () => {
+  const chat = `@${loadBrand().mainChannel}`;
+  const face = `face = 'channel:${chat}'`;
+  const row = () => standRows(`SELECT checked_at, photo_id FROM looks WHERE ${face}`)[0];
+  const first = () => standSql(`UPDATE looks SET checked_at = -1 WHERE ${face}`);
   const sets = async () =>
-    (await botMessages()).filter((m) => m.bot === 'passenger' && m.method.startsWith('setMy'));
-  // Never checked: the first of the next round, it gets the picture of the repository.
-  standSql(`DELETE FROM looks WHERE ${PASSENGER}`);
+    (await botMessages()).filter((m) => m.chat === chat && m.method.startsWith('setChat'));
+  // The main channel is the second face: the first round already brings it to the repository.
+  await runCron();
+  const photo = String(row()?.photo_id);
+  await byHand('setChatTitle', { chat_id: chat, title: 'Qoʻlda' });
+  await byHand('setChatPhoto', { chat_id: chat });
+  first();
   await clearBotMessages();
   await runCron();
-  expect((await sets()).map((m) => m.method)).toContain('setMyProfilePhoto');
-  expect(String(row()?.photo_id)).toMatch(/^stand-photo-/u);
+  expect((await sets()).map((m) => m.method)).toEqual(['setChatTitle', 'setChatPhoto']);
+  expect(String(row()?.photo_id)).not.toBe(photo);
   // Checked again first: Telegram is like the repository, nothing is set.
-  standSql(`UPDATE looks SET checked_at = -1 WHERE ${PASSENGER}`);
+  first();
   await clearBotMessages();
   await runCron();
   expect(Number(row()?.checked_at)).toBeGreaterThan(0);

@@ -59,6 +59,7 @@ import { PLACE_ICONS } from './place-icons';
 import { PROFILE_ICONS } from './profile-icons';
 import { TALK_ICONS } from './talk-icons';
 import { TEAM_ICONS } from './team-icons';
+import { WAITLIST_ICONS } from './waitlist-icons';
 import { WAY_ICONS } from './way-icons';
 // One meaning = one icon in all three Mini Apps (docs/19).
 const ICONS = {
@@ -90,6 +91,7 @@ const ICONS = {
   ...TALK_ICONS,
   ...PLACE_ICONS,
   ...TEAM_ICONS,
+  ...WAITLIST_ICONS,
   car: CarFront,
   carSide: Car,
   carInterior: Armchair,

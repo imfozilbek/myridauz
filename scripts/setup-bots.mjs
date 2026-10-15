@@ -1,11 +1,11 @@
 // Points the bots at the deployed Worker (docs/45): pnpm run setup-bots --brand=<brand> --env=<environment>.
 // Run after the first deploy and when bot settings change. Needs TELEGRAM_WEBHOOK_SECRET of that
-// environment; bot tokens stay in Cloudflare secrets (docs/32). Then the looks of every bot and
-// channel come from the repository round by round, not in a day of the Cron (docs/180).
+// environment; bot tokens stay in Cloudflare secrets (docs/32). Then the looks of every channel come
+// from the repository round by round, not in a day of the Cron (docs/180).
 import { apiHost } from '../brands/index.ts';
 import { targetOf } from './deploy/target.mjs';
 
-// A round checks a few bots and channels (docs/117): 67 channels take about 15 rounds.
+// A round checks a few channels (docs/117): 68 channels take about 11 rounds.
 const MAX_ROUNDS = 40;
 
 const { brand } = targetOf('setup-bots');

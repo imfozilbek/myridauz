@@ -1,10 +1,9 @@
-import { MINI_APPS, type MiniApp } from '@platform/contracts';
+import type { MiniApp } from '@platform/contracts';
 import type { Bindings } from '../../env';
 
-// One bot per Mini App (docs/02) and the support bot (docs/50). Tokens are Worker secrets, never in
-// the repository (docs/32).
+// One bot per Mini App (docs/02), the main bot of the waitlist among them (G83), and the support
+// bot (docs/50). Tokens are Worker secrets, never in the repository (docs/32).
 export type BotName = MiniApp | 'support';
-export const BOT_NAMES: readonly BotName[] = [...MINI_APPS, 'support'];
 
 export function botToken(env: Bindings, bot: BotName): string | undefined {
   return {
@@ -12,6 +11,7 @@ export function botToken(env: Bindings, bot: BotName): string | undefined {
     driver: env.DRIVER_BOT_TOKEN,
     admin: env.ADMIN_BOT_TOKEN,
     support: env.SUPPORT_BOT_TOKEN,
+    main: env.MAIN_BOT_TOKEN,
   }[bot];
 }
 

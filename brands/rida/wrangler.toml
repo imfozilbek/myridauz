@@ -13,6 +13,9 @@ routes = [{ pattern = "api.myrida.uz", custom_domain = true }]
 BRAND = "rida"
 # Channel posts of new trips (docs/15): the deploy sets it by the environment (`posts`, docs/179).
 CHANNEL_POSTS = "off"
+# The names, texts and pictures of the channels from the repository (docs/180): "on" in an environment
+# after the owner says yes to their texts (G84).
+CHANNEL_LOOKS = "off"
 # The Analytics Engine dataset the dashboard reads (docs/29); the same as below.
 ANALYTICS_DATASET = "rida_analytics"
 

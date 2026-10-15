@@ -1,0 +1,52 @@
+/* The waitlist of the team (G83): the values of the approved mockups 5-team and 6-team-stats. */
+.wl-team-line {
+  margin: 0;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.wl-team-line:last-child {
+  border-bottom: 0;
+}
+
+.wl-team-line b {
+  font-weight: 700;
+}
+
+.wl-bar {
+  display: block;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--reg-divider);
+  font-size: 15px;
+}
+
+.wl-bar:last-child {
+  border-bottom: 0;
+}
+
+.wl-bar-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.wl-bar-top b {
+  font-weight: 700;
+}
+
+.wl-meter {
+  display: block;
+  height: 6px;
+  margin-top: 6px;
+  border-radius: 3px;
+  background: var(--reg-off);
+}
+
+.wl-meter i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--reg-strong);
+}

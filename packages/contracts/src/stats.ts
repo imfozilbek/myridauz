@@ -5,8 +5,17 @@ import { TRIP_STEPS } from './analytics';
 export const ADMIN_STATS_PATH = '/admin/stats';
 export const STATS_PERIODS = ['day', 'week'] as const;
 export type StatsPeriod = (typeof STATS_PERIODS)[number];
-export const FUNNELS = ['passenger', 'driver', 'new_trip', 'way'] as const;
+export const FUNNELS = [
+  'passenger',
+  'driver',
+  'new_trip',
+  'way',
+  'waitlist',
+  'waitlist_passenger',
+  'waitlist_driver',
+] as const;
 export type FunnelId = (typeof FUNNELS)[number];
+const WAITLIST_FUNNEL = ['role', 'pains', 'route', 'when', 'listed'] as const;
 // The steps of each funnel (docs/29), in order.
 export const FUNNEL_STEPS = {
   passenger: ['opened', 'searched', 'trip_opened', 'requested', 'chat', 'confirmed', 'boarded'],
@@ -14,6 +23,10 @@ export const FUNNEL_STEPS = {
   new_trip: TRIP_STEPS,
   // The route of a search by lists (G26, docs/74): opened, start, end, the trips seen.
   way: ['opened', 'from', 'to', 'done'],
+  // The waitlist of G83 (docs/183): from the bot to the list, then each role step by step.
+  waitlist: ['bot_opened', 'opened', 'role_chosen', 'listed'],
+  waitlist_passenger: WAITLIST_FUNNEL,
+  waitlist_driver: WAITLIST_FUNNEL,
 } as const satisfies Record<FunnelId, readonly string[]>;
 export type FunnelStepId = (typeof FUNNEL_STEPS)[FunnelId][number];
 const STEP_IDS = [...new Set(Object.values(FUNNEL_STEPS).flat())] as [FunnelStepId, ...FunnelStepId[]];

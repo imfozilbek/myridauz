@@ -7,18 +7,17 @@ import {
   type TextPart,
 } from '../domain/look';
 
-// One bot or channel in Telegram: its look in the repository and the calls that read and set it.
+// A channel or the bot of the channels in Telegram: its look in the repository and the calls that
+// read and set it.
 export type Face = {
   readonly key: string;
   readonly look: Look;
   // The most calls one check makes: a run keeps within its budget of requests (docs/117).
   readonly cost: number;
-  // A channel takes the photo it already has (docs/180); a bot gets the photo of the repository.
-  readonly adopt: boolean;
   read(): Promise<Seen>;
   write(part: TextPart, text: string): Promise<void>;
-  // Sets the picture and gives the photo Telegram made of it.
-  photo(picture: ArrayBuffer): Promise<string | null>;
+  // Sets the picture and gives the photo Telegram made of it. The bot of the channels has none.
+  photo?(picture: ArrayBuffer): Promise<string | null>;
 };
 
 // What the Worker last checked of a face, and the photo it gave or took.
@@ -38,10 +37,10 @@ export type LooksDeps = {
 };
 
 async function keepPhoto(deps: LooksDeps, face: Face, seen: string | null, memory: PhotoMemory | null) {
-  if (!face.look.avatar) return memory;
+  if (!face.look.avatar || !face.photo) return memory;
   const picture = await deps.picture(face.look.avatar);
   const hash = await deps.hash(picture);
-  const step = photoStep(hash, seen, memory, face.adopt);
+  const step = photoStep(hash, seen, memory);
   if (step === 'keep') return memory;
   const photo = step === 'adopt' ? seen : await face.photo(picture);
   return photo ? { hash, photo } : null;

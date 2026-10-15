@@ -1,24 +1,11 @@
 import type { BrandChannel, BrandConfig } from '@platform/brands';
-import { createI18n, DEFAULT_LOCALE, type TranslationKey } from '@platform/i18n';
-import type { BotName } from '../../../shared/telegram/bot-config';
+import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Look } from '../domain/look';
 
 const { t } = createI18n(DEFAULT_LOCALE);
 
 // The looks of the repository (docs/180): the texts from packages/i18n with the name of the
-// environment, the pictures from the site of the environment (brands/<brand>/landing).
-
-// The name, the text of an empty chat, the profile line and the picture of a bot (G16, G34).
-export function botLook(brand: BrandConfig, bot: BotName, site: string): Look {
-  const text = (part: 'name' | 'description' | 'short') =>
-    t(`bot.profile.${bot}.${part}` as TranslationKey, { brand: brand.name, slogan: brand.slogan });
-  return {
-    name: text('name'),
-    description: text('description'),
-    short: text('short'),
-    avatar: `${site}/bot/${bot}-avatar.jpg`,
-  };
-}
+// environment, the pictures from the site of the environment (brands/<brand>/landing/channel).
 
 // The bot of the channels: only the team sees it, as the admin of the channels (docs/176).
 export const posterLook = (brand: BrandConfig): Look => ({

@@ -1,0 +1,128 @@
+{
+  "overview": {
+    "passengers": 1240,
+    "drivers": 86,
+    "directions": [
+      { "region": "1718", "passengers": 124, "drivers": 9, "opened": null },
+      { "region": "1730", "passengers": 98, "drivers": 6, "opened": null },
+      { "region": "1703", "passengers": 87, "drivers": 4, "opened": null },
+      { "region": "1710", "passengers": 61, "drivers": 3, "opened": null },
+      { "region": "1706", "passengers": 44, "drivers": 2, "opened": null },
+      { "region": "1714", "passengers": 40, "drivers": 2, "opened": null },
+      { "region": "1727", "passengers": 35, "drivers": 2, "opened": null },
+      { "region": "1708", "passengers": 30, "drivers": 1, "opened": null },
+      { "region": "1724", "passengers": 25, "drivers": 1, "opened": null },
+      { "region": "1712", "passengers": 20, "drivers": 1, "opened": null },
+      { "region": "1722", "passengers": 18, "drivers": 1, "opened": null },
+      { "region": "1733", "passengers": 12, "drivers": 0, "opened": null },
+      { "region": "1735", "passengers": 10, "drivers": 0, "opened": null }
+    ],
+    "topPain": { "pain": "chats", "share": 64 }
+  },
+  "direction": {
+    "region": "1718",
+    "since": "2026-10-18T05:00:00Z",
+    "passengers": {
+      "count": 124,
+      "cadences": [
+        { "cadence": "weekly", "count": 61 },
+        { "cadence": "monthly", "count": 30 },
+        { "cadence": "holidays", "count": 21 },
+        { "cadence": "once", "count": 12 }
+      ],
+      "pains": [
+        { "pain": "chats", "count": 1, "share": 64 },
+        { "pain": "fixed", "count": 1, "share": 47 },
+        { "pain": "phone", "count": 1, "share": 41 },
+        { "pain": "wait", "count": 1, "share": 38 },
+        { "pain": "price", "count": 1, "share": 35 },
+        { "pain": "woman", "count": 1, "share": 18 }
+      ]
+    },
+    "drivers": {
+      "count": 9,
+      "cadences": [
+        { "cadence": "daily", "count": 2 },
+        { "cadence": "weekly", "count": 5 },
+        { "cadence": "monthly", "count": 1 },
+        { "cadence": "sometimes", "count": 1 }
+      ],
+      "pains": [
+        { "pain": "chats", "count": 7, "share": 0 },
+        { "pain": "fixed", "count": 6, "share": 0 },
+        { "pain": "empty", "count": 5, "share": 0 },
+        { "pain": "phone", "count": 3, "share": 0 },
+        { "pain": "safety", "count": 3, "share": 0 },
+        { "pain": "wait", "count": 2, "share": 0 },
+        { "pain": "woman", "count": 1, "share": 0 }
+      ],
+      "approved": 4
+    },
+    "opened": null
+  },
+  "gold": {
+    "after": { "listed": 948, "joined": 436, "invited": 180, "byFriends": 362 },
+    "sources": [
+      { "source": "channel", "opened": 612, "listed": 453 },
+      { "source": "friend", "opened": 402, "listed": 362 },
+      { "source": "ad", "opened": 310, "listed": 99 },
+      { "source": "direct", "opened": 86, "listed": 34 }
+    ],
+    "devices": [
+      { "platform": "android", "opened": 1420, "listed": 937 },
+      { "platform": "ios", "opened": 230, "listed": 140 },
+      { "platform": "desktop", "opened": 60, "listed": 15 }
+    ],
+    "hours": [
+      { "from": 6, "count": 9 },
+      { "from": 9, "count": 14 },
+      { "from": 12, "count": 12 },
+      { "from": 15, "count": 15 },
+      { "from": 18, "count": 27 },
+      { "from": 21, "count": 23 }
+    ],
+    "shortage": [
+      { "region": "1703", "passengers": 87, "drivers": 1 },
+      { "region": "1730", "passengers": 98, "drivers": 2 },
+      { "region": "1718", "passengers": 124, "drivers": 9 }
+    ],
+    "cadences": [
+      { "cadence": "weekly", "count": 38 },
+      { "cadence": "monthly", "count": 27 },
+      { "cadence": "holidays", "count": 22 },
+      { "cadence": "once", "count": 13 }
+    ],
+    "bothRoles": 21
+  },
+  "funnels": [
+    {
+      "id": "waitlist",
+      "steps": [
+        { "step": "bot_opened", "count": 2410, "drop": null },
+        { "step": "opened", "count": 1150, "drop": 52 },
+        { "step": "role_chosen", "count": 1060, "drop": 8 },
+        { "step": "listed", "count": 948, "drop": 11 }
+      ]
+    },
+    {
+      "id": "waitlist_passenger",
+      "steps": [
+        { "step": "role", "count": 980, "drop": null },
+        { "step": "pains", "count": 905, "drop": 8 },
+        { "step": "route", "count": 874, "drop": 3 },
+        { "step": "when", "count": 852, "drop": 3 },
+        { "step": "listed", "count": 852, "drop": 0 }
+      ]
+    },
+    {
+      "id": "waitlist_driver",
+      "steps": [
+        { "step": "role", "count": 80, "drop": null },
+        { "step": "pains", "count": 74, "drop": 8 },
+        { "step": "route", "count": 71, "drop": 4 },
+        { "step": "when", "count": 30, "drop": 58 },
+        { "step": "listed", "count": 30, "drop": 0 }
+      ]
+    }
+  ]
+}

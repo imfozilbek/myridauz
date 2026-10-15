@@ -1,7 +1,8 @@
 import { appHost, type BrandConfig } from '@platform/brands';
 import type { AppLink } from '@platform/contracts';
 
-type App = 'passenger' | 'driver';
+// main: the questionnaire of the main bot (G83, docs/181).
+type App = 'passenger' | 'driver' | 'main';
 
 // A button that opens the Mini App, right on its booking, offer or trip when a link is given
 // (docs/65 B5), never only on the main screen. The buttons of a live card are these (G68).

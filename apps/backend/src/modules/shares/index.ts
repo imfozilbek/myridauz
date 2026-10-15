@@ -12,7 +12,7 @@ import { shareRoutes } from './http/share-routes';
 import { storyRoutes } from './http/story-routes';
 import { d1Shares } from './infrastructure/d1-shares';
 import { createMemoryShares } from './infrastructure/memory-shares';
-import { prepareCard } from './infrastructure/prepared-card';
+import { prepareCard } from '../../shared/telegram/prepared-card';
 import { shareTexts } from './infrastructure/share-texts';
 import { brandOf } from '../../shared/brand/brand-of';
 

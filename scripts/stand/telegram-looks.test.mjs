@@ -3,16 +3,11 @@ import { standLooks } from './telegram-looks.mjs';
 
 // docs/180: the stub of the stand gives back the look a bot set, like Telegram.
 describe('the looks of the stand', () => {
-  it('gives back the name and the photo a bot set', () => {
+  it('gives back the name the bot of the channels set', () => {
     const looks = standLooks();
-    expect(looks('getMyName', '1:p', {}, 1)).toEqual({ name: '' });
-    looks('setMyName', '1:p', { name: 'Brend | yoʻlovchi' }, 2);
-    looks('setMyProfilePhoto', '1:p', { multipart: true }, 3);
-    expect(looks('getMyName', '1:p', {}, 4)).toEqual({ name: 'Brend | yoʻlovchi' });
-    expect(looks('getUserProfilePhotos', '1:p', { user_id: 1 }, 5)).toEqual({
-      total_count: 1,
-      photos: [[{ file_unique_id: 'stand-photo-3' }]],
-    });
+    expect(looks('getMyName', '5:c', {}, 1)).toEqual({ name: '' });
+    looks('setMyName', '5:c', { name: 'Brend | poster' }, 2);
+    expect(looks('getMyName', '5:c', {}, 3)).toEqual({ name: 'Brend | poster' });
   });
 
   it('keeps a channel by its chat, a number from a form and a text from JSON alike', () => {

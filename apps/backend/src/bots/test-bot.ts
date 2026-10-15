@@ -41,6 +41,7 @@ export const botEnv = {
   DRIVER_BOT_TOKEN: 'd',
   ADMIN_BOT_TOKEN: 'a',
   SUPPORT_BOT_TOKEN: 's',
+  MAIN_BOT_TOKEN: 'm',
   TELEGRAM_WEBHOOK_SECRET: 'hook',
   ADMIN_TELEGRAM_IDS: '7,8',
 };

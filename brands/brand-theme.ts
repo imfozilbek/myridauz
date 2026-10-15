@@ -89,6 +89,13 @@ export type BrandColors = {
   readonly control: HexColor;
   readonly disabled: HexColor;
   readonly disabledText: HexColor;
+  // The map of the regions of the waitlist (G83, mockup g83/5-regions): the land around, the tints of
+  // the groups (neighbours never share one), the names on it; each role its own.
+  readonly mapLand: HexColor;
+  readonly mapTint: HexColor;
+  readonly mapTintPale: HexColor;
+  readonly mapTintMid: HexColor;
+  readonly mapInk: HexColor;
 };
 
 // Each Mini App has its own main color, so a person always knows where they are (docs/20).

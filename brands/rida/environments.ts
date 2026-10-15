@@ -16,6 +16,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
       driver: 'myrida_haydovchi_bot',
       admin: 'myrida_admin_bot',
       support: 'myrida_support_bot',
+      // The main bot «MyRida» of the waitlist (owner decision 14.10.2026, docs/181).
+      main: 'myridauz_bot',
     },
     channels: [],
     mainChannel: 'myrida_uz',
@@ -31,6 +33,8 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
       driver: 'rida1uz_haydovchi_bot',
       admin: 'rida1uz_admin_bot',
       support: 'rida1uz_yordam_bot',
+      // The owner names the main bot of production before its waitlist opens (docs/181).
+      main: '',
     },
     channels,
     mainChannel: 'rida1uz',

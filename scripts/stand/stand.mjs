@@ -30,8 +30,9 @@ const run = (command, args, env = {}) =>
 const token = () => `${randomBytes(4).readUInt32BE()}:${randomBytes(24).toString('base64url')}`;
 
 mkdirSync(STAND_DIR, { recursive: true });
-// Made again when a value is new (the support bot, G30; calls, G33): every bot needs its token.
-const LAST_BOT = 'POSTER_BOT_TOKEN=';
+// Made again when a value is new (the support bot, G30; calls, G33; the main bot, G83): every bot
+// needs its token.
+const LAST_BOT = 'MAIN_BOT_TOKEN=';
 if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_BOT)) {
   const vars = {
     PASSENGER_BOT_TOKEN: token(),
@@ -39,6 +40,7 @@ if (!existsSync(STAND_VARS) || !readFileSync(STAND_VARS, 'utf8').includes(LAST_B
     ADMIN_BOT_TOKEN: token(),
     SUPPORT_BOT_TOKEN: token(),
     POSTER_BOT_TOKEN: token(),
+    MAIN_BOT_TOKEN: token(),
     TELEGRAM_WEBHOOK_SECRET: randomBytes(16).toString('hex'),
     ADMIN_TELEGRAM_IDS: String(STAND_OWNER_ID),
     // Calls are switched on with values that reach nothing: a call rings, but never connects (G33).
@@ -117,7 +119,7 @@ const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
 const site = `SITE_URL:http://localhost:${STAND_TELEGRAM_PORT}/__site`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
 dev.push('--inspector-port', String(STAND_INSPECTOR_PORT));
-dev.push('--var', telegram, '--var', site);
+dev.push('--var', telegram, '--var', site, '--var', 'CHANNEL_LOOKS:on');
 dev.push('--var', 'CHANNEL_POSTS:on', '--var', 'CRON_TIERS:off', '--test-scheduled');
 // The stand at another hour (pnpm stand:check --at 23:30): the Worker with its clock moved (G77).
 const shift = process.env.STAND_SHIFT_MS;

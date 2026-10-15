@@ -1,6 +1,6 @@
 # 46. Инфраструктура: ресурсы, домены, секреты
 
-> **Кратко:** у Rida две среды (`179`, G81): внутренняя команды на первом аккаунте Cloudflare (`myrida.uz`) и прод для людей на новом (`ridaone.uz`). В каждой: Worker, база D1, приватный R2, Analytics Engine, 3 Mini App и сайт на Pages. Секреты только в Cloudflare и в Environment `internal` и `production`. Первая среда сделана в G03 (28.09.2026).
+> **Кратко:** у Rida две среды (`179`, G81): внутренняя команды на первом аккаунте Cloudflare (`myrida.uz`) и прод для людей на новом (`ridaone.uz`). В каждой: Worker, база D1, приватный R2, Analytics Engine, 4 Mini App и сайт на Pages. Секреты только в Cloudflare и в Environment `internal` и `production`. Первая среда сделана в G03 (28.09.2026).
 
 ## Адреса
 
@@ -10,6 +10,7 @@
 | `passenger.<домен>` | Mini App попутчика | Pages `rida-passenger` |
 | `driver.<домен>` | Mini App водителя | Pages `rida-driver` |
 | `admin.<домен>` | Mini App админа | Pages `rida-admin` |
+| `main.<домен>` | Mini App списка ожидания (G83, `181`) | Pages `rida-main`: деплой создаёт сам |
 | `<домен>`, `www.<домен>` | Лендинг и документы (`59`); внутренний закрыт для поисковиков | Pages `rida-landing` |
 
 - Адреса строятся из домена среды: `brands/hosts.ts`, `brands/rida/environments.ts` (`22`, `179`).
@@ -43,6 +44,7 @@
 | `@myrida_bot` / `@rida1uz_bot` | `api.<домен>/telegram/passenger` | «ilova» → `passenger.<домен>` |
 | `@myrida_haydovchi_bot` / `@rida1uz_haydovchi_bot` | `api.<домен>/telegram/driver` | «ilova» → `driver.<домен>` |
 | `@myrida_admin_bot` / `@rida1uz_admin_bot` | `api.<домен>/telegram/admin` | «ilova» → `admin.<домен>`: ставит владелец в BotFather, код её не трогает |
+| `@myridauz_bot` / прод: имя выберет владелец (общий бот, G83, `181`) | `api.<домен>/telegram/main` | «ilova» → `main.<домен>`: ставит `setup-bots` |
 | `@myrida_support_bot` / `@rida1uz_yordam_bot` | `api.<домен>/telegram/support` | нет: люди пишут вопрос (G30, `50`) |
 | `@myrida_poster_bot` / `@rida1uz_poster_bot` (бот каналов) | `api.<домен>/telegram/poster`: только `chat_member` | нет: публикует в каналы среды (G80, `176`, `179`) |
 
@@ -53,7 +55,7 @@
 
 | Секрет | Где | Кто видит |
 |---|---|---|
-| Токены 5 ботов своей среды (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80), свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker каждой среды (`wrangler secret`) | Только Worker |
+| Токены 6 ботов своей среды (`SUPPORT_BOT_TOKEN` с G30, `POSTER_BOT_TOKEN` с G80, `MAIN_BOT_TOKEN` общего бота с G83), свой `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` | Секреты Worker каждой среды (`wrangler secret`) | Только Worker |
 | `ANALYTICS_API_TOKEN`, `CF_ACCOUNT_ID` (G12, `56`) | Секреты Worker | Только Worker |
 | `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN` (G13, `08`) | Секреты Worker | Только Worker |
 | `CLOUDFLARE_API_TOKEN` (деплой), `CLOUDFLARE_ACCOUNT_ID` | GitHub Environment `internal` (первый аккаунт); `production` (новый) вернётся с продом (`179`) | Только job `deploy-internal` на `main` |
@@ -82,6 +84,6 @@
   старые заявки (`51`), шлёт пачки подписок и напоминания о поездке (`54`).
 - Посты в каналы включает переменная `CHANNEL_POSTS` в `wrangler.toml` (`off` или `on`, `54`).
   Бот каналов среды должен быть админом её каналов с правами публиковать и менять посты и «Добавление подписчиков» (`176`).
-- После смены настроек ботов: `pnpm run setup-bots --brand=rida --env=<среда>`. Он ставит вебхук, меню и команды, потом оформление ботов и каналов (`180`): имя, описания, аватар. После G06 обязательно:
+- Настройку ботов Cron делает сам (G83, таблица `bot_setup`): после деплоя с новыми текстами и когда владелец добавил токен нового бота, следующий тик ставит вебхук, меню, команды, имя, описания и аватар (`62`). Руками `pnpm run setup-bots --brand=rida --env=<среда>` нужен только после смены токена того же бота; он же сразу оформляет каналы (`180`). После G06 обязательно:
   боты получают нажатия кнопок (`callback_query`, `50`).
 - Секрета вебхука нет в окружении сессии Claude: перед `setup-bots` Claude делает новый и кладёт в Worker своей среды (решение владельца 13.10, `176`).

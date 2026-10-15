@@ -8,7 +8,7 @@ import { onSplashLeft, splashStands } from './chrome';
 import { useBehind } from './behind';
 import { useInTelegram } from './in-telegram-context';
 import { useUnderSheet } from './sheet-shown';
-import { ownLook } from './own-look';
+import { lookOf } from './button-look';
 import { useOneAtATime } from './one-at-a-time';
 
 type NativeParams = {
@@ -27,8 +27,8 @@ type NativeButton = {
   readonly onClick: (listener: () => void) => () => void;
   readonly colored: boolean;
 };
-// An action that returns a promise keeps the button busy until it ends (docs/65 A4).
-// A dangerous action (delete, remove) is red, like in Telegram itself (docs/86 V12).
+// An action that returns a promise keeps the button busy until it ends (docs/65 A4); a dangerous
+// action (delete, remove) is red, like in Telegram itself (docs/86 V12).
 type BottomButtonProps = {
   readonly text: string;
   readonly onClick: () => unknown;
@@ -38,6 +38,7 @@ type BottomButtonProps = {
   // The pair of the block at the bottom of the main screen (G76): the secondary on the left in the
   // light color of the app, the main one on the right, as on the mockups g76.
   readonly beside?: boolean;
+  readonly under?: boolean; // under the main button as a link of the screen (G83, mockup 3-result)
 };
 
 const noop = () => undefined;
@@ -87,6 +88,7 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
     destructive = false,
     disabled = false,
     beside = false,
+    under = false,
   }: BottomButtonProps) {
     const inTelegram = useInTelegram();
     const { colors } = useBrand().theme;
@@ -102,18 +104,13 @@ function createBottomButton(native: NativeButton, mode: 'filled' | 'bezeled') {
     }, [inTelegram, run]);
     useEffect(() => {
       if (!inTelegram) return;
-      const background = destructive ? colors.danger : colors.brandStrong;
-      const look = disabled
-        ? { backgroundColor: colors.disabled, textColor: colors.disabledText }
-        : { backgroundColor: background, textColor: colors.bg };
-      // The secondary pair of the block is soft in the color of the app, gray while inert (G76).
-      const soft = { backgroundColor: colors.brandSoft, textColor: colors.brandText };
-      const telegram = ownLook();
-      const pair = beside ? { ...(disabled ? look : soft), position: 'left' as const } : telegram;
-      const color = native.colored ? look : pair;
       keepShown(native);
-      native.setParams({ text, isVisible: true, ...color });
-    }, [inTelegram, text, colors, destructive, disabled, beside]);
+      native.setParams({
+        text,
+        isVisible: true,
+        ...lookOf(native.colored, colors, { destructive, disabled, beside, under }),
+      });
+    }, [inTelegram, text, colors, destructive, disabled, beside, under]);
     useEffect(() => {
       if (inTelegram) native.setParams({ isLoaderVisible: busy, isEnabled: !busy && !disabled });
     }, [inTelegram, busy, disabled]);

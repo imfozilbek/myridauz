@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { deliver } from './application/deliver';
 import type { NotificationJob } from './application/job';
 
-const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c' };
+const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c', main: 'm' };
 const JOB: NotificationJob = { bot: 'passenger', chatId: 5, text: '<b>Bugun 08:30</b>', html: true };
 
 // What Telegram got: the body of the one call.

@@ -15,6 +15,8 @@ export type Reply = {
   // A first message with a picture (G34): the picture by its address, the words as its caption.
   photo?: string;
   caption?: string;
+  // The main bot writes HTML (G83): Telegram draws its marks.
+  parse_mode?: string;
   reply_markup?: { inline_keyboard?: { text: string }[][] };
 };
 async function update(bot: string, body: object): Promise<Reply> {

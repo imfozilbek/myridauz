@@ -1,13 +1,10 @@
-// The looks of the bots and channels on the stand (docs/180): what a bot set, Telegram gives back, so
-// the next round of the Cron finds nothing to change, like in Telegram.
+// The looks of the channels on the stand (docs/180): what a bot set, Telegram gives back, so the next
+// round of the Cron finds nothing to change, like in Telegram.
 const SETS = {
   setMyName: ['name', 'name'],
-  setMyDescription: ['description', 'description'],
-  setMyShortDescription: ['short', 'short_description'],
   setChatTitle: ['name', 'title'],
   setChatDescription: ['description', 'description'],
 };
-const PHOTOS = ['setMyProfilePhoto', 'setChatPhoto'];
 
 export function standLooks() {
   const looks = new Map();
@@ -19,12 +16,6 @@ export function standLooks() {
   };
   const reads = {
     getMyName: (look) => ({ name: look.name ?? '' }),
-    getMyDescription: (look) => ({ description: look.description ?? '' }),
-    getMyShortDescription: (look) => ({ short_description: look.short ?? '' }),
-    getUserProfilePhotos: (look) => ({
-      total_count: look.photo ? 1 : 0,
-      photos: look.photo ? [[{ file_unique_id: look.photo }]] : [],
-    }),
     getChat: (look, body) => ({
       id: body.chat_id,
       title: look.name ?? 'stand',
@@ -40,7 +31,7 @@ export function standLooks() {
       look[part] = body[field];
       return true;
     }
-    if (PHOTOS.includes(method)) {
+    if (method === 'setChatPhoto') {
       look.photo = `stand-photo-${id}`;
       return true;
     }

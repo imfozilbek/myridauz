@@ -24,6 +24,8 @@ export type Bindings = {
   readonly DRIVER_BOT_TOKEN?: string;
   readonly ADMIN_BOT_TOKEN?: string;
   readonly SUPPORT_BOT_TOKEN?: string;
+  // The main bot of the waitlist and its questionnaire (G83, docs/181).
+  readonly MAIN_BOT_TOKEN?: string;
   // The bot of the channels (docs/176): the admin of every channel, it posts, edits and counts there.
   readonly POSTER_BOT_TOKEN?: string;
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
@@ -36,6 +38,9 @@ export type Bindings = {
   readonly ADMIN_TELEGRAM_IDS?: string;
   // "on" posts new trips to the channels (docs/15). Off until the owner approves the post (docs/33).
   readonly CHANNEL_POSTS?: string;
+  // "on" brings the names, texts and pictures of the channels to the repository (docs/180). Off until the
+  // owner approves their texts (G84).
+  readonly CHANNEL_LOOKS?: string;
   // 'off' on the stand: a Cron run by hand runs every job, the hourly and the daily ones too (G56).
   readonly CRON_TIERS?: string;
   // The dashboard reads Analytics Engine through its SQL API (docs/29): a read-only key and the

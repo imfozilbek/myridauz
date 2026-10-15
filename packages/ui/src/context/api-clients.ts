@@ -17,6 +17,7 @@ import type {
   StatsClient,
   SubscriptionsClient,
   TeamClient,
+  WaitlistClient,
   WalletClient,
 } from '@platform/api-client';
 import { createContext, useContext } from 'react';
@@ -42,6 +43,8 @@ export type ApiClients = {
   readonly sounds: SoundsClient;
   readonly limits: LimitsClient;
   readonly team: TeamClient;
+  // The waitlist of G83: the questionnaire of the main bot and the team's screens (docs/181).
+  readonly waitlist: WaitlistClient;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

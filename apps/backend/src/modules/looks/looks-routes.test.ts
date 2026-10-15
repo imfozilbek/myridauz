@@ -11,8 +11,7 @@ const face = (key: string): Face => ({
   key,
   look: { name: key, avatar: 'https://site.uz/a.jpg' },
   cost: ROUND_BUDGET / 2,
-  adopt: true,
-  read: async () => ({ name: null, description: null, short: null, photo: null }),
+  read: async () => ({ name: null, description: null, photo: null }),
   write: async () => undefined,
   photo: async () => `photo-${key}`,
 });
@@ -35,7 +34,7 @@ function setup() {
   return { deps, round };
 }
 
-// docs/180: setup-bots runs rounds until every bot and channel is checked.
+// docs/180: setup-bots runs rounds until every channel is checked.
 describe('POST /telegram/looks', () => {
   it('checks as many faces as one round may and tells how many are left', async () => {
     const { deps, round } = setup();

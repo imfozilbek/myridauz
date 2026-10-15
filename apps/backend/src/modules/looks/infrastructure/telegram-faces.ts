@@ -1,72 +1,27 @@
 import { telegramUrl } from '../../../shared/telegram/api-url';
 import { askTelegram, type Fetch } from '../../../shared/telegram/telegram-api';
 import type { Face } from '../application/looks';
-import type { Look, TextPart } from '../domain/look';
+import type { Look } from '../domain/look';
 
-// The calls of one check at most (docs/117): a bot reads 4 parts and the picture, sets 3 texts, the
-// photo and reads it; a channel reads the chat and the picture, sets 2 texts, the photo and reads it.
-const BOT_COST = 10;
+// The calls of one check at most (docs/117): the bot of the channels reads and sets its name; a channel
+// reads the chat and the picture, sets 2 texts, the photo and reads it.
+const POSTER_COST = 2;
 const CHANNEL_COST = 6;
-const PICTURE = 'picture';
 
-// A picture goes to Telegram as an uploaded file: nobody uploads it by hand in BotFather (G34).
-async function upload(
-  call: Fetch,
-  token: string,
-  method: string,
-  fields: object,
-  file: string,
-  picture: ArrayBuffer,
-) {
-  const form = new FormData();
-  for (const [key, value] of Object.entries(fields)) form.append(key, String(value));
-  form.append(file, new Blob([picture], { type: 'image/jpeg' }), 'avatar.jpg');
-  const response = await call(telegramUrl(token, method), { method: 'POST', body: form });
-  if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);
-}
-
-const BOT_TEXTS: Readonly<Record<TextPart, readonly [method: string, field: string]>> = {
-  name: ['setMyName', 'name'],
-  description: ['setMyDescription', 'description'],
-  short: ['setMyShortDescription', 'short_description'],
-};
-type BotText = { readonly name?: string; readonly description?: string; readonly short_description?: string };
-type Photos = { readonly photos?: readonly (readonly { readonly file_unique_id?: string }[])[] };
-
-// A bot of the environment. The token never leaves these calls; its first part is the bot id.
-export function botFace(call: Fetch, token: string, key: string, look: Look): Face {
-  const ask = <T>(method: string, params?: object) => askTelegram<T>(call, token, method, params);
-  const photoOf = async () =>
-    (
-      await ask<Photos>('getUserProfilePhotos', { user_id: Number(token.split(':')[0]), limit: 1 })
-    )?.photos?.[0]?.at(-1)?.file_unique_id ?? null;
+// The bot of the channels: only its name, the team sees it as the admin of the channels (docs/176).
+// The bots of people get their looks from the setup of G83 (configure-bots.ts).
+export function posterFace(call: Fetch, token: string, look: Look): Face {
   return {
-    key,
+    key: 'bot:poster',
     look,
-    cost: BOT_COST,
-    adopt: false,
+    cost: POSTER_COST,
     read: async () => {
-      const [name, description, short, photo] = await Promise.all([
-        ask<BotText>('getMyName'),
-        ask<BotText>('getMyDescription'),
-        ask<BotText>('getMyShortDescription'),
-        photoOf(),
-      ]);
-      return {
-        name: name?.name ?? null,
-        description: description?.description ?? null,
-        short: short?.short_description ?? null,
-        photo,
-      };
+      const seen = await askTelegram<{ readonly name?: string }>(call, token, 'getMyName');
+      return { name: seen?.name ?? null, description: null, photo: null };
     },
-    write: async (part, text) => {
-      const [method, field] = BOT_TEXTS[part];
-      await ask(method, { [field]: text });
-    },
-    photo: async (picture) => {
-      const photo = JSON.stringify({ type: 'static', photo: `attach://${PICTURE}` });
-      await upload(call, token, 'setMyProfilePhoto', { photo }, PICTURE, picture);
-      return photoOf();
+    // Its look has only the name, so only the name is ever set.
+    write: async (_part, name) => {
+      await askTelegram(call, token, 'setMyName', { name });
     },
   };
 }
@@ -85,18 +40,22 @@ export function channelFace(call: Fetch, token: string, chat: string, look: Look
     key: `channel:${chat}`,
     look,
     cost: CHANNEL_COST,
-    adopt: true,
     read: async () => {
       const seen = await chatOf();
       const photo = seen?.photo?.big_file_unique_id ?? null;
-      return { name: seen?.title ?? null, description: seen?.description ?? null, short: null, photo };
+      return { name: seen?.title ?? null, description: seen?.description ?? null, photo };
     },
     write: async (part, text) => {
       if (part === 'name') await ask('setChatTitle', { chat_id: chat, title: text });
       else await ask('setChatDescription', { chat_id: chat, description: text });
     },
+    // The picture goes to Telegram as an uploaded file: nobody uploads it by hand.
     photo: async (picture) => {
-      await upload(call, token, 'setChatPhoto', { chat_id: chat }, 'photo', picture);
+      const form = new FormData();
+      form.append('chat_id', chat);
+      form.append('photo', new Blob([picture], { type: 'image/jpeg' }), 'avatar.jpg');
+      const response = await call(telegramUrl(token, 'setChatPhoto'), { method: 'POST', body: form });
+      if (!response.ok) throw new Error(`telegram.setChatPhoto_${response.status}`);
       return (await chatOf())?.photo?.big_file_unique_id ?? null;
     },
   };

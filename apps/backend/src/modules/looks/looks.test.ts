@@ -6,18 +6,17 @@ import { createMemoryLooks } from './infrastructure/d1-looks';
 const NOW = Date.parse('2026-10-13T19:30:00Z');
 const HOUR = 60 * 60 * 1000;
 const LOOK: Look = { name: 'Brend | Boʻka', description: 'Safarlar', avatar: 'https://site.uz/a.jpg' };
-const NOTHING: Seen = { name: null, description: null, short: null, photo: null };
+const NOTHING: Seen = { name: null, description: null, photo: null };
 
 // A face of Telegram in memory: what it shows now, and every call that changed it.
-function fakeFace(key: string, seen: Seen, options: { cost?: number; adopt?: boolean } = {}) {
+function fakeFace(key: string, seen: Seen, cost = 6) {
   const set: string[] = [];
   let shown = seen;
   let photos = 0;
   const face: Face = {
     key,
     look: LOOK,
-    cost: options.cost ?? 6,
-    adopt: options.adopt ?? true,
+    cost,
     read: async () => shown,
     write: async (part: TextPart, text: string) => {
       set.push(part);
@@ -46,7 +45,7 @@ function setup(faces: readonly Face[], file = 'v1') {
 }
 
 // docs/180: Telegram comes to the repository, and only what differs is set.
-describe('the looks of the bots and channels', () => {
+describe('the looks of the channels', () => {
   it('sets the texts and the picture a face lacks, then leaves a face like the repository alone', async () => {
     const channel = fakeFace('channel:@a', NOTHING);
     const { deps } = setup([channel.face]);
@@ -64,11 +63,13 @@ describe('the looks of the bots and channels', () => {
     expect((await deps.store.rows())[0]?.memory).toEqual({ hash: 'v1', photo: 'by-hand' });
   });
 
-  it('gives a bot the photo of the repository the first time', async () => {
-    const bot = fakeFace('bot:driver', { ...NOTHING, name: LOOK.name, photo: 'old' }, { adopt: false });
-    const { deps } = setup([bot.face]);
+  it('sets only the name of the bot of the channels: it has no picture', async () => {
+    const poster = fakeFace('bot:poster', { ...NOTHING, photo: 'own' });
+    const { key, cost, read, write } = poster.face;
+    const { deps } = setup([{ key, cost, read, write, look: { name: 'Brend | poster' } }]);
     await keepLooks(deps, 24);
-    expect(bot.set).toEqual(['description', 'photo']);
+    expect(poster.set).toEqual(['name']);
+    expect((await deps.store.rows())[0]?.memory).toBeNull();
   });
 
   it('sets the photo again for a new file of the repository and for a photo changed by hand', async () => {
@@ -84,7 +85,7 @@ describe('the looks of the bots and channels', () => {
   });
 
   it('checks the faces checked the longest ago while the calls of the run last', async () => {
-    const faces = ['a', 'b', 'c', 'd'].map((key) => fakeFace(key, NOTHING, { cost: 10 }));
+    const faces = ['a', 'b', 'c', 'd'].map((key) => fakeFace(key, NOTHING, 10));
     const { deps } = setup(faces.map(({ face }) => face));
     await deps.store.save({ key: 'a', checkedAt: NOW - HOUR, memory: null });
     expect(await keepLooks(deps, 24)).toEqual(['b', 'c']);

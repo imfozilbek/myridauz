@@ -41,6 +41,7 @@ import { teamRole } from './modules/team';
 import { tripFacts, tripForFamily, tripsModule } from './modules/trips';
 import { blockedGuard, usersModule } from './modules/users';
 import { walletModule } from './modules/wallet';
+import { waitlistModule } from './modules/waitlist';
 import { telegramAuth } from './shared/auth/telegram-auth';
 import { allowMap, allowMiniApps, allowPublic } from './shared/http/cors';
 import { notFound, onServerError } from './shared/http/errors';
@@ -49,14 +50,16 @@ import { teamScreens } from './team-screens';
 
 // The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
 const auth = telegramAuth(() => Date.now(), teamRole);
+// The bots call Telegram through the fetch of the Worker, the tests through their own.
+const callTelegram = (input: string, init?: RequestInit) => fetch(input, init);
 
 export const app = new Hono<AppEnv>()
   // The limits the owner set reach every rule of this request (G75, docs/128 §4).
   .use('*', freshLimits)
   .use('/analytics', allowMiniApps, rateLimit('ANALYTICS_LIMIT', 'analytics'))
-  // CORS goes first: a browser preflight carries no Telegram signature.
-  // "/me/*" also matches "/me".
+  // CORS goes first: a browser preflight carries no Telegram signature. "/me/*" also matches "/me".
   .use('/me/*', allowMiniApps, auth)
+  .use('/waitlist/*', allowMiniApps, auth)
   .use('/users/*', allowMiniApps, auth)
   .use('/driver/*', allowMiniApps, auth, blockedGuard)
   .use('/admin/*', allowMiniApps, auth, blockedGuard)
@@ -123,6 +126,7 @@ export const app = new Hono<AppEnv>()
   .route('/', teamScreens)
   .route('/', bookingsModule)
   .route('/', walletModule)
+  .route('/', waitlistModule)
   .route(
     '/',
     chatRoutes(async (env, key, userId) => {
@@ -137,14 +141,8 @@ export const app = new Hono<AppEnv>()
   .route('/', feedRoutes)
   .route('/', sharesModule(bookingForShare, tripForFamily))
   // Setup and looks go before the webhook route: "/telegram/:role" would take them as a bot name.
-  .route(
-    '/',
-    setupRoutes((input, init) => fetch(input, init)),
-  )
+  .route('/', setupRoutes(callTelegram))
   .route('/', looksModule)
-  .route(
-    '/',
-    webhookRoutes((input, init) => fetch(input, init)),
-  )
+  .route('/', webhookRoutes(callTelegram))
   .onError(onServerError)
   .notFound(notFound);

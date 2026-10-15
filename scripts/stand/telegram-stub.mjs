@@ -7,7 +7,7 @@ const SENT_PATH = '/__sent';
 const CALL = /^\/bot([^/]+)\/(\w+)$/u;
 // A file a bot got (a voice message): a few bytes are enough for the backend (docs/50).
 const FILE = /^\/file\/bot[^/]+\//u;
-// A picture of the site for the looks of the bots and channels (docs/180): SITE_URL of the stand.
+// A picture of the site for the looks of the channels (docs/180): SITE_URL of the stand.
 const SITE = /^\/__site\//u;
 const KEEP_ALIVE_MS = 60 * 1000;
 const JSON_TYPE = { 'content-type': 'application/json' };

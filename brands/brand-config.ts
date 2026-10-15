@@ -109,6 +109,8 @@ export type BrandConfig = PeopleRules & {
     readonly driver: string;
     readonly admin: string;
     readonly support: string;
+    // The main bot of the waitlist and its questionnaire (G83, docs/181).
+    readonly main: string;
   };
   // Telegram channels of the directions (docs/15, docs/176): a trip goes to the channels of each end.
   readonly channels: readonly BrandChannel[];

@@ -56,3 +56,5 @@ export { ScreenSkeleton } from './states/screen-skeleton';
 export { BackButton } from './telegram/back-button';
 export { MainButton, SecondaryButton } from './telegram/bottom-button';
 export { confirm, haptic } from './telegram/feedback';
+// The questionnaire of the main bot (G83, docs/181).
+export { WaitlistFlow } from './waitlist/waitlist-flow';

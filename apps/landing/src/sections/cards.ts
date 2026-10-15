@@ -1,7 +1,7 @@
 import type { BrandConfig } from '@platform/brands';
 import type { I18n, TranslationKey } from '@platform/i18n';
 import { art } from '../art';
-import { escape, telegramLink } from '../html';
+import { entryButton, escape, telegramLink } from '../html';
 import { icon, type IconName } from '../icons';
 import type { RegionName } from '../map-data';
 import { actions } from './hero';
@@ -36,7 +36,7 @@ export function driver(brand: BrandConfig, i18n: I18n) {
 <h2>${escape(t('landing.driver.title'))}</h2>
 <p class="section-lead">${escape(t('landing.driver.text'))}</p>
 <ul class="cards">${cards('driver', ['pitak', 'return', 'bonus'], i18n, values, 'amber')}</ul>
-<a class="button driver wide" href="${telegramLink(brand.bots.driver)}">${escape(t('landing.cta.driver'))}</a>
+${entryButton(brand, 'button driver wide', escape(t('landing.cta.driver')), telegramLink(brand.bots.driver))}
 </div></section>`;
 }
 

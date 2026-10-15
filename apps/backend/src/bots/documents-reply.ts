@@ -6,7 +6,7 @@ const { t } = createI18n(DEFAULT_LOCALE);
 export const DOCUMENTS_COMMAND = '/hujjatlar';
 
 // "/hujjatlar": the three documents, each opens in the Mini App before any registration (docs/30).
-export function documentsReply(brand: BrandConfig, role: 'passenger' | 'driver', chatId: number) {
+export function documentsReply(brand: BrandConfig, role: 'passenger' | 'driver' | 'main', chatId: number) {
   const rows = LEGAL_DOCUMENTS.map((document) => [
     {
       text: t(`legal.${document}.title`),

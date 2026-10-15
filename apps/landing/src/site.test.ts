@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { loadBrand } from '@platform/brands';
+import { apiHost, loadBrand } from '@platform/brands';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import { describe, expect, it } from 'vitest';
 import { escape } from './html';
@@ -38,6 +38,11 @@ describe('landing (G15)', () => {
     expect(home).toContain(`href="https://t.me/${brand.bots.support}"`);
     expect(home).not.toContain(brand.bots.admin);
     expect(home).toContain(escape(t('landing.cta.passenger')));
+  });
+
+  it('leads into the main bot while the list of waiting is open (G83, docs/181)', () => {
+    expect(home).toContain(`data-list href="https://t.me/${brand.bots.main}?start=site"`);
+    expect(home).toContain(`data-waitlist="https://${apiHost(brand)}/public/waitlist"`);
   });
 
   it('shows every part: pains, steps with screens, map, driver, safety, channels, questions', () => {
@@ -89,7 +94,7 @@ describe('landing (G15)', () => {
   it('shows each document with its edition and every section, no placeholder left', () => {
     const offer = site['offer/index.html'] ?? '';
     expect(offer).toContain(escape(t('legal.offer.title')));
-    expect(offer).toContain('Tahrir 1.5');
+    expect(offer).toContain('Tahrir 1.6');
     expect(offer).toContain(`12. ${escape(t('legal.offer.12.title'))}`);
     // Built without the requisites: the brand name; the script fills what the owner saved (G34).
     expect(offer).toContain(`<span data-company>${escape(brand.name)}</span>`);

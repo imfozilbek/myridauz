@@ -19,6 +19,7 @@
 | Mini App | `passenger.`, `driver.`, `admin.myrida.uz` | `passenger.`, `driver.`, `admin.ridaone.uz` |
 | Боты | `@myrida_bot`, `@myrida_haydovchi_bot`, `@myrida_admin_bot`, `@myrida_support_bot` | `@rida1uz_bot`, `@rida1uz_haydovchi_bot`, `@rida1uz_admin_bot`, `@rida1uz_yordam_bot` |
 | Бот каналов | `@myrida_poster_bot` | `@rida1uz_poster_bot` |
+| Общий бот списка ожидания (G83, `181`) | `@myridauz_bot` «MyRida» | имя выберет владелец |
 | Главный канал | `@myrida_uz` | `@rida1uz` |
 | Каналы направлений | один приватный «MyRida \| Viloyatlar»: все направления | 67 приватных (`176`) |
 | Поисковики | закрыт: `robots.txt` «Disallow: /» | открыт, карта сайта (`60`) |
@@ -64,6 +65,8 @@
 | Zone `ridaone.uz` | Workers Routes, DNS: Edit; Zone: Read |
 
 ## Шаги: сначала внутренняя среда
+
+Шаги владельца и прода ведёт цель G84 (решение владельца 15.10.2026).
 
 | № | Кто | Что |
 |---|---|---|

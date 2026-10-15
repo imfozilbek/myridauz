@@ -40,6 +40,9 @@ const API = /\/(passenger|users)\//u;
 test('1a. a bad network: «Back» from the error screen works, «Qayta urinish» loads', async ({ page }) => {
   await openAs(page, 'passenger', ZARINA);
   await expect(page.getByText(t('common.myTrips'))).toBeVisible();
+  // The lists of the main screen came before the network drops: under the load of the whole stand
+  // the tile shows while they still load (G83 full stand).
+  await page.waitForLoadState('networkidle');
   await page.route(API, (route) => route.abort('internetdisconnected'));
   // «Mening safarlarim» keeps the lists of the main screen: the bookings stay, no error (G77 D4).
   await page.getByText(t('common.myTrips')).click();

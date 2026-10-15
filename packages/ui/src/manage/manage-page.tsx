@@ -54,7 +54,8 @@ export function ManageNote({ children }: { readonly children: ReactNode }) {
 export type RowTone = 'success' | 'danger';
 
 type RowProps = {
-  readonly icon: IconName;
+  // No icon: a row of a list of the same things, as the directions of «Kutayotganlar» (G83).
+  readonly icon?: IconName;
   readonly tone?: RowTone;
   readonly title: string;
   // A live line like «Bugun 17 ta»; its place is kept while it loads, the rows do not move.
@@ -84,9 +85,11 @@ export function ManageRow({
 }: RowProps) {
   const words = (
     <>
-      <span className={tone ? `navbat-icon manage-tone-${tone}` : 'navbat-icon'}>
-        <Icon name={icon} size={ICON} />
-      </span>
+      {icon ? (
+        <span className={tone ? `navbat-icon manage-tone-${tone}` : 'navbat-icon'}>
+          <Icon name={icon} size={ICON} />
+        </span>
+      ) : null}
       <span className="navbat-words">
         <span className={danger ? 'navbat-title manage-danger' : 'navbat-title'}>{title}</span>
         {hint === undefined ? null : (
