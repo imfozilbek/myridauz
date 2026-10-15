@@ -12,8 +12,8 @@ import { openAs, outsideCalls, type Person } from './stand-kit';
 import { runCron, standSql } from './stand-tools';
 
 // G69 (docs/123) on the whole local Rida, Android and iOS: the celebration after the registration, the
-// loops 2 and 3, the celebration after the review, «Sizning taʼsiringiz», the QR of a new driver and
-// «Rost» of the owner. The shots go to screenshots/stand/g69/ for the owner (docs/33).
+// loops 2 and 3, no celebration after the review (owner decision 15.10.2026), «Sizning taʼsiringiz»,
+// the QR of a new driver and «Rost» of the owner. The shots go to screenshots/stand/g69/ (docs/33).
 const { t } = createI18n(DEFAULT_LOCALE);
 const brand = loadBrand().name;
 const HOUR = 60 * MINUTE;
@@ -36,10 +36,7 @@ async function shot(page: Page, name: string, end = false) {
   await page.screenshot({ path: `screenshots/stand/g69/${name}-end.png`, animations: 'disabled' });
 }
 // The moments of a person come back: the scenarios of the stand take them away at the registration.
-const uncelebrate = (person: Person, keep: readonly string[] = []) =>
-  standSql(
-    `DELETE FROM share_moments WHERE user_id = ${person.id}${keep.map((moment) => ` AND moment != '${moment}'`).join('')}`,
-  );
+const uncelebrate = (person: Person) => standSql(`DELETE FROM share_moments WHERE user_id = ${person.id}`);
 const later = (page: Page) => page.getByRole('button', { name: t('growth.later') }).click();
 
 test.setTimeout(240_000);
@@ -76,11 +73,10 @@ test('the passenger: the celebrations, the group of the district and the free se
     await expect(booked.getByText(t('growth.seats.button'))).toBeVisible();
     await shot(booked, `3-seats-${platform}`);
     await booked.context().close();
-    // The trip is over: the review, then the celebration of the first trip (docs/124 В).
+    // The trip is over: the review, then the seat again, no celebration (owner decision 15.10.2026).
     moveTrip(trip.id, Date.now() - 6 * HOUR, Date.now() - HOUR);
     standSql(`UPDATE trips SET status = 'completed' WHERE id = '${trip.id}'`);
     standSql(`UPDATE bookings SET status = 'completed' WHERE id = '${seat.id}'`);
-    uncelebrate(passenger, ['join']);
     const rating = await phone(browser);
     await openAs(rating, 'passenger', passenger, { platform, search: `?${BOOKING_LINK}=${seat.id}` });
     await rating.getByText(t('bookings.done.rate')).click();
@@ -88,10 +84,9 @@ test('the passenger: the celebrations, the group of the district and the free se
     await mainButton(rating)
       .filter({ hasText: t('reviews.send') })
       .click();
-    await expect(rating.getByText(t('growth.title.trip1'))).toBeVisible();
-    await rating.getByRole('radio').nth(1).click();
-    await shot(rating, `4-moment-trip-${platform}`, true);
-    await later(rating);
+    await expect(rating.locator('.booking-buttons')).toBeVisible();
+    await expect(rating.getByRole('button', { name: t('growth.later') })).toHaveCount(0);
+    await shot(rating, `4-after-review-${platform}`);
     await rating.context().close();
   }
 });

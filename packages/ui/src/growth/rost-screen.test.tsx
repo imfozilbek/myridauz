@@ -1,5 +1,5 @@
 import type { StatsClient } from '@platform/api-client';
-import type { Rost } from '@platform/contracts';
+import { GROWTH_LOOPS, type Rost } from '@platform/contracts';
 import { cleanup, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderMarket, tap } from '../market/market-test-kit';
@@ -8,20 +8,10 @@ import { RostScreen } from './rost-screen';
 
 afterEach(cleanup);
 
-const loops = [
-  'qr',
-  'req-share',
-  'seats',
-  'follow',
-  'share-join',
-  'share-trip',
-  'share-driver',
-  'share-riders',
-] as const;
 const ROST: Rost = {
   period: 'week',
   events: 'off',
-  loops: loops.map((loop) => ({
+  loops: GROWTH_LOOPS.map((loop) => ({
     loop,
     came: loop === 'qr' ? 6 : 0,
     registered: loop === 'qr' ? 2 : 0,

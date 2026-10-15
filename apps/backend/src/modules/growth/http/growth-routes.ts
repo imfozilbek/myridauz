@@ -10,7 +10,6 @@ import {
   momentCardSchema,
   momentOfferedSchema,
   momentQuerySchema,
-  momentSchema,
   MY_GROWTH_PATH,
   storyImagePath,
   type ApiErrorCode,
@@ -51,8 +50,7 @@ export function growthRoutes(deps: (env: Bindings) => Wiring | null) {
       on(async (context, wiring, userId) => {
         const query = momentQuerySchema.safeParse({ side: context.req.query('side') });
         if (!query.success) return fail('growth.invalid_input');
-        // The link to start without a trip stays on the server: the card asks for it.
-        return context.json(momentSchema.parse(await dueMoment(wiring, userId, query.data.side)));
+        return context.json(await dueMoment(wiring, userId, query.data.side));
       }),
     )
     .post(

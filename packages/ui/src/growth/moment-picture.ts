@@ -6,7 +6,7 @@ export type MomentStoryTexts = {
   readonly brandName: string;
   readonly initial: string;
   readonly quote: string;
-  readonly who: string;
+  readonly name: string;
   readonly fact: string;
   readonly link: string;
   readonly slogan: string;
@@ -50,8 +50,8 @@ function drawCard(paint: Paint, texts: MomentStoryTexts, main: string, colors: B
     write(paint, line, CENTER, QUOTE.top + index * QUOTE.line, colors.text, 'center'),
   );
   const below = QUOTE.top + lines.length * QUOTE.line + 20;
-  fitted(paint, texts.who, 600, 48, TEXT_WIDTH, font);
-  write(paint, texts.who, CENTER, below, colors.textMuted, 'center');
+  fitted(paint, texts.name, 600, 48, TEXT_WIDTH, font);
+  write(paint, texts.name, CENTER, below, colors.textMuted, 'center');
   fitted(paint, texts.fact, 700, 48, TEXT_WIDTH, font);
   write(paint, texts.fact, CENTER, below + 80, main, 'center');
   paint.fillStyle = main;

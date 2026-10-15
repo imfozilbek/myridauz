@@ -23,7 +23,6 @@ function deps(seatsLeft = 2) {
       offered: async () => [],
       offer: async () => undefined,
       approvedAt: async () => null,
-      riders: async () => 0,
     },
     request: async (id) => (id === 'r1' ? REQUEST : undefined),
     seat: async (id) => (id === 'b1' ? { ...SEAT, seatsLeft } : undefined),

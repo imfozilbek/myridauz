@@ -108,7 +108,7 @@ export const otherClients = (overrides: Overrides) => ({
   // No moment by default: the screens show no celebration unless a test brings one (G69).
   growth: {
     mine: NOT_USED,
-    moment: async () => ({ moment: null, route: null, people: 0, link: '' }),
+    moment: async () => ({ moment: null, link: '' }),
     offered: NOT_USED,
     momentCard: NOT_USED,
     momentStory: NOT_USED,

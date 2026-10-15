@@ -7,7 +7,7 @@ import { TeamGate } from './account/team-gate';
 import { DriverGate } from './driver/driver-gate';
 import { FeedProvider } from './feed/feed-provider';
 import { FollowGate } from './follow/follow-gate';
-import { MomentGate } from './growth/moment-step';
+import { MomentGate } from './growth/moment-gate';
 import { LaunchLinks } from './launch-links';
 import { LegalGate } from './legal/legal-gate';
 import { playNotify } from './sounds/brand-sound';
