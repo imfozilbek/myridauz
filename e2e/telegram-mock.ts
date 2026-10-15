@@ -50,6 +50,17 @@ const MOCK = String((signedContact: string | null) => {
   const stable = { is_expanded: true, is_state_stable: true };
   const viewport = (height: number) => reply('viewport_changed', { height, width: innerWidth, ...stable });
   const BUTTON_SPACE = 64;
+  // Two buttons one over the other take two rows of the bar: the view gets shorter by both (G69).
+  const TWO_ROWS = 124;
+  const bottomBar = () => {
+    if (button.style.display !== 'block') return 0;
+    const stacked = second.style.display === 'block' && second.dataset['position'] !== 'left';
+    return stacked ? TWO_ROWS : BUTTON_SPACE;
+  };
+  const fitView = () => {
+    viewport(innerHeight - bottomBar());
+    document.body.style.paddingBottom = bottomBar() > 0 ? `${bottomBar()}px` : '';
+  };
   // The buttons of Telegram are outside the page: no sheet turns their taps off, no tap reaches it.
   const TAPS = 'pointerdown pointerup mousedown mouseup touchstart touchend click'.split(' ');
   const FIXED = 'position:fixed;height:50px;border:0;border-radius:12px;display:none;pointer-events:auto';
@@ -102,19 +113,25 @@ const MOCK = String((signedContact: string | null) => {
           bar.style.display = button.style.display;
           button.disabled = data.is_active === false; // An inactive button sends nothing (G58).
           // The button is under the web view in Telegram: the view gets shorter, the last row shows (G78).
-          viewport(data.is_visible ? innerHeight - BUTTON_SPACE : innerHeight);
-          document.body.style.paddingBottom = data.is_visible ? `${BUTTON_SPACE}px` : '';
+          fitView();
         }
         if (type === 'web_app_setup_secondary_button') {
           second.textContent = data.text;
           if (data.color) second.style.background = data.color;
           if (data.text_color) second.style.color = data.text_color;
           second.style.display = data.is_visible ? 'block' : 'none';
-          // On the left of the main button, half of the bar each, as in Telegram (G76).
+          // On the left of the main button, half of the bar each, as in Telegram (G76); «bottom» under
+          // the main button, else over it.
           const beside = data.is_visible && data.position === 'left';
-          const spots = beside ? ['14px', '14px', 'calc(50% + 4px)'] : ['74px', '16px', '16px'];
+          const under = data.is_visible && data.position === 'bottom';
+          second.dataset['position'] = beside ? 'left' : under ? 'bottom' : 'top';
+          const spots = beside
+            ? ['14px', '14px', 'calc(50% + 4px)']
+            : [under ? '14px' : '74px', '16px', '16px'];
           Object.assign(second.style, { bottom: spots[0], left: spots[1], right: spots[2] });
           button.style.left = beside ? 'calc(50% + 4px)' : '14px';
+          button.style.bottom = under ? '74px' : '14px';
+          fitView();
         }
       },
     },

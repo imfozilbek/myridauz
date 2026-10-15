@@ -63,7 +63,8 @@ export function MomentScreen({ found, onDone }: Props) {
         {t('growth.later')}
       </button>
       {share.canStory ? <MainButton {...story} /> : <MainButton {...chat} />}
-      {share.canStory ? <SecondaryButton beside {...chat} /> : null}
+      {/* The chat names to whom, a long line: under the story, never squeezed beside it (docs/121). */}
+      {share.canStory ? <SecondaryButton under {...chat} /> : null}
     </div>
   );
 }

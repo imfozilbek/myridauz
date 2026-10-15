@@ -5,10 +5,11 @@ import {
   createModerationClient,
   createUsersClient,
 } from '@platform/api-client';
-import { CAR_PHOTO_KINDS, type Gender, type MiniApp } from '@platform/contracts';
+import { CAR_PHOTO_KINDS, SHARE_MOMENTS, type Gender, type MiniApp } from '@platform/contracts';
 import { loadBrand } from '../../brands/index';
 import { DRIVERS, MEN, OWNER, PASSENGERS } from './people';
 import { contactOf, signedAs, type Person } from './stand-kit';
+import { standSql } from './stand-tools';
 
 // The people of the scenarios, made through the API of the stand like the apps make them (docs/75).
 export const CAR = { make: 'Chevrolet', model: 'Cobalt', color: 'white', seats: 4 } as const;
@@ -32,8 +33,18 @@ export async function register(app: MiniApp, person: Person, gender: Gender) {
   }
   // The face goes with the registration, as in the Mini App (G58).
   await users.uploadAvatar(PHOTO);
+  celebrated(person);
   return users;
 }
+
+// A person of the scenarios is offered no moment «Men Rida bilan» (G69): the celebration never stands
+// before the screen a scenario opens. The scenario of G69 takes this back for its own people.
+export const celebrated = (person: Person) =>
+  standSql(
+    `INSERT OR IGNORE INTO share_moments (user_id, moment, at) VALUES ${SHARE_MOMENTS.map(
+      (moment) => `(${person.id}, '${moment}', 0)`,
+    ).join(', ')}`,
+  );
 
 // A driver sends the application: registration, photo, car photos, the car.
 export async function apply(person: Person, plate: string, gender: Gender) {
