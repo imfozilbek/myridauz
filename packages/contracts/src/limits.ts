@@ -67,7 +67,11 @@ export const limitsSchema = z.object({
 export type Limits = z.infer<typeof limitsSchema>;
 
 // The owner's values for the Mini Apps: only the limits the owner changed.
-export const ownerLimitsSchema = z.object({ values: z.partialRecord(z.enum(LIMIT_KEYS), z.number()) });
+// calls: Realtime is set up, so the call buttons show (docs/08, G52); an old answer without it: shown.
+export const ownerLimitsSchema = z.object({
+  values: z.partialRecord(z.enum(LIMIT_KEYS), z.number()),
+  calls: z.boolean().optional(),
+});
 export type OwnerLimits = z.infer<typeof ownerLimitsSchema>;
 
 // A value the owner may set: within the rule, whole numbers (the stars in tenths).

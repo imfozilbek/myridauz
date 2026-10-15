@@ -14,13 +14,15 @@ afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
 // The request just sent is cancelled as on the page of the seat (G77): the same question, counted,
-// a failure says why and keeps the screen.
+// a seat changed meanwhile opens as it is now.
 describe('the cancel of a request just sent', { timeout: 20_000 }, () => {
   it('asks as the page of the seat and says why it did not go', async () => {
     const cancelMine = vi.fn<BookingsClient['cancelMine']>(async () => {
       throw new ApiError(409, 'bookings.wrong_status');
     });
-    const { onClose } = openBook('both', {}, undefined, { cancelMine });
+    // The driver answered meanwhile: the page of the seat comes as it is now (G52, docs/112).
+    const myBookings = vi.fn<BookingsClient['myBookings']>(async () => [{ ...booking, status: 'declined' }]);
+    const { onClose } = openBook('both', {}, undefined, { cancelMine, myBookings });
     expect(await screen.findByText('Qayerdan, qayerga?')).toBeTruthy();
     fireEvent.click(row('Tushirish joyi'));
     await screen.findByText('Yangi Margʻilon', {}, { timeout: 3000 });
@@ -33,7 +35,8 @@ describe('the cancel of a request just sent', { timeout: 20_000 }, () => {
       'Joyni bekor qilasizmi? Haydovchi bu haqda xabar oladi.',
       'Joyni bekor qilish',
     );
-    expect(await screen.findByRole('alert')).toBeTruthy();
+    await waitFor(() => expect(myBookings).toHaveBeenCalled());
+    expect(await screen.findByText('Haydovchi joy bera olmadi.')).toBeTruthy();
     expect(onClose).not.toHaveBeenCalled();
   });
 });

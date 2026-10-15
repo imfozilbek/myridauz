@@ -42,6 +42,12 @@ describe('pricing API (docs/23)', () => {
     expect((await call('/prices/recommendation?from=x', 5, 'passenger')).status).toBe(400);
   });
 
+  it('measures a whole region from its place nearest to the center, as the directions (G52)', async () => {
+    const response = await call('/prices/recommendation?from=1726273&to=1718', 5, 'passenger');
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ from: '1726273', to: '1718', km: 300 });
+  });
+
   it('lets only the team change the formula and the directions', async () => {
     expect((await call('/admin/pricing', 5, 'passenger')).status).toBe(403);
     const state = (await (await call('/admin/pricing', 900, 'admin')).json()) as {

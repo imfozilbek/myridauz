@@ -9,6 +9,7 @@ import { useBookingEnds } from '../trip/booking-ends';
 import { MeetingMap } from '../trip/meeting-map';
 import { MeetActions } from './meet-actions';
 import './meet-map.css';
+import { useCallsOn } from '../call/calls-on';
 
 const FACE = 63;
 const TOOL_ICON = 17.5;
@@ -30,6 +31,7 @@ type Props = {
 // the rule of docs/121, who waits there, the mark of the driver, the chat and the call.
 export function MeetCard({ booking, number, current, onMark, onChat, onCall }: Props) {
   const { t, formatTime } = useI18n();
+  const callsOn = useCallsOn();
   const { start, startPoint } = useBookingEnds(booking);
   // «Chilonzor, Toshkent shahri» under the place (docs/121): the district of the trip, its region.
   const { name, area: region } = usePlaceLabel()(booking.trip.from);
@@ -77,10 +79,12 @@ export function MeetCard({ booking, number, current, onMark, onChat, onCall }: P
           <Icon name="write" size={TOOL_ICON} />
           {t('driverAfter.meet.write')}
         </button>
-        <button type="button" onClick={onCall}>
-          <Icon name="phone" size={TOOL_ICON} />
-          {t('calls.call')}
-        </button>
+        {callsOn ? (
+          <button type="button" onClick={onCall}>
+            <Icon name="phone" size={TOOL_ICON} />
+            {t('calls.call')}
+          </button>
+        ) : null}
       </div>
     </section>
   );

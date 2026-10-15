@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { SubscriptionsScreen } from './subscriptions-screen';
+import { ErrorBoundary } from '../states/error-boundary';
 
 const PARAM = 'subscriptions';
 const ON = /^1$/u;
@@ -13,5 +14,9 @@ export function SubscriptionsLink({ children }: { readonly children: ReactNode }
     forgetLaunchParam(PARAM);
     setOpen(false);
   };
-  return <SubscriptionsScreen onBack={close} />;
+  return (
+    <ErrorBoundary onBack={close}>
+      <SubscriptionsScreen onBack={close} />
+    </ErrorBoundary>
+  );
 }

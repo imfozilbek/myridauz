@@ -6,6 +6,7 @@ import { forgetLaunchParam, launchParam } from '../telegram/launch-param';
 import { RateLinkScreen } from '../trip-end/rate-link-screen';
 import { ComplaintScreen } from './complaint-screen';
 import { ReviewScreen } from './review-screen';
+import { ErrorBoundary } from '../states/error-boundary';
 
 // "Izoh qoldirish" and "Shikoyat qilish" under the bot's "Safar qanday oʻtdi?" (docs/17, docs/24).
 const REVIEW = 'review';
@@ -36,22 +37,22 @@ export function FeedbackLink({ app, children }: { readonly app: MiniApp; readonl
     close();
     closeApp();
   };
-  if (open.screen === 'complain')
-    return <ComplaintScreen bookingId={open.bookingId} onBack={close} onSent={close} />;
-  if (app === 'driver')
-    return (
+  const screen =
+    open.screen === 'complain' ? (
+      <ComplaintScreen bookingId={open.bookingId} onBack={close} onSent={close} />
+    ) : app === 'driver' ? (
       <PlacesGate onBack={close}>
         <RateLinkScreen bookingId={open.bookingId} onBack={close} onSent={done} />
       </PlacesGate>
+    ) : (
+      <PlacesGate onBack={close}>
+        <ReviewScreen
+          bookingId={open.bookingId}
+          onBack={close}
+          onClose={done}
+          onComplain={() => setOpen({ screen: 'complain', bookingId: open.bookingId })}
+        />
+      </PlacesGate>
     );
-  return (
-    <PlacesGate onBack={close}>
-      <ReviewScreen
-        bookingId={open.bookingId}
-        onBack={close}
-        onClose={done}
-        onComplain={() => setOpen({ screen: 'complain', bookingId: open.bookingId })}
-      />
-    </PlacesGate>
-  );
+  return <ErrorBoundary onBack={close}>{screen}</ErrorBoundary>;
 }

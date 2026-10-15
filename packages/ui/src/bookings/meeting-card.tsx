@@ -10,6 +10,7 @@ import { openExternal } from '../telegram/feedback';
 import { useBookingEnds } from '../trip/booking-ends';
 import { mapUrl } from './map-link';
 import './meeting-card.css';
+import { useTalkTools } from '../home/dock/talk-tools';
 
 // From the brand's minutes before the departure until the passenger is in the car (docs/126).
 export const meetingTime = (booking: Booking, now: number, minutes: number) =>
@@ -32,15 +33,11 @@ export function MeetingCard({ booking, onOpen, onTold }: Props) {
   const { came, failure } = useCame(onTold, 'bookings.passenger');
   const { startPoint } = useBookingEnds(booking);
   const told = booking.cameAt !== null;
-  const tools = [
-    { icon: 'phone' as const, label: t('sheet.meet.call'), onClick: () => onOpen('call') },
-    {
-      icon: 'chat' as const,
-      label: t('chat.open'),
-      dot: (booking.unread ?? 0) > 0,
-      onClick: () => onOpen('chat'),
-    },
-  ];
+  const { tools } = useTalkTools(
+    () => onOpen('call'),
+    () => onOpen('chat'),
+    (booking.unread ?? 0) > 0,
+  );
   return (
     <div className="meeting-block">
       <SeatMeetCard booking={booking} words={words} tools={tools} />

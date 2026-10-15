@@ -9,6 +9,7 @@ import type { DockWords } from './dock-words';
 import { markStillOnWay } from './passenger-marks';
 import type { SeatActions } from './seat-actions';
 import { SeatMeetCard } from './seat-meet-card';
+import { useTalkTools } from './talk-tools';
 
 type Kind = 'meeting' | 'driverWaits' | 'onRoad' | 'arrivedAsk';
 type Props = {
@@ -28,15 +29,7 @@ export function PassengerDayCard({ kind, booking, words, act, onTold }: Props) {
   const { trip } = booking;
   const driver = trip.driver;
   const car = words.car(driver.car, booking.plate);
-  const tools = [
-    { icon: 'phone' as const, label: t('sheet.meet.call'), onClick: act.call(booking) },
-    {
-      icon: 'chat' as const,
-      label: t('chat.open'),
-      dot: (booking.unread ?? 0) > 0,
-      onClick: act.talk(booking),
-    },
-  ];
+  const { tools } = useTalkTools(act.call(booking), act.talk(booking), (booking.unread ?? 0) > 0);
   const to = ends.regionName(trip.to);
   const arrives = formatTime(new Date(arrivalAt(trip.departAt, trip.km)));
   // «Men keldim» at the point, red while the driver waits there (mockup g76/2 state 10). After it the

@@ -90,4 +90,16 @@ describe('StartFlow', () => {
     expect(screen.getByText(HOME)).toBeTruthy();
     expect(screen.getByText('Xatolik yuz berdi')).toBeTruthy();
   });
+
+  it('keeps the tiles when the block «Qayerdan / Qayerga» breaks, and the block when the tiles break (G52)', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const Broken = (): never => {
+      throw new Error('boom');
+    };
+    renderInShell(<StartFlow actions={ACTIONS} tiles={tiles} dock={() => <Broken />} />);
+    expect(screen.getByText(HOME)).toBeTruthy();
+    cleanup();
+    renderInShell(<StartFlow actions={ACTIONS} tiles={() => <Broken />} dock={() => <p>blok</p>} />);
+    expect(screen.getByText('blok')).toBeTruthy();
+  });
 });

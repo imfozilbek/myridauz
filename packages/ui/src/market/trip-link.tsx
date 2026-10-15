@@ -11,6 +11,7 @@ import { freshStartParam, useLinkOpened } from '../telegram/launch-param';
 import { LinkedSearch } from './find-link';
 import { PlacesGate } from './places-gate';
 import { useLoad } from './use-list';
+import { ErrorBoundary } from '../states/error-boundary';
 
 // The link has only the start parameter: no bot sends ?trip= (G77, lesson 227).
 const NO_PARAMS: readonly string[] = [];
@@ -28,9 +29,11 @@ export function TripLink({ enabled, children }: { readonly enabled: boolean; rea
   if (!id) return <>{children}</>;
   const close = () => setId(null);
   return (
-    <PlacesGate onBack={close}>
-      <TripById id={id} onClose={close} />
-    </PlacesGate>
+    <ErrorBoundary onBack={close}>
+      <PlacesGate onBack={close}>
+        <TripById id={id} onClose={close} />
+      </PlacesGate>
+    </ErrorBoundary>
   );
 }
 

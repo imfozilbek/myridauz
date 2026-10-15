@@ -35,7 +35,9 @@ export function ExistingRequest(props: Props) {
 function Existing({ from, to, date, onClose }: Props) {
   const { market, bookings } = useApiClients();
   const shared = useSharedPassengerData();
-  const { value, failed, reload } = useLoad(() => Promise.all([market.myRequests(), bookings.myOffers()]));
+  const { value, failed, reload, refresh } = useLoad(() =>
+    Promise.all([market.myRequests(), bookings.myOffers()]),
+  );
   const request = value?.[0].find(openOn({ from, to, date }));
   const gone = value !== null && !request;
   useEffect(() => {
@@ -45,5 +47,13 @@ function Existing({ from, to, date, onClose }: Props) {
   }, [gone, onClose, shared]);
   if (failed) return <ErrorScreen onRetry={reload} onBack={onClose} />;
   if (!value || !request) return <ScreenSkeleton onBack={onClose} />;
-  return <PassengerOpen opened={{ kind: 'request', request }} offers={value[1]} onClose={onClose} />;
+  // A request or an offer changed meanwhile: they come fresh at once (G52, docs/112).
+  return (
+    <PassengerOpen
+      opened={{ kind: 'request', request }}
+      offers={value[1]}
+      onClose={onClose}
+      onStale={() => void refresh()}
+    />
+  );
 }

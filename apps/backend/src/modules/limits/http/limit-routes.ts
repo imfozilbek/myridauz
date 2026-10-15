@@ -28,6 +28,8 @@ type LimitDeps = {
   ) => Promise<void>;
   readonly name: (env: Bindings, id: number) => Promise<string>;
   readonly owners: () => OwnerLimits['values'];
+  // Realtime is set up: without it the Mini Apps hide every call button (docs/08, G52).
+  readonly calls: (env: Bindings) => boolean;
 };
 const HISTORY = 50;
 const PUBLIC_MAX_AGE = 60;
@@ -63,7 +65,7 @@ export const limitRoutes = (deps: LimitDeps) => {
       // Every Mini App reads the owner's values over its brand config (G75); a minute in the cache.
       .get(PUBLIC_LIMITS_PATH, (context) => {
         context.header('cache-control', `public, max-age=${PUBLIC_MAX_AGE}`);
-        return context.json({ values: deps.owners() });
+        return context.json({ values: deps.owners(), calls: deps.calls(context.env) });
       })
       .put(`${ADMIN_LIMITS_PATH}/:key`, async (context) => {
         const { env } = context;

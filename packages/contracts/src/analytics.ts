@@ -43,8 +43,9 @@ const WAY_STEPS = ['opened', 'from', 'to', 'done'] as const;
 // The splash never waits this long (docs/121 §4): a longer time is a mistake of the phone clock.
 const MAX_READY_MS = 120_000;
 
-// Answers that are a normal state, not an error: they are not sent as api_error (G12).
-export const QUIET_API_ERRORS: readonly string[] = ['users.not_registered', 'drivers.not_found'];
+// Normal states, not errors: not sent as api_error (G12); no signature gets «Telegramda oching» (G52).
+const QUIET = ['users.not_registered', 'drivers.not_found', 'auth.missing'];
+export const QUIET_API_ERRORS: readonly string[] = QUIET;
 
 // Screens and codes are ids, never free text: no personal data can get in (docs/29).
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);

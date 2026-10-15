@@ -5,6 +5,7 @@ import { useApiClients } from '../context/api-clients';
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import { useDirectory } from '../places/use-directory';
+import { ErrorBoundary } from '../states/error-boundary';
 import { ErrorScreen } from '../states/error-screen';
 import { ScreenSkeleton } from '../states/screen-skeleton';
 import { BackButton } from '../telegram/back-button';
@@ -34,7 +35,14 @@ const draftOf = ({ role, pains, home, region, cadence }: WaitlistEntry): Draft =
 
 // The Mini App of the main bot (G83, docs/181): the questionnaire for a new person, then «Siz
 // roʻyxatdasiz» with its sheet, the channels and a friend's invitation. Closed by the owner: the trips.
-export function WaitlistFlow() {
+// Its own boundary: a broken step shows «Qayta urinish», not the error of the whole app (G52).
+export const WaitlistFlow = () => (
+  <ErrorBoundary>
+    <Waitlist />
+  </ErrorBoundary>
+);
+
+function Waitlist() {
   const { t } = useI18n();
   const { track } = useAnalytics();
   const brand = useBrand();

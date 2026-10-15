@@ -19,6 +19,7 @@ import { MeetingCard, meetingTime } from './meeting-card';
 import { mapUrl } from './map-link';
 import { useSeatSteps } from './use-seat-steps';
 import './confirmed-booking.css';
+import { useCallsOn } from '../call/calls-on';
 
 type Props = {
   readonly booking: Booking;
@@ -43,6 +44,7 @@ export function ConfirmedBooking(props: Props) {
   // The page of a past trip has the gradient of docs/121 §5, the booking is flat (mockups g60/1, g60/7).
   useScreenBackground();
   const { t, formatRating } = useI18n();
+  const callsOn = useCallsOn();
   const { driver } = booking.trip;
   const brand = useBrand();
   const { colors } = brand.theme;
@@ -87,7 +89,9 @@ export function ConfirmedBooking(props: Props) {
           <ActionFailure error={steps.failure} />
           <div className="booking-buttons">
             {button('chat', t('chat.open'), () => onOpen('chat'))}
-            {booking.status === 'confirmed' ? button('phone', t('calls.call'), () => onOpen('call')) : null}
+            {booking.status === 'confirmed' && callsOn
+              ? button('phone', t('calls.call'), () => onOpen('call'))
+              : null}
             {booking.status === 'confirmed' ? button('share', t('bookings.toClose'), steps.share) : null}
           </div>
           {steps.note ? (

@@ -72,17 +72,22 @@ export function StartFlow(props: StartFlowProps) {
   if (screen === 'home')
     return (
       <>
+        {/* Each block of the main screen has its own boundary: a broken one keeps the others (G52). */}
         <HomeScreen
           square={Boolean(dock)}
-          after={after}
+          after={after ? <ErrorBoundary>{after}</ErrorBoundary> : undefined}
           top={home ? <ErrorBoundary>{home(go)}</ErrorBoundary> : undefined}
-          tiles={tiles?.(go, openProfile)}
-          side={side?.(openProfile)}
+          tiles={tiles ? <ErrorBoundary>{tiles(go, openProfile)}</ErrorBoundary> : undefined}
+          side={side ? <ErrorBoundary>{side(openProfile)}</ErrorBoundary> : undefined}
           onProfile={() => openProfile()}
         />
         {/* After the main screen: the block paints the bottom bar after the screen does (G66). It
             stays under the sheets, its buttons step aside while one is open (G76, lesson 199). */}
-        <UnderSheets.Provider value>{dock?.(go)}</UnderSheets.Provider>
+        {dock ? (
+          <UnderSheets.Provider value>
+            <ErrorBoundary>{dock(go)}</ErrorBoundary>
+          </UnderSheets.Provider>
+        ) : null}
       </>
     );
   // A broken section shows the error with «Orqaga» to the main screen: the app goes on (G52).

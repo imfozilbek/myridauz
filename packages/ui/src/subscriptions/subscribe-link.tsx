@@ -11,6 +11,7 @@ import { freshStartParam, useLinkOpened } from '../telegram/launch-param';
 import { useWay } from '../mine/use-way';
 import { NotifyMe } from './notify-me';
 import '../market/market.css';
+import { ErrorBoundary } from '../states/error-boundary';
 
 // "Shu yoʻnalishga obuna" under a channel post: startapp=sub_<from>_<to>_<day> (docs/15, docs/24).
 const START = /^sub_(\d{2,10})_(\d{2,10})_(\d{4}-\d{2}-\d{2})$/u;
@@ -37,9 +38,11 @@ export function SubscribeLink({
   useLinkOpened(route !== null, NO_PARAMS);
   if (!route) return <>{children}</>;
   return (
-    <PlacesGate onBack={() => setRoute(null)}>
-      <SubscribeScreen route={route} onBack={() => setRoute(null)} />
-    </PlacesGate>
+    <ErrorBoundary onBack={() => setRoute(null)}>
+      <PlacesGate onBack={() => setRoute(null)}>
+        <SubscribeScreen route={route} onBack={() => setRoute(null)} />
+      </PlacesGate>
+    </ErrorBoundary>
   );
 }
 

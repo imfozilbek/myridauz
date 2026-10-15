@@ -49,6 +49,8 @@ export function useOwnTripActions({ trip, stage, bookings, open, onChanged, onCl
     onDone: refresh,
     onShort: () => (balance.reload(), fail(notEnough())),
     fail,
+    // The seat changed meanwhile: the trip and its seats come fresh (G52, docs/112).
+    onStale: refresh,
   });
   const answer = (booking: Booking, action: 'confirm' | 'decline') => {
     clear();

@@ -5,6 +5,7 @@ import { ScreenSkeleton } from '../states/screen-skeleton';
 import { FIND_LINK, REQUESTS_LINK_VALUE } from '@platform/contracts';
 import { freshStartParam, launchParam, useLinkOpened } from '../telegram/launch-param';
 import { FindTripFlow } from './find-trip-flow';
+import { ErrorBoundary } from '../states/error-boundary';
 
 // "Shu yoʻnalishda safar topish" on the landing: startapp=find_<from>_<to> (docs/59). After the
 // registration the search opens with that route, ready for the day. «Boshqa safar topish» of a bot
@@ -24,7 +25,12 @@ export function FindLink({ enabled, children }: { readonly enabled: boolean; rea
   const [ids, setIds] = useState(() => (enabled ? linkedRoute() : null));
   useLinkOpened(ids !== null, PARAMS);
   if (!ids) return <>{children}</>;
-  return <LinkedSearch ids={ids} onClose={() => setIds(null)} />;
+  const close = () => setIds(null);
+  return (
+    <ErrorBoundary onBack={close}>
+      <LinkedSearch ids={ids} onClose={close} />
+    </ErrorBoundary>
+  );
 }
 
 // Unknown places start the search from the route, never with a wrong one.
