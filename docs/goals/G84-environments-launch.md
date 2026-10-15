@@ -11,11 +11,12 @@ G84. Запуск сред: шаги владельца, прод и оформ�
 Definition of Done
 
 A. Внутренняя среда (docs/179, «Шаги: сначала внутренняя среда»)
-[ ] Владелец: GitHub → Settings → Environments: новый internal с
+[ ] Владелец: GitHub → Settings → Environments → internal (GitHub
+    создаёт его сам при первом запуске, пустым): добавить
     CLOUDFLARE_API_TOKEN и CLOUDFLARE_ACCOUNT_ID первого аккаунта
     (те же, что сейчас в production). Около 2 минут.
-[ ] Claude: слить PR G81 (#237), потом G82 (#238);
-    deploy-internal зелёный.
+[x] PR #237 (G81 и G82) слит в main 15.10.2026.
+[ ] Claude: перезапуск deploy-internal после секретов; зелёный.
 [ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и в
     @myrida_uz: публикация, редактирование, удаление сообщений,
     добавление подписчиков, изменение профиля канала.
@@ -55,7 +56,7 @@ D. Проверка владельца
 
 | № | Что | Где | Время |
 |---|---|---|---|
-| 1 | Environment `internal` | GitHub → Settings → Environments | 2 минуты |
+| 1 | Два секрета в Environment `internal` | GitHub → Settings → Environments → `internal` | 2 минуты |
 | 2 | Бот каналов админ в двух каналах | Telegram | 3 минуты |
 | 3 | `INTERNAL_POSTER_BOT_TOKEN`, новая сессия | настройки окружения Claude | 2 минуты |
 | 4 | R2, секреты нового аккаунта, `PROD_*`, ID команды | Cloudflare, GitHub, настройки Claude | 15 минут |
