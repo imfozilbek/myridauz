@@ -1,24 +1,6 @@
 import type { Page } from '@playwright/test';
 
-// Launch parameters that Telegram puts into the Mini App URL.
-const INIT_DATA = new URLSearchParams({
-  user: JSON.stringify({ id: 1, first_name: 'Test' }),
-  auth_date: '1790000000',
-  signature: 'test',
-  hash: 'test',
-}).toString();
-const launch = (platform: 'android' | 'ios', initData: string) =>
-  new URLSearchParams({
-    tgWebAppPlatform: platform,
-    tgWebAppVersion: '9.0',
-    tgWebAppThemeParams: '{}',
-    tgWebAppData: initData,
-  }).toString();
-
-// Most people in Uzbekistan use Android: the main screens are shot on both (lesson 52).
-// The stand (docs/75) passes launch data signed with its test bot token.
-export const telegramUrl = (url: string, platform: 'android' | 'ios' = 'ios', initData = INIT_DATA) =>
-  `${url}#${launch(platform, initData)}`;
+export { telegramUrl } from './telegram-url';
 
 // A small Telegram client: answers SDK requests and draws the native header and main button,
 // so tests and screenshots see what a person sees inside Telegram.
