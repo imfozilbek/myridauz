@@ -42,6 +42,7 @@ test('passenger: calls the driver, nobody answers; the driver calls back', async
   await expect(page.getByText(t('calls.incoming'))).toBeVisible();
   await take('5-incoming');
   await page.getByText(t('calls.answer')).click();
-  await expect(page.getByText('00:0', { exact: false })).toBeVisible();
+  // The clock of the call itself: the trip line of the chat may show «≈ 00:05» at some hours (lesson 287).
+  await expect(page.locator('.call-clock')).toHaveText(/^00:0\d$/u);
   await take('6-talking');
 });
