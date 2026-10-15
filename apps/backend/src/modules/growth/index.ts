@@ -8,6 +8,7 @@ import {
   MOMENT_OFFERED_PATH,
   MOMENT_PATH,
   MOMENT_STORY_PATH,
+  QR_PICTURE_PATH,
   type GrowthLoop,
 } from '@platform/contracts';
 import { Hono } from 'hono';
@@ -85,6 +86,7 @@ export const growthModule = new Hono<AppEnv>()
   .use(MOMENT_CARD_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .use(MOMENT_STORY_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .use(LOOP_CARD_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
+  .use(QR_PICTURE_PATH, blockedGuard, rateLimit('ACTIONS_LIMIT', 'action'))
   .route('/', growthRoutes(growthDeps));
 
 // The mark of a link a person shares outside the cards (docs/123): «Yaqinlarimga», the free seats,

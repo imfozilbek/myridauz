@@ -12,11 +12,15 @@ describe('where the new people came from (G55, docs/116)', () => {
       { via: 'site', client: 'weba 9.5', count: 1 },
       { via: 'friend1', client: 'something', count: 1 },
       { via: 'driver', client: 'android 9.6 chrome 120', count: 2 },
+      // The loops of growth by their name, never one row per author (G69, docs/123).
+      { via: 'qr-a1b2c3', client: null, count: 1 },
+      { via: 'qr-zzzzzz', client: null, count: 1 },
     ]);
     expect(arrivals.sources).toEqual([
       { kind: 'channel', mark: 'yol-samarqand', count: 5 },
       { kind: 'direct', mark: '', count: 4 },
       { kind: 'driver', mark: '', count: 2 },
+      { kind: 'loop', mark: 'qr', count: 2 },
       { kind: 'ad', mark: 'insta1', count: 1 },
       { kind: 'story', mark: '', count: 1 },
       { kind: 'site', mark: '', count: 1 },
@@ -25,8 +29,8 @@ describe('where the new people came from (G55, docs/116)', () => {
     expect(arrivals.platforms).toEqual([
       { platform: 'android', count: 6 },
       { platform: 'desktop', count: 5 },
+      { platform: 'other', count: 4 },
       { platform: 'ios', count: 2 },
-      { platform: 'other', count: 2 },
     ]);
   });
 

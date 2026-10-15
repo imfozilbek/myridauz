@@ -8,6 +8,7 @@ import { TeamTripsScreen } from '../market/team-trips-screen';
 import { PitaksScreen } from '../pitaks/pitaks-screen';
 import { PricingScreen } from '../pricing/pricing-screen';
 import { SoundsScreen } from '../sounds/sounds-screen';
+import { RostScreen } from '../growth/rost-screen';
 import { StatsScreen } from '../stats/stats-screen';
 import { TeamWalletsScreen } from '../wallet/team-wallets-screen';
 import { JournalScreen } from './journal-screen';
@@ -33,6 +34,7 @@ const SCREENS = {
   company: CompanyScreen,
   sounds: SoundsScreen,
   ads: AdLinksScreen,
+  rost: RostScreen,
 } satisfies Record<string, ComponentType<Back>>;
 type Open = 'menu' | 'statistics' | keyof typeof SCREENS;
 
@@ -101,6 +103,12 @@ export function ManagementScreen({ onBack }: Back) {
           title={t('common.admin.statistics')}
           hint={t('manage.statisticsHint')}
           onClick={() => setOpen('statistics')}
+        />
+        <ManageRow
+          icon="companion"
+          title={t('growth.rost.title')}
+          hint={t('growth.rost.hint')}
+          onClick={() => setOpen('rost')}
         />
         <ManageRow
           icon="passengers"

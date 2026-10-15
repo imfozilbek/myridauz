@@ -5,7 +5,8 @@ import {
   MOMENT_PATH,
   MOMENT_STORY_PATH,
   momentSchema,
-  momentStorySchema,
+  pictureSchema,
+  QR_PICTURE_PATH,
   MY_GROWTH_PATH,
   myGrowthSchema,
   preparedCardSchema,
@@ -32,7 +33,9 @@ export function createGrowthClient(options: SignedOptions) {
     momentCard: async (moment: ShareMoment, phrase: number): Promise<PreparedCard> =>
       prepared(await post(MOMENT_CARD_PATH, { moment, phrase })),
     momentStory: async (image: Blob): Promise<string> =>
-      momentStorySchema.parse(await (await put(MOMENT_STORY_PATH, image)).json()).imageUrl,
+      pictureSchema.parse(await (await put(MOMENT_STORY_PATH, image)).json()).imageUrl,
+    qrPicture: async (image: Blob): Promise<string> =>
+      pictureSchema.parse(await (await put(QR_PICTURE_PATH, image)).json()).imageUrl,
     loopCard: async (card: LoopCard): Promise<PreparedCard> => prepared(await post(LOOP_CARD_PATH, card)),
   };
 }

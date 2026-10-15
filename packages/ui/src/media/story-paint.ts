@@ -42,10 +42,13 @@ export const write = (
 export const STORY = { width: 1080, height: 1920 } as const;
 const JPEG_QUALITY = 0.9;
 
-export function storyCanvas(): { readonly canvas: HTMLCanvasElement; readonly paint: Paint } | null {
+export function storyCanvas(
+  width: number = STORY.width,
+  height: number = STORY.height,
+): { readonly canvas: HTMLCanvasElement; readonly paint: Paint } | null {
   const canvas = document.createElement('canvas');
-  canvas.width = STORY.width;
-  canvas.height = STORY.height;
+  canvas.width = width;
+  canvas.height = height;
   const paint = canvas.getContext('2d');
   return paint ? { canvas, paint } : null;
 }

@@ -57,5 +57,6 @@ export const offerMoment = (deps: GrowthDeps, userId: number, moment: ShareMomen
 // «Sizning taʼsiringiz»: who came by the person's links, who of them rode, the link to share again.
 export async function myGrowth(deps: GrowthDeps, userId: number): Promise<MyGrowth> {
   const [impact, code] = await Promise.all([deps.store.impactOf(userId), deps.store.codeOf(userId)]);
-  return { ...impact, link: botStartLink(deps.passengerBot, loopVia('share-join', code)) };
+  const link = (loop: 'share-join' | 'qr') => botStartLink(deps.passengerBot, loopVia(loop, code));
+  return { ...impact, link: link('share-join'), qr: link('qr') };
 }

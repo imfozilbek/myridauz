@@ -4,6 +4,7 @@ import {
   MOMENT_OFFERED_PATH,
   MOMENT_PATH,
   MOMENT_STORY_PATH,
+  QR_PICTURE_PATH,
   LOOP_CARD_PATH,
   loopCardSchema,
   momentCardSchema,
@@ -19,7 +20,7 @@ import type { AppEnv, Bindings } from '../../../env';
 import { readCapped } from '../../../shared/upload/read-capped';
 import { momentCard, myGrowth, offerMoment, type CardDeps } from '../application/cards';
 import { loopCard, type LoopDeps } from '../application/loop-cards';
-import { saveMomentStory, type StoryDeps } from '../application/moment-story';
+import { savePicture, type PictureKind, type StoryDeps } from '../application/pictures';
 import { dueMoment } from '../application/moments';
 
 const STATUS = {
@@ -81,18 +82,18 @@ export function growthRoutes(deps: (env: Bindings) => Wiring | null) {
         return card ? context.json(card) : fail('growth.not_found');
       }),
     )
-    .put(
-      MOMENT_STORY_PATH,
-      on(async (context, wiring, userId) => {
-        const body = await readCapped(context.req.raw, MAX_STORY_BYTES);
-        if (!body) return fail('growth.invalid_image');
-        const image = { body, type: context.req.header('content-type') ?? '' };
-        const saved = await saveMomentStory(wiring, userId, image);
-        if (!saved.ok) return fail(saved.error);
-        return context.json(
-          { imageUrl: `${new URL(context.req.url).origin}${storyImagePath(saved.id)}` },
-          201,
-        );
-      }),
-    );
+    .put(MOMENT_STORY_PATH, on(picture('moment')))
+    .put(QR_PICTURE_PATH, on(picture('qr')));
 }
+
+// The picture of a story or of the QR (docs/123): its public link for Telegram.
+const picture =
+  (kind: PictureKind): Handler =>
+  async (context, wiring, userId) => {
+    const body = await readCapped(context.req.raw, MAX_STORY_BYTES);
+    if (!body) return fail('growth.invalid_image');
+    const image = { body, type: context.req.header('content-type') ?? '' };
+    const saved = await savePicture(wiring, userId, kind, image);
+    if (!saved.ok) return fail(saved.error);
+    return context.json({ imageUrl: `${new URL(context.req.url).origin}${storyImagePath(saved.id)}` }, 201);
+  };

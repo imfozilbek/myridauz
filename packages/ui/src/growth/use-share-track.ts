@@ -11,5 +11,6 @@ export function useShareTrack(button: GrowthLoop, screen: string) {
   useEffect(() => {
     track({ name: 'share_shown', button, screen });
   }, [track, button, screen]);
-  return (target: Target) => track({ name: 'share_done', button, target, screen });
+  // No target: a download (the QR of a driver).
+  return (target?: Target) => track({ name: 'share_done', button, screen, ...(target ? { target } : {}) });
 }

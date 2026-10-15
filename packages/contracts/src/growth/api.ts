@@ -8,6 +8,8 @@ export const myGrowthSchema = z.object({
   joined: z.number().int().min(0),
   rode: z.number().int().min(0),
   link: z.string(),
+  // The QR of a driver on the glass (loop 1): the same start with the mark qr-<code>.
+  qr: z.string(),
 });
 export type MyGrowth = z.infer<typeof myGrowthSchema>;
 
@@ -60,7 +62,9 @@ export const loopCardSchema = z.discriminatedUnion('loop', [
 ]);
 export type LoopCard = z.infer<typeof loopCardSchema>;
 
-// «Hikoyamga joylash»: the Mini App draws the card, the API keeps it a day behind a public link
-// (stories/, docs/117) like the story of a trip.
+// «Hikoyamga joylash» and the QR of a driver: the Mini App draws the picture, the API keeps it a day
+// behind a public link (stories/, docs/117) like the story of a trip; Telegram reads it from there.
 export const MOMENT_STORY_PATH = '/me/moment/story';
-export const momentStorySchema = z.object({ imageUrl: z.string() });
+export const QR_PICTURE_PATH = '/me/qr';
+export const QR_TYPE = 'image/png';
+export const pictureSchema = z.object({ imageUrl: z.string() });

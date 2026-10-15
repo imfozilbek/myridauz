@@ -32,11 +32,14 @@ function eventsOf(env: Bindings): EventSource | null {
   return analyticsSql({ accountId, token, dataset, fetch: (input, init) => fetch(input, init) });
 }
 
+// Without D1 (local runs): no people yet.
+const localNumbers = { numbers: async () => zeroNumbers, arrivals: async () => [], riders: async () => [] };
+
 const statsDeps = (env: Bindings): StatsDeps => {
   const brand = brandOf(env);
   return {
     events: eventsOf(env),
-    numbers: env.DB ? d1Numbers(env.DB) : { numbers: async () => zeroNumbers, arrivals: async () => [] },
+    numbers: env.DB ? d1Numbers(env.DB) : localNumbers,
     cache: env.DB ? d1Cache(env.DB) : localCache,
     rules: brand.alerts,
     tellOwners: (alert) => tellOwners(env, alertSign(alert)),
