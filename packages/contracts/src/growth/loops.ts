@@ -12,9 +12,7 @@ export const GROWTH_LOOPS = [
   'follow',
   // 5: the cards «Men Rida bilan» of the moments.
   'share-join',
-  'share-trip',
   'share-driver',
-  'share-riders',
 ] as const;
 export type GrowthLoop = (typeof GROWTH_LOOPS)[number];
 
@@ -29,46 +27,17 @@ export function loopOf(via: string): { readonly loop: GrowthLoop; readonly code:
   return loop && code ? { loop: loop as GrowthLoop, code } : null;
 }
 
-// The moments of «Men Rida bilan» (docs/123): a person is offered each one once, never forced.
-export const SHARE_MOMENTS = [
-  'join',
-  'trip1',
-  'trip5',
-  'trip10',
-  'trip25',
-  'driver',
-  'riders10',
-  'riders50',
-  'riders100',
-] as const;
+// The moments of «Men Rida bilan» (docs/123): a person is offered each one once, never forced. No
+// moment after a trip: the trip ends with the stars (owner decision 15.10.2026).
+export const SHARE_MOMENTS = ['join', 'driver'] as const;
 export type ShareMoment = (typeof SHARE_MOMENTS)[number];
 
-// The texts of a moment (docs/123): the first trip has its own, the round counts share theirs.
-export type MomentKind = 'join' | 'trip1' | 'trips' | 'driver' | 'riders';
-const MOMENT_KIND = {
-  join: 'join',
-  trip1: 'trip1',
-  trip5: 'trips',
-  trip10: 'trips',
-  trip25: 'trips',
-  driver: 'driver',
-  riders10: 'riders',
-  riders50: 'riders',
-  riders100: 'riders',
-} as const satisfies Record<ShareMoment, MomentKind>;
-export const momentKind = (moment: ShareMoment): MomentKind => MOMENT_KIND[moment];
-// The round count of a moment: the trips or the people; 0 for a moment without one.
-export const momentCount = (moment: ShareMoment) => Number(moment.replace(/\D/gu, '')) || 0;
-
-const KIND_LOOP = {
+const MOMENT_LOOP = {
   join: 'share-join',
-  trip1: 'share-trip',
-  trips: 'share-trip',
   driver: 'share-driver',
-  riders: 'share-riders',
-} as const satisfies Record<MomentKind, GrowthLoop>;
+} as const satisfies Record<ShareMoment, GrowthLoop>;
 // The loop of the link a moment's card carries.
-export const momentLoop = (moment: ShareMoment): GrowthLoop => KIND_LOOP[momentKind(moment)];
+export const momentLoop = (moment: ShareMoment): GrowthLoop => MOMENT_LOOP[moment];
 
 // share_shown and share_done (docs/123, docs/29): which button was shown or used, and where to.
 export const SHARE_TARGETS = ['story', 'chat'] as const;

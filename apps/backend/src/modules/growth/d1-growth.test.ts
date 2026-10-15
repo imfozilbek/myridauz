@@ -39,18 +39,11 @@ describe('the loops of growth in D1', () => {
     expect(await growth.codeOf(VALI)).not.toBe(code);
   });
 
-  it('counts the people of a trip who rode: no no-show, no cancelled seat', async () => {
-    const { growth } = await seeded();
-    expect(await growth.riders('new')).toBe(2);
-    expect(await growth.riders('old')).toBe(0);
-    expect(await growth.riders('open')).toBe(0);
-  });
-
   it('knows who came by the code of a person and who of them rode', async () => {
     const { db, growth } = await seeded();
     const users = d1Users(db);
     const code = await growth.codeOf(DRIVER);
-    await users.arrived(ALI, { source: 'find', via: `share-riders-${code}` }, NOW);
+    await users.arrived(ALI, { source: 'find', via: `share-driver-${code}` }, NOW);
     await users.arrived(VALI, { via: `qr-${code}` }, NOW);
     // The own code brings nobody; a mark of a channel has no author.
     await users.arrived(DRIVER, { via: `seats-${code}` }, NOW);
@@ -63,10 +56,12 @@ describe('the loops of growth in D1', () => {
 
   it('offers a moment once and reads the first approval of a driver', async () => {
     const { db, growth } = await seeded();
-    await growth.offer(ALI, ['trip5', 'trip1'], NOW);
-    await growth.offer(ALI, ['trip1'], NOW + 1);
-    await growth.offer(ALI, [], NOW);
-    expect((await growth.offered(ALI)).sort()).toEqual(['trip1', 'trip5']);
+    await growth.offer(ALI, 'join', NOW);
+    await growth.offer(ALI, 'join', NOW + 1);
+    expect(await growth.offered(ALI)).toEqual(['join']);
+    // A moment of an older version (a trip, before the owner decision 15.10.2026) is not a moment.
+    await db.exec(`INSERT INTO share_moments (user_id, moment, at) VALUES (${ALI}, 'trip1', ${NOW})`);
+    expect(await growth.offered(ALI)).toEqual(['join']);
     expect(await growth.approvedAt(DRIVER)).toBeNull();
     await db.exec(`INSERT INTO application_log (user_id, status, reasons, decided_by, decided_at)
       VALUES (${DRIVER}, 'approved', '[]', 900, ${NOW - DAY}), (${DRIVER}, 'approved', '[]', 900, ${NOW})`);
@@ -80,7 +75,6 @@ describe('the loops of growth in D1', () => {
       growth.impactOf(ALI),
       growth.offered(ALI),
       growth.approvedAt(DRIVER),
-      growth.riders('new'),
     ]);
     expect(fullScans(db)).toEqual([]);
   });

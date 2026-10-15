@@ -45,9 +45,12 @@ describe('the loops of growth over HTTP', () => {
     expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'nope' }))).status).toBe(400);
     expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'join' }))).status).toBe(204);
     expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(201);
-    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'trip25', phrase: 0 }))).status).toBe(
+    // A moment the person did not reach: a passenger is no new driver.
+    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'driver', phrase: 0 }))).status).toBe(
       404,
     );
+    // No moment after a trip any more (owner decision 15.10.2026).
+    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'trip1', phrase: 0 }))).status).toBe(400);
     expect((await call('/me/moment?side=nobody', PASSENGER, { env })).status).toBe(400);
   });
 });

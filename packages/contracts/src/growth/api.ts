@@ -20,15 +20,13 @@ export const GROWTH_BADGES = [
   { id: 'hero', people: 25 },
 ] as const;
 
-// The moment of «Men Rida bilan» a person reached and was not offered yet, with the true facts of
-// its card: the route of the last trip, how many people rode in the car, the count of the moment.
+// The moment of «Men Rida bilan» a person reached and was not offered yet, with the link of its
+// card: the start of the bot with the mark of the moment and the short code of the person.
 export const MOMENT_PATH = '/me/moment';
 const roleSchema = z.enum(['passenger', 'driver']);
 export const momentQuerySchema = z.object({ side: roleSchema });
 export const momentSchema = z.object({
   moment: z.enum(SHARE_MOMENTS).nullable(),
-  route: z.object({ from: z.string(), to: z.string() }).nullable(),
-  people: z.number().int().min(0),
   link: z.string(),
 });
 export type Moment = z.infer<typeof momentSchema>;

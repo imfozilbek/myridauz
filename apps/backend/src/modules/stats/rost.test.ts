@@ -1,3 +1,4 @@
+import { GROWTH_LOOPS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { fullScans, testD1 } from '../../test-d1';
 import { directionsOf, loopsOf } from './domain/rost';
@@ -21,7 +22,7 @@ describe('«Rost»', () => {
       { via: null, client: null, count: 5 },
     ];
     const loops = loopsOf(came, arrivals, [{ via: 'qr-a1b2c3', count: 1 }]);
-    expect(loops).toHaveLength(8);
+    expect(loops.map((one) => one.loop)).toEqual([...GROWTH_LOOPS]);
     expect(row('qr')(loops)).toEqual({ loop: 'qr', came: 6, registered: 2, rode: 1 });
     expect(row('seats')(loops)).toEqual({ loop: 'seats', came: 0, registered: 1, rode: 0 });
   });
