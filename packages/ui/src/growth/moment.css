@@ -1,5 +1,5 @@
-/* The celebration of a moment of the brand (G69, docs/123, mockups g69/1 … 3) at 360 px: the
-   passenger in the brand color, the driver in the accent (docs/20). */
+/* The celebration of a moment of the brand (G69, docs/123, mockups g69/1 … 3) at 360 px, in the main
+   color of the app: the passenger app teal, the driver app amber (docs/20). */
 .moment {
   --moment-main: var(--reg-strong);
   --moment-soft: var(--reg-soft);
@@ -9,11 +9,6 @@
   min-height: var(--tg-viewport-stable-height, 100vh);
   box-sizing: border-box;
   padding: 18px 14px 16px;
-}
-
-.moment-driver {
-  --moment-main: var(--reg-accent);
-  --moment-soft: var(--reg-accent-soft);
 }
 
 .moment-title {
@@ -42,7 +37,7 @@
   background: var(--reg-card);
   font-size: 14px;
   line-height: 1.4;
-  color: var(--reg-text);
+  color: var(--reg-ink);
 }
 
 .moment-why svg {
@@ -78,7 +73,7 @@
   font-size: 14px;
   line-height: 1.35;
   text-align: left;
-  color: var(--reg-text);
+  color: var(--reg-ink);
   cursor: pointer;
 }
 

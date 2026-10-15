@@ -49,7 +49,6 @@ export function useMomentWords(found: Moment & { readonly moment: ShareMoment })
       : found.route && kind !== 'join'
         ? t('growth.toFriendsGoing', values)
         : t('growth.toFriends'),
-    driver,
   };
 }
 

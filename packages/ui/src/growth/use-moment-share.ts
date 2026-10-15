@@ -28,7 +28,6 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
         link: words.link,
         slogan: brand.slogan,
       },
-      words.driver,
       brand.theme.colors,
       getComputedStyle(document.body).fontFamily,
     );

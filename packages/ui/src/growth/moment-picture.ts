@@ -60,18 +60,17 @@ function drawCard(paint: Paint, texts: MomentStoryTexts, main: string, colors: B
   write(paint, texts.link, CENTER, 1390, colors.bg, 'center');
 }
 
-// The card of «Men Rida bilan» as a story: the color of the role (the passenger the brand, the driver
-// the accent), the white card of the screen, the slogan under it. null: the browser cannot draw.
+// The card of «Men Rida bilan» as a story: the main color of the app (the passenger teal, the driver
+// amber, docs/20), the white card of the screen, the slogan under it. null: the browser cannot draw.
 export async function drawMomentStory(
   texts: MomentStoryTexts,
-  driver: boolean,
   colors: BrandColors,
   font: string,
 ): Promise<Blob | null> {
   const drawn = storyCanvas();
   if (!drawn) return null;
   const { canvas, paint } = drawn;
-  const main = driver ? colors.accentStrong : colors.brandStrong;
+  const main = colors.brandStrong;
   paint.fillStyle = main;
   paint.fillRect(0, 0, STORY.width, STORY.height);
   drawCard(paint, texts, main, colors, font);

@@ -9,7 +9,7 @@ export function MomentCard({ words, phrase }: { readonly words: MomentWords; rea
   const brand = useBrand();
   const { t } = useI18n();
   return (
-    <div className={words.driver ? 'moment-card moment-card-driver' : 'moment-card'}>
+    <div className="moment-card">
       <span className="moment-card-brand">
         <span className="moment-card-logo">{brand.name.charAt(0).toUpperCase()}</span>
         {brand.name}

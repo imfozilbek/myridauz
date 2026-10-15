@@ -37,7 +37,7 @@
   border-radius: 6px;
   background: var(--moment-main);
   font-size: 13px;
-  color: var(--reg-bg);
+  color: var(--reg-card);
 }
 
 .moment-card-face {

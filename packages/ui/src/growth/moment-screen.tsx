@@ -45,7 +45,7 @@ export function MomentScreen({ found, onDone }: Props) {
   const story = { text: t('growth.toStory'), onClick: run(share.story) };
   const chat = { text: words.chat, onClick: run(share.chat) };
   return (
-    <div className={words.driver ? 'moment moment-driver' : 'moment'} style={brandVars(colors)}>
+    <div className="moment" style={brandVars(colors)}>
       <Screen onBack={onDone} />
       <h1 className="moment-title">{words.title}</h1>
       <p className="moment-lead">{words.lead}</p>

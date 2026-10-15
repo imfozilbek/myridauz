@@ -60,7 +60,6 @@ describe('the celebration of a moment', () => {
     const { onDone } = open({ moment: 'riders10', route: TRIP.route, people: 12, link: TRIP.link });
     expect(await screen.findByText('10 yoʻlovchi! 🏅')).toBeTruthy();
     expect(screen.getByText('Yoʻlovchilarimga yuborish')).toBeTruthy();
-    expect(document.querySelector('.moment-driver')).not.toBeNull();
     await tap('Keyinroq');
     expect(onDone).toHaveBeenCalled();
   });
