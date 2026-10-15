@@ -1,5 +1,5 @@
 import type { Bindings } from '../../env';
-import { brandOf } from '../../shared/brand/brand-of';
+import { brandOf, siteOf } from '../../shared/brand/brand-of';
 import type { Fetch } from '../../shared/telegram/telegram-api';
 import type { Face, LooksDeps } from './application/looks';
 import { createMemoryLooks, d1Looks } from './infrastructure/d1-looks';
@@ -14,7 +14,7 @@ function facesOf(env: Bindings, call: Fetch): Face[] {
   const poster = env.POSTER_BOT_TOKEN;
   if (env.CHANNEL_LOOKS !== 'on' || !poster) return [];
   const brand = brandOf(env);
-  const site = env.SITE_URL ?? `https://${brand.domain}`;
+  const site = siteOf(env);
   return [
     posterFace(call, poster, posterLook(brand)),
     channelFace(call, poster, `@${brand.mainChannel}`, mainLook(brand, site)),

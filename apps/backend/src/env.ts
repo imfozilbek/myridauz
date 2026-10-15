@@ -31,8 +31,8 @@ export type Bindings = {
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
   // The Bot API of the local stand (docs/75); unset in production: Telegram itself.
   readonly TELEGRAM_API_URL?: string;
-  // The site the pictures of the bots and channels come from (docs/180): the stand points it at its
-  // stub; unset in the environments: the site of their domain.
+  // The site the pictures of the bots and channels come from (siteOf, docs/180): the stand points it at
+  // its stub; unset in the environments: the site of their domain.
   readonly SITE_URL?: string;
   // Comma separated Telegram ids of the team: a secret, the repository is public (docs/32).
   readonly ADMIN_TELEGRAM_IDS?: string;
