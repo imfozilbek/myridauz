@@ -47,7 +47,10 @@ test('a request to the whole region of a card', async ({ page }) => {
   const cards = await openLastCard(page, ASKER);
   await cards.last().click();
   await expect(page.locator('.week-row')).toBeVisible();
-  await page.getByText(t('common.passenger.leaveRequest')).first().click();
+  // The last day of the week: no scenario of the stand puts a trip there (lesson 95), so the day is
+  // empty and its row offers the request.
+  await page.locator('.week-day').last().click();
+  await page.locator('#root').getByText(t('common.passenger.leaveRequest')).first().click();
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
   await page.waitForTimeout(1500);
   await expect(page.getByText(t('bookings.points.title'))).toBeVisible();
