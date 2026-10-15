@@ -7,6 +7,7 @@
 ## Технология
 
 - WebRTC + Cloudflare Realtime SFU (TURN включён).
+- Без ключей Realtime в секретах Worker кнопок звонка нет нигде: сервер говорит это в `/public/limits` (`calls`), Mini App прячет кнопки (G52, `112`).
 - Сигнализация (кто звонит, принять/отклонить): через Durable Object чата
   (`07-contacts-and-chat.md`).
 - Бесплатно: 1 000 ГБ/мес (SFU + TURN вместе), платный Workers не нужен.
