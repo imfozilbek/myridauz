@@ -71,6 +71,8 @@ describe('Telegram wrappers', () => {
   it('uses the Android look on other platforms and names the Telegram app (G52)', () => {
     sdk.retrieveLaunchParams.mockReturnValueOnce({ tgWebAppPlatform: 'android', tgWebAppVersion: '7.10' });
     expect(initTelegram(colors)).toMatchObject({ platform: 'base', client: 'android 7.10' });
+    // Back from the tabs Telegram for Android calls it (lesson 283): the call passes.
+    expect((window as unknown as Record<string, unknown>).__tg__postBackgroundChange).toBeTypeOf('function');
   });
 
   it('paints the Telegram header in the color of the screen', () => {
