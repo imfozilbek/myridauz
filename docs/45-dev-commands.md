@@ -22,7 +22,7 @@
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
 | `pnpm run deploy --brand=rida` | Деплой бренда: сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами и лендинг. В CI: job `deploy` |
-| `pnpm run setup-bots --brand=rida` | Вебхуки и кнопки меню 3 ботов. Один раз после первого деплоя и при смене настроек ботов. Нужен `TELEGRAM_WEBHOOK_SECRET` |
+| `pnpm run setup-bots --brand=rida` | Вебхуки, профиль и меню ботов вручную. Обычно не нужен: Cron настраивает ботов сам (G83, `46`). Нужен `TELEGRAM_WEBHOOK_SECRET` |
 
 - Для `check:secrets` локально нужен файл `gitleaks` (v8.30.1) в `PATH`.
 - В облачной сессии Claude: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`.
