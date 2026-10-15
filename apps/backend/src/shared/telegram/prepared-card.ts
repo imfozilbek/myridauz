@@ -4,8 +4,8 @@ import { telegramUrl } from './api-url';
 const { t } = createI18n(DEFAULT_LOCALE);
 type Fetch = (input: string, init?: RequestInit) => Promise<Response>;
 
-// The title of the card and the words of its button: a shared trip by default (docs/43). A card
-// of «Men Rida bilan» has a second button under the first (G69, docs/123).
+// The title of the card and the words of its button: a shared trip by default (docs/43). The card
+// «Yaqinlarimga» has a second button under the first: «Men ham yoʻlga chiqaman» (G69, docs/123).
 type Button = { readonly text: string; readonly url: string };
 type Words = { readonly title: string; readonly button: string; readonly second?: Button };
 

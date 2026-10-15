@@ -21,9 +21,9 @@ export function useMomentShare(found: Moment & { readonly moment: ShareMoment },
     const picture = await drawMomentStory(
       {
         brandName: brand.name,
-        initial: words.values.name.charAt(0).toUpperCase(),
+        initial: words.name.charAt(0).toUpperCase(),
         quote,
-        who: words.who,
+        name: words.name,
         fact: words.fact,
         link: words.link,
         slogan: brand.slogan,

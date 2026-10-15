@@ -18,10 +18,9 @@ import { rateLimit } from '../../shared/http/rate-limit';
 import { storiesOf } from '../../shared/storage/stories';
 import { prepareCard } from '../../shared/telegram/prepared-card';
 import { placesOf } from '../locations';
-import { bookingForShare, pastRidesOf } from '../bookings';
+import { bookingForShare } from '../bookings';
 import { requestFacts } from '../ride-requests';
 import { blockedGuard, joinedAtOf, peopleOf } from '../users';
-import { ridesByTrip } from './application/moments';
 import { growthRoutes, type Wiring } from './http/growth-routes';
 import { cardMessage } from './infrastructure/card-text';
 import { d1Growth } from './infrastructure/d1-growth';
@@ -34,12 +33,10 @@ const growthDeps = (env: Bindings): Wiring | null => {
   const placeName = async (id: string) => (await placesOf(env)).get(id)?.name ?? id;
   return {
     store: d1Growth(db),
-    rides: async (userId, side) => ridesByTrip(await pastRidesOf(env, userId, side)),
     joinedAt: (userId) => joinedAtOf(env, userId),
     passengerBot: brand.bots.passenger,
     now: Date.now,
     nameOf: async (userId) => (await peopleOf(env).find(userId))?.firstName,
-    placeName,
     message: (input) => cardMessage(brand, input),
     prepare: (side, userId, message, link) =>
       prepareCard(

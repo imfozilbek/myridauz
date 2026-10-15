@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { ChatScreen } from '../chat/chat-screen';
 import { ComplaintScreen } from '../feedback/complaint-screen';
 import { ReviewScreen } from '../feedback/review-screen';
-import { MomentStep } from '../growth/moment-step';
 import { LinkedSearch } from '../market/find-link';
 import { ActionFailure } from '../states/action-failure';
 import { cancellable } from './booking-status';
@@ -23,9 +22,7 @@ type Props = {
   readonly stars?: boolean;
 };
 
-type Opened = {
-  readonly screen: 'chat' | 'call' | 'complaint' | 'review' | 'moment' | 'others' | 'again';
-} | null;
+type Opened = { readonly screen: 'chat' | 'call' | 'complaint' | 'review' | 'others' | 'again' } | null;
 
 // One booking of a passenger (docs/35, docs/118 path 3): waiting, confirmed or after the trip, with
 // its chat, call, complaint and review. The parent gives fresh data on each signal (docs/64).
@@ -49,11 +46,8 @@ export function PassengerBooking({ booking: fresh, onClose, onStale, onHome, sta
         bookingId={booking.id}
         onBack={stars ? () => onClose(false) : back}
         onComplain={() => setOpened({ screen: 'complaint' })}
-        // The review, then the celebration «Men Rida bilan» (docs/124 В, docs/123, G69).
-        onClose={() => setOpened({ screen: 'moment' })}
       />
     );
-  if (opened?.screen === 'moment') return <MomentStep onDone={stars ? () => onClose(false) : back} />;
   if (opened)
     return (
       <ChatScreen

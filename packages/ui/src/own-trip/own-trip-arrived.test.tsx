@@ -14,10 +14,12 @@ const rider = { ...confirmed, id: 'b2' };
 // On the road since the time of the trip; the server has not closed it yet (docs/35).
 const left: Trip = { ...trip, seatsLeft: 1, departedAt: trip.departAt };
 const NOW = trip.departAt + 6 * 60 * MINUTE;
+// The server answers «no moment» (G69); the trip end must not even ask (owner decision 15.10.2026).
+const noMoment = () => vi.fn(testClients({}).growth.moment);
 
 // The list keeps what the server answers: fresh: after «Yetib keldik» it brings the mark. The seat is
 // rated once the stars came (docs/24).
-function open(start: Trip, fresh: boolean) {
+function open(start: Trip, fresh: boolean, moment = noMoment()) {
   vi.setSystemTime(NOW);
   let shown = start;
   let rated = false;
@@ -33,6 +35,7 @@ function open(start: Trip, fresh: boolean) {
       bookings: { driverBookings: async () => [{ ...rider, rated }], driverOffers: async () => [] },
       feedback: { review: async () => void (rated = true), target: fiveStars },
       wallet: { mine: async () => wallet },
+      growth: { moment },
     }),
   );
   return arriveTrip;
@@ -83,6 +86,18 @@ describe('after «Yetib keldik» the trip is past at once (lead decision)', { ti
     await tap('Yuborish');
     await pastShown();
     expect(await screen.findByText('Baho: ★★★★★ qoʻydingiz')).toBeTruthy();
+  });
+
+  // No celebration after the trip (owner decision 15.10.2026): the stars, then the past trip at once.
+  it('after the stars of «Safar tugadi» no celebration is asked', async () => {
+    const moment = noMoment();
+    open(left, true, moment);
+    await openTrip();
+    await tap('Yetib keldik');
+    expect(await screen.findByText('Yoʻlovchilarni baholang')).toBeTruthy();
+    await tap('Yuborish');
+    await pastShown();
+    expect(moment).not.toHaveBeenCalled();
   });
 
   it('opened again from the list after «Safar tugadi», the trip is past', async () => {

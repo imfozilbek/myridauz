@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { VIA_PATTERN } from '../arrival';
-import { GROWTH_LOOPS, loopOf, loopVia, momentCount, momentLoop, SHARE_MOMENTS } from './loops';
+import { GROWTH_LOOPS, loopOf, loopVia, momentLoop, SHARE_MOMENTS } from './loops';
 
 describe('the marks of the loops of growth (G69, docs/123, docs/116)', () => {
   it('carries the loop and the short code of the author, within 21 signs', () => {
@@ -17,20 +17,6 @@ describe('the marks of the loops of growth (G69, docs/123, docs/116)', () => {
   });
 
   it('gives each moment the loop of its card', () => {
-    expect(SHARE_MOMENTS.map(momentLoop)).toEqual([
-      'share-join',
-      'share-trip',
-      'share-trip',
-      'share-trip',
-      'share-trip',
-      'share-driver',
-      'share-riders',
-      'share-riders',
-      'share-riders',
-    ]);
-  });
-
-  it('reads the round count of a moment', () => {
-    expect(SHARE_MOMENTS.map(momentCount)).toEqual([0, 1, 5, 10, 25, 0, 10, 50, 100]);
+    expect(SHARE_MOMENTS.map(momentLoop)).toEqual(['share-join', 'share-driver']);
   });
 });

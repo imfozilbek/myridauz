@@ -31,7 +31,7 @@ export function MomentScreen({ found, onDone }: Props) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
   const { growth } = useApiClients();
-  const words = useMomentWords(found);
+  const words = useMomentWords(found.moment);
   const share = useMomentShare(found, words);
   const [phrase, setPhrase] = useState(0);
   const [failure, setFailure] = useState<TranslationKey | null>(null);

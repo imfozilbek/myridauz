@@ -48,17 +48,11 @@ export function d1Growth(db: D1Database): GrowthStore {
         .all<{ moment: string }>();
       return results.map((row) => row.moment).filter(isMoment);
     },
-    offer: async (userId, moments, at) => {
-      if (moments.length === 0) return;
-      await db.batch(
-        moments.map((moment) =>
-          db
-            .prepare(
-              'INSERT INTO share_moments (user_id, moment, at) VALUES (?, ?, ?) ON CONFLICT DO NOTHING',
-            )
-            .bind(userId, moment, at),
-        ),
-      );
+    offer: async (userId, moment, at) => {
+      await db
+        .prepare('INSERT INTO share_moments (user_id, moment, at) VALUES (?, ?, ?) ON CONFLICT DO NOTHING')
+        .bind(userId, moment, at)
+        .run();
     },
     // The first approval: a new car approved later is not a new driver.
     approvedAt: async (userId) =>
@@ -70,12 +64,5 @@ export function d1Growth(db: D1Database): GrowthStore {
           .bind(userId)
           .first<{ at: number | null }>()
       )?.at ?? null,
-    riders: async (tripId) =>
-      (
-        await db
-          .prepare(`SELECT COALESCE(SUM(seats), 0) AS seats FROM bookings WHERE trip_id = ? AND ${RODE}`)
-          .bind(tripId)
-          .first<{ seats: number }>()
-      )?.seats ?? 0,
   };
 }
