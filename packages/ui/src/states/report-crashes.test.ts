@@ -31,14 +31,4 @@ describe('reportCrashes (G52, docs/112)', () => {
     ]);
     expect(flush).toHaveBeenCalledTimes(2);
   });
-
-  it('does not count the hidden error of a script of another origin (lesson 283)', () => {
-    const track = vi.fn();
-    const target = new EventTarget();
-    reportCrashes({ track, flush: async () => undefined }, 'ios 9.6', target);
-    target.dispatchEvent(Object.assign(new Event('error'), { error: null, message: 'Script error.' }));
-    expect(track).not.toHaveBeenCalled();
-    target.dispatchEvent(Object.assign(new Event('error'), { error: null, message: 'Script error here' }));
-    expect(track).toHaveBeenCalledTimes(1);
-  });
 });

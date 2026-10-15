@@ -47,12 +47,14 @@
   - движок в `client`: `android 9.6 chrome 83`, только имя и главная версия.
 - Сборка детерминирована: по коммиту из `version` собираем ту же сборку с source map и видим строку кода.
 
-## Чужая ошибка без подробностей (15.10.2026)
+## `Script error.` на Android: ошибка Telegram (15.10.2026)
 
-- Владелец увидел в «Ilova buzilishlari»: `Thrown: Script error.`, `main · waitlist_done`, 1 раз, iPhone.
-- `Script error.` без объекта ошибки: так браузер прячет ошибку скрипта с другого адреса. На iPhone это скрипты, которые Telegram сам кладёт в Mini App. Наши файлы с того же адреса, их ошибки всегда приходят полностью.
-- На стенде (iOS) прошёл все нажатия экрана «Siz roʻyxatdasiz» обеих ролей: ошибок нашего кода нет. Экран у владельца не сломался.
-- Решение: такие ошибки не считаются падением Mini App, как в службах учёта ошибок (`report-crashes.ts`, урок №283). Старая запись уйдёт из окна статистики сама.
+- Владелец увидел в «Ilova buzilishlari»: `Thrown: Script error.`, `main · waitlist_done`.
+- Выгрузка из Analytics Engine за 30 дней: 12 таких записей, **все на Android** (Telegram 9.6, Chrome 153 и 154), в `main` и `passenger`. На iPhone нет ни одной.
+- Шаги сессий перед ошибкой: в `main` через 7 и 12 с после «Taklif qilish» (`invite_sent`).
+- Сама ошибка: `TypeError: window.__tg__postBackgroundChange is not a function`. Её даёт Telegram для Android (`BotWebViewContainer.java`, `setContainers`): когда Mini App возвращается из вкладок, он вызывает эту функцию, а определяет её только в своём браузере. Окно «отправить в чат» тоже уводит Mini App во вкладки и возвращает.
+- Браузер прячет текст ошибки чужого скрипта, поэтому в статистике только `Script error.`.
+- Решение: пустая функция `window.__tg__postBackgroundChange` в Mini App (`telegram/android-tabs.ts`), вызов Telegram проходит, ошибки нет. Ошибки без подробностей по-прежнему считаются: новую такую ищем по шагам сессии и по коду клиента Telegram (урок №283).
 
 ## Остальные ошибки: что сервер отказал и почему
 
