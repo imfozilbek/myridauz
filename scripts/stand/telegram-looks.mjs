@@ -1,23 +1,18 @@
 // The looks of the channels on the stand (docs/180): what a bot set, Telegram gives back, so the next
 // round of the Cron finds nothing to change, like in Telegram. The method comes from the address of a
-// request: Maps never reach the methods every object has (constructor, toString …).
+// request: it is only compared with known names, never used to call a function (lesson 285).
 const SETS = new Map([
   ['setMyName', ['name', 'name']],
   ['setChatTitle', ['name', 'title']],
   ['setChatDescription', ['description', 'description']],
 ]);
-const READS = new Map([
-  ['getMyName', (look) => ({ name: look.name ?? '' })],
-  [
-    'getChat',
-    (look, body) => ({
-      id: body.chat_id,
-      title: look.name ?? 'stand',
-      ...(look.description ? { description: look.description } : {}),
-      ...(look.photo ? { photo: { big_file_unique_id: look.photo } } : {}),
-    }),
-  ],
-]);
+
+const chatOf = (look, body) => ({
+  id: body.chat_id,
+  title: look.name ?? 'stand',
+  ...(look.description ? { description: look.description } : {}),
+  ...(look.photo ? { photo: { big_file_unique_id: look.photo } } : {}),
+});
 
 export function standLooks() {
   const looks = new Map();
@@ -40,6 +35,8 @@ export function standLooks() {
       look.photo = `stand-photo-${id}`;
       return true;
     }
-    return READS.get(method)?.(look, body);
+    if (method === 'getMyName') return { name: look.name ?? '' };
+    if (method === 'getChat') return chatOf(look, body);
+    return undefined;
   };
 }
