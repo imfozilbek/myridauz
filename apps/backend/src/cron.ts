@@ -1,3 +1,4 @@
+import { setupBotsWhenChanged } from './bots/bot-setup-job';
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
 import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
@@ -28,8 +29,10 @@ const DAILY_HOUR_UTC = 0;
 // forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
 // boards of the day, reminds the team of waiting driver applications and keeps the minutes of
 // «Navbat» fresh; tells the waiting people of opened directions and refreshes the cards of the list
-// on Monday, a few at a time (docs/15, docs/35, docs/122, docs/181, G10, G34, G63, G68, G83).
+// on Monday, a few at a time; sets the bots up again when their tokens or texts changed (docs/15,
+// docs/35, docs/122, docs/181, G10, G34, G63, G68, G83).
 const everyTick = (env: Bindings, now: number): Job[] => [
+  ['setupBots', () => setupBotsWhenChanged(env, (input, init) => fetch(input, init), now)],
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
   ['expireBookings', () => expireBookings(env, now)],
