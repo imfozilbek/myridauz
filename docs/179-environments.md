@@ -64,6 +64,8 @@
 | Account | Account Analytics: Read; Realtime (Calls): Edit |
 | Zone `ridaone.uz` | Workers Routes, DNS: Edit; Zone: Read |
 
+Токен внутренней среды (Environment `internal`, первый аккаунт): те же права, только зона `myrida.uz`. Без «Workers Routes» выкладка падает после загрузки Worker: Mini App и сайт не выкладываются (15.10.2026).
+
 ## Шаги: сначала внутренняя среда
 
 Шаги владельца и прода ведёт цель G84 (решение владельца 15.10.2026).

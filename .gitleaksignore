@@ -1,4 +1,0 @@
-# False alarm of generic-api-key in an early commit of G69 (docs/32): the word «Keyinroq» and the next key of
-# the language file looked like a key and its value. The line is moved in the file; this commit stays in the
-# history of the goal branch only and leaves with its squash merge.
-a5f91446aed8c345b72387e820924c0fddbf4605:packages/i18n/locales/uz-Latn/growth.json:generic-api-key:23
