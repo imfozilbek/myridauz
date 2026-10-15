@@ -1,6 +1,6 @@
 import { apiHost } from '@platform/brands';
 import type { Bindings } from '../env';
-import { brandOf } from '../shared/brand/brand-of';
+import { brandOf, siteOf } from '../shared/brand/brand-of';
 import { botToken, type BotName } from '../shared/telegram/bot-config';
 import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
 import { POSTER_WEBHOOK_PATH } from '../modules/channels';
@@ -25,7 +25,9 @@ function plansOf(env: Bindings) {
     if (!token) return [];
     const menu = hasMenu(role) ? { menu: menuButton(brand, role), commands: botCommands() } : null;
     const hook = `https://${apiHost(brand)}/telegram/${role}`;
-    return [{ role, token, hook, profile: botProfile(brand, role), avatar: avatarUrl(brand, role), menu }];
+    return [
+      { role, token, hook, profile: botProfile(brand, role), avatar: avatarUrl(siteOf(env), role), menu },
+    ];
   });
 }
 

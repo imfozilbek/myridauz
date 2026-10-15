@@ -7,7 +7,7 @@ import { renderSite } from './site';
 
 // Build step (docs/59): writes the pages of the brand to apps/landing/dist with the inline script
 // and copies the icons and the pictures of brands/<brand>/landing.
-const brand = loadBrand(process.env['VITE_BRAND']);
+const brand = loadBrand(process.env['VITE_BRAND'], process.env['VITE_ENVIRONMENT']);
 const from = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 const dist = from('../dist/');
 const data = (file: string) =>

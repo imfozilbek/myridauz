@@ -16,6 +16,22 @@ export async function callTelegram(
   if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);
 }
 
+// A Bot API call that gives back what Telegram answered (docs/180).
+export async function askTelegram<T>(
+  fetch: Fetch,
+  token: string,
+  method: string,
+  params: object = {},
+): Promise<T | undefined> {
+  const response = await fetch(telegramUrl(token, method), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(params),
+  });
+  if (!response.ok) throw new Error(`telegram.${method}_${response.status}`);
+  return ((await response.json()) as { result?: T }).result;
+}
+
 type Photo = { readonly body: ReadableStream | ArrayBuffer; readonly type: string };
 
 // Private photos go to Telegram as uploaded files: there is no public link to give (docs/05).

@@ -1,6 +1,7 @@
 // Static brand assets: logo, lockups, plate device, Telegram, web.
 import { text, markR, textCentered } from './text.mjs';
 import { C, COMBOS, svg } from './palette.mjs';
+import { SITE } from './production.mjs';
 
 export const squircle = (x, y, s, fill, extra = '') => `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${s * 0.22}" fill="${fill}"${extra}/>`;
 
@@ -76,6 +77,6 @@ export function ogImage() {
     text('Manzil sari', { x: 526, y: 398, fill: C.mint, weight: 600, size: 58 }) +
     `<rect x="526" y="438" width="130" height="12" rx="6" fill="${C.amber}"/>` +
     text('Viloyatlararo birga safarlar', { x: 526, y: 520, fill: C.white, weight: 600, size: 40, maxWidth: 600 }) +
-    text('myrida.uz', { x: 1104, y: 584, anchor: 'end', fill: C.mint, weight: 500, size: 30 });
+    text(SITE, { x: 1104, y: 584, anchor: 'end', fill: C.mint, weight: 500, size: 30 });
   return svg(1200, 630, body);
 }

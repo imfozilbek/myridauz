@@ -1,11 +1,12 @@
-import { appHost, loadBrand } from '@platform/brands';
+import { appHost } from '@platform/brands';
 import { MINI_APPS } from '@platform/contracts';
 import { cors } from 'hono/cors';
 import type { AppEnv } from '../../env';
+import { configOf } from '../brand/brand-of';
 
 // Mini Apps live on their own subdomains, so the browser needs CORS to call the API.
 const miniAppOrigin = (origin: string, context: { env: unknown }) => {
-  const brand = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
+  const brand = configOf((context.env as AppEnv['Bindings'] | undefined) ?? {});
   return MINI_APPS.some((app) => origin === `https://${appHost(brand, app)}`) ? origin : null;
 };
 // The browser keeps the answer to a preflight this long (Chrome keeps 2 hours at most): without it
@@ -23,7 +24,7 @@ export const allowMap = cors({
 export const allowPublic = cors({
   maxAge: PREFLIGHT_SECONDS,
   origin: (origin, context) => {
-    const { domain } = loadBrand((context.env as AppEnv['Bindings'] | undefined)?.BRAND);
+    const { domain } = configOf((context.env as AppEnv['Bindings'] | undefined) ?? {});
     const site = [`https://${domain}`, `https://www.${domain}`].includes(origin);
     return site ? origin : miniAppOrigin(origin, context);
   },

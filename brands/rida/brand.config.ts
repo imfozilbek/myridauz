@@ -1,13 +1,9 @@
-import type { BrandConfig } from '../brand-config';
-// 67 channels of directions over all districts (owner, 12.10.2026, docs/176): a district may be in
-// several of them; Toshkent shahri has none (docs/15).
-import channels from './channels.json' with { type: 'json' };
+import type { BrandBase } from '../brand-config';
 import { theme } from './theme.ts';
 
-export const brandConfig: BrandConfig = {
+// The address, the bots and the channels differ by environment: environments.ts (docs/179).
+export const brandConfig: BrandBase = {
   id: 'rida',
-  name: 'Rida',
-  domain: 'myrida.uz',
   slogan: 'Manzil sari',
   monetization: 'commission',
   // docs/12: 10% per seat, at least 3 000 sum per seat; up to 3 × 500 000 sum of bonus.
@@ -15,16 +11,6 @@ export const brandConfig: BrandConfig = {
   promo: { amount: 500_000, grants: 3, days: 30, windowDays: 90 },
   theme,
   regionPhotos: true,
-  bots: {
-    passenger: 'myrida_bot',
-    driver: 'myrida_haydovchi_bot',
-    admin: 'myrida_admin_bot',
-    support: 'myrida_support_bot',
-    // The main bot «MyRida» of the waitlist (owner decision 14.10.2026, docs/181).
-    main: 'myridauz_bot',
-  },
-  channels,
-  mainChannel: 'rida1uz',
   pricing: 'per-km',
   // docs/29: 3 times the usual hour and at least 10 errors; a step 20 points worse than the week
   // from at least 20 people; the same signal once in 6 hours.

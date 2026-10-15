@@ -22,12 +22,12 @@ OPS-05 (владелец): операции запуска
    BotFather, /mybots, бот, Bot Settings, Configure Mini App,
    Configure Splash Screen.
    Иконка: файл brands/rida/landing/bot/miniapp-splash.svg
-   (после деплоя: https://myrida.uz/bot/miniapp-splash.svg),
+   (после деплоя: https://ridaone.uz/bot/miniapp-splash.svg),
    SVG 512 × 512, один <path>, белая «R».
    Фон, светлая и тёмная тема одинаково:
-     @myrida_bot (попутчик)            #0D9488
-     @myrida_haydovchi_bot (водитель)  #D97706
-     @myrida_admin_bot (админ)         #334155
+     @rida1uz_bot (попутчик)            #0D9488
+     @rida1uz_haydovchi_bot (водитель)  #D97706
+     @rida1uz_admin_bot (админ)         #334155
    Цвет иконки и текста: #FFFFFF.
 8. Утвердить запуск.
 

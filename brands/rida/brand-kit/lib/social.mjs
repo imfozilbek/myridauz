@@ -3,6 +3,7 @@ import { text, markR, textCentered, layout } from './text.mjs';
 import { C, svg } from './palette.mjs';
 import { squircle, plate } from './brand.mjs';
 import { prog, outCubic, outBack, scaleAt } from './ease.mjs';
+import { SITE } from './production.mjs';
 
 const tile = (x, y, s, bg = C.teal, fg = C.white) => squircle(x, y, s, bg) + markR({ cx: x + s / 2, cy: y + s / 2, h: s * 0.62, fill: fg });
 const bar = (cx, y, w = 150, h = 14) => `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${C.amber}"/>`;
@@ -12,7 +13,7 @@ export function postSoon() {
     textCentered('Tez orada', { cx: 540, cy: 560, h: 110, fill: C.white }) +
     textCentered('Viloyatlararo birga safarlar', { cx: 540, cy: 668, h: 42, fill: C.mint, weight: 600, maxWidth: 900 }) +
     bar(540, 736) + textCentered('Manzil sari', { cx: 540, cy: 826, h: 40, fill: C.white, weight: 600 }) +
-    textCentered('myrida.uz', { cx: 540, cy: 990, h: 26, fill: C.mint, weight: 500 }));
+    textCentered(SITE, { cx: 540, cy: 990, h: 26, fill: C.mint, weight: 500 }));
 }
 
 export function postLaunch() {
@@ -81,7 +82,7 @@ export function carSticker() {
   return svg(S, S, `<circle cx="${S / 2}" cy="${S / 2}" r="${S / 2}" fill="${C.teal}"/>` +
     markR({ cx: S / 2, cy: S * 0.4, h: S * 0.4, fill: C.white }) +
     textCentered('Rida', { cx: S / 2, cy: S * 0.73, h: S * 0.12, fill: C.white }) +
-    textCentered('myrida.uz', { cx: S / 2, cy: S * 0.86, h: S * 0.045, fill: C.mint, weight: 600 }));
+    textCentered(SITE, { cx: S / 2, cy: S * 0.86, h: S * 0.045, fill: C.mint, weight: 600 }));
 }
 
 export function qrPoster(matrix) {
@@ -99,5 +100,5 @@ export function qrPoster(matrix) {
     text('Safar toping', { x: 160, y: 1030, fill: C.ink, size: 250 }) +
     text('Telefon kamerasi bilan skanerlang', { x: 160, y: 1170, fill: C.muted, weight: 600, size: 90, maxWidth: 2160 }) +
     `<path d="${d}" fill="${C.ink}"/>` + squircle(W / 2 - 170, y0 + size / 2 - 170, 340, C.white) + tile(W / 2 - 140, y0 + size / 2 - 140, 280) +
-    steps + textCentered('myrida.uz', { cx: W / 2, cy: 3340, h: 80, fill: C.teal }));
+    steps + textCentered(SITE, { cx: W / 2, cy: 3340, h: 80, fill: C.teal }));
 }

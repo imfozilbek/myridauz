@@ -1,16 +1,19 @@
-// One command deploys a brand (docs/22, docs/45): pnpm run deploy --brand=<brand>
-// Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Bot tokens are Worker secrets, never used here (docs/32).
+// One command deploys a brand to one environment (docs/22, docs/45, docs/179):
+// pnpm run deploy --brand=<brand> --env=<internal|production>. Needs CLOUDFLARE_API_TOKEN and
+// CLOUDFLARE_ACCOUNT_ID of the account of that environment. Bot tokens are Worker secrets, never used here (docs/32).
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
-import { apiHost, appHost, loadBrand, mapHost } from '../brands/index.ts';
+import { apiHost, appHost, mapHost } from '../brands/index.ts';
 import { MAP_ARCHIVE } from '../packages/contracts/src/map.ts';
+import { ensureAccountOf } from './deploy/account.mjs';
 import { copyMap, dropOldMaps, ensureMapBucket, ensureStoriesRule, mapServed } from './deploy/map-bucket.mjs';
 import { ensurePagesDomain, ensurePagesProject } from './deploy/pages.mjs';
+import { targetOf } from './deploy/target.mjs';
+import { workerConfig } from './deploy/worker-config.mjs';
 
-const brandArg = process.argv.find((arg) => arg.startsWith('--brand='));
-if (!brandArg) throw new Error('deploy: --brand=<brand> is required');
-const brand = loadBrand(brandArg.split('=')[1]);
-const config = `brands/${brand.id}/wrangler.toml`;
+const { brand, environment } = targetOf('deploy');
+await ensureAccountOf(brand, environment);
+const config = await workerConfig(brand, environment);
 const apps = readdirSync('apps')
   .filter((dir) => dir.startsWith('miniapp-'))
   .map((dir) => dir.replace('miniapp-', ''));
@@ -41,6 +44,7 @@ else console.warn(`deploy: ${mapHost(brand)} does not answer yet, the map stays 
 
 run('pnpm', ['--filter', './apps/miniapp-*', '--filter', './apps/landing', 'build'], {
   VITE_BRAND: brand.id,
+  VITE_ENVIRONMENT: environment,
   VITE_API_URL: `https://${apiHost(brand)}`,
   ...(served ? { VITE_MAP_URL: `https://${mapHost(brand)}` } : {}),
   VITE_APP_VERSION: process.env.GITHUB_SHA?.slice(0, 7) ?? 'local',
@@ -79,4 +83,4 @@ wrangler(
 );
 for (const host of [brand.domain, `www.${brand.domain}`])
   await ensurePagesDomain(landing, host, brand.domain);
-console.log(`deploy: ${brand.id} done`);
+console.log(`deploy: ${brand.id} ${environment} done`);

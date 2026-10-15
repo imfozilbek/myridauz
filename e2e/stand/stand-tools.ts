@@ -95,7 +95,7 @@ export async function despiteReload(send: () => Promise<Response>): Promise<Resp
     }
   }
 }
-// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes.
+// The Cron of the Worker at once, as Cloudflare runs it every 15 minutes: it answers when its jobs are done.
 export async function runCron(): Promise<void> {
   const url = `${API}/__scheduled?cron=${encodeURIComponent(CRON)}`;
   const response = await despiteReload(() => fetch(url));

@@ -6,6 +6,8 @@ import type { TelegramUser } from './shared/auth/telegram-fields';
 // Optional ones are absent when running locally and in tests.
 export type Bindings = {
   readonly BRAND?: string;
+  // "internal" or "production" (docs/179): the address, the bots and the channels of the brand.
+  readonly ENVIRONMENT?: string;
   readonly ANALYTICS?: AnalyticsEngineDataset;
   readonly DB?: D1Database;
   readonly MEDIA?: R2Bucket;
@@ -29,10 +31,16 @@ export type Bindings = {
   readonly TELEGRAM_WEBHOOK_SECRET?: string;
   // The Bot API of the local stand (docs/75); unset in production: Telegram itself.
   readonly TELEGRAM_API_URL?: string;
+  // The site the pictures of the bots and channels come from (siteOf, docs/180): the stand points it at
+  // its stub; unset in the environments: the site of their domain.
+  readonly SITE_URL?: string;
   // Comma separated Telegram ids of the team: a secret, the repository is public (docs/32).
   readonly ADMIN_TELEGRAM_IDS?: string;
   // "on" posts new trips to the channels (docs/15). Off until the owner approves the post (docs/33).
   readonly CHANNEL_POSTS?: string;
+  // "on" brings the names, texts and pictures of the channels to the repository (docs/180). Off until the
+  // owner approves their texts (G84).
+  readonly CHANNEL_LOOKS?: string;
   // 'off' on the stand: a Cron run by hand runs every job, the hourly and the daily ones too (G56).
   readonly CRON_TIERS?: string;
   // The dashboard reads Analytics Engine through its SQL API (docs/29): a read-only key and the

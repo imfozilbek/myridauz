@@ -21,8 +21,8 @@
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
-| `pnpm run deploy --brand=rida` | Деплой бренда: сборка Mini App, миграции D1, Worker, 3 проекта Pages с доменами и лендинг. В CI: job `deploy` |
-| `pnpm run setup-bots --brand=rida` | Вебхуки, профиль и меню ботов вручную. Обычно не нужен: Cron настраивает ботов сам (G83, `46`). Нужен `TELEGRAM_WEBHOOK_SECRET` |
+| `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 4 проекта Pages с доменами и лендинг. В CI: `deploy-internal`; прод вернётся с новым аккаунтом (`179`) |
+| `pnpm run setup-bots --brand=rida --env=<среда>` | Вебхуки, профиль и меню ботов среды вручную. Обычно не нужен: Cron настраивает ботов сам (G83, `46`). Потом оформление каналов кругами, если оно включено (`180`). Нужен `TELEGRAM_WEBHOOK_SECRET` этой среды |
 
 - Для `check:secrets` локально нужен файл `gitleaks` (v8.30.1) в `PATH`.
 - В облачной сессии Claude: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`.
@@ -67,7 +67,7 @@
 | `secrets`, `brand-kit` | gitleaks; бренд-пакет собирается, только если менялись `brands/` или lock |
 | `screenshots (1/2)`, `(2/2)` | После барьеров, артефакт для людей; не барьер |
 
-- `deploy` ждёт `CI ok`. Запускается, только если прод поменялся с последнего успешного деплоя (`changes`, `46`).
+- `deploy-internal` ждёт `CI ok`. Запускается, только если код поменялся с последнего успешного деплоя внутренней среды (`changes`, `46`, `179`).
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.
 
 ## Надёжность сервера (G42)
@@ -86,7 +86,7 @@
 | `packages/api-client` | Клиент API, ошибки с кодом (`ApiError`) |
 | `packages/i18n` | `t()` и `uz-Latn/common.json` |
 | `packages/ui` | `AppShell` (TelegramUI, светлая тема), `StartScreen`, `mountApp`, иконки Lucide |
-| `brands` | `@platform/brands`: `loadBrand()`, `rida/brand.config.ts`, `rida/theme.ts` |
+| `brands` | `@platform/brands`: `loadBrand(id, среда)`, `rida/brand.config.ts`, `rida/environments.ts` (`179`), `rida/theme.ts` |
 | `apps/backend` | Hono Worker, модуль `health` во всех 4 слоях, контрактный тест |
 | `apps/miniapp-*` | 3 Mini App в FSD, стартовый экран в каждом |
 | `e2e` | Подмена Telegram, smoke тест, скриншоты |

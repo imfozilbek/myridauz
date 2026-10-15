@@ -1,4 +1,4 @@
-# 62. Чек-лист запуска 01.02.2027 (G16)
+# 62. Чек-лист запуска 18.10.2026 (G16)
 
 > **Кратко:** Всё, что нужно сделать и проверить до запуска, в одном месте. G16 (код) закрыта 30.09.2026 по решению владельца: e2e, нагрузка (`61`), профиль ботов, 20 зон каналов (`63`). Остальное: операции владельца (OPS-02, OPS-04, OPS-05) и исправления после бета-теста. Живые платежи (G17) после запуска, до 01.05.2027.
 
@@ -16,11 +16,12 @@
 
 | Бот | Имя (код) | Знак на аватаре | Картинка описания (Edit Bot → Edit Description Picture) | Экран загрузки (Bot Settings → Configure Mini App) |
 |---|---|---|---|---|
-| `@myrida_bot` | Rida \| yoʻlovchi | человек | `bot-passenger-description.png` | `miniapp-splash.svg`, фон `#FFFFFF`, знак `#14B8A6` |
-| `@myrida_haydovchi_bot` | Rida \| haydovchi | машина | `bot-driver-description.png` | тот же файл, знак `#F59E0B` |
-| `@myrida_admin_bot` | Rida \| admin | щит | `bot-admin-description.png` | нет Mini App в меню |
-| `@myrida_support_bot` | Rida \| yordam | наушники | `bot-support-description.png` | нет Mini App |
+| `@rida1uz_bot` | Rida \| yoʻlovchi | человек | `bot-passenger-description.png` | `miniapp-splash.svg`, фон `#FFFFFF`, знак `#14B8A6` |
+| `@rida1uz_haydovchi_bot` | Rida \| haydovchi | машина | `bot-driver-description.png` | тот же файл, знак `#F59E0B` |
+| `@rida1uz_admin_bot` | Rida \| admin | щит | `bot-admin-description.png` | нет Mini App в меню |
+| `@rida1uz_yordam_bot` | Rida \| yordam | наушники | `bot-support-description.png` | нет Mini App |
 
+- Боты прода (`179`). Боты внутренней среды `@myrida_*` настроены так же.
 - Файлы: `brands/rida/brand-kit/kit/telegram/` (собирается `pnpm build` бренд-пакета, `38`).
 - Кнопка меню у поля ввода: «ilova» (решение владельца 03.10.2026, ключ `bot.menu`); кнопки в сообщениях бота: «Ochish» (`bot.open`). Описания ботов до Start зовут нажать «ilova».
 - Тексты и имена меняются только в коде (`bot.json`), иначе `setup-bots` вернёт старые.
@@ -50,7 +51,7 @@
 1. Попутчик: регистрация → поиск → бронь → чат → звонок → «Yaqinlarimga yuborish» → отзыв.
 2. Водитель: заявка → одобрение в админ-боте → поездка → подтверждение брони → Hamyon.
 3. Админ: жалоба и решение, цены, Statistika.
-4. Лендинг `myrida.uz`: кнопки, маршрут в бота.
+4. Лендинг `ridaone.uz`: кнопки, маршрут в бота (`179`).
 5. Каналы: пост новой поездки появился.
 
 ## После запуска

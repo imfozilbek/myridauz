@@ -1,14 +1,19 @@
 // Pictures the bots take by link (G34, docs/95): the driver welcome (sendPhoto) and the four bot
 // avatars (setMyProfilePhoto), and the splash of the Mini Apps for BotFather. They live in brands/rida/landing/bot, which the landing serves at
 // https://<domain>/bot/…: Telegram and the Worker fetch them from there, no upload by hand.
+// The avatars of the channels (docs/180) live in landing/channel: the region of a direction by its
+// plate code, and the main channel of an environment.
 // Usage: CHROMIUM=… pnpm bot
 import fs from 'node:fs';
 import { chromium } from 'playwright';
 import { botAvatar } from '../lib/avatar.mjs';
 import { splash } from '../lib/brand.mjs';
 import { botWelcome } from '../lib/welcome.mjs';
+import { channelAvatar, mainAvatar } from '../lib/channels.mjs';
 
 const OUT = new URL('../../landing/bot/', import.meta.url);
+const CHANNELS = new URL('../../landing/channel/', import.meta.url);
+const regions = JSON.parse(fs.readFileSync(new URL('../data/regions.json', import.meta.url), 'utf8'));
 const AVATAR = 640;
 const JPEG_QUALITY = 90;
 const ROLES = ['passenger', 'driver', 'admin', 'support', 'main'];
@@ -17,18 +22,22 @@ const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: p
 const page = await browser.newPage();
 await page.setContent('<html><body style="margin:0;background:transparent"><div id="s"></div></body></html>');
 
-async function save(name, body, width, height, type) {
+async function save(name, body, width, height, type, out = OUT) {
   await page.setViewportSize({ width, height });
   await page.evaluate((s) => { document.getElementById('s').innerHTML = s; }, body);
   const clip = { x: 0, y: 0, width, height };
   const shot = await page.screenshot(type === 'jpeg' ? { clip, type, quality: JPEG_QUALITY } : { clip, type });
-  fs.writeFileSync(new URL(name, OUT), shot);
+  fs.writeFileSync(new URL(name, out), shot);
   console.log(`${name} ${Math.round(shot.length / 1024)} KB`);
 }
 
 fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync(CHANNELS, { recursive: true });
 // The splash of Telegram before the Mini App (BotFather, docs/121 §4, OPS-05): one white «R».
 fs.writeFileSync(new URL('miniapp-splash.svg', OUT), splash());
 for (const role of ['driver', 'passenger', 'support', 'main', 'main-open']) await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png');
 for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
+for (const region of regions)
+  await save(`${region.code}-avatar.jpg`, channelAvatar(region), AVATAR, AVATAR, 'jpeg', CHANNELS);
+await save('main-avatar.jpg', mainAvatar(AVATAR), AVATAR, AVATAR, 'jpeg', CHANNELS);
 await browser.close();

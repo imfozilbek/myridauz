@@ -53,7 +53,11 @@ export function mountApp(app: MiniApp, Page: ComponentType, { welcome }: MountOp
   const container = document.getElementById(ROOT_ID);
   if (!container) throw new Error('ui.root_missing');
   // The questionnaire of the main bot starts in the colors of the passenger (G83, docs/181).
-  const brand = brandForApp(loadBrand(import.meta.env.VITE_BRAND), app === 'main' ? 'passenger' : app);
+  const environment = import.meta.env.VITE_ENVIRONMENT;
+  const brand = brandForApp(
+    loadBrand(import.meta.env.VITE_BRAND, environment),
+    app === 'main' ? 'passenger' : app,
+  );
   document.title = brand.name;
   const session = initTelegram(brand.theme.colors);
   markLowMotion();

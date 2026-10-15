@@ -17,6 +17,7 @@ import {
 } from './modules/bookings';
 import { callsModule, callsReady } from './modules/calls';
 import { channelsModule, publicityModule, zoneWatch } from './modules/channels';
+import { looksModule } from './modules/looks';
 import { chatRoutes } from './modules/chat';
 import { companyModule } from './modules/company';
 import { soundsModule } from './modules/sounds';
@@ -49,6 +50,8 @@ import { teamScreens } from './team-screens';
 
 // The clock is read at each request, not kept from the start: tests set their own time (lesson 76).
 const auth = telegramAuth(() => Date.now(), teamRole);
+// The bots call Telegram through the fetch of the Worker, the tests through their own.
+const callTelegram = (input: string, init?: RequestInit) => fetch(input, init);
 
 export const app = new Hono<AppEnv>()
   // The limits the owner set reach every rule of this request (G75, docs/128 §4).
@@ -137,14 +140,9 @@ export const app = new Hono<AppEnv>()
   )
   .route('/', feedRoutes)
   .route('/', sharesModule(bookingForShare, tripForFamily))
-  // Setup goes before the webhook route: "/telegram/:role" would take "/telegram/setup" as a bot name.
-  .route(
-    '/',
-    setupRoutes((input, init) => fetch(input, init)),
-  )
-  .route(
-    '/',
-    webhookRoutes((input, init) => fetch(input, init)),
-  )
+  // Setup and looks go before the webhook route: "/telegram/:role" would take them as a bot name.
+  .route('/', setupRoutes(callTelegram))
+  .route('/', looksModule)
+  .route('/', webhookRoutes(callTelegram))
   .onError(onServerError)
   .notFound(notFound);

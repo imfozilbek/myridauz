@@ -19,7 +19,8 @@ brands/rida/brand-kit/kit/
 playwright-report/
 test-results/
 screenshots/
-brands/*/wrangler.tmp.toml
+# The settings of the Worker of one environment, made by the deploy (docs/179)
+brands/*/wrangler.*.toml
 
 # Landing prerender bundle
 apps/landing/.render/

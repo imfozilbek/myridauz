@@ -115,9 +115,12 @@ const api = `http://${host}`;
 // Cron run of a scenario runs every job, the hourly and the daily ones too (G56).
 serveTelegram(STAND_TELEGRAM_PORT);
 const telegram = `TELEGRAM_API_URL:http://localhost:${STAND_TELEGRAM_PORT}`;
+// The pictures of the looks come from the stub too: nothing leaves the computer (docs/180).
+const site = `SITE_URL:http://localhost:${STAND_TELEGRAM_PORT}/__site`;
 const dev = ['dev', ...local, '--port', String(STAND_API_PORT), '--local-upstream', host];
 dev.push('--inspector-port', String(STAND_INSPECTOR_PORT));
-dev.push('--var', telegram, '--var', 'CHANNEL_POSTS:on', '--var', 'CRON_TIERS:off', '--test-scheduled');
+dev.push('--var', telegram, '--var', site, '--var', 'CHANNEL_LOOKS:on');
+dev.push('--var', 'CHANNEL_POSTS:on', '--var', 'CRON_TIERS:off', '--test-scheduled');
 // The stand at another hour (pnpm stand:check --at 23:30): the Worker with its clock moved (G77).
 const shift = process.env.STAND_SHIFT_MS;
 if (shift)

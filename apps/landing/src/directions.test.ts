@@ -77,4 +77,13 @@ describe('directions for search engines (docs/60)', () => {
       expect(sitemap).toContain(`<loc>https://${brand.domain}${path}</loc>`);
     expect(site['robots.txt']).toContain(`Sitemap: https://${brand.domain}/sitemap.xml`);
   });
+
+  // docs/179: the site of the team is not for people, search engines stay out of it.
+  it('closes the site of the internal environment to search engines', () => {
+    const internal = loadBrand(brand.id, 'internal');
+    const robots = renderSite(internal, { year: 2027, map: MAP, roads: ROADS, regions: REGIONS, script: '' })[
+      'robots.txt'
+    ];
+    expect(robots).toBe('User-agent: *\nDisallow: /\n');
+  });
 });
