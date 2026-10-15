@@ -20,5 +20,7 @@ describe('the looks of the stand', () => {
       photo: { big_file_unique_id: 'stand-photo-7' },
     });
     expect(looks('sendMessage', '5:c', { chat_id: '-100123' }, 10)).toBeUndefined();
+    expect(looks('constructor', '5:c', {}, 11)).toBeUndefined();
+    expect(looks('toString', '5:c', {}, 12)).toBeUndefined();
   });
 });

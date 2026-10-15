@@ -1,10 +1,23 @@
 // The looks of the channels on the stand (docs/180): what a bot set, Telegram gives back, so the next
-// round of the Cron finds nothing to change, like in Telegram.
-const SETS = {
-  setMyName: ['name', 'name'],
-  setChatTitle: ['name', 'title'],
-  setChatDescription: ['description', 'description'],
-};
+// round of the Cron finds nothing to change, like in Telegram. The method comes from the address of a
+// request: Maps never reach the methods every object has (constructor, toString …).
+const SETS = new Map([
+  ['setMyName', ['name', 'name']],
+  ['setChatTitle', ['name', 'title']],
+  ['setChatDescription', ['description', 'description']],
+]);
+const READS = new Map([
+  ['getMyName', (look) => ({ name: look.name ?? '' })],
+  [
+    'getChat',
+    (look, body) => ({
+      id: body.chat_id,
+      title: look.name ?? 'stand',
+      ...(look.description ? { description: look.description } : {}),
+      ...(look.photo ? { photo: { big_file_unique_id: look.photo } } : {}),
+    }),
+  ],
+]);
 
 export function standLooks() {
   const looks = new Map();
@@ -14,20 +27,12 @@ export function standLooks() {
     if (!looks.has(key)) looks.set(key, {});
     return looks.get(key);
   };
-  const reads = {
-    getMyName: (look) => ({ name: look.name ?? '' }),
-    getChat: (look, body) => ({
-      id: body.chat_id,
-      title: look.name ?? 'stand',
-      ...(look.description ? { description: look.description } : {}),
-      ...(look.photo ? { photo: { big_file_unique_id: look.photo } } : {}),
-    }),
-  };
   // The answer of a method of the looks, undefined for any other method.
   return (method, token, body, id) => {
     const look = lookOf(token, body);
-    if (SETS[method]) {
-      const [part, field] = SETS[method];
+    const set = SETS.get(method);
+    if (set) {
+      const [part, field] = set;
       look[part] = body[field];
       return true;
     }
@@ -35,6 +40,6 @@ export function standLooks() {
       look.photo = `stand-photo-${id}`;
       return true;
     }
-    return reads[method]?.(look, body);
+    return READS.get(method)?.(look, body);
   };
 }
