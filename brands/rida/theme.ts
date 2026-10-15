@@ -66,6 +66,11 @@ export const theme: BrandTheme = {
     disabled: '#E5E7EB',
     disabledText: '#9CA3AF',
     scrim: '#000000',
+    mapLand: '#ECEEF1',
+    mapTint: '#8FD9CB',
+    mapTintPale: '#CDEFE8',
+    mapTintMid: '#ADE5DA',
+    mapInk: '#134E4A',
   },
   // Owner decision 29.09.2026: the driver app is amber, the admin app is graphite (docs/20).
   apps: {
@@ -84,6 +89,10 @@ export const theme: BrandTheme = {
       accentSoft: '#F0FDFA',
       accentDeep: '#115E59',
       cardLine: '#FCD34D',
+      mapTint: '#F9CF7A',
+      mapTintPale: '#FDEBC2',
+      mapTintMid: '#FBDC9C',
+      mapInk: '#78350F',
     },
     admin: {
       brand: '#475569',

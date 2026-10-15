@@ -12,7 +12,7 @@ export function chatSheetRoutes(memberOf: MemberOf) {
   return new Hono<AppEnv>()
     .get(CHATS_UNREAD_PATH, async (context) => {
       const { user, app } = context.get('session');
-      const chats = app === 'admin' ? [] : await lastUnread(context.env, user.id, app);
+      const chats = app === 'admin' || app === 'main' ? [] : await lastUnread(context.env, user.id, app);
       return context.json({ chats });
     })
     .post('/chats/:key/messages', async (context) => {

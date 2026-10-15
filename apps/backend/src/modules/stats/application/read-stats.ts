@@ -9,7 +9,12 @@ const DAY = 24 * 60 * MINUTE;
 const CACHE_MINUTES = 10;
 const PERIOD_DAYS: Readonly<Record<StatsPeriod, number>> = { day: 1, week: 7 };
 
-async function cached<T>(cache: StatsCache, key: string, now: number, load: () => Promise<T>): Promise<T> {
+export async function cached<T>(
+  cache: StatsCache,
+  key: string,
+  now: number,
+  load: () => Promise<T>,
+): Promise<T> {
   const saved = await cache.get(key, now);
   if (saved !== undefined) return JSON.parse(saved) as T;
   const fresh = await load();

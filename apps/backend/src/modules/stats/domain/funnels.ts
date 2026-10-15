@@ -23,6 +23,20 @@ const DRIVER: Readonly<Record<(typeof FUNNEL_STEPS.driver)[number], StepMatch>> 
 };
 const newTripStep = (step: string): StepMatch => ({ name: 'trip_step', code: step, by: 'sessions' });
 const wayStep = (step: string): StepMatch => ({ name: 'way_step', code: step, by: 'sessions' });
+// The waitlist (G83, docs/183): Start of the main bot, the steps of the questionnaire by role, and
+// «Roʻyxatda», the server's own event when a record is new.
+const BOTH = ['passenger', 'driver'] as const;
+const WAITLIST: Readonly<Record<(typeof FUNNEL_STEPS.waitlist)[number], StepMatch>> = {
+  bot_opened: { name: 'bot_command', app: 'main', code: 'start', by: 'events' },
+  opened: { name: 'waitlist_step', code: 'opened', by: 'sessions' },
+  role_chosen: { name: 'waitlist_step', code: BOTH.map((role) => `${role}.role`), by: 'sessions' },
+  listed: { name: 'waitlist_step', code: BOTH.map((role) => `${role}.listed`), by: 'events' },
+};
+const roleStep = (role: string, step: string): StepMatch => ({
+  name: 'waitlist_step',
+  code: `${role}.${step}`,
+  by: step === 'listed' ? 'events' : 'sessions',
+});
 
 const matchOf = (id: FunnelId, step: FunnelStepId): StepMatch =>
   id === 'passenger'
@@ -31,7 +45,11 @@ const matchOf = (id: FunnelId, step: FunnelStepId): StepMatch =>
       ? DRIVER[step as keyof typeof DRIVER]
       : id === 'way'
         ? wayStep(step)
-        : newTripStep(step);
+        : id === 'waitlist'
+          ? WAITLIST[step as keyof typeof WAITLIST]
+          : id === 'waitlist_passenger' || id === 'waitlist_driver'
+            ? roleStep(id.slice('waitlist_'.length), step)
+            : newTripStep(step);
 
 // Who did not come from the previous step, in percent. More on a later step is no drop.
 const dropOf = (previous: number, current: number) =>

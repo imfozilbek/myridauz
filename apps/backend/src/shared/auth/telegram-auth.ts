@@ -3,6 +3,7 @@ import {
   AUTH_SCHEME,
   MINI_APP_HEADER,
   MINI_APPS,
+  WAITLIST_PATH,
   type MiniApp,
   type TeamRole,
 } from '@platform/contracts';
@@ -44,6 +45,9 @@ export function telegramAuth(now: () => number, teamRole: TeamLookup): Middlewar
     const isAdmin = role !== null;
     // The admin Mini App is only for the team (docs/02).
     if (app === 'admin' && !isAdmin) return context.json({ error: 'auth.not_admin' }, FORBIDDEN);
+    // The questionnaire of the main bot reads and writes only the waitlist, and only it (G83).
+    if ((app === 'main') !== context.req.path.startsWith(WAITLIST_PATH))
+      return context.json({ error: 'auth.invalid' }, FORBIDDEN);
     context.set('session', { app, user, botToken: token, isAdmin, teamRole: role });
     await next();
   };

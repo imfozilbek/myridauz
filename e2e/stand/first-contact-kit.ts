@@ -81,7 +81,10 @@ export function answered(page: Page, bot: Bot, said: string, reply: Reply) {
     .map((button) => `<div class="button">${escape(button.text)}</div>`)
     .join('');
   const picture = reply.photo ? `<img class="photo" src="${landingImage(reply.photo)}">` : '';
-  const words = escape(reply.caption ?? reply.text ?? '');
+  // A bot that writes HTML is drawn with its marks, as showChat draws the cards (bot-chat.ts).
+  const text = reply.caption ?? reply.text ?? '';
+  const words =
+    reply.parse_mode === 'HTML' ? text.replaceAll('</blockquote>\n', '</blockquote>') : escape(text);
   const answer = `<div class="bubble">${picture}${words}</div>${buttons}`;
   return draw(page, bot, `<div class="bubble mine">${escape(said)}</div>${answer}`);
 }

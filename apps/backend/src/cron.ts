@@ -1,3 +1,4 @@
+import { setupBotsWhenChanged } from './bots/bot-setup-job';
 import type { Job } from './cron-jobs';
 import type { Bindings } from './env';
 import { closeDepartedPosts, sendChannelSummaries, showChannelBoards } from './module-events';
@@ -16,6 +17,7 @@ import { checkStatsAlerts, dayNumbers } from './modules/stats';
 import { purgeSupport } from './modules/support';
 import { completeTrips } from './modules/trips';
 import { burnBonuses, warnBonusEnd } from './modules/wallet';
+import { refreshWaitlistCards, tellOpenedDirections } from './modules/waitlist';
 import { TICK_MINUTES } from './shared/cron/tick';
 
 // The Cron of wrangler.toml runs every 15 minutes. The first tick of an hour also runs the hourly
@@ -26,8 +28,11 @@ const DAILY_HOUR_UTC = 0;
 // Closes trips, requests and bookings whose time is over, sends trip reminders, asks a driver who
 // forgot «Yoʻlga chiqdim» and departs the trip later, edits channel posts of trips that left and the
 // boards of the day, reminds the team of waiting driver applications and keeps the minutes of
-// «Navbat» fresh (docs/15, docs/35, docs/122, G10, G34, G63, G68).
+// «Navbat» fresh; tells the waiting people of opened directions and refreshes the cards of the list
+// on Monday, a few at a time; sets the bots up again when their tokens or texts changed (docs/15,
+// docs/35, docs/122, docs/181, G10, G34, G63, G68, G83).
 const everyTick = (env: Bindings, now: number): Job[] => [
+  ['setupBots', () => setupBotsWhenChanged(env, (input, init) => fetch(input, init), now)],
   ['completeTrips', () => completeTrips(env, now)],
   ['expireRequests', () => expireRequests(env, now)],
   ['expireBookings', () => expireBookings(env, now)],
@@ -37,6 +42,8 @@ const everyTick = (env: Bindings, now: number): Job[] => [
   ['showChannelBoards', () => showChannelBoards(env)],
   ['sendApplicationReminders', () => sendApplicationReminders(env, () => waitingApplications(env))],
   ['showTeamQueue', () => showQueue(env)],
+  ['tellOpenedDirections', () => tellOpenedDirections(env)],
+  ['refreshWaitlistCards', () => refreshWaitlistCards(env)],
 ];
 
 // Ends subscriptions whose time is over, sends the summaries of the channels (22:00, Monday), burns

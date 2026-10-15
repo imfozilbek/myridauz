@@ -43,7 +43,7 @@ await asset('logo/rida-wordmark-teal', brand.wordmark(C.teal), [1480]);
 await asset('logo/rida-lockup-horizontal', brand.lockupH(), [1640]);
 await asset('logo/rida-lockup-vertical', brand.lockupV(), [1000]);
 // Telegram
-for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-avatar`, botAvatar(r), [640]);
+for (const r of ['passenger', 'driver', 'admin', 'support', 'main']) await asset(`telegram/bot-${r}-avatar`, botAvatar(r), [640]);
 for (const r of ['passenger', 'driver', 'admin', 'support']) await asset(`telegram/bot-${r}-description`, brand.botDescription(r), [640]);
 for (const r of ['driver', 'passenger', 'support']) await asset(`telegram/bot-${r}-welcome`, welcome.botWelcome(r), [1280]);
 put(`${OUT}/telegram/miniapp-splash.svg`, brand.splash());

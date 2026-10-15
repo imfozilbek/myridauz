@@ -53,3 +53,35 @@ describe('funnelOf (docs/29)', () => {
     expect(FUNNEL_EVENTS).not.toContain('client_error');
   });
 });
+
+// The waitlist of G83 (docs/183): Start of the main bot, the app, the role, the server's record.
+describe('the funnels of the waitlist', () => {
+  const counters = [
+    row('bot_command', 'main', 'start', 0, 100),
+    row('waitlist_step', 'main', 'opened', 80),
+    row('waitlist_step', 'main', 'passenger.role', 50),
+    row('waitlist_step', 'main', 'driver.role', 10),
+    row('waitlist_step', 'main', 'passenger.pains', 45),
+    row('waitlist_step', 'main', 'passenger.route', 40),
+    row('waitlist_step', 'main', 'passenger.when', 30),
+    row('waitlist_step', 'main', 'passenger.listed', 0, 29),
+    row('waitlist_step', 'main', 'driver.listed', 0, 8),
+  ];
+
+  it('goes from the bot to the list for both roles', () => {
+    expect(funnelOf('waitlist', counters).steps.map((step) => [step.step, step.count])).toEqual([
+      ['bot_opened', 100],
+      ['opened', 80],
+      ['role_chosen', 60],
+      ['listed', 37],
+    ]);
+  });
+
+  it('follows each role step by step', () => {
+    expect(funnelOf('waitlist_passenger', counters).steps.map((step) => step.count)).toEqual([
+      50, 45, 40, 30, 29,
+    ]);
+    expect(funnelOf('waitlist_driver', counters).steps.map((step) => step.count)).toEqual([10, 0, 0, 0, 8]);
+    expect(FUNNEL_EVENTS).toEqual(expect.arrayContaining(['bot_command', 'waitlist_step']));
+  });
+});

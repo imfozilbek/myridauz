@@ -20,6 +20,7 @@ const NAMES: Record<MiniApp, readonly string[]> = {
   passenger: [BOOKING_LINK, REQUEST_LINK],
   driver: [MY_TRIP_LINK, OFFER_LINK],
   admin: [],
+  main: [],
 };
 
 export function bookingLinkOf(app: MiniApp): AppLink | null {

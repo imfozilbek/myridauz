@@ -36,7 +36,7 @@ function sourceOf(via: string | null): { kind: ArrivalKind; mark: string } {
 
 // The Telegram app says the platform: Android, iPhone or iPad, or a computer.
 const DESKTOP = new Set(['tdesktop', 'macos', 'web', 'weba', 'webk', 'unigram']);
-function platformOf(client: string | null): Platform {
+export function platformOf(client: string | null): Platform {
   const app = client?.split(' ')[0] ?? '';
   if (app === 'android' || app === 'android_x') return 'android';
   if (app === 'ios') return 'ios';

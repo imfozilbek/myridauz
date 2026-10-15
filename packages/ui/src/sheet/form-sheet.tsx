@@ -11,6 +11,8 @@ import './form-sheet.css';
 
 type Props = {
   readonly open: boolean;
+  // Gray under white cards, as the sheet «Oʻzgartirish» of the waitlist (G83, mockup 3-result).
+  readonly grouped?: boolean;
   readonly title?: string;
   readonly hint?: string;
   readonly onClose: () => void;
@@ -20,7 +22,7 @@ type Props = {
 // A form over its screen (G75, mockup g75/3 A): the screen stays seen under the shade, no «Orqaga»;
 // a swipe down or a tap on the shade closes it. The native main button of Telegram does the step:
 // the screen under the sheet gives its own button away while the sheet stands (useAnySheet).
-export function FormSheet({ open: asked, title, hint, onClose, children }: Props) {
+export function FormSheet({ open: asked, grouped = false, title, hint, onClose, children }: Props) {
   const { colors } = useBrand().theme;
   const behind = useBehind();
   const open = asked && !behind;
@@ -35,7 +37,7 @@ export function FormSheet({ open: asked, title, hint, onClose, children }: Props
     >
       {open ? (
         <InFormSheet.Provider value>
-          <div className="form-sheet" style={brandVars(colors)}>
+          <div className={grouped ? 'form-sheet form-sheet-grouped' : 'form-sheet'} style={brandVars(colors)}>
             <SheetBack onClose={onClose} />
             <span className="form-sheet-grab" aria-hidden />
             {title ? <h2 className="form-sheet-title">{title}</h2> : null}

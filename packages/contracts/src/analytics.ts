@@ -3,11 +3,13 @@ import { CLIENT_PATTERN, VIA_PATTERN } from './arrival';
 import { DOCK_STATES } from './dock-states';
 import { HOME_TARGETS } from './home-targets';
 import { NAVIGATORS } from './navigator';
+import { waitlistStepFields } from './waitlist/person';
 
 // Product analytics events (docs/29). One place for all Mini Apps; add an event when a goal needs it.
 export const ANALYTICS_PATH = '/analytics';
 export const MAX_ANALYTICS_BATCH = 50;
-export const MINI_APPS = ['passenger', 'driver', 'admin'] as const;
+// main: the questionnaire of the main bot, the waitlist of G83 (docs/181).
+export const MINI_APPS = ['passenger', 'driver', 'admin', 'main'] as const;
 export type MiniApp = (typeof MINI_APPS)[number];
 // G34: two screens. «consent» on the welcome, «about» when the answers are sent, then the phone.
 export const REGISTRATION_STEPS = ['consent', 'about', 'phone', 'done'] as const;
@@ -138,5 +140,7 @@ export const analyticsEventSchema = z.discriminatedUnion('name', [
   z.object({ name: z.literal('home_tap'), target: z.enum(HOME_TARGETS), ...context }),
   // G76: the state the block at the bottom came to.
   z.object({ name: z.literal('dock_state'), state: z.enum(DOCK_STATES), ...context }),
+  // G83: a step of the waitlist questionnaire and the role it is for (docs/183).
+  z.object({ name: z.literal('waitlist_step'), ...waitlistStepFields, ...context }),
 ]);
 export type AnalyticsEvent = z.infer<typeof analyticsEventSchema>;

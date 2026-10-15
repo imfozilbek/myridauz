@@ -31,7 +31,7 @@ export const AREAS = {
     'g63',
   ],
   team: ['team', 'team-moderation', 'screens-team', 'all-admin'],
-  bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots'],
+  bots: ['bots', 'bots-team', 'complaints-time', 'g68-bots', 'g83'],
   channels: ['system-channels', 'system-cron', 'system-people'],
 };
 const NAMES = Object.keys(AREAS);
@@ -39,6 +39,7 @@ const NAMES = Object.keys(AREAS);
 // The path of the code → the areas that walk it. A path of code that no rule knows wakes every area:
 // better a longer check than a missed one.
 const RULES = [
+  [/waitlist|miniapp-main/, ['bots']],
   [/users|account|legal|registration|flow\/|company/, ['registration']],
   [/locations|search|market|favorites|history/, ['search']],
   [/map|pitaks|places|way/, ['map']],

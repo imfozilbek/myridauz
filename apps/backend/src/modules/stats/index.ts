@@ -2,6 +2,7 @@ import type { Bindings } from '../../env';
 import { localAnalyticsRows } from '../analytics';
 import { tellOwners } from '../team-queue';
 import { checkAlerts } from './application/check-alerts';
+import { cached } from './application/read-stats';
 import type { EventSource, StatsDeps } from './application/ports';
 import { statsRoutes } from './http/stats-routes';
 import { analyticsSql } from './infrastructure/analytics-sql';
@@ -58,3 +59,9 @@ export async function dayNumbers(env: Bindings, since: number) {
     .reduce((sum, row) => sum + row.count, 0);
   return { newUsers: main.newUsers, trips: main.trips, bookings: main.bookings, fromChannels };
 }
+
+// The platform of a Telegram app (G55, docs/116), and an answer kept 10 minutes like the dashboard
+// (docs/56): the «gold» of the waitlist (G83, docs/183).
+export { platformOf } from './domain/arrivals';
+export const statsCached = <T>(env: Bindings, key: string, load: () => Promise<T>) =>
+  cached(statsDeps(env).cache, key, Date.now(), load);

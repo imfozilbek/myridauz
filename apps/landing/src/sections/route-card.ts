@@ -1,6 +1,6 @@
 import { channelOf, type BrandConfig } from '@platform/brands';
 import type { I18n } from '@platform/i18n';
-import { escape, passengerLink, telegramLink } from '../html';
+import { entryButton, escape, passengerLink, telegramLink } from '../html';
 import { icon } from '../icons';
 import type { MapData, Route } from '../map-data';
 
@@ -28,7 +28,7 @@ export function routeCard(brand: BrandConfig, i18n: I18n, route: Route, map: Map
 <button type="button" data-more aria-label="${escape(t('landing.map.more'))}">${icon('more')}</button></div>
 <strong data-total></strong>
 </div>
-<a class="button" data-go href="${start}">${escape(t('landing.map.go'))}</a>
+${entryButton(brand, 'button', escape(t('landing.map.go')), start, 'data-go ')}
 <small class="go-hint">${escape(t('landing.map.goHint', { brand: brand.name }))}</small>
 <a class="channel" data-channel-link href="${escape(channel?.link ?? telegramLink(brand.bots.passenger))}">${icon('telegram')}<span>${escape(t('landing.map.channel'))}</span></a>
 </div>`;

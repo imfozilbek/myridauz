@@ -30,7 +30,7 @@ function newestChange(paths) {
 // The Mini Apps are built again only when their code, the packages or the brand changed after the
 // last build of the stand, or when the build of one app is older than the code: a stamp alone once
 // served the old main screen of the driver (G66, lesson 192).
-const APPS = ['apps/miniapp-passenger', 'apps/miniapp-driver', 'apps/miniapp-admin'];
+const APPS = ['apps/miniapp-passenger', 'apps/miniapp-driver', 'apps/miniapp-admin', 'apps/miniapp-main'];
 const SOURCES = [...APPS, 'packages', 'brands', 'pnpm-lock.yaml'];
 const BUILDS = APPS.map((app) => join(app, 'dist/index.html'));
 // The build must be the one of the stand too: the e2e servers build the same folders with their own
