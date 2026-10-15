@@ -42,6 +42,7 @@ test('passenger: calls the driver, nobody answers; the driver calls back', async
   await expect(page.getByText(t('calls.incoming'))).toBeVisible();
   await take('5-incoming');
   await page.getByText(t('calls.answer')).click();
-  await expect(page.getByText('00:0', { exact: false })).toBeVisible();
+  // Only the clock of the call: the card above can show an arrival «≈ 00:05» too (lesson 289).
+  await expect(page.getByText(/^00:0\d$/u)).toBeVisible();
   await take('6-talking');
 });
