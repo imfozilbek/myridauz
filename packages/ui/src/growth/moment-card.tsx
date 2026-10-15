@@ -1,6 +1,7 @@
 import { useBrand } from '../context/brand-context';
 import { useI18n } from '../context/i18n-context';
 import type { MomentWords } from './moment-words';
+import './moment-card.css';
 
 // «Doʻstlaringiz shuni koʻradi» (docs/123, mockup g69/3): the card a friend sees, in the voice of
 // the person: the phrase, the name and the route, the fact, the words of the link.

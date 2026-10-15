@@ -1,0 +1,80 @@
+/* The card a friend sees (G69, docs/123, mockup g69/3): the voice of the person, the facts, the link. */
+.moment-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  align-self: center;
+  width: 72%;
+  padding: 14px 16px 16px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, var(--reg-card), var(--moment-soft));
+  box-shadow: 0 6px 20px var(--reg-line);
+  text-align: center;
+}
+
+.moment-card-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--moment-main);
+}
+
+.moment-card-logo,
+.moment-card-face {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.moment-card-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--moment-main);
+  font-size: 13px;
+  color: var(--reg-bg);
+}
+
+.moment-card-face {
+  width: 56px;
+  height: 56px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--reg-bg);
+  font-size: 26px;
+  color: var(--moment-main);
+}
+
+.moment-card-phrase {
+  font-size: 17px;
+  line-height: 1.3;
+  color: var(--reg-ink);
+  text-wrap: balance;
+}
+
+.moment-card-who {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--reg-muted);
+}
+
+.moment-card-fact {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--moment-main);
+}
+
+.moment-card-link {
+  margin-top: 4px;
+  padding: 5px 12px;
+  border-radius: 10px;
+  background: var(--reg-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--moment-main);
+}
