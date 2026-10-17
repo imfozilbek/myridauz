@@ -73,8 +73,8 @@ D. Проверка владельца
 - `pnpm run keys` прошла в обеих средах без ошибок. Ключи на час удалены.
 - Внутренняя (`myrida.uz`): сделаны `rida-internal-deploy` и `rida-internal-analytics`; зона настроена (SSL Full strict, HTTPS, TLS 1.2); `ANALYTICS_API_TOKEN` в Worker. Bot Fight Mode, Web Analytics, R2, DNS, звонки, вебхуки уже были в порядке.
 - Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
-- Ждём владельца: Roll `rida-internal-deploy` и `rida-prod-deploy` в GitHub (с Account ID); R2 в аккаунте прода; Telegram ID на странице (`--admins`).
-- Потом Claude: перезапуск `deploy-internal`; `keys --admins` во внутренней.
+- Владелец: Roll `rida-internal-deploy` в GitHub `internal` сделан. Ждём «Re-run failed jobs» у `deploy-internal` (запуск 39032899321): мне перезапуск закрыт (403).
+- Дальше владелец: Roll `rida-prod-deploy` в GitHub `production` (с Account ID); R2 в аккаунте прода; Telegram ID на странице (`--admins`).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
 ## Ждёт решения владельца
