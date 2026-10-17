@@ -22,7 +22,7 @@ A. Ключи обеих сред программой (docs/189, решение
     production (с Account ID); строки «owner:» отчёта (R2 прода).
 
 B. Внутренняя среда, потом прод
-[ ] Claude: перезапуск deploy-internal; зелёный.
+[x] Claude: перезапуск deploy-internal; зелёный (17.10.2026).
 [ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и
     @myrida_uz; Telegram ID, номер канала и ссылка на странице.
 [ ] Claude: канал в environments.ts; keys --admins; стенд; PR.
@@ -73,7 +73,7 @@ D. Проверка владельца
 - `pnpm run keys` прошла в обеих средах без ошибок. Ключи на час удалены.
 - Внутренняя (`myrida.uz`): сделаны `rida-internal-deploy` и `rida-internal-analytics`; зона настроена (SSL Full strict, HTTPS, TLS 1.2); `ANALYTICS_API_TOKEN` в Worker. Bot Fight Mode, Web Analytics, R2, DNS, звонки, вебхуки уже были в порядке.
 - Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
-- Владелец: Roll `rida-internal-deploy` в GitHub `internal` сделан. Ждём «Re-run failed jobs» у `deploy-internal` (запуск 39032899321): мне перезапуск закрыт (403).
+- Владелец: Roll `rida-internal-deploy` в GitHub `internal` и «Re-run failed jobs» (мне закрыт, 403). `deploy-internal` зелёный: `/health` ok, сайт, 4 Mini App и карта `myrida.uz` отвечают, Mini App ходят на `api.myrida.uz` и `map.myrida.uz`.
 - Дальше владелец: Roll `rida-prod-deploy` в GitHub `production` (с Account ID); R2 в аккаунте прода; Telegram ID на странице (`--admins`).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
