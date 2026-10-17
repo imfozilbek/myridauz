@@ -9,8 +9,7 @@ on:
       environment:
         description: Where the map goes
         type: choice
-        # Production joins with its account (owner decision 13.10.2026, docs/179).
-        options: [internal]
+        options: [internal, production]
         required: true
 
 permissions:

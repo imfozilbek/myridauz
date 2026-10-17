@@ -74,7 +74,9 @@ D. Проверка владельца
 - Внутренняя (`myrida.uz`): сделаны `rida-internal-deploy` и `rida-internal-analytics`; зона настроена (SSL Full strict, HTTPS, TLS 1.2); `ANALYTICS_API_TOKEN` в Worker. Bot Fight Mode, Web Analytics, R2, DNS, звонки, вебхуки уже были в порядке.
 - Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
 - Владелец: Roll `rida-internal-deploy` в GitHub `internal` и «Re-run failed jobs» (мне закрыт, 403). `deploy-internal` зелёный: `/health` ok, сайт, 4 Mini App и карта `myrida.uz` отвечают, Mini App ходят на `api.myrida.uz` и `map.myrida.uz`.
-- Дальше владелец: Roll `rida-prod-deploy` в GitHub `production` (с Account ID); R2 в аккаунте прода; Telegram ID на странице (`--admins`).
+- Владелец: Roll `rida-prod-deploy` в GitHub `production` и R2 в аккаунте прода сделаны; программа это подтвердила.
+- Claude: `deploy-production` в CI после `deploy-internal`, с **Approve**; «Map data» для прода; база D1 прода в Западной Европе. Слияние PR ждёт «да» владельца.
+- Дальше владелец: Telegram ID, бот каналов и номер «MyRida | Viloyatlar» на странице (часть 3).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
 ## Ждёт решения владельца

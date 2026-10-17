@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { loadBrand } from '../brands/index.ts';
-import { resourcesOf, withEnvironment } from './deploy/worker-config.mjs';
+import { newDatabase, resourcesOf, withEnvironment } from './deploy/worker-config.mjs';
 
 const { id } = loadBrand();
 const BASE = readFileSync(`brands/${id}/wrangler.toml`, 'utf8');
@@ -35,6 +35,11 @@ describe('the Worker of an environment', () => {
   // The owner, 13.10.2026: the team sees the posts in its own channel before people do.
   it('turns the channel posts on only where the environment wants them', () => {
     expect(withEnvironment(BASE, { ...VALUES, posts: true })).toContain('CHANNEL_POSTS = "on"');
+  });
+
+  // G84: the database of production stands where the one of the first account does.
+  it('makes the database of an empty account in Western Europe', () => {
+    expect(newDatabase(`${id}-db`)).toEqual({ name: `${id}-db`, primary_location_hint: 'weur' });
   });
 
   it('stops when the settings changed their shape', () => {
