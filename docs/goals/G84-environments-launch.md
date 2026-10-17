@@ -76,7 +76,7 @@ D. Проверка владельца
 - Владелец: Roll `rida-internal-deploy` в GitHub `internal` и «Re-run failed jobs» (мне закрыт, 403). `deploy-internal` зелёный: `/health` ok, сайт, 4 Mini App и карта `myrida.uz` отвечают, Mini App ходят на `api.myrida.uz` и `map.myrida.uz`.
 - Владелец: Roll `rida-prod-deploy` в GitHub `production` и R2 в аккаунте прода сделаны; программа это подтвердила.
 - PR #252 слит: выкладка прода в CI, «Map data» для прода, база D1 прода в Западной Европе. Первая выкладка прода (Approve) упала: в аккаунте прода не включён Analytics Engine (урок №303). База D1 прода создана, миграции прошли.
-- Ждём владельца: Analytics Engine в аккаунте 2, «Re-run failed jobs» запуска 39035958657, Approve.
+- Владелец включил Analytics Engine и открыл страницу Workers (адрес `workers.dev`, урок №305). «Deploy production» (запуск 39038096564) прошёл: `api.ridaone.uz/health` ok. Сайт и Mini App прода: ошибка 1014, записи DNS вели на проекты Pages внутреннего аккаунта (урок №306); исправление в PR.
 - Проверяющий агент нашёл в #252 две ошибки (урок №304). Исправление: свой workflow «Deploy production» и `scripts/deploy-needed.mjs`; PR на «да» владельца после CI и проверки.
 - Дальше владелец: Telegram ID, бот каналов и номер «MyRida | Viloyatlar» на странице (часть 3).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.

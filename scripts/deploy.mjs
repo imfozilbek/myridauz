@@ -53,7 +53,7 @@ wrangler('deploy', '--config', config);
 
 for (const app of apps) {
   const project = `${brand.id}-${app}`;
-  await ensurePagesProject(project);
+  const target = await ensurePagesProject(project);
   wrangler(
     'pages',
     'deploy',
@@ -64,12 +64,12 @@ for (const app of apps) {
     'main',
     '--commit-dirty=true',
   );
-  await ensurePagesDomain(project, appHost(brand, app), brand.domain);
+  await ensurePagesDomain(project, appHost(brand, app), brand.domain, target);
 }
 
 // The landing lives on the brand domain itself, www leads to the same pages (G15, docs/59).
 const landing = `${brand.id}-landing`;
-await ensurePagesProject(landing);
+const landingTarget = await ensurePagesProject(landing);
 wrangler(
   'pages',
   'deploy',
@@ -81,5 +81,5 @@ wrangler(
   '--commit-dirty=true',
 );
 for (const host of [brand.domain, `www.${brand.domain}`])
-  await ensurePagesDomain(landing, host, brand.domain);
+  await ensurePagesDomain(landing, host, brand.domain, landingTarget);
 console.log(`deploy: ${brand.id} ${environment} done`);
