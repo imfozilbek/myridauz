@@ -33,6 +33,9 @@ describe('the main screen of the team', () => {
     expect(go).toHaveBeenCalledWith('statistics');
     fireEvent.click(screen.getByText('Kanallar'));
     expect(go).toHaveBeenCalledWith('channels');
+    // The links of the ads: the whole team makes them (owner, 17.10.2026, docs/184).
+    fireEvent.click(screen.getByText('Reklama havolalari'));
+    expect(go).toHaveBeenCalledWith('ads');
   });
 
   it('lists every case the oldest first, a late one red, who opened it', async () => {

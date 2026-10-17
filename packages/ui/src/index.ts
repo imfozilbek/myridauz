@@ -14,6 +14,7 @@ export { StatsScreen } from './stats/stats-screen';
 export { ReadChannelsScreen } from './channels/channels-screen';
 export { TeamTripsScreen } from './market/team-trips-screen';
 export {
+  ADS_SECTION,
   CHANNELS_SECTION,
   MANAGEMENT_SECTION,
   NAVBAT_SECTION,
@@ -23,6 +24,7 @@ export {
   WALLETS_SECTION,
 } from './team/team-sections';
 export { TeamWalletsScreen } from './wallet/team-wallets-screen';
+export { AdLinksScreen } from './waitlist/team/ad-links-screen';
 export { PeopleScreen } from './manage/people-screen';
 export { NavbatScreen } from './navbat/navbat-screen';
 export { linkedCase } from './navbat/linked-case';

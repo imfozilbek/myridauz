@@ -8,7 +8,7 @@ import { ScreenSkeleton } from '../../states/screen-skeleton';
 import { SecondaryButton } from '../../telegram/bottom-button';
 import { haptic } from '../../telegram/feedback';
 import { shareOf } from './share';
-import { listedOf, useAdWords } from './ad-words';
+import { intoTrips, listedOf, useAdWords } from './ad-words';
 
 const PERCENT = 100;
 // The share that did not come from the step before: «30% ketdi».
@@ -36,10 +36,14 @@ export function AdDetail({ code, onBack }: { readonly code: string; readonly onB
     />
   );
   const bot = ad.target === 'bot';
+  // Into a bot of the trips (owner, 17.10.2026): who registered by the link, and what one cost.
+  const trips = intoTrips(ad);
   return (
     <ManagePage title={ad.name} hint={words.where(ad, true)} onBack={onBack}>
       <ManageGroup title={t('ads.gave')}>
-        {bot ? (
+        {trips ? (
+          step(t('ads.inBot'), result.registered)
+        ) : bot ? (
           <>
             {step(t('ads.pressed'), result.clicked)}
             {step(t('ads.opened'), result.opened, dropOf(result.clicked, result.opened))}
@@ -68,26 +72,20 @@ export function AdDetail({ code, onBack }: { readonly code: string; readonly onB
           hint={words.terms(ad)}
           value={ad.price === null ? '' : formatMoney(ad.price)}
         />
-        {bot ? null : (
+        {bot || trips ? null : (
           <ManageRow
             icon="channel"
             title={t('ads.perSubscriber')}
             value={words.per(ad.price, result.joined)}
           />
         )}
-        <ManageRow icon="passengers" title={t('ads.perListed')} value={words.per(ad.price, listed)} />
-      </ManageGroup>
-      <ManageGroup title={t('ads.later')}>
         <ManageRow
-          icon="invite"
-          title={t('ads.byFriends')}
-          hint={t('ads.byFriendsHint')}
-          value={formatNumber(result.byFriends)}
+          icon="passengers"
+          title={t(trips ? 'ads.perRegistered' : 'ads.perListed')}
+          value={words.per(ad.price, listed)}
         />
-        {bot ? (
-          <ManageRow icon="channel" title={t('ads.inChannel')} value={formatNumber(result.joined)} />
-        ) : null}
       </ManageGroup>
+      {trips ? null : <Later ad={ad} />}
       <SecondaryButton
         text={t('ads.copy')}
         under
@@ -97,5 +95,23 @@ export function AdDetail({ code, onBack }: { readonly code: string; readonly onB
         }}
       />
     </ManagePage>
+  );
+}
+
+// «Keyin»: the friends the people of the ad brought to the list; a main bot link also shows the channel.
+function Later({ ad }: { readonly ad: AdLink }) {
+  const { t, formatNumber } = useI18n();
+  return (
+    <ManageGroup title={t('ads.later')}>
+      <ManageRow
+        icon="invite"
+        title={t('ads.byFriends')}
+        hint={t('ads.byFriendsHint')}
+        value={formatNumber(ad.result.byFriends)}
+      />
+      {ad.target === 'bot' ? (
+        <ManageRow icon="channel" title={t('ads.inChannel')} value={formatNumber(ad.result.joined)} />
+      ) : null}
+    </ManageGroup>
   );
 }

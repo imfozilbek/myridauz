@@ -75,6 +75,7 @@ D. Проверка владельца
 - Владельцы в обеих средах: оба аккаунта владельца (`ADMIN_TELEGRAM_IDS`).
 - PR #257: «MyRida | Viloyatlar» в `environments.ts`; «Jamoa» принимает Telegram ID. Bobomurod и Jafar: модераторы в проде (проверено в базе 17.10.2026).
 - Решение владельца 17.10.2026: без списка ожидания; рубильник «Roʻyxatga yozish» выключает владелец в админке каждой среды; код списка остаётся, убрать его можно после запуска. Посты поездок в каналы прода включены (`posts: true`, выкладка с Approve).
+- Ссылки для рекламы (просьба владельца 17.10.2026, `../184`): делают и модераторы (строка на главном экране), ведут в бот попутчика или водителя (сразу Mini App) или в канал; итог: «Roʻyxatdan oʻtdi».
 - Пятаки в проде удалены (решение владельца 17.10.2026): 39 пятаков и 57 направлений, каждое удаление в `pitak_log`; новые только через админку («Pitaklar»). Внутренняя среда без изменений.
 - 17.10 с 19:00 до 20:35 по Ташкенту база прода не принимала записи: первое заполнение съело дневную квоту (урок №307). Владелец включил Workers Paid в аккаунте прода; записи вернулись сразу.
 - Новый аккаунт потребовал в панели R2, Analytics Engine и адрес `workers.dev` (уроки №303, №305; таблица в `../189`); Pages прода получили адреса с окончанием (урок №306).
@@ -86,6 +87,14 @@ D. Проверка владельца
 |---|---|---|---|
 | `manage.teamAddId` | «Jamoa», поле | «ID yoki Telegram ID raqami» | да, 17.10.2026 |
 | `team.not_found` | «Jamoa», ошибка | «Odam topilmadi. U avval botda roʻyxatdan oʻtsin.» | да, 17.10.2026 |
+| `ads.target.passenger` | «Yangi havola», выбор | «Yoʻlovchi boti» | ждёт |
+| `ads.target.driver` | «Yangi havola», выбор | «Haydovchi boti» | ждёт |
+| `ads.appLink` | «Havola tayyor», подсказка | «Havola «{bot}» ilovasini darhol ochadi.» | ждёт |
+| `ads.toPassenger` | список, куда ведёт | «yoʻlovchi botiga» | ждёт |
+| `ads.toDriver` | список, куда ведёт | «haydovchi botiga» | ждёт |
+| `ads.registered` | список, итог | «{n} roʻyxatdan oʻtdi» | ждёт |
+| `ads.inBot` | одна ссылка, шаг | «Roʻyxatdan oʻtdi» | ждёт |
+| `ads.perRegistered` | одна ссылка, цена | «Bitta roʻyxatdan oʻtgan odam» | ждёт |
 
 ## Ждёт решения владельца
 

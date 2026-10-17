@@ -1,4 +1,4 @@
-import type { AdLink } from '@platform/contracts';
+import { AD_BOTS, type AdLink } from '@platform/contracts';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { shownName } from '../../channels/channel-name';
@@ -18,12 +18,12 @@ export function useAdWords() {
       ...(ad.top > 0 ? [t('ads.topShort', { n: ad.top })] : []),
       ...(ad.pin > 0 ? [t('ads.pinShort', { n: ad.pin })] : []),
     ].join(' · ');
-  const target = (ad: Pick<AdLink, 'target' | 'channel'>, named = false) =>
-    ad.target === 'bot'
-      ? t('ads.toBot')
-      : named
-        ? t('ads.toChannelNamed', { channel: channelName(ad.channel) })
-        : t('ads.toChannel');
+  const target = (ad: Pick<AdLink, 'target' | 'channel'>, named = false) => {
+    if (ad.target === 'channel')
+      return named ? t('ads.toChannelNamed', { channel: channelName(ad.channel) }) : t('ads.toChannel');
+    if (ad.target === 'passenger') return t('ads.toPassenger');
+    return ad.target === 'driver' ? t('ads.toDriver') : t('ads.toBot');
+  };
   const where = (ad: AdLink, named = false) =>
     [t(`ads.place.${ad.place}`), formatDate(new Date(ad.at)), target(ad, named)].join(' · ');
   // One person on the list or one subscriber: the price parted; nothing without a price.
@@ -32,4 +32,8 @@ export function useAdWords() {
   return { channelName, terms, target, where, per };
 }
 
-export const listedOf = (ad: AdLink) => ad.result.passengers + ad.result.drivers;
+// A link into a bot of the trips (owner, 17.10.2026): it leads to a registration, not to the list.
+export const intoTrips = (ad: Pick<AdLink, 'target'>) => (AD_BOTS as readonly string[]).includes(ad.target);
+// The people an ad brought for its price: registered by a link into a bot of the trips, else on the list.
+export const listedOf = (ad: AdLink) =>
+  intoTrips(ad) ? ad.result.registered : ad.result.passengers + ad.result.drivers;
