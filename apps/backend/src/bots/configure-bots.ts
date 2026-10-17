@@ -6,6 +6,7 @@ import { callTelegram, type Fetch } from '../shared/telegram/telegram-api';
 import { POSTER_WEBHOOK_PATH } from '../modules/channels';
 import { avatarUrl, setBotAvatar } from './bot-avatar';
 import { botProfile } from './bot-profile';
+import { setTextsWhenChanged } from './bot-texts';
 import { BOT_ROLES, isBotRole } from './bot-roles';
 import { botCommands } from './documents-reply';
 import { menuButton } from './start-reply';
@@ -42,12 +43,7 @@ export async function configureBots(env: Bindings, fetch: Fetch, secret: string)
       allowed_updates: ['message', 'callback_query'],
       drop_pending_updates: true,
     });
-    // The name, the text of an empty chat and the profile line (G16).
-    await callTelegram(fetch, token, 'setMyName', { name: profile.name });
-    await callTelegram(fetch, token, 'setMyDescription', { description: profile.description });
-    await callTelegram(fetch, token, 'setMyShortDescription', {
-      short_description: profile.short_description,
-    });
+    await setTextsWhenChanged(fetch, token, profile);
     // The face of the bot (G34): a missing picture must not stop the rest of the setup.
     await setBotAvatar(fetch, token, avatar).catch((error: unknown) =>
       console.warn(JSON.stringify({ event: 'bot_avatar_failed', role, message: String(error) })),
