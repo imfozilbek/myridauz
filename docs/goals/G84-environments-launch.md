@@ -77,12 +77,12 @@ D. Проверка владельца
 - Новый аккаунт потребовал в панели R2, Analytics Engine и адрес `workers.dev` (уроки №303, №305; таблица в `../189`); Pages прода получили адреса с окончанием (урок №306).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
-## Новые тексты на «да» владельца (`../33`)
+## Новые тексты (`../33`)
 
-| Ключ | Где | Текст |
-|---|---|---|
-| `manage.teamAddId` | «Jamoa», поле | «ID yoki Telegram ID raqami» |
-| `team.not_found` | «Jamoa», ошибка | «Odam topilmadi. U avval botda roʻyxatdan oʻtsin.» |
+| Ключ | Где | Текст | «Да» |
+|---|---|---|---|
+| `manage.teamAddId` | «Jamoa», поле | «ID yoki Telegram ID raqami» | да, 17.10.2026 |
+| `team.not_found` | «Jamoa», ошибка | «Odam topilmadi. U avval botda roʻyxatdan oʻtsin.» | да, 17.10.2026 |
 
 ## Ждёт решения владельца
 
