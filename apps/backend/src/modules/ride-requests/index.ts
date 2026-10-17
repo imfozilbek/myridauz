@@ -3,7 +3,7 @@ import { approvedCar } from '../drivers';
 import { placesOf } from '../locations';
 import { recommendationFor } from '../pricing';
 import { peopleOf } from '../users';
-import { pointFitsPlace } from '../map';
+import { districtOf, pointFitsPlace } from '../map';
 import { pitakOf } from '../pitaks';
 import { ratingsOfPeople } from '../ratings';
 import type { RequestsDeps } from './application/ports';
@@ -62,6 +62,7 @@ const requestsDeps = (env: Bindings): RequestsDeps => ({
   places: () => placesOf(env),
   pitakOf: (from, to) => pitakOf(env, from, to),
   fits: pointFitsPlace,
+  districtOf,
   published: (requestId) => onPublished(env, requestId),
   changed: (requestId) => onChanged(env, requestId),
   hidden: (userIds) => hiddenOf(env, userIds),

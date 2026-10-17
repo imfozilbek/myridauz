@@ -75,6 +75,8 @@ export function setup() {
     // Toshkent shahri → Samarqand viloyati has a pitak; a point far to the north is out of the route.
     pitakOf: async (from, to) => (from === '1726' && to === '1718' ? PITAK : null),
     fits: (point) => point.lat < 45,
+    // The districts of the points: Tashkent to the north, Samarqand to the south, nothing far away.
+    districtOf: (point) => (point.lat >= 45 ? null : point.lat > 41 ? '1726273' : '1718401'),
     published: async () => undefined,
     changed: async () => undefined,
     hidden: async () => new Set(),

@@ -16,6 +16,7 @@ import {
   type RequestRecord,
 } from '../domain/ride-request';
 import type { RequestsDeps, Result } from './ports';
+import { routeByPoints } from './request-route';
 import { views } from './views';
 import { upcomingFirst } from '../../../shared/order/upcoming-first';
 
@@ -47,8 +48,9 @@ async function wayError(deps: RequestsDeps, input: RideRequestData) {
 export async function publishRequest(
   deps: RequestsDeps,
   passengerId: number,
-  input: RideRequestData,
+  asked: RideRequestData,
 ): Promise<Result<RideRequest, PublishError>> {
+  const input = await routeByPoints(deps, asked);
   const now = deps.now();
   const timeError = dateError(input.date, now, deps.limits.schedule.daysAhead);
   if (timeError) return { ok: false, error: timeError };
