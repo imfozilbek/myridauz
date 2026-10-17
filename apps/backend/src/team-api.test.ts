@@ -39,9 +39,11 @@ describe('«Jamoa»', () => {
     await registerUser(colleague);
     expect((await call(ADMIN_TEAM_PATH, OWNER, add(String(colleague)))).status).toBe(204);
     expect(await teamRole(testEnv, colleague)).toBe('moderator');
-    const list = teamListSchema.parse(await (await call(ADMIN_TEAM_PATH, OWNER, team())).json());
+    const raw = await (await call(ADMIN_TEAM_PATH, OWNER, team())).text();
+    const list = teamListSchema.parse(JSON.parse(raw));
     expect(list.members.map((member) => member.id)).toContain(await pid(colleague));
-    expect(JSON.stringify(list)).not.toContain(`"${colleague}"`);
+    // The raw answer, not the parsed one: no number or string of the Telegram ID outside a hex id.
+    expect(raw).not.toMatch(new RegExp(`(^|[^0-9a-f])${colleague}([^0-9a-f]|$)`, 'u'));
   });
 
   it("is the owner's only: a moderator neither reads nor changes the team", async () => {
