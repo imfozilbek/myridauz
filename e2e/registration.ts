@@ -15,7 +15,8 @@ export async function register(page: Page, welcome: string, shot: Shot = async (
   await passConsent(page, () => shot('1-welcome-ticked'));
   await expect(page.getByRole('textbox')).toHaveValue('Dilnoza');
   await page.getByRole('radio', { name: TEXT.female }).click();
-  // «Raqamni yuborish» waits for the face (G58): camera or gallery, here a file.
+  // «Raqamni yuborish» waits for the face (G58): only the front camera (owner, 17.10.2026); here
+  // a file into the input of the camera app.
   await expect(mainButton).toBeDisabled();
   await shot('2-about');
   await addFace(page);

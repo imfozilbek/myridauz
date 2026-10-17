@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import { useBrand } from '../../context/brand-context';
 import { useI18n } from '../../context/i18n-context';
 import { Icon } from '../../icons';
+import { usePhotoTaker } from '../../media/use-photo-taker';
 import { haptic } from '../../telegram/feedback';
 import { compressImage } from '../profile/compress-image';
 
@@ -13,19 +14,16 @@ type FaceCircleProps = {
 };
 
 // The face of screen 2 (G58, docs/118): a circle «Rasm qoʻshish», then the photo and
-// «Rasmni almashtirish». The phone offers the camera or the gallery; a computer opens a file.
+// «Rasmni almashtirish». Only the front camera, never the gallery (owner, 17.10.2026): our camera
+// with the oval, the camera app of the phone where ours cannot open.
 export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
   const { t } = useI18n();
   const { colors } = useBrand().theme;
-  const input = useRef<HTMLInputElement>(null);
   const [failed, setFailed] = useState(false);
   const url = usePreview(photo);
-  const picked = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (!file) return;
+  const taken = async (shot: Blob) => {
     try {
-      onPhoto(await compressImage(file));
+      onPhoto(await compressImage(shot));
       setFailed(false);
       haptic.success();
     } catch {
@@ -33,15 +31,22 @@ export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
       setFailed(true);
     }
   };
+  const camera = usePhotoTaker('user', (shot) => void taken(shot));
+  const take = () =>
+    camera.open({
+      guide: 'face',
+      title: t('account.avatar.cameraTitle'),
+      hint: t('account.avatar.cameraHint'),
+    });
   const label = t(photo ? 'account.avatar.change' : 'account.avatar.add');
   return (
     <div className="face-circle">
-      <input ref={input} className="file-input" type="file" accept="image/*" onChange={picked} />
+      {camera.element}
       <button
         type="button"
         className={url ? 'face-circle-button' : 'face-circle-button face-circle-empty'}
         aria-label={label}
-        onClick={() => input.current?.click()}
+        onClick={take}
       >
         {url ? (
           <img className="face-circle-photo" src={url} alt={t('account.avatar.cameraTitle')} />
@@ -52,7 +57,7 @@ export function FaceCircle({ photo, onPhoto }: FaceCircleProps) {
           </>
         )}
       </button>
-      <p className="face-circle-label" onClick={() => input.current?.click()}>
+      <p className="face-circle-label" onClick={take}>
         {label}
       </p>
       {failed ? <p className="about-error">{t('account.avatar.failed')}</p> : null}

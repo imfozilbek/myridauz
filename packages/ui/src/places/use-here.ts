@@ -2,7 +2,7 @@ import type { MapClient } from '@platform/api-client';
 import { insideUzbekistan, type Location, type Point } from '@platform/contracts';
 import { useEffect, useState } from 'react';
 import { useApiClients } from '../context/api-clients';
-import { knownPosition } from '../telegram/location';
+import { herePosition } from '../telegram/location';
 import type { PlaceDirectory } from './directory';
 
 // The district found last time on this phone: it shows at once, and the row never grows when the
@@ -37,8 +37,8 @@ export async function districtAt(
   return (where?.district ? directory.find(where.district) : undefined) ?? null;
 }
 
-// The district where the person stands (G26, docs/74): «Qayerdan» fills itself, only when the
-// person allowed the place before. Nothing is asked here; outside Uzbekistan nothing is filled.
+// The district where the person stands (G26, docs/74): «Qayerdan» fills itself. The first main screen
+// asks the place once (owner, 17.10.2026); outside Uzbekistan nothing is filled.
 export function useHere(directory: PlaceDirectory | null): Location | null {
   return useHereChecked(directory) ?? null;
 }
@@ -56,7 +56,7 @@ function useHereChecked(directory: PlaceDirectory | null): Location | null | und
       keepHere(place?.id ?? null);
       if (active) setHere(place);
     };
-    void knownPosition().then(async (point) => found(await districtAt(point, map, directory)));
+    void herePosition().then(async (point) => found(await districtAt(point, map, directory)));
     return () => void (active = false);
   }, [map, directory]);
   if (here !== undefined) return here;

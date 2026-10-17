@@ -107,8 +107,8 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     const { client, account } = renderProfile();
     fireEvent.click(screen.getByText('Dilnoza'));
     const input = document.querySelector('input[type=file]') as HTMLInputElement;
-    // The camera or the gallery, as on screen 2 of the registration (G58).
-    expect(input.hasAttribute('capture')).toBe(false);
+    // Only the front camera, as on screen 2 of the registration (owner, 17.10.2026).
+    expect(input.getAttribute('capture')).toBe('user');
     const photo = new File(['x'], 'me.jpg', { type: 'image/jpeg' });
     await act(async () => fireEvent.change(input, { target: { files: [photo] } }));
     expect(client.uploadAvatar).toHaveBeenCalledWith(photo);
@@ -122,11 +122,12 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     expect(screen.getByText('Rasm juda katta. Boshqa rasmni tanlang.')).toBeTruthy();
   });
 
-  it('works on Telegram Desktop too: a file instead of the camera (G58)', () => {
+  // Where our camera cannot open, the camera of the device asks for the face (G58, owner 17.10.2026).
+  it('without our camera opens the camera of the device, never the gallery', () => {
     renderProfile({ app: 'driver', profile: { ...profile, hasAvatar: false } }, { hasCamera: false });
     fireEvent.click(screen.getByText('Dilnoza'));
     expect(screen.getByText('Rasm qoʻshish')).toBeTruthy();
-    expect(document.querySelector('input[type=file]')?.hasAttribute('capture')).toBe(false);
+    expect(document.querySelector('input[type=file]')?.getAttribute('capture')).toBe('user');
   });
 });
 

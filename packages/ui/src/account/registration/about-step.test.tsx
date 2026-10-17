@@ -50,8 +50,8 @@ describe('Registration, screen 2: «Siz haqingizda» (G58)', () => {
     await addFace(container);
     expect(container.querySelector('.face-circle-photo')?.getAttribute('src')).toBe('blob:face');
     expect(screen.getByRole('button', { name: 'Rasmni almashtirish' })).toBeTruthy();
-    // The phone offers the camera or the gallery: the input does not force the camera.
-    expect(container.querySelector('.face-circle input')?.hasAttribute('capture')).toBe(false);
+    // Only the front camera, never the gallery (owner, 17.10.2026).
+    expect(container.querySelector('.face-circle input')?.getAttribute('capture')).toBe('user');
   });
 
   it('«Raqamni yuborish» works only with the photo, the name and the gender', async () => {

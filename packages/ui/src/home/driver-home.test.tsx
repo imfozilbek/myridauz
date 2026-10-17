@@ -10,7 +10,7 @@ import { DRIVER_ACTIONS, linkOf } from './home-test-actions';
 import { approved, renderHome } from './home-test-kit';
 
 const location = vi.hoisted(() => ({
-  knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
+  herePosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);
 // «Siz haydovchisiz!» was told on an earlier visit (G62).

@@ -1,14 +1,14 @@
 import { Text } from '@telegram-apps/telegram-ui';
-import { useLayoutEffect, useRef, type ChangeEvent } from 'react';
+import { useLayoutEffect } from 'react';
 import { Button } from '../../components';
 import { useI18n } from '../../context/i18n-context';
 import { useAccount } from '../account-context';
-import { useFaceUpload } from './use-face-shot';
+import { useFaceShot } from './use-face-shot';
 
-// A new face from the camera or the gallery, as on screen 2 of the registration (G58, docs/118):
-// it works on Telegram Desktop too, the team checks every photo. In the card of «Profil» it is a
-// link of the brand color (G65, mockup g65/3). pick: the camera or the gallery opens at once, still
-// in the tap that opened the page (G79 П18).
+// A new face, as on screen 2 of the registration (G58, docs/118): only the front camera, never the
+// gallery (owner, 17.10.2026); the team checks every photo. In the card of «Profil» it is a link of
+// the brand color (G65, mockup g65/3). pick: the camera opens at once, still in the tap that opened
+// the page (G79 П18).
 export function AvatarPicker({
   link = false,
   pick = false,
@@ -18,31 +18,27 @@ export function AvatarPicker({
 }) {
   const account = useAccount();
   const { t } = useI18n();
-  const input = useRef<HTMLInputElement>(null);
-  const { upload, busy, failure } = useFaceUpload();
+  const face = useFaceShot();
+  const { take } = face;
   useLayoutEffect(() => {
-    if (pick) input.current?.click();
+    if (pick) take();
+    // Only the tap that opened the page: a new render must not open the camera again.
   }, [pick]);
   if (!account) return null;
   const label = t(account.profile.hasAvatar ? 'account.avatar.change' : 'account.avatar.add');
-  const picked = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = '';
-    if (file) void upload(file);
-  };
   return (
     <>
-      <input ref={input} className="file-input" type="file" accept="image/*" onChange={picked} />
+      {face.element}
       {link ? (
-        <button type="button" className="profile-link" disabled={busy} onClick={() => input.current?.click()}>
+        <button type="button" className="profile-link" disabled={face.busy} onClick={take}>
           {label}
         </button>
       ) : (
-        <Button mode="bezeled" size="m" loading={busy} onClick={() => input.current?.click()}>
+        <Button mode="bezeled" size="m" loading={face.busy} onClick={take}>
           {label}
         </Button>
       )}
-      {failure ? <Text className="step-error">{t(failure)}</Text> : null}
+      {face.failure ? <Text className="step-error">{t(face.failure)}</Text> : null}
     </>
   );
 }

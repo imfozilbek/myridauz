@@ -7,7 +7,7 @@ import { renderHome } from './home-test-kit';
 import { PassengerHome } from './passenger-home';
 
 const location = vi.hoisted(() => ({
-  knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
+  herePosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);
 afterEach(() => {
@@ -32,13 +32,13 @@ describe(
     });
 
     it('takes the start of the last route when the place is not known, without the note', async () => {
-      location.knownPosition.mockResolvedValue(null);
+      location.herePosition.mockResolvedValue(null);
       rememberRoute({ from: ROUTE.to, to: ROUTE.from });
       home();
       await waitFor(() => expect(fromLine()?.textContent).toContain('Fargʻona'));
       expect(screen.queryByText(HERE)).toBeNull();
-      location.knownPosition.mockReset();
-      location.knownPosition.mockResolvedValue({ lat: 41.3, lng: 69.2 });
+      location.herePosition.mockReset();
+      location.herePosition.mockResolvedValue({ lat: 41.3, lng: 69.2 });
     });
 
     // The point of the seat tells the district later (G78 П9).
