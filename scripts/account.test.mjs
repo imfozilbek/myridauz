@@ -12,7 +12,9 @@ const secrets = { CLOUDFLARE_API_TOKEN: 'token', CLOUDFLARE_ACCOUNT_ID: 'account
 // docs/179: the secrets of one environment never deploy the other one.
 describe('the account of an environment', () => {
   it('lets the environment deploy to the account of its domain', async () => {
-    await expect(ensureAccountOf(internal, 'internal', firstAccount, secrets)).resolves.toBeUndefined();
+    await expect(ensureAccountOf(internal, 'internal', firstAccount, secrets)).resolves.toEqual({
+      name: internal.domain,
+    });
   });
 
   it('stops production on the account of the team before anything changes', async () => {

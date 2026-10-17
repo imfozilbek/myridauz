@@ -23,6 +23,7 @@
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
 | `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 4 проекта Pages с доменами и лендинг. В CI: `deploy-internal`; прод вернётся с новым аккаунтом (`179`) |
 | `pnpm run setup-bots --brand=rida --env=<среда>` | Вебхуки, профиль и меню ботов среды вручную. Обычно не нужен: Cron настраивает ботов сам (G83, `46`). Потом оформление каналов кругами, если оно включено (`180`). Нужен `TELEGRAM_WEBHOOK_SECRET` этой среды |
+| `pnpm run keys --brand=rida --env=<среда>` | Ключи Cloudflare с точными правами, настройки зоны, секреты Worker, ключи звонков (`189`). Нужен ключ шаблона «Create Additional Tokens» этой среды в `CLOUDFLARE_API_TOKEN`. Флаги: `--admins=<id>,<id>`, `--dns`, `--webhook`, `--finish --yes`. Значения не печатает |
 
 - Для `check:secrets` локально нужен файл `gitleaks` (v8.30.1) в `PATH`.
 - В облачной сессии Claude: `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers`.

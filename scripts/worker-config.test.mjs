@@ -16,6 +16,7 @@ const VALUES = {
 describe('the Worker of an environment', () => {
   it('names what an empty account needs', () => {
     expect(resourcesOf(BASE)).toEqual({
+      worker: `${id}-backend`,
       database: `${id}-db`,
       queue: `${id}-notifications`,
       media: `${id}-media`,

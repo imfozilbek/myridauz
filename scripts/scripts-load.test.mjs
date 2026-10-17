@@ -4,7 +4,7 @@ import { loadBrand } from '../brands/index.ts';
 
 // The scripts of the deploy run in plain Node, not through a bundler: every import must load there.
 // Without --brand each one stops at its own first check, after all imports (G57, lesson 131).
-const SCRIPTS = ['deploy', 'map-data', 'setup-bots'];
+const SCRIPTS = ['deploy', 'map-data', 'setup-bots', 'keys'];
 
 describe('the scripts of the deploy', () => {
   it.each(SCRIPTS)('%s loads in Node', (script) => {
