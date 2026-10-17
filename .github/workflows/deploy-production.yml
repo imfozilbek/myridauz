@@ -14,10 +14,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: deploy-production
-  cancel-in-progress: false
-
 jobs:
   # The newest main only, once its push passed CI, and only when something deployed changed since the
   # last deploy of production (scripts/deploy-needed.mjs).
@@ -46,16 +42,28 @@ jobs:
           deploy="$(node scripts/deploy-needed.mjs --env=production --workflow=deploy-production.yml --after=ci.yml ${ALWAYS})"
           echo "deploy=${deploy}" >> "$GITHUB_OUTPUT"
 
+  # The queue holds only real deploys: a run with nothing to deploy never takes the place of one that
+  # waits for the approval.
   deploy:
     needs: changes
     if: needs.changes.outputs.deploy == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # A re-run of an old run would bring older code back: only the newest main goes.
+      - run: |
+          newest="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [ "${newest}" != "${GITHUB_SHA}" ]; then
+            echo "main is ${newest} now, not ${GITHUB_SHA}: the newest main deploys after its CI"
+            exit 1
+          fi
       - uses: ./.github/actions/setup
       - run: pnpm run deploy --brand=rida --env=production
         env:
