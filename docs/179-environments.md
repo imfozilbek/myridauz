@@ -48,65 +48,36 @@
 
 ## Ключи обеих сред (карта владельца 15.10.2026)
 
-Источник правды по ключам: карта в репозитории инфраструктуры `dream-infra`, `docs/18-rida-keys.md` (утвердил владелец). Где взять каждый ключ, права по шагам и куда положить: `189`.
-Правило: один ключ лежит в одном месте и делает одно дело; имя `rida-<среда>-<задача>`. Обе среды симметричны: те же наборы прав и имена (решение владельца 17.10.2026, `189`).
+Все ключи и настройки обеих сред делает программа `pnpm run keys` (решение владельца 17.10.2026); шаги и наборы прав: `189`. Карта ключей infra (`dream-infra`, `docs/18-rida-keys.md`) повторяет эту таблицу.
+Правило: один ключ лежит в одном месте и делает одно дело; имя `rida-<среда>-<задача>`. Обе среды симметричны: те же наборы прав, имена и настройки.
 
-| Токен Cloudflare | Аккаунт | Права | Где лежит, имя |
+| Ключ | Аккаунт | Права | Где лежит, имя |
 |---|---|---|---|
-| `rida-internal-deploy` | первый | права деплоя (ниже), зона `myrida.uz` | GitHub Environment `internal`: `CLOUDFLARE_API_TOKEN` |
-| `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; своя зона: Zone Settings, SSL and Certificates: Edit | окружение Claude: `CLOUDFLARE_API_TOKEN` |
+| ключ шаблона «Create Additional Tokens» | первый | только создаёт другие ключи; до конца G84 | окружение Claude: `CLOUDFLARE_API_TOKEN` |
+| `rida-internal-deploy` | первый | набор «Выкладка», зона `myrida.uz` | GitHub Environment `internal`: `CLOUDFLARE_API_TOKEN` |
 | `rida-internal-analytics` | первый | только Account Analytics: Read | секрет Worker: `ANALYTICS_API_TOKEN` |
-| `rida-prod-deploy` | новый | права деплоя, зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
-| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; своя зона: Zone Settings, SSL and Certificates: Edit | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| ключ шаблона «Create Additional Tokens» | новый | только создаёт другие ключи; до конца G84 | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| `rida-prod-deploy` | новый | набор «Выкладка», зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
 | `rida-prod-analytics` | новый | только Account Analytics: Read | секрет Worker прода: `ANALYTICS_API_TOKEN` |
 
-- Рядом с токеном: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).
-- Окружение Claude для Rida: только эти 4 переменные. Токенов ботов в нём нет: окружение одно на все проекты.
-- Окружение Claude можно очистить и положить 4 переменные заново: новые значения видит только новая сессия (17.10.2026).
-- Старые токены в Cloudflare удалять последним шагом: старый ключ деплоя может стоять в Worker как `ANALYTICS_API_TOKEN` (решение 05.10.2026, `117`), без него статистика админки встанет.
-- Токены 6 ботов своей среды кладёт владелец: BotFather (Revoke, новый токен) → Cloudflare → Workers & Pages → `rida-backend` → Settings → Variables and Secrets. Cron сам ставит ботам вебхук, меню и описания (`46`).
-- Claude ставит в Worker: новый `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS` (номера даёт владелец), `CF_ACCOUNT_ID`. Ключи звонков (`REALTIME_*`, `TURN_*`) у каждого аккаунта свои (`08`).
+- Рядом с ключом: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).
+- Окружение Claude для Rida: только эти 4 переменные. Токенов ботов в нём нет: окружение одно на все проекты. Новые значения видит только новая сессия.
+- Старые токены (`rida-deploy`, `rida-claude`, `rida-*-claude`) удаляет `pnpm run keys --finish --yes` последним шагом: сначала новый `ANALYTICS_API_TOKEN` в Worker, без него статистика админки встанет (`117`).
+- Токены 6 ботов своей среды кладёт владелец в секреты Worker. Cron сам ставит ботам вебхук, меню и описания (`46`).
 - Значения ключей в чат и в репозиторий никогда (`32`).
 - `deploy-internal`: без согласия, после зелёного CI на `main`. Прод в CI вернётся с новым аккаунтом: Environment `production`, согласие владельца (`32`). «Map data»: пока только `internal`.
 
-## Права токена деплоя
+## Права ключа выкладки
 
-Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать, только создать заново с этими правами (урок №297).
-
-| Где | Право |
-|---|---|
-| Account | Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit |
-| Account | Account Settings: Read |
-| Zone своей среды | Workers Routes, DNS: Edit; Zone: Read |
+Значение секрета в GitHub прочитать нельзя: «тот же токен, что в другом Environment» не скопировать (урок №297). Набор «Выкладка» в коде (`scripts/keys/rights.mjs`) и в `189`.
 
 - Только то, что вызывает `scripts/deploy.mjs`: Worker и его маршрут, D1, очередь, R2, Pages, DNS. KV, Realtime и аналитика выкладке не нужны.
 - Без «Workers Routes» выкладка падает после загрузки Worker: Mini App и сайт не выкладываются (15.10.2026).
-- В GitHub токен лежит в **Secrets** Environment, не в Variables. Секрет Environment сильнее секрета репозитория с тем же именем: общий секрет репозитория лишний.
+- В GitHub ключ лежит в **Secrets** Environment, не в Variables. Секрет Environment сильнее секрета репозитория с тем же именем: общий секрет репозитория лишний.
 
-## Шаги: сначала внутренняя среда
+## Шаги обеих сред
 
-Шаги владельца и прода ведёт цель G84 (решение владельца 15.10.2026).
-
-| № | Кто | Что |
-|---|---|---|
-| 1 | Владелец | `rida-internal-deploy` → GitHub `internal` (`CLOUDFLARE_API_TOKEN`; `CLOUDFLARE_ACCOUNT_ID` первого аккаунта); общий секрет репозитория с тем же именем удалить, если есть; перезапуск `deploy-internal` |
-| 2 | Владелец | `rida-internal-claude` → окружение Claude; `rida-internal-analytics` → Worker первого аккаунта |
-| 3 | Владелец | 6 ботов внутренней среды: Revoke → новый токен → Worker первого аккаунта; Claude от владельца: «боты внутренней среды готовы» |
-| 4 | Владелец | `@myrida_poster_bot` админ в «MyRida \| Viloyatlar» и `@myrida_uz`; Claude от владельца: номер канала (web.telegram.org, число после `#`) и ссылка-приглашение с одобрением заявок. Это не секреты |
-| 5 | Claude | Канал в `environments.ts`; `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID` в Worker; полный стенд; PR; слияние; `deploy-internal` |
-| 6 | Claude | Тестовая поездка, пост в канале, скриншоты |
-
-## Шаги прода (к запуску 18.10)
-
-| № | Кто | Что |
-|---|---|---|
-| 1 | Владелец | Новый аккаунт: включить R2 (может попросить карту, платить не нужно), Web Analytics для `ridaone.uz` (`59`); старые записи DNS зоны, если есть, удалить (деплой не трогает чужую запись) |
-| 2 | Владелец | `rida-prod-deploy` → GitHub `production`: заменить **оба** секрета, `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID` (там первый аккаунт); ветки: только `main`; Approve владельца там уже стоит |
-| 3 | Владелец | `rida-prod-claude` → окружение Claude; новая сессия; Telegram ID команды (или «те же») |
-| 4 | Claude | Вернуть `deploy-production` (job `changes` не должен пропустить первую выкладку) и прод в «Map data»; регион D1 «Европа» при создании базы (`46`); PR; слияние; деплой прода (Approve владельца). Infra: настройки зоны, датчик расхода, ночная копия D1 |
-| 5 | Владелец | `rida-prod-analytics` и 6 ботов прода → Worker нового аккаунта |
-| 6 | Claude | `TELEGRAM_WEBHOOK_SECRET`, `ADMIN_TELEGRAM_IDS`, `CF_ACCOUNT_ID`, ключи звонков (`08`); setup-bots; «Map data» прода и повторный деплой (оба с Approve); проверка: `/health`, боты, Mini App, карта, сайт, звонок |
-| 7 | Владелец | Удалить старые `rida-deploy`, `rida-claude` и все токены, которых нет в карте |
+Шаги владельца по порядку: `189`; ход работ и что осталось: цель G84 (`goals/G84-environments-launch.md`).
 
 ## Решения владельца 13.10.2026 (ответ «Запуск 18.10, да на всё, посты во внутреннем да»)
 

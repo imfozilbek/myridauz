@@ -10,45 +10,37 @@ G84. Запуск сред: шаги владельца, прод и оформ�
 
 Definition of Done
 
-A. Внутренняя среда (docs/179, «Шаги: сначала внутренняя среда»)
-Ключи по карте владельца 15.10.2026 (docs/179, «Ключи обеих сред»).
-[x] PR #237 (G81 и G82) слит в main 15.10.2026.
-[x] PR #245 (карта ключей, права токенов, бот прода) слит 15.10.2026.
-[ ] Владелец: rida-internal-deploy → GitHub internal; общий секрет
-    репозитория с тем же именем удалить, если есть.
+A. Ключи обеих сред программой (docs/189, решение владельца 17.10.2026)
+[x] PR #237 (G81 и G82) и PR #245 (карта ключей) слиты 15.10.2026.
+[x] Программа pnpm run keys: ключи с точными правами, зона, DNS,
+    секреты Worker, удаление старых ключей; тесты (17.10.2026).
+[ ] Владелец: ключ шаблона «Create Additional Tokens» в каждом
+    аккаунте → окружение Claude; новая сессия.
+[ ] Claude: pnpm run keys в обеих средах; отчёт владельцу по шагам.
+[ ] Владелец: Roll rida-<среда>-deploy → GitHub internal и
+    production (с Account ID); строки «owner:» отчёта (R2 прода).
+
+B. Внутренняя среда, потом прод
 [ ] Claude: перезапуск deploy-internal; зелёный.
-[ ] Владелец: rida-internal-claude → окружение Claude;
-    rida-internal-analytics → Worker первого аккаунта.
-[ ] Владелец: 6 ботов внутренней среды: Revoke → новый токен →
-    Worker; «боты внутренней среды готовы». Токен в чат никогда.
 [ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и
-    @myrida_uz; номер канала и ссылка-приглашение Claude.
-[ ] Claude: канал в environments.ts; секрет вебхука,
-    ADMIN_TELEGRAM_IDS, CF_ACCOUNT_ID в Worker; стенд; PR.
+    @myrida_uz; Telegram ID, номер канала и ссылка на странице.
+[ ] Claude: канал в environments.ts; keys --admins; стенд; PR.
 [ ] Проверка: /health, боты «MyRida | …», Mini App, сайт, пост во
     внутреннем канале; скриншоты владельцу.
-
-B. Прод на новом аккаунте (docs/179, «Шаги прода»)
-[x] Владелец: общий бот прода @ridauz_bot создан 15.10.2026
-    (docs/181); токен потом только в Worker прода.
-[ ] Владелец: R2 и Web Analytics на новом аккаунте; старые записи
-    DNS ridaone.uz, если есть, удалить.
-[ ] Владелец: rida-prod-deploy → production, заменить оба секрета
-    (токен и Account ID); rida-prod-claude → окружение Claude;
-    ID команды прода.
+[x] Владелец: общий бот прода @ridauz_bot создан 15.10.2026.
 [ ] Claude: deploy-production (первая выкладка не пропускается),
     прод в «Map data», регион D1 «Европа»; PR; слияние; деплой
-    прода с Approve. Infra: настройки зоны ridaone.uz.
-[ ] Владелец: rida-prod-analytics и 6 ботов прода → Worker прода.
-[ ] Claude: секреты Worker прода, ключи звонков, setup-bots,
+    прода с Approve.
+[ ] Владелец: 6 ботов прода → Worker прода; BotFather: Configure
+    Mini App у 4 ботов.
+[ ] Claude: keys прода ещё раз (секреты Worker, звонки, setup-bots),
     «Map data» прода и повторный деплой (Approve).
 [ ] Проверка: /health, боты, Mini App, карта, сайт, звонок на
     Android и iPhone; скриншоты.
-[ ] Владелец: BotFather (картинка, Configure Mini App, сплэш);
-    админка прода: «Jamoa», «Kompaniya rekvizitlari», «Kutish
-    roʻyxati», ссылки рекламы; тест команды на проде.
-[ ] Владелец: удалить rida-deploy, rida-claude и токены вне карты
-    (последним шагом, docs/179); ветку goal/g84-environments-launch.
+[ ] Владелец: админка прода: «Jamoa», «Kompaniya rekvizitlari»,
+    «Kutish roʻyxati», ссылки рекламы; тест команды на проде.
+[ ] Claude: keys --finish --yes в обеих средах (старые ключи и ключи
+    шаблона); владелец удаляет ветку goal/g84-environments-launch.
 
 C. Оформление каналов (docs/180, остаток G82; ботов оформляет G83)
 [ ] Владелец: «да» сессии инфраструктуры на выгрузку в репозиторий
@@ -68,22 +60,19 @@ D. Проверка владельца
 
 | № | Что | Где | Время |
 |---|---|---|---|
-| 1 | `rida-internal-deploy` в GitHub `internal`, перезапуск | Cloudflare, GitHub | 5 минут |
-| 2 | `rida-internal-claude`, `rida-internal-analytics` | Cloudflare, настройки Claude, Worker | 5 минут |
-| 3 | 6 ботов внутренней среды: новый токен в Worker | BotFather, Cloudflare | 10 минут |
-| 4 | Бот каналов админ; номер и ссылка канала | Telegram | 3 минуты |
-| 5 | Новый аккаунт: R2, Web Analytics, DNS; `rida-prod-deploy` (оба секрета), `rida-prod-claude`, ID команды | Cloudflare, GitHub, настройки Claude | 20 минут |
-| 6 | Approve первой выкладки прода; потом `rida-prod-analytics`, 6 ботов прода | GitHub Mobile, Cloudflare, BotFather | 15 минут |
-| 7 | BotFather: картинка, Configure Mini App, сплэш; админка прода; тест команды | Telegram, Mini App | 60 минут |
-| 8 | В конце: удалить старые токены и ветку `goal/g84-environments-launch` | Cloudflare, GitHub | 3 минуты |
-| 9 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
+| 1 | Ключ шаблона в каждом аккаунте → окружение Claude; новая сессия | Cloudflare, настройки Claude | 5 минут |
+| 2 | Roll двух ключей выкладки → GitHub; строки «owner:» (R2 прода) | Cloudflare, GitHub | 10 минут |
+| 3 | Бот каналов админ; Telegram ID, номер и ссылка канала на странице | Telegram | 5 минут |
+| 4 | Approve первой выкладки прода; 6 ботов прода в Worker | GitHub Mobile, BotFather, Cloudflare | 15 минут |
+| 5 | BotFather: Configure Mini App у 4 ботов прода; админка прода; тест команды | Telegram, Mini App | 30 минут |
+| 6 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
 
 ## Где остановились (17.10.2026)
 
 - `deploy-internal` красный (последний запуск 16.10): у старого токена нет «Workers Routes». Worker обновлён, Mini App и сайт старые.
-- Владелец настраивает всё заново по `../189` и странице с отметками (решение 17.10.2026: полная симметрия). Новая сессия начинает с этого файла: читает отметки и поля страницы (`ArtifactData`, `progress/main`) и делает шаги Claude из `../189`.
-- С ключами в окружении Claude сам: деплой внутренней среды из сессии, секреты Worker, DNS, ключи звонков, setup-bots, «Map data», проверка. Выкладка прода только с «да» владельца.
-- Только владелец: создать токены, секреты GitHub, токены ботов, R2 и Web Analytics, Approve, BotFather, права в каналах.
+- Владелец не смог пройти 30 шагов руками (урок №301). Теперь ключи и настройки делает `pnpm run keys` (`../189`); владелец кладёт ключи шаблона в окружение Claude.
+- Новая сессия начинает с этого файла: читает отметки и поля страницы (`ArtifactData`, `progress/main`), запускает `pnpm run keys` для `internal` и `production`, пересказывает строки «owner:» по одной.
+- Только владелец: ключи шаблона, Roll в GitHub, ключи ботов, R2, Approve, BotFather, права в каналах.
 
 ## Ждёт решения владельца
 

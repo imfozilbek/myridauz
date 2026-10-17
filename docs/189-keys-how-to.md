@@ -1,49 +1,72 @@
 # 189. Ключи и доступы обеих сред: по шагам
 
-> **Кратко:** решение владельца 17.10.2026: полная симметрия обеих сред в GitHub, Cloudflare и Telegram, всё настраивается заново по одному списку, «чтобы больше не возвращаться». Страница с отметками шагов для владельца: https://claude.ai/artifact/EYnwD27jVRfTthViKV9tJJ (Claude читает отметки и поля через её базу, документ `progress/main`). Карта ключей: `179`. Значения ключей в чат, на страницу и в репозиторий никогда (`32`).
+> **Кратко:** решение владельца 17.10.2026: ключи и настройки обеих сред делает программа `pnpm run keys` (`scripts/keys.mjs`); владелец делает только то, что требует его рук. Полная симметрия: те же наборы прав, имена и настройки в обеих средах. Страница с отметками шагов для владельца: https://claude.ai/artifact/EYnwD27jVRfTthViKV9tJJ (Claude читает отметки и поля через её базу, документ `progress/main`). Значения ключей в чат, на страницу и в репозиторий никогда (`32`).
 
-## Правила
+## Как это устроено
 
-- Токен Cloudflare: My Profile → API Tokens → Create Token → Create Custom Token. Account Resources: аккаунт среды; Zone Resources: зона среды. TTL и IP Filtering пустые.
-- Значение токена показывают один раз: сразу вставить в место назначения.
-- Права добавляются потом через «Edit» токена: значение не меняется, вставлять заново не нужно.
-- GitHub: только Environment secrets (не Variables, не секреты репозитория).
-- Секрет Worker: Workers & Pages → `rida-backend` → Settings → Variables and Secrets → Type: Secret → Deploy.
-- Окружение Claude: меню среды в заголовке сессии → Edit. Новые значения видит только новая сессия.
-- Токен бота: BotFather → `/mybots` → бот → API Token → Revoke, прямо перед вставкой в Worker.
+- В каждом аккаунте владелец делает один ключ из шаблона Cloudflare «Create Additional Tokens». Этот ключ умеет только создавать другие ключи.
+- Программа этим ключом создаёт ключи с точными правами, настраивает зону и секреты Worker. Значения она не печатает никогда.
+- Для своей работы программа делает ключ на один час и удаляет его в конце запуска.
+- Ключ выкладки владелец переносит в GitHub через «Roll»: новое значение видит только он.
+- Запуск можно повторять: что уже на месте, программа не трогает. Ключ перестал работать: запустить снова (урок №297).
+- Почему так: список из 30 шагов руками владелец пройти не смог (урок №301).
 
-## Наборы прав Cloudflare (одинаковые в обеих средах)
+## Шаги владельца
+
+| № | Когда | Что |
+|---|---|---|
+| 1 | сейчас | Каждый аккаунт: My Profile → API Tokens → Create Token → шаблон «Create Additional Tokens» → Use template → Continue to summary → Create Token → Copy. Аккаунт с `myrida.uz` → окружение Claude `CLOUDFLARE_API_TOKEN`; аккаунт с `ridaone.uz` → `PROD_CLOUDFLARE_API_TOKEN` (заменить старые значения) |
+| 2 | сразу | Слить PR с программой (Claude скажет, когда CI зелёный); новая сессия Claude с фразой со страницы |
+| 3 | после программы | Каждый аккаунт: API Tokens → `rida-<среда>-deploy` → ⋯ → Roll → Copy → GitHub → Settings → Environments → `internal` или `production` → Environment secrets → `CLOUDFLARE_API_TOKEN`. Там же `CLOUDFLARE_ACCOUNT_ID`: Account ID этого аккаунта |
+| 4 | после программы | Строки «owner:» отчёта программы: Claude даёт их по одной (например, включить R2 в проде) |
+| 5 | после первой выкладки прода | Approve в GitHub Actions; 6 ключей ботов прода в Worker (ниже); BotFather: Configure Mini App у 4 ботов прода |
+| 6 | в конце | Ничего: Claude запускает `--finish --yes`, программа удаляет старые ключи и оба ключа шаблона |
+
+## Что делает программа
+
+| Шаг | Что |
+|---|---|
+| Ключи | `rida-<среда>-deploy` (набор «Выкладка», своя зона), `rida-<среда>-analytics` (набор «Аналитика»), ключ на час для себя |
+| Зона | SSL/TLS Full (strict), Always Use HTTPS On, Minimum TLS 1.2, Bot Fight Mode Off (`85`), Web Analytics с автоустановкой (`59`) |
+| R2 | проверяет; выключен: строка владельцу (включается только в панели, может попросить карту, платить не нужно) |
+| DNS | показывает старые записи адресов бренда (`@`, `www`, `api`, `map`, 4 Mini App); удаляет только с `--dns` |
+| Worker (после первой выкладки) | `CF_ACCOUNT_ID`; `ADMIN_TELEGRAM_IDS` (`--admins=`); `ANALYTICS_API_TOKEN`; ключи звонков (`08`); `TELEGRAM_WEBHOOK_SECRET` и сразу setup-bots, только когда все 6 ключей ботов на месте |
+| `--finish --yes` | новое значение `ANALYTICS_API_TOKEN`, потом удаляет старые ключи `rida-*` и свой ключ шаблона |
+
+- Внутренняя: `pnpm run keys --brand=rida --env=internal --admins=<id>,<id>`.
+- Прод: те же флаги с `--env=production`, переменные `PROD_CLOUDFLARE_*` подставляются в `CLOUDFLARE_*` перед запуском.
+- Строка без доступа к праву (Cloudflare переименовал право): программа называет шаг руками и идёт дальше.
+
+## Наборы прав (код: `scripts/keys/rights.mjs`)
 
 | Набор | Строки |
 |---|---|
 | «Выкладка» | Account: Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit; Account Settings: Read. Zone: Workers Routes, DNS: Edit; Zone: Read |
-| «Claude» | «Выкладка» и ещё: Account: Realtime (или Calls): Edit; Account Analytics, Workers Tail: Read. Zone: Zone Settings, SSL and Certificates: Edit |
 | «Аналитика» | Account: Account Analytics: Read |
+| Ключ на час | «Выкладка» и Zone Settings: Edit; если Cloudflare их знает: Realtime (Calls), Bot Management, Web Analytics: Edit. Все зоны своего аккаунта, один час |
 
-## 1. GitHub
+Набора «Claude» больше нет: Claude работает ключом шаблона через программу.
+
+## Ключи среды (одинаково в обеих)
+
+| Ключ | Кто делает | Где лежит |
+|---|---|---|
+| ключ шаблона «Create Additional Tokens» | владелец | окружение Claude: `CLOUDFLARE_API_TOKEN` (внутренняя), `PROD_CLOUDFLARE_API_TOKEN` (прод); до конца G84 |
+| `rida-<среда>-deploy` | программа; значение: Roll владельца | GitHub Environment среды: `CLOUDFLARE_API_TOKEN` |
+| `rida-<среда>-analytics` | программа | Worker среды: `ANALYTICS_API_TOKEN` |
+| Account ID | уже есть | GitHub: `CLOUDFLARE_ACCOUNT_ID`; Claude: `CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`; Worker: `CF_ACCOUNT_ID` |
+
+## GitHub (руками: API GitHub из сессии Claude закрыт)
 
 | Что | Как |
 |---|---|
-| Секреты репозитория | Удалить `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` из Repository secrets и Variables, если есть |
-| Environment `internal` | Ветки: только `main`; Required reviewers выключено (решение 13.10); Variables пусто |
-| Environment `production` | Required reviewers: владелец; Prevent self-review выключено; Wait timer выключен; ветки: только `main`; Variables пусто |
+| Environment `internal` | ветки: только `main`; Required reviewers выключено (решение 13.10) |
+| Environment `production` | Required reviewers: владелец; Prevent self-review выключено; ветки: только `main` |
+| Секреты репозитория | `CLOUDFLARE_*` на уровне репозитория лишние: удалить, если есть |
 
-## 2 и 3. Cloudflare
+## Telegram
 
-| Что | Внутренняя: аккаунт 1, `myrida.uz` | Прод: аккаунт 2, `ridaone.uz` |
-|---|---|---|
-| Account ID | GitHub `internal`: `CLOUDFLARE_ACCOUNT_ID`; Claude: `CLOUDFLARE_ACCOUNT_ID` | GitHub `production`: `CLOUDFLARE_ACCOUNT_ID` (заменить); Claude: `PROD_CLOUDFLARE_ACCOUNT_ID` |
-| Токен «Выкладка» | `rida-internal-deploy` → GitHub `internal`: `CLOUDFLARE_API_TOKEN` | `rida-prod-deploy` → GitHub `production`: `CLOUDFLARE_API_TOKEN` (заменить) |
-| Токен «Claude» | `rida-internal-claude` → Claude: `CLOUDFLARE_API_TOKEN` | `rida-prod-claude` → Claude: `PROD_CLOUDFLARE_API_TOKEN` |
-| Токен «Аналитика» | `rida-internal-analytics` → Worker: `ANALYTICS_API_TOKEN` | `rida-prod-analytics` → Worker: `ANALYTICS_API_TOKEN`, после первой выкладки |
-| R2 | включён | включить до первой выкладки (может попросить карту, платить не нужно) |
-| Web Analytics | есть, автоустановка (`59`) | добавить сайт, автоустановка |
-| Зона | SSL/TLS Full (strict); Always Use HTTPS On; Minimum TLS 1.2; Bot Fight Mode Off (`85`) | то же |
-| DNS | не трогать | удалить старые записи `@`, `www`, `api`, `passenger`, `driver`, `admin`, `main`, `map`, если есть |
-
-## 4 и 5. Telegram
-
-Секреты Worker (6 ботов; во внутренней сейчас, в проде после первой выкладки):
+Секреты Worker (6 ботов; во внутренней программа проверяет, что они на месте; в проде после первой выкладки):
 
 | Роль | Внутренняя | Прод | Секрет |
 |---|---|---|---|
@@ -53,6 +76,8 @@
 | поддержка | `@myrida_support_bot` | `@rida1uz_yordam_bot` | `SUPPORT_BOT_TOKEN` |
 | главный | `@myridauz_bot` | `@ridauz_bot` | `MAIN_BOT_TOKEN` |
 | каналы | `@myrida_poster_bot` | `@rida1uz_poster_bot` | `POSTER_BOT_TOKEN` |
+
+- Ключ бота: BotFather → `/mybots` → бот → API Token → Copy. В Worker: Workers & Pages → `rida-backend` → Settings → Variables and Secrets → Add → Type: Secret → Deploy. Кладёт только владелец (`32`).
 
 BotFather руками (в API Telegram этого нет):
 
@@ -64,17 +89,10 @@ BotFather руками (в API Telegram этого нет):
 | главный | `https://main.<домен>` | `#0D9488` | нет |
 | поддержка | нет | нет | `bot-support-description.png` |
 
-- Сплэш: иконка `brands/rida/landing/bot/miniapp-splash.svg`, фон одинаковый для светлой и тёмной темы, иконка и текст `#FFFFFF` (`121`, OPS-05).
-- Mini App в BotFather нужна ссылкам `t.me/<бот>?startapp` (доска дня, `openApp`): без неё ссылка открывает только чат.
-- Картинки описания: `brands/rida/brand-kit/kit/telegram/` (собирает бренд-пакет, `38`); на странице владельца они есть для скачивания.
+- К запуску нужен Configure Mini App: без него ссылки `t.me/<бот>?startapp` (доска дня, `openApp`) открывают только чат. Сплэш и картинки описания можно после запуска (совет Claude, решает владелец).
+- Сплэш: иконка `brands/rida/landing/bot/miniapp-splash.svg`, фон одинаковый для светлой и тёмной темы, иконка и текст `#FFFFFF` (`121`, OPS-05). Картинки: `brands/rida/brand-kit/kit/telegram/` (`38`), на странице владельца есть для скачивания.
 - Бот каналов админ в главном канале и каналах направлений с 4 правами: изменение профиля канала, публикация, редактирование чужих публикаций, добавление подписчиков (`176`, `180`). Прод: стоят в 68 каналах (проверка infra 13.10). Внутренняя: `@myrida_uz` и «MyRida | Viloyatlar».
-- Владелец даёт (не ключи, поля на странице): Telegram ID обоих аккаунтов (web.telegram.org/k → «Избранное» → число после `#`), номер «MyRida | Viloyatlar» и ссылку-приглашение с заявками.
-
-## Делает Claude
-
-- `TELEGRAM_WEBHOOK_SECRET` в каждой среде и сразу setup-bots, иначе боты замолчат.
-- `CF_ACCOUNT_ID` и `ADMIN_TELEGRAM_IDS` (оба ID владельца в обеих средах).
-- Ключи звонков `REALTIME_APP_ID`, `REALTIME_APP_SECRET`, `TURN_KEY_ID`, `TURN_KEY_TOKEN`: свои у каждого аккаунта (`08`).
+- Владелец даёт полями страницы (не ключи): Telegram ID обоих аккаунтов (web.telegram.org/k → «Избранное» → число после `#`), номер «MyRida | Viloyatlar» и ссылку-приглашение с заявками.
 
 ## Где симметрии нет
 
@@ -85,8 +103,6 @@ BotFather руками (в API Telegram этого нет):
 | Каналов 2 и 68 | решение 13.10; права бота каналов одинаковые |
 | Секреты Worker прода позже | Worker прода появится с первой выкладкой |
 
-## В конце
+## Новый бренд или среда
 
-- Cloudflare, оба аккаунта: удалить `rida-deploy`, `rida-claude` и все токены Rida, кроме шести из этого списка. Раньше нельзя: старый ключ может стоять в Worker как `ANALYTICS_API_TOKEN` (`179`).
-- GitHub: удалить ветку `goal/g84-environments-launch`.
-- Ключ перестал работать: создать заново с тем же набором и положить в то же место (урок №297). Новый бренд или среда (`22`): тот же список, имена `<бренд>-<среда>-<задача>`.
+Тот же список: ключ шаблона, `pnpm run keys`, Roll в GitHub. Имена `<бренд>-<среда>-<задача>` (`22`).

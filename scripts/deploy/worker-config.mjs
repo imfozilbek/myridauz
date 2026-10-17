@@ -35,8 +35,9 @@ async function ensureBucket(name) {
   if (!(await cloudflare('GET', `${BUCKETS}/${name}`))) await cloudflare('POST', BUCKETS, { name });
 }
 
-// The names of what the Worker needs on its account.
+// The names of the Worker and of what it needs on its account.
 export const resourcesOf = (base) => ({
+  worker: valueOf(base, /^name = "([^"]+)"/mu, 'name'),
   database: valueOf(base, /database_name = "([^"]+)"/u, 'database'),
   queue: valueOf(base, /\[\[queues\.producers\]\][^[]*queue = "([^"]+)"/u, 'queue'),
   media: valueOf(base, /binding = "MEDIA"\s+bucket_name = "([^"]+)"/u, 'MEDIA bucket'),

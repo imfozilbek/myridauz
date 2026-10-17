@@ -2,10 +2,11 @@
 // pnpm run deploy --brand=<brand> --env=<internal|production>. Needs CLOUDFLARE_API_TOKEN and
 // CLOUDFLARE_ACCOUNT_ID of the account of that environment. Bot tokens are Worker secrets, never used here (docs/32).
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { apiHost, appHost, mapHost } from '../brands/index.ts';
 import { MAP_ARCHIVE } from '../packages/contracts/src/map.ts';
 import { ensureAccountOf } from './deploy/account.mjs';
+import { miniApps } from './deploy/hosts.mjs';
 import { copyMap, dropOldMaps, ensureMapBucket, ensureStoriesRule, mapServed } from './deploy/map-bucket.mjs';
 import { ensurePagesDomain, ensurePagesProject } from './deploy/pages.mjs';
 import { targetOf } from './deploy/target.mjs';
@@ -14,9 +15,7 @@ import { workerConfig } from './deploy/worker-config.mjs';
 const { brand, environment } = targetOf('deploy');
 await ensureAccountOf(brand, environment);
 const config = await workerConfig(brand, environment);
-const apps = readdirSync('apps')
-  .filter((dir) => dir.startsWith('miniapp-'))
-  .map((dir) => dir.replace('miniapp-', ''));
+const apps = miniApps();
 const run = (command, args, env = {}) =>
   execFileSync(command, args, { stdio: 'inherit', env: { ...process.env, ...env } });
 const wrangler = (...args) => run('pnpm', ['exec', 'wrangler', ...args]);
