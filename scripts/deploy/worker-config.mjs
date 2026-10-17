@@ -8,6 +8,8 @@ import { cloudflare } from './cloudflare.mjs';
 const DATABASES = '/accounts/:account/d1/database';
 const QUEUES = '/accounts/:account/queues';
 const BUCKETS = '/accounts/:account/r2/buckets';
+// Western Europe, as the database of the first account (docs/46): the same in every environment.
+const REGION = 'weur';
 
 const valueOf = (config, pattern, what) => {
   const value = pattern.exec(config)?.[1];
@@ -19,9 +21,13 @@ const replaced = (config, pattern, value) => {
   return config.replace(pattern, value);
 };
 
+// A database made on an empty account; Cloudflare never moves it later.
+export const newDatabase = (name) => ({ name, primary_location_hint: REGION });
+
 async function ensureDatabase(name) {
   const found = (await cloudflare('GET', `${DATABASES}?name=${encodeURIComponent(name)}`)) ?? [];
-  const database = found.find((one) => one.name === name) ?? (await cloudflare('POST', DATABASES, { name }));
+  const database =
+    found.find((one) => one.name === name) ?? (await cloudflare('POST', DATABASES, newDatabase(name)));
   return database.uuid;
 }
 

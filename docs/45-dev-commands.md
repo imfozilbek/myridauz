@@ -21,7 +21,7 @@
 | `pnpm --filter @platform/brand-kit-rida build` | Бренд-пакет в `brands/rida/brand-kit/kit/` (нужны `FFMPEG`, Chromium, `38`) |
 | `pnpm --filter @platform/miniapp-passenger dev` | Mini App попутчика локально |
 | `pnpm --filter @platform/landing build` | Лендинг в `apps/landing/dist` (`59`) |
-| `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 4 проекта Pages с доменами и лендинг. В CI: `deploy-internal`; прод вернётся с новым аккаунтом (`179`) |
+| `pnpm run deploy --brand=rida --env=internal\|production` | Деплой бренда в среду (`179`): база D1, очередь и R2 на пустом аккаунте, сборка Mini App, миграции D1, Worker, 4 проекта Pages с доменами и лендинг. В CI: `deploy-internal` и `deploy-production` (`179`) |
 | `pnpm run setup-bots --brand=rida --env=<среда>` | Вебхуки, профиль и меню ботов среды вручную. Обычно не нужен: Cron настраивает ботов сам (G83, `46`). Потом оформление каналов кругами, если оно включено (`180`). Нужен `TELEGRAM_WEBHOOK_SECRET` этой среды |
 | `pnpm run keys --brand=rida --env=<среда>` | Ключи Cloudflare с точными правами, настройки зоны, секреты Worker, ключи звонков (`189`). Нужен ключ шаблона «Create Additional Tokens» этой среды в `CLOUDFLARE_API_TOKEN`. Флаги: `--admins=<id>,<id>`, `--dns`, `--webhook`, `--finish --yes`. Значения не печатает |
 
@@ -68,7 +68,7 @@
 | `secrets`, `brand-kit` | gitleaks; бренд-пакет собирается, только если менялись `brands/` или lock |
 | `screenshots (1/2)`, `(2/2)` | После барьеров, артефакт для людей; не барьер |
 
-- `deploy-internal` ждёт `CI ok`. Запускается, только если код поменялся с последнего успешного деплоя внутренней среды (`changes`, `46`, `179`).
+- `deploy-internal` ждёт `CI ok`; `deploy-production` ждёт ещё `deploy-internal` и **Approve**. Каждый запускается, только если код поменялся с последнего успешного деплоя своей среды; среда без успешного деплоя получает его всегда (`changes`, `46`, `179`).
 - Новая задача-барьер: добавить её имя в шаг «Wait for the other gates» задачи `CI ok` (`GATES`), иначе она не держит слияние.
 
 ## Надёжность сервера (G42)
