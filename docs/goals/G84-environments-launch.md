@@ -18,8 +18,9 @@ A. Ключи обеих сред программой (docs/189, решение
     аккаунте → окружение Claude; новая сессия (17.10.2026).
 [x] Claude: pnpm run keys в обеих средах; отчёт владельцу по шагам
     (17.10.2026).
-[ ] Владелец: Roll rida-<среда>-deploy → GitHub internal и
-    production (с Account ID); строки «owner:» отчёта (R2 прода).
+[x] Владелец: Roll rida-<среда>-deploy → GitHub internal и
+    production (с Account ID); строки «owner:» отчёта (R2 прода)
+    (17.10.2026).
 
 B. Внутренняя среда, потом прод
 [x] Claude: перезапуск deploy-internal; зелёный (17.10.2026).
@@ -29,13 +30,14 @@ B. Внутренняя среда, потом прод
 [ ] Проверка: /health, боты «MyRida | …», Mini App, сайт, пост во
     внутреннем канале; скриншоты владельцу.
 [x] Владелец: общий бот прода @ridauz_bot создан 15.10.2026.
-[ ] Claude: deploy-production (первая выкладка не пропускается),
+[x] Claude: deploy-production (первая выкладка не пропускается),
     прод в «Map data», регион D1 «Европа»; PR; слияние; деплой
-    прода с Approve.
+    прода с Approve (17.10.2026: PR #252 … #255).
 [ ] Владелец: 6 ботов прода → Worker прода; BotFather: Configure
     Mini App у 4 ботов.
 [ ] Claude: keys прода ещё раз (секреты Worker, звонки, setup-bots),
-    «Map data» прода и повторный деплой (Approve).
+    «Map data» прода и повторный деплой (Approve). 17.10: всё, кроме
+    setup-bots (ждёт 6 ключей ботов прода).
 [ ] Проверка: /health, боты, Mini App, карта, сайт, звонок на
     Android и iPhone; скриншоты.
 [ ] Владелец: админка прода: «Jamoa», «Kompaniya rekvizitlari»,
@@ -70,15 +72,11 @@ D. Проверка владельца
 
 ## Где остановились (17.10.2026, вечер)
 
-- `pnpm run keys` прошла в обеих средах без ошибок. Ключи на час удалены.
-- Внутренняя (`myrida.uz`): сделаны `rida-internal-deploy` и `rida-internal-analytics`; зона настроена (SSL Full strict, HTTPS, TLS 1.2); `ANALYTICS_API_TOKEN` в Worker. Bot Fight Mode, Web Analytics, R2, DNS, звонки, вебхуки уже были в порядке.
-- Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
-- Владелец: Roll `rida-internal-deploy` в GitHub `internal` и «Re-run failed jobs» (мне закрыт, 403). `deploy-internal` зелёный: `/health` ok, сайт, 4 Mini App и карта `myrida.uz` отвечают, Mini App ходят на `api.myrida.uz` и `map.myrida.uz`.
-- Владелец: Roll `rida-prod-deploy` в GitHub `production` и R2 в аккаунте прода сделаны; программа это подтвердила.
-- PR #252 слит: выкладка прода в CI, «Map data» для прода, база D1 прода в Западной Европе. Первая выкладка прода (Approve) упала: в аккаунте прода не включён Analytics Engine (урок №303). База D1 прода создана, миграции прошли.
-- Владелец включил Analytics Engine и открыл страницу Workers (адрес `workers.dev`, урок №305). «Deploy production» (запуск 39038096564) прошёл: `api.ridaone.uz/health` ok. Сайт и Mini App прода: ошибка 1014, записи DNS вели на проекты Pages внутреннего аккаунта (урок №306); исправление в PR.
-- Проверяющий агент нашёл в #252 две ошибки (урок №304). Исправление: свой workflow «Deploy production» и `scripts/deploy-needed.mjs`; PR на «да» владельца после CI и проверки.
-- Дальше владелец: Telegram ID, бот каналов и номер «MyRida | Viloyatlar» на странице (часть 3).
+- Обе среды выложены: `myrida.uz` и `ridaone.uz` отвечают (`/health`, сайт, 4 Mini App, карта). Mini App прода ходят на `api.ridaone.uz` и `map.ridaone.uz`.
+- `pnpm run keys` в обеих средах. Прод: `CF_ACCOUNT_ID`, `ANALYTICS_API_TOKEN`, 4 ключа звонков в Worker; ключ `rida-prod-analytics` сделан.
+- Выкладка прода: свой workflow «Deploy production» после зелёного CI, с Approve (PR #253, #254); записи DNS Pages ведут на свои проекты (PR #255).
+- Новый аккаунт потребовал в панели R2, Analytics Engine и адрес `workers.dev` (уроки №303, №305; таблица в `../189`); Pages прода получили адреса с окончанием (урок №306).
+- Ждём владельца: 6 ключей ботов прода в Worker (потом Claude: `keys` прода, вебхуки и setup-bots); BotFather: Mini App у 4 ботов прода; часть 3 страницы (Telegram ID, бот каналов во внутренних каналах).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
 ## Ждёт решения владельца
