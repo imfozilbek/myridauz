@@ -8,7 +8,7 @@ export const DEPLOY = [
   ['D1 Write'],
   ['Workers R2 Storage Write'],
   ['Queues Write'],
-  ['Pages Write', 'Cloudflare Pages Write'],
+  ['Pages Write'],
   ['Account Settings Read'],
   ['Workers Routes Write'],
   ['DNS Write'],
@@ -20,9 +20,10 @@ export const ANALYTICS = [['Account Analytics Read']];
 export const SETUP = [...DEPLOY, ['Zone Settings Write']];
 // Without these the setup still runs; it names the step the owner then does by hand.
 export const OPTIONAL = {
-  calls: ['Calls Write', 'Realtime Write', 'Realtime Admin'],
+  calls: ['Realtime Write', 'Calls Write'],
   botFight: ['Bot Management Write'],
-  webAnalytics: ['Account Web Analytics Write', 'Web Analytics Write'],
+  // Web Analytics has no right of its own: its sites are account settings.
+  webAnalytics: ['Account Settings Write'],
 };
 
 const byName = (groups) => new Map(groups.map((group) => [group.name.toLowerCase(), group]));
@@ -65,11 +66,14 @@ export function policiesOf(groups, { accountId, zoneId }) {
     .map(({ resources, groups: list }) => ({ effect: 'allow', resources, permission_groups: ids(list) }));
 }
 
-// The same rights on the same resources, in any order: a key that has them stays as it is.
+// Every resource of policies, nested ones as "account>zone": "com.cloudflare.api.account.<id>" and the like.
 const flat = (resources) =>
   Object.entries(resources).flatMap(([key, value]) =>
     typeof value === 'object' ? flat(value).map((inner) => `${key}>${inner}`) : [key],
   );
+export const resourceKeys = (policies) => policies.flatMap((policy) => flat(policy.resources ?? {}));
+
+// The same rights on the same resources, in any order: a key that has them stays as it is.
 const signature = (policies) =>
   policies
     .flatMap((policy) =>

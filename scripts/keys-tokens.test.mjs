@@ -75,19 +75,48 @@ describe('the keys of the setup', () => {
     ]);
   });
 
-  it('calls old only the keys of the brand that are neither kept nor setup keys', () => {
-    const setupKey = {
-      name: 'acme-prod-setup',
-      policies: [{ permission_groups: [{ id: 'u', name: 'API Tokens Write' }] }],
-    };
+  it('lists expired keys too for the end of the setup', async () => {
+    const { calls, request } = recorder({ GET: [] });
+    await tokensOf(request, { expired: true });
+    expect(calls[0].path).toBe('/user/tokens?per_page=50&page=1&include_expired=true');
+  });
+
+  it('switches a disabled key with the right rights on again', async () => {
+    const { calls, request } = recorder();
+    const tokens = [{ id: 't1', name: 'acme-internal-deploy', policies: POLICIES, status: 'disabled' }];
+    expect((await ensureToken(request, tokens, 'acme-internal-deploy', POLICIES)).state).toBe('changed');
+    expect(calls[0].body.status).toBe('active');
+  });
+
+  it('calls old only the keys of the brand on this account, never kept, setup or running ones', () => {
+    const now = Date.parse('2026-10-17T12:00:00Z');
+    const on = (resources) => [{ resources, permission_groups: [{ id: 'g1', name: 'DNS Write' }] }];
+    const thisAccount = on({ 'com.cloudflare.api.account.a1': '*' });
     const tokens = [
-      { name: 'acme-deploy' },
-      { name: 'acme-claude', policies: POLICIES },
-      { name: 'acme-internal-deploy' },
-      { name: 'other-project-deploy' },
-      setupKey,
+      { name: 'acme-deploy', policies: thisAccount },
+      { name: 'acme-claude', policies: on({ 'com.cloudflare.api.account.zone.z1': '*' }) },
+      {
+        name: 'acme-old-hour',
+        policies: on({ 'com.cloudflare.api.account.a1': { 'com.cloudflare.api.account.zone.*': '*' } }),
+        expires_on: '2026-10-17T11:00:00Z',
+      },
+      { name: 'acme-internal-deploy', policies: thisAccount },
+      { name: 'acme-prod-hour', policies: thisAccount, expires_on: '2026-10-17T12:30:00Z' },
+      { name: 'acme-infra', policies: on({ 'com.cloudflare.api.account.a2': '*' }) },
+      { name: 'acme-everything', policies: on({ 'com.cloudflare.api.account.*': '*' }) },
+      { name: 'other-project-deploy', policies: thisAccount },
+      {
+        name: 'acme-prod-setup',
+        policies: [
+          {
+            resources: { 'com.cloudflare.api.user.u1': '*' },
+            permission_groups: [{ id: 'u', name: 'API Tokens Write' }],
+          },
+        ],
+      },
     ];
-    const old = oldTokens(tokens, 'acme', ['acme-internal-deploy']).map((token) => token.name);
-    expect(old).toEqual(['acme-deploy', 'acme-claude']);
+    const where = { accountId: 'a1', zoneId: 'z1', now };
+    const old = oldTokens(tokens, 'acme', ['acme-internal-deploy'], where).map((token) => token.name);
+    expect(old).toEqual(['acme-deploy', 'acme-claude', 'acme-old-hour']);
   });
 });

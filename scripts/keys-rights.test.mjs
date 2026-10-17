@@ -11,12 +11,30 @@ import {
 } from './keys/rights.mjs';
 
 const ZONE = 'com.cloudflare.api.account.zone';
-const ZONE_RIGHTS = ['Workers Routes Write', 'DNS Write', 'Zone Read', 'Zone Settings Write'];
-// The permission groups as Cloudflare gives them: the first name of every right of the sets.
-const GROUPS = [...SETUP, ...ANALYTICS].map(([name], index) => ({
+const ACCOUNT = 'com.cloudflare.api.account';
+// The permission groups by the names and scopes of the Cloudflare permissions page (17.10.2026), not by
+// the lists of the code: a wrong name in the code fails here.
+const REAL = {
+  'Workers Scripts Write': ACCOUNT,
+  'D1 Write': ACCOUNT,
+  'Workers R2 Storage Write': ACCOUNT,
+  'Queues Write': ACCOUNT,
+  'Pages Write': ACCOUNT,
+  'Account Settings Read': ACCOUNT,
+  'Account Settings Write': ACCOUNT,
+  'Account Analytics Read': ACCOUNT,
+  'Realtime Write': ACCOUNT,
+  'Workers Routes Write': ZONE,
+  'DNS Write': ZONE,
+  'Zone Read': ZONE,
+  'Zone Settings Write': ZONE,
+  'Bot Management Write': ZONE,
+  'API Tokens Write': 'com.cloudflare.api.user',
+};
+const GROUPS = Object.entries(REAL).map(([name, scope], index) => ({
   id: `g${index}`,
   name,
-  scopes: [ZONE_RIGHTS.includes(name) ? ZONE : 'com.cloudflare.api.account'],
+  scopes: [scope],
 }));
 const ids = (policy) => policy.permission_groups.map((group) => group.id);
 
@@ -27,13 +45,19 @@ describe('the rights of the keys', () => {
     expect(SETUP).toEqual(expect.arrayContaining(DEPLOY));
   });
 
-  it('finds a right by a later name and in any case', () => {
-    const renamed = GROUPS.map((group) =>
-      group.name === 'Pages Write' ? { ...group, name: 'cloudflare pages write' } : group,
-    );
-    expect(groupsOf(DEPLOY, renamed).map((group) => group.id)).toEqual(
+  it('finds every right of every set by the names Cloudflare gives, in any case', () => {
+    expect(groupsOf([...SETUP, ...ANALYTICS], GROUPS)).toHaveLength(SETUP.length + 1);
+    const lower = GROUPS.map((group) => ({ ...group, name: group.name.toLowerCase() }));
+    expect(groupsOf(DEPLOY, lower).map((group) => group.id)).toEqual(
       groupsOf(DEPLOY, GROUPS).map((group) => group.id),
     );
+  });
+
+  it('knows every optional right, Web Analytics by the account settings', () => {
+    const optional = optionalOf(GROUPS);
+    expect(optional.calls.name).toBe('Realtime Write');
+    expect(optional.botFight.name).toBe('Bot Management Write');
+    expect(optional.webAnalytics.name).toBe('Account Settings Write');
   });
 
   it('stops on an unknown right and names the near ones', () => {
@@ -43,9 +67,10 @@ describe('the rights of the keys', () => {
     );
   });
 
-  it('gives no optional right Cloudflare does not know', () => {
-    const calls = { id: 'c', name: OPTIONAL.calls[1], scopes: ['com.cloudflare.api.account'] };
-    expect(optionalOf([...GROUPS, calls])).toEqual({ calls, botFight: undefined, webAnalytics: undefined });
+  it('takes the older name of calls and gives no optional right Cloudflare does not know', () => {
+    const known = GROUPS.filter((group) => !Object.values(OPTIONAL).flat().includes(group.name));
+    const calls = { id: 'c', name: 'Calls Write', scopes: [ACCOUNT] };
+    expect(optionalOf([...known, calls])).toEqual({ calls, botFight: undefined, webAnalytics: undefined });
   });
 
   it('puts account rights on the account and zone rights on one zone', () => {

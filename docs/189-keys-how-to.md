@@ -31,11 +31,12 @@
 | R2 | проверяет; выключен: строка владельцу (включается только в панели, может попросить карту, платить не нужно) |
 | DNS | показывает старые записи адресов бренда (`@`, `www`, `api`, `map`, 4 Mini App); удаляет только с `--dns` |
 | Worker (после первой выкладки) | `CF_ACCOUNT_ID`; `ADMIN_TELEGRAM_IDS` (`--admins=`); `ANALYTICS_API_TOKEN`; ключи звонков (`08`); `TELEGRAM_WEBHOOK_SECRET` и сразу setup-bots, только когда все 6 ключей ботов на месте |
-| `--finish --yes` | новое значение `ANALYTICS_API_TOKEN`, потом удаляет старые ключи `rida-*` и свой ключ шаблона |
+| `--finish --yes` | новое значение `ANALYTICS_API_TOKEN`, потом удаляет старые ключи `rida-*` этого аккаунта и свой ключ шаблона. Новый ключ выкладки ещё не в GitHub: не удаляет ничего, просит сначала Roll. Без `--yes`: только список |
 
 - Внутренняя: `pnpm run keys --brand=rida --env=internal --admins=<id>,<id>`.
 - Прод: те же флаги с `--env=production`, переменные `PROD_CLOUDFLARE_*` подставляются в `CLOUDFLARE_*` перед запуском.
 - Строка без доступа к праву (Cloudflare переименовал право): программа называет шаг руками и идёт дальше.
+- Боты молчат после нового секрета вебхука (setup-bots не прошёл): Claude запускает ту же команду с `--webhook`.
 
 ## Наборы прав (код: `scripts/keys/rights.mjs`)
 
@@ -43,7 +44,7 @@
 |---|---|
 | «Выкладка» | Account: Workers Scripts, D1, Workers R2 Storage, Queues, Cloudflare Pages: Edit; Account Settings: Read. Zone: Workers Routes, DNS: Edit; Zone: Read |
 | «Аналитика» | Account: Account Analytics: Read |
-| Ключ на час | «Выкладка» и Zone Settings: Edit; если Cloudflare их знает: Realtime (Calls), Bot Management, Web Analytics: Edit. Все зоны своего аккаунта, один час |
+| Ключ на час | «Выкладка» и Zone Settings: Edit; если Cloudflare их знает: Realtime (Calls), Bot Management: Edit; Account Settings: Edit (для Web Analytics). Все зоны своего аккаунта, один час |
 
 Набора «Claude» больше нет: Claude работает ключом шаблона через программу.
 

@@ -1,13 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { isOld, zoneSettings, zoneSteps } from './keys/zone.mjs';
+import { isOld, r2On, zoneSettings, zoneSteps } from './keys/zone.mjs';
 
 const ZONE = { id: 'z1', name: 'example.uz' };
 const PARKING = { id: 'r1', type: 'A', name: 'example.uz', content: '203.0.113.7' };
 // A new zone: the settings of a fresh account, R2 on, one parking record on the domain.
-const cloudflare = ({ r2 = true, records = [PARKING] } = {}) => {
+const cloudflare = ({ r2 = true, records = [PARKING], served = [], auto = false } = {}) => {
   const calls = [];
   const request = async (method, path, body) => {
     calls.push(`${method} ${path}`);
+    if (path.includes('/workers/domains')) return served.map((hostname) => ({ hostname }));
+    if (path.endsWith('ssl_automatic_mode')) return { value: auto ? 'auto' : 'custom' };
     if (path.endsWith('/settings/ssl')) return { value: 'full' };
     if (path.includes('/settings/')) return { value: path.endsWith('min_tls_version') ? '1.0' : 'on' };
     if (path.includes('/r2/') && !r2) throw new Error('cloudflare GET r2: [{"code":10042}]');
@@ -17,7 +19,14 @@ const cloudflare = ({ r2 = true, records = [PARKING] } = {}) => {
   return { calls, request };
 };
 const steps = (request, more = {}) =>
-  zoneSteps(request, { zone: ZONE, hosts: [ZONE.name], optional: {}, dropOld: false, ...more });
+  zoneSteps(request, {
+    zone: ZONE,
+    hosts: [ZONE.name, 'api.example.uz'],
+    bucket: 'acme-map',
+    optional: {},
+    dropOld: false,
+    ...more,
+  });
 
 // docs/189: the zone of every environment has the same settings, old records never break the deploy.
 describe('the zone of an environment', () => {
@@ -83,5 +92,39 @@ describe('the zone of an environment', () => {
     const report = await steps(failing, { optional: { botFight: {} } });
     expect(report).toContain('owner: example.uz → Security → Bots → Bot Fight Mode: Off');
     expect(report.some((line) => line.startsWith('failed: Error: cloudflare GET bot_management'))).toBe(true);
+  });
+  it('leaves the automatic SSL mode before it sets Full (strict)', async () => {
+    const { calls, request } = cloudflare({ auto: true });
+    expect(await zoneSettings(request, 'z1')).toEqual(['ssl_automatic_mode', 'ssl', 'min_tls_version']);
+    expect(calls).toContain('PATCH /zones/z1/settings/ssl_automatic_mode');
+  });
+
+  it('never deletes the record of an address a Worker serves, even without its read only mark', async () => {
+    const api = { id: 'r2', type: 'AAAA', name: 'api.example.uz', content: '2001:db8::7' };
+    const { calls, request } = cloudflare({ records: [PARKING, api], served: ['api.example.uz'] });
+    await steps(request, { dropOld: true });
+    expect(calls).toContain('DELETE /zones/z1/dns_records/r1');
+    expect(calls).not.toContain('DELETE /zones/z1/dns_records/r2');
+  });
+
+  it('keeps Web Analytics that the zone already has and the other bot settings', async () => {
+    const { calls, request } = cloudflare({ records: [] });
+    const answers = async (method, path, body) => {
+      if (path.includes('rum/site_info/list')) return [{ ruleset: { zone_tag: 'z1' } }];
+      if (path.endsWith('/bot_management') && method === 'GET') return { fight_mode: true, enable_js: true };
+      return request(method, path, body);
+    };
+    const sent = [];
+    const watched = async (method, path, body) => (body && sent.push(body), answers(method, path, body));
+    await steps(watched, { optional: { botFight: {}, webAnalytics: {} } });
+    expect(calls.some((call) => call.startsWith('POST'))).toBe(false);
+    expect(sent).toContainEqual({ enable_js: true, fight_mode: false });
+  });
+
+  it('stops on an R2 error that is not "R2 is off"', async () => {
+    const broken = async () => {
+      throw new Error('cloudflare GET r2: [{"code":10000}]');
+    };
+    await expect(r2On(broken)).rejects.toThrow('10000');
   });
 });
