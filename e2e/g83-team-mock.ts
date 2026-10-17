@@ -30,7 +30,7 @@ const adOf = ([code, target, place, name, at, [days = 0, top = 0, pin = 0], coun
     top,
     pin,
     at: day(at),
-    result: { clicked, opened, passengers, drivers, joined, stayed, byFriends: 31 },
+    result: { registered: 0, clicked, opened, passengers, drivers, joined, stayed, byFriends: 31 },
   };
 };
 const ADS = (

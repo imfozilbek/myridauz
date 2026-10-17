@@ -7,7 +7,7 @@
   "listed": "{n} yozildi",
   "joined": "{n} qoʻshildi",
   "registered": "{n} roʻyxatdan oʻtdi",
-  "costNote": "Oʻngda: bitta yozilgan odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh.",
+  "costNote": "Oʻngda: bitta odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh.",
   "target": "Qayerga olib boradi",
   "target.bot": "Bot",
   "target.passenger": "Yoʻlovchi boti",

@@ -95,6 +95,7 @@ D. Проверка владельца
 | `ads.registered` | список, итог | «{n} roʻyxatdan oʻtdi» | ждёт |
 | `ads.inBot` | одна ссылка, шаг | «Roʻyxatdan oʻtdi» | ждёт |
 | `ads.perRegistered` | одна ссылка, цена | «Bitta roʻyxatdan oʻtgan odam» | ждёт |
+| `ads.costNote` | список, подпись внизу | «Oʻngda: bitta odam qanchaga tushdi. Narx kiritilmagan boʻlsa, boʻsh.» (было «bitta yozilgan odam») | ждёт |
 
 ## Ждёт решения владельца
 
