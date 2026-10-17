@@ -75,7 +75,7 @@
 
 | Переменная | Что это |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | `rida-internal-claude`: права из `179` (деплой, Realtime, аналитика, Workers Tail), первый аккаунт |
+| `CLOUDFLARE_API_TOKEN` | `rida-internal-claude`: права из `179` (деплой, Realtime, аналитика, Workers Tail, настройки своей зоны), первый аккаунт |
 | `CLOUDFLARE_ACCOUNT_ID` | ID первого аккаунта |
 | `PROD_CLOUDFLARE_API_TOKEN` | `rida-prod-claude`: то же на новом аккаунте |
 | `PROD_CLOUDFLARE_ACCOUNT_ID` | ID нового аккаунта |

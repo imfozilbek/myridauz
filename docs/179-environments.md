@@ -49,15 +49,15 @@
 ## Ключи обеих сред (карта владельца 15.10.2026)
 
 Источник правды по ключам: карта в репозитории инфраструктуры `dream-infra`, `docs/18-rida-keys.md` (утвердил владелец). Где взять каждый ключ, права по шагам и куда положить: `189`.
-Правило: один ключ лежит в одном месте и делает одно дело; имя `rida-<среда>-<задача>`.
+Правило: один ключ лежит в одном месте и делает одно дело; имя `rida-<среда>-<задача>`. Обе среды симметричны: те же наборы прав и имена (решение владельца 17.10.2026, `189`).
 
 | Токен Cloudflare | Аккаунт | Права | Где лежит, имя |
 |---|---|---|---|
 | `rida-internal-deploy` | первый | права деплоя (ниже), зона `myrida.uz` | GitHub Environment `internal`: `CLOUDFLARE_API_TOKEN` |
-| `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read | окружение Claude: `CLOUDFLARE_API_TOKEN` |
+| `rida-internal-claude` | первый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; своя зона: Zone Settings, SSL and Certificates: Edit | окружение Claude: `CLOUDFLARE_API_TOKEN` |
 | `rida-internal-analytics` | первый | только Account Analytics: Read | секрет Worker: `ANALYTICS_API_TOKEN` |
 | `rida-prod-deploy` | новый | права деплоя, зона `ridaone.uz` | GitHub Environment `production`: `CLOUDFLARE_API_TOKEN` |
-| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; зона `ridaone.uz`: Zone Settings, SSL and Certificates: Edit (настройки зоны делает infra) | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
+| `rida-prod-claude` | новый | права деплоя; Realtime: Edit; Account Analytics, Workers Tail: Read; своя зона: Zone Settings, SSL and Certificates: Edit | окружение Claude: `PROD_CLOUDFLARE_API_TOKEN` |
 | `rida-prod-analytics` | новый | только Account Analytics: Read | секрет Worker прода: `ANALYTICS_API_TOKEN` |
 
 - Рядом с токеном: Account ID своего аккаунта (`CLOUDFLARE_ACCOUNT_ID`, `PROD_CLOUDFLARE_ACCOUNT_ID`, в Worker `CF_ACCOUNT_ID`).

@@ -16,12 +16,12 @@
 
 | Бот | Имя (код) | Знак на аватаре | Картинка описания (Edit Bot → Edit Description Picture) | Экран загрузки (Bot Settings → Configure Mini App) |
 |---|---|---|---|---|
-| `@rida1uz_bot` | Rida \| yoʻlovchi | человек | `bot-passenger-description.png` | `miniapp-splash.svg`, фон `#FFFFFF`, знак `#14B8A6` |
-| `@rida1uz_haydovchi_bot` | Rida \| haydovchi | машина | `bot-driver-description.png` | тот же файл, знак `#F59E0B` |
-| `@rida1uz_admin_bot` | Rida \| admin | щит | `bot-admin-description.png` | нет Mini App в меню |
+| `@rida1uz_bot` | Rida \| yoʻlovchi | человек | `bot-passenger-description.png` | `miniapp-splash.svg`, фон `#0D9488`, знак `#FFFFFF` |
+| `@rida1uz_haydovchi_bot` | Rida \| haydovchi | машина | `bot-driver-description.png` | тот же файл, фон `#D97706` |
+| `@rida1uz_admin_bot` | Rida \| admin | щит | `bot-admin-description.png` | тот же файл, фон `#334155`; кнопки меню нет |
 | `@rida1uz_yordam_bot` | Rida \| yordam | наушники | `bot-support-description.png` | нет Mini App |
 
-- Боты прода (`179`). Боты внутренней среды `@myrida_*` настроены так же.
+- Боты прода (`179`). Боты внутренней среды `@myrida_*` и главные боты настраиваются так же: все шаги BotFather обеих сред в `189`.
 - Файлы: `brands/rida/brand-kit/kit/telegram/` (собирается `pnpm build` бренд-пакета, `38`).
 - Кнопка меню у поля ввода: «ilova» (решение владельца 03.10.2026, ключ `bot.menu`); кнопки в сообщениях бота: «Ochish» (`bot.open`). Описания ботов до Start зовут нажать «ilova».
 - Тексты и имена меняются только в коде (`bot.json`), иначе `setup-bots` вернёт старые.
