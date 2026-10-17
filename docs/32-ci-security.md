@@ -36,8 +36,8 @@
    через Environment (`179`):
    - правило обоих: деплой только из `main`;
    - `internal` (среда команды): без подтверждения;
-   - `production`: вернётся с новым аккаунтом (`179`), после `internal`, обязательное подтверждение владельцем (required reviewer).
-4. `permissions:` минимальные: по умолчанию `contents: read`; job `changes` ещё читает `deployments` (только чтение, только на `main`).
+   - `production`: свой workflow «Deploy production» (`workflow_run` после CI только для `push` в `main`, или руками из `main`), только коммит с зелёным CI, обязательное подтверждение владельцем (required reviewer).
+4. `permissions:` минимальные: по умолчанию `contents: read`; job `changes` ещё читает `deployments` и `actions` (только чтение, только на `main`).
 5. Сторонние actions закреплены по полному SHA коммита, не по тегу.
 6. Первые запуски CI от новых внешних участников требуют одобрения
    (настройка репозитория).

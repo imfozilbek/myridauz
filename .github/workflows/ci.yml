@@ -238,11 +238,9 @@ jobs:
           tar -xzf "${archive}" gitleaks
       - run: ./gitleaks git --no-banner --redact
 
-  # Deploy only when something that is deployed changed: code, brands, dependencies, the deploy
-  # script. A merge of docs alone needs no deploy (owner decision 29.09.2026).
-  # The base is the last commit that reached the environment, not the previous push: a red main skips
-  # its deploy, and the next merge of docs alone must still bring that code there (lesson 208). An
-  # environment without a successful deploy always gets one.
+  # Deploy only when something that is deployed changed since the last deploy of the internal environment
+  # (scripts/deploy-needed.mjs, docs/45, lesson 208). A merge of docs alone needs no deploy (owner
+  # decision 29.09.2026).
   changes:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -250,9 +248,9 @@ jobs:
     permissions:
       contents: read
       deployments: read
+      actions: read
     outputs:
-      internal: ${{ steps.diff.outputs.internal }}
-      production: ${{ steps.diff.outputs.production }}
+      deploy: ${{ steps.diff.outputs.deploy }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -261,39 +259,14 @@ jobs:
       - id: diff
         env:
           GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: |
-          needed() {
-            local base="" id sha state changed
-            local deployments
-            deployments="$(gh api "repos/${REPO}/deployments?environment=$1&per_page=30" --jq '.[] | "\(.id) \(.sha)"' || true)"
-            while read -r id sha; do
-              [ -n "${id}" ] || continue
-              state="$(gh api "repos/${REPO}/deployments/${id}/statuses?per_page=1" --jq '.[0].state' || true)"
-              if [ "${state}" = "success" ]; then base="${sha}"; break; fi
-            done <<< "${deployments}"
-            echo "last $1 deploy: ${base:-none}" >&2
-            if [ -z "${base}" ] || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
-              echo true
-              return
-            fi
-            changed="$(git diff --name-only "${base}" HEAD)"
-            echo "${changed}" >&2
-            if echo "${changed}" | grep -Eq '^(apps/|packages/|brands/|scripts/deploy|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$)'; then
-              echo true
-            else
-              echo false
-            fi
-          }
-          for environment in internal production; do
-            echo "${environment}=$(needed "${environment}")" >> "$GITHUB_OUTPUT"
-          done
+        run: echo "deploy=$(node scripts/deploy-needed.mjs --env=internal --workflow=ci.yml)" >> "$GITHUB_OUTPUT"
 
-  # Deploy (docs/32, docs/179): only from main, only after every gate is green. The internal environment
-  # of the team on the first account goes by itself (Environment "internal"). Pull requests never reach it.
-  # The screenshots are media for people: the deploy does not wait for them (docs/45).
+  # Deploy (docs/32, docs/179): only from main, only after every gate is green, to the internal
+  # environment of the team on the first account (Environment "internal"). Pull requests never reach it.
+  # Production follows in its own workflow (deploy-production.yml). The screenshots are media for people:
+  # the deploy does not wait for them (docs/45).
   deploy-internal:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.internal == 'true'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.deploy == 'true'
     needs: [ci-ok, changes]
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -307,30 +280,6 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
       - run: pnpm run deploy --brand=rida --env=internal
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-  # Production on its own account (owner decision 13.10.2026, docs/179): after the internal environment
-  # went well or had nothing to deploy, and only after the owner approves it (Environment "production").
-  deploy-production:
-    if: >-
-      !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/main' &&
-      needs.ci-ok.result == 'success' && needs.changes.outputs.production == 'true' &&
-      (needs.deploy-internal.result == 'success' || needs.deploy-internal.result == 'skipped')
-    needs: [ci-ok, changes, deploy-internal]
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment: production
-    concurrency:
-      group: deploy-production
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: pnpm run deploy --brand=rida --env=production
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
