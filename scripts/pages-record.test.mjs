@@ -16,7 +16,20 @@ describe('the DNS record of a Pages address', () => {
 
   it('points a CNAME of another account at this project again', () => {
     const records = [{ id: 'r1', type: 'CNAME', content: 'acme-passenger.pages.dev' }];
-    expect(recordStep(records, HOST, OWN)).toEqual({ method: 'PATCH', id: 'r1', body: { content: OWN } });
+    expect(recordStep(records, HOST, OWN)).toEqual({
+      method: 'PATCH',
+      id: 'r1',
+      body: { type: 'CNAME', name: HOST, content: OWN, proxied: true },
+    });
+  });
+
+  // The review of G84: the root of a domain may hold MX or TXT next to its CNAME.
+  it('finds the CNAME among the other records of the name', () => {
+    const records = [
+      { id: 't1', type: 'TXT', content: 'v=spf1 -all' },
+      { id: 'r1', type: 'CNAME', content: 'acme-passenger.pages.dev' },
+    ];
+    expect(recordStep(records, HOST, OWN)).toMatchObject({ method: 'PATCH', id: 'r1' });
   });
 
   it('keeps a right record and any record that is not a CNAME', () => {
