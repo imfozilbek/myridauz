@@ -9,3 +9,5 @@ export const PEOPLE_SECTION = 'people';
 export const CHANNELS_SECTION = 'channels';
 // «Hamyonlar» of the owner: the money signs of «Diqqat» open it at once (G77).
 export const WALLETS_SECTION = 'wallets';
+// «Reklama havolalari»: the whole team makes the links of the ads (owner, 17.10.2026, docs/184).
+export const ADS_SECTION = 'ads';

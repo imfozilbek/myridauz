@@ -1,4 +1,6 @@
 import {
+  ADS_SECTION,
+  AdLinksScreen,
   CHANNELS_SECTION,
   linkedCase,
   linkedStats,
@@ -71,6 +73,14 @@ const SECTIONS: readonly StartAction[] = [
     labelKey: 'wallet.team.title',
     hintKey: 'wallet.team.title',
     Screen: TeamWalletsScreen,
+  },
+  {
+    id: ADS_SECTION,
+    icon: 'adLink',
+    tone: 'brand',
+    labelKey: 'ads.title',
+    hintKey: 'ads.hint',
+    Screen: AdLinksScreen,
   },
   {
     id: MANAGEMENT_SECTION,

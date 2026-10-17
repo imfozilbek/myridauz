@@ -16,12 +16,13 @@ const BAD_REQUEST = 400;
 const FORBIDDEN = 403;
 const NOT_FOUND = 404;
 
-// «Kutish roʻyxati» of «Boshqaruv» (docs/181, docs/184): the switch and the ad links, the owner's.
+// «Kutish roʻyxati» of «Boshqaruv» (docs/181, docs/184): the switch is the owner's; the ad links are the
+// whole team's (owner, 17.10.2026).
 export const adRoutes = (deps: (env: Bindings) => AdDeps | null) =>
   new Hono<AppEnv>()
     .use(ADMIN_WAITLIST_SWITCH_PATH, teamOnly, ownerOnly)
-    .use(ADMIN_AD_LINKS_PATH, teamOnly, ownerOnly)
-    .use(`${ADMIN_AD_LINKS_PATH}/*`, teamOnly, ownerOnly)
+    .use(ADMIN_AD_LINKS_PATH, teamOnly)
+    .use(`${ADMIN_AD_LINKS_PATH}/*`, teamOnly)
     .get(
       ADMIN_WAITLIST_SWITCH_PATH,
       withDeps(deps, async (context, found) => context.json(await readSwitch(found))),

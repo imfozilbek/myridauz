@@ -1,5 +1,6 @@
 import {
   AD_DAYS,
+  AD_NEW_TARGETS,
   AD_PIN_HOURS,
   AD_PLACES,
   AD_TOP_HOURS,
@@ -28,8 +29,9 @@ type Draft = Omit<AdLinkInput, 'days' | 'top' | 'pin'> & {
 };
 const DIGITS = /\D/gu;
 
-// «Yangi havola» (docs/184, mockup 7-team-ad-links screens 2 and 5): where it leads, where the ad is,
-// a name for the statistics, the price if any, and the terms by a tap.
+// «Yangi havola» (docs/184, mockup 7-team-ad-links screens 2 and 5): where it leads (the passenger or
+// the driver bot, or a channel: owner, 17.10.2026), where the ad is, a name for the statistics, the
+// price if any, and the terms by a tap.
 export function AdForm({ onMade, onBack }: Props) {
   useScreenView('ads_new');
   const { t } = useI18n();
@@ -38,7 +40,7 @@ export function AdForm({ onMade, onBack }: Props) {
   const words = useAdWords();
   const { failure, fail, clear } = useFailure();
   const [input, setInput] = useState<Draft>({
-    target: 'bot',
+    target: 'passenger',
     channel: null,
     place: 'telegram',
     name: '',
@@ -64,7 +66,7 @@ export function AdForm({ onMade, onBack }: Props) {
       <h2 className="wl-head">{t('ads.target')}</h2>
       <OutlineChips
         label={t('ads.target')}
-        options={(['bot', 'channel'] as const).map((id) => ({ id, label: t(`ads.target.${id}`) }))}
+        options={AD_NEW_TARGETS.map((id) => ({ id, label: t(`ads.target.${id}`) }))}
         value={input.target}
         onChange={(target) => set({ target, channel: target === 'channel' ? `@${brand.mainChannel}` : null })}
       />

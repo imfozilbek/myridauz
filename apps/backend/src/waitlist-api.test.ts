@@ -87,7 +87,7 @@ describe('the waitlist of the team (docs/181, docs/183, docs/184)', () => {
     expect(sent.filter((method) => method === 'sendMessage').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('the switch and the ad links are the owner’s', async () => {
+  it('the switch is the owner’s; the ad links lead into a bot of the trips', async () => {
     expect(await read(admin('/admin/waitlist-switch'))).toEqual({ open: true, at: null, links: 0 });
     const closed = await read<{ open: boolean }>(
       admin('/admin/waitlist-switch', { ...json({ open: false }, 'PUT') }),
@@ -111,12 +111,30 @@ describe('the waitlist of the team (docs/181, docs/183, docs/184)', () => {
     };
     const bad = await admin('/admin/ad-links', { ...json(input) });
     expect(bad.status).toBe(400);
-    const bot = { ...input, target: 'bot', channel: null };
+    const old = { ...input, target: 'bot', channel: null };
+    expect((await admin('/admin/ad-links', { ...json(old) })).status).toBe(400);
+    const bot = { ...input, target: 'passenger', channel: null };
     const made = await read<{ code: string; link: string }>(admin('/admin/ad-links', { ...json(bot) }));
-    expect(made.link).toContain(`?start=${made.code}`);
+    expect(made.link).toContain(`?startapp=__${made.code}`);
     const links = await read<{ links: unknown[] }>(admin('/admin/ad-links'));
     expect(links.links).toHaveLength(1);
     expect((await admin(`/admin/ad-links/${made.code}`)).status).toBe(200);
     expect((await admin('/admin/ad-links/ad-000000')).status).toBe(404);
+  });
+
+  // Owner, 17.10.2026: the moderators make ad links too; the switch of the list stays the owner's.
+  it('lets a moderator make and read ad links, never the switch', async () => {
+    const moderator = 77;
+    await env.DB.prepare(
+      "INSERT INTO team_members (user_id, role, added_by, added_at) VALUES (?, 'moderator', ?, 1)",
+    )
+      .bind(moderator, OWNER)
+      .run();
+    const input = { target: 'driver', channel: null, place: 'instagram', name: 'Bloger', price: 100_000 };
+    const ad = { ...input, days: 1, top: 0, pin: 0 };
+    const made = await read<{ link: string }>(admin('/admin/ad-links', { ...json(ad) }, moderator));
+    expect(made.link).toContain('?startapp=__ad-');
+    expect((await admin('/admin/ad-links', {}, moderator)).status).toBe(200);
+    expect((await admin('/admin/waitlist-switch', {}, moderator)).status).toBe(403);
   });
 });

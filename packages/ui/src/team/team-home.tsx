@@ -13,7 +13,7 @@ import { DiqqatSection } from './diqqat-section';
 import { NavbatSection } from './navbat-section';
 import { TeamProfile } from './team-profile';
 import { ManageGroup, ManageRow } from '../manage/manage-page';
-import { CHANNELS_SECTION, MANAGEMENT_SECTION, STATS_SECTION } from './team-sections';
+import { ADS_SECTION, CHANNELS_SECTION, MANAGEMENT_SECTION, STATS_SECTION } from './team-sections';
 import { WorkNumbers } from './work-numbers';
 
 const ICON = 20;
@@ -54,7 +54,8 @@ function OwnerDiqqat({ go }: GoProps) {
 }
 
 // The own numbers of the day, then «Statistika» and «Kanallar» to read only (owner decision
-// 06.10.2026, docs/120): a moderator changes nothing there, the server refuses it too.
+// 06.10.2026, docs/120): a moderator changes nothing there, the server refuses it too. The links of
+// the ads a moderator makes and reads (owner, 17.10.2026, docs/184).
 function ModeratorNumbers({ go }: GoProps) {
   const { t } = useI18n();
   const brand = useBrand();
@@ -71,6 +72,7 @@ function ModeratorNumbers({ go }: GoProps) {
           onClick={() => go(STATS_SECTION)}
         />
         <ManageRow icon="channel" title={t('channels.title')} onClick={() => go(CHANNELS_SECTION)} />
+        <ManageRow icon="adLink" title={t('ads.title')} onClick={() => go(ADS_SECTION)} />
       </ManageGroup>
     </>
   );

@@ -13,11 +13,38 @@ const INPUT = {
 } as const;
 
 describe('«Reklama havolalari» (G83, docs/184)', () => {
-  it('makes a link into the main bot with a mark and counts what it gave', async () => {
+  // Owner, 17.10.2026: without the waitlist an ad leads into a bot of the trips, its Mini App at once;
+  // the registration keeps the mark (docs/116), so the ad counts who registered by it.
+  it('makes a link into the passenger or the driver bot and counts who registered by it', async () => {
     const kit = setup();
-    const made = await createAd(kit.ads, { ...INPUT, target: 'bot', channel: null }, 900);
-    if (typeof made === 'string') throw new Error(made);
+    const made = await createAd(kit.ads, { ...INPUT, target: 'passenger', channel: null }, 900);
+    const driver = await createAd(kit.ads, { ...INPUT, target: 'driver', channel: null }, 900);
+    if (typeof made === 'string' || typeof driver === 'string') throw new Error('not made');
     expect(made.code).toMatch(/^ad-[a-z0-9]{6}$/u);
+    expect(made.link).toBe(`https://t.me/passenger_bot?startapp=__${made.code}`);
+    expect(driver.link).toBe(`https://t.me/driver_bot?startapp=__${driver.code}`);
+    const arrive = (userId: number, via: string) =>
+      kit.db
+        .prepare(
+          'INSERT INTO user_arrivals (user_id, source, via, client, arrived_at) VALUES (?, ?, ?, ?, ?)',
+        )
+        .bind(userId, 'direct', via, 'android', kit.at())
+        .run();
+    await arrive(1, made.code);
+    await arrive(2, made.code);
+    await arrive(3, driver.code);
+    expect((await oneAd(kit.ads, made.code))?.result).toMatchObject({ registered: 2, clicked: 0 });
+    expect((await oneAd(kit.ads, driver.code))?.result.registered).toBe(1);
+    expect(kit.journal).toEqual([`900 ${made.code} ad`, `900 ${driver.code} ad`]);
+  });
+
+  it('keeps counting a link into the main bot made while the list was open', async () => {
+    const kit = setup();
+    const code = 'ad-main01';
+    const row = { ...INPUT, code, target: 'bot', channel: null, invite: null, at: kit.at() } as const;
+    await kit.ads.ads.add(row, 900);
+    const made = await oneAd(kit.ads, code);
+    if (!made) throw new Error('not found');
     expect(made.link).toBe(`https://t.me/main_bot?start=${made.code}`);
     await kit.deps.visits.started(1, made.code, kit.at());
     await kit.deps.visits.started(2, made.code, kit.at());
@@ -31,6 +58,7 @@ describe('«Reklama havolalari» (G83, docs/184)', () => {
       .prepare("INSERT INTO channel_members (chat, user_id, member, at) VALUES ('-1001', 1, 1, 1)")
       .run();
     expect((await oneAd(kit.ads, made.code))?.result).toEqual({
+      registered: 0,
       clicked: 2,
       opened: 1,
       passengers: 1,
@@ -39,7 +67,6 @@ describe('«Reklama havolalari» (G83, docs/184)', () => {
       stayed: 0,
       byFriends: 1,
     });
-    expect(kit.journal).toEqual([`900 ${made.code} ad`]);
   });
 
   it('makes a channel link by its own invite link and counts joins, leaves and records', async () => {

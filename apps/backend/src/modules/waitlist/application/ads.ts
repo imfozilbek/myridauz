@@ -6,8 +6,9 @@ import type { AdRow, AdStore, SwitchStore } from './ports';
 export type AdDeps = {
   readonly ads: AdStore;
   readonly switches: SwitchStore;
-  // The link into the main bot with the mark of the ad (docs/184).
-  readonly botLink: (code: string) => string;
+  // The link into a bot with the mark of the ad (docs/184): the main bot by its Start, a bot of the
+  // trips straight into its Mini App, where the registration keeps the mark (docs/116).
+  readonly botLink: (target: AdRow['target'], code: string) => string;
   // The chats a channel ad may lead to: the main channel and the channels of the directions.
   readonly channels: ReadonlySet<string>;
   // The own invite link the bot of the channels makes, named by the ad; null when it may not.
@@ -18,7 +19,7 @@ export type AdDeps = {
 
 const linkOf = async (deps: AdDeps, ad: AdRow): Promise<AdLink> => ({
   code: ad.code,
-  link: ad.invite ?? deps.botLink(ad.code),
+  link: ad.invite ?? deps.botLink(ad.target, ad.code),
   target: ad.target,
   channel: ad.channel,
   place: ad.place,

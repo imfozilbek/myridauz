@@ -1,10 +1,15 @@
 import { z } from 'zod';
 
-// Links for ads (G83, docs/184): each ad gets its own link with a mark, into the main bot or into a
-// channel by its own invite link. Only the link: the content is the seller's (owner, 14.10.2026).
+// Links for ads (G83, docs/184): each ad gets its own link with a mark, into a bot of the trips or into
+// a channel by its own invite link. Only the link: the content is the seller's (owner, 14.10.2026).
+// The whole team makes them (owner, 17.10.2026).
 export const ADMIN_AD_LINKS_PATH = '/admin/ad-links';
 export const adminAdLinkPath = (code: string) => `${ADMIN_AD_LINKS_PATH}/${code}`;
-export const AD_TARGETS = ['bot', 'channel'] as const;
+// «bot»: the main bot of the waitlist, kept for the links made before the list closed (17.10.2026).
+export const AD_TARGETS = ['bot', 'passenger', 'driver', 'channel'] as const;
+// What a new link may lead to: the passenger or the driver bot, opening its Mini App, or a channel.
+export const AD_NEW_TARGETS = ['passenger', 'driver', 'channel'] as const;
+export const AD_BOTS = ['passenger', 'driver'] as const;
 export const AD_PLACES = ['telegram', 'instagram', 'blogger', 'other'] as const;
 // The terms the way channels sell an ad: days in the channel (none: for good), hours on top with no
 // other post, hours pinned.
@@ -21,7 +26,7 @@ const literal = <T extends readonly number[]>(values: T) =>
 
 export const adLinkInputSchema = z
   .object({
-    target: z.enum(AD_TARGETS),
+    target: z.enum(AD_NEW_TARGETS),
     // The chat of a brand channel, or «@name» of the main channel.
     channel: z.string().min(1).max(64).nullable(),
     place: z.enum(AD_PLACES),
@@ -35,9 +40,11 @@ export const adLinkInputSchema = z
 export type AdLinkInput = z.infer<typeof adLinkInputSchema>;
 
 const count = z.number().int().nonnegative();
-// What one ad gave (docs/184): into the bot, pressed, opened the app, got on the list; into a channel,
-// joined, stayed, got on the list. byFriends: the friends of these people who got on the list.
+// What one ad gave (docs/184): into the main bot, pressed, opened the app, got on the list; into a bot of
+// the trips, registered; into a channel, joined, stayed, got on the list. byFriends: the friends of these
+// people who got on the list.
 export const adResultSchema = z.object({
+  registered: count,
   clicked: count,
   opened: count,
   passengers: count,

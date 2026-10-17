@@ -9,7 +9,7 @@ import { useLoad } from '../../market/use-list';
 import { AdDetail } from './ad-detail';
 import { AdForm } from './ad-form';
 import { AdReady } from './ad-ready';
-import { listedOf, useAdWords } from './ad-words';
+import { intoTrips, listedOf, useAdWords } from './ad-words';
 
 type View =
   | { readonly kind: 'list' }
@@ -28,17 +28,21 @@ function AdRow({ ad, onOpen }: { readonly ad: AdLink; readonly onOpen: () => voi
     ad.target === 'bot'
       ? t('ads.clicked', { n: formatNumber(ad.result.clicked) })
       : t('ads.joined', { n: formatNumber(ad.result.joined) });
+  // Into a bot of the trips: who registered by it, the one number the link gives (owner, 17.10.2026).
+  const gave = intoTrips(ad)
+    ? t('ads.registered', { n: formatNumber(ad.result.registered) })
+    : `${reach} · ${listed}`;
   return (
     <button type="button" className="navbat-row manage-row" onClick={onOpen}>
       <span className="navbat-icon">
-        <Icon name={ad.target === 'bot' ? 'botFace' : 'channel'} size={ICON} />
+        <Icon name={ad.target === 'channel' ? 'channel' : 'botFace'} size={ICON} />
       </span>
       <span className="navbat-words">
         <span className="navbat-title">{ad.name}</span>
         <span className="navbat-hint manage-row-hint">
           <span className="ad-lines">{words.where(ad)}</span>
           <span className="ad-lines">{words.terms(ad)}</span>
-          <span className="ad-lines">{`${reach} · ${listed}`}</span>
+          <span className="ad-lines">{gave}</span>
         </span>
       </span>
       <span className="manage-value">{words.per(ad.price, listedOf(ad))}</span>

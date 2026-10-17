@@ -1,4 +1,4 @@
-import type { WaitlistAnswers, WaitlistRole } from '@platform/contracts';
+import { botStartLink, type WaitlistAnswers, type WaitlistRole } from '@platform/contracts';
 import { testD1 } from '../../test-d1';
 import type { AdDeps } from './application/ads';
 import type { CardView } from './application/person';
@@ -36,7 +36,10 @@ export function setup(start = Date.parse('2026-10-14T10:00:00Z')) {
   const ads: AdDeps = {
     ads: d1Ads(db),
     switches: deps.switches,
-    botLink: (code) => `https://t.me/main_bot?start=${code}`,
+    botLink: (target, code) =>
+      target === 'passenger' || target === 'driver'
+        ? botStartLink(`${target}_bot`, code)
+        : `https://t.me/main_bot?start=${code}`,
     channels: new Set(['@main', '-1001']),
     invite: async (chat, name) => (chat === '-1001' ? `https://t.me/+${name.length}xyz` : null),
     journal: deps.journal,

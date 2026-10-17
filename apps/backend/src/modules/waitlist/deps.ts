@@ -1,4 +1,4 @@
-import { TASHKENT_CITY } from '@platform/contracts';
+import { botStartLink, TASHKENT_CITY } from '@platform/contracts';
 import { createI18n, DEFAULT_LOCALE } from '@platform/i18n';
 import type { Bindings } from '../../env';
 import { brandOf } from '../../shared/brand/brand-of';
@@ -115,7 +115,10 @@ export function adDeps(env: Bindings): AdDeps | null {
   return {
     ads: d1Ads(db),
     switches: d1Switches(db),
-    botLink: (code) => `https://t.me/${brand.bots.main}?start=${code}`,
+    botLink: (target, code) =>
+      target === 'passenger' || target === 'driver'
+        ? botStartLink(brand.bots[target], code)
+        : `https://t.me/${brand.bots.main}?start=${code}`,
     channels: new Set([`@${brand.mainChannel}`, ...brand.channels.map(({ chat }) => chat)]),
     invite: (chat, name) => adInviteLink(env, chat, name),
     journal: journal(env),
