@@ -1,4 +1,4 @@
-import { personIdSchema, type TeamList } from '@platform/contracts';
+import { teamPersonSchema, type TeamList } from '@platform/contracts';
 import { useState } from 'react';
 import { useApiClients } from '../context/api-clients';
 import { useI18n } from '../context/i18n-context';
@@ -13,14 +13,14 @@ import { ManageGroup, ManagePage, ManageRow } from './manage-page';
 type Member = TeamList['members'][number];
 
 // «Jamoa» (G75, docs/120, docs/50): the owner adds a moderator by the public id of a registered
-// person and removes one; the admin bot no longer does it.
+// person or by the Telegram ID the colleague sent (G84) and removes one; the admin bot no longer does it.
 export function TeamScreen({ onBack }: { readonly onBack: () => void }) {
   const { t } = useI18n();
   const { team } = useApiClients();
   const { value, failed, reload } = useLoad(() => team.members(), 'manage.team');
   const [text, setText] = useState('');
   const { failure, fail, clear } = useFailure();
-  const id = personIdSchema.safeParse(text.trim().toLowerCase());
+  const id = teamPersonSchema.safeParse(text.trim().toLowerCase());
   if (failed) return <ErrorScreen onRetry={reload} onBack={onBack} />;
   if (!value) return <ScreenSkeleton onBack={onBack} />;
   const change = async (work: () => Promise<void>) => {
@@ -60,8 +60,8 @@ export function TeamScreen({ onBack }: { readonly onBack: () => void }) {
           }}
         >
           <input
-            aria-label={t('manage.person.id')}
-            placeholder={t('manage.person.id')}
+            aria-label={t('manage.teamAddId')}
+            placeholder={t('manage.teamAddId')}
             value={text}
             onChange={(event) => setText(event.target.value)}
           />

@@ -51,11 +51,23 @@ describe('«Boshqaruv»', () => {
     renderManagement({ team: { members: async () => MEMBERS, add, remove } });
     await tap('Jamoa');
     expect(await screen.findByText('Egasi')).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('ID raqami'), { target: { value: PERSON } });
+    fireEvent.change(screen.getByLabelText('ID yoki Telegram ID raqami'), { target: { value: PERSON } });
     await tap('Qoʻshish');
     await waitFor(() => expect(add).toHaveBeenCalledWith(PERSON));
     vi.stubGlobal('confirm', () => true);
     await tap('Aziz');
     await waitFor(() => expect(remove).toHaveBeenCalledWith(MEMBERS.members[1]?.id));
+  });
+
+  // G84: the colleague sends the owner the Telegram ID; the field takes it as it is.
+  it('adds a moderator by the Telegram ID in «Jamoa»', async () => {
+    const add = vi.fn(async () => undefined);
+    renderManagement({ team: { members: async () => MEMBERS, add, remove: vi.fn() } });
+    await tap('Jamoa');
+    fireEvent.change(await screen.findByLabelText('ID yoki Telegram ID raqami'), {
+      target: { value: ' 123456789 ' },
+    });
+    await tap('Qoʻshish');
+    await waitFor(() => expect(add).toHaveBeenCalledWith('123456789'));
   });
 });

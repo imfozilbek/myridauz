@@ -31,6 +31,8 @@ const EXPLAINED: readonly string[] = [
   'complaints.already',
   'channels.bot_not_admin',
   'channels.invalid_input',
+  // G84: the colleague has not registered yet.
+  'team.not_found',
   // G27, docs/86 T1 … T9.
   'bookings.wrong_mode',
   'bookings.outside_area',

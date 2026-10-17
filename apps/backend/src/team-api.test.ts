@@ -31,6 +31,21 @@ describe('«Jamoa»', () => {
     expect(await teamRole(testEnv, PERSON)).toBeNull();
   });
 
+  // G84: a colleague sends the owner the Telegram ID; the list still shows the public id only.
+  it('lets the owner add a registered person by the Telegram ID a colleague sent', async () => {
+    const colleague = 63;
+    const stranger = add('64');
+    expect((await call(ADMIN_TEAM_PATH, OWNER, stranger)).status).toBe(404);
+    await registerUser(colleague);
+    expect((await call(ADMIN_TEAM_PATH, OWNER, add(String(colleague)))).status).toBe(204);
+    expect(await teamRole(testEnv, colleague)).toBe('moderator');
+    const raw = await (await call(ADMIN_TEAM_PATH, OWNER, team())).text();
+    const list = teamListSchema.parse(JSON.parse(raw));
+    expect(list.members.map((member) => member.id)).toContain(await pid(colleague));
+    // The raw answer, not the parsed one: no number or string of the Telegram ID outside a hex id.
+    expect(raw).not.toMatch(new RegExp(`(^|[^0-9a-f])${colleague}([^0-9a-f]|$)`, 'u'));
+  });
+
   it("is the owner's only: a moderator neither reads nor changes the team", async () => {
     await registerUser(OTHER);
     expect((await call(ADMIN_TEAM_PATH, OWNER, add(await pid(OTHER)))).status).toBe(204);
