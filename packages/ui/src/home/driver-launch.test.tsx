@@ -10,7 +10,7 @@ import { DRIVER_ACTIONS } from './home-test-actions';
 import { renderHome } from './home-test-kit';
 
 const location = vi.hoisted(() => ({
-  knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
+  herePosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);
 afterEach(() => {
@@ -102,10 +102,10 @@ describe('«Safar eʼlon qilish» of a driver from the main screen', { timeout: 
   // The place of the person is asked for the free block and these cards only (docs/117, review).
   it('asks nothing about the place while a trip is published', async () => {
     markApprovalSeen();
-    location.knownPosition.mockClear();
+    location.herePosition.mockClear();
     driver([trip]);
     expect(await screen.findByText(/^0 \/ 3/u)).toBeTruthy();
-    expect(location.knownPosition).not.toHaveBeenCalled();
+    expect(location.herePosition).not.toHaveBeenCalled();
   });
 
   // The last search goes before the last trip, as on the mockup g76/3 phone 5 (review).

@@ -12,7 +12,7 @@ import { PassengerHome } from './passenger-home';
 
 // The place was never allowed before: the block knows nothing, Telegram asks at the tap only.
 const location = vi.hoisted(() => ({
-  knownPosition: vi.fn(async (): Promise<Point | null> => null),
+  herePosition: vi.fn(async (): Promise<Point | null> => null),
   requestPosition: vi.fn(async (): Promise<Point | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);

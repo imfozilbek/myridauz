@@ -6,7 +6,7 @@ import { testClients } from '../test-shell';
 import { RouteScreen } from './route-screen';
 
 const location = vi.hoisted(() => ({
-  knownPosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
+  herePosition: vi.fn(async (): Promise<{ lat: number; lng: number } | null> => ({ lat: 41.3, lng: 69.2 })),
 }));
 vi.mock('../telegram/location', () => location);
 afterEach(() => {
@@ -24,7 +24,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
   });
 
   it('leaves it empty when the place is not known', async () => {
-    location.knownPosition.mockResolvedValueOnce(null);
+    location.herePosition.mockResolvedValueOnce(null);
     renderMarket(
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
@@ -35,7 +35,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
 
   it('shows the district of last time at once, while the fresh one is asked (G41, docs/108)', async () => {
     localStorage.setItem('here_district', '1726269');
-    location.knownPosition.mockReturnValueOnce(new Promise(() => undefined));
+    location.herePosition.mockReturnValueOnce(new Promise(() => undefined));
     renderMarket(
       <RouteScreen allowWholeRegion onBack={() => undefined} onDone={() => undefined} />,
       testClients({ map: testMap() }),
@@ -55,7 +55,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
   // G79 В8 (docs/170): the first empty end opens at once, not after a tap on its row (+1 → 0).
   it('opens «Qayerga» at once where «Qayerdan» is known, «Qayerdan» where it is not', async () => {
     localStorage.setItem('here_district', '1726269');
-    location.knownPosition.mockReturnValueOnce(new Promise(() => undefined));
+    location.herePosition.mockReturnValueOnce(new Promise(() => undefined));
     const screenOf = () => (
       <RouteScreen allowWholeRegion quick onBack={() => undefined} onDone={() => undefined} />
     );
@@ -63,7 +63,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
     expect(await screen.findByText('Qayerga borasiz?')).toBeTruthy();
     cleanup();
     localStorage.clear();
-    location.knownPosition.mockResolvedValueOnce(null);
+    location.herePosition.mockResolvedValueOnce(null);
     renderMarket(screenOf(), testClients({ map: testMap() }));
     expect(await screen.findByText('Qayerdan yoʻlga chiqasiz?')).toBeTruthy();
   });
@@ -71,7 +71,7 @@ describe('«Qayerdan» by the place of the person (G26, docs/74)', () => {
   // The place comes a moment after the screen (the first visit, nothing of last time): the screen
   // waits for it, so «Qayerga» opens, not «Qayerdan» (G79 В8, review).
   it('waits a moment for the place before it opens the first empty end', async () => {
-    location.knownPosition.mockImplementationOnce(
+    location.herePosition.mockImplementationOnce(
       () => new Promise((done) => setTimeout(() => done({ lat: 41.3, lng: 69.2 }), 300)),
     );
     renderMarket(

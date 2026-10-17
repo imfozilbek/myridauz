@@ -8,7 +8,7 @@ import { useAccount } from '../account-context';
 import { compressImage } from './compress-image';
 
 // A new face goes up small (docs/05) and the team checks it (G58); a failure says why.
-export function useFaceUpload() {
+function useFaceUpload() {
   const account = useAccount();
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<TranslationKey | null>(null);

@@ -90,10 +90,13 @@ describe('the cameras and «Назад» of Telegram (docs/94 F6, F7)', () => {
     expect(native.mainShown).toBe(true);
   });
 
-  it('G58: in the profile the photo opens the camera or the gallery of the phone, no own camera', () => {
+  // Only the front camera, never the gallery (owner, 17.10.2026): «Назад» closes the camera first.
+  it('the photo of the profile opens our front camera, «Назад» closes it and the profile stays', () => {
     const onBack = vi.fn();
     inTelegram(<ProfileScreen onBack={onBack} />);
     fireEvent.click(screen.getByText('Rasmni almashtirish'));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    act(pressBack);
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(onBack).not.toHaveBeenCalled();
   });

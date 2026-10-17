@@ -36,11 +36,17 @@ export async function requestPosition(): Promise<Point | null> {
   }
 }
 
-async function askKnown(): Promise<Point | null> {
+// The main screen asks once (owner, 17.10.2026; before, G25: only when allowed earlier): Telegram
+// shows its own question the first time; a «no» stays with Telegram, and nothing is asked again.
+async function askHere(): Promise<Point | null> {
   try {
     if (locationManager.mount.isAvailable() && !locationManager.isMounted())
       await locationManager.mount({ timeout: CHECK_TIMEOUT_MS });
-    return locationManager.isAccessGranted() ? await requestPosition() : null;
+    const refused =
+      locationManager.isMounted() &&
+      locationManager.isAccessRequested() &&
+      !locationManager.isAccessGranted();
+    return refused ? null : await requestPosition();
   } catch {
     return null;
   }
@@ -50,9 +56,9 @@ async function askKnown(): Promise<Point | null> {
 // read as «nowhere» would wipe the place of a screen asking at the same moment (G66).
 let asking: Promise<Point | null> | null = null;
 
-// Where the person stands, only when they already allowed it (G25): the main screen never asks.
-export function knownPosition(): Promise<Point | null> {
-  asking ??= askKnown().finally(() => {
+// Where the person stands: asked once, then known while it stays allowed.
+export function herePosition(): Promise<Point | null> {
+  asking ??= askHere().finally(() => {
     asking = null;
   });
   return asking;
