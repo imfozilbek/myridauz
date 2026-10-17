@@ -19,10 +19,21 @@ export async function tokensOf(request, { expired = false } = {}) {
   }
 }
 
+// A key that makes keys is the setup key of an environment: only its own run deletes it.
+const makesKeys = (token) =>
+  (token.policies ?? []).some((policy) =>
+    policy.permission_groups.some((group) => group.name?.startsWith('API Tokens')),
+  );
+
 // The key with this name and these rights: made when missing, its rights set again when they differ or
 // it was switched off (its value stays then, the place that holds it needs nothing).
 export async function ensureToken(request, tokens, name, policies) {
   const found = tokens.find((token) => token.name === name);
+  // A setup key with the name of a key the setup makes would lose its own rights here.
+  if (found && makesKeys(found))
+    throw new Error(
+      `keys: ${name} is a setup key, rename it to ${name.replace(/-[^-]+$/u, '-setup')} (docs/189)`,
+    );
   if (!found) {
     const made = await request('POST', TOKENS, { name, policies });
     return { id: made.id, value: made.value, state: 'made' };
@@ -46,11 +57,6 @@ export const rolled = (request, id) => request('PUT', `${TOKENS}/${id}/value`, {
 export const dropToken = (request, id) => request('DELETE', `${TOKENS}/${id}`);
 export const ownId = async (request) => (await request('GET', `${TOKENS}/verify`)).id;
 
-// A key that makes keys is the setup key of an environment: only its own run deletes it.
-const makesKeys = (token) =>
-  (token.policies ?? []).some((policy) =>
-    policy.permission_groups.some((group) => group.name?.startsWith('API Tokens')),
-  );
 // A key of this account or of its zone; a key of every account or of another one is never touched.
 const ofAccount = (token, { accountId, zoneId }) =>
   resourceKeys(token.policies ?? []).some((key) =>

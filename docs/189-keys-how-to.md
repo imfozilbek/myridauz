@@ -15,7 +15,7 @@
 
 | № | Когда | Что |
 |---|---|---|
-| 1 | сейчас | Каждый аккаунт: My Profile → API Tokens → Create Token → шаблон «Create Additional Tokens» → Use template → Continue to summary → Create Token → Copy. Аккаунт с `myrida.uz` → окружение Claude `CLOUDFLARE_API_TOKEN`; аккаунт с `ridaone.uz` → `PROD_CLOUDFLARE_API_TOKEN` (заменить старые значения) |
+| 1 | сейчас | Каждый аккаунт: My Profile → API Tokens → Create Token → шаблон «Create Additional Tokens» → Use template → имя `rida-internal-setup` или `rida-prod-setup` (не `-deploy`: так программа назовёт ключ выкладки, урок №302) → Continue to summary → Create Token → Copy. Аккаунт с `myrida.uz` → окружение Claude `CLOUDFLARE_API_TOKEN`; аккаунт с `ridaone.uz` → `PROD_CLOUDFLARE_API_TOKEN` (заменить старые значения) |
 | 2 | сразу | Слить PR с программой (Claude скажет, когда CI зелёный); новая сессия Claude с фразой со страницы |
 | 3 | после программы | Каждый аккаунт: API Tokens → `rida-<среда>-deploy` → ⋯ → Roll → Copy → GitHub → Settings → Environments → `internal` или `production` → Environment secrets → `CLOUDFLARE_API_TOKEN`. Там же `CLOUDFLARE_ACCOUNT_ID`: Account ID этого аккаунта |
 | 4 | после программы | Строки «owner:» отчёта программы: Claude даёт их по одной (например, включить R2 в проде) |

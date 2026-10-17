@@ -52,6 +52,18 @@ describe('the keys of the setup', () => {
     ]);
   });
 
+  it('stops before it changes a setup key named like a key it makes', async () => {
+    const { calls, request } = recorder();
+    const setup = [
+      { resources: { 'com.cloudflare.api.user.u1': '*' }, permission_groups: [{ name: 'API Tokens Write' }] },
+    ];
+    const tokens = [{ id: 's1', name: 'acme-internal-deploy', policies: setup }];
+    await expect(ensureToken(request, tokens, 'acme-internal-deploy', POLICIES)).rejects.toThrow(
+      'keys: acme-internal-deploy is a setup key, rename it to acme-internal-setup (docs/189)',
+    );
+    expect(calls).toEqual([]);
+  });
+
   it('gives the key of one run an end in an hour', async () => {
     const { calls, request } = recorder({ POST: { id: 'h1', value: 'hour-value' } });
     const now = Date.parse('2026-10-17T10:15:30.500Z');
