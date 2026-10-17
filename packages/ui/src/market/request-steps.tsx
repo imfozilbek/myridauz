@@ -40,7 +40,7 @@ export function RequestStep({ flow, find, search, from, to, onBack, onClose }: S
   if (where && flow.sent) return <ExistingRequest {...where} onClose={home} />;
   // One already open on this route and day: it opens at once, not after the points and the price
   // (G79 П10); «Назад» comes back to the day.
-  if (where && step !== 'route' && step !== 'date' && requests.some(openOn(where)))
+  if (where && step !== 'route' && step !== 'date' && requests.some(openOn(where, find)))
     return <ExistingRequest {...where} onClose={toDate} />;
   if (step === 'route' || !route)
     return (

@@ -42,6 +42,8 @@ export type RequestsDeps = {
   // The main pitak of a direction and where a point of a route may lie (G24, docs/69, docs/72).
   readonly pitakOf: (fromRegion: string, toRegion: string) => Promise<Pitak | null>;
   readonly fits: (point: Point, placeId: string) => boolean;
+  // The district of a point by the borders (G24): null abroad.
+  readonly districtOf: (point: Point) => string | null;
   // A request was published: drivers subscribed to its route hear about it (docs/24).
   readonly published: (requestId: string) => Promise<void>;
   // A request cancelled or burned: its card in the passenger bot says so (G68, docs/122).
