@@ -14,9 +14,10 @@ A. Ключи обеих сред программой (docs/189, решение
 [x] PR #237 (G81 и G82) и PR #245 (карта ключей) слиты 15.10.2026.
 [x] Программа pnpm run keys: ключи с точными правами, зона, DNS,
     секреты Worker, удаление старых ключей; тесты (17.10.2026).
-[ ] Владелец: ключ шаблона «Create Additional Tokens» в каждом
-    аккаунте → окружение Claude; новая сессия.
-[ ] Claude: pnpm run keys в обеих средах; отчёт владельцу по шагам.
+[x] Владелец: ключ шаблона «Create Additional Tokens» в каждом
+    аккаунте → окружение Claude; новая сессия (17.10.2026).
+[x] Claude: pnpm run keys в обеих средах; отчёт владельцу по шагам
+    (17.10.2026).
 [ ] Владелец: Roll rida-<среда>-deploy → GitHub internal и
     production (с Account ID); строки «owner:» отчёта (R2 прода).
 
@@ -67,12 +68,14 @@ D. Проверка владельца
 | 5 | BotFather: Configure Mini App у 4 ботов прода; админка прода; тест команды | Telegram, Mini App | 30 минут |
 | 6 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
 
-## Где остановились (17.10.2026)
+## Где остановились (17.10.2026, вечер)
 
-- `deploy-internal` красный (последний запуск 16.10): у старого токена нет «Workers Routes». Worker обновлён, Mini App и сайт старые.
-- Владелец не смог пройти 30 шагов руками (урок №301). Теперь ключи и настройки делает `pnpm run keys` (`../189`); владелец кладёт ключи шаблона в окружение Claude.
-- Новая сессия начинает с этого файла: читает отметки и поля страницы (`ArtifactData`, `progress/main`), запускает `pnpm run keys` для `internal` и `production`, пересказывает строки «owner:» по одной.
-- Только владелец: ключи шаблона, Roll в GitHub, ключи ботов, R2, Approve, BotFather, права в каналах.
+- `pnpm run keys` прошла в обеих средах без ошибок. Ключи на час удалены.
+- Внутренняя (`myrida.uz`): сделаны `rida-internal-deploy` и `rida-internal-analytics`; зона настроена (SSL Full strict, HTTPS, TLS 1.2); `ANALYTICS_API_TOKEN` в Worker. Bot Fight Mode, Web Analytics, R2, DNS, звонки, вебхуки уже были в порядке.
+- Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
+- Ждём владельца: Roll `rida-internal-deploy` и `rida-prod-deploy` в GitHub (с Account ID); R2 в аккаунте прода; Telegram ID на странице (`--admins`).
+- Потом Claude: перезапуск `deploy-internal`; `keys --admins` во внутренней.
+- Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
 ## Ждёт решения владельца
 
