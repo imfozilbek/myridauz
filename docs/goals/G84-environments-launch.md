@@ -31,14 +31,24 @@ A. Внутренняя среда (docs/179, «Шаги: сначала вну�
 B. Прод на новом аккаунте (docs/179, «Шаги прода»)
 [x] Владелец: общий бот прода @ridauz_bot создан 15.10.2026
     (docs/181); токен потом только в Worker прода.
-[ ] Владелец: R2 на новом аккаунте; rida-prod-deploy → production;
-    rida-prod-claude → окружение Claude; ID команды прода.
-[ ] Claude: deploy-production и прод в «Map data»; PR; слияние;
-    деплой прода с Approve.
+[ ] Владелец: R2 и Web Analytics на новом аккаунте; старые записи
+    DNS ridaone.uz, если есть, удалить.
+[ ] Владелец: rida-prod-deploy → production, заменить оба секрета
+    (токен и Account ID); rida-prod-claude → окружение Claude;
+    ID команды прода.
+[ ] Claude: deploy-production (первая выкладка не пропускается),
+    прод в «Map data», регион D1 «Европа»; PR; слияние; деплой
+    прода с Approve. Infra: настройки зоны ridaone.uz.
 [ ] Владелец: rida-prod-analytics и 6 ботов прода → Worker прода.
-[ ] Claude: секреты Worker прода, «Map data» прода.
-[ ] Проверка: /health, боты, Mini App, карта, сайт; скриншоты.
-[ ] Владелец: удалить rida-deploy, rida-claude и токены вне карты.
+[ ] Claude: секреты Worker прода, ключи звонков, setup-bots,
+    «Map data» прода и повторный деплой (Approve).
+[ ] Проверка: /health, боты, Mini App, карта, сайт, звонок на
+    Android и iPhone; скриншоты.
+[ ] Владелец: BotFather (картинка, Configure Mini App, сплэш);
+    админка прода: «Jamoa», «Kompaniya rekvizitlari», «Kutish
+    roʻyxati», ссылки рекламы; тест команды на проде.
+[ ] Владелец: удалить rida-deploy, rida-claude и токены вне карты
+    (последним шагом, docs/179); ветку goal/g84-environments-launch.
 
 C. Оформление каналов (docs/180, остаток G82; ботов оформляет G83)
 [ ] Владелец: «да» сессии инфраструктуры на выгрузку в репозиторий
@@ -62,7 +72,23 @@ D. Проверка владельца
 | 2 | `rida-internal-claude`, `rida-internal-analytics` | Cloudflare, настройки Claude, Worker | 5 минут |
 | 3 | 6 ботов внутренней среды: новый токен в Worker | BotFather, Cloudflare | 10 минут |
 | 4 | Бот каналов админ; номер и ссылка канала | Telegram | 3 минуты |
-| 5 | Новый аккаунт: R2, `rida-prod-deploy`, `rida-prod-claude`, ID команды | Cloudflare, GitHub, настройки Claude | 15 минут |
-| 6 | После первой выкладки прода: `rida-prod-analytics`, 6 ботов прода | Cloudflare, BotFather | 10 минут |
-| 7 | Удалить старые токены | Cloudflare | 2 минуты |
-| 8 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
+| 5 | Новый аккаунт: R2, Web Analytics, DNS; `rida-prod-deploy` (оба секрета), `rida-prod-claude`, ID команды | Cloudflare, GitHub, настройки Claude | 20 минут |
+| 6 | Approve первой выкладки прода; потом `rida-prod-analytics`, 6 ботов прода | GitHub Mobile, Cloudflare, BotFather | 15 минут |
+| 7 | BotFather: картинка, Configure Mini App, сплэш; админка прода; тест команды | Telegram, Mini App | 60 минут |
+| 8 | В конце: удалить старые токены и ветку `goal/g84-environments-launch` | Cloudflare, GitHub | 3 минуты |
+| 9 | «Да» инфраструктуре; описание и знак ʻ у @rida1uz | сессия инфраструктуры, этот чат | 1 минута |
+
+## Где остановились (17.10.2026)
+
+- `deploy-internal` красный (последний запуск 16.10): у старого токена нет «Workers Routes». Worker обновлён, Mini App и сайт старые.
+- Владелец очищает окружение Claude и кладёт 4 переменные (`../179`, «Ключи обеих сред»). Новая сессия начинает с этого файла и шагов `../179`.
+- С ключами в окружении Claude сам: деплой внутренней среды из сессии, секреты Worker, DNS, ключи звонков, setup-bots, «Map data», проверка. Выкладка прода только с «да» владельца.
+- Только владелец: создать токены, секреты GitHub, токены ботов, R2 и Web Analytics, Approve, BotFather, права в каналах.
+
+## Ждёт решения владельца
+
+| Вопрос | Совет Claude |
+|---|---|
+| Что открываем 18.10 (`../181`, «Ждёт подтверждения») | Список ожидания и каналы; поездки и посты прода после теста команды |
+| Вернуть `deploy-production` в `ci.yml` (шаг 4 прода) | Да: решение 13.10 есть, нужно «да» в чате |
+| Оформление каналов кодом (раздел C) | Можно после запуска |
