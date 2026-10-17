@@ -31,7 +31,9 @@ const COLUMNS =
   'code, target, channel, invite_link, place, name, price, days, top_hours, pin_hours, created_at';
 // The people an ad brought: by the mark of the main bot link, by the mark kept at the registration
 // through a bot of the trips (docs/116), or by the joins of its invite link.
-const REGISTERED = 'SELECT user_id AS id FROM user_arrivals WHERE via = ?1';
+// «via LIKE 'ad-%'» lets the partial index of the ad marks read only them (migration 0070, docs/117).
+const ARRIVED = "FROM user_arrivals WHERE via = ?1 AND via LIKE 'ad-%'";
+const REGISTERED = `SELECT user_id AS id ${ARRIVED}`;
 const BROUGHT = {
   bot: 'SELECT telegram_id AS id FROM waitlist_visits WHERE via = ?1',
   passenger: REGISTERED,
@@ -89,7 +91,7 @@ export function d1Ads(db: D1Database): AdStore {
       ).results;
       const ofRole = (role: string) => roles.find((row) => row.role === role)?.count ?? 0;
       return {
-        registered: await count('SELECT COUNT(*) AS count FROM user_arrivals WHERE via = ?', ad.code),
+        registered: await count(`SELECT COUNT(*) AS count ${ARRIVED}`, ad.code),
         clicked: await count(
           'SELECT COUNT(*) AS count FROM waitlist_visits WHERE via = ? AND started_at IS NOT NULL',
           ad.code,

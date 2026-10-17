@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { fullScans } from '../../test-d1';
 import { createAd, heardChange, listAds, oneAd, readSwitch, setSwitch } from './application/ads';
 import { saveAnswers } from './application/person';
 import { driverAnswers, passengerAnswers, setup } from './test-kit';
@@ -36,6 +37,9 @@ describe('«Reklama havolalari» (G83, docs/184)', () => {
     expect((await oneAd(kit.ads, made.code))?.result).toMatchObject({ registered: 2, clicked: 0 });
     expect((await oneAd(kit.ads, driver.code))?.result.registered).toBe(1);
     expect(kit.journal).toEqual([`900 ${made.code} ad`, `900 ${driver.code} ad`]);
+    // The list counts every link each time it opens: only through the indexes (docs/117).
+    await listAds(kit.ads);
+    expect(fullScans(kit.db)).toEqual([]);
   });
 
   it('keeps counting a link into the main bot made while the list was open', async () => {
