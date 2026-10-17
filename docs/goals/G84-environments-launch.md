@@ -75,7 +75,9 @@ D. Проверка владельца
 - Прод (`ridaone.uz`): сделан `rida-prod-deploy`; зона настроена; Web Analytics добавлен. Worker прода ещё нет: его секреты после первой выкладки.
 - Владелец: Roll `rida-internal-deploy` в GitHub `internal` и «Re-run failed jobs» (мне закрыт, 403). `deploy-internal` зелёный: `/health` ok, сайт, 4 Mini App и карта `myrida.uz` отвечают, Mini App ходят на `api.myrida.uz` и `map.myrida.uz`.
 - Владелец: Roll `rida-prod-deploy` в GitHub `production` и R2 в аккаунте прода сделаны; программа это подтвердила.
-- Claude: `deploy-production` в CI после `deploy-internal`, с **Approve**; «Map data» для прода; база D1 прода в Западной Европе. Слияние PR ждёт «да» владельца.
+- PR #252 слит: выкладка прода в CI, «Map data» для прода, база D1 прода в Западной Европе. Первая выкладка прода (Approve) упала: в аккаунте прода не включён Analytics Engine (урок №303). База D1 прода создана, миграции прошли.
+- Ждём владельца: Analytics Engine в аккаунте 2, «Re-run failed jobs» запуска 39035958657, Approve.
+- Проверяющий агент нашёл в #252 две ошибки (урок №304). Исправление: свой workflow «Deploy production» и `scripts/deploy-needed.mjs`; PR на «да» владельца после CI и проверки.
 - Дальше владелец: Telegram ID, бот каналов и номер «MyRida | Viloyatlar» на странице (часть 3).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
 
@@ -84,5 +86,4 @@ D. Проверка владельца
 | Вопрос | Совет Claude |
 |---|---|
 | Что открываем 18.10 (`../181`, «Ждёт подтверждения») | Список ожидания и каналы; поездки и посты прода после теста команды |
-| Вернуть `deploy-production` в `ci.yml` (шаг 4 прода) | Да: решение 13.10 есть, нужно «да» в чате |
 | Оформление каналов кодом (раздел C) | Можно после запуска |
