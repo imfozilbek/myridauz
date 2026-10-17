@@ -18,7 +18,7 @@
 | 1 | сейчас | Каждый аккаунт: My Profile → API Tokens → Create Token → шаблон «Create Additional Tokens» → Use template → имя `rida-internal-setup` или `rida-prod-setup` (не `-deploy`: так программа назовёт ключ выкладки, урок №302) → Continue to summary → Create Token → Copy. Аккаунт с `myrida.uz` → окружение Claude `CLOUDFLARE_API_TOKEN`; аккаунт с `ridaone.uz` → `PROD_CLOUDFLARE_API_TOKEN` (заменить старые значения) |
 | 2 | сразу | Слить PR с программой (Claude скажет, когда CI зелёный); новая сессия Claude с фразой со страницы |
 | 3 | после программы | Каждый аккаунт: API Tokens → `rida-<среда>-deploy` → ⋯ → Roll → Copy → GitHub → Settings → Environments → `internal` или `production` → Environment secrets → `CLOUDFLARE_API_TOKEN`. Там же `CLOUDFLARE_ACCOUNT_ID`: Account ID этого аккаунта |
-| 4 | после программы | Строки «owner:» отчёта программы: Claude даёт их по одной (например, включить R2 в проде). Новый аккаунт: ещё Analytics Engine (Workers & Pages → Analytics Engine → Enable), программа его не проверяет (урок №303) |
+| 4 | после программы | Строки «owner:» отчёта программы: Claude даёт их по одной (например, включить R2 в проде). Новый аккаунт: ещё Analytics Engine и адрес `workers.dev` (таблица в конце) |
 | 5 | после первой выкладки прода | Approve в GitHub Actions; 6 ключей ботов прода в Worker (ниже); BotFather: Configure Mini App у 4 ботов прода |
 | 6 | в конце | Ничего: Claude запускает `--finish --yes`, программа удаляет старые ключи и оба ключа шаблона |
 
@@ -107,3 +107,11 @@ BotFather руками (в API Telegram этого нет):
 ## Новый бренд или среда
 
 Тот же список: ключ шаблона, `pnpm run keys`, Roll в GitHub. Имена `<бренд>-<среда>-<задача>` (`22`).
+
+До первой выкладки на новый аккаунт владелец один раз делает в панели то, чего нет в API (уроки №303, №305):
+
+| Что | Как | Без этого |
+|---|---|---|
+| R2 | R2 Object Storage → включить (программа проверяет) | нет карты и фото |
+| Analytics Engine | Workers & Pages → Analytics Engine → Create Dataset → `rida_analytics`, Binding `ANALYTICS` | `wrangler deploy`: код 10089 |
+| Адрес `workers.dev` | открыть страницу Workers & Pages один раз | `wrangler deploy`: код 10063 |
