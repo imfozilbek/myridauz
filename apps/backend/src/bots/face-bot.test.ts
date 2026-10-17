@@ -49,4 +49,25 @@ describe('admin bot: the card of a new face photo (docs/120, G51)', () => {
     }
     expect((await reply(await send('admin', press(`face:${PERSON}:ok`, 55)))).text).toBeUndefined();
   });
+
+  // Owner, 17.10.2026: a person changed the photo again; the card of the older photo stays in the bot.
+  it('a card of an older photo never decides the newer one', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    const okOf = () =>
+      /face:\d+:[0-9a-z]+:ok/u.exec(
+        String(telegram.calls.filter((sent) => sent.method === 'sendPhoto').at(-1)?.body.reply_markup),
+      )?.[0] ?? '';
+    vi.setSystemTime(Date.parse('2026-10-17T19:00:00Z'));
+    await call('/me/avatar', PERSON, photo);
+    const older = okOf();
+    vi.setSystemTime(Date.parse('2026-10-17T19:05:00Z'));
+    await call('/me/avatar', PERSON, photo);
+    const newer = okOf();
+    vi.useRealTimers();
+    expect(older).not.toBe(newer);
+    expect((await reply(await send('admin', press(older)))).text).toBe(
+      'Rasm almashdi: yangisi keyingi kartochkada.',
+    );
+    expect((await reply(await send('admin', press(newer)))).text).toBe('Tasdiqlandi');
+  });
 });

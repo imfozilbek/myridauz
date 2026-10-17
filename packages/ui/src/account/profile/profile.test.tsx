@@ -38,7 +38,7 @@ describe('«Profil» (G65, mockup g65/3)', () => {
     // The past trips live in «Oʻtgan» only (owner decision 10.10.2026): no «Safarlar tarixi».
     expect(screen.queryByText('Safarlar tarixi')).toBeNull();
     await waitFor(() => expect(screen.getAllByAltText('Dilnoza').length).toBeGreaterThan(0));
-    expect(client.getAvatar).toHaveBeenCalledWith(profile.id);
+    expect(client.getAvatar).toHaveBeenCalledWith(profile.id, false);
     fireEvent.click(screen.getByText('Orqaga'));
     expect(screen.getByLabelText('Profil va rasm')).toBeTruthy();
   });

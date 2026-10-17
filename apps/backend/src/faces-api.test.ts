@@ -30,7 +30,9 @@ describe('the face photo check over HTTP (docs/118, G51)', () => {
       photo: 'file',
       caption: expect.stringContaining('Yangi yuz rasmi: Ali'),
     });
-    expect(String(card?.body.reply_markup)).toContain(`"callback_data":"face:${PERSON}:ok"`);
+    expect(String(card?.body.reply_markup)).toMatch(
+      new RegExp(`"callback_data":"face:${PERSON}:[0-9a-z]+:ok"`, 'u'),
+    );
     // Others see a person without a photo until the team approves it.
     const shown = await (await call(`/users/${await pid(PERSON)}`, OTHER)).json();
     expect(shown).toMatchObject({ hasAvatar: false });

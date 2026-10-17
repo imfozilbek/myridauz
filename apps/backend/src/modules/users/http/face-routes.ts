@@ -8,8 +8,9 @@ import { recordAction } from '../../journal';
 
 const ONE = `${ADMIN_FACES_PATH}/:id{[0-9a-f]+}`;
 const NO_CONTENT = 204;
-// Personal photos: a short private cache only (docs/30).
-const PHOTO_CACHE = 'private, max-age=300';
+// Personal photos, never kept (docs/30): the team decides the photo that came last, not a copy of
+// the one before it (owner, 17.10.2026).
+const PHOTO_CACHE = 'private, no-store';
 const teamOnly: MiddlewareHandler<AppEnv> = async (context, next) =>
   context.get('session').isAdmin ? next() : fail(context, 'auth.not_admin');
 

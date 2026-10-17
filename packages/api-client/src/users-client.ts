@@ -31,8 +31,9 @@ export function createUsersClient(options: SignedOptions) {
       await request(ME_PATH, { method: 'DELETE' });
     },
     // The photo needs the Telegram signature, so it is loaded as a blob, not by an <img> link.
-    async getAvatar(userId: PersonId): Promise<Blob> {
-      return (await request(userAvatarPath(userId))).blob();
+    // fresh: the own photo just changed, the phone must not show the copy it kept (owner, 17.10.2026).
+    async getAvatar(userId: PersonId, fresh = false): Promise<Blob> {
+      return (await request(userAvatarPath(userId), fresh ? { cache: 'no-cache' } : {})).blob();
     },
   };
 }

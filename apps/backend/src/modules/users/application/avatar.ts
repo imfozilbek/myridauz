@@ -1,5 +1,5 @@
 import { AVATAR_TYPES, MAX_AVATAR_BYTES } from '@platform/contracts';
-import { canSeeAvatar } from '../domain/avatar-visibility';
+import { canSeeAvatar, type Viewer } from '../domain/avatar-visibility';
 import { newFace } from '../domain/face';
 import type { StoredImage } from '../../../shared/storage/image-store';
 import type { Caller, Failure, UsersDeps } from './ports';
@@ -34,14 +34,14 @@ type ReadError = 'users.not_found' | 'users.avatar_hidden';
 
 export async function readAvatar(
   deps: UsersDeps,
-  caller: Caller,
+  viewer: Viewer,
   ownerId: number,
 ): Promise<{ readonly ok: true; readonly image: StoredImage } | Failure<ReadError>> {
   const owner = await deps.users.find(ownerId);
   if (!owner?.avatarKey) return { ok: false, error: 'users.not_found' };
-  const relation = await deps.trips.relation(caller.id, ownerId);
+  const relation = await deps.trips.relation(viewer.id, ownerId);
   // Hidden and missing look the same to others, so nobody learns that a hidden photo exists.
-  if (!canSeeAvatar({ id: caller.id, isAdmin: caller.isAdmin }, owner, relation)) {
+  if (!canSeeAvatar(viewer, owner, relation)) {
     return { ok: false, error: 'users.avatar_hidden' };
   }
   const image = await deps.avatars.get(owner.avatarKey);

@@ -59,6 +59,15 @@ describe('canSeeAvatar (docs/05)', () => {
     expect(canSeeAvatar(stranger, sampleUser, 'trip_driver')).toBe(false);
   });
 
+  // Owner, 17.10.2026: in the Mini App of a driver only the own photo shows, whatever the person once
+  // was: a co passenger of an old trip or a member of the team.
+  it('shows nobody else in the Mini App of a driver, only the own photo', () => {
+    const asDriver = { ...stranger, asDriver: true };
+    expect(canSeeAvatar(asDriver, sampleUser, 'co_passenger')).toBe(false);
+    expect(canSeeAvatar({ ...asDriver, isAdmin: true }, sampleUser, 'none')).toBe(false);
+    expect(canSeeAvatar({ id: 1, isAdmin: false, asDriver: true }, sampleUser, 'none')).toBe(true);
+  });
+
   it('shows a driver photo to everybody and hides a missing photo', () => {
     expect(canSeeAvatar(stranger, { ...sampleUser, isDriver: true }, 'none')).toBe(true);
     expect(canSeeAvatar({ id: 1, isAdmin: true }, { ...sampleUser, avatarKey: null }, 'none')).toBe(false);
