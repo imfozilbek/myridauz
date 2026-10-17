@@ -19,7 +19,18 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
       // The main bot «MyRida» of the waitlist (owner decision 14.10.2026, docs/181).
       main: 'myridauz_bot',
     },
-    channels: [],
+    // One private channel of every direction (owner, 13.10.2026): a trip from any place goes there. The
+    // avatar of a region stands in for its own picture (G84).
+    channels: [
+      {
+        chat: '-1004497717884',
+        title: 'Viloyatlar',
+        name: 'MyRida | Viloyatlar',
+        code: '10',
+        places: [...new Set(channels.flatMap((channel) => channel.places))],
+        link: 'https://t.me/+CcXbhDy1iD0yNmYy',
+      },
+    ],
     mainChannel: 'myrida_uz',
     // The team sees every post before people do (owner, 13.10.2026).
     posts: true,

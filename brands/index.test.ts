@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { brandForApp, loadBrand, UnknownBrandError, UnknownEnvironmentError } from './index';
+import { brandForApp, channelOf, loadBrand, UnknownBrandError, UnknownEnvironmentError } from './index';
 
 describe('loadBrand', () => {
   it('returns the main brand in production by default', () => {
@@ -34,6 +34,16 @@ describe('loadBrand', () => {
     expect(internal.channels.filter((channel) => chats.has(channel.chat))).toEqual([]);
     const shared = { name: 0, domain: 0, indexed: 0, bots: 0, channels: 0, mainChannel: 0, posts: 0 };
     expect({ ...internal, ...shared }).toEqual({ ...production, ...shared });
+  });
+
+  // G84: the team sees a trip of any direction in its one channel «MyRida | Viloyatlar».
+  it('gives every place of the directions the one channel of the internal environment', () => {
+    const internal = loadBrand('rida', 'internal');
+    const places = loadBrand('rida', 'production').channels.flatMap((channel) => channel.places);
+    expect(internal.channels.map((channel) => channel.name)).toEqual(['MyRida | Viloyatlar']);
+    expect(new Set(places.map((place) => channelOf(internal, place)?.name))).toEqual(
+      new Set(['MyRida | Viloyatlar']),
+    );
   });
 
   it('returns a brand by id', () => {

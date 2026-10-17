@@ -24,8 +24,8 @@ A. Ключи обеих сред программой (docs/189, решение
 
 B. Внутренняя среда, потом прод
 [x] Claude: перезапуск deploy-internal; зелёный (17.10.2026).
-[ ] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и
-    @myrida_uz; Telegram ID, номер канала и ссылка на странице.
+[x] Владелец: @myrida_poster_bot админ в «MyRida | Viloyatlar» и
+    @myrida_uz; Telegram ID, номер канала и ссылка (17.10.2026).
 [ ] Claude: канал в environments.ts; keys --admins; стенд; PR.
 [ ] Проверка: /health, боты «MyRida | …», Mini App, сайт, пост во
     внутреннем канале; скриншоты владельцу.
@@ -33,11 +33,10 @@ B. Внутренняя среда, потом прод
 [x] Claude: deploy-production (первая выкладка не пропускается),
     прод в «Map data», регион D1 «Европа»; PR; слияние; деплой
     прода с Approve (17.10.2026: PR #252 … #255).
-[ ] Владелец: 6 ботов прода → Worker прода; BotFather: Configure
-    Mini App у 4 ботов.
-[ ] Claude: keys прода ещё раз (секреты Worker, звонки, setup-bots),
-    «Map data» прода и повторный деплой (Approve). 17.10: всё, кроме
-    setup-bots (ждёт 6 ключей ботов прода).
+[x] Владелец: 6 ботов прода → Worker прода; BotFather: Configure
+    Mini App у 4 ботов (17.10.2026).
+[x] Claude: keys прода ещё раз (секреты Worker, звонки, setup-bots),
+    «Map data» прода и повторный деплой (Approve) (17.10.2026).
 [ ] Проверка: /health, боты, Mini App, карта, сайт, звонок на
     Android и iPhone; скриншоты.
 [ ] Владелец: админка прода: «Jamoa», «Kompaniya rekvizitlari»,
@@ -72,12 +71,18 @@ D. Проверка владельца
 
 ## Где остановились (17.10.2026, вечер)
 
-- Обе среды выложены: `myrida.uz` и `ridaone.uz` отвечают (`/health`, сайт, 4 Mini App, карта). Mini App прода ходят на `api.ridaone.uz` и `map.ridaone.uz`.
-- `pnpm run keys` в обеих средах. Прод: `CF_ACCOUNT_ID`, `ANALYTICS_API_TOKEN`, 4 ключа звонков в Worker; ключ `rida-prod-analytics` сделан.
-- Выкладка прода: свой workflow «Deploy production» после зелёного CI, с Approve (PR #253, #254); записи DNS Pages ведут на свои проекты (PR #255).
+- Обе среды выложены и отвечают; боты прода настроены (`keys`, вебхуки, setup-bots); Mini App прода в BotFather.
+- Владельцы в обеих средах: оба аккаунта владельца (`ADMIN_TELEGRAM_IDS`).
+- В работе (PR): «MyRida | Viloyatlar» в `environments.ts`; «Jamoa» принимает Telegram ID коллеги (решение владельца: коллеги модераторы). Коллеги: Bobomurod и Jafar, добавляет владелец после выкладки.
 - Новый аккаунт потребовал в панели R2, Analytics Engine и адрес `workers.dev` (уроки №303, №305; таблица в `../189`); Pages прода получили адреса с окончанием (урок №306).
-- Ждём владельца: 6 ключей ботов прода в Worker (потом Claude: `keys` прода, вебхуки и setup-bots); BotFather: Mini App у 4 ботов прода; часть 3 страницы (Telegram ID, бот каналов во внутренних каналах).
 - Старые ключи `rida-claude` и `rida-deploy` во внутреннем аккаунте удалит `--finish --yes` в конце G84.
+
+## Новые тексты на «да» владельца (`../33`)
+
+| Ключ | Где | Текст |
+|---|---|---|
+| `manage.teamAddId` | «Jamoa», поле | «ID yoki Telegram ID raqami» |
+| `team.not_found` | «Jamoa», ошибка | «Odam topilmadi. U avval botda roʻyxatdan oʻtsin.» |
 
 ## Ждёт решения владельца
 
