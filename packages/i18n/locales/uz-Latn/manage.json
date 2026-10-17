@@ -78,6 +78,7 @@
   "teamRemoveAsk": "{name} jamoadan olib tashlansinmi?",
   "teamAdd": "Moderator qoʻshish",
   "teamAddButton": "Qoʻshish",
+  "teamAddId": "ID yoki Telegram ID raqami",
   "journalEmpty": "Hali qaror yoʻq",
   "journalMore": "Yana",
   "entry.approved": "Ariza tasdiqlandi",

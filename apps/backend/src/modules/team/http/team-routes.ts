@@ -1,4 +1,4 @@
-import { ADMIN_TEAM_PATH, teamAddSchema } from '@platform/contracts';
+import { ADMIN_TEAM_PATH, teamAddSchema, telegramIdSchema } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import { ownerOnly } from '../../../shared/auth/owner-only';
@@ -16,11 +16,17 @@ const NO_CONTENT = 204;
 const NOT_FOUND = 404;
 const BAD_REQUEST = 400;
 
-// «Jamoa» (G75, docs/120): the owner's only. A person is found by the public id; a member who never
-// registered has no public id and stays out of the list (docs/65 A3).
+// «Jamoa» (G75, docs/120): the owner's only. A person is found by the public id, or by the Telegram ID
+// a colleague sent the owner (G84); only a registered person joins, and the list shows public ids only
+// (docs/65 A3).
 export const teamRoutes = ({ members, change, find, idOf }: TeamDeps) => {
-  const set = async (env: Bindings, actorId: number, publicId: string, add: boolean) => {
-    const userId = await idOf(env, publicId);
+  const userOf = async (env: Bindings, person: string) => {
+    if (!telegramIdSchema.safeParse(person).success) return idOf(env, person);
+    const userId = Number(person);
+    return (await find(env, userId)) ? userId : undefined;
+  };
+  const set = async (env: Bindings, actorId: number, person: string, add: boolean) => {
+    const userId = await userOf(env, person);
     if (userId === undefined) return 'team.not_found';
     return change(env, actorId, userId, add);
   };
