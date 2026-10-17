@@ -49,7 +49,7 @@ export const environments: Readonly<Record<EnvironmentName, BrandEnvironment>> =
     },
     channels,
     mainChannel: 'rida1uz',
-    // On only after the owner says yes to the posts for people (docs/33).
-    posts: false,
+    // The owner said yes to the posts for people (17.10.2026, docs/33): the trips go to the channels.
+    posts: true,
   },
 };

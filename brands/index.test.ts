@@ -26,7 +26,7 @@ describe('loadBrand', () => {
       mainChannel: 'myrida_uz',
       posts: true,
     });
-    expect(production.posts).toBe(false);
+    expect(production.posts).toBe(true);
     expect(internal.bots.passenger).toBe('myrida_bot');
     const bots = (brand: typeof internal) => Object.values(brand.bots);
     expect(bots(internal).filter((bot) => bots(production).includes(bot))).toEqual([]);
