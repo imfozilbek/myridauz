@@ -1,5 +1,5 @@
 // Test helper: the drivers module over memory, one person «Ali» (docs/04).
-import type { Car } from '@platform/contracts';
+import { CAR_PHOTO_KINDS, type Car } from '@platform/contracts';
 import { createMemoryImages } from '../../shared/storage/memory-images';
 import { uploadCarPhoto } from './application/apply';
 import type { DriversDeps, Person } from './application/ports';
@@ -46,7 +46,7 @@ export function setup(avatarKey: string | null = 'avatars/1/a') {
     newId: () => `id${(id += 1)}`,
   };
   const photos = async () => {
-    for (const kind of ['front', 'side', 'interior'] as const) await uploadCarPhoto(deps, 1, kind, jpeg);
+    for (const kind of CAR_PHOTO_KINDS) await uploadCarPhoto(deps, 1, kind, jpeg);
   };
   return { deps, drivers, log, photos, onTrip: () => void (liveTrips = true) };
 }

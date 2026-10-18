@@ -49,7 +49,7 @@ const jasur = (page: Page) => async () => {
         application: {
           status: 'approved',
           car,
-          photos: { front: true, side: true, interior: true },
+          photos: { front: true },
           reasons: [],
         },
       },

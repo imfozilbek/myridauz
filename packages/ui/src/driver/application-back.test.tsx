@@ -15,7 +15,7 @@ const toFix = () =>
       status: 'changes_requested',
       car,
       reasons: ['plate_mismatch'],
-      photos: { front: true, side: true, interior: true },
+      photos: { front: true },
     }),
   );
 
@@ -66,15 +66,15 @@ describe('ApplicationFlow: «Назад» of the application (docs/94 B4, F3, G6
       application({
         status: 'changes_requested',
         car,
-        reasons: ['side_unclear'],
-        photos: { front: true, side: true, interior: true },
+        reasons: ['front_unclear'],
+        photos: { front: true },
       }),
     );
     expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
     await tap('Orqaga');
     expect(await screen.findByText('Tuzatish kerak')).toBeTruthy();
     // The block says the reason and how many photos to take again (G76, mockup g76/3 state 3).
-    expect(screen.getByText('Yon tomondan olingan rasm tiniq emas')).toBeTruthy();
+    expect(screen.getByText('Old tomondan olingan rasm tiniq emas')).toBeTruthy();
     expect(screen.getByText('Bitta rasmni qayta oling')).toBeTruthy();
     expect(screen.queryByText('Mashinangiz')).toBeNull();
   });

@@ -4,7 +4,7 @@ import { mockApi } from './api-mock';
 import { appUrl, MINI_APPS, TEXT } from './apps';
 import type { DriverStart } from './drivers-mock';
 import { fillCar } from './driver-application';
-import { mockTelegram, pressBack, telegramUrl } from './telegram-mock';
+import { mockTelegram, telegramUrl } from './telegram-mock';
 
 // Pixel Perfect of G62 (lessons 141, 147, docs/138): the driver application shot at the size of the
 // mockup phones of g62/1-path.png (360 × 760); the diff is read by scripts/pixel-diff.py.
@@ -21,7 +21,7 @@ async function open(page: Page, start: DriverStart) {
   await page.goto(telegramUrl(appUrl(DRIVER.port)));
 }
 
-test('1, 2, 3: the home before the application, «Mashinangiz» and «Mashina rasmlari»', async ({ page }) => {
+test('1, 2, 3: the home before the application, «Mashinangiz» and «Mashina rasmi»', async ({ page }) => {
   await open(page, 'none');
   await expect(page.getByText(TEXT.becomeDriver)).toBeVisible();
   await shot(page, '01');
@@ -29,22 +29,14 @@ test('1, 2, 3: the home before the application, «Mashinangiz» and «Mashina ra
   await page.getByRole('button', { name: 'Cobalt', exact: true }).click();
   await shot(page, '02');
   await page.locator('#tg-main-button').click();
-  // The front by its tile, then the camera opens by itself for the side (G40, K7).
-  await page.locator('.photo-tile', { hasText: TEXT.photoFront }).click();
-  for (const label of [TEXT.photoFront, TEXT.photoSide]) {
-    await page.getByRole('dialog').getByLabel(TEXT.shutter).click();
-    await expect(page.locator('.photo-tile', { hasText: label })).toHaveAttribute('data-taken', 'true');
-  }
-  // The camera opened by itself for the inside: «Назад» closes it, the tile stays empty.
-  await page.getByRole('dialog').getByLabel(TEXT.shutter).waitFor();
-  await pressBack(page);
-  await expect(page.getByRole('dialog')).toHaveCount(0);
+  // One photo since 18.10.2026: before it, the driver's own car drawn from the front with its plate.
+  await expect(page.locator('.car-sketch .uz-plate')).toBeVisible();
   await shot(page, '03');
 });
 
 const STATES = [
   ['04', 'pending', TEXT.check],
-  ['05', 'changes', TEXT.reasonSide],
+  ['05', 'changes', TEXT.reasonFront],
   ['06', 'approved', TEXT.approved],
 ] as const;
 

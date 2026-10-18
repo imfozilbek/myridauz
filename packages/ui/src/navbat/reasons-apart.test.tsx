@@ -13,7 +13,7 @@ describe('the ticks of «Tuzatish» and «Rad etish»', { timeout: 20_000 }, () 
   it('stay apart', async () => {
     renderNavbat({ filter: 'application', kind: 'application', id: JASUR.id }, [JASUR]);
     fireEvent.click(await screen.findByText('Tuzatish'));
-    fireEvent.click(screen.getByText('Salon rasmi tiniq emas'));
+    fireEvent.click(screen.getByText('Old tomondan olingan rasm tiniq emas'));
     await closeSheet();
     fireEvent.click(await screen.findByText('Rad etish'));
     expect(screen.queryByText('Yuborish')).toBeNull();

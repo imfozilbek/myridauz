@@ -1,3 +1,4 @@
+import { CAR_PHOTO_KINDS } from '@platform/contracts';
 import { afterAll, describe, expect, it, vi } from 'vitest';
 import { fakeTelegram } from './bots/test-bot';
 import { changeModerator } from './modules/team';
@@ -27,7 +28,7 @@ const car = {
 async function applyAsDriver(id: number) {
   await registerUser(id);
   await call('/me/avatar', id, { method: 'PUT', ...jpeg });
-  for (const kind of ['front', 'side', 'interior']) {
+  for (const kind of CAR_PHOTO_KINDS) {
     await call(`/driver/application/photos/${kind}`, id, { method: 'PUT', app: 'driver', ...jpeg });
   }
   return call('/driver/application', id, { method: 'POST', app: 'driver', ...json(car) });

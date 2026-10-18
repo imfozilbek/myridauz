@@ -8,7 +8,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const allPhotos = { front: true, side: true, interior: true };
+const allPhotos = { front: true };
 const cameraOpened = (spy: { mock: { contexts: unknown[] } }) =>
   spy.mock.contexts.filter((input) => (input as HTMLInputElement).getAttribute('capture') === 'environment')
     .length;
@@ -19,7 +19,7 @@ describe('one photo to retake', { timeout: 20_000 }, () => {
   it('opens the camera at once after «Tuzatish», not when the fix opens by itself', async () => {
     const clicked = vi.spyOn(HTMLInputElement.prototype, 'click');
     renderGate(
-      application({ status: 'changes_requested', car, reasons: ['side_unclear'], photos: allPhotos }),
+      application({ status: 'changes_requested', car, reasons: ['front_unclear'], photos: allPhotos }),
     );
     expect(await screen.findByText('Bitta rasmni almashtiring')).toBeTruthy();
     expect(cameraOpened(clicked)).toBe(0);

@@ -21,7 +21,7 @@ const active = {
 };
 
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-const photos = { front: true, side: true, interior: true };
+const photos = { front: true };
 const application = (status: string) => ({ application: { status, car, photos, reasons: [] } });
 // The API of the tests: who the person is, the application of the driver, else the same person.
 const api = (status = 'approved') =>

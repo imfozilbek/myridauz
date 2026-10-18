@@ -21,7 +21,7 @@ const dilnoza = {
   avatarReason: null,
 };
 const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01A123BC', seats: 4 };
-const photos = { front: true, side: true, interior: true };
+const photos = { front: true };
 const json = (route: Route, body: unknown) => route.fulfill({ json: body });
 
 export async function openDriverShot(page: Page, shot: number) {

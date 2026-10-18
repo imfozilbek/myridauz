@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 // Test helper for the bookings API: a small directory, an approved driver, JSON requests.
-import type { Location } from '@platform/contracts';
+import { CAR_PHOTO_KINDS, type Location } from '@platform/contracts';
 import { localLocations } from './modules/locations';
 import { call, pid, registerUser } from './test-api';
 
@@ -53,7 +53,7 @@ function telegramIds(value: unknown, parent = ''): string[] {
 export async function approvedDriver(id: number) {
   await registerUser(id);
   await call('/me/avatar', id, { method: 'PUT', ...jpeg });
-  for (const kind of ['front', 'side', 'interior'])
+  for (const kind of CAR_PHOTO_KINDS)
     await call(`/driver/application/photos/${kind}`, id, { method: 'PUT', app: 'driver', ...jpeg });
   const car = { make: 'Chevrolet', model: 'Cobalt', color: 'white', plate: '01 A 123 BC', seats: 4 };
   await call('/driver/application', id, { app: 'driver', ...json(car) });

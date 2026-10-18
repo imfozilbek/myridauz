@@ -6,7 +6,7 @@ const DRIVER = 81;
 const HOUR = 3_600_000;
 const jpeg = { body: new Uint8Array(20), headers: { 'content-type': 'image/jpeg' } };
 const photo = () =>
-  call('/driver/application/photos/side', DRIVER, { method: 'PUT', app: 'driver', ...jpeg });
+  call('/driver/application/photos/front', DRIVER, { method: 'PUT', app: 'driver', ...jpeg });
 
 // One car at the launch (G75, docs/124 Ё): a live trip keeps the car, it is over: the car changes.
 describe('a new car of an approved driver', { timeout: 20_000 }, () => {

@@ -24,12 +24,12 @@ describe('«Navbat»', () => {
   it('opens the next case of the filter by itself after a decision', async () => {
     const { decide, take } = renderNavbat(open, [JASUR, BOBUR]);
     fireEvent.click(await screen.findByText('Rad etish'));
-    fireEvent.click(screen.getByText('Yon tomondan olingan rasm tiniq emas'));
+    fireEvent.click(screen.getByText('Old tomondan olingan rasm tiniq emas'));
     fireEvent.click(screen.getByText('Yuborish'));
     expect(await screen.findByText('Bobur · ariza')).toBeTruthy();
     expect(screen.getByText('2 / 2 · qarordan keyin keyingisi oʻzi ochiladi')).toBeTruthy();
     expect(screen.getByText('Javob yuborildi')).toBeTruthy();
-    expect(decide).toHaveBeenCalledWith(JASUR.id, { action: 'reject', reasons: ['side_unclear'] });
+    expect(decide).toHaveBeenCalledWith(JASUR.id, { action: 'reject', reasons: ['front_unclear'] });
     await waitFor(() => expect(take).toHaveBeenCalledWith('application', BOBUR.id));
   });
 

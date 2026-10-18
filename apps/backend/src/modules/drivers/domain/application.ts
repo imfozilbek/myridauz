@@ -1,4 +1,5 @@
 import {
+  CAR_PHOTO_KINDS,
   REASON_PLACE,
   type ApplicationStatus,
   type Car,
@@ -8,8 +9,10 @@ import {
   type ProblemPlace,
 } from '@platform/contracts';
 
-// A driver application (docs/04): one per person, edited in place.
-type CarPhotos = Readonly<Record<CarPhotoKind, string | null>>;
+// A driver application (docs/04): one per person, edited in place. side and interior: asked until
+// 18.10.2026 (owner decision: one photo, the front with the plate); an older application keeps them
+// until the account is deleted, nothing shows them any more.
+type CarPhotos = Readonly<Record<CarPhotoKind | 'side' | 'interior', string | null>>;
 
 export type Application = {
   readonly userId: number;
@@ -34,7 +37,7 @@ export const emptyApplication = (userId: number, now: number): Application => ({
   updatedAt: now,
 });
 
-const hasAllPhotos = (photos: CarPhotos) => Object.values(photos).every((key) => key !== null);
+const hasAllPhotos = (photos: CarPhotos) => CAR_PHOTO_KINDS.every((kind) => photos[kind] !== null);
 // A fixed place is no longer a problem: the driver sees only what is left to fix.
 const fixed = (reasons: readonly ModerationReason[], place: ProblemPlace) =>
   reasons.filter((reason) => REASON_PLACE[reason] !== place);
