@@ -26,6 +26,16 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 
 Результат: `kit/promo/rida-promo-1080x1920.mp4`. Режим `--preview` сохраняет кадры PNG.
 
+Флаеры направлений 99 × 210 мм: `CHROMIUM=… pnpm flyer`. Пишет в `kit/print/` PDF
+из двух страниц для типографии (вылеты 3 мм), PNG 300 dpi каждой стороны и листы для
+резки: один флаер ровно 99 × 210 мм, A4 с 3 флаерами в ряд, A3 с 6 (3 × 2); страница 1
+попутчик, страница 2 водитель. Размер страниц точный: Chromium округляет его, `pdf-lib` ставит обратно. Направления
+и ссылки QR: `data/flyers.json`. Экраны шагов снимает стенд:
+`pnpm stand:check e2e/stand/flyer-shots.spec.ts --shots` пишет их в `data/flyer-screens/<направление>/`.
+
+Картинки для Telegram Ads 16:9: `CHROMIUM=… pnpm ads`. Пишет в `kit/ads/` 6 PNG 1920 × 1080
+(3 для бота попутчика, 3 для бота водителя) на экранах и маршруте первого флаера.
+
 Картинки ботов (G34): `CHROMIUM=… pnpm bot`. Пишет в `brands/rida/landing/bot/`
 картинку приветствия бота водителя и 4 аватара ботов (JPG 640). Файлы
 в репозитории; сайт отдаёт их по адресу `https://<домен>/bot/…`, оттуда
@@ -45,6 +55,11 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 | `lib/extras.mjs` | CSS токенов и favicon.ico (без рендера) |
 | `build.mjs` | Собирает всё в `kit/` |
 | `data/regions.json` | 13 каналов: код региона, названия, ссылки |
+| `lib/flyer.mjs`, `flyer.mjs` | Флаер направления: сторона попутчика и сторона водителя, PDF и PNG |
+| `data/flyers.json` | Флаеры: направление и ссылки QR (ссылки для рекламы, `docs/184`) |
+| `lib/ads.mjs`, `ads.mjs` | Картинки для Telegram Ads 16:9 |
+| `lib/phone.mjs`, `lib/route-card.mjs` | Экран Mini App в телефоне и карточка маршрута: общие для флаера и рекламы |
+| `data/flyer-screens/` | Экраны шагов флаера с локальной Rida (стенд, `docs/75`) |
 | `data/qr.json` | Матрица QR для https://myrida.uz (python qrcode, уровень H) |
 | `data/tokens.json` | Для чего каждый цвет и моушн-токены. Значения цветов: только `brands/rida/theme.ts` |
 | `data/kit-readme.txt` | README.txt внутри архива |
