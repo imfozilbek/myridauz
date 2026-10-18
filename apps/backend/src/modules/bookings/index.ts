@@ -113,7 +113,6 @@ export const ridesOfTrips = (env: Bindings, trips: Parameters<typeof ridesOf>[1]
 export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(bookingsDeps(env), userId);
 // A blocked person finishes the trip on the way (owner decision 10.10.2026, docs/158 Ж).
 export const ridingOf = (env: Bindings, userId: number) => ridingNow(bookingsDeps(env), userId);
-
 export { cancelsOf, passengerRideCount, ridesOfPerson } from './person-facts';
 
 // «Hamyon» names the passenger and the seats of each booking of its rows (G63, G65).
