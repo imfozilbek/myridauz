@@ -26,6 +26,10 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 
 Результат: `kit/promo/rida-promo-1080x1920.mp4`. Режим `--preview` сохраняет кадры PNG.
 
+Флаеры направлений 99 × 210 мм: `CHROMIUM=… pnpm flyer`. Пишет в `kit/print/` PDF
+из двух страниц для типографии (вылеты 3 мм) и PNG 300 dpi каждой стороны. Направления
+и ссылки QR: `data/flyers.json`.
+
 Картинки ботов (G34): `CHROMIUM=… pnpm bot`. Пишет в `brands/rida/landing/bot/`
 картинку приветствия бота водителя и 4 аватара ботов (JPG 640). Файлы
 в репозитории; сайт отдаёт их по адресу `https://<домен>/bot/…`, оттуда
@@ -45,6 +49,8 @@ FFMPEG=… CHROMIUM=… pnpm promo --preview 1.5,30,100
 | `lib/extras.mjs` | CSS токенов и favicon.ico (без рендера) |
 | `build.mjs` | Собирает всё в `kit/` |
 | `data/regions.json` | 13 каналов: код региона, названия, ссылки |
+| `lib/flyer.mjs`, `flyer.mjs` | Флаер направления: сторона попутчика и сторона водителя, PDF и PNG |
+| `data/flyers.json` | Флаеры: направление и ссылки QR (ссылки для рекламы, `docs/184`) |
 | `data/qr.json` | Матрица QR для https://myrida.uz (python qrcode, уровень H) |
 | `data/tokens.json` | Для чего каждый цвет и моушн-токены. Значения цветов: только `brands/rida/theme.ts` |
 | `data/kit-readme.txt` | README.txt внутри архива |
