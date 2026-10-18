@@ -57,16 +57,18 @@ describe('the loops of growth over HTTP', () => {
   });
 
   it('keeps the story of a moment only after the moment was offered', async () => {
+    expect((await call('/me/moment/story', DRIVER, picture('image/jpeg'))).status).toBe(404);
+    expect((await call('/me/moment/offered', DRIVER, json({ moment: 'nope' }))).status).toBe(400);
+    expect((await call('/me/moment/offered', DRIVER, json({ moment: 'driver' }))).status).toBe(204);
+    expect((await call('/me/moment/story', DRIVER, picture('image/jpeg'))).status).toBe(201);
+    // A moment the person did not reach: a passenger is no new driver, not even after a crafted offer.
+    const passenger = (path: string, body: unknown) => call(path, PASSENGER, json(body));
+    expect((await passenger('/me/moment/offered', { moment: 'driver' })).status).toBe(404);
+    expect((await passenger('/me/moment/card', { moment: 'driver', phrase: 0 })).status).toBe(404);
     expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(404);
-    expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'nope' }))).status).toBe(400);
-    expect((await call('/me/moment/offered', PASSENGER, json({ moment: 'join' }))).status).toBe(204);
-    expect((await call('/me/moment/story', PASSENGER, picture('image/jpeg'))).status).toBe(201);
-    // A moment the person did not reach: a passenger is no new driver.
-    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'driver', phrase: 0 }))).status).toBe(
-      404,
-    );
-    // No moment after a trip any more (owner decision 15.10.2026).
-    expect((await call('/me/moment/card', PASSENGER, json({ moment: 'trip1', phrase: 0 }))).status).toBe(400);
+    // No moment after a trip nor after the registration any more (owner decisions 15 and 18.10.2026).
+    expect((await passenger('/me/moment/card', { moment: 'trip1', phrase: 0 })).status).toBe(400);
+    expect((await passenger('/me/moment/offered', { moment: 'join' })).status).toBe(400);
     expect((await call('/me/moment?side=nobody', PASSENGER, { env })).status).toBe(400);
   });
 });

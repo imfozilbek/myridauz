@@ -61,8 +61,8 @@ export function growthRoutes(deps: (env: Bindings) => Wiring | null) {
         on(async (context, wiring, userId) => {
           const input = momentOfferedSchema.safeParse(await context.req.json().catch(() => null));
           if (!input.success) return fail('growth.invalid_input');
-          await offerMoment(wiring, userId, input.data.moment);
-          return context.body(null, 204);
+          const kept = await offerMoment(wiring, userId, input.data.moment);
+          return kept ? context.body(null, 204) : fail('growth.not_found');
         }),
       )
       .post(

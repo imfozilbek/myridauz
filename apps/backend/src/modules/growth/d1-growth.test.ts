@@ -56,12 +56,14 @@ describe('the loops of growth in D1', () => {
 
   it('offers a moment once and reads the first approval of a driver', async () => {
     const { db, growth } = await seeded();
-    await growth.offer(ALI, 'join', NOW);
-    await growth.offer(ALI, 'join', NOW + 1);
-    expect(await growth.offered(ALI)).toEqual(['join']);
-    // A moment of an older version (a trip, before the owner decision 15.10.2026) is not a moment.
-    await db.exec(`INSERT INTO share_moments (user_id, moment, at) VALUES (${ALI}, 'trip1', ${NOW})`);
-    expect(await growth.offered(ALI)).toEqual(['join']);
+    await growth.offer(ALI, 'driver', NOW);
+    await growth.offer(ALI, 'driver', NOW + 1);
+    expect(await growth.offered(ALI)).toEqual(['driver']);
+    // A moment of an older version (a trip, the registration: owner decisions 15 and 18.10.2026) is
+    // not a moment.
+    await db.exec(`INSERT INTO share_moments (user_id, moment, at)
+      VALUES (${ALI}, 'trip1', ${NOW}), (${ALI}, 'join', ${NOW})`);
+    expect(await growth.offered(ALI)).toEqual(['driver']);
     expect(await growth.approvedAt(DRIVER)).toBeNull();
     await db.exec(`INSERT INTO application_log (user_id, status, reasons, decided_by, decided_at)
       VALUES (${DRIVER}, 'approved', '[]', 900, ${NOW - DAY}), (${DRIVER}, 'approved', '[]', 900, ${NOW})`);

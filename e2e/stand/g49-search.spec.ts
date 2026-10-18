@@ -9,7 +9,7 @@ import { runCron, standRows, standSql } from './stand-tools';
 
 // G49 (docs/77 P17, P18, docs/81 V11): the search of a passenger on the whole local Rida. The routes
 // to Xiva shahri and Hazorasp are this file's own: no other scenario of the stand goes there (checked
-// by id and by name, lesson 334); Urganch and Termiz are the empty days of other scenarios.
+// by id and by name, lesson 335); Urganch and Termiz are the empty days of other scenarios.
 test.describe.configure({ mode: 'serial' });
 const XIVA = '1733406';
 const HAZORASP = '1733220';

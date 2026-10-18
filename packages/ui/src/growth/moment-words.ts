@@ -23,8 +23,8 @@ export function useMomentWords(moment: ShareMoment) {
     phrases: Array.from({ length: PHRASES }, (_, phrase) => t(key(keys(phrase).phrase), values)),
     fact: t(key(keys(0).fact), values),
     link: t(key(keys(0).link), values),
-    // The button names to whom (docs/123): the friends, or the own passengers of a driver.
-    chat: moment === 'driver' ? t('growth.toRiders') : t('growth.toFriends'),
+    // The button names to whom (docs/123): the own passengers of a driver.
+    chat: t('growth.toRiders'),
   };
 }
 

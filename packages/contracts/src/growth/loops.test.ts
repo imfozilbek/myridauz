@@ -16,7 +16,7 @@ describe('the marks of the loops of growth (G69, docs/123, docs/116)', () => {
       expect(loopOf(via)).toBeNull();
   });
 
-  it('gives each moment the loop of its card', () => {
-    expect(SHARE_MOMENTS.map(momentLoop)).toEqual(['share-join', 'share-driver']);
+  it('gives the only moment, a new driver, the loop of its card (owner decision 18.10.2026)', () => {
+    expect(SHARE_MOMENTS.map(momentLoop)).toEqual(['share-driver']);
   });
 });

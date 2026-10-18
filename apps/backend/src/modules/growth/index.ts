@@ -22,7 +22,7 @@ import { prepareCard } from '../../shared/telegram/prepared-card';
 import { placesOf } from '../locations';
 import { bookingForShare, driverTripView } from '../bookings';
 import { requestFacts } from '../ride-requests';
-import { blockedGuard, joinedAtOf, peopleOf } from '../users';
+import { blockedGuard, peopleOf } from '../users';
 import { growthRoutes, type Wiring } from './http/growth-routes';
 import { cardMessage } from './infrastructure/card-text';
 import { d1Growth } from './infrastructure/d1-growth';
@@ -34,7 +34,6 @@ const growthDeps = (env: Bindings): Wiring | null => {
   const brand = brandOf(env);
   return {
     store: d1Growth(db),
-    joinedAt: (userId) => joinedAtOf(env, userId),
     passengerBot: brand.bots.passenger,
     now: Date.now,
     nameOf: async (userId) => (await peopleOf(env).find(userId))?.firstName,

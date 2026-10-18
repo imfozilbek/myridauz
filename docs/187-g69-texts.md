@@ -1,36 +1,33 @@
 # 187. G69: новые тексты петель роста на согласие владельца
 
-> **Кратко:** все новые тексты G69 (`123`): экран праздника «Men Rida bilan», 3 фразы своим голосом, карточка для чата и истории, петли 2, 3, 4, «Sizning taʼsiringiz», QR водителя, «Rost» и 2 строки политики. Ключи в `packages/i18n/locales/uz-Latn/growth.json` (кроме отмеченных). `{brand}`: имя среды («MyRida» внутри команды, «Rida» в проде, `179`). Решения владельца 15.10.2026: без «tekshirilgan»; эмодзи только в заголовках экрана, в истории нет. Согласие владельца 15.10.2026 (тексты, вид экранов, политика 1.7); ждёт проверки носителем (`25`). Решение владельца 15.10.2026: праздника после поездки нет, тексты поездок и попутчиков водителя убраны.
+> **Кратко:** все новые тексты G69 (`123`): экран праздника «Men Rida bilan», 3 фразы своим голосом, карточка для чата и истории, петли 2, 3, 4, «Sizning taʼsiringiz», QR водителя, «Rost» и 2 строки политики. Ключи в `packages/i18n/locales/uz-Latn/growth.json` (кроме отмеченных). `{brand}`: имя среды («MyRida» внутри команды, «Rida» в проде, `179`). Решения владельца 15.10.2026: без «tekshirilgan»; эмодзи только в заголовках экрана, в истории нет. Согласие владельца 15.10.2026 (тексты, вид экранов, политика 1.7); ждёт проверки носителем (`25`). Решение владельца 15.10.2026: праздника после поездки нет, тексты поездок и попутчиков водителя убраны. Решение владельца 18.10.2026: праздника после регистрации нет, его тексты убраны.
 
 ## Экран праздника
 
 | Момент | Заголовок | Строка под ним |
 |---|---|---|
-| Регистрация | Siz {brand} jamoasidasiz! 🎉 | Doʻstlaringizga ayting: ular ham viloyatga birga borsin. |
 | Водитель одобрен | Siz endi {brand} haydovchisisiz! ✅ | Doimiy yoʻlovchilaringizga ayting: endi sizni {brand} da topadi. |
 
 | Блок «выгода» | Жирно | Дальше |
 |---|---|---|
-| Регистрация | Doʻstlaringiz ham shunday borsin. | Havolangiz orqali ular ham {brand} ga qoʻshiladi va viloyatga birga boradi. |
 | Водитель | Yoʻlovchilar sizni topadi. (G88, `194`) | Doimiy yoʻlovchilaringiz va guruhingiz safarlaringizni bir bosishda topadi. |
 
 - Подписи: «Qaysi soʻz sizniki?», «Doʻstlaringiz shuni koʻradi».
-- Кнопки: «Hikoyamga joylash»; кнопка с адресатом: «Doʻstlarimga yuborish» (регистрация), «Yoʻlovchilarimga yuborish» (водитель); «Keyinroq».
+- Кнопки: «Hikoyamga joylash»; кнопка с адресатом «Yoʻlovchilarimga yuborish»; «Keyinroq».
 
 ## Три фразы своим голосом
 
 | Момент | 1 | 2 | 3 |
 |---|---|---|---|
-| Регистрация | Men endi {brand} jamoasidaman! | Viloyatga endi birga boraman | Men ham {brand} bilan yoʻlga chiqaman |
 | Водитель одобрен | Men {brand} haydovchisiman | Endi meni {brand} da toping | Viloyatga men bilan yuring |
 
 ## Карточка, чат и история
 
 | Где | Текст |
 |---|---|
-| Факт на карточке | Viloyatlararo birga safarlar (G88, `194`) · {brand} haydovchisi |
+| Факт на карточке | {brand} haydovchisi |
 | Кто | {name} |
-| Слова ссылки | Men ham qoʻshilaman · {name} bilan yoʻlga chiqish |
+| Слова ссылки | Safar topish (G88, `194`); «Men ham qoʻshilaman» у «Yana ulashish» |
 | Фраза в кавычках | «{phrase}» |
 | Сообщение в чат | «{phrase}» · {name} · факт · Siz ham {name} bilan yoʻlga chiqing: |
 | Заголовок в окне Telegram | Men {brand} bilan |
@@ -62,7 +59,7 @@
 | Где | Текст |
 |---|---|
 | «Rost» | Rost · Halqalar va yoʻnalishlar: kim keldi va safarga chiqdi · 7 kun · 30 kun · Halqalar · Yoʻnalishlar |
-| Петли | Oynadagi QR · Soʻrov tuman guruhida · Doʻstingni chaqir · Yaqinlarimga · Roʻyxatdan keyin · Haydovchi tasdiqlandi |
+| Петли | Oynadagi QR · Soʻrov tuman guruhida · Doʻstingni chaqir · Yaqinlarimga · Yana ulashish (18.10.2026, было «Roʻyxatdan keyin») · Haydovchi tasdiqlandi |
 | Строки | {came} keldi · {registered} roʻyxatdan oʻtdi · {rode} safarga chiqdi · {found} / {searches} qidiruvda safar topildi · Bu davrda qidiruv yoʻq |
 | Без аналитики | Kelganlar soni analitika ulanganda chiqadi. · Analitika javob bermadi: kelganlar soni keyinroq chiqadi. |
 | «Statistika» (`stats.json`) | Odamlar havolasi (приход по петле) |
