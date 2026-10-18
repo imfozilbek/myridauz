@@ -40,6 +40,8 @@ export const otherClients = (overrides: Overrides) => ({
     chat: NOT_USED,
     decide: NOT_USED,
     answerRefund: NOT_USED,
+    teamReviews: NOT_USED,
+    hideReview: NOT_USED,
     ...overrides.feedback,
   },
   stats: { get: NOT_USED, rost: NOT_USED, ...overrides.stats },

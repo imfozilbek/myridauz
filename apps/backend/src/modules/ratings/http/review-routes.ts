@@ -1,9 +1,10 @@
-import { REVIEWS_PATH, reviewInputSchema, type ApiErrorCode } from '@platform/contracts';
+import { ADMIN_REVIEWS_PATH, REVIEWS_PATH, reviewInputSchema, type ApiErrorCode } from '@platform/contracts';
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { RatingsDeps } from '../application/ports';
 import { rate, reviewTarget } from '../application/rate';
 import { reviewsOf } from '../application/read';
+import { teamReviews } from '../application/team-reviews';
 
 const STATUS = {
   'reviews.not_found': 404,
@@ -15,7 +16,7 @@ const STATUS = {
 const fail = (code: keyof typeof STATUS) => Response.json({ error: code }, { status: STATUS[code] });
 
 // Reviews after a ride (docs/24): the review screen, sending a review, a person's published reviews,
-// and hiding a review by the team.
+// and the reviews of the team with hiding one (G45).
 export const reviewRoutes = (deps: (env: Bindings) => RatingsDeps) =>
   new Hono<AppEnv>()
     .get(`${REVIEWS_PATH}/:bookingId`, async (context) => {
@@ -33,6 +34,12 @@ export const reviewRoutes = (deps: (env: Bindings) => RatingsDeps) =>
       const userId = await deps(context.env).people.idOf(context.req.param('id'));
       if (userId === undefined) return fail('reviews.not_found');
       return context.json(await reviewsOf(deps(context.env), userId));
+    })
+    // «Sharhlar» of the team (G45): ?before=<ms> brings the next page.
+    .get(ADMIN_REVIEWS_PATH, async (context) => {
+      if (!context.get('session').isAdmin) return fail('auth.not_admin');
+      const before = Number(context.req.query('before') ?? '') || Number.MAX_SAFE_INTEGER;
+      return context.json(await teamReviews(deps(context.env), before));
     })
     .post('/admin/reviews/:id/hide', async (context) => {
       if (!context.get('session').isAdmin) return fail('auth.not_admin');

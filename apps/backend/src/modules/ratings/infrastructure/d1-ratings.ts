@@ -99,6 +99,14 @@ export const d1Ratings = (db: D1Database): RatingStore => ({
     const rows = await allIn<{ booking_id: string; rater_id: number }>(db, sql, ids);
     return new Set(rows.map((row) => `${row.booking_id}:${row.rater_id}`));
   },
+  // Through reviews_created (migration 0074): one page, never the whole table.
+  latest: async (before, limit) =>
+    (
+      await db
+        .prepare('SELECT * FROM reviews WHERE created_at < ? ORDER BY created_at DESC LIMIT ?')
+        .bind(before, limit)
+        .all<ReviewRow>()
+    ).results.map(toReview),
   hide: async (id) => {
     const result = await db.prepare('UPDATE reviews SET hidden = 1 WHERE id = ?').bind(id).run();
     return result.meta.changes > 0;

@@ -33,6 +33,11 @@ export function createMemoryRatings(): RatingStore {
           .filter((review) => ids.includes(review.raterId))
           .map((r) => key(r.bookingId, r.raterId)),
       ),
+    latest: async (before, limit) =>
+      [...reviews.values()]
+        .filter((review) => review.createdAt < before)
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, limit),
     hide: async (id) => {
       const review = [...reviews.values()].find((known) => known.id === id);
       if (review) reviews.set(key(review.bookingId, review.raterId), { ...review, hidden: true });

@@ -1,5 +1,8 @@
 import {
   ADMIN_COMPLAINTS_PATH,
+  ADMIN_REVIEWS_PATH,
+  adminReviewHidePath,
+  adminReviewsSchema,
   adminComplaintChatPath,
   adminComplaintDecisionPath,
   adminComplaintPath,
@@ -15,6 +18,7 @@ import {
   reviewTargetSchema,
   userReviewsPath,
   userReviewsSchema,
+  type AdminReviews,
   type ChatLine,
   type Complaint,
   type ComplaintDecision,
@@ -49,6 +53,12 @@ export function createFeedbackClient(options: SignedOptions) {
       complaintChatSchema.parse(await (await post(adminComplaintChatPath(id), {})).json()).lines,
     decide: async (id: string, decision: ComplaintDecision): Promise<void> =>
       void (await post(adminComplaintDecisionPath(id), decision)),
+    // «Sharhlar» of the team (G45): a page of reviews, then the page before the last one seen.
+    teamReviews: async (before?: number): Promise<AdminReviews> => {
+      const path = before === undefined ? ADMIN_REVIEWS_PATH : `${ADMIN_REVIEWS_PATH}?before=${before}`;
+      return adminReviewsSchema.parse(await (await request(path)).json());
+    },
+    hideReview: async (id: string): Promise<void> => void (await post(adminReviewHidePath(id), {})),
     // Only the owner confirms or rejects the refund of a no-show (docs/35, G63).
     answerRefund: async (id: string, answer: RefundAnswer): Promise<void> =>
       void (await post(adminComplaintRefundPath(id, answer), {})),
