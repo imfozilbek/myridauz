@@ -127,4 +127,23 @@ describe('«Kanallar» of a person (G65, docs/119)', () => {
     expect(screen.getByText('Soʻrovlar koʻp')).toBeTruthy();
     expect(screen.getByText('Oxirgi safaringiz')).toBeTruthy();
   });
+
+  // A failed load offers nothing for the person: every channel stays below (docs/119, G49).
+  it('shows every channel without «Siz uchun» when what the app knows fails to load', async () => {
+    const failed = async () => Promise.reject(new Error('network'));
+    renderProfile(
+      {},
+      {
+        clients: {
+          comfort: { history: failed },
+          market: { myRequests: failed },
+          channels: { mine: async () => made },
+        },
+      },
+    );
+    fireEvent.click(screen.getByText('Dilnoza'));
+    fireEvent.click(await screen.findByText('Kanallar'));
+    expect(await screen.findByText('Qamchiq | Furqat | Qoʻqon')).toBeTruthy();
+    expect(screen.queryByText('Siz uchun')).toBeNull();
+  });
 });

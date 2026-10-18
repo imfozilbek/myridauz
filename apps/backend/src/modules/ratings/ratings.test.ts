@@ -1,51 +1,11 @@
-import { loadBrand } from '@platform/brands';
 import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { askRatings } from './application/ask';
-import type { Ask, RatingsDeps, Ride } from './application/ports';
 import { rate } from './application/rate';
 import { ratingsOf, reviewsOf, standingOf } from './application/read';
 import { ratingOf } from './domain/rating';
-import { createMemoryRatings } from './infrastructure/memory-ratings';
-import { idOfPublic, publicIdOf } from '../../test-people';
-
-const NOW = Date.parse('2026-10-05T12:00:00Z');
-const HOUR = 3_600_000;
-const RULES = loadBrand().ratings;
-const DRIVER = 1;
-const ride = (n: number, over = true): Ride => ({
-  bookingId: `b${n}`,
-  tripId: `t${n}`,
-  driverId: DRIVER,
-  passengerId: 100 + n,
-  endsAt: NOW - HOUR,
-  over,
-});
-
-function setup(rides: Ride[] = [ride(1)]) {
-  let clock = NOW;
-  const asked: { ask: Ask; name: string; rater: string; reminder: boolean }[] = [];
-  const alerts: { name: string; publicId: string }[] = [];
-  const told: (readonly [number, string])[] = [];
-  const deps: RatingsDeps = {
-    store: createMemoryRatings(),
-    rides: {
-      ended: async (from, to) => rides.filter((known) => known.endsAt >= from && known.endsAt < to),
-      find: async (id) => rides.find((known) => known.bookingId === id),
-    },
-    names: async (ids) => new Map(ids.map((id) => [id, id === DRIVER ? 'Jasur' : `P${id}`])),
-    people: { publicId: async (id) => publicIdOf(id), idOf: idOfPublic },
-    ask: async (ask, name, { rater }, reminder) => void asked.push({ ask, name, rater, reminder }),
-    alertTeam: async (person) => void alerts.push(person),
-    tellLow: async (userId, role) => void told.push([userId, role]),
-    mask: (text) => text.replace(/\+?\d{9,}/gu, '***'),
-    limits: RULES,
-    now: () => clock,
-    newId: () => `r${Math.random()}`,
-  };
-  return { deps, asked, alerts, told, later: (ms: number) => void (clock += ms) };
-}
-const review = (bookingId: string, stars: number, text = '') => ({ bookingId, stars, tags: [], text });
+import { DRIVER, HOUR, review, ride, RULES, setup } from './ratings-test-kit';
+import { publicIdOf } from '../../test-people';
 
 describe('the rating of a person (docs/24)', () => {
   it('shows "Yangi" below 3 ratings and the average with one decimal after', () => {
