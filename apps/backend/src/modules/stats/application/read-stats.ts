@@ -73,10 +73,13 @@ async function eventsPart(deps: StatsDeps, period: StatsPeriod, at: number): Pro
 
 export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<Stats> {
   const at = deps.now();
-  const since = at - PERIOD_DAYS[period] * DAY;
+  const span = PERIOD_DAYS[period] * DAY;
+  const since = at - span;
   // The main numbers count whole tables: they live in the cache too (G56, docs/117).
-  const [numbers, arrivals, voice, part] = await Promise.all([
+  const [numbers, before, arrivals, voice, part] = await Promise.all([
     cached(deps.cache, `numbers:${period}`, at, () => deps.numbers.numbers(since)),
+    // The period before, to compare (G45, F-A12 of docs/90).
+    cached(deps.cache, `before:${period}`, at, () => deps.numbers.before(since - span, since)),
     cached(deps.cache, `arrivals:${period}`, at, () => deps.numbers.arrivals(since)),
     // G87 (docs/191): the ratings and the complaints of the period.
     cached(deps.cache, `voice:${period}`, at, async () => {
@@ -85,5 +88,5 @@ export async function readStats(deps: StatsDeps, period: StatsPeriod): Promise<S
     }),
     eventsPart(deps, period, at),
   ]);
-  return { period, numbers, arrivals: arrivalsOf(arrivals), ...voice, ...part, at };
+  return { period, numbers, before, arrivals: arrivalsOf(arrivals), ...voice, ...part, at };
 }

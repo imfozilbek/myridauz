@@ -45,6 +45,10 @@ export const MAIN_NUMBERS = [
   'complaints',
 ] as const;
 export type MainNumber = (typeof MAIN_NUMBERS)[number];
+// The numbers counted over a period, compared with the period before it (F-A12 of docs/90, G45); the
+// live trips are a number of now.
+export const COUNTED_NUMBERS = MAIN_NUMBERS.filter((name) => name !== 'activeTrips');
+export type CountedNumber = Exclude<MainNumber, 'activeTrips'>;
 
 const count = z.number().int().nonnegative();
 const id = z.string().regex(/^[a-z][a-z0-9_.]{0,47}$/);
@@ -109,6 +113,8 @@ export type BotBlock = z.infer<typeof botBlockSchema>;
 export const statsSchema = z.object({
   period: z.enum(STATS_PERIODS),
   numbers: z.record(z.enum(MAIN_NUMBERS), count),
+  // The same numbers of the period before (G45); an answer of before G45: none.
+  before: z.partialRecord(z.enum(MAIN_NUMBERS), count).default({}),
   arrivals: arrivalsSchema,
   // Funnels and errors come from the events: "off" while the analytics key is not set (docs/46),
   // "failed" when Analytics Engine did not answer.

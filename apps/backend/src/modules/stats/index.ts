@@ -36,6 +36,7 @@ function eventsOf(env: Bindings): EventSource | null {
 const noVoice = { stars: { count: 0, total: 0, low: 0 }, tags: [], complaints: [] };
 const localNumbers = {
   numbers: async () => zeroNumbers,
+  before: async () => zeroNumbers,
   arrivals: async () => [],
   riders: async () => [],
   voice: async () => noVoice,

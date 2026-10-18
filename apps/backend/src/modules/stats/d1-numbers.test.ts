@@ -32,6 +32,15 @@ describe('the main numbers (docs/29)', () => {
     const numbers = await d1Numbers(db).numbers(NOW - 24 * HOUR);
     expect(numbers.activeTrips).toBe(2);
     expect(numbers.trips).toBe(5);
+    // The day before (G45, F-A12): the trips made then, not now.
+    expect(await d1Numbers(db).before(NOW - 48 * HOUR, NOW - 24 * HOUR)).toEqual({
+      newUsers: 0,
+      trips: 0,
+      bookings: 0,
+      driverApplications: 0,
+      complaints: 0,
+    });
+    expect((await d1Numbers(db).before(NOW - 2 * HOUR, NOW)).trips).toBe(5);
     // Each count reads only its period, through an index (G56).
     await d1Numbers(db).arrivals(NOW - 24 * HOUR);
     expect(fullScans(db)).toEqual([]);

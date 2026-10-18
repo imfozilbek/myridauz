@@ -1,3 +1,4 @@
+import { DAY_MS } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import type { DataPoint } from '../analytics';
 import { checkAlerts } from './application/check-alerts';
@@ -8,6 +9,8 @@ import { createMemoryCache } from './infrastructure/d1-cache';
 import { memoryEvents } from './infrastructure/memory-events';
 
 const NOW = 1_790_000_000_000;
+// The spans the period before was asked for (G45).
+const asked: [number, number][] = [];
 const HOUR = 3_600_000;
 const point = (
   name: string,
@@ -38,6 +41,8 @@ function setup(events: EventSource | null) {
     events: counting,
     numbers: {
       numbers: async () => numbers,
+      // The day before (G45): asked for the span right before the period.
+      before: async (since, until) => (asked.push([since, until]), { ...numbers, trips: 1 }),
       arrivals: async () => [],
       riders: async () => [],
       voice: async () => ({ stars: { count: 0, total: 0, low: 0 }, tags: [], complaints: [] }),
@@ -66,6 +71,8 @@ describe('readStats (docs/29)', () => {
     const { deps, queries } = setup(memoryEvents(rows, () => NOW));
     const day = await readStats(deps, 'day');
     expect(day.numbers).toEqual(numbers);
+    expect(day.before.trips).toBe(1);
+    expect(asked).toContainEqual([NOW - 2 * DAY_MS, NOW - DAY_MS]);
     expect(day.events).toBe('on');
     expect(day.funnels.find((funnel) => funnel.id === 'passenger')?.steps.slice(0, 2)).toEqual([
       { step: 'opened', count: 2, drop: null },

@@ -1,4 +1,4 @@
-import type { ErrorRow, MainNumber } from '@platform/contracts';
+import type { CountedNumber, ErrorRow, MainNumber } from '@platform/contracts';
 import type { Alert, AlertRules } from '../domain/alerts';
 import type { ArrivalCount } from '../domain/arrivals';
 import type { BotEvents } from '../domain/bot-load';
@@ -25,6 +25,8 @@ export type EventSource = {
 // The new people by the mark of their source and their platform (G55, docs/116).
 export type NumbersSource = {
   numbers(since: number): Promise<Record<MainNumber, number>>;
+  // The counted numbers of [since, until): the period before, to compare (G45, F-A12 of docs/90).
+  before(since: number, until: number): Promise<Record<CountedNumber, number>>;
   arrivals(since: number): Promise<ArrivalCount[]>;
   // The new people of a mark who rode since (G69): a seat ridden or a trip driven to its end.
   riders(since: number): Promise<MarkCount[]>;
