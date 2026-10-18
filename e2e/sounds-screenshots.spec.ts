@@ -64,7 +64,7 @@ test('admin: the three sets, the owner picks the first', async ({ page }) => {
   await page.route('**/api/admin/sounds', async (route) => {
     if (route.request().method() !== 'POST') return route.fulfill({ json: state });
     picked.push(route.request().postDataJSON());
-    return route.fulfill({ json: { ...state, set: '1', changedBy: 900, changedAt: Date.now() } });
+    return route.fulfill({ json: { ...state, set: '1', changedBy: 'Fozil', changedAt: Date.now() } });
   });
   const take = shot(page);
   await mockTelegram(page);

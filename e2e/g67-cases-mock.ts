@@ -46,6 +46,7 @@ export async function mockCases(page: Page) {
     author: party(4, 'Madina', 'passenger'),
     against: party(2, 'Jasur', 'driver'),
     refund: null,
+    past: [],
   });
   // The trip of the complaint: Jasur to Samarqand, done (mockup «5-okt 08:00 · Safar tugadi»).
   await json(page, '**/api/trips/t1', tripOf('1', 'Jasur', false, -30, { status: 'completed' }));

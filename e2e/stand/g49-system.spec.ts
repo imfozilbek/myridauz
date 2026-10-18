@@ -45,9 +45,12 @@ test('S51. the app missed the signal in the background: back in it, the screen i
 }) => {
   const seat = await bookedSeat(SANJAR, '01G924SJ', GULI);
   let away = false;
+  // In the background the socket stays as it was: a close by a busy server is not passed on, or the
+  // socket opened again would catch the screen up by itself (a reopened socket refreshes, docs/64).
   await page.routeWebSocket('**/feed/socket**', (socket) => {
     const server = socket.connectToServer();
     server.onMessage((message) => (away ? undefined : socket.send(message)));
+    server.onClose(() => (away ? undefined : socket.close()));
   });
   await openAs(page, 'passenger', GULI);
   await page.getByText(t('common.myTrips')).click();

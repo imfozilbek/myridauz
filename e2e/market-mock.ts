@@ -109,9 +109,9 @@ export async function mockMarket(page: Page) {
   });
   let variables = V;
   const state = () => ({
-    current: { version: 2, variables, changedBy: 1, changedAt: Date.now() },
+    current: { version: 2, variables, changedBy: 'Fozil', changedAt: Date.now() },
     history: [
-      { version: 2, variables, changedBy: 1, changedAt: Date.now() },
+      { version: 2, variables, changedBy: 'Fozil', changedAt: Date.now() },
       { version: 1, variables: V, changedBy: null, changedAt: 0 },
     ],
   });
