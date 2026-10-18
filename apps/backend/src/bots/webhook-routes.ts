@@ -14,6 +14,7 @@ import { onRatingCallback } from './rating-callbacks';
 import { onSupportMessage, SUPPORT_BOT, toSupportBot } from './support-bot';
 import type { BotContext } from './bot-context';
 import { botEventOf } from './bot-events';
+import { noteBotMember } from './bot-member';
 import { DOCUMENTS_COMMAND, documentsReply } from './documents-reply';
 import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
@@ -42,6 +43,7 @@ export function webhookRoutes(fetch: Fetch) {
     if (event) recordServerEvent(context.env, event);
     const bot: BotContext = { env: context.env, brand: brandOf(context.env), fetch };
     try {
+      if (role !== SUPPORT_BOT) await noteBotMember(context.env, role, update.data);
       return context.json(await answer(bot, role, update.data));
     } catch (error) {
       // A broken step still answers 200: a retry would repeat a forward to the team (G42).

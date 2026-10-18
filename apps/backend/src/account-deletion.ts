@@ -4,7 +4,7 @@ import { forgetChat, forgetUnread } from './modules/chat';
 import { openComplaintsOf } from './modules/complaints';
 import { forgetDriver } from './modules/drivers';
 import { forgetFavorites } from './modules/favorites';
-import { forgetCards } from './modules/notifications';
+import { forgetBotBlocks, forgetCards } from './modules/notifications';
 import { forgetRatings } from './modules/ratings';
 import { eraseRequestPointsOf, forgetRequestViews } from './modules/ride-requests';
 import { forgetSubscriptions } from './modules/route-subscriptions';
@@ -31,6 +31,8 @@ wireAccountDeletion(async (env, userId) => {
   await forgetUnread(env, userId);
   // The live cards of the bots too (G68).
   await forgetCards(env, userId);
+  // The marks «blocked the bot» too (G46).
+  await forgetBotBlocks(env, userId);
   await forgetDriver(env, userId);
   await forgetFavorites(env, userId);
   await forgetSubscriptions(env, userId);

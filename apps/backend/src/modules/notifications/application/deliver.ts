@@ -12,13 +12,15 @@ export type Delivery =
   | { readonly outcome: 'sent'; readonly messageId: number | null }
   // limited: Telegram said 429, the whole bot waits (G85 T4).
   | { readonly outcome: 'retry'; readonly afterSeconds: number; readonly limited?: boolean }
-  | { readonly outcome: 'drop' }
+  // blocked: the person blocked the bot or never opened it (403): it stays quiet to them (G46).
+  | { readonly outcome: 'drop'; readonly blocked?: boolean }
   | { readonly outcome: 'gone' };
 
 const TOO_MANY_REQUESTS = 429;
 const SERVER_ERROR = 500;
 const DEFAULT_RETRY_SECONDS = 5;
 const BAD_REQUEST = 400;
+const FORBIDDEN = 403;
 const NOT_MODIFIED = 'message is not modified';
 const GONE = ['message to edit not found', "message can't be edited"];
 
@@ -56,5 +58,6 @@ export async function deliver(fetch: Fetch, tokens: Tokens, job: NotificationJob
   }
   if (response.status >= SERVER_ERROR) return { outcome: 'retry', afterSeconds: DEFAULT_RETRY_SECONDS };
   console.warn(JSON.stringify({ event: 'notification_dropped', bot: job.bot, status: response.status }));
-  return { outcome: 'drop' };
+  const person = typeof job.chatId === 'number';
+  return person && response.status === FORBIDDEN ? { outcome: 'drop', blocked: true } : { outcome: 'drop' };
 }

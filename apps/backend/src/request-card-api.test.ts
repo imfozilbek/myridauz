@@ -49,6 +49,12 @@ const lastText = (person = PASSENGER) =>
       .at(-1)?.body.text,
   );
 
+// «Soʻrov muddati tugadi» as a new message with sound, the search under it (G46, docs/77 P64).
+const expiredRings = (person: number) =>
+  toPassenger(person).filter(
+    (sent) => sent.method === 'sendMessage' && String(sent.body.text).startsWith('⌛'),
+  );
+
 // The request of a passenger lives as one card in the passenger bot (G68, docs/122).
 describe('the request card of the passenger bot (G68, docs/122)', () => {
   it('waits on top of the chat, counts the offers, rings for the first one only, ends accepted', async () => {
@@ -89,8 +95,12 @@ describe('the request card of the passenger bot (G68, docs/122)', () => {
     await call(`/passenger/requests/${cancelled.request.id}/cancel`, LATER_PASSENGER, { method: 'POST' });
     expect(lastText(LATER_PASSENGER)).toContain('Bekor qilindi');
     expect(over(LATER_DRIVER)).toHaveLength(1);
+    // Her own cancel needs no word more; a request burned by its day rings with the search (G46).
+    expect(expiredRings(LATER_PASSENGER)).toHaveLength(0);
     await asked(LATER_PASSENGER, 3);
     await expireRequests(testEnv, Date.now() + 5 * DAY_MS);
     expect(lastText(LATER_PASSENGER)).toContain('Soʻrov muddati tugadi');
+    const [ring] = expiredRings(LATER_PASSENGER);
+    expect(JSON.stringify(ring?.body.reply_markup)).toContain('?find=');
   });
 });

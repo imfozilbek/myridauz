@@ -35,6 +35,8 @@ const memberSchema = z.object({
   new_chat_member: z.object({ status: z.string() }),
 });
 export type BotMember = z.infer<typeof memberSchema>;
+// The status of the bot in a private chat a person blocked it in (G87, docs/191).
+export const BLOCKED_STATUS = 'kicked';
 
 export const telegramUpdateSchema = z.object({
   message: messageSchema.optional(),

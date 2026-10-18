@@ -44,7 +44,7 @@ describe('bot messages through the queue (docs/03)', () => {
       limited: true,
     });
     expect(await deliver(answer(502, {}), TOKENS, JOB)).toEqual({ outcome: 'retry', afterSeconds: 5 });
-    expect(await deliver(answer(403, {}), TOKENS, JOB)).toEqual({ outcome: 'drop' });
+    expect(await deliver(answer(403, {}), TOKENS, JOB)).toEqual({ outcome: 'drop', blocked: true });
     expect(await deliver(answer(200, {}), { ...TOKENS, driver: undefined }, JOB)).toEqual({
       outcome: 'drop',
     });

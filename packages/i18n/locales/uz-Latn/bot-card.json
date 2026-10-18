@@ -41,6 +41,7 @@
   "ring.message": "💬 {name} sizga xabar yozdi",
   "ring.call": "📞 {name} sizga qoʻngʻiroq qilyapti",
   "ring.missed": "📞 {name} qoʻngʻiroq qildi, lekin gaplasha olmadingiz",
+  "ring.requestExpired": "⌛ Soʻrov muddati tugadi, haydovchi topilmadi. Boshqa safarlarni koʻring.",
   "ring.offer": "📨 Soʻrovingizga taklif keldi: {name}, {time}, {price}",
   "ring.driverCame": "📍 {name} uchrashuv joyiga keldi",
   "news.more": "… va yana {count} ta",

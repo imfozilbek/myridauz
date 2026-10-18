@@ -2,7 +2,9 @@ import { isQuietTime } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { teamMembers } from '../team';
 import { cardJob, ringJob, type Card, type Ring } from './application/cards';
+import type { NotificationJob } from './application/job';
 import { newsCard, type News } from './application/news';
+import { blocksOf } from './infrastructure/bot-blocks';
 import { deadPostsByChannel } from './infrastructure/dead-posts';
 import { notify, notifyMass } from './infrastructure/lanes';
 import { cardsOf, newsOf } from './infrastructure/wiring';
@@ -11,6 +13,7 @@ export type { NotificationJob, QueueMessage, TimedTask } from './application/job
 export type { Card, Ring } from './application/cards';
 export type { News, NewsLine } from './application/news';
 export { forgetCards, forgetOldCards } from './infrastructure/d1-cards';
+export { forgetBotBlocks } from './infrastructure/bot-blocks';
 export { handleAfterSent } from './infrastructure/deliver-now';
 export { notify, notifyMass, scheduleTasks } from './infrastructure/lanes';
 export { consumeNotifications, MAX_ATTEMPTS } from './infrastructure/consumer';
@@ -65,3 +68,8 @@ export async function notifyTeam(env: Bindings, text: string, markup?: object): 
 // The channel posts Telegram never took since a moment, by channel («Kanallar» of the owner, G75).
 export const deadChannelPosts = async (env: Bindings, since: number) =>
   env.DB ? deadPostsByChannel(env.DB, since) : new Map<string, number>();
+
+// A person blocked a bot or came back to it with /start (G46, docs/191): the bot is quiet to them
+// until then.
+export const botBlockedBy = (env: Bindings, bot: NotificationJob['bot'], chatId: number, blocked: boolean) =>
+  blocked ? blocksOf(env).mark(bot, chatId, Date.now()) : blocksOf(env).clear(bot, chatId);

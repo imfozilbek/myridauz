@@ -4,6 +4,7 @@ import { cardSent } from '../application/card-sent';
 import { deliver, type Delivery } from '../application/deliver';
 import type { AfterSentHandler, NotificationJob } from '../application/job';
 import { SECOND_MS } from '../application/pace';
+import { blocksOf } from './bot-blocks';
 import { cardsOf, opsOf, paceOf, send, tokensOf } from './wiring';
 
 // What to do once a message has its id; set by the app, which knows every module (app.ts).
@@ -39,9 +40,21 @@ async function tryOnce(env: Bindings, job: NotificationJob): Promise<Delivery> {
   return delivery;
 }
 
+// A person who blocked the bot hears nothing until /start (G46, docs/191): no call to Telegram.
+async function quiet(env: Bindings, job: NotificationJob): Promise<boolean> {
+  if (typeof job.chatId !== 'number') return false;
+  return blocksOf(env).has(job.bot, job.chatId);
+}
+
 export async function deliverNow(env: Bindings, job: NotificationJob): Promise<Delivery> {
+  if (await quiet(env, job)) {
+    recordServerEvent(env, { name: 'bot_send', source: job.bot, code: 'drop' });
+    return { outcome: 'drop' };
+  }
   let sent = await withReply(env, job);
   let delivery = await tryOnce(env, sent);
+  if (delivery.outcome === 'drop' && delivery.blocked === true && typeof job.chatId === 'number')
+    await blocksOf(env).mark(job.bot, job.chatId, Date.now());
   const card = sent.after?.type === 'card' ? sent.after : null;
   let replaced: number | null = null;
   // The person deleted the card, or it is too old to edit: a new card takes its place.
