@@ -25,7 +25,16 @@ const withoutEdit = (job: NotificationJob): NotificationJob =>
 async function tryOnce(env: Bindings, job: NotificationJob): Promise<Delivery> {
   const delivery = await deliver(send, tokensOf(env), job);
   const limited = delivery.outcome === 'retry' && delivery.limited === true;
-  recordServerEvent(env, { name: 'bot_send', source: job.bot, code: limited ? 'limited' : delivery.outcome });
+  // A failed count must never send the message once more.
+  try {
+    recordServerEvent(env, {
+      name: 'bot_send',
+      source: job.bot,
+      code: limited ? 'limited' : delivery.outcome,
+    });
+  } catch (error) {
+    console.warn(JSON.stringify({ event: 'bot_send_uncounted', message: String(error) }));
+  }
   if (limited) await paceOf(env).pause(job.bot, Date.now() + delivery.afterSeconds * SECOND_MS);
   return delivery;
 }

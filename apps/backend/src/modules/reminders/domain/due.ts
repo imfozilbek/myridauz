@@ -31,3 +31,18 @@ export function reminderAt(departAt: number, kind: ReminderKind, now: number): n
 }
 
 export const REMINDER_HORIZON_MS = DAY_BEFORE_MS;
+
+// A reminder is a card and a ring: 10 a second keep a bot within 20 messages a second (G85 T6).
+const REMINDERS_PER_SECOND = 10;
+const STEP_MS = 1000 / REMINDERS_PER_SECOND;
+
+// The moments of sorted reminders, each at least a step after the one before: many of one moment
+// spread over the next seconds, the rest keep theirs.
+export function spreadMoments(sorted: readonly number[]): number[] {
+  let next = -Infinity;
+  return sorted.map((at) => {
+    const moment = Math.max(at, next);
+    next = moment + STEP_MS;
+    return moment;
+  });
+}

@@ -3,25 +3,31 @@ import type { NotificationJob } from './job';
 // Telegram lets a bot send about 30 messages a second (core.telegram.org/bots/faq). Many messages at
 // once take 20 of them: the answers to people's own steps always find room (G85 T2, docs/122).
 export const MASS_PER_SECOND = 20;
-// A channel takes about 20 posts a minute; Rida keeps to 18, one each 60 / 18 seconds (G85 T7).
-export const CHANNEL_STEP_MS = 60_000 / 18;
+// A channel takes about 20 posts a minute; Rida sends 18 new posts a minute at most, the next ones
+// wait for a later minute (G85 T7). Edits and deletes of posts go at once.
+export const CHANNEL_PER_MINUTE = 18;
 export const SECOND_MS = 1000;
 
 // A channel is "@username" or a negative chat id; a person is a positive one (docs/15).
 export const isChannel = (chatId: NotificationJob['chatId']) => typeof chatId === 'string' || chatId < 0;
 
-// The wait of each message of a big batch: each bot sends MASS_PER_SECOND of them a second.
-export function massDelays(jobs: readonly NotificationJob[]): number[] {
-  const sent = new Map<NotificationJob['bot'], number>();
-  return jobs.map((job) => {
-    const index = sent.get(job.bot) ?? 0;
-    sent.set(job.bot, index + 1);
-    return Math.floor(index / MASS_PER_SECOND);
-  });
+// The clock of a bot's mass messages: the moment its next one may go. A message waits whole seconds
+// (rounded down): MASS_PER_SECOND of them share one second, the next ones the second after.
+export function paceAfter(
+  clock: Map<NotificationJob['bot'], number>,
+  bot: NotificationJob['bot'],
+  now: number,
+) {
+  const at = Math.max(clock.get(bot) ?? 0, now);
+  clock.set(bot, at + SECOND_MS / MASS_PER_SECOND);
+  return Math.floor((at - now) / SECOND_MS);
 }
 
-// Whole seconds until a moment; a moment passed is now.
-export const secondsUntil = (at: number, now: number) => Math.max(0, Math.ceil((at - now) / SECOND_MS));
+// Queues hold a message at most 12 hours (developers.cloudflare.com/queues).
+const MAX_DELAY_SECONDS = 43_200;
+// Whole seconds until a moment; a moment passed is now; never longer than the queue holds.
+export const secondsUntil = (at: number, now: number) =>
+  Math.min(MAX_DELAY_SECONDS, Math.max(0, Math.ceil((at - now) / SECOND_MS)));
 
 // A plain message to a person joins another one only when nothing else rides on it: no buttons, no
 // edit, no card, no picture. Channel posts stay apart (docs/15).

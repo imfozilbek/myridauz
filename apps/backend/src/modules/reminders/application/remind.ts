@@ -1,5 +1,11 @@
 import type { Booking, Trip } from '@platform/contracts';
-import { REMINDER_HORIZON_MS, REMINDER_KINDS, reminderAt, type ReminderKind } from '../domain/due';
+import {
+  REMINDER_HORIZON_MS,
+  REMINDER_KINDS,
+  reminderAt,
+  spreadMoments,
+  type ReminderKind,
+} from '../domain/due';
 
 // A reminder waiting in the queue for its moment (G85 R3): the trip at the time it was found; the
 // booking of a passenger, none for the driver.
@@ -49,25 +55,37 @@ export async function remindTrips(deps: RemindersDeps): Promise<void> {
         held.push({ reminder: { ...base, bookingId: booking.id }, at });
     if (await deps.first(`${trip.id}:${kind}:driver`)) held.push({ reminder: base, at });
   }
-  if (held.length > 0) await deps.schedule(held);
+  if (held.length === 0) return;
+  // Many reminders of one moment (08:00, a round hour) go a few a second, not all at once (G85 T6).
+  const sorted = [...held].sort((one, other) => one.at - other.at);
+  const moments = spreadMoments(sorted.map(({ at }) => at));
+  await deps.schedule(sorted.map((item, index) => ({ ...item, at: moments[index] ?? item.at })));
 }
 
+// The statuses of a trip that still goes.
+const GOING: readonly Trip['status'][] = ['active', 'full'];
+
 export type TellDeps = {
-  readonly trips: RemindersDeps['trips'];
+  readonly trip: (id: string) => Promise<Trip | undefined>;
   readonly bookings: RemindersDeps['bookings'];
+  readonly schedule: RemindersDeps['schedule'];
   readonly tell: {
     passenger(booking: Booking, kind: ReminderKind): Promise<void>;
     driver(trip: Trip, kind: ReminderKind): Promise<void>;
   };
+  readonly now: () => number;
 };
 
-// At its moment a reminder reads the trip again: a trip cancelled, moved or left without riders, and
-// a booking cancelled, remind nobody.
+// At its moment a reminder reads the trip again: a cancelled trip, a trip left without riders and a
+// cancelled booking remind nobody. A trip the driver moved is reminded at the moment of its new time.
 export async function tellReminder(deps: TellDeps, reminder: Reminder): Promise<void> {
-  const trip = (await deps.trips(reminder.departAt, reminder.departAt + 1)).find(
-    (one) => one.id === reminder.tripId,
-  );
-  if (!trip) return;
+  const trip = await deps.trip(reminder.tripId);
+  if (!trip || !GOING.includes(trip.status)) return;
+  if (trip.departAt !== reminder.departAt) {
+    const at = reminderAt(trip.departAt, reminder.kind, deps.now());
+    if (at !== null) await deps.schedule([{ reminder: { ...reminder, departAt: trip.departAt }, at }]);
+    return;
+  }
   const riders = await deps.bookings([trip.id]);
   if (reminder.bookingId === undefined) {
     if (riders.length > 0) await deps.tell.driver(trip, reminder.kind);

@@ -2,7 +2,7 @@ import { MINUTE_MS } from '@platform/contracts';
 import type { Bindings } from '../../env';
 import { confirmedBookings, passengerNewsOf, requestsPastHalf, tellDriver } from '../bookings';
 import { notifyMass, scheduleTasks, type TimedTask } from '../notifications';
-import { departByCron, tripsDeparting, tripsNotDeparted } from '../trips';
+import { departByCron, tripsDeparting, tripsNotDeparted, tripViewsOf } from '../trips';
 import { watchDepartures } from './application/departures';
 import { remindTrips, tellReminder, type TellDeps } from './application/remind';
 import { departReminder } from './infrastructure/depart-reminder';
@@ -13,9 +13,21 @@ import { TICK_MINUTES } from '../../shared/cron/tick';
 
 const localFirst = createMemoryFirst();
 
+// Holds reminders until their moments; without the queue (tests, the stand) they go at once.
+const scheduleOf =
+  (env: Bindings): TellDeps['schedule'] =>
+  (held) =>
+    scheduleTasks(
+      env,
+      held.map(({ reminder, at }) => ({ task: reminderTask(reminder), at })),
+      (task) => runReminderTask(env, task),
+    );
+
 const tellDeps = (env: Bindings): TellDeps => ({
-  trips: (from, to) => tripsDeparting(env, from, to),
+  trip: async (id) => (await tripViewsOf(env, [id]))[0],
   bookings: (tripIds) => confirmedBookings(env, tripIds),
+  schedule: scheduleOf(env),
+  now: Date.now,
   tell: {
     // The day before: the trip card shows it without sound; 2 hours before: a ring (G68, docs/122).
     passenger: (booking, kind) => passengerNewsOf(env)(booking, kind === 'soon' ? 'soon' : undefined),
@@ -35,18 +47,13 @@ export const sendReminders = async (env: Bindings, now: number) => {
   const first = env.DB ? d1First(env.DB) : localFirst;
   for (const request of await requestsPastHalf(env, now))
     if (await first(`${request.id}:half`)) await tellDriver(env, request.tripId, 'askAgain', request.id);
-  const tell = tellDeps(env);
   await remindTrips({
-    trips: tell.trips,
-    bookings: tell.bookings,
+    trips: (from, to) => tripsDeparting(env, from, to),
+    bookings: (tripIds) => confirmedBookings(env, tripIds),
     first,
-    schedule: (held) =>
-      scheduleTasks(
-        env,
-        held.map(({ reminder, at }) => ({ task: reminderTask(reminder), at })),
-        (task) => runReminderTask(env, task),
-      ),
-    windowMs: TICK_MINUTES * MINUTE_MS,
+    schedule: scheduleOf(env),
+    // Without the queue a reminder goes at once: the Cron then takes only the ones due now.
+    windowMs: env.NOTIFICATIONS ? TICK_MINUTES * MINUTE_MS : 0,
     now: () => now,
   });
 };

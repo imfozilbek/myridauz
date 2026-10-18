@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { NotificationJob } from './application/job';
-import { coalesce, isChannel, massDelays, MASS_PER_SECOND, secondsUntil } from './application/pace';
+import { coalesce, isChannel, MASS_PER_SECOND, paceAfter, secondsUntil } from './application/pace';
 
 const to = (chatId: number | string, text: string, more: Partial<NotificationJob> = {}): NotificationJob => ({
   bot: 'passenger',
@@ -13,18 +13,23 @@ const card = (key: string, text: string, edit?: number) =>
 
 // G85 part 2 (docs/122): many messages go at an even pace; events of one person at once are one message.
 describe('the pace of the bots', () => {
-  it('lets each bot send MASS_PER_SECOND of a big batch a second', () => {
-    const jobs = Array.from({ length: MASS_PER_SECOND * 2 + 1 }, (_, chatId) => to(chatId + 1, 'x'));
-    const delays = massDelays([...jobs, { ...to(1, 'y'), bot: 'driver' }]);
-    expect(delays.slice(0, MASS_PER_SECOND)).toEqual(Array(MASS_PER_SECOND).fill(0));
-    expect(delays.slice(MASS_PER_SECOND, MASS_PER_SECOND * 2)).toEqual(Array(MASS_PER_SECOND).fill(1));
+  // The clock of a bot also paces a loop that tells people one by one (the reviewer of G85).
+  it('lets each bot send MASS_PER_SECOND mass messages a second, call after call', () => {
+    const clock = new Map();
+    const waits = Array.from({ length: MASS_PER_SECOND * 2 + 1 }, () => paceAfter(clock, 'passenger', 0));
+    expect(waits.slice(0, MASS_PER_SECOND)).toEqual(Array(MASS_PER_SECOND).fill(0));
+    expect(waits.slice(MASS_PER_SECOND, MASS_PER_SECOND * 2)).toEqual(Array(MASS_PER_SECOND).fill(1));
     // The last of the passenger bot waits 2 seconds; the driver bot starts at once.
-    expect(delays.slice(-2)).toEqual([2, 0]);
+    expect([waits.at(-1), paceAfter(clock, 'driver', 0)]).toEqual([2, 0]);
+    // A quiet bot starts again from now.
+    expect(paceAfter(clock, 'passenger', 60_000)).toBe(0);
   });
 
   it('knows a channel from a person and counts whole seconds', () => {
     expect([isChannel('@channel'), isChannel(-100123), isChannel(5)]).toEqual([true, true, false]);
     expect([secondsUntil(1001, 0), secondsUntil(0, 5000)]).toEqual([2, 0]);
+    // The queue holds a message 12 hours at most.
+    expect(secondsUntil(100 * 3_600_000, 0)).toBe(43_200);
   });
 
   it('keeps the last state of a live card and joins plain texts to one person', () => {

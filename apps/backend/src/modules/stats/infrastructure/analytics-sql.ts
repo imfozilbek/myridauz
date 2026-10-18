@@ -24,8 +24,6 @@ type Options = {
 const TOP_ERRORS = 15;
 // The marks of the first screens and the directions of «Rost»: enough rows for every author code.
 const TOP_MARKS = 2000;
-// The busiest seconds of all bots: enough for the peak of each one.
-const TOP_SECONDS = 200;
 const list = (names: readonly string[]) => names.map((name) => `'${name}'`).join(', ');
 const within = (unit: 'DAY' | 'HOUR', amount: number) =>
   `timestamp > NOW() - INTERVAL '${Math.trunc(amount)}' ${unit}`;
@@ -84,17 +82,19 @@ export function analyticsSql({ accountId, token, dataset, fetch }: Options): Eve
       return sqlAnswerSchema(searchRow).parse(await query(sql)).data;
     },
     // G85 T1: what Telegram answered each bot, its dead letters, the operations of the queue (double3),
-    // and the busiest seconds of each bot.
+    // and the busiest second of each bot.
     bots: async (days) => {
       const rows =
         `SELECT blob1 AS name, blob2 AS bot, blob6 AS code, SUM(_sample_interval) AS count, ` +
         `SUM(double3 * _sample_interval) AS amount FROM ${dataset} WHERE ${within('DAY', days)} AND ` +
         `(blob1 IN ('bot_send', 'queue_ops') OR (blob1 = 'server_error' AND blob6 = 'notification_dead')) ` +
         `GROUP BY name, bot, code`;
+      // The busiest second of each bot: the seconds of every bot first, then the most of each one.
       const peaks =
-        `SELECT blob2 AS bot, toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS second, ` +
-        `SUM(_sample_interval) AS count FROM ${dataset} WHERE ${within('DAY', days)} AND blob1 = 'bot_send' ` +
-        `AND blob6 = 'sent' GROUP BY bot, second ORDER BY count DESC LIMIT ${TOP_SECONDS}`;
+        `SELECT bot, max(count) AS count FROM (SELECT blob2 AS bot, ` +
+        `toStartOfInterval(timestamp, INTERVAL '1' SECOND) AS second, SUM(_sample_interval) AS count ` +
+        `FROM ${dataset} WHERE ${within('DAY', days)} AND blob1 = 'bot_send' AND blob6 = 'sent' ` +
+        `GROUP BY bot, second) GROUP BY bot`;
       const [found, busiest] = await Promise.all([query(rows), query(peaks)]);
       return {
         rows: sqlAnswerSchema(botRow).parse(found).data,

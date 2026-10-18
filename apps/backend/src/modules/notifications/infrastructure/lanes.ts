@@ -4,10 +4,10 @@ import { sendSignals, signalsOf } from '../../feed';
 import type { Delivery } from '../application/deliver';
 import type { NotificationJob, QueueMessage, TimedTask } from '../application/job';
 import {
-  CHANNEL_STEP_MS,
+  CHANNEL_PER_MINUTE,
   coalesce,
   isChannel,
-  massDelays,
+  paceAfter,
   SECOND_MS,
   secondsUntil,
 } from '../application/pace';
@@ -20,8 +20,30 @@ const DIRECT_LIMIT = 5;
 const RETRY = { outcome: 'retry', afterSeconds: 5 } as const;
 // One sendBatch of Queues takes at most 100 messages.
 const BATCH = 100;
+// The waits of the bots are read from D1 at most this often by one Worker (G85 T4).
+const PAUSES_FRESH_MS = 5000;
 type Waiting = { readonly body: NotificationJob; readonly delaySeconds: number };
 type Bot = NotificationJob['bot'];
+
+// Kept by the Worker between requests: the clock of the mass messages of each bot, so a loop that
+// tells many people one by one keeps the pace too (T2), and the waits of the bots read lately (T4).
+const clocks = new WeakMap<Bindings, Map<Bot, number>>();
+const pauses = new WeakMap<Bindings, { readonly at: number; readonly paused: Map<Bot, number> }>();
+function clockOf(env: Bindings): Map<Bot, number> {
+  const kept = clocks.get(env);
+  if (kept) return kept;
+  const clock = new Map<Bot, number>();
+  clocks.set(env, clock);
+  return clock;
+}
+
+async function pausesOf(env: Bindings, now: number): Promise<Map<Bot, number>> {
+  const kept = pauses.get(env);
+  if (kept && now - kept.at < PAUSES_FRESH_MS) return kept.paused;
+  const paused = new Map(await paceOf(env).pauses(now));
+  pauses.set(env, { at: now, paused });
+  return paused;
+}
 
 // Messages and tasks into the queue, counted as its operations for the dashboard (G85 T1).
 export async function enqueue(env: Bindings, items: readonly MessageSendRequest<QueueMessage>[]) {
@@ -46,7 +68,7 @@ async function sendDirect(env: Bindings, ready: readonly Waiting[], paused: Map<
     const delivery: Delivery = await deliverNow(env, item.body).catch(() => RETRY);
     if (delivery.outcome !== 'retry') continue;
     if (delivery.limited) paused.set(item.body.bot, now + delivery.afterSeconds * SECOND_MS);
-    later.push({ body: item.body, delaySeconds: delivery.afterSeconds });
+    later.push({ body: item.body, delaySeconds: secondsUntil(now + delivery.afterSeconds * SECOND_MS, now) });
   }
   return later;
 }
@@ -57,11 +79,10 @@ async function dispatch(env: Bindings, items: readonly Waiting[]) {
     for (const { body } of items) await deliverNow(env, body);
     return;
   }
-  const paused = new Map(await paceOf(env).pauses(Date.now()));
   const now = items.filter((item) => item.delaySeconds === 0);
   const direct = now.length <= DIRECT_LIMIT ? now : [];
   const queued = items.filter((item) => !direct.includes(item));
-  const later = await sendDirect(env, direct, paused);
+  const later = direct.length > 0 ? await sendDirect(env, direct, await pausesOf(env, Date.now())) : [];
   await enqueue(env, [...queued, ...later]);
 }
 
@@ -81,7 +102,7 @@ export async function notify(
 }
 
 // Many messages at once (subscriptions, posts in channels, reminders, the waitlist): an even pace,
-// MASS_PER_SECOND a bot, and 18 posts a minute in one channel (G85 T2, T7, docs/122).
+// MASS_PER_SECOND a bot, and 18 new posts a minute in one channel (G85 T2, T7, docs/122).
 export async function notifyMass(
   env: Bindings,
   jobs: readonly NotificationJob[],
@@ -89,14 +110,16 @@ export async function notifyMass(
 ): Promise<void> {
   if (jobs.length === 0) return;
   await sendSignals(env, signalsOf(signalled));
-  const joined = coalesce(jobs);
-  const delays = massDelays(joined.filter((job) => !isChannel(job.chatId)));
+  const clock = clockOf(env);
   const pace = paceOf(env);
   const now = Date.now();
   const items: Waiting[] = [];
-  for (const body of joined) {
-    const slot = isChannel(body.chatId) ? await pace.slot(String(body.chatId), now, CHANNEL_STEP_MS) : null;
-    const delaySeconds = slot === null ? (delays.shift() ?? 0) : secondsUntil(slot, now);
+  for (const body of coalesce(jobs)) {
+    const channel = isChannel(body.chatId);
+    const post = channel && body.edit === undefined;
+    const slot = post ? await pace.slot(String(body.chatId), now, CHANNEL_PER_MINUTE) : null;
+    const delaySeconds =
+      slot !== null ? secondsUntil(slot, now) : channel ? 0 : paceAfter(clock, body.bot, now);
     items.push({ body, delaySeconds });
   }
   await dispatch(env, items);

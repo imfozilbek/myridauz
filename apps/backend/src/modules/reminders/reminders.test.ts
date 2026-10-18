@@ -1,7 +1,7 @@
 import type { Booking, Trip } from '@platform/contracts';
 import { describe, expect, it } from 'vitest';
 import { remindTrips, tellReminder, type Reminder, type RemindersDeps } from './application/remind';
-import { reminderAt } from './domain/due';
+import { reminderAt, spreadMoments } from './domain/due';
 import { createMemoryFirst } from './infrastructure/reminder-store';
 import { reminderOf, reminderTask } from './infrastructure/reminder-task';
 import { publicIdOf } from '../../test-people';
@@ -53,27 +53,34 @@ describe('holding reminders until their moment, once (G10, G85 R3)', () => {
     };
     await remindTrips(deps);
     await remindTrips(deps);
-    expect(held).toEqual([`b1 day ${10 * MINUTE}`, `b2 day ${10 * MINUTE}`, `driver day ${10 * MINUTE}`]);
+    // One moment for three people: a tenth of a second apart (G85 T6).
+    expect(held).toEqual([
+      `b1 day ${10 * MINUTE}`,
+      `b2 day ${10 * MINUTE + 100}`,
+      `driver day ${10 * MINUTE + 200}`,
+    ]);
     now = departAt - 2 * HOUR - 5 * MINUTE;
     await remindTrips(deps);
     expect(held.slice(3)).toEqual([
       `b1 soon ${5 * MINUTE}`,
-      `b2 soon ${5 * MINUTE}`,
-      `driver soon ${5 * MINUTE}`,
+      `b2 soon ${5 * MINUTE + 100}`,
+      `driver soon ${5 * MINUTE + 200}`,
     ]);
   });
 
-  it('reads the trip again at the moment: a cancelled booking or a moved trip reminds nobody', async () => {
+  it('reads the trip again at the moment: a cancelled booking or trip reminds nobody', async () => {
     const told: string[] = [];
-    let trips = [trip('t1', MORNING)];
+    let found: Trip | undefined = { ...trip('t1', MORNING), status: 'active' };
     let bookings = [booking('b1', 't1')];
     const deps = {
-      trips: async () => trips,
+      trip: async () => found,
       bookings: async () => bookings,
+      schedule: async () => undefined,
       tell: {
         passenger: async (item: Booking, kind: string) => void told.push(`${item.id} ${kind}`),
         driver: async (item: Trip, kind: string) => void told.push(`${item.id} ${kind}`),
       },
+      now: () => MORNING - 2 * HOUR,
     };
     const reminder: Reminder = { kind: 'soon', tripId: 't1', departAt: MORNING, bookingId: 'b1' };
     const driver: Reminder = { kind: 'soon', tripId: 't1', departAt: MORNING };
@@ -82,10 +89,37 @@ describe('holding reminders until their moment, once (G10, G85 R3)', () => {
     bookings = [];
     await tellReminder(deps, reminder);
     await tellReminder(deps, driver);
-    trips = [];
     bookings = [booking('b1', 't1')];
+    found = { ...trip('t1', MORNING), status: 'cancelled' };
+    await tellReminder(deps, reminder);
+    found = undefined;
     await tellReminder(deps, reminder);
     expect(told).toEqual(['b1 soon', 't1 soon']);
+  });
+
+  // The reviewer of G85: a trip moved after its reminder was held is reminded at its new time.
+  it('holds the reminder of a moved trip again for the moment of its new time', async () => {
+    const held: { reminder: Reminder; at: number }[] = [];
+    const moved = { ...trip('t1', MORNING + 30 * MINUTE), status: 'active' as const };
+    const deps = {
+      trip: async () => moved,
+      bookings: async () => [booking('b1', 't1')],
+      schedule: async (items: readonly { reminder: Reminder; at: number }[]) => void held.push(...items),
+      tell: { passenger: async () => undefined, driver: async () => undefined },
+      now: () => MORNING - 2 * HOUR,
+    };
+    await tellReminder(deps, { kind: 'soon', tripId: 't1', departAt: MORNING, bookingId: 'b1' });
+    expect(held).toEqual([
+      {
+        reminder: { kind: 'soon', tripId: 't1', departAt: MORNING + 30 * MINUTE, bookingId: 'b1' },
+        at: MORNING - 90 * MINUTE,
+      },
+    ]);
+  });
+
+  it('spreads many reminders of one moment over the next seconds, 10 a second', () => {
+    const at = MORNING;
+    expect(spreadMoments([at, at, at, at + 5000])).toEqual([at, at + 100, at + 200, at + 5000]);
   });
 
   it('rides the queue as a task and comes back the same; a broken one is dropped', () => {

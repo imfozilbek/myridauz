@@ -28,16 +28,29 @@ async function failed(env: Bindings, message: Message<QueueMessage>, body: Queue
   message.ack();
 }
 
+// The messages of a waiting bot come back spread over this many seconds, not all in its first free
+// second: a crowd at once would meet the next 429 (G85 T4). The regulator of G86 replaces it.
+const SPREAD_SECONDS = 30;
+const spreadOf = (id: string) => [...id].reduce((sum, sign) => sum + sign.charCodeAt(0), 0) % SPREAD_SECONDS;
+
 // The queue consumer (brands/<brand>/wrangler.toml). A bot Telegram asked to wait (429, G85 T4)
 // waits as a whole: its messages go back to the queue as new ones, so waiting never uses up their
-// tries. A timed task runs at its moment (R3).
+// tries; each one is let go only once its copy is in the queue. A timed task runs at its moment (R3).
 export async function consumeNotifications(
   batch: MessageBatch<QueueMessage>,
   env: Bindings,
   tasks: TaskRunners,
 ): Promise<void> {
   const paused = new Map(await paceOf(env).pauses(Date.now()));
-  const waiting: MessageSendRequest<QueueMessage>[] = [];
+  const waiting: {
+    readonly message: Message<QueueMessage>;
+    readonly copy: MessageSendRequest<QueueMessage>;
+  }[] = [];
+  const wait = (message: Message<QueueMessage>, body: QueueMessage, until: number, now: number) =>
+    waiting.push({
+      message,
+      copy: { body, delaySeconds: secondsUntil(until, now) + spreadOf(message.id ?? '') },
+    });
   for (const message of batch.messages) {
     const body = message.body;
     if ('task' in body) {
@@ -50,19 +63,23 @@ export async function consumeNotifications(
     const now = Date.now();
     const until = paused.get(body.bot) ?? 0;
     if (until > now) {
-      waiting.push({ body, delaySeconds: secondsUntil(until, now) });
-      message.ack();
+      wait(message, body, until, now);
       continue;
     }
     const delivery = await deliverNow(env, body).catch(() => RETRY);
     if (delivery.outcome !== 'retry') message.ack();
     else if (delivery.limited === true) {
       paused.set(body.bot, now + delivery.afterSeconds * SECOND_MS);
-      waiting.push({ body, delaySeconds: delivery.afterSeconds });
-      message.ack();
+      wait(message, body, now + delivery.afterSeconds * SECOND_MS, now);
     } else await failed(env, message, body);
   }
-  await enqueue(env, waiting);
+  await enqueue(
+    env,
+    waiting.map(({ copy }) => copy),
+  ).then(
+    () => waiting.forEach(({ message }) => message.ack()),
+    () => waiting.forEach(({ message }) => message.retry({ delaySeconds: RETRY_SECONDS })),
+  );
   // Each message read is one operation, its delete after the ack another (docs/117).
   recordServerEvent(env, { name: 'queue_ops', source: 'read', count: batch.messages.length * 2 });
 }

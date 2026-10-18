@@ -37,25 +37,34 @@ afterEach(() => vi.unstubAllGlobals());
 // G85 part 2 (docs/122): the answers to people's steps go at once and first, the rest at an even pace.
 describe('the lanes of the bot messages', () => {
   it('sends a few mass messages at once and spreads a big batch over seconds', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.parse('2026-10-18T10:00:00Z'));
     const { env, queued, sent } = world();
     await notifyMass(env, [job(1), job(2)]);
     expect(sent).toEqual([1, 2]);
+    // The next call goes on with the clock of the bot: 18 more fit the first second.
     await notifyMass(
       env,
       Array.from({ length: 45 }, (_, index) => job(index + 10)),
     );
     expect(queued.map((item) => item.delaySeconds)).toEqual([
-      ...Array(20).fill(0),
+      ...Array(18).fill(0),
       ...Array(20).fill(1),
-      ...Array(5).fill(2),
+      ...Array(7).fill(2),
     ]);
+    vi.useRealTimers();
   });
 
-  it('keeps 18 posts a minute in one channel: the next ones wait their turn', async () => {
+  it('keeps 18 new posts a minute in one channel; the next ones wait for the next minute', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.parse('2026-10-18T10:00:30Z'));
     const { env, queued, sent } = world();
     await notifyMass(env, [job('@ch', 'poster'), job('@ch', 'poster'), job('@other', 'poster')]);
-    expect(sent).toEqual(['@ch', '@other']);
-    expect(queued).toEqual([{ body: job('@ch', 'poster'), delaySeconds: 4 }]);
+    expect(sent).toEqual(['@ch', '@ch', '@other']);
+    const edit = { ...job('@ch', 'poster'), edit: 7 };
+    await notifyMass(env, [...Array.from({ length: 18 }, () => job('@ch', 'poster')), edit]);
+    expect(queued.map((item) => item.delaySeconds)).toEqual([...Array(16).fill(0), 30, 30, 0]);
+    vi.useRealTimers();
   });
 
   it('makes the whole bot wait after a 429, and its next messages go to the queue', async () => {
