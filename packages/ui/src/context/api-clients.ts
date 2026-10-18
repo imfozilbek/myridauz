@@ -18,6 +18,7 @@ import type {
   StatsClient,
   SubscriptionsClient,
   TeamClient,
+  UsersClient,
   WaitlistClient,
   WalletClient,
 } from '@platform/api-client';
@@ -48,6 +49,8 @@ export type ApiClients = {
   readonly waitlist: WaitlistClient;
   // The loops of growth of G69 (docs/123).
   readonly growth: GrowthClient;
+  // Another person's photo before there is an account: the driver for close people (G46, docs/43).
+  readonly users: Pick<UsersClient, 'getAvatar'>;
 };
 
 export const ApiClientsContext = createContext<ApiClients | null>(null);

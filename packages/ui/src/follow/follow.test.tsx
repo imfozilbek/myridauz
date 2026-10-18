@@ -1,10 +1,10 @@
 import { ApiError, type ChatClient } from '@platform/api-client';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TRIP_DAY, confirmed } from '../bookings/booking-test-kit';
 import { MyRequestsScreen } from '../market/my-requests-screen';
-import { renderMarket, tap } from '../market/market-test-kit';
-import { testClients } from '../test-shell';
+import { locations, renderMarket, tap } from '../market/market-test-kit';
+import { renderInShell, testClients } from '../test-shell';
 import { FollowScreen } from './follow-screen';
 
 afterEach(cleanup);
@@ -111,5 +111,13 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     vi.advanceTimersByTime(60_000);
     expect(await screen.findByText('Dilnoza yoʻlda')).toBeTruthy();
     vi.useRealTimers();
+  });
+
+  // A close person has no account in Rida: the photo of the driver loads all the same (G46).
+  it('show the photo of the driver to a close person without an account', async () => {
+    const getAvatar = vi.fn(async () => new Blob());
+    const clients = testClients({ chat: { sharedTrip: async () => TRIP }, users: { getAvatar } });
+    renderInShell(<FollowScreen token={TOKEN} onJoin={() => undefined} />, false, true, locations, clients);
+    await waitFor(() => expect(getAvatar).toHaveBeenCalledWith('d1', false));
   });
 });

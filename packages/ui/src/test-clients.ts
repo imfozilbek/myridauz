@@ -73,6 +73,7 @@ export const testClients = (overrides: Overrides): ApiClients => ({
     mine: NOT_USED,
     ...overrides.channels,
   },
+  users: { getAvatar: NOT_USED, ...overrides.users },
   bookings: {
     book: NOT_USED,
     myBookings: NOT_USED,

@@ -56,6 +56,7 @@ test('S76. close people see the face and the stars of the driver', async ({ page
   await register('passenger', MOTHER, 'female');
   await openAs(page, 'passenger', MOTHER, { search: `?follow=${token}` });
   await expect(page.getByText(/★ 5/u)).toBeVisible();
+  await expect(page.getByRole('img', { name: DRIVER.name })).toBeVisible();
   await shot(page, '1-follow');
 });
 
@@ -72,7 +73,8 @@ test('P78, P79. «Hamrohlaringiz» on the seat; the complaint names the driver o
 });
 
 test('P80. every review of the driver with its day, the older ones on demand', async ({ page }) => {
-  await openAs(page, 'passenger', MADINA, { search: `?trip=${tripId}` });
+  // One who has no seat on the trip opens it: a seat holder lands on the seat (docs/172).
+  await openAs(page, 'passenger', MOTHER, { start: `trip_${tripId}` });
   await page.getByText(t('find.allReviews', { count: String(REVIEWS) })).click();
   await expect(page.getByText(/ · Yoʻlda ehtiyotkor, vaqtida keldi$/u)).toBeVisible();
   await shot(page, '4-reviews');
