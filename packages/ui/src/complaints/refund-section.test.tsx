@@ -1,5 +1,5 @@
 import type { FeedbackClient } from '@platform/api-client';
-import type { Complaint, TeamRole } from '@platform/contracts';
+import type { ComplaintCase, TeamRole } from '@platform/contracts';
 import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { COMPLAINT, COMPLAINT_DETAIL, renderNavbat } from '../navbat/navbat-test-kit';
@@ -7,7 +7,7 @@ import { COMPLAINT, COMPLAINT_DETAIL, renderNavbat } from '../navbat/navbat-test
 afterEach(cleanup);
 
 // «Kelmadi» of the driver: the moderator decided and proposed to give the commission back (docs/35).
-const waiting: Complaint = {
+const waiting: ComplaintCase = {
   ...COMPLAINT_DETAIL,
   status: 'resolved',
   refund: { state: 'proposed', amount: 9000 },

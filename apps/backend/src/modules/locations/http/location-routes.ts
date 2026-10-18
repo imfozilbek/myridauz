@@ -1,4 +1,5 @@
 import {
+  ADMIN_DISTANCE_HISTORY_PATH,
   distanceQuerySchema,
   distanceSchema,
   LOCATION_DISTANCE_PATH,
@@ -8,8 +9,9 @@ import {
 import { Hono, type MiddlewareHandler } from 'hono';
 import type { AppEnv, Bindings } from '../../../env';
 import type { Directory } from '../application/directory';
-import { getDistance, updateDistance } from '../application/distance';
+import { distanceHistory, getDistance, updateDistance } from '../application/distance';
 import { ownerOnly } from '../../../shared/auth/owner-only';
+import { teamOnly } from '../../../shared/auth/team-only';
 import type { LocationsDeps } from '../application/ports';
 
 const STATUS = {
@@ -33,31 +35,41 @@ type Wiring = {
 };
 
 export function locationRoutes({ deps, directory, auth }: Wiring) {
-  return new Hono<AppEnv>()
-    .get(LOCATIONS_PATH, async (context) => {
-      const response = await directory(deps(context.env), LOCALE);
-      const etag = `"${response.version}"`;
-      const headers = { etag, 'cache-control': DIRECTORY_CACHE };
-      if (context.req.header('if-none-match') === etag) return context.body(null, NOT_MODIFIED, headers);
-      return context.json(response, 200, headers);
-    })
-    .get(LOCATION_DISTANCE_PATH, async (context) => {
-      const query = distanceQuerySchema.safeParse(context.req.query());
-      if (!query.success)
-        return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
-      const result = await getDistance(deps(context.env), directory, query.data.from, query.data.to);
-      return result.ok
-        ? context.json(result.value)
-        : context.json({ error: result.error }, STATUS[result.error]);
-    })
-    .put(LOCATION_DISTANCE_PATH, auth, ownerOnly, async (context) => {
-      const input = distanceSchema.safeParse(await context.req.json().catch(() => null));
-      if (!input.success)
-        return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
-      const caller = { isOwner: context.get('session').teamRole === 'owner' };
-      const result = await updateDistance(deps(context.env), directory, caller, input.data);
-      return result.ok
-        ? context.json(result.value)
-        : context.json({ error: result.error }, STATUS[result.error]);
-    });
+  return (
+    new Hono<AppEnv>()
+      .get(LOCATIONS_PATH, async (context) => {
+        const response = await directory(deps(context.env), LOCALE);
+        const etag = `"${response.version}"`;
+        const headers = { etag, 'cache-control': DIRECTORY_CACHE };
+        if (context.req.header('if-none-match') === etag) return context.body(null, NOT_MODIFIED, headers);
+        return context.json(response, 200, headers);
+      })
+      .get(LOCATION_DISTANCE_PATH, async (context) => {
+        const query = distanceQuerySchema.safeParse(context.req.query());
+        if (!query.success)
+          return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
+        const result = await getDistance(deps(context.env), directory, query.data.from, query.data.to);
+        return result.ok
+          ? context.json(result.value)
+          : context.json({ error: result.error }, STATUS[result.error]);
+      })
+      .put(LOCATION_DISTANCE_PATH, auth, ownerOnly, async (context) => {
+        const input = distanceSchema.safeParse(await context.req.json().catch(() => null));
+        if (!input.success)
+          return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
+        const session = context.get('session');
+        const caller = { id: session.user.id, isOwner: session.teamRole === 'owner' };
+        const result = await updateDistance(deps(context.env), directory, caller, input.data);
+        return result.ok
+          ? context.json(result.value)
+          : context.json({ error: result.error }, STATUS[result.error]);
+      })
+      // The history of one distance: the team reads it beside the price of the direction (G45).
+      .get(ADMIN_DISTANCE_HISTORY_PATH, teamOnly, async (context) => {
+        const query = distanceQuerySchema.safeParse(context.req.query());
+        if (!query.success)
+          return context.json({ error: 'locations.invalid_input' }, STATUS['locations.invalid_input']);
+        return context.json(await distanceHistory(deps(context.env), query.data.from, query.data.to));
+      })
+  );
 }

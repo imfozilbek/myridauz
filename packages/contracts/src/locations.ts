@@ -44,3 +44,13 @@ export const distanceSchema = z.object({
   km: kmSchema,
 });
 export type Distance = z.infer<typeof distanceSchema>;
+
+// The corrections of one distance for the team (G45, docs/48): who, when, the km before and after;
+// before is null for a pair that had no distance. The newest first.
+export const ADMIN_DISTANCE_HISTORY_PATH = '/admin/locations/distance/history';
+export const distanceHistorySchema = z.object({
+  changes: z.array(
+    z.object({ before: z.number().int().nullable(), after: kmSchema, by: z.string(), at: z.number().int() }),
+  ),
+});
+export type DistanceHistory = z.infer<typeof distanceHistorySchema>;
