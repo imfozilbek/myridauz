@@ -6,7 +6,7 @@
 
 | № | Где | Текст |
 |---|---|---|
-| T1 | Start, подпись к картинке | Assalomu alaykum! {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas.\n\nHaydovchi sifatida siz:\n🚗 Safarni bir daqiqada eʼlon qilasiz.\n👥 Yoʻlovchilar sizni oʻzi topadi, pitakda kutish shart emas.\n💰 Yoʻl xarajatingiz qaytadi.\n🎁 Boshlash uchun {bonus} bonus.\n\nRoʻyxatdan oʻtish uchun «Ochish» tugmasini bosing. |
+| T1 | Start, подпись к картинке | Assalomu alaykum! {brand}: yoʻli bir odamlar bir mashinada boradi va yoʻl xarajatini boʻlishadi. Bu taksi emas.\n\nHaydovchi sifatida siz:\n🚗 Safarni bir daqiqada eʼlon qilasiz.\n👥 Yoʻlovchilar sizni oʻzi topadi, pitakda kutish shart emas.\n💰 Yoʻl xarajatingiz qaytadi.\n🎁 Boshlash uchun {bonus}gacha bonus.\n\nRoʻyxatdan oʻtish uchun «Ochish» tugmasini bosing. |
 | T2 | Start из бота попутчика, первая строка вместо «Assalomu alaykum!…» | Assalomu alaykum! Endi {brand} bilan haydovchi sifatida ham safar qiling. |
 | T3 | Любой другой текст | Bu bot xabarlarga javob bermaydi. Savolingiz boʻlsa, @{supportBot} ga yozing. Ilovani ochish uchun «Ochish» tugmasini bosing. |
 | T4 | Кнопка рядом с «Ochish» | Yordam |
@@ -17,7 +17,7 @@
 
 | № | Где | Текст |
 |---|---|---|
-| T7 | Приветствие водителя, польза 2 | Boshlash uchun {bonus} bonus. |
+| T7 | Приветствие водителя, польза 2 | Boshlash uchun {bonus}gacha bonus. С 18.10.2026 `{bonus}` это все начисления акции вместе (1 500 000 soʻm), «да» владельца; так же в посте водителя в каналах (`176`) и на картинке приветствия, в две строки |
 | T8 | Приветствие водителя, польза 3 | Yoʻlovchilar sizni oʻzi topadi. |
 | T9 | Приветствие, строка согласия | «Davom etish» tugmasini bosib, siz ommaviy oferta, maxfiylik siyosati va shaxsga doir maʼlumotlarni qayta ishlash shartlariga rozilik bildirasiz. |
 | T10 | Второй экран, заголовок | Siz haqingizda |
