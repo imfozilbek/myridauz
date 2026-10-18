@@ -21,6 +21,10 @@ import { FollowDriver } from './follow-driver';
 import { FollowState } from './follow-state';
 import './follow.css';
 
+// Close people get no live signals of a trip that is not theirs: the open screen reads the trip
+// again each minute (G46, docs/43).
+const REFRESH_MS = 60_000;
+
 // The token of a shared trip, when a close person came from the card (docs/43).
 export const followToken = () => launchParam('follow', SHARE_TOKEN);
 
@@ -47,7 +51,11 @@ function Follow({ token, onJoin }: Props) {
   const { colors } = useBrand().theme;
   const { track } = useAnalytics();
   const { chat } = useApiClients();
-  const { value, failed } = useLoad(() => chat.sharedTrip(token));
+  const { value, failed, refresh } = useLoad(() => chat.sharedTrip(token));
+  useEffect(() => {
+    const timer = setInterval(() => void refresh(), REFRESH_MS);
+    return () => clearInterval(timer);
+  }, [refresh]);
   const [note, setNote] = useState<'follow.subscribed' | 'follow.full' | null>(null);
   const { failure, fail, clear } = useFailure();
   useEffect(() => {

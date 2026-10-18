@@ -94,4 +94,22 @@ describe('the passenger shares the trip; in the car by the driver «Keldi» (doc
     await tap('Yaqinlarimga');
     expect(await screen.findByText('Ulashishni toʻxtatish')).toBeTruthy();
   });
+
+  // G46 (docs/43): the face and the stars of the driver; close people get no signals of a trip that
+  // is not theirs, so the screen reads it again while it is open.
+  it('show the stars of the driver and the new status without a tap', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
+    const sharedTrip = vi
+      .fn<ChatClient['sharedTrip']>()
+      .mockResolvedValueOnce(TRIP)
+      .mockResolvedValue({ ...TRIP, status: 'on_the_way' });
+    renderMarket(
+      <FollowScreen token={TOKEN} onJoin={() => undefined} />,
+      testClients({ chat: { sharedTrip } }),
+    );
+    expect(await screen.findByText(/★ 4,9/u)).toBeTruthy();
+    vi.advanceTimersByTime(60_000);
+    expect(await screen.findByText('Dilnoza yoʻlda')).toBeTruthy();
+    vi.useRealTimers();
+  });
 });

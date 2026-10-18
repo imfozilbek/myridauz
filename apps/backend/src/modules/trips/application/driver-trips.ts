@@ -1,20 +1,24 @@
-import { onTheWay, type Trip } from '@platform/contracts';
+import { NO_RATING, onTheWay, type Trip } from '@platform/contracts';
 import { isLive, statusAt } from '../domain/trip';
 import type { TripsDeps } from './ports';
 import { views } from './views-of';
 
 // The driver's trip as the family sees it when the driver shares it (G18, docs/43):
-// the name, the car and the plate; never a phone.
+// the name, the face, the stars, the car and the plate; never a phone (G46).
 export async function familyView(deps: TripsDeps, id: string) {
   const trip = await deps.trips.find(id);
   if (!trip) return undefined;
   const [driver, car] = [await deps.people.find(trip.driverId), trip.car];
   if (!driver || !car) return undefined;
   const { driverId, from, to, departAt, departedAt, arrivedAt, km } = trip;
+  const rating = (await deps.ratings([driverId])).get(driverId) ?? NO_RATING;
   return {
     id,
     driverId,
     driverName: driver.firstName,
+    driverPublicId: driver.publicId,
+    hasAvatar: driver.avatarShown,
+    rating,
     car: { make: car.make, model: car.model, color: car.color, plate: car.plate },
     plate: car.plate,
     from,

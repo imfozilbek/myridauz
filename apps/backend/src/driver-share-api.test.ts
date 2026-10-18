@@ -34,6 +34,9 @@ describe('the driver stops sharing a trip', () => {
     const token = created.link.split('follow_')[1] ?? '';
     const shared = () => app.request(`/shared/${token}`, {}, testEnv);
     expect((await shared()).status).toBe(200);
+    // The family sees the face and the stars of the driver too (G46).
+    const family = (await (await shared()).json()) as { driver: Record<string, unknown> };
+    expect(family.driver).toMatchObject({ id: expect.any(String), rating: { average: null, count: 0 } });
     const stop = (id: number) => call(`${path}/stop`, id, { method: 'POST', app: 'driver' });
     const refused = await stop(STRANGER);
     expect([refused.status, await refused.json()]).toEqual([404, { error: 'shares.not_found' }]);

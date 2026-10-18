@@ -21,6 +21,10 @@ export type DriverTrip = {
   readonly id: string;
   readonly driverId: number;
   readonly driverName: string;
+  // The face and the stars the family sees (G46): the public id, never the Telegram ID.
+  readonly driverPublicId: string;
+  readonly hasAvatar: boolean;
+  readonly rating: Trip['driver']['rating'];
   readonly car: Trip['driver']['car'];
   readonly plate: string;
   readonly from: string;

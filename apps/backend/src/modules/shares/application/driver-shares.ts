@@ -35,7 +35,13 @@ export function driverShared(trip: DriverTrip, followers: number, now: number): 
     departAt: trip.departAt,
     firstDepartAt: trip.departAt,
     km: trip.km,
-    driver: { firstName: trip.driverName, car: trip.car },
+    driver: {
+      id: trip.driverPublicId,
+      firstName: trip.driverName,
+      hasAvatar: trip.hasAvatar,
+      rating: trip.rating,
+      car: trip.car,
+    },
     plate: trip.plate,
     // The driver takes many people: no single meeting place to show (docs/70).
     meetingPoint: null,
