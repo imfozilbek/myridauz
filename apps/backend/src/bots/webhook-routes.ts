@@ -19,6 +19,7 @@ import { isBotRole, type BotRole } from './bot-roles';
 import { noRepliesReply } from './no-replies';
 import { onMainUpdate } from './main-bot';
 import { movedReply } from './moved-reply';
+import { profileReply } from './profile-reply';
 import { startReply } from './start-reply';
 import { isStartCommand, telegramUpdateSchema, type TelegramUpdate } from './telegram-update';
 import { brandOf } from '../shared/brand/brand-of';
@@ -74,7 +75,8 @@ async function answer(bot: BotContext, role: BotRole | typeof SUPPORT_BOT, data:
     if (!blocked && role === 'admin' && team === null) return toSupportBot(bot.brand, message.chat.id);
     const access = blocked ? 'blocked' : 'allowed';
     const payload = message.text?.split(' ')[1] ?? '';
-    return startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload });
+    const profile = blocked ? null : await profileReply(bot, role, message.chat.id, payload);
+    return profile ?? startReply({ brand: bot.brand, role, chatId: message.chat.id, access, payload });
   }
   if (blocked) return {};
   if (message.text === DOCUMENTS_COMMAND && role !== 'admin')

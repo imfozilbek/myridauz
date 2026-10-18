@@ -6,8 +6,10 @@ import type { QueueNews } from '../../team-queue';
 import type { ImageStore } from '../../../shared/storage/image-store';
 import { escapeHtml } from '../../../shared/telegram/html';
 import { openButton } from '../../../shared/telegram/open-button';
+import { profileLink } from '../../../shared/telegram/profile-link';
 import { sendPhoto, type Fetch } from '../../../shared/telegram/telegram-api';
-import type { FaceNotifier } from '../application/ports';
+import type { FaceNotifier, TelegramSeen } from '../application/ports';
+import type { User } from '../domain/user';
 import { faceCardText, faceMenu } from './face-card';
 
 const { t } = createI18n(DEFAULT_LOCALE);
@@ -22,15 +24,18 @@ type Wiring = {
   readonly send: (jobs: readonly NotificationJob[]) => Promise<void>;
   // «Navbat» of the team (G68, docs/122): a new photo is a case.
   readonly queue: (news?: QueueNews) => Promise<void>;
-  // The public name of the Telegram account: the team sees who it is (owner, 17.10.2026).
-  readonly nameOf: (userId: number) => Promise<string | null>;
+  // The Telegram account: the team sees who it is (owner, 17.10.2026).
+  readonly seenOf: (userId: number) => Promise<TelegramSeen | null>;
 };
 
-// The card: the name, what to check, and the Telegram account with the link to its profile.
-async function cardCaption(wiring: Wiring, user: { readonly id: number; readonly firstName: string }) {
-  const username = await wiring.nameOf(user.id);
+// The card: the name, what to check, and the Telegram account with the link to its profile. The
+// admin bot does not know the person: the link goes through the bot that does (owner, 18.10.2026).
+async function cardCaption(wiring: Wiring, user: User) {
+  const seen = await wiring.seenOf(user.id);
+  const username = seen?.username;
   const who = username ? t('bot.face.telegram', { username }) : t('bot.face.telegramNone');
-  const profile = `<a href="tg://user?id=${user.id}">${escapeHtml(t('bot.face.profile'))}</a>`;
+  const link = profileLink(wiring.brand, seen?.bot ?? 'passenger', user.publicId);
+  const profile = `<a href="${link}">${escapeHtml(t('bot.person.open'))}</a>`;
   return `${escapeHtml(faceCardText(user.firstName))}\n${escapeHtml(who)} · ${profile}`;
 }
 
