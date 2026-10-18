@@ -70,6 +70,9 @@ const GROWING = [
   'waitlist',
   'waitlist_visits',
   'ad_joins',
+  // The life of the channels by day and the reactions of their posts (G87, docs/191).
+  'channel_days',
+  'post_reactions',
 ] as const;
 // «SCAN t» reads every row of t, through an index or not; «SEARCH t USING INDEX» reads only what it needs.
 const SCAN = /^SCAN (\w+)/u;

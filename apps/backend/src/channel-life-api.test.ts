@@ -1,103 +1,92 @@
-import { channelOf, loadBrand } from '@platform/brands';
-import { afterAll, describe, expect, it, vi } from 'vitest';
-import { approvedDriver, json, read } from './bookings-test-api';
-import { call, doorBooking, registerUser, testEnv } from './test-api';
+import { loadBrand } from '@platform/brands';
+import { ADMIN_CHANNEL_HEALTH_PATH, channelHealthSchema } from '@platform/contracts';
+import { describe, expect, it } from 'vitest';
+import { app } from './app';
+import { createMemoryChannelLife, d1ChannelLife } from './modules/channels/infrastructure/channel-life';
+import { call, registerUser, testEnv } from './test-api';
+import { fullScans, testD1 } from './test-d1';
 
-// Every Telegram call: the posts of the channel and the messages of the bots.
-const telegram: { method: string; body: Record<string, unknown> }[] = [];
-let messageId = 0;
-vi.stubGlobal('fetch', async (input: string, init?: RequestInit) => {
-  const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as Record<string, unknown>) : {};
-  telegram.push({ method: input.split('/').pop() ?? '', body });
-  return Response.json({ ok: true, result: { message_id: (messageId += 1) } });
-});
-vi.useFakeTimers({ toFake: ['Date'] });
-vi.setSystemTime(Date.parse('2026-10-08T03:00:00Z'));
-afterAll(() => {
-  vi.unstubAllGlobals();
-  vi.useRealTimers();
-});
-// The owner approved the post: autoposting is on in this test (docs/33).
-Object.assign(testEnv, { CHANNEL_POSTS: 'on' });
-const brand = loadBrand();
-const SAMARQAND = channelOf(brand, '1718401')?.chat ?? '';
-const HOUR = 3_600_000;
-const [DRIVER, PASSENGER, OTHER_DRIVER] = [81, 82, 83];
-const trip = (departAt: number) =>
-  json({
-    from: '1726273',
-    to: '1718401',
-    departAt,
-    seats: 3,
-    price: 90_000,
-    womanOnBoard: false,
-    pickupMode: 'door',
-    comment: '',
-  });
-// The posts of the trip, not the board of the day nor its pin (G68).
-const POSTS = ['sendMessage', 'editMessageText', 'deleteMessage'];
-const posts = () =>
-  telegram.filter(
-    (item) =>
-      item.body.chat_id === SAMARQAND &&
-      POSTS.includes(item.method) &&
-      !String(item.body.text ?? '').startsWith('<b>📋'),
+const OWNER = 900;
+const SECRET = 's';
+const env = { ...testEnv, TELEGRAM_WEBHOOK_SECRET: SECRET };
+const [first, second] = loadBrand().channels;
+const FIRST = first?.chat ?? '';
+const SECOND = second?.chat ?? '';
+const NOW = Math.floor(Date.now() / 1000);
+
+const poster = (update: object) =>
+  app.request(
+    '/telegram/poster',
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-telegram-bot-api-secret-token': SECRET },
+      body: JSON.stringify({ update_id: 1, ...update }),
+    },
+    env,
   );
-const heads = () => posts().map((item) => [item.method, String(item.body.text ?? '').split('\n')[0]]);
-
-// The life of a post in the channel (G68, docs/122, mockup g68/5 «Post hayoti»).
-describe('the life of a channel post (G68)', () => {
-  it('new without sound, then on the road, then arrived with the people of the car', async () => {
-    await approvedDriver(DRIVER);
-    await registerUser(PASSENGER);
-    const published = await read<{ id: string }>(
-      call('/driver/trips', DRIVER, { app: 'driver', ...trip(Date.now() + 3 * HOUR) }),
-    );
-    const booking = await read<{ id: string }>(
-      call(`/trips/${published.id}/bookings`, PASSENGER, json(doorBooking(1))),
-    );
-    await call(`/driver/bookings/${booking.id}/confirm`, DRIVER, { method: 'POST', app: 'driver' });
-    const step = (path: string) =>
-      call(`/driver/trips/${published.id}/${path}`, DRIVER, { method: 'POST', app: 'driver' });
-    vi.setSystemTime(Date.now() + 2.5 * HOUR);
-    await step('depart');
-    vi.setSystemTime(Date.now() + 5 * HOUR);
-    await step('arrive');
-    expect(posts()[0]?.body.disable_notification).toBe(true);
-    expect(heads().map(([, head]) => head)).toEqual([
-      '<b>🆕 Yangi safar</b>',
-      '<b>🆕 Yangi safar</b>',
-      '<b>🚗 Yoʻlga chiqdi</b>',
-      '<b>🏁 Yetib bordi</b>',
-    ]);
-    expect(String(posts().at(-1)?.body.text)).toContain('Yoʻl xarajati 2 ga boʻlindi');
-    // The board of the day (08:00 now): pinned, with sound once, the picture of the direction above.
-    const boards = telegram.filter(
-      (item) => item.body.chat_id === SAMARQAND && String(item.body.text ?? '').startsWith('<b>📋'),
-    );
-    expect(boards[0]).toMatchObject({ method: 'sendMessage' });
-    expect(boards[0]?.body).not.toHaveProperty('disable_notification');
-    expect(boards[0]?.body.link_preview_options).toMatchObject({
-      url: `https://${brand.domain}/yonalish/toshkent-samarqand/`,
-      show_above_text: true,
-    });
-    expect(boards.slice(1).every((item) => item.method === 'editMessageText')).toBe(true);
-    expect(String(boards.at(-1)?.body.text)).toContain('yetib bordi</s>');
-    expect(telegram.some((item) => item.method === 'pinChatMessage' && item.body.chat_id === SAMARQAND)).toBe(
-      true,
-    );
+const member = (status: string, user = 77) => ({
+  status,
+  user: { id: user },
+  // A restricted person is still in the channel.
+  ...(status === 'restricted' ? { is_member: true } : {}),
+});
+// A person of anyone joins or leaves: counted, never kept (docs/30).
+const moved = (chat: string, was: string, now: string, user?: number) =>
+  poster({
+    chat_member: {
+      chat: { id: Number(chat) },
+      date: NOW,
+      old_chat_member: member(was, user),
+      new_chat_member: member(now, user),
+    },
+  });
+const reacted = (chat: string, messageId: number, counts: number[], date = NOW) =>
+  poster({
+    message_reaction_count: {
+      chat: { id: Number(chat) },
+      message_id: messageId,
+      date,
+      reactions: counts.map((total) => ({ type: { type: 'emoji', emoji: '👍' }, total_count: total })),
+    },
   });
 
-  it('a cancelled trip: «Safar bekor qilindi», then the post is deleted', async () => {
-    await approvedDriver(OTHER_DRIVER);
-    const published = await read<{ id: string }>(
-      call('/driver/trips', OTHER_DRIVER, { app: 'driver', ...trip(Date.now() + 6 * HOUR) }),
+// G87 (docs/191): «Kanallar» of the owner shows who joined and left this week and the reactions.
+describe('the life of the channels through the bot of the posts', () => {
+  it('counts the joins, the leaves and the reactions of the posts of each channel', async () => {
+    await registerUser(OWNER);
+    for (const user of [1, 2, 3]) expect((await moved(FIRST, 'left', 'member', user)).status).toBe(200);
+    await moved(FIRST, 'member', 'left', 1);
+    // A changed right of a member is no join.
+    await moved(FIRST, 'member', 'restricted');
+    await reacted(FIRST, 10, [4, 2]);
+    await reacted(FIRST, 11, [1]);
+    // An older count of a post never wins over a newer one.
+    await reacted(FIRST, 10, [1], NOW - 60);
+    await reacted(SECOND, 12, [3]);
+    const health = channelHealthSchema.parse(
+      await (await call(ADMIN_CHANNEL_HEALTH_PATH, OWNER, { app: 'admin' })).json(),
     );
-    telegram.length = 0;
-    await call(`/driver/trips/${published.id}/cancel`, OTHER_DRIVER, { method: 'POST', app: 'driver' });
-    expect(heads()).toEqual([
-      ['editMessageText', '<b>❌ Safar bekor qilindi</b>'],
-      ['deleteMessage', ''],
-    ]);
+    const life = (chat: string) => health.channels.find((one) => one.chat === chat);
+    expect(life(FIRST)).toMatchObject({ joined: 3, gone: 1, reactions: 7, topReactions: 6 });
+    expect(life(SECOND)).toMatchObject({ joined: 0, gone: 0, reactions: 3, topReactions: 3 });
+  });
+
+  it('reads a week of D1 through the keys, the same as in memory', async () => {
+    const db = testD1();
+    const DAY = 24 * 3600 * 1000;
+    const at = Date.parse('2026-10-18T10:00:00Z');
+    for (const life of [d1ChannelLife(db), createMemoryChannelLife()]) {
+      await life.moved('2026-10-18', '-1001', 'joined');
+      await life.moved('2026-10-18', '-1001', 'joined');
+      await life.moved('2026-10-10', '-1001', 'gone');
+      await life.counted('2026-10-18', '-1001', 120);
+      await life.reacted('-1001', 5, 3, at);
+      await life.reacted('-1001', 6, 8, at - DAY);
+      await life.reacted('-1001', 7, 9, at - 9 * DAY);
+      expect(await life.since('2026-10-12', at - 7 * DAY)).toEqual(
+        new Map([['-1001', { joined: 2, gone: 0, reactions: 11, topReactions: 8 }]]),
+      );
+    }
+    expect(fullScans(db)).toEqual([]);
   });
 });
