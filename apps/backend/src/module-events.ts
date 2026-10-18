@@ -1,4 +1,6 @@
 import { NO_RATING } from '@platform/contracts';
+// «Navbat» of the team, wired apart (G68).
+import './team-queue-wiring';
 import {
   cancelAllOf,
   chatRing,
@@ -15,10 +17,10 @@ import {
   walletBookingsOf,
 } from './modules/bookings';
 import { wireChatRings } from './modules/chat';
-import { hiddenByComplaints, waitingComplaints, wireComplaints } from './modules/complaints';
-import { assignTo, waitingSupport } from './modules/assignments';
+import { hiddenByComplaints, wireComplaints } from './modules/complaints';
+import { assignTo } from './modules/assignments';
 import { inviteFromMark, tripViewCounts } from './modules/channels';
-import { approvedCar, waitingApplications, wireLiveTrips } from './modules/drivers';
+import { approvedCar, wireLiveTrips } from './modules/drivers';
 import { wireFavorites } from './modules/favorites';
 import {
   handleRequestChanged,
@@ -38,8 +40,7 @@ import {
   upcomingTripsOf,
   wireTripStanding,
 } from './modules/trips';
-import { wireTeamQueue } from './modules/team-queue';
-import { peopleOf, waitingFaces, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
+import { peopleOf, wireFaceTeam, wireRegistered, wireRiding } from './modules/users';
 import { refundNoShow, wireWalletLinks } from './modules/wallet';
 
 // What one module does after another: set here, the one place that knows every module, so the
@@ -123,28 +124,6 @@ wireComplaints({
   cancelAll: cancelAllOf,
   refund: refundNoShow,
   coRiders: coRidersOf,
-});
-
-// «Navbat» of the team reads its cases from the modules that hold them (G68, docs/122).
-wireTeamQueue(async (env) => {
-  const [applications, complaints, faces, support] = await Promise.all([
-    waitingApplications(env),
-    waitingComplaints(env),
-    waitingFaces(env),
-    waitingSupport(env),
-  ]);
-  return [
-    ...applications.map(({ publicId, name, submittedAt, car }) => ({
-      kind: 'application' as const,
-      id: publicId,
-      name,
-      since: submittedAt,
-      car,
-    })),
-    ...complaints.map((item) => ({ kind: 'complaint' as const, ...item })),
-    ...faces.map((item) => ({ kind: 'face' as const, ...item })),
-    ...support.map((item) => ({ kind: 'support' as const, ...item })),
-  ];
 });
 
 // A car changes only without live trips; a person blocked on the road finishes the trip (docs/158).
