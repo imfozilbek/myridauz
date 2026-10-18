@@ -106,6 +106,8 @@ describe('toDataPoint', () => {
       blobs: ['bot_command', 'driver', '', '', '', 'start'],
       doubles: [5, 5],
     });
+    // G85 T1: one row stands for several operations of the queue.
+    expect(serverDataPoint({ name: 'queue_ops', source: 'write', count: 12 }, 5).doubles).toEqual([5, 5, 12]);
     expect(serverDataPoint({ name: 'driver_approved' }, 5).blobs).toEqual([
       'driver_approved',
       'server',

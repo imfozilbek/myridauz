@@ -3,7 +3,7 @@ import { tripBookLink, VIA_STORY, type Booking } from '@platform/contracts';
 import type { AppEnv, Bindings } from '../../env';
 import { storiesOf } from '../../shared/storage/stories';
 import { placesOf } from '../locations';
-import { notify } from '../notifications';
+import { notifyMass } from '../notifications';
 import type { DriverTrip, SharedBooking, SharesDeps, ShareUpdate } from './application/ports';
 import { tellTripCancelled, tellTripRetimed } from './application/driver-shares';
 import { tellFollowers } from './application/shares';
@@ -25,7 +25,8 @@ const base = (env: Bindings) => {
   return {
     shares: env.DB ? d1Shares(env.DB) : localShares,
     texts: shareTexts(brand, async (id) => (await placesOf(env)).get(id)?.name ?? id),
-    notify: (jobs: Parameters<SharesDeps['notify']>[0]) => notify(env, jobs),
+    // Everyone who follows a trip at once: the even pace of the bots (G85 T2).
+    notify: (jobs: Parameters<SharesDeps['notify']>[0]) => notifyMass(env, jobs),
     link: (token: string) => `https://t.me/${brand.bots.passenger}?start=${FOLLOW_START}${token}`,
   };
 };

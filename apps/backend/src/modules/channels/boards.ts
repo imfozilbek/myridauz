@@ -26,7 +26,7 @@ function common(env: Bindings, tripsOf: TripsOfDate) {
       channels: async () => allChannels(await teamDeps(env)),
       places: () => placesOf(env),
       tripsOf: (date: string) => tripsOf(env, date),
-      show: (cards: Parameters<typeof showCards>[1]) => showCards(env, cards),
+      show: (cards: Parameters<typeof showCards>[1]) => showCards(env, cards, [], 'mass'),
       now: () => Date.now(),
     },
   };

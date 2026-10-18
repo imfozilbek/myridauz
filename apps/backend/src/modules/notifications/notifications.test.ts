@@ -6,6 +6,7 @@ import { consumeNotifications, handleAfterSent, notify, notifyTeam } from '.';
 const TOKENS = { passenger: 'p', driver: 'd', admin: 'a', poster: 'c', main: 'm' };
 const JOB: NotificationJob = { bot: 'driver', chatId: 5, text: 'Yangi xabar' };
 const answer = (status: number, body: object) => async () => Response.json(body, { status });
+const TASKS = { reminder: async () => undefined };
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -40,6 +41,7 @@ describe('bot messages through the queue (docs/03)', () => {
     expect(await deliver(answer(429, { parameters: { retry_after: 7 } }), TOKENS, JOB)).toEqual({
       outcome: 'retry',
       afterSeconds: 7,
+      limited: true,
     });
     expect(await deliver(answer(502, {}), TOKENS, JOB)).toEqual({ outcome: 'retry', afterSeconds: 5 });
     expect(await deliver(answer(403, {}), TOKENS, JOB)).toEqual({ outcome: 'drop' });
@@ -61,15 +63,17 @@ describe('bot messages through the queue (docs/03)', () => {
     vi.stubGlobal('fetch', answer(429, { parameters: { retry_after: 3 } }));
     await notify(env as never, [JOB]);
     expect(queued).toEqual([{ body: JOB, delaySeconds: 3 }]);
+    // Six people at once: one batch through the queue.
     await notify(
       env as never,
-      Array.from({ length: 6 }, () => JOB),
+      Array.from({ length: 6 }, (_, chatId) => ({ ...JOB, chatId })),
     );
     expect(queued).toHaveLength(7);
   });
 
-  it('acks or retries each message of the queue', async () => {
-    vi.stubGlobal('fetch', answer(429, { parameters: { retry_after: 3 } }));
+  // G85 T4: a 429 is no failure of the message: it goes back to the queue as a new one and keeps its
+  // tries; a broken Telegram is tried again.
+  it('acks, waits or retries each message of the queue', async () => {
     const done: string[] = [];
     const message = {
       body: JOB,
@@ -77,11 +81,18 @@ describe('bot messages through the queue (docs/03)', () => {
       ack: () => done.push('ack'),
       retry: (options: { delaySeconds: number }) => done.push(`retry ${options.delaySeconds}`),
     };
-    const envWithTokens = { DRIVER_BOT_TOKEN: 'd' };
-    await consumeNotifications({ messages: [message] } as never, envWithTokens);
+    const queued: unknown[] = [];
+    const NOTIFICATIONS = { sendBatch: async (batch: unknown[]) => void queued.push(...batch) };
+    const env = { DRIVER_BOT_TOKEN: 'd', NOTIFICATIONS };
+    const consume = () => consumeNotifications({ messages: [message] } as never, env as never, TASKS);
+    vi.stubGlobal('fetch', answer(429, { parameters: { retry_after: 3 } }));
+    await consume();
+    vi.stubGlobal('fetch', answer(502, {}));
+    await consume();
     vi.stubGlobal('fetch', answer(200, { result: { message_id: 4 } }));
-    await consumeNotifications({ messages: [message] } as never, envWithTokens);
-    expect(done).toEqual(['retry 3', 'ack']);
+    await consume();
+    expect(done).toEqual(['ack', 'retry 5', 'ack']);
+    expect(queued).toEqual([{ body: JOB, delaySeconds: 3 }]);
   });
 
   it('remembers a channel post once it is sent, and reaches the whole team', async () => {

@@ -3,7 +3,7 @@ import { channelVia, tripBookLink, TRIPS_PATH, VIA_DRIVER, type Trip } from '@pl
 import { Hono } from 'hono';
 import type { AppEnv, Bindings } from '../../env';
 import { placesOf } from '../locations';
-import { notify } from '../notifications';
+import { notify, notifyMass } from '../notifications';
 import { claimZoneInvite } from '../users';
 import { closeDeparted, closePosts, postTrip, refreshPosts, rememberPost } from './application/channels';
 import { inviteToZone, tellsHome, type ZoneInviteDeps } from './application/zone-invite';
@@ -52,7 +52,7 @@ const channelsDeps = (env: Bindings, tripOf: TripOf): ChannelsDeps => {
     trip: (id) => tripOf(env, id),
     posts: postsOf(env),
     render: channelPost(brand.bots.passenger),
-    send: (jobs) => notify(env, jobs),
+    send: (jobs) => notifyMass(env, jobs),
     now: () => Date.now(),
   };
 };

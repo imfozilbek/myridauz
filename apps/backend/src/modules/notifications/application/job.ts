@@ -48,4 +48,12 @@ export type NotificationJob = {
   readonly remove?: boolean;
 };
 
+// Work done when its moment comes, not a ready message: a reminder reads the trip at its time and
+// says what is true then (G85 R3). The module that owns the task runs it (src/index.ts).
+export type TimedTask = {
+  readonly task: 'reminder';
+  readonly data: Readonly<Record<string, string | number>>;
+};
+export type QueueMessage = NotificationJob | TimedTask;
+
 export type AfterSentHandler<Env> = (env: Env, after: ChannelPostSent, messageId: number) => Promise<void>;

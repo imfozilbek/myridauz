@@ -3,7 +3,8 @@ import { runJobs } from './cron-jobs';
 import { recordServerEvent } from './modules/analytics';
 import { cronJobs } from './cron';
 import type { Bindings } from './env';
-import { consumeNotifications, type NotificationJob } from './modules/notifications';
+import { consumeNotifications, type QueueMessage } from './modules/notifications';
+import { runReminderTask } from './modules/reminders';
 import { useTelegramApi } from './shared/telegram/api-url';
 import { refreshLimits } from './modules/limits';
 
@@ -18,11 +19,12 @@ export default {
     useTelegramApi(env.TELEGRAM_API_URL);
     return app.fetch(request, env, context);
   },
-  // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56).
+  // The bot messages Telegram asked to wait for, and big batches, at Telegram's pace (docs/03, G56);
+  // the reminders of trips at their minute (G85 R3).
   queue: async (batch, env) => {
     useTelegramApi(env.TELEGRAM_API_URL);
     await refreshLimits(env);
-    return consumeNotifications(batch, env);
+    return consumeNotifications(batch, env, { reminder: runReminderTask });
   },
   // The Cron answers when its jobs are done: the Cron of the stand too, so a scenario never meets the
   // jobs of the Cron before it (lesson 274).
@@ -34,4 +36,4 @@ export default {
     // A broken job is counted on the dashboard like any server error (G42).
     for (const job of failed) recordServerEvent(env, { name: 'server_error', code: `cron:${job}` });
   },
-} satisfies ExportedHandler<Bindings, NotificationJob>;
+} satisfies ExportedHandler<Bindings, QueueMessage>;
