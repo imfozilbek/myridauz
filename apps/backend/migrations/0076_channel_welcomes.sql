@@ -1,7 +1,7 @@
 -- The welcomes of the passenger and the driver bot in every channel of the brand (owner, 18.10.2026,
--- docs/176): one row per channel and bot. A welcome counts as posted from the moment it is taken
--- (tried_at = posted_at); a post Telegram refused clears posted_at and is taken again an hour later.
--- message_id is the post in the channel, to find, change or delete it.
+-- docs/176): one row per channel and bot. A welcome is posted only when Telegram gave message_id,
+-- the post in the channel (to find, change or delete it); posted_at is when. Any other end is taken
+-- again an hour after tried_at.
 CREATE TABLE channel_welcomes (
   chat TEXT NOT NULL,
   role TEXT NOT NULL,
