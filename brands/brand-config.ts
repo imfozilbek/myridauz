@@ -117,7 +117,7 @@ export type BrandConfig = PeopleRules & {
   readonly app?: AppName; // set by brandForApp: the colors and the drawings of one Mini App
   // Telegram usernames of the bots (docs/02, docs/46): deep links between them; support answers people (docs/50).
   readonly bots: BotNames;
-  // The version of every welcome picture, its own bytes: a new look, a new address (lesson №311).
+  // The version of every welcome picture, from its drawing: a new look, a new address (lesson №311).
   readonly welcomes: Readonly<Record<BotWelcome, string>>;
   // An environment of the team only (owner, 17.10.2026, docs/179): anyone outside the team is sent
   // to these bots of production; null where people are welcome.

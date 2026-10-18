@@ -67,10 +67,11 @@ function point(look, [name, line], index) {
     textCentered(line, { cx: x + 345, cy: y + 80, h: 34, fill: C.deep, weight: 600, maxWidth: 360 });
 }
 
-// The welcomes the bots send (apps/backend start-reply.ts) and the version of a picture: its own bytes.
+// The welcomes the bots send (apps/backend start-reply.ts) and the version of a picture: its drawing,
+// so a drawing changed without pnpm bot fails welcome.test.mjs.
 export const WELCOMES = ['driver', 'passenger', 'support', 'main', 'main-open'];
 const VERSION_LENGTH = 8;
-export const welcomeVersion = (picture) => createHash('sha256').update(picture).digest('hex').slice(0, VERSION_LENGTH);
+export const welcomeVersion = (drawing) => createHash('sha256').update(drawing).digest('hex').slice(0, VERSION_LENGTH);
 
 export function botWelcome(role = 'driver') {
   if (role === 'main' || role === 'main-open') return mainWelcome(role === 'main');

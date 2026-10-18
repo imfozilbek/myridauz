@@ -31,7 +31,6 @@ async function save(name, body, width, height, type, out = OUT) {
   const shot = await page.screenshot(type === 'jpeg' ? { clip, type, quality: JPEG_QUALITY } : { clip, type });
   fs.writeFileSync(new URL(name, out), shot);
   console.log(`${name} ${Math.round(shot.length / 1024)} KB`);
-  return shot;
 }
 
 fs.mkdirSync(OUT, { recursive: true });
@@ -39,7 +38,11 @@ fs.mkdirSync(CHANNELS, { recursive: true });
 // The splash of Telegram before the Mini App (BotFather, docs/121 §4, OPS-05): one white «R».
 fs.writeFileSync(new URL('miniapp-splash.svg', OUT), splash());
 const versions = {};
-for (const role of WELCOMES) versions[role] = welcomeVersion(await save(`${role}-welcome.png`, botWelcome(role), 1280, 720, 'png'));
+for (const role of WELCOMES) {
+  const picture = botWelcome(role);
+  versions[role] = welcomeVersion(picture);
+  await save(`${role}-welcome.png`, picture, 1280, 720, 'png');
+}
 fs.writeFileSync(VERSIONS, `${JSON.stringify(versions, null, 2)}\n`);
 for (const role of ROLES) await save(`${role}-avatar.jpg`, botAvatar(role), AVATAR, AVATAR, 'jpeg');
 for (const region of regions)
