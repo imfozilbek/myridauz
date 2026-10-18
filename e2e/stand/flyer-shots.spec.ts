@@ -27,8 +27,8 @@ const TWO_SEATS = {
 } as const;
 const SCREENS = `brands/${loadBrand().id}/brand-kit/data/flyer-screens/qashqadaryo`;
 // The screens go straight to the data of the flyer (pnpm flyer), only with --shots (e2e/crash-guard.ts):
-// the photos of the regions and the people are in before the picture. A short phone: every screen is full
-// and its main button stands at the bottom.
+// the photos of the regions and the people are in before the picture. The view of a Mini App inside Telegram
+// on a phone of 390 x 844: the brand kit draws the status bar, the header of Telegram and the bottom around it.
 const shot = async (page: Page, name: string) => {
   await page.waitForLoadState('networkidle');
   await page.waitForFunction(() =>
@@ -42,7 +42,7 @@ const shot = async (page: Page, name: string) => {
 };
 const seen = (page: Page, text: string | RegExp) => expect(page.getByText(text).first()).toBeVisible();
 
-test.use({ viewport: { width: 390, height: 640 }, deviceScaleFactor: 2 });
+test.use({ viewport: { width: 390, height: 707 }, deviceScaleFactor: 2 });
 test.setTimeout(240_000);
 
 test.beforeAll(async () => {

@@ -49,7 +49,7 @@ function band(s, copy) {
 }
 
 // The screens of the Mini App of a side, each whole in a thin phone (lib/phone.mjs), the step under it.
-const PHONE = { gap: 24, bezel: 6, y: 830 };
+const PHONE = { gap: 24, bezel: 6, y: 820 };
 function steps(s, side, flyer) {
   const list = COPY[side].steps, width = (CW - (list.length - 1) * PHONE.gap) / list.length;
   const h = phoneHeight(width, PHONE.bezel), y = PHONE.y;
@@ -66,7 +66,7 @@ function steps(s, side, flyer) {
 function facts(s, list) {
   const w = (CW - 20) / 2, h = 110;
   return list.map(([name, [first, second], box], i) => {
-    const x = M + (i % 2) * (w + 20), y = 1460 + Math.floor(i / 2) * (h + 20), ink = box ? s.boxInk : C.ink;
+    const x = M + (i % 2) * (w + 20), y = 1540 + Math.floor(i / 2) * (h + 20), ink = box ? s.boxInk : C.ink;
     return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="28" fill="${box ? s.box : s.soft}"/>` +
       `<circle cx="${x + 52}" cy="${y + h / 2}" r="32" fill="${box ? s.box : C.white}"/>` + icon(name, x + 52, y + h / 2, 40, box ? s.boxInk : s.band, 2.25) +
       text(first, { x: x + 100, y: y + 48, fill: ink, weight: 600, size: box ? 30 : 36, maxWidth: w - 116 }) +
@@ -92,7 +92,7 @@ function qr(url, x, y, size, s) {
 
 // One side of the flyer of a direction: `side` is passenger or driver, `flyer` an entry of data/flyers.json.
 export function flyerSide(side, flyer) {
-  const s = SIDES[side], copy = COPY[side], y = 1830, size = 480, x = M + size + 44;
+  const s = SIDES[side], copy = COPY[side], y = 1880, size = 470, x = M + size + 44;
   const lines = (list, top, opts) => list.map((line, n) => text(line, { x, y: top + n * opts.gap, maxWidth: W - M - x, ...opts })).join('');
   return svg(W, H, `<rect width="${W}" height="${H}" fill="${C.white}"/>` + band(s, copy) + routeCard({ x: M, y: 560, width: CW, from: flyer.from, to: flyer.to }) +
     steps(s, side, flyer) + facts(s, copy.facts) + qr(flyer[side], M, y, size, s) +
