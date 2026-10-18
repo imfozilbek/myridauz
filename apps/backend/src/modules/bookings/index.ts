@@ -19,7 +19,6 @@ import { filedRideOf, ratableRideOf, rideOf, ridesOf } from './application/rides
 import { expireTripOffers } from './application/salon-trip';
 import { tellTripRetimed } from './application/trip-change';
 import { bookingViews } from './application/views';
-import { isRide } from './domain/meeting';
 import { bookingRoutes } from './http/booking-routes';
 import { meetingRoutes } from './http/meeting-routes';
 import { offerRoutes } from './http/offer-routes';
@@ -109,9 +108,7 @@ export const cancelAllOf = (env: Bindings, userId: number) => cancelEverything(b
 // A blocked person finishes the trip on the way (owner decision 10.10.2026, docs/158 Ж).
 export const ridingOf = (env: Bindings, userId: number) => ridingNow(bookingsDeps(env), userId);
 
-// The history of a passenger for a moderator: how many rides they took (docs/17), not the no-shows.
-export const passengerRideCount = async (env: Bindings, passengerId: number) =>
-  (await bookingsDeps(env).bookings.byPassenger(passengerId)).filter(isRide).length;
+export { cancelsOf, passengerRideCount, ridesOfPerson } from './person-facts';
 
 // «Hamyon» names the passenger and the seats of each booking of its rows (G63, G65).
 export const walletBookingsOf = async (env: Bindings, bookingIds: readonly string[]) => {

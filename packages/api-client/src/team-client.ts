@@ -14,6 +14,8 @@ import {
   journalSchema,
   navbatSchema,
   navbatTakePath,
+  personActivityPath,
+  personActivitySchema,
   personCardSchema,
   supportCaseSchema,
   teamListSchema,
@@ -24,6 +26,7 @@ import {
   type Journal,
   type Navbat,
   type NavbatKind,
+  type PersonActivity,
   type PersonCard,
   type PersonId,
   type SupportCase,
@@ -51,6 +54,8 @@ export function createTeamClient(options: SignedOptions) {
     add: async (person: PersonId): Promise<void> => void (await post(ADMIN_TEAM_PATH, { person })),
     person: async (id: PersonId): Promise<PersonCard> =>
       personCardSchema.parse(await json(adminPersonPath(id))),
+    activity: async (id: PersonId): Promise<PersonActivity> =>
+      personActivitySchema.parse(await json(personActivityPath(id))),
     channelHealth: async (): Promise<ChannelHealth> =>
       channelHealthSchema.parse(await json(ADMIN_CHANNEL_HEALTH_PATH)),
     // The photo of a member on the main screen: the admin app has no account of its own (G75).

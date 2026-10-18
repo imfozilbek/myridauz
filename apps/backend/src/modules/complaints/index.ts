@@ -83,6 +83,11 @@ export async function waitingComplaints(env: Bindings) {
 // The complaints against a person, for «Odamlar» of the owner (G75).
 export const complaintsAgainst = (env: Bindings, userId: number) =>
   complaintsDeps(env).store.countAgainst(userId);
+// The newest complaints against a person for «Odamlar» (G45): by the index of the person.
+export const complaintsListAgainst = async (env: Bindings, userId: number, limit: number) =>
+  (await complaintsDeps(env).store.against([userId], 0))
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .slice(0, limit);
 
 export const complaintsModule = complaintRoutes(complaintsDeps)
   .route('/', blockRoutes(complaintsDeps))
